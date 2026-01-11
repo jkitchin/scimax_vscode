@@ -902,6 +902,42 @@
         {
           "name": "markup.underline.link.file.org",
           "match": "(?<![\\w])file:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.doi.org",
+          "match": "(?<![\\w])doi:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.bibliography.org",
+          "match": "(?<![\\w])bibliography:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.bibliographystyle.org",
+          "match": "(?<![\\w])bibliographystyle:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.elisp.org",
+          "match": "(?<![\\w])elisp:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.shell.org",
+          "match": "(?<![\\w])shell:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.info.org",
+          "match": "(?<![\\w])info:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.mailto.org",
+          "match": "(?<![\\w])mailto:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "comment": "Generic org-mode link type:path pattern",
+          "name": "markup.underline.link.generic.org",
+          "match": "(?<![\\w])([a-zA-Z][a-zA-Z0-9+-]*):[^\\s<>\\[\\](){}:]+(?=[\\s.,;:!?)]|$)",
+          "captures": {
+            "1": { "name": "entity.name.type.link.org" }
+          }
         }
       ]
     },
