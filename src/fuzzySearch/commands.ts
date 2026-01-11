@@ -84,10 +84,10 @@ async function goToLine(filePath: string, lineNumber: number): Promise<void> {
 }
 
 /**
- * Swiper - Search current file with live preview
- * Similar to Emacs swiper, shows all matching lines as you type
+ * Fuzzy search current file with live preview
+ * Shows all matching lines as you type
  */
-async function swiper(): Promise<void> {
+async function fuzzySearch(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showWarningMessage('No active editor');
@@ -150,10 +150,10 @@ async function swiper(): Promise<void> {
 }
 
 /**
- * Swiper All - Search all open files with live preview
- * Similar to Emacs swiper-all, searches across all open buffers
+ * Fuzzy search all open files with live preview
+ * Searches across all open buffers
  */
-async function swiperAll(): Promise<void> {
+async function fuzzySearchOpenFiles(): Promise<void> {
     // Get all open text documents
     const openDocuments = vscode.workspace.textDocuments.filter(doc => {
         // Filter out internal VS Code documents
@@ -236,10 +236,10 @@ async function swiperAll(): Promise<void> {
 }
 
 /**
- * Swiper Symbol - Search headings/symbols in current file
- * Like swiper but focused on structure (headings, functions, etc.)
+ * Fuzzy search headings/symbols in current file
+ * Focused on structure (headings, functions, etc.)
  */
-async function swiperSymbol(): Promise<void> {
+async function fuzzySearchOutline(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showWarningMessage('No active editor');
@@ -345,14 +345,14 @@ async function swiperSymbol(): Promise<void> {
 }
 
 /**
- * Register all swiper commands
+ * Register all fuzzy search commands
  */
-export function registerSwiperCommands(context: vscode.ExtensionContext): void {
+export function registerFuzzySearchCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.swiper', swiper),
-        vscode.commands.registerCommand('scimax.swiperAll', swiperAll),
-        vscode.commands.registerCommand('scimax.swiperSymbol', swiperSymbol)
+        vscode.commands.registerCommand('scimax.fuzzySearch', fuzzySearch),
+        vscode.commands.registerCommand('scimax.fuzzySearchOpenFiles', fuzzySearchOpenFiles),
+        vscode.commands.registerCommand('scimax.fuzzySearchOutline', fuzzySearchOutline)
     );
 
-    console.log('Scimax: Swiper commands registered');
+    console.log('Scimax: Fuzzy search commands registered');
 }

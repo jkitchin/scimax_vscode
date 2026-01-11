@@ -645,16 +645,16 @@
         "title": "Scimax: Cleanup Non-existent Projects"
       },
       {
-        "command": "scimax.swiper",
-        "title": "Scimax: Swiper (Search Current File)"
+        "command": "scimax.fuzzySearch",
+        "title": "Scimax: Fuzzy Search (Current File)"
       },
       {
-        "command": "scimax.swiperAll",
-        "title": "Scimax: Swiper All (Search Open Files)"
+        "command": "scimax.fuzzySearchOpenFiles",
+        "title": "Scimax: Fuzzy Search (Open Files)"
       },
       {
-        "command": "scimax.swiperSymbol",
-        "title": "Scimax: Swiper Symbol (Search Headings)"
+        "command": "scimax.fuzzySearchOutline",
+        "title": "Scimax: Fuzzy Search (Outline)"
       }
     ],
     "keybindings": [
@@ -881,19 +881,19 @@
         "mac": "ctrl+c p a"
       },
       {
-        "command": "scimax.swiper",
+        "command": "scimax.fuzzySearch",
         "key": "ctrl+c s",
         "mac": "ctrl+c s",
         "when": "editorTextFocus"
       },
       {
-        "command": "scimax.swiperAll",
+        "command": "scimax.fuzzySearchOpenFiles",
         "key": "ctrl+c shift+s",
         "mac": "ctrl+c shift+s",
         "when": "editorTextFocus"
       },
       {
-        "command": "scimax.swiperSymbol",
+        "command": "scimax.fuzzySearchOutline",
         "key": "ctrl+c alt+s",
         "mac": "ctrl+c alt+s",
         "when": "editorTextFocus"
