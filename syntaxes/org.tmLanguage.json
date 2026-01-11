@@ -839,8 +839,8 @@
     "inline-elements": {
       "patterns": [
         { "include": "#timestamps" },
-        { "include": "#links" },
         { "include": "#citations" },
+        { "include": "#links" },
         { "include": "#footnote-references" },
         { "include": "#latex-fragments" },
         { "include": "#entities" },
@@ -932,6 +932,23 @@
           "match": "(?<![\\w])mailto:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
         },
         {
+          "comment": "org-ref label definition",
+          "name": "entity.name.label.org",
+          "match": "(?<![\\w])label:([^\\s<>\\[\\](){}]+)(?=[\\s.,;:!?)]|$)",
+          "captures": {
+            "1": { "name": "entity.name.tag.label.org" }
+          }
+        },
+        {
+          "comment": "org-ref cross-reference links",
+          "name": "markup.underline.link.ref.org",
+          "match": "(?<![\\w])(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\\s<>\\[\\](){}]+)(?=[\\s.,;:!?)]|$)",
+          "captures": {
+            "1": { "name": "keyword.other.ref.org" },
+            "2": { "name": "variable.other.label.org" }
+          }
+        },
+        {
           "comment": "Generic org-mode link type:path pattern",
           "name": "markup.underline.link.generic.org",
           "match": "(?<![\\w])([a-zA-Z][a-zA-Z0-9+-]*):[^\\s<>\\[\\](){}:]+(?=[\\s.,;:!?)]|$)",
@@ -953,10 +970,7 @@
         },
         {
           "name": "entity.other.citation.org",
-          "match": "(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\\w:-]+)",
-          "captures": {
-            "1": { "name": "variable.other.citation.key.org" }
-          }
+          "match": "(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt):[\\w:-]+(?:,[\\w:-]+)*"
         },
         {
           "name": "entity.other.citation.at.org",

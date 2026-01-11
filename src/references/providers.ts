@@ -27,6 +27,7 @@ export class CitationHoverProvider implements vscode.HoverProvider {
             // Show hover for unknown citation
             const markdown = new vscode.MarkdownString();
             markdown.isTrusted = true;
+            markdown.supportHtml = true;
             markdown.appendMarkdown(`### Citation: ${key}\n\n`);
             markdown.appendMarkdown(`*Not found in bibliography*\n\n`);
             markdown.appendMarkdown(`[Search Google Scholar](https://scholar.google.com/scholar?q=${encodeURIComponent(key)}) | `);
@@ -37,6 +38,7 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         // Build hover content
         const markdown = new vscode.MarkdownString();
         markdown.isTrusted = true;
+        markdown.supportHtml = true;
 
         // Title and authors
         markdown.appendMarkdown(`### ${entry.title || 'Untitled'}\n\n`);
@@ -81,29 +83,72 @@ export class CitationHoverProvider implements vscode.HoverProvider {
 
     /**
      * Find citation key at cursor position
+     * Handles comma-separated keys like cite:key1,key2,key3
      */
     private findCitationKeyAtPosition(line: string, position: number): string | null {
-        // Patterns to match citations (order matters - more specific first)
+        // Patterns to match citations with potentially comma-separated keys
         const patterns = [
-            // org-ref style: cite:key, citep:key, citet:key, etc.
-            /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g,
-            // org-mode 9.5+ citation: [cite:@key] or [cite/style:@key]
-            /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g,
+            // org-ref style: cite:key1,key2,key3 etc.
+            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g, keysGroup: 1 },
+            // org-mode 9.5+ citation: [cite:@key1;@key2] or [cite/style:@key]
+            { regex: /\[cite(?:\/[^\]]*)?:([^\]]+)\]/g, keysGroup: 1, prefix: '@' },
             // Pandoc/markdown: [@key]
-            /\[@([a-zA-Z0-9_:-]+)\]/g,
+            { regex: /\[@([a-zA-Z0-9_:-]+)\]/g, keysGroup: 1 },
             // Pandoc/markdown: @key (standalone)
-            /(?:^|[^\\w@])@([a-zA-Z][a-zA-Z0-9_:-]*)/g,
-            // LaTeX: \cite{key}
-            /\\cite[pt]?\{([a-zA-Z0-9_:-]+)\}/g
+            { regex: /(?:^|[^\w@])@([a-zA-Z][a-zA-Z0-9_:-]*)/g, keysGroup: 1 },
+            // LaTeX: \cite{key1,key2}
+            { regex: /\\cite[pt]?\{([a-zA-Z0-9_:,-]+)\}/g, keysGroup: 1 }
         ];
 
-        for (const pattern of patterns) {
+        for (const { regex, keysGroup, prefix } of patterns) {
             let match;
-            while ((match = pattern.exec(line)) !== null) {
-                const start = match.index;
-                const end = start + match[0].length;
-                if (position >= start && position <= end) {
-                    return match[1];
+            while ((match = regex.exec(line)) !== null) {
+                const fullStart = match.index;
+                const fullEnd = fullStart + match[0].length;
+
+                // Check if cursor is within this citation
+                if (position >= fullStart && position <= fullEnd) {
+                    const keysStr = match[keysGroup];
+
+                    // For org-mode 9.5+ style with @key;@key2 format
+                    if (prefix === '@') {
+                        const keys = keysStr.split(/[;,]/).map(k => k.trim().replace(/^@/, ''));
+                        // Find which key the cursor is on
+                        let keyStart = match.index + match[0].indexOf(keysStr);
+                        for (const keyPart of keysStr.split(/([;,])/)) {
+                            const keyEnd = keyStart + keyPart.length;
+                            if (position >= keyStart && position < keyEnd) {
+                                const key = keyPart.trim().replace(/^@/, '');
+                                if (key && !key.match(/^[;,]$/)) {
+                                    return key;
+                                }
+                            }
+                            keyStart = keyEnd;
+                        }
+                        return keys[0]; // fallback to first key
+                    }
+
+                    // For comma-separated keys (cite:key1,key2,key3)
+                    const keys = keysStr.split(',');
+                    if (keys.length === 1) {
+                        return keys[0];
+                    }
+
+                    // Find the key at cursor position
+                    // Calculate position within the keys string
+                    const keysStartInLine = match.index + match[0].indexOf(keysStr);
+                    let currentPos = keysStartInLine;
+
+                    for (const key of keys) {
+                        const keyEnd = currentPos + key.length;
+                        if (position >= currentPos && position <= keyEnd) {
+                            return key;
+                        }
+                        currentPos = keyEnd + 1; // +1 for the comma
+                    }
+
+                    // Fallback: return first key if position is on the prefix
+                    return keys[0];
                 }
             }
         }
@@ -125,24 +170,28 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.Hover> {
         const line = document.lineAt(position.line).text;
+        console.log('BibliographyHoverProvider: checking line:', line);
 
         // Match bibliography references
         // #+BIBLIOGRAPHY: path/to/file.bib
         // bibliography:path/to/file.bib
-        const patterns = [
-            /^#\+BIBLIOGRAPHY:\s*(.+\.bib)\s*$/i,
-            /bibliography:([^\s]+\.bib)/i
+        const patterns: { regex: RegExp }[] = [
+            { regex: /^(#\+BIBLIOGRAPHY:\s*)(.+?\.bib)\s*$/i },
+            { regex: /(bibliography:)([^\s<>\[\](){}]+)/i }
         ];
 
-        for (const pattern of patterns) {
-            const match = pattern.exec(line);
+        for (const { regex } of patterns) {
+            const match = regex.exec(line);
+            console.log('BibliographyHoverProvider: pattern', regex, 'match:', match);
             if (match) {
-                const bibPath = match[1].trim();
-                const start = line.indexOf(bibPath);
-                const end = start + bibPath.length;
+                const bibPath = match[2].trim();
+                const end = match.index + match[0].length;
 
-                // Check if cursor is on the path
-                if (position.character >= start && position.character <= end) {
+                console.log('BibliographyHoverProvider: bibPath:', bibPath, 'match.index:', match.index, 'end:', end, 'position.character:', position.character);
+
+                // Check if cursor is anywhere on the link
+                if (position.character >= match.index && position.character <= end) {
+                    console.log('BibliographyHoverProvider: cursor is on link, creating hover');
                     return this.createBibHover(bibPath, document);
                 }
             }
@@ -161,6 +210,14 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
         } else if (!path.isAbsolute(bibPath)) {
             const docDir = path.dirname(document.uri.fsPath);
             resolvedPath = path.resolve(docDir, bibPath);
+        }
+
+        // Try adding .bib extension if file doesn't exist
+        if (!fs.existsSync(resolvedPath) && !resolvedPath.endsWith('.bib')) {
+            const withBib = resolvedPath + '.bib';
+            if (fs.existsSync(withBib)) {
+                resolvedPath = withBib;
+            }
         }
 
         const markdown = new vscode.MarkdownString();
@@ -253,6 +310,251 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
             markdown.appendMarkdown(`${error}`);
             return new vscode.Hover(markdown);
         }
+    }
+}
+
+/**
+ * Hover provider for cross-reference links (ref:, eqref:, etc.)
+ * Shows context around the label definition
+ */
+export class RefHoverProvider implements vscode.HoverProvider {
+    provideHover(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.Hover> {
+        const line = document.lineAt(position.line).text;
+
+        // Match ref-style links: ref:label, eqref:label, pageref:label, etc.
+        const refPattern = /(?<![\\w])(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>\[\](){}:,]+)/g;
+
+        let match;
+        while ((match = refPattern.exec(line)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+
+            if (position.character >= start && position.character <= end) {
+                const refType = match[1];
+                const label = match[2];
+                return this.createRefHover(document, refType, label);
+            }
+        }
+
+        return null;
+    }
+
+    private async createRefHover(
+        document: vscode.TextDocument,
+        refType: string,
+        label: string
+    ): Promise<vscode.Hover | null> {
+        const markdown = new vscode.MarkdownString();
+        markdown.isTrusted = true;
+
+        // Search for label definition in current document
+        const labelInfo = await this.findLabelDefinition(document, label);
+
+        if (labelInfo) {
+            markdown.appendMarkdown(`### ${refType}:${label}\n\n`);
+            markdown.appendMarkdown(`**${labelInfo.type}**`);
+            if (labelInfo.file !== document.uri.fsPath) {
+                markdown.appendMarkdown(` in \`${path.basename(labelInfo.file)}\``);
+            }
+            markdown.appendMarkdown(`\n\n`);
+
+            // Show context
+            if (labelInfo.context) {
+                markdown.appendMarkdown(`> ${labelInfo.context}\n\n`);
+            }
+
+            // Show surrounding lines for more context
+            if (labelInfo.surroundingLines && labelInfo.surroundingLines.length > 0) {
+                markdown.appendMarkdown(`\`\`\`\n`);
+                for (const contextLine of labelInfo.surroundingLines) {
+                    markdown.appendMarkdown(`${contextLine}\n`);
+                }
+                markdown.appendMarkdown(`\`\`\`\n\n`);
+            }
+
+            // Link to definition
+            const uri = vscode.Uri.file(labelInfo.file);
+            const args = encodeURIComponent(JSON.stringify([uri, { selection: new vscode.Range(labelInfo.line, 0, labelInfo.line, 0) }]));
+            markdown.appendMarkdown(`[Go to definition](command:vscode.open?${args})`);
+        } else {
+            markdown.appendMarkdown(`### ${refType}:${label}\n\n`);
+            markdown.appendMarkdown(`*Label not found*\n\n`);
+            markdown.appendMarkdown(`Define with: \`label:${label}\` or \`\\label{${label}}\``);
+        }
+
+        return new vscode.Hover(markdown);
+    }
+
+    private async findLabelDefinition(
+        document: vscode.TextDocument,
+        label: string
+    ): Promise<{
+        type: string;
+        context: string;
+        file: string;
+        line: number;
+        surroundingLines: string[];
+    } | null> {
+        // Patterns to find label definitions
+        const labelPatterns = [
+            // org-ref style: label:name
+            { regex: new RegExp(`label:${this.escapeRegex(label)}(?=[\\s.,;:!?)]|$)`, 'i'), type: 'Label' },
+            // LaTeX style: \label{name}
+            { regex: new RegExp(`\\\\label\\{${this.escapeRegex(label)}\\}`, 'i'), type: 'LaTeX Label' },
+            // org-mode CUSTOM_ID property
+            { regex: new RegExp(`:CUSTOM_ID:\\s*${this.escapeRegex(label)}\\s*$`, 'i'), type: 'Heading (CUSTOM_ID)' },
+            // org-mode #+NAME:
+            { regex: new RegExp(`^\\s*#\\+NAME:\\s*${this.escapeRegex(label)}\\s*$`, 'i'), type: 'Named Element' },
+            // org-mode #+LABEL: (for figures/tables)
+            { regex: new RegExp(`^\\s*#\\+LABEL:\\s*${this.escapeRegex(label)}\\s*$`, 'i'), type: 'Figure/Table' }
+        ];
+
+        // Search in current document first
+        const text = document.getText();
+        const lines = text.split('\n');
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            for (const { regex, type } of labelPatterns) {
+                if (regex.test(line)) {
+                    // Found the label! Get context
+                    const context = this.getContext(lines, i, type);
+                    const surroundingLines = this.getSurroundingLines(lines, i, 2);
+
+                    return {
+                        type,
+                        context,
+                        file: document.uri.fsPath,
+                        line: i,
+                        surroundingLines
+                    };
+                }
+            }
+        }
+
+        // Search in other org files in workspace
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders) {
+            for (const folder of workspaceFolders) {
+                const orgFiles = await vscode.workspace.findFiles(
+                    new vscode.RelativePattern(folder, '**/*.org'),
+                    '**/node_modules/**',
+                    100
+                );
+
+                for (const fileUri of orgFiles) {
+                    if (fileUri.fsPath === document.uri.fsPath) continue;
+
+                    try {
+                        const content = fs.readFileSync(fileUri.fsPath, 'utf8');
+                        const fileLines = content.split('\n');
+
+                        for (let i = 0; i < fileLines.length; i++) {
+                            const line = fileLines[i];
+                            for (const { regex, type } of labelPatterns) {
+                                if (regex.test(line)) {
+                                    const context = this.getContext(fileLines, i, type);
+                                    const surroundingLines = this.getSurroundingLines(fileLines, i, 2);
+
+                                    return {
+                                        type,
+                                        context,
+                                        file: fileUri.fsPath,
+                                        line: i,
+                                        surroundingLines
+                                    };
+                                }
+                            }
+                        }
+                    } catch {
+                        // Ignore file read errors
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private getContext(lines: string[], labelLine: number, type: string): string {
+        // Look for context based on label type
+
+        // For CUSTOM_ID, find the heading
+        if (type === 'Heading (CUSTOM_ID)') {
+            // Search backwards for the heading
+            for (let i = labelLine - 1; i >= 0; i--) {
+                const headingMatch = lines[i].match(/^(\*+)\s+(.+)/);
+                if (headingMatch) {
+                    return headingMatch[2].replace(/\s*:\w+:$/, '').trim(); // Remove tags
+                }
+            }
+        }
+
+        // For Named Element or Figure/Table, look at next non-empty line
+        if (type === 'Named Element' || type === 'Figure/Table') {
+            for (let i = labelLine + 1; i < Math.min(labelLine + 5, lines.length); i++) {
+                const line = lines[i].trim();
+                if (line && !line.startsWith('#+')) {
+                    // Check for caption
+                    const captionMatch = lines.slice(labelLine, i + 1).join('\n').match(/#\+CAPTION:\s*(.+)/i);
+                    if (captionMatch) {
+                        return captionMatch[1].trim();
+                    }
+                    return line.slice(0, 100) + (line.length > 100 ? '...' : '');
+                }
+            }
+        }
+
+        // For LaTeX labels or org-ref labels, look at the surrounding context
+        // Check if it's in an equation environment
+        const surroundingText = lines.slice(Math.max(0, labelLine - 5), labelLine + 5).join('\n');
+
+        if (surroundingText.includes('\\begin{equation}') || surroundingText.includes('\\begin{align}')) {
+            return 'Equation';
+        }
+        if (surroundingText.includes('\\begin{figure}') || surroundingText.match(/#\+BEGIN.*figure/i)) {
+            const captionMatch = surroundingText.match(/\\caption\{([^}]+)\}|#\+CAPTION:\s*(.+)/i);
+            if (captionMatch) {
+                return captionMatch[1] || captionMatch[2];
+            }
+            return 'Figure';
+        }
+        if (surroundingText.includes('\\begin{table}') || surroundingText.match(/#\+BEGIN.*table/i)) {
+            const captionMatch = surroundingText.match(/\\caption\{([^}]+)\}|#\+CAPTION:\s*(.+)/i);
+            if (captionMatch) {
+                return captionMatch[1] || captionMatch[2];
+            }
+            return 'Table';
+        }
+
+        // Check if line itself contains a heading
+        const headingMatch = lines[labelLine].match(/^(\*+)\s+(.+)/);
+        if (headingMatch) {
+            return headingMatch[2].replace(/\s*:\w+:$/, '').trim();
+        }
+
+        return lines[labelLine].trim().slice(0, 80);
+    }
+
+    private getSurroundingLines(lines: string[], centerLine: number, radius: number): string[] {
+        const result: string[] = [];
+        const start = Math.max(0, centerLine - radius);
+        const end = Math.min(lines.length - 1, centerLine + radius);
+
+        for (let i = start; i <= end; i++) {
+            const prefix = i === centerLine ? '→ ' : '  ';
+            result.push(prefix + lines[i]);
+        }
+
+        return result;
+    }
+
+    private escapeRegex(str: string): string {
+        return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 }
 
@@ -447,9 +749,45 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
         const text = document.getText();
 
         // Patterns to match various citation formats
-        const patterns = [
-            // org-ref style: cite:key, citep:key, citet:key, etc.
-            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g, group: 1 },
+        // For org-ref style with comma-separated keys, we need special handling
+        const orgRefPattern = /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g;
+
+        let match;
+        while ((match = orgRefPattern.exec(text)) !== null) {
+            const fullMatch = match[0];
+            const keysStr = match[1];
+            const keys = keysStr.split(',');
+            const prefixLen = fullMatch.indexOf(':') + 1; // Length of "cite:" etc.
+
+            let keyOffset = match.index + prefixLen;
+
+            for (const key of keys) {
+                if (!key) continue;
+
+                const entry = this.manager.getEntry(key);
+                const startPos = document.positionAt(keyOffset);
+                const endPos = document.positionAt(keyOffset + key.length);
+                const range = new vscode.Range(startPos, endPos);
+
+                const link = new vscode.DocumentLink(range);
+
+                if (entry) {
+                    link.tooltip = `${formatAuthors(entry.author)} (${entry.year}): ${entry.title?.slice(0, 50) || 'Untitled'}...`;
+                } else {
+                    link.tooltip = `Citation: ${key} (not in bibliography - click to search)`;
+                }
+
+                link.target = vscode.Uri.parse(
+                    `command:scimax.ref.citeAction?${encodeURIComponent(JSON.stringify(key))}`
+                );
+
+                links.push(link);
+                keyOffset += key.length + 1; // +1 for comma
+            }
+        }
+
+        // Other patterns (single key only)
+        const singleKeyPatterns = [
             // org-mode 9.5+ citation: [cite:@key] or [cite/style:@key]
             { regex: /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g, group: 1 },
             // Pandoc/markdown: [@key] or @key
@@ -459,7 +797,7 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
             { regex: /\\cite[pt]?\{([a-zA-Z0-9_:-]+)\}/g, group: 1 }
         ];
 
-        for (const { regex, group } of patterns) {
+        for (const { regex, group } of singleKeyPatterns) {
             let match;
             while ((match = regex.exec(text)) !== null) {
                 const key = match[group];
@@ -472,12 +810,11 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
                 const link = new vscode.DocumentLink(range);
 
                 if (entry) {
-                    link.tooltip = `Click for actions: ${formatAuthors(entry.author)} (${entry.year})`;
+                    link.tooltip = `${formatAuthors(entry.author)} (${entry.year}): ${entry.title?.slice(0, 50) || 'Untitled'}...`;
                 } else {
                     link.tooltip = `Citation: ${key} (not in bibliography - click to search)`;
                 }
 
-                // Set target to command that shows action menu
                 link.target = vscode.Uri.parse(
                     `command:scimax.ref.citeAction?${encodeURIComponent(JSON.stringify(key))}`
                 );

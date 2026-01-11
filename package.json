@@ -131,6 +131,69 @@
         }
       }
     ],
+    "configurationDefaults": {
+      "editor.tokenColorCustomizations": {
+        "textMateRules": [
+          {
+            "scope": [
+              "entity.other.citation.org",
+              "entity.other.citation.bracket.org",
+              "entity.other.citation.at.org",
+              "variable.other.citation.key.org"
+            ],
+            "settings": {
+              "foreground": "#2E8B57"
+            }
+          },
+          {
+            "scope": [
+              "markup.underline.link.org",
+              "markup.underline.link.angle.org",
+              "markup.underline.link.plain.org",
+              "markup.underline.link.file.org",
+              "markup.underline.link.doi.org",
+              "markup.underline.link.bibliography.org",
+              "markup.underline.link.bibliographystyle.org",
+              "markup.underline.link.elisp.org",
+              "markup.underline.link.shell.org",
+              "markup.underline.link.info.org",
+              "markup.underline.link.mailto.org",
+              "markup.underline.link.generic.org",
+              "string.other.link.title.org",
+              "string.other.link.description.org"
+            ],
+            "settings": {
+              "foreground": "#6495ED"
+            }
+          },
+          {
+            "scope": [
+              "markup.underline.link.ref.org",
+              "keyword.other.ref.org",
+              "variable.other.label.org"
+            ],
+            "settings": {
+              "foreground": "#DA70D6"
+            }
+          },
+          {
+            "scope": [
+              "entity.name.label.org",
+              "entity.name.tag.label.org"
+            ],
+            "settings": {
+              "foreground": "#DDA0DD"
+            }
+          }
+        ]
+      },
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "orgCitation": "#2E8B57",
+          "orgLink": "#6495ED"
+        }
+      }
+    },
     "commands": [
       {
         "command": "scimax.journal.today",
@@ -354,6 +417,14 @@
       {
         "command": "scimax.notebook.remove",
         "title": "Scimax: Remove Notebook from Tracking"
+      },
+      {
+        "command": "scimax.org.toggleFold",
+        "title": "Scimax: Toggle Fold at Cursor"
+      },
+      {
+        "command": "scimax.org.cycleGlobalFold",
+        "title": "Scimax: Cycle Global Folding"
       }
     ],
     "keybindings": [
@@ -389,6 +460,16 @@
         "key": "ctrl+]",
         "mac": "cmd+]",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.toggleFold",
+        "key": "tab",
+        "when": "editorTextFocus && editorLangId == 'org' && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
+        "command": "scimax.org.cycleGlobalFold",
+        "key": "shift+tab",
+        "when": "editorTextFocus && editorLangId == 'org'"
       }
     ],
     "configuration": {

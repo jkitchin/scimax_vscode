@@ -117,11 +117,93 @@ export class OrgFoldingRangeProvider implements vscode.FoldingRangeProvider {
     }
 }
 
+// Track global fold state for cycling
+let globalFoldState: 'expanded' | 'headings-only' | 'collapsed' = 'expanded';
+
+/**
+ * Toggle fold at the current cursor position
+ * If on a heading, toggles that heading's fold state
+ */
+async function toggleFoldAtCursor(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const line = document.lineAt(position.line).text;
+
+    // Check if we're on a heading
+    const headingMatch = line.match(/^(\*+)\s/);
+    if (headingMatch) {
+        // Toggle fold at this line
+        await vscode.commands.executeCommand('editor.toggleFold', {
+            selectionLines: [position.line]
+        });
+    } else {
+        // Find the nearest heading above and toggle it
+        for (let i = position.line - 1; i >= 0; i--) {
+            const checkLine = document.lineAt(i).text;
+            if (checkLine.match(/^(\*+)\s/)) {
+                // Move cursor to heading and toggle
+                const newPosition = new vscode.Position(i, 0);
+                editor.selection = new vscode.Selection(newPosition, newPosition);
+                await vscode.commands.executeCommand('editor.toggleFold', {
+                    selectionLines: [i]
+                });
+                // Move cursor back
+                editor.selection = new vscode.Selection(position, position);
+                return;
+            }
+        }
+        // No heading found, insert a tab
+        await vscode.commands.executeCommand('tab');
+    }
+}
+
+/**
+ * Cycle through global folding states like Emacs org-mode:
+ * 1. All expanded (SHOWALL)
+ * 2. Only headings visible (OVERVIEW)
+ * 3. All collapsed to top-level (CONTENTS)
+ */
+async function cycleGlobalFold(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    switch (globalFoldState) {
+        case 'expanded':
+            // Fold all to show only headings
+            await vscode.commands.executeCommand('editor.foldAll');
+            globalFoldState = 'collapsed';
+            vscode.window.setStatusBarMessage('Org: OVERVIEW (all folded)', 2000);
+            break;
+        case 'collapsed':
+            // Unfold to level 1 (show top-level content)
+            await vscode.commands.executeCommand('editor.unfoldAll');
+            await vscode.commands.executeCommand('editor.foldLevel2');
+            globalFoldState = 'headings-only';
+            vscode.window.setStatusBarMessage('Org: CONTENTS (level 2)', 2000);
+            break;
+        case 'headings-only':
+            // Expand all
+            await vscode.commands.executeCommand('editor.unfoldAll');
+            globalFoldState = 'expanded';
+            vscode.window.setStatusBarMessage('Org: SHOWALL (expanded)', 2000);
+            break;
+    }
+}
+
 export function registerFoldingProvider(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.languages.registerFoldingRangeProvider(
             { language: 'org', scheme: 'file' },
             new OrgFoldingRangeProvider()
         )
+    );
+
+    // Register folding commands
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.toggleFold', toggleFoldAtCursor),
+        vscode.commands.registerCommand('scimax.org.cycleGlobalFold', cycleGlobalFold)
     );
 }

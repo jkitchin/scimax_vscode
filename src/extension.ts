@@ -17,6 +17,7 @@ import {
     ReferenceTreeProvider,
     BibliographyCodeLensProvider,
     BibliographyHoverProvider,
+    RefHoverProvider,
     registerCiteActionCommand
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
@@ -156,6 +157,14 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerHoverProvider(
             documentSelector,
             new BibliographyHoverProvider(referenceManager)
+        )
+    );
+
+    // Register Ref Hover Provider (for ref:, eqref:, etc. links)
+    context.subscriptions.push(
+        vscode.languages.registerHoverProvider(
+            documentSelector,
+            new RefHoverProvider()
         )
     );
 
