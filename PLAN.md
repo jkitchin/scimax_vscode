@@ -305,7 +305,17 @@ df.head()
 
 ## Priority 5: Bibliography & Citations (org-ref)
 
-**Rationale**: Essential for academic users.
+**Rationale**: Essential for academic users. Based on [org-ref](https://github.com/jkitchin/org-ref).
+
+### org-ref Feature Analysis
+
+org-ref provides:
+- **Hyper-functional links**: Citations are clickable with hover info
+- **Multiple citation styles**: cite, citet, citep, citeauthor, citeyear, etc.
+- **PDF integration**: Open PDF from citation link
+- **DOI utilities**: Fetch BibTeX from DOI, CrossRef integration
+- **Cross-references**: Label/ref links for figures, tables, equations
+- **Pre/postnote support**: `[[cite:key][prenote::postnote]]`
 
 ### Features to Implement
 
@@ -314,27 +324,79 @@ df.head()
 │              BIBLIOGRAPHY MANAGEMENT                        │
 ├─────────────────────────────────────────────────────────────┤
 │ BibTeX Integration:                                         │
-│ • Parse .bib files                                          │
-│ • Citation completion (fuzzy search)                        │
-│ • Preview citation on hover                                 │
-│ • Open PDF from citation                                    │
-│ • Open URL/DOI from citation                                │
+│ • Parse .bib files (author, title, year, journal, etc.)     │
+│ • Citation completion with fuzzy search (Ctrl+])            │
+│ • Preview citation on hover (tooltip with full reference)   │
+│ • Clickable citation links with action menu:                │
+│   - Open PDF (if available)                                 │
+│   - Open URL/DOI in browser                                 │
+│   - Open notes file                                         │
+│   - Copy BibTeX entry                                       │
+│   - Edit entry                                              │
 │                                                             │
 │ Citation Insertion:                                         │
-│ • Insert citation via command palette                       │
-│ • Multiple citation styles (cite, citet, citep, etc.)       │
-│ • Auto-complete citation keys                               │
+│ • Insert citation via command palette (Ctrl+])              │
+│ • Multiple citation styles:                                 │
+│   - cite (basic)                                            │
+│   - citet (textual: "Author (Year)")                        │
+│   - citep (parenthetical: "(Author, Year)")                 │
+│   - citeauthor (author only)                                │
+│   - citeyear (year only)                                    │
+│ • Multi-citation support: cite:key1,key2,key3               │
+│ • Pre/postnote: cite:key[see][p. 42]                        │
 │                                                             │
 │ DOI Utilities:                                              │
-│ • Fetch BibTeX from DOI                                     │
-│ • Add entry from DOI                                        │
-│ • Validate DOIs                                             │
+│ • Fetch BibTeX from DOI (via CrossRef API)                  │
+│ • Add entry from DOI with one command                       │
+│ • Auto-download PDF if available                            │
+│ • Validate DOIs in bibliography                             │
 │                                                             │
-│ Cross-Reference:                                            │
+│ Cross-Reference (figures/tables/equations):                 │
+│ • Label insertion: <<fig:name>>                             │
+│ • Reference insertion: ref:fig:name                         │
+│ • Clickable refs jump to label                              │
+│ • Preview on hover                                          │
+│                                                             │
+│ Bibliography Management:                                    │
 │ • Find all citations of a reference                         │
-│ • Unused references detection                               │
-│ • Missing references detection                              │
+│ • Detect unused references                                  │
+│ • Detect missing references                                 │
+│ • Sort/clean bibliography file                              │
+│ • Merge duplicate entries                                   │
+│                                                             │
+│ Notes Integration:                                          │
+│ • Create notes file for each reference                      │
+│ • Link between notes and source documents                   │
+│ • Search across notes                                       │
 └─────────────────────────────────────────────────────────────┘
+```
+
+### Citation Link Syntax
+
+**Org-mode format:**
+```org
+cite:kitchin2015
+citet:kitchin2015
+citep:kitchin2015[see][p. 42]
+[[cite:kitchin2015][as shown in]]
+```
+
+**Markdown format (proposed):**
+```markdown
+[@kitchin2015]
+[@kitchin2015, p. 42]
+[see @kitchin2015; @smith2020]
+```
+
+### Configuration
+```json
+{
+  "scimax.ref.bibliographyFiles": ["~/bibliography/refs.bib"],
+  "scimax.ref.pdfDirectory": "~/papers/",
+  "scimax.ref.notesDirectory": "~/notes/references/",
+  "scimax.ref.defaultCiteStyle": "cite",
+  "scimax.ref.autoDownloadPdf": false
+}
 ```
 
 ---
@@ -523,9 +585,73 @@ Legend: ✅ = Full parity, ⚡ = Alternative approach, 🔨 = Partial implementa
 
 ---
 
+## Priority 9: Project Management (Projectile-inspired)
+
+**Rationale**: Based on [Projectile](https://docs.projectile.mx/projectile/index.html), provides project-level operations.
+
+### Projectile Feature Analysis
+
+Projectile provides:
+- **Project detection**: Via VCS (.git), build files (package.json, pom.xml), or .projectile marker
+- **Fast file finding**: Cached file lists for quick navigation
+- **Project switching**: Quick-switch between known projects
+- **Related files**: Toggle between test/implementation, header/source
+- **Project commands**: Run shell commands in project root
+
+### Integration Strategy
+
+VS Code already provides workspaces and `Ctrl+P` for file finding. We'll add:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              PROJECT MANAGEMENT                             │
+├─────────────────────────────────────────────────────────────┤
+│ Project Discovery:                                          │
+│ • Auto-detect projects in configured directories            │
+│ • Remember recently opened projects                         │
+│ • Project-local configuration (.scimax/config.json)         │
+│                                                             │
+│ Related Files:                                              │
+│ • Toggle test ↔ implementation                              │
+│ • Toggle header ↔ source (.h ↔ .c/.cpp)                     │
+│ • Custom related file patterns                              │
+│                                                             │
+│ Project Commands:                                           │
+│ • Run command in project root                               │
+│ • Project-specific build/test/run                           │
+│ • Remember per-project commands                             │
+│                                                             │
+│ Journal Integration:                                        │
+│ • Project-specific journal directory                        │
+│ • Link journal entries to projects                          │
+│ • Project notes file                                        │
+│                                                             │
+│ Quick Actions:                                              │
+│ • Find file in project (enhanced Ctrl+P)                    │
+│ • Find recent file in project                               │
+│ • Search in project (ripgrep integration)                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Configuration
+```json
+{
+  "scimax.project.searchDirectories": ["~/projects", "~/work"],
+  "scimax.project.relatedFilePatterns": {
+    "*.ts": ["*.spec.ts", "*.test.ts"],
+    "*.py": ["test_*.py", "*_test.py"],
+    "*.h": ["*.c", "*.cpp"]
+  }
+}
+```
+
+---
+
 ## Resources
 
 - [Scimax Repository](https://github.com/jkitchin/scimax)
+- [org-ref](https://github.com/jkitchin/org-ref) - Citation management
+- [Projectile](https://docs.projectile.mx/projectile/index.html) - Project management
 - [VS Code Extension API](https://code.visualstudio.com/api)
 - [VS Code Org Mode](https://github.com/vscode-org-mode/vscode-org-mode)
 - [Tree-sitter](https://tree-sitter.github.io/tree-sitter/)

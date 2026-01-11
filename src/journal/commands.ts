@@ -17,6 +17,19 @@ export function registerJournalCommands(
     // Create new journal entry for a specific date
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.journal.new', async () => {
+            // Ask for template first
+            const templates = manager.getAvailableTemplates();
+            const templateItems = templates.map(t => ({
+                label: t === 'default' ? `$(file) ${t} (default)` : `$(file) ${t}`,
+                value: t
+            }));
+
+            const templateSelection = await vscode.window.showQuickPick(templateItems, {
+                placeHolder: 'Select a template'
+            });
+
+            if (!templateSelection) return;
+
             const dateStr = await vscode.window.showInputBox({
                 prompt: 'Enter date (YYYY-MM-DD) or leave empty for today',
                 placeHolder: 'YYYY-MM-DD',
@@ -36,6 +49,21 @@ export function registerJournalCommands(
             if (dateStr === undefined) return; // Cancelled
 
             const date = dateStr ? new Date(dateStr) : new Date();
+
+            // Check if entry already exists
+            const existingEntry = manager.getEntry(date);
+            if (existingEntry.exists) {
+                const overwrite = await vscode.window.showWarningMessage(
+                    `An entry for ${dateStr || 'today'} already exists. Open it instead?`,
+                    'Open Existing', 'Cancel'
+                );
+                if (overwrite === 'Open Existing') {
+                    await manager.openEntry(date);
+                }
+                return;
+            }
+
+            await manager.createEntryWithTemplate(date, templateSelection.value);
             await manager.openEntry(date);
             treeProvider.refresh();
         })
@@ -99,8 +127,22 @@ export function registerJournalCommands(
     // Search journal entries
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.journal.search', async () => {
+            // First ask for date range
+            const rangeOptions = [
+                { label: '$(calendar) All entries', value: 'all' as const },
+                { label: '$(clock) This week', value: 'week' as const },
+                { label: '$(calendar) This month', value: 'month' as const },
+                { label: '$(calendar) This year', value: 'year' as const }
+            ];
+
+            const rangeSelection = await vscode.window.showQuickPick(rangeOptions, {
+                placeHolder: 'Select date range to search'
+            });
+
+            if (!rangeSelection) return;
+
             const query = await vscode.window.showInputBox({
-                prompt: 'Search journal entries',
+                prompt: `Search journal entries (${rangeSelection.label.replace(/\$\([^)]+\)\s*/, '')})`,
                 placeHolder: 'Enter search term...'
             });
 
@@ -111,7 +153,7 @@ export function registerJournalCommands(
                 title: 'Searching journal...',
                 cancellable: false
             }, async () => {
-                const results = await manager.searchEntries(query);
+                const results = await manager.searchInDateRange(query, rangeSelection.value);
 
                 if (results.length === 0) {
                     vscode.window.showInformationMessage(`No results found for "${query}"`);
@@ -123,10 +165,12 @@ export function registerJournalCommands(
                     const date = result.entry.date;
                     const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 
-                    return result.matches.slice(0, 3).map(match => ({
+                    return result.matches.slice(0, 3).map((match, i) => ({
                         label: `$(file) ${dateStr}`,
                         description: match.length > 80 ? match.substring(0, 80) + '...' : match,
-                        entry: result.entry
+                        detail: `Line ${result.lineNumbers[i]}`,
+                        entry: result.entry,
+                        lineNumber: result.lineNumbers[i]
                     }));
                 });
 
@@ -138,20 +182,16 @@ export function registerJournalCommands(
                 if (selected) {
                     await manager.openEntry(selected.entry.date);
 
-                    // Highlight the search term
+                    // Jump to the specific line
                     const editor = vscode.window.activeTextEditor;
-                    if (editor) {
-                        const document = editor.document;
-                        const text = document.getText();
-                        const index = text.toLowerCase().indexOf(query.toLowerCase());
-                        if (index !== -1) {
-                            const position = document.positionAt(index);
-                            editor.selection = new vscode.Selection(position, position);
-                            editor.revealRange(
-                                new vscode.Range(position, position),
-                                vscode.TextEditorRevealType.InCenter
-                            );
-                        }
+                    if (editor && selected.lineNumber) {
+                        const line = selected.lineNumber - 1;
+                        const position = new vscode.Position(line, 0);
+                        editor.selection = new vscode.Selection(position, position);
+                        editor.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
                     }
                 }
             });
@@ -199,6 +239,57 @@ export function registerJournalCommands(
 
             if (text) {
                 await manager.addLogEntry(text);
+            }
+        })
+    );
+
+    // Show journal statistics
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.journal.stats', async () => {
+            const stats = manager.getTotalStats();
+
+            const message = [
+                `Total entries: ${stats.entryCount}`,
+                `Total words: ${stats.totalWords.toLocaleString()}`,
+                `Current streak: ${stats.streak} day${stats.streak !== 1 ? 's' : ''}`,
+                `Longest streak: ${stats.longestStreak} day${stats.longestStreak !== 1 ? 's' : ''}`
+            ].join(' | ');
+
+            vscode.window.showInformationMessage(message);
+        })
+    );
+
+    // Week view - show entries for current week
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.journal.weekView', async () => {
+            const entries = manager.getEntriesForWeek();
+
+            if (entries.length === 0) {
+                vscode.window.showInformationMessage('No journal entries this week');
+                return;
+            }
+
+            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const items = entries.map(entry => {
+                const date = entry.date;
+                const weekday = weekdays[date.getDay()];
+                const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                const stats = manager.getEntryStats(entry);
+
+                return {
+                    label: `$(calendar) ${weekday} ${dateStr}`,
+                    description: `${stats.wordCount} words`,
+                    detail: stats.taskCount > 0 ? `${stats.doneCount}/${stats.taskCount} tasks completed` : undefined,
+                    date: entry.date
+                };
+            });
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `This week: ${entries.length} entries`
+            });
+
+            if (selected) {
+                await manager.openEntry(selected.date);
             }
         })
     );

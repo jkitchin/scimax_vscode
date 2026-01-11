@@ -201,11 +201,28 @@ export class JournalManager {
     }
 
     /**
-     * Get the default template based on format
+     * Get the default template based on format and template name
      */
     private getDefaultTemplate(): string {
+        const templateName = this.config.template;
+
+        // Built-in templates
+        const templates = this.getBuiltInTemplates();
+        if (templates[templateName]) {
+            return templates[templateName];
+        }
+
+        // Fall back to 'default'
+        return templates['default'];
+    }
+
+    /**
+     * Get all built-in templates
+     */
+    public getBuiltInTemplates(): Record<string, string> {
         if (this.config.format === 'org') {
-            return `#+TITLE: {{date}} - {{weekday}}
+            return {
+                'default': `#+TITLE: {{date}} - {{weekday}}
 #+DATE: {{date}}
 
 * Tasks
@@ -214,10 +231,61 @@ export class JournalManager {
 * Notes
 
 * Log
-`;
+`,
+                'minimal': `#+TITLE: {{date}}
+#+DATE: {{date}}
+
+* Notes
+`,
+                'research': `#+TITLE: Research Log - {{date}}
+#+DATE: {{date}}
+#+AUTHOR: {{author}}
+
+* Goals for Today
+- [ ]
+
+* Experiments
+
+* Results
+
+* Next Steps
+
+* References
+`,
+                'meeting': `#+TITLE: Meeting Notes - {{date}}
+#+DATE: {{date}}
+
+* Attendees
+-
+
+* Agenda
+1.
+
+* Discussion
+
+* Action Items
+- [ ]
+
+* Next Meeting
+`,
+                'standup': `#+TITLE: Standup - {{date}}
+#+DATE: {{date}}
+
+* Yesterday
+-
+
+* Today
+-
+
+* Blockers
+-
+`
+            };
         }
 
-        return `# {{date}} - {{weekday}}
+        // Markdown templates
+        return {
+            'default': `# {{date}} - {{weekday}}
 
 ## Tasks
 - [ ]
@@ -225,7 +293,89 @@ export class JournalManager {
 ## Notes
 
 ## Log
-`;
+`,
+            'minimal': `# {{date}}
+
+## Notes
+`,
+            'research': `# Research Log - {{date}}
+
+## Goals for Today
+- [ ]
+
+## Experiments
+
+## Results
+
+## Next Steps
+
+## References
+`,
+            'meeting': `# Meeting Notes - {{date}}
+
+## Attendees
+-
+
+## Agenda
+1.
+
+## Discussion
+
+## Action Items
+- [ ]
+
+## Next Meeting
+`,
+            'standup': `# Standup - {{date}}
+
+## Yesterday
+-
+
+## Today
+-
+
+## Blockers
+-
+`
+        };
+    }
+
+    /**
+     * Get list of available template names
+     */
+    public getAvailableTemplates(): string[] {
+        const builtIn = Object.keys(this.getBuiltInTemplates());
+
+        // Check for custom templates
+        const customDir = path.join(this.config.directory, '.scimax', 'templates');
+        const custom: string[] = [];
+
+        if (fs.existsSync(customDir)) {
+            const files = fs.readdirSync(customDir);
+            for (const file of files) {
+                const ext = path.extname(file);
+                if (ext === this.getExtension()) {
+                    custom.push(path.basename(file, ext));
+                }
+            }
+        }
+
+        return [...new Set([...builtIn, ...custom])];
+    }
+
+    /**
+     * Create entry with specific template
+     */
+    public async createEntryWithTemplate(date: Date, templateName: string): Promise<void> {
+        const originalTemplate = this.config.template;
+        this.config.template = templateName;
+        this.templateCache.delete(templateName);
+
+        try {
+            await this.createEntry(date);
+        } finally {
+            this.config.template = originalTemplate;
+        }
     }
 
     /**
@@ -364,25 +514,49 @@ export class JournalManager {
     /**
      * Search journal entries for text
      */
-    public async searchEntries(query: string): Promise<{entry: JournalEntry, matches: string[]}[]> {
-        const entries = this.getAllEntries();
-        const results: {entry: JournalEntry, matches: string[]}[] = [];
+    public async searchEntries(
+        query: string,
+        options?: {
+            startDate?: Date;
+            endDate?: Date;
+            limit?: number;
+        }
+    ): Promise<{entry: JournalEntry, matches: string[], lineNumbers: number[]}[]> {
+        let entries = this.getAllEntries();
+
+        // Apply date range filter
+        if (options?.startDate) {
+            const start = options.startDate.getTime();
+            entries = entries.filter(e => e.date.getTime() >= start);
+        }
+        if (options?.endDate) {
+            const end = options.endDate.getTime();
+            entries = entries.filter(e => e.date.getTime() <= end);
+        }
+
+        const results: {entry: JournalEntry, matches: string[], lineNumbers: number[]}[] = [];
 
         for (const entry of entries) {
             try {
                 const content = fs.readFileSync(entry.path, 'utf8');
                 const lines = content.split('\n');
                 const matches: string[] = [];
+                const lineNumbers: number[] = [];
 
                 const queryLower = query.toLowerCase();
-                for (const line of lines) {
-                    if (line.toLowerCase().includes(queryLower)) {
-                        matches.push(line.trim());
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].toLowerCase().includes(queryLower)) {
+                        matches.push(lines[i].trim());
+                        lineNumbers.push(i + 1);
                     }
                 }
 
                 if (matches.length > 0) {
-                    results.push({ entry, matches });
+                    results.push({ entry, matches, lineNumbers });
+                }
+
+                if (options?.limit && results.length >= options.limit) {
+                    break;
                 }
             } catch (error) {
                 // Skip files that can't be read
@@ -390,6 +564,180 @@ export class JournalManager {
         }
 
         return results;
+    }
+
+    /**
+     * Get entries for the current week
+     */
+    public getEntriesForWeek(date: Date = new Date()): JournalEntry[] {
+        const startOfWeek = new Date(date);
+        const dayOfWeek = startOfWeek.getDay();
+        const mondayOffset = this.config.weekStartsOn === 'monday'
+            ? (dayOfWeek === 0 ? -6 : 1 - dayOfWeek)
+            : -dayOfWeek;
+        startOfWeek.setDate(startOfWeek.getDate() + mondayOffset);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(endOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        return this.getAllEntries().filter(entry =>
+            entry.date >= startOfWeek && entry.date <= endOfWeek
+        );
+    }
+
+    /**
+     * Search entries within a date range
+     */
+    public async searchInDateRange(
+        query: string,
+        range: 'today' | 'week' | 'month' | 'year' | 'all'
+    ): Promise<{entry: JournalEntry, matches: string[], lineNumbers: number[]}[]> {
+        const now = new Date();
+        let startDate: Date | undefined;
+        let endDate: Date | undefined;
+
+        switch (range) {
+            case 'today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                break;
+            case 'week':
+                const dayOfWeek = now.getDay();
+                const mondayOffset = this.config.weekStartsOn === 'monday'
+                    ? (dayOfWeek === 0 ? -6 : 1 - dayOfWeek)
+                    : -dayOfWeek;
+                startDate = new Date(now);
+                startDate.setDate(now.getDate() + mondayOffset);
+                startDate.setHours(0, 0, 0, 0);
+                endDate = now;
+                break;
+            case 'month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                endDate = now;
+                break;
+            case 'year':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                endDate = now;
+                break;
+            case 'all':
+                // No date filtering
+                break;
+        }
+
+        return this.searchEntries(query, { startDate, endDate });
+    }
+
+    /**
+     * Get entry statistics
+     */
+    public getEntryStats(entry: JournalEntry): { wordCount: number; lineCount: number; taskCount: number; doneCount: number } {
+        try {
+            const content = fs.readFileSync(entry.path, 'utf8');
+            const lines = content.split('\n');
+            const words = content.split(/\s+/).filter(w => w.length > 0);
+
+            // Count tasks
+            const taskPattern = this.config.format === 'org'
+                ? /^\s*-\s*\[\s*\]/
+                : /^\s*-\s*\[\s*\]/;
+            const donePattern = this.config.format === 'org'
+                ? /^\s*-\s*\[X\]/i
+                : /^\s*-\s*\[x\]/i;
+
+            let taskCount = 0;
+            let doneCount = 0;
+            for (const line of lines) {
+                if (taskPattern.test(line)) taskCount++;
+                if (donePattern.test(line)) doneCount++;
+            }
+
+            return {
+                wordCount: words.length,
+                lineCount: lines.length,
+                taskCount: taskCount + doneCount,
+                doneCount
+            };
+        } catch {
+            return { wordCount: 0, lineCount: 0, taskCount: 0, doneCount: 0 };
+        }
+    }
+
+    /**
+     * Get total journal statistics
+     */
+    public getTotalStats(): { entryCount: number; totalWords: number; streak: number; longestStreak: number } {
+        const entries = this.getAllEntries();
+        let totalWords = 0;
+
+        for (const entry of entries) {
+            const stats = this.getEntryStats(entry);
+            totalWords += stats.wordCount;
+        }
+
+        // Calculate streaks
+        let currentStreak = 0;
+        let longestStreak = 0;
+        let tempStreak = 0;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Check if there's an entry today or yesterday to start current streak
+        const sortedEntries = [...entries].sort((a, b) => b.date.getTime() - a.date.getTime());
+
+        if (sortedEntries.length > 0) {
+            const latestEntry = sortedEntries[0].date;
+            latestEntry.setHours(0, 0, 0, 0);
+            const diffDays = Math.floor((today.getTime() - latestEntry.getTime()) / (1000 * 60 * 60 * 24));
+
+            if (diffDays <= 1) {
+                // Count consecutive days backwards
+                let expectedDate = diffDays === 0 ? today : new Date(today.getTime() - 24 * 60 * 60 * 1000);
+
+                for (const entry of sortedEntries) {
+                    const entryDate = new Date(entry.date);
+                    entryDate.setHours(0, 0, 0, 0);
+
+                    if (entryDate.getTime() === expectedDate.getTime()) {
+                        currentStreak++;
+                        expectedDate = new Date(expectedDate.getTime() - 24 * 60 * 60 * 1000);
+                    } else if (entryDate.getTime() < expectedDate.getTime()) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Calculate longest streak
+        const ascEntries = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+        for (let i = 0; i < ascEntries.length; i++) {
+            if (i === 0) {
+                tempStreak = 1;
+            } else {
+                const prevDate = new Date(ascEntries[i - 1].date);
+                const currDate = new Date(ascEntries[i].date);
+                prevDate.setHours(0, 0, 0, 0);
+                currDate.setHours(0, 0, 0, 0);
+
+                const diff = (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24);
+                if (diff === 1) {
+                    tempStreak++;
+                } else {
+                    longestStreak = Math.max(longestStreak, tempStreak);
+                    tempStreak = 1;
+                }
+            }
+        }
+        longestStreak = Math.max(longestStreak, tempStreak);
+
+        return {
+            entryCount: entries.length,
+            totalWords,
+            streak: currentStreak,
+            longestStreak
+        };
     }
 
     /**

@@ -2,11 +2,13 @@ import * as vscode from 'vscode';
 import { JournalManager } from './journal/journalManager';
 import { JournalTreeProvider } from './journal/journalTreeProvider';
 import { JournalCalendarProvider } from './journal/calendarView';
+import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
 import { OrgDb } from './database/orgDb';
 import { registerDbCommands } from './database/commands';
 
 let journalManager: JournalManager;
+let journalStatusBar: JournalStatusBar;
 let orgDb: OrgDb;
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -77,51 +79,9 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    // Status bar item showing current journal entry date
-    const statusBarItem = vscode.window.createStatusBarItem(
-        vscode.StatusBarAlignment.Right,
-        100
-    );
-    statusBarItem.command = 'scimax.journal.today';
-    statusBarItem.tooltip = 'Open today\'s journal';
-    context.subscriptions.push(statusBarItem);
-
-    // Update status bar on active editor change
-    context.subscriptions.push(
-        vscode.window.onDidChangeActiveTextEditor(editor => {
-            updateStatusBar(editor, statusBarItem);
-        })
-    );
-
-    // Initial status bar update
-    updateStatusBar(vscode.window.activeTextEditor, statusBarItem);
-}
-
-function updateStatusBar(
-    editor: vscode.TextEditor | undefined,
-    statusBarItem: vscode.StatusBarItem
-): void {
-    if (editor && journalManager.isJournalFile(editor.document.uri.fsPath)) {
-        const date = journalManager.getDateFromPath(editor.document.uri.fsPath);
-        if (date) {
-            statusBarItem.text = `$(calendar) ${formatDate(date)}`;
-            statusBarItem.show();
-            return;
-        }
-    }
-    // Show icon only when not in a journal file
-    statusBarItem.text = '$(calendar)';
-    statusBarItem.show();
-}
-
-function formatDate(date: Date): string {
-    const options: Intl.DateTimeFormatOptions = {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    };
-    return date.toLocaleDateString(undefined, options);
+    // Create status bar with journal info (word count, streak, etc.)
+    journalStatusBar = new JournalStatusBar(journalManager);
+    context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
 }
 
 export function deactivate() {

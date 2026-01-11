@@ -40,6 +40,7 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
                 case 'openDate':
                     const date = new Date(message.year, message.month, message.day);
                     await this.manager.openEntry(date);
+                    this.refresh();
                     break;
                 case 'prevMonth':
                     this.currentMonth--;
@@ -64,6 +65,23 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
                     this.refresh();
                     await this.manager.openEntry(now);
                     break;
+                case 'goToMonth':
+                    this.currentMonth = message.month;
+                    this.refresh();
+                    break;
+                case 'goToYear':
+                    this.currentYear = message.year;
+                    this.refresh();
+                    break;
+                case 'weekView':
+                    await vscode.commands.executeCommand('scimax.journal.weekView');
+                    break;
+                case 'search':
+                    await vscode.commands.executeCommand('scimax.journal.search');
+                    break;
+                case 'stats':
+                    await vscode.commands.executeCommand('scimax.journal.stats');
+                    break;
             }
         });
     }
@@ -77,11 +95,15 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
     private getHtmlContent(): string {
         const entries = this.manager.getEntriesForMonth(this.currentYear, this.currentMonth);
         const entryDays = new Set(entries.map(e => e.date.getDate()));
+        const totalStats = this.manager.getTotalStats();
 
         const monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'
         ];
+
+        const monthNamesShort = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
         const today = new Date();
         const isCurrentMonth = today.getFullYear() === this.currentYear &&
@@ -95,8 +117,13 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
 
         let calendarHtml = '';
 
-        // Header row
-        const dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        // Header row (weekdays)
+        const config = this.manager.getConfig();
+        let dayHeaders = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        if (config.weekStartsOn === 'monday') {
+            dayHeaders = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+        }
+
         calendarHtml += '<div class="calendar-header">';
         for (const day of dayHeaders) {
             calendarHtml += `<div class="day-header">${day}</div>`;
@@ -106,8 +133,14 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
         // Day cells
         calendarHtml += '<div class="calendar-grid">';
 
+        // Adjust start day for Monday start
+        let adjustedStartDay = startDayOfWeek;
+        if (config.weekStartsOn === 'monday') {
+            adjustedStartDay = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
+        }
+
         // Empty cells before first day
-        for (let i = 0; i < startDayOfWeek; i++) {
+        for (let i = 0; i < adjustedStartDay; i++) {
             calendarHtml += '<div class="day empty"></div>';
         }
 
@@ -115,15 +148,35 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
         for (let day = 1; day <= daysInMonth; day++) {
             const hasEntry = entryDays.has(day);
             const isToday = isCurrentMonth && day === today.getDate();
+            const isPast = new Date(this.currentYear, this.currentMonth, day) < today;
 
             let classes = 'day';
             if (hasEntry) classes += ' has-entry';
             if (isToday) classes += ' today';
+            if (isPast && !hasEntry && !isToday) classes += ' past-no-entry';
 
-            calendarHtml += `<div class="${classes}" onclick="openDate(${this.currentYear}, ${this.currentMonth}, ${day})">${day}</div>`;
+            const tooltip = hasEntry ? 'Click to open entry' : 'Click to create entry';
+            calendarHtml += `<div class="${classes}" onclick="openDate(${this.currentYear}, ${this.currentMonth}, ${day})" title="${tooltip}">${day}</div>`;
         }
 
         calendarHtml += '</div>';
+
+        // Month picker
+        let monthPickerHtml = '<div class="month-picker">';
+        for (let m = 0; m < 12; m++) {
+            const isActive = m === this.currentMonth;
+            const hasEntries = this.manager.getEntriesForMonth(this.currentYear, m).length > 0;
+            let mClass = 'month-btn';
+            if (isActive) mClass += ' active';
+            if (hasEntries) mClass += ' has-entries';
+            monthPickerHtml += `<button class="${mClass}" onclick="goToMonth(${m})">${monthNamesShort[m]}</button>`;
+        }
+        monthPickerHtml += '</div>';
+
+        // Stats summary
+        const streakText = totalStats.streak > 0
+            ? `🔥 ${totalStats.streak} day streak`
+            : '';
 
         return `<!DOCTYPE html>
 <html lang="en">
@@ -143,7 +196,7 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .nav-btn {
@@ -162,6 +215,66 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
         .month-year {
             font-weight: bold;
             font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        .month-year:hover {
+            text-decoration: underline;
+        }
+
+        .year-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .year-btn {
+            background: none;
+            border: none;
+            color: var(--vscode-descriptionForeground);
+            cursor: pointer;
+            padding: 2px 6px;
+            font-size: 0.9em;
+        }
+
+        .year-btn:hover {
+            color: var(--vscode-foreground);
+        }
+
+        .year-btn.active {
+            color: var(--vscode-foreground);
+            font-weight: bold;
+        }
+
+        .month-picker {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .month-btn {
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .month-btn:hover {
+            background: var(--vscode-button-secondaryHoverBackground);
+        }
+
+        .month-btn.active {
+            background: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+        }
+
+        .month-btn.has-entries {
+            font-weight: bold;
         }
 
         .calendar-header {
@@ -190,6 +303,7 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
             cursor: pointer;
             border-radius: 3px;
             transition: background-color 0.1s;
+            position: relative;
         }
 
         .day:hover:not(.empty) {
@@ -214,6 +328,10 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
             padding: 4px 2px;
         }
 
+        .day.past-no-entry {
+            opacity: 0.5;
+        }
+
         .today-btn {
             display: block;
             width: 100%;
@@ -232,24 +350,73 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
 
         .stats {
             margin-top: 12px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: var(--vscode-descriptionForeground);
             text-align: center;
+        }
+
+        .streak {
+            margin-top: 8px;
+            font-size: 0.9em;
+            text-align: center;
+            color: var(--vscode-charts-orange);
+        }
+
+        .quick-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .quick-action {
+            flex: 1;
+            padding: 6px;
+            font-size: 0.8em;
+            background: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .quick-action:hover {
+            background: var(--vscode-button-secondaryHoverBackground);
         }
     </style>
 </head>
 <body>
     <div class="nav">
         <button class="nav-btn" onclick="prevMonth()">◀</button>
-        <span class="month-year">${monthNames[this.currentMonth]} ${this.currentYear}</span>
+        <span class="month-year" onclick="toggleMonthPicker()" title="Click to pick month">${monthNames[this.currentMonth]} ${this.currentYear}</span>
         <button class="nav-btn" onclick="nextMonth()">▶</button>
+    </div>
+
+    <div class="year-nav">
+        <button class="year-btn" onclick="goToYear(${this.currentYear - 2})">${this.currentYear - 2}</button>
+        <button class="year-btn" onclick="goToYear(${this.currentYear - 1})">${this.currentYear - 1}</button>
+        <button class="year-btn active">${this.currentYear}</button>
+        <button class="year-btn" onclick="goToYear(${this.currentYear + 1})">${this.currentYear + 1}</button>
+    </div>
+
+    <div id="monthPicker" style="display: none;">
+        ${monthPickerHtml}
     </div>
 
     ${calendarHtml}
 
     <button class="today-btn" onclick="goToToday()">Today's Journal</button>
 
-    <div class="stats">${entries.length} entries this month</div>
+    ${streakText ? `<div class="streak">${streakText}</div>` : ''}
+
+    <div class="stats">
+        ${entries.length} entries this month · ${totalStats.entryCount} total
+    </div>
+
+    <div class="quick-actions">
+        <button class="quick-action" onclick="weekView()">This Week</button>
+        <button class="quick-action" onclick="search()">Search</button>
+        <button class="quick-action" onclick="stats()">Stats</button>
+    </div>
 
     <script>
         const vscode = acquireVsCodeApi();
@@ -268,6 +435,31 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
 
         function goToToday() {
             vscode.postMessage({ command: 'today' });
+        }
+
+        function goToMonth(month) {
+            vscode.postMessage({ command: 'goToMonth', month });
+        }
+
+        function goToYear(year) {
+            vscode.postMessage({ command: 'goToYear', year });
+        }
+
+        function toggleMonthPicker() {
+            const picker = document.getElementById('monthPicker');
+            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function weekView() {
+            vscode.postMessage({ command: 'weekView' });
+        }
+
+        function search() {
+            vscode.postMessage({ command: 'search' });
+        }
+
+        function stats() {
+            vscode.postMessage({ command: 'stats' });
         }
     </script>
 </body>

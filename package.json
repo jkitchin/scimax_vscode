@@ -126,6 +126,30 @@
       {
         "command": "scimax.journal.quickLog",
         "title": "Scimax: Quick Log Entry"
+      },
+      {
+        "command": "scimax.journal.stats",
+        "title": "Scimax: Show Journal Statistics"
+      },
+      {
+        "command": "scimax.journal.weekView",
+        "title": "Scimax: This Week's Entries"
+      },
+      {
+        "command": "scimax.ref.insertCitation",
+        "title": "Scimax: Insert Citation"
+      },
+      {
+        "command": "scimax.ref.openBibliography",
+        "title": "Scimax: Open Bibliography"
+      },
+      {
+        "command": "scimax.ref.fetchFromDOI",
+        "title": "Scimax: Fetch BibTeX from DOI"
+      },
+      {
+        "command": "scimax.ref.searchReferences",
+        "title": "Scimax: Search References"
       }
     ],
     "keybindings": [
@@ -148,6 +172,12 @@
         "command": "scimax.org.executeBlock",
         "key": "ctrl+enter",
         "mac": "cmd+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ref.insertCitation",
+        "key": "ctrl+]",
+        "mac": "cmd+]",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       }
     ],
@@ -211,6 +241,30 @@
           "type": "string",
           "default": "",
           "description": "Path to Jupyter executable"
+        },
+        "scimax.ref.bibliographyFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Paths to BibTeX bibliography files"
+        },
+        "scimax.ref.pdfDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory containing PDF files for references"
+        },
+        "scimax.ref.notesDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory for reference notes"
+        },
+        "scimax.ref.defaultCiteStyle": {
+          "type": "string",
+          "enum": ["cite", "citet", "citep", "citeauthor", "citeyear"],
+          "default": "cite",
+          "description": "Default citation style"
         }
       }
     },
@@ -245,6 +299,11 @@
           "id": "scimax.tags",
           "name": "Tags",
           "icon": "$(tag)"
+        },
+        {
+          "id": "scimax.references",
+          "name": "References",
+          "icon": "$(book)"
         }
       ]
     },
