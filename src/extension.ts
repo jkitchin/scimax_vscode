@@ -33,6 +33,7 @@ import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
+import { registerSwiperCommands } from './swiper/commands';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
@@ -335,6 +336,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Projectile Commands
     registerProjectileCommands(context, projectileManager);
     console.log('Scimax: Projectile manager initialized');
+
+    // Register Swiper Commands (search current/all open files)
+    registerSwiperCommands(context);
 }
 
 export async function deactivate() {

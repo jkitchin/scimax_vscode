@@ -643,6 +643,18 @@
       {
         "command": "scimax.projectile.cleanup",
         "title": "Scimax: Cleanup Non-existent Projects"
+      },
+      {
+        "command": "scimax.swiper",
+        "title": "Scimax: Swiper (Search Current File)"
+      },
+      {
+        "command": "scimax.swiperAll",
+        "title": "Scimax: Swiper All (Search Open Files)"
+      },
+      {
+        "command": "scimax.swiperSymbol",
+        "title": "Scimax: Swiper Symbol (Search Headings)"
       }
     ],
     "keybindings": [
@@ -867,6 +879,24 @@
         "command": "scimax.projectile.add",
         "key": "ctrl+c p a",
         "mac": "ctrl+c p a"
+      },
+      {
+        "command": "scimax.swiper",
+        "key": "ctrl+c s",
+        "mac": "ctrl+c s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.swiperAll",
+        "key": "ctrl+c shift+s",
+        "mac": "ctrl+c shift+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.swiperSymbol",
+        "key": "ctrl+c alt+s",
+        "mac": "ctrl+c alt+s",
+        "when": "editorTextFocus"
       }
     ],
     "configuration": {
