@@ -1356,6 +1356,21 @@ export function registerCiteActionCommand(
                     description: `https://doi.org/${entry.doi}`,
                     action: 'doi'
                 });
+                items.push({
+                    label: '$(references) Citing Works (OpenAlex)',
+                    description: 'Show papers that cite this work',
+                    action: 'citingWorks'
+                });
+                items.push({
+                    label: '$(telescope) Related Works (OpenAlex)',
+                    description: 'Show related papers',
+                    action: 'relatedWorks'
+                });
+                items.push({
+                    label: '$(graph) View in OpenAlex',
+                    description: 'Open in OpenAlex web interface',
+                    action: 'openAlex'
+                });
             }
 
             if (entry.url) {
@@ -1405,6 +1420,15 @@ export function registerCiteActionCommand(
                     break;
                 case 'doi':
                     await vscode.env.openExternal(vscode.Uri.parse(`https://doi.org/${entry.doi}`));
+                    break;
+                case 'citingWorks':
+                    await vscode.commands.executeCommand('scimax.ref.showCitingWorks', entry.doi);
+                    break;
+                case 'relatedWorks':
+                    await vscode.commands.executeCommand('scimax.ref.showRelatedWorks', entry.doi);
+                    break;
+                case 'openAlex':
+                    await vscode.env.openExternal(vscode.Uri.parse(`https://openalex.org/works/doi:${entry.doi}`));
                     break;
                 case 'url':
                     await vscode.env.openExternal(vscode.Uri.parse(entry.url!));
