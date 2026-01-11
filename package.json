@@ -1,0 +1,305 @@
+{
+  "name": "scimax-vscode",
+  "displayName": "Scimax for VS Code",
+  "description": "Scientific computing environment inspired by Emacs Scimax - journal, literate programming, org-mode enhancements",
+  "version": "0.1.0",
+  "publisher": "jkitchin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jkitchin/scimax_vscode"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Notebooks",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "scimax",
+    "org-mode",
+    "journal",
+    "literate programming",
+    "scientific computing",
+    "research"
+  ],
+  "activationEvents": [
+    "onLanguage:org",
+    "onLanguage:markdown",
+    "workspaceContains:**/*.org"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "scimax.journal.today",
+        "title": "Scimax: Open Today's Journal",
+        "icon": "$(calendar)"
+      },
+      {
+        "command": "scimax.journal.new",
+        "title": "Scimax: New Journal Entry"
+      },
+      {
+        "command": "scimax.journal.prev",
+        "title": "Scimax: Previous Journal Entry"
+      },
+      {
+        "command": "scimax.journal.next",
+        "title": "Scimax: Next Journal Entry"
+      },
+      {
+        "command": "scimax.journal.goto",
+        "title": "Scimax: Go to Journal Date"
+      },
+      {
+        "command": "scimax.journal.search",
+        "title": "Scimax: Search Journal"
+      },
+      {
+        "command": "scimax.journal.calendar",
+        "title": "Scimax: Show Journal Calendar"
+      },
+      {
+        "command": "scimax.db.reindex",
+        "title": "Scimax: Reindex Files"
+      },
+      {
+        "command": "scimax.db.search",
+        "title": "Scimax: Search All Files"
+      },
+      {
+        "command": "scimax.db.searchHeadings",
+        "title": "Scimax: Search Headings"
+      },
+      {
+        "command": "scimax.org.executeBlock",
+        "title": "Scimax: Execute Code Block"
+      },
+      {
+        "command": "scimax.org.executeAllBlocks",
+        "title": "Scimax: Execute All Code Blocks"
+      },
+      {
+        "command": "scimax.org.insertBlock",
+        "title": "Scimax: Insert Code Block"
+      },
+      {
+        "command": "scimax.org.nextBlock",
+        "title": "Scimax: Go to Next Code Block"
+      },
+      {
+        "command": "scimax.org.prevBlock",
+        "title": "Scimax: Go to Previous Code Block"
+      },
+      {
+        "command": "scimax.db.searchBlocks",
+        "title": "Scimax: Search Code Blocks"
+      },
+      {
+        "command": "scimax.db.searchHashtags",
+        "title": "Scimax: Search by Hashtag"
+      },
+      {
+        "command": "scimax.db.showTodos",
+        "title": "Scimax: Show TODO Items"
+      },
+      {
+        "command": "scimax.db.stats",
+        "title": "Scimax: Show Database Stats"
+      },
+      {
+        "command": "scimax.journal.refresh",
+        "title": "Scimax: Refresh Journal View",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "scimax.journal.openDirectory",
+        "title": "Scimax: Open Journal Directory"
+      },
+      {
+        "command": "scimax.journal.insertTimestamp",
+        "title": "Scimax: Insert Timestamp"
+      },
+      {
+        "command": "scimax.journal.quickLog",
+        "title": "Scimax: Quick Log Entry"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "scimax.journal.today",
+        "key": "ctrl+shift+j",
+        "mac": "cmd+shift+j"
+      },
+      {
+        "command": "scimax.journal.prev",
+        "key": "alt+[",
+        "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
+      },
+      {
+        "command": "scimax.journal.next",
+        "key": "alt+]",
+        "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
+      },
+      {
+        "command": "scimax.org.executeBlock",
+        "key": "ctrl+enter",
+        "mac": "cmd+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      }
+    ],
+    "configuration": {
+      "title": "Scimax",
+      "properties": {
+        "scimax.journal.directory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory for journal files. If empty, uses ~/scimax-journal"
+        },
+        "scimax.journal.format": {
+          "type": "string",
+          "enum": ["markdown", "org"],
+          "default": "markdown",
+          "description": "File format for journal entries"
+        },
+        "scimax.journal.template": {
+          "type": "string",
+          "default": "default",
+          "description": "Template name for new journal entries"
+        },
+        "scimax.journal.dateFormat": {
+          "type": "string",
+          "default": "YYYY-MM-DD",
+          "description": "Date format for journal file names"
+        },
+        "scimax.journal.autoTimestamp": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically add timestamps to log entries"
+        },
+        "scimax.journal.weekStartsOn": {
+          "type": "string",
+          "enum": ["sunday", "monday"],
+          "default": "monday",
+          "description": "First day of the week in calendar view"
+        },
+        "scimax.db.directories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Additional directories to index for search"
+        },
+        "scimax.db.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["**/node_modules/**", "**/.git/**", "**/dist/**"],
+          "description": "Glob patterns to exclude from indexing"
+        },
+        "scimax.literate.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to Python executable for code execution"
+        },
+        "scimax.literate.jupyterPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to Jupyter executable"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "scimax",
+          "title": "Scimax",
+          "icon": "$(beaker)"
+        }
+      ]
+    },
+    "views": {
+      "scimax": [
+        {
+          "type": "webview",
+          "id": "scimax.journal.calendar",
+          "name": "Calendar",
+          "icon": "$(calendar)"
+        },
+        {
+          "id": "scimax.journal",
+          "name": "Journal Entries",
+          "icon": "$(list-tree)"
+        },
+        {
+          "id": "scimax.headings",
+          "name": "Headings",
+          "icon": "$(list-tree)"
+        },
+        {
+          "id": "scimax.tags",
+          "name": "Tags",
+          "icon": "$(tag)"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "scimax.journal.today",
+          "when": "view == scimax.journal",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.journal.refresh",
+          "when": "view == scimax.journal",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "scimax.org.executeBlock",
+          "when": "editorLangId =~ /org|markdown/",
+          "group": "scimax"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "scimax.journal.prev",
+          "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
+        },
+        {
+          "command": "scimax.journal.next",
+          "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "vitest",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.2.0",
+    "date-fns": "^2.30.0"
+  }
+}
