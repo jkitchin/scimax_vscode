@@ -671,6 +671,38 @@
       {
         "command": "scimax.fuzzySearchOutline",
         "title": "Scimax: Fuzzy Search (Outline)"
+      },
+      {
+        "command": "scimax.jump.gotoChar",
+        "title": "Scimax: Jump to Character"
+      },
+      {
+        "command": "scimax.jump.gotoChar2",
+        "title": "Scimax: Jump to 2-Character Sequence"
+      },
+      {
+        "command": "scimax.jump.gotoWord",
+        "title": "Scimax: Jump to Word"
+      },
+      {
+        "command": "scimax.jump.gotoLine",
+        "title": "Scimax: Jump to Line"
+      },
+      {
+        "command": "scimax.jump.gotoSymbol",
+        "title": "Scimax: Jump to Symbol"
+      },
+      {
+        "command": "scimax.jump.gotoSubword",
+        "title": "Scimax: Jump to Subword"
+      },
+      {
+        "command": "scimax.jump.copyLine",
+        "title": "Scimax: Jump Copy Line"
+      },
+      {
+        "command": "scimax.jump.killLine",
+        "title": "Scimax: Jump Kill Line"
       }
     ],
     "keybindings": [
@@ -912,6 +944,42 @@
         "command": "scimax.fuzzySearchOutline",
         "key": "ctrl+c alt+s",
         "mac": "ctrl+c alt+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.jump.gotoChar",
+        "key": "ctrl+c j c",
+        "mac": "ctrl+c j c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.jump.gotoChar2",
+        "key": "ctrl+c j j",
+        "mac": "ctrl+c j j",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.jump.gotoWord",
+        "key": "ctrl+c j w",
+        "mac": "ctrl+c j w",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.jump.gotoLine",
+        "key": "ctrl+c j l",
+        "mac": "ctrl+c j l",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.jump.gotoSymbol",
+        "key": "ctrl+c j o",
+        "mac": "ctrl+c j o",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.jump.gotoSubword",
+        "key": "ctrl+c j s",
+        "mac": "ctrl+c j s",
         "when": "editorTextFocus"
       }
     ],

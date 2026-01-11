@@ -35,6 +35,7 @@ import { registerHeadingCommands } from './org/headingProvider';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
+import { registerJumpCommands } from './jump/commands';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
@@ -348,6 +349,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Fuzzy Search Commands (search current/all open files)
     registerFuzzySearchCommands(context);
+
+    // Register Jump Commands (avy-style jump to visible locations)
+    registerJumpCommands(context);
 }
 
 export async function deactivate() {
