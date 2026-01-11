@@ -267,7 +267,7 @@ export class BibliographyCodeLensProvider implements vscode.CodeLensProvider {
 
 /**
  * Document link provider for citation links
- * Makes citations clickable
+ * Makes citations clickable - opens action menu
  */
 export class CitationLinkProvider implements vscode.DocumentLinkProvider {
     constructor(private manager: ReferenceManager) {}
@@ -297,7 +297,11 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
                     const range = new vscode.Range(startPos, endPos);
 
                     const link = new vscode.DocumentLink(range);
-                    link.tooltip = `${formatAuthors(entry.author)} (${entry.year}): ${entry.title}`;
+                    link.tooltip = `Click for actions: ${formatAuthors(entry.author)} (${entry.year})`;
+                    // Set target to command that shows action menu
+                    link.target = vscode.Uri.parse(
+                        `command:scimax.ref.citeAction?${encodeURIComponent(JSON.stringify(key))}`
+                    );
 
                     links.push(link);
                 }
@@ -306,6 +310,143 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
 
         return links;
     }
+}
+
+/**
+ * Register the cite action command
+ */
+export function registerCiteActionCommand(
+    context: vscode.ExtensionContext,
+    manager: ReferenceManager
+): void {
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.citeAction', async (key: string) => {
+            const entry = manager.getEntry(key);
+            if (!entry) {
+                vscode.window.showErrorMessage(`Reference not found: ${key}`);
+                return;
+            }
+
+            // Build action items
+            const items: (vscode.QuickPickItem & { action: string })[] = [
+                {
+                    label: '$(book) Open BibTeX Entry',
+                    description: 'Jump to entry in .bib file',
+                    action: 'bib'
+                }
+            ];
+
+            if (entry.doi) {
+                items.push({
+                    label: '$(link-external) Open DOI',
+                    description: `https://doi.org/${entry.doi}`,
+                    action: 'doi'
+                });
+            }
+
+            if (entry.url) {
+                items.push({
+                    label: '$(globe) Open URL',
+                    description: entry.url,
+                    action: 'url'
+                });
+            }
+
+            const pdfPath = manager.getPdfPath(entry);
+            if (pdfPath) {
+                items.push({
+                    label: '$(file-pdf) Open PDF',
+                    description: pdfPath,
+                    action: 'pdf'
+                });
+            }
+
+            items.push({
+                label: '$(note) Open/Create Notes',
+                description: 'Open notes file for this reference',
+                action: 'notes'
+            });
+
+            items.push({
+                label: '$(clippy) Copy Citation Key',
+                description: key,
+                action: 'copy'
+            });
+
+            items.push({
+                label: '$(copy) Copy BibTeX',
+                description: 'Copy full BibTeX entry to clipboard',
+                action: 'copyBib'
+            });
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `${key}: ${entry.title?.slice(0, 60)}...`
+            });
+
+            if (!selected) return;
+
+            switch (selected.action) {
+                case 'bib':
+                    await openBibEntry(entry, manager);
+                    break;
+                case 'doi':
+                    await vscode.env.openExternal(vscode.Uri.parse(`https://doi.org/${entry.doi}`));
+                    break;
+                case 'url':
+                    await vscode.env.openExternal(vscode.Uri.parse(entry.url!));
+                    break;
+                case 'pdf':
+                    await manager.openPdf(entry);
+                    break;
+                case 'notes':
+                    await manager.openNotes(entry);
+                    break;
+                case 'copy':
+                    await vscode.env.clipboard.writeText(key);
+                    vscode.window.showInformationMessage(`Copied: ${key}`);
+                    break;
+                case 'copyBib':
+                    const { entryToBibTeX } = await import('./bibtexParser');
+                    await vscode.env.clipboard.writeText(entryToBibTeX(entry));
+                    vscode.window.showInformationMessage('BibTeX copied to clipboard');
+                    break;
+            }
+        })
+    );
+}
+
+/**
+ * Open bib file at entry location
+ */
+async function openBibEntry(entry: any, manager: ReferenceManager): Promise<void> {
+    const sourceFile = entry._sourceFile;
+    if (!sourceFile) {
+        vscode.window.showWarningMessage('Source .bib file not found for this entry');
+        return;
+    }
+
+    const fs = await import('fs');
+    const content = fs.readFileSync(sourceFile, 'utf8');
+    const lines = content.split('\n');
+
+    // Find the entry
+    for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(`{${entry.key},`) || lines[i].includes(`{${entry.key}`)) {
+            const doc = await vscode.workspace.openTextDocument(sourceFile);
+            const editor = await vscode.window.showTextDocument(doc);
+            const position = new vscode.Position(i, 0);
+            editor.selection = new vscode.Selection(position, position);
+            editor.revealRange(
+                new vscode.Range(position, position),
+                vscode.TextEditorRevealType.InCenter
+            );
+            return;
+        }
+    }
+
+    // Fallback: just open the file
+    const doc = await vscode.workspace.openTextDocument(sourceFile);
+    await vscode.window.showTextDocument(doc);
 }
 
 /**

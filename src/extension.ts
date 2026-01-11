@@ -15,7 +15,8 @@ import {
     CitationDefinitionProvider,
     CitationLinkProvider,
     ReferenceTreeProvider,
-    BibliographyCodeLensProvider
+    BibliographyCodeLensProvider,
+    registerCiteActionCommand
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands } from './notebook/commands';
@@ -114,6 +115,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Reference Commands
     registerReferenceCommands(context, referenceManager);
+
+    // Register cite action command (for clickable cite links)
+    registerCiteActionCommand(context, referenceManager);
 
     // Register Reference Tree View
     const referenceTreeProvider = new ReferenceTreeProvider(referenceManager);
