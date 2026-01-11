@@ -791,6 +791,26 @@
       {
         "command": "scimax.editmarks.summary",
         "title": "Scimax: Show Edit Marks Summary"
+      },
+      {
+        "command": "scimax.hydra.show",
+        "title": "Scimax: Show Hydra Menu"
+      },
+      {
+        "command": "scimax.hydra.hide",
+        "title": "Scimax: Hide Hydra Menu"
+      },
+      {
+        "command": "scimax.hydra.back",
+        "title": "Scimax: Hydra Menu Back"
+      },
+      {
+        "command": "scimax.hydra.main",
+        "title": "Scimax: Main Menu"
+      },
+      {
+        "command": "scimax.hydra.contextMenu",
+        "title": "Scimax: Context Menu"
       }
     ],
     "keybindings": [
@@ -1171,6 +1191,16 @@
         "key": "ctrl+c e s",
         "mac": "ctrl+c e s",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.hydra.main",
+        "key": "ctrl+c m",
+        "mac": "ctrl+c m"
+      },
+      {
+        "command": "scimax.hydra.contextMenu",
+        "key": "ctrl+c ctrl+m",
+        "mac": "ctrl+c ctrl+m"
       }
     ],
     "configuration": {
@@ -1313,6 +1343,26 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically detect projects in workspace"
+        },
+        "scimax.hydra.showKeyHints": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show keyboard shortcuts inline with menu items"
+        },
+        "scimax.hydra.singleKeySelection": {
+          "type": "boolean",
+          "default": true,
+          "description": "Select menu items with a single keypress (no Enter needed)"
+        },
+        "scimax.hydra.dimNonMatching": {
+          "type": "boolean",
+          "default": true,
+          "description": "Dim menu items that don't match the current filter"
+        },
+        "scimax.hydra.sortByKey": {
+          "type": "boolean",
+          "default": false,
+          "description": "Sort menu items by their keyboard shortcut"
         }
       }
     },
