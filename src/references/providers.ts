@@ -78,6 +78,13 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         }
         markdown.appendMarkdown(`[Actions](command:scimax.ref.showDetails?${encodeURIComponent(JSON.stringify(key))})`);
 
+        // Show source file
+        const sourceFile = (entry as any)._sourceFile;
+        if (sourceFile) {
+            const fileName = path.basename(sourceFile);
+            markdown.appendMarkdown(`\n\n---\n*Source: ${fileName}*`);
+        }
+
         return new vscode.Hover(markdown);
     }
 
