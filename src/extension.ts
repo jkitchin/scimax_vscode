@@ -18,6 +18,7 @@ import {
     BibliographyCodeLensProvider,
     BibliographyHoverProvider,
     RefHoverProvider,
+    DoiHoverProvider,
     registerCiteActionCommand
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
@@ -174,6 +175,14 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerHoverProvider(
             documentSelector,
             new RefHoverProvider()
+        )
+    );
+
+    // Register DOI Hover Provider (fetches metadata from CrossRef)
+    context.subscriptions.push(
+        vscode.languages.registerHoverProvider(
+            documentSelector,
+            new DoiHoverProvider(referenceManager)
         )
     );
 
