@@ -20,6 +20,7 @@ import {
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands } from './notebook/commands';
 import { NotebookTreeProvider } from './notebook/notebookTreeProvider';
+import { OrgLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
@@ -156,6 +157,17 @@ export async function activate(context: vscode.ExtensionContext) {
             new CitationLinkProvider(referenceManager)
         )
     );
+
+    // Register Org Link Provider (for [[link]] syntax)
+    context.subscriptions.push(
+        vscode.languages.registerDocumentLinkProvider(
+            { language: 'org', scheme: 'file' },
+            new OrgLinkProvider()
+        )
+    );
+
+    // Register Org Link navigation commands
+    registerOrgLinkCommands(context);
 
     // Register Bibliography Code Lens Provider
     context.subscriptions.push(
