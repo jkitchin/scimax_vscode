@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
-import { formatCitation, formatAuthors, formatCitationLink } from './bibtexParser';
+import { formatCitation, formatAuthors, formatCitationLink, parseBibTeX } from './bibtexParser';
 
 /**
  * Hover provider for citation links
@@ -21,7 +23,16 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         if (!key) return null;
 
         const entry = this.manager.getEntry(key);
-        if (!entry) return null;
+        if (!entry) {
+            // Show hover for unknown citation
+            const markdown = new vscode.MarkdownString();
+            markdown.isTrusted = true;
+            markdown.appendMarkdown(`### Citation: ${key}\n\n`);
+            markdown.appendMarkdown(`*Not found in bibliography*\n\n`);
+            markdown.appendMarkdown(`[Search Google Scholar](https://scholar.google.com/scholar?q=${encodeURIComponent(key)}) | `);
+            markdown.appendMarkdown(`[Add from DOI](command:scimax.ref.fetchFromDOI)`);
+            return new vscode.Hover(markdown);
+        }
 
         // Build hover content
         const markdown = new vscode.MarkdownString();
@@ -72,12 +83,16 @@ export class CitationHoverProvider implements vscode.HoverProvider {
      * Find citation key at cursor position
      */
     private findCitationKeyAtPosition(line: string, position: number): string | null {
-        // Patterns to match citations
+        // Patterns to match citations (order matters - more specific first)
         const patterns = [
-            // org-mode: cite:key, citet:key, citep:key
-            /(?:cite[pt]?|citeauthor|citeyear):([a-zA-Z0-9_:-]+)/g,
-            // Markdown/Pandoc: @key or [@key]
-            /@([a-zA-Z0-9_:-]+)/g,
+            // org-ref style: cite:key, citep:key, citet:key, etc.
+            /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g,
+            // org-mode 9.5+ citation: [cite:@key] or [cite/style:@key]
+            /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g,
+            // Pandoc/markdown: [@key]
+            /\[@([a-zA-Z0-9_:-]+)\]/g,
+            // Pandoc/markdown: @key (standalone)
+            /(?:^|[^\\w@])@([a-zA-Z][a-zA-Z0-9_:-]*)/g,
             // LaTeX: \cite{key}
             /\\cite[pt]?\{([a-zA-Z0-9_:-]+)\}/g
         ];
@@ -94,6 +109,150 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         }
 
         return null;
+    }
+}
+
+/**
+ * Hover provider for bibliography file references
+ * Shows bib file info on hover over #+BIBLIOGRAPHY: or bibliography: links
+ */
+export class BibliographyHoverProvider implements vscode.HoverProvider {
+    constructor(private manager: ReferenceManager) {}
+
+    provideHover(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+    ): vscode.ProviderResult<vscode.Hover> {
+        const line = document.lineAt(position.line).text;
+
+        // Match bibliography references
+        // #+BIBLIOGRAPHY: path/to/file.bib
+        // bibliography:path/to/file.bib
+        const patterns = [
+            /^#\+BIBLIOGRAPHY:\s*(.+\.bib)\s*$/i,
+            /bibliography:([^\s]+\.bib)/i
+        ];
+
+        for (const pattern of patterns) {
+            const match = pattern.exec(line);
+            if (match) {
+                const bibPath = match[1].trim();
+                const start = line.indexOf(bibPath);
+                const end = start + bibPath.length;
+
+                // Check if cursor is on the path
+                if (position.character >= start && position.character <= end) {
+                    return this.createBibHover(bibPath, document);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private async createBibHover(bibPath: string, document: vscode.TextDocument): Promise<vscode.Hover | null> {
+        // Resolve the path relative to the document
+        let resolvedPath = bibPath;
+        const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+
+        if (bibPath.startsWith('~')) {
+            resolvedPath = bibPath.replace('~', homeDir);
+        } else if (!path.isAbsolute(bibPath)) {
+            const docDir = path.dirname(document.uri.fsPath);
+            resolvedPath = path.resolve(docDir, bibPath);
+        }
+
+        const markdown = new vscode.MarkdownString();
+        markdown.isTrusted = true;
+
+        // Check if file exists
+        if (!fs.existsSync(resolvedPath)) {
+            markdown.appendMarkdown(`### Bibliography: ${bibPath}\n\n`);
+            markdown.appendMarkdown(`**File not found**\n\n`);
+            markdown.appendMarkdown(`Expected path: \`${resolvedPath}\`\n\n`);
+            markdown.appendMarkdown(`[Create file](command:scimax.ref.createBibFile?${encodeURIComponent(JSON.stringify(resolvedPath))})`);
+            return new vscode.Hover(markdown);
+        }
+
+        try {
+            // Read and parse the bib file
+            const content = fs.readFileSync(resolvedPath, 'utf8');
+            const parseResult = parseBibTeX(content);
+            const entries = parseResult.entries;
+
+            // Count entry types
+            const typeCounts = new Map<string, number>();
+            const years = new Set<string>();
+            const recentEntries: { key: string; author: string; year: string; title: string }[] = [];
+
+            for (const entry of entries) {
+                typeCounts.set(entry.type, (typeCounts.get(entry.type) || 0) + 1);
+                if (entry.year) {
+                    years.add(entry.year);
+                }
+            }
+
+            // Get 3 most recent entries (by position in file, assuming recent at end)
+            const lastEntries = entries.slice(-3).reverse();
+            for (const entry of lastEntries) {
+                recentEntries.push({
+                    key: entry.key,
+                    author: formatAuthors(entry.author, 1),
+                    year: entry.year || 'n.d.',
+                    title: entry.title?.slice(0, 50) + (entry.title && entry.title.length > 50 ? '...' : '') || ''
+                });
+            }
+
+            // Get file stats
+            const stats = fs.statSync(resolvedPath);
+            const modifiedDate = stats.mtime.toLocaleDateString();
+
+            // Build hover content
+            markdown.appendMarkdown(`### Bibliography: ${path.basename(bibPath)}\n\n`);
+            markdown.appendMarkdown(`**${entries.length} entries**`);
+
+            if (years.size > 0) {
+                const sortedYears = Array.from(years).sort();
+                markdown.appendMarkdown(` (${sortedYears[0]}–${sortedYears[sortedYears.length - 1]})`);
+            }
+            markdown.appendMarkdown(`\n\n`);
+
+            // Entry type breakdown
+            if (typeCounts.size > 0) {
+                const typeList = Array.from(typeCounts.entries())
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([type, count]) => `${type}: ${count}`)
+                    .join(', ');
+                markdown.appendMarkdown(`*Types:* ${typeList}\n\n`);
+            }
+
+            // Recent entries
+            if (recentEntries.length > 0) {
+                markdown.appendMarkdown(`**Recent entries:**\n`);
+                for (const entry of recentEntries) {
+                    markdown.appendMarkdown(`- \`${entry.key}\` ${entry.author} (${entry.year})\n`);
+                }
+                markdown.appendMarkdown(`\n`);
+            }
+
+            // File info
+            markdown.appendMarkdown(`---\n`);
+            markdown.appendMarkdown(`*Path:* \`${resolvedPath}\`\n\n`);
+            markdown.appendMarkdown(`*Modified:* ${modifiedDate}\n\n`);
+
+            // Actions
+            markdown.appendMarkdown(`[Open file](${vscode.Uri.file(resolvedPath).toString()}) | `);
+            markdown.appendMarkdown(`[Search entries](command:scimax.ref.searchReferences)`);
+
+            return new vscode.Hover(markdown);
+        } catch (error) {
+            markdown.appendMarkdown(`### Bibliography: ${bibPath}\n\n`);
+            markdown.appendMarkdown(`**Error reading file**\n\n`);
+            markdown.appendMarkdown(`${error}`);
+            return new vscode.Hover(markdown);
+        }
     }
 }
 
@@ -189,9 +348,17 @@ export class CitationDefinitionProvider implements vscode.DefinitionProvider {
     }
 
     private findCitationKeyAtPosition(line: string, position: number): string | null {
+        // Patterns to match citations (order matters - more specific first)
         const patterns = [
-            /(?:cite[pt]?|citeauthor|citeyear):([a-zA-Z0-9_:-]+)/g,
-            /@([a-zA-Z0-9_:-]+)/g,
+            // org-ref style: cite:key, citep:key, citet:key, etc.
+            /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g,
+            // org-mode 9.5+ citation: [cite:@key] or [cite/style:@key]
+            /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g,
+            // Pandoc/markdown: [@key]
+            /\[@([a-zA-Z0-9_:-]+)\]/g,
+            // Pandoc/markdown: @key (standalone)
+            /(?:^|[^\\w@])@([a-zA-Z][a-zA-Z0-9_:-]*)/g,
+            // LaTeX: \cite{key}
             /\\cite[pt]?\{([a-zA-Z0-9_:-]+)\}/g
         ];
 
@@ -279,10 +446,17 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
         const links: vscode.DocumentLink[] = [];
         const text = document.getText();
 
-        // Patterns to match
+        // Patterns to match various citation formats
         const patterns = [
-            { regex: /(?:cite[pt]?|citeauthor|citeyear):([a-zA-Z0-9_:-]+)/g, group: 1 },
-            { regex: /\[@([a-zA-Z0-9_:-]+)/g, group: 1 }
+            // org-ref style: cite:key, citep:key, citet:key, etc.
+            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g, group: 1 },
+            // org-mode 9.5+ citation: [cite:@key] or [cite/style:@key]
+            { regex: /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g, group: 1 },
+            // Pandoc/markdown: [@key] or @key
+            { regex: /\[@([a-zA-Z0-9_:-]+)\]/g, group: 1 },
+            { regex: /(?<![\\w@])@([a-zA-Z][a-zA-Z0-9_:-]*)/g, group: 1 },
+            // LaTeX: \cite{key}
+            { regex: /\\cite[pt]?\{([a-zA-Z0-9_:-]+)\}/g, group: 1 }
         ];
 
         for (const { regex, group } of patterns) {
@@ -291,20 +465,24 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
                 const key = match[group];
                 const entry = this.manager.getEntry(key);
 
+                const startPos = document.positionAt(match.index);
+                const endPos = document.positionAt(match.index + match[0].length);
+                const range = new vscode.Range(startPos, endPos);
+
+                const link = new vscode.DocumentLink(range);
+
                 if (entry) {
-                    const startPos = document.positionAt(match.index);
-                    const endPos = document.positionAt(match.index + match[0].length);
-                    const range = new vscode.Range(startPos, endPos);
-
-                    const link = new vscode.DocumentLink(range);
                     link.tooltip = `Click for actions: ${formatAuthors(entry.author)} (${entry.year})`;
-                    // Set target to command that shows action menu
-                    link.target = vscode.Uri.parse(
-                        `command:scimax.ref.citeAction?${encodeURIComponent(JSON.stringify(key))}`
-                    );
-
-                    links.push(link);
+                } else {
+                    link.tooltip = `Citation: ${key} (not in bibliography - click to search)`;
                 }
+
+                // Set target to command that shows action menu
+                link.target = vscode.Uri.parse(
+                    `command:scimax.ref.citeAction?${encodeURIComponent(JSON.stringify(key))}`
+                );
+
+                links.push(link);
             }
         }
 
@@ -322,12 +500,61 @@ export function registerCiteActionCommand(
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.citeAction', async (key: string) => {
             const entry = manager.getEntry(key);
+
             if (!entry) {
-                vscode.window.showErrorMessage(`Reference not found: ${key}`);
+                // Handle unknown citation - offer search options
+                const items: (vscode.QuickPickItem & { action: string })[] = [
+                    {
+                        label: '$(search) Search Google Scholar',
+                        description: `Search for "${key}"`,
+                        action: 'scholar'
+                    },
+                    {
+                        label: '$(link-external) Search CrossRef',
+                        description: 'Search CrossRef database',
+                        action: 'crossref'
+                    },
+                    {
+                        label: '$(add) Add from DOI',
+                        description: 'Fetch BibTeX entry from a DOI',
+                        action: 'doi'
+                    },
+                    {
+                        label: '$(clippy) Copy Key',
+                        description: key,
+                        action: 'copy'
+                    }
+                ];
+
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: `Citation "${key}" not found in bibliography`
+                });
+
+                if (!selected) return;
+
+                switch (selected.action) {
+                    case 'scholar':
+                        await vscode.env.openExternal(
+                            vscode.Uri.parse(`https://scholar.google.com/scholar?q=${encodeURIComponent(key)}`)
+                        );
+                        break;
+                    case 'crossref':
+                        await vscode.env.openExternal(
+                            vscode.Uri.parse(`https://search.crossref.org/?q=${encodeURIComponent(key)}&from_ui=yes`)
+                        );
+                        break;
+                    case 'doi':
+                        await vscode.commands.executeCommand('scimax.ref.fetchFromDOI');
+                        break;
+                    case 'copy':
+                        await vscode.env.clipboard.writeText(key);
+                        vscode.window.showInformationMessage(`Copied: ${key}`);
+                        break;
+                }
                 return;
             }
 
-            // Build action items
+            // Build action items for known entry
             const items: (vscode.QuickPickItem & { action: string })[] = [
                 {
                     label: '$(book) Open BibTeX Entry',

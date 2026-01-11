@@ -16,12 +16,15 @@ import {
     CitationLinkProvider,
     ReferenceTreeProvider,
     BibliographyCodeLensProvider,
+    BibliographyHoverProvider,
     registerCiteActionCommand
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands } from './notebook/commands';
 import { NotebookTreeProvider } from './notebook/notebookTreeProvider';
 import { OrgLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
+import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
+import { registerFoldingProvider } from './highlighting/foldingProvider';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
@@ -110,18 +113,24 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Initialize Reference Manager
     try {
+        console.log('Scimax: Initializing ReferenceManager...');
         referenceManager = new ReferenceManager(context);
         await referenceManager.initialize();
         context.subscriptions.push({ dispose: () => referenceManager.dispose() });
+        console.log('Scimax: ReferenceManager initialized successfully');
 
         // Register Reference Commands
+        console.log('Scimax: Registering reference commands...');
         registerReferenceCommands(context, referenceManager);
+        console.log('Scimax: Reference commands registered');
 
         // Register cite action command (for clickable cite links)
         registerCiteActionCommand(context, referenceManager);
-    } catch (error) {
-        console.error('Scimax: Failed to initialize ReferenceManager:', error);
-        vscode.window.showErrorMessage(`Scimax reference initialization failed: ${error}`);
+        console.log('Scimax: Cite action command registered');
+    } catch (error: any) {
+        const errorMsg = error?.message || String(error);
+        console.error('Scimax: Failed to initialize ReferenceManager:', errorMsg, error?.stack);
+        vscode.window.showErrorMessage(`Scimax reference initialization failed: ${errorMsg}`);
     }
 
     // Register Reference Tree View
@@ -139,6 +148,14 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerHoverProvider(
             documentSelector,
             new CitationHoverProvider(referenceManager)
+        )
+    );
+
+    // Register Bibliography Hover Provider (for #+BIBLIOGRAPHY: links)
+    context.subscriptions.push(
+        vscode.languages.registerHoverProvider(
+            documentSelector,
+            new BibliographyHoverProvider(referenceManager)
         )
     );
 
@@ -177,6 +194,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Org Link navigation commands
     registerOrgLinkCommands(context);
+
+    // Register Semantic Token Provider for org-mode
+    registerSemanticTokenProvider(context);
+    console.log('Scimax: Semantic token provider registered');
+
+    // Register Folding Provider for org-mode
+    registerFoldingProvider(context);
+    console.log('Scimax: Folding provider registered');
 
     // Register Bibliography Code Lens Provider
     context.subscriptions.push(

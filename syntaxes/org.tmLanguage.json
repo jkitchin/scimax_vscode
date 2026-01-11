@@ -1,0 +1,1149 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Org Mode",
+  "scopeName": "source.org",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#headings" },
+    { "include": "#property-drawers" },
+    { "include": "#drawers" },
+    { "include": "#planning" },
+    { "include": "#clock" },
+    { "include": "#source-blocks" },
+    { "include": "#example-blocks" },
+    { "include": "#quote-blocks" },
+    { "include": "#center-blocks" },
+    { "include": "#verse-blocks" },
+    { "include": "#export-blocks" },
+    { "include": "#comment-blocks" },
+    { "include": "#generic-blocks" },
+    { "include": "#dynamic-blocks" },
+    { "include": "#keywords" },
+    { "include": "#horizontal-rule" },
+    { "include": "#fixed-width" },
+    { "include": "#tables" },
+    { "include": "#lists" },
+    { "include": "#footnote-definitions" },
+    { "include": "#latex-environments" },
+    { "include": "#inline-elements" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.org",
+          "match": "^\\s*#(?!\\+).*$"
+        }
+      ]
+    },
+    "headings": {
+      "patterns": [
+        {
+          "name": "markup.heading.1.org",
+          "match": "^(\\*)\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "captures": {
+            "1": { "name": "punctuation.definition.heading.1.org" },
+            "2": { "name": "keyword.other.todo.org" },
+            "3": { "name": "constant.other.priority.org" },
+            "4": { "name": "comment.block.org" },
+            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "6": { "name": "entity.name.tag.org" }
+          }
+        },
+        {
+          "name": "markup.heading.2.org",
+          "match": "^(\\*\\*)\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "captures": {
+            "1": { "name": "punctuation.definition.heading.2.org" },
+            "2": { "name": "keyword.other.todo.org" },
+            "3": { "name": "constant.other.priority.org" },
+            "4": { "name": "comment.block.org" },
+            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "6": { "name": "entity.name.tag.org" }
+          }
+        },
+        {
+          "name": "markup.heading.3.org",
+          "match": "^(\\*\\*\\*)\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "captures": {
+            "1": { "name": "punctuation.definition.heading.3.org" },
+            "2": { "name": "keyword.other.todo.org" },
+            "3": { "name": "constant.other.priority.org" },
+            "4": { "name": "comment.block.org" },
+            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "6": { "name": "entity.name.tag.org" }
+          }
+        },
+        {
+          "name": "markup.heading.4.org",
+          "match": "^(\\*{4})\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "captures": {
+            "1": { "name": "punctuation.definition.heading.4.org" },
+            "2": { "name": "keyword.other.todo.org" },
+            "3": { "name": "constant.other.priority.org" },
+            "4": { "name": "comment.block.org" },
+            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "6": { "name": "entity.name.tag.org" }
+          }
+        },
+        {
+          "name": "markup.heading.5.org",
+          "match": "^(\\*{5})\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "captures": {
+            "1": { "name": "punctuation.definition.heading.5.org" },
+            "2": { "name": "keyword.other.todo.org" },
+            "3": { "name": "constant.other.priority.org" },
+            "4": { "name": "comment.block.org" },
+            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "6": { "name": "entity.name.tag.org" }
+          }
+        },
+        {
+          "name": "markup.heading.6.org",
+          "match": "^(\\*{6,})\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "captures": {
+            "1": { "name": "punctuation.definition.heading.6.org" },
+            "2": { "name": "keyword.other.todo.org" },
+            "3": { "name": "constant.other.priority.org" },
+            "4": { "name": "comment.block.org" },
+            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "6": { "name": "entity.name.tag.org" }
+          }
+        }
+      ]
+    },
+    "planning": {
+      "patterns": [
+        {
+          "name": "meta.planning.org",
+          "match": "^\\s*(SCHEDULED|DEADLINE|CLOSED):\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.planning.org" },
+            "2": { "patterns": [{ "include": "#timestamps" }] }
+          }
+        }
+      ]
+    },
+    "clock": {
+      "patterns": [
+        {
+          "name": "meta.clock.org",
+          "match": "^\\s*(CLOCK):\\s*(\\[.*?\\])(?:\\s*--\\s*(\\[.*?\\]))?(?:\\s*=>\\s*(\\d+:\\d+))?\\s*$",
+          "captures": {
+            "1": { "name": "keyword.other.clock.org" },
+            "2": { "name": "constant.other.timestamp.inactive.org" },
+            "3": { "name": "constant.other.timestamp.inactive.org" },
+            "4": { "name": "constant.numeric.duration.org" }
+          }
+        }
+      ]
+    },
+    "property-drawers": {
+      "name": "meta.drawer.properties.org",
+      "begin": "^(\\s*)(:PROPERTIES:)\\s*$",
+      "end": "^(\\1)(:END:)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.drawer.begin.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.drawer.end.org" }
+      },
+      "patterns": [
+        {
+          "name": "meta.property.org",
+          "match": "^\\s*(:([A-Za-z_][A-Za-z0-9_-]*):)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.org" },
+            "2": { "name": "variable.other.property.org" },
+            "3": { "name": "string.unquoted.property-value.org", "patterns": [{ "include": "#timestamps" }] }
+          }
+        }
+      ]
+    },
+    "drawers": {
+      "name": "meta.drawer.org",
+      "begin": "^(\\s*)(:([A-Za-z][A-Za-z0-9_-]*):)\\s*$",
+      "end": "^(\\1)(:END:)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.drawer.begin.org" },
+        "3": { "name": "entity.name.drawer.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.drawer.end.org" }
+      },
+      "patterns": [
+        { "include": "#inline-elements" }
+      ]
+    },
+    "source-blocks": {
+      "patterns": [
+        {
+          "name": "meta.embedded.block.python.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(python)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.python",
+          "patterns": [{ "include": "source.python" }]
+        },
+        {
+          "name": "meta.embedded.block.bash.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(bash|sh|shell)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.shellscript",
+          "patterns": [{ "include": "source.shell" }]
+        },
+        {
+          "name": "meta.embedded.block.latex.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(latex)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.latex",
+          "patterns": [{ "include": "text.tex.latex" }]
+        },
+        {
+          "name": "meta.embedded.block.json.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(json)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.json",
+          "patterns": [{ "include": "source.json" }]
+        },
+        {
+          "name": "meta.embedded.block.javascript.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(javascript|js)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.javascript",
+          "patterns": [{ "include": "source.js" }]
+        },
+        {
+          "name": "meta.embedded.block.typescript.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(typescript|ts)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.typescript",
+          "patterns": [{ "include": "source.ts" }]
+        },
+        {
+          "name": "meta.embedded.block.sql.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(sql)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.sql",
+          "patterns": [{ "include": "source.sql" }]
+        },
+        {
+          "name": "meta.embedded.block.yaml.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(yaml|yml)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.yaml",
+          "patterns": [{ "include": "source.yaml" }]
+        },
+        {
+          "name": "meta.embedded.block.r.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(r|R)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.r",
+          "patterns": [{ "include": "source.r" }]
+        },
+        {
+          "name": "meta.embedded.block.julia.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(julia)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.julia",
+          "patterns": [{ "include": "source.julia" }]
+        },
+        {
+          "name": "meta.embedded.block.c.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(c)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.c",
+          "patterns": [{ "include": "source.c" }]
+        },
+        {
+          "name": "meta.embedded.block.cpp.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(cpp|c\\+\\+)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.cpp",
+          "patterns": [{ "include": "source.cpp" }]
+        },
+        {
+          "name": "meta.embedded.block.java.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(java)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.java",
+          "patterns": [{ "include": "source.java" }]
+        },
+        {
+          "name": "meta.embedded.block.rust.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(rust)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.rust",
+          "patterns": [{ "include": "source.rust" }]
+        },
+        {
+          "name": "meta.embedded.block.go.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(go|golang)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.go",
+          "patterns": [{ "include": "source.go" }]
+        },
+        {
+          "name": "meta.embedded.block.ruby.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(ruby)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.ruby",
+          "patterns": [{ "include": "source.ruby" }]
+        },
+        {
+          "name": "meta.embedded.block.perl.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(perl)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.perl",
+          "patterns": [{ "include": "source.perl" }]
+        },
+        {
+          "name": "meta.embedded.block.elisp.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(emacs-lisp|elisp)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.lisp",
+          "patterns": [{ "include": "source.lisp" }]
+        },
+        {
+          "name": "meta.embedded.block.css.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(css)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.css",
+          "patterns": [{ "include": "source.css" }]
+        },
+        {
+          "name": "meta.embedded.block.html.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(html)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.html",
+          "patterns": [{ "include": "text.html.basic" }]
+        },
+        {
+          "name": "meta.embedded.block.xml.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(xml)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.xml",
+          "patterns": [{ "include": "text.xml" }]
+        },
+        {
+          "name": "meta.embedded.block.markdown.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(markdown|md)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "meta.embedded.block.markdown",
+          "patterns": [{ "include": "text.html.markdown" }]
+        },
+        {
+          "comment": "Fallback for unrecognized languages",
+          "name": "meta.embedded.block.generic.org",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(\\S+)(.*)$",
+          "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
+          "beginCaptures": {
+            "2": { "name": "keyword.control.block.begin.org" },
+            "3": { "name": "storage.type.language.org" },
+            "4": { "name": "meta.block.header.org" }
+          },
+          "endCaptures": {
+            "2": { "name": "keyword.control.block.end.org" }
+          },
+          "contentName": "markup.raw.block.org"
+        }
+      ]
+    },
+    "example-blocks": {
+      "name": "meta.block.example.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN_EXAMPLE)(.*)$",
+      "end": "(?i)^(\\1)(#\\+END_EXAMPLE)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "meta.block.header.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      },
+      "contentName": "markup.raw.block.org"
+    },
+    "quote-blocks": {
+      "name": "meta.block.quote.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN_QUOTE)(.*)$",
+      "end": "(?i)^(\\1)(#\\+END_QUOTE)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "meta.block.header.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      },
+      "contentName": "markup.quote.org",
+      "patterns": [{ "include": "#inline-elements" }]
+    },
+    "center-blocks": {
+      "name": "meta.block.center.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN_CENTER)(.*)$",
+      "end": "(?i)^(\\1)(#\\+END_CENTER)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "meta.block.header.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      },
+      "patterns": [{ "include": "#inline-elements" }]
+    },
+    "verse-blocks": {
+      "name": "meta.block.verse.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN_VERSE)(.*)$",
+      "end": "(?i)^(\\1)(#\\+END_VERSE)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "meta.block.header.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      },
+      "contentName": "markup.quote.verse.org",
+      "patterns": [{ "include": "#inline-elements" }]
+    },
+    "export-blocks": {
+      "name": "meta.block.export.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN_EXPORT)\\s+(\\S+)(.*)$",
+      "end": "(?i)^(\\1)(#\\+END_EXPORT)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "storage.type.export.org" },
+        "4": { "name": "meta.block.header.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      },
+      "contentName": "markup.raw.block.export.org"
+    },
+    "comment-blocks": {
+      "name": "comment.block.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN_COMMENT)(.*)$",
+      "end": "(?i)^(\\1)(#\\+END_COMMENT)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "meta.block.header.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      }
+    },
+    "generic-blocks": {
+      "name": "meta.block.generic.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN_(\\w+))(.*)$",
+      "end": "(?i)^(\\1)(#\\+END_\\3)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "entity.name.type.block.org" },
+        "4": { "name": "meta.block.header.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      },
+      "patterns": [{ "include": "#inline-elements" }]
+    },
+    "dynamic-blocks": {
+      "name": "meta.block.dynamic.org",
+      "begin": "(?i)^(\\s*)(#\\+BEGIN:)\\s+(\\S+)(.*)$",
+      "end": "(?i)^(\\1)(#\\+END:?)\\s*$",
+      "beginCaptures": {
+        "2": { "name": "keyword.control.block.begin.org" },
+        "3": { "name": "entity.name.function.org" },
+        "4": { "name": "meta.block.parameters.org" }
+      },
+      "endCaptures": {
+        "2": { "name": "keyword.control.block.end.org" }
+      },
+      "patterns": [{ "include": "#inline-elements" }]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "meta.keyword.title.org",
+          "match": "(?i)^\\s*(#\\+TITLE:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.title.org" },
+            "2": { "name": "string.unquoted.title.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.author.org",
+          "match": "(?i)^\\s*(#\\+AUTHOR:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.author.org" },
+            "2": { "name": "string.unquoted.author.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.date.org",
+          "match": "(?i)^\\s*(#\\+DATE:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.date.org" },
+            "2": { "name": "string.unquoted.date.org", "patterns": [{ "include": "#timestamps" }] }
+          }
+        },
+        {
+          "name": "meta.keyword.options.org",
+          "match": "(?i)^\\s*(#\\+OPTIONS:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.options.org" },
+            "2": { "name": "string.unquoted.options.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.property.org",
+          "match": "(?i)^\\s*(#\\+PROPERTY:)\\s*(\\S+)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.property.org" },
+            "2": { "name": "variable.other.property.org" },
+            "3": { "name": "string.unquoted.property-value.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.results.org",
+          "match": "(?i)^\\s*(#\\+RESULTS:?)(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.results.org" },
+            "2": { "name": "meta.results.name.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.name.org",
+          "match": "(?i)^\\s*(#\\+NAME:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.name.org" },
+            "2": { "name": "entity.name.label.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.caption.org",
+          "match": "(?i)^\\s*(#\\+CAPTION:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.caption.org" },
+            "2": { "name": "string.unquoted.caption.org", "patterns": [{ "include": "#inline-elements" }] }
+          }
+        },
+        {
+          "name": "meta.keyword.attr.org",
+          "match": "(?i)^\\s*(#\\+ATTR_\\w+:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.attr.org" },
+            "2": { "name": "string.unquoted.attr.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.include.org",
+          "match": "(?i)^\\s*(#\\+INCLUDE:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.control.include.org" },
+            "2": { "name": "string.unquoted.include.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.setupfile.org",
+          "match": "(?i)^\\s*(#\\+SETUPFILE:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.control.setupfile.org" },
+            "2": { "name": "string.unquoted.setupfile.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.bibliography.org",
+          "match": "(?i)^\\s*(#\\+BIBLIOGRAPHY:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.bibliography.org" },
+            "2": { "name": "string.unquoted.bibliography.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.call.org",
+          "match": "(?i)^\\s*(#\\+CALL:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.control.call.org" },
+            "2": { "name": "entity.name.function.org" }
+          }
+        },
+        {
+          "name": "meta.keyword.generic.org",
+          "match": "(?i)^\\s*(#\\+[A-Za-z_][A-Za-z0-9_]*:)\\s*(.*)$",
+          "captures": {
+            "1": { "name": "keyword.other.generic.org" },
+            "2": { "name": "string.unquoted.org" }
+          }
+        }
+      ]
+    },
+    "horizontal-rule": {
+      "name": "markup.separator.horizontal-rule.org",
+      "match": "^\\s*-{5,}\\s*$"
+    },
+    "fixed-width": {
+      "name": "markup.raw.fixed-width.org",
+      "match": "^\\s*:\\s.*$"
+    },
+    "tables": {
+      "patterns": [
+        {
+          "name": "meta.table.separator.org",
+          "match": "^\\s*\\|[-+|]+\\|\\s*$"
+        },
+        {
+          "name": "meta.table.row.org",
+          "match": "^\\s*\\|(.*)\\|\\s*$",
+          "captures": {
+            "0": { "name": "markup.other.table.org" },
+            "1": { "patterns": [{ "include": "#inline-elements" }] }
+          }
+        }
+      ]
+    },
+    "lists": {
+      "patterns": [
+        {
+          "name": "meta.list.unordered.org",
+          "match": "^(\\s*)([-+*])\\s+(\\[[ X-]\\])?\\s*(.*)$",
+          "captures": {
+            "2": { "name": "punctuation.definition.list.begin.org" },
+            "3": { "name": "keyword.other.checkbox.org" },
+            "4": { "patterns": [{ "include": "#list-tag" }, { "include": "#inline-elements" }] }
+          }
+        },
+        {
+          "name": "meta.list.ordered.org",
+          "match": "^(\\s*)(\\d+[.)])\\s+(\\[[ X-]\\])?\\s*(.*)$",
+          "captures": {
+            "2": { "name": "punctuation.definition.list.begin.org" },
+            "3": { "name": "keyword.other.checkbox.org" },
+            "4": { "patterns": [{ "include": "#list-tag" }, { "include": "#inline-elements" }] }
+          }
+        },
+        {
+          "name": "meta.list.ordered-alpha.org",
+          "match": "^(\\s*)([a-zA-Z][.)])\\s+(\\[[ X-]\\])?\\s*(.*)$",
+          "captures": {
+            "2": { "name": "punctuation.definition.list.begin.org" },
+            "3": { "name": "keyword.other.checkbox.org" },
+            "4": { "patterns": [{ "include": "#list-tag" }, { "include": "#inline-elements" }] }
+          }
+        }
+      ]
+    },
+    "list-tag": {
+      "match": "^([^:]+)\\s*::\\s*",
+      "captures": {
+        "1": { "name": "entity.name.tag.list.org" }
+      }
+    },
+    "footnote-definitions": {
+      "name": "meta.footnote.definition.org",
+      "match": "^\\s*(\\[fn:([^]]+)\\])\\s*(.*)$",
+      "captures": {
+        "1": { "name": "entity.name.footnote.org" },
+        "2": { "name": "variable.other.footnote.org" },
+        "3": { "name": "string.unquoted.footnote.content.org", "patterns": [{ "include": "#inline-elements" }] }
+      }
+    },
+    "latex-environments": {
+      "name": "meta.environment.latex.org",
+      "begin": "^\\s*(\\\\begin\\{)([^}]+)(\\})",
+      "end": "^\\s*(\\\\end\\{)(\\2)(\\})",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.begin.latex.org" },
+        "2": { "name": "entity.name.type.latex.org" },
+        "3": { "name": "keyword.control.begin.latex.org" }
+      },
+      "endCaptures": {
+        "1": { "name": "keyword.control.end.latex.org" },
+        "2": { "name": "entity.name.type.latex.org" },
+        "3": { "name": "keyword.control.end.latex.org" }
+      },
+      "contentName": "markup.math.block.latex.org",
+      "patterns": [{ "include": "text.tex.latex" }]
+    },
+    "inline-elements": {
+      "patterns": [
+        { "include": "#timestamps" },
+        { "include": "#links" },
+        { "include": "#citations" },
+        { "include": "#footnote-references" },
+        { "include": "#latex-fragments" },
+        { "include": "#entities" },
+        { "include": "#macros" },
+        { "include": "#inline-src" },
+        { "include": "#inline-call" },
+        { "include": "#export-snippets" },
+        { "include": "#statistics-cookies" },
+        { "include": "#text-markup" },
+        { "include": "#subscript-superscript" },
+        { "include": "#line-break" },
+        { "include": "#target" },
+        { "include": "#radio-target" }
+      ]
+    },
+    "timestamps": {
+      "patterns": [
+        {
+          "name": "constant.other.timestamp.active.org",
+          "match": "<\\d{4}-\\d{2}-\\d{2}(?:\\s+[A-Za-z]+)?(?:\\s+\\d{1,2}:\\d{2}(?:-\\d{1,2}:\\d{2})?)?(?:\\s+[.+]?\\+\\d+[hdwmy])?(?:\\s+--?\\d+[hdwmy])?>(?:--<\\d{4}-\\d{2}-\\d{2}(?:\\s+[A-Za-z]+)?(?:\\s+\\d{1,2}:\\d{2})?>)?"
+        },
+        {
+          "name": "constant.other.timestamp.inactive.org",
+          "match": "\\[\\d{4}-\\d{2}-\\d{2}(?:\\s+[A-Za-z]+)?(?:\\s+\\d{1,2}:\\d{2}(?:-\\d{1,2}:\\d{2})?)?(?:\\s+[.+]?\\+\\d+[hdwmy])?(?:\\s+--?\\d+[hdwmy])?\\](?:--\\[\\d{4}-\\d{2}-\\d{2}(?:\\s+[A-Za-z]+)?(?:\\s+\\d{1,2}:\\d{2})?\\])?"
+        },
+        {
+          "name": "constant.other.timestamp.diary.org",
+          "match": "<%%\\([^>]+\\)>"
+        }
+      ]
+    },
+    "links": {
+      "patterns": [
+        {
+          "name": "meta.link.bracket.org",
+          "match": "\\[\\[([^\\]]+)\\]\\[([^\\]]+)\\]\\]",
+          "captures": {
+            "0": { "name": "markup.underline.link.org" },
+            "1": { "name": "string.other.link.title.org" },
+            "2": { "name": "string.other.link.description.org" }
+          }
+        },
+        {
+          "name": "meta.link.bracket.plain.org",
+          "match": "\\[\\[([^\\]]+)\\]\\]",
+          "captures": {
+            "0": { "name": "markup.underline.link.org" },
+            "1": { "name": "string.other.link.title.org" }
+          }
+        },
+        {
+          "name": "markup.underline.link.angle.org",
+          "match": "<(https?://[^>]+)>"
+        },
+        {
+          "name": "markup.underline.link.plain.org",
+          "match": "(?<![\\w])https?://[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        },
+        {
+          "name": "markup.underline.link.file.org",
+          "match": "(?<![\\w])file:[^\\s<>\\[\\](){}]+(?=[\\s.,;:!?)]|$)"
+        }
+      ]
+    },
+    "citations": {
+      "patterns": [
+        {
+          "name": "entity.other.citation.bracket.org",
+          "match": "\\[cite(?:/[^:]*)?:([^\\]]+)\\]",
+          "captures": {
+            "0": { "name": "markup.other.citation.org" },
+            "1": { "name": "variable.other.citation.key.org" }
+          }
+        },
+        {
+          "name": "entity.other.citation.org",
+          "match": "(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\\w:-]+)",
+          "captures": {
+            "1": { "name": "variable.other.citation.key.org" }
+          }
+        },
+        {
+          "name": "entity.other.citation.at.org",
+          "match": "(?<![\\w])@([\\w:-]+)",
+          "captures": {
+            "0": { "name": "markup.other.citation.org" },
+            "1": { "name": "variable.other.citation.key.org" }
+          }
+        }
+      ]
+    },
+    "footnote-references": {
+      "patterns": [
+        {
+          "name": "entity.other.footnote.inline.org",
+          "match": "\\[fn:([^:]+):([^\\]]+)\\]",
+          "captures": {
+            "1": { "name": "variable.other.footnote.org" },
+            "2": { "name": "string.unquoted.footnote.content.org" }
+          }
+        },
+        {
+          "name": "entity.other.footnote.anonymous.org",
+          "match": "\\[fn::([^\\]]+)\\]",
+          "captures": {
+            "1": { "name": "string.unquoted.footnote.content.org" }
+          }
+        },
+        {
+          "name": "entity.other.footnote.reference.org",
+          "match": "\\[fn:([^\\]]+)\\]",
+          "captures": {
+            "1": { "name": "variable.other.footnote.org" }
+          }
+        }
+      ]
+    },
+    "latex-fragments": {
+      "patterns": [
+        {
+          "name": "markup.math.display.latex.org",
+          "begin": "\\$\\$",
+          "end": "\\$\\$",
+          "contentName": "markup.math.content.org",
+          "patterns": [{ "include": "text.tex.latex" }]
+        },
+        {
+          "name": "markup.math.inline.latex.org",
+          "match": "(?<!\\$)\\$(?!\\$)([^$\\n]+)\\$(?!\\$)",
+          "captures": {
+            "1": { "name": "markup.math.content.org" }
+          }
+        },
+        {
+          "name": "markup.math.display.bracket.latex.org",
+          "begin": "\\\\\\[",
+          "end": "\\\\\\]",
+          "contentName": "markup.math.content.org",
+          "patterns": [{ "include": "text.tex.latex" }]
+        },
+        {
+          "name": "markup.math.inline.paren.latex.org",
+          "begin": "\\\\\\(",
+          "end": "\\\\\\)",
+          "contentName": "markup.math.content.org",
+          "patterns": [{ "include": "text.tex.latex" }]
+        }
+      ]
+    },
+    "entities": {
+      "patterns": [
+        {
+          "name": "constant.character.entity.org",
+          "match": "\\\\[a-zA-Z]+(?:\\{\\}|(?=[^a-zA-Z]))"
+        }
+      ]
+    },
+    "macros": {
+      "name": "meta.macro.org",
+      "match": "\\{\\{\\{([^}(]+)(?:\\(([^)]*)\\))?\\}\\}\\}",
+      "captures": {
+        "0": { "name": "entity.name.function.macro.org" },
+        "1": { "name": "variable.other.macro.name.org" },
+        "2": { "name": "string.unquoted.macro.args.org" }
+      }
+    },
+    "inline-src": {
+      "name": "meta.inline.source.org",
+      "match": "src_([a-zA-Z][a-zA-Z0-9-]*)(?:\\[([^\\]]*)\\])?\\{([^}]*)\\}",
+      "captures": {
+        "0": { "name": "markup.inline.raw.org" },
+        "1": { "name": "storage.type.language.org" },
+        "2": { "name": "meta.block.header.org" },
+        "3": { "name": "markup.raw.inline.org" }
+      }
+    },
+    "inline-call": {
+      "name": "meta.inline.call.org",
+      "match": "call_([a-zA-Z][a-zA-Z0-9-]*)(?:\\[([^\\]]*)\\])?\\(([^)]*)\\)(?:\\[([^\\]]*)\\])?",
+      "captures": {
+        "0": { "name": "entity.name.function.call.org" },
+        "1": { "name": "variable.other.call.name.org" },
+        "2": { "name": "meta.block.header.org" },
+        "3": { "name": "string.unquoted.call.args.org" },
+        "4": { "name": "meta.block.header.org" }
+      }
+    },
+    "export-snippets": {
+      "name": "meta.export.snippet.org",
+      "match": "@@([a-zA-Z][a-zA-Z0-9-]*):([^@]*)@@",
+      "captures": {
+        "0": { "name": "markup.raw.inline.export.org" },
+        "1": { "name": "storage.type.export.org" },
+        "2": { "name": "string.unquoted.export.content.org" }
+      }
+    },
+    "statistics-cookies": {
+      "patterns": [
+        {
+          "name": "constant.other.statistics.percent.org",
+          "match": "\\[\\d+%\\]"
+        },
+        {
+          "name": "constant.other.statistics.fraction.org",
+          "match": "\\[\\d+/\\d+\\]"
+        }
+      ]
+    },
+    "text-markup": {
+      "patterns": [
+        {
+          "name": "markup.bold.org",
+          "match": "(?<=[\\s\\-({'\"])\\*([^*\\n]+)\\*(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "captures": {
+            "1": { "name": "markup.bold.content.org" }
+          }
+        },
+        {
+          "name": "markup.italic.org",
+          "match": "(?<=[\\s\\-({'\"])/([^/\\n]+)/(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "captures": {
+            "1": { "name": "markup.italic.content.org" }
+          }
+        },
+        {
+          "name": "markup.underline.org",
+          "match": "(?<=[\\s\\-({'\"])_([^_\\n]+)_(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "captures": {
+            "1": { "name": "markup.underline.content.org" }
+          }
+        },
+        {
+          "name": "markup.raw.verbatim.org",
+          "match": "(?<=[\\s\\-({'\"])=([^=\\n]+)=(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "captures": {
+            "1": { "name": "markup.raw.verbatim.content.org" }
+          }
+        },
+        {
+          "name": "markup.inline.raw.org",
+          "match": "(?<=[\\s\\-({'\"])~([^~\\n]+)~(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "captures": {
+            "1": { "name": "markup.inline.raw.content.org" }
+          }
+        },
+        {
+          "name": "markup.strikethrough.org",
+          "match": "(?<=[\\s\\-({'\"])\\+([^+\\n]+)\\+(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "captures": {
+            "1": { "name": "markup.strikethrough.content.org" }
+          }
+        }
+      ]
+    },
+    "subscript-superscript": {
+      "patterns": [
+        {
+          "name": "markup.subscript.org",
+          "match": "(?<=[a-zA-Z0-9])_\\{([^}]+)\\}",
+          "captures": {
+            "1": { "name": "markup.subscript.content.org" }
+          }
+        },
+        {
+          "name": "markup.superscript.org",
+          "match": "(?<=[a-zA-Z0-9])\\^\\{([^}]+)\\}",
+          "captures": {
+            "1": { "name": "markup.superscript.content.org" }
+          }
+        },
+        {
+          "name": "markup.subscript.plain.org",
+          "match": "(?<=[a-zA-Z0-9])_([a-zA-Z0-9]+)",
+          "captures": {
+            "1": { "name": "markup.subscript.content.org" }
+          }
+        },
+        {
+          "name": "markup.superscript.plain.org",
+          "match": "(?<=[a-zA-Z0-9])\\^([a-zA-Z0-9]+)",
+          "captures": {
+            "1": { "name": "markup.superscript.content.org" }
+          }
+        }
+      ]
+    },
+    "line-break": {
+      "name": "constant.character.escape.linebreak.org",
+      "match": "\\\\\\\\\\s*$"
+    },
+    "target": {
+      "name": "entity.name.target.org",
+      "match": "<<([^<>]+)>>",
+      "captures": {
+        "1": { "name": "string.other.target.name.org" }
+      }
+    },
+    "radio-target": {
+      "name": "entity.name.radio-target.org",
+      "match": "<<<([^<>]+)>>>",
+      "captures": {
+        "1": { "name": "string.other.radio-target.name.org" }
+      }
+    }
+  }
+}

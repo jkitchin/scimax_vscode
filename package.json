@@ -34,6 +34,103 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "org",
+        "aliases": ["Org Mode", "org-mode", "Org"],
+        "extensions": [".org"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "org",
+        "scopeName": "source.org",
+        "path": "./syntaxes/org.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.python": "python",
+          "meta.embedded.block.shellscript": "shellscript",
+          "meta.embedded.block.latex": "latex",
+          "meta.embedded.block.json": "json",
+          "meta.embedded.block.javascript": "javascript",
+          "meta.embedded.block.typescript": "typescript",
+          "meta.embedded.block.sql": "sql",
+          "meta.embedded.block.yaml": "yaml",
+          "meta.embedded.block.r": "r",
+          "meta.embedded.block.julia": "julia",
+          "meta.embedded.block.c": "c",
+          "meta.embedded.block.cpp": "cpp",
+          "meta.embedded.block.java": "java",
+          "meta.embedded.block.rust": "rust",
+          "meta.embedded.block.go": "go",
+          "meta.embedded.block.ruby": "ruby",
+          "meta.embedded.block.perl": "perl",
+          "meta.embedded.block.css": "css",
+          "meta.embedded.block.html": "html",
+          "meta.embedded.block.xml": "xml",
+          "meta.embedded.block.markdown": "markdown"
+        }
+      }
+    ],
+    "semanticTokenTypes": [
+      {
+        "id": "orgLink",
+        "superType": "string",
+        "description": "Org-mode link"
+      },
+      {
+        "id": "orgCitation",
+        "superType": "variable",
+        "description": "Org-mode citation reference"
+      },
+      {
+        "id": "orgTimestamp",
+        "superType": "number",
+        "description": "Org-mode timestamp"
+      },
+      {
+        "id": "orgHeading",
+        "superType": "class",
+        "description": "Org-mode heading"
+      },
+      {
+        "id": "orgTodo",
+        "superType": "keyword",
+        "description": "Org-mode TODO keyword"
+      },
+      {
+        "id": "orgTag",
+        "superType": "label",
+        "description": "Org-mode tag"
+      }
+    ],
+    "semanticTokenModifiers": [
+      {
+        "id": "active",
+        "description": "Active timestamp"
+      },
+      {
+        "id": "inactive",
+        "description": "Inactive timestamp"
+      },
+      {
+        "id": "done",
+        "description": "Completed TODO state"
+      }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "org",
+        "scopes": {
+          "orgLink": ["markup.underline.link.org"],
+          "orgCitation": ["entity.other.citation.org"],
+          "orgTimestamp": ["constant.other.timestamp.org"],
+          "orgHeading": ["entity.name.section.org"],
+          "orgTodo": ["keyword.other.todo.org"],
+          "orgTag": ["entity.name.tag.org"]
+        }
+      }
+    ],
     "commands": [
       {
         "command": "scimax.journal.today",

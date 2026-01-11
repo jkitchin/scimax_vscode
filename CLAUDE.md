@@ -77,3 +77,9 @@ Each manager is passed to its command registration function and tree providers.
 - `@xenova/transformers` - Local embeddings via Transformers.js
 - `date-fns` - Date manipulation for journal
 - `minimatch` - Glob pattern matching for ignore patterns
+
+## References
+
+- **Org-mode Syntax Specification**: https://orgmode.org/worg/org-syntax.html
+  - Canonical reference for all org-mode syntax elements
+  - Used for building the syntax highlighter and parser
