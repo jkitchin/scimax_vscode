@@ -18,6 +18,7 @@ import {
     BibliographyCodeLensProvider,
     BibliographyHoverProvider,
     RefHoverProvider,
+    DoiHoverProvider,
     registerCiteActionCommand
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
@@ -33,6 +34,11 @@ import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
+import { registerFuzzySearchCommands } from './fuzzySearch/commands';
+import { registerJumpCommands } from './jump/commands';
+import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
+import { SpellChecker, registerSpellCheckCommands, SpellingCodeActionProvider } from './spelling/spellChecker';
+import { registerEditmarkCommands } from './editmarks/editmarks';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
@@ -40,6 +46,7 @@ let scimaxDb: ScimaxDb;
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 let projectileManager: ProjectileManager;
+let spellChecker: SpellChecker;
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Scimax VS Code extension activating...');
@@ -136,6 +143,11 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register cite action command (for clickable cite links)
         registerCiteActionCommand(context, referenceManager);
         console.log('Scimax: Cite action command registered');
+
+        // Register citation manipulation commands (transpose, sort)
+        registerCitationManipulationCommands(context, (key) => referenceManager.getEntry(key));
+        checkCitationContext(context);
+        console.log('Scimax: Citation manipulation commands registered');
     } catch (error: any) {
         const errorMsg = error?.message || String(error);
         console.error('Scimax: Failed to initialize ReferenceManager:', errorMsg, error?.stack);
@@ -173,6 +185,14 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerHoverProvider(
             documentSelector,
             new RefHoverProvider()
+        )
+    );
+
+    // Register DOI Hover Provider (fetches metadata from CrossRef)
+    context.subscriptions.push(
+        vscode.languages.registerHoverProvider(
+            documentSelector,
+            new DoiHoverProvider(referenceManager)
         )
     );
 
@@ -335,6 +355,37 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Projectile Commands
     registerProjectileCommands(context, projectileManager);
     console.log('Scimax: Projectile manager initialized');
+
+    // Register Fuzzy Search Commands (search current/all open files)
+    registerFuzzySearchCommands(context);
+
+    // Register Jump Commands (avy-style jump to visible locations)
+    registerJumpCommands(context);
+
+    // Initialize Spell Checker (jinx-style)
+    spellChecker = new SpellChecker(context);
+    registerSpellCheckCommands(context, spellChecker);
+    context.subscriptions.push({ dispose: () => spellChecker.dispose() });
+
+    // Register spell check code action provider
+    const spellCheckSelector = [
+        { language: 'org', scheme: 'file' },
+        { language: 'markdown', scheme: 'file' },
+        { language: 'plaintext', scheme: 'file' },
+        { language: 'latex', scheme: 'file' }
+    ];
+    context.subscriptions.push(
+        vscode.languages.registerCodeActionsProvider(
+            spellCheckSelector,
+            new SpellingCodeActionProvider(spellChecker),
+            { providedCodeActionKinds: [vscode.CodeActionKind.QuickFix] }
+        )
+    );
+    console.log('Scimax: Spell checker initialized');
+
+    // Register Editmark Commands (track changes)
+    registerEditmarkCommands(context);
+    console.log('Scimax: Editmarks initialized');
 }
 
 export async function deactivate() {
