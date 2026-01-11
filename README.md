@@ -57,6 +57,11 @@ Full bibliography management with BibTeX support, DOI fetching, and citation ins
 | `Scimax: Show Citing Works (OpenAlex)` | - | Show papers that cite a DOI |
 | `Scimax: Show Related Works (OpenAlex)` | - | Show related papers for a DOI |
 | `Scimax: Search OpenAlex` | - | Search the OpenAlex academic database |
+| `Scimax: Transpose Citation Left` | `Shift+Left` | Swap citation with previous (when on citation) |
+| `Scimax: Transpose Citation Right` | `Shift+Right` | Swap citation with next (when on citation) |
+| `Scimax: Sort Citations Alphabetically` | `Shift+Up` | Sort citation keys alphabetically (when on citation) |
+| `Scimax: Sort Citations by Year` | `Shift+Down` | Sort citation keys by year (when on citation) |
+| `Scimax: Delete Citation at Cursor` | `Ctrl+Shift+K` | Delete citation key at cursor (when on citation) |
 
 **Features:**
 - **Hover preview**: Hover over citations to see reference details with source file
@@ -66,6 +71,7 @@ Full bibliography management with BibTeX support, DOI fetching, and citation ins
 - **Code lens**: In .bib files, see citations count and quick actions
 - **Citation styles**: cite, citet, citep, citeauthor, citeyear
 - **OpenAlex integration**: View citation counts, open access links, citing works, related works
+- **Citation manipulation**: Transpose, sort, and delete citations with keyboard shortcuts (like org-ref)
 
 **Configuration:**
 ```json
@@ -358,6 +364,11 @@ The extension adds a **Scimax** activity bar icon with these views:
 |----------|---------|------|
 | `Ctrl+c ]` | Insert Citation | In org/markdown/latex |
 | `Ctrl+u Ctrl+c ]` | Insert Reference Link | In org/markdown/latex |
+| `Shift+Left` | Transpose Citation Left | On citation |
+| `Shift+Right` | Transpose Citation Right | On citation |
+| `Shift+Up` | Sort Citations Alphabetically | On citation |
+| `Shift+Down` | Sort Citations by Year | On citation |
+| `Ctrl+Shift+K` | Delete Citation | On citation |
 
 ### Fuzzy Search
 | Shortcut | Command | When |

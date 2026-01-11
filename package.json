@@ -417,6 +417,26 @@
         "title": "Scimax: Search OpenAlex"
       },
       {
+        "command": "scimax.ref.transposeCitationLeft",
+        "title": "Scimax: Transpose Citation Left"
+      },
+      {
+        "command": "scimax.ref.transposeCitationRight",
+        "title": "Scimax: Transpose Citation Right"
+      },
+      {
+        "command": "scimax.ref.sortCitations",
+        "title": "Scimax: Sort Citations Alphabetically"
+      },
+      {
+        "command": "scimax.ref.sortCitationsByYear",
+        "title": "Scimax: Sort Citations by Year"
+      },
+      {
+        "command": "scimax.ref.deleteCitation",
+        "title": "Scimax: Delete Citation at Cursor"
+      },
+      {
         "command": "scimax.notebook.new",
         "title": "Scimax: New Notebook"
       },
@@ -981,6 +1001,36 @@
         "key": "ctrl+c j s",
         "mac": "ctrl+c j s",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.ref.transposeCitationLeft",
+        "key": "shift+left",
+        "mac": "shift+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+      },
+      {
+        "command": "scimax.ref.transposeCitationRight",
+        "key": "shift+right",
+        "mac": "shift+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+      },
+      {
+        "command": "scimax.ref.sortCitations",
+        "key": "shift+up",
+        "mac": "shift+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+      },
+      {
+        "command": "scimax.ref.sortCitationsByYear",
+        "key": "shift+down",
+        "mac": "shift+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+      },
+      {
+        "command": "scimax.ref.deleteCitation",
+        "key": "ctrl+shift+k",
+        "mac": "cmd+shift+k",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
       }
     ],
     "configuration": {

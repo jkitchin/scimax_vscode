@@ -36,6 +36,7 @@ import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
+import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
@@ -139,6 +140,11 @@ export async function activate(context: vscode.ExtensionContext) {
         // Register cite action command (for clickable cite links)
         registerCiteActionCommand(context, referenceManager);
         console.log('Scimax: Cite action command registered');
+
+        // Register citation manipulation commands (transpose, sort)
+        registerCitationManipulationCommands(context, (key) => referenceManager.getEntry(key));
+        checkCitationContext(context);
+        console.log('Scimax: Citation manipulation commands registered');
     } catch (error: any) {
         const errorMsg = error?.message || String(error);
         console.error('Scimax: Failed to initialize ReferenceManager:', errorMsg, error?.stack);
