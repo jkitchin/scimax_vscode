@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { NotebookManager, Notebook, Collaborator } from './notebookManager';
-import { OrgDbSqlite } from '../database/orgDbSqlite';
+import { ScimaxDb } from '../database/scimaxDb';
 
 export function registerNotebookCommands(
     context: vscode.ExtensionContext,
     notebookManager: NotebookManager,
-    orgDb: OrgDbSqlite
+    scimaxDb: ScimaxDb
 ): void {
     // Create new notebook
     context.subscriptions.push(
@@ -165,14 +165,14 @@ export function registerNotebookCommands(
             if (!query) return;
 
             // Set org-db scope to this notebook
-            orgDb.setSearchScope({ type: 'directory', path: notebook.path });
+            scimaxDb.setSearchScope({ type: 'directory', path: notebook.path });
 
             // Perform search
-            const results = await orgDb.searchFullText(query, { limit: 100 });
+            const results = await scimaxDb.searchFullText(query, { limit: 100 });
 
             if (results.length === 0) {
                 vscode.window.showInformationMessage(`No results found in ${notebook.name}`);
-                orgDb.setSearchScope({ type: 'all' }); // Reset scope
+                scimaxDb.setSearchScope({ type: 'all' }); // Reset scope
                 return;
             }
 
@@ -188,7 +188,7 @@ export function registerNotebookCommands(
                 matchOnDescription: true
             });
 
-            orgDb.setSearchScope({ type: 'all' }); // Reset scope
+            scimaxDb.setSearchScope({ type: 'all' }); // Reset scope
 
             if (selected) {
                 const doc = await vscode.workspace.openTextDocument(selected.result.file_path);
@@ -207,13 +207,13 @@ export function registerNotebookCommands(
             if (!notebook) return;
 
             // Set scope
-            orgDb.setSearchScope({ type: 'directory', path: notebook.path });
+            scimaxDb.setSearchScope({ type: 'directory', path: notebook.path });
 
-            const agendaItems = await orgDb.getAgenda({ before: '+2w', includeUnscheduled: true });
+            const agendaItems = await scimaxDb.getAgenda({ before: '+2w', includeUnscheduled: true });
 
             if (agendaItems.length === 0) {
                 vscode.window.showInformationMessage(`No agenda items in ${notebook.name}`);
-                orgDb.setSearchScope({ type: 'all' });
+                scimaxDb.setSearchScope({ type: 'all' });
                 return;
             }
 
@@ -228,7 +228,7 @@ export function registerNotebookCommands(
                 placeHolder: `${agendaItems.length} items in ${notebook.name}`
             });
 
-            orgDb.setSearchScope({ type: 'all' });
+            scimaxDb.setSearchScope({ type: 'all' });
 
             if (selected) {
                 const doc = await vscode.workspace.openTextDocument(selected.item.heading.file_path);
@@ -327,7 +327,7 @@ export function registerNotebookCommands(
                 title: `Indexing ${notebook.name}...`,
                 cancellable: false
             }, async (progress) => {
-                const indexed = await orgDb.indexDirectory(notebook.path, progress);
+                const indexed = await scimaxDb.indexDirectory(notebook.path, progress);
                 vscode.window.showInformationMessage(`Indexed ${indexed} files in ${notebook.name}`);
             });
         })

@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import {
-    OrgDbSqlite,
+    ScimaxDb,
     HeadingRecord,
     SourceBlockRecord,
     SearchResult,
     AgendaItem,
     SearchScope
-} from './orgDbSqlite';
+} from './scimaxDb';
 import {
     createEmbeddingService,
     testEmbeddingService,
@@ -18,7 +18,7 @@ import {
 
 export function registerDbCommands(
     context: vscode.ExtensionContext,
-    db: OrgDbSqlite
+    db: ScimaxDb
 ): void {
     // Reindex all files
     context.subscriptions.push(
@@ -775,8 +775,12 @@ export function registerDbCommands(
                 ? `Semantic search: Enabled (${stats.chunks} chunks)`
                 : 'Semantic search: Disabled';
 
+            const fileTypes = stats.by_type
+                ? `(${stats.by_type.org} org, ${stats.by_type.md} md, ${stats.by_type.ipynb} ipynb)`
+                : '';
+
             vscode.window.showInformationMessage(
-                `Scimax DB: ${stats.files} files, ${stats.headings} headings, ` +
+                `Scimax DB: ${stats.files} files ${fileTypes}, ${stats.headings} headings, ` +
                 `${stats.blocks} code blocks, ${stats.links} links. ` +
                 `${embeddingStatus}. Last indexed: ${lastIndexed}`
             );

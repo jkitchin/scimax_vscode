@@ -4,7 +4,7 @@ import { JournalTreeProvider } from './journal/journalTreeProvider';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
-import { OrgDbSqlite } from './database/orgDbSqlite';
+import { ScimaxDb } from './database/scimaxDb';
 import { registerDbCommands } from './database/commands';
 import { createEmbeddingService } from './database/embeddingService';
 import { ReferenceManager } from './references/referenceManager';
@@ -24,7 +24,7 @@ import { OrgLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvid
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
-let orgDb: OrgDbSqlite;
+let scimaxDb: ScimaxDb;
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 
@@ -34,14 +34,14 @@ export async function activate(context: vscode.ExtensionContext) {
     // Initialize Journal Manager
     journalManager = new JournalManager(context);
 
-    // Initialize Org Database (SQLite with FTS5 and vector search)
-    orgDb = new OrgDbSqlite(context);
-    await orgDb.initialize();
+    // Initialize Scimax Database (SQLite with FTS5 and vector search)
+    scimaxDb = new ScimaxDb(context);
+    await scimaxDb.initialize();
 
     // Setup embedding service for semantic search (if configured)
     const embeddingService = createEmbeddingService();
     if (embeddingService) {
-        orgDb.setEmbeddingService(embeddingService);
+        scimaxDb.setEmbeddingService(embeddingService);
         console.log('Scimax: Semantic search enabled');
     }
 
@@ -62,7 +62,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerJournalCommands(context, journalManager, journalTreeProvider);
 
     // Register Database Commands
-    registerDbCommands(context, orgDb);
+    registerDbCommands(context, scimaxDb);
 
     // Auto-index on activation if workspace is open
     const workspaceFolders = vscode.workspace.workspaceFolders;
@@ -70,25 +70,25 @@ export async function activate(context: vscode.ExtensionContext) {
         // Index in background without blocking
         setTimeout(async () => {
             for (const folder of workspaceFolders) {
-                await orgDb.indexDirectory(folder.uri.fsPath);
+                await scimaxDb.indexDirectory(folder.uri.fsPath);
             }
-            const stats = await orgDb.getStats();
+            const stats = await scimaxDb.getStats();
             console.log(`Scimax: Indexed ${stats.files} files`);
         }, 1000);
     }
 
-    // Watch for file changes to update index
-    const watcher = vscode.workspace.createFileSystemWatcher('**/*.{org,md}');
+    // Watch for file changes to update index (org, md, ipynb)
+    const watcher = vscode.workspace.createFileSystemWatcher('**/*.{org,md,ipynb}');
     context.subscriptions.push(
         watcher.onDidChange(async (uri) => {
-            await orgDb.indexFile(uri.fsPath);
+            await scimaxDb.indexFile(uri.fsPath);
         }),
         watcher.onDidCreate(async (uri) => {
-            await orgDb.indexFile(uri.fsPath);
+            await scimaxDb.indexFile(uri.fsPath);
         }),
         watcher.onDidDelete(async (uri) => {
-            // Re-index to remove deleted file
-            await orgDb.indexFile(uri.fsPath);
+            // Remove deleted file from index
+            await scimaxDb.removeFile(uri.fsPath);
         }),
         watcher
     );
@@ -200,7 +200,7 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push({ dispose: () => notebookManager.dispose() });
 
     // Register Notebook Commands
-    registerNotebookCommands(context, notebookManager, orgDb);
+    registerNotebookCommands(context, notebookManager, scimaxDb);
 
     // Register Notebook Tree View
     const notebookTreeProvider = new NotebookTreeProvider(notebookManager);
@@ -214,7 +214,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export async function deactivate() {
     // Close database connection
-    if (orgDb) {
-        await orgDb.close();
+    if (scimaxDb) {
+        await scimaxDb.close();
     }
 }

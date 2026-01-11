@@ -10,6 +10,11 @@ import {
     extractHashtags,
     extractMentions
 } from '../parser/orgParser';
+import {
+    parseNotebook,
+    getNotebookFullText,
+    NotebookDocument
+} from '../parser/ipynbParser';
 
 /**
  * Embedding service interface for semantic search
@@ -26,6 +31,7 @@ export interface EmbeddingService {
 export interface FileRecord {
     id: number;
     path: string;
+    file_type: string;  // 'org' | 'md' | 'ipynb'
     mtime: number;
     hash: string;
     size: number;
@@ -48,6 +54,7 @@ export interface HeadingRecord {
     scheduled: string | null;
     deadline: string | null;
     closed: string | null;
+    cell_index: number | null;  // For notebook cells
 }
 
 export interface SourceBlockRecord {
@@ -58,6 +65,7 @@ export interface SourceBlockRecord {
     content: string;
     line_number: number;
     headers: string;
+    cell_index: number | null;  // For notebook cells
 }
 
 export interface LinkRecord {
@@ -102,13 +110,14 @@ export interface DbStats {
     chunks: number;
     has_embeddings: boolean;
     last_indexed?: number;
+    by_type: { org: number; md: number; ipynb: number };
 }
 
 /**
- * OrgDb with libsql - SQLite with FTS5 and Vector Search
- * Scalable to thousands of files with fast search
+ * ScimaxDb - SQLite database with FTS5 and Vector Search
+ * Indexes org, markdown, and Jupyter notebook files
  */
-export class OrgDbSqlite {
+export class ScimaxDb {
     private db: Client | null = null;
     private parser: OrgParser;
     private dbPath: string;
@@ -126,7 +135,7 @@ export class OrgDbSqlite {
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.parser = new OrgParser();
-        this.dbPath = path.join(context.globalStorageUri.fsPath, 'org-db.sqlite');
+        this.dbPath = path.join(context.globalStorageUri.fsPath, 'scimax-db.sqlite');
     }
 
     /**
@@ -147,7 +156,7 @@ export class OrgDbSqlite {
         this.loadIgnorePatterns();
         this.setupFileWatcher();
 
-        console.log('OrgDbSqlite: Initialized');
+        console.log('ScimaxDb: Initialized');
     }
 
     /**
@@ -157,10 +166,11 @@ export class OrgDbSqlite {
         if (!this.db) return;
 
         await this.db.batch([
-            // Files table
+            // Files table - now with file_type
             `CREATE TABLE IF NOT EXISTS files (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 path TEXT UNIQUE NOT NULL,
+                file_type TEXT NOT NULL DEFAULT 'org',
                 mtime REAL NOT NULL,
                 hash TEXT NOT NULL,
                 size INTEGER NOT NULL,
@@ -168,7 +178,7 @@ export class OrgDbSqlite {
                 keywords TEXT DEFAULT '{}'
             )`,
 
-            // Headings table
+            // Headings table - now with cell_index for notebooks
             `CREATE TABLE IF NOT EXISTS headings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 file_id INTEGER NOT NULL,
@@ -185,10 +195,11 @@ export class OrgDbSqlite {
                 scheduled TEXT,
                 deadline TEXT,
                 closed TEXT,
+                cell_index INTEGER,
                 FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
             )`,
 
-            // Source blocks table
+            // Source blocks table - now with cell_index for notebooks
             `CREATE TABLE IF NOT EXISTS source_blocks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 file_id INTEGER NOT NULL,
@@ -197,6 +208,7 @@ export class OrgDbSqlite {
                 content TEXT NOT NULL,
                 line_number INTEGER NOT NULL,
                 headers TEXT DEFAULT '{}',
+                cell_index INTEGER,
                 FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
             )`,
 
@@ -249,7 +261,8 @@ export class OrgDbSqlite {
             `CREATE INDEX IF NOT EXISTS idx_blocks_language ON source_blocks(language)`,
             `CREATE INDEX IF NOT EXISTS idx_links_file ON links(file_id)`,
             `CREATE INDEX IF NOT EXISTS idx_hashtags_tag ON hashtags(tag)`,
-            `CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)`
+            `CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_files_type ON files(file_type)`
         ]);
 
         // Create vector index if embeddings are enabled
@@ -259,8 +272,7 @@ export class OrgDbSqlite {
                 ON chunks(libsql_vector_idx(embedding, 'metric=cosine'))
             `);
         } catch (e) {
-            // Vector index creation may fail if no embeddings yet
-            console.log('OrgDbSqlite: Vector index will be created when embeddings are added');
+            console.log('ScimaxDb: Vector index will be created when embeddings are added');
         }
     }
 
@@ -276,8 +288,9 @@ export class OrgDbSqlite {
      * Setup file watcher for auto-indexing
      */
     private setupFileWatcher(): void {
+        // Watch org, md, and ipynb files
         this.fileWatcher = vscode.workspace.createFileSystemWatcher(
-            '**/*.{org,md}',
+            '**/*.{org,md,ipynb}',
             false, false, false
         );
 
@@ -297,7 +310,8 @@ export class OrgDbSqlite {
             '**/node_modules/**',
             '**/.git/**',
             '**/dist/**',
-            '**/build/**'
+            '**/build/**',
+            '**/.ipynb_checkpoints/**'
         ];
     }
 
@@ -335,7 +349,7 @@ export class OrgDbSqlite {
             try {
                 await this.indexFile(filePath);
             } catch (error) {
-                console.error(`OrgDbSqlite: Failed to index ${filePath}`, error);
+                console.error(`ScimaxDb: Failed to index ${filePath}`, error);
             }
         }
 
@@ -374,7 +388,7 @@ export class OrgDbSqlite {
     }
 
     /**
-     * Find all org/md files in directory
+     * Find all indexable files in directory
      */
     private async findFiles(directory: string): Promise<string[]> {
         const files: string[] = [];
@@ -390,13 +404,13 @@ export class OrgDbSqlite {
                         walk(fullPath);
                     } else if (item.isFile()) {
                         const ext = path.extname(item.name).toLowerCase();
-                        if (ext === '.org' || ext === '.md') {
+                        if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
                             files.push(fullPath);
                         }
                     }
                 }
             } catch (error) {
-                console.error(`OrgDbSqlite: Error walking ${dir}`, error);
+                console.error(`ScimaxDb: Error walking ${dir}`, error);
             }
         };
 
@@ -426,6 +440,17 @@ export class OrgDbSqlite {
     }
 
     /**
+     * Get file type from extension
+     */
+    private getFileType(filePath: string): 'org' | 'md' | 'ipynb' {
+        const ext = path.extname(filePath).toLowerCase();
+        if (ext === '.org') return 'org';
+        if (ext === '.md') return 'md';
+        if (ext === '.ipynb') return 'ipynb';
+        return 'org';  // default
+    }
+
+    /**
      * Index a single file
      */
     public async indexFile(filePath: string): Promise<void> {
@@ -434,7 +459,7 @@ export class OrgDbSqlite {
         try {
             const content = fs.readFileSync(filePath, 'utf8');
             const stats = fs.statSync(filePath);
-            const ext = path.extname(filePath).toLowerCase();
+            const fileType = this.getFileType(filePath);
             const hash = crypto.createHash('md5').update(content).digest('hex');
 
             // Remove old data for this file
@@ -442,23 +467,28 @@ export class OrgDbSqlite {
 
             // Insert file record
             const fileResult = await this.db.execute({
-                sql: `INSERT INTO files (path, mtime, hash, size, indexed_at, keywords)
-                      VALUES (?, ?, ?, ?, ?, ?)`,
-                args: [filePath, stats.mtimeMs, hash, stats.size, Date.now(), '{}']
+                sql: `INSERT INTO files (path, file_type, mtime, hash, size, indexed_at, keywords)
+                      VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                args: [filePath, fileType, stats.mtimeMs, hash, stats.size, Date.now(), '{}']
             });
 
             const fileId = Number(fileResult.lastInsertRowid);
 
-            // Parse and index content
-            if (ext === '.org') {
+            // Parse and index content based on type
+            let fullText = content;
+            if (fileType === 'org') {
                 const doc = this.parser.parse(content);
                 await this.indexOrgDocument(fileId, filePath, doc, content);
-            } else if (ext === '.md') {
+            } else if (fileType === 'md') {
                 await this.indexMarkdownDocument(fileId, filePath, content);
+            } else if (fileType === 'ipynb') {
+                const doc = parseNotebook(content);
+                await this.indexNotebookDocument(fileId, filePath, doc);
+                fullText = getNotebookFullText(doc);
             }
 
             // Extract and index hashtags
-            const hashtags = extractHashtags(content);
+            const hashtags = extractHashtags(fullText);
             for (const tag of hashtags) {
                 await this.db.execute({
                     sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
@@ -469,16 +499,16 @@ export class OrgDbSqlite {
             // Index for FTS5
             await this.db.execute({
                 sql: 'INSERT INTO fts_content (file_path, title, content) VALUES (?, ?, ?)',
-                args: [filePath, path.basename(filePath), content]
+                args: [filePath, path.basename(filePath), fullText]
             });
 
             // Create chunks for semantic search
             if (this.embeddingService) {
-                await this.createChunks(fileId, filePath, content);
+                await this.createChunks(fileId, filePath, fullText);
             }
 
         } catch (error) {
-            console.error(`OrgDbSqlite: Failed to index ${filePath}`, error);
+            console.error(`ScimaxDb: Failed to index ${filePath}`, error);
         }
     }
 
@@ -536,8 +566,8 @@ export class OrgDbSqlite {
                 sql: `INSERT INTO headings
                       (file_id, file_path, level, title, line_number, begin_pos,
                        todo_state, priority, tags, inherited_tags, properties,
-                       scheduled, deadline, closed)
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                       scheduled, deadline, closed, cell_index)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)`,
                 args: [
                     fileId, filePath, heading.level, heading.title,
                     heading.lineNumber, linePositions[headingLine] || 0,
@@ -553,8 +583,8 @@ export class OrgDbSqlite {
         for (const block of doc.sourceBlocks) {
             await this.db.execute({
                 sql: `INSERT INTO source_blocks
-                      (file_id, file_path, language, content, line_number, headers)
-                      VALUES (?, ?, ?, ?, ?, ?)`,
+                      (file_id, file_path, language, content, line_number, headers, cell_index)
+                      VALUES (?, ?, ?, ?, ?, ?, NULL)`,
                 args: [
                     fileId, filePath, block.language, block.content,
                     block.lineNumber, JSON.stringify(block.headers)
@@ -615,8 +645,8 @@ export class OrgDbSqlite {
                 await this.db.execute({
                     sql: `INSERT INTO headings
                           (file_id, file_path, level, title, line_number, begin_pos,
-                           todo_state, tags, inherited_tags, properties)
-                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}')`,
+                           todo_state, tags, inherited_tags, properties, cell_index)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}', NULL)`,
                     args: [fileId, filePath, level, title.trim(), lineNumber, charPos,
                            todoState, JSON.stringify(tags)]
                 });
@@ -630,10 +660,63 @@ export class OrgDbSqlite {
         for (const block of blocks) {
             await this.db.execute({
                 sql: `INSERT INTO source_blocks
-                      (file_id, file_path, language, content, line_number, headers)
-                      VALUES (?, ?, ?, ?, ?, ?)`,
+                      (file_id, file_path, language, content, line_number, headers, cell_index)
+                      VALUES (?, ?, ?, ?, ?, ?, NULL)`,
                 args: [fileId, filePath, block.language, block.content,
                        block.lineNumber, JSON.stringify(block.headers)]
+            });
+        }
+    }
+
+    /**
+     * Index Jupyter notebook document
+     */
+    private async indexNotebookDocument(
+        fileId: number,
+        filePath: string,
+        doc: NotebookDocument
+    ): Promise<void> {
+        if (!this.db) return;
+
+        // Index headings from markdown cells
+        for (const heading of doc.headings) {
+            await this.db.execute({
+                sql: `INSERT INTO headings
+                      (file_id, file_path, level, title, line_number, begin_pos,
+                       todo_state, tags, inherited_tags, properties, cell_index)
+                      VALUES (?, ?, ?, ?, ?, 0, NULL, '[]', '[]', '{}', ?)`,
+                args: [fileId, filePath, heading.level, heading.title,
+                       heading.lineNumber, heading.cellIndex]
+            });
+        }
+
+        // Index code cells as source blocks
+        for (const block of doc.codeBlocks) {
+            await this.db.execute({
+                sql: `INSERT INTO source_blocks
+                      (file_id, file_path, language, content, line_number, headers, cell_index)
+                      VALUES (?, ?, ?, ?, ?, '{}', ?)`,
+                args: [fileId, filePath, block.language, block.content,
+                       block.lineNumber, block.cellIndex]
+            });
+        }
+
+        // Index links
+        for (const link of doc.links) {
+            await this.db.execute({
+                sql: `INSERT INTO links
+                      (file_id, file_path, link_type, target, description, line_number)
+                      VALUES (?, ?, ?, ?, ?, ?)`,
+                args: [fileId, filePath, link.type, link.target,
+                       link.description || null, link.lineNumber]
+            });
+        }
+
+        // Index hashtags
+        for (const tag of doc.hashtags) {
+            await this.db.execute({
+                sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
+                args: [tag.toLowerCase(), filePath]
             });
         }
     }
@@ -649,9 +732,7 @@ export class OrgDbSqlite {
         if (!this.db || !this.embeddingService) return;
 
         const lines = content.split('\n');
-        const chunkSize = 2000;  // Characters per chunk
-        const chunkOverlap = 200;
-
+        const chunkSize = 2000;
         const chunks: { text: string; lineStart: number; lineEnd: number }[] = [];
         let currentChunk = '';
         let currentLineStart = 1;
@@ -669,7 +750,6 @@ export class OrgDbSqlite {
                     lineEnd: i + 1
                 });
 
-                // Overlap: keep last few lines
                 const overlapLines = currentChunk.split('\n').slice(-3);
                 currentChunk = overlapLines.join('\n');
                 currentLineStart = Math.max(1, i - 2);
@@ -677,7 +757,6 @@ export class OrgDbSqlite {
             }
         }
 
-        // Last chunk
         if (currentChunk.trim()) {
             chunks.push({
                 text: currentChunk.trim(),
@@ -686,11 +765,9 @@ export class OrgDbSqlite {
             });
         }
 
-        // Generate embeddings in batch
         const texts = chunks.map(c => c.text);
         const embeddings = await this.embeddingService.embedBatch(texts);
 
-        // Insert chunks with embeddings
         for (let i = 0; i < chunks.length; i++) {
             await this.db.execute({
                 sql: `INSERT INTO chunks
@@ -814,7 +891,7 @@ export class OrgDbSqlite {
             file_path: row.file_path as string,
             line_number: row.line_start as number,
             preview: (row.content as string).slice(0, 200),
-            score: 1 - (row.distance as number),  // Convert distance to similarity
+            score: 1 - (row.distance as number),
             distance: row.distance as number
         }));
     }
@@ -831,13 +908,11 @@ export class OrgDbSqlite {
         const ftsWeight = options?.ftsWeight || 0.5;
         const vectorWeight = options?.vectorWeight || 0.5;
 
-        // Get results from both methods
         const [ftsResults, vectorResults] = await Promise.all([
             this.searchFullText(query, { limit: limit * 2 }),
             this.embeddingService ? this.searchSemantic(query, { limit: limit * 2 }) : []
         ]);
 
-        // Reciprocal rank fusion
         const scoreMap = new Map<string, { result: SearchResult; rrf: number }>();
 
         ftsResults.forEach((result, idx) => {
@@ -857,7 +932,6 @@ export class OrgDbSqlite {
             }
         });
 
-        // Sort by combined score
         return Array.from(scoreMap.values())
             .sort((a, b) => b.rrf - a.rrf)
             .slice(0, limit)
@@ -1008,7 +1082,6 @@ export class OrgDbSqlite {
             }
         }
 
-        // Sort
         items.sort((a, b) => {
             if (a.overdue && !b.overdue) return -1;
             if (!a.overdue && b.overdue) return 1;
@@ -1166,16 +1239,19 @@ export class OrgDbSqlite {
     public async getStats(): Promise<DbStats> {
         if (!this.db) return {
             files: 0, headings: 0, blocks: 0, links: 0, chunks: 0,
-            has_embeddings: false
+            has_embeddings: false, by_type: { org: 0, md: 0, ipynb: 0 }
         };
 
-        const [files, headings, blocks, links, chunks, embeddings] = await Promise.all([
+        const [files, headings, blocks, links, chunks, embeddings, orgFiles, mdFiles, ipynbFiles] = await Promise.all([
             this.db.execute('SELECT COUNT(*) as count FROM files'),
             this.db.execute('SELECT COUNT(*) as count FROM headings'),
             this.db.execute('SELECT COUNT(*) as count FROM source_blocks'),
             this.db.execute('SELECT COUNT(*) as count FROM links'),
             this.db.execute('SELECT COUNT(*) as count FROM chunks'),
-            this.db.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL')
+            this.db.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'),
+            this.db.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'org'"),
+            this.db.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'md'"),
+            this.db.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'ipynb'")
         ]);
 
         const lastFile = await this.db.execute(
@@ -1189,7 +1265,12 @@ export class OrgDbSqlite {
             links: links.rows[0].count as number,
             chunks: chunks.rows[0].count as number,
             has_embeddings: (embeddings.rows[0].count as number) > 0,
-            last_indexed: lastFile.rows[0].last as number | undefined
+            last_indexed: lastFile.rows[0].last as number | undefined,
+            by_type: {
+                org: orgFiles.rows[0].count as number,
+                md: mdFiles.rows[0].count as number,
+                ipynb: ipynbFiles.rows[0].count as number
+            }
         };
     }
 
@@ -1216,7 +1297,6 @@ export class OrgDbSqlite {
     public async optimize(): Promise<void> {
         if (!this.db) return;
 
-        // Remove stale entries
         const files = await this.getFiles();
         for (const file of files) {
             if (!fs.existsSync(file.path)) {
@@ -1224,7 +1304,6 @@ export class OrgDbSqlite {
             }
         }
 
-        // Vacuum
         await this.db.execute('VACUUM');
     }
 
