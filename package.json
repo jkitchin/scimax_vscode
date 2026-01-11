@@ -405,6 +405,18 @@
         "title": "Scimax: Extract Bibliography from File"
       },
       {
+        "command": "scimax.ref.showCitingWorks",
+        "title": "Scimax: Show Citing Works (OpenAlex)"
+      },
+      {
+        "command": "scimax.ref.showRelatedWorks",
+        "title": "Scimax: Show Related Works (OpenAlex)"
+      },
+      {
+        "command": "scimax.ref.searchOpenAlex",
+        "title": "Scimax: Search OpenAlex"
+      },
+      {
         "command": "scimax.notebook.new",
         "title": "Scimax: New Notebook"
       },

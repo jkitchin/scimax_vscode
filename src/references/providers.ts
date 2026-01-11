@@ -3,6 +3,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
 import { formatCitation, formatAuthors, formatCitationLink, parseBibTeX } from './bibtexParser';
+import {
+    fetchOpenAlexWork,
+    reconstructAbstract,
+    formatCitationCount,
+    getOAStatusIcon,
+    getOAStatusDescription,
+    OpenAlexWork
+} from './openalexService';
 
 /**
  * Hover provider for citation links
@@ -602,7 +610,7 @@ const DOI_CACHE_TTL = 1000 * 60 * 60; // 1 hour
 
 /**
  * Hover provider for DOI links
- * Fetches and displays metadata from CrossRef
+ * Fetches and displays metadata from CrossRef + OpenAlex
  */
 export class DoiHoverProvider implements vscode.HoverProvider {
     constructor(private manager: ReferenceManager) {}
@@ -618,12 +626,14 @@ export class DoiHoverProvider implements vscode.HoverProvider {
         const doiInfo = this.findDoiAtPosition(line, position.character);
         if (!doiInfo) return null;
 
-        const { doi, start, end } = doiInfo;
+        const { doi } = doiInfo;
 
         // Check if already in bibliography
         const existingEntry = this.findEntryByDoi(doi);
         if (existingEntry) {
-            return this.createExistingEntryHover(existingEntry, doi);
+            // Also fetch OpenAlex for citation count
+            const openAlexWork = await fetchOpenAlexWork(doi);
+            return this.createExistingEntryHover(existingEntry, doi, openAlexWork);
         }
 
         // Check cache
@@ -633,16 +643,25 @@ export class DoiHoverProvider implements vscode.HoverProvider {
                 return this.createNotFoundHover(doi);
             }
             if (Date.now() - cached.fetchedAt < DOI_CACHE_TTL) {
-                return this.createMetadataHover(cached, doi);
+                // Also fetch OpenAlex for enhanced data
+                const openAlexWork = await fetchOpenAlexWork(doi);
+                return this.createMetadataHover(cached, doi, openAlexWork);
             }
         }
 
-        // Fetch from CrossRef (async)
+        // Fetch from CrossRef and OpenAlex in parallel
         try {
-            const metadata = await this.fetchDoiMetadata(doi);
+            const [metadata, openAlexWork] = await Promise.all([
+                this.fetchDoiMetadata(doi),
+                fetchOpenAlexWork(doi)
+            ]);
+
             if (metadata) {
                 doiCache.set(doi, metadata);
-                return this.createMetadataHover(metadata, doi);
+                return this.createMetadataHover(metadata, doi, openAlexWork);
+            } else if (openAlexWork) {
+                // Use OpenAlex data if CrossRef fails
+                return this.createOpenAlexOnlyHover(openAlexWork, doi);
             } else {
                 doiCache.set(doi, null);
                 return this.createNotFoundHover(doi);
@@ -693,7 +712,7 @@ export class DoiHoverProvider implements vscode.HoverProvider {
         return null;
     }
 
-    private createExistingEntryHover(entry: any, doi: string): vscode.Hover {
+    private createExistingEntryHover(entry: any, doi: string, openAlexWork?: OpenAlexWork | null): vscode.Hover {
         const markdown = new vscode.MarkdownString();
         markdown.isTrusted = true;
         markdown.supportHtml = true;
@@ -711,16 +730,37 @@ export class DoiHoverProvider implements vscode.HoverProvider {
             markdown.appendMarkdown('\n\n');
         }
 
+        // OpenAlex metrics (citations, OA status)
+        if (openAlexWork) {
+            const metrics: string[] = [];
+            metrics.push(`**${formatCitationCount(openAlexWork.cited_by_count)}** citations`);
+
+            if (openAlexWork.open_access) {
+                const oaIcon = getOAStatusIcon(openAlexWork.open_access.oa_status);
+                metrics.push(`${oaIcon} ${getOAStatusDescription(openAlexWork.open_access.oa_status)}`);
+            }
+
+            if (openAlexWork.primary_topic) {
+                metrics.push(`Topic: ${openAlexWork.primary_topic.display_name}`);
+            }
+
+            markdown.appendMarkdown(metrics.join(' | ') + '\n\n');
+        }
+
         markdown.appendMarkdown(`[Open DOI](https://doi.org/${doi}) | `);
         markdown.appendMarkdown(`[Insert Citation](command:scimax.ref.insertCitationForKey?${encodeURIComponent(JSON.stringify(entry.key))}) | `);
         markdown.appendMarkdown(`[Actions](command:scimax.ref.showDetails?${encodeURIComponent(JSON.stringify(entry.key))})`);
+
+        if (openAlexWork?.open_access?.oa_url) {
+            markdown.appendMarkdown(` | [PDF](${openAlexWork.open_access.oa_url})`);
+        }
 
         markdown.appendMarkdown(`\n\n---\n*In bibliography as: ${entry.key}*`);
 
         return new vscode.Hover(markdown);
     }
 
-    private createMetadataHover(metadata: DoiMetadata, doi: string): vscode.Hover {
+    private createMetadataHover(metadata: DoiMetadata, doi: string, openAlexWork?: OpenAlexWork | null): vscode.Hover {
         const markdown = new vscode.MarkdownString();
         markdown.isTrusted = true;
         markdown.supportHtml = true;
@@ -744,18 +784,131 @@ export class DoiHoverProvider implements vscode.HoverProvider {
             markdown.appendMarkdown(`*${metadata.publisher}*\n\n`);
         }
 
+        // OpenAlex metrics (citations, OA status, topics)
+        if (openAlexWork) {
+            const metrics: string[] = [];
+            metrics.push(`**${formatCitationCount(openAlexWork.cited_by_count)}** citations`);
+
+            if (openAlexWork.open_access) {
+                const oaIcon = getOAStatusIcon(openAlexWork.open_access.oa_status);
+                metrics.push(`${oaIcon} ${getOAStatusDescription(openAlexWork.open_access.oa_status)}`);
+            }
+
+            markdown.appendMarkdown(metrics.join(' | ') + '\n\n');
+
+            // Topics
+            if (openAlexWork.primary_topic) {
+                const topic = openAlexWork.primary_topic;
+                let topicLine = `**Topic:** ${topic.display_name}`;
+                if (topic.field) {
+                    topicLine += ` (${topic.field.display_name})`;
+                }
+                markdown.appendMarkdown(topicLine + '\n\n');
+            }
+        }
+
+        // Abstract
         if (metadata.abstract) {
             const abstract = metadata.abstract.length > 250
                 ? metadata.abstract.substring(0, 250) + '...'
                 : metadata.abstract;
             markdown.appendMarkdown(`> ${abstract}\n\n`);
+        } else if (openAlexWork?.abstract_inverted_index) {
+            const abstract = reconstructAbstract(openAlexWork.abstract_inverted_index);
+            if (abstract) {
+                const truncated = abstract.length > 250 ? abstract.substring(0, 250) + '...' : abstract;
+                markdown.appendMarkdown(`> ${truncated}\n\n`);
+            }
         }
 
+        // Actions
         markdown.appendMarkdown(`[Open DOI](https://doi.org/${doi}) | `);
         markdown.appendMarkdown(`[Add to Bibliography](command:scimax.ref.fetchFromDOI?${encodeURIComponent(JSON.stringify(doi))}) | `);
         markdown.appendMarkdown(`[Google Scholar](https://scholar.google.com/scholar?q=${encodeURIComponent(metadata.title)})`);
 
+        if (openAlexWork?.open_access?.oa_url) {
+            markdown.appendMarkdown(` | [PDF](${openAlexWork.open_access.oa_url})`);
+        }
+
+        if (openAlexWork) {
+            markdown.appendMarkdown(` | [Citing Works](command:scimax.ref.showCitingWorks?${encodeURIComponent(JSON.stringify(doi))})`);
+        }
+
         markdown.appendMarkdown(`\n\n---\n*DOI: ${doi}*`);
+
+        return new vscode.Hover(markdown);
+    }
+
+    private createOpenAlexOnlyHover(work: OpenAlexWork, doi: string): vscode.Hover {
+        const markdown = new vscode.MarkdownString();
+        markdown.isTrusted = true;
+        markdown.supportHtml = true;
+
+        markdown.appendMarkdown(`### ${work.title}\n\n`);
+
+        // Authors
+        if (work.authorships && work.authorships.length > 0) {
+            const authors = work.authorships.length > 3
+                ? work.authorships.slice(0, 3).map(a => a.author.display_name).join(', ') + ' et al.'
+                : work.authorships.map(a => a.author.display_name).join(', ');
+            markdown.appendMarkdown(`**${authors}** (${work.publication_year || 'n.d.'})\n\n`);
+        }
+
+        // Source
+        if (work.primary_location?.source) {
+            markdown.appendMarkdown(`*${work.primary_location.source.display_name}*`);
+            if (work.biblio) {
+                if (work.biblio.volume) markdown.appendMarkdown(`, ${work.biblio.volume}`);
+                if (work.biblio.issue) markdown.appendMarkdown(`(${work.biblio.issue})`);
+                if (work.biblio.first_page) {
+                    markdown.appendMarkdown(`, pp. ${work.biblio.first_page}`);
+                    if (work.biblio.last_page) markdown.appendMarkdown(`-${work.biblio.last_page}`);
+                }
+            }
+            markdown.appendMarkdown('\n\n');
+        }
+
+        // Metrics
+        const metrics: string[] = [];
+        metrics.push(`**${formatCitationCount(work.cited_by_count)}** citations`);
+
+        if (work.open_access) {
+            const oaIcon = getOAStatusIcon(work.open_access.oa_status);
+            metrics.push(`${oaIcon} ${getOAStatusDescription(work.open_access.oa_status)}`);
+        }
+
+        markdown.appendMarkdown(metrics.join(' | ') + '\n\n');
+
+        // Topic
+        if (work.primary_topic) {
+            let topicLine = `**Topic:** ${work.primary_topic.display_name}`;
+            if (work.primary_topic.field) {
+                topicLine += ` (${work.primary_topic.field.display_name})`;
+            }
+            markdown.appendMarkdown(topicLine + '\n\n');
+        }
+
+        // Abstract
+        if (work.abstract_inverted_index) {
+            const abstract = reconstructAbstract(work.abstract_inverted_index);
+            if (abstract) {
+                const truncated = abstract.length > 250 ? abstract.substring(0, 250) + '...' : abstract;
+                markdown.appendMarkdown(`> ${truncated}\n\n`);
+            }
+        }
+
+        // Actions
+        markdown.appendMarkdown(`[Open DOI](https://doi.org/${doi}) | `);
+        markdown.appendMarkdown(`[Add to Bibliography](command:scimax.ref.fetchFromDOI?${encodeURIComponent(JSON.stringify(doi))}) | `);
+        markdown.appendMarkdown(`[Google Scholar](https://scholar.google.com/scholar?q=${encodeURIComponent(work.title)})`);
+
+        if (work.open_access?.oa_url) {
+            markdown.appendMarkdown(` | [PDF](${work.open_access.oa_url})`);
+        }
+
+        markdown.appendMarkdown(` | [Citing Works](command:scimax.ref.showCitingWorks?${encodeURIComponent(JSON.stringify(doi))})`);
+
+        markdown.appendMarkdown(`\n\n---\n*DOI: ${doi} | Source: OpenAlex*`);
 
         return new vscode.Hover(markdown);
     }

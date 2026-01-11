@@ -2,6 +2,16 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
 import { BibEntry, formatCitation, formatCitationLink, formatAuthors, entryToBibTeX } from './bibtexParser';
+import {
+    fetchOpenAlexWork,
+    fetchCitingWorks,
+    fetchRelatedWorks,
+    searchOpenAlexWorks,
+    formatCitationCount,
+    getOAStatusIcon,
+    reconstructAbstract,
+    OpenAlexWork
+} from './openalexService';
 
 /**
  * Register all reference-related commands
@@ -387,6 +397,144 @@ export function registerReferenceCommands(
         })
     );
 
+    // Show citing works for a DOI (via OpenAlex)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.showCitingWorks', async (doi?: string) => {
+            // If no DOI provided, ask for one
+            if (!doi) {
+                doi = await vscode.window.showInputBox({
+                    prompt: 'Enter DOI',
+                    placeHolder: '10.1000/example'
+                });
+            }
+            if (!doi) return;
+
+            // Clean DOI
+            doi = doi.replace(/^https?:\/\/doi\.org\//, '').replace(/^doi:/, '');
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Fetching citing works from OpenAlex...',
+                cancellable: false
+            }, async () => {
+                // First get the work to find its OpenAlex ID
+                const work = await fetchOpenAlexWork(doi!);
+                if (!work) {
+                    vscode.window.showWarningMessage(`Work not found in OpenAlex: ${doi}`);
+                    return;
+                }
+
+                // Fetch citing works
+                const citingWorks = await fetchCitingWorks(work.id, 25);
+
+                if (citingWorks.length === 0) {
+                    vscode.window.showInformationMessage(`No citing works found for ${doi}`);
+                    return;
+                }
+
+                // Show in QuickPick
+                const items = citingWorks.map(w => formatWorkForQuickPick(w));
+
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: `${work.cited_by_count} total citations - showing top ${citingWorks.length}`,
+                    matchOnDescription: true,
+                    matchOnDetail: true
+                });
+
+                if (selected && selected.work) {
+                    await showWorkActions(selected.work, manager);
+                }
+            });
+        })
+    );
+
+    // Show related works for a DOI (via OpenAlex)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.showRelatedWorks', async (doi?: string) => {
+            if (!doi) {
+                doi = await vscode.window.showInputBox({
+                    prompt: 'Enter DOI',
+                    placeHolder: '10.1000/example'
+                });
+            }
+            if (!doi) return;
+
+            doi = doi.replace(/^https?:\/\/doi\.org\//, '').replace(/^doi:/, '');
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Fetching related works from OpenAlex...',
+                cancellable: false
+            }, async () => {
+                const work = await fetchOpenAlexWork(doi!);
+                if (!work) {
+                    vscode.window.showWarningMessage(`Work not found in OpenAlex: ${doi}`);
+                    return;
+                }
+
+                if (!work.related_works || work.related_works.length === 0) {
+                    vscode.window.showInformationMessage(`No related works found for ${doi}`);
+                    return;
+                }
+
+                const relatedWorks = await fetchRelatedWorks(work.related_works, 10);
+
+                if (relatedWorks.length === 0) {
+                    vscode.window.showInformationMessage(`Could not fetch related works`);
+                    return;
+                }
+
+                const items = relatedWorks.map(w => formatWorkForQuickPick(w));
+
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: `Related works for "${work.title.substring(0, 50)}..."`,
+                    matchOnDescription: true,
+                    matchOnDetail: true
+                });
+
+                if (selected && selected.work) {
+                    await showWorkActions(selected.work, manager);
+                }
+            });
+        })
+    );
+
+    // Search OpenAlex
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.searchOpenAlex', async () => {
+            const query = await vscode.window.showInputBox({
+                prompt: 'Search OpenAlex',
+                placeHolder: 'Enter search terms (title, author, keywords...)'
+            });
+            if (!query) return;
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Searching OpenAlex...',
+                cancellable: false
+            }, async () => {
+                const works = await searchOpenAlexWorks(query, 25);
+
+                if (works.length === 0) {
+                    vscode.window.showInformationMessage(`No results found for "${query}"`);
+                    return;
+                }
+
+                const items = works.map(w => formatWorkForQuickPick(w));
+
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: `${works.length} results for "${query}"`,
+                    matchOnDescription: true,
+                    matchOnDetail: true
+                });
+
+                if (selected && selected.work) {
+                    await showWorkActions(selected.work, manager);
+                }
+            });
+        })
+    );
+
     // Insert ref link (C-u C-c ])
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.insertRef', async () => {
@@ -588,6 +736,153 @@ async function collectLabels(currentDoc: vscode.TextDocument): Promise<LabelInfo
 
     // Sort by name
     return labels.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Format OpenAlex work for QuickPick display
+ */
+interface WorkQuickPickItem extends vscode.QuickPickItem {
+    work: OpenAlexWork;
+}
+
+function formatWorkForQuickPick(work: OpenAlexWork): WorkQuickPickItem {
+    // Authors
+    let authors = 'Unknown';
+    if (work.authorships && work.authorships.length > 0) {
+        authors = work.authorships.length > 2
+            ? work.authorships.slice(0, 2).map(a => a.author.display_name).join(', ') + ' et al.'
+            : work.authorships.map(a => a.author.display_name).join(', ');
+    }
+
+    // OA status icon
+    const oaIcon = work.open_access ? getOAStatusIcon(work.open_access.oa_status) : '';
+
+    // Citation count
+    const citations = formatCitationCount(work.cited_by_count);
+
+    return {
+        label: `$(book) ${work.title.substring(0, 70)}${work.title.length > 70 ? '...' : ''}`,
+        description: `${authors} (${work.publication_year || 'n.d.'})`,
+        detail: `${oaIcon} ${citations} citations | ${work.primary_location?.source?.display_name || 'Unknown source'}`,
+        work
+    };
+}
+
+/**
+ * Show actions menu for an OpenAlex work
+ */
+async function showWorkActions(work: OpenAlexWork, manager: ReferenceManager): Promise<void> {
+    const doi = work.doi?.replace('https://doi.org/', '');
+
+    const actions: Array<{ label: string; description?: string; action: string }> = [
+        { label: '$(link-external) Open DOI', description: doi, action: 'doi' },
+        { label: '$(search) View Citing Works', description: `${work.cited_by_count} citations`, action: 'citing' },
+        { label: '$(references) View Related Works', action: 'related' },
+        { label: '$(add) Add to Bibliography', action: 'add' },
+        { label: '$(clippy) Copy BibTeX', action: 'bibtex' }
+    ];
+
+    if (work.open_access?.oa_url) {
+        actions.splice(1, 0, {
+            label: '$(file-pdf) Open PDF',
+            description: 'Open Access',
+            action: 'pdf'
+        });
+    }
+
+    const selected = await vscode.window.showQuickPick(actions, {
+        placeHolder: work.title
+    });
+
+    if (!selected) return;
+
+    switch (selected.action) {
+        case 'doi':
+            if (doi) {
+                await vscode.env.openExternal(vscode.Uri.parse(`https://doi.org/${doi}`));
+            }
+            break;
+
+        case 'pdf':
+            if (work.open_access?.oa_url) {
+                await vscode.env.openExternal(vscode.Uri.parse(work.open_access.oa_url));
+            }
+            break;
+
+        case 'citing':
+            if (doi) {
+                await vscode.commands.executeCommand('scimax.ref.showCitingWorks', doi);
+            }
+            break;
+
+        case 'related':
+            if (doi) {
+                await vscode.commands.executeCommand('scimax.ref.showRelatedWorks', doi);
+            }
+            break;
+
+        case 'add':
+            if (doi) {
+                await vscode.commands.executeCommand('scimax.ref.fetchFromDOI', doi);
+            }
+            break;
+
+        case 'bibtex':
+            // Generate simple BibTeX from OpenAlex data
+            const bibtex = generateBibTeXFromOpenAlex(work);
+            await vscode.env.clipboard.writeText(bibtex);
+            vscode.window.showInformationMessage('BibTeX copied to clipboard');
+            break;
+    }
+}
+
+/**
+ * Generate BibTeX entry from OpenAlex work
+ */
+function generateBibTeXFromOpenAlex(work: OpenAlexWork): string {
+    const doi = work.doi?.replace('https://doi.org/', '');
+    const firstAuthor = work.authorships?.[0]?.author.display_name.split(' ').pop() || 'unknown';
+    const key = `${firstAuthor.toLowerCase()}${work.publication_year || ''}`;
+
+    const type = work.type === 'book' ? 'book' : 'article';
+
+    const fields: string[] = [];
+
+    fields.push(`  title = {${work.title}}`);
+
+    if (work.authorships && work.authorships.length > 0) {
+        const authors = work.authorships.map(a => a.author.display_name).join(' and ');
+        fields.push(`  author = {${authors}}`);
+    }
+
+    if (work.publication_year) {
+        fields.push(`  year = {${work.publication_year}}`);
+    }
+
+    if (work.primary_location?.source?.display_name) {
+        fields.push(`  journal = {${work.primary_location.source.display_name}}`);
+    }
+
+    if (work.biblio) {
+        if (work.biblio.volume) fields.push(`  volume = {${work.biblio.volume}}`);
+        if (work.biblio.issue) fields.push(`  number = {${work.biblio.issue}}`);
+        if (work.biblio.first_page) {
+            const pages = work.biblio.last_page
+                ? `${work.biblio.first_page}--${work.biblio.last_page}`
+                : work.biblio.first_page;
+            fields.push(`  pages = {${pages}}`);
+        }
+    }
+
+    if (doi) {
+        fields.push(`  doi = {${doi}}`);
+    }
+
+    if (work.open_access?.oa_url) {
+        fields.push(`  url = {${work.open_access.oa_url}}`);
+    }
+
+    return `@${type}{${key},\n${fields.join(',\n')}\n}`;
 }
 
 /**
