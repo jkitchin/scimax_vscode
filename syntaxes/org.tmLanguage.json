@@ -40,74 +40,80 @@
       "patterns": [
         {
           "name": "markup.heading.1.org",
-          "match": "^(\\*)\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "match": "^(\\*)\\s+(?:(TODO|NEXT|WAITING|HOLD)\\s+|(DONE|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
           "captures": {
             "1": { "name": "punctuation.definition.heading.1.org" },
             "2": { "name": "keyword.other.todo.org" },
-            "3": { "name": "constant.other.priority.org" },
-            "4": { "name": "comment.block.org" },
-            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
-            "6": { "name": "entity.name.tag.org" }
+            "3": { "name": "keyword.other.done.org" },
+            "4": { "name": "constant.other.priority.org" },
+            "5": { "name": "comment.block.org" },
+            "6": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "7": { "name": "entity.name.tag.org" }
           }
         },
         {
           "name": "markup.heading.2.org",
-          "match": "^(\\*\\*)\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "match": "^(\\*\\*)\\s+(?:(TODO|NEXT|WAITING|HOLD)\\s+|(DONE|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
           "captures": {
             "1": { "name": "punctuation.definition.heading.2.org" },
             "2": { "name": "keyword.other.todo.org" },
-            "3": { "name": "constant.other.priority.org" },
-            "4": { "name": "comment.block.org" },
-            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
-            "6": { "name": "entity.name.tag.org" }
+            "3": { "name": "keyword.other.done.org" },
+            "4": { "name": "constant.other.priority.org" },
+            "5": { "name": "comment.block.org" },
+            "6": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "7": { "name": "entity.name.tag.org" }
           }
         },
         {
           "name": "markup.heading.3.org",
-          "match": "^(\\*\\*\\*)\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "match": "^(\\*\\*\\*)\\s+(?:(TODO|NEXT|WAITING|HOLD)\\s+|(DONE|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
           "captures": {
             "1": { "name": "punctuation.definition.heading.3.org" },
             "2": { "name": "keyword.other.todo.org" },
-            "3": { "name": "constant.other.priority.org" },
-            "4": { "name": "comment.block.org" },
-            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
-            "6": { "name": "entity.name.tag.org" }
+            "3": { "name": "keyword.other.done.org" },
+            "4": { "name": "constant.other.priority.org" },
+            "5": { "name": "comment.block.org" },
+            "6": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "7": { "name": "entity.name.tag.org" }
           }
         },
         {
           "name": "markup.heading.4.org",
-          "match": "^(\\*{4})\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "match": "^(\\*{4})\\s+(?:(TODO|NEXT|WAITING|HOLD)\\s+|(DONE|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
           "captures": {
             "1": { "name": "punctuation.definition.heading.4.org" },
             "2": { "name": "keyword.other.todo.org" },
-            "3": { "name": "constant.other.priority.org" },
-            "4": { "name": "comment.block.org" },
-            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
-            "6": { "name": "entity.name.tag.org" }
+            "3": { "name": "keyword.other.done.org" },
+            "4": { "name": "constant.other.priority.org" },
+            "5": { "name": "comment.block.org" },
+            "6": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "7": { "name": "entity.name.tag.org" }
           }
         },
         {
           "name": "markup.heading.5.org",
-          "match": "^(\\*{5})\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "match": "^(\\*{5})\\s+(?:(TODO|NEXT|WAITING|HOLD)\\s+|(DONE|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
           "captures": {
             "1": { "name": "punctuation.definition.heading.5.org" },
             "2": { "name": "keyword.other.todo.org" },
-            "3": { "name": "constant.other.priority.org" },
-            "4": { "name": "comment.block.org" },
-            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
-            "6": { "name": "entity.name.tag.org" }
+            "3": { "name": "keyword.other.done.org" },
+            "4": { "name": "constant.other.priority.org" },
+            "5": { "name": "comment.block.org" },
+            "6": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "7": { "name": "entity.name.tag.org" }
           }
         },
         {
           "name": "markup.heading.6.org",
-          "match": "^(\\*{6,})\\s+(?:(TODO|DONE|NEXT|WAITING|HOLD|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
+          "match": "^(\\*{6,})\\s+(?:(TODO|NEXT|WAITING|HOLD)\\s+|(DONE|CANCELLED)\\s+)?(?:(\\[#[A-Za-z0-9]\\])\\s+)?(?:(COMMENT)\\s+)?(.*?)(\\s+:[\\w@#%:]+:)?\\s*$",
           "captures": {
             "1": { "name": "punctuation.definition.heading.6.org" },
             "2": { "name": "keyword.other.todo.org" },
-            "3": { "name": "constant.other.priority.org" },
-            "4": { "name": "comment.block.org" },
-            "5": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
-            "6": { "name": "entity.name.tag.org" }
+            "3": { "name": "keyword.other.done.org" },
+            "4": { "name": "constant.other.priority.org" },
+            "5": { "name": "comment.block.org" },
+            "6": { "name": "entity.name.section.org", "patterns": [{ "include": "#inline-elements" }] },
+            "7": { "name": "entity.name.tag.org" }
           }
         }
       ]

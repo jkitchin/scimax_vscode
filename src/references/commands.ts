@@ -64,7 +64,8 @@ export function registerReferenceCommands(
             const editor = vscode.window.activeTextEditor;
             if (!editor) return;
 
-            const format = editor.document.languageId === 'org' ? 'org' : 'markdown';
+            const langId = editor.document.languageId;
+            const format = langId === 'org' ? 'org' : langId === 'latex' ? 'latex' : 'markdown';
 
             // Insert citation
             const citation = formatCitationLink(selected.entry.key, styleSelection.value, format);
@@ -296,6 +297,163 @@ export function registerReferenceCommands(
             vscode.window.showInformationMessage(`Loaded ${stats.totalEntries} references`);
         })
     );
+
+    // Insert ref link (C-u C-c ])
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.insertRef', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            // Collect all labels from current document and workspace
+            const labels = await collectLabels(editor.document);
+
+            if (labels.length === 0) {
+                vscode.window.showInformationMessage('No labels found. Define labels with label:name, \\label{name}, #+NAME:, or :CUSTOM_ID:');
+                return;
+            }
+
+            // Show quick pick with labels
+            const items = labels.map(l => ({
+                label: l.name,
+                description: l.type,
+                detail: l.context ? `${l.context} (${l.file})` : l.file,
+                labelInfo: l
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Select label to reference',
+                matchOnDescription: true,
+                matchOnDetail: true
+            });
+
+            if (!selected) return;
+
+            // Ask for ref type
+            const refTypes = [
+                { label: 'ref', description: 'Basic reference' },
+                { label: 'eqref', description: 'Equation reference (with parentheses)' },
+                { label: 'pageref', description: 'Page reference' },
+                { label: 'nameref', description: 'Name/title reference' },
+                { label: 'autoref', description: 'Auto-formatted reference' }
+            ];
+
+            const refType = await vscode.window.showQuickPick(refTypes, {
+                placeHolder: 'Select reference type'
+            });
+
+            if (!refType) return;
+
+            // Insert the ref link
+            const refLink = `${refType.label}:${selected.labelInfo.name}`;
+            await editor.edit(editBuilder => {
+                editBuilder.insert(editor.selection.active, refLink);
+            });
+        })
+    );
+}
+
+interface LabelInfo {
+    name: string;
+    type: string;
+    file: string;
+    line: number;
+    context?: string;
+}
+
+/**
+ * Collect all labels from document and workspace
+ */
+async function collectLabels(currentDoc: vscode.TextDocument): Promise<LabelInfo[]> {
+    const labels: LabelInfo[] = [];
+    const seenLabels = new Set<string>();
+
+    // Patterns to find labels
+    const patterns = [
+        { regex: /label:([^\s<>\[\](){}:,]+)/g, type: 'org-ref label' },
+        { regex: /\\label\{([^}]+)\}/g, type: 'LaTeX label' },
+        { regex: /^[ \t]*#\+NAME:\s*(.+?)\s*$/gm, type: 'Named element' },
+        { regex: /^[ \t]*#\+LABEL:\s*(.+?)\s*$/gm, type: 'Figure/Table label' },
+        { regex: /:CUSTOM_ID:\s*(.+?)\s*$/gm, type: 'Heading ID' }
+    ];
+
+    // Helper to extract labels from text
+    const extractLabels = (text: string, filePath: string, lines: string[]) => {
+        for (const { regex, type } of patterns) {
+            let match;
+            // Reset regex
+            regex.lastIndex = 0;
+            while ((match = regex.exec(text)) !== null) {
+                const name = match[1].trim();
+                if (name && !seenLabels.has(name)) {
+                    seenLabels.add(name);
+
+                    // Find line number and context
+                    const beforeMatch = text.substring(0, match.index);
+                    const lineNum = beforeMatch.split('\n').length - 1;
+
+                    // Get context (nearby heading or caption)
+                    let context = '';
+                    if (type === 'Heading ID') {
+                        // Look for heading above
+                        for (let i = lineNum - 1; i >= 0 && i >= lineNum - 5; i--) {
+                            const headingMatch = lines[i]?.match(/^(\*+)\s+(.+)/);
+                            if (headingMatch) {
+                                context = headingMatch[2].replace(/\s*:\w+:\s*$/, '').trim();
+                                break;
+                            }
+                        }
+                    } else {
+                        // Look for caption nearby
+                        const nearbyText = lines.slice(Math.max(0, lineNum - 3), lineNum + 3).join('\n');
+                        const captionMatch = nearbyText.match(/#\+CAPTION:\s*(.+)/i) ||
+                                           nearbyText.match(/\\caption\{([^}]+)\}/);
+                        if (captionMatch) {
+                            context = captionMatch[1].slice(0, 50);
+                        }
+                    }
+
+                    labels.push({
+                        name,
+                        type,
+                        file: filePath,
+                        line: lineNum,
+                        context
+                    });
+                }
+            }
+        }
+    };
+
+    // Search current document
+    const currentText = currentDoc.getText();
+    const currentLines = currentText.split('\n');
+    extractLabels(currentText, currentDoc.uri.fsPath, currentLines);
+
+    // Search workspace files
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders) {
+        const files = await vscode.workspace.findFiles(
+            '**/*.{org,tex,md}',
+            '**/node_modules/**',
+            100
+        );
+
+        for (const file of files) {
+            if (file.fsPath === currentDoc.uri.fsPath) continue;
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(file);
+                const text = doc.getText();
+                const lines = text.split('\n');
+                extractLabels(text, file.fsPath, lines);
+            } catch {
+                // Ignore errors reading files
+            }
+        }
+    }
+
+    // Sort by name
+    return labels.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /**

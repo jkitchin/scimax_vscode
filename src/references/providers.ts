@@ -325,11 +325,11 @@ export class RefHoverProvider implements vscode.HoverProvider {
     ): vscode.ProviderResult<vscode.Hover> {
         const line = document.lineAt(position.line).text;
 
-        // Match ref-style links: ref:label, eqref:label, pageref:label, etc.
-        const refPattern = /(?<![\\w])(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>\[\](){}:,]+)/g;
+        // Match org-ref style links: ref:label, eqref:label, pageref:label, etc.
+        const orgRefPattern = /(?<![\\w])(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>\[\](){}:,]+)/g;
 
         let match;
-        while ((match = refPattern.exec(line)) !== null) {
+        while ((match = orgRefPattern.exec(line)) !== null) {
             const start = match.index;
             const end = start + match[0].length;
 
@@ -337,6 +337,20 @@ export class RefHoverProvider implements vscode.HoverProvider {
                 const refType = match[1];
                 const label = match[2];
                 return this.createRefHover(document, refType, label);
+            }
+        }
+
+        // Match LaTeX style refs: \ref{label}, \eqref{label}, \pageref{label}, etc.
+        const latexRefPattern = /\\(ref|eqref|pageref|nameref|autoref|cref|Cref|vref|fref|Fref)\{([^}]+)\}/g;
+
+        while ((match = latexRefPattern.exec(line)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+
+            if (position.character >= start && position.character <= end) {
+                const refType = match[1];
+                const label = match[2];
+                return this.createRefHover(document, `\\${refType}`, label);
             }
         }
 

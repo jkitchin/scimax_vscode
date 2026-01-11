@@ -99,6 +99,11 @@
         "description": "Org-mode TODO keyword"
       },
       {
+        "id": "orgDone",
+        "superType": "keyword",
+        "description": "Org-mode DONE keyword"
+      },
+      {
         "id": "orgTag",
         "superType": "label",
         "description": "Org-mode tag"
@@ -127,6 +132,7 @@
           "orgTimestamp": ["constant.other.timestamp.org"],
           "orgHeading": ["entity.name.section.org"],
           "orgTodo": ["keyword.other.todo.org"],
+          "orgDone": ["keyword.other.done.org"],
           "orgTag": ["entity.name.tag.org"]
         }
       }
@@ -184,13 +190,33 @@
             "settings": {
               "foreground": "#DDA0DD"
             }
+          },
+          {
+            "scope": [
+              "keyword.other.todo.org"
+            ],
+            "settings": {
+              "foreground": "#FF6B6B",
+              "fontStyle": "bold"
+            }
+          },
+          {
+            "scope": [
+              "keyword.other.done.org"
+            ],
+            "settings": {
+              "foreground": "#4CAF50",
+              "fontStyle": "bold"
+            }
           }
         ]
       },
       "editor.semanticTokenColorCustomizations": {
         "rules": {
           "orgCitation": "#2E8B57",
-          "orgLink": "#6495ED"
+          "orgLink": "#6495ED",
+          "orgTodo": { "foreground": "#FF6B6B", "bold": true },
+          "orgDone": { "foreground": "#4CAF50", "bold": true }
         }
       }
     },
@@ -371,6 +397,10 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "scimax.ref.insertRef",
+        "title": "Scimax: Insert Reference Link"
+      },
+      {
         "command": "scimax.notebook.new",
         "title": "Scimax: New Notebook"
       },
@@ -425,6 +455,194 @@
       {
         "command": "scimax.org.cycleGlobalFold",
         "title": "Scimax: Cycle Global Folding"
+      },
+      {
+        "command": "scimax.markdown.toggleCheckbox",
+        "title": "Scimax: Toggle Checkbox"
+      },
+      {
+        "command": "scimax.markdown.insertTask",
+        "title": "Scimax: Insert Task"
+      },
+      {
+        "command": "scimax.markdown.insertDueDate",
+        "title": "Scimax: Insert Due Date"
+      },
+      {
+        "command": "scimax.markdown.insertScheduledDate",
+        "title": "Scimax: Insert Scheduled Date"
+      },
+      {
+        "command": "scimax.markdown.insertPriority",
+        "title": "Scimax: Insert Priority"
+      },
+      {
+        "command": "scimax.markdown.showAgenda",
+        "title": "Scimax: Show Agenda"
+      },
+      {
+        "command": "scimax.markdown.showTodaysTasks",
+        "title": "Scimax: Show Today's Tasks"
+      },
+      {
+        "command": "scimax.markdown.showTasksByProject",
+        "title": "Scimax: Show Tasks by Project"
+      },
+      {
+        "command": "scimax.markdown.showTasksByTag",
+        "title": "Scimax: Show Tasks by Tag"
+      },
+      {
+        "command": "scimax.showDbMenu",
+        "title": "Scimax: Database Menu (Hyper-V)"
+      },
+      {
+        "command": "scimax.org.shiftTimestampUp",
+        "title": "Scimax: Shift Timestamp Up"
+      },
+      {
+        "command": "scimax.org.shiftTimestampDown",
+        "title": "Scimax: Shift Timestamp Down"
+      },
+      {
+        "command": "scimax.org.shiftTimestampLeft",
+        "title": "Scimax: Shift Timestamp Left (Previous Day)"
+      },
+      {
+        "command": "scimax.org.shiftTimestampRight",
+        "title": "Scimax: Shift Timestamp Right (Next Day)"
+      },
+      {
+        "command": "scimax.org.insertTimestamp",
+        "title": "Scimax: Insert Timestamp"
+      },
+      {
+        "command": "scimax.org.addRepeater",
+        "title": "Scimax: Add/Change Repeater on Timestamp"
+      },
+      {
+        "command": "scimax.table.moveRowUp",
+        "title": "Scimax: Move Table Row Up"
+      },
+      {
+        "command": "scimax.table.moveRowDown",
+        "title": "Scimax: Move Table Row Down"
+      },
+      {
+        "command": "scimax.table.moveColumnLeft",
+        "title": "Scimax: Move Table Column Left"
+      },
+      {
+        "command": "scimax.table.moveColumnRight",
+        "title": "Scimax: Move Table Column Right"
+      },
+      {
+        "command": "scimax.table.insertRowBelow",
+        "title": "Scimax: Insert Table Row Below"
+      },
+      {
+        "command": "scimax.table.insertRowAbove",
+        "title": "Scimax: Insert Table Row Above"
+      },
+      {
+        "command": "scimax.table.deleteRow",
+        "title": "Scimax: Delete Table Row"
+      },
+      {
+        "command": "scimax.table.insertColumnRight",
+        "title": "Scimax: Insert Table Column Right"
+      },
+      {
+        "command": "scimax.table.deleteColumn",
+        "title": "Scimax: Delete Table Column"
+      },
+      {
+        "command": "scimax.table.align",
+        "title": "Scimax: Align Table"
+      },
+      {
+        "command": "scimax.table.create",
+        "title": "Scimax: Create Table"
+      },
+      {
+        "command": "scimax.table.nextCell",
+        "title": "Scimax: Next Table Cell"
+      },
+      {
+        "command": "scimax.table.prevCell",
+        "title": "Scimax: Previous Table Cell"
+      },
+      {
+        "command": "scimax.table.insertSeparator",
+        "title": "Scimax: Insert Table Separator"
+      },
+      {
+        "command": "scimax.heading.promote",
+        "title": "Scimax: Promote Heading"
+      },
+      {
+        "command": "scimax.heading.demote",
+        "title": "Scimax: Demote Heading"
+      },
+      {
+        "command": "scimax.heading.promoteSubtree",
+        "title": "Scimax: Promote Subtree"
+      },
+      {
+        "command": "scimax.heading.demoteSubtree",
+        "title": "Scimax: Demote Subtree"
+      },
+      {
+        "command": "scimax.heading.moveUp",
+        "title": "Scimax: Move Heading Up"
+      },
+      {
+        "command": "scimax.heading.moveDown",
+        "title": "Scimax: Move Heading Down"
+      },
+      {
+        "command": "scimax.heading.insert",
+        "title": "Scimax: Insert Heading"
+      },
+      {
+        "command": "scimax.heading.insertSub",
+        "title": "Scimax: Insert Subheading"
+      },
+      {
+        "command": "scimax.projectile.switch",
+        "title": "Scimax: Switch Project"
+      },
+      {
+        "command": "scimax.projectile.findFile",
+        "title": "Scimax: Find File in Project"
+      },
+      {
+        "command": "scimax.projectile.search",
+        "title": "Scimax: Search in Project"
+      },
+      {
+        "command": "scimax.projectile.root",
+        "title": "Scimax: Open Project Root"
+      },
+      {
+        "command": "scimax.projectile.add",
+        "title": "Scimax: Add Project"
+      },
+      {
+        "command": "scimax.projectile.remove",
+        "title": "Scimax: Remove Project"
+      },
+      {
+        "command": "scimax.projectile.scan",
+        "title": "Scimax: Scan Directory for Projects"
+      },
+      {
+        "command": "scimax.projectile.info",
+        "title": "Scimax: Project Info"
+      },
+      {
+        "command": "scimax.projectile.cleanup",
+        "title": "Scimax: Cleanup Non-existent Projects"
       }
     ],
     "keybindings": [
@@ -457,19 +675,198 @@
       },
       {
         "command": "scimax.ref.insertCitation",
-        "key": "ctrl+]",
-        "mac": "cmd+]",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "key": "ctrl+c ]",
+        "mac": "ctrl+c ]",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
+      },
+      {
+        "command": "scimax.ref.insertRef",
+        "key": "ctrl+u ctrl+c ]",
+        "mac": "ctrl+u ctrl+c ]",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
       },
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == 'org' && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|latex/ && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId == 'org'"
+        "when": "editorTextFocus && editorLangId =~ /org|latex/"
+      },
+      {
+        "command": "scimax.markdown.toggleCheckbox",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/"
+      },
+      {
+        "command": "scimax.markdown.insertDueDate",
+        "key": "ctrl+c ctrl+d",
+        "mac": "ctrl+c ctrl+d",
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/"
+      },
+      {
+        "command": "scimax.markdown.insertScheduledDate",
+        "key": "ctrl+c ctrl+s",
+        "mac": "ctrl+c ctrl+s",
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/"
+      },
+      {
+        "command": "scimax.showDbMenu",
+        "key": "ctrl+alt+v",
+        "mac": "ctrl+cmd+v"
+      },
+      {
+        "command": "workbench.action.reloadWindow",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r"
+      },
+      {
+        "command": "scimax.org.shiftTimestampUp",
+        "key": "shift+up",
+        "mac": "shift+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.shiftTimestampDown",
+        "key": "shift+down",
+        "mac": "shift+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.shiftTimestampLeft",
+        "key": "shift+left",
+        "mac": "shift+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !editorHasSelection"
+      },
+      {
+        "command": "scimax.org.shiftTimestampRight",
+        "key": "shift+right",
+        "mac": "shift+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !editorHasSelection"
+      },
+      {
+        "command": "scimax.org.insertTimestamp",
+        "key": "ctrl+c .",
+        "mac": "ctrl+c .",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.addRepeater",
+        "key": "ctrl+c ctrl+r",
+        "mac": "ctrl+c ctrl+r",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.insertRowBelow",
+        "key": "alt+enter",
+        "mac": "alt+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.insertRowAbove",
+        "key": "alt+shift+enter",
+        "mac": "alt+shift+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.deleteRow",
+        "key": "alt+shift+backspace",
+        "mac": "alt+shift+backspace",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.insertColumnRight",
+        "key": "alt+shift+right",
+        "mac": "alt+shift+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.deleteColumn",
+        "key": "alt+shift+left",
+        "mac": "alt+shift+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.create",
+        "key": "ctrl+c |",
+        "mac": "ctrl+c |",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.insertSeparator",
+        "key": "ctrl+c -",
+        "mac": "ctrl+c -",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.heading.promote",
+        "key": "alt+left",
+        "mac": "alt+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.heading.demote",
+        "key": "alt+right",
+        "mac": "alt+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.heading.promoteSubtree",
+        "key": "alt+shift+left",
+        "mac": "alt+shift+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inTable"
+      },
+      {
+        "command": "scimax.heading.demoteSubtree",
+        "key": "alt+shift+right",
+        "mac": "alt+shift+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inTable"
+      },
+      {
+        "command": "scimax.heading.moveUp",
+        "key": "alt+up",
+        "mac": "alt+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.heading.moveDown",
+        "key": "alt+down",
+        "mac": "alt+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.heading.insert",
+        "key": "ctrl+enter",
+        "mac": "ctrl+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.projectile.switch",
+        "key": "ctrl+c p p",
+        "mac": "ctrl+c p p"
+      },
+      {
+        "command": "scimax.projectile.findFile",
+        "key": "ctrl+c p f",
+        "mac": "ctrl+c p f"
+      },
+      {
+        "command": "scimax.projectile.search",
+        "key": "ctrl+c p s",
+        "mac": "ctrl+c p s"
+      },
+      {
+        "command": "scimax.projectile.root",
+        "key": "ctrl+c p d",
+        "mac": "ctrl+c p d"
+      },
+      {
+        "command": "scimax.projectile.add",
+        "key": "ctrl+c p a",
+        "mac": "ctrl+c p a"
       }
     ],
     "configuration": {

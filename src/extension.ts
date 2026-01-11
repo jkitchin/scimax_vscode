@@ -26,12 +26,20 @@ import { NotebookTreeProvider } from './notebook/notebookTreeProvider';
 import { OrgLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
+import { registerCheckboxFeatures } from './markdown/checkboxProvider';
+import { registerTaskCommands } from './markdown/taskCommands';
+import { registerTimestampCommands } from './org/timestampProvider';
+import { registerTableCommands, isInTable } from './org/tableProvider';
+import { registerHeadingCommands } from './org/headingProvider';
+import { ProjectileManager } from './projectile/projectileManager';
+import { registerProjectileCommands } from './projectile/commands';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
 let scimaxDb: ScimaxDb;
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
+let projectileManager: ProjectileManager;
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Scimax VS Code extension activating...');
@@ -212,6 +220,42 @@ export async function activate(context: vscode.ExtensionContext) {
     registerFoldingProvider(context);
     console.log('Scimax: Folding provider registered');
 
+    // Register Markdown Checkbox Features
+    registerCheckboxFeatures(context);
+    console.log('Scimax: Checkbox features registered');
+
+    // Register Markdown Task Commands
+    registerTaskCommands(context);
+    console.log('Scimax: Task commands registered');
+
+    // Register Timestamp Commands (shift-arrow to adjust dates)
+    registerTimestampCommands(context);
+    console.log('Scimax: Timestamp commands registered');
+
+    // Register Table Commands (row/column manipulation)
+    registerTableCommands(context);
+    console.log('Scimax: Table commands registered');
+
+    // Register Heading Commands (promote/demote/move)
+    registerHeadingCommands(context);
+    console.log('Scimax: Heading commands registered');
+
+    // Track cursor position to set context for keybinding differentiation
+    // This enables different keybindings when cursor is in a table vs on a heading
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(e => {
+            const editor = e.textEditor;
+            const document = editor.document;
+            const position = editor.selection.active;
+
+            // Only check for org/markdown files
+            if (document.languageId === 'org' || document.languageId === 'markdown') {
+                const inTable = isInTable(document, position);
+                vscode.commands.executeCommand('setContext', 'scimax.inTable', inTable);
+            }
+        })
+    );
+
     // Register Bibliography Code Lens Provider
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider(
@@ -237,6 +281,35 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
+    // Register Database Menu Command (Hyper-V)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.showDbMenu', async () => {
+            const items: (vscode.QuickPickItem & { command: string })[] = [
+                { label: '$(search) Search All Files', description: 'Full-text search across indexed files', command: 'scimax.db.search' },
+                { label: '$(symbol-class) Search Headings', description: 'Search by heading text', command: 'scimax.db.searchHeadings' },
+                { label: '$(code) Search Code Blocks', description: 'Search source code blocks', command: 'scimax.db.searchBlocks' },
+                { label: '$(calendar) Show Agenda', description: 'View tasks by date', command: 'scimax.markdown.showAgenda' },
+                { label: '$(checklist) Today\'s Tasks', description: 'Tasks due or scheduled today', command: 'scimax.markdown.showTodaysTasks' },
+                { label: '$(tag) Search by Tag', description: 'Filter tasks by #tag', command: 'scimax.markdown.showTasksByTag' },
+                { label: '$(project) Search by Project', description: 'Filter tasks by @project', command: 'scimax.markdown.showTasksByProject' },
+                { label: '$(check) Show TODOs', description: 'All TODO items from org files', command: 'scimax.db.showTodos' },
+                { label: '$(clock) Deadlines', description: 'Upcoming deadlines', command: 'scimax.db.deadlines' },
+                { label: '$(book) Search References', description: 'Search bibliography entries', command: 'scimax.ref.searchReferences' },
+                { label: '$(notebook) Open Notebook', description: 'Open a scimax notebook', command: 'scimax.notebook.open' },
+                { label: '$(sync) Reindex Files', description: 'Rebuild the search index', command: 'scimax.db.reindex' },
+            ];
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Scimax Database (Ctrl+Cmd+V)',
+                matchOnDescription: true
+            });
+
+            if (selected) {
+                await vscode.commands.executeCommand(selected.command);
+            }
+        })
+    );
+
     // Initialize Notebook Manager
     notebookManager = new NotebookManager(context);
     await notebookManager.initialize();
@@ -253,6 +326,15 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         notebookManager.onNotebookChanged(() => notebookTreeProvider.refresh())
     );
+
+    // Initialize Projectile Manager (project switching)
+    projectileManager = new ProjectileManager(context);
+    await projectileManager.initialize();
+    context.subscriptions.push({ dispose: () => projectileManager.dispose() });
+
+    // Register Projectile Commands
+    registerProjectileCommands(context, projectileManager);
+    console.log('Scimax: Projectile manager initialized');
 }
 
 export async function deactivate() {

@@ -7,6 +7,7 @@ const tokenTypes = [
     'orgTimestamp',
     'orgHeading',
     'orgTodo',
+    'orgDone',
     'orgTag'
 ];
 
@@ -227,7 +228,7 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
                         line: lineNum,
                         startChar: todoStart,
                         length: todo.length,
-                        tokenType: tokenTypes.indexOf('orgTodo'),
+                        tokenType: tokenTypes.indexOf(isDone ? 'orgDone' : 'orgTodo'),
                         tokenModifiers: isDone ? (1 << tokenModifiers.indexOf('done')) : 0
                     });
                 }

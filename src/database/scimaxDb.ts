@@ -319,7 +319,7 @@ export class ScimaxDb {
      * Check if file should be ignored
      */
     private shouldIgnore(filePath: string): boolean {
-        const minimatch = require('minimatch');
+        const { minimatch } = require('minimatch');
         return this.ignorePatterns.some(pattern => minimatch(filePath, pattern));
     }
 

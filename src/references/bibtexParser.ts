@@ -220,7 +220,7 @@ export function formatCitation(entry: BibEntry, style: 'full' | 'short' | 'inlin
 export function formatCitationLink(
     key: string,
     style: 'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear',
-    format: 'org' | 'markdown',
+    format: 'org' | 'markdown' | 'latex',
     prenote?: string,
     postnote?: string
 ): string {
@@ -230,6 +230,18 @@ export function formatCitationLink(
             link = `[[${style}:${key}][${prenote || ''}::${postnote || ''}]]`;
         }
         return link;
+    } else if (format === 'latex') {
+        // LaTeX style: \cite{key}, \citet{key}, \citep{key}, etc.
+        // Map styles to LaTeX commands
+        const latexCmd = style === 'cite' ? 'cite' : style;
+        if (prenote && postnote) {
+            return `\\${latexCmd}[${prenote}][${postnote}]{${key}}`;
+        } else if (postnote) {
+            return `\\${latexCmd}[${postnote}]{${key}}`;
+        } else if (prenote) {
+            return `\\${latexCmd}[${prenote}][]{${key}}`;
+        }
+        return `\\${latexCmd}{${key}}`;
     } else {
         // Markdown/Pandoc style
         let citation = `@${key}`;
