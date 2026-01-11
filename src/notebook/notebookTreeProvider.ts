@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { NotebookManager, Notebook } from './notebookManager';
 
-type NotebookTreeItem = NotebookItem | NotebookSectionItem | NotebookFileItem;
+type NotebookTreeItem = NotebookItem | NotebookSectionItem | NotebookFileItem | CollaboratorItem | InfoItem;
 
 class NotebookItem extends vscode.TreeItem {
     constructor(

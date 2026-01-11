@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { NotebookManager, Notebook, Collaborator } from './notebookManager';
-import { OrgDb } from '../database/orgDb';
+import { OrgDbSqlite } from '../database/orgDbSqlite';
 
 export function registerNotebookCommands(
     context: vscode.ExtensionContext,
     notebookManager: NotebookManager,
-    orgDb: OrgDb
+    orgDb: OrgDbSqlite
 ): void {
     // Create new notebook
     context.subscriptions.push(
@@ -108,7 +108,7 @@ export function registerNotebookCommands(
     // Open master file
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.notebook.openMasterFile', async () => {
-            const notebook = getCurrentOrSelectNotebook(notebookManager);
+            const notebook = await getCurrentOrSelectNotebook(notebookManager);
             if (!notebook) return;
 
             if (notebook.masterFile) {
@@ -168,7 +168,7 @@ export function registerNotebookCommands(
             orgDb.setSearchScope({ type: 'directory', path: notebook.path });
 
             // Perform search
-            const results = orgDb.searchFullText(query, { limit: 100 });
+            const results = await orgDb.searchFullText(query, { limit: 100 });
 
             if (results.length === 0) {
                 vscode.window.showInformationMessage(`No results found in ${notebook.name}`);
@@ -177,9 +177,9 @@ export function registerNotebookCommands(
             }
 
             const items = results.map(r => ({
-                label: `$(file) ${path.basename(r.filePath)}:${r.lineNumber}`,
+                label: `$(file) ${path.basename(r.file_path)}:${r.line_number}`,
                 description: r.preview,
-                detail: path.relative(notebook.path, r.filePath),
+                detail: path.relative(notebook.path, r.file_path),
                 result: r
             }));
 
@@ -191,9 +191,9 @@ export function registerNotebookCommands(
             orgDb.setSearchScope({ type: 'all' }); // Reset scope
 
             if (selected) {
-                const doc = await vscode.workspace.openTextDocument(selected.result.filePath);
+                const doc = await vscode.workspace.openTextDocument(selected.result.file_path);
                 const editor = await vscode.window.showTextDocument(doc);
-                const position = new vscode.Position(selected.result.lineNumber - 1, 0);
+                const position = new vscode.Position(selected.result.line_number - 1, 0);
                 editor.selection = new vscode.Selection(position, position);
                 editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
             }
@@ -209,7 +209,7 @@ export function registerNotebookCommands(
             // Set scope
             orgDb.setSearchScope({ type: 'directory', path: notebook.path });
 
-            const agendaItems = orgDb.getAgenda({ before: '+2w', includeUnscheduled: true });
+            const agendaItems = await orgDb.getAgenda({ before: '+2w', includeUnscheduled: true });
 
             if (agendaItems.length === 0) {
                 vscode.window.showInformationMessage(`No agenda items in ${notebook.name}`);
@@ -220,7 +220,7 @@ export function registerNotebookCommands(
             const items = agendaItems.map(item => ({
                 label: `${getAgendaIcon(item)} ${item.heading.title}`,
                 description: formatAgendaDescription(item),
-                detail: path.relative(notebook.path, item.heading.filePath),
+                detail: path.relative(notebook.path, item.heading.file_path),
                 item
             }));
 
@@ -231,9 +231,9 @@ export function registerNotebookCommands(
             orgDb.setSearchScope({ type: 'all' });
 
             if (selected) {
-                const doc = await vscode.workspace.openTextDocument(selected.item.heading.filePath);
+                const doc = await vscode.workspace.openTextDocument(selected.item.heading.file_path);
                 const editor = await vscode.window.showTextDocument(doc);
-                const position = new vscode.Position(selected.item.heading.lineNumber - 1, 0);
+                const position = new vscode.Position(selected.item.heading.line_number - 1, 0);
                 editor.selection = new vscode.Selection(position, position);
                 editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
             }
@@ -443,8 +443,8 @@ function getAgendaIcon(item: { type: string; overdue?: boolean }): string {
 function formatAgendaDescription(item: {
     type: string;
     date?: string;
-    daysUntil?: number;
-    heading: { priority?: string };
+    days_until?: number;
+    heading: { priority?: string | null };
 }): string {
     const parts: string[] = [];
 
@@ -453,11 +453,11 @@ function formatAgendaDescription(item: {
 
     if (item.date) parts.push(item.date.split(' ')[0]);
 
-    if (item.daysUntil !== undefined) {
-        if (item.daysUntil === 0) parts.push('(TODAY)');
-        else if (item.daysUntil === 1) parts.push('(tomorrow)');
-        else if (item.daysUntil < 0) parts.push(`(${Math.abs(item.daysUntil)} days ago)`);
-        else parts.push(`(in ${item.daysUntil} days)`);
+    if (item.days_until !== undefined) {
+        if (item.days_until === 0) parts.push('(TODAY)');
+        else if (item.days_until === 1) parts.push('(tomorrow)');
+        else if (item.days_until < 0) parts.push(`(${Math.abs(item.days_until)} days ago)`);
+        else parts.push(`(in ${item.days_until} days)`);
     }
 
     if (item.heading.priority) parts.push(`[#${item.heading.priority}]`);

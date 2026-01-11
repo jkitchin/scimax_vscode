@@ -71,7 +71,7 @@ export async function activate(context: vscode.ExtensionContext) {
             for (const folder of workspaceFolders) {
                 await orgDb.indexDirectory(folder.uri.fsPath);
             }
-            const stats = orgDb.getStats();
+            const stats = await orgDb.getStats();
             console.log(`Scimax: Indexed ${stats.files} files`);
         }, 1000);
     }
