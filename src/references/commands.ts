@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
-import { BibEntry, formatCitation, formatCitationLink, formatAuthors } from './bibtexParser';
+import { BibEntry, formatCitation, formatCitationLink, formatAuthors, entryToBibTeX } from './bibtexParser';
 
 /**
  * Register all reference-related commands
@@ -298,6 +299,94 @@ export function registerReferenceCommands(
         })
     );
 
+    // Extract citations to new bib file
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.extractBibliography', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showWarningMessage('No active editor');
+                return;
+            }
+
+            const document = editor.document;
+            const text = document.getText();
+
+            // Find all citation keys in the document
+            const citationKeys = extractCitationKeys(text);
+
+            if (citationKeys.size === 0) {
+                vscode.window.showInformationMessage('No citations found in this file');
+                return;
+            }
+
+            // Look up entries
+            const foundEntries: BibEntry[] = [];
+            const missingKeys: string[] = [];
+
+            for (const key of citationKeys) {
+                const entry = manager.getEntry(key);
+                if (entry) {
+                    foundEntries.push(entry);
+                } else {
+                    missingKeys.push(key);
+                }
+            }
+
+            if (foundEntries.length === 0) {
+                vscode.window.showWarningMessage(`None of the ${citationKeys.size} citations were found in the bibliography`);
+                return;
+            }
+
+            // Show summary and ask for confirmation
+            let message = `Found ${foundEntries.length} of ${citationKeys.size} citations`;
+            if (missingKeys.length > 0) {
+                message += `. Missing: ${missingKeys.slice(0, 5).join(', ')}${missingKeys.length > 5 ? '...' : ''}`;
+            }
+
+            const action = await vscode.window.showInformationMessage(
+                message,
+                'Save to .bib File',
+                'Copy to Clipboard',
+                'Cancel'
+            );
+
+            if (!action || action === 'Cancel') return;
+
+            // Generate BibTeX content
+            const bibContent = foundEntries.map(entry => entryToBibTeX(entry)).join('\n\n');
+
+            if (action === 'Copy to Clipboard') {
+                await vscode.env.clipboard.writeText(bibContent);
+                vscode.window.showInformationMessage(`Copied ${foundEntries.length} BibTeX entries to clipboard`);
+                return;
+            }
+
+            // Save to file
+            const currentFileName = path.basename(document.fileName, path.extname(document.fileName));
+            const suggestedName = `${currentFileName}-references.bib`;
+
+            const saveUri = await vscode.window.showSaveDialog({
+                defaultUri: vscode.Uri.file(path.join(path.dirname(document.fileName), suggestedName)),
+                filters: { 'BibTeX': ['bib'] },
+                title: 'Save extracted bibliography'
+            });
+
+            if (!saveUri) return;
+
+            // Write the file
+            const header = `% Bibliography extracted from ${path.basename(document.fileName)}\n` +
+                          `% Generated: ${new Date().toISOString()}\n` +
+                          `% Contains ${foundEntries.length} entries\n\n`;
+
+            await vscode.workspace.fs.writeFile(saveUri, Buffer.from(header + bibContent));
+            vscode.window.showInformationMessage(`Saved ${foundEntries.length} entries to ${path.basename(saveUri.fsPath)}`);
+
+            // Open the file
+            const doc = await vscode.workspace.openTextDocument(saveUri);
+            await vscode.window.showTextDocument(doc);
+        })
+    );
+
     // Insert ref link (C-u C-c ])
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.insertRef', async () => {
@@ -350,6 +439,51 @@ export function registerReferenceCommands(
             });
         })
     );
+}
+
+/**
+ * Extract all citation keys from document text
+ */
+function extractCitationKeys(text: string): Set<string> {
+    const keys = new Set<string>();
+
+    // Patterns to match citations
+    const patterns = [
+        // org-ref style: cite:key1,key2,key3 etc.
+        /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g,
+        // org-mode 9.5+ citation: [cite:@key1;@key2] or [cite/style:@key]
+        /\[cite(?:\/[^\]]*)?:([^\]]+)\]/g,
+        // Pandoc/markdown: [@key] or [@key1; @key2]
+        /\[([^\]]*@[a-zA-Z][a-zA-Z0-9_:-]*[^\]]*)\]/g,
+        // LaTeX: \cite{key1,key2}
+        /\\cite[pt]?\{([a-zA-Z0-9_:,-]+)\}/g,
+        // autocite, textcite, etc.
+        /\\(?:auto|text|par|foot|super|full)cite\*?\{([a-zA-Z0-9_:,-]+)\}/g
+    ];
+
+    for (const pattern of patterns) {
+        let match;
+        while ((match = pattern.exec(text)) !== null) {
+            const keysStr = match[1];
+
+            // Handle different key formats
+            if (keysStr.includes('@')) {
+                // org-mode 9.5+ or Pandoc style with @ prefix
+                const keyMatches = keysStr.matchAll(/@([a-zA-Z][a-zA-Z0-9_:-]*)/g);
+                for (const km of keyMatches) {
+                    keys.add(km[1]);
+                }
+            } else {
+                // Comma-separated keys
+                const keyList = keysStr.split(/[,;]/).map(k => k.trim()).filter(k => k.length > 0);
+                for (const key of keyList) {
+                    keys.add(key);
+                }
+            }
+        }
+    }
+
+    return keys;
 }
 
 interface LabelInfo {
