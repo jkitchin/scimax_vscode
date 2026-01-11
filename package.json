@@ -28,7 +28,9 @@
   "activationEvents": [
     "onLanguage:org",
     "onLanguage:markdown",
-    "workspaceContains:**/*.org"
+    "onLanguage:bibtex",
+    "workspaceContains:**/*.org",
+    "workspaceContains:**/*.bib"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -150,6 +152,19 @@
       {
         "command": "scimax.ref.searchReferences",
         "title": "Scimax: Search References"
+      },
+      {
+        "command": "scimax.ref.findCitations",
+        "title": "Scimax: Find Citations of Reference"
+      },
+      {
+        "command": "scimax.ref.copyBibTeX",
+        "title": "Scimax: Copy BibTeX Entry"
+      },
+      {
+        "command": "scimax.ref.refresh",
+        "title": "Scimax: Refresh References",
+        "icon": "$(refresh)"
       }
     ],
     "keybindings": [

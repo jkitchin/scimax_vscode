@@ -6,10 +6,21 @@ import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
 import { OrgDb } from './database/orgDb';
 import { registerDbCommands } from './database/commands';
+import { ReferenceManager } from './references/referenceManager';
+import { registerReferenceCommands } from './references/commands';
+import {
+    CitationHoverProvider,
+    CitationCompletionProvider,
+    CitationDefinitionProvider,
+    CitationLinkProvider,
+    ReferenceTreeProvider,
+    BibliographyCodeLensProvider
+} from './references/providers';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
 let orgDb: OrgDb;
+let referenceManager: ReferenceManager;
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Scimax VS Code extension is now active');
@@ -82,6 +93,82 @@ export async function activate(context: vscode.ExtensionContext) {
     // Create status bar with journal info (word count, streak, etc.)
     journalStatusBar = new JournalStatusBar(journalManager);
     context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
+
+    // Initialize Reference Manager
+    referenceManager = new ReferenceManager(context);
+    await referenceManager.initialize();
+    context.subscriptions.push({ dispose: () => referenceManager.dispose() });
+
+    // Register Reference Commands
+    registerReferenceCommands(context, referenceManager);
+
+    // Register Reference Tree View
+    const referenceTreeProvider = new ReferenceTreeProvider(referenceManager);
+    vscode.window.registerTreeDataProvider('scimax.references', referenceTreeProvider);
+
+    // Register Citation Hover Provider (for org and markdown)
+    const documentSelector = [
+        { language: 'org', scheme: 'file' },
+        { language: 'markdown', scheme: 'file' },
+        { language: 'latex', scheme: 'file' }
+    ];
+
+    context.subscriptions.push(
+        vscode.languages.registerHoverProvider(
+            documentSelector,
+            new CitationHoverProvider(referenceManager)
+        )
+    );
+
+    // Register Citation Completion Provider
+    context.subscriptions.push(
+        vscode.languages.registerCompletionItemProvider(
+            documentSelector,
+            new CitationCompletionProvider(referenceManager),
+            ':', '@', '{' // Trigger characters
+        )
+    );
+
+    // Register Citation Definition Provider (go to definition)
+    context.subscriptions.push(
+        vscode.languages.registerDefinitionProvider(
+            documentSelector,
+            new CitationDefinitionProvider(referenceManager)
+        )
+    );
+
+    // Register Citation Link Provider
+    context.subscriptions.push(
+        vscode.languages.registerDocumentLinkProvider(
+            documentSelector,
+            new CitationLinkProvider(referenceManager)
+        )
+    );
+
+    // Register Bibliography Code Lens Provider
+    context.subscriptions.push(
+        vscode.languages.registerCodeLensProvider(
+            { language: 'bibtex', scheme: 'file' },
+            new BibliographyCodeLensProvider(referenceManager)
+        )
+    );
+
+    // Additional reference commands for code lens
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.findCitationsForKey', async (key: string) => {
+            const locations = await referenceManager.findCitations(key);
+            if (locations.length === 0) {
+                vscode.window.showInformationMessage(`No citations found for ${key}`);
+            } else {
+                vscode.window.showInformationMessage(`Found ${locations.length} citations of ${key}`);
+                // Could also show in peek view if editor is available
+            }
+        }),
+        vscode.commands.registerCommand('scimax.ref.copyKey', async (key: string) => {
+            await vscode.env.clipboard.writeText(key);
+            vscode.window.showInformationMessage(`Copied: ${key}`);
+        })
+    );
 }
 
 export function deactivate() {
