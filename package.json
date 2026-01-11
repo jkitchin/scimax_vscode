@@ -725,30 +725,6 @@
         "title": "Scimax: Jump Kill Line"
       },
       {
-        "command": "scimax.spelling.correct",
-        "title": "Scimax: Correct Spelling"
-      },
-      {
-        "command": "scimax.spelling.nextError",
-        "title": "Scimax: Next Spelling Error"
-      },
-      {
-        "command": "scimax.spelling.prevError",
-        "title": "Scimax: Previous Spelling Error"
-      },
-      {
-        "command": "scimax.spelling.addToDictionary",
-        "title": "Scimax: Add Word to Dictionary"
-      },
-      {
-        "command": "scimax.spelling.toggle",
-        "title": "Scimax: Toggle Spell Checking"
-      },
-      {
-        "command": "scimax.spelling.checkDocument",
-        "title": "Scimax: Check Document Spelling"
-      },
-      {
         "command": "scimax.editmarks.insertion",
         "title": "Scimax: Mark Insertion"
       },
@@ -1119,24 +1095,6 @@
         "key": "ctrl+shift+k",
         "mac": "cmd+shift+k",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
-      },
-      {
-        "command": "scimax.spelling.correct",
-        "key": "alt+$",
-        "mac": "alt+$",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "scimax.spelling.nextError",
-        "key": "ctrl+c ; n",
-        "mac": "ctrl+c ; n",
-        "when": "editorTextFocus"
-      },
-      {
-        "command": "scimax.spelling.prevError",
-        "key": "ctrl+c ; p",
-        "mac": "ctrl+c ; p",
-        "when": "editorTextFocus"
       },
       {
         "command": "scimax.editmarks.insertion",
