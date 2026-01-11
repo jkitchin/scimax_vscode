@@ -30,7 +30,7 @@ let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 
 export async function activate(context: vscode.ExtensionContext) {
-    console.log('Scimax VS Code extension is now active');
+    console.log('Scimax VS Code extension activating...');
 
     // Initialize Journal Manager
     journalManager = new JournalManager(context);
@@ -109,15 +109,20 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
 
     // Initialize Reference Manager
-    referenceManager = new ReferenceManager(context);
-    await referenceManager.initialize();
-    context.subscriptions.push({ dispose: () => referenceManager.dispose() });
+    try {
+        referenceManager = new ReferenceManager(context);
+        await referenceManager.initialize();
+        context.subscriptions.push({ dispose: () => referenceManager.dispose() });
 
-    // Register Reference Commands
-    registerReferenceCommands(context, referenceManager);
+        // Register Reference Commands
+        registerReferenceCommands(context, referenceManager);
 
-    // Register cite action command (for clickable cite links)
-    registerCiteActionCommand(context, referenceManager);
+        // Register cite action command (for clickable cite links)
+        registerCiteActionCommand(context, referenceManager);
+    } catch (error) {
+        console.error('Scimax: Failed to initialize ReferenceManager:', error);
+        vscode.window.showErrorMessage(`Scimax reference initialization failed: ${error}`);
+    }
 
     // Register Reference Tree View
     const referenceTreeProvider = new ReferenceTreeProvider(referenceManager);

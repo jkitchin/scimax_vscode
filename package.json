@@ -261,6 +261,12 @@
     ],
     "keybindings": [
       {
+        "command": "workbench.action.showCommands",
+        "key": "ctrl+x",
+        "mac": "cmd+x",
+        "args": "Scimax"
+      },
+      {
         "command": "scimax.journal.today",
         "key": "ctrl+shift+j",
         "mac": "cmd+shift+j"

@@ -16,6 +16,7 @@ node_modules/**
 !node_modules/minimatch/**
 !node_modules/brace-expansion/**
 !node_modules/balanced-match/**
+!node_modules/js-base64/**
 *.vsix
 .claude/**
 PLAN.md
