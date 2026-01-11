@@ -128,6 +128,59 @@ Quick navigation to visible text using labeled targets, inspired by Emacs [avy](
 
 ---
 
+### Spell Checking (jinx-style)
+
+Just-in-time spell checking with smart exclusions for scientific writing, inspired by [jinx](https://github.com/minad/jinx).
+
+**Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Correct Spelling` | `Alt+$` | Correct word at cursor (or find next error) |
+| `Scimax: Next Spelling Error` | `Ctrl+c ; n` | Jump to next spelling error |
+| `Scimax: Previous Spelling Error` | `Ctrl+c ; p` | Jump to previous spelling error |
+| `Scimax: Add Word to Dictionary` | - | Add word at cursor to personal dictionary |
+| `Scimax: Toggle Spell Checking` | - | Enable/disable spell checking |
+| `Scimax: Check Document Spelling` | - | Force spell check on current document |
+
+**Features:**
+- **Smart exclusions**: Skips citations, DOIs, URLs, code blocks, LaTeX math, file paths
+- **Personal dictionary**: Add words to your custom dictionary
+- **Quick fix**: Quick actions in editor for corrections
+- **Code-aware**: Recognizes camelCase, snake_case, SCREAMING_CASE
+
+---
+
+### Edit Marks (Track Changes)
+
+Collaborative editing markup for reviewing changes, inspired by scimax-editmarks.
+
+**Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Mark Insertion` | `Ctrl+c e i` | Mark selected text as insertion |
+| `Scimax: Mark Deletion` | `Ctrl+c e d` | Mark selected text for deletion |
+| `Scimax: Insert Edit Comment` | `Ctrl+c e c` | Insert a review comment |
+| `Scimax: Mark Typo Correction` | `Ctrl+c e t` | Mark typo with correction |
+| `Scimax: Accept Edit Mark` | `Ctrl+c e a` | Accept the edit mark at cursor |
+| `Scimax: Reject Edit Mark` | `Ctrl+c e r` | Reject the edit mark at cursor |
+| `Scimax: Accept All Edit Marks` | - | Accept all marks in document |
+| `Scimax: Reject All Edit Marks` | - | Reject all marks in document |
+| `Scimax: Next Edit Mark` | `Ctrl+c e ]` | Navigate to next edit mark |
+| `Scimax: Previous Edit Mark` | `Ctrl+c e [` | Navigate to previous edit mark |
+| `Scimax: Show Edit Marks Summary` | `Ctrl+c e s` | Show summary of all edit marks |
+
+**Markup Format:**
+```
+@@+inserted text+@@          # Insertion (green)
+@@-deleted text-@@           # Deletion (red, strikethrough)
+@@>comment text<@@           # Comment (yellow, italic)
+@@~old text|new text~@@      # Typo correction (orange)
+```
+
+Also supports CriticMarkup format: `{++insert++}`, `{--delete--}`, `{>>comment<<}`, `{~~old~>new~~}`
+
+---
+
 ### Project Management (projectile-style)
 
 Quick project switching and file finding, inspired by Emacs [projectile](https://github.com/bbatsov/projectile).
@@ -387,6 +440,26 @@ The extension adds a **Scimax** activity bar icon with these views:
 | `Ctrl+c j o` | Jump to Symbol | In editor |
 | `Ctrl+c j s` | Jump to Subword | In editor |
 
+### Spell Checking
+| Shortcut | Command | When |
+|----------|---------|------|
+| `Alt+$` | Correct Spelling | In editor |
+| `Ctrl+c ; n` | Next Spelling Error | In editor |
+| `Ctrl+c ; p` | Previous Spelling Error | In editor |
+
+### Edit Marks (Track Changes)
+| Shortcut | Command | When |
+|----------|---------|------|
+| `Ctrl+c e i` | Mark Insertion | In editor |
+| `Ctrl+c e d` | Mark Deletion | In editor |
+| `Ctrl+c e c` | Insert Comment | In editor |
+| `Ctrl+c e t` | Mark Typo | In editor |
+| `Ctrl+c e a` | Accept Edit Mark | In editor |
+| `Ctrl+c e r` | Reject Edit Mark | In editor |
+| `Ctrl+c e ]` | Next Edit Mark | In editor |
+| `Ctrl+c e [` | Previous Edit Mark | In editor |
+| `Ctrl+c e s` | Show Summary | In editor |
+
 ### Project Management
 | Shortcut | Command |
 |----------|---------|
@@ -439,6 +512,8 @@ The extension supports:
 | Projectile | projectile | Full support |
 | Swiper | swiper/ivy | Full support (fuzzy search) |
 | Avy | avy | Full support (jump) |
+| Spell Check | jinx/flyspell | Full support (smart exclusions) |
+| Track Changes | scimax-editmarks | Full support (editmarks) |
 | Literate Programming | ob-ipython | Planned |
 | Contacts | org-contacts | Not yet |
 

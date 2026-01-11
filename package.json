@@ -723,6 +723,74 @@
       {
         "command": "scimax.jump.killLine",
         "title": "Scimax: Jump Kill Line"
+      },
+      {
+        "command": "scimax.spelling.correct",
+        "title": "Scimax: Correct Spelling"
+      },
+      {
+        "command": "scimax.spelling.nextError",
+        "title": "Scimax: Next Spelling Error"
+      },
+      {
+        "command": "scimax.spelling.prevError",
+        "title": "Scimax: Previous Spelling Error"
+      },
+      {
+        "command": "scimax.spelling.addToDictionary",
+        "title": "Scimax: Add Word to Dictionary"
+      },
+      {
+        "command": "scimax.spelling.toggle",
+        "title": "Scimax: Toggle Spell Checking"
+      },
+      {
+        "command": "scimax.spelling.checkDocument",
+        "title": "Scimax: Check Document Spelling"
+      },
+      {
+        "command": "scimax.editmarks.insertion",
+        "title": "Scimax: Mark Insertion"
+      },
+      {
+        "command": "scimax.editmarks.deletion",
+        "title": "Scimax: Mark Deletion"
+      },
+      {
+        "command": "scimax.editmarks.comment",
+        "title": "Scimax: Insert Edit Comment"
+      },
+      {
+        "command": "scimax.editmarks.typo",
+        "title": "Scimax: Mark Typo Correction"
+      },
+      {
+        "command": "scimax.editmarks.accept",
+        "title": "Scimax: Accept Edit Mark"
+      },
+      {
+        "command": "scimax.editmarks.reject",
+        "title": "Scimax: Reject Edit Mark"
+      },
+      {
+        "command": "scimax.editmarks.acceptAll",
+        "title": "Scimax: Accept All Edit Marks"
+      },
+      {
+        "command": "scimax.editmarks.rejectAll",
+        "title": "Scimax: Reject All Edit Marks"
+      },
+      {
+        "command": "scimax.editmarks.next",
+        "title": "Scimax: Next Edit Mark"
+      },
+      {
+        "command": "scimax.editmarks.prev",
+        "title": "Scimax: Previous Edit Mark"
+      },
+      {
+        "command": "scimax.editmarks.summary",
+        "title": "Scimax: Show Edit Marks Summary"
       }
     ],
     "keybindings": [
@@ -1031,6 +1099,78 @@
         "key": "ctrl+shift+k",
         "mac": "cmd+shift+k",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onCitation"
+      },
+      {
+        "command": "scimax.spelling.correct",
+        "key": "alt+$",
+        "mac": "alt+$",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.spelling.nextError",
+        "key": "ctrl+c ; n",
+        "mac": "ctrl+c ; n",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.spelling.prevError",
+        "key": "ctrl+c ; p",
+        "mac": "ctrl+c ; p",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.insertion",
+        "key": "ctrl+c e i",
+        "mac": "ctrl+c e i",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.deletion",
+        "key": "ctrl+c e d",
+        "mac": "ctrl+c e d",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.comment",
+        "key": "ctrl+c e c",
+        "mac": "ctrl+c e c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.typo",
+        "key": "ctrl+c e t",
+        "mac": "ctrl+c e t",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.accept",
+        "key": "ctrl+c e a",
+        "mac": "ctrl+c e a",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.reject",
+        "key": "ctrl+c e r",
+        "mac": "ctrl+c e r",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.next",
+        "key": "ctrl+c e ]",
+        "mac": "ctrl+c e ]",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.prev",
+        "key": "ctrl+c e [",
+        "mac": "ctrl+c e [",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.editmarks.summary",
+        "key": "ctrl+c e s",
+        "mac": "ctrl+c e s",
+        "when": "editorTextFocus"
       }
     ],
     "configuration": {
