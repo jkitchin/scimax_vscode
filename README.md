@@ -46,19 +46,26 @@ Full bibliography management with BibTeX support, DOI fetching, and citation ins
 **Commands:**
 | Command | Keybinding | Description |
 |---------|------------|-------------|
-| `Scimax: Insert Citation` | `Ctrl+]` / `Cmd+]` | Insert a citation at cursor |
+| `Scimax: Insert Citation` | `Ctrl+c ]` | Insert a citation at cursor |
+| `Scimax: Insert Reference Link` | `Ctrl+u Ctrl+c ]` | Insert ref:/eqref:/pageref: link |
 | `Scimax: Fetch BibTeX from DOI` | - | Fetch bibliography entry from DOI |
 | `Scimax: Search References` | - | Search all bibliography entries |
 | `Scimax: Open Bibliography` | - | Open a .bib file |
 | `Scimax: Find Citations of Reference` | - | Find all citations of a reference |
 | `Scimax: Copy BibTeX Entry` | - | Copy BibTeX to clipboard |
+| `Scimax: Extract Bibliography from File` | - | Extract all cited references to a new .bib file |
+| `Scimax: Show Citing Works (OpenAlex)` | - | Show papers that cite a DOI |
+| `Scimax: Show Related Works (OpenAlex)` | - | Show related papers for a DOI |
+| `Scimax: Search OpenAlex` | - | Search the OpenAlex academic database |
 
 **Features:**
-- **Hover preview**: Hover over citations to see reference details
+- **Hover preview**: Hover over citations to see reference details with source file
+- **DOI tooltips**: Hover over DOIs to see metadata from CrossRef + OpenAlex (citation count, open access status, topics)
 - **Autocomplete**: Type `cite:` or `@` for citation suggestions
 - **Go to definition**: Jump from citation to bibliography entry
 - **Code lens**: In .bib files, see citations count and quick actions
 - **Citation styles**: cite, citet, citep, citeauthor, citeyear
+- **OpenAlex integration**: View citation counts, open access links, citing works, related works
 
 **Configuration:**
 ```json
@@ -69,6 +76,71 @@ Full bibliography management with BibTeX support, DOI fetching, and citation ins
   "scimax.ref.defaultCiteStyle": "cite"
 }
 ```
+
+---
+
+### Fuzzy Search (swiper-style)
+
+Fast, interactive search for the current file and all open files, inspired by Emacs [swiper](https://github.com/abo-abo/swiper).
+
+**Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Fuzzy Search (Current File)` | `Ctrl+c s` | Search lines in current file with live preview |
+| `Scimax: Fuzzy Search (Open Files)` | `Ctrl+c Shift+s` | Search across all open editor tabs |
+| `Scimax: Fuzzy Search (Outline)` | `Ctrl+c Alt+s` | Search headings/symbols in current file |
+
+**Features:**
+- **Live preview**: Cursor moves to match as you type
+- **Match highlighting**: Matches highlighted in the editor
+- **Multi-file search**: Search all open tabs at once
+- **Outline mode**: Jump to headings, functions, classes
+
+---
+
+### Jump Navigation (avy-style)
+
+Quick navigation to visible text using labeled targets, inspired by Emacs [avy](https://github.com/abo-abo/avy).
+
+**Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Jump to Character` | `Ctrl+c j c` | Jump to any occurrence of a character |
+| `Scimax: Jump to 2-Character Sequence` | `Ctrl+c j j` | Jump to a two-character sequence |
+| `Scimax: Jump to Word` | `Ctrl+c j w` | Jump to word starts |
+| `Scimax: Jump to Line` | `Ctrl+c j l` | Jump to any visible line |
+| `Scimax: Jump to Symbol` | `Ctrl+c j o` | Jump to symbols/headings in view |
+| `Scimax: Jump to Subword` | `Ctrl+c j s` | Jump to subword boundaries (camelCase, snake_case) |
+| `Scimax: Jump Copy Line` | - | Select a visible line and copy it |
+| `Scimax: Jump Kill Line` | - | Select a visible line and delete it |
+
+**Features:**
+- **Label-based selection**: Type a label (a, s, d, f...) to instantly jump
+- **QuickPick fallback**: Browse and filter targets in a list
+- **Match highlighting**: All targets highlighted in the editor
+- **Works everywhere**: Functions in any file type
+
+---
+
+### Project Management (projectile-style)
+
+Quick project switching and file finding, inspired by Emacs [projectile](https://github.com/bbatsov/projectile).
+
+**Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Switch Project` | `Ctrl+c p p` | Switch to a known project |
+| `Scimax: Find File in Project` | `Ctrl+c p f` | Find file in current project |
+| `Scimax: Search in Project` | `Ctrl+c p s` | Search text in project files |
+| `Scimax: Open Project Root` | `Ctrl+c p d` | Open project root directory |
+| `Scimax: Add Project` | `Ctrl+c p a` | Add a project to the list |
+| `Scimax: Remove Project` | - | Remove project from tracking |
+| `Scimax: Scan Directory for Projects` | - | Scan a directory for projects |
+| `Scimax: Project Info` | - | Show project statistics |
+| `Scimax: Cleanup Non-existent Projects` | - | Remove deleted projects |
+
+**Project Detection:**
+Automatically detects projects via: `.projectile`, `.git`, `.scimax`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `build.gradle`, `.project`
 
 ---
 
@@ -155,9 +227,6 @@ Project-based organization for scientific research and software development.
 - **software**: Software project with src/, tests/, docs/
 - **notes**: Note-taking with journal/ directory
 
-**Project Detection:**
-Automatically detects projects via: `.projectile`, `.git`, `.scimax`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `build.gradle`, `.project`
-
 **Configuration:**
 ```json
 {
@@ -166,6 +235,65 @@ Automatically detects projects via: `.projectile`, `.git`, `.scimax`, `package.j
   "scimax.notebook.autoDetect": true
 }
 ```
+
+---
+
+### Org-Mode Editing Features
+
+Enhanced editing commands for org-mode and markdown files.
+
+**Timestamp Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Insert Timestamp` | `Ctrl+c .` | Insert timestamp at cursor |
+| `Scimax: Shift Timestamp Up` | `Shift+Up` | Increment date component |
+| `Scimax: Shift Timestamp Down` | `Shift+Down` | Decrement date component |
+| `Scimax: Shift Timestamp Left` | `Shift+Left` | Previous day |
+| `Scimax: Shift Timestamp Right` | `Shift+Right` | Next day |
+| `Scimax: Add/Change Repeater` | `Ctrl+c Ctrl+r` | Add repeater to timestamp |
+
+**Table Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Create Table` | `Ctrl+c \|` | Create a new table |
+| `Scimax: Insert Row Below` | `Alt+Enter` | Insert row below current |
+| `Scimax: Insert Row Above` | `Alt+Shift+Enter` | Insert row above current |
+| `Scimax: Delete Row` | `Alt+Shift+Backspace` | Delete current row |
+| `Scimax: Insert Column Right` | `Alt+Shift+Right` | Insert column (in table) |
+| `Scimax: Delete Column` | `Alt+Shift+Left` | Delete column (in table) |
+| `Scimax: Insert Separator` | `Ctrl+c -` | Insert table separator line |
+| `Scimax: Align Table` | - | Align table columns |
+
+**Heading Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Promote Heading` | `Alt+Left` | Decrease heading level |
+| `Scimax: Demote Heading` | `Alt+Right` | Increase heading level |
+| `Scimax: Promote Subtree` | `Alt+Shift+Left` | Promote heading and children |
+| `Scimax: Demote Subtree` | `Alt+Shift+Right` | Demote heading and children |
+| `Scimax: Move Heading Up` | `Alt+Up` | Move heading up |
+| `Scimax: Move Heading Down` | `Alt+Down` | Move heading down |
+| `Scimax: Insert Heading` | `Ctrl+Enter` | Insert new heading |
+| `Scimax: Insert Subheading` | - | Insert subheading |
+
+**Task Commands:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Toggle Checkbox` | `Ctrl+c Ctrl+c` | Toggle checkbox state |
+| `Scimax: Insert Task` | - | Insert a new task |
+| `Scimax: Insert Due Date` | `Ctrl+c Ctrl+d` | Add due date to task |
+| `Scimax: Insert Scheduled Date` | `Ctrl+c Ctrl+s` | Add scheduled date to task |
+| `Scimax: Insert Priority` | - | Add priority to task |
+| `Scimax: Show Agenda` | - | Show agenda view |
+| `Scimax: Show Today's Tasks` | - | Show tasks due today |
+| `Scimax: Show Tasks by Project` | - | Filter tasks by @project |
+| `Scimax: Show Tasks by Tag` | - | Filter tasks by #tag |
+
+**Folding:**
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `Scimax: Toggle Fold at Cursor` | `Tab` | Toggle fold at current heading |
+| `Scimax: Cycle Global Folding` | `Shift+Tab` | Cycle all headings fold state |
 
 ---
 
@@ -211,15 +339,72 @@ The extension adds a **Scimax** activity bar icon with these views:
 
 ---
 
-## Keyboard Shortcuts
+## Keyboard Shortcuts Summary
 
+### General
+| Shortcut | Command |
+|----------|---------|
+| `Ctrl+Shift+J` / `Cmd+Shift+J` | Open Today's Journal |
+| `Ctrl+Alt+V` / `Ctrl+Cmd+V` | Database Menu (quick access to search commands) |
+
+### Journal Navigation
 | Shortcut | Command | When |
 |----------|---------|------|
-| `Ctrl+Shift+J` / `Cmd+Shift+J` | Open Today's Journal | Always |
 | `Alt+[` | Previous Journal Entry | In journal file |
 | `Alt+]` | Next Journal Entry | In journal file |
-| `Ctrl+Enter` / `Cmd+Enter` | Execute Code Block | In org/markdown |
-| `Ctrl+]` / `Cmd+]` | Insert Citation | In org/markdown |
+
+### Citations & References
+| Shortcut | Command | When |
+|----------|---------|------|
+| `Ctrl+c ]` | Insert Citation | In org/markdown/latex |
+| `Ctrl+u Ctrl+c ]` | Insert Reference Link | In org/markdown/latex |
+
+### Fuzzy Search
+| Shortcut | Command | When |
+|----------|---------|------|
+| `Ctrl+c s` | Fuzzy Search (Current File) | In editor |
+| `Ctrl+c Shift+s` | Fuzzy Search (Open Files) | In editor |
+| `Ctrl+c Alt+s` | Fuzzy Search (Outline) | In editor |
+
+### Jump Navigation
+| Shortcut | Command | When |
+|----------|---------|------|
+| `Ctrl+c j c` | Jump to Character | In editor |
+| `Ctrl+c j j` | Jump to 2-Char Sequence | In editor |
+| `Ctrl+c j w` | Jump to Word | In editor |
+| `Ctrl+c j l` | Jump to Line | In editor |
+| `Ctrl+c j o` | Jump to Symbol | In editor |
+| `Ctrl+c j s` | Jump to Subword | In editor |
+
+### Project Management
+| Shortcut | Command |
+|----------|---------|
+| `Ctrl+c p p` | Switch Project |
+| `Ctrl+c p f` | Find File in Project |
+| `Ctrl+c p s` | Search in Project |
+| `Ctrl+c p d` | Open Project Root |
+| `Ctrl+c p a` | Add Project |
+
+### Org-Mode Editing
+| Shortcut | Command | When |
+|----------|---------|------|
+| `Tab` | Toggle Fold | On heading, in org |
+| `Shift+Tab` | Cycle Global Folding | In org |
+| `Ctrl+Enter` | Insert Heading / Execute Block | In org/markdown |
+| `Ctrl+c Ctrl+c` | Toggle Checkbox | In org/markdown |
+| `Ctrl+c .` | Insert Timestamp | In org/markdown |
+| `Ctrl+c Ctrl+d` | Insert Due Date | In org/markdown |
+| `Ctrl+c Ctrl+s` | Insert Scheduled Date | In org/markdown |
+| `Ctrl+c Ctrl+r` | Add Repeater | In org/markdown |
+| `Ctrl+c \|` | Create Table | In org/markdown |
+| `Ctrl+c -` | Insert Table Separator | In org/markdown |
+| `Shift+Up/Down` | Adjust Timestamp | On timestamp |
+| `Shift+Left/Right` | Previous/Next Day | On timestamp |
+| `Alt+Left/Right` | Promote/Demote Heading | On heading |
+| `Alt+Up/Down` | Move Heading Up/Down | On heading |
+| `Alt+Enter` | Insert Table Row Below | In table |
+| `Alt+Shift+Enter` | Insert Table Row Above | In table |
+| `Alt+Shift+Left/Right` | Promote/Demote Subtree or Delete/Insert Column | Context-dependent |
 
 ---
 
@@ -237,9 +422,12 @@ The extension supports:
 | Feature | Emacs Scimax | VS Code Scimax |
 |---------|--------------|----------------|
 | Journal | scimax-journal | Full support |
-| Bibliography | org-ref | Full support |
+| Bibliography | org-ref | Full support + OpenAlex |
 | Database | org-db-v3 | Full support with semantic search |
 | Notebooks | scimax-notebook | Full support |
+| Projectile | projectile | Full support |
+| Swiper | swiper/ivy | Full support (fuzzy search) |
+| Avy | avy | Full support (jump) |
 | Literate Programming | ob-ipython | Planned |
 | Contacts | org-contacts | Not yet |
 
