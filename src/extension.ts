@@ -39,8 +39,10 @@ import { registerJumpCommands } from './jump/commands';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 import { SpellChecker, registerSpellCheckCommands, SpellingCodeActionProvider } from './spelling/spellChecker';
 import { registerEditmarkCommands } from './editmarks/editmarks';
+import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 
 let journalManager: JournalManager;
+let hydraManager: HydraManager;
 let journalStatusBar: JournalStatusBar;
 let scimaxDb: ScimaxDb;
 let referenceManager: ReferenceManager;
@@ -386,6 +388,13 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Editmark Commands (track changes)
     registerEditmarkCommands(context);
     console.log('Scimax: Editmarks initialized');
+
+    // Initialize Hydra Menu Framework
+    hydraManager = new HydraManager(context);
+    hydraManager.registerMenus(scimaxMenus);
+    registerHydraCommands(context, hydraManager);
+    context.subscriptions.push({ dispose: () => hydraManager.dispose() });
+    console.log('Scimax: Hydra menu framework initialized');
 }
 
 export async function deactivate() {
