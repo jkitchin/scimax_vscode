@@ -1,0 +1,1240 @@
+import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as crypto from 'crypto';
+import { createClient, Client } from '@libsql/client';
+import {
+    OrgParser,
+    OrgDocument,
+    parseMarkdownCodeBlocks,
+    extractHashtags,
+    extractMentions
+} from '../parser/orgParser';
+
+/**
+ * Embedding service interface for semantic search
+ */
+export interface EmbeddingService {
+    embed(text: string): Promise<number[]>;
+    embedBatch(texts: string[]): Promise<number[][]>;
+    dimensions: number;
+}
+
+/**
+ * Database record types
+ */
+export interface FileRecord {
+    id: number;
+    path: string;
+    mtime: number;
+    hash: string;
+    size: number;
+    indexed_at: number;
+}
+
+export interface HeadingRecord {
+    id: number;
+    file_id: number;
+    file_path: string;
+    level: number;
+    title: string;
+    line_number: number;
+    begin_pos: number;
+    todo_state: string | null;
+    priority: string | null;
+    tags: string;
+    inherited_tags: string;
+    properties: string;
+    scheduled: string | null;
+    deadline: string | null;
+    closed: string | null;
+}
+
+export interface SourceBlockRecord {
+    id: number;
+    file_id: number;
+    file_path: string;
+    language: string;
+    content: string;
+    line_number: number;
+    headers: string;
+}
+
+export interface LinkRecord {
+    id: number;
+    file_id: number;
+    file_path: string;
+    link_type: string;
+    target: string;
+    description: string | null;
+    line_number: number;
+}
+
+export interface SearchResult {
+    type: 'heading' | 'block' | 'link' | 'content' | 'semantic';
+    file_path: string;
+    line_number: number;
+    title?: string;
+    preview: string;
+    score: number;
+    distance?: number;
+}
+
+export interface AgendaItem {
+    type: 'deadline' | 'scheduled' | 'todo';
+    heading: HeadingRecord;
+    date?: string;
+    days_until?: number;
+    overdue?: boolean;
+}
+
+export interface SearchScope {
+    type: 'all' | 'directory' | 'project';
+    path?: string;
+    keyword?: string;
+}
+
+export interface DbStats {
+    files: number;
+    headings: number;
+    blocks: number;
+    links: number;
+    chunks: number;
+    has_embeddings: boolean;
+    last_indexed?: number;
+}
+
+/**
+ * OrgDb with libsql - SQLite with FTS5 and Vector Search
+ * Scalable to thousands of files with fast search
+ */
+export class OrgDbSqlite {
+    private db: Client | null = null;
+    private parser: OrgParser;
+    private dbPath: string;
+    private context: vscode.ExtensionContext;
+    private searchScope: SearchScope = { type: 'all' };
+    private embeddingService: EmbeddingService | null = null;
+    private fileWatcher: vscode.FileSystemWatcher | undefined;
+    private indexQueue: Set<string> = new Set();
+    private isIndexing: boolean = false;
+    private ignorePatterns: string[] = [];
+
+    // Embedding dimensions (384 for all-MiniLM-L6-v2, 1536 for OpenAI)
+    private embeddingDimensions: number = 384;
+
+    constructor(context: vscode.ExtensionContext) {
+        this.context = context;
+        this.parser = new OrgParser();
+        this.dbPath = path.join(context.globalStorageUri.fsPath, 'org-db.sqlite');
+    }
+
+    /**
+     * Initialize the database
+     */
+    public async initialize(): Promise<void> {
+        const storageDir = this.context.globalStorageUri.fsPath;
+        if (!fs.existsSync(storageDir)) {
+            fs.mkdirSync(storageDir, { recursive: true });
+        }
+
+        // Create libsql client
+        this.db = createClient({
+            url: `file:${this.dbPath}`
+        });
+
+        await this.createSchema();
+        this.loadIgnorePatterns();
+        this.setupFileWatcher();
+
+        console.log('OrgDbSqlite: Initialized');
+    }
+
+    /**
+     * Create database schema with FTS5 and vector support
+     */
+    private async createSchema(): Promise<void> {
+        if (!this.db) return;
+
+        await this.db.batch([
+            // Files table
+            `CREATE TABLE IF NOT EXISTS files (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                path TEXT UNIQUE NOT NULL,
+                mtime REAL NOT NULL,
+                hash TEXT NOT NULL,
+                size INTEGER NOT NULL,
+                indexed_at INTEGER NOT NULL,
+                keywords TEXT DEFAULT '{}'
+            )`,
+
+            // Headings table
+            `CREATE TABLE IF NOT EXISTS headings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                level INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                line_number INTEGER NOT NULL,
+                begin_pos INTEGER NOT NULL,
+                todo_state TEXT,
+                priority TEXT,
+                tags TEXT DEFAULT '[]',
+                inherited_tags TEXT DEFAULT '[]',
+                properties TEXT DEFAULT '{}',
+                scheduled TEXT,
+                deadline TEXT,
+                closed TEXT,
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+
+            // Source blocks table
+            `CREATE TABLE IF NOT EXISTS source_blocks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                language TEXT NOT NULL,
+                content TEXT NOT NULL,
+                line_number INTEGER NOT NULL,
+                headers TEXT DEFAULT '{}',
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+
+            // Links table
+            `CREATE TABLE IF NOT EXISTS links (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                link_type TEXT NOT NULL,
+                target TEXT NOT NULL,
+                description TEXT,
+                line_number INTEGER NOT NULL,
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+
+            // Hashtags table
+            `CREATE TABLE IF NOT EXISTS hashtags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tag TEXT NOT NULL,
+                file_path TEXT NOT NULL,
+                UNIQUE(tag, file_path)
+            )`,
+
+            // Text chunks for semantic search (with vector column)
+            `CREATE TABLE IF NOT EXISTS chunks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id INTEGER NOT NULL,
+                file_path TEXT NOT NULL,
+                content TEXT NOT NULL,
+                line_start INTEGER NOT NULL,
+                line_end INTEGER NOT NULL,
+                embedding F32_BLOB(${this.embeddingDimensions}),
+                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
+            )`,
+
+            // FTS5 virtual table for full-text search
+            `CREATE VIRTUAL TABLE IF NOT EXISTS fts_content USING fts5(
+                file_path,
+                title,
+                content,
+                tokenize='porter unicode61'
+            )`,
+
+            // Indexes for performance
+            `CREATE INDEX IF NOT EXISTS idx_headings_file ON headings(file_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_headings_todo ON headings(todo_state)`,
+            `CREATE INDEX IF NOT EXISTS idx_headings_deadline ON headings(deadline)`,
+            `CREATE INDEX IF NOT EXISTS idx_headings_scheduled ON headings(scheduled)`,
+            `CREATE INDEX IF NOT EXISTS idx_blocks_file ON source_blocks(file_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_blocks_language ON source_blocks(language)`,
+            `CREATE INDEX IF NOT EXISTS idx_links_file ON links(file_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_hashtags_tag ON hashtags(tag)`,
+            `CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)`
+        ]);
+
+        // Create vector index if embeddings are enabled
+        try {
+            await this.db.execute(`
+                CREATE INDEX IF NOT EXISTS idx_chunks_embedding
+                ON chunks(libsql_vector_idx(embedding, 'metric=cosine'))
+            `);
+        } catch (e) {
+            // Vector index creation may fail if no embeddings yet
+            console.log('OrgDbSqlite: Vector index will be created when embeddings are added');
+        }
+    }
+
+    /**
+     * Set embedding service for semantic search
+     */
+    public setEmbeddingService(service: EmbeddingService): void {
+        this.embeddingService = service;
+        this.embeddingDimensions = service.dimensions;
+    }
+
+    /**
+     * Setup file watcher for auto-indexing
+     */
+    private setupFileWatcher(): void {
+        this.fileWatcher = vscode.workspace.createFileSystemWatcher(
+            '**/*.{org,md}',
+            false, false, false
+        );
+
+        this.fileWatcher.onDidCreate(uri => this.queueIndex(uri.fsPath));
+        this.fileWatcher.onDidChange(uri => this.queueIndex(uri.fsPath));
+        this.fileWatcher.onDidDelete(uri => this.removeFile(uri.fsPath));
+
+        this.context.subscriptions.push(this.fileWatcher);
+    }
+
+    /**
+     * Load ignore patterns from config
+     */
+    private loadIgnorePatterns(): void {
+        const config = vscode.workspace.getConfiguration('scimax.db');
+        this.ignorePatterns = config.get<string[]>('ignorePatterns') || [
+            '**/node_modules/**',
+            '**/.git/**',
+            '**/dist/**',
+            '**/build/**'
+        ];
+    }
+
+    /**
+     * Check if file should be ignored
+     */
+    private shouldIgnore(filePath: string): boolean {
+        const minimatch = require('minimatch');
+        return this.ignorePatterns.some(pattern => minimatch(filePath, pattern));
+    }
+
+    /**
+     * Queue file for indexing (debounced)
+     */
+    private queueIndex(filePath: string): void {
+        if (this.shouldIgnore(filePath)) return;
+        this.indexQueue.add(filePath);
+
+        if (!this.isIndexing) {
+            setTimeout(() => this.processIndexQueue(), 500);
+        }
+    }
+
+    /**
+     * Process index queue
+     */
+    private async processIndexQueue(): Promise<void> {
+        if (this.indexQueue.size === 0 || !this.db) return;
+
+        this.isIndexing = true;
+        const files = Array.from(this.indexQueue);
+        this.indexQueue.clear();
+
+        for (const filePath of files) {
+            try {
+                await this.indexFile(filePath);
+            } catch (error) {
+                console.error(`OrgDbSqlite: Failed to index ${filePath}`, error);
+            }
+        }
+
+        this.isIndexing = false;
+
+        if (this.indexQueue.size > 0) {
+            setTimeout(() => this.processIndexQueue(), 100);
+        }
+    }
+
+    /**
+     * Index a directory recursively
+     */
+    public async indexDirectory(
+        directory: string,
+        progress?: vscode.Progress<{ message?: string; increment?: number }>
+    ): Promise<number> {
+        const files = await this.findFiles(directory);
+        let indexed = 0;
+
+        for (const filePath of files) {
+            if (await this.needsReindex(filePath)) {
+                await this.indexFile(filePath);
+                indexed++;
+            }
+
+            if (progress) {
+                progress.report({
+                    message: `Indexing: ${path.basename(filePath)}`,
+                    increment: 100 / files.length
+                });
+            }
+        }
+
+        return indexed;
+    }
+
+    /**
+     * Find all org/md files in directory
+     */
+    private async findFiles(directory: string): Promise<string[]> {
+        const files: string[] = [];
+
+        const walk = (dir: string) => {
+            try {
+                const items = fs.readdirSync(dir, { withFileTypes: true });
+                for (const item of items) {
+                    const fullPath = path.join(dir, item.name);
+                    if (this.shouldIgnore(fullPath)) continue;
+
+                    if (item.isDirectory() && !item.name.startsWith('.')) {
+                        walk(fullPath);
+                    } else if (item.isFile()) {
+                        const ext = path.extname(item.name).toLowerCase();
+                        if (ext === '.org' || ext === '.md') {
+                            files.push(fullPath);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(`OrgDbSqlite: Error walking ${dir}`, error);
+            }
+        };
+
+        walk(directory);
+        return files;
+    }
+
+    /**
+     * Check if file needs reindexing
+     */
+    private async needsReindex(filePath: string): Promise<boolean> {
+        if (!this.db) return true;
+
+        const result = await this.db.execute({
+            sql: 'SELECT mtime FROM files WHERE path = ?',
+            args: [filePath]
+        });
+
+        if (result.rows.length === 0) return true;
+
+        try {
+            const stats = fs.statSync(filePath);
+            return stats.mtimeMs > (result.rows[0].mtime as number);
+        } catch {
+            return true;
+        }
+    }
+
+    /**
+     * Index a single file
+     */
+    public async indexFile(filePath: string): Promise<void> {
+        if (!this.db) return;
+
+        try {
+            const content = fs.readFileSync(filePath, 'utf8');
+            const stats = fs.statSync(filePath);
+            const ext = path.extname(filePath).toLowerCase();
+            const hash = crypto.createHash('md5').update(content).digest('hex');
+
+            // Remove old data for this file
+            await this.removeFileData(filePath);
+
+            // Insert file record
+            const fileResult = await this.db.execute({
+                sql: `INSERT INTO files (path, mtime, hash, size, indexed_at, keywords)
+                      VALUES (?, ?, ?, ?, ?, ?)`,
+                args: [filePath, stats.mtimeMs, hash, stats.size, Date.now(), '{}']
+            });
+
+            const fileId = Number(fileResult.lastInsertRowid);
+
+            // Parse and index content
+            if (ext === '.org') {
+                const doc = this.parser.parse(content);
+                await this.indexOrgDocument(fileId, filePath, doc, content);
+            } else if (ext === '.md') {
+                await this.indexMarkdownDocument(fileId, filePath, content);
+            }
+
+            // Extract and index hashtags
+            const hashtags = extractHashtags(content);
+            for (const tag of hashtags) {
+                await this.db.execute({
+                    sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
+                    args: [tag.toLowerCase(), filePath]
+                });
+            }
+
+            // Index for FTS5
+            await this.db.execute({
+                sql: 'INSERT INTO fts_content (file_path, title, content) VALUES (?, ?, ?)',
+                args: [filePath, path.basename(filePath), content]
+            });
+
+            // Create chunks for semantic search
+            if (this.embeddingService) {
+                await this.createChunks(fileId, filePath, content);
+            }
+
+        } catch (error) {
+            console.error(`OrgDbSqlite: Failed to index ${filePath}`, error);
+        }
+    }
+
+    /**
+     * Index org document
+     */
+    private async indexOrgDocument(
+        fileId: number,
+        filePath: string,
+        doc: OrgDocument,
+        content: string
+    ): Promise<void> {
+        if (!this.db) return;
+
+        const lines = content.split('\n');
+        let charPos = 0;
+        const linePositions: number[] = [];
+        for (const line of lines) {
+            linePositions.push(charPos);
+            charPos += line.length + 1;
+        }
+
+        // Index headings with tag inheritance
+        const flatHeadings = this.parser.flattenHeadings(doc);
+        const tagStack: string[][] = [];
+
+        for (const heading of flatHeadings) {
+            while (tagStack.length >= heading.level) {
+                tagStack.pop();
+            }
+            const inheritedTags = tagStack.flat();
+            tagStack.push(heading.tags);
+
+            // Find scheduling info
+            const headingLine = heading.lineNumber - 1;
+            let scheduled: string | null = null;
+            let deadline: string | null = null;
+            let closed: string | null = null;
+
+            for (let i = headingLine + 1; i < Math.min(headingLine + 5, lines.length); i++) {
+                const line = lines[i];
+                if (line.match(/^\*+\s/)) break;
+
+                const schedMatch = line.match(/SCHEDULED:\s*<(\d{4}-\d{2}-\d{2}[^>]*)>/);
+                if (schedMatch) scheduled = schedMatch[1];
+
+                const deadMatch = line.match(/DEADLINE:\s*<(\d{4}-\d{2}-\d{2}[^>]*)>/);
+                if (deadMatch) deadline = deadMatch[1];
+
+                const closedMatch = line.match(/CLOSED:\s*\[(\d{4}-\d{2}-\d{2}[^\]]*)\]/);
+                if (closedMatch) closed = closedMatch[1];
+            }
+
+            await this.db.execute({
+                sql: `INSERT INTO headings
+                      (file_id, file_path, level, title, line_number, begin_pos,
+                       todo_state, priority, tags, inherited_tags, properties,
+                       scheduled, deadline, closed)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                args: [
+                    fileId, filePath, heading.level, heading.title,
+                    heading.lineNumber, linePositions[headingLine] || 0,
+                    heading.todoState || null, heading.priority || null,
+                    JSON.stringify(heading.tags), JSON.stringify(inheritedTags),
+                    JSON.stringify(heading.properties),
+                    scheduled, deadline, closed
+                ]
+            });
+        }
+
+        // Index source blocks
+        for (const block of doc.sourceBlocks) {
+            await this.db.execute({
+                sql: `INSERT INTO source_blocks
+                      (file_id, file_path, language, content, line_number, headers)
+                      VALUES (?, ?, ?, ?, ?, ?)`,
+                args: [
+                    fileId, filePath, block.language, block.content,
+                    block.lineNumber, JSON.stringify(block.headers)
+                ]
+            });
+        }
+
+        // Index links
+        for (const link of doc.links) {
+            await this.db.execute({
+                sql: `INSERT INTO links
+                      (file_id, file_path, link_type, target, description, line_number)
+                      VALUES (?, ?, ?, ?, ?, ?)`,
+                args: [
+                    fileId, filePath, link.type, link.target,
+                    link.description || null, link.lineNumber
+                ]
+            });
+        }
+    }
+
+    /**
+     * Index markdown document
+     */
+    private async indexMarkdownDocument(
+        fileId: number,
+        filePath: string,
+        content: string
+    ): Promise<void> {
+        if (!this.db) return;
+
+        const lines = content.split('\n');
+        let charPos = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const lineNumber = i + 1;
+
+            const match = line.match(/^(#{1,6})\s+(.*)$/);
+            if (match) {
+                const level = match[1].length;
+                let title = match[2];
+                const tags: string[] = [];
+
+                const tagMatch = title.match(/\s+#(\w+(?:\s+#\w+)*)$/);
+                if (tagMatch) {
+                    tags.push(...tagMatch[1].split(/\s+#/));
+                    title = title.slice(0, -tagMatch[0].length);
+                }
+
+                let todoState: string | null = null;
+                const todoMatch = title.match(/^\[([A-Z]+)\]\s+/);
+                if (todoMatch) {
+                    todoState = todoMatch[1];
+                    title = title.slice(todoMatch[0].length);
+                }
+
+                await this.db.execute({
+                    sql: `INSERT INTO headings
+                          (file_id, file_path, level, title, line_number, begin_pos,
+                           todo_state, tags, inherited_tags, properties)
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]', '{}')`,
+                    args: [fileId, filePath, level, title.trim(), lineNumber, charPos,
+                           todoState, JSON.stringify(tags)]
+                });
+            }
+
+            charPos += line.length + 1;
+        }
+
+        // Index code blocks
+        const blocks = parseMarkdownCodeBlocks(content);
+        for (const block of blocks) {
+            await this.db.execute({
+                sql: `INSERT INTO source_blocks
+                      (file_id, file_path, language, content, line_number, headers)
+                      VALUES (?, ?, ?, ?, ?, ?)`,
+                args: [fileId, filePath, block.language, block.content,
+                       block.lineNumber, JSON.stringify(block.headers)]
+            });
+        }
+    }
+
+    /**
+     * Create text chunks for semantic search
+     */
+    private async createChunks(
+        fileId: number,
+        filePath: string,
+        content: string
+    ): Promise<void> {
+        if (!this.db || !this.embeddingService) return;
+
+        const lines = content.split('\n');
+        const chunkSize = 2000;  // Characters per chunk
+        const chunkOverlap = 200;
+
+        const chunks: { text: string; lineStart: number; lineEnd: number }[] = [];
+        let currentChunk = '';
+        let currentLineStart = 1;
+        let charCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            currentChunk += line + '\n';
+            charCount += line.length + 1;
+
+            if (charCount >= chunkSize) {
+                chunks.push({
+                    text: currentChunk.trim(),
+                    lineStart: currentLineStart,
+                    lineEnd: i + 1
+                });
+
+                // Overlap: keep last few lines
+                const overlapLines = currentChunk.split('\n').slice(-3);
+                currentChunk = overlapLines.join('\n');
+                currentLineStart = Math.max(1, i - 2);
+                charCount = currentChunk.length;
+            }
+        }
+
+        // Last chunk
+        if (currentChunk.trim()) {
+            chunks.push({
+                text: currentChunk.trim(),
+                lineStart: currentLineStart,
+                lineEnd: lines.length
+            });
+        }
+
+        // Generate embeddings in batch
+        const texts = chunks.map(c => c.text);
+        const embeddings = await this.embeddingService.embedBatch(texts);
+
+        // Insert chunks with embeddings
+        for (let i = 0; i < chunks.length; i++) {
+            await this.db.execute({
+                sql: `INSERT INTO chunks
+                      (file_id, file_path, content, line_start, line_end, embedding)
+                      VALUES (?, ?, ?, ?, ?, vector(?))`,
+                args: [
+                    fileId, filePath, chunks[i].text,
+                    chunks[i].lineStart, chunks[i].lineEnd,
+                    JSON.stringify(embeddings[i])
+                ]
+            });
+        }
+    }
+
+    /**
+     * Remove file from database
+     */
+    public async removeFile(filePath: string): Promise<void> {
+        await this.removeFileData(filePath);
+    }
+
+    /**
+     * Remove all data for a file
+     */
+    private async removeFileData(filePath: string): Promise<void> {
+        if (!this.db) return;
+
+        await this.db.batch([
+            { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
+            { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
+            { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
+            { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
+            { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
+            { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
+            { sql: 'DELETE FROM files WHERE path = ?', args: [filePath] }
+        ]);
+    }
+
+    /**
+     * Set search scope
+     */
+    public setSearchScope(scope: SearchScope): void {
+        this.searchScope = scope;
+    }
+
+    /**
+     * Get search scope
+     */
+    public getSearchScope(): SearchScope {
+        return this.searchScope;
+    }
+
+    /**
+     * Build scope WHERE clause
+     */
+    private getScopeClause(pathColumn: string = 'file_path'): { sql: string; args: any[] } {
+        if (this.searchScope.type === 'directory' && this.searchScope.path) {
+            return {
+                sql: ` AND ${pathColumn} LIKE ?`,
+                args: [`${this.searchScope.path}%`]
+            };
+        }
+        return { sql: '', args: [] };
+    }
+
+    /**
+     * Full-text search using FTS5 with BM25 ranking
+     */
+    public async searchFullText(query: string, options?: {
+        limit?: number;
+    }): Promise<SearchResult[]> {
+        if (!this.db) return [];
+
+        const limit = options?.limit || 100;
+        const scope = this.getScopeClause('file_path');
+
+        const result = await this.db.execute({
+            sql: `SELECT file_path, title,
+                         snippet(fts_content, 2, '<mark>', '</mark>', '...', 32) as snippet,
+                         bm25(fts_content) as score
+                  FROM fts_content
+                  WHERE fts_content MATCH ?${scope.sql}
+                  ORDER BY score
+                  LIMIT ?`,
+            args: [query, ...scope.args, limit]
+        });
+
+        return result.rows.map(row => ({
+            type: 'content' as const,
+            file_path: row.file_path as string,
+            line_number: 1,
+            preview: row.snippet as string,
+            score: Math.abs(row.score as number)
+        }));
+    }
+
+    /**
+     * Semantic search using vector similarity
+     */
+    public async searchSemantic(query: string, options?: {
+        limit?: number;
+    }): Promise<SearchResult[]> {
+        if (!this.db || !this.embeddingService) return [];
+
+        const limit = options?.limit || 20;
+        const queryEmbedding = await this.embeddingService.embed(query);
+        const scope = this.getScopeClause('c.file_path');
+
+        const result = await this.db.execute({
+            sql: `SELECT c.file_path, c.content, c.line_start, c.line_end,
+                         vector_distance_cos(c.embedding, vector(?)) as distance
+                  FROM chunks c
+                  WHERE c.embedding IS NOT NULL${scope.sql}
+                  ORDER BY distance ASC
+                  LIMIT ?`,
+            args: [JSON.stringify(queryEmbedding), ...scope.args, limit]
+        });
+
+        return result.rows.map(row => ({
+            type: 'semantic' as const,
+            file_path: row.file_path as string,
+            line_number: row.line_start as number,
+            preview: (row.content as string).slice(0, 200),
+            score: 1 - (row.distance as number),  // Convert distance to similarity
+            distance: row.distance as number
+        }));
+    }
+
+    /**
+     * Hybrid search: combine FTS5 and vector search with reciprocal rank fusion
+     */
+    public async searchHybrid(query: string, options?: {
+        limit?: number;
+        ftsWeight?: number;
+        vectorWeight?: number;
+    }): Promise<SearchResult[]> {
+        const limit = options?.limit || 20;
+        const ftsWeight = options?.ftsWeight || 0.5;
+        const vectorWeight = options?.vectorWeight || 0.5;
+
+        // Get results from both methods
+        const [ftsResults, vectorResults] = await Promise.all([
+            this.searchFullText(query, { limit: limit * 2 }),
+            this.embeddingService ? this.searchSemantic(query, { limit: limit * 2 }) : []
+        ]);
+
+        // Reciprocal rank fusion
+        const scoreMap = new Map<string, { result: SearchResult; rrf: number }>();
+
+        ftsResults.forEach((result, idx) => {
+            const key = `${result.file_path}:${result.line_number}`;
+            const rrf = ftsWeight / (idx + 1);
+            scoreMap.set(key, { result, rrf });
+        });
+
+        vectorResults.forEach((result, idx) => {
+            const key = `${result.file_path}:${result.line_number}`;
+            const rrf = vectorWeight / (idx + 1);
+            const existing = scoreMap.get(key);
+            if (existing) {
+                existing.rrf += rrf;
+            } else {
+                scoreMap.set(key, { result, rrf });
+            }
+        });
+
+        // Sort by combined score
+        return Array.from(scoreMap.values())
+            .sort((a, b) => b.rrf - a.rrf)
+            .slice(0, limit)
+            .map(item => ({ ...item.result, score: item.rrf }));
+    }
+
+    /**
+     * Search headings
+     */
+    public async searchHeadings(query: string, options?: {
+        todoState?: string;
+        tag?: string;
+        limit?: number;
+    }): Promise<HeadingRecord[]> {
+        if (!this.db) return [];
+
+        const limit = options?.limit || 100;
+        const scope = this.getScopeClause();
+
+        let sql = `SELECT * FROM headings WHERE 1=1${scope.sql}`;
+        const args: any[] = [...scope.args];
+
+        if (query) {
+            sql += ' AND title LIKE ?';
+            args.push(`%${query}%`);
+        }
+
+        if (options?.todoState) {
+            sql += ' AND todo_state = ?';
+            args.push(options.todoState);
+        }
+
+        if (options?.tag) {
+            sql += ' AND (tags LIKE ? OR inherited_tags LIKE ?)';
+            args.push(`%"${options.tag}"%`, `%"${options.tag}"%`);
+        }
+
+        sql += ' ORDER BY file_path, line_number LIMIT ?';
+        args.push(limit);
+
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
+     * Search by property
+     */
+    public async searchByProperty(propertyName: string, value?: string): Promise<HeadingRecord[]> {
+        if (!this.db) return [];
+
+        const scope = this.getScopeClause();
+
+        let sql = `SELECT * FROM headings WHERE properties LIKE ?${scope.sql}`;
+        const args: any[] = value
+            ? [`%"${propertyName}":"${value}%`, ...scope.args]
+            : [`%"${propertyName}"%`, ...scope.args];
+
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
+     * Get agenda items
+     */
+    public async getAgenda(options?: {
+        before?: string;
+        includeUnscheduled?: boolean;
+    }): Promise<AgendaItem[]> {
+        if (!this.db) return [];
+
+        const items: AgendaItem[] = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let beforeDate: Date | undefined;
+        if (options?.before) {
+            beforeDate = this.parseRelativeDate(options.before);
+        }
+
+        const scope = this.getScopeClause();
+
+        // Get items with deadlines
+        const deadlines = await this.db.execute({
+            sql: `SELECT * FROM headings
+                  WHERE deadline IS NOT NULL
+                  AND (todo_state IS NULL OR todo_state NOT IN ('DONE', 'CANCELLED'))
+                  ${scope.sql}`,
+            args: scope.args
+        });
+
+        for (const row of deadlines.rows) {
+            const heading = row as unknown as HeadingRecord;
+            const deadlineDate = new Date(heading.deadline!.split(' ')[0]);
+            const daysUntil = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+            if (!beforeDate || deadlineDate <= beforeDate) {
+                items.push({
+                    type: 'deadline',
+                    heading,
+                    date: heading.deadline!,
+                    days_until: daysUntil,
+                    overdue: daysUntil < 0
+                });
+            }
+        }
+
+        // Get scheduled items
+        const scheduled = await this.db.execute({
+            sql: `SELECT * FROM headings
+                  WHERE scheduled IS NOT NULL
+                  AND (todo_state IS NULL OR todo_state NOT IN ('DONE', 'CANCELLED'))
+                  ${scope.sql}`,
+            args: scope.args
+        });
+
+        for (const row of scheduled.rows) {
+            const heading = row as unknown as HeadingRecord;
+            const scheduledDate = new Date(heading.scheduled!.split(' ')[0]);
+            const daysUntil = Math.floor((scheduledDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+            if (!beforeDate || scheduledDate <= beforeDate) {
+                items.push({
+                    type: 'scheduled',
+                    heading,
+                    date: heading.scheduled!,
+                    days_until: daysUntil,
+                    overdue: daysUntil < 0
+                });
+            }
+        }
+
+        // Get unscheduled TODOs
+        if (options?.includeUnscheduled) {
+            const todos = await this.db.execute({
+                sql: `SELECT * FROM headings
+                      WHERE todo_state IS NOT NULL
+                      AND todo_state NOT IN ('DONE', 'CANCELLED')
+                      AND deadline IS NULL AND scheduled IS NULL
+                      ${scope.sql}`,
+                args: scope.args
+            });
+
+            for (const row of todos.rows) {
+                items.push({
+                    type: 'todo',
+                    heading: row as unknown as HeadingRecord
+                });
+            }
+        }
+
+        // Sort
+        items.sort((a, b) => {
+            if (a.overdue && !b.overdue) return -1;
+            if (!a.overdue && b.overdue) return 1;
+            if (a.days_until !== undefined && b.days_until !== undefined) {
+                return a.days_until - b.days_until;
+            }
+            return 0;
+        });
+
+        return items;
+    }
+
+    /**
+     * Parse relative date
+     */
+    private parseRelativeDate(dateStr: string): Date {
+        const date = new Date();
+        if (dateStr.startsWith('+')) {
+            const match = dateStr.match(/\+(\d+)([dwmy])/);
+            if (match) {
+                const amount = parseInt(match[1]);
+                const unit = match[2];
+                switch (unit) {
+                    case 'd': date.setDate(date.getDate() + amount); break;
+                    case 'w': date.setDate(date.getDate() + amount * 7); break;
+                    case 'm': date.setMonth(date.getMonth() + amount); break;
+                    case 'y': date.setFullYear(date.getFullYear() + amount); break;
+                }
+            }
+        } else {
+            return new Date(dateStr);
+        }
+        return date;
+    }
+
+    /**
+     * Search source blocks
+     */
+    public async searchSourceBlocks(language?: string, query?: string): Promise<SourceBlockRecord[]> {
+        if (!this.db) return [];
+
+        const scope = this.getScopeClause();
+        let sql = `SELECT * FROM source_blocks WHERE 1=1${scope.sql}`;
+        const args: any[] = [...scope.args];
+
+        if (language) {
+            sql += ' AND language = ?';
+            args.push(language.toLowerCase());
+        }
+
+        if (query) {
+            sql += ' AND content LIKE ?';
+            args.push(`%${query}%`);
+        }
+
+        sql += ' LIMIT 100';
+
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as SourceBlockRecord[];
+    }
+
+    /**
+     * Get all unique tags
+     */
+    public async getAllTags(): Promise<string[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute(
+            'SELECT DISTINCT tag FROM hashtags ORDER BY tag'
+        );
+        return result.rows.map(r => r.tag as string);
+    }
+
+    /**
+     * Get all TODO states
+     */
+    public async getAllTodoStates(): Promise<string[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute(
+            'SELECT DISTINCT todo_state FROM headings WHERE todo_state IS NOT NULL ORDER BY todo_state'
+        );
+        return result.rows.map(r => r.todo_state as string);
+    }
+
+    /**
+     * Get all languages
+     */
+    public async getAllLanguages(): Promise<string[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute(
+            'SELECT DISTINCT language FROM source_blocks ORDER BY language'
+        );
+        return result.rows.map(r => r.language as string);
+    }
+
+    /**
+     * Get all files
+     */
+    public async getFiles(): Promise<FileRecord[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute('SELECT * FROM files ORDER BY indexed_at DESC');
+        return result.rows as unknown as FileRecord[];
+    }
+
+    /**
+     * Get TODOs
+     */
+    public async getTodos(state?: string): Promise<HeadingRecord[]> {
+        if (!this.db) return [];
+
+        const scope = this.getScopeClause();
+        let sql = `SELECT * FROM headings WHERE todo_state IS NOT NULL${scope.sql}`;
+        const args: any[] = [...scope.args];
+
+        if (state) {
+            sql += ' AND todo_state = ?';
+            args.push(state);
+        }
+
+        const result = await this.db.execute({ sql, args });
+        return result.rows as unknown as HeadingRecord[];
+    }
+
+    /**
+     * Find files by hashtag
+     */
+    public async findByHashtag(tag: string): Promise<string[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute({
+            sql: 'SELECT DISTINCT file_path FROM hashtags WHERE tag = ?',
+            args: [tag.toLowerCase()]
+        });
+        return result.rows.map(r => r.file_path as string);
+    }
+
+    /**
+     * Get all hashtags
+     */
+    public async getAllHashtags(): Promise<string[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute(
+            'SELECT DISTINCT tag FROM hashtags ORDER BY tag'
+        );
+        return result.rows.map(r => r.tag as string);
+    }
+
+    /**
+     * Get database stats
+     */
+    public async getStats(): Promise<DbStats> {
+        if (!this.db) return {
+            files: 0, headings: 0, blocks: 0, links: 0, chunks: 0,
+            has_embeddings: false
+        };
+
+        const [files, headings, blocks, links, chunks, embeddings] = await Promise.all([
+            this.db.execute('SELECT COUNT(*) as count FROM files'),
+            this.db.execute('SELECT COUNT(*) as count FROM headings'),
+            this.db.execute('SELECT COUNT(*) as count FROM source_blocks'),
+            this.db.execute('SELECT COUNT(*) as count FROM links'),
+            this.db.execute('SELECT COUNT(*) as count FROM chunks'),
+            this.db.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL')
+        ]);
+
+        const lastFile = await this.db.execute(
+            'SELECT MAX(indexed_at) as last FROM files'
+        );
+
+        return {
+            files: files.rows[0].count as number,
+            headings: headings.rows[0].count as number,
+            blocks: blocks.rows[0].count as number,
+            links: links.rows[0].count as number,
+            chunks: chunks.rows[0].count as number,
+            has_embeddings: (embeddings.rows[0].count as number) > 0,
+            last_indexed: lastFile.rows[0].last as number | undefined
+        };
+    }
+
+    /**
+     * Clear database
+     */
+    public async clear(): Promise<void> {
+        if (!this.db) return;
+
+        await this.db.batch([
+            'DELETE FROM chunks',
+            'DELETE FROM fts_content',
+            'DELETE FROM hashtags',
+            'DELETE FROM links',
+            'DELETE FROM source_blocks',
+            'DELETE FROM headings',
+            'DELETE FROM files'
+        ]);
+    }
+
+    /**
+     * Optimize database
+     */
+    public async optimize(): Promise<void> {
+        if (!this.db) return;
+
+        // Remove stale entries
+        const files = await this.getFiles();
+        for (const file of files) {
+            if (!fs.existsSync(file.path)) {
+                await this.removeFileData(file.path);
+            }
+        }
+
+        // Vacuum
+        await this.db.execute('VACUUM');
+    }
+
+    /**
+     * Close database
+     */
+    public async close(): Promise<void> {
+        if (this.db) {
+            this.db.close();
+            this.db = null;
+        }
+    }
+}

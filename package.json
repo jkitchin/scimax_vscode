@@ -145,6 +145,18 @@
         "title": "Scimax: Show Database Stats"
       },
       {
+        "command": "scimax.db.searchSemantic",
+        "title": "Scimax: Semantic Search (AI)"
+      },
+      {
+        "command": "scimax.db.searchHybrid",
+        "title": "Scimax: Hybrid Search (Keywords + AI)"
+      },
+      {
+        "command": "scimax.db.configureEmbeddings",
+        "title": "Scimax: Configure Embedding Service"
+      },
+      {
         "command": "scimax.journal.refresh",
         "title": "Scimax: Refresh Journal View",
         "icon": "$(refresh)"
@@ -340,6 +352,27 @@
           "default": true,
           "description": "Automatically index files on save"
         },
+        "scimax.db.embeddingProvider": {
+          "type": "string",
+          "enum": ["none", "ollama", "openai"],
+          "default": "none",
+          "description": "Embedding provider for semantic search"
+        },
+        "scimax.db.ollamaUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Ollama API URL for embeddings"
+        },
+        "scimax.db.ollamaModel": {
+          "type": "string",
+          "default": "nomic-embed-text",
+          "description": "Ollama model for embeddings"
+        },
+        "scimax.db.openaiApiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API key for embeddings"
+        },
         "scimax.literate.pythonPath": {
           "type": "string",
           "default": "",
@@ -487,7 +520,8 @@
     "@vscode/vsce": "^2.22.0"
   },
   "dependencies": {
-    "better-sqlite3": "^9.2.0",
-    "date-fns": "^2.30.0"
+    "@libsql/client": "^0.17.0",
+    "date-fns": "^2.30.0",
+    "minimatch": "^9.0.0"
   }
 }

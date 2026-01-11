@@ -1,17 +1,23 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import {
-    OrgDb,
+    OrgDbSqlite,
     HeadingRecord,
     SourceBlockRecord,
     SearchResult,
     AgendaItem,
     SearchScope
-} from './orgDb';
+} from './orgDbSqlite';
+import {
+    createEmbeddingService,
+    testEmbeddingService,
+    OllamaEmbeddingService,
+    OpenAIEmbeddingService
+} from './embeddingService';
 
 export function registerDbCommands(
     context: vscode.ExtensionContext,
-    db: OrgDb
+    db: OrgDbSqlite
 ): void {
     // Reindex all files
     context.subscriptions.push(
@@ -43,7 +49,7 @@ export function registerDbCommands(
                     totalIndexed += indexed;
                 }
 
-                const stats = db.getStats();
+                const stats = await db.getStats();
                 vscode.window.showInformationMessage(
                     `Indexed ${totalIndexed} files. Total: ${stats.files} files, ${stats.headings} headings, ${stats.blocks} code blocks`
                 );
@@ -51,43 +57,230 @@ export function registerDbCommands(
         })
     );
 
-    // Full-text search
+    // Full-text search (FTS5)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.search', async () => {
             const query = await vscode.window.showInputBox({
-                prompt: 'Search all org/markdown files',
-                placeHolder: 'Enter search term (use spaces for AND, prefix with OR: for OR search)...'
+                prompt: 'Search all org/markdown files (FTS5)',
+                placeHolder: 'Enter search term...'
             });
 
             if (!query) return;
 
-            const isOrSearch = query.startsWith('OR:');
-            const searchQuery = isOrSearch ? query.slice(3).trim() : query;
-            const results = db.searchFullText(searchQuery, {
-                operator: isOrSearch ? 'OR' : 'AND',
-                limit: 100
-            });
+            const results = await db.searchFullText(query, { limit: 100 });
 
             if (results.length === 0) {
-                vscode.window.showInformationMessage(`No results found for "${searchQuery}"`);
+                vscode.window.showInformationMessage(`No results found for "${query}"`);
                 return;
             }
 
             const items = results.map(result => ({
-                label: `$(file) ${path.basename(result.filePath)}:${result.lineNumber}`,
-                description: result.preview,
-                detail: result.filePath,
+                label: `$(file) ${path.basename(result.file_path)}`,
+                description: result.preview.replace(/<\/?mark>/g, ''),
+                detail: result.file_path,
                 result
             }));
 
             const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${results.length} results for "${searchQuery}"`,
+                placeHolder: `${results.length} results for "${query}"`,
                 matchOnDescription: true,
                 matchOnDetail: true
             });
 
             if (selected) {
-                await openFileAtLine(selected.result.filePath, selected.result.lineNumber);
+                await openFileAtLine(selected.result.file_path, selected.result.line_number);
+            }
+        })
+    );
+
+    // Semantic search (vector)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.searchSemantic', async () => {
+            const config = vscode.workspace.getConfiguration('scimax.db');
+            const provider = config.get<string>('embeddingProvider') || 'none';
+
+            if (provider === 'none') {
+                const configure = await vscode.window.showWarningMessage(
+                    'Semantic search requires an embedding provider. Configure one?',
+                    'Configure'
+                );
+                if (configure === 'Configure') {
+                    vscode.commands.executeCommand('scimax.db.configureEmbeddings');
+                }
+                return;
+            }
+
+            const query = await vscode.window.showInputBox({
+                prompt: 'Semantic search (find by meaning)',
+                placeHolder: 'Describe what you\'re looking for...'
+            });
+
+            if (!query) return;
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Searching...',
+                cancellable: false
+            }, async () => {
+                const results = await db.searchSemantic(query, { limit: 20 });
+
+                if (results.length === 0) {
+                    vscode.window.showInformationMessage(`No semantic matches for "${query}"`);
+                    return;
+                }
+
+                const items = results.map(result => ({
+                    label: `$(file) ${path.basename(result.file_path)}:${result.line_number}`,
+                    description: `Score: ${(result.score * 100).toFixed(1)}%`,
+                    detail: result.preview,
+                    result
+                }));
+
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: `${results.length} semantic matches for "${query}"`,
+                    matchOnDetail: true
+                });
+
+                if (selected) {
+                    await openFileAtLine(selected.result.file_path, selected.result.line_number);
+                }
+            });
+        })
+    );
+
+    // Hybrid search (FTS5 + vector)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.searchHybrid', async () => {
+            const query = await vscode.window.showInputBox({
+                prompt: 'Hybrid search (keywords + semantic)',
+                placeHolder: 'Enter search query...'
+            });
+
+            if (!query) return;
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Searching...',
+                cancellable: false
+            }, async () => {
+                const results = await db.searchHybrid(query, { limit: 20 });
+
+                if (results.length === 0) {
+                    vscode.window.showInformationMessage(`No results for "${query}"`);
+                    return;
+                }
+
+                const items = results.map(result => ({
+                    label: `$(file) ${path.basename(result.file_path)}:${result.line_number}`,
+                    description: result.type === 'semantic' ? '$(sparkle) AI' : '$(search) Keywords',
+                    detail: result.preview,
+                    result
+                }));
+
+                const selected = await vscode.window.showQuickPick(items, {
+                    placeHolder: `${results.length} hybrid results for "${query}"`,
+                    matchOnDetail: true
+                });
+
+                if (selected) {
+                    await openFileAtLine(selected.result.file_path, selected.result.line_number);
+                }
+            });
+        })
+    );
+
+    // Configure embedding service
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.configureEmbeddings', async () => {
+            const providerItems = [
+                {
+                    label: '$(x) None',
+                    description: 'Disable semantic search',
+                    provider: 'none'
+                },
+                {
+                    label: '$(server) Ollama (Local)',
+                    description: 'Free, private, requires Ollama running locally',
+                    provider: 'ollama'
+                },
+                {
+                    label: '$(cloud) OpenAI',
+                    description: 'Cloud-based, requires API key',
+                    provider: 'openai'
+                }
+            ];
+
+            const selected = await vscode.window.showQuickPick(providerItems, {
+                placeHolder: 'Select embedding provider for semantic search'
+            });
+
+            if (!selected) return;
+
+            const config = vscode.workspace.getConfiguration('scimax.db');
+
+            if (selected.provider === 'ollama') {
+                // Test Ollama connection
+                const url = config.get<string>('ollamaUrl') || 'http://localhost:11434';
+                const modelItems = [
+                    { label: 'nomic-embed-text', description: '768 dimensions (recommended)' },
+                    { label: 'all-minilm', description: '384 dimensions (smaller)' },
+                    { label: 'mxbai-embed-large', description: '1024 dimensions (larger)' }
+                ];
+
+                const modelChoice = await vscode.window.showQuickPick(modelItems, {
+                    placeHolder: 'Select Ollama embedding model'
+                });
+
+                if (!modelChoice) return;
+
+                // Test connection
+                const testService = new OllamaEmbeddingService(url, modelChoice.label);
+                const works = await testEmbeddingService(testService);
+
+                if (!works) {
+                    vscode.window.showErrorMessage(
+                        `Could not connect to Ollama at ${url}. Make sure Ollama is running and the model is pulled: ollama pull ${modelChoice.label}`
+                    );
+                    return;
+                }
+
+                await config.update('embeddingProvider', 'ollama', vscode.ConfigurationTarget.Global);
+                await config.update('ollamaModel', modelChoice.label, vscode.ConfigurationTarget.Global);
+
+                db.setEmbeddingService(testService);
+                vscode.window.showInformationMessage(
+                    `Configured Ollama with ${modelChoice.label}. Run "Reindex Files" to enable semantic search.`
+                );
+
+            } else if (selected.provider === 'openai') {
+                const apiKey = await vscode.window.showInputBox({
+                    prompt: 'Enter your OpenAI API key',
+                    password: true,
+                    placeHolder: 'sk-...'
+                });
+
+                if (!apiKey) return;
+
+                // Test connection
+                const testService = new OpenAIEmbeddingService(apiKey);
+                const works = await testEmbeddingService(testService);
+
+                if (!works) {
+                    vscode.window.showErrorMessage('Invalid OpenAI API key or connection error');
+                    return;
+                }
+
+                await config.update('embeddingProvider', 'openai', vscode.ConfigurationTarget.Global);
+                await config.update('openaiApiKey', apiKey, vscode.ConfigurationTarget.Global);
+
+                db.setEmbeddingService(testService);
+                vscode.window.showInformationMessage(
+                    'Configured OpenAI embeddings. Run "Reindex Files" to enable semantic search.'
+                );
+
+            } else {
+                await config.update('embeddingProvider', 'none', vscode.ConfigurationTarget.Global);
+                vscode.window.showInformationMessage('Semantic search disabled');
             }
         })
     );
@@ -102,7 +295,7 @@ export function registerDbCommands(
 
             if (!query) return;
 
-            const results = db.searchHeadings(query);
+            const results = await db.searchHeadings(query);
 
             if (results.length === 0) {
                 vscode.window.showInformationMessage(`No headings found matching "${query}"`);
@@ -112,7 +305,7 @@ export function registerDbCommands(
             const items = results.slice(0, 100).map(heading => ({
                 label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
                 description: formatHeadingDescription(heading),
-                detail: `${path.basename(heading.filePath)}:${heading.lineNumber}`,
+                detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
                 heading
             }));
 
@@ -123,7 +316,7 @@ export function registerDbCommands(
             });
 
             if (selected) {
-                await openFileAtLine(selected.heading.filePath, selected.heading.lineNumber);
+                await openFileAtLine(selected.heading.file_path, selected.heading.line_number);
             }
         })
     );
@@ -131,7 +324,7 @@ export function registerDbCommands(
     // Search by tag
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchByTag', async () => {
-            const tags = db.getAllTags();
+            const tags = await db.getAllTags();
 
             if (tags.length === 0) {
                 vscode.window.showInformationMessage('No tags found in indexed files');
@@ -149,7 +342,7 @@ export function registerDbCommands(
 
             if (!selected) return;
 
-            const results = db.searchHeadings('', { tag: selected.tag });
+            const results = await db.searchHeadings('', { tag: selected.tag });
 
             if (results.length === 0) {
                 vscode.window.showInformationMessage(`No headings with tag :${selected.tag}:`);
@@ -159,7 +352,7 @@ export function registerDbCommands(
             const items = results.map(heading => ({
                 label: `${getHeadingIcon(heading)} ${heading.title}`,
                 description: formatHeadingDescription(heading),
-                detail: `${path.basename(heading.filePath)}:${heading.lineNumber}`,
+                detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
                 heading
             }));
 
@@ -168,7 +361,7 @@ export function registerDbCommands(
             });
 
             if (headingSelected) {
-                await openFileAtLine(headingSelected.heading.filePath, headingSelected.heading.lineNumber);
+                await openFileAtLine(headingSelected.heading.file_path, headingSelected.heading.line_number);
             }
         })
     );
@@ -176,51 +369,43 @@ export function registerDbCommands(
     // Search by property
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchByProperty', async () => {
-            const properties = db.getAllPropertyNames();
-
-            if (properties.length === 0) {
-                vscode.window.showInformationMessage('No properties found in indexed files');
-                return;
-            }
-
-            const propItems = properties.map(prop => ({
-                label: `:${prop}:`,
-                property: prop
-            }));
-
-            const selectedProp = await vscode.window.showQuickPick(propItems, {
-                placeHolder: 'Select a property name'
+            const propName = await vscode.window.showInputBox({
+                prompt: 'Enter property name',
+                placeHolder: 'e.g., ID, CATEGORY, CUSTOM_ID...'
             });
 
-            if (!selectedProp) return;
+            if (!propName) return;
 
             const value = await vscode.window.showInputBox({
-                prompt: `Search for value in :${selectedProp.property}:`,
+                prompt: `Search for value in :${propName}:`,
                 placeHolder: 'Enter value (leave empty for any value)'
             });
 
-            const results = db.searchByProperty(selectedProp.property, value || undefined);
+            const results = await db.searchByProperty(propName, value || undefined);
 
             if (results.length === 0) {
                 vscode.window.showInformationMessage(
-                    `No headings with :${selectedProp.property}:${value ? ` = "${value}"` : ''}`
+                    `No headings with :${propName}:${value ? ` = "${value}"` : ''}`
                 );
                 return;
             }
 
-            const items = results.map(heading => ({
-                label: `${getHeadingIcon(heading)} ${heading.title}`,
-                description: `:${selectedProp.property}: ${heading.properties[selectedProp.property]}`,
-                detail: `${path.basename(heading.filePath)}:${heading.lineNumber}`,
-                heading
-            }));
+            const items = results.map(heading => {
+                const props = JSON.parse(heading.properties);
+                return {
+                    label: `${getHeadingIcon(heading)} ${heading.title}`,
+                    description: `:${propName}: ${props[propName] || ''}`,
+                    detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
+                    heading
+                };
+            });
 
             const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${results.length} headings with :${selectedProp.property}:`
+                placeHolder: `${results.length} headings with :${propName}:`
             });
 
             if (selected) {
-                await openFileAtLine(selected.heading.filePath, selected.heading.lineNumber);
+                await openFileAtLine(selected.heading.file_path, selected.heading.line_number);
             }
         })
     );
@@ -228,7 +413,7 @@ export function registerDbCommands(
     // Search source blocks
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchBlocks', async () => {
-            const languages = db.getAllLanguages();
+            const languages = await db.getAllLanguages();
 
             const languageItems = [
                 { label: '$(list-flat) All languages', language: undefined },
@@ -249,7 +434,7 @@ export function registerDbCommands(
                 placeHolder: 'Enter code to search for...'
             });
 
-            const results = db.searchSourceBlocks(langChoice.language, query || undefined);
+            const results = await db.searchSourceBlocks(langChoice.language, query || undefined);
 
             if (results.length === 0) {
                 vscode.window.showInformationMessage('No code blocks found');
@@ -259,7 +444,7 @@ export function registerDbCommands(
             const items = results.slice(0, 100).map(block => ({
                 label: `$(code) ${block.language}`,
                 description: block.content.split('\n')[0].slice(0, 60),
-                detail: `${path.basename(block.filePath)}:${block.lineNumber}`,
+                detail: `${path.basename(block.file_path)}:${block.line_number}`,
                 block
             }));
 
@@ -269,7 +454,7 @@ export function registerDbCommands(
             });
 
             if (selected) {
-                await openFileAtLine(selected.block.filePath, selected.block.lineNumber);
+                await openFileAtLine(selected.block.file_path, selected.block.line_number);
             }
         })
     );
@@ -277,17 +462,20 @@ export function registerDbCommands(
     // Search by hashtag
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchHashtags', async () => {
-            const hashtags = db.getAllHashtags();
+            const hashtags = await db.getAllHashtags();
 
             if (hashtags.length === 0) {
                 vscode.window.showInformationMessage('No hashtags found in indexed files');
                 return;
             }
 
-            const items = hashtags.map(tag => ({
-                label: `#${tag}`,
-                description: `${db.findByHashtag(tag).length} files`,
-                tag
+            const items = await Promise.all(hashtags.map(async tag => {
+                const files = await db.findByHashtag(tag);
+                return {
+                    label: `#${tag}`,
+                    description: `${files.length} files`,
+                    tag
+                };
             }));
 
             const selected = await vscode.window.showQuickPick(items, {
@@ -296,7 +484,7 @@ export function registerDbCommands(
 
             if (!selected) return;
 
-            const files = db.findByHashtag(selected.tag);
+            const files = await db.findByHashtag(selected.tag);
             const fileItems = files.map(filePath => ({
                 label: `$(file) ${path.basename(filePath)}`,
                 detail: filePath,
@@ -317,14 +505,14 @@ export function registerDbCommands(
     // Show TODOs
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.showTodos', async () => {
-            const todos = db.getTodos();
+            const todos = await db.getTodos();
 
             if (todos.length === 0) {
                 vscode.window.showInformationMessage('No TODO items found');
                 return;
             }
 
-            const states = db.getAllTodoStates();
+            const states = await db.getAllTodoStates();
             const stateItems = [
                 { label: '$(list-flat) All TODOs', state: undefined },
                 ...states.map(state => ({
@@ -340,13 +528,13 @@ export function registerDbCommands(
             if (!stateChoice) return;
 
             const filtered = stateChoice.state
-                ? todos.filter(t => t.todoState === stateChoice.state)
+                ? todos.filter(t => t.todo_state === stateChoice.state)
                 : todos;
 
             const items = filtered.map(todo => ({
-                label: `$(${getTodoIcon(todo.todoState!)}) ${todo.title}`,
+                label: `$(${getTodoIcon(todo.todo_state!)}) ${todo.title}`,
                 description: formatHeadingDescription(todo),
-                detail: `${path.basename(todo.filePath)}:${todo.lineNumber}`,
+                detail: `${path.basename(todo.file_path)}:${todo.line_number}`,
                 todo
             }));
 
@@ -355,7 +543,7 @@ export function registerDbCommands(
             });
 
             if (selected) {
-                await openFileAtLine(selected.todo.filePath, selected.todo.lineNumber);
+                await openFileAtLine(selected.todo.file_path, selected.todo.line_number);
             }
         })
     );
@@ -376,7 +564,7 @@ export function registerDbCommands(
 
             if (!periodChoice) return;
 
-            const agendaItems = db.getAgenda({
+            const agendaItems = await db.getAgenda({
                 before: periodChoice.period,
                 includeUnscheduled: true
             });
@@ -389,7 +577,7 @@ export function registerDbCommands(
             const items = agendaItems.map(item => ({
                 label: `${getAgendaIcon(item)} ${item.heading.title}`,
                 description: formatAgendaDescription(item),
-                detail: `${path.basename(item.heading.filePath)}:${item.heading.lineNumber}`,
+                detail: `${path.basename(item.heading.file_path)}:${item.heading.line_number}`,
                 item
             }));
 
@@ -398,7 +586,7 @@ export function registerDbCommands(
             });
 
             if (selected) {
-                await openFileAtLine(selected.item.heading.filePath, selected.item.heading.lineNumber);
+                await openFileAtLine(selected.item.heading.file_path, selected.item.heading.line_number);
             }
         })
     );
@@ -406,7 +594,7 @@ export function registerDbCommands(
     // Show Deadlines
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.deadlines', async () => {
-            const agendaItems = db.getAgenda({ before: '+2w' })
+            const agendaItems = (await db.getAgenda({ before: '+2w' }))
                 .filter(item => item.type === 'deadline');
 
             if (agendaItems.length === 0) {
@@ -417,7 +605,7 @@ export function registerDbCommands(
             const items = agendaItems.map(item => ({
                 label: `${getAgendaIcon(item)} ${item.heading.title}`,
                 description: formatAgendaDescription(item),
-                detail: `${path.basename(item.heading.filePath)}:${item.heading.lineNumber}`,
+                detail: `${path.basename(item.heading.file_path)}:${item.heading.line_number}`,
                 item
             }));
 
@@ -426,7 +614,7 @@ export function registerDbCommands(
             });
 
             if (selected) {
-                await openFileAtLine(selected.item.heading.filePath, selected.item.heading.lineNumber);
+                await openFileAtLine(selected.item.heading.file_path, selected.item.heading.line_number);
             }
         })
     );
@@ -477,18 +665,18 @@ export function registerDbCommands(
     // Browse files
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.browseFiles', async () => {
-            const files = db.getFiles();
+            const files = await db.getFiles();
 
             if (files.length === 0) {
-                vscode.window.showInformationMessage('No files indexed. Run "Scimax: Reindex Database" first.');
+                vscode.window.showInformationMessage('No files indexed. Run "Scimax: Reindex Files" first.');
                 return;
             }
 
             const items = files
-                .sort((a, b) => b.indexedAt - a.indexedAt)
+                .sort((a, b) => b.indexed_at - a.indexed_at)
                 .map(file => ({
                     label: `$(file) ${path.basename(file.path)}`,
-                    description: new Date(file.indexedAt).toLocaleDateString(),
+                    description: new Date(file.indexed_at).toLocaleDateString(),
                     detail: file.path,
                     file
                 }));
@@ -508,8 +696,13 @@ export function registerDbCommands(
     // Optimize database
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.optimize', async () => {
-            db.optimize();
-            await db.save();
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Optimizing database...',
+                cancellable: false
+            }, async () => {
+                await db.optimize();
+            });
             vscode.window.showInformationMessage('Database optimized');
         })
     );
@@ -524,8 +717,7 @@ export function registerDbCommands(
             );
 
             if (confirm === 'Yes, clear') {
-                db.clear();
-                await db.save();
+                await db.clear();
                 vscode.window.showInformationMessage('Database cleared');
             }
         })
@@ -533,25 +725,28 @@ export function registerDbCommands(
 
     // Show database stats
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.db.stats', () => {
-            const stats = db.getStats();
-            const lastIndexed = stats.lastIndexed
-                ? new Date(stats.lastIndexed).toLocaleString()
+        vscode.commands.registerCommand('scimax.db.stats', async () => {
+            const stats = await db.getStats();
+            const lastIndexed = stats.last_indexed
+                ? new Date(stats.last_indexed).toLocaleString()
                 : 'Never';
+
+            const embeddingStatus = stats.has_embeddings
+                ? `Semantic search: Enabled (${stats.chunks} chunks)`
+                : 'Semantic search: Disabled';
 
             vscode.window.showInformationMessage(
                 `Scimax DB: ${stats.files} files, ${stats.headings} headings, ` +
-                `${stats.blocks} code blocks, ${stats.links} links, ` +
-                `${stats.todoItems} TODOs (${stats.deadlines} deadlines, ${stats.scheduled} scheduled). ` +
-                `Last indexed: ${lastIndexed}`
+                `${stats.blocks} code blocks, ${stats.links} links. ` +
+                `${embeddingStatus}. Last indexed: ${lastIndexed}`
             );
         })
     );
 }
 
 function getHeadingIcon(heading: HeadingRecord): string {
-    if (heading.todoState) {
-        return `$(${getTodoIcon(heading.todoState)})`;
+    if (heading.todo_state) {
+        return `$(${getTodoIcon(heading.todo_state)})`;
     }
     if (heading.deadline) {
         return '$(bell)';
@@ -565,17 +760,21 @@ function getHeadingIcon(heading: HeadingRecord): string {
 function formatHeadingDescription(heading: HeadingRecord): string {
     const parts: string[] = [];
 
-    if (heading.todoState) {
-        parts.push(heading.todoState);
+    if (heading.todo_state) {
+        parts.push(heading.todo_state);
     }
 
     if (heading.priority) {
         parts.push(`[#${heading.priority}]`);
     }
 
-    if (heading.tags.length > 0) {
-        parts.push(`:${heading.tags.join(':')}:`);
-    }
+    // Parse tags from JSON string
+    try {
+        const tags = JSON.parse(heading.tags);
+        if (Array.isArray(tags) && tags.length > 0) {
+            parts.push(`:${tags.join(':')}:`);
+        }
+    } catch { }
 
     if (heading.deadline) {
         parts.push(`DL: ${heading.deadline.split(' ')[0]}`);
@@ -637,17 +836,17 @@ function formatAgendaDescription(item: AgendaItem): string {
         parts.push(item.date.split(' ')[0]);
     }
 
-    if (item.daysUntil !== undefined) {
-        if (item.daysUntil === 0) {
+    if (item.days_until !== undefined) {
+        if (item.days_until === 0) {
             parts.push('(TODAY)');
-        } else if (item.daysUntil === 1) {
+        } else if (item.days_until === 1) {
             parts.push('(tomorrow)');
-        } else if (item.daysUntil === -1) {
+        } else if (item.days_until === -1) {
             parts.push('(yesterday)');
-        } else if (item.daysUntil < 0) {
-            parts.push(`(${Math.abs(item.daysUntil)} days ago)`);
+        } else if (item.days_until < 0) {
+            parts.push(`(${Math.abs(item.days_until)} days ago)`);
         } else {
-            parts.push(`(in ${item.daysUntil} days)`);
+            parts.push(`(in ${item.days_until} days)`);
         }
     }
 

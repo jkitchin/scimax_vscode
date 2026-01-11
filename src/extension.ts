@@ -4,8 +4,9 @@ import { JournalTreeProvider } from './journal/journalTreeProvider';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
-import { OrgDb } from './database/orgDb';
+import { OrgDbSqlite } from './database/orgDbSqlite';
 import { registerDbCommands } from './database/commands';
+import { createEmbeddingService } from './database/embeddingService';
 import { ReferenceManager } from './references/referenceManager';
 import { registerReferenceCommands } from './references/commands';
 import {
@@ -22,7 +23,7 @@ import { NotebookTreeProvider } from './notebook/notebookTreeProvider';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
-let orgDb: OrgDb;
+let orgDb: OrgDbSqlite;
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 
@@ -32,9 +33,16 @@ export async function activate(context: vscode.ExtensionContext) {
     // Initialize Journal Manager
     journalManager = new JournalManager(context);
 
-    // Initialize Org Database
-    orgDb = new OrgDb(context);
+    // Initialize Org Database (SQLite with FTS5 and vector search)
+    orgDb = new OrgDbSqlite(context);
     await orgDb.initialize();
+
+    // Setup embedding service for semantic search (if configured)
+    const embeddingService = createEmbeddingService();
+    if (embeddingService) {
+        orgDb.setEmbeddingService(embeddingService);
+        console.log('Scimax: Semantic search enabled');
+    }
 
     // Register Journal Tree View
     const journalTreeProvider = new JournalTreeProvider(journalManager);
@@ -192,6 +200,9 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 }
 
-export function deactivate() {
-    // Cleanup if needed
+export async function deactivate() {
+    // Close database connection
+    if (orgDb) {
+        await orgDb.close();
+    }
 }

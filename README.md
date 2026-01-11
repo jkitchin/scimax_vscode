@@ -74,13 +74,15 @@ Full bibliography management with BibTeX support, DOI fetching, and citation ins
 
 ### File Database (org-db-v3)
 
-SQLite-inspired database for indexing and searching org-mode and markdown files.
+SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) with **FTS5 full-text search** and **vector semantic search**.
 
 **Commands:**
 | Command | Description |
 |---------|-------------|
 | `Scimax: Reindex Files` | Reindex all files in workspace |
-| `Scimax: Search All Files` | Full-text search (AND/OR operators) |
+| `Scimax: Search All Files` | Full-text search with BM25 ranking |
+| `Scimax: Semantic Search (AI)` | Find by meaning using embeddings |
+| `Scimax: Hybrid Search` | Combined keyword + semantic search |
 | `Scimax: Search Headings` | Search document headings |
 | `Scimax: Search by Tag` | Filter headings by org-mode tags |
 | `Scimax: Search by Property` | Search by property drawer values |
@@ -91,24 +93,37 @@ SQLite-inspired database for indexing and searching org-mode and markdown files.
 | `Scimax: Show Upcoming Deadlines` | See deadlines in next 2 weeks |
 | `Scimax: Browse Indexed Files` | Browse all indexed files |
 | `Scimax: Set Search Scope` | Limit searches to directory/project |
+| `Scimax: Configure Embedding Service` | Setup Ollama/OpenAI for semantic search |
 | `Scimax: Show Database Stats` | Display indexing statistics |
-| `Scimax: Optimize Database` | Clean up stale entries |
+| `Scimax: Optimize Database` | Clean up stale entries (VACUUM) |
 | `Scimax: Clear Database` | Reset the database |
 
 **Features:**
+- **SQLite with FTS5**: Fast full-text search with BM25 ranking, scalable to 10k+ files
+- **Vector Search**: Semantic search using embeddings (cosine similarity)
+- **Hybrid Search**: Reciprocal rank fusion of keyword + semantic results
 - **Auto-indexing**: Files are automatically indexed on save
 - **Tag inheritance**: Inherited tags from parent headings
 - **Agenda view**: Deadlines, scheduled items, and TODOs with overdue detection
 - **Scoped search**: Limit searches to specific directories
-- **Full-text search**: AND/OR operators, ranked results
+
+**Embedding Providers for Semantic Search:**
+| Provider | Model | Dimensions | Setup |
+|----------|-------|------------|-------|
+| **Ollama** (local) | nomic-embed-text | 768 | `ollama pull nomic-embed-text` |
+| **Ollama** (local) | all-minilm | 384 | `ollama pull all-minilm` |
+| **OpenAI** (cloud) | text-embedding-3-small | 1536 | Requires API key |
 
 **Configuration:**
 ```json
 {
   "scimax.db.directories": [],
-  "scimax.db.excludePatterns": ["**/node_modules/**"],
   "scimax.db.ignorePatterns": ["**/node_modules/**", "**/.git/**"],
-  "scimax.db.autoIndex": true
+  "scimax.db.autoIndex": true,
+  "scimax.db.embeddingProvider": "ollama",
+  "scimax.db.ollamaUrl": "http://localhost:11434",
+  "scimax.db.ollamaModel": "nomic-embed-text",
+  "scimax.db.openaiApiKey": ""
 }
 ```
 
@@ -223,7 +238,7 @@ The extension supports:
 |---------|--------------|----------------|
 | Journal | scimax-journal | Full support |
 | Bibliography | org-ref | Full support |
-| Database | org-db-v3 | Full support (no semantic search) |
+| Database | org-db-v3 | Full support with semantic search |
 | Notebooks | scimax-notebook | Full support |
 | Literate Programming | ob-ipython | Planned |
 | Contacts | org-contacts | Not yet |
