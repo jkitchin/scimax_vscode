@@ -16,11 +16,15 @@ import {
     ReferenceTreeProvider,
     BibliographyCodeLensProvider
 } from './references/providers';
+import { NotebookManager } from './notebook/notebookManager';
+import { registerNotebookCommands } from './notebook/commands';
+import { NotebookTreeProvider } from './notebook/notebookTreeProvider';
 
 let journalManager: JournalManager;
 let journalStatusBar: JournalStatusBar;
 let orgDb: OrgDb;
 let referenceManager: ReferenceManager;
+let notebookManager: NotebookManager;
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Scimax VS Code extension is now active');
@@ -168,6 +172,23 @@ export async function activate(context: vscode.ExtensionContext) {
             await vscode.env.clipboard.writeText(key);
             vscode.window.showInformationMessage(`Copied: ${key}`);
         })
+    );
+
+    // Initialize Notebook Manager
+    notebookManager = new NotebookManager(context);
+    await notebookManager.initialize();
+    context.subscriptions.push({ dispose: () => notebookManager.dispose() });
+
+    // Register Notebook Commands
+    registerNotebookCommands(context, notebookManager, orgDb);
+
+    // Register Notebook Tree View
+    const notebookTreeProvider = new NotebookTreeProvider(notebookManager);
+    vscode.window.registerTreeDataProvider('scimax.notebooks', notebookTreeProvider);
+
+    // Refresh notebook tree when notebooks change
+    context.subscriptions.push(
+        notebookManager.onNotebookChanged(() => notebookTreeProvider.refresh())
     );
 }
 

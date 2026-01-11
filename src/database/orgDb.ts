@@ -1,25 +1,30 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as crypto from 'crypto';
 import {
     OrgParser,
     OrgDocument,
     OrgHeading,
     OrgSourceBlock,
     OrgLink,
+    OrgTimestamp,
     parseMarkdownCodeBlocks,
     extractHashtags,
     extractMentions
 } from '../parser/orgParser';
 
 /**
- * Database record types
+ * Database record types - Enhanced for org-db-v3
  */
 export interface FileRecord {
     id: number;
     path: string;
     mtime: number;
     hash: string;
+    size: number;
+    indexedAt: number;
+    keywords: Record<string, string>;
 }
 
 export interface HeadingRecord {
@@ -29,10 +34,15 @@ export interface HeadingRecord {
     level: number;
     title: string;
     lineNumber: number;
+    begin: number;  // Character position
     todoState?: string;
     priority?: string;
     tags: string[];
+    inheritedTags: string[];
     properties: Record<string, string>;
+    scheduled?: string;
+    deadline?: string;
+    closed?: string;
 }
 
 export interface SourceBlockRecord {
@@ -42,6 +52,7 @@ export interface SourceBlockRecord {
     language: string;
     content: string;
     lineNumber: number;
+    headers: Record<string, string>;
 }
 
 export interface LinkRecord {
@@ -54,53 +65,200 @@ export interface LinkRecord {
     lineNumber: number;
 }
 
+export interface TimestampRecord {
+    id: number;
+    fileId: number;
+    filePath: string;
+    type: 'active' | 'inactive' | 'scheduled' | 'deadline' | 'closed';
+    date: string;
+    time?: string;
+    repeater?: string;
+    lineNumber: number;
+}
+
 export interface SearchResult {
-    type: 'heading' | 'block' | 'link' | 'content';
+    type: 'heading' | 'block' | 'link' | 'content' | 'property';
     filePath: string;
     lineNumber: number;
     title?: string;
     preview: string;
     score: number;
+    matchContext?: string;
+}
+
+export interface AgendaItem {
+    type: 'deadline' | 'scheduled' | 'todo';
+    heading: HeadingRecord;
+    date?: string;
+    daysUntil?: number;
+    overdue?: boolean;
+}
+
+export interface SearchScope {
+    type: 'all' | 'directory' | 'project';
+    path?: string;
+    keyword?: string;
+}
+
+export interface IgnorePattern {
+    pattern: string;
+    enabled: boolean;
+    type: 'glob' | 'regex';
+}
+
+export interface DbStats {
+    files: number;
+    headings: number;
+    blocks: number;
+    links: number;
+    timestamps: number;
+    todoItems: number;
+    deadlines: number;
+    scheduled: number;
+    lastIndexed?: number;
 }
 
 /**
- * In-memory org database for fast searching
- * Uses Map-based storage for quick lookups
- * Can be persisted to JSON for caching
+ * Enhanced org database inspired by org-db-v3
+ * Features: Full-text search, agenda, property search, scoped queries
  */
 export class OrgDb {
     private files: Map<string, FileRecord> = new Map();
     private headings: HeadingRecord[] = [];
     private sourceBlocks: SourceBlockRecord[] = [];
     private links: LinkRecord[] = [];
-    private hashtags: Map<string, Set<string>> = new Map(); // hashtag -> file paths
-    private mentions: Map<string, Set<string>> = new Map(); // @mention -> file paths
-    private fullTextIndex: Map<string, string> = new Map(); // file path -> content
+    private timestamps: TimestampRecord[] = [];
+    private hashtags: Map<string, Set<string>> = new Map();
+    private mentions: Map<string, Set<string>> = new Map();
+    private fullTextIndex: Map<string, string> = new Map();
+    private ignorePatterns: IgnorePattern[] = [];
 
     private parser: OrgParser;
     private dbPath: string;
     private context: vscode.ExtensionContext;
     private nextId: number = 1;
     private isDirty: boolean = false;
+    private searchScope: SearchScope = { type: 'all' };
+    private fileWatcher: vscode.FileSystemWatcher | undefined;
+    private indexQueue: Set<string> = new Set();
+    private isIndexing: boolean = false;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.parser = new OrgParser();
-        this.dbPath = path.join(context.globalStorageUri.fsPath, 'org-db.json');
+        this.dbPath = path.join(context.globalStorageUri.fsPath, 'org-db-v3.json');
     }
 
     /**
      * Initialize the database
      */
     public async initialize(): Promise<void> {
-        // Ensure storage directory exists
         const storageDir = this.context.globalStorageUri.fsPath;
         if (!fs.existsSync(storageDir)) {
             fs.mkdirSync(storageDir, { recursive: true });
         }
 
-        // Load existing database if available
         await this.load();
+        this.setupFileWatcher();
+        this.loadIgnorePatterns();
+    }
+
+    /**
+     * Setup file watcher for auto-indexing
+     */
+    private setupFileWatcher(): void {
+        this.fileWatcher = vscode.workspace.createFileSystemWatcher(
+            '**/*.{org,md}',
+            false, false, false
+        );
+
+        this.fileWatcher.onDidCreate(uri => this.queueIndex(uri.fsPath));
+        this.fileWatcher.onDidChange(uri => this.queueIndex(uri.fsPath));
+        this.fileWatcher.onDidDelete(uri => this.removeFile(uri.fsPath));
+
+        this.context.subscriptions.push(this.fileWatcher);
+    }
+
+    /**
+     * Queue a file for indexing (debounced)
+     */
+    private queueIndex(filePath: string): void {
+        if (this.shouldIgnore(filePath)) return;
+
+        this.indexQueue.add(filePath);
+
+        if (!this.isIndexing) {
+            setTimeout(() => this.processIndexQueue(), 500);
+        }
+    }
+
+    /**
+     * Process the index queue
+     */
+    private async processIndexQueue(): Promise<void> {
+        if (this.indexQueue.size === 0) return;
+
+        this.isIndexing = true;
+        const files = Array.from(this.indexQueue);
+        this.indexQueue.clear();
+
+        for (const filePath of files) {
+            try {
+                await this.indexFile(filePath);
+            } catch (error) {
+                console.error(`OrgDb: Failed to index ${filePath}`, error);
+            }
+        }
+
+        await this.save();
+        this.isIndexing = false;
+
+        // Check if more files were queued during indexing
+        if (this.indexQueue.size > 0) {
+            setTimeout(() => this.processIndexQueue(), 100);
+        }
+    }
+
+    /**
+     * Load ignore patterns from configuration
+     */
+    private loadIgnorePatterns(): void {
+        const config = vscode.workspace.getConfiguration('scimax.db');
+        const patterns = config.get<string[]>('ignorePatterns') || [
+            '**/node_modules/**',
+            '**/.git/**',
+            '**/dist/**',
+            '**/build/**'
+        ];
+
+        this.ignorePatterns = patterns.map(p => ({
+            pattern: p,
+            enabled: true,
+            type: 'glob' as const
+        }));
+    }
+
+    /**
+     * Check if a file should be ignored
+     */
+    private shouldIgnore(filePath: string): boolean {
+        const minimatch = require('minimatch');
+
+        for (const pattern of this.ignorePatterns) {
+            if (!pattern.enabled) continue;
+
+            if (pattern.type === 'glob') {
+                if (minimatch(filePath, pattern.pattern)) return true;
+            } else {
+                try {
+                    if (new RegExp(pattern.pattern).test(filePath)) return true;
+                } catch {
+                    // Invalid regex, skip
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -111,13 +269,15 @@ export class OrgDb {
             if (fs.existsSync(this.dbPath)) {
                 const data = JSON.parse(fs.readFileSync(this.dbPath, 'utf8'));
 
-                this.files = new Map(Object.entries(data.files || {}));
+                this.files = new Map(Object.entries(data.files || {}).map(
+                    ([k, v]: [string, any]) => [k, v as FileRecord]
+                ));
                 this.headings = data.headings || [];
                 this.sourceBlocks = data.sourceBlocks || [];
                 this.links = data.links || [];
+                this.timestamps = data.timestamps || [];
                 this.nextId = data.nextId || 1;
 
-                // Rebuild hashtag and mention indexes
                 for (const [tag, paths] of Object.entries(data.hashtags || {})) {
                     this.hashtags.set(tag, new Set(paths as string[]));
                 }
@@ -144,6 +304,7 @@ export class OrgDb {
                 headings: this.headings,
                 sourceBlocks: this.sourceBlocks,
                 links: this.links,
+                timestamps: this.timestamps,
                 nextId: this.nextId,
                 hashtags: Object.fromEntries(
                     Array.from(this.hashtags.entries()).map(([k, v]) => [k, Array.from(v)])
@@ -159,6 +320,20 @@ export class OrgDb {
         } catch (error) {
             console.error('OrgDb: Failed to save cache', error);
         }
+    }
+
+    /**
+     * Set search scope
+     */
+    public setSearchScope(scope: SearchScope): void {
+        this.searchScope = scope;
+    }
+
+    /**
+     * Get current search scope
+     */
+    public getSearchScope(): SearchScope {
+        return this.searchScope;
     }
 
     /**
@@ -195,40 +370,31 @@ export class OrgDb {
      */
     private async findFiles(directory: string): Promise<string[]> {
         const files: string[] = [];
-        const config = vscode.workspace.getConfiguration('scimax.db');
-        const excludePatterns = config.get<string[]>('excludePatterns') || [];
 
         const walk = (dir: string) => {
-            const items = fs.readdirSync(dir, { withFileTypes: true });
+            try {
+                const items = fs.readdirSync(dir, { withFileTypes: true });
 
-            for (const item of items) {
-                const fullPath = path.join(dir, item.name);
+                for (const item of items) {
+                    const fullPath = path.join(dir, item.name);
 
-                // Check exclude patterns
-                const shouldExclude = excludePatterns.some(pattern => {
-                    const minimatch = require('minimatch');
-                    return minimatch(fullPath, pattern);
-                });
+                    if (this.shouldIgnore(fullPath)) continue;
 
-                if (shouldExclude) continue;
-
-                if (item.isDirectory() && !item.name.startsWith('.')) {
-                    walk(fullPath);
-                } else if (item.isFile()) {
-                    const ext = path.extname(item.name).toLowerCase();
-                    if (ext === '.org' || ext === '.md') {
-                        files.push(fullPath);
+                    if (item.isDirectory() && !item.name.startsWith('.')) {
+                        walk(fullPath);
+                    } else if (item.isFile()) {
+                        const ext = path.extname(item.name).toLowerCase();
+                        if (ext === '.org' || ext === '.md') {
+                            files.push(fullPath);
+                        }
                     }
                 }
+            } catch (error) {
+                console.error(`OrgDb: Error walking ${dir}`, error);
             }
         };
 
-        try {
-            walk(directory);
-        } catch (error) {
-            console.error('OrgDb: Error walking directory', error);
-        }
-
+        walk(directory);
         return files;
     }
 
@@ -256,32 +422,34 @@ export class OrgDb {
             const stats = fs.statSync(filePath);
             const ext = path.extname(filePath).toLowerCase();
 
-            // Remove old records for this file
             this.removeFileRecords(filePath);
 
-            // Create file record
             const fileId = this.nextId++;
-            const hash = this.simpleHash(content);
+            const hash = crypto.createHash('md5').update(content).digest('hex');
 
-            this.files.set(filePath, {
+            const fileRecord: FileRecord = {
                 id: fileId,
                 path: filePath,
                 mtime: stats.mtimeMs,
-                hash
-            });
+                hash,
+                size: stats.size,
+                indexedAt: Date.now(),
+                keywords: {}
+            };
 
-            // Store full text for search
             this.fullTextIndex.set(filePath, content);
 
-            // Parse and index content
             if (ext === '.org') {
                 const doc = this.parser.parse(content);
-                this.indexOrgDocument(fileId, filePath, doc);
+                fileRecord.keywords = doc.keywords;
+                this.indexOrgDocument(fileId, filePath, doc, content);
             } else if (ext === '.md') {
                 this.indexMarkdownDocument(fileId, filePath, content);
             }
 
-            // Extract and index hashtags and mentions
+            this.files.set(filePath, fileRecord);
+
+            // Extract hashtags and mentions
             const hashtags = extractHashtags(content);
             for (const tag of hashtags) {
                 if (!this.hashtags.has(tag)) {
@@ -305,12 +473,57 @@ export class OrgDb {
     }
 
     /**
-     * Index an org document
+     * Index an org document with enhanced metadata
      */
-    private indexOrgDocument(fileId: number, filePath: string, doc: OrgDocument): void {
-        // Index headings
+    private indexOrgDocument(
+        fileId: number,
+        filePath: string,
+        doc: OrgDocument,
+        content: string
+    ): void {
+        const lines = content.split('\n');
+        let charPos = 0;
+        const linePositions: number[] = [];
+
+        for (const line of lines) {
+            linePositions.push(charPos);
+            charPos += line.length + 1;
+        }
+
+        // Collect inherited tags
         const flatHeadings = this.parser.flattenHeadings(doc);
+        const tagStack: string[][] = [];
+
         for (const heading of flatHeadings) {
+            // Manage tag inheritance stack
+            while (tagStack.length >= heading.level) {
+                tagStack.pop();
+            }
+
+            const inheritedTags = tagStack.flat();
+            tagStack.push(heading.tags);
+
+            // Find scheduling info in the content after heading
+            const headingLine = heading.lineNumber - 1;
+            let scheduled: string | undefined;
+            let deadline: string | undefined;
+            let closed: string | undefined;
+
+            // Look at lines after heading for scheduling
+            for (let i = headingLine + 1; i < Math.min(headingLine + 5, lines.length); i++) {
+                const line = lines[i];
+                if (line.match(/^\*+\s/)) break; // Next heading
+
+                const schedMatch = line.match(/SCHEDULED:\s*<(\d{4}-\d{2}-\d{2}[^>]*)>/);
+                if (schedMatch) scheduled = schedMatch[1];
+
+                const deadMatch = line.match(/DEADLINE:\s*<(\d{4}-\d{2}-\d{2}[^>]*)>/);
+                if (deadMatch) deadline = deadMatch[1];
+
+                const closedMatch = line.match(/CLOSED:\s*\[(\d{4}-\d{2}-\d{2}[^\]]*)\]/);
+                if (closedMatch) closed = closedMatch[1];
+            }
+
             this.headings.push({
                 id: this.nextId++,
                 fileId,
@@ -318,10 +531,15 @@ export class OrgDb {
                 level: heading.level,
                 title: heading.title,
                 lineNumber: heading.lineNumber,
+                begin: linePositions[headingLine] || 0,
                 todoState: heading.todoState,
                 priority: heading.priority,
                 tags: heading.tags,
-                properties: heading.properties
+                inheritedTags,
+                properties: heading.properties,
+                scheduled,
+                deadline,
+                closed
             });
         }
 
@@ -333,7 +551,8 @@ export class OrgDb {
                 filePath,
                 language: block.language,
                 content: block.content,
-                lineNumber: block.lineNumber
+                lineNumber: block.lineNumber,
+                headers: block.headers
             });
         }
 
@@ -349,6 +568,20 @@ export class OrgDb {
                 lineNumber: link.lineNumber
             });
         }
+
+        // Index timestamps
+        for (const ts of doc.timestamps) {
+            this.timestamps.push({
+                id: this.nextId++,
+                fileId,
+                filePath,
+                type: ts.type,
+                date: ts.date,
+                time: ts.time,
+                repeater: ts.repeater,
+                lineNumber: ts.lineNumber
+            });
+        }
     }
 
     /**
@@ -356,23 +589,25 @@ export class OrgDb {
      */
     private indexMarkdownDocument(fileId: number, filePath: string, content: string): void {
         const lines = content.split('\n');
+        let charPos = 0;
 
-        // Index headings (# syntax)
         for (let i = 0; i < lines.length; i++) {
-            const match = lines[i].match(/^(#{1,6})\s+(.*)$/);
+            const line = lines[i];
+            const lineNumber = i + 1;
+
+            // Parse headings
+            const match = line.match(/^(#{1,6})\s+(.*)$/);
             if (match) {
                 const level = match[1].length;
                 let title = match[2];
                 const tags: string[] = [];
 
-                // Extract tags from end of heading
                 const tagMatch = title.match(/\s+#(\w+(?:\s+#\w+)*)$/);
                 if (tagMatch) {
                     tags.push(...tagMatch[1].split(/\s+#/));
                     title = title.slice(0, -tagMatch[0].length);
                 }
 
-                // Check for TODO in brackets
                 let todoState: string | undefined;
                 const todoMatch = title.match(/^\[([A-Z]+)\]\s+/);
                 if (todoMatch) {
@@ -386,12 +621,16 @@ export class OrgDb {
                     filePath,
                     level,
                     title: title.trim(),
-                    lineNumber: i + 1,
+                    lineNumber,
+                    begin: charPos,
                     todoState,
                     tags,
+                    inheritedTags: [],
                     properties: {}
                 });
             }
+
+            charPos += line.length + 1;
         }
 
         // Index code blocks
@@ -403,11 +642,12 @@ export class OrgDb {
                 filePath,
                 language: block.language,
                 content: block.content,
-                lineNumber: block.lineNumber
+                lineNumber: block.lineNumber,
+                headers: block.headers
             });
         }
 
-        // Index links (markdown syntax)
+        // Index links
         const linkRegex = /\[([^\]]*)\]\(([^)]+)\)/g;
         for (let i = 0; i < lines.length; i++) {
             let match;
@@ -434,6 +674,14 @@ export class OrgDb {
     }
 
     /**
+     * Remove a file from the database
+     */
+    public removeFile(filePath: string): void {
+        this.removeFileRecords(filePath);
+        this.isDirty = true;
+    }
+
+    /**
      * Remove all records for a file
      */
     private removeFileRecords(filePath: string): void {
@@ -441,9 +689,9 @@ export class OrgDb {
         this.headings = this.headings.filter(h => h.filePath !== filePath);
         this.sourceBlocks = this.sourceBlocks.filter(b => b.filePath !== filePath);
         this.links = this.links.filter(l => l.filePath !== filePath);
+        this.timestamps = this.timestamps.filter(t => t.filePath !== filePath);
         this.fullTextIndex.delete(filePath);
 
-        // Remove from hashtag and mention indexes
         for (const [, paths] of this.hashtags) {
             paths.delete(filePath);
         }
@@ -453,14 +701,76 @@ export class OrgDb {
     }
 
     /**
-     * Search headings
+     * Apply scope filter to headings
      */
-    public searchHeadings(query: string): HeadingRecord[] {
+    private applyScopeFilter<T extends { filePath: string }>(items: T[]): T[] {
+        if (this.searchScope.type === 'all') return items;
+
+        return items.filter(item => {
+            if (this.searchScope.type === 'directory' && this.searchScope.path) {
+                if (!item.filePath.startsWith(this.searchScope.path)) return false;
+            }
+
+            if (this.searchScope.keyword) {
+                const file = this.files.get(item.filePath);
+                if (!file) return false;
+                const hasKeyword = Object.values(file.keywords).some(
+                    v => v.toLowerCase().includes(this.searchScope.keyword!.toLowerCase())
+                );
+                if (!hasKeyword) return false;
+            }
+
+            return true;
+        });
+    }
+
+    /**
+     * Search headings with enhanced ranking
+     */
+    public searchHeadings(query: string, options?: {
+        todoState?: string;
+        tag?: string;
+        property?: { name: string; value?: string };
+        limit?: number;
+    }): HeadingRecord[] {
         const queryLower = query.toLowerCase();
-        return this.headings.filter(h =>
-            h.title.toLowerCase().includes(queryLower)
-        ).sort((a, b) => {
-            // Prioritize exact matches and start-of-string matches
+        let results = this.applyScopeFilter(this.headings);
+
+        // Filter by query
+        if (query) {
+            results = results.filter(h =>
+                h.title.toLowerCase().includes(queryLower)
+            );
+        }
+
+        // Filter by TODO state
+        if (options?.todoState) {
+            results = results.filter(h => h.todoState === options.todoState);
+        }
+
+        // Filter by tag (including inherited)
+        if (options?.tag) {
+            const tagLower = options.tag.toLowerCase();
+            results = results.filter(h =>
+                h.tags.some(t => t.toLowerCase() === tagLower) ||
+                h.inheritedTags.some(t => t.toLowerCase() === tagLower)
+            );
+        }
+
+        // Filter by property
+        if (options?.property) {
+            results = results.filter(h => {
+                const value = h.properties[options.property!.name];
+                if (!value) return false;
+                if (options.property!.value) {
+                    return value.toLowerCase().includes(options.property!.value.toLowerCase());
+                }
+                return true;
+            });
+        }
+
+        // Sort by relevance
+        results.sort((a, b) => {
             const aTitle = a.title.toLowerCase();
             const bTitle = b.title.toLowerCase();
             const aStarts = aTitle.startsWith(queryLower);
@@ -469,13 +779,148 @@ export class OrgDb {
             if (!aStarts && bStarts) return 1;
             return aTitle.localeCompare(bTitle);
         });
+
+        return options?.limit ? results.slice(0, options.limit) : results;
+    }
+
+    /**
+     * Search by property
+     */
+    public searchByProperty(propertyName: string, value?: string): HeadingRecord[] {
+        let results = this.applyScopeFilter(this.headings);
+
+        results = results.filter(h => {
+            const propValue = h.properties[propertyName];
+            if (!propValue) return false;
+            if (value) {
+                return propValue.toLowerCase().includes(value.toLowerCase());
+            }
+            return true;
+        });
+
+        return results;
+    }
+
+    /**
+     * Get agenda items (deadlines, scheduled, TODOs)
+     */
+    public getAgenda(options?: {
+        before?: string;  // Date string or relative like '+2w'
+        includeUnscheduled?: boolean;
+    }): AgendaItem[] {
+        const items: AgendaItem[] = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let beforeDate: Date | undefined;
+        if (options?.before) {
+            beforeDate = this.parseRelativeDate(options.before);
+        }
+
+        const headings = this.applyScopeFilter(this.headings);
+
+        for (const heading of headings) {
+            // Skip completed items
+            if (heading.todoState === 'DONE' || heading.todoState === 'CANCELLED') {
+                continue;
+            }
+
+            // Deadlines
+            if (heading.deadline) {
+                const deadlineDate = new Date(heading.deadline.split(' ')[0]);
+                const daysUntil = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+                if (!beforeDate || deadlineDate <= beforeDate) {
+                    items.push({
+                        type: 'deadline',
+                        heading,
+                        date: heading.deadline,
+                        daysUntil,
+                        overdue: daysUntil < 0
+                    });
+                }
+            }
+
+            // Scheduled
+            if (heading.scheduled) {
+                const scheduledDate = new Date(heading.scheduled.split(' ')[0]);
+                const daysUntil = Math.floor((scheduledDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+                if (!beforeDate || scheduledDate <= beforeDate) {
+                    items.push({
+                        type: 'scheduled',
+                        heading,
+                        date: heading.scheduled,
+                        daysUntil,
+                        overdue: daysUntil < 0
+                    });
+                }
+            }
+
+            // Unscheduled TODOs
+            if (options?.includeUnscheduled && heading.todoState && !heading.deadline && !heading.scheduled) {
+                items.push({
+                    type: 'todo',
+                    heading
+                });
+            }
+        }
+
+        // Sort by date (overdue first, then by date)
+        items.sort((a, b) => {
+            if (a.overdue && !b.overdue) return -1;
+            if (!a.overdue && b.overdue) return 1;
+            if (a.daysUntil !== undefined && b.daysUntil !== undefined) {
+                return a.daysUntil - b.daysUntil;
+            }
+            // Prioritize by priority
+            const aPriority = a.heading.priority || 'Z';
+            const bPriority = b.heading.priority || 'Z';
+            return aPriority.localeCompare(bPriority);
+        });
+
+        return items;
+    }
+
+    /**
+     * Parse relative date string like '+2w' or '+1m'
+     */
+    private parseRelativeDate(dateStr: string): Date {
+        const date = new Date();
+
+        if (dateStr.startsWith('+')) {
+            const match = dateStr.match(/\+(\d+)([dwmy])/);
+            if (match) {
+                const amount = parseInt(match[1]);
+                const unit = match[2];
+
+                switch (unit) {
+                    case 'd':
+                        date.setDate(date.getDate() + amount);
+                        break;
+                    case 'w':
+                        date.setDate(date.getDate() + amount * 7);
+                        break;
+                    case 'm':
+                        date.setMonth(date.getMonth() + amount);
+                        break;
+                    case 'y':
+                        date.setFullYear(date.getFullYear() + amount);
+                        break;
+                }
+            }
+        } else {
+            return new Date(dateStr);
+        }
+
+        return date;
     }
 
     /**
      * Search source blocks by language
      */
     public searchSourceBlocks(language?: string, contentQuery?: string): SourceBlockRecord[] {
-        let results = this.sourceBlocks;
+        let results = this.applyScopeFilter(this.sourceBlocks);
 
         if (language) {
             results = results.filter(b => b.language === language.toLowerCase());
@@ -493,7 +938,7 @@ export class OrgDb {
      * Search links by type or target
      */
     public searchLinks(type?: string, targetQuery?: string): LinkRecord[] {
-        let results = this.links;
+        let results = this.applyScopeFilter(this.links);
 
         if (type) {
             results = results.filter(l => l.type === type);
@@ -511,39 +956,75 @@ export class OrgDb {
     }
 
     /**
-     * Full-text search across all files
+     * Full-text search with BM25-like ranking
      */
-    public searchFullText(query: string): SearchResult[] {
+    public searchFullText(query: string, options?: {
+        limit?: number;
+        operator?: 'AND' | 'OR';
+    }): SearchResult[] {
         const results: SearchResult[] = [];
-        const queryLower = query.toLowerCase();
+        const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+        const operator = options?.operator || 'AND';
 
         for (const [filePath, content] of this.fullTextIndex) {
+            // Apply scope filter
+            if (this.searchScope.type === 'directory' && this.searchScope.path) {
+                if (!filePath.startsWith(this.searchScope.path)) continue;
+            }
+
             const contentLower = content.toLowerCase();
-            let index = contentLower.indexOf(queryLower);
+            const lines = content.split('\n');
 
-            while (index !== -1) {
-                // Find line number
-                const beforeMatch = content.slice(0, index);
-                const lineNumber = beforeMatch.split('\n').length;
+            // Check if file matches query
+            let matches: boolean;
+            if (operator === 'AND') {
+                matches = terms.every(term => contentLower.includes(term));
+            } else {
+                matches = terms.some(term => contentLower.includes(term));
+            }
 
-                // Get context (the line containing the match)
-                const lines = content.split('\n');
-                const line = lines[lineNumber - 1] || '';
+            if (!matches) continue;
 
-                results.push({
-                    type: 'content',
-                    filePath,
-                    lineNumber,
-                    preview: line.trim().slice(0, 100),
-                    score: 1
-                });
+            // Find matching lines
+            for (let i = 0; i < lines.length; i++) {
+                const lineLower = lines[i].toLowerCase();
+                const lineMatches = operator === 'AND'
+                    ? terms.every(term => lineLower.includes(term))
+                    : terms.some(term => lineLower.includes(term));
 
-                // Find next occurrence
-                index = contentLower.indexOf(queryLower, index + 1);
+                if (lineMatches) {
+                    // Calculate simple score based on term frequency
+                    let score = 0;
+                    for (const term of terms) {
+                        const matches = lineLower.match(new RegExp(term, 'g'));
+                        if (matches) score += matches.length;
+                    }
+
+                    results.push({
+                        type: 'content',
+                        filePath,
+                        lineNumber: i + 1,
+                        preview: lines[i].trim().slice(0, 150),
+                        score,
+                        matchContext: this.getContext(lines, i)
+                    });
+                }
             }
         }
 
-        return results;
+        // Sort by score
+        results.sort((a, b) => b.score - a.score);
+
+        return options?.limit ? results.slice(0, options.limit) : results;
+    }
+
+    /**
+     * Get context lines around a match
+     */
+    private getContext(lines: string[], lineIndex: number, contextSize: number = 1): string {
+        const start = Math.max(0, lineIndex - contextSize);
+        const end = Math.min(lines.length, lineIndex + contextSize + 1);
+        return lines.slice(start, end).join('\n');
     }
 
     /**
@@ -577,10 +1058,38 @@ export class OrgDb {
     }
 
     /**
+     * Get all unique tags from headings
+     */
+    public getAllTags(): string[] {
+        const tags = new Set<string>();
+        for (const heading of this.headings) {
+            for (const tag of heading.tags) {
+                tags.add(tag);
+            }
+        }
+        return Array.from(tags).sort();
+    }
+
+    /**
+     * Get all unique property names
+     */
+    public getAllPropertyNames(): string[] {
+        const props = new Set<string>();
+        for (const heading of this.headings) {
+            for (const name of Object.keys(heading.properties)) {
+                props.add(name);
+            }
+        }
+        return Array.from(props).sort();
+    }
+
+    /**
      * Get all TODO items
      */
     public getTodos(state?: string): HeadingRecord[] {
-        return this.headings.filter(h => {
+        let results = this.applyScopeFilter(this.headings);
+
+        return results.filter(h => {
             if (!h.todoState) return false;
             if (state) return h.todoState === state;
             return true;
@@ -588,28 +1097,69 @@ export class OrgDb {
     }
 
     /**
+     * Get all unique TODO states
+     */
+    public getAllTodoStates(): string[] {
+        const states = new Set<string>();
+        for (const heading of this.headings) {
+            if (heading.todoState) {
+                states.add(heading.todoState);
+            }
+        }
+        return Array.from(states).sort();
+    }
+
+    /**
+     * Get all files
+     */
+    public getFiles(): FileRecord[] {
+        return Array.from(this.files.values());
+    }
+
+    /**
+     * Get all languages used in source blocks
+     */
+    public getAllLanguages(): string[] {
+        const langs = new Set<string>();
+        for (const block of this.sourceBlocks) {
+            langs.add(block.language);
+        }
+        return Array.from(langs).sort();
+    }
+
+    /**
+     * Get file keywords
+     */
+    public getFileKeywords(filePath: string): Record<string, string> {
+        return this.files.get(filePath)?.keywords || {};
+    }
+
+    /**
      * Get database stats
      */
-    public getStats(): { files: number; headings: number; blocks: number; links: number } {
+    public getStats(): DbStats {
+        const deadlines = this.headings.filter(h => h.deadline).length;
+        const scheduled = this.headings.filter(h => h.scheduled).length;
+        const todoItems = this.headings.filter(h => h.todoState).length;
+
+        let lastIndexed: number | undefined;
+        for (const file of this.files.values()) {
+            if (!lastIndexed || file.indexedAt > lastIndexed) {
+                lastIndexed = file.indexedAt;
+            }
+        }
+
         return {
             files: this.files.size,
             headings: this.headings.length,
             blocks: this.sourceBlocks.length,
-            links: this.links.length
+            links: this.links.length,
+            timestamps: this.timestamps.length,
+            todoItems,
+            deadlines,
+            scheduled,
+            lastIndexed
         };
-    }
-
-    /**
-     * Simple hash function for content comparison
-     */
-    private simpleHash(str: string): string {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return hash.toString(16);
     }
 
     /**
@@ -620,10 +1170,34 @@ export class OrgDb {
         this.headings = [];
         this.sourceBlocks = [];
         this.links = [];
+        this.timestamps = [];
         this.hashtags.clear();
         this.mentions.clear();
         this.fullTextIndex.clear();
         this.nextId = 1;
         this.isDirty = true;
+    }
+
+    /**
+     * Optimize the database (clean up orphaned records)
+     */
+    public optimize(): void {
+        // Remove entries for files that no longer exist
+        const filesToRemove: string[] = [];
+
+        for (const [filePath] of this.files) {
+            if (!fs.existsSync(filePath)) {
+                filesToRemove.push(filePath);
+            }
+        }
+
+        for (const filePath of filesToRemove) {
+            this.removeFileRecords(filePath);
+        }
+
+        if (filesToRemove.length > 0) {
+            this.isDirty = true;
+            console.log(`OrgDb: Removed ${filesToRemove.length} stale file entries`);
+        }
     }
 }

@@ -105,8 +105,40 @@
         "title": "Scimax: Search by Hashtag"
       },
       {
+        "command": "scimax.db.searchByTag",
+        "title": "Scimax: Search by Tag"
+      },
+      {
+        "command": "scimax.db.searchByProperty",
+        "title": "Scimax: Search by Property"
+      },
+      {
         "command": "scimax.db.showTodos",
         "title": "Scimax: Show TODO Items"
+      },
+      {
+        "command": "scimax.db.agenda",
+        "title": "Scimax: Show Agenda"
+      },
+      {
+        "command": "scimax.db.deadlines",
+        "title": "Scimax: Show Upcoming Deadlines"
+      },
+      {
+        "command": "scimax.db.browseFiles",
+        "title": "Scimax: Browse Indexed Files"
+      },
+      {
+        "command": "scimax.db.setScope",
+        "title": "Scimax: Set Search Scope"
+      },
+      {
+        "command": "scimax.db.optimize",
+        "title": "Scimax: Optimize Database"
+      },
+      {
+        "command": "scimax.db.clear",
+        "title": "Scimax: Clear Database"
       },
       {
         "command": "scimax.db.stats",
@@ -165,6 +197,54 @@
         "command": "scimax.ref.refresh",
         "title": "Scimax: Refresh References",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "scimax.notebook.new",
+        "title": "Scimax: New Notebook"
+      },
+      {
+        "command": "scimax.notebook.open",
+        "title": "Scimax: Open Notebook"
+      },
+      {
+        "command": "scimax.notebook.openMasterFile",
+        "title": "Scimax: Open Notebook Master File"
+      },
+      {
+        "command": "scimax.notebook.recentFiles",
+        "title": "Scimax: Recent Files in Notebook"
+      },
+      {
+        "command": "scimax.notebook.search",
+        "title": "Scimax: Search in Notebook"
+      },
+      {
+        "command": "scimax.notebook.agenda",
+        "title": "Scimax: Notebook Agenda"
+      },
+      {
+        "command": "scimax.notebook.addCollaborator",
+        "title": "Scimax: Add Collaborator"
+      },
+      {
+        "command": "scimax.notebook.archive",
+        "title": "Scimax: Archive Notebook"
+      },
+      {
+        "command": "scimax.notebook.settings",
+        "title": "Scimax: Notebook Settings"
+      },
+      {
+        "command": "scimax.notebook.index",
+        "title": "Scimax: Index Notebook"
+      },
+      {
+        "command": "scimax.notebook.info",
+        "title": "Scimax: Notebook Info"
+      },
+      {
+        "command": "scimax.notebook.remove",
+        "title": "Scimax: Remove Notebook from Tracking"
       }
     ],
     "keybindings": [
@@ -247,6 +327,19 @@
           "default": ["**/node_modules/**", "**/.git/**", "**/dist/**"],
           "description": "Glob patterns to exclude from indexing"
         },
+        "scimax.db.ignorePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"],
+          "description": "Patterns for files to ignore during indexing"
+        },
+        "scimax.db.autoIndex": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically index files on save"
+        },
         "scimax.literate.pythonPath": {
           "type": "string",
           "default": "",
@@ -280,6 +373,22 @@
           "enum": ["cite", "citet", "citep", "citeauthor", "citeyear"],
           "default": "cite",
           "description": "Default citation style"
+        },
+        "scimax.notebook.directory": {
+          "type": "string",
+          "default": "",
+          "description": "Default parent directory for new notebooks"
+        },
+        "scimax.notebook.defaultTemplate": {
+          "type": "string",
+          "enum": ["empty", "research", "software", "notes"],
+          "default": "research",
+          "description": "Default template for new notebooks"
+        },
+        "scimax.notebook.autoDetect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically detect projects in workspace"
         }
       }
     },
@@ -319,6 +428,11 @@
           "id": "scimax.references",
           "name": "References",
           "icon": "$(book)"
+        },
+        {
+          "id": "scimax.notebooks",
+          "name": "Notebooks",
+          "icon": "$(folder-library)"
         }
       ]
     },
