@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as https from 'https';
 import * as http from 'http';
+import * as path from 'path';
 
 /**
  * Embedding service interface
@@ -9,6 +10,92 @@ export interface EmbeddingService {
     embed(text: string): Promise<number[]>;
     embedBatch(texts: string[]): Promise<number[][]>;
     dimensions: number;
+}
+
+/**
+ * Local embedding service using Transformers.js
+ * Runs ONNX models directly in Node.js - no external services needed
+ */
+export class TransformersJsEmbeddingService implements EmbeddingService {
+    private modelName: string;
+    private pipeline: any = null;
+    private isLoading: boolean = false;
+    private loadPromise: Promise<void> | null = null;
+    public dimensions: number;
+
+    constructor(modelName: string = 'Xenova/all-MiniLM-L6-v2') {
+        this.modelName = modelName;
+        this.dimensions = this.getDimensions(modelName);
+    }
+
+    private getDimensions(model: string): number {
+        const dims: Record<string, number> = {
+            'Xenova/all-MiniLM-L6-v2': 384,
+            'Xenova/bge-small-en-v1.5': 384,
+            'Xenova/gte-small': 384,
+            'Xenova/all-mpnet-base-v2': 768,
+            'Xenova/bge-base-en-v1.5': 768
+        };
+        return dims[model] || 384;
+    }
+
+    private async loadPipeline(): Promise<void> {
+        if (this.pipeline) return;
+        if (this.loadPromise) return this.loadPromise;
+
+        this.isLoading = true;
+        this.loadPromise = (async () => {
+            try {
+                // Dynamic import to avoid issues if package not installed
+                const { pipeline, env } = await import('@xenova/transformers');
+
+                // Configure cache directory
+                const config = vscode.workspace.getConfiguration('scimax.db');
+                const cacheDir = path.join(
+                    vscode.extensions.getExtension('jkitchin.scimax-vscode')?.extensionPath || '',
+                    '.transformers-cache'
+                );
+                env.cacheDir = cacheDir;
+
+                // Load the feature-extraction pipeline
+                console.log(`TransformersJs: Loading model ${this.modelName}...`);
+                this.pipeline = await pipeline('feature-extraction', this.modelName, {
+                    quantized: true  // Use quantized model for faster inference
+                });
+                console.log(`TransformersJs: Model ${this.modelName} loaded`);
+            } catch (error) {
+                console.error('TransformersJs: Failed to load pipeline', error);
+                throw error;
+            } finally {
+                this.isLoading = false;
+            }
+        })();
+
+        return this.loadPromise;
+    }
+
+    async embed(text: string): Promise<number[]> {
+        await this.loadPipeline();
+
+        const output = await this.pipeline(text, {
+            pooling: 'mean',
+            normalize: true
+        });
+
+        // Convert to regular array
+        return Array.from(output.data);
+    }
+
+    async embedBatch(texts: string[]): Promise<number[][]> {
+        await this.loadPipeline();
+
+        const embeddings: number[][] = [];
+        for (const text of texts) {
+            const embedding = await this.embed(text);
+            embeddings.push(embedding);
+        }
+        return embeddings;
+    }
 }
 
 /**
@@ -177,6 +264,11 @@ export function createEmbeddingService(): EmbeddingService | null {
     const provider = config.get<string>('embeddingProvider') || 'none';
 
     switch (provider) {
+        case 'local': {
+            const model = config.get<string>('localModel') || 'Xenova/all-MiniLM-L6-v2';
+            return new TransformersJsEmbeddingService(model);
+        }
+
         case 'ollama': {
             const url = config.get<string>('ollamaUrl') || 'http://localhost:11434';
             const model = config.get<string>('ollamaModel') || 'nomic-embed-text';

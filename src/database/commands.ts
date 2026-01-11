@@ -11,6 +11,7 @@ import {
 import {
     createEmbeddingService,
     testEmbeddingService,
+    TransformersJsEmbeddingService,
     OllamaEmbeddingService,
     OpenAIEmbeddingService
 } from './embeddingService';
@@ -199,7 +200,12 @@ export function registerDbCommands(
                     provider: 'none'
                 },
                 {
-                    label: '$(server) Ollama (Local)',
+                    label: '$(chip) Local (Transformers.js)',
+                    description: 'Free, private, runs in VS Code (recommended)',
+                    provider: 'local'
+                },
+                {
+                    label: '$(server) Ollama',
                     description: 'Free, private, requires Ollama running locally',
                     provider: 'ollama'
                 },
@@ -218,8 +224,44 @@ export function registerDbCommands(
 
             const config = vscode.workspace.getConfiguration('scimax.db');
 
-            if (selected.provider === 'ollama') {
-                // Test Ollama connection
+            if (selected.provider === 'local') {
+                const modelItems = [
+                    { label: 'Xenova/all-MiniLM-L6-v2', description: '384 dimensions (recommended, fast)' },
+                    { label: 'Xenova/bge-small-en-v1.5', description: '384 dimensions (high quality)' },
+                    { label: 'Xenova/gte-small', description: '384 dimensions (alternative)' }
+                ];
+
+                const modelChoice = await vscode.window.showQuickPick(modelItems, {
+                    placeHolder: 'Select local embedding model (downloads on first use, ~30MB)'
+                });
+
+                if (!modelChoice) return;
+
+                await vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: 'Testing local embeddings...',
+                    cancellable: false
+                }, async () => {
+                    const testService = new TransformersJsEmbeddingService(modelChoice.label);
+                    const works = await testEmbeddingService(testService);
+
+                    if (!works) {
+                        vscode.window.showErrorMessage(
+                            `Failed to load model ${modelChoice.label}. Check console for errors.`
+                        );
+                        return;
+                    }
+
+                    await config.update('embeddingProvider', 'local', vscode.ConfigurationTarget.Global);
+                    await config.update('localModel', modelChoice.label, vscode.ConfigurationTarget.Global);
+
+                    db.setEmbeddingService(testService);
+                    vscode.window.showInformationMessage(
+                        `Configured local embeddings with ${modelChoice.label}. Run "Reindex Files" to enable semantic search.`
+                    );
+                });
+
+            } else if (selected.provider === 'ollama') {
                 const url = config.get<string>('ollamaUrl') || 'http://localhost:11434';
                 const modelItems = [
                     { label: 'nomic-embed-text', description: '768 dimensions (recommended)' },
@@ -233,7 +275,6 @@ export function registerDbCommands(
 
                 if (!modelChoice) return;
 
-                // Test connection
                 const testService = new OllamaEmbeddingService(url, modelChoice.label);
                 const works = await testEmbeddingService(testService);
 
@@ -261,7 +302,6 @@ export function registerDbCommands(
 
                 if (!apiKey) return;
 
-                // Test connection
                 const testService = new OpenAIEmbeddingService(apiKey);
                 const works = await testEmbeddingService(testService);
 

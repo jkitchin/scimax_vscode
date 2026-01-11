@@ -354,9 +354,15 @@
         },
         "scimax.db.embeddingProvider": {
           "type": "string",
-          "enum": ["none", "ollama", "openai"],
+          "enum": ["none", "local", "ollama", "openai"],
           "default": "none",
-          "description": "Embedding provider for semantic search"
+          "description": "Embedding provider for semantic search (local uses Transformers.js)"
+        },
+        "scimax.db.localModel": {
+          "type": "string",
+          "enum": ["Xenova/all-MiniLM-L6-v2", "Xenova/bge-small-en-v1.5", "Xenova/gte-small"],
+          "default": "Xenova/all-MiniLM-L6-v2",
+          "description": "Local embedding model (downloads on first use)"
         },
         "scimax.db.ollamaUrl": {
           "type": "string",
@@ -521,6 +527,7 @@
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",
+    "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",
     "minimatch": "^9.0.0"
   }
