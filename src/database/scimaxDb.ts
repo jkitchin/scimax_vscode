@@ -4,12 +4,14 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import { createClient, Client } from '@libsql/client';
 import {
-    OrgParser,
-    OrgDocument,
     parseMarkdownCodeBlocks,
     extractHashtags,
     extractMentions
 } from '../parser/orgParser';
+import {
+    UnifiedParserAdapter,
+    LegacyDocument,
+} from '../parser/orgParserAdapter';
 import {
     parseNotebook,
     getNotebookFullText,
@@ -119,7 +121,7 @@ export interface DbStats {
  */
 export class ScimaxDb {
     private db: Client | null = null;
-    private parser: OrgParser;
+    private parser: UnifiedParserAdapter;
     private dbPath: string;
     private context: vscode.ExtensionContext;
     private searchScope: SearchScope = { type: 'all' };
@@ -134,7 +136,7 @@ export class ScimaxDb {
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
-        this.parser = new OrgParser();
+        this.parser = new UnifiedParserAdapter();
         this.dbPath = path.join(context.globalStorageUri.fsPath, 'scimax-db.sqlite');
     }
 
@@ -518,7 +520,7 @@ export class ScimaxDb {
     private async indexOrgDocument(
         fileId: number,
         filePath: string,
-        doc: OrgDocument,
+        doc: LegacyDocument,
         content: string
     ): Promise<void> {
         if (!this.db) return;

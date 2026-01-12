@@ -315,7 +315,7 @@ Enhanced editing commands for org-mode, markdown, and LaTeX files.
 | `Scimax: Insert Heading`    | `Ctrl+Enter`      | Insert new heading           |
 | `Scimax: Insert Subheading` | -                 | Insert subheading            |
 
-**Task Commands:**
+### Task Commands:**
 | Command                         | Keybinding      | Description                |
 | ---------                       | ------------    | -------------              |
 | `Scimax: Toggle Checkbox`       | `Ctrl+c Ctrl+c` | Toggle checkbox state      |
@@ -333,6 +333,152 @@ Enhanced editing commands for org-mode, markdown, and LaTeX files.
 | ------------------------------- | ----------- | ------------------------------ |
 | `Scimax: Toggle Fold at Cursor` | `Tab`       | Toggle fold at current heading |
 | `Scimax: Cycle Global Folding`  | `Shift+Tab` | Cycle all headings fold state  |
+
+---
+
+### Source Block Execution (Babel)
+
+Full literate programming support with native code execution and Jupyter kernel integration.
+
+**Commands:**
+| Command                            | Keybinding      | Description                        |
+| ---------------------------------- | --------------- | ---------------------------------- |
+| `Scimax: Execute Block`            | `Ctrl+Enter`    | Execute source block at cursor     |
+| `Scimax: Execute and Next`         | `Shift+Enter`   | Execute block and move to next     |
+| `Scimax: Execute All Blocks`       | -               | Execute all source blocks          |
+| `Scimax: Execute to Point`         | -               | Execute all blocks up to cursor    |
+| `Scimax: Clear Results`            | -               | Clear results for current block    |
+| `Scimax: Clear All Results`        | -               | Clear all results in document      |
+
+**Features:**
+- **Language support**: Python, JavaScript/TypeScript, Shell (bash), SQL, R, and more
+- **Native Jupyter kernels**: Use `jupyter-python`, `jupyter-julia`, etc. as block language
+- **Session persistence**: Maintain state across block executions
+- **Rich output**: Automatic image capture from matplotlib, displayed as org links
+- **Auto-save images**: Jupyter outputs saved to `.ob-jupyter/` directory
+
+**Example:**
+```org
+#+BEGIN_SRC jupyter-python :session main
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+plt.plot(x, np.sin(x))
+plt.title("Sine Wave")
+plt.show()
+#+END_SRC
+
+#+RESULTS:
+[[file:.ob-jupyter/output-1736686800000-0.png]]
+```
+
+---
+
+### Source Block Manipulation (scimax-ob)
+
+Jupyter notebook-like editing for org-mode source blocks.
+
+**Block Creation:**
+| Command                              | Keybinding      | Description                     |
+| ------------------------------------ | --------------- | ------------------------------- |
+| `Scimax: Insert Block Above`         | -               | Insert new block above current  |
+| `Scimax: Insert Block Below`         | `Ctrl+c Ctrl+n` | Insert new block below current  |
+| `Scimax: Insert Block Below (Same)`  | -               | Insert block with same language |
+
+**Block Manipulation:**
+| Command                          | Keybinding    | Description                    |
+| -------------------------------- | ------------- | ------------------------------ |
+| `Scimax: Split Block`            | `Ctrl+c -`    | Split block at cursor position |
+| `Scimax: Clone Block`            | -             | Duplicate current block        |
+| `Scimax: Kill Block`             | -             | Delete block and its results   |
+| `Scimax: Copy Block`             | -             | Copy block to clipboard        |
+| `Scimax: Move Block Up`          | -             | Swap block with previous       |
+| `Scimax: Move Block Down`        | -             | Swap block with next           |
+| `Scimax: Merge with Previous`    | -             | Merge with previous block      |
+| `Scimax: Merge with Next`        | -             | Merge with next block          |
+
+**Navigation:**
+| Command                          | Keybinding    | Description                    |
+| -------------------------------- | ------------- | ------------------------------ |
+| `Scimax: Next Source Block`      | `Ctrl+Down`   | Jump to next block             |
+| `Scimax: Previous Source Block`  | `Ctrl+Up`     | Jump to previous block         |
+| `Scimax: Jump to Source Block`   | `Ctrl+c Ctrl+b` | Quick pick to jump to block  |
+| `Scimax: Jump to Results`        | -             | Jump to current block results  |
+
+---
+
+### Text Markup (scimax-org)
+
+Emacs-style text markup with keyboard shortcuts.
+
+**Markup Commands:**
+| Command                  | Keybinding  | Result             |
+| ------------------------ | ----------- | ------------------ |
+| `Scimax: Bold`           | `Ctrl+c b`  | `*bold*`           |
+| `Scimax: Italic`         | `Ctrl+c i`  | `/italic/`         |
+| `Scimax: Underline`      | `Ctrl+c u`  | `_underline_`      |
+| `Scimax: Code`           | `Ctrl+c \`` | `~code~`           |
+| `Scimax: Verbatim`       | `Ctrl+c =`  | `=verbatim=`       |
+| `Scimax: Strikethrough`  | `Ctrl+c +`  | `+strikethrough+`  |
+| `Scimax: Subscript`      | -           | `_{subscript}`     |
+| `Scimax: Superscript`    | -           | `^{superscript}`   |
+| `Scimax: LaTeX Math`     | -           | `$math$`           |
+
+**DWIM Return**: Smart return key that creates:
+- New list items when in a list
+- New headings when on a heading line
+- New table rows when in a table
+
+---
+
+### Export System
+
+Export org documents to multiple formats.
+
+**Commands:**
+| Command                     | Description                    |
+| --------------------------- | ------------------------------ |
+| `Scimax: Export to HTML`    | Export current file to HTML    |
+| `Scimax: Export to Markdown`| Export to GitHub-flavored MD   |
+| `Scimax: Export to LaTeX`   | Export to LaTeX document       |
+| `Scimax: Export to PDF`     | Export to PDF via LaTeX/Pandoc |
+| `Scimax: Export Dispatch`   | Show export options dialog     |
+
+**Features:**
+- Full org-mode syntax support (headings, lists, tables, blocks)
+- Source block syntax highlighting in exports
+- Citation handling with bibliography
+- Table of contents generation
+- Custom CSS/templates for HTML export
+
+---
+
+### Enhanced Tables (scimax-tables)
+
+Spreadsheet-like table editing with export capabilities.
+
+**Table Commands:**
+| Command                       | Keybinding            | Description                 |
+| ---------                     | ------------          | -------------               |
+| `Scimax: Create Table`        | `Ctrl+c \|`           | Create a new table          |
+| `Scimax: Insert Row Below`    | `Alt+Enter`           | Insert row below current    |
+| `Scimax: Insert Row Above`    | `Alt+Shift+Enter`     | Insert row above current    |
+| `Scimax: Delete Row`          | `Alt+Shift+Backspace` | Delete current row          |
+| `Scimax: Insert Column Right` | `Alt+Shift+Right`     | Insert column (in table)    |
+| `Scimax: Delete Column`       | `Alt+Shift+Left`      | Delete column (in table)    |
+| `Scimax: Insert Separator`    | `Ctrl+c -`            | Insert table separator line |
+| `Scimax: Align Table`         | -                     | Align table columns         |
+
+**Named Tables & Export:**
+| Command                  | Keybinding        | Description                     |
+| ------------------------ | ----------------- | ------------------------------- |
+| `Scimax: Go to Named Table` | -              | Jump to table by #+NAME:        |
+| `Scimax: Export Table`   | `Ctrl+c Ctrl+e t` | Export to CSV/TSV/HTML/LaTeX    |
+| `Scimax: Import Table`   | -                 | Create table from clipboard     |
+| `Scimax: Sum Column`     | -                 | Sum numbers in current column   |
+| `Scimax: Average Column` | -                 | Average numbers in column       |
+| `Scimax: Sort by Column` | `Ctrl+c ^`        | Sort table by current column    |
 
 ---
 
@@ -445,21 +591,44 @@ The extension adds a **Scimax** activity bar icon with these views:
 | ---------------------- | ---------------------------------------------- | ------------------------ |
 | `Tab`                  | Toggle Fold                                    | On heading               |
 | `Shift+Tab`            | Cycle Global Folding                           | In org/markdown/latex    |
-| `Ctrl+Enter`           | Insert Heading / Execute Block                 | In org/markdown   |
-| `Ctrl+c Ctrl+c`        | Toggle Checkbox                                | In org/markdown   |
-| `Ctrl+c .`             | Insert Timestamp                               | In org/markdown   |
-| `Ctrl+c Ctrl+d`        | Insert Due Date                                | In org/markdown   |
-| `Ctrl+c Ctrl+s`        | Insert Scheduled Date                          | In org/markdown   |
-| `Ctrl+c Ctrl+r`        | Add Repeater                                   | In org/markdown   |
-| `Ctrl+c \`             | Create Table                                   | In org/markdown   |
-| `Ctrl+c -`             | Insert Table Separator                         | In org/markdown   |
-| `Shift+Up/Down`        | Adjust Timestamp                               | On timestamp      |
-| `Shift+Left/Right`     | Previous/Next Day or Cycle TODO                | On timestamp/heading |
-| `Alt+Left/Right`       | Promote/Demote Heading                         | On heading        |
-| `Alt+Up/Down`          | Move Heading Up/Down                           | On heading        |
-| `Alt+Enter`            | Insert Table Row Below                         | In table          |
-| `Alt+Shift+Enter`      | Insert Table Row Above                         | In table          |
-| `Alt+Shift+Left/Right` | Promote/Demote Subtree or Delete/Insert Column | Context-dependent |
+| `Ctrl+Enter`           | Execute Block / Insert Heading                 | In org/markdown          |
+| `Shift+Enter`          | Execute Block and Move to Next                 | In org/markdown          |
+| `Ctrl+c Ctrl+c`        | Toggle Checkbox                                | In org/markdown          |
+| `Ctrl+c .`             | Insert Timestamp                               | In org/markdown          |
+| `Ctrl+c Ctrl+d`        | Insert Due Date                                | In org/markdown          |
+| `Ctrl+c Ctrl+s`        | Insert Scheduled Date                          | In org/markdown          |
+| `Ctrl+c Ctrl+r`        | Add Repeater                                   | In org/markdown          |
+| `Ctrl+c \|`            | Create Table                                   | In org/markdown          |
+| `Ctrl+c -`             | Insert Table Separator / Split Block           | In org/markdown          |
+| `Shift+Up/Down`        | Adjust Timestamp                               | On timestamp             |
+| `Shift+Left/Right`     | Previous/Next Day or Cycle TODO                | On timestamp/heading     |
+| `Alt+Left/Right`       | Promote/Demote Heading                         | On heading               |
+| `Alt+Up/Down`          | Move Heading/Subtree Up/Down                   | On heading               |
+| `Alt+Enter`            | Insert Table Row Below                         | In table                 |
+| `Alt+Shift+Enter`      | Insert Table Row Above                         | In table                 |
+| `Alt+Shift+Left/Right` | Promote/Demote Subtree or Delete/Insert Column | Context-dependent        |
+
+### Text Markup
+| Shortcut     | Command            | Result              |
+| ------------ | ------------------ | ------------------- |
+| `Ctrl+c b`   | Bold               | `*text*`            |
+| `Ctrl+c i`   | Italic             | `/text/`            |
+| `Ctrl+c u`   | Underline          | `_text_`            |
+| `Ctrl+c \``  | Code               | `~text~`            |
+| `Ctrl+c =`   | Verbatim           | `=text=`            |
+| `Ctrl+c +`   | Strikethrough      | `+text+`            |
+
+### Source Block Navigation & Execution
+| Shortcut       | Command                 | When          |
+| -------------- | ----------------------- | ------------- |
+| `Ctrl+Down`    | Next Source Block       | In org/md     |
+| `Ctrl+Up`      | Previous Source Block   | In org/md     |
+| `Ctrl+c Ctrl+n`| Insert Block Below      | In org/md     |
+| `Ctrl+c Ctrl+b`| Jump to Source Block    | In org/md     |
+| `Ctrl+c Ctrl+j`| Jump to Heading         | In org/md     |
+| `Ctrl+c Ctrl+o`| Open Link at Point      | In org/md     |
+| `Ctrl+c Ctrl+l`| Insert Link             | In org/md     |
+| `Ctrl+c Ctrl+t`| Cycle TODO State        | In org/md     |
 
 ---
 
@@ -474,19 +643,25 @@ The extension supports:
 
 ## Comparison with Emacs Scimax
 
-| Feature              | Emacs Scimax     | VS Code Scimax                    |
-| -------------------- | ---------------- | --------------------------------- |
-| Journal              | scimax-journal   | Full support                      |
-| Bibliography         | org-ref          | Full support + OpenAlex           |
-| Database             | org-db-v3        | Full support with semantic search |
-| Notebooks            | scimax-notebook  | Full support                      |
-| Projectile           | projectile       | Full support                      |
-| Swiper               | swiper/ivy       | Full support (fuzzy search)       |
-| Avy                  | avy              | Full support (jump)               |
-| Spell Check          | jinx/flyspell    | Use LTeX extension                |
-| Track Changes        | scimax-editmarks | Full support (editmarks)          |
-| Literate Programming | ob-ipython       | Planned                           |
-| Contacts             | org-contacts     | Not yet                           |
+| Feature              | Emacs Scimax       | VS Code Scimax                        |
+| -------------------- | ------------------ | ------------------------------------- |
+| Journal              | scimax-journal     | Full support                          |
+| Bibliography         | org-ref            | Full support + OpenAlex               |
+| Database             | org-db-v3          | Full support with semantic search     |
+| Notebooks            | scimax-notebook    | Full support                          |
+| Projectile           | projectile         | Full support                          |
+| Swiper               | swiper/ivy         | Full support (fuzzy search)           |
+| Avy                  | avy                | Full support (jump)                   |
+| Spell Check          | jinx/flyspell      | Use LTeX extension                    |
+| Track Changes        | scimax-editmarks   | Full support (editmarks)              |
+| Literate Programming | ob-ipython/ob-*    | Full support (Babel + Jupyter)        |
+| Text Markup          | scimax-org         | Full support (bold, italic, etc.)     |
+| Block Manipulation   | scimax-ob          | Full support (split, merge, navigate) |
+| Export               | ox-*               | Full support (HTML, LaTeX, MD, PDF)   |
+| Tables               | org-table          | Full support + export to CSV/HTML     |
+| Clocking             | org-clock          | Partial (basic clocking)              |
+| Contacts             | org-contacts       | Not yet                               |
+| Capture Templates    | org-capture        | Not yet                               |
 
 ---
 

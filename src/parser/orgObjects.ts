@@ -1,0 +1,990 @@
+/**
+ * Parser for org-mode inline objects
+ * Handles text emphasis, links, timestamps, entities, subscripts, superscripts, etc.
+ */
+
+import type {
+    OrgObject,
+    ObjectType,
+    OrgRange,
+    BoldObject,
+    ItalicObject,
+    UnderlineObject,
+    StrikeThroughObject,
+    CodeObject,
+    VerbatimObject,
+    LinkObject,
+    TimestampObject,
+    EntityObject,
+    LatexFragmentObject,
+    SubscriptObject,
+    SuperscriptObject,
+    StatisticsCookieObject,
+    FootnoteReferenceObject,
+    TargetObject,
+    RadioTargetObject,
+    LineBreakObject,
+    PlainTextObject,
+    InlineSrcBlockObject,
+    InlineBabelCallObject,
+    ExportSnippetObject,
+    MacroObject,
+} from './orgElementTypes';
+import { ORG_ENTITIES, getEntity } from './orgEntities';
+
+// =============================================================================
+// Object Parser Configuration
+// =============================================================================
+
+/**
+ * Characters that can precede emphasis markers
+ */
+const PRE_EMPHASIS_CHARS = /[\s\-({'"]/;
+
+/**
+ * Characters that can follow emphasis markers
+ */
+const POST_EMPHASIS_CHARS = /[\s\-.,:!?;'")}\\[\]]/;
+
+/**
+ * Emphasis marker pairs
+ */
+const EMPHASIS_MARKERS: Record<string, { type: ObjectType; close: string }> = {
+    '*': { type: 'bold', close: '*' },
+    '/': { type: 'italic', close: '/' },
+    '_': { type: 'underline', close: '_' },
+    '+': { type: 'strike-through', close: '+' },
+    '=': { type: 'code', close: '=' },
+    '~': { type: 'verbatim', close: '~' },
+};
+
+// =============================================================================
+// Main Parser Class
+// =============================================================================
+
+export interface ParseObjectsOptions {
+    /** Allowed object types (null = all allowed) */
+    allowedTypes?: ObjectType[] | null;
+    /** Whether to parse nested objects in emphasis */
+    parseNested?: boolean;
+    /** Starting offset in the original document */
+    baseOffset?: number;
+}
+
+/**
+ * Parse inline objects from text
+ */
+export function parseObjects(
+    text: string,
+    options: ParseObjectsOptions = {}
+): OrgObject[] {
+    const { allowedTypes = null, parseNested = true, baseOffset = 0 } = options;
+    const objects: OrgObject[] = [];
+    let pos = 0;
+    let plainTextStart = 0;
+
+    const isAllowed = (type: ObjectType): boolean => {
+        return allowedTypes === null || allowedTypes.includes(type);
+    };
+
+    const addPlainText = (end: number): void => {
+        if (plainTextStart < end) {
+            const value = text.slice(plainTextStart, end);
+            if (value) {
+                objects.push(createPlainText(value, plainTextStart + baseOffset, end + baseOffset));
+            }
+        }
+    };
+
+    while (pos < text.length) {
+        const char = text[pos];
+        const prevChar = pos > 0 ? text[pos - 1] : ' ';
+        let parsed: OrgObject | null = null;
+
+        // Try to parse various object types
+        // Order matters - more specific patterns first
+
+        // Line break (\\)
+        if (char === '\\' && text[pos + 1] === '\\' && isAllowed('line-break')) {
+            parsed = tryParseLineBreak(text, pos, baseOffset);
+        }
+
+        // LaTeX fragment ($...$, $$...$$, \(...\), \[...\])
+        if (!parsed && (char === '$' || char === '\\') && isAllowed('latex-fragment')) {
+            parsed = tryParseLatexFragment(text, pos, baseOffset);
+        }
+
+        // Entity (\alpha, \rightarrow, etc.)
+        if (!parsed && char === '\\' && isAllowed('entity')) {
+            parsed = tryParseEntity(text, pos, baseOffset);
+        }
+
+        // Statistics cookie ([2/5] or [40%])
+        if (!parsed && char === '[' && isAllowed('statistics-cookie')) {
+            parsed = tryParseStatisticsCookie(text, pos, baseOffset);
+        }
+
+        // Timestamp (<...> or [...])
+        if (!parsed && (char === '<' || char === '[') && isAllowed('timestamp')) {
+            parsed = tryParseTimestamp(text, pos, baseOffset);
+        }
+
+        // Link ([[...]] or protocol:path)
+        if (!parsed && char === '[' && text[pos + 1] === '[' && isAllowed('link')) {
+            parsed = tryParseBracketLink(text, pos, baseOffset, { parseNested, allowedTypes });
+        }
+
+        // Footnote reference ([fn:...])
+        if (!parsed && char === '[' && text.slice(pos, pos + 4) === '[fn:' && isAllowed('footnote-reference')) {
+            parsed = tryParseFootnoteReference(text, pos, baseOffset);
+        }
+
+        // Target (<<...>>)
+        if (!parsed && char === '<' && text[pos + 1] === '<' && text[pos + 2] !== '<' && isAllowed('target')) {
+            parsed = tryParseTarget(text, pos, baseOffset);
+        }
+
+        // Radio target (<<<...>>>)
+        if (!parsed && text.slice(pos, pos + 3) === '<<<' && isAllowed('radio-target')) {
+            parsed = tryParseRadioTarget(text, pos, baseOffset, { parseNested, allowedTypes });
+        }
+
+        // Inline src block (src_lang{...} or src_lang[...]{...})
+        if (!parsed && text.slice(pos, pos + 4) === 'src_' && isAllowed('inline-src-block')) {
+            parsed = tryParseInlineSrcBlock(text, pos, baseOffset);
+        }
+
+        // Inline babel call (call_name(...) or call_name[...](...))
+        if (!parsed && text.slice(pos, pos + 5) === 'call_' && isAllowed('inline-babel-call')) {
+            parsed = tryParseInlineBabelCall(text, pos, baseOffset);
+        }
+
+        // Export snippet (@@backend:value@@)
+        if (!parsed && char === '@' && text[pos + 1] === '@' && isAllowed('export-snippet')) {
+            parsed = tryParseExportSnippet(text, pos, baseOffset);
+        }
+
+        // Macro ({{{name(args)}}})
+        if (!parsed && text.slice(pos, pos + 3) === '{{{' && isAllowed('macro')) {
+            parsed = tryParseMacro(text, pos, baseOffset);
+        }
+
+        // Subscript (a_b or a_{bc})
+        if (!parsed && char === '_' && pos > 0 && isAllowed('subscript')) {
+            const maybeSub = tryParseSubscript(text, pos, prevChar, baseOffset, { parseNested, allowedTypes });
+            if (maybeSub) {
+                parsed = maybeSub;
+            }
+        }
+
+        // Superscript (a^b or a^{bc})
+        if (!parsed && char === '^' && pos > 0 && isAllowed('superscript')) {
+            const maybeSuper = tryParseSuperscript(text, pos, prevChar, baseOffset, { parseNested, allowedTypes });
+            if (maybeSuper) {
+                parsed = maybeSuper;
+            }
+        }
+
+        // Emphasis markers (*bold*, /italic/, _underline_, +strike+, =code=, ~verbatim~)
+        if (!parsed && char in EMPHASIS_MARKERS) {
+            const emphasisInfo = EMPHASIS_MARKERS[char];
+            if (isAllowed(emphasisInfo.type)) {
+                parsed = tryParseEmphasis(text, pos, char, prevChar, baseOffset, { parseNested, allowedTypes });
+            }
+        }
+
+        if (parsed) {
+            addPlainText(pos);
+            objects.push(parsed);
+            pos = parsed.range.end - baseOffset;
+            plainTextStart = pos;
+        } else {
+            pos++;
+        }
+    }
+
+    // Add remaining plain text
+    addPlainText(text.length);
+
+    return objects;
+}
+
+// =============================================================================
+// Individual Object Parsers
+// =============================================================================
+
+function createPlainText(value: string, start: number, end: number): PlainTextObject {
+    return {
+        type: 'plain-text',
+        range: { start, end },
+        postBlank: 0,
+        properties: { value },
+    };
+}
+
+function tryParseLineBreak(text: string, pos: number, baseOffset: number): LineBreakObject | null {
+    if (text.slice(pos, pos + 2) === '\\\\') {
+        // Check if followed by newline or end of string
+        const afterSlashes = text[pos + 2];
+        if (afterSlashes === '\n' || afterSlashes === undefined || afterSlashes === ' ') {
+            return {
+                type: 'line-break',
+                range: { start: pos + baseOffset, end: pos + 2 + baseOffset },
+                postBlank: 0,
+            };
+        }
+    }
+    return null;
+}
+
+function tryParseLatexFragment(text: string, pos: number, baseOffset: number): LatexFragmentObject | null {
+    // Inline math: $...$
+    if (text[pos] === '$' && text[pos + 1] !== '$') {
+        const endPos = findClosingDelimiter(text, pos + 1, '$');
+        if (endPos > pos + 1 && !text.slice(pos + 1, endPos).includes('\n')) {
+            return {
+                type: 'latex-fragment',
+                range: { start: pos + baseOffset, end: endPos + 1 + baseOffset },
+                postBlank: 0,
+                properties: {
+                    value: text.slice(pos, endPos + 1),
+                    fragmentType: 'inline-math',
+                },
+            };
+        }
+    }
+
+    // Display math: $$...$$
+    if (text.slice(pos, pos + 2) === '$$') {
+        const endPos = text.indexOf('$$', pos + 2);
+        if (endPos > pos + 2) {
+            return {
+                type: 'latex-fragment',
+                range: { start: pos + baseOffset, end: endPos + 2 + baseOffset },
+                postBlank: 0,
+                properties: {
+                    value: text.slice(pos, endPos + 2),
+                    fragmentType: 'display-math',
+                },
+            };
+        }
+    }
+
+    // \(...\) inline math
+    if (text.slice(pos, pos + 2) === '\\(') {
+        const endPos = text.indexOf('\\)', pos + 2);
+        if (endPos > pos + 2) {
+            return {
+                type: 'latex-fragment',
+                range: { start: pos + baseOffset, end: endPos + 2 + baseOffset },
+                postBlank: 0,
+                properties: {
+                    value: text.slice(pos, endPos + 2),
+                    fragmentType: 'inline-math',
+                },
+            };
+        }
+    }
+
+    // \[...\] display math
+    if (text.slice(pos, pos + 2) === '\\[') {
+        const endPos = text.indexOf('\\]', pos + 2);
+        if (endPos > pos + 2) {
+            return {
+                type: 'latex-fragment',
+                range: { start: pos + baseOffset, end: endPos + 2 + baseOffset },
+                postBlank: 0,
+                properties: {
+                    value: text.slice(pos, endPos + 2),
+                    fragmentType: 'display-math',
+                },
+            };
+        }
+    }
+
+    // LaTeX command: \command or \command{arg}
+    if (text[pos] === '\\') {
+        const match = text.slice(pos).match(/^\\([a-zA-Z]+)(\{[^}]*\})?/);
+        if (match && !getEntity(match[1])) {
+            // Not an entity, treat as LaTeX command
+            const fullMatch = match[0];
+            return {
+                type: 'latex-fragment',
+                range: { start: pos + baseOffset, end: pos + fullMatch.length + baseOffset },
+                postBlank: 0,
+                properties: {
+                    value: fullMatch,
+                    fragmentType: 'command',
+                },
+            };
+        }
+    }
+
+    return null;
+}
+
+function tryParseEntity(text: string, pos: number, baseOffset: number): EntityObject | null {
+    if (text[pos] !== '\\') return null;
+
+    // Match \entityname or \entityname{}
+    const match = text.slice(pos).match(/^\\([a-zA-Z]+)(\{\})?/);
+    if (!match) return null;
+
+    const entityName = match[1];
+    const entity = getEntity(entityName);
+    if (!entity) return null;
+
+    const usesBrackets = match[2] === '{}';
+    const fullLength = match[0].length;
+
+    return {
+        type: 'entity',
+        range: { start: pos + baseOffset, end: pos + fullLength + baseOffset },
+        postBlank: 0,
+        properties: {
+            name: entityName,
+            usesBrackets,
+            latex: entity.latex,
+            html: entity.html,
+            utf8: entity.utf8,
+        },
+    };
+}
+
+function tryParseStatisticsCookie(text: string, pos: number, baseOffset: number): StatisticsCookieObject | null {
+    // [2/5] or [40%]
+    const match = text.slice(pos).match(/^\[(\d+\/\d+|\d+%)\]/);
+    if (!match) return null;
+
+    return {
+        type: 'statistics-cookie',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            value: match[0],
+        },
+    };
+}
+
+function tryParseTimestamp(text: string, pos: number, baseOffset: number): TimestampObject | null {
+    const isActive = text[pos] === '<';
+    const openBracket = isActive ? '<' : '[';
+    const closeBracket = isActive ? '>' : ']';
+
+    // Find closing bracket
+    let depth = 1;
+    let endPos = pos + 1;
+    while (endPos < text.length && depth > 0) {
+        if (text[endPos] === openBracket) depth++;
+        else if (text[endPos] === closeBracket) depth--;
+        endPos++;
+    }
+
+    if (depth !== 0) return null;
+
+    const content = text.slice(pos + 1, endPos - 1);
+
+    // Parse the timestamp content
+    // Format: YYYY-MM-DD DAY [HH:MM[-HH:MM]] [REPEATER] [WARNING]
+    const dateMatch = content.match(
+        /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2})(?:-(\d{2}):(\d{2}))?)?(?:\s+([.+]?\+\d+[hdwmy]))?(?:\s+(-\d+[hdwmy]))?/
+    );
+
+    if (!dateMatch) return null;
+
+    const [
+        ,
+        yearStr,
+        monthStr,
+        dayStr,
+        hourStartStr,
+        minuteStartStr,
+        hourEndStr,
+        minuteEndStr,
+        repeaterStr,
+        warningStr,
+    ] = dateMatch;
+
+    // Check for range timestamps: <...>--<...>
+    let timestampType: TimestampObject['properties']['timestampType'] = isActive ? 'active' : 'inactive';
+    let rangeEnd: { year: number; month: number; day: number; hour?: number; minute?: number } | undefined;
+
+    if (text.slice(endPos, endPos + 2) === '--') {
+        const secondMatch = text.slice(endPos + 2).match(
+            /^[<\[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?[>\]]/
+        );
+        if (secondMatch) {
+            timestampType = isActive ? 'active-range' : 'inactive-range';
+            rangeEnd = {
+                year: parseInt(secondMatch[1], 10),
+                month: parseInt(secondMatch[2], 10),
+                day: parseInt(secondMatch[3], 10),
+                hour: secondMatch[4] ? parseInt(secondMatch[4], 10) : undefined,
+                minute: secondMatch[5] ? parseInt(secondMatch[5], 10) : undefined,
+            };
+            endPos += 2 + secondMatch[0].length;
+        }
+    }
+
+    // Parse repeater
+    let repeaterType: TimestampObject['properties']['repeaterType'];
+    let repeaterValue: number | undefined;
+    let repeaterUnit: TimestampObject['properties']['repeaterUnit'];
+
+    if (repeaterStr) {
+        const repMatch = repeaterStr.match(/^([.+]?\+)(\d+)([hdwmy])$/);
+        if (repMatch) {
+            repeaterType = repMatch[1] as '+' | '++' | '.+';
+            repeaterValue = parseInt(repMatch[2], 10);
+            repeaterUnit = repMatch[3] as 'h' | 'd' | 'w' | 'm' | 'y';
+        }
+    }
+
+    // Parse warning
+    let warningType: TimestampObject['properties']['warningType'];
+    let warningValue: number | undefined;
+    let warningUnit: TimestampObject['properties']['warningUnit'];
+
+    if (warningStr) {
+        const warnMatch = warningStr.match(/^(-{1,2})(\d+)([hdwmy])$/);
+        if (warnMatch) {
+            warningType = warnMatch[1] as '-' | '--';
+            warningValue = parseInt(warnMatch[2], 10);
+            warningUnit = warnMatch[3] as 'h' | 'd' | 'w' | 'm' | 'y';
+        }
+    }
+
+    const properties: TimestampObject['properties'] = {
+        timestampType,
+        rawValue: text.slice(pos, endPos),
+        yearStart: parseInt(yearStr, 10),
+        monthStart: parseInt(monthStr, 10),
+        dayStart: parseInt(dayStr, 10),
+    };
+
+    if (hourStartStr) {
+        properties.hourStart = parseInt(hourStartStr, 10);
+        properties.minuteStart = parseInt(minuteStartStr, 10);
+    }
+
+    if (hourEndStr) {
+        // Time range within same day
+        properties.hourEnd = parseInt(hourEndStr, 10);
+        properties.minuteEnd = parseInt(minuteEndStr, 10);
+    }
+
+    if (rangeEnd) {
+        properties.yearEnd = rangeEnd.year;
+        properties.monthEnd = rangeEnd.month;
+        properties.dayEnd = rangeEnd.day;
+        if (rangeEnd.hour !== undefined) {
+            properties.hourEnd = rangeEnd.hour;
+            properties.minuteEnd = rangeEnd.minute;
+        }
+    }
+
+    if (repeaterType) {
+        properties.repeaterType = repeaterType;
+        properties.repeaterValue = repeaterValue;
+        properties.repeaterUnit = repeaterUnit;
+    }
+
+    if (warningType) {
+        properties.warningType = warningType;
+        properties.warningValue = warningValue;
+        properties.warningUnit = warningUnit;
+    }
+
+    return {
+        type: 'timestamp',
+        range: { start: pos + baseOffset, end: endPos + baseOffset },
+        postBlank: 0,
+        properties,
+    };
+}
+
+function tryParseBracketLink(
+    text: string,
+    pos: number,
+    baseOffset: number,
+    options: ParseObjectsOptions
+): LinkObject | null {
+    // [[link]] or [[link][description]]
+    if (text.slice(pos, pos + 2) !== '[[') return null;
+
+    // Find the end of the link path
+    let linkEnd = pos + 2;
+    let bracketDepth = 0;
+
+    while (linkEnd < text.length) {
+        if (text[linkEnd] === '[') bracketDepth++;
+        else if (text[linkEnd] === ']') {
+            if (bracketDepth === 0) break;
+            bracketDepth--;
+        }
+        linkEnd++;
+    }
+
+    if (linkEnd >= text.length) return null;
+
+    const linkPath = text.slice(pos + 2, linkEnd);
+
+    // Check for description
+    let description: OrgObject[] | undefined;
+    let fullEnd = linkEnd + 1;
+
+    if (text[linkEnd + 1] === '[') {
+        // Has description
+        const descStart = linkEnd + 2;
+        let descEnd = descStart;
+        bracketDepth = 0;
+
+        while (descEnd < text.length) {
+            if (text[descEnd] === '[') bracketDepth++;
+            else if (text[descEnd] === ']') {
+                if (bracketDepth === 0) break;
+                bracketDepth--;
+            }
+            descEnd++;
+        }
+
+        if (descEnd < text.length && text[descEnd + 1] === ']') {
+            const descText = text.slice(descStart, descEnd);
+            if (options.parseNested) {
+                description = parseObjects(descText, {
+                    ...options,
+                    baseOffset: baseOffset + descStart,
+                });
+            } else {
+                description = [createPlainText(descText, baseOffset + descStart, baseOffset + descEnd)];
+            }
+            fullEnd = descEnd + 2;
+        } else {
+            // Malformed, just close after link
+            fullEnd = linkEnd + 2;
+        }
+    } else if (text[linkEnd + 1] === ']') {
+        fullEnd = linkEnd + 2;
+    } else {
+        return null; // Malformed
+    }
+
+    // Determine link type
+    let linkType = 'internal';
+    let path = linkPath;
+    let searchOption: string | undefined;
+    let application: string | undefined;
+
+    if (linkPath.startsWith('http://') || linkPath.startsWith('https://')) {
+        linkType = linkPath.startsWith('https://') ? 'https' : 'http';
+    } else if (linkPath.startsWith('file:')) {
+        linkType = 'file';
+        path = linkPath.slice(5);
+        // Check for search option (file:path::search)
+        const searchIdx = path.indexOf('::');
+        if (searchIdx !== -1) {
+            searchOption = path.slice(searchIdx + 2);
+            path = path.slice(0, searchIdx);
+        }
+    } else if (linkPath.startsWith('id:')) {
+        linkType = 'id';
+        path = linkPath.slice(3);
+    } else if (linkPath.includes(':')) {
+        const colonIdx = linkPath.indexOf(':');
+        const maybeProtocol = linkPath.slice(0, colonIdx);
+        if (/^[a-z]+$/.test(maybeProtocol)) {
+            linkType = maybeProtocol;
+            path = linkPath.slice(colonIdx + 1);
+        }
+    }
+
+    return {
+        type: 'link',
+        range: { start: pos + baseOffset, end: fullEnd + baseOffset },
+        postBlank: 0,
+        properties: {
+            linkType,
+            path,
+            format: 'bracket',
+            rawLink: linkPath,
+            searchOption,
+            application,
+        },
+        children: description,
+    };
+}
+
+function tryParseFootnoteReference(
+    text: string,
+    pos: number,
+    baseOffset: number
+): FootnoteReferenceObject | null {
+    // [fn:label] or [fn:label:definition] or [fn::definition]
+    const match = text.slice(pos).match(/^\[fn:([^:\]]*)?(?::([^\]]*))?\]/);
+    if (!match) return null;
+
+    const label = match[1] || undefined;
+    const definition = match[2];
+    const isInline = definition !== undefined;
+
+    const result: FootnoteReferenceObject = {
+        type: 'footnote-reference',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            label,
+            referenceType: isInline ? 'inline' : 'standard',
+        },
+    };
+
+    if (isInline && definition) {
+        // Parse the inline definition
+        result.children = parseObjects(definition, {
+            baseOffset: baseOffset + pos + 4 + (label?.length || 0) + 1,
+        });
+    }
+
+    return result;
+}
+
+function tryParseTarget(text: string, pos: number, baseOffset: number): TargetObject | null {
+    // <<target>>
+    const match = text.slice(pos).match(/^<<([^<>\n]+)>>/);
+    if (!match) return null;
+
+    return {
+        type: 'target',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            value: match[1],
+        },
+    };
+}
+
+function tryParseRadioTarget(
+    text: string,
+    pos: number,
+    baseOffset: number,
+    options: ParseObjectsOptions
+): RadioTargetObject | null {
+    // <<<radio target>>>
+    const match = text.slice(pos).match(/^<<<([^<>\n]+)>>>/);
+    if (!match) return null;
+
+    const content = match[1];
+    const children = options.parseNested
+        ? parseObjects(content, { ...options, baseOffset: baseOffset + pos + 3 })
+        : [createPlainText(content, pos + 3 + baseOffset, pos + 3 + content.length + baseOffset)];
+
+    return {
+        type: 'radio-target',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        children,
+    };
+}
+
+function tryParseInlineSrcBlock(text: string, pos: number, baseOffset: number): InlineSrcBlockObject | null {
+    // src_lang{code} or src_lang[headers]{code}
+    const match = text.slice(pos).match(/^src_([a-zA-Z0-9-]+)(?:\[([^\]]*)\])?\{([^}]*)\}/);
+    if (!match) return null;
+
+    return {
+        type: 'inline-src-block',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            language: match[1],
+            parameters: match[2],
+            value: match[3],
+        },
+    };
+}
+
+function tryParseInlineBabelCall(text: string, pos: number, baseOffset: number): InlineBabelCallObject | null {
+    // call_name(args) or call_name[header](args)[end-header]
+    const match = text.slice(pos).match(/^call_([a-zA-Z0-9_-]+)(?:\[([^\]]*)\])?\(([^)]*)\)(?:\[([^\]]*)\])?/);
+    if (!match) return null;
+
+    return {
+        type: 'inline-babel-call',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            call: match[1],
+            insideHeader: match[2],
+            arguments: match[3],
+            endHeader: match[4],
+        },
+    };
+}
+
+function tryParseExportSnippet(text: string, pos: number, baseOffset: number): ExportSnippetObject | null {
+    // @@backend:value@@
+    const match = text.slice(pos).match(/^@@([a-zA-Z0-9-]+):([^@]*)@@/);
+    if (!match) return null;
+
+    return {
+        type: 'export-snippet',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            backend: match[1],
+            value: match[2],
+        },
+    };
+}
+
+function tryParseMacro(text: string, pos: number, baseOffset: number): MacroObject | null {
+    // {{{name(args)}}} or {{{name}}}
+    const match = text.slice(pos).match(/^\{\{\{([a-zA-Z][a-zA-Z0-9_-]*)(?:\(([^)]*)\))?\}\}\}/);
+    if (!match) return null;
+
+    const args = match[2] ? match[2].split(',').map(s => s.trim()) : [];
+
+    return {
+        type: 'macro',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            key: match[1],
+            args,
+        },
+    };
+}
+
+function tryParseSubscript(
+    text: string,
+    pos: number,
+    prevChar: string,
+    baseOffset: number,
+    options: ParseObjectsOptions
+): SubscriptObject | null {
+    // Must follow a word character
+    if (!/[a-zA-Z0-9)]/.test(prevChar)) return null;
+
+    // _content or _{content}
+    if (text[pos + 1] === '{') {
+        const endBrace = findMatchingBrace(text, pos + 1);
+        if (endBrace === -1) return null;
+
+        const content = text.slice(pos + 2, endBrace);
+        const children = options.parseNested
+            ? parseObjects(content, { ...options, baseOffset: baseOffset + pos + 2 })
+            : [createPlainText(content, pos + 2 + baseOffset, endBrace + baseOffset)];
+
+        return {
+            type: 'subscript',
+            range: { start: pos + baseOffset, end: endBrace + 1 + baseOffset },
+            postBlank: 0,
+            properties: { usesBraces: true },
+            children,
+        };
+    }
+
+    // Simple subscript: _x (single character or digits)
+    const match = text.slice(pos).match(/^_([a-zA-Z0-9]+)/);
+    if (!match) return null;
+
+    return {
+        type: 'subscript',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: { usesBraces: false },
+        children: [createPlainText(match[1], pos + 1 + baseOffset, pos + match[0].length + baseOffset)],
+    };
+}
+
+function tryParseSuperscript(
+    text: string,
+    pos: number,
+    prevChar: string,
+    baseOffset: number,
+    options: ParseObjectsOptions
+): SuperscriptObject | null {
+    // Must follow a word character
+    if (!/[a-zA-Z0-9)]/.test(prevChar)) return null;
+
+    // ^content or ^{content}
+    if (text[pos + 1] === '{') {
+        const endBrace = findMatchingBrace(text, pos + 1);
+        if (endBrace === -1) return null;
+
+        const content = text.slice(pos + 2, endBrace);
+        const children = options.parseNested
+            ? parseObjects(content, { ...options, baseOffset: baseOffset + pos + 2 })
+            : [createPlainText(content, pos + 2 + baseOffset, endBrace + baseOffset)];
+
+        return {
+            type: 'superscript',
+            range: { start: pos + baseOffset, end: endBrace + 1 + baseOffset },
+            postBlank: 0,
+            properties: { usesBraces: true },
+            children,
+        };
+    }
+
+    // Simple superscript: ^x (single character or digits)
+    const match = text.slice(pos).match(/^\^([a-zA-Z0-9]+)/);
+    if (!match) return null;
+
+    return {
+        type: 'superscript',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: { usesBraces: false },
+        children: [createPlainText(match[1], pos + 1 + baseOffset, pos + match[0].length + baseOffset)],
+    };
+}
+
+function tryParseEmphasis(
+    text: string,
+    pos: number,
+    marker: string,
+    prevChar: string,
+    baseOffset: number,
+    options: ParseObjectsOptions
+): OrgObject | null {
+    const emphasisInfo = EMPHASIS_MARKERS[marker];
+    if (!emphasisInfo) return null;
+
+    // Check pre-condition: must be at start or after whitespace/punctuation
+    if (pos > 0 && !PRE_EMPHASIS_CHARS.test(prevChar)) {
+        return null;
+    }
+
+    // Find closing marker
+    const closePos = findEmphasisClose(text, pos + 1, marker);
+    if (closePos === -1) return null;
+
+    // Check post-condition: must be followed by whitespace/punctuation or end
+    const afterClose = text[closePos + 1];
+    if (afterClose && !POST_EMPHASIS_CHARS.test(afterClose)) {
+        return null;
+    }
+
+    const content = text.slice(pos + 1, closePos);
+
+    // For code and verbatim, don't parse nested objects
+    if (emphasisInfo.type === 'code') {
+        return {
+            type: 'code',
+            range: { start: pos + baseOffset, end: closePos + 1 + baseOffset },
+            postBlank: 0,
+            properties: { value: content },
+        } as CodeObject;
+    }
+
+    if (emphasisInfo.type === 'verbatim') {
+        return {
+            type: 'verbatim',
+            range: { start: pos + baseOffset, end: closePos + 1 + baseOffset },
+            postBlank: 0,
+            properties: { value: content },
+        } as VerbatimObject;
+    }
+
+    // For other emphasis types, parse nested objects
+    const children = options.parseNested
+        ? parseObjects(content, { ...options, baseOffset: baseOffset + pos + 1 })
+        : [createPlainText(content, pos + 1 + baseOffset, closePos + baseOffset)];
+
+    switch (emphasisInfo.type) {
+        case 'bold':
+            return {
+                type: 'bold',
+                range: { start: pos + baseOffset, end: closePos + 1 + baseOffset },
+                postBlank: 0,
+                children,
+            } as BoldObject;
+        case 'italic':
+            return {
+                type: 'italic',
+                range: { start: pos + baseOffset, end: closePos + 1 + baseOffset },
+                postBlank: 0,
+                children,
+            } as ItalicObject;
+        case 'underline':
+            return {
+                type: 'underline',
+                range: { start: pos + baseOffset, end: closePos + 1 + baseOffset },
+                postBlank: 0,
+                children,
+            } as UnderlineObject;
+        case 'strike-through':
+            return {
+                type: 'strike-through',
+                range: { start: pos + baseOffset, end: closePos + 1 + baseOffset },
+                postBlank: 0,
+                children,
+            } as StrikeThroughObject;
+    }
+
+    return null;
+}
+
+// =============================================================================
+// Helper Functions
+// =============================================================================
+
+function findClosingDelimiter(text: string, start: number, delimiter: string): number {
+    let pos = start;
+    while (pos < text.length) {
+        if (text[pos] === delimiter) {
+            return pos;
+        }
+        if (text[pos] === '\\') {
+            pos++; // Skip escaped character
+        }
+        pos++;
+    }
+    return -1;
+}
+
+function findMatchingBrace(text: string, pos: number): number {
+    if (text[pos] !== '{') return -1;
+
+    let depth = 1;
+    let i = pos + 1;
+
+    while (i < text.length && depth > 0) {
+        if (text[i] === '{') depth++;
+        else if (text[i] === '}') depth--;
+        i++;
+    }
+
+    return depth === 0 ? i - 1 : -1;
+}
+
+function findEmphasisClose(text: string, start: number, marker: string): number {
+    let pos = start;
+
+    while (pos < text.length) {
+        if (text[pos] === marker) {
+            // Check that it's not at the start of a word
+            const prevChar = pos > start ? text[pos - 1] : '';
+            if (prevChar && !/\s/.test(prevChar)) {
+                return pos;
+            }
+        }
+        if (text[pos] === '\n') {
+            // Emphasis cannot span multiple lines
+            return -1;
+        }
+        pos++;
+    }
+
+    return -1;
+}
+
+// =============================================================================
+// Exports
+// =============================================================================
+
+export {
+    parseObjects as default,
+    PRE_EMPHASIS_CHARS,
+    POST_EMPHASIS_CHARS,
+    EMPHASIS_MARKERS,
+};

@@ -32,6 +32,14 @@ import { registerTaskCommands } from './markdown/taskCommands';
 import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
+import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
+import { registerOrgCompletionProvider } from './org/completionProvider';
+import { registerOrgHoverProvider } from './org/hoverProvider';
+import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
+import { registerExportCommands } from './org/exportProvider';
+import { registerScimaxOrgCommands } from './org/scimaxOrg';
+import { registerScimaxObCommands } from './org/scimaxOb';
+import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { ProjectTreeProvider } from './projectile/projectTreeProvider';
@@ -260,6 +268,39 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Heading Commands (promote/demote/move)
     registerHeadingCommands(context);
     console.log('Scimax: Heading commands registered');
+
+    // Register Document Symbol Provider (for outline view)
+    registerDocumentSymbolProvider(context);
+    console.log('Scimax: Document symbol provider registered');
+
+    // Register Org Completion Provider (for intelligent completions)
+    registerOrgCompletionProvider(context);
+    console.log('Scimax: Org completion provider registered');
+
+    // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
+    registerOrgHoverProvider(context);
+    console.log('Scimax: Org hover provider registered');
+
+    // Register Babel commands and Code Lens (for source block execution)
+    registerBabelCommands(context);
+    registerBabelCodeLens(context);
+    console.log('Scimax: Babel code execution registered');
+
+    // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
+    registerExportCommands(context);
+    console.log('Scimax: Export commands registered');
+
+    // Register Jupyter kernel commands (native ZMQ kernel support)
+    registerJupyterCommands(context);
+    console.log('Scimax: Jupyter kernel support registered');
+
+    // Register Scimax-org commands (text markup, DWIM return, navigation)
+    registerScimaxOrgCommands(context);
+    console.log('Scimax: Scimax-org commands registered');
+
+    // Register Scimax-ob commands (source block manipulation)
+    registerScimaxObCommands(context);
+    console.log('Scimax: Scimax-ob commands registered');
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
