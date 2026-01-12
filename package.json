@@ -335,6 +335,42 @@
         "icon": "$(open-preview)"
       },
       {
+        "command": "scimax.jupyter.showKernels",
+        "title": "Scimax: Show Available Jupyter Kernels",
+        "icon": "$(server)"
+      },
+      {
+        "command": "scimax.jupyter.showRunning",
+        "title": "Scimax: Show Running Kernels"
+      },
+      {
+        "command": "scimax.jupyter.startKernel",
+        "title": "Scimax: Start Jupyter Kernel",
+        "icon": "$(play)"
+      },
+      {
+        "command": "scimax.jupyter.changeKernel",
+        "title": "Scimax: Change Jupyter Kernel"
+      },
+      {
+        "command": "scimax.jupyter.restartKernel",
+        "title": "Scimax: Restart Jupyter Kernel",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "scimax.jupyter.interruptKernel",
+        "title": "Scimax: Interrupt Jupyter Kernel",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "scimax.jupyter.shutdownKernel",
+        "title": "Scimax: Shutdown Jupyter Kernel"
+      },
+      {
+        "command": "scimax.jupyter.shutdownAll",
+        "title": "Scimax: Shutdown All Jupyter Kernels"
+      },
+      {
         "command": "scimax.db.searchBlocks",
         "title": "Scimax: Search Code Blocks"
       },
@@ -1480,6 +1516,8 @@
     "@libsql/client": "^0.17.0",
     "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",
-    "minimatch": "^9.0.0"
+    "minimatch": "^9.0.0",
+    "zeromq": "^6.0.0-beta.19",
+    "uuid": "^9.0.0"
   }
 }
