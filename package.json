@@ -293,6 +293,48 @@
         "title": "Scimax: Go to Previous Code Block"
       },
       {
+        "command": "scimax.org.clearResults",
+        "title": "Scimax: Clear Block Results"
+      },
+      {
+        "command": "scimax.org.clearAllResults",
+        "title": "Scimax: Clear All Results"
+      },
+      {
+        "command": "scimax.org.showBabelOutput",
+        "title": "Scimax: Show Babel Output"
+      },
+      {
+        "command": "scimax.org.checkExecutors",
+        "title": "Scimax: Check Available Executors"
+      },
+      {
+        "command": "scimax.org.export",
+        "title": "Scimax: Export Org Document",
+        "icon": "$(export)"
+      },
+      {
+        "command": "scimax.org.exportHtml",
+        "title": "Scimax: Export to HTML"
+      },
+      {
+        "command": "scimax.org.exportLatex",
+        "title": "Scimax: Export to LaTeX"
+      },
+      {
+        "command": "scimax.org.exportPdf",
+        "title": "Scimax: Export to PDF"
+      },
+      {
+        "command": "scimax.org.exportMarkdown",
+        "title": "Scimax: Export to Markdown"
+      },
+      {
+        "command": "scimax.org.previewHtml",
+        "title": "Scimax: Preview HTML",
+        "icon": "$(open-preview)"
+      },
+      {
         "command": "scimax.db.searchBlocks",
         "title": "Scimax: Search Code Blocks"
       },

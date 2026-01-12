@@ -35,6 +35,8 @@ import { registerHeadingCommands } from './org/headingProvider';
 import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
 import { registerOrgCompletionProvider } from './org/completionProvider';
 import { registerOrgHoverProvider } from './org/hoverProvider';
+import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
+import { registerExportCommands } from './org/exportProvider';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { ProjectTreeProvider } from './projectile/projectTreeProvider';
@@ -275,6 +277,15 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
     registerOrgHoverProvider(context);
     console.log('Scimax: Org hover provider registered');
+
+    // Register Babel commands and Code Lens (for source block execution)
+    registerBabelCommands(context);
+    registerBabelCodeLens(context);
+    console.log('Scimax: Babel code execution registered');
+
+    // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
+    registerExportCommands(context);
+    console.log('Scimax: Export commands registered');
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
