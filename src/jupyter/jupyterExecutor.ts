@@ -1,6 +1,10 @@
 /**
  * Jupyter Executor for Org Babel
  * Integrates Jupyter kernels with the Babel execution system
+ *
+ * Supports two modes:
+ * 1. Explicit: Use `jupyter-python`, `jupyter-julia`, etc. to force Jupyter
+ * 2. Automatic: Regular language names use Jupyter if kernel is available
  */
 
 import * as path from 'path';
@@ -15,7 +19,7 @@ import type { LanguageExecutor, ExecutionResult, ExecutionContext } from '../par
 // =============================================================================
 
 /**
- * Languages that should use Jupyter kernels
+ * Languages that can use Jupyter kernels
  * Maps org-mode language names to kernel language names
  */
 const JUPYTER_LANGUAGES: Record<string, string> = {
@@ -47,16 +51,46 @@ const JUPYTER_LANGUAGES: Record<string, string> = {
 };
 
 /**
- * Check if a language should use Jupyter
+ * Check if a language explicitly requests Jupyter (jupyter-<lang> syntax)
+ */
+export function isExplicitJupyter(language: string): boolean {
+    return language.toLowerCase().startsWith('jupyter-');
+}
+
+/**
+ * Parse jupyter-<lang> to extract the actual language
+ */
+export function parseJupyterLanguage(language: string): string | null {
+    const lower = language.toLowerCase();
+    if (lower.startsWith('jupyter-')) {
+        return lower.slice(8); // Remove 'jupyter-' prefix
+    }
+    return null;
+}
+
+/**
+ * Check if a language can use Jupyter (either explicit or in supported list)
  */
 export function shouldUseJupyter(language: string): boolean {
+    if (isExplicitJupyter(language)) {
+        return true;
+    }
     return language.toLowerCase() in JUPYTER_LANGUAGES;
 }
 
 /**
  * Get kernel language for org language
+ * Handles both regular names and jupyter-<lang> syntax
  */
 function getKernelLanguage(orgLanguage: string): string {
+    // Check for jupyter-<lang> syntax first
+    const parsed = parseJupyterLanguage(orgLanguage);
+    if (parsed) {
+        // Map the parsed language if it's in our mapping
+        return JUPYTER_LANGUAGES[parsed] || parsed;
+    }
+
+    // Otherwise use the mapping or the language as-is
     return JUPYTER_LANGUAGES[orgLanguage.toLowerCase()] || orgLanguage;
 }
 
@@ -118,65 +152,110 @@ function convertOutput(output: ExecutionOutput, context: ExecutionContext): Exec
     };
 }
 
+// Counter for unique filenames within a session
+let imageCounter = 0;
+
 /**
- * Save display data (images, etc.) to files
+ * Get or create the .ob-jupyter output directory
+ */
+function getJupyterOutputDir(baseDir: string): string {
+    const outputDir = path.join(baseDir, '.ob-jupyter');
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+    return outputDir;
+}
+
+/**
+ * Generate a unique filename for output
+ */
+function generateOutputFilename(extension: string): string {
+    const timestamp = Date.now();
+    const counter = imageCounter++;
+    return `output-${timestamp}-${counter}${extension}`;
+}
+
+/**
+ * Save display data (images, etc.) to .ob-jupyter directory
+ * Returns the relative path from the document directory
  */
 function saveDisplayData(
     displayData: DisplayDataContent | { data: Record<string, string> },
     context: ExecutionContext
 ): string | null {
     const data = displayData.data;
-    const outputDir = context.cwd || process.cwd();
+    const baseDir = context.cwd || process.cwd();
+    const outputDir = getJupyterOutputDir(baseDir);
 
-    // PNG image
+    // PNG image (most common for matplotlib, etc.)
     if (data['image/png']) {
-        const filename = `output-${Date.now()}.png`;
+        const filename = generateOutputFilename('.png');
         const filepath = path.join(outputDir, filename);
         const buffer = Buffer.from(data['image/png'], 'base64');
         fs.writeFileSync(filepath, buffer);
-        return filename;
+        return `.ob-jupyter/${filename}`;
     }
 
     // SVG image
     if (data['image/svg+xml']) {
-        const filename = `output-${Date.now()}.svg`;
+        const filename = generateOutputFilename('.svg');
         const filepath = path.join(outputDir, filename);
         fs.writeFileSync(filepath, data['image/svg+xml']);
-        return filename;
+        return `.ob-jupyter/${filename}`;
     }
 
     // JPEG image
     if (data['image/jpeg']) {
-        const filename = `output-${Date.now()}.jpg`;
+        const filename = generateOutputFilename('.jpg');
         const filepath = path.join(outputDir, filename);
         const buffer = Buffer.from(data['image/jpeg'], 'base64');
         fs.writeFileSync(filepath, buffer);
-        return filename;
+        return `.ob-jupyter/${filename}`;
     }
 
     // PDF
     if (data['application/pdf']) {
-        const filename = `output-${Date.now()}.pdf`;
+        const filename = generateOutputFilename('.pdf');
         const filepath = path.join(outputDir, filename);
         const buffer = Buffer.from(data['application/pdf'], 'base64');
         fs.writeFileSync(filepath, buffer);
-        return filename;
+        return `.ob-jupyter/${filename}`;
+    }
+
+    // HTML (save as file for complex HTML output)
+    if (data['text/html'] && data['text/html'].length > 1000) {
+        const filename = generateOutputFilename('.html');
+        const filepath = path.join(outputDir, filename);
+        fs.writeFileSync(filepath, data['text/html']);
+        return `.ob-jupyter/${filename}`;
     }
 
     return null;
 }
 
 /**
+ * Generate list of supported languages including jupyter- prefixed versions
+ */
+function getJupyterLanguages(): string[] {
+    const languages = Object.keys(JUPYTER_LANGUAGES);
+    // Add jupyter- prefixed versions for explicit Jupyter usage
+    const jupyterPrefixed = languages.map(lang => `jupyter-${lang}`);
+    return [...languages, ...jupyterPrefixed];
+}
+
+/**
  * Jupyter executor for Babel
+ * Handles both regular language names and jupyter-<lang> syntax
  */
 export const jupyterExecutor: LanguageExecutor = {
-    languages: Object.keys(JUPYTER_LANGUAGES),
+    languages: getJupyterLanguages(),
 
     async execute(code: string, context: ExecutionContext): Promise<ExecutionResult> {
         const manager = getKernelManager();
 
-        // Determine language (from context or default to python)
-        const language = getKernelLanguage((context as any).language || 'python');
+        // Determine language from context, handling jupyter- prefix
+        const rawLanguage = (context as any).language || 'python';
+        const language = getKernelLanguage(rawLanguage);
 
         // Determine session name
         const sessionName = context.session || `${language}-default`;
@@ -217,7 +296,8 @@ export const jupyterExecutor: LanguageExecutor = {
 
     async initSession(sessionName: string, context: ExecutionContext): Promise<void> {
         const manager = getKernelManager();
-        const language = getKernelLanguage((context as any).language || 'python');
+        const rawLanguage = (context as any).language || 'python';
+        const language = getKernelLanguage(rawLanguage);
         await manager.startKernel(language, sessionName);
     },
 

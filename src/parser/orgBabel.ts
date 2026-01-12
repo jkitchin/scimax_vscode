@@ -626,8 +626,10 @@ export async function executeSourceBlock(
     const headers = parseHeaderArguments(block.properties.parameters || '');
 
     // Merge context with header arguments
-    const fullContext: ExecutionContext = {
+    // Include the language so executors (like Jupyter) can access it
+    const fullContext: ExecutionContext & { language?: string } = {
         ...context,
+        language,
         session: headers.session || context.session,
         cwd: headers.dir || context.cwd,
         variables: headers.var ? { ...context.variables, ...parseVariables(headers.var) } : context.variables,
@@ -714,32 +716,62 @@ export function formatResult(
     }
 
     const output = result.stdout || '';
-    if (!output) {
+    const files = result.files || [];
+
+    // If no output and no files, return empty results
+    if (!output && files.length === 0) {
         return '#+RESULTS:';
     }
 
     // Determine format
     const type = format.type || result.resultType || 'verbatim';
 
-    switch (type) {
-        case 'table':
-            return formatAsTable(output);
-        case 'list':
-            return formatAsList(output);
-        case 'html':
-            return `#+RESULTS:\n#+BEGIN_EXPORT html\n${output}\n#+END_EXPORT`;
-        case 'latex':
-            return `#+RESULTS:\n#+BEGIN_EXPORT latex\n${output}\n#+END_EXPORT`;
-        case 'org':
-            return `#+RESULTS:\n${output}`;
-        case 'drawer':
-            return `#+RESULTS:\n:RESULTS:\n${output}\n:END:`;
-        case 'file':
-            return `#+RESULTS:\n[[file:${output}]]`;
-        case 'verbatim':
-        default:
-            return formatAsVerbatim(output);
+    let resultText = '';
+
+    // Format text output
+    if (output) {
+        switch (type) {
+            case 'table':
+                resultText = formatAsTable(output);
+                break;
+            case 'list':
+                resultText = formatAsList(output);
+                break;
+            case 'html':
+                resultText = `#+RESULTS:\n#+BEGIN_EXPORT html\n${output}\n#+END_EXPORT`;
+                break;
+            case 'latex':
+                resultText = `#+RESULTS:\n#+BEGIN_EXPORT latex\n${output}\n#+END_EXPORT`;
+                break;
+            case 'org':
+                resultText = `#+RESULTS:\n${output}`;
+                break;
+            case 'drawer':
+                resultText = `#+RESULTS:\n:RESULTS:\n${output}\n:END:`;
+                break;
+            case 'file':
+                resultText = `#+RESULTS:\n[[file:${output}]]`;
+                break;
+            case 'verbatim':
+            default:
+                resultText = formatAsVerbatim(output);
+                break;
+        }
+    } else {
+        resultText = '#+RESULTS:';
     }
+
+    // Append file links (for Jupyter image output, etc.)
+    if (files.length > 0) {
+        const fileLinks = files.map(f => `[[file:${f}]]`).join('\n');
+        if (output) {
+            resultText += '\n' + fileLinks;
+        } else {
+            resultText = '#+RESULTS:\n' + fileLinks;
+        }
+    }
+
+    return resultText;
 }
 
 function formatAsVerbatim(output: string): string {

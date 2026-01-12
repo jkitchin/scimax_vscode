@@ -335,12 +335,16 @@ async function executeBlock(
     // Create the SrcBlockElement for the executor
     const srcBlock: SrcBlockElement = {
         type: 'src-block',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
         properties: {
             language: block.language,
             value: block.code,
             parameters: block.parameters,
-            preserveIndent: 0,
-            name: block.name,
+            preserveIndent: false,
+            headers: headers as Record<string, string>,
+            lineNumber: block.startLine,
+            endLineNumber: block.endLine,
         },
     };
 

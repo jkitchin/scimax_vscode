@@ -40,8 +40,14 @@
     "languages": [
       {
         "id": "org",
-        "aliases": ["Org Mode", "org-mode", "Org"],
-        "extensions": [".org"],
+        "aliases": [
+          "Org Mode",
+          "org-mode",
+          "Org"
+        ],
+        "extensions": [
+          ".org"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
@@ -137,13 +143,27 @@
       {
         "language": "org",
         "scopes": {
-          "orgLink": ["markup.underline.link.org"],
-          "orgCitation": ["entity.other.citation.org"],
-          "orgTimestamp": ["constant.other.timestamp.org"],
-          "orgHeading": ["entity.name.section.org"],
-          "orgTodo": ["keyword.other.todo.org"],
-          "orgDone": ["keyword.other.done.org"],
-          "orgTag": ["entity.name.tag.org"]
+          "orgLink": [
+            "markup.underline.link.org"
+          ],
+          "orgCitation": [
+            "entity.other.citation.org"
+          ],
+          "orgTimestamp": [
+            "constant.other.timestamp.org"
+          ],
+          "orgHeading": [
+            "entity.name.section.org"
+          ],
+          "orgTodo": [
+            "keyword.other.todo.org"
+          ],
+          "orgDone": [
+            "keyword.other.done.org"
+          ],
+          "orgTag": [
+            "entity.name.tag.org"
+          ]
         }
       }
     ],
@@ -225,8 +245,14 @@
         "rules": {
           "orgCitation": "#2E8B57",
           "orgLink": "#6495ED",
-          "orgTodo": { "foreground": "#FF6B6B", "bold": true },
-          "orgDone": { "foreground": "#4CAF50", "bold": true }
+          "orgTodo": {
+            "foreground": "#FF6B6B",
+            "bold": true
+          },
+          "orgDone": {
+            "foreground": "#4CAF50",
+            "bold": true
+          }
         }
       }
     },
@@ -1265,7 +1291,10 @@
         },
         "scimax.journal.format": {
           "type": "string",
-          "enum": ["markdown", "org"],
+          "enum": [
+            "markdown",
+            "org"
+          ],
           "default": "markdown",
           "description": "File format for journal entries"
         },
@@ -1286,7 +1315,10 @@
         },
         "scimax.journal.weekStartsOn": {
           "type": "string",
-          "enum": ["sunday", "monday"],
+          "enum": [
+            "sunday",
+            "monday"
+          ],
           "default": "monday",
           "description": "First day of the week in calendar view"
         },
@@ -1303,7 +1335,11 @@
           "items": {
             "type": "string"
           },
-          "default": ["**/node_modules/**", "**/.git/**", "**/dist/**"],
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/dist/**"
+          ],
           "description": "Glob patterns to exclude from indexing"
         },
         "scimax.db.ignorePatterns": {
@@ -1311,7 +1347,12 @@
           "items": {
             "type": "string"
           },
-          "default": ["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"],
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/dist/**",
+            "**/build/**"
+          ],
           "description": "Patterns for files to ignore during indexing"
         },
         "scimax.db.autoIndex": {
@@ -1321,13 +1362,22 @@
         },
         "scimax.db.embeddingProvider": {
           "type": "string",
-          "enum": ["none", "local", "ollama", "openai"],
+          "enum": [
+            "none",
+            "local",
+            "ollama",
+            "openai"
+          ],
           "default": "none",
           "description": "Embedding provider for semantic search (local uses Transformers.js)"
         },
         "scimax.db.localModel": {
           "type": "string",
-          "enum": ["Xenova/all-MiniLM-L6-v2", "Xenova/bge-small-en-v1.5", "Xenova/gte-small"],
+          "enum": [
+            "Xenova/all-MiniLM-L6-v2",
+            "Xenova/bge-small-en-v1.5",
+            "Xenova/gte-small"
+          ],
           "default": "Xenova/all-MiniLM-L6-v2",
           "description": "Local embedding model (downloads on first use)"
         },
@@ -1376,7 +1426,13 @@
         },
         "scimax.ref.defaultCiteStyle": {
           "type": "string",
-          "enum": ["cite", "citet", "citep", "citeauthor", "citeyear"],
+          "enum": [
+            "cite",
+            "citet",
+            "citep",
+            "citeauthor",
+            "citeyear"
+          ],
           "default": "cite",
           "description": "Default citation style"
         },
@@ -1387,7 +1443,12 @@
         },
         "scimax.notebook.defaultTemplate": {
           "type": "string",
-          "enum": ["empty", "research", "software", "notes"],
+          "enum": [
+            "empty",
+            "research",
+            "software",
+            "notes"
+          ],
           "default": "research",
           "description": "Default template for new notebooks"
         },
@@ -1504,20 +1565,21 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.0",
+    "@types/uuid": "^10.0.0",
     "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",
     "@typescript-eslint/parser": "^6.13.0",
+    "@vscode/vsce": "^2.22.0",
     "eslint": "^8.55.0",
     "typescript": "^5.3.0",
-    "vitest": "^1.0.0",
-    "@vscode/vsce": "^2.22.0"
+    "vitest": "^1.0.0"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",
     "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",
     "minimatch": "^9.0.0",
-    "zeromq": "^6.0.0-beta.19",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "zeromq": "^6.0.0-beta.19"
   }
 }
