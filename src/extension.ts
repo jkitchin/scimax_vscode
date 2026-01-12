@@ -33,6 +33,8 @@ import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
 import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
+import { registerOrgCompletionProvider } from './org/completionProvider';
+import { registerOrgHoverProvider } from './org/hoverProvider';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { ProjectTreeProvider } from './projectile/projectTreeProvider';
@@ -265,6 +267,14 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Document Symbol Provider (for outline view)
     registerDocumentSymbolProvider(context);
     console.log('Scimax: Document symbol provider registered');
+
+    // Register Org Completion Provider (for intelligent completions)
+    registerOrgCompletionProvider(context);
+    console.log('Scimax: Org completion provider registered');
+
+    // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
+    registerOrgHoverProvider(context);
+    console.log('Scimax: Org hover provider registered');
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
