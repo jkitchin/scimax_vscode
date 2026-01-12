@@ -797,10 +797,580 @@ export async function insertSeparator(): Promise<boolean> {
     return true;
 }
 
+// =============================================================================
+// Scimax Table Extensions - Named Tables and Export
+// =============================================================================
+
+interface NamedTable {
+    name: string;
+    startLine: number;
+    endLine: number;
+    rows: string[][];
+    separatorLines: number[];
+}
+
+/**
+ * Find all named tables in the document
+ */
+function findNamedTables(document: vscode.TextDocument): NamedTable[] {
+    const tables: NamedTable[] = [];
+    const text = document.getText();
+    const lines = text.split('\n');
+
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i].trim();
+
+        // Look for #+NAME: or #+TBLNAME:
+        const nameMatch = line.match(/^#\+(NAME|TBLNAME):\s*(.+)$/i);
+        if (nameMatch) {
+            const name = nameMatch[2].trim();
+
+            // Look for table starting on next line
+            if (i + 1 < lines.length && isTableRow(lines[i + 1])) {
+                const tableStart = i + 1;
+                let tableEnd = tableStart;
+
+                // Find table end
+                for (let j = tableStart; j < lines.length; j++) {
+                    if (!isTableRow(lines[j])) {
+                        break;
+                    }
+                    tableEnd = j;
+                }
+
+                // Parse table
+                const rows: string[][] = [];
+                const separatorLines: number[] = [];
+
+                for (let j = tableStart; j <= tableEnd; j++) {
+                    if (isSeparatorRow(lines[j])) {
+                        separatorLines.push(j - tableStart);
+                        rows.push([]);
+                    } else {
+                        rows.push(parseRow(lines[j]));
+                    }
+                }
+
+                tables.push({
+                    name,
+                    startLine: tableStart,
+                    endLine: tableEnd,
+                    rows,
+                    separatorLines
+                });
+
+                i = tableEnd + 1;
+                continue;
+            }
+        }
+        i++;
+    }
+
+    return tables;
+}
+
+/**
+ * Jump to a named table
+ */
+export async function gotoNamedTable(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const tables = findNamedTables(editor.document);
+
+    if (tables.length === 0) {
+        vscode.window.showInformationMessage('No named tables in document');
+        return;
+    }
+
+    const selected = await vscode.window.showQuickPick(
+        tables.map(t => ({
+            label: t.name,
+            description: `Line ${t.startLine + 1}`,
+            detail: `${t.rows.filter(r => r.length > 0).length} rows`,
+            table: t
+        })),
+        { placeHolder: 'Jump to table...' }
+    );
+
+    if (selected) {
+        const pos = new vscode.Position(selected.table.startLine, 0);
+        editor.selection = new vscode.Selection(pos, pos);
+        editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+    }
+}
+
+/**
+ * Get a named table's data as a 2D array
+ */
+export function getNamedTableData(document: vscode.TextDocument, name: string): string[][] | null {
+    const tables = findNamedTables(document);
+    const table = tables.find(t => t.name === name);
+    if (!table) return null;
+
+    // Return only data rows (not separator rows)
+    return table.rows.filter(r => r.length > 0);
+}
+
+/**
+ * Get a specific row from a named table
+ */
+export function getTableRow(document: vscode.TextDocument, name: string, rowIndex: number): string[] | null {
+    const data = getNamedTableData(document, name);
+    if (!data || rowIndex < 0 || rowIndex >= data.length) return null;
+    return data[rowIndex];
+}
+
+/**
+ * Get a specific column from a named table
+ */
+export function getTableColumn(document: vscode.TextDocument, name: string, colIndex: number): string[] | null {
+    const data = getNamedTableData(document, name);
+    if (!data) return null;
+
+    const column: string[] = [];
+    for (const row of data) {
+        if (colIndex < row.length) {
+            column.push(row[colIndex]);
+        }
+    }
+    return column.length > 0 ? column : null;
+}
+
+/**
+ * Export table to CSV format
+ */
+function tableToCSV(rows: string[][]): string {
+    return rows
+        .filter(r => r.length > 0)
+        .map(row =>
+            row.map(cell => {
+                // Quote cells containing commas or quotes
+                if (cell.includes(',') || cell.includes('"') || cell.includes('\n')) {
+                    return `"${cell.replace(/"/g, '""')}"`;
+                }
+                return cell;
+            }).join(',')
+        )
+        .join('\n');
+}
+
+/**
+ * Export table to TSV format
+ */
+function tableToTSV(rows: string[][]): string {
+    return rows
+        .filter(r => r.length > 0)
+        .map(row => row.join('\t'))
+        .join('\n');
+}
+
+/**
+ * Export table to HTML format
+ */
+function tableToHTML(rows: string[][]): string {
+    const dataRows = rows.filter(r => r.length > 0);
+    if (dataRows.length === 0) return '';
+
+    const escapeHtml = (str: string) =>
+        str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    let html = '<table>\n';
+
+    // First row as header
+    html += '  <thead>\n    <tr>\n';
+    for (const cell of dataRows[0]) {
+        html += `      <th>${escapeHtml(cell)}</th>\n`;
+    }
+    html += '    </tr>\n  </thead>\n';
+
+    // Rest as body
+    if (dataRows.length > 1) {
+        html += '  <tbody>\n';
+        for (let i = 1; i < dataRows.length; i++) {
+            html += '    <tr>\n';
+            for (const cell of dataRows[i]) {
+                html += `      <td>${escapeHtml(cell)}</td>\n`;
+            }
+            html += '    </tr>\n';
+        }
+        html += '  </tbody>\n';
+    }
+
+    html += '</table>';
+    return html;
+}
+
+/**
+ * Export table to LaTeX format
+ */
+function tableToLaTeX(rows: string[][]): string {
+    const dataRows = rows.filter(r => r.length > 0);
+    if (dataRows.length === 0) return '';
+
+    const escapeLaTeX = (str: string) =>
+        str.replace(/&/g, '\\&').replace(/%/g, '\\%').replace(/_/g, '\\_');
+
+    const numCols = Math.max(...dataRows.map(r => r.length));
+    const colSpec = 'l'.repeat(numCols);
+
+    let latex = `\\begin{tabular}{${colSpec}}\n\\hline\n`;
+
+    for (let i = 0; i < dataRows.length; i++) {
+        const row = dataRows[i].map(escapeLaTeX);
+        latex += row.join(' & ') + ' \\\\\n';
+        if (i === 0) {
+            latex += '\\hline\n';
+        }
+    }
+
+    latex += '\\hline\n\\end{tabular}';
+    return latex;
+}
+
+/**
+ * Export the current table to various formats
+ */
+export async function exportTable(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const table = findTableAtCursor(editor.document, editor.selection.active);
+    if (!table) {
+        vscode.window.showInformationMessage('Not in a table');
+        return;
+    }
+
+    const format = await vscode.window.showQuickPick(
+        [
+            { label: 'CSV', description: 'Comma-separated values' },
+            { label: 'TSV', description: 'Tab-separated values' },
+            { label: 'HTML', description: 'HTML table' },
+            { label: 'LaTeX', description: 'LaTeX tabular' }
+        ],
+        { placeHolder: 'Export format' }
+    );
+
+    if (!format) return;
+
+    let output: string;
+    let extension: string;
+
+    switch (format.label) {
+        case 'CSV':
+            output = tableToCSV(table.rows);
+            extension = 'csv';
+            break;
+        case 'TSV':
+            output = tableToTSV(table.rows);
+            extension = 'tsv';
+            break;
+        case 'HTML':
+            output = tableToHTML(table.rows);
+            extension = 'html';
+            break;
+        case 'LaTeX':
+            output = tableToLaTeX(table.rows);
+            extension = 'tex';
+            break;
+        default:
+            return;
+    }
+
+    const destination = await vscode.window.showQuickPick(
+        [
+            { label: 'Clipboard', description: 'Copy to clipboard' },
+            { label: 'File', description: 'Save to file' },
+            { label: 'New Tab', description: 'Open in new tab' }
+        ],
+        { placeHolder: 'Export destination' }
+    );
+
+    if (!destination) return;
+
+    switch (destination.label) {
+        case 'Clipboard':
+            await vscode.env.clipboard.writeText(output);
+            vscode.window.showInformationMessage(`Table copied to clipboard as ${format.label}`);
+            break;
+        case 'File':
+            const uri = await vscode.window.showSaveDialog({
+                defaultUri: vscode.Uri.file(`table.${extension}`),
+                filters: { [format.label]: [extension] }
+            });
+            if (uri) {
+                const fs = await import('fs');
+                fs.writeFileSync(uri.fsPath, output);
+                vscode.window.showInformationMessage(`Table exported to ${uri.fsPath}`);
+            }
+            break;
+        case 'New Tab':
+            const doc = await vscode.workspace.openTextDocument({
+                content: output,
+                language: extension === 'html' ? 'html' : extension === 'tex' ? 'latex' : 'plaintext'
+            });
+            await vscode.window.showTextDocument(doc);
+            break;
+    }
+}
+
+/**
+ * Create a table from clipboard CSV/TSV data
+ */
+export async function importTableFromClipboard(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const clipboardText = await vscode.env.clipboard.readText();
+    if (!clipboardText.trim()) {
+        vscode.window.showInformationMessage('Clipboard is empty');
+        return;
+    }
+
+    // Detect delimiter (tab or comma)
+    const hasTab = clipboardText.includes('\t');
+    const delimiter = hasTab ? '\t' : ',';
+
+    // Parse the data
+    const lines = clipboardText.trim().split('\n');
+    const rows: string[][] = lines.map(line => {
+        if (delimiter === ',') {
+            // Handle CSV with quoted fields
+            const cells: string[] = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    cells.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            cells.push(current.trim());
+            return cells;
+        } else {
+            return line.split('\t').map(c => c.trim());
+        }
+    });
+
+    // Calculate column widths
+    const columnWidths: number[] = [];
+    for (const row of rows) {
+        for (let i = 0; i < row.length; i++) {
+            columnWidths[i] = Math.max(columnWidths[i] || 0, row[i].length, 1);
+        }
+    }
+
+    // Format as org table
+    const isOrg = editor.document.languageId === 'org';
+    const tableLines: string[] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+        tableLines.push(formatRow(rows[i], columnWidths));
+        // Add separator after first row (header)
+        if (i === 0) {
+            tableLines.push(formatSeparator(columnWidths, isOrg));
+        }
+    }
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(editor.selection.active, tableLines.join('\n') + '\n');
+    });
+}
+
+/**
+ * Sum a column of numbers
+ */
+export async function sumColumn(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const table = findTableAtCursor(editor.document, editor.selection.active);
+    if (!table) {
+        vscode.window.showInformationMessage('Not in a table');
+        return;
+    }
+
+    // Determine which column the cursor is in
+    const position = editor.selection.active;
+    const line = editor.document.lineAt(position.line).text;
+    const colIndex = getColumnIndexAtPosition(line, position.character);
+
+    if (colIndex === -1) {
+        vscode.window.showInformationMessage('Could not determine column');
+        return;
+    }
+
+    // Sum the column (skip header row and separators)
+    let sum = 0;
+    let count = 0;
+    const dataRows = table.rows.filter(r => r.length > 0);
+
+    for (let i = 1; i < dataRows.length; i++) {
+        const row = dataRows[i];
+        if (colIndex < row.length) {
+            const value = parseFloat(row[colIndex].replace(/[^0-9.-]/g, ''));
+            if (!isNaN(value)) {
+                sum += value;
+                count++;
+            }
+        }
+    }
+
+    vscode.window.showInformationMessage(`Sum: ${sum} (${count} values)`);
+}
+
+/**
+ * Calculate average of a column
+ */
+export async function averageColumn(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const table = findTableAtCursor(editor.document, editor.selection.active);
+    if (!table) {
+        vscode.window.showInformationMessage('Not in a table');
+        return;
+    }
+
+    const position = editor.selection.active;
+    const line = editor.document.lineAt(position.line).text;
+    const colIndex = getColumnIndexAtPosition(line, position.character);
+
+    if (colIndex === -1) return;
+
+    let sum = 0;
+    let count = 0;
+    const dataRows = table.rows.filter(r => r.length > 0);
+
+    for (let i = 1; i < dataRows.length; i++) {
+        const row = dataRows[i];
+        if (colIndex < row.length) {
+            const value = parseFloat(row[colIndex].replace(/[^0-9.-]/g, ''));
+            if (!isNaN(value)) {
+                sum += value;
+                count++;
+            }
+        }
+    }
+
+    const avg = count > 0 ? sum / count : 0;
+    vscode.window.showInformationMessage(`Average: ${avg.toFixed(2)} (${count} values)`);
+}
+
+/**
+ * Get the column index at a character position in a table row
+ */
+function getColumnIndexAtPosition(line: string, charPos: number): number {
+    if (!isTableRow(line)) return -1;
+
+    let colIndex = -1;
+    let pipeCount = 0;
+
+    for (let i = 0; i < charPos && i < line.length; i++) {
+        if (line[i] === '|') {
+            pipeCount++;
+            colIndex = pipeCount - 1;
+        }
+    }
+
+    return Math.max(0, colIndex);
+}
+
+/**
+ * Sort table by the current column
+ */
+export async function sortByColumn(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const table = findTableAtCursor(editor.document, editor.selection.active);
+    if (!table) {
+        vscode.window.showInformationMessage('Not in a table');
+        return;
+    }
+
+    const position = editor.selection.active;
+    const line = editor.document.lineAt(position.line).text;
+    const colIndex = getColumnIndexAtPosition(line, position.character);
+
+    if (colIndex === -1) return;
+
+    const order = await vscode.window.showQuickPick(
+        [
+            { label: 'Ascending', value: 'asc' },
+            { label: 'Descending', value: 'desc' }
+        ],
+        { placeHolder: 'Sort order' }
+    );
+
+    if (!order) return;
+
+    // Separate header and data rows
+    const dataRows = table.rows.filter(r => r.length > 0);
+    const header = dataRows[0];
+    const body = dataRows.slice(1);
+
+    // Sort the body
+    body.sort((a, b) => {
+        const aVal = colIndex < a.length ? a[colIndex] : '';
+        const bVal = colIndex < b.length ? b[colIndex] : '';
+
+        // Try numeric comparison first
+        const aNum = parseFloat(aVal);
+        const bNum = parseFloat(bVal);
+
+        if (!isNaN(aNum) && !isNaN(bNum)) {
+            return order.value === 'asc' ? aNum - bNum : bNum - aNum;
+        }
+
+        // Fall back to string comparison
+        const cmp = aVal.localeCompare(bVal);
+        return order.value === 'asc' ? cmp : -cmp;
+    });
+
+    // Recalculate column widths
+    const allRows = [header, ...body];
+    const columnWidths: number[] = [];
+    for (const row of allRows) {
+        for (let i = 0; i < row.length; i++) {
+            columnWidths[i] = Math.max(columnWidths[i] || 0, row[i].length, 1);
+        }
+    }
+
+    // Rebuild table
+    const isOrg = editor.document.languageId === 'org';
+    const newLines: string[] = [
+        formatRow(header, columnWidths),
+        formatSeparator(columnWidths, isOrg),
+        ...body.map(row => formatRow(row, columnWidths))
+    ];
+
+    await editor.edit(editBuilder => {
+        const range = new vscode.Range(
+            table.startLine, 0,
+            table.endLine, editor.document.lineAt(table.endLine).text.length
+        );
+        editBuilder.replace(range, newLines.join('\n'));
+    });
+}
+
 /**
  * Register table commands
  */
 export function registerTableCommands(context: vscode.ExtensionContext): void {
+    // Original commands
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.table.moveRowUp', moveRowUp),
         vscode.commands.registerCommand('scimax.table.moveRowDown', moveRowDown),
@@ -816,5 +1386,15 @@ export function registerTableCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.table.nextCell', nextCell),
         vscode.commands.registerCommand('scimax.table.prevCell', prevCell),
         vscode.commands.registerCommand('scimax.table.insertSeparator', insertSeparator)
+    );
+
+    // Scimax extensions
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.table.gotoNamed', gotoNamedTable),
+        vscode.commands.registerCommand('scimax.table.export', exportTable),
+        vscode.commands.registerCommand('scimax.table.import', importTableFromClipboard),
+        vscode.commands.registerCommand('scimax.table.sumColumn', sumColumn),
+        vscode.commands.registerCommand('scimax.table.averageColumn', averageColumn),
+        vscode.commands.registerCommand('scimax.table.sortByColumn', sortByColumn)
     );
 }

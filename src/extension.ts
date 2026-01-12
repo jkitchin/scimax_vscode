@@ -37,6 +37,8 @@ import { registerOrgCompletionProvider } from './org/completionProvider';
 import { registerOrgHoverProvider } from './org/hoverProvider';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
 import { registerExportCommands } from './org/exportProvider';
+import { registerScimaxOrgCommands } from './org/scimaxOrg';
+import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
@@ -291,6 +293,14 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Jupyter kernel commands (native ZMQ kernel support)
     registerJupyterCommands(context);
     console.log('Scimax: Jupyter kernel support registered');
+
+    // Register Scimax-org commands (text markup, DWIM return, navigation)
+    registerScimaxOrgCommands(context);
+    console.log('Scimax: Scimax-org commands registered');
+
+    // Register Scimax-ob commands (source block manipulation)
+    registerScimaxObCommands(context);
+    console.log('Scimax: Scimax-ob commands registered');
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

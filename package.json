@@ -908,6 +908,238 @@
       {
         "command": "scimax.hydra.contextMenu",
         "title": "Scimax: Context Menu"
+      },
+      {
+        "command": "scimax.markup.bold",
+        "title": "Scimax: Bold (Markup)"
+      },
+      {
+        "command": "scimax.markup.italic",
+        "title": "Scimax: Italic (Markup)"
+      },
+      {
+        "command": "scimax.markup.underline",
+        "title": "Scimax: Underline (Markup)"
+      },
+      {
+        "command": "scimax.markup.code",
+        "title": "Scimax: Code (Markup)"
+      },
+      {
+        "command": "scimax.markup.verbatim",
+        "title": "Scimax: Verbatim (Markup)"
+      },
+      {
+        "command": "scimax.markup.strikethrough",
+        "title": "Scimax: Strikethrough (Markup)"
+      },
+      {
+        "command": "scimax.markup.subscript",
+        "title": "Scimax: Subscript (Markup)"
+      },
+      {
+        "command": "scimax.markup.superscript",
+        "title": "Scimax: Superscript (Markup)"
+      },
+      {
+        "command": "scimax.markup.latexMath",
+        "title": "Scimax: LaTeX Math (Markup)"
+      },
+      {
+        "command": "scimax.markup.latexDisplayMath",
+        "title": "Scimax: LaTeX Display Math (Markup)"
+      },
+      {
+        "command": "scimax.org.jumpToHeading",
+        "title": "Scimax: Jump to Heading"
+      },
+      {
+        "command": "scimax.org.nextHeading",
+        "title": "Scimax: Next Heading"
+      },
+      {
+        "command": "scimax.org.previousHeading",
+        "title": "Scimax: Previous Heading"
+      },
+      {
+        "command": "scimax.org.parentHeading",
+        "title": "Scimax: Parent Heading"
+      },
+      {
+        "command": "scimax.org.promoteHeading",
+        "title": "Scimax: Promote Heading"
+      },
+      {
+        "command": "scimax.org.demoteHeading",
+        "title": "Scimax: Demote Heading"
+      },
+      {
+        "command": "scimax.org.promoteSubtree",
+        "title": "Scimax: Promote Subtree"
+      },
+      {
+        "command": "scimax.org.demoteSubtree",
+        "title": "Scimax: Demote Subtree"
+      },
+      {
+        "command": "scimax.org.moveSubtreeUp",
+        "title": "Scimax: Move Subtree Up"
+      },
+      {
+        "command": "scimax.org.moveSubtreeDown",
+        "title": "Scimax: Move Subtree Down"
+      },
+      {
+        "command": "scimax.org.killSubtree",
+        "title": "Scimax: Kill Subtree"
+      },
+      {
+        "command": "scimax.org.cloneSubtree",
+        "title": "Scimax: Clone Subtree"
+      },
+      {
+        "command": "scimax.org.insertHeading",
+        "title": "Scimax: Insert Heading"
+      },
+      {
+        "command": "scimax.org.insertSubheading",
+        "title": "Scimax: Insert Subheading"
+      },
+      {
+        "command": "scimax.org.cycleTodo",
+        "title": "Scimax: Cycle TODO State"
+      },
+      {
+        "command": "scimax.org.toggleCheckbox",
+        "title": "Scimax: Toggle Checkbox"
+      },
+      {
+        "command": "scimax.org.insertCheckbox",
+        "title": "Scimax: Insert Checkbox"
+      },
+      {
+        "command": "scimax.org.insertLink",
+        "title": "Scimax: Insert Link"
+      },
+      {
+        "command": "scimax.org.openLink",
+        "title": "Scimax: Open Link at Point"
+      },
+      {
+        "command": "scimax.org.dwimReturn",
+        "title": "Scimax: DWIM Return"
+      },
+      {
+        "command": "scimax.ob.insertBlockAbove",
+        "title": "Scimax: Insert Block Above"
+      },
+      {
+        "command": "scimax.ob.insertBlockBelow",
+        "title": "Scimax: Insert Block Below"
+      },
+      {
+        "command": "scimax.ob.insertBlockBelowSame",
+        "title": "Scimax: Insert Block Below (Same Language)"
+      },
+      {
+        "command": "scimax.ob.splitBlock",
+        "title": "Scimax: Split Block"
+      },
+      {
+        "command": "scimax.ob.cloneBlock",
+        "title": "Scimax: Clone Block"
+      },
+      {
+        "command": "scimax.ob.killBlock",
+        "title": "Scimax: Kill Block and Results"
+      },
+      {
+        "command": "scimax.ob.copyBlock",
+        "title": "Scimax: Copy Block and Results"
+      },
+      {
+        "command": "scimax.ob.moveBlockUp",
+        "title": "Scimax: Move Block Up"
+      },
+      {
+        "command": "scimax.ob.moveBlockDown",
+        "title": "Scimax: Move Block Down"
+      },
+      {
+        "command": "scimax.ob.mergeWithPrevious",
+        "title": "Scimax: Merge with Previous Block"
+      },
+      {
+        "command": "scimax.ob.mergeWithNext",
+        "title": "Scimax: Merge with Next Block"
+      },
+      {
+        "command": "scimax.ob.nextBlock",
+        "title": "Scimax: Next Source Block"
+      },
+      {
+        "command": "scimax.ob.previousBlock",
+        "title": "Scimax: Previous Source Block"
+      },
+      {
+        "command": "scimax.ob.jumpToBlock",
+        "title": "Scimax: Jump to Source Block"
+      },
+      {
+        "command": "scimax.ob.jumpToResults",
+        "title": "Scimax: Jump to Results"
+      },
+      {
+        "command": "scimax.ob.executeAndNext",
+        "title": "Scimax: Execute and Next"
+      },
+      {
+        "command": "scimax.ob.executeToPoint",
+        "title": "Scimax: Execute to Point"
+      },
+      {
+        "command": "scimax.ob.executeAll",
+        "title": "Scimax: Execute All Blocks"
+      },
+      {
+        "command": "scimax.ob.clearResults",
+        "title": "Scimax: Clear Results"
+      },
+      {
+        "command": "scimax.ob.clearAllResults",
+        "title": "Scimax: Clear All Results"
+      },
+      {
+        "command": "scimax.ob.toggleResults",
+        "title": "Scimax: Toggle Results Visibility"
+      },
+      {
+        "command": "scimax.ob.editHeader",
+        "title": "Scimax: Edit Block Header"
+      },
+      {
+        "command": "scimax.table.gotoNamed",
+        "title": "Scimax: Go to Named Table"
+      },
+      {
+        "command": "scimax.table.export",
+        "title": "Scimax: Export Table"
+      },
+      {
+        "command": "scimax.table.import",
+        "title": "Scimax: Import Table from Clipboard"
+      },
+      {
+        "command": "scimax.table.sumColumn",
+        "title": "Scimax: Sum Column"
+      },
+      {
+        "command": "scimax.table.averageColumn",
+        "title": "Scimax: Average Column"
+      },
+      {
+        "command": "scimax.table.sortByColumn",
+        "title": "Scimax: Sort by Column"
       }
     ],
     "keybindings": [
@@ -1279,6 +1511,156 @@
         "command": "scimax.hydra.contextMenu",
         "key": "ctrl+c ctrl+m",
         "mac": "ctrl+c ctrl+m"
+      },
+      {
+        "command": "scimax.markup.bold",
+        "key": "ctrl+c b",
+        "mac": "ctrl+c b",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.italic",
+        "key": "ctrl+c i",
+        "mac": "ctrl+c i",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.underline",
+        "key": "ctrl+c u",
+        "mac": "ctrl+c u",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.code",
+        "key": "ctrl+c `",
+        "mac": "ctrl+c `",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.verbatim",
+        "key": "ctrl+c =",
+        "mac": "ctrl+c =",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.strikethrough",
+        "key": "ctrl+c +",
+        "mac": "ctrl+c +",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.cycleTodo",
+        "key": "ctrl+c ctrl+t",
+        "mac": "ctrl+c ctrl+t",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.jumpToHeading",
+        "key": "ctrl+c ctrl+j",
+        "mac": "ctrl+c ctrl+j",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.nextHeading",
+        "key": "ctrl+c n",
+        "mac": "ctrl+c n",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.previousHeading",
+        "key": "ctrl+c p",
+        "mac": "ctrl+c p",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.promoteHeading",
+        "key": "alt+left",
+        "mac": "alt+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+      },
+      {
+        "command": "scimax.org.demoteHeading",
+        "key": "alt+right",
+        "mac": "alt+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+      },
+      {
+        "command": "scimax.org.moveSubtreeUp",
+        "key": "alt+up",
+        "mac": "alt+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+      },
+      {
+        "command": "scimax.org.moveSubtreeDown",
+        "key": "alt+down",
+        "mac": "alt+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+      },
+      {
+        "command": "scimax.org.insertHeading",
+        "key": "ctrl+enter",
+        "mac": "ctrl+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+      },
+      {
+        "command": "scimax.org.openLink",
+        "key": "ctrl+c ctrl+o",
+        "mac": "ctrl+c ctrl+o",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.insertLink",
+        "key": "ctrl+c ctrl+l",
+        "mac": "ctrl+c ctrl+l",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.nextBlock",
+        "key": "ctrl+down",
+        "mac": "ctrl+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.previousBlock",
+        "key": "ctrl+up",
+        "mac": "ctrl+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.insertBlockBelow",
+        "key": "ctrl+c ctrl+n",
+        "mac": "ctrl+c ctrl+n",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.executeAndNext",
+        "key": "shift+enter",
+        "mac": "shift+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.splitBlock",
+        "key": "ctrl+c -",
+        "mac": "ctrl+c -",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.jumpToBlock",
+        "key": "ctrl+c ctrl+b",
+        "mac": "ctrl+c ctrl+b",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.export",
+        "key": "ctrl+c ctrl+e t",
+        "mac": "ctrl+c ctrl+e t",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.sortByColumn",
+        "key": "ctrl+c ^",
+        "mac": "ctrl+c ^",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       }
     ],
     "configuration": {
