@@ -662,7 +662,8 @@
       },
       {
         "command": "scimax.projectile.add",
-        "title": "Scimax: Add Project"
+        "title": "Scimax: Add Project",
+        "icon": "$(add)"
       },
       {
         "command": "scimax.projectile.remove",
@@ -670,7 +671,8 @@
       },
       {
         "command": "scimax.projectile.scan",
-        "title": "Scimax: Scan Directory for Projects"
+        "title": "Scimax: Scan Directory for Projects",
+        "icon": "$(search)"
       },
       {
         "command": "scimax.projectile.info",
@@ -679,6 +681,11 @@
       {
         "command": "scimax.projectile.cleanup",
         "title": "Scimax: Cleanup Non-existent Projects"
+      },
+      {
+        "command": "scimax.projectile.refreshTree",
+        "title": "Scimax: Refresh Projects",
+        "icon": "$(refresh)"
       },
       {
         "command": "scimax.fuzzySearch",
@@ -792,9 +799,8 @@
     "keybindings": [
       {
         "command": "workbench.action.showCommands",
-        "key": "ctrl+x",
-        "mac": "cmd+x",
-        "args": "Scimax"
+        "key": "alt+x",
+        "mac": "alt+x"
       },
       {
         "command": "scimax.journal.today",
@@ -832,12 +838,12 @@
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|latex/ && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId =~ /org|latex/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
       },
       {
         "command": "scimax.markdown.toggleCheckbox",
@@ -1347,24 +1353,9 @@
           "icon": "$(list-tree)"
         },
         {
-          "id": "scimax.headings",
-          "name": "Headings",
-          "icon": "$(list-tree)"
-        },
-        {
-          "id": "scimax.tags",
-          "name": "Tags",
-          "icon": "$(tag)"
-        },
-        {
-          "id": "scimax.references",
-          "name": "References",
-          "icon": "$(book)"
-        },
-        {
-          "id": "scimax.notebooks",
-          "name": "Notebooks",
-          "icon": "$(folder-library)"
+          "id": "scimax.projects",
+          "name": "Projects",
+          "icon": "$(folder)"
         }
       ]
     },
@@ -1378,6 +1369,21 @@
         {
           "command": "scimax.journal.refresh",
           "when": "view == scimax.journal",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.projectile.add",
+          "when": "view == scimax.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.projectile.scan",
+          "when": "view == scimax.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.projectile.refreshTree",
+          "when": "view == scimax.projects",
           "group": "navigation"
         }
       ],

@@ -10,15 +10,32 @@ vsc-extension-quickstart.md
 **/*.ts
 !out/**/*.js
 node_modules/**
+# libsql and all its dependencies
 !node_modules/@libsql/**
 !node_modules/libsql/**
+!node_modules/@neon-rs/**
+!node_modules/detect-libc/**
+!node_modules/ws/**
+!node_modules/@types/ws/**
+!node_modules/cross-fetch/**
+!node_modules/node-fetch/**
+!node_modules/data-uri-to-buffer/**
+!node_modules/fetch-blob/**
+!node_modules/formdata-polyfill/**
+!node_modules/web-streams-polyfill/**
+!node_modules/node-domexception/**
+!node_modules/whatwg-url/**
+!node_modules/tr46/**
+!node_modules/webidl-conversions/**
+!node_modules/js-base64/**
+!node_modules/promise-limit/**
+# transformers.js
 !node_modules/@xenova/**
+# other runtime deps
 !node_modules/date-fns/**
 !node_modules/minimatch/**
 !node_modules/brace-expansion/**
 !node_modules/balanced-match/**
-!node_modules/js-base64/**
-!node_modules/promise-limit/**
 *.vsix
 .claude/**
 !syntaxes/**

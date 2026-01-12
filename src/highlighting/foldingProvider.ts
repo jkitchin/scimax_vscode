@@ -223,6 +223,152 @@ export class LaTeXFoldingRangeProvider implements vscode.FoldingRangeProvider {
     }
 }
 
+/**
+ * Markdown folding provider for headings and code blocks
+ */
+export class MarkdownFoldingRangeProvider implements vscode.FoldingRangeProvider {
+
+    provideFoldingRanges(
+        document: vscode.TextDocument,
+        context: vscode.FoldingContext,
+        token: vscode.CancellationToken
+    ): vscode.FoldingRange[] {
+        const ranges: vscode.FoldingRange[] = [];
+        const lines = document.getText().split('\n');
+
+        // Track heading positions by level
+        const headingStack: { level: number; line: number }[] = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            if (token.isCancellationRequested) {
+                break;
+            }
+
+            const line = lines[i];
+
+            // Check for ATX headings (# to ######)
+            const headingMatch = line.match(/^(#{1,6})\s/);
+            if (headingMatch) {
+                const level = headingMatch[1].length;
+
+                // Close all headings of same or higher level
+                while (headingStack.length > 0) {
+                    const top = headingStack[headingStack.length - 1];
+                    if (top.level >= level) {
+                        headingStack.pop();
+                        // Create folding range from heading to line before this one
+                        if (i - 1 > top.line) {
+                            ranges.push(new vscode.FoldingRange(
+                                top.line,
+                                i - 1,
+                                vscode.FoldingRangeKind.Region
+                            ));
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                // Push this heading onto stack
+                headingStack.push({ level, line: i });
+            }
+
+            // Check for fenced code blocks (``` or ~~~)
+            const codeBlockMatch = line.match(/^(`{3,}|~{3,})(\w*)/);
+            if (codeBlockMatch) {
+                const fence = codeBlockMatch[1];
+                const fenceChar = fence[0];
+                const fenceLen = fence.length;
+                // Find matching closing fence
+                for (let j = i + 1; j < lines.length; j++) {
+                    const closingMatch = lines[j].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
+                    if (closingMatch) {
+                        ranges.push(new vscode.FoldingRange(
+                            i,
+                            j,
+                            vscode.FoldingRangeKind.Region
+                        ));
+                        break;
+                    }
+                }
+            }
+
+            // Check for HTML-style collapsible sections (<details> to </details>)
+            if (line.match(/^\s*<details/i)) {
+                for (let j = i + 1; j < lines.length; j++) {
+                    if (lines[j].match(/^\s*<\/details>/i)) {
+                        ranges.push(new vscode.FoldingRange(
+                            i,
+                            j,
+                            vscode.FoldingRangeKind.Region
+                        ));
+                        break;
+                    }
+                }
+            }
+
+            // Check for HTML comments (<!-- to -->)
+            if (line.match(/^\s*<!--/) && !line.match(/-->\s*$/)) {
+                for (let j = i + 1; j < lines.length; j++) {
+                    if (lines[j].match(/-->\s*$/)) {
+                        ranges.push(new vscode.FoldingRange(
+                            i,
+                            j,
+                            vscode.FoldingRangeKind.Comment
+                        ));
+                        break;
+                    }
+                }
+            }
+
+            // Check for blockquotes (consecutive lines starting with >)
+            if (line.match(/^>\s/) && (i === 0 || !lines[i - 1].match(/^>\s/))) {
+                let endLine = i;
+                for (let j = i + 1; j < lines.length; j++) {
+                    if (lines[j].match(/^>\s/) || lines[j].match(/^>\s*$/)) {
+                        endLine = j;
+                    } else if (lines[j].trim() === '') {
+                        // Allow one blank line within blockquote
+                        if (j + 1 < lines.length && lines[j + 1].match(/^>/)) {
+                            endLine = j;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                if (endLine > i) {
+                    ranges.push(new vscode.FoldingRange(
+                        i,
+                        endLine,
+                        vscode.FoldingRangeKind.Region
+                    ));
+                }
+            }
+        }
+
+        // Close any remaining headings at end of document
+        while (headingStack.length > 0) {
+            const top = headingStack.pop()!;
+            // Find last non-empty line
+            let lastLine = lines.length - 1;
+            while (lastLine > top.line && lines[lastLine].trim() === '') {
+                lastLine--;
+            }
+            if (lastLine > top.line) {
+                ranges.push(new vscode.FoldingRange(
+                    top.line,
+                    lastLine,
+                    vscode.FoldingRangeKind.Region
+                ));
+            }
+        }
+
+        return ranges;
+    }
+}
+
 // Track global fold state for cycling
 let globalFoldState: 'expanded' | 'headings-only' | 'collapsed' = 'expanded';
 
@@ -241,6 +387,13 @@ function isLaTeXSection(line: string): boolean {
 }
 
 /**
+ * Check if a line is a markdown heading
+ */
+function isMarkdownHeading(line: string): boolean {
+    return /^#{1,6}\s/.test(line);
+}
+
+/**
  * Toggle fold at the current cursor position
  * If in a table, move to next cell
  * If on a heading/section, toggles that fold state
@@ -252,7 +405,7 @@ async function toggleFoldAtCursor(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
     const line = document.lineAt(position.line).text;
-    const isLatex = document.languageId === 'latex';
+    const langId = document.languageId;
 
     // Check if we're in a table first - Tab moves between cells
     if (isInTable(document, position)) {
@@ -260,8 +413,18 @@ async function toggleFoldAtCursor(): Promise<void> {
         if (moved) return;
     }
 
+    // Determine the heading check function based on language
+    let checkFn: (line: string) => boolean;
+    if (langId === 'latex') {
+        checkFn = isLaTeXSection;
+    } else if (langId === 'markdown') {
+        checkFn = isMarkdownHeading;
+    } else {
+        checkFn = isOrgHeading;
+    }
+
     // Check if we're on a foldable element
-    const isFoldable = isLatex ? isLaTeXSection(line) : isOrgHeading(line);
+    const isFoldable = checkFn(line);
 
     if (isFoldable) {
         // Toggle fold at this line
@@ -270,7 +433,6 @@ async function toggleFoldAtCursor(): Promise<void> {
         });
     } else {
         // Find the nearest heading/section above and toggle it
-        const checkFn = isLatex ? isLaTeXSection : isOrgHeading;
         for (let i = position.line - 1; i >= 0; i--) {
             const checkLine = document.lineAt(i).text;
             if (checkFn(checkLine)) {
@@ -300,8 +462,15 @@ async function cycleGlobalFold(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    const isLatex = editor.document.languageId === 'latex';
-    const prefix = isLatex ? 'LaTeX' : 'Org';
+    const langId = editor.document.languageId;
+    let prefix: string;
+    if (langId === 'latex') {
+        prefix = 'LaTeX';
+    } else if (langId === 'markdown') {
+        prefix = 'Markdown';
+    } else {
+        prefix = 'Org';
+    }
 
     switch (globalFoldState) {
         case 'expanded':
@@ -343,7 +512,15 @@ export function registerFoldingProvider(context: vscode.ExtensionContext): void 
         )
     );
 
-    // Register folding commands (shared for org and latex)
+    // Register Markdown folding provider
+    context.subscriptions.push(
+        vscode.languages.registerFoldingRangeProvider(
+            { language: 'markdown', scheme: 'file' },
+            new MarkdownFoldingRangeProvider()
+        )
+    );
+
+    // Register folding commands (shared for org, latex, and markdown)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.toggleFold', toggleFoldAtCursor),
         vscode.commands.registerCommand('scimax.org.cycleGlobalFold', cycleGlobalFold)

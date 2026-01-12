@@ -34,6 +34,7 @@ import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
+import { ProjectTreeProvider } from './projectile/projectTreeProvider';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
@@ -354,6 +355,47 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Projectile Commands
     registerProjectileCommands(context, projectileManager);
+
+    // Register Project Tree View
+    const projectTreeProvider = new ProjectTreeProvider(projectileManager);
+    vscode.window.registerTreeDataProvider('scimax.projects', projectTreeProvider);
+
+    // Command to open project from tree view
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.projectile.openProject', async (project) => {
+            const uri = vscode.Uri.file(project.path);
+            await projectileManager.touchProject(project.path);
+
+            const currentFolders = vscode.workspace.workspaceFolders || [];
+            if (currentFolders.some(f => f.uri.fsPath === project.path)) {
+                vscode.window.showInformationMessage(`Project ${project.name} is already open`);
+                return;
+            }
+
+            const openIn = await vscode.window.showQuickPick([
+                { label: '$(window) New Window', value: 'new' },
+                { label: '$(folder-opened) Current Window', value: 'current' },
+                { label: '$(add) Add to Workspace', value: 'add' }
+            ], { placeHolder: `Open ${project.name}` });
+
+            if (!openIn) return;
+
+            switch (openIn.value) {
+                case 'new':
+                    await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+                    break;
+                case 'current':
+                    await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
+                    break;
+                case 'add':
+                    vscode.workspace.updateWorkspaceFolders(
+                        vscode.workspace.workspaceFolders?.length || 0, 0, { uri }
+                    );
+                    break;
+            }
+        }),
+        vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh())
+    );
     console.log('Scimax: Projectile manager initialized');
 
     // Register Fuzzy Search Commands (search current/all open files)

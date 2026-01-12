@@ -3,12 +3,12 @@
 This file tests markdown features in the Scimax VS Code extension.
 
 ## Text Formatting
-
+[@schuett-2018-schnet]
 Here are examples of **bold**, *italic*, ~~strikethrough~~, and `inline code`.
 
 You can combine them: ***bold italic***, ~~*strikethrough italic*~~.
 
-## Links
+## Links        
 
 - [Package JSON](./package.json)
 - [GitHub](https://github.com/jkitchin/scimax)
