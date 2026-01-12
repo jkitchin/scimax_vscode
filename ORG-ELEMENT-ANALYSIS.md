@@ -802,6 +802,500 @@ Full org-element parity (100%) would require ~4 weeks and is only needed for:
 
 ---
 
+## Part 9: LaTeX Export Requirements
+
+LaTeX export is more demanding than HTML/Markdown and requires additional parser features. Here's what's specifically needed:
+
+### 9.1 Critical Parser Additions for LaTeX
+
+| Feature | Why Needed | Effort |
+|---------|------------|--------|
+| **Affiliated keywords** | #+CAPTION, #+NAME, #+LABEL, #+ATTR_LATEX | ~150 LOC |
+| **LaTeX fragments** | `$inline$`, `$$display$$`, `\begin{equation}` | ~100 LOC |
+| **LaTeX environments** | Pass through unchanged to output | ~50 LOC |
+| **Entity parsing** | `\alpha`, `\rightarrow` → LaTeX commands | ~100 LOC |
+| **Subscript/superscript** | `H_2O`, `x^2` → `H$_2$O`, `x$^2$` | ~50 LOC |
+| **Table structure** | Cells, alignment, hlines, longtable support | ~200 LOC |
+| **Footnote references** | `[fn:1]` → `\footnote{}` | ~50 LOC |
+
+**Additional effort for LaTeX: ~700 LOC**
+
+### 9.2 Affiliated Keywords (MUST IMPLEMENT)
+
+For LaTeX export, affiliated keywords are **not optional**. They control:
+
+```org
+#+CAPTION: This is my figure caption
+#+NAME: fig:my-figure
+#+ATTR_LATEX: :width 0.8\textwidth :float t :placement [H]
+[[file:image.png]]
+```
+
+**Parser changes needed:**
+
+```typescript
+interface AffiliatedKeywords {
+  // Standard keywords
+  caption?: string | [string, string];  // [short, long] caption
+  name?: string;                         // For cross-references
+
+  // Attribute keywords (per-backend)
+  attr: {
+    latex?: Record<string, string>;      // :width, :float, :placement, etc.
+    html?: Record<string, string>;
+    // ... other backends
+  };
+
+  // Results keywords (for Babel)
+  results?: string[];
+}
+
+interface OrgElement {
+  type: ElementType;
+  range: { start: number; end: number };
+  properties: ElementProperties;
+  affiliated?: AffiliatedKeywords;  // ← ADD THIS
+  children?: OrgElement[];
+}
+```
+
+**Parsing strategy:**
+
+```typescript
+function parseAffiliatedKeywords(
+  lines: string[],
+  elementStartLine: number
+): { affiliated: AffiliatedKeywords; consumedLines: number } {
+  // Look backwards from element to collect #+KEYWORD lines
+  const affiliated: AffiliatedKeywords = { attr: {} };
+  let i = elementStartLine - 1;
+
+  while (i >= 0) {
+    const line = lines[i];
+
+    // #+CAPTION: text
+    const captionMatch = line.match(/^#\+CAPTION:\s*(.*)$/i);
+    if (captionMatch) {
+      affiliated.caption = captionMatch[1];
+      i--;
+      continue;
+    }
+
+    // #+NAME: identifier
+    const nameMatch = line.match(/^#\+NAME:\s*(.*)$/i);
+    if (nameMatch) {
+      affiliated.name = nameMatch[1];
+      i--;
+      continue;
+    }
+
+    // #+ATTR_LATEX: :key value :key2 value2
+    const attrMatch = line.match(/^#\+ATTR_(\w+):\s*(.*)$/i);
+    if (attrMatch) {
+      const backend = attrMatch[1].toLowerCase();
+      const attrs = parseColonAttributes(attrMatch[2]);
+      affiliated.attr[backend] = { ...affiliated.attr[backend], ...attrs };
+      i--;
+      continue;
+    }
+
+    // Not an affiliated keyword - stop
+    break;
+  }
+
+  return { affiliated, consumedLines: elementStartLine - 1 - i };
+}
+
+function parseColonAttributes(text: string): Record<string, string> {
+  // Parse ":key value :key2 value2" format
+  const result: Record<string, string> = {};
+  const regex = /:(\w+)\s+([^:]+?)(?=\s+:|$)/g;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    result[match[1]] = match[2].trim();
+  }
+  return result;
+}
+```
+
+### 9.3 LaTeX Fragment and Environment Parsing
+
+**LaTeX fragments** (inline math, display math):
+
+```typescript
+type LatexFragmentType =
+  | 'inline-math'      // $...$
+  | 'display-math'     // $$...$$ or \[...\]
+  | 'inline-command'   // \command or \command{arg}
+  | 'environment';     // \begin{env}...\end{env}
+
+interface LatexFragment extends OrgObject {
+  type: 'latex-fragment';
+  properties: {
+    value: string;           // Raw LaTeX content
+    fragmentType: LatexFragmentType;
+  };
+}
+
+// Detection patterns
+const LATEX_PATTERNS = {
+  inlineMath: /\$([^\$\n]+)\$/g,
+  displayMath: /\$\$([^\$]+)\$\$/g,
+  displayMathBracket: /\\\[([\s\S]+?)\\\]/g,
+  inlineMathParen: /\\\(([\s\S]+?)\\\)/g,
+};
+
+// Math environment names (pass through unchanged)
+const MATH_ENVIRONMENTS = new Set([
+  'equation', 'equation*', 'align', 'align*', 'gather', 'gather*',
+  'multline', 'multline*', 'flalign', 'flalign*', 'alignat', 'alignat*',
+  'eqnarray', 'eqnarray*', 'subequations',
+  'matrix', 'pmatrix', 'bmatrix', 'vmatrix', 'Vmatrix',
+  'cases', 'dcases', 'rcases',
+]);
+```
+
+**LaTeX environments** (block-level):
+
+```typescript
+interface LatexEnvironment extends OrgElement {
+  type: 'latex-environment';
+  properties: {
+    name: string;            // Environment name
+    value: string;           // Full content including \begin...\end
+    options?: string;        // Optional [options]
+  };
+}
+
+function parseLatexEnvironment(
+  content: string,
+  offset: number
+): LatexEnvironment | null {
+  const match = content.slice(offset).match(
+    /^\\begin\{(\w+\*?)\}(\[.*?\])?([\s\S]*?)\\end\{\1\}/
+  );
+  if (!match) return null;
+
+  return {
+    type: 'latex-environment',
+    range: { start: offset, end: offset + match[0].length },
+    properties: {
+      name: match[1],
+      options: match[2],
+      value: match[0],
+    },
+  };
+}
+```
+
+### 9.4 Entity Parsing
+
+Org entities like `\alpha`, `\rightarrow`, `\nbsp` need conversion:
+
+```typescript
+// Subset of org-entities - full list has ~400 entries
+const ORG_ENTITIES: Record<string, { latex: string; html: string; utf8: string }> = {
+  'alpha': { latex: '\\alpha', html: '&alpha;', utf8: 'α' },
+  'beta': { latex: '\\beta', html: '&beta;', utf8: 'β' },
+  'gamma': { latex: '\\gamma', html: '&gamma;', utf8: 'γ' },
+  'rightarrow': { latex: '\\rightarrow', html: '&rarr;', utf8: '→' },
+  'Rightarrow': { latex: '\\Rightarrow', html: '&rArr;', utf8: '⇒' },
+  'nbsp': { latex: '~', html: '&nbsp;', utf8: '\u00A0' },
+  'mdash': { latex: '---', html: '&mdash;', utf8: '—' },
+  'ndash': { latex: '--', html: '&ndash;', utf8: '–' },
+  'times': { latex: '\\times', html: '&times;', utf8: '×' },
+  'div': { latex: '\\div', html: '&divide;', utf8: '÷' },
+  // ... ~390 more
+};
+
+interface EntityObject extends OrgObject {
+  type: 'entity';
+  properties: {
+    name: string;            // Entity name without backslash
+    latex: string;           // LaTeX representation
+    html: string;            // HTML representation
+    utf8: string;            // UTF-8 character
+    usesBrackets: boolean;   // \alpha vs \alpha{}
+  };
+}
+```
+
+### 9.5 Table Structure for LaTeX
+
+LaTeX tables need detailed structure:
+
+```typescript
+interface OrgTable extends OrgElement {
+  type: 'table';
+  properties: {
+    tableType: 'org' | 'table.el';
+
+    // For LaTeX export
+    environment?: string;    // tabular, longtable, tabularx, etc.
+    alignment?: string;      // |l|c|r| or from #+ATTR_LATEX
+    float?: boolean;         // Wrap in table environment
+    placement?: string;      // [H], [htbp], etc.
+    booktabs?: boolean;      // Use booktabs package
+
+    // Caption/label from affiliated
+    caption?: string;
+    name?: string;           // For \label{}
+  };
+  children: OrgTableRow[];
+}
+
+interface OrgTableRow extends OrgElement {
+  type: 'table-row';
+  properties: {
+    rowType: 'standard' | 'rule';  // Data row or horizontal line
+  };
+  children: OrgTableCell[];
+}
+
+interface OrgTableCell extends OrgObject {
+  type: 'table-cell';
+  properties: {
+    value: string;           // Raw cell content
+  };
+  children?: OrgObject[];    // Parsed cell content (markup, links, etc.)
+}
+```
+
+### 9.6 Cross-References and Labels
+
+LaTeX cross-references require consistent label generation:
+
+```typescript
+interface LabelManager {
+  // Generate label from #+NAME or CUSTOM_ID
+  getLabel(element: OrgElement): string | undefined;
+
+  // Generate automatic label if none provided
+  generateLabel(element: OrgElement): string;
+
+  // Resolve [[reference]] to \ref{label}
+  resolveReference(target: string): { label: string; type: 'ref' | 'pageref' | 'nameref' } | undefined;
+}
+
+// Label generation strategy
+function generateLabel(element: OrgElement, doc: OrgDocument): string {
+  // Priority: #+NAME > CUSTOM_ID > auto-generated
+  if (element.affiliated?.name) {
+    return sanitizeLabel(element.affiliated.name);
+  }
+
+  if (element.properties.customId) {
+    return sanitizeLabel(element.properties.customId);
+  }
+
+  // Auto-generate: fig:orgXXXXXX, tab:orgXXXXXX, sec:orgXXXXXX
+  const prefix = getLabelPrefix(element.type);
+  const hash = hashPosition(element.range.start);
+  return `${prefix}:org${hash}`;
+}
+
+function getLabelPrefix(type: ElementType): string {
+  switch (type) {
+    case 'headline': return 'sec';
+    case 'table': return 'tab';
+    case 'paragraph': return 'fig';  // If contains image
+    case 'src-block': return 'lst';
+    case 'latex-environment': return 'eq';
+    default: return 'org';
+  }
+}
+```
+
+### 9.7 Revised Effort Estimate (Including LaTeX)
+
+| Component | Original | + LaTeX | Total |
+|-----------|----------|---------|-------|
+| Element types & interfaces | 200 | +50 | 250 |
+| Inline object parser | 300 | +150 (entities, sub/super) | 450 |
+| Enhanced element parser | 400 | +100 (latex-environment) | 500 |
+| Planning/clock parser | 150 | - | 150 |
+| Interpreter | 200 | - | 200 |
+| **Affiliated keywords** | - | +150 | 150 |
+| **Table structure** | - | +200 | 200 |
+| **LaTeX fragments** | - | +100 | 100 |
+| **Entity definitions** | - | +100 (data file) | 100 |
+| **Caching/performance** | 100 | - | 100 |
+| **Total** | **1350** | **+850** | **2200** |
+
+### 9.8 LaTeX Export Backend (~800 LOC additional)
+
+```typescript
+// src/export/backends/exportLatex.ts
+
+interface LatexExportOptions {
+  // Document class
+  documentClass: 'article' | 'report' | 'book' | 'beamer' | string;
+  classOptions?: string[];  // [11pt, a4paper]
+
+  // Packages
+  packages: string[];       // Auto-detected + user-specified
+
+  // Code blocks
+  codeBackend: 'verbatim' | 'listings' | 'minted' | 'engraved';
+
+  // Sections
+  sectionNumbering: boolean;
+  tocDepth: number;
+
+  // Babel/Polyglossia
+  language: string;
+  usePolyglossia: boolean;
+
+  // Output
+  standalone: boolean;      // Include preamble
+  outputFile?: string;
+}
+
+const latexTranscoders: ExportBackend['transcoders'] = {
+  'headline': (el, contents, info) => {
+    const level = el.properties.level!;
+    const cmds = ['section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph'];
+    const cmd = cmds[Math.min(level - 1, cmds.length - 1)];
+    const title = transcodeObjects(el.properties.title || [], info);
+    const label = el.affiliated?.name ? `\\label{${el.affiliated.name}}` : '';
+    return `\\${cmd}{${title}}${label}\n${contents}`;
+  },
+
+  'paragraph': (el, contents, info) => {
+    // Check if paragraph contains only an image → figure environment
+    if (isFigureParagraph(el)) {
+      return transcodeFigure(el, info);
+    }
+    return `${contents}\n\n`;
+  },
+
+  'src-block': (el, contents, info) => {
+    const lang = el.properties.language || '';
+    const code = escapeLatex(el.properties.value || '');
+    const caption = el.affiliated?.caption;
+    const label = el.affiliated?.name;
+
+    switch (info.options.codeBackend) {
+      case 'minted':
+        return `\\begin{minted}{${lang}}\n${code}\n\\end{minted}`;
+      case 'listings':
+        const opts = [
+          caption && `caption={${caption}}`,
+          label && `label=${label}`,
+          lang && `language=${lang}`,
+        ].filter(Boolean).join(',');
+        return `\\begin{lstlisting}[${opts}]\n${code}\n\\end{lstlisting}`;
+      default:
+        return `\\begin{verbatim}\n${code}\n\\end{verbatim}`;
+    }
+  },
+
+  'table': (el, contents, info) => {
+    const attrs = el.affiliated?.attr?.latex || {};
+    const env = attrs.environment || 'tabular';
+    const align = attrs.align || inferAlignment(el);
+    const caption = el.affiliated?.caption;
+    const label = el.affiliated?.name;
+    const booktabs = attrs.booktabs === 'yes';
+
+    let result = '';
+    if (attrs.float !== 'nil') {
+      result += `\\begin{table}[${attrs.placement || 'htbp'}]\n`;
+      result += `\\centering\n`;
+    }
+    result += `\\begin{${env}}{${align}}\n`;
+    if (booktabs) result += `\\toprule\n`;
+    result += contents;
+    if (booktabs) result += `\\bottomrule\n`;
+    result += `\\end{${env}}\n`;
+    if (caption) result += `\\caption{${caption}}\n`;
+    if (label) result += `\\label{${label}}\n`;
+    if (attrs.float !== 'nil') {
+      result += `\\end{table}\n`;
+    }
+    return result;
+  },
+
+  'latex-environment': (el) => {
+    // Pass through unchanged
+    return el.properties.value + '\n';
+  },
+
+  'latex-fragment': (el) => {
+    return el.properties.value;
+  },
+
+  'entity': (el) => {
+    return el.properties.latex;
+  },
+
+  'bold': (el, contents) => `\\textbf{${contents}}`,
+  'italic': (el, contents) => `\\textit{${contents}}`,
+  'underline': (el, contents) => `\\underline{${contents}}`,
+  'strike-through': (el, contents) => `\\sout{${contents}}`,
+  'code': (el) => `\\texttt{${escapeLatex(el.properties.value)}}`,
+  'verbatim': (el) => `\\verb|${el.properties.value}|`,
+
+  'link': (el, contents, info) => {
+    const path = el.properties.path!;
+    const type = el.properties.linkType;
+
+    if (type === 'file' && isImageFile(path)) {
+      // Image link
+      const width = el.affiliated?.attr?.latex?.width || '0.7\\textwidth';
+      return `\\includegraphics[width=${width}]{${path}}`;
+    }
+
+    if (type === 'http' || type === 'https') {
+      return `\\href{${path}}{${contents || path}}`;
+    }
+
+    // Internal reference
+    const label = info.labelManager.resolveReference(path);
+    if (label) {
+      return `\\ref{${label.label}}`;
+    }
+
+    return contents || path;
+  },
+
+  'footnote-reference': (el, contents) => {
+    if (el.properties.type === 'inline') {
+      return `\\footnote{${contents}}`;
+    }
+    // Named footnote - resolve from definitions
+    return `\\footnote{${contents}}`;
+  },
+
+  // ... more transcoders
+};
+```
+
+### 9.9 Summary: What LaTeX Export Adds
+
+**Parser additions (REQUIRED):**
+1. Affiliated keywords parsing → captions, labels, attributes
+2. LaTeX fragment/environment detection → pass-through
+3. Entity parsing → symbol conversion
+4. Enhanced table structure → cell-level parsing
+5. Subscript/superscript → inline math wrapping
+
+**Export additions:**
+1. LaTeX transcoder functions for all element types
+2. Label manager for cross-references
+3. Package detection (booktabs, minted, hyperref, etc.)
+4. Preamble generation
+5. Beamer support (future)
+
+**Revised timeline:**
+- Original estimate: ~6 days for 75% parity
+- With LaTeX export: ~10 days for 85% parity
+- Full LaTeX/Beamer parity: ~3 weeks
+
+The affiliated keywords change is the most significant architectural addition. Once implemented, it benefits all export backends (HTML, Markdown, ODT, etc.).
+
+---
+
 ## References
 
 - [Org Element API](https://orgmode.org/worg/dev/org-element-api.html)
