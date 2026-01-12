@@ -4,6 +4,8 @@
  */
 
 import * as vscode from 'vscode';
+import * as path from 'path';
+import * as fs from 'fs';
 import { ORG_ENTITIES } from '../parser/orgEntities';
 
 // Entity lookup map for fast access
@@ -15,6 +17,11 @@ for (const entity of ORG_ENTITIES) {
         html: entity.html,
     });
 }
+
+// Image file extensions
+const IMAGE_EXTENSIONS = new Set([
+    '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.bmp', '.ico', '.tiff', '.tif'
+]);
 
 // Keyword descriptions
 const KEYWORD_DESCRIPTIONS: Record<string, string> = {
@@ -139,6 +146,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
         // Check for various hover contexts
         let hover: vscode.Hover | null = null;
 
+        // Image link hover (show image preview) - check first for better UX
+        hover = this.getImageLinkHover(line, position, document);
+        if (hover) return hover;
+
         // Entity hover (backslash entities like \alpha)
         hover = this.getEntityHover(line, position);
         if (hover) return hover;
@@ -209,6 +220,123 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                     );
                     return new vscode.Hover(markdown, range);
                 }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get hover for image links - shows image preview
+     */
+    private getImageLinkHover(
+        line: string,
+        position: vscode.Position,
+        document: vscode.TextDocument
+    ): vscode.Hover | null {
+        // Match org links: [[path]] or [[path][description]] or [[file:path]]
+        const linkPattern = /\[\[(?:file:)?([^\]]+?)(?:\]\[([^\]]*))?\]\]/g;
+        let match;
+
+        while ((match = linkPattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = match.index + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                let imagePath = match[1];
+                const description = match[2];
+
+                // Check if this is an image file
+                const ext = path.extname(imagePath).toLowerCase();
+                if (!IMAGE_EXTENSIONS.has(ext)) {
+                    return null;
+                }
+
+                // Resolve the image path
+                const documentDir = path.dirname(document.uri.fsPath);
+                let absolutePath: string;
+
+                if (path.isAbsolute(imagePath)) {
+                    absolutePath = imagePath;
+                } else {
+                    // Handle ./path or just path
+                    absolutePath = path.resolve(documentDir, imagePath);
+                }
+
+                // Check if file exists
+                if (!fs.existsSync(absolutePath)) {
+                    const markdown = new vscode.MarkdownString();
+                    markdown.appendMarkdown(`**Image not found:**\n\n\`${imagePath}\`\n\n`);
+                    markdown.appendMarkdown(`Expected at: \`${absolutePath}\``);
+
+                    const range = new vscode.Range(
+                        position.line, startCol,
+                        position.line, endCol
+                    );
+                    return new vscode.Hover(markdown, range);
+                }
+
+                // Create hover with image preview
+                const markdown = new vscode.MarkdownString();
+                markdown.isTrusted = true;
+                markdown.supportHtml = true;
+
+                // Get file size for info
+                const stats = fs.statSync(absolutePath);
+                const sizeKB = (stats.size / 1024).toFixed(1);
+
+                // Use file URI for the image
+                const imageUri = vscode.Uri.file(absolutePath);
+
+                // Add image with max dimensions for readability
+                markdown.appendMarkdown(`**${description || path.basename(imagePath)}**\n\n`);
+                markdown.appendMarkdown(`<img src="${imageUri.toString()}" width="400" />\n\n`);
+                markdown.appendMarkdown(`*${path.basename(imagePath)}* (${sizeKB} KB)`);
+
+                const range = new vscode.Range(
+                    position.line, startCol,
+                    position.line, endCol
+                );
+                return new vscode.Hover(markdown, range);
+            }
+        }
+
+        // Also check for bare image links (just a path to an image file)
+        const bareImagePattern = /\[\[([^\]]+\.(png|jpe?g|gif|svg|webp|bmp|ico|tiff?))\]\]/gi;
+        bareImagePattern.lastIndex = 0;
+
+        while ((match = bareImagePattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = match.index + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                const imagePath = match[1];
+                const documentDir = path.dirname(document.uri.fsPath);
+                const absolutePath = path.isAbsolute(imagePath)
+                    ? imagePath
+                    : path.resolve(documentDir, imagePath);
+
+                if (!fs.existsSync(absolutePath)) {
+                    return null;
+                }
+
+                const markdown = new vscode.MarkdownString();
+                markdown.isTrusted = true;
+                markdown.supportHtml = true;
+
+                const stats = fs.statSync(absolutePath);
+                const sizeKB = (stats.size / 1024).toFixed(1);
+                const imageUri = vscode.Uri.file(absolutePath);
+
+                markdown.appendMarkdown(`**${path.basename(imagePath)}**\n\n`);
+                markdown.appendMarkdown(`<img src="${imageUri.toString()}" width="400" />\n\n`);
+                markdown.appendMarkdown(`*${sizeKB} KB*`);
+
+                const range = new vscode.Range(
+                    position.line, startCol,
+                    position.line, endCol
+                );
+                return new vscode.Hover(markdown, range);
             }
         }
 
