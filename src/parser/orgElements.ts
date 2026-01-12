@@ -306,7 +306,7 @@ export function parseClockLine(
     let status: 'running' | 'closed' = 'running';
 
     if (match[2]) {
-        endTs = parseTimestampString(match[2], charOffset + trimmed.indexOf(match[2]));
+        endTs = parseTimestampString(match[2], charOffset + trimmed.indexOf(match[2])) ?? undefined;
         status = 'closed';
     }
 

@@ -115,7 +115,7 @@ function extractFromNode(
     if (!node) return;
 
     switch (node.type) {
-        case 'org-document':
+        case 'org-data':
             const docNode = node as OrgDocumentNode;
             if (docNode.children) {
                 for (const child of docNode.children) {
@@ -183,36 +183,11 @@ function extractHeadline(
     const lineNumber = headline.position?.start?.line ?? 0;
 
     // Extract properties from property drawer
-    const properties: Record<string, string> = {};
-    if (headline.children) {
-        for (const child of headline.children) {
-            if (child.type === 'section') {
-                const section = child as SectionElement;
-                if (section.children) {
-                    for (const sectionChild of section.children) {
-                        if (sectionChild.type === 'drawer' &&
-                            (sectionChild as DrawerElement).properties?.name === 'PROPERTIES') {
-                            const drawer = sectionChild as DrawerElement;
-                            if (drawer.children) {
-                                for (const propLine of drawer.children) {
-                                    if (propLine.type === 'node-property') {
-                                        const propProps = (propLine as any).properties || {};
-                                        if (propProps.key && propProps.value !== undefined) {
-                                            properties[propProps.key] = propProps.value;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    const properties: Record<string, string> = headline.propertiesDrawer || {};
 
     const legacyHeading: LegacyHeading = {
         level: props.level || 1,
-        title: props.title || '',
+        title: props.rawValue || '',
         todoState: props.todoKeyword,
         priority: props.priority,
         tags: props.tags || [],
@@ -261,7 +236,7 @@ function extractSourceBlock(block: SrcBlockElement): LegacySourceBlock {
         headers,
         lineNumber: startLine + 1, // Convert to 1-indexed
         endLineNumber: endLine + 1,
-        name: props.name,
+        name: block.affiliated?.name,
     };
 }
 
@@ -324,18 +299,19 @@ function extractTimestamp(timestamp: TimestampObject): LegacyTimestamp {
     const lineNumber = timestamp.position?.start?.line ?? 0;
 
     // Determine timestamp type
-    let type: LegacyTimestamp['type'] = props.active ? 'active' : 'inactive';
+    const tsType = props.timestampType;
+    let type: LegacyTimestamp['type'] = (tsType === 'active' || tsType === 'active-range') ? 'active' : 'inactive';
 
     // Format date
-    const year = props.year || new Date().getFullYear();
-    const month = String(props.month || 1).padStart(2, '0');
-    const day = String(props.day || 1).padStart(2, '0');
+    const year = props.yearStart || new Date().getFullYear();
+    const month = String(props.monthStart || 1).padStart(2, '0');
+    const day = String(props.dayStart || 1).padStart(2, '0');
     const date = `${year}-${month}-${day}`;
 
     // Format time if present
     let time: string | undefined;
-    if (props.hour !== undefined && props.minute !== undefined) {
-        time = `${String(props.hour).padStart(2, '0')}:${String(props.minute).padStart(2, '0')}`;
+    if (props.hourStart !== undefined && props.minuteStart !== undefined) {
+        time = `${String(props.hourStart).padStart(2, '0')}:${String(props.minuteStart).padStart(2, '0')}`;
     }
 
     // Format repeater if present

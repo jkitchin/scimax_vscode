@@ -106,6 +106,8 @@ export interface LatexExportOptions extends ExportOptions {
     tocDepth?: number;
     /** Headline level to start with (1 = \section, 0 = \chapter) */
     headlineStartLevel?: number;
+    /** Export only the body (no preamble/document environment) */
+    bodyOnly?: boolean;
 }
 
 const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {

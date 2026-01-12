@@ -25,9 +25,11 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.Hover> {
         const line = document.lineAt(position.line).text;
+        console.log('CitationHoverProvider: checking line:', line.substring(0, 100));
 
         // Find citation at position
         const key = this.findCitationKeyAtPosition(line, position.character);
+        console.log('CitationHoverProvider: found key:', key, 'at position:', position.character);
         if (!key) return null;
 
         const entry = this.manager.getEntry(key);

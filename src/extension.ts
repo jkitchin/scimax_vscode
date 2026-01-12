@@ -4,9 +4,11 @@ import { JournalTreeProvider } from './journal/journalTreeProvider';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
-import { ScimaxDb } from './database/scimaxDb';
-import { registerDbCommands } from './database/commands';
-import { createEmbeddingService } from './database/embeddingService';
+// Database imports disabled to prevent SQLite module loading on startup
+// These will be imported dynamically when database is re-enabled
+// import { ScimaxDb } from './database/scimaxDb';
+// import { registerDbCommands } from './database/commands';
+// import { createEmbeddingService } from './database/embeddingService';
 import { ReferenceManager } from './references/referenceManager';
 import { registerReferenceCommands } from './references/commands';
 import {
@@ -14,7 +16,6 @@ import {
     CitationCompletionProvider,
     CitationDefinitionProvider,
     CitationLinkProvider,
-    ReferenceTreeProvider,
     BibliographyCodeLensProvider,
     BibliographyHoverProvider,
     RefHoverProvider,
@@ -23,10 +24,10 @@ import {
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands } from './notebook/commands';
-import { NotebookTreeProvider } from './notebook/notebookTreeProvider';
 import { OrgLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
+import { registerBlockDecorations } from './highlighting/blockDecorations';
 import { registerCheckboxFeatures } from './markdown/checkboxProvider';
 import { registerTaskCommands } from './markdown/taskCommands';
 import { registerTimestampCommands } from './org/timestampProvider';
@@ -39,7 +40,8 @@ import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvide
 import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
-import { registerJupyterCommands } from './jupyter/commands';
+// Jupyter commands imported dynamically to handle zeromq errors gracefully
+// import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { ProjectTreeProvider } from './projectile/projectTreeProvider';
@@ -52,7 +54,7 @@ import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
 let journalStatusBar: JournalStatusBar;
-let scimaxDb: ScimaxDb;
+// let scimaxDb: ScimaxDb;  // Disabled while investigating memory issues
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 let projectileManager: ProjectileManager;
@@ -60,94 +62,93 @@ let projectileManager: ProjectileManager;
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Scimax VS Code extension activating...');
 
+    // Set Leuven as default theme on first activation
+    const hasSetDefaultTheme = context.globalState.get<boolean>('scimax.hasSetDefaultTheme');
+    if (!hasSetDefaultTheme) {
+        const config = vscode.workspace.getConfiguration('workbench');
+        const currentTheme = config.get<string>('colorTheme');
+        // Only set if user hasn't explicitly chosen another theme or is using a default
+        if (!currentTheme || currentTheme === 'Default Dark+' || currentTheme === 'Default Light+' ||
+            currentTheme === 'Visual Studio Dark' || currentTheme === 'Visual Studio Light') {
+            await config.update('colorTheme', 'Leuven', vscode.ConfigurationTarget.Global);
+            console.log('Scimax: Set Leuven as default color theme');
+        }
+        await context.globalState.update('scimax.hasSetDefaultTheme', true);
+    }
+
     // Initialize Journal Manager
     journalManager = new JournalManager(context);
 
-    // Initialize Scimax Database (SQLite with FTS5 and vector search)
-    scimaxDb = new ScimaxDb(context);
-    await scimaxDb.initialize();
+    // Database initialization disabled to investigate memory issues
+    // TODO: Make database lazy-load on first use
+    // scimaxDb = new ScimaxDb(context);
+    // await scimaxDb.initialize();
+    // const embeddingService = createEmbeddingService();
+    // if (embeddingService) {
+    //     scimaxDb.setEmbeddingService(embeddingService);
+    //     console.log('Scimax: Semantic search enabled');
+    // }
+    console.log('Scimax: Database disabled (pending investigation)');
 
-    // Setup embedding service for semantic search (if configured)
-    const embeddingService = createEmbeddingService();
-    if (embeddingService) {
-        scimaxDb.setEmbeddingService(embeddingService);
-        console.log('Scimax: Semantic search enabled');
-    }
+    // Journal Tree View disabled while investigating performance issues
+    // The tree view calls getAllEntries() which does synchronous recursive directory scanning
+    // const journalTreeProvider = new JournalTreeProvider(journalManager);
+    // vscode.window.registerTreeDataProvider('scimax.journal', journalTreeProvider);
 
-    // Register Journal Tree View
-    const journalTreeProvider = new JournalTreeProvider(journalManager);
-    vscode.window.registerTreeDataProvider('scimax.journal', journalTreeProvider);
+    // // Register Journal Calendar WebView
+    // const calendarProvider = new JournalCalendarProvider(journalManager, context.extensionUri);
+    // context.subscriptions.push(
+    //     vscode.window.registerWebviewViewProvider(
+    //         JournalCalendarProvider.viewType,
+    //         calendarProvider
+    //     )
+    // );
 
-    // Register Journal Calendar WebView
-    const calendarProvider = new JournalCalendarProvider(journalManager, context.extensionUri);
-    context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(
-            JournalCalendarProvider.viewType,
-            calendarProvider
-        )
-    );
+    // Register Journal Commands (passing null for tree provider while disabled)
+    registerJournalCommands(context, journalManager, null as any);
+    console.log('Scimax: Journal tree view disabled (pending investigation)');
 
-    // Register Journal Commands
-    registerJournalCommands(context, journalManager, journalTreeProvider);
+    // Register Database Commands (disabled while investigating memory issues)
+    // registerDbCommands(context, scimaxDb);
 
-    // Register Database Commands
-    registerDbCommands(context, scimaxDb);
-
-    // Auto-index on activation if workspace is open
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (workspaceFolders && workspaceFolders.length > 0) {
-        // Index in background without blocking
-        setTimeout(async () => {
-            for (const folder of workspaceFolders) {
-                await scimaxDb.indexDirectory(folder.uri.fsPath);
-            }
-            const stats = await scimaxDb.getStats();
-            console.log(`Scimax: Indexed ${stats.files} files`);
-        }, 1000);
-    }
-
-    // Watch for file changes to update index (org, md, ipynb)
-    const watcher = vscode.workspace.createFileSystemWatcher('**/*.{org,md,ipynb}');
-    context.subscriptions.push(
-        watcher.onDidChange(async (uri) => {
-            await scimaxDb.indexFile(uri.fsPath);
-        }),
-        watcher.onDidCreate(async (uri) => {
-            await scimaxDb.indexFile(uri.fsPath);
-        }),
-        watcher.onDidDelete(async (uri) => {
-            // Remove deleted file from index
-            await scimaxDb.removeFile(uri.fsPath);
-        }),
-        watcher
-    );
+    // Auto-indexing and file watching disabled while investigating memory issues
+    // const config = vscode.workspace.getConfiguration('scimax.db');
+    // const autoIndex = config.get<boolean>('autoIndex', false);
+    // if (autoIndex) { ... }
 
     // Watch for configuration changes
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('scimax.journal')) {
                 journalManager.reloadConfig();
-                journalTreeProvider.refresh();
+                // journalTreeProvider.refresh(); // Tree view disabled
             }
         })
     );
 
-    // Create status bar with journal info (word count, streak, etc.)
-    journalStatusBar = new JournalStatusBar(journalManager);
-    context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
+    // Journal status bar disabled - getTotalStats() calls getAllEntries() which scans filesystem
+    // journalStatusBar = new JournalStatusBar(journalManager);
+    // context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
+    console.log('Scimax: Journal status bar disabled (pending investigation)');
 
-    // Initialize Reference Manager
+    // Initialize Reference Manager (deferred to avoid blocking extension host)
     try {
         console.log('Scimax: Initializing ReferenceManager...');
         referenceManager = new ReferenceManager(context);
-        await referenceManager.initialize();
         context.subscriptions.push({ dispose: () => referenceManager.dispose() });
-        console.log('Scimax: ReferenceManager initialized successfully');
+        // Defer bibliography loading to avoid blocking extension activation
+        // Use setImmediate to yield to the event loop
+        setImmediate(async () => {
+            try {
+                await referenceManager.initialize();
+                console.log('Scimax: ReferenceManager initialized successfully');
+            } catch (error: any) {
+                console.error('Scimax: Failed to load bibliographies:', error?.message || error);
+            }
+        });
 
-        // Register Reference Commands
-        console.log('Scimax: Registering reference commands...');
+        // Register Reference Commands (commands work even before bib files are loaded)
         registerReferenceCommands(context, referenceManager);
-        console.log('Scimax: Reference commands registered');
 
         // Register cite action command (for clickable cite links)
         registerCiteActionCommand(context, referenceManager);
@@ -163,9 +164,6 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.window.showErrorMessage(`Scimax reference initialization failed: ${errorMsg}`);
     }
 
-    // Register Reference Tree View
-    const referenceTreeProvider = new ReferenceTreeProvider(referenceManager);
-    vscode.window.registerTreeDataProvider('scimax.references', referenceTreeProvider);
 
     // Register Citation Hover Provider (for org and markdown)
     const documentSelector = [
@@ -249,6 +247,9 @@ export async function activate(context: vscode.ExtensionContext) {
     registerFoldingProvider(context);
     console.log('Scimax: Folding provider registered');
 
+    // Register Block Decorations (background colors for src blocks, etc.)
+    registerBlockDecorations(context);
+
     // Register Markdown Checkbox Features
     registerCheckboxFeatures(context);
     console.log('Scimax: Checkbox features registered');
@@ -290,9 +291,17 @@ export async function activate(context: vscode.ExtensionContext) {
     registerExportCommands(context);
     console.log('Scimax: Export commands registered');
 
-    // Register Jupyter kernel commands (native ZMQ kernel support)
-    registerJupyterCommands(context);
-    console.log('Scimax: Jupyter kernel support registered');
+    // Jupyter kernel support disabled to prevent memory issues
+    // TODO: Investigate zeromq memory consumption
+    // try {
+    //     const { registerJupyterCommands } = await import('./jupyter/commands');
+    //     registerJupyterCommands(context);
+    //     console.log('Scimax: Jupyter kernel support registered');
+    // } catch (error) {
+    //     console.warn('Scimax: Jupyter kernel support unavailable (zeromq not loaded)');
+    //     console.log('Scimax: jupyter-* blocks will not work, but regular python/shell blocks will');
+    // }
+    console.log('Scimax: Jupyter kernel support disabled (pending investigation)');
 
     // Register Scimax-org commands (text markup, DWIM return, navigation)
     registerScimaxOrgCommands(context);
@@ -302,6 +311,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerScimaxObCommands(context);
     console.log('Scimax: Scimax-ob commands registered');
 
+    console.log('Scimax: [DEBUG] About to register selection handler...');
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
     context.subscriptions.push(
@@ -317,7 +327,9 @@ export async function activate(context: vscode.ExtensionContext) {
             }
         })
     );
+    console.log('Scimax: [DEBUG] Selection handler registered');
 
+    console.log('Scimax: [DEBUG] About to register BibliographyCodeLensProvider...');
     // Register Bibliography Code Lens Provider
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider(
@@ -325,6 +337,7 @@ export async function activate(context: vscode.ExtensionContext) {
             new BibliographyCodeLensProvider(referenceManager)
         )
     );
+    console.log('Scimax: [DEBUG] BibliographyCodeLensProvider registered');
 
     // Additional reference commands for code lens
     context.subscriptions.push(
@@ -372,72 +385,70 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
+    console.log('Scimax: [DEBUG] About to initialize NotebookManager...');
     // Initialize Notebook Manager
     notebookManager = new NotebookManager(context);
     await notebookManager.initialize();
     context.subscriptions.push({ dispose: () => notebookManager.dispose() });
+    console.log('Scimax: [DEBUG] NotebookManager initialized');
 
-    // Register Notebook Commands
-    registerNotebookCommands(context, notebookManager, scimaxDb);
+    // Register Notebook Commands (passing null for scimaxDb while investigating)
+    registerNotebookCommands(context, notebookManager, null as any);
+    console.log('Scimax: [DEBUG] NotebookCommands registered');
 
-    // Register Notebook Tree View
-    const notebookTreeProvider = new NotebookTreeProvider(notebookManager);
-    vscode.window.registerTreeDataProvider('scimax.notebooks', notebookTreeProvider);
 
-    // Refresh notebook tree when notebooks change
-    context.subscriptions.push(
-        notebookManager.onNotebookChanged(() => notebookTreeProvider.refresh())
-    );
+    // Projectile Manager disabled while investigating performance issues
+    // console.log('Scimax: [DEBUG] About to initialize ProjectileManager...');
+    // // Initialize Projectile Manager (project switching)
+    // projectileManager = new ProjectileManager(context);
+    // await projectileManager.initialize();
+    // context.subscriptions.push({ dispose: () => projectileManager.dispose() });
+    // console.log('Scimax: [DEBUG] ProjectileManager initialized');
 
-    // Initialize Projectile Manager (project switching)
-    projectileManager = new ProjectileManager(context);
-    await projectileManager.initialize();
-    context.subscriptions.push({ dispose: () => projectileManager.dispose() });
+    // // Register Projectile Commands
+    // registerProjectileCommands(context, projectileManager);
 
-    // Register Projectile Commands
-    registerProjectileCommands(context, projectileManager);
+    // // Register Project Tree View
+    // const projectTreeProvider = new ProjectTreeProvider(projectileManager);
+    // vscode.window.registerTreeDataProvider('scimax.projects', projectTreeProvider);
 
-    // Register Project Tree View
-    const projectTreeProvider = new ProjectTreeProvider(projectileManager);
-    vscode.window.registerTreeDataProvider('scimax.projects', projectTreeProvider);
+    // // Command to open project from tree view
+    // context.subscriptions.push(
+    //     vscode.commands.registerCommand('scimax.projectile.openProject', async (project) => {
+    //         const uri = vscode.Uri.file(project.path);
+    //         await projectileManager.touchProject(project.path);
 
-    // Command to open project from tree view
-    context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.projectile.openProject', async (project) => {
-            const uri = vscode.Uri.file(project.path);
-            await projectileManager.touchProject(project.path);
+    //         const currentFolders = vscode.workspace.workspaceFolders || [];
+    //         if (currentFolders.some(f => f.uri.fsPath === project.path)) {
+    //             vscode.window.showInformationMessage(`Project ${project.name} is already open`);
+    //             return;
+    //         }
 
-            const currentFolders = vscode.workspace.workspaceFolders || [];
-            if (currentFolders.some(f => f.uri.fsPath === project.path)) {
-                vscode.window.showInformationMessage(`Project ${project.name} is already open`);
-                return;
-            }
+    //         const openIn = await vscode.window.showQuickPick([
+    //             { label: '$(window) New Window', value: 'new' },
+    //             { label: '$(folder-opened) Current Window', value: 'current' },
+    //             { label: '$(add) Add to Workspace', value: 'add' }
+    //         ], { placeHolder: `Open ${project.name}` });
 
-            const openIn = await vscode.window.showQuickPick([
-                { label: '$(window) New Window', value: 'new' },
-                { label: '$(folder-opened) Current Window', value: 'current' },
-                { label: '$(add) Add to Workspace', value: 'add' }
-            ], { placeHolder: `Open ${project.name}` });
+    //         if (!openIn) return;
 
-            if (!openIn) return;
-
-            switch (openIn.value) {
-                case 'new':
-                    await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
-                    break;
-                case 'current':
-                    await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
-                    break;
-                case 'add':
-                    vscode.workspace.updateWorkspaceFolders(
-                        vscode.workspace.workspaceFolders?.length || 0, 0, { uri }
-                    );
-                    break;
-            }
-        }),
-        vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh())
-    );
-    console.log('Scimax: Projectile manager initialized');
+    //         switch (openIn.value) {
+    //             case 'new':
+    //                 await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+    //                 break;
+    //             case 'current':
+    //                 await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
+    //                 break;
+    //             case 'add':
+    //                 vscode.workspace.updateWorkspaceFolders(
+    //                     vscode.workspace.workspaceFolders?.length || 0, 0, { uri }
+    //                 );
+    //                 break;
+    //         }
+    //     }),
+    //     vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh())
+    // );
+    console.log('Scimax: Projectile manager disabled (pending investigation)');
 
     // Register Fuzzy Search Commands (search current/all open files)
     registerFuzzySearchCommands(context);
@@ -458,8 +469,8 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate() {
-    // Close database connection
-    if (scimaxDb) {
-        await scimaxDb.close();
-    }
+    // Close database connection (disabled while investigating)
+    // if (scimaxDb) {
+    //     await scimaxDb.close();
+    // }
 }

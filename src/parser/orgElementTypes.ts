@@ -179,8 +179,8 @@ export interface OrgElement extends OrgNode {
     affiliated?: AffiliatedKeywords;
     /** Range of the element's contents (excluding markup) */
     contentsRange?: OrgRange;
-    /** Child elements (for greater elements) */
-    children?: OrgElement[];
+    /** Child elements or objects (for greater elements and elements with inline content) */
+    children?: (OrgElement | OrgObject)[];
 }
 
 /**
@@ -226,6 +226,10 @@ export interface HeadlineElement extends OrgElement {
         customId?: string;
         /** ID property if set */
         id?: string;
+        /** CATEGORY property if set */
+        category?: string;
+        /** EFFORT property if set */
+        effort?: string;
         /** Line number (1-indexed) for legacy compatibility */
         lineNumber: number;
     };

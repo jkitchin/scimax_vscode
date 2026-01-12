@@ -234,13 +234,13 @@ function saveDisplayData(
 }
 
 /**
- * Generate list of supported languages including jupyter- prefixed versions
+ * Generate list of supported languages for Jupyter executor
+ * Only returns jupyter- prefixed versions to avoid overriding vanilla executors
  */
 function getJupyterLanguages(): string[] {
     const languages = Object.keys(JUPYTER_LANGUAGES);
-    // Add jupyter- prefixed versions for explicit Jupyter usage
-    const jupyterPrefixed = languages.map(lang => `jupyter-${lang}`);
-    return [...languages, ...jupyterPrefixed];
+    // Only register jupyter- prefixed versions so vanilla python/julia/etc use their own executors
+    return languages.map(lang => `jupyter-${lang}`);
 }
 
 /**

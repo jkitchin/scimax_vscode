@@ -104,32 +104,38 @@ const EXPORT_SCOPES: ExportScope[] = [
 function extractMetadata(doc: OrgDocumentNode): Partial<ExportOptions> {
     const options: Partial<ExportOptions> = {};
 
-    // Look for keywords in the document
-    for (const child of doc.children || []) {
-        if (child.type === 'section') {
-            for (const elem of (child as any).children || []) {
-                if (elem.type === 'keyword') {
-                    const keyword = elem.properties?.key?.toUpperCase();
-                    const value = elem.properties?.value;
+    // Get keywords directly from document keywords map
+    if (doc.keywords) {
+        if (doc.keywords.TITLE) options.title = doc.keywords.TITLE;
+        if (doc.keywords.AUTHOR) options.author = doc.keywords.AUTHOR;
+        if (doc.keywords.DATE) options.date = doc.keywords.DATE;
+        if (doc.keywords.LANGUAGE) options.language = doc.keywords.LANGUAGE;
+        if (doc.keywords.OPTIONS) parseOptionsLine(doc.keywords.OPTIONS, options);
+    }
 
-                    switch (keyword) {
-                        case 'TITLE':
-                            options.title = value;
-                            break;
-                        case 'AUTHOR':
-                            options.author = value;
-                            break;
-                        case 'DATE':
-                            options.date = value;
-                            break;
-                        case 'LANGUAGE':
-                            options.language = value;
-                            break;
-                        case 'OPTIONS':
-                            // Parse OPTIONS line
-                            parseOptionsLine(value, options);
-                            break;
-                    }
+    // Also look for keywords in the document's section (preamble)
+    if (doc.section?.children) {
+        for (const elem of doc.section.children) {
+            if (elem.type === 'keyword') {
+                const keyword = (elem as any).properties?.key?.toUpperCase();
+                const value = (elem as any).properties?.value;
+
+                switch (keyword) {
+                    case 'TITLE':
+                        if (!options.title) options.title = value;
+                        break;
+                    case 'AUTHOR':
+                        if (!options.author) options.author = value;
+                        break;
+                    case 'DATE':
+                        if (!options.date) options.date = value;
+                        break;
+                    case 'LANGUAGE':
+                        if (!options.language) options.language = value;
+                        break;
+                    case 'OPTIONS':
+                        parseOptionsLine(value, options);
+                        break;
                 }
             }
         }

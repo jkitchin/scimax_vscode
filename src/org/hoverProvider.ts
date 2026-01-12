@@ -10,8 +10,8 @@ import { ORG_ENTITIES } from '../parser/orgEntities';
 
 // Entity lookup map for fast access
 const ENTITY_MAP = new Map<string, { utf8: string; latex: string; html: string }>();
-for (const entity of ORG_ENTITIES) {
-    ENTITY_MAP.set(entity.name, {
+for (const [name, entity] of Object.entries(ORG_ENTITIES)) {
+    ENTITY_MAP.set(name, {
         utf8: entity.utf8,
         latex: entity.latex,
         html: entity.html,

@@ -118,7 +118,14 @@
     "breadcrumbPicker.background": "#F5F5F5",
 
     "notebook.cellEditorBackground": "#FFFFE0",
-    "notebook.cellBorderColor": "#E0E0E0"
+    "notebook.cellBorderColor": "#E0E0E0",
+
+    "scimax.srcBlockBackground": "#DFFFDF",
+    "scimax.srcBlockHeaderBackground": "#C8E8C8",
+    "scimax.tableBackground": "#DFFFDF",
+    "scimax.exampleBlockBackground": "#E0F0FF",
+    "scimax.quoteBlockBackground": "#FFFFD7",
+    "scimax.resultsBackground": "#F0F0F0"
   },
   "tokenColors": [
     {

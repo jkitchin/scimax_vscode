@@ -178,29 +178,47 @@ export function parseClockLine(line: string): ClockEntry | null {
  */
 export function parseClockElement(clock: ClockElement): ClockEntry | null {
     const props = clock.properties;
+    const startTs = props.start?.properties;
+    if (!startTs) return null;
 
     const start = new Date(
-        props.startYear,
-        props.startMonth - 1,
-        props.startDay,
-        props.startHour ?? 0,
-        props.startMinute ?? 0
+        startTs.yearStart,
+        startTs.monthStart - 1,
+        startTs.dayStart,
+        startTs.hourStart ?? 0,
+        startTs.minuteStart ?? 0
     );
 
     const entry: ClockEntry = { start };
 
-    if (props.endYear !== undefined && props.endMonth !== undefined && props.endDay !== undefined) {
+    const endTs = props.end?.properties;
+    if (endTs?.yearEnd !== undefined && endTs?.monthEnd !== undefined && endTs?.dayEnd !== undefined) {
         entry.end = new Date(
-            props.endYear,
-            props.endMonth - 1,
-            props.endDay,
-            props.endHour ?? 0,
-            props.endMinute ?? 0
+            endTs.yearEnd,
+            endTs.monthEnd - 1,
+            endTs.dayEnd,
+            endTs.hourEnd ?? 0,
+            endTs.minuteEnd ?? 0
+        );
+    } else if (endTs?.yearStart !== undefined) {
+        // For range timestamps, the end is in yearStart/monthStart/dayStart of end timestamp
+        entry.end = new Date(
+            endTs.yearStart,
+            endTs.monthStart - 1,
+            endTs.dayStart,
+            endTs.hourStart ?? 0,
+            endTs.minuteStart ?? 0
         );
     }
 
-    if (props.durationHours !== undefined && props.durationMinutes !== undefined) {
-        entry.duration = props.durationHours * 60 + props.durationMinutes;
+    // Parse duration from string if present (e.g., "1:30")
+    if (props.duration) {
+        const durationMatch = props.duration.match(/(\d+):(\d+)/);
+        if (durationMatch) {
+            const hours = parseInt(durationMatch[1], 10);
+            const minutes = parseInt(durationMatch[2], 10);
+            entry.duration = hours * 60 + minutes;
+        }
     } else if (entry.end) {
         entry.duration = Math.round((entry.end.getTime() - start.getTime()) / 60000);
     }
@@ -815,15 +833,3 @@ export function checkClockConsistency(entries: ClockEntry[]): ClockIssue[] {
     return issues;
 }
 
-// =============================================================================
-// Exports
-// =============================================================================
-
-export {
-    type ClockEntry,
-    type ClockState,
-    type TimeReportEntry,
-    type TimeReportConfig,
-    type ClockTableConfig,
-    type ClockIssue,
-};

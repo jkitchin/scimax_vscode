@@ -51,6 +51,119 @@ function cycleTodoBackward(current: string): string {
 }
 
 /**
+ * Priority states for cycling (A is highest, C is lowest, empty means no priority)
+ */
+const PRIORITY_STATES = ['', 'A', 'B', 'C'];
+
+/**
+ * Check if line has an org priority and return match info
+ * Matches [#A], [#B], [#C] etc.
+ */
+function getOrgPriorityInfo(line: string): { priority: string; start: number; end: number } | null {
+    const match = line.match(/\[#([A-Z])\]/);
+    if (!match || match.index === undefined) return null;
+    return {
+        priority: match[1],
+        start: match.index,
+        end: match.index + match[0].length
+    };
+}
+
+/**
+ * Check if cursor is on a heading line (starts with * or #)
+ */
+function isOnHeadingLine(line: string): boolean {
+    return /^(\*+|#{1,6})\s/.test(line);
+}
+
+/**
+ * Cycle priority up (increase priority): C → B → A → (none) → C
+ * In org-mode, A is highest priority, C is lowest
+ */
+function cyclePriorityUp(current: string): string {
+    // Order for increasing priority: '' -> A -> B -> C -> ''
+    // Wait, that's decreasing. Let me think again:
+    // Up = increase = higher priority = A is higher than B is higher than C
+    // So: C -> B -> A -> '' -> C
+    const upOrder = ['C', 'B', 'A', ''];
+    const idx = upOrder.indexOf(current);
+    if (idx === -1) return 'A'; // Unknown, start with A (highest)
+    return upOrder[(idx + 1) % upOrder.length];
+}
+
+/**
+ * Cycle priority down (decrease priority): A → B → C → (none) → A
+ */
+function cyclePriorityDown(current: string): string {
+    // Order for decreasing priority: A -> B -> C -> '' -> A
+    const downOrder = ['A', 'B', 'C', ''];
+    const idx = downOrder.indexOf(current);
+    if (idx === -1) return 'C'; // Unknown, start with C (lowest)
+    return downOrder[(idx + 1) % downOrder.length];
+}
+
+/**
+ * Handle priority cycling on a heading line
+ * Returns true if priority was cycled, false otherwise
+ */
+async function cyclePriorityOnHeading(
+    editor: vscode.TextEditor,
+    direction: 'up' | 'down'
+): Promise<boolean> {
+    const document = editor.document;
+    const position = editor.selection.active;
+    const line = document.lineAt(position.line).text;
+
+    // Only work on heading lines
+    if (!isOnHeadingLine(line)) return false;
+
+    const priorityInfo = getOrgPriorityInfo(line);
+    const currentPriority = priorityInfo ? priorityInfo.priority : '';
+    const newPriority = direction === 'up'
+        ? cyclePriorityUp(currentPriority)
+        : cyclePriorityDown(currentPriority);
+
+    if (priorityInfo) {
+        // Replace existing priority
+        if (newPriority === '') {
+            // Remove priority completely (including space after it if present)
+            await editor.edit(editBuilder => {
+                const range = new vscode.Range(
+                    position.line, priorityInfo.start,
+                    position.line, priorityInfo.end + (line[priorityInfo.end] === ' ' ? 1 : 0)
+                );
+                editBuilder.replace(range, '');
+            });
+        } else {
+            // Change priority letter
+            await editor.edit(editBuilder => {
+                const range = new vscode.Range(
+                    position.line, priorityInfo.start,
+                    position.line, priorityInfo.end
+                );
+                editBuilder.replace(range, `[#${newPriority}]`);
+            });
+        }
+    } else {
+        // Add new priority after TODO keyword or after stars
+        // Pattern: * TODO title -> * TODO [#A] title
+        // Pattern: * title -> * [#A] title
+        const headingMatch = line.match(/^(\*+)\s+(TODO|DONE|NEXT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED)?\s*/);
+        if (headingMatch) {
+            const insertPos = headingMatch[0].length;
+            await editor.edit(editBuilder => {
+                editBuilder.insert(
+                    new vscode.Position(position.line, insertPos),
+                    `[#${newPriority}] `
+                );
+            });
+        }
+    }
+
+    return true;
+}
+
+/**
  * Format heading with new TODO state
  */
 function formatHeading(prefix: string, todoState: string, rest: string): string {
@@ -363,7 +476,7 @@ function adjustTimestamp(
 }
 
 /**
- * Shift timestamp up (increment) or move table row up
+ * Shift timestamp up (increment) or move table row up or cycle priority up
  */
 async function shiftTimestampUp(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -372,38 +485,47 @@ async function shiftTimestampUp(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
 
-    // Check if in table first
+    // Check if in table first - if in table, only handle table operations
     if (isInTable(document, position)) {
-        const moved = await moveRowUp();
-        if (moved) return;
+        await moveRowUp();
+        return; // Always return if in table, even if move failed (don't fall through)
     }
 
+    // Check if on a timestamp
     const ts = findTimestampAtCursor(document, position);
-    if (!ts) {
-        // No timestamp found, let default shift-up behavior happen
-        await vscode.commands.executeCommand('editor.action.moveLinesUpAction');
+    if (ts) {
+        // Timestamp found, adjust it
+        const line = document.lineAt(position.line).text;
+        const component = getTimestampComponent(line, position.character, ts);
+        const { newTimestamp } = adjustTimestamp(ts, component, 1);
+
+        await editor.edit(editBuilder => {
+            const range = new vscode.Range(
+                position.line, ts.start,
+                position.line, ts.end
+            );
+            editBuilder.replace(range, newTimestamp);
+        });
+
+        // Keep cursor on same component
+        const newPosition = new vscode.Position(position.line, position.character);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
         return;
     }
 
+    // Check if on a heading line - cycle priority
     const line = document.lineAt(position.line).text;
-    const component = getTimestampComponent(line, position.character, ts);
-    const { newTimestamp } = adjustTimestamp(ts, component, 1);
+    if (isOnHeadingLine(line)) {
+        const cycled = await cyclePriorityOnHeading(editor, 'up');
+        if (cycled) return;
+    }
 
-    await editor.edit(editBuilder => {
-        const range = new vscode.Range(
-            position.line, ts.start,
-            position.line, ts.end
-        );
-        editBuilder.replace(range, newTimestamp);
-    });
-
-    // Keep cursor on same component
-    const newPosition = new vscode.Position(position.line, position.character);
-    editor.selection = new vscode.Selection(newPosition, newPosition);
+    // No timestamp or heading found, let default shift-up behavior happen
+    await vscode.commands.executeCommand('editor.action.moveLinesUpAction');
 }
 
 /**
- * Shift timestamp down (decrement) or move table row down
+ * Shift timestamp down (decrement) or move table row down or cycle priority down
  */
 async function shiftTimestampDown(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -412,34 +534,43 @@ async function shiftTimestampDown(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
 
-    // Check if in table first
+    // Check if in table first - if in table, only handle table operations
     if (isInTable(document, position)) {
-        const moved = await moveRowDown();
-        if (moved) return;
+        await moveRowDown();
+        return; // Always return if in table, even if move failed (don't fall through)
     }
 
+    // Check if on a timestamp
     const ts = findTimestampAtCursor(document, position);
-    if (!ts) {
-        // No timestamp found, let default shift-down behavior happen
-        await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
+    if (ts) {
+        // Timestamp found, adjust it
+        const line = document.lineAt(position.line).text;
+        const component = getTimestampComponent(line, position.character, ts);
+        const { newTimestamp } = adjustTimestamp(ts, component, -1);
+
+        await editor.edit(editBuilder => {
+            const range = new vscode.Range(
+                position.line, ts.start,
+                position.line, ts.end
+            );
+            editBuilder.replace(range, newTimestamp);
+        });
+
+        // Keep cursor on same component
+        const newPosition = new vscode.Position(position.line, position.character);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
         return;
     }
 
+    // Check if on a heading line - cycle priority
     const line = document.lineAt(position.line).text;
-    const component = getTimestampComponent(line, position.character, ts);
-    const { newTimestamp } = adjustTimestamp(ts, component, -1);
+    if (isOnHeadingLine(line)) {
+        const cycled = await cyclePriorityOnHeading(editor, 'down');
+        if (cycled) return;
+    }
 
-    await editor.edit(editBuilder => {
-        const range = new vscode.Range(
-            position.line, ts.start,
-            position.line, ts.end
-        );
-        editBuilder.replace(range, newTimestamp);
-    });
-
-    // Keep cursor on same component
-    const newPosition = new vscode.Position(position.line, position.character);
-    editor.selection = new vscode.Selection(newPosition, newPosition);
+    // No timestamp or heading found, let default shift-down behavior happen
+    await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
 }
 
 /**

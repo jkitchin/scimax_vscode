@@ -1,17 +1,205 @@
 /**
  * Document Symbol Provider for org-mode
- * Provides outline symbols using the unified parser
+ * Uses a fast, lightweight headline-only parser for performance
  */
 
 import * as vscode from 'vscode';
-import { parseOrg } from '../parser/orgParserUnified';
-import type {
-    OrgDocumentNode,
-    HeadlineElement,
-    SrcBlockElement,
-    TableElement,
-    PlainListElement,
-} from '../parser/orgElementTypes';
+
+// =============================================================================
+// Lightweight Headline Structure (no full AST needed)
+// =============================================================================
+
+interface LightHeadline {
+    level: number;
+    title: string;
+    todoKeyword?: string;
+    todoType?: 'todo' | 'done';
+    priority?: string;
+    tags: string[];
+    lineNumber: number;
+    endLineNumber: number;
+    children: LightHeadline[];
+}
+
+interface LightBlock {
+    type: 'src-block' | 'table' | 'drawer';
+    name?: string;
+    language?: string;
+    lineNumber: number;
+    endLineNumber: number;
+}
+
+// Simple cache for parsed documents
+interface CacheEntry {
+    version: number;
+    symbols: vscode.DocumentSymbol[];
+}
+
+const parseCache = new Map<string, CacheEntry>();
+const MAX_CACHE_SIZE = 10;
+
+// TODO keywords (could be made configurable)
+const TODO_KEYWORDS = new Set(['TODO', 'NEXT', 'WAITING', 'HOLD', 'SOMEDAY']);
+const DONE_KEYWORDS = new Set(['DONE', 'CANCELLED', 'CANCELED']);
+
+/**
+ * Fast, lightweight parser that only extracts headlines and blocks
+ * Much faster than full AST parsing for document symbols
+ */
+function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks: LightBlock[] } {
+    const startTime = Date.now();
+    console.log(`Scimax: [PARSE] Starting lightweight parse of ${lines.length} lines`);
+
+    const rootHeadlines: LightHeadline[] = [];
+    const blocks: LightBlock[] = [];
+    const headlineStack: LightHeadline[] = [];
+
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i];
+
+        // Check for headline
+        const headlineMatch = line.match(/^(\*+)\s+(.*)$/);
+        if (headlineMatch) {
+            const level = headlineMatch[1].length;
+            const headline = parseHeadlineLine(headlineMatch[2], level, i);
+
+            // Find end of this headline (next headline of same or higher level)
+            let endLine = i + 1;
+            while (endLine < lines.length) {
+                const nextMatch = lines[endLine].match(/^(\*+)\s/);
+                if (nextMatch && nextMatch[1].length <= level) {
+                    break;
+                }
+                endLine++;
+            }
+            headline.endLineNumber = endLine - 1;
+
+            // Build hierarchy
+            while (headlineStack.length > 0 && headlineStack[headlineStack.length - 1].level >= level) {
+                headlineStack.pop();
+            }
+
+            if (headlineStack.length === 0) {
+                rootHeadlines.push(headline);
+            } else {
+                headlineStack[headlineStack.length - 1].children.push(headline);
+            }
+            headlineStack.push(headline);
+            i++;
+            continue;
+        }
+
+        // Check for source block (fast check)
+        if (line.match(/^#\+BEGIN_SRC/i)) {
+            const langMatch = line.match(/^#\+BEGIN_SRC\s+(\S+)/i);
+            const nameMatch = lines[i - 1]?.match(/^#\+NAME:\s*(.+)$/i);
+            let endLine = i + 1;
+            while (endLine < lines.length && !lines[endLine].match(/^#\+END_SRC/i)) {
+                endLine++;
+            }
+            blocks.push({
+                type: 'src-block',
+                language: langMatch?.[1] || 'code',
+                name: nameMatch?.[1],
+                lineNumber: i,
+                endLineNumber: endLine,
+            });
+            i = endLine + 1;
+            continue;
+        }
+
+        // Check for table (fast check)
+        if (line.match(/^\s*\|/)) {
+            const startLine = i;
+            while (i < lines.length && lines[i].match(/^\s*\|/)) {
+                i++;
+            }
+            blocks.push({
+                type: 'table',
+                lineNumber: startLine,
+                endLineNumber: i - 1,
+            });
+            continue;
+        }
+
+        // Check for drawer (fast check)
+        const drawerMatch = line.match(/^:(\w+):\s*$/);
+        if (drawerMatch && drawerMatch[1] !== 'END' && drawerMatch[1] !== 'PROPERTIES') {
+            const startLine = i;
+            i++;
+            while (i < lines.length && lines[i].trim() !== ':END:') {
+                i++;
+            }
+            blocks.push({
+                type: 'drawer',
+                name: drawerMatch[1],
+                lineNumber: startLine,
+                endLineNumber: i,
+            });
+            i++;
+            continue;
+        }
+
+        i++;
+    }
+
+    const elapsed = Date.now() - startTime;
+    console.log(`Scimax: [PARSE] Lightweight parse complete: ${rootHeadlines.length} headlines, ${blocks.length} blocks in ${elapsed}ms`);
+    return { headlines: rootHeadlines, blocks };
+}
+
+/**
+ * Parse a single headline line (very fast)
+ */
+function parseHeadlineLine(text: string, level: number, lineNumber: number): LightHeadline {
+    let title = text;
+    let todoKeyword: string | undefined;
+    let todoType: 'todo' | 'done' | undefined;
+    let priority: string | undefined;
+    const tags: string[] = [];
+
+    // Extract TODO keyword (first word)
+    const todoMatch = title.match(/^(\S+)\s+/);
+    if (todoMatch) {
+        const word = todoMatch[1];
+        if (TODO_KEYWORDS.has(word)) {
+            todoKeyword = word;
+            todoType = 'todo';
+            title = title.slice(todoMatch[0].length);
+        } else if (DONE_KEYWORDS.has(word)) {
+            todoKeyword = word;
+            todoType = 'done';
+            title = title.slice(todoMatch[0].length);
+        }
+    }
+
+    // Extract priority [#A]
+    const priorityMatch = title.match(/^\[#([A-Z])\]\s+/);
+    if (priorityMatch) {
+        priority = priorityMatch[1];
+        title = title.slice(priorityMatch[0].length);
+    }
+
+    // Extract tags :tag1:tag2:
+    const tagMatch = title.match(/\s+:([^:\s]+(?::[^:\s]+)*):$/);
+    if (tagMatch) {
+        tags.push(...tagMatch[1].split(':'));
+        title = title.slice(0, -tagMatch[0].length);
+    }
+
+    return {
+        level,
+        title: title.trim(),
+        todoKeyword,
+        todoType,
+        priority,
+        tags,
+        lineNumber,
+        endLineNumber: lineNumber,
+        children: [],
+    };
+}
 
 /**
  * Document symbol provider for org-mode files
@@ -23,245 +211,192 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
         document: vscode.TextDocument,
         token: vscode.CancellationToken
     ): vscode.DocumentSymbol[] {
+        const startTime = Date.now();
+        const fileName = document.uri.path.split('/').pop();
+        console.log(`Scimax: [SYMBOLS] provideDocumentSymbols called for ${fileName}`);
+
+        const cacheKey = document.uri.toString();
+        const cached = parseCache.get(cacheKey);
+
+        // Return cached symbols if document hasn't changed
+        if (cached && cached.version === document.version) {
+            console.log(`Scimax: [SYMBOLS] Cache hit for ${fileName}`);
+            return cached.symbols;
+        }
+        console.log(`Scimax: [SYMBOLS] Cache miss for ${fileName}, parsing...`);
+
         const symbols: vscode.DocumentSymbol[] = [];
 
         try {
-            // Parse the document
-            const content = document.getText();
-            const doc = parseOrg(content, { addPositions: true });
+            // Use fast lightweight parser - only extracts headlines and blocks
+            const lines = document.getText().split('\n');
+            const { headlines, blocks } = parseLightweight(lines);
 
             if (token.isCancellationRequested) {
                 return symbols;
             }
 
-            // Add document-level keywords as properties
-            if (doc.keywords['TITLE']) {
-                const titleSymbol = new vscode.DocumentSymbol(
-                    `📄 ${doc.keywords['TITLE']}`,
-                    'Document title',
-                    vscode.SymbolKind.File,
-                    new vscode.Range(0, 0, 0, 0),
-                    new vscode.Range(0, 0, 0, 0)
-                );
-                symbols.push(titleSymbol);
-            }
-
-            // Add headlines
-            for (const headline of doc.children) {
-                const headlineSymbol = this.createHeadlineSymbol(headline, document);
-                if (headlineSymbol) {
-                    symbols.push(headlineSymbol);
+            // Check for document title in first few lines
+            for (let i = 0; i < Math.min(20, lines.length); i++) {
+                const titleMatch = lines[i].match(/^#\+TITLE:\s*(.+)$/i);
+                if (titleMatch) {
+                    symbols.push(new vscode.DocumentSymbol(
+                        `📄 ${titleMatch[1]}`,
+                        'Document title',
+                        vscode.SymbolKind.File,
+                        new vscode.Range(i, 0, i, lines[i].length),
+                        new vscode.Range(i, 0, i, lines[i].length)
+                    ));
+                    break;
                 }
             }
 
-            // Add section elements (source blocks, tables at document level)
-            if (doc.section) {
-                this.addSectionSymbols(doc.section.children, symbols, document);
+            // Add headlines
+            for (const headline of headlines) {
+                const symbol = this.createLightHeadlineSymbol(headline, document);
+                if (symbol) {
+                    symbols.push(symbol);
+                }
             }
 
+            // Add top-level blocks (before first headline)
+            const firstHeadlineLine = headlines.length > 0 ? headlines[0].lineNumber : lines.length;
+            for (const block of blocks) {
+                if (block.lineNumber < firstHeadlineLine) {
+                    const symbol = this.createBlockSymbol(block, document);
+                    if (symbol) {
+                        symbols.push(symbol);
+                    }
+                }
+            }
+
+            // Cache the result
+            if (parseCache.size >= MAX_CACHE_SIZE) {
+                const firstKey = parseCache.keys().next().value;
+                if (firstKey) {
+                    parseCache.delete(firstKey);
+                }
+            }
+            parseCache.set(cacheKey, { version: document.version, symbols });
+
         } catch (error) {
-            console.error('Error parsing document for symbols:', error);
+            console.error('Scimax: [SYMBOLS] Error parsing document for symbols:', error);
         }
 
+        const elapsed = Date.now() - startTime;
+        console.log(`Scimax: [SYMBOLS] Total time for ${fileName}: ${elapsed}ms, ${symbols.length} symbols`);
         return symbols;
     }
 
     /**
-     * Create a document symbol for a headline
+     * Create symbol from lightweight headline
      */
-    private createHeadlineSymbol(
-        headline: HeadlineElement,
+    private createLightHeadlineSymbol(
+        headline: LightHeadline,
         document: vscode.TextDocument
     ): vscode.DocumentSymbol | null {
-        if (!headline.position) return null;
-
-        const startPos = new vscode.Position(
-            headline.position.start.line,
-            headline.position.start.column
-        );
-        const endPos = new vscode.Position(
-            headline.position.end.line,
-            headline.position.end.column
-        );
+        const startLine = headline.lineNumber;
+        const endLine = headline.endLineNumber;
 
         // Build symbol name
-        let name = headline.properties.rawValue;
-        const prefix = this.getHeadlinePrefix(headline);
-        if (prefix) {
+        let name = headline.title;
+        if (headline.todoKeyword) {
+            const prefix = headline.todoType === 'done' ? '✓' : '☐';
             name = `${prefix} ${name}`;
         }
 
         // Build detail string
         const details: string[] = [];
-        if (headline.properties.tags.length > 0) {
-            details.push(`:${headline.properties.tags.join(':')}:`);
+        if (headline.tags.length > 0) {
+            details.push(`:${headline.tags.join(':')}:`);
         }
-        if (headline.properties.priority) {
-            details.push(`[#${headline.properties.priority}]`);
+        if (headline.priority) {
+            details.push(`[#${headline.priority}]`);
         }
+
+        const range = new vscode.Range(startLine, 0, endLine,
+            endLine < document.lineCount ? document.lineAt(endLine).text.length : 0);
+        const selectionRange = new vscode.Range(startLine, 0, startLine,
+            document.lineAt(startLine).text.length);
 
         const symbol = new vscode.DocumentSymbol(
             name,
             details.join(' '),
             this.getHeadlineSymbolKind(headline),
-            new vscode.Range(startPos, endPos),
-            new vscode.Range(startPos, startPos) // Selection range is just the headline line
+            range,
+            selectionRange
         );
 
-        // Add children (sub-headlines)
+        // Add children recursively
         for (const child of headline.children) {
-            const childSymbol = this.createHeadlineSymbol(child, document);
+            const childSymbol = this.createLightHeadlineSymbol(child, document);
             if (childSymbol) {
                 symbol.children.push(childSymbol);
             }
-        }
-
-        // Add section elements (source blocks, tables within this headline)
-        if (headline.section) {
-            this.addSectionSymbols(headline.section.children, symbol.children, document);
         }
 
         return symbol;
     }
 
     /**
-     * Get prefix for headline (TODO state, etc.)
+     * Create symbol from lightweight block
      */
-    private getHeadlinePrefix(headline: HeadlineElement): string {
-        const parts: string[] = [];
+    private createBlockSymbol(
+        block: LightBlock,
+        document: vscode.TextDocument
+    ): vscode.DocumentSymbol | null {
+        const startLine = block.lineNumber;
+        const endLine = block.endLineNumber;
 
-        if (headline.properties.todoKeyword) {
-            if (headline.properties.todoType === 'done') {
-                parts.push('✓');
-            } else {
-                parts.push('☐');
-            }
+        const range = new vscode.Range(startLine, 0, endLine,
+            endLine < document.lineCount ? document.lineAt(endLine).text.length : 0);
+        const selectionRange = new vscode.Range(startLine, 0, startLine,
+            document.lineAt(startLine).text.length);
+
+        switch (block.type) {
+            case 'src-block':
+                return new vscode.DocumentSymbol(
+                    `⟨${block.name || block.language}⟩`,
+                    `Source block (${block.language})`,
+                    vscode.SymbolKind.Function,
+                    range,
+                    selectionRange
+                );
+            case 'table':
+                return new vscode.DocumentSymbol(
+                    '📊 Table',
+                    `${endLine - startLine + 1} rows`,
+                    vscode.SymbolKind.Struct,
+                    range,
+                    selectionRange
+                );
+            case 'drawer':
+                return new vscode.DocumentSymbol(
+                    `📦 :${block.name}:`,
+                    'Drawer',
+                    vscode.SymbolKind.Namespace,
+                    range,
+                    selectionRange
+                );
         }
-
-        return parts.join(' ');
+        return null;
     }
 
     /**
-     * Get appropriate symbol kind for headline
+     * Get symbol kind based on headline properties
      */
-    private getHeadlineSymbolKind(headline: HeadlineElement): vscode.SymbolKind {
-        if (headline.properties.todoKeyword) {
-            return headline.properties.todoType === 'done'
+    private getHeadlineSymbolKind(headline: LightHeadline): vscode.SymbolKind {
+        if (headline.todoKeyword) {
+            return headline.todoType === 'done'
                 ? vscode.SymbolKind.Event
                 : vscode.SymbolKind.Key;
         }
-
-        // Use different kinds based on level for visual distinction
-        switch (headline.properties.level) {
+        switch (headline.level) {
             case 1: return vscode.SymbolKind.Class;
             case 2: return vscode.SymbolKind.Method;
             case 3: return vscode.SymbolKind.Function;
             case 4: return vscode.SymbolKind.Variable;
             default: return vscode.SymbolKind.Field;
-        }
-    }
-
-    /**
-     * Add section element symbols (source blocks, tables, etc.)
-     */
-    private addSectionSymbols(
-        elements: any[],
-        symbols: vscode.DocumentSymbol[],
-        document: vscode.TextDocument
-    ): void {
-        for (const element of elements) {
-            if (!element.position) continue;
-
-            const startPos = new vscode.Position(
-                element.position.start.line,
-                element.position.start.column
-            );
-            const endPos = new vscode.Position(
-                element.position.end.line,
-                element.position.end.column
-            );
-
-            let symbol: vscode.DocumentSymbol | null = null;
-
-            switch (element.type) {
-                case 'src-block': {
-                    const srcBlock = element as SrcBlockElement;
-                    const lang = srcBlock.properties.language || 'code';
-                    const name = srcBlock.properties.headers?.['name'] || lang;
-                    symbol = new vscode.DocumentSymbol(
-                        `⟨${name}⟩`,
-                        `Source block (${lang})`,
-                        vscode.SymbolKind.Function,
-                        new vscode.Range(startPos, endPos),
-                        new vscode.Range(startPos, startPos)
-                    );
-                    break;
-                }
-
-                case 'table': {
-                    const table = element as TableElement;
-                    const rowCount = table.children?.length || 0;
-                    symbol = new vscode.DocumentSymbol(
-                        '📊 Table',
-                        `${rowCount} rows`,
-                        vscode.SymbolKind.Struct,
-                        new vscode.Range(startPos, endPos),
-                        new vscode.Range(startPos, startPos)
-                    );
-                    break;
-                }
-
-                case 'plain-list': {
-                    const list = element as PlainListElement;
-                    const itemCount = list.children?.length || 0;
-                    const listType = list.properties.listType || 'unordered';
-                    symbol = new vscode.DocumentSymbol(
-                        `📝 List (${listType})`,
-                        `${itemCount} items`,
-                        vscode.SymbolKind.Array,
-                        new vscode.Range(startPos, endPos),
-                        new vscode.Range(startPos, startPos)
-                    );
-                    break;
-                }
-
-                case 'drawer': {
-                    symbol = new vscode.DocumentSymbol(
-                        `📦 :${element.properties?.name || 'DRAWER'}:`,
-                        'Drawer',
-                        vscode.SymbolKind.Namespace,
-                        new vscode.Range(startPos, endPos),
-                        new vscode.Range(startPos, startPos)
-                    );
-                    break;
-                }
-
-                case 'latex-environment': {
-                    symbol = new vscode.DocumentSymbol(
-                        `∑ ${element.properties?.name || 'LaTeX'}`,
-                        'LaTeX environment',
-                        vscode.SymbolKind.Operator,
-                        new vscode.Range(startPos, endPos),
-                        new vscode.Range(startPos, startPos)
-                    );
-                    break;
-                }
-
-                case 'footnote-definition': {
-                    symbol = new vscode.DocumentSymbol(
-                        `[fn:${element.properties?.label || '?'}]`,
-                        'Footnote',
-                        vscode.SymbolKind.String,
-                        new vscode.Range(startPos, endPos),
-                        new vscode.Range(startPos, startPos)
-                    );
-                    break;
-                }
-            }
-
-            if (symbol) {
-                symbols.push(symbol);
-            }
         }
     }
 }

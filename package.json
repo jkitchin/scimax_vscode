@@ -88,6 +88,68 @@
         "path": "./themes/leuven-color-theme.json"
       }
     ],
+    "colors": [
+      {
+        "id": "scimax.srcBlockBackground",
+        "description": "Background color for source block body",
+        "defaults": {
+          "dark": "#1e3a1e40",
+          "light": "#90EE9028",
+          "highContrast": "#00FF0020"
+        }
+      },
+      {
+        "id": "scimax.srcBlockHeaderBackground",
+        "description": "Background color for source block header/footer (#+BEGIN_SRC, #+END_SRC)",
+        "defaults": {
+          "dark": "#1e3a1e60",
+          "light": "#90EE9045",
+          "highContrast": "#00FF0030"
+        }
+      },
+      {
+        "id": "scimax.tableBackground",
+        "description": "Background color for org tables",
+        "defaults": {
+          "dark": "#1e3a1e40",
+          "light": "#90EE9028",
+          "highContrast": "#00FF0020"
+        }
+      },
+      {
+        "id": "scimax.exampleBlockBackground",
+        "description": "Background color for example blocks",
+        "defaults": {
+          "dark": "#1e2a3e40",
+          "light": "#ADD8E630",
+          "highContrast": "#0000FF20"
+        }
+      },
+      {
+        "id": "scimax.quoteBlockBackground",
+        "description": "Background color for quote blocks",
+        "defaults": {
+          "dark": "#3e3a1e40",
+          "light": "#FFFFE030",
+          "highContrast": "#FFFF0020"
+        }
+      },
+      {
+        "id": "scimax.resultsBackground",
+        "description": "Background color for results blocks",
+        "defaults": {
+          "dark": "#2a2a2a40",
+          "light": "#C8C8C820",
+          "highContrast": "#80808020"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "org",
+        "path": "./snippets/org.json"
+      }
+    ],
     "semanticTokenTypes": [
       {
         "id": "orgLink",
@@ -1149,6 +1211,71 @@
         "mac": "alt+x"
       },
       {
+        "command": "workbench.action.quickOpen",
+        "key": "ctrl+x ctrl+f",
+        "mac": "ctrl+x ctrl+f"
+      },
+      {
+        "command": "workbench.action.files.save",
+        "key": "ctrl+x ctrl+s",
+        "mac": "ctrl+x ctrl+s"
+      },
+      {
+        "command": "workbench.action.files.saveAll",
+        "key": "ctrl+x s",
+        "mac": "ctrl+x s"
+      },
+      {
+        "command": "workbench.action.closeActiveEditor",
+        "key": "ctrl+x k",
+        "mac": "ctrl+x k"
+      },
+      {
+        "command": "workbench.action.splitEditorRight",
+        "key": "ctrl+x 3",
+        "mac": "ctrl+x 3"
+      },
+      {
+        "command": "workbench.action.splitEditorDown",
+        "key": "ctrl+x 2",
+        "mac": "ctrl+x 2"
+      },
+      {
+        "command": "workbench.action.closeEditorsInGroup",
+        "key": "ctrl+x 1",
+        "mac": "ctrl+x 1"
+      },
+      {
+        "command": "workbench.action.closeAllEditors",
+        "key": "ctrl+x 0",
+        "mac": "ctrl+x 0"
+      },
+      {
+        "command": "workbench.action.focusNextGroup",
+        "key": "ctrl+x o",
+        "mac": "ctrl+x o"
+      },
+      {
+        "command": "workbench.action.navigateBack",
+        "key": "ctrl+x ctrl+left",
+        "mac": "ctrl+x ctrl+left"
+      },
+      {
+        "command": "workbench.action.navigateForward",
+        "key": "ctrl+x ctrl+right",
+        "mac": "ctrl+x ctrl+right"
+      },
+      {
+        "command": "undo",
+        "key": "ctrl+/",
+        "mac": "ctrl+/"
+      },
+      {
+        "command": "editor.action.commentLine",
+        "key": "ctrl+;",
+        "mac": "ctrl+;"
+      },
+      {
         "command": "scimax.journal.today",
         "key": "ctrl+shift+j",
         "mac": "cmd+shift+j"
@@ -1192,10 +1319,16 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
       },
       {
+        "command": "scimax.org.executeBlock",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock"
+      },
+      {
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/"
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock"
       },
       {
         "command": "scimax.markdown.insertDueDate",
@@ -1609,6 +1742,12 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
+        "command": "scimax.org.openLink",
+        "key": "enter",
+        "mac": "enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onLink"
+      },
+      {
         "command": "scimax.org.insertLink",
         "key": "ctrl+c ctrl+l",
         "mac": "ctrl+c ctrl+l",
@@ -1739,8 +1878,8 @@
         },
         "scimax.db.autoIndex": {
           "type": "boolean",
-          "default": true,
-          "description": "Automatically index files on save"
+          "default": false,
+          "description": "Automatically index workspace files on activation. Disable for large workspaces to prevent memory issues."
         },
         "scimax.db.embeddingProvider": {
           "type": "string",
@@ -1861,63 +2000,7 @@
         }
       }
     },
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "scimax",
-          "title": "Scimax",
-          "icon": "$(beaker)"
-        }
-      ]
-    },
-    "views": {
-      "scimax": [
-        {
-          "type": "webview",
-          "id": "scimax.journal.calendar",
-          "name": "Calendar",
-          "icon": "$(calendar)"
-        },
-        {
-          "id": "scimax.journal",
-          "name": "Journal Entries",
-          "icon": "$(list-tree)"
-        },
-        {
-          "id": "scimax.projects",
-          "name": "Projects",
-          "icon": "$(folder)"
-        }
-      ]
-    },
     "menus": {
-      "view/title": [
-        {
-          "command": "scimax.journal.today",
-          "when": "view == scimax.journal",
-          "group": "navigation"
-        },
-        {
-          "command": "scimax.journal.refresh",
-          "when": "view == scimax.journal",
-          "group": "navigation"
-        },
-        {
-          "command": "scimax.projectile.add",
-          "when": "view == scimax.projects",
-          "group": "navigation"
-        },
-        {
-          "command": "scimax.projectile.scan",
-          "when": "view == scimax.projects",
-          "group": "navigation"
-        },
-        {
-          "command": "scimax.projectile.refreshTree",
-          "when": "view == scimax.projects",
-          "group": "navigation"
-        }
-      ],
       "editor/context": [
         {
           "command": "scimax.org.executeBlock",
@@ -1954,7 +2037,7 @@
     "@vscode/vsce": "^2.22.0",
     "eslint": "^8.55.0",
     "typescript": "^5.3.0",
-    "vitest": "^1.0.0"
+    "vitest": "^4.0.17"
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",

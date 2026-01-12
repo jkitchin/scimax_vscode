@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { NotebookManager, Notebook, Collaborator } from './notebookManager';
-import { ScimaxDb } from '../database/scimaxDb';
+// Database import disabled to prevent libsql module loading on startup
+// import { ScimaxDb } from '../database/scimaxDb';
 
 export function registerNotebookCommands(
     context: vscode.ExtensionContext,
     notebookManager: NotebookManager,
-    scimaxDb: ScimaxDb
+    scimaxDb: any  // ScimaxDb - disabled while investigating memory issues
 ): void {
     // Create new notebook
     context.subscriptions.push(
@@ -164,6 +165,12 @@ export function registerNotebookCommands(
 
             if (!query) return;
 
+            // Database features disabled while investigating memory issues
+            if (!scimaxDb) {
+                vscode.window.showWarningMessage('Database features are currently disabled');
+                return;
+            }
+
             // Set org-db scope to this notebook
             scimaxDb.setSearchScope({ type: 'directory', path: notebook.path });
 
@@ -176,7 +183,7 @@ export function registerNotebookCommands(
                 return;
             }
 
-            const items = results.map(r => ({
+            const items = results.map((r: any) => ({
                 label: `$(file) ${path.basename(r.file_path)}:${r.line_number}`,
                 description: r.preview,
                 detail: path.relative(notebook.path, r.file_path),
@@ -191,9 +198,10 @@ export function registerNotebookCommands(
             scimaxDb.setSearchScope({ type: 'all' }); // Reset scope
 
             if (selected) {
-                const doc = await vscode.workspace.openTextDocument(selected.result.file_path);
+                const result = (selected as any).result;
+                const doc = await vscode.workspace.openTextDocument(result.file_path);
                 const editor = await vscode.window.showTextDocument(doc);
-                const position = new vscode.Position(selected.result.line_number - 1, 0);
+                const position = new vscode.Position(result.line_number - 1, 0);
                 editor.selection = new vscode.Selection(position, position);
                 editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
             }
@@ -206,6 +214,12 @@ export function registerNotebookCommands(
             const notebook = await getCurrentOrSelectNotebook(notebookManager);
             if (!notebook) return;
 
+            // Database features disabled while investigating memory issues
+            if (!scimaxDb) {
+                vscode.window.showWarningMessage('Database features are currently disabled');
+                return;
+            }
+
             // Set scope
             scimaxDb.setSearchScope({ type: 'directory', path: notebook.path });
 
@@ -217,7 +231,7 @@ export function registerNotebookCommands(
                 return;
             }
 
-            const items = agendaItems.map(item => ({
+            const items = agendaItems.map((item: any) => ({
                 label: `${getAgendaIcon(item)} ${item.heading.title}`,
                 description: formatAgendaDescription(item),
                 detail: path.relative(notebook.path, item.heading.file_path),
@@ -231,9 +245,10 @@ export function registerNotebookCommands(
             scimaxDb.setSearchScope({ type: 'all' });
 
             if (selected) {
-                const doc = await vscode.workspace.openTextDocument(selected.item.heading.file_path);
+                const item = (selected as any).item;
+                const doc = await vscode.workspace.openTextDocument(item.heading.file_path);
                 const editor = await vscode.window.showTextDocument(doc);
-                const position = new vscode.Position(selected.item.heading.line_number - 1, 0);
+                const position = new vscode.Position(item.heading.line_number - 1, 0);
                 editor.selection = new vscode.Selection(position, position);
                 editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
             }
@@ -321,6 +336,12 @@ export function registerNotebookCommands(
         vscode.commands.registerCommand('scimax.notebook.index', async () => {
             const notebook = await getCurrentOrSelectNotebook(notebookManager);
             if (!notebook) return;
+
+            // Database features disabled while investigating memory issues
+            if (!scimaxDb) {
+                vscode.window.showWarningMessage('Database features are currently disabled');
+                return;
+            }
 
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import * as https from 'https';
 import {
@@ -115,16 +116,19 @@ export class ReferenceManager {
     }
 
     /**
-     * Load a single .bib file
+     * Load a single .bib file (async to avoid blocking extension host)
      */
     private async loadBibFile(filePath: string): Promise<void> {
         try {
-            if (!fs.existsSync(filePath)) {
+            // Use async file operations to avoid blocking the extension host
+            try {
+                await fsPromises.access(filePath);
+            } catch {
                 console.warn(`Bibliography file not found: ${filePath}`);
                 return;
             }
 
-            const content = fs.readFileSync(filePath, 'utf8');
+            const content = await fsPromises.readFile(filePath, 'utf8');
             const result = parseBibTeX(content);
 
             for (const entry of result.entries) {

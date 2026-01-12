@@ -925,6 +925,47 @@ export async function insertLink(): Promise<void> {
 }
 
 /**
+ * Check if cursor is on a link and return the link info
+ */
+export function getLinkAtPoint(document: vscode.TextDocument, position: vscode.Position): { url: string; start: number; end: number } | null {
+    const line = document.lineAt(position.line).text;
+
+    // Link patterns to check
+    const patterns = [
+        // Org bracket links: [[url]] or [[url][description]]
+        /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g,
+        // Citation links: cite:key or cite:key1,key2
+        /(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt):[\w:-]+(?:,[\w:-]+)*/g,
+        // Bare URLs
+        /https?:\/\/[^\s\]>)]+/g,
+    ];
+
+    for (const pattern of patterns) {
+        pattern.lastIndex = 0; // Reset regex state
+        let match;
+        while ((match = pattern.exec(line)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+
+            if (position.character >= start && position.character <= end) {
+                // Extract the actual URL
+                let url = match[1] || match[0]; // match[1] for bracket links, match[0] for others
+                return { url, start, end };
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Check if cursor is on a link (for context)
+ */
+export function isOnLink(document: vscode.TextDocument, position: vscode.Position): boolean {
+    return getLinkAtPoint(document, position) !== null;
+}
+
+/**
  * Open link at point
  */
 export async function openLinkAtPoint(): Promise<void> {
@@ -933,37 +974,53 @@ export async function openLinkAtPoint(): Promise<void> {
 
     const document = editor.document;
     const position = editor.selection.active;
-    const line = document.lineAt(position.line).text;
 
-    // Find link at cursor position
-    const linkPattern = /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g;
-    let match;
-
-    while ((match = linkPattern.exec(line)) !== null) {
-        const start = match.index;
-        const end = start + match[0].length;
-
-        if (position.character >= start && position.character <= end) {
-            const url = match[1];
-
-            // Handle different link types
-            if (url.startsWith('http://') || url.startsWith('https://')) {
-                vscode.env.openExternal(vscode.Uri.parse(url));
-            } else if (url.startsWith('file:')) {
-                const filePath = url.replace(/^file:/, '');
-                const uri = vscode.Uri.file(filePath);
-                vscode.commands.executeCommand('vscode.open', uri);
-            } else {
-                // Treat as relative file path
-                const currentDir = vscode.Uri.joinPath(document.uri, '..');
-                const targetUri = vscode.Uri.joinPath(currentDir, url);
-                vscode.commands.executeCommand('vscode.open', targetUri);
-            }
-            return;
-        }
+    const linkInfo = getLinkAtPoint(document, position);
+    if (!linkInfo) {
+        vscode.window.showInformationMessage('No link at cursor');
+        return;
     }
 
-    vscode.window.showInformationMessage('No link at cursor');
+    const url = linkInfo.url;
+
+    // Handle different link types
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        vscode.env.openExternal(vscode.Uri.parse(url));
+    } else if (url.startsWith('file:')) {
+        const filePath = url.replace(/^file:/, '');
+        const uri = vscode.Uri.file(filePath);
+        vscode.commands.executeCommand('vscode.open', uri);
+    } else if (url.startsWith('cite:') || url.startsWith('citep:') || url.startsWith('citet:')) {
+        // Citation link - trigger citation action
+        vscode.commands.executeCommand('scimax.citation.action');
+    } else {
+        // Treat as relative file path or internal link
+        const currentDir = vscode.Uri.joinPath(document.uri, '..');
+        const targetUri = vscode.Uri.joinPath(currentDir, url);
+        vscode.commands.executeCommand('vscode.open', targetUri);
+    }
+}
+
+/**
+ * Setup link context tracking
+ */
+export function setupLinkContext(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(e => {
+            const editor = e.textEditor;
+            const document = editor.document;
+
+            // Only check for org/markdown files
+            if (!['org', 'markdown'].includes(document.languageId)) {
+                vscode.commands.executeCommand('setContext', 'scimax.onLink', false);
+                return;
+            }
+
+            const position = editor.selection.active;
+            const onLink = isOnLink(document, position);
+            vscode.commands.executeCommand('setContext', 'scimax.onLink', onLink);
+        })
+    );
 }
 
 // =============================================================================
@@ -1022,6 +1079,9 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.org.insertLink', insertLink),
         vscode.commands.registerCommand('scimax.org.openLink', openLinkAtPoint)
     );
+
+    // Setup link context tracking for Enter key
+    setupLinkContext(context);
 
     // DWIM Return
     context.subscriptions.push(

@@ -31,6 +31,7 @@ DEADLINE: <2026-01-16 Fri>
 This is an important task that needs to be done soon.
 
 ** DONE Completed task [#B]
+
 CLOSED: [2026-01-10 Fri 15:30]
 :PROPERTIES:
 :EFFORT: 2h
@@ -71,7 +72,21 @@ You can also use the newer org-cite syntax:
 
 * Code Blocks :code:
 
+** Jupyter-python example
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+print(f"Max value: {y.max():.4f}")
+print(f"Min value: {y.min():.4f}")
+#+END_SRC
+
+
 ** Python Example
+
 #+BEGIN_SRC python :results output
 import numpy as np
 
@@ -83,12 +98,14 @@ print(f"Min value: {y.min():.4f}")
 #+END_SRC
 
 ** Bash Example
+
 #+BEGIN_SRC bash
 echo "Current directory: $(pwd)"
 echo "Files: $(ls -1 | wc -l)"
 #+END_SRC
 
 ** JavaScript Example
+
 #+BEGIN_SRC javascript
 const greeting = (name) => {
     return `Hello, ${name}!`;
@@ -98,6 +115,7 @@ console.log(greeting("World"));
 #+END_SRC
 
 ** LaTeX Math
+
 #+BEGIN_SRC latex
 \begin{equation}
 E = mc^2
@@ -106,6 +124,8 @@ E = mc^2
 
 * Tables :tables:
 
+#+name: tab-1
+#+caption: sample data table
 | City        | Name    | Age |
 |-------------+---------+-----|
 | Los Angeles | Bob     | 25  |
@@ -117,6 +137,7 @@ E = mc^2
 * Lists :lists:
 
 ** Unordered List
+
 - First item
   - Nested item 1
   - Nested item 2
@@ -124,6 +145,7 @@ E = mc^2
 - Third item with *bold*
 
 ** Ordered List
+
 1. First step
 2. Second step
    1. Sub-step A
@@ -131,6 +153,7 @@ E = mc^2
 3. Third step
 
 ** Checkbox List
+
 - [x] Completed item
 - [ ] Incomplete item
 - [-] Partially complete
@@ -138,6 +161,7 @@ E = mc^2
   - [ ] Sub-item pending
 
 ** Definition List
+
   - Term 1 :: Definition of term 1
   - Term 2 :: Definition of term 2
 
@@ -189,12 +213,14 @@ This text has a footnote[fn:1]. Here is another reference[fn:note].
 * Special Blocks
 
 ** Quote Block
+
 #+BEGIN_QUOTE
 The only way to do great work is to love what you do.
 -- Steve Jobs
 #+END_QUOTE
 
 ** Example Block
+
 #+BEGIN_EXAMPLE
 This is preformatted text.
   Whitespace is preserved.
@@ -202,11 +228,13 @@ This is preformatted text.
 #+END_EXAMPLE
 
 ** Center Block
+
 #+BEGIN_CENTER
 This text is centered.
 #+END_CENTER
 
 ** Comment Block (hidden in export)
+
 #+BEGIN_COMMENT
 This comment won't appear in exported documents.
 TODO: Remember to update this section.

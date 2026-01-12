@@ -4,7 +4,6 @@
  */
 
 import * as vscode from 'vscode';
-import { parseOrg } from '../parser/orgParserUnified';
 import { ORG_ENTITIES } from '../parser/orgEntities';
 
 // Common source block languages
@@ -326,9 +325,9 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
      * Get entity completions (LaTeX-style entities)
      */
     private getEntityCompletions(): vscode.CompletionItem[] {
-        return ORG_ENTITIES.map(entity => {
-            const item = new vscode.CompletionItem(entity.name, vscode.CompletionItemKind.Text);
-            item.insertText = entity.name;
+        return Object.entries(ORG_ENTITIES).map(([name, entity]) => {
+            const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Text);
+            item.insertText = name;
             item.detail = `${entity.utf8} (${entity.latex})`;
             item.documentation = `Renders as: ${entity.utf8}`;
             return item;

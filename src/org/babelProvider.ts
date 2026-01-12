@@ -671,6 +671,24 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
             outputChannel?.dispose();
         },
     });
+
+    // Setup source block context tracking for C-c C-c keybinding
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(e => {
+            const editor = e.textEditor;
+            const document = editor.document;
+
+            // Only check for org files
+            if (document.languageId !== 'org') {
+                vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
+                return;
+            }
+
+            const position = editor.selection.active;
+            const inBlock = findSourceBlockAtCursor(document, position) !== null;
+            vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inBlock);
+        })
+    );
 }
 
 /**
