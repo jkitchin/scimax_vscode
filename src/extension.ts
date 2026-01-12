@@ -32,6 +32,7 @@ import { registerTaskCommands } from './markdown/taskCommands';
 import { registerTimestampCommands } from './org/timestampProvider';
 import { registerTableCommands, isInTable } from './org/tableProvider';
 import { registerHeadingCommands } from './org/headingProvider';
+import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
 import { ProjectileManager } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { ProjectTreeProvider } from './projectile/projectTreeProvider';
@@ -260,6 +261,10 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Heading Commands (promote/demote/move)
     registerHeadingCommands(context);
     console.log('Scimax: Heading commands registered');
+
+    // Register Document Symbol Provider (for outline view)
+    registerDocumentSymbolProvider(context);
+    console.log('Scimax: Document symbol provider registered');
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
