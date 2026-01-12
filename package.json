@@ -15,7 +15,8 @@
   "categories": [
     "Other",
     "Notebooks",
-    "Programming Languages"
+    "Programming Languages",
+    "Themes"
   ],
   "keywords": [
     "scimax",
@@ -23,7 +24,9 @@
     "journal",
     "literate programming",
     "scientific computing",
-    "research"
+    "research",
+    "leuven",
+    "theme"
   ],
   "activationEvents": [
     "onLanguage:org",
@@ -70,6 +73,13 @@
           "meta.embedded.block.xml": "xml",
           "meta.embedded.block.markdown": "markdown"
         }
+      }
+    ],
+    "themes": [
+      {
+        "label": "Leuven",
+        "uiTheme": "vs",
+        "path": "./themes/leuven-color-theme.json"
       }
     ],
     "semanticTokenTypes": [
