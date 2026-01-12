@@ -102,6 +102,28 @@ export interface OrgPosition {
     column: number;
 }
 
+/**
+ * Source location with line, column, and offset
+ */
+export interface SourceLocation {
+    /** Line number (0-indexed) */
+    line: number;
+    /** Column number (0-indexed) */
+    column: number;
+    /** Character offset (0-indexed) */
+    offset: number;
+}
+
+/**
+ * Position span from start to end
+ */
+export interface SourcePosition {
+    /** Start position */
+    start: SourceLocation;
+    /** End position */
+    end: SourceLocation;
+}
+
 // =============================================================================
 // Affiliated Keywords
 // =============================================================================
@@ -142,6 +164,8 @@ export interface OrgNode {
     type: ElementType | ObjectType;
     /** Character offset range in the source document */
     range: OrgRange;
+    /** Line/column position in the source document (populated by addPositionsToDocument) */
+    position?: SourcePosition;
     /** Number of trailing blank lines/spaces */
     postBlank: number;
 }
@@ -840,6 +864,8 @@ export interface OrgDocumentNode {
     section?: SectionElement;
     /** Top-level headlines */
     children: HeadlineElement[];
+    /** Line/column position in the source document */
+    position?: SourcePosition;
 }
 
 // =============================================================================
