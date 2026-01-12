@@ -1,5 +1,31 @@
 # Scimax VS Code Extension - Project Plan
 
+## Implementation Status (January 2026)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **Journal System** | ✅ Complete | Full scimax-journal implementation |
+| **File Database (org-db)** | ✅ Complete | SQLite + FTS5 + vector search |
+| **Bibliography (org-ref)** | ✅ Complete | Citations + DOI + OpenAlex |
+| **Literate Programming (Babel)** | ✅ Complete | Python, JS, Shell, SQL, R + Jupyter |
+| **Jupyter Kernels** | ✅ Complete | Native ZMQ, jupyter-* syntax |
+| **Export System** | ✅ Complete | HTML, LaTeX, Markdown, PDF |
+| **Org-Mode Editing** | ✅ Complete | Folding, headings, tables, timestamps |
+| **Scimax-org** | ✅ Complete | Text markup, DWIM return, navigation |
+| **Scimax-ob** | ✅ Complete | Block manipulation |
+| **Enhanced Tables** | ✅ Complete | Export, named tables, formulas |
+| **Project Management** | ✅ Complete | Projectile-style |
+| **Fuzzy Search** | ✅ Complete | Swiper-style |
+| **Jump Navigation** | ✅ Complete | Avy-style |
+| **Edit Marks** | ✅ Complete | Track changes |
+| **Hydra Menus** | ✅ Complete | Context menus |
+| **Basic Clocking** | ✅ Complete | Clock in/out |
+| **Capture Templates** | 🔲 Todo | |
+| **Backlinks/Graph** | 🔲 Todo | |
+| **LaTeX Preview** | 🔲 Todo | |
+
+---
+
 ## Executive Summary
 
 This document outlines a prioritized plan for creating a VS Code extension that brings the core capabilities of [scimax](https://github.com/jkitchin/scimax) to Visual Studio Code. Scimax is an Emacs-based scientific computing environment that transforms plain text into a powerful research platform.

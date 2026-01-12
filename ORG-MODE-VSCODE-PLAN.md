@@ -28,6 +28,7 @@ The reference implementation consists of these major subsystems:
 
 **Already Implemented:**
 - Org parser with headings, blocks, links, timestamps, properties, tags
+- **Unified AST parser** (org-element compatible) - `orgParserUnified.ts`
 - SQLite database with FTS5 full-text search + vector semantic search
 - Citation/bibliography management (org-ref compatible)
 - Journal system with calendar view
@@ -36,15 +37,22 @@ The reference implementation consists of these major subsystems:
 - Hydra menu framework
 - Semantic highlighting and folding
 - Project/notebook detection
+- **Babel code execution** - Python, JS, Shell, SQL, R with sessions
+- **Native Jupyter kernel support** - ZeroMQ-based, jupyter-* syntax
+- **Export system** - HTML, LaTeX, Markdown, PDF
+- **Scimax-org** - Text markup, DWIM return, heading navigation
+- **Scimax-ob** - Block manipulation (split, merge, clone, move)
+- **Enhanced tables** - Named tables, export to CSV/HTML/LaTeX
+- **Basic clocking** - Clock in/out, duration tracking
+- **Image preview on hover** - For org image links
 
 **Not Yet Implemented:**
-- Babel (code execution)
-- Export system
 - Capture templates
-- Clocking/time tracking
-- Recurring events
-- LaTeX preview
+- Advanced clocking reports
+- Recurring events expansion
+- LaTeX preview (inline math rendering)
 - Backlinks/graph view
+- org-contacts
 
 ---
 
@@ -1086,19 +1094,23 @@ interface SyncManager {
 
 ## Implementation Priority Matrix
 
-| Phase | Feature | Impact | Effort | Priority |
-|-------|---------|--------|--------|----------|
-| 2 | Babel (Python/JS/Shell) | Very High | High | P0 |
-| 4 | Capture Templates | Very High | Medium | P0 |
-| 5 | Enhanced Agenda | High | Medium | P0 |
-| 3 | HTML Export | High | Medium | P1 |
-| 6 | Time Tracking | High | Medium | P1 |
-| 3 | Markdown Export | Medium | Low | P1 |
-| 7 | Backlinks/Graph | High | High | P1 |
-| 1 | Full org-element parser | Medium | High | P2 |
-| 3 | LaTeX/PDF Export | Medium | High | P2 |
-| 8 | LaTeX Preview | Medium | Medium | P2 |
-| 5 | Habit Tracking | Medium | Medium | P2 |
+| Phase | Feature | Impact | Effort | Priority | Status |
+|-------|---------|--------|--------|----------|--------|
+| 2 | Babel (Python/JS/Shell) | Very High | High | P0 | ✅ Done |
+| 2 | Jupyter Kernels | Very High | High | P0 | ✅ Done |
+| 3 | HTML Export | High | Medium | P1 | ✅ Done |
+| 3 | Markdown Export | Medium | Low | P1 | ✅ Done |
+| 3 | LaTeX/PDF Export | Medium | High | P2 | ✅ Done |
+| 6 | Time Tracking (Basic) | High | Medium | P1 | ✅ Done |
+| 1 | Full org-element parser | Medium | High | P2 | ✅ Done |
+| - | Scimax-org | High | Medium | P1 | ✅ Done |
+| - | Scimax-ob | High | Medium | P1 | ✅ Done |
+| - | Enhanced Tables | Medium | Medium | P1 | ✅ Done |
+| 4 | Capture Templates | Very High | Medium | P0 | 🔲 Todo |
+| 5 | Enhanced Agenda | High | Medium | P0 | 🔲 Partial |
+| 7 | Backlinks/Graph | High | High | P1 | 🔲 Todo |
+| 8 | LaTeX Preview | Medium | Medium | P2 | 🔲 Todo |
+| 5 | Habit Tracking | Medium | Medium | P2 | 🔲 Todo |
 
 ---
 
