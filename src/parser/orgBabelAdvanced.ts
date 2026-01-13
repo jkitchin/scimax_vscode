@@ -380,9 +380,12 @@ export function tangleBlocks(
                 if (options.comments && options.comments !== 'no') {
                     const comment = getCommentSyntax(block.language);
                     if (comment) {
+                        // Add link comment if requested
                         if (options.comments === 'link' || options.comments === 'both') {
                             content.push(`${comment.start} [[file:${options.baseDir}::${block.lineNumber}][${block.name || 'source'}]] ${comment.end || ''}`);
-                        } else if (options.comments === 'org' || options.comments === 'both') {
+                        }
+                        // Add org-style comment if requested (separate check for 'both' to work correctly)
+                        if (options.comments === 'org' || options.comments === 'both') {
                             content.push(`${comment.start} BEGIN ${block.name || 'block'} ${comment.end || ''}`);
                         }
                     }
@@ -685,8 +688,12 @@ export async function executeInlineSrc(
             language: inline.language,
             value: inline.code,
             parameters: '',
+            headers: {},
+            lineNumber: inline.line,
+            endLineNumber: inline.line,
         },
         range: { start: inline.start, end: inline.end },
+        postBlank: 0,
     };
 
     const context: ExecutionContext = {
@@ -790,8 +797,12 @@ export async function executeCall(
             language: block.language,
             value: block.code,
             parameters: '',
+            headers: {},
+            lineNumber: block.lineNumber,
+            endLineNumber: block.lineNumber,
         },
         range: { start: 0, end: 0 },
+        postBlank: 0,
     };
 
     return executeSourceBlock(execBlock, context);
@@ -1003,8 +1014,12 @@ export async function executeToPoint(
                 language: block.language,
                 value: block.code,
                 parameters: '',
+                headers: {},
+                lineNumber: block.lineNumber,
+                endLineNumber: block.lineNumber,
             },
             range: { start: 0, end: 0 },
+            postBlank: 0,
         };
 
         // Skip non-executable blocks
@@ -1227,8 +1242,12 @@ export function registerBabelAdvancedCommands(context: vscode.ExtensionContext):
                     language: block.language,
                     value: block.code,
                     parameters: '',
+                    headers: {},
+                    lineNumber: block.lineNumber,
+                    endLineNumber: block.lineNumber + block.code.split('\n').length,
                 },
                 range: { start: 0, end: 0 },
+                postBlank: 0,
             };
 
             const id = executionQueue.enqueue(

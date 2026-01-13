@@ -131,6 +131,8 @@ export interface HeaderArguments {
     hlines?: 'yes' | 'no';
     /** Command line arguments (:cmdline) */
     cmdline?: string;
+    /** Shebang line (:shebang) */
+    shebang?: string;
     /** Additional custom arguments */
     [key: string]: unknown;
 }

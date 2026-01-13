@@ -45,6 +45,7 @@ import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerSpeedCommands } from './org/speedCommands';
+import { registerImageOverlayCommands } from './org/imageOverlayProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
@@ -332,6 +333,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Speed Commands (single-key shortcuts at heading start)
     registerSpeedCommands(context);
+
+    // Register Image Overlay Commands (inline image thumbnails)
+    registerImageOverlayCommands(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

@@ -1806,6 +1806,26 @@
       {
         "command": "scimax.babel.showOutput",
         "title": "Scimax: Show Babel Output"
+      },
+      {
+        "command": "scimax.imageOverlays.toggle",
+        "title": "Scimax: Toggle Image Overlays"
+      },
+      {
+        "command": "scimax.imageOverlays.toggleCurrentFile",
+        "title": "Scimax: Toggle Image Overlays for Current File"
+      },
+      {
+        "command": "scimax.imageOverlays.refresh",
+        "title": "Scimax: Refresh Image Overlays"
+      },
+      {
+        "command": "scimax.imageOverlays.clearCache",
+        "title": "Scimax: Clear Image Overlay Cache"
+      },
+      {
+        "command": "scimax.imageOverlays.showStats",
+        "title": "Scimax: Show Image Overlay Cache Statistics"
       }
     ],
     "keybindings": [
@@ -2953,6 +2973,59 @@
           "type": "boolean",
           "default": true,
           "description": "Enable org-mode speed commands (single-key shortcuts at beginning of headings)"
+        },
+        "scimax.imageOverlays.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline image thumbnails in org-mode files"
+        },
+        "scimax.imageOverlays.maxWidth": {
+          "type": "number",
+          "default": 96,
+          "description": "Maximum width in pixels for thumbnail icons"
+        },
+        "scimax.imageOverlays.maxHeight": {
+          "type": "number",
+          "default": 96,
+          "description": "Maximum height in pixels for thumbnail icons"
+        },
+        "scimax.imageOverlays.renderMode": {
+          "type": "string",
+          "enum": [
+            "gutter",
+            "after",
+            "both"
+          ],
+          "default": "gutter",
+          "description": "Where to display image thumbnails: gutter (line margin), after (inline emoji), or both"
+        },
+        "scimax.imageOverlays.onlyWhenCursorNotInLink": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hide overlay when cursor is inside the image link"
+        },
+        "scimax.imageOverlays.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Regex patterns for image paths to exclude from overlays"
+        },
+        "scimax.imageOverlays.maxOverlaysPerDocument": {
+          "type": "number",
+          "default": 200,
+          "description": "Maximum number of image overlays to display per document"
+        },
+        "scimax.imageOverlays.showDimensions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show image dimensions in the after-content decoration"
+        },
+        "scimax.imageOverlays.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Cache generated thumbnails for faster loading"
         }
       }
     },

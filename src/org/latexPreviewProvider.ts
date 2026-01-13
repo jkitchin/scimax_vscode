@@ -735,7 +735,7 @@ export async function createLatexHover(
 
     // Detect dark mode
     const isDarkMode = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ||
-                       vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrastDark;
+                       vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrast;
 
     // Render the equation
     const result = await renderLatexToSvg(fragment, settings, equationNumber, isDarkMode);
@@ -780,7 +780,7 @@ export async function createLatexHover(
 
             // Show source LaTeX
             markdown.appendMarkdown('---\n\n');
-            markdown.appendCodeBlock(fragment.raw, 'latex');
+            markdown.appendCodeblock(fragment.raw, 'latex');
         }
     } else {
         // Show error with the LaTeX source
@@ -788,7 +788,7 @@ export async function createLatexHover(
         markdown.appendMarkdown(`⚠️ ${result.error || 'Failed to render equation'}\n\n`);
         markdown.appendMarkdown('---\n\n');
         markdown.appendMarkdown('**Source:**\n\n');
-        markdown.appendCodeBlock(fragment.raw, 'latex');
+        markdown.appendCodeblock(fragment.raw, 'latex');
 
         // Offer fallback: show as text
         markdown.appendMarkdown('\n\n**Rendered (text):**\n\n');
