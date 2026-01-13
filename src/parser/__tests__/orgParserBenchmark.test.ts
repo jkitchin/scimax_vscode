@@ -3,6 +3,11 @@
  * These tests measure parsing performance and verify optimizations
  *
  * Run with: npx vitest run src/parser/__tests__/orgParserBenchmark.test.ts
+ *
+ * Performance tracking:
+ * - Baselines are stored in performanceBaseline.json
+ * - Tests fail if performance regresses beyond threshold (default 25%)
+ * - Update baselines after intentional performance changes
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -10,6 +15,147 @@ import { parseOrg, OrgParserUnified } from '../orgParserUnified';
 import { parseObjects } from '../orgObjects';
 import { parseOrgFast } from '../orgExportParser';
 import { performance, PerformanceObserver } from 'perf_hooks';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// =============================================================================
+// Performance Baseline Tracking
+// =============================================================================
+
+interface BaselineMetric {
+    avgMs: number;
+    maxMs: number;
+    description: string;
+}
+
+interface PerformanceBaseline {
+    version: string;
+    lastUpdated: string;
+    thresholds: {
+        regressionThreshold: number;
+        significantImprovementThreshold: number;
+    };
+    baselines: {
+        parseOrg: Record<string, BaselineMetric>;
+        parseObjects: Record<string, BaselineMetric>;
+        stressTests: Record<string, BaselineMetric>;
+        scaling: {
+            maxTimeRatioForSizeRatio: number;
+            description: string;
+        };
+    };
+}
+
+// Load baseline from JSON file
+function loadBaseline(): PerformanceBaseline {
+    const baselinePath = path.join(__dirname, 'performanceBaseline.json');
+    try {
+        const content = fs.readFileSync(baselinePath, 'utf-8');
+        return JSON.parse(content);
+    } catch {
+        // Return default baseline if file doesn't exist
+        return {
+            version: '1.0.0',
+            lastUpdated: new Date().toISOString().split('T')[0],
+            thresholds: {
+                regressionThreshold: 1.25,
+                significantImprovementThreshold: 0.75,
+            },
+            baselines: {
+                parseOrg: {},
+                parseObjects: {},
+                stressTests: {},
+                scaling: {
+                    maxTimeRatioForSizeRatio: 3.0,
+                    description: 'Time should scale at most 3x for every 10x size increase',
+                },
+            },
+        };
+    }
+}
+
+const baseline = loadBaseline();
+
+/**
+ * Check performance against baseline and report status
+ */
+function checkPerformance(
+    category: 'parseOrg' | 'parseObjects' | 'stressTests',
+    testName: string,
+    actualAvgMs: number,
+    actualMaxMs: number
+): { passed: boolean; message: string; status: 'ok' | 'regression' | 'improved' } {
+    const baselineMetric = baseline.baselines[category]?.[testName];
+
+    if (!baselineMetric) {
+        return {
+            passed: true,
+            message: `No baseline for ${category}.${testName} - current: ${actualAvgMs.toFixed(2)}ms avg`,
+            status: 'ok',
+        };
+    }
+
+    const avgRatio = actualAvgMs / baselineMetric.avgMs;
+    const { regressionThreshold, significantImprovementThreshold } = baseline.thresholds;
+
+    let status: 'ok' | 'regression' | 'improved' = 'ok';
+    let passed = true;
+    let message = '';
+
+    if (avgRatio > regressionThreshold) {
+        status = 'regression';
+        passed = false;
+        message = `REGRESSION: ${testName} is ${((avgRatio - 1) * 100).toFixed(0)}% slower than baseline (${actualAvgMs.toFixed(2)}ms vs ${baselineMetric.avgMs}ms baseline)`;
+    } else if (avgRatio < significantImprovementThreshold) {
+        status = 'improved';
+        message = `IMPROVED: ${testName} is ${((1 - avgRatio) * 100).toFixed(0)}% faster than baseline (${actualAvgMs.toFixed(2)}ms vs ${baselineMetric.avgMs}ms baseline)`;
+    } else {
+        message = `OK: ${testName} within baseline (${actualAvgMs.toFixed(2)}ms vs ${baselineMetric.avgMs}ms baseline, ${(avgRatio * 100).toFixed(0)}%)`;
+    }
+
+    // Also check max time
+    if (actualMaxMs > baselineMetric.maxMs * regressionThreshold) {
+        message += ` [WARNING: max time ${actualMaxMs.toFixed(2)}ms exceeds baseline max ${baselineMetric.maxMs}ms]`;
+    }
+
+    return { passed, message, status };
+}
+
+/**
+ * Print performance summary with baseline comparison
+ */
+function printPerformanceSummary(results: Array<{ name: string; avgMs: number; maxMs: number; category: string; testName: string }>) {
+    console.log('\n' + '='.repeat(80));
+    console.log('PERFORMANCE SUMMARY (vs baseline)');
+    console.log('='.repeat(80));
+
+    const regressions: string[] = [];
+    const improvements: string[] = [];
+
+    for (const r of results) {
+        const check = checkPerformance(
+            r.category as 'parseOrg' | 'parseObjects' | 'stressTests',
+            r.testName,
+            r.avgMs,
+            r.maxMs
+        );
+
+        const statusIcon = check.status === 'regression' ? '!' : check.status === 'improved' ? '+' : ' ';
+        console.log(`[${statusIcon}] ${check.message}`);
+
+        if (check.status === 'regression') regressions.push(r.name);
+        if (check.status === 'improved') improvements.push(r.name);
+    }
+
+    console.log('='.repeat(80));
+    if (regressions.length > 0) {
+        console.log(`Regressions detected: ${regressions.join(', ')}`);
+    }
+    if (improvements.length > 0) {
+        console.log(`Improvements detected: ${improvements.join(', ')}`);
+    }
+    console.log('='.repeat(80));
+}
 
 // =============================================================================
 // Profiling Utilities
@@ -301,7 +447,13 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Document size: ${smallDoc.length} chars, ${smallDoc.split('\n').length} lines`);
 
-            // Small docs should parse in under 10ms average
+            // Check against baseline
+            const perfCheck = checkPerformance('parseOrg', 'smallDoc', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            // Fail on regression
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
+            // Also enforce absolute max
             expect(result.avgMs).toBeLessThan(50);
         });
 
@@ -313,7 +465,12 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Document size: ${mediumDoc.length} chars, ${mediumDoc.split('\n').length} lines`);
 
-            // Medium docs should parse in under 50ms average
+            // Check against baseline
+            const perfCheck = checkPerformance('parseOrg', 'mediumDoc', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            // Fail on regression
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(200);
         });
 
@@ -325,7 +482,12 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Document size: ${largeDoc.length} chars, ${largeDoc.split('\n').length} lines`);
 
-            // Large docs should parse in under 200ms average
+            // Check against baseline
+            const perfCheck = checkPerformance('parseOrg', 'largeDoc', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            // Fail on regression
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(1000);
         });
 
@@ -379,6 +541,11 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Text length: ${shortText.length} chars`);
 
+            // Check against baseline
+            const perfCheck = checkPerformance('parseObjects', 'shortText', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(10);
         });
 
@@ -390,6 +557,11 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Text length: ${mediumText.length} chars`);
 
+            // Check against baseline
+            const perfCheck = checkPerformance('parseObjects', 'mediumText', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(30);
         });
 
@@ -401,6 +573,11 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Text length: ${longText.length} chars`);
 
+            // Check against baseline
+            const perfCheck = checkPerformance('parseObjects', 'longText', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(100);
         });
     });
@@ -465,7 +642,11 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Document size: ${manyHeadings.length} chars`);
 
-            // Should handle 500 headings in under 500ms
+            // Check against baseline
+            const perfCheck = checkPerformance('stressTests', 'manyHeadings', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(500);
         });
 
@@ -485,6 +666,11 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Document size: ${manySrcBlocks.length} chars`);
 
+            // Check against baseline
+            const perfCheck = checkPerformance('stressTests', 'manySrcBlocks', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(500);
         });
 
@@ -506,6 +692,11 @@ describe('Parser Benchmark Suite', () => {
             console.log(`\n${formatBenchmark(result)}`);
             console.log(`  Document size: ${deepDoc.length} chars`);
 
+            // Check against baseline
+            const perfCheck = checkPerformance('stressTests', 'deepNesting', result.avgMs, result.maxMs);
+            console.log(`  Baseline: ${perfCheck.message}`);
+
+            expect(perfCheck.passed, perfCheck.message).toBe(true);
             expect(result.avgMs).toBeLessThan(100);
         });
 
