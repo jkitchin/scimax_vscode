@@ -144,18 +144,92 @@ function findSourceBlockAtCursor(
                 if (nextLine.match(/^#\+RESULTS:?/i)) {
                     currentBlock.resultsLine = j;
                     // Find end of results
+                    let inDrawer = false;
+                    let inExportBlock = false;
                     for (let k = j + 1; k < lines.length; k++) {
                         const resultLine = lines[k];
-                        // Results end at next headline, block, or non-result content
-                        if (resultLine.match(/^\*+ /) ||
-                            resultLine.match(/^#\+(?!RESULTS)/i) ||
-                            (resultLine.trim() && !resultLine.match(/^[:|]/) &&
-                             !resultLine.match(/^#\+BEGIN/i) &&
-                             !resultLine.match(/^:END:/i))) {
+                        const trimmedResult = resultLine.trim();
+
+                        // Track drawer state
+                        if (trimmedResult.match(/^:RESULTS:$/i)) {
+                            inDrawer = true;
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+                        if (inDrawer && trimmedResult.match(/^:END:$/i)) {
+                            currentBlock.resultsEndLine = k;
+                            break;
+                        }
+
+                        // Track export block state
+                        if (trimmedResult.match(/^#\+BEGIN_EXPORT/i)) {
+                            inExportBlock = true;
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+                        if (inExportBlock && trimmedResult.match(/^#\+END_EXPORT/i)) {
+                            inExportBlock = false;
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+
+                        // Inside drawer or export block, include everything
+                        if (inDrawer || inExportBlock) {
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+
+                        // Results end at next headline or org keyword (except RESULTS continuation)
+                        if (resultLine.match(/^\*+ /)) {
                             currentBlock.resultsEndLine = k - 1;
                             break;
                         }
-                        currentBlock.resultsEndLine = k;
+
+                        // Check for another org keyword (but not a result continuation)
+                        if (trimmedResult.match(/^#\+/) && !trimmedResult.match(/^#\+RESULTS/i)) {
+                            currentBlock.resultsEndLine = k - 1;
+                            break;
+                        }
+
+                        // Empty line after results ends the result block (unless in drawer/export)
+                        if (!trimmedResult) {
+                            // Check if the next non-empty line is still a result line
+                            let foundMoreResults = false;
+                            for (let m = k + 1; m < lines.length && m < k + 3; m++) {
+                                const nextResultLine = lines[m].trim();
+                                if (nextResultLine) {
+                                    // Check if it's a valid result continuation
+                                    if (nextResultLine.match(/^[:|]/) ||
+                                        nextResultLine.match(/^\[\[/) ||
+                                        nextResultLine.match(/^-\s/)) {
+                                        foundMoreResults = true;
+                                    }
+                                    break;
+                                }
+                            }
+                            if (!foundMoreResults) {
+                                currentBlock.resultsEndLine = k - 1;
+                                break;
+                            }
+                        }
+
+                        // Valid result line patterns:
+                        // - Lines starting with : (verbatim output)
+                        // - Lines starting with | (tables)
+                        // - Lines starting with [[ (file links)
+                        // - Lines starting with - (list items)
+                        // - Lines that are part of a continued result
+                        if (trimmedResult.match(/^[:|]/) ||
+                            trimmedResult.match(/^\[\[/) ||
+                            trimmedResult.match(/^-\s/) ||
+                            trimmedResult === '') {
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+
+                        // If we reach here, it's not a recognized result pattern
+                        currentBlock.resultsEndLine = k - 1;
+                        break;
                     }
                     break;
                 } else if (nextLine.match(/^\*+ /) || nextLine.match(/^#\+/)) {
@@ -228,27 +302,104 @@ function findAllSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
             );
             currentBlock.code = codeLines.join('\n');
 
-            // Look for existing results
+            // Look for existing #+RESULTS: after the block
             for (let j = i + 1; j < lines.length; j++) {
                 const nextLine = lines[j].trim();
-                if (!nextLine) continue;
+                if (!nextLine) continue; // Skip empty lines
 
                 if (nextLine.match(/^#\+RESULTS:?/i)) {
                     currentBlock.resultsLine = j;
+                    // Find end of results
+                    let inDrawer = false;
+                    let inExportBlock = false;
                     for (let k = j + 1; k < lines.length; k++) {
                         const resultLine = lines[k];
-                        if (resultLine.match(/^\*+ /) ||
-                            resultLine.match(/^#\+(?!RESULTS)/i) ||
-                            (resultLine.trim() && !resultLine.match(/^[:|]/) &&
-                             !resultLine.match(/^#\+BEGIN/i) &&
-                             !resultLine.match(/^:END:/i))) {
+                        const trimmedResult = resultLine.trim();
+
+                        // Track drawer state
+                        if (trimmedResult.match(/^:RESULTS:$/i)) {
+                            inDrawer = true;
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+                        if (inDrawer && trimmedResult.match(/^:END:$/i)) {
+                            currentBlock.resultsEndLine = k;
+                            break;
+                        }
+
+                        // Track export block state
+                        if (trimmedResult.match(/^#\+BEGIN_EXPORT/i)) {
+                            inExportBlock = true;
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+                        if (inExportBlock && trimmedResult.match(/^#\+END_EXPORT/i)) {
+                            inExportBlock = false;
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+
+                        // Inside drawer or export block, include everything
+                        if (inDrawer || inExportBlock) {
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+
+                        // Results end at next headline or org keyword (except RESULTS continuation)
+                        if (resultLine.match(/^\*+ /)) {
                             currentBlock.resultsEndLine = k - 1;
                             break;
                         }
-                        currentBlock.resultsEndLine = k;
+
+                        // Check for another org keyword (but not a result continuation)
+                        if (trimmedResult.match(/^#\+/) && !trimmedResult.match(/^#\+RESULTS/i)) {
+                            currentBlock.resultsEndLine = k - 1;
+                            break;
+                        }
+
+                        // Empty line after results ends the result block (unless in drawer/export)
+                        if (!trimmedResult) {
+                            // Check if the next non-empty line is still a result line
+                            let foundMoreResults = false;
+                            for (let m = k + 1; m < lines.length && m < k + 3; m++) {
+                                const nextResultLine = lines[m].trim();
+                                if (nextResultLine) {
+                                    // Check if it's a valid result continuation
+                                    if (nextResultLine.match(/^[:|]/) ||
+                                        nextResultLine.match(/^\[\[/) ||
+                                        nextResultLine.match(/^-\s/)) {
+                                        foundMoreResults = true;
+                                    }
+                                    break;
+                                }
+                            }
+                            if (!foundMoreResults) {
+                                currentBlock.resultsEndLine = k - 1;
+                                break;
+                            }
+                        }
+
+                        // Valid result line patterns:
+                        // - Lines starting with : (verbatim output)
+                        // - Lines starting with | (tables)
+                        // - Lines starting with [[ (file links)
+                        // - Lines starting with - (list items)
+                        // - Lines that are part of a continued result
+                        if (trimmedResult.match(/^[:|]/) ||
+                            trimmedResult.match(/^\[\[/) ||
+                            trimmedResult.match(/^-\s/) ||
+                            trimmedResult === '') {
+                            currentBlock.resultsEndLine = k;
+                            continue;
+                        }
+
+                        // If we reach here, it's not a recognized result pattern
+                        currentBlock.resultsEndLine = k - 1;
+                        break;
                     }
                     break;
                 } else if (nextLine.match(/^\*+ /) || nextLine.match(/^#\+/)) {
+                    // Hit another element, no results
                     break;
                 }
             }
@@ -522,13 +673,8 @@ async function clearResultsAtCursor(blockLine?: number): Promise<void> {
     }
 
     await editor.edit((editBuilder) => {
-        // Delete the results including any preceding empty line
-        let startLine = block!.resultsLine!;
-        if (startLine > 0 && editor.document.lineAt(startLine - 1).text.trim() === '') {
-            startLine--;
-        }
-
-        const startPos = new vscode.Position(startLine, 0);
+        // Delete only the results (from #+RESULTS: line to end of results)
+        const startPos = new vscode.Position(block!.resultsLine!, 0);
         const endPos = new vscode.Position(
             block!.resultsEndLine! + 1,
             0
@@ -536,8 +682,6 @@ async function clearResultsAtCursor(blockLine?: number): Promise<void> {
         const range = new vscode.Range(startPos, endPos);
         editBuilder.delete(range);
     });
-
-    vscode.window.showInformationMessage('Results cleared');
 }
 
 /**
@@ -563,12 +707,8 @@ async function clearAllResults(): Promise<void> {
         for (const block of blocksWithResults.reverse()) {
             if (block.resultsLine === undefined || block.resultsEndLine === undefined) continue;
 
-            let startLine = block.resultsLine;
-            if (startLine > 0 && editor.document.lineAt(startLine - 1).text.trim() === '') {
-                startLine--;
-            }
-
-            const startPos = new vscode.Position(startLine, 0);
+            // Delete only the results (from #+RESULTS: line to end of results)
+            const startPos = new vscode.Position(block.resultsLine, 0);
             const endPos = new vscode.Position(block.resultsEndLine + 1, 0);
             const range = new vscode.Range(startPos, endPos);
             editBuilder.delete(range);
