@@ -1,0 +1,342 @@
+#+TITLE: Medium Test Document - Comprehensive Org Elements
+#+AUTHOR: Test User
+#+EMAIL: test@example.com
+#+DATE: <2024-01-15 Mon>
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t
+#+PROPERTY: header-args :exports both
+#+MACRO: version 1.0.0
+
+* INTRODUCTION                                                       :intro:
+:PROPERTIES:
+:CUSTOM_ID: introduction
+:CREATED: [2024-01-01 Mon]
+:END:
+
+This document demonstrates all org-mode elements for testing the parser.
+
+** Overview
+
+The document includes:
+- Headlines with TODO states
+- Planning lines (SCHEDULED, DEADLINE, CLOSED)
+- Properties drawers
+- Tables with formulas
+- Source blocks in multiple languages
+- Various inline objects
+- Lists (ordered, unordered, descriptive)
+- Links of different types
+- Timestamps and time ranges
+- LaTeX fragments
+- Special blocks
+
+* TODO [#A] Tasks and Planning                                       :tasks:
+DEADLINE: <2024-02-01 Thu 17:00 -3d> SCHEDULED: <2024-01-20 Sat +1w>
+:PROPERTIES:
+:EFFORT: 2:00
+:CATEGORY: work
+:END:
+
+This heading has both deadline and scheduled timestamps with repeaters.
+
+** NEXT [#B] Subtask with Priority B
+SCHEDULED: <2024-01-18 Thu 09:00-11:00>
+
+Time range within same day.
+
+** WAITING Waiting on External                                    :waiting:
+:LOGBOOK:
+CLOCK: [2024-01-14 Sun 10:00]--[2024-01-14 Sun 11:30] =>  1:30
+CLOCK: [2024-01-13 Sat 14:00]--[2024-01-13 Sat 15:15] =>  1:15
+:END:
+
+Clock entries show time tracking.
+
+** DONE Completed Task                                              :done:
+CLOSED: [2024-01-12 Fri 16:45]
+
+This task is complete.
+
+* Tables                                                           :tables:
+
+** Simple Table
+
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Cell 1   | Cell 2   | Cell 3   |
+| *Bold*   | /Italic/ | =Code=   |
+| 100      | 200      | 300      |
+
+** Table with Formulas
+
+| Item     | Qty | Price | Total |
+|----------|-----|-------|-------|
+| Widget A |  10 |  5.00 | 50.00 |
+| Widget B |   5 | 10.00 | 50.00 |
+| Widget C |   3 | 15.00 | 45.00 |
+|----------|-----|-------|-------|
+| Sum      |     |       |       |
+#+TBLFM: $4=$2*$3::@5$4=vsum(@2$4..@4$4)
+
+** Table with Alignment
+
+| <l>         |    <c>     |         <r> |
+| Left        |   Center   |       Right |
+| Aligned     |  Content   |     Content |
+
+* Source Blocks                                                     :code:
+
+** Python Example
+
+#+NAME: python-example
+#+BEGIN_SRC python :results output :var name="World"
+def greet(name):
+    """Greet someone."""
+    return f"Hello, {name}!"
+
+print(greet(name))
+#+END_SRC
+
+** Shell Script
+
+#+BEGIN_SRC shell :results verbatim
+echo "Current directory: $(pwd)"
+ls -la | head -5
+#+END_SRC
+
+** JavaScript
+
+#+BEGIN_SRC javascript :results value
+const data = [1, 2, 3, 4, 5];
+const sum = data.reduce((a, b) => a + b, 0);
+return `Sum: ${sum}`;
+#+END_SRC
+
+** Emacs Lisp
+
+#+BEGIN_SRC elisp :results silent
+(message "Hello from Emacs Lisp!")
+#+END_SRC
+
+** Inline Code Examples
+
+You can use inline code like src_python{1 + 1} which evaluates to 2.
+
+Also call_greet(name="Reader") to run named blocks.
+
+* Inline Objects                                                  :inline:
+
+** Text Emphasis
+
+Regular text with *bold*, /italic/, _underline_, +strikethrough+, =code=, and ~verbatim~ markup.
+
+Nested emphasis like */bold italic/* and _/underline italic/_ are supported.
+
+** Links
+
+- External: [[https://orgmode.org][Org Mode Homepage]]
+- File: [[file:./other-file.org][Other File]]
+- File with search: [[file:data.org::*Heading][Specific Heading]]
+- ID link: [[id:12345-abcde][Link by ID]]
+- Custom ID: [[#introduction][Back to Introduction]]
+- Mailto: [[mailto:test@example.com][Email Us]]
+- Shell: [[shell:ls -la]]
+
+** Timestamps
+
+- Active: <2024-01-15 Mon>
+- Inactive: [2024-01-15 Mon]
+- With time: <2024-01-15 Mon 14:30>
+- Time range: <2024-01-15 Mon 14:00-16:00>
+- Date range: <2024-01-15 Mon>--<2024-01-20 Sat>
+- With repeater: <2024-01-15 Mon +1w>
+- With warning: <2024-01-15 Mon -3d>
+
+** Footnotes
+
+This text has a footnote[fn:1] and another[fn:2:Inline definition].
+
+Also anonymous footnotes[fn::This is inline anonymous].
+
+[fn:1] This is the first footnote definition.
+
+** Statistics Cookies
+
+- [ ] Task 1
+- [X] Task 2
+- [ ] Task 3
+
+Progress: [1/3] or [33%]
+
+** Targets and Radio Targets
+
+This is a <<target>> that can be linked to.
+
+This is a <<<radio target>>> that creates automatic links.
+
+** LaTeX Fragments
+
+Inline math: $E = mc^2$ and $\sum_{i=1}^{n} x_i$
+
+Display math:
+$$\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$$
+
+LaTeX commands: \alpha, \beta, \gamma, \rightarrow
+
+** Subscripts and Superscripts
+
+Water is H_2O. Einstein's equation: E = mc^2.
+
+With braces: x_{subscript} and x^{superscript}.
+
+** Entities
+
+Greek: \alpha \beta \gamma \delta \epsilon
+Arrows: \rightarrow \leftarrow \uparrow \downarrow
+Symbols: \infty \pm \times \div \ne \le \ge
+
+** Macros
+
+Version: {{{version}}}
+Today: {{{date}}}
+
+** Export Snippets
+
+@@html:<span style="color:red">Red HTML</span>@@
+@@latex:\textbf{Bold LaTeX}@@
+
+* Lists                                                            :lists:
+
+** Unordered Lists
+
+- First item
+- Second item
+  - Nested item 1
+  - Nested item 2
+    - Deeply nested
+- Third item with [[https://example.com][link]]
+
+** Ordered Lists
+
+1. First step
+2. Second step
+   1. Sub-step A
+   2. Sub-step B
+3. Third step
+
+** Descriptive Lists
+
+- Term 1 :: Definition of term 1
+- Term 2 :: Definition of term 2 with *emphasis*
+- Term 3 :: Multi-line definition
+  continues here
+
+** Checkbox Lists
+
+- [ ] Unchecked item
+- [X] Checked item
+- [-] Partially checked item
+
+* Special Blocks                                                  :blocks:
+
+** Quote Block
+
+#+BEGIN_QUOTE
+"The only way to do great work is to love what you do."
+-- Steve Jobs
+
+This can contain *markup* and [[https://example.com][links]].
+#+END_QUOTE
+
+** Example Block
+
+#+BEGIN_EXAMPLE
+This is preformatted text.
+  Whitespace is preserved.
+    Like this.
+#+END_EXAMPLE
+
+** Center Block
+
+#+BEGIN_CENTER
+This text will be centered
+when exported.
+#+END_CENTER
+
+** Verse Block
+
+#+BEGIN_VERSE
+Roses are red,
+  Violets are blue,
+    Org mode is great,
+      And so are you.
+#+END_VERSE
+
+** Comment Block
+
+#+BEGIN_COMMENT
+This will not be exported.
+It's a comment block.
+#+END_COMMENT
+
+** Export Block
+
+#+BEGIN_EXPORT html
+<div class="custom">
+  <p>Raw HTML export</p>
+</div>
+#+END_EXPORT
+
+** Special Block
+
+#+BEGIN_WARNING
+This is a custom warning block.
+Handle with care!
+#+END_WARNING
+
+* Drawers                                                        :drawers:
+
+:MYDRAWER:
+This is content inside a custom drawer.
+It can contain multiple lines.
+:END:
+
+:NOTES:
+These are some notes in a drawer.
+- Note 1
+- Note 2
+:END:
+
+* Fixed Width and Comments
+
+Fixed width lines (start with colon-space):
+: This is fixed width
+: Preserves formatting
+:   Including indentation
+
+Comment lines (start with hash-space):
+# This is a comment
+# It won't be exported
+
+* LaTeX Environment
+
+\begin{equation}
+f(x) = \int_{-\infty}^{\infty} \hat{f}(\xi) e^{2\pi i \xi x} d\xi
+\end{equation}
+
+\begin{align}
+a &= b + c \\
+d &= e + f
+\end{align}
+
+* Horizontal Rules
+
+Content before rule.
+
+-----
+
+Content after rule.
+
+-----------------------------------
+
+Another long rule above.

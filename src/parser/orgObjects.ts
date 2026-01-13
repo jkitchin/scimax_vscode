@@ -33,17 +33,63 @@ import type {
 import { ORG_ENTITIES, getEntity } from './orgEntities';
 
 // =============================================================================
+// Pre-compiled Regex Patterns (Performance Optimization)
+// =============================================================================
+
+// LaTeX patterns
+const RE_LATEX_COMMAND = /^\\([a-zA-Z]+)(\{[^}]*\})?/;
+
+// Entity pattern
+const RE_ENTITY = /^\\([a-zA-Z]+)(\{\})?/;
+
+// Statistics cookie
+const RE_STATISTICS_COOKIE = /^\[(\d+\/\d+|\d+%)\]/;
+
+// Timestamp patterns
+const RE_TIMESTAMP_CONTENT = /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2})(?:-(\d{2}):(\d{2}))?)?(?:\s+([.+]?\+\d+[hdwmy]))?(?:\s+(-\d+[hdwmy]))?/;
+const RE_TIMESTAMP_RANGE = /^[<\[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?[>\]]/;
+const RE_REPEATER = /^([.+]?\+)(\d+)([hdwmy])$/;
+const RE_WARNING = /^(-{1,2})(\d+)([hdwmy])$/;
+
+// Footnote reference
+const RE_FOOTNOTE_REF = /^\[fn:([^:\]]*)?(?::([^\]]*))?\]/;
+
+// Target patterns
+const RE_TARGET = /^<<([^<>\n]+)>>/;
+const RE_RADIO_TARGET = /^<<<([^<>\n]+)>>>/;
+
+// Inline src block
+const RE_INLINE_SRC = /^src_([a-zA-Z0-9-]+)(?:\[([^\]]*)\])?\{([^}]*)\}/;
+
+// Inline babel call
+const RE_INLINE_BABEL = /^call_([a-zA-Z0-9_-]+)(?:\[([^\]]*)\])?\(([^)]*)\)(?:\[([^\]]*)\])?/;
+
+// Export snippet
+const RE_EXPORT_SNIPPET = /^@@([a-zA-Z0-9-]+):([^@]*)@@/;
+
+// Macro
+const RE_MACRO = /^\{\{\{([a-zA-Z][a-zA-Z0-9_-]*)(?:\(([^)]*)\))?\}\}\}/;
+
+// Subscript/superscript
+const RE_SUBSCRIPT = /^_([a-zA-Z0-9]+)/;
+const RE_SUPERSCRIPT = /^\^([a-zA-Z0-9]+)/;
+
+// =============================================================================
 // Object Parser Configuration
 // =============================================================================
 
 /**
- * Characters that can precede emphasis markers
+ * Characters that can precede emphasis markers (as Set for O(1) lookup)
  */
-const PRE_EMPHASIS_CHARS = /[\s\-({'"]/;
+const PRE_EMPHASIS_SET = new Set([' ', '\t', '\n', '-', '(', '{', "'", '"']);
 
 /**
- * Characters that can follow emphasis markers
+ * Characters that can follow emphasis markers (as Set for O(1) lookup)
  */
+const POST_EMPHASIS_SET = new Set([' ', '\t', '\n', '-', '.', ',', ':', '!', '?', ';', "'", '"', ')', '}', '\\', '[', ']']);
+
+// Keep regex versions for export compatibility
+const PRE_EMPHASIS_CHARS = /[\s\-({'"]/;
 const POST_EMPHASIS_CHARS = /[\s\-.,:!?;'")}\\[\]]/;
 
 /**
@@ -57,6 +103,11 @@ const EMPHASIS_MARKERS: Record<string, { type: ObjectType; close: string }> = {
     '=': { type: 'code', close: '=' },
     '~': { type: 'verbatim', close: '~' },
 };
+
+/**
+ * Characters that can start an inline object (for fast-path routing)
+ */
+const OBJECT_START_CHARS = new Set(['\\', '$', '[', '<', '@', '{', '_', '^', '*', '/', '+', '=', '~', 's', 'c']);
 
 // =============================================================================
 // Main Parser Class
@@ -98,99 +149,133 @@ export function parseObjects(
 
     while (pos < text.length) {
         const char = text[pos];
+
+        // Fast path: skip characters that can't start any object
+        if (!OBJECT_START_CHARS.has(char)) {
+            pos++;
+            continue;
+        }
+
         const prevChar = pos > 0 ? text[pos - 1] : ' ';
         let parsed: OrgObject | null = null;
 
-        // Try to parse various object types
-        // Order matters - more specific patterns first
+        // Route based on first character for efficiency
+        switch (char) {
+            case '\\':
+                // Line break (\\)
+                if (text[pos + 1] === '\\' && isAllowed('line-break')) {
+                    parsed = tryParseLineBreak(text, pos, baseOffset);
+                }
+                // LaTeX fragment (\(...\), \[...\], \command)
+                if (!parsed && isAllowed('latex-fragment')) {
+                    parsed = tryParseLatexFragment(text, pos, baseOffset);
+                }
+                // Entity (\alpha, \rightarrow, etc.)
+                if (!parsed && isAllowed('entity')) {
+                    parsed = tryParseEntity(text, pos, baseOffset);
+                }
+                break;
 
-        // Line break (\\)
-        if (char === '\\' && text[pos + 1] === '\\' && isAllowed('line-break')) {
-            parsed = tryParseLineBreak(text, pos, baseOffset);
-        }
+            case '$':
+                // LaTeX fragment ($...$, $$...$$)
+                if (isAllowed('latex-fragment')) {
+                    parsed = tryParseLatexFragment(text, pos, baseOffset);
+                }
+                break;
 
-        // LaTeX fragment ($...$, $$...$$, \(...\), \[...\])
-        if (!parsed && (char === '$' || char === '\\') && isAllowed('latex-fragment')) {
-            parsed = tryParseLatexFragment(text, pos, baseOffset);
-        }
+            case '[':
+                // Footnote reference ([fn:...]) - check before link
+                if (text[pos + 1] === 'f' && text[pos + 2] === 'n' && text[pos + 3] === ':' && isAllowed('footnote-reference')) {
+                    parsed = tryParseFootnoteReference(text, pos, baseOffset);
+                }
+                // Link ([[...]])
+                if (!parsed && text[pos + 1] === '[' && isAllowed('link')) {
+                    parsed = tryParseBracketLink(text, pos, baseOffset, { parseNested, allowedTypes });
+                }
+                // Statistics cookie ([2/5] or [40%])
+                if (!parsed && isAllowed('statistics-cookie')) {
+                    parsed = tryParseStatisticsCookie(text, pos, baseOffset);
+                }
+                // Timestamp ([...])
+                if (!parsed && isAllowed('timestamp')) {
+                    parsed = tryParseTimestamp(text, pos, baseOffset);
+                }
+                break;
 
-        // Entity (\alpha, \rightarrow, etc.)
-        if (!parsed && char === '\\' && isAllowed('entity')) {
-            parsed = tryParseEntity(text, pos, baseOffset);
-        }
+            case '<':
+                // Radio target (<<<...>>>)
+                if (text[pos + 1] === '<' && text[pos + 2] === '<' && isAllowed('radio-target')) {
+                    parsed = tryParseRadioTarget(text, pos, baseOffset, { parseNested, allowedTypes });
+                }
+                // Target (<<...>>)
+                if (!parsed && text[pos + 1] === '<' && text[pos + 2] !== '<' && isAllowed('target')) {
+                    parsed = tryParseTarget(text, pos, baseOffset);
+                }
+                // Timestamp (<...>)
+                if (!parsed && isAllowed('timestamp')) {
+                    parsed = tryParseTimestamp(text, pos, baseOffset);
+                }
+                break;
 
-        // Statistics cookie ([2/5] or [40%])
-        if (!parsed && char === '[' && isAllowed('statistics-cookie')) {
-            parsed = tryParseStatisticsCookie(text, pos, baseOffset);
-        }
+            case '@':
+                // Export snippet (@@backend:value@@)
+                if (text[pos + 1] === '@' && isAllowed('export-snippet')) {
+                    parsed = tryParseExportSnippet(text, pos, baseOffset);
+                }
+                break;
 
-        // Timestamp (<...> or [...])
-        if (!parsed && (char === '<' || char === '[') && isAllowed('timestamp')) {
-            parsed = tryParseTimestamp(text, pos, baseOffset);
-        }
+            case '{':
+                // Macro ({{{name(args)}}})
+                if (text[pos + 1] === '{' && text[pos + 2] === '{' && isAllowed('macro')) {
+                    parsed = tryParseMacro(text, pos, baseOffset);
+                }
+                break;
 
-        // Link ([[...]] or protocol:path)
-        if (!parsed && char === '[' && text[pos + 1] === '[' && isAllowed('link')) {
-            parsed = tryParseBracketLink(text, pos, baseOffset, { parseNested, allowedTypes });
-        }
+            case 's':
+                // Inline src block (src_lang{...})
+                if (text[pos + 1] === 'r' && text[pos + 2] === 'c' && text[pos + 3] === '_' && isAllowed('inline-src-block')) {
+                    parsed = tryParseInlineSrcBlock(text, pos, baseOffset);
+                }
+                break;
 
-        // Footnote reference ([fn:...])
-        if (!parsed && char === '[' && text.slice(pos, pos + 4) === '[fn:' && isAllowed('footnote-reference')) {
-            parsed = tryParseFootnoteReference(text, pos, baseOffset);
-        }
+            case 'c':
+                // Inline babel call (call_name(...))
+                if (text[pos + 1] === 'a' && text[pos + 2] === 'l' && text[pos + 3] === 'l' && text[pos + 4] === '_' && isAllowed('inline-babel-call')) {
+                    parsed = tryParseInlineBabelCall(text, pos, baseOffset);
+                }
+                break;
 
-        // Target (<<...>>)
-        if (!parsed && char === '<' && text[pos + 1] === '<' && text[pos + 2] !== '<' && isAllowed('target')) {
-            parsed = tryParseTarget(text, pos, baseOffset);
-        }
+            case '_':
+                // Subscript (a_b or a_{bc}) - only after word char
+                if (pos > 0 && isAllowed('subscript')) {
+                    parsed = tryParseSubscript(text, pos, prevChar, baseOffset, { parseNested, allowedTypes });
+                }
+                // Also check for underline emphasis
+                if (!parsed && isAllowed('underline')) {
+                    parsed = tryParseEmphasis(text, pos, char, prevChar, baseOffset, { parseNested, allowedTypes });
+                }
+                break;
 
-        // Radio target (<<<...>>>)
-        if (!parsed && text.slice(pos, pos + 3) === '<<<' && isAllowed('radio-target')) {
-            parsed = tryParseRadioTarget(text, pos, baseOffset, { parseNested, allowedTypes });
-        }
+            case '^':
+                // Superscript (a^b or a^{bc})
+                if (pos > 0 && isAllowed('superscript')) {
+                    parsed = tryParseSuperscript(text, pos, prevChar, baseOffset, { parseNested, allowedTypes });
+                }
+                break;
 
-        // Inline src block (src_lang{...} or src_lang[...]{...})
-        if (!parsed && text.slice(pos, pos + 4) === 'src_' && isAllowed('inline-src-block')) {
-            parsed = tryParseInlineSrcBlock(text, pos, baseOffset);
-        }
-
-        // Inline babel call (call_name(...) or call_name[...](...))
-        if (!parsed && text.slice(pos, pos + 5) === 'call_' && isAllowed('inline-babel-call')) {
-            parsed = tryParseInlineBabelCall(text, pos, baseOffset);
-        }
-
-        // Export snippet (@@backend:value@@)
-        if (!parsed && char === '@' && text[pos + 1] === '@' && isAllowed('export-snippet')) {
-            parsed = tryParseExportSnippet(text, pos, baseOffset);
-        }
-
-        // Macro ({{{name(args)}}})
-        if (!parsed && text.slice(pos, pos + 3) === '{{{' && isAllowed('macro')) {
-            parsed = tryParseMacro(text, pos, baseOffset);
-        }
-
-        // Subscript (a_b or a_{bc})
-        if (!parsed && char === '_' && pos > 0 && isAllowed('subscript')) {
-            const maybeSub = tryParseSubscript(text, pos, prevChar, baseOffset, { parseNested, allowedTypes });
-            if (maybeSub) {
-                parsed = maybeSub;
-            }
-        }
-
-        // Superscript (a^b or a^{bc})
-        if (!parsed && char === '^' && pos > 0 && isAllowed('superscript')) {
-            const maybeSuper = tryParseSuperscript(text, pos, prevChar, baseOffset, { parseNested, allowedTypes });
-            if (maybeSuper) {
-                parsed = maybeSuper;
-            }
-        }
-
-        // Emphasis markers (*bold*, /italic/, _underline_, +strike+, =code=, ~verbatim~)
-        if (!parsed && char in EMPHASIS_MARKERS) {
-            const emphasisInfo = EMPHASIS_MARKERS[char];
-            if (isAllowed(emphasisInfo.type)) {
-                parsed = tryParseEmphasis(text, pos, char, prevChar, baseOffset, { parseNested, allowedTypes });
-            }
+            case '*':
+            case '/':
+            case '+':
+            case '=':
+            case '~':
+                // Emphasis markers
+                if (char in EMPHASIS_MARKERS) {
+                    const emphasisInfo = EMPHASIS_MARKERS[char];
+                    if (isAllowed(emphasisInfo.type)) {
+                        parsed = tryParseEmphasis(text, pos, char, prevChar, baseOffset, { parseNested, allowedTypes });
+                    }
+                }
+                break;
         }
 
         if (parsed) {
@@ -304,7 +389,7 @@ function tryParseLatexFragment(text: string, pos: number, baseOffset: number): L
 
     // LaTeX command: \command or \command{arg}
     if (text[pos] === '\\') {
-        const match = text.slice(pos).match(/^\\([a-zA-Z]+)(\{[^}]*\})?/);
+        const match = text.slice(pos).match(RE_LATEX_COMMAND);
         if (match && !getEntity(match[1])) {
             // Not an entity, treat as LaTeX command
             const fullMatch = match[0];
@@ -326,8 +411,8 @@ function tryParseLatexFragment(text: string, pos: number, baseOffset: number): L
 function tryParseEntity(text: string, pos: number, baseOffset: number): EntityObject | null {
     if (text[pos] !== '\\') return null;
 
-    // Match \entityname or \entityname{}
-    const match = text.slice(pos).match(/^\\([a-zA-Z]+)(\{\})?/);
+    // Match \entityname or \entityname{} - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_ENTITY);
     if (!match) return null;
 
     const entityName = match[1];
@@ -352,8 +437,8 @@ function tryParseEntity(text: string, pos: number, baseOffset: number): EntityOb
 }
 
 function tryParseStatisticsCookie(text: string, pos: number, baseOffset: number): StatisticsCookieObject | null {
-    // [2/5] or [40%]
-    const match = text.slice(pos).match(/^\[(\d+\/\d+|\d+%)\]/);
+    // [2/5] or [40%] - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_STATISTICS_COOKIE);
     if (!match) return null;
 
     return {
@@ -386,9 +471,8 @@ function tryParseTimestamp(text: string, pos: number, baseOffset: number): Times
 
     // Parse the timestamp content
     // Format: YYYY-MM-DD DAY [HH:MM[-HH:MM]] [REPEATER] [WARNING]
-    const dateMatch = content.match(
-        /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2})(?:-(\d{2}):(\d{2}))?)?(?:\s+([.+]?\+\d+[hdwmy]))?(?:\s+(-\d+[hdwmy]))?/
-    );
+    // Use pre-compiled pattern
+    const dateMatch = content.match(RE_TIMESTAMP_CONTENT);
 
     if (!dateMatch) return null;
 
@@ -409,10 +493,9 @@ function tryParseTimestamp(text: string, pos: number, baseOffset: number): Times
     let timestampType: TimestampObject['properties']['timestampType'] = isActive ? 'active' : 'inactive';
     let rangeEnd: { year: number; month: number; day: number; hour?: number; minute?: number } | undefined;
 
-    if (text.slice(endPos, endPos + 2) === '--') {
-        const secondMatch = text.slice(endPos + 2).match(
-            /^[<\[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?[>\]]/
-        );
+    // Fast check: only try range if we have '--'
+    if (text[endPos] === '-' && text[endPos + 1] === '-') {
+        const secondMatch = text.slice(endPos + 2).match(RE_TIMESTAMP_RANGE);
         if (secondMatch) {
             timestampType = isActive ? 'active-range' : 'inactive-range';
             rangeEnd = {
@@ -426,13 +509,13 @@ function tryParseTimestamp(text: string, pos: number, baseOffset: number): Times
         }
     }
 
-    // Parse repeater
+    // Parse repeater - use pre-compiled pattern
     let repeaterType: TimestampObject['properties']['repeaterType'];
     let repeaterValue: number | undefined;
     let repeaterUnit: TimestampObject['properties']['repeaterUnit'];
 
     if (repeaterStr) {
-        const repMatch = repeaterStr.match(/^([.+]?\+)(\d+)([hdwmy])$/);
+        const repMatch = repeaterStr.match(RE_REPEATER);
         if (repMatch) {
             repeaterType = repMatch[1] as '+' | '++' | '.+';
             repeaterValue = parseInt(repMatch[2], 10);
@@ -440,13 +523,13 @@ function tryParseTimestamp(text: string, pos: number, baseOffset: number): Times
         }
     }
 
-    // Parse warning
+    // Parse warning - use pre-compiled pattern
     let warningType: TimestampObject['properties']['warningType'];
     let warningValue: number | undefined;
     let warningUnit: TimestampObject['properties']['warningUnit'];
 
     if (warningStr) {
-        const warnMatch = warningStr.match(/^(-{1,2})(\d+)([hdwmy])$/);
+        const warnMatch = warningStr.match(RE_WARNING);
         if (warnMatch) {
             warningType = warnMatch[1] as '-' | '--';
             warningValue = parseInt(warnMatch[2], 10);
@@ -620,7 +703,8 @@ function tryParseFootnoteReference(
     baseOffset: number
 ): FootnoteReferenceObject | null {
     // [fn:label] or [fn:label:definition] or [fn::definition]
-    const match = text.slice(pos).match(/^\[fn:([^:\]]*)?(?::([^\]]*))?\]/);
+    // Use pre-compiled pattern
+    const match = text.slice(pos).match(RE_FOOTNOTE_REF);
     if (!match) return null;
 
     const label = match[1] || undefined;
@@ -648,8 +732,8 @@ function tryParseFootnoteReference(
 }
 
 function tryParseTarget(text: string, pos: number, baseOffset: number): TargetObject | null {
-    // <<target>>
-    const match = text.slice(pos).match(/^<<([^<>\n]+)>>/);
+    // <<target>> - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_TARGET);
     if (!match) return null;
 
     return {
@@ -668,8 +752,8 @@ function tryParseRadioTarget(
     baseOffset: number,
     options: ParseObjectsOptions
 ): RadioTargetObject | null {
-    // <<<radio target>>>
-    const match = text.slice(pos).match(/^<<<([^<>\n]+)>>>/);
+    // <<<radio target>>> - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_RADIO_TARGET);
     if (!match) return null;
 
     const content = match[1];
@@ -686,8 +770,8 @@ function tryParseRadioTarget(
 }
 
 function tryParseInlineSrcBlock(text: string, pos: number, baseOffset: number): InlineSrcBlockObject | null {
-    // src_lang{code} or src_lang[headers]{code}
-    const match = text.slice(pos).match(/^src_([a-zA-Z0-9-]+)(?:\[([^\]]*)\])?\{([^}]*)\}/);
+    // src_lang{code} or src_lang[headers]{code} - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_INLINE_SRC);
     if (!match) return null;
 
     return {
@@ -703,8 +787,8 @@ function tryParseInlineSrcBlock(text: string, pos: number, baseOffset: number): 
 }
 
 function tryParseInlineBabelCall(text: string, pos: number, baseOffset: number): InlineBabelCallObject | null {
-    // call_name(args) or call_name[header](args)[end-header]
-    const match = text.slice(pos).match(/^call_([a-zA-Z0-9_-]+)(?:\[([^\]]*)\])?\(([^)]*)\)(?:\[([^\]]*)\])?/);
+    // call_name(args) or call_name[header](args)[end-header] - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_INLINE_BABEL);
     if (!match) return null;
 
     return {
@@ -721,8 +805,8 @@ function tryParseInlineBabelCall(text: string, pos: number, baseOffset: number):
 }
 
 function tryParseExportSnippet(text: string, pos: number, baseOffset: number): ExportSnippetObject | null {
-    // @@backend:value@@
-    const match = text.slice(pos).match(/^@@([a-zA-Z0-9-]+):([^@]*)@@/);
+    // @@backend:value@@ - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_EXPORT_SNIPPET);
     if (!match) return null;
 
     return {
@@ -737,8 +821,8 @@ function tryParseExportSnippet(text: string, pos: number, baseOffset: number): E
 }
 
 function tryParseMacro(text: string, pos: number, baseOffset: number): MacroObject | null {
-    // {{{name(args)}}} or {{{name}}}
-    const match = text.slice(pos).match(/^\{\{\{([a-zA-Z][a-zA-Z0-9_-]*)(?:\(([^)]*)\))?\}\}\}/);
+    // {{{name(args)}}} or {{{name}}} - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_MACRO);
     if (!match) return null;
 
     const args = match[2] ? match[2].split(',').map(s => s.trim()) : [];
@@ -783,8 +867,8 @@ function tryParseSubscript(
         };
     }
 
-    // Simple subscript: _x (single character or digits)
-    const match = text.slice(pos).match(/^_([a-zA-Z0-9]+)/);
+    // Simple subscript: _x (single character or digits) - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_SUBSCRIPT);
     if (!match) return null;
 
     return {
@@ -825,8 +909,8 @@ function tryParseSuperscript(
         };
     }
 
-    // Simple superscript: ^x (single character or digits)
-    const match = text.slice(pos).match(/^\^([a-zA-Z0-9]+)/);
+    // Simple superscript: ^x (single character or digits) - use pre-compiled pattern
+    const match = text.slice(pos).match(RE_SUPERSCRIPT);
     if (!match) return null;
 
     return {
@@ -850,7 +934,8 @@ function tryParseEmphasis(
     if (!emphasisInfo) return null;
 
     // Check pre-condition: must be at start or after whitespace/punctuation
-    if (pos > 0 && !PRE_EMPHASIS_CHARS.test(prevChar)) {
+    // Use Set for O(1) lookup instead of regex
+    if (pos > 0 && !PRE_EMPHASIS_SET.has(prevChar)) {
         return null;
     }
 
@@ -859,8 +944,9 @@ function tryParseEmphasis(
     if (closePos === -1) return null;
 
     // Check post-condition: must be followed by whitespace/punctuation or end
+    // Use Set for O(1) lookup instead of regex
     const afterClose = text[closePos + 1];
-    if (afterClose && !POST_EMPHASIS_CHARS.test(afterClose)) {
+    if (afterClose && !POST_EMPHASIS_SET.has(afterClose)) {
         return null;
     }
 
