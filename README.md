@@ -767,6 +767,34 @@ Contributions welcome! Please see the [GitHub repository](https://github.com/jki
 
 MIT License - see LICENSE file for details.
 
-## Credits
+## Inspiration & Acknowledgments
 
-Inspired by [Scimax](https://github.com/jkitchin/scimax) by John Kitchin.
+This project is a reimplementation of concepts and workflows from the Emacs ecosystem for VS Code. We gratefully acknowledge the following projects that inspired this work:
+
+### Core Inspiration
+
+- **[Org-mode](https://orgmode.org/)** - The foundational system for outlining, task management, and literate programming in Emacs. Org-mode's elegant plain-text format and powerful features are the heart of what we're bringing to VS Code.
+
+- **[Scimax](https://github.com/jkitchin/scimax)** - An Emacs configuration for scientists and engineers by John Kitchin. Scimax extends org-mode with features specifically designed for scientific computing, reproducible research, and technical writing. This VS Code extension is a spiritual successor to Scimax.
+
+### Feature Inspirations
+
+- **[org-ref](https://github.com/jkitchin/org-ref)** - Bibliography and citation management for org-mode. Our reference management system, including citation links, BibTeX integration, and crossref/OpenAlex lookups, follows org-ref's design.
+
+- **[org-db](https://github.com/jkitchin/org-db)** - A database for indexing and searching org files. Our SQLite-based database with FTS5 full-text search and semantic vector search is inspired by org-db.
+
+- **[Swiper/Ivy](https://github.com/abo-abo/swiper)** - Completion and narrowing framework for Emacs. Our fuzzy search feature brings swiper-style incremental search to VS Code.
+
+- **[Avy](https://github.com/abo-abo/avy)** - Jump to visible text using a char-based decision tree. Our jump feature implements avy-style navigation.
+
+- **[Projectile](https://github.com/bbatsov/projectile)** - Project management for Emacs. Our project management features draw from projectile's approach.
+
+- **[Hydra](https://github.com/abo-abo/hydra)** - Sticky key bindings for Emacs. Our hydra menu system brings this concept to VS Code.
+
+### Org-mode Babel
+
+The source block execution system (Babel) is inspired by org-babel, which pioneered literate programming and reproducible research in plain text documents.
+
+### Thank You
+
+Special thanks to the Emacs community and all the developers who have built these incredible tools over the years. While this is a clean-room reimplementation for VS Code, the ideas and workflows we're implementing come from decades of innovation in the Emacs ecosystem.

@@ -80,8 +80,10 @@ export interface LatexExportOptions extends ExportOptions {
     classOptions?: string[];
     /** Additional packages to include */
     packages?: string[];
-    /** Custom preamble content */
+    /** Custom preamble content (added after auto-generated packages) */
     preamble?: string;
+    /** Complete custom header (replaces entire auto-generated preamble, should include documentclass through packages) */
+    customHeader?: string;
     /** Use hyperref package */
     hyperref?: boolean;
     /** Hyperref options */
@@ -785,8 +787,15 @@ export class LatexExportBackend implements ExportBackend {
 
             case 'bibliography':
                 // bibliography:file1.bib,file2.bib -> \bibliography{file1,file2}
-                // Remove .bib extensions if present
-                const bibFiles = path.split(',').map(f => f.trim().replace(/\.bib$/i, ''));
+                // Expand ~ to home directory and remove .bib extensions
+                const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+                const bibFiles = path.split(',').map(f => {
+                    let bibPath = f.trim();
+                    if (bibPath.startsWith('~')) {
+                        bibPath = bibPath.replace('~', homeDir);
+                    }
+                    return bibPath.replace(/\.bib$/i, '');
+                });
                 return `\\bibliography{${bibFiles.join(',')}}`;
 
             case 'bibstyle':
@@ -932,88 +941,94 @@ export class LatexExportBackend implements ExportBackend {
             author: string;
             date: string;
         } & LatexExportOptions,
-        state: ExportState
+        _state: ExportState
     ): string {
         const parts: string[] = [];
 
-        // Document class
-        const classOpts = meta.classOptions?.length
-            ? `[${meta.classOptions.join(',')}]`
-            : '';
-        parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
-        parts.push('');
-
-        // Standard packages
-        parts.push('% Encoding');
-        parts.push('\\usepackage[utf8]{inputenc}');
-        parts.push('\\usepackage[T1]{fontenc}');
-        parts.push('');
-
-        // Hyperref
-        if (meta.hyperref) {
-            const hyperopts = Object.entries(meta.hyperrefOptions || {})
-                .map(([k, v]) => `${k}=${v}`)
-                .join(',\n  ');
-            parts.push('% Hyperlinks');
-            parts.push(`\\usepackage[${hyperopts}]{hyperref}`);
+        // If custom header is provided, use it instead of auto-generated preamble
+        if (meta.customHeader) {
+            parts.push(meta.customHeader);
             parts.push('');
-        }
-
-        // Code highlighting
-        if (meta.minted) {
-            parts.push('% Code highlighting with minted');
-            parts.push('\\usepackage{minted}');
+        } else {
+            // Document class
+            const classOpts = meta.classOptions?.length
+                ? `[${meta.classOptions.join(',')}]`
+                : '';
+            parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
             parts.push('');
-        } else if (meta.listings) {
-            parts.push('% Code highlighting with listings');
-            parts.push('\\usepackage{listings}');
-            parts.push('\\usepackage{xcolor}');
-            parts.push('\\lstset{');
-            parts.push('  basicstyle=\\ttfamily\\small,');
-            parts.push('  breaklines=true,');
-            parts.push('  frame=single,');
-            parts.push('  backgroundcolor=\\color{gray!10}');
-            parts.push('}');
+
+            // Standard packages
+            parts.push('% Encoding');
+            parts.push('\\usepackage[utf8]{inputenc}');
+            parts.push('\\usepackage[T1]{fontenc}');
             parts.push('');
-        }
 
-        // Tables
-        if (meta.booktabs) {
-            parts.push('% Better tables');
-            parts.push('\\usepackage{booktabs}');
-            parts.push('');
-        }
-
-        // Graphics
-        parts.push('% Graphics');
-        parts.push('\\usepackage{graphicx}');
-        parts.push('');
-
-        // Strike-through
-        parts.push('% Strike-through');
-        parts.push('\\usepackage[normalem]{ulem}');
-        parts.push('');
-
-        // AMS math
-        parts.push('% Math');
-        parts.push('\\usepackage{amsmath}');
-        parts.push('\\usepackage{amssymb}');
-        parts.push('');
-
-        // Additional packages
-        if (meta.packages && meta.packages.length > 0) {
-            parts.push('% Additional packages');
-            for (const pkg of meta.packages) {
-                parts.push(`\\usepackage{${pkg}}`);
+            // Hyperref
+            if (meta.hyperref) {
+                const hyperopts = Object.entries(meta.hyperrefOptions || {})
+                    .map(([k, v]) => `${k}=${v}`)
+                    .join(',\n  ');
+                parts.push('% Hyperlinks');
+                parts.push(`\\usepackage[${hyperopts}]{hyperref}`);
+                parts.push('');
             }
-            parts.push('');
-        }
 
-        // Custom preamble
-        if (meta.preamble) {
-            parts.push('% Custom preamble');
-            parts.push(meta.preamble);
+            // Code highlighting
+            if (meta.minted) {
+                parts.push('% Code highlighting with minted');
+                parts.push('\\usepackage{minted}');
+                parts.push('');
+            } else if (meta.listings) {
+                parts.push('% Code highlighting with listings');
+                parts.push('\\usepackage{listings}');
+                parts.push('\\usepackage{xcolor}');
+                parts.push('\\lstset{');
+                parts.push('  basicstyle=\\ttfamily\\small,');
+                parts.push('  breaklines=true,');
+                parts.push('  frame=single,');
+                parts.push('  backgroundcolor=\\color{gray!10}');
+                parts.push('}');
+                parts.push('');
+            }
+
+            // Tables
+            if (meta.booktabs) {
+                parts.push('% Better tables');
+                parts.push('\\usepackage{booktabs}');
+                parts.push('');
+            }
+
+            // Graphics
+            parts.push('% Graphics');
+            parts.push('\\usepackage{graphicx}');
             parts.push('');
+
+            // Strike-through
+            parts.push('% Strike-through');
+            parts.push('\\usepackage[normalem]{ulem}');
+            parts.push('');
+
+            // AMS math
+            parts.push('% Math');
+            parts.push('\\usepackage{amsmath}');
+            parts.push('\\usepackage{amssymb}');
+            parts.push('');
+
+            // Additional packages
+            if (meta.packages && meta.packages.length > 0) {
+                parts.push('% Additional packages');
+                for (const pkg of meta.packages) {
+                    parts.push(`\\usepackage{${pkg}}`);
+                }
+                parts.push('');
+            }
+
+            // Custom preamble (added after packages)
+            if (meta.preamble) {
+                parts.push('% Custom preamble');
+                parts.push(meta.preamble);
+                parts.push('');
+            }
         }
 
         // Title, author, date
@@ -1067,6 +1082,7 @@ export class LatexExportBackend implements ExportBackend {
         const mapping: Record<string, string> = {
             'python': 'Python',
             'py': 'Python',
+            'jupyter-python': 'Python',
             'javascript': 'JavaScript',
             'js': 'JavaScript',
             'typescript': 'JavaScript',
@@ -1094,10 +1110,13 @@ export class LatexExportBackend implements ExportBackend {
             'haskell': 'Haskell',
             'ocaml': 'ML',
             'r': 'R',
+            'jupyter-R': 'R',
             'matlab': 'Matlab',
             'fortran': 'Fortran',
             'go': 'Go',
             'rust': 'Rust',
+            'julia': 'Python',  // Julia not in listings, use Python as fallback
+            'jupyter-julia': 'Python',
         };
 
         return mapping[lang.toLowerCase()] || lang;

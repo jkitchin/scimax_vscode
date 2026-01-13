@@ -18,6 +18,7 @@ import {
     CitationLinkProvider,
     BibliographyCodeLensProvider,
     BibliographyHoverProvider,
+    BibliographyDiagnosticProvider,
     RefHoverProvider,
     DoiHoverProvider,
     registerCiteActionCommand
@@ -230,6 +231,11 @@ export async function activate(context: vscode.ExtensionContext) {
             new OrgLinkProvider()
         )
     );
+
+    // Register Bibliography Diagnostic Provider (shows errors for missing bib files)
+    const bibDiagnosticProvider = new BibliographyDiagnosticProvider(referenceManager);
+    bibDiagnosticProvider.initialize();
+    context.subscriptions.push({ dispose: () => bibDiagnosticProvider.dispose() });
 
     // Register Org Link navigation commands
     registerOrgLinkCommands(context);

@@ -61,14 +61,14 @@ Time range: <2026-01-11 Sat 09:00>--<2026-01-11 Sat 17:00>
 * Citations and References :citations:
 
 Here are some citation examples:
-- Single citation: cite:kitchin2015examples
-- Multiple citations: cite:kitchin2015examples,kitchin2018machine
-- Textual citation: citet:kitchin2015examples
-- Parenthetical: citep:kitchin2015examples
+- Single citation: cite:schuett-2018-schnet 
+- Multiple citations: cite:schuett-2018-schnet,gastegger-2018-wacsf-weigh
+- Textual citation: citet:schuett-2018-schnet
+- Parenthetical: citep:schuett-2018-schnet
 
 You can also use the newer org-cite syntax:
-- [cite:@kitchin2015examples]
-- [cite:@kitchin2015examples;@kitchin2018machine]
+- [cite:@schuett-2018-schnet]
+- [cite:@schuett-2018-schnet;@gastegger-2018-wacsf-weigh]
 
 * Code Blocks :code:
 
@@ -84,7 +84,6 @@ print(f"Max value: {y.max():.4f}")
 print(f"Min value: {y.min():.4f}")
 #+END_SRC
 
-
 ** Python Example
 
 #+BEGIN_SRC python :results output
@@ -97,12 +96,20 @@ print(f"Max value: {y.max():.4f}")
 print(f"Min value: {y.min():.4f}")
 #+END_SRC
 
+#+RESULTS:
+: Max value: 0.9999
+: Min value: -0.9999
+
 ** Bash Example
 
 #+BEGIN_SRC bash
 echo "Current directory: $(pwd)"
 echo "Files: $(ls -1 | wc -l)"
 #+END_SRC
+
+#+RESULTS:
+: Current directory: /Users/jkitchin/Dropbox/emacs/projects/scimax_vscode
+: Files:       23
 
 ** JavaScript Example
 
@@ -113,7 +120,6 @@ const greeting = (name) => {
 
 console.log(greeting("World"));
 #+END_SRC
-
 ** LaTeX Math
 
 #+BEGIN_SRC latex
@@ -292,3 +298,6 @@ This section inherits parent tags.
 :END:
 
 Archived content goes here.
+
+bibstyle:unsrtnat
+bibliography:~/Dropbox/emacs/bibliography/references.bib

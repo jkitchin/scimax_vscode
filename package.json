@@ -2725,6 +2725,11 @@
           "default": "cite",
           "description": "Default citation style"
         },
+        "scimax.export.latex.customHeader": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\\documentclass` through all `\\usepackage` commands. Example:\n```latex\n\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n```"
+        },
         "scimax.notebook.directory": {
           "type": "string",
           "default": "",

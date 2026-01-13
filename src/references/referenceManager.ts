@@ -165,7 +165,95 @@ export class ReferenceManager {
     }
 
     /**
-     * Get all entries
+     * Extract bibliography file paths from document text
+     * Looks for bibliography: links and #+BIBLIOGRAPHY: keywords
+     */
+    public extractBibliographyPaths(documentText: string, documentPath: string): string[] {
+        const paths: string[] = [];
+        const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+        const docDir = path.dirname(documentPath);
+
+        // Match bibliography:path1,path2 (comma-separated)
+        const bibLinkRegex = /bibliography:([^\s<>\[\](){}]+)/gi;
+        // Match #+BIBLIOGRAPHY: path
+        const bibKeywordRegex = /^#\+BIBLIOGRAPHY:\s*(.+?\.bib)\s*$/gim;
+
+        let match;
+
+        // Extract from bibliography: links
+        while ((match = bibLinkRegex.exec(documentText)) !== null) {
+            const bibPaths = match[1].split(',');
+            for (const bibPath of bibPaths) {
+                const trimmed = bibPath.trim();
+                if (trimmed) {
+                    let resolved = trimmed;
+                    if (resolved.startsWith('~')) {
+                        resolved = resolved.replace('~', homeDir);
+                    } else if (!path.isAbsolute(resolved)) {
+                        resolved = path.resolve(docDir, resolved);
+                    }
+                    // Add .bib extension if missing
+                    if (!resolved.endsWith('.bib')) {
+                        resolved = resolved + '.bib';
+                    }
+                    if (!paths.includes(resolved)) {
+                        paths.push(resolved);
+                    }
+                }
+            }
+        }
+
+        // Extract from #+BIBLIOGRAPHY: keywords
+        while ((match = bibKeywordRegex.exec(documentText)) !== null) {
+            const bibPath = match[1].trim();
+            if (bibPath) {
+                let resolved = bibPath;
+                if (resolved.startsWith('~')) {
+                    resolved = resolved.replace('~', homeDir);
+                } else if (!path.isAbsolute(resolved)) {
+                    resolved = path.resolve(docDir, resolved);
+                }
+                if (!paths.includes(resolved)) {
+                    paths.push(resolved);
+                }
+            }
+        }
+
+        return paths;
+    }
+
+    /**
+     * Load bibliography entries from document-local bibliography links
+     * Returns the entries found in those files (doesn't add to global entries)
+     */
+    public async loadDocumentBibliographies(document: vscode.TextDocument): Promise<BibEntry[]> {
+        const bibPaths = this.extractBibliographyPaths(document.getText(), document.uri.fsPath);
+        const entries: BibEntry[] = [];
+
+        for (const bibPath of bibPaths) {
+            try {
+                await fsPromises.access(bibPath);
+                const content = await fsPromises.readFile(bibPath, 'utf8');
+                const result = parseBibTeX(content);
+
+                for (const entry of result.entries) {
+                    (entry as any)._sourceFile = bibPath;
+                    entries.push(entry);
+                    // Also add to global entries so they're available
+                    if (!this.entries.has(entry.key)) {
+                        this.entries.set(entry.key, entry);
+                    }
+                }
+            } catch {
+                // File doesn't exist or can't be read - will be handled by diagnostics
+            }
+        }
+
+        return entries;
+    }
+
+    /**
+     * Get all entries, optionally loading document-local bibliographies first
      */
     public getAllEntries(): BibEntry[] {
         return Array.from(this.entries.values());

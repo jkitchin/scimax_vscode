@@ -19,16 +19,19 @@ import {
 export class CitationHoverProvider implements vscode.HoverProvider {
     constructor(private manager: ReferenceManager) {}
 
-    provideHover(
+    async provideHover(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken
-    ): vscode.ProviderResult<vscode.Hover> {
+    ): Promise<vscode.Hover | null> {
         const line = document.lineAt(position.line).text;
 
         // Find citation at position
         const key = this.findCitationKeyAtPosition(line, position.character);
         if (!key) return null;
+
+        // Load document-local bibliographies first
+        await this.manager.loadDocumentBibliographies(document);
 
         const entry = this.manager.getEntry(key);
         if (!entry) {
@@ -1010,12 +1013,12 @@ export class DoiHoverProvider implements vscode.HoverProvider {
 export class CitationCompletionProvider implements vscode.CompletionItemProvider {
     constructor(private manager: ReferenceManager) {}
 
-    provideCompletionItems(
+    async provideCompletionItems(
         document: vscode.TextDocument,
         position: vscode.Position,
         token: vscode.CancellationToken,
         context: vscode.CompletionContext
-    ): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
+    ): Promise<vscode.CompletionItem[] | vscode.CompletionList | null> {
         const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
 
         // Check if we're in a citation context
@@ -1029,6 +1032,9 @@ export class CitationCompletionProvider implements vscode.CompletionItemProvider
         if (!isCiteContext) {
             return null;
         }
+
+        // Load document-local bibliographies first
+        await this.manager.loadDocumentBibliographies(document);
 
         const entries = this.manager.getAllEntries();
         const items: vscode.CompletionItem[] = [];
@@ -1186,10 +1192,13 @@ export class BibliographyCodeLensProvider implements vscode.CodeLensProvider {
 export class CitationLinkProvider implements vscode.DocumentLinkProvider {
     constructor(private manager: ReferenceManager) {}
 
-    provideDocumentLinks(
+    async provideDocumentLinks(
         document: vscode.TextDocument,
         token: vscode.CancellationToken
-    ): vscode.ProviderResult<vscode.DocumentLink[]> {
+    ): Promise<vscode.DocumentLink[]> {
+        // Load document-local bibliographies first
+        await this.manager.loadDocumentBibliographies(document);
+
         const links: vscode.DocumentLink[] = [];
         const text = document.getText();
 
@@ -1579,6 +1588,158 @@ class ReferenceTreeItem extends vscode.TreeItem {
             this.iconPath = new vscode.ThemeIcon('folder');
         } else {
             this.iconPath = new vscode.ThemeIcon('book');
+        }
+    }
+}
+
+/**
+ * Diagnostic provider for bibliography links
+ * Shows errors for invalid/missing bibliography files
+ */
+export class BibliographyDiagnosticProvider {
+    private diagnosticCollection: vscode.DiagnosticCollection;
+    private disposables: vscode.Disposable[] = [];
+
+    constructor(private manager: ReferenceManager) {
+        this.diagnosticCollection = vscode.languages.createDiagnosticCollection('bibliography');
+    }
+
+    /**
+     * Initialize the diagnostic provider
+     */
+    public initialize(): void {
+        // Update diagnostics for open documents
+        if (vscode.window.activeTextEditor) {
+            this.updateDiagnostics(vscode.window.activeTextEditor.document);
+        }
+
+        // Update on document open
+        this.disposables.push(
+            vscode.window.onDidChangeActiveTextEditor(editor => {
+                if (editor) {
+                    this.updateDiagnostics(editor.document);
+                }
+            })
+        );
+
+        // Update on document change
+        this.disposables.push(
+            vscode.workspace.onDidChangeTextDocument(event => {
+                this.updateDiagnostics(event.document);
+            })
+        );
+
+        // Clear diagnostics when document closes
+        this.disposables.push(
+            vscode.workspace.onDidCloseTextDocument(document => {
+                this.diagnosticCollection.delete(document.uri);
+            })
+        );
+    }
+
+    /**
+     * Update diagnostics for a document
+     */
+    public updateDiagnostics(document: vscode.TextDocument): void {
+        if (document.languageId !== 'org' && !document.fileName.endsWith('.org')) {
+            return;
+        }
+
+        const diagnostics: vscode.Diagnostic[] = [];
+        const text = document.getText();
+        const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+        const docDir = path.dirname(document.uri.fsPath);
+
+        // Match bibliography:path (with optional comma-separated paths)
+        const bibLinkRegex = /bibliography:([^\s<>\[\](){}]+)/gi;
+        // Match #+BIBLIOGRAPHY: path
+        const bibKeywordRegex = /^(#\+BIBLIOGRAPHY:\s*)(.+?\.bib)\s*$/gim;
+
+        let match;
+
+        // Check bibliography: links
+        while ((match = bibLinkRegex.exec(text)) !== null) {
+            const bibPaths = match[1].split(',');
+            let offset = match.index + 'bibliography:'.length;
+
+            for (const bibPath of bibPaths) {
+                const trimmed = bibPath.trim();
+                if (trimmed) {
+                    let resolved = trimmed;
+                    if (resolved.startsWith('~')) {
+                        resolved = resolved.replace('~', homeDir);
+                    } else if (!path.isAbsolute(resolved)) {
+                        resolved = path.resolve(docDir, resolved);
+                    }
+                    // Add .bib extension if missing
+                    if (!resolved.endsWith('.bib')) {
+                        resolved = resolved + '.bib';
+                    }
+
+                    // Check if file exists
+                    if (!fs.existsSync(resolved)) {
+                        const startPos = document.positionAt(offset);
+                        const endPos = document.positionAt(offset + trimmed.length);
+                        const range = new vscode.Range(startPos, endPos);
+
+                        const diagnostic = new vscode.Diagnostic(
+                            range,
+                            `Bibliography file not found: ${resolved}`,
+                            vscode.DiagnosticSeverity.Error
+                        );
+                        diagnostic.source = 'scimax-ref';
+                        diagnostic.code = 'missing-bibliography';
+                        diagnostics.push(diagnostic);
+                    }
+                }
+                offset += trimmed.length + 1; // +1 for comma
+            }
+        }
+
+        // Check #+BIBLIOGRAPHY: keywords
+        while ((match = bibKeywordRegex.exec(text)) !== null) {
+            const bibPath = match[2].trim();
+            if (bibPath) {
+                let resolved = bibPath;
+                if (resolved.startsWith('~')) {
+                    resolved = resolved.replace('~', homeDir);
+                } else if (!path.isAbsolute(resolved)) {
+                    resolved = path.resolve(docDir, resolved);
+                }
+
+                if (!fs.existsSync(resolved)) {
+                    const lineStart = text.lastIndexOf('\n', match.index) + 1;
+                    const lineNum = document.positionAt(match.index).line;
+                    const startChar = match[1].length;
+                    const endChar = startChar + match[2].length;
+
+                    const range = new vscode.Range(
+                        new vscode.Position(lineNum, startChar),
+                        new vscode.Position(lineNum, endChar)
+                    );
+
+                    const diagnostic = new vscode.Diagnostic(
+                        range,
+                        `Bibliography file not found: ${resolved}`,
+                        vscode.DiagnosticSeverity.Error
+                    );
+                    diagnostic.source = 'scimax-ref';
+                    diagnostic.code = 'missing-bibliography';
+                    diagnostics.push(diagnostic);
+                }
+            }
+        }
+
+        this.diagnosticCollection.set(document.uri, diagnostics);
+    }
+
+    /**
+     * Dispose resources
+     */
+    public dispose(): void {
+        this.diagnosticCollection.dispose();
+        for (const disposable of this.disposables) {
+            disposable.dispose();
         }
     }
 }

@@ -47,11 +47,17 @@ export function registerReferenceCommands(
     // Insert citation
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.insertCitation', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            // First, try to load document-local bibliographies
+            await manager.loadDocumentBibliographies(editor.document);
+
             const entries = manager.getAllEntries();
 
             if (entries.length === 0) {
                 const action = await vscode.window.showWarningMessage(
-                    'No bibliography entries found. Add a .bib file or fetch from DOI.',
+                    'No bibliography entries found. Add a .bib file, bibliography: link, or fetch from DOI.',
                     'Fetch from DOI', 'Cancel'
                 );
                 if (action === 'Fetch from DOI') {
@@ -73,8 +79,6 @@ export function registerReferenceCommands(
             if (!selected) return;
 
             // Check if cursor is on an existing citation
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) return;
 
             const document = editor.document;
             const position = editor.selection.active;
@@ -664,6 +668,9 @@ export function registerReferenceCommands(
                 return;
             }
 
+            // Load document-local bibliographies first
+            await manager.loadDocumentBibliographies(document);
+
             // Get all entries and find which bib files contain the cited keys
             const bibFiles = new Set<string>();
             const allEntries = manager.getAllEntries();
@@ -676,16 +683,29 @@ export function registerReferenceCommands(
             }
 
             if (bibFiles.size === 0) {
-                // No matches found - show available bib files
+                // No matches found - try configured bib files first
                 const config = manager.getConfig();
                 if (config.bibliographyFiles && config.bibliographyFiles.length > 0) {
-                    // Use configured bib files
                     for (const bibFile of config.bibliographyFiles) {
                         bibFiles.add(bibFile);
                     }
                 } else {
-                    vscode.window.showWarningMessage('No bibliography files found for cited keys');
-                    return;
+                    // No configured files - let user select a .bib file
+                    const selected = await vscode.window.showOpenDialog({
+                        canSelectFiles: true,
+                        canSelectFolders: false,
+                        canSelectMany: true,
+                        filters: { 'BibTeX files': ['bib'] },
+                        title: 'Select bibliography file(s)'
+                    });
+
+                    if (!selected || selected.length === 0) {
+                        return;
+                    }
+
+                    for (const uri of selected) {
+                        bibFiles.add(uri.fsPath);
+                    }
                 }
             }
 

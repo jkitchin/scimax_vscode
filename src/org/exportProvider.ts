@@ -262,9 +262,14 @@ async function exportLatex(
 
     const metadata = extractMetadata(doc);
 
+    // Get custom header from VS Code settings if not provided
+    const config = vscode.workspace.getConfiguration('scimax.export.latex');
+    const customHeader = options.customHeader || config.get<string>('customHeader');
+
     const latexOptions: LatexExportOptions = {
         ...metadata,
         ...options,
+        customHeader,
         bodyOnly,
     };
 
@@ -280,13 +285,14 @@ async function exportLatex(
 }
 
 /**
- * Export to PDF via LaTeX
+ * Export to PDF via LaTeX using latexmk
+ * Returns the log file path if there was an error
  */
 async function exportPdf(
     content: string,
     options: Partial<LatexExportOptions>,
     outputPath: string
-): Promise<void> {
+): Promise<string | undefined> {
 
     // First generate LaTeX
     const latexContent = await exportLatex(content, options, false);
@@ -295,35 +301,25 @@ async function exportPdf(
     const tempDir = path.dirname(outputPath);
     const baseName = path.basename(outputPath, '.pdf');
     const texPath = path.join(tempDir, `${baseName}.tex`);
+    const logPath = path.join(tempDir, `${baseName}.log`);
 
     await fs.promises.writeFile(texPath, latexContent, 'utf-8');
 
-    // Compile with pdflatex
+    // Compile with latexmk - handles bibliography and multiple passes automatically
     try {
-        // Run pdflatex twice for references
-        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, {
+        await execAsync(`latexmk -pdf -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, {
             cwd: tempDir,
-            timeout: 60000,
+            timeout: 120000, // 2 minutes for complex documents with bibliography
         });
-        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, {
-            cwd: tempDir,
-            timeout: 60000,
-        });
-    } catch (error) {
-        // Try to clean up
-        const auxFiles = ['.aux', '.log', '.out', '.toc'];
-        for (const ext of auxFiles) {
-            try {
-                await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
-            } catch {
-                // Ignore cleanup errors
-            }
-        }
-        throw error;
+    } catch {
+        // latexmk may return non-zero even when PDF is produced (warnings)
     }
 
-    // Clean up auxiliary files
-    const auxFiles = ['.aux', '.log', '.out', '.toc', '.tex'];
+    // Check if PDF was created
+    const pdfCreated = fs.existsSync(outputPath);
+
+    // Clean up auxiliary files (keep .tex for debugging, latexmk creates many aux files)
+    const auxFiles = ['.aux', '.bbl', '.blg', '.fdb_latexmk', '.fls', '.out', '.toc', '.synctex.gz'];
     for (const ext of auxFiles) {
         try {
             await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
@@ -331,6 +327,22 @@ async function exportPdf(
             // Ignore cleanup errors
         }
     }
+
+    if (!pdfCreated) {
+        // Keep the log and tex file for debugging, return log path
+        return logPath;
+    }
+
+    // Clean up log and tex on success
+    for (const ext of ['.log', '.tex']) {
+        try {
+            await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
+        } catch {
+            // Ignore cleanup errors
+        }
+    }
+
+    return undefined;
 }
 
 /**
@@ -707,18 +719,30 @@ async function quickExportPdf(): Promise<void> {
     await vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
-            title: 'Exporting to PDF...',
+            title: 'Exporting to PDF via latexmk...',
             cancellable: false,
         },
         async () => {
             try {
-                await exportPdf(content, {}, outputPath);
-                const action = await vscode.window.showInformationMessage(
-                    `Exported to ${path.basename(outputPath)}`,
-                    'Open'
-                );
-                if (action === 'Open') {
-                    await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                const logPath = await exportPdf(content, {}, outputPath);
+                if (logPath) {
+                    // PDF failed to generate - open the log file
+                    const action = await vscode.window.showErrorMessage(
+                        'PDF export failed. View log for details.',
+                        'Open Log'
+                    );
+                    if (action === 'Open Log' && fs.existsSync(logPath)) {
+                        const doc = await vscode.workspace.openTextDocument(logPath);
+                        await vscode.window.showTextDocument(doc);
+                    }
+                } else {
+                    const action = await vscode.window.showInformationMessage(
+                        `Exported to ${path.basename(outputPath)}`,
+                        'Open'
+                    );
+                    if (action === 'Open') {
+                        await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                    }
                 }
             } catch (error) {
                 const message = error instanceof Error ? error.message : String(error);
@@ -944,30 +968,23 @@ async function exportDispatcher(): Promise<void> {
             case 'pdf-file': {
                 const outputPath = inputPath.replace(/\.org$/, '.pdf');
                 await vscode.window.withProgress(
-                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF...', cancellable: false },
+                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF via latexmk...', cancellable: false },
                     async (progress) => {
-                        progress.report({ message: 'Parsing and generating LaTeX...' });
-                        const latex = await exportLatex(content, {}, false);
-
-                        progress.report({ message: 'Writing .tex file...' });
-                        const texPath = outputPath.replace(/\.pdf$/, '.tex');
-                        await fs.promises.writeFile(texPath, latex, 'utf-8');
-
-                        const tempDir = path.dirname(outputPath);
-
-                        progress.report({ message: 'Running pdflatex (pass 1)...' });
-                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
-
-                        progress.report({ message: 'Running pdflatex (pass 2)...' });
-                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
-
-                        // Clean up aux files
-                        const baseName = path.basename(outputPath, '.pdf');
-                        for (const ext of ['.aux', '.log', '.out', '.toc', '.tex']) {
-                            try { await fs.promises.unlink(path.join(tempDir, baseName + ext)); } catch {}
+                        progress.report({ message: 'Generating LaTeX and compiling...' });
+                        const logPath = await exportPdf(content, {}, outputPath);
+                        if (logPath) {
+                            // PDF failed - open the log
+                            const action = await vscode.window.showErrorMessage(
+                                'PDF export failed. View log for details.',
+                                'Open Log'
+                            );
+                            if (action === 'Open Log' && fs.existsSync(logPath)) {
+                                const doc = await vscode.workspace.openTextDocument(logPath);
+                                await vscode.window.showTextDocument(doc);
+                            }
+                        } else {
+                            vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
                         }
-
-                        vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
                     }
                 );
                 break;
@@ -975,30 +992,23 @@ async function exportDispatcher(): Promise<void> {
             case 'pdf-open': {
                 const outputPath = inputPath.replace(/\.org$/, '.pdf');
                 await vscode.window.withProgress(
-                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF...', cancellable: false },
+                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF via latexmk...', cancellable: false },
                     async (progress) => {
-                        progress.report({ message: 'Parsing document...' });
-                        const latex = await exportLatex(content, {}, false);
-
-                        progress.report({ message: 'Writing .tex file...' });
-                        const texPath = outputPath.replace(/\.pdf$/, '.tex');
-                        await fs.promises.writeFile(texPath, latex, 'utf-8');
-
-                        progress.report({ message: 'Running pdflatex (pass 1)...' });
-                        const tempDir = path.dirname(outputPath);
-
-                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
-
-                        progress.report({ message: 'Running pdflatex (pass 2)...' });
-                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
-
-                        // Clean up aux files
-                        const baseName = path.basename(outputPath, '.pdf');
-                        for (const ext of ['.aux', '.log', '.out', '.toc', '.tex']) {
-                            try { await fs.promises.unlink(path.join(tempDir, baseName + ext)); } catch {}
+                        progress.report({ message: 'Generating LaTeX and compiling...' });
+                        const logPath = await exportPdf(content, {}, outputPath);
+                        if (logPath) {
+                            // PDF failed - open the log
+                            const action = await vscode.window.showErrorMessage(
+                                'PDF export failed. View log for details.',
+                                'Open Log'
+                            );
+                            if (action === 'Open Log' && fs.existsSync(logPath)) {
+                                const doc = await vscode.workspace.openTextDocument(logPath);
+                                await vscode.window.showTextDocument(doc);
+                            }
+                        } else {
+                            await vscode.env.openExternal(vscode.Uri.file(outputPath));
                         }
-
-                        await vscode.env.openExternal(vscode.Uri.file(outputPath));
                     }
                 );
                 break;
