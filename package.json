@@ -1733,6 +1733,18 @@
       {
         "command": "scimax.speed.toggle",
         "title": "Scimax: Toggle Speed Commands"
+      },
+      {
+        "command": "scimax.clearLatexCache",
+        "title": "Scimax: Clear LaTeX Preview Cache"
+      },
+      {
+        "command": "scimax.checkLatexTools",
+        "title": "Scimax: Check LaTeX Tools Availability"
+      },
+      {
+        "command": "scimax.latexCacheStats",
+        "title": "Scimax: Show LaTeX Cache Statistics"
       }
     ],
     "keybindings": [
@@ -2753,6 +2765,21 @@
           "type": "string",
           "default": "",
           "markdownDescription": "Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\\documentclass` through all `\\usepackage` commands. Example:\n```latex\n\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n```"
+        },
+        "scimax.latexPreview.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable LaTeX equation preview on hover"
+        },
+        "scimax.latexPreview.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Cache rendered equations for faster hover responses"
+        },
+        "scimax.latexPreview.darkModeAware": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically adjust equation rendering for dark/light themes"
         },
         "scimax.notebook.directory": {
           "type": "string",

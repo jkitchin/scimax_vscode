@@ -37,6 +37,7 @@ import { registerHeadingCommands } from './org/headingProvider';
 import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
 import { registerOrgCompletionProvider } from './org/completionProvider';
 import { registerOrgHoverProvider } from './org/hoverProvider';
+import { initLatexPreviewCache, clearLatexCache, checkLatexAvailable, getCacheStats } from './org/latexPreviewProvider';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
 import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
@@ -272,6 +273,32 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
     registerOrgHoverProvider(context);
+
+    // Initialize LaTeX preview cache for equation rendering
+    initLatexPreviewCache(context);
+
+    // Register LaTeX preview commands
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.clearLatexCache', async () => {
+            clearLatexCache();
+            vscode.window.showInformationMessage('LaTeX preview cache cleared');
+        }),
+        vscode.commands.registerCommand('scimax.checkLatexTools', async () => {
+            const result = await checkLatexAvailable();
+            if (result.available) {
+                vscode.window.showInformationMessage(`LaTeX tools: ${result.message}`);
+            } else {
+                vscode.window.showWarningMessage(`LaTeX tools: ${result.message}`);
+            }
+        }),
+        vscode.commands.registerCommand('scimax.latexCacheStats', () => {
+            const stats = getCacheStats();
+            const sizeKB = (stats.totalSize / 1024).toFixed(1);
+            vscode.window.showInformationMessage(
+                `LaTeX cache: ${stats.entryCount} entries, ${sizeKB} KB total`
+            );
+        })
+    );
 
     // Register Babel commands and Code Lens (for source block execution)
     registerBabelCommands(context);
