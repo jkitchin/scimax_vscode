@@ -100,6 +100,11 @@
     "views": {
       "scimax": [
         {
+          "id": "scimax.agenda",
+          "name": "Agenda",
+          "icon": "$(calendar)"
+        },
+        {
           "id": "scimax.projects",
           "name": "Projects",
           "icon": "$(folder)"
@@ -107,7 +112,7 @@
         {
           "id": "scimax.journal",
           "name": "Journal",
-          "icon": "$(calendar)"
+          "icon": "$(notebook)"
         }
       ]
     },
@@ -1808,6 +1813,72 @@
         "title": "Scimax: Show Babel Output"
       },
       {
+        "command": "scimax.agenda.menu",
+        "title": "Scimax: Open Agenda Menu",
+        "icon": "$(calendar)"
+      },
+      {
+        "command": "scimax.agenda.day",
+        "title": "Scimax: Day Agenda"
+      },
+      {
+        "command": "scimax.agenda.week",
+        "title": "Scimax: Week Agenda"
+      },
+      {
+        "command": "scimax.agenda.fortnight",
+        "title": "Scimax: Fortnight Agenda"
+      },
+      {
+        "command": "scimax.agenda.month",
+        "title": "Scimax: Month Agenda"
+      },
+      {
+        "command": "scimax.agenda.todoList",
+        "title": "Scimax: TODO List"
+      },
+      {
+        "command": "scimax.agenda.deadlines",
+        "title": "Scimax: Upcoming Deadlines"
+      },
+      {
+        "command": "scimax.agenda.scheduled",
+        "title": "Scimax: Scheduled Items"
+      },
+      {
+        "command": "scimax.agenda.filterByTag",
+        "title": "Scimax: Agenda Filter by Tag"
+      },
+      {
+        "command": "scimax.agenda.refresh",
+        "title": "Scimax: Refresh Agenda",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "scimax.agenda.showAgenda",
+        "title": "Scimax: Show Agenda View"
+      },
+      {
+        "command": "scimax.agenda.showTodos",
+        "title": "Scimax: Show TODO List View"
+      },
+      {
+        "command": "scimax.agenda.groupByDate",
+        "title": "Scimax: Group Agenda by Date"
+      },
+      {
+        "command": "scimax.agenda.groupByCategory",
+        "title": "Scimax: Group Agenda by Category"
+      },
+      {
+        "command": "scimax.agenda.groupByPriority",
+        "title": "Scimax: Group Agenda by Priority"
+      },
+      {
+        "command": "scimax.agenda.configure",
+        "title": "Scimax: Configure Agenda Files"
+      },
+      {
         "command": "scimax.imageOverlays.toggle",
         "title": "Scimax: Toggle Image Overlays"
       },
@@ -2974,6 +3045,53 @@
           "default": true,
           "description": "Enable org-mode speed commands (single-key shortcuts at beginning of headings)"
         },
+        "scimax.agenda.files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Directories or files to include in the agenda. If empty, scans all org files in workspace."
+        },
+        "scimax.agenda.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["**/node_modules/**", "**/.git/**", "**/archive/**"],
+          "description": "Glob patterns to exclude from agenda scanning"
+        },
+        "scimax.agenda.defaultSpan": {
+          "type": "number",
+          "default": 7,
+          "description": "Default number of days to show in agenda view"
+        },
+        "scimax.agenda.showDone": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show completed (DONE) items in agenda"
+        },
+        "scimax.agenda.showHabits": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show items tagged with :HABIT:"
+        },
+        "scimax.agenda.todoStates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["TODO", "NEXT", "WAITING"],
+          "description": "Active TODO states to show in TODO list"
+        },
+        "scimax.agenda.doneStates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["DONE", "CANCELLED"],
+          "description": "Completed TODO states"
+        },
         "scimax.imageOverlays.enabled": {
           "type": "boolean",
           "default": true,
@@ -3045,6 +3163,50 @@
         {
           "command": "scimax.journal.next",
           "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "scimax.agenda.refresh",
+          "when": "view == scimax.agenda",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.agenda.showAgenda",
+          "when": "view == scimax.agenda",
+          "group": "1_view"
+        },
+        {
+          "command": "scimax.agenda.showTodos",
+          "when": "view == scimax.agenda",
+          "group": "1_view"
+        },
+        {
+          "command": "scimax.agenda.groupByDate",
+          "when": "view == scimax.agenda",
+          "group": "2_group"
+        },
+        {
+          "command": "scimax.agenda.groupByCategory",
+          "when": "view == scimax.agenda",
+          "group": "2_group"
+        },
+        {
+          "command": "scimax.agenda.groupByPriority",
+          "when": "view == scimax.agenda",
+          "group": "2_group"
+        },
+        {
+          "command": "scimax.agenda.configure",
+          "when": "view == scimax.agenda",
+          "group": "3_config"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "scimax.agenda.gotoItem",
+          "when": "view == scimax.agenda && viewItem == agendaItem",
+          "group": "inline"
         }
       ]
     }

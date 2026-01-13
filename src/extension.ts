@@ -46,6 +46,7 @@ import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerSpeedCommands } from './org/speedCommands';
 import { registerImageOverlayCommands } from './org/imageOverlayProvider';
+import { registerAgendaCommands } from './org/agendaProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
@@ -336,6 +337,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Image Overlay Commands (inline image thumbnails)
     registerImageOverlayCommands(context);
+
+    // Register Native Agenda Commands (file-scanning based agenda)
+    registerAgendaCommands(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
