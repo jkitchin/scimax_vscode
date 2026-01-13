@@ -29,7 +29,8 @@ function isPdflatexAvailable(): boolean {
     }
 }
 
-describe('PDF Export', () => {
+// Tests that require the local test-features.org file
+describe.skipIf(!hasTestFile)('PDF Export', () => {
     const hasPdflatex = isPdflatexAvailable();
 
     beforeAll(() => {
@@ -39,13 +40,13 @@ describe('PDF Export', () => {
         }
     });
 
-    it.skipIf(!hasTestFile)('should have test file available', () => {
+    it('should have test file available', () => {
         expect(fs.existsSync(TEST_FILE)).toBe(true);
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
         console.log(`Test file: ${content.length} characters, ${content.split('\n').length} lines`);
     });
 
-    it.skipIf(!hasTestFile)('parses test-features.org successfully', () => {
+    it('parses test-features.org successfully', () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
 
         const start = performance.now();
@@ -60,7 +61,7 @@ describe('PDF Export', () => {
         console.log(`Keywords: ${Object.keys(doc.keywords).join(', ')}`);
     });
 
-    it.skipIf(!hasTestFile)('exports to LaTeX successfully', () => {
+    it('exports to LaTeX successfully', () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
         const doc = parseOrgFast(content);
 
@@ -85,7 +86,7 @@ describe('PDF Export', () => {
         console.log(`Saved: ${texPath}`);
     });
 
-    it.skipIf(!hasTestFile || !hasPdflatex)('compiles to PDF with pdflatex', async () => {
+    it.skipIf(!hasPdflatex)('compiles to PDF with pdflatex', async () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
         const doc = parseOrgFast(content);
 
@@ -107,7 +108,7 @@ describe('PDF Export', () => {
                 cwd: OUTPUT_DIR,
                 timeout: 60000,
             });
-        } catch (e: any) {
+        } catch (e: unknown) {
             // pdflatex may return non-zero even on success with warnings
             console.log('Pass 1 completed (with warnings)');
         }
@@ -122,7 +123,7 @@ describe('PDF Export', () => {
                 cwd: OUTPUT_DIR,
                 timeout: 60000,
             });
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.log('Pass 2 completed (with warnings)');
         }
         const time2 = performance.now() - start2;
@@ -153,7 +154,7 @@ describe('PDF Export', () => {
         expect(pdfExists).toBe(true);
     }, 120000); // 2 minute timeout
 
-    it.skipIf(!hasTestFile)('measures full export pipeline timing', () => {
+    it('measures full export pipeline timing', () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
 
         // Parse

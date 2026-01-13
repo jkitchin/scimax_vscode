@@ -13,16 +13,7 @@ const TEST_FILE = path.join(__dirname, '../../../test-features.org');
 // Check if test file exists (it's a local file not in the repo)
 const hasTestFile = fs.existsSync(TEST_FILE);
 
-describe('Parser Timing', () => {
-    const content = hasTestFile
-        ? fs.readFileSync(TEST_FILE, 'utf-8')
-        : '';
-
-    it.skipIf(!hasTestFile)('should have test file available', () => {
-        expect(content.length).toBeGreaterThan(0);
-        console.log(`Test file size: ${content.length} characters, ${content.split('\n').length} lines`);
-    });
-
+describe('Parser Timing - Inline Objects', () => {
     it('times inline object parsing on simple text', () => {
         const testCases = [
             'Simple text without any markup',
@@ -66,8 +57,20 @@ describe('Parser Timing', () => {
             expect(time).toBeLessThan(100);
         }
     });
+});
 
-    it.skipIf(!hasTestFile)('times fast export parser on full document', () => {
+// Tests that require the local test-features.org file
+describe.skipIf(!hasTestFile)('Parser Timing - Full Document', () => {
+    const content = hasTestFile
+        ? fs.readFileSync(TEST_FILE, 'utf-8')
+        : '';
+
+    it('should have test file available', () => {
+        expect(content.length).toBeGreaterThan(0);
+        console.log(`Test file size: ${content.length} characters, ${content.split('\n').length} lines`);
+    });
+
+    it('times fast export parser on full document', () => {
         const iterations = 5;
         const times: number[] = [];
 
@@ -98,7 +101,7 @@ describe('Parser Timing', () => {
         expect(avg).toBeLessThan(100);
     });
 
-    it.skipIf(!hasTestFile)('scales linearly with document size', () => {
+    it('scales linearly with document size', () => {
         const sizes = [1, 2, 5, 10];
 
         console.log('\nScaling test:');
