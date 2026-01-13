@@ -40,6 +40,7 @@ import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvide
 import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
+import { registerSpeedCommands } from './org/speedCommands';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
@@ -287,6 +288,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Scimax-ob commands (source block manipulation)
     registerScimaxObCommands(context);
+
+    // Register Speed Commands (single-key shortcuts at heading start)
+    registerSpeedCommands(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

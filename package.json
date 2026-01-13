@@ -1623,6 +1623,110 @@
       {
         "command": "scimax.table.sortByColumn",
         "title": "Scimax: Sort by Column"
+      },
+      {
+        "command": "scimax.speed.nextSibling",
+        "title": "Scimax: Next Sibling Heading"
+      },
+      {
+        "command": "scimax.speed.previousSibling",
+        "title": "Scimax: Previous Sibling Heading"
+      },
+      {
+        "command": "scimax.speed.firstHeading",
+        "title": "Scimax: First Heading"
+      },
+      {
+        "command": "scimax.speed.lastHeading",
+        "title": "Scimax: Last Heading"
+      },
+      {
+        "command": "scimax.speed.gotoMenu",
+        "title": "Scimax: Go To Menu"
+      },
+      {
+        "command": "scimax.speed.schedule",
+        "title": "Scimax: Add/Edit SCHEDULED"
+      },
+      {
+        "command": "scimax.speed.deadline",
+        "title": "Scimax: Add/Edit DEADLINE"
+      },
+      {
+        "command": "scimax.speed.setTags",
+        "title": "Scimax: Set Tags"
+      },
+      {
+        "command": "scimax.speed.setEffort",
+        "title": "Scimax: Set Effort"
+      },
+      {
+        "command": "scimax.speed.setProperty",
+        "title": "Scimax: Set Property"
+      },
+      {
+        "command": "scimax.speed.priorityA",
+        "title": "Scimax: Set Priority A"
+      },
+      {
+        "command": "scimax.speed.priorityB",
+        "title": "Scimax: Set Priority B"
+      },
+      {
+        "command": "scimax.speed.priorityC",
+        "title": "Scimax: Set Priority C"
+      },
+      {
+        "command": "scimax.speed.priorityNone",
+        "title": "Scimax: Remove Priority"
+      },
+      {
+        "command": "scimax.speed.showChildren",
+        "title": "Scimax: Show All Children"
+      },
+      {
+        "command": "scimax.speed.overview",
+        "title": "Scimax: Overview (Fold All)"
+      },
+      {
+        "command": "scimax.speed.clockIn",
+        "title": "Scimax: Clock In"
+      },
+      {
+        "command": "scimax.speed.clockOut",
+        "title": "Scimax: Clock Out"
+      },
+      {
+        "command": "scimax.speed.archiveSubtree",
+        "title": "Scimax: Archive Subtree"
+      },
+      {
+        "command": "scimax.speed.toggleArchiveTag",
+        "title": "Scimax: Toggle Archive Tag"
+      },
+      {
+        "command": "scimax.speed.archiveToSibling",
+        "title": "Scimax: Archive to Sibling"
+      },
+      {
+        "command": "scimax.speed.yankSubtree",
+        "title": "Scimax: Yank (Paste) Subtree"
+      },
+      {
+        "command": "scimax.speed.narrowToSubtree",
+        "title": "Scimax: Narrow to Subtree"
+      },
+      {
+        "command": "scimax.speed.widen",
+        "title": "Scimax: Widen"
+      },
+      {
+        "command": "scimax.speed.help",
+        "title": "Scimax: Speed Commands Help"
+      },
+      {
+        "command": "scimax.speed.toggle",
+        "title": "Scimax: Toggle Speed Commands"
       }
     ],
     "keybindings": [
@@ -2263,6 +2367,207 @@
         "key": "ctrl+c ^",
         "mac": "ctrl+c ^",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.speed.nextSibling",
+        "key": "f",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.previousSibling",
+        "key": "b",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.nextHeading",
+        "key": "n",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.previousHeading",
+        "key": "p",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.parentHeading",
+        "key": "u",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.jumpToHeading",
+        "key": "j",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.gotoMenu",
+        "key": "g",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.cycleGlobalFold",
+        "key": "c",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.showChildren",
+        "key": "shift+c",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.overview",
+        "key": "o",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.heading.moveUp",
+        "key": "shift+u",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.heading.moveDown",
+        "key": "shift+d",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.heading.demoteSubtree",
+        "key": "r",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.heading.promoteSubtree",
+        "key": "l",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.heading.demote",
+        "key": "shift+r",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.heading.promote",
+        "key": "shift+l",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.killSubtree",
+        "key": "w",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.yankSubtree",
+        "key": "y",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.cloneSubtree",
+        "key": "shift+w",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.cycleTodo",
+        "key": "t",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.shiftTimestampUp",
+        "key": ",",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.priorityA",
+        "key": "1",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.priorityB",
+        "key": "2",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.priorityC",
+        "key": "3",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.priorityNone",
+        "key": "0",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.schedule",
+        "key": "s",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.deadline",
+        "key": "d",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.insertTimestamp",
+        "key": ".",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.setTags",
+        "key": "shift+;",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.setEffort",
+        "key": "e",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.setProperty",
+        "key": "shift+p",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.clockIn",
+        "key": "shift+i",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.clockOut",
+        "key": "shift+o",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.archiveSubtree",
+        "key": "a",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.toggleArchiveTag",
+        "key": "shift+a",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.archiveToSibling",
+        "key": "shift+4",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.narrowToSubtree",
+        "key": "shift+n",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.widen",
+        "key": "shift+s",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.help",
+        "key": "shift+/",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.speed.toggle",
+        "key": "ctrl+c ctrl+x s",
+        "mac": "ctrl+c ctrl+x s",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       }
     ],
     "configuration": {
@@ -2460,6 +2765,11 @@
           "type": "boolean",
           "default": false,
           "description": "Sort menu items by their keyboard shortcut"
+        },
+        "scimax.speedCommands.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable org-mode speed commands (single-key shortcuts at beginning of headings)"
         }
       }
     },
