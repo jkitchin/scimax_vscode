@@ -10,12 +10,15 @@ import { parseObjectsFast, parseOrgFast } from '../orgExportParser';
 
 const TEST_FILE = path.join(__dirname, '../../../test-features.org');
 
+// Check if test file exists (it's a local file not in the repo)
+const hasTestFile = fs.existsSync(TEST_FILE);
+
 describe('Parser Timing', () => {
-    const content = fs.existsSync(TEST_FILE)
+    const content = hasTestFile
         ? fs.readFileSync(TEST_FILE, 'utf-8')
         : '';
 
-    it('should have test file available', () => {
+    it.skipIf(!hasTestFile)('should have test file available', () => {
         expect(content.length).toBeGreaterThan(0);
         console.log(`Test file size: ${content.length} characters, ${content.split('\n').length} lines`);
     });
@@ -64,7 +67,7 @@ describe('Parser Timing', () => {
         }
     });
 
-    it('times fast export parser on full document', () => {
+    it.skipIf(!hasTestFile)('times fast export parser on full document', () => {
         const iterations = 5;
         const times: number[] = [];
 
@@ -95,7 +98,7 @@ describe('Parser Timing', () => {
         expect(avg).toBeLessThan(100);
     });
 
-    it('scales linearly with document size', () => {
+    it.skipIf(!hasTestFile)('scales linearly with document size', () => {
         const sizes = [1, 2, 5, 10];
 
         console.log('\nScaling test:');

@@ -16,6 +16,9 @@ const execAsync = promisify(exec);
 const TEST_FILE = path.join(__dirname, '../../../test-features.org');
 const OUTPUT_DIR = path.join(__dirname, '../../../test-output');
 
+// Check if test file exists (it's a local file not in the repo)
+const hasTestFile = fs.existsSync(TEST_FILE);
+
 // Check if pdflatex is available
 function isPdflatexAvailable(): boolean {
     try {
@@ -36,13 +39,13 @@ describe('PDF Export', () => {
         }
     });
 
-    it('should have test file available', () => {
+    it.skipIf(!hasTestFile)('should have test file available', () => {
         expect(fs.existsSync(TEST_FILE)).toBe(true);
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
         console.log(`Test file: ${content.length} characters, ${content.split('\n').length} lines`);
     });
 
-    it('parses test-features.org successfully', () => {
+    it.skipIf(!hasTestFile)('parses test-features.org successfully', () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
 
         const start = performance.now();
@@ -57,7 +60,7 @@ describe('PDF Export', () => {
         console.log(`Keywords: ${Object.keys(doc.keywords).join(', ')}`);
     });
 
-    it('exports to LaTeX successfully', () => {
+    it.skipIf(!hasTestFile)('exports to LaTeX successfully', () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
         const doc = parseOrgFast(content);
 
@@ -82,7 +85,7 @@ describe('PDF Export', () => {
         console.log(`Saved: ${texPath}`);
     });
 
-    it.skipIf(!hasPdflatex)('compiles to PDF with pdflatex', async () => {
+    it.skipIf(!hasTestFile || !hasPdflatex)('compiles to PDF with pdflatex', async () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
         const doc = parseOrgFast(content);
 
@@ -150,7 +153,7 @@ describe('PDF Export', () => {
         expect(pdfExists).toBe(true);
     }, 120000); // 2 minute timeout
 
-    it('measures full export pipeline timing', () => {
+    it.skipIf(!hasTestFile)('measures full export pipeline timing', () => {
         const content = fs.readFileSync(TEST_FILE, 'utf-8');
 
         // Parse
