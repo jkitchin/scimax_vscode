@@ -432,6 +432,99 @@ Emacs-style text markup with keyboard shortcuts.
 
 ---
 
+### Speed Commands (org-speed-commands)
+
+Single-key shortcuts that work when the cursor is at column 0 of a heading line, just like Emacs org-mode speed commands.
+
+**How it works:** Place your cursor at the very beginning of a heading line (column 0) and press a single key to execute commands instantly—no modifier keys needed.
+
+**Navigation:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `n` | Next heading             | Jump to next visible heading |
+| `p` | Previous heading         | Jump to previous heading     |
+| `f` | Next sibling             | Next heading at same level   |
+| `b` | Previous sibling         | Previous heading at same level |
+| `u` | Parent heading           | Jump to parent heading       |
+| `j` | Jump to heading          | Quick pick any heading       |
+| `g` | Go to menu               | Show navigation submenu      |
+
+**Visibility:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `c` | Cycle global             | Cycle all headings visibility |
+| `C` | Show children            | Expand all children          |
+| `o` | Overview                 | Fold all headings            |
+| `Tab` | Toggle fold            | Cycle fold at current heading |
+
+**Structure Editing:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `U` | Move subtree up          | Swap with previous sibling   |
+| `D` | Move subtree down        | Swap with next sibling       |
+| `r` | Demote subtree           | Increase level of subtree    |
+| `l` | Promote subtree          | Decrease level of subtree    |
+| `R` | Demote heading           | Increase level of heading only |
+| `L` | Promote heading          | Decrease level of heading only |
+| `w` | Kill subtree             | Cut subtree to clipboard     |
+| `y` | Yank subtree             | Paste subtree from clipboard |
+| `W` | Clone subtree            | Duplicate subtree below      |
+
+**TODO & Priority:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `t` | Cycle TODO               | Cycle through TODO states    |
+| `,` | Cycle priority           | Cycle priority up            |
+| `1` | Priority A               | Set priority [#A]            |
+| `2` | Priority B               | Set priority [#B]            |
+| `3` | Priority C               | Set priority [#C]            |
+| `0` | No priority              | Remove priority              |
+
+**Planning:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `s` | Schedule                 | Add/edit SCHEDULED timestamp |
+| `d` | Deadline                 | Add/edit DEADLINE timestamp  |
+| `.` | Insert timestamp         | Insert timestamp at point    |
+
+**Metadata:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `:` | Set tags                 | Edit tags for heading        |
+| `e` | Set effort               | Set Effort property          |
+| `P` | Set property             | Add/edit any property        |
+
+**Clocking:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `I` | Clock in                 | Start clock on this heading  |
+| `O` | Clock out                | Stop current clock           |
+
+**Archive:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `a` | Archive subtree          | Archive to archive file      |
+| `A` | Toggle ARCHIVE tag       | Add/remove :ARCHIVE: tag     |
+| `$` | Archive to sibling       | Archive under Archive sibling |
+
+**Special:**
+| Key | Command                  | Description                  |
+|-----|--------------------------|------------------------------|
+| `N` | Narrow to subtree        | Show only this subtree       |
+| `S` | Widen                    | Show full buffer             |
+| `?` | Speed help               | Show all speed commands      |
+
+**Configuration:**
+```json
+{
+  "scimax.speedCommands.enabled": true
+}
+```
+
+Toggle speed commands on/off with `Ctrl+c Ctrl+x s`.
+
+---
+
 ### Export System
 
 Export org documents to multiple formats.
@@ -659,6 +752,7 @@ The extension supports:
 | Block Manipulation   | scimax-ob          | Full support (split, merge, navigate) |
 | Export               | ox-*               | Full support (HTML, LaTeX, MD, PDF)   |
 | Tables               | org-table          | Full support + export to CSV/HTML     |
+| Speed Commands       | org-speed-commands | Full support (37 commands)            |
 | Clocking             | org-clock          | Partial (basic clocking)              |
 | Contacts             | org-contacts       | Not yet                               |
 | Capture Templates    | org-capture        | Not yet                               |
