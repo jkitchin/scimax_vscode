@@ -47,6 +47,8 @@ import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerSpeedCommands } from './org/speedCommands';
 import { registerImageOverlayCommands } from './org/imageOverlayProvider';
 import { registerAgendaCommands } from './org/agendaProvider';
+import { registerTableFormulaCommands } from './org/tableFormula';
+import { registerCaptureCommands } from './org/captureProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
@@ -340,6 +342,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Native Agenda Commands (file-scanning based agenda)
     registerAgendaCommands(context);
+
+    // Register Table Formula Commands (spreadsheet-like calculations)
+    registerTableFormulaCommands(context);
+
+    // Register Capture Commands (org-capture quick note system)
+    registerCaptureCommands(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

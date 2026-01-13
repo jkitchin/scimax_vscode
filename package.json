@@ -1897,6 +1897,50 @@
       {
         "command": "scimax.imageOverlays.showStats",
         "title": "Scimax: Show Image Overlay Cache Statistics"
+      },
+      {
+        "command": "scimax.table.recalculate",
+        "title": "Scimax: Recalculate Table Formulas"
+      },
+      {
+        "command": "scimax.table.insertColumnFormula",
+        "title": "Scimax: Insert Column Formula"
+      },
+      {
+        "command": "scimax.table.insertFieldFormula",
+        "title": "Scimax: Insert Field Formula"
+      },
+      {
+        "command": "scimax.table.formulaHelp",
+        "title": "Scimax: Table Formula Help"
+      },
+      {
+        "command": "scimax.capture",
+        "title": "Scimax: Capture"
+      },
+      {
+        "command": "scimax.captureByKey",
+        "title": "Scimax: Capture by Key"
+      },
+      {
+        "command": "scimax.capture.todo",
+        "title": "Scimax: Quick Capture TODO"
+      },
+      {
+        "command": "scimax.capture.note",
+        "title": "Scimax: Quick Capture Note"
+      },
+      {
+        "command": "scimax.capture.createTemplate",
+        "title": "Scimax: Create Capture Template"
+      },
+      {
+        "command": "scimax.capture.listTemplates",
+        "title": "Scimax: List Capture Templates"
+      },
+      {
+        "command": "scimax.capture.configure",
+        "title": "Scimax: Configure Capture Templates"
       }
     ],
     "keybindings": [
@@ -2792,6 +2836,22 @@
         "key": "ctrl+c ctrl+x s",
         "mac": "ctrl+c ctrl+x s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.recalculate",
+        "key": "ctrl+c *",
+        "mac": "ctrl+c *",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.capture",
+        "key": "ctrl+c c",
+        "mac": "ctrl+c c"
+      },
+      {
+        "command": "scimax.capture.todo",
+        "key": "ctrl+c t",
+        "mac": "ctrl+c t"
       }
     ],
     "configuration": {
@@ -3144,6 +3204,27 @@
           "type": "boolean",
           "default": true,
           "description": "Cache generated thumbnails for faster loading"
+        },
+        "scimax.capture.templates": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Capture templates for quick note-taking. Each template has: `key` (single char), `name`, `type` (entry/item/table-line), `file`, `headline` (optional), `datetree` (boolean), and `template` (with placeholders like `%^{prompt}`, `%t`, `%i`)"
+        },
+        "scimax.capture.defaultFile": {
+          "type": "string",
+          "default": "~/org/notes.org",
+          "description": "Default file for captures when no target file is specified"
+        },
+        "scimax.capture.datetreeFormat": {
+          "type": "string",
+          "enum": ["day", "week", "month"],
+          "default": "day",
+          "description": "Granularity of datetree entries"
+        },
+        "scimax.capture.autoSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically save the file after capture"
         }
       }
     },
