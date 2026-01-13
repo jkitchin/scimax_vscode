@@ -95,7 +95,7 @@ export class JournalManager {
 
         return {
             directory,
-            format: vsConfig.get<'markdown' | 'org'>('format') || 'markdown',
+            format: vsConfig.get<'markdown' | 'org'>('format') || 'org',
             template: vsConfig.get<string>('template') || 'default',
             dateFormat: vsConfig.get<string>('dateFormat') || 'YYYY-MM-DD',
             autoTimestamp: vsConfig.get<boolean>('autoTimestamp') ?? true,

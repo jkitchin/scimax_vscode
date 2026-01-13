@@ -111,6 +111,12 @@
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "scimax.journal",
+        "contents": "No journal entries yet.\n[Create Today's Entry](command:scimax.journal.today)\n[Open Calendar](command:scimax.journal.calendar)\n[Open Journal Directory](command:scimax.journal.openDirectory)"
+      }
+    ],
     "colors": [
       {
         "id": "scimax.srcBlockBackground",
@@ -1796,6 +1802,24 @@
         "mac": "ctrl+/"
       },
       {
+        "command": "editor.action.clipboardPasteAction",
+        "key": "ctrl+y",
+        "mac": "ctrl+y",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "editor.action.clipboardCutAction",
+        "key": "ctrl+w",
+        "mac": "ctrl+w",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "editor.action.clipboardCopyAction",
+        "key": "alt+w",
+        "mac": "alt+w",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
         "command": "editor.action.commentLine",
         "key": "ctrl+;",
         "mac": "ctrl+;"
@@ -2581,10 +2605,10 @@
         "scimax.journal.format": {
           "type": "string",
           "enum": [
-            "markdown",
-            "org"
+            "org",
+            "markdown"
           ],
-          "default": "markdown",
+          "default": "org",
           "description": "File format for journal entries"
         },
         "scimax.journal.template": {
