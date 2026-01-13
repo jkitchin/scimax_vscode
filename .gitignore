@@ -7,3 +7,28 @@ node_modules/
 .env
 *.db
 *.db-journal
+
+# Jupyter babel output
+.ob-jupyter/
+
+# LaTeX build artifacts
+*.aux
+*.dvi
+*.fdb_latexmk
+*.fls
+*.out
+*.toc
+*.synctex.gz
+
+# Test output
+test-output/
+
+# TypeScript compiled config files
+vitest.config.d.mts
+vitest.config.d.mts.map
+vitest.config.d.ts
+vitest.config.d.ts.map
+vitest.config.js
+vitest.config.js.map
+vitest.config.mjs
+vitest.config.mjs.map

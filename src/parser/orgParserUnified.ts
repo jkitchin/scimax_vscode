@@ -343,6 +343,31 @@ export class OrgParserUnified {
                 continue;
             }
 
+            // Handle stray :PROPERTIES: or :END: lines in section content
+            // (These can appear when PROPERTIES drawer isn't immediately after headline)
+            if (line.match(/^:(PROPERTIES|END):\s*$/i)) {
+                if (line.match(/^:PROPERTIES:\s*$/i)) {
+                    // Parse as properties drawer even though it's in section content
+                    const drawerResult = this.parsePropertiesDrawer(lines, i, offset);
+                    // Create a drawer element to hold the properties
+                    elements.push({
+                        type: 'drawer',
+                        range: { start: offset, end: drawerResult.endOffset - 1 },
+                        postBlank: 0,
+                        properties: { name: 'PROPERTIES' },
+                        children: [],
+                    } as DrawerElement);
+                    offset = drawerResult.endOffset;
+                    i = drawerResult.endLine;
+                    continue;
+                } else {
+                    // Stray :END: - skip it
+                    offset += line.length + 1;
+                    i++;
+                    continue;
+                }
+            }
+
             // Paragraph (default)
             const paraResult = this.parseParagraph(lines, i, offset);
             elements.push(paraResult.element);
@@ -498,59 +523,82 @@ export class OrgParserUnified {
     ): { element: OrgElement; endLine: number; endOffset: number } | null {
         const line = lines[startLine];
 
-        // Source block
-        const srcMatch = line.match(/^#\+BEGIN_SRC(?:\s+(\S+))?(.*)$/i);
-        if (srcMatch) {
-            return this.parseSrcBlock(lines, startLine, offset, srcMatch[1] || '', srcMatch[2] || '');
+        // Fast early-exit: blocks only start with '#', '\', or ':'
+        // This avoids running 10+ regex matches on every line
+        const firstChar = line[0];
+        if (firstChar !== '#' && firstChar !== '\\' && firstChar !== ':') {
+            return null;
         }
 
-        // Example block
-        if (line.match(/^#\+BEGIN_EXAMPLE/i)) {
-            return this.parseSimpleBlock(lines, startLine, offset, 'example-block', 'EXAMPLE');
-        }
+        // Org blocks (#+BEGIN_*)
+        if (firstChar === '#') {
+            // Check for #+BEGIN_ prefix before running specific regexes
+            if (!line.match(/^#\+BEGIN_/i)) {
+                return null;
+            }
 
-        // Quote block
-        if (line.match(/^#\+BEGIN_QUOTE/i)) {
-            return this.parseSimpleBlock(lines, startLine, offset, 'quote-block', 'QUOTE');
-        }
+            // Source block
+            const srcMatch = line.match(/^#\+BEGIN_SRC(?:\s+(\S+))?(.*)$/i);
+            if (srcMatch) {
+                return this.parseSrcBlock(lines, startLine, offset, srcMatch[1] || '', srcMatch[2] || '');
+            }
 
-        // Center block
-        if (line.match(/^#\+BEGIN_CENTER/i)) {
-            return this.parseSimpleBlock(lines, startLine, offset, 'center-block', 'CENTER');
-        }
+            // Example block
+            if (line.match(/^#\+BEGIN_EXAMPLE/i)) {
+                return this.parseSimpleBlock(lines, startLine, offset, 'example-block', 'EXAMPLE');
+            }
 
-        // Verse block
-        if (line.match(/^#\+BEGIN_VERSE/i)) {
-            return this.parseSimpleBlock(lines, startLine, offset, 'verse-block', 'VERSE');
-        }
+            // Quote block
+            if (line.match(/^#\+BEGIN_QUOTE/i)) {
+                return this.parseSimpleBlock(lines, startLine, offset, 'quote-block', 'QUOTE');
+            }
 
-        // Comment block
-        if (line.match(/^#\+BEGIN_COMMENT/i)) {
-            return this.parseSimpleBlock(lines, startLine, offset, 'comment-block', 'COMMENT');
-        }
+            // Center block
+            if (line.match(/^#\+BEGIN_CENTER/i)) {
+                return this.parseSimpleBlock(lines, startLine, offset, 'center-block', 'CENTER');
+            }
 
-        // Export block
-        const exportMatch = line.match(/^#\+BEGIN_EXPORT(?:\s+(\S+))?/i);
-        if (exportMatch) {
-            return this.parseExportBlock(lines, startLine, offset, exportMatch[1] || 'html');
-        }
+            // Verse block
+            if (line.match(/^#\+BEGIN_VERSE/i)) {
+                return this.parseSimpleBlock(lines, startLine, offset, 'verse-block', 'VERSE');
+            }
 
-        // Special block (#+BEGIN_foo)
-        const specialMatch = line.match(/^#\+BEGIN_(\w+)/i);
-        if (specialMatch) {
-            return this.parseSpecialBlock(lines, startLine, offset, specialMatch[1]);
+            // Comment block
+            if (line.match(/^#\+BEGIN_COMMENT/i)) {
+                return this.parseSimpleBlock(lines, startLine, offset, 'comment-block', 'COMMENT');
+            }
+
+            // Export block
+            const exportMatch = line.match(/^#\+BEGIN_EXPORT(?:\s+(\S+))?/i);
+            if (exportMatch) {
+                return this.parseExportBlock(lines, startLine, offset, exportMatch[1] || 'html');
+            }
+
+            // Special block (#+BEGIN_foo) - fallback for any other BEGIN block
+            const specialMatch = line.match(/^#\+BEGIN_(\w+)/i);
+            if (specialMatch) {
+                return this.parseSpecialBlock(lines, startLine, offset, specialMatch[1]);
+            }
+
+            return null;
         }
 
         // LaTeX environment
-        const latexMatch = line.match(/^\\begin\{(\w+)\}/);
-        if (latexMatch) {
-            return this.parseLatexEnvironment(lines, startLine, offset, latexMatch[1]);
+        if (firstChar === '\\') {
+            const latexMatch = line.match(/^\\begin\{(\w+)\}/);
+            if (latexMatch) {
+                return this.parseLatexEnvironment(lines, startLine, offset, latexMatch[1]);
+            }
+            return null;
         }
 
         // Drawer
-        const drawerMatch = line.match(/^:(\w+):\s*$/);
-        if (drawerMatch && drawerMatch[1].toUpperCase() !== 'PROPERTIES' && drawerMatch[1].toUpperCase() !== 'END') {
-            return this.parseDrawer(lines, startLine, offset, drawerMatch[1]);
+        if (firstChar === ':') {
+            const drawerMatch = line.match(/^:(\w+):\s*$/);
+            if (drawerMatch && drawerMatch[1].toUpperCase() !== 'PROPERTIES' && drawerMatch[1].toUpperCase() !== 'END') {
+                return this.parseDrawer(lines, startLine, offset, drawerMatch[1]);
+            }
+            return null;
         }
 
         return null;

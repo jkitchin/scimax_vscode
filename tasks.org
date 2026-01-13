@@ -1,7 +1,8 @@
-#+
-* DONE implement speed commands
+#+TITLE: Scimax Tasks
 
+* TODO scimax-org-return
 * TODO test code block functionality
+
 
 - [x] the clear button is a little too aggressive. it clears empty lines after results sometimes. I think it should only clear the results.
 - [x] test jupyter python blocks, they are not working.
@@ -24,6 +25,7 @@ plt.plot([1,2,4]);
 : Max value: 0.9999
 : Min value: -0.9999
 [[file:.ob-jupyter/output-1768309066567-3.png]]
+
 
 
 
@@ -57,32 +59,33 @@ x
 
 
 
-* DONE Recurring task test
-DEADLINE: <2026-02-02 Mon +1w>
-
-when i use shift-right here to toggle the todo state, this should update the timestamp to next week, and keep the TODO state
-
-
-#+BEGIN_SRC python 
-print("hello world")
-#+END_SRC
-hello world
-* TODO scimax-org-return
-
-
-
-* TODO shift for selection doesn't work
-
-* TODO up/down arrows on lists
-
 * TODO test exports
 ** TODO do we need to save the file before exporting?
-** TODO latex
 ** TODO pdf (with citations)
 ** TODO html - looks pretty bad
+** TODO latex
 ** TODO lots of export features are probably missing like visible, body, etc
 
-* DONE inserting * makes a pair
+
+* DONE up/down arrows on lists
+DEADLINE: <2026-02-19 Thu>
+
+- two
+- three
+  - one
+  - two
+
+
+
+  * DONE implement speed commands
+
+
+    * DONE shift for selection doesn't work
+
+    tree
+
+
+    * DONE inserting * makes a pair
 
 * DONE test table functionality
     
@@ -114,6 +117,12 @@ cite:curtin-2009-struc-activ
 when the cursor is on a citation or at the end, append the new citation to the existing one.
 
 ** DONE not exporting correctly
+
+* DONE Recurring task test
+DEADLINE: <2026-02-02 Mon +1w>
+
+when i use shift-right here to toggle the todo state, this should update the timestamp to next week, and keep the TODO state
+
 
 
 

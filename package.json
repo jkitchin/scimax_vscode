@@ -1879,6 +1879,11 @@
         "title": "Scimax: Configure Agenda Files"
       },
       {
+        "command": "scimax.agenda.gotoItem",
+        "title": "Scimax: Go to Agenda Item",
+        "icon": "$(go-to-file)"
+      },
+      {
         "command": "scimax.imageOverlays.toggle",
         "title": "Scimax: Toggle Image Overlays"
       },
@@ -3315,6 +3320,7 @@
     "vitest": "^4.0.17"
   },
   "dependencies": {
+    "@babel/runtime": "^7.24.0",
     "@libsql/client": "^0.17.0",
     "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",

@@ -187,9 +187,12 @@ export class AgendaManager {
                 return cached;
             }
 
-            // Parse file
+            // Parse file with fast mode (skip inline object parsing for agenda)
             const content = fs.readFileSync(filePath, 'utf-8');
-            const document = parseOrg(content);
+            const document = parseOrg(content, {
+                parseInlineObjects: false,
+                addPositions: false,
+            });
 
             // Extract headlines
             const headlines = this.extractHeadlines(document);
@@ -473,8 +476,17 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(treeView);
     context.subscriptions.push({ dispose: () => manager.dispose() });
 
-    // Initial load
-    treeProvider.refresh();
+    // Lazy load: only parse agenda files when the view becomes visible
+    // This prevents blocking extension activation
+    let initialized = false;
+    context.subscriptions.push(
+        treeView.onDidChangeVisibility(e => {
+            if (e.visible && !initialized) {
+                initialized = true;
+                treeProvider.refresh();
+            }
+        })
+    );
 
     // Commands
     context.subscriptions.push(

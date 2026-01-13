@@ -84,6 +84,10 @@ print(f"Max value: {y.max():.4f}")
 print(f"Min value: {y.min():.4f}")
 #+END_SRC
 
+#+RESULTS:
+: Max value: 0.9999
+: Min value: -0.9999
+
 ** Python Example
 
 #+BEGIN_SRC python :results output
@@ -236,7 +240,7 @@ This is preformatted text.
 ** Center Block
 
 #+BEGIN_CENTER
-This text is centered.
+This text is centered. 
 #+END_CENTER
 
 ** Comment Block (hidden in export)
