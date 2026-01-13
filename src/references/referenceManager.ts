@@ -112,7 +112,6 @@ export class ReferenceManager {
         }
 
         this._onDidUpdateEntries.fire();
-        console.log(`ReferenceManager: Loaded ${this.entries.size} entries`);
     }
 
     /**

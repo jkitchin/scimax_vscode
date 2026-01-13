@@ -7,6 +7,8 @@ import { JournalManager } from './journalManager';
 export class JournalStatusBar {
     private statusBarItem: vscode.StatusBarItem;
     private manager: JournalManager;
+    private disposables: vscode.Disposable[] = [];
+    private updatePending = false;
 
     constructor(manager: JournalManager) {
         this.manager = manager;
@@ -20,20 +22,46 @@ export class JournalStatusBar {
         this.statusBarItem.command = 'scimax.journal.today';
         this.statusBarItem.tooltip = 'Click to open today\'s journal';
 
-        // Update on editor change
-        vscode.window.onDidChangeActiveTextEditor(() => this.update());
-        vscode.workspace.onDidSaveTextDocument(() => this.update());
+        // Update on editor change (debounced)
+        this.disposables.push(
+            vscode.window.onDidChangeActiveTextEditor(() => this.scheduleUpdate()),
+            vscode.workspace.onDidSaveTextDocument((doc) => {
+                // Only update if saving a journal file
+                if (this.manager.isJournalFile(doc.uri.fsPath)) {
+                    this.scheduleUpdate();
+                }
+            }),
+            // Listen for journal entry changes
+            manager.onDidChangeEntries(() => this.scheduleUpdate())
+        );
 
-        // Initial update
-        this.update();
+        // Initial update (async)
+        this.updateAsync();
         this.statusBarItem.show();
     }
 
-    public update(): void {
+    /**
+     * Schedule an update (debounced to avoid rapid updates)
+     */
+    private scheduleUpdate(): void {
+        if (this.updatePending) return;
+        this.updatePending = true;
+
+        // Debounce updates by 100ms
+        setTimeout(() => {
+            this.updatePending = false;
+            this.updateAsync();
+        }, 100);
+    }
+
+    /**
+     * Update status bar asynchronously
+     */
+    private async updateAsync(): Promise<void> {
         const editor = vscode.window.activeTextEditor;
 
         if (editor && this.manager.isJournalFile(editor.document.uri.fsPath)) {
-            // Show detailed info for journal file
+            // Show detailed info for journal file (this is fast, no async needed)
             const date = this.manager.getDateFromPath(editor.document.uri.fsPath);
             if (date) {
                 const entry = this.manager.getEntry(date);
@@ -67,21 +95,32 @@ export class JournalStatusBar {
                     : `Journal entry for ${date.toLocaleDateString()}`;
             }
         } else {
-            // Show streak and quick access
-            const totalStats = this.manager.getTotalStats();
+            // Show streak and quick access (use async to avoid blocking)
+            // Start with basic text while loading
+            this.statusBarItem.text = '$(notebook) Journal';
 
-            let text = '$(notebook) Journal';
+            try {
+                const totalStats = await this.manager.getTotalStatsAsync();
 
-            if (totalStats.streak > 0) {
-                text += ` | ${totalStats.streak} day streak`;
+                let text = '$(notebook) Journal';
+
+                if (totalStats.streak > 0) {
+                    text += ` | ${totalStats.streak} day streak`;
+                }
+
+                this.statusBarItem.text = text;
+                this.statusBarItem.tooltip = `${totalStats.entryCount} entries | ${totalStats.totalWords} total words | Click to open today's journal`;
+            } catch {
+                // Keep basic text on error
+                this.statusBarItem.tooltip = 'Click to open today\'s journal';
             }
-
-            this.statusBarItem.text = text;
-            this.statusBarItem.tooltip = `${totalStats.entryCount} entries | ${totalStats.totalWords} total words | Click to open today's journal`;
         }
     }
 
     public dispose(): void {
         this.statusBarItem.dispose();
+        for (const d of this.disposables) {
+            d.dispose();
+        }
     }
 }

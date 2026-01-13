@@ -223,9 +223,7 @@ async function exportHtml(
     // Yield to event loop before starting
     await new Promise(resolve => setImmediate(resolve));
 
-    console.log('Export: Parsing document...');
     const doc = parseOrgFast(content);
-    console.log(`Export: Parsed ${doc.children.length} headlines`);
 
     // Yield after parsing
     await new Promise(resolve => setImmediate(resolve));
@@ -241,9 +239,7 @@ async function exportHtml(
     // Yield before export
     await new Promise(resolve => setImmediate(resolve));
 
-    console.log('Export: Converting to HTML...');
     const result = exportToHtml(doc, htmlOptions);
-    console.log(`Export: Generated ${result.length} characters of HTML`);
 
     return result;
 }
@@ -259,10 +255,7 @@ async function exportLatex(
     // Yield to event loop before starting
     await new Promise(resolve => setImmediate(resolve));
 
-    console.log('LaTeX Export: Parsing document...');
-    const startParse = Date.now();
     const doc = parseOrgFast(content);
-    console.log(`LaTeX Export: Parsed ${doc.children.length} headlines in ${Date.now() - startParse}ms`);
 
     // Yield after parsing
     await new Promise(resolve => setImmediate(resolve));
@@ -278,10 +271,7 @@ async function exportLatex(
     // Yield before export
     await new Promise(resolve => setImmediate(resolve));
 
-    console.log('LaTeX Export: Converting to LaTeX...');
-    const startExport = Date.now();
     const result = exportToLatex(doc, latexOptions);
-    console.log(`LaTeX Export: Generated ${result.length} characters in ${Date.now() - startExport}ms`);
 
     // Yield after export
     await new Promise(resolve => setImmediate(resolve));
@@ -953,14 +943,11 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'pdf-file': {
                 const outputPath = inputPath.replace(/\.org$/, '.pdf');
-                const totalStart = Date.now();
                 await vscode.window.withProgress(
                     { location: vscode.ProgressLocation.Notification, title: 'Generating PDF...', cancellable: false },
                     async (progress) => {
                         progress.report({ message: 'Parsing and generating LaTeX...' });
-                        const latexStart = Date.now();
                         const latex = await exportLatex(content, {}, false);
-                        console.log(`PDF Export: LaTeX generation took ${Date.now() - latexStart}ms`);
 
                         progress.report({ message: 'Writing .tex file...' });
                         const texPath = outputPath.replace(/\.pdf$/, '.tex');
@@ -969,14 +956,10 @@ async function exportDispatcher(): Promise<void> {
                         const tempDir = path.dirname(outputPath);
 
                         progress.report({ message: 'Running pdflatex (pass 1)...' });
-                        const pass1Start = Date.now();
                         await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
-                        console.log(`PDF Export: pdflatex pass 1 took ${Date.now() - pass1Start}ms`);
 
                         progress.report({ message: 'Running pdflatex (pass 2)...' });
-                        const pass2Start = Date.now();
                         await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
-                        console.log(`PDF Export: pdflatex pass 2 took ${Date.now() - pass2Start}ms`);
 
                         // Clean up aux files
                         const baseName = path.basename(outputPath, '.pdf');
@@ -984,7 +967,6 @@ async function exportDispatcher(): Promise<void> {
                             try { await fs.promises.unlink(path.join(tempDir, baseName + ext)); } catch {}
                         }
 
-                        console.log(`PDF Export: Total time ${Date.now() - totalStart}ms`);
                         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
                     }
                 );

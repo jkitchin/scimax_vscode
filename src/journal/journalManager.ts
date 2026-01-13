@@ -23,10 +23,64 @@ export class JournalManager {
     private context: vscode.ExtensionContext;
     private templateCache: Map<string, string> = new Map();
 
+    // Entry cache for performance
+    private entriesCache: JournalEntry[] | null = null;
+    private cacheTimestamp: number = 0;
+    private readonly CACHE_TTL = 30000; // 30 seconds cache TTL
+    private cachePromise: Promise<JournalEntry[]> | null = null;
+    private fileWatcher: vscode.FileSystemWatcher | null = null;
+    private _onDidChangeEntries = new vscode.EventEmitter<void>();
+    public readonly onDidChangeEntries = this._onDidChangeEntries.event;
+
+    // Cached stats for status bar
+    private statsCache: { entryCount: number; totalWords: number; streak: number; longestStreak: number } | null = null;
+    private statsCacheTimestamp: number = 0;
+    private readonly STATS_CACHE_TTL = 60000; // 1 minute for stats
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.config = this.loadConfig();
         this.ensureDirectoryExists();
+        this.setupFileWatcher();
+    }
+
+    /**
+     * Set up file watcher to invalidate cache when journal files change
+     */
+    private setupFileWatcher(): void {
+        const pattern = new vscode.RelativePattern(
+            this.config.directory,
+            '**/*.{md,org}'
+        );
+        this.fileWatcher = vscode.workspace.createFileSystemWatcher(pattern);
+
+        const invalidateCache = () => {
+            this.invalidateCache();
+            this._onDidChangeEntries.fire();
+        };
+
+        this.fileWatcher.onDidCreate(invalidateCache);
+        this.fileWatcher.onDidDelete(invalidateCache);
+        this.fileWatcher.onDidChange(invalidateCache);
+
+        this.context.subscriptions.push(this.fileWatcher);
+    }
+
+    /**
+     * Invalidate the entries cache
+     */
+    public invalidateCache(): void {
+        this.entriesCache = null;
+        this.cachePromise = null;
+        this.statsCache = null;
+    }
+
+    /**
+     * Dispose of resources
+     */
+    public dispose(): void {
+        this.fileWatcher?.dispose();
+        this._onDidChangeEntries.dispose();
     }
 
     private loadConfig(): JournalConfig {
@@ -50,9 +104,17 @@ export class JournalManager {
     }
 
     public reloadConfig(): void {
+        const oldDirectory = this.config.directory;
         this.config = this.loadConfig();
         this.ensureDirectoryExists();
         this.templateCache.clear();
+        this.invalidateCache();
+
+        // Recreate file watcher if directory changed
+        if (oldDirectory !== this.config.directory) {
+            this.fileWatcher?.dispose();
+            this.setupFileWatcher();
+        }
     }
 
     private ensureDirectoryExists(): void {
@@ -445,12 +507,22 @@ export class JournalManager {
     }
 
     /**
-     * Get all existing journal entries sorted by date
+     * Get all existing journal entries sorted by date (uses cache)
      */
     public getAllEntries(): JournalEntry[] {
+        const now = Date.now();
+
+        // Return cached entries if still valid
+        if (this.entriesCache && (now - this.cacheTimestamp) < this.CACHE_TTL) {
+            return this.entriesCache;
+        }
+
+        // Synchronous fallback - populate cache
         const entries: JournalEntry[] = [];
 
         if (!fs.existsSync(this.config.directory)) {
+            this.entriesCache = entries;
+            this.cacheTimestamp = now;
             return entries;
         }
 
@@ -459,7 +531,99 @@ export class JournalManager {
         // Sort by date (oldest first)
         entries.sort((a, b) => a.date.getTime() - b.date.getTime());
 
+        this.entriesCache = entries;
+        this.cacheTimestamp = now;
         return entries;
+    }
+
+    /**
+     * Get all existing journal entries asynchronously (recommended for UI)
+     * Uses cache and async scanning to avoid blocking
+     */
+    public async getAllEntriesAsync(): Promise<JournalEntry[]> {
+        const now = Date.now();
+
+        // Return cached entries if still valid
+        if (this.entriesCache && (now - this.cacheTimestamp) < this.CACHE_TTL) {
+            return this.entriesCache;
+        }
+
+        // If already scanning, wait for that promise
+        if (this.cachePromise) {
+            return this.cachePromise;
+        }
+
+        // Start async scan
+        this.cachePromise = this.scanEntriesAsync();
+        try {
+            const entries = await this.cachePromise;
+            this.entriesCache = entries;
+            this.cacheTimestamp = Date.now();
+            return entries;
+        } finally {
+            this.cachePromise = null;
+        }
+    }
+
+    /**
+     * Async directory scanning - yields to event loop periodically
+     */
+    private async scanEntriesAsync(): Promise<JournalEntry[]> {
+        const entries: JournalEntry[] = [];
+
+        if (!fs.existsSync(this.config.directory)) {
+            return entries;
+        }
+
+        await this.scanDirectoryAsync(this.config.directory, entries);
+
+        // Sort by date (oldest first)
+        entries.sort((a, b) => a.date.getTime() - b.date.getTime());
+
+        return entries;
+    }
+
+    /**
+     * Async recursive directory scan with yielding
+     */
+    private async scanDirectoryAsync(dir: string, entries: JournalEntry[]): Promise<void> {
+        let items: fs.Dirent[];
+        try {
+            items = await fs.promises.readdir(dir, { withFileTypes: true });
+        } catch {
+            return;
+        }
+
+        // Yield to event loop every 50 items
+        let count = 0;
+        for (const item of items) {
+            const fullPath = path.join(dir, item.name);
+
+            if (item.isDirectory()) {
+                // Skip hidden directories
+                if (!item.name.startsWith('.')) {
+                    await this.scanDirectoryAsync(fullPath, entries);
+                }
+            } else if (item.isFile()) {
+                const ext = path.extname(item.name);
+                if (ext === '.md' || ext === '.org') {
+                    const date = this.getDateFromPath(fullPath);
+                    if (date) {
+                        entries.push({
+                            date,
+                            path: fullPath,
+                            exists: true
+                        });
+                    }
+                }
+            }
+
+            count++;
+            if (count % 50 === 0) {
+                // Yield to event loop
+                await new Promise(resolve => setImmediate(resolve));
+            }
+        }
     }
 
     /**
@@ -665,10 +829,45 @@ export class JournalManager {
     }
 
     /**
-     * Get total journal statistics
+     * Get total journal statistics (async with caching - recommended for UI)
+     */
+    public async getTotalStatsAsync(): Promise<{ entryCount: number; totalWords: number; streak: number; longestStreak: number }> {
+        const now = Date.now();
+
+        // Return cached stats if still valid
+        if (this.statsCache && (now - this.statsCacheTimestamp) < this.STATS_CACHE_TTL) {
+            return this.statsCache;
+        }
+
+        const entries = await this.getAllEntriesAsync();
+        const stats = this.computeStats(entries);
+        this.statsCache = stats;
+        this.statsCacheTimestamp = now;
+        return stats;
+    }
+
+    /**
+     * Get total journal statistics (synchronous, uses cache if available)
      */
     public getTotalStats(): { entryCount: number; totalWords: number; streak: number; longestStreak: number } {
+        const now = Date.now();
+
+        // Return cached stats if still valid
+        if (this.statsCache && (now - this.statsCacheTimestamp) < this.STATS_CACHE_TTL) {
+            return this.statsCache;
+        }
+
         const entries = this.getAllEntries();
+        const stats = this.computeStats(entries);
+        this.statsCache = stats;
+        this.statsCacheTimestamp = now;
+        return stats;
+    }
+
+    /**
+     * Compute statistics from entries
+     */
+    private computeStats(entries: JournalEntry[]): { entryCount: number; totalWords: number; streak: number; longestStreak: number } {
         let totalWords = 0;
 
         for (const entry of entries) {

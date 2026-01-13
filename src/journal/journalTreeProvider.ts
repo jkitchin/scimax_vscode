@@ -8,7 +8,20 @@ export class JournalTreeProvider implements vscode.TreeDataProvider<JournalTreeI
     readonly onDidChangeTreeData: vscode.Event<JournalTreeItem | undefined | null | void> =
         this._onDidChangeTreeData.event;
 
-    constructor(private manager: JournalManager) {}
+    // Cache entries locally to avoid repeated async calls during tree building
+    private cachedEntries: JournalEntry[] = [];
+    private disposable: vscode.Disposable | null = null;
+
+    constructor(private manager: JournalManager) {
+        // Listen for entry changes and refresh
+        this.disposable = manager.onDidChangeEntries(() => {
+            this.refresh();
+        });
+    }
+
+    dispose(): void {
+        this.disposable?.dispose();
+    }
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
@@ -18,27 +31,29 @@ export class JournalTreeProvider implements vscode.TreeDataProvider<JournalTreeI
         return element;
     }
 
-    getChildren(element?: JournalTreeItem): Thenable<JournalTreeItem[]> {
+    async getChildren(element?: JournalTreeItem): Promise<JournalTreeItem[]> {
         if (!element) {
-            // Root level - show years
-            return Promise.resolve(this.getYearItems());
+            // Root level - show years (async to load entries)
+            return this.getYearItems();
         }
 
         if (element.contextValue === 'year') {
-            // Year level - show months
-            return Promise.resolve(this.getMonthItems(element.year!));
+            // Year level - show months (uses cached entries)
+            return this.getMonthItems(element.year!);
         }
 
         if (element.contextValue === 'month') {
-            // Month level - show entries
-            return Promise.resolve(this.getEntryItems(element.year!, element.month!));
+            // Month level - show entries (uses cached entries)
+            return this.getEntryItems(element.year!, element.month!);
         }
 
-        return Promise.resolve([]);
+        return [];
     }
 
-    private getYearItems(): JournalTreeItem[] {
-        const entries = this.manager.getAllEntries();
+    private async getYearItems(): Promise<JournalTreeItem[]> {
+        // Load entries asynchronously
+        this.cachedEntries = await this.manager.getAllEntriesAsync();
+        const entries = this.cachedEntries;
         const years = new Set<number>();
 
         for (const entry of entries) {
@@ -63,7 +78,8 @@ export class JournalTreeProvider implements vscode.TreeDataProvider<JournalTreeI
     }
 
     private getMonthItems(year: number): JournalTreeItem[] {
-        const entries = this.manager.getEntriesForYear(year);
+        // Use cached entries filtered by year
+        const entries = this.cachedEntries.filter(e => e.date.getFullYear() === year);
         const months = new Set<number>();
 
         for (const entry of entries) {
@@ -93,7 +109,10 @@ export class JournalTreeProvider implements vscode.TreeDataProvider<JournalTreeI
     }
 
     private getEntryItems(year: number, month: number): JournalTreeItem[] {
-        const entries = this.manager.getEntriesForMonth(year, month);
+        // Use cached entries filtered by year and month
+        const entries = this.cachedEntries.filter(e =>
+            e.date.getFullYear() === year && e.date.getMonth() === month
+        );
 
         // Sort entries in descending order (most recent first)
         entries.sort((a, b) => b.date.getTime() - a.date.getTime());

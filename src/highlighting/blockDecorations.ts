@@ -428,6 +428,4 @@ export function registerBlockDecorations(context: vscode.ExtensionContext): void
             }
         }
     });
-
-    console.log('Scimax: Block decorations registered');
 }

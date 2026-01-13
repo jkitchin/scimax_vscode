@@ -37,8 +37,6 @@ export class ProjectileManager {
         vscode.workspace.onDidChangeWorkspaceFolders(async () => {
             await this.registerCurrentWorkspace();
         });
-
-        console.log(`Scimax Projectile: Loaded ${this.projects.size} projects`);
     }
 
     /**

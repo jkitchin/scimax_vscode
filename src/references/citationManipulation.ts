@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
  * - Shift-down: Sort citations by year (newest first)
  */
 
-interface CitationInfo {
+export interface CitationInfo {
     fullMatch: string;
     prefix: string;           // e.g., "cite:", "citep:", "\cite{"
     suffix: string;           // e.g., "" or "}"
@@ -24,8 +24,9 @@ interface CitationInfo {
 
 /**
  * Find citation at cursor position
+ * Exported for testing
  */
-function findCitationAtPosition(line: string, position: number): CitationInfo | null {
+export function findCitationAtPosition(line: string, position: number): CitationInfo | null {
     // Patterns to match different citation formats
     const patterns = [
         // org-ref style: cite:key1,key2,key3
@@ -250,8 +251,9 @@ function calculateKeyPosition(citation: CitationInfo, keyIndex: number): number 
 /**
  * Extract year from citation key or bibliography entry
  * Handles keys like "curtin-2009-struc-activ" or "2023-jupyt-ai"
+ * Exported for testing
  */
-function extractYear(key: string, getEntry?: (key: string) => any): number {
+export function extractYear(key: string, getEntry?: (key: string) => any): number {
     // First try to get year from bibliography entry
     if (getEntry) {
         const entry = getEntry(key);
@@ -495,8 +497,6 @@ export function registerCitationManipulationCommands(
         vscode.commands.registerCommand('scimax.ref.sortCitationsAlphabetically', sortCitations),  // alphabetical sort
         vscode.commands.registerCommand('scimax.ref.deleteCitation', deleteCitation)
     );
-
-    console.log('Scimax: Citation manipulation commands registered');
 }
 
 /**

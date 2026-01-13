@@ -93,7 +93,6 @@ export class NotebookManager {
                 for (const nb of data.notebooks || []) {
                     this.notebooks.set(nb.path, nb);
                 }
-                console.log(`NotebookManager: Loaded ${this.notebooks.size} notebooks`);
             }
         } catch (error) {
             console.error('NotebookManager: Failed to load', error);

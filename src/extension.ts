@@ -90,23 +90,22 @@ export async function activate(context: vscode.ExtensionContext) {
     // }
     console.log('Scimax: Database disabled (pending investigation)');
 
-    // Journal Tree View disabled while investigating performance issues
-    // The tree view calls getAllEntries() which does synchronous recursive directory scanning
-    // const journalTreeProvider = new JournalTreeProvider(journalManager);
-    // vscode.window.registerTreeDataProvider('scimax.journal', journalTreeProvider);
+    // Journal Tree View (uses async caching for performance)
+    const journalTreeProvider = new JournalTreeProvider(journalManager);
+    vscode.window.registerTreeDataProvider('scimax.journal', journalTreeProvider);
+    context.subscriptions.push({ dispose: () => journalTreeProvider.dispose() });
 
-    // // Register Journal Calendar WebView
-    // const calendarProvider = new JournalCalendarProvider(journalManager, context.extensionUri);
-    // context.subscriptions.push(
-    //     vscode.window.registerWebviewViewProvider(
-    //         JournalCalendarProvider.viewType,
-    //         calendarProvider
-    //     )
-    // );
+    // Register Journal Calendar WebView
+    const calendarProvider = new JournalCalendarProvider(journalManager, context.extensionUri);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            JournalCalendarProvider.viewType,
+            calendarProvider
+        )
+    );
 
-    // Register Journal Commands (passing null for tree provider while disabled)
-    registerJournalCommands(context, journalManager, null as any);
-    console.log('Scimax: Journal tree view disabled (pending investigation)');
+    // Register Journal Commands
+    registerJournalCommands(context, journalManager, journalTreeProvider);
 
     // Register Database Commands (disabled while investigating memory issues)
     // registerDbCommands(context, scimaxDb);
@@ -121,19 +120,17 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('scimax.journal')) {
                 journalManager.reloadConfig();
-                // journalTreeProvider.refresh(); // Tree view disabled
+                journalTreeProvider.refresh();
             }
         })
     );
 
-    // Journal status bar disabled - getTotalStats() calls getAllEntries() which scans filesystem
-    // journalStatusBar = new JournalStatusBar(journalManager);
-    // context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
-    console.log('Scimax: Journal status bar disabled (pending investigation)');
+    // Journal status bar (uses async caching for performance)
+    journalStatusBar = new JournalStatusBar(journalManager);
+    context.subscriptions.push({ dispose: () => journalStatusBar.dispose() });
 
     // Initialize Reference Manager (deferred to avoid blocking extension host)
     try {
-        console.log('Scimax: Initializing ReferenceManager...');
         referenceManager = new ReferenceManager(context);
         context.subscriptions.push({ dispose: () => referenceManager.dispose() });
         // Defer bibliography loading to avoid blocking extension activation
@@ -141,7 +138,6 @@ export async function activate(context: vscode.ExtensionContext) {
         setImmediate(async () => {
             try {
                 await referenceManager.initialize();
-                console.log('Scimax: ReferenceManager initialized successfully');
             } catch (error: any) {
                 console.error('Scimax: Failed to load bibliographies:', error?.message || error);
             }
@@ -152,12 +148,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
         // Register cite action command (for clickable cite links)
         registerCiteActionCommand(context, referenceManager);
-        console.log('Scimax: Cite action command registered');
 
         // Register citation manipulation commands (transpose, sort)
         registerCitationManipulationCommands(context, (key) => referenceManager.getEntry(key));
         checkCitationContext(context);
-        console.log('Scimax: Citation manipulation commands registered');
     } catch (error: any) {
         const errorMsg = error?.message || String(error);
         console.error('Scimax: Failed to initialize ReferenceManager:', errorMsg, error?.stack);
@@ -241,73 +235,58 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Semantic Token Provider for org-mode
     registerSemanticTokenProvider(context);
-    console.log('Scimax: Semantic token provider registered');
 
     // Register Folding Provider for org-mode
     registerFoldingProvider(context);
-    console.log('Scimax: Folding provider registered');
 
     // Register Block Decorations (background colors for src blocks, etc.)
     registerBlockDecorations(context);
 
     // Register Markdown Checkbox Features
     registerCheckboxFeatures(context);
-    console.log('Scimax: Checkbox features registered');
 
     // Register Markdown Task Commands
     registerTaskCommands(context);
-    console.log('Scimax: Task commands registered');
 
     // Register Timestamp Commands (shift-arrow to adjust dates)
     registerTimestampCommands(context);
-    console.log('Scimax: Timestamp commands registered');
 
     // Register Table Commands (row/column manipulation)
     registerTableCommands(context);
-    console.log('Scimax: Table commands registered');
 
     // Register Heading Commands (promote/demote/move)
     registerHeadingCommands(context);
-    console.log('Scimax: Heading commands registered');
 
     // Register Document Symbol Provider (for outline view)
     registerDocumentSymbolProvider(context);
-    console.log('Scimax: Document symbol provider registered');
 
     // Register Org Completion Provider (for intelligent completions)
     registerOrgCompletionProvider(context);
-    console.log('Scimax: Org completion provider registered');
 
     // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
     registerOrgHoverProvider(context);
-    console.log('Scimax: Org hover provider registered');
 
     // Register Babel commands and Code Lens (for source block execution)
     registerBabelCommands(context);
     registerBabelCodeLens(context);
-    console.log('Scimax: Babel code execution registered');
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     registerExportCommands(context);
-    console.log('Scimax: Export commands registered');
 
     // Jupyter kernel support - uses dynamic import for lazy loading
     // Only loads zeromq when first jupyter block is executed
     try {
         const { registerJupyterCommands } = await import('./jupyter/commands');
         registerJupyterCommands(context);
-        console.log('Scimax: Jupyter kernel support registered');
     } catch (error) {
         console.warn('Scimax: Jupyter kernel support unavailable (zeromq not loaded)');
     }
 
     // Register Scimax-org commands (text markup, DWIM return, navigation)
     registerScimaxOrgCommands(context);
-    console.log('Scimax: Scimax-org commands registered');
 
     // Register Scimax-ob commands (source block manipulation)
     registerScimaxObCommands(context);
-    console.log('Scimax: Scimax-ob commands registered');
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
@@ -440,7 +419,6 @@ export async function activate(context: vscode.ExtensionContext) {
     setImmediate(async () => {
         try {
             await projectileManager.initialize();
-            console.log('Scimax: Projectile manager initialized');
         } catch (error) {
             console.error('Scimax: Failed to initialize Projectile manager:', error);
         }
@@ -454,17 +432,22 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Editmark Commands (track changes)
     registerEditmarkCommands(context);
-    console.log('Scimax: Editmarks initialized');
 
     // Initialize Hydra Menu Framework
     hydraManager = new HydraManager(context);
     hydraManager.registerMenus(scimaxMenus);
     registerHydraCommands(context, hydraManager);
     context.subscriptions.push({ dispose: () => hydraManager.dispose() });
-    console.log('Scimax: Hydra menu framework initialized');
+
+    console.log('Scimax: Extension activated');
 }
 
 export async function deactivate() {
+    // Dispose journal manager
+    if (journalManager) {
+        journalManager.dispose();
+    }
+
     // Close database connection (disabled while investigating)
     // if (scimaxDb) {
     //     await scimaxDb.close();
