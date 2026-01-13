@@ -100,6 +100,11 @@
     "views": {
       "scimax": [
         {
+          "id": "scimax.agenda",
+          "name": "Agenda",
+          "icon": "$(calendar)"
+        },
+        {
           "id": "scimax.projects",
           "name": "Projects",
           "icon": "$(folder)"
@@ -107,7 +112,7 @@
         {
           "id": "scimax.journal",
           "name": "Journal",
-          "icon": "$(calendar)"
+          "icon": "$(notebook)"
         }
       ]
     },
@@ -1733,6 +1738,209 @@
       {
         "command": "scimax.speed.toggle",
         "title": "Scimax: Toggle Speed Commands"
+      },
+      {
+        "command": "scimax.clearLatexCache",
+        "title": "Scimax: Clear LaTeX Preview Cache"
+      },
+      {
+        "command": "scimax.checkLatexTools",
+        "title": "Scimax: Check LaTeX Tools Availability"
+      },
+      {
+        "command": "scimax.latexCacheStats",
+        "title": "Scimax: Show LaTeX Cache Statistics"
+      },
+      {
+        "command": "scimax.latex.openPreview",
+        "title": "Scimax: Open LaTeX Live Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "scimax.latex.forwardSync",
+        "title": "Scimax: Sync PDF to Cursor Position"
+      },
+      {
+        "command": "scimax.latex.rebuild",
+        "title": "Scimax: Rebuild PDF"
+      },
+      {
+        "command": "scimax.latex.showOutput",
+        "title": "Scimax: Show LaTeX Build Output"
+      },
+      {
+        "command": "scimax.babel.tangle",
+        "title": "Scimax: Tangle Source Blocks"
+      },
+      {
+        "command": "scimax.babel.executeToPoint",
+        "title": "Scimax: Execute Blocks to Point"
+      },
+      {
+        "command": "scimax.babel.executeInline",
+        "title": "Scimax: Execute Inline Source at Cursor"
+      },
+      {
+        "command": "scimax.babel.clearCache",
+        "title": "Scimax: Clear Babel Result Cache"
+      },
+      {
+        "command": "scimax.babel.cacheStats",
+        "title": "Scimax: Show Babel Cache Statistics"
+      },
+      {
+        "command": "scimax.babel.showQueue",
+        "title": "Scimax: Show Execution Queue"
+      },
+      {
+        "command": "scimax.babel.clearQueue",
+        "title": "Scimax: Clear Execution Queue"
+      },
+      {
+        "command": "scimax.babel.queueBlock",
+        "title": "Scimax: Queue Block for Async Execution"
+      },
+      {
+        "command": "scimax.babel.pauseQueue",
+        "title": "Scimax: Pause Execution Queue"
+      },
+      {
+        "command": "scimax.babel.resumeQueue",
+        "title": "Scimax: Resume Execution Queue"
+      },
+      {
+        "command": "scimax.babel.showOutput",
+        "title": "Scimax: Show Babel Output"
+      },
+      {
+        "command": "scimax.agenda.menu",
+        "title": "Scimax: Open Agenda Menu",
+        "icon": "$(calendar)"
+      },
+      {
+        "command": "scimax.agenda.day",
+        "title": "Scimax: Day Agenda"
+      },
+      {
+        "command": "scimax.agenda.week",
+        "title": "Scimax: Week Agenda"
+      },
+      {
+        "command": "scimax.agenda.fortnight",
+        "title": "Scimax: Fortnight Agenda"
+      },
+      {
+        "command": "scimax.agenda.month",
+        "title": "Scimax: Month Agenda"
+      },
+      {
+        "command": "scimax.agenda.todoList",
+        "title": "Scimax: TODO List"
+      },
+      {
+        "command": "scimax.agenda.deadlines",
+        "title": "Scimax: Upcoming Deadlines"
+      },
+      {
+        "command": "scimax.agenda.scheduled",
+        "title": "Scimax: Scheduled Items"
+      },
+      {
+        "command": "scimax.agenda.filterByTag",
+        "title": "Scimax: Agenda Filter by Tag"
+      },
+      {
+        "command": "scimax.agenda.refresh",
+        "title": "Scimax: Refresh Agenda",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "scimax.agenda.showAgenda",
+        "title": "Scimax: Show Agenda View"
+      },
+      {
+        "command": "scimax.agenda.showTodos",
+        "title": "Scimax: Show TODO List View"
+      },
+      {
+        "command": "scimax.agenda.groupByDate",
+        "title": "Scimax: Group Agenda by Date"
+      },
+      {
+        "command": "scimax.agenda.groupByCategory",
+        "title": "Scimax: Group Agenda by Category"
+      },
+      {
+        "command": "scimax.agenda.groupByPriority",
+        "title": "Scimax: Group Agenda by Priority"
+      },
+      {
+        "command": "scimax.agenda.configure",
+        "title": "Scimax: Configure Agenda Files"
+      },
+      {
+        "command": "scimax.imageOverlays.toggle",
+        "title": "Scimax: Toggle Image Overlays"
+      },
+      {
+        "command": "scimax.imageOverlays.toggleCurrentFile",
+        "title": "Scimax: Toggle Image Overlays for Current File"
+      },
+      {
+        "command": "scimax.imageOverlays.refresh",
+        "title": "Scimax: Refresh Image Overlays"
+      },
+      {
+        "command": "scimax.imageOverlays.clearCache",
+        "title": "Scimax: Clear Image Overlay Cache"
+      },
+      {
+        "command": "scimax.imageOverlays.showStats",
+        "title": "Scimax: Show Image Overlay Cache Statistics"
+      },
+      {
+        "command": "scimax.table.recalculate",
+        "title": "Scimax: Recalculate Table Formulas"
+      },
+      {
+        "command": "scimax.table.insertColumnFormula",
+        "title": "Scimax: Insert Column Formula"
+      },
+      {
+        "command": "scimax.table.insertFieldFormula",
+        "title": "Scimax: Insert Field Formula"
+      },
+      {
+        "command": "scimax.table.formulaHelp",
+        "title": "Scimax: Table Formula Help"
+      },
+      {
+        "command": "scimax.capture",
+        "title": "Scimax: Capture"
+      },
+      {
+        "command": "scimax.captureByKey",
+        "title": "Scimax: Capture by Key"
+      },
+      {
+        "command": "scimax.capture.todo",
+        "title": "Scimax: Quick Capture TODO"
+      },
+      {
+        "command": "scimax.capture.note",
+        "title": "Scimax: Quick Capture Note"
+      },
+      {
+        "command": "scimax.capture.createTemplate",
+        "title": "Scimax: Create Capture Template"
+      },
+      {
+        "command": "scimax.capture.listTemplates",
+        "title": "Scimax: List Capture Templates"
+      },
+      {
+        "command": "scimax.capture.configure",
+        "title": "Scimax: Configure Capture Templates"
       }
     ],
     "keybindings": [
@@ -1874,6 +2082,30 @@
         "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock"
       },
       {
+        "command": "scimax.babel.tangle",
+        "key": "ctrl+c ctrl+v t",
+        "mac": "ctrl+c ctrl+v t",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.babel.executeToPoint",
+        "key": "ctrl+c ctrl+v p",
+        "mac": "ctrl+c ctrl+v p",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.babel.executeInline",
+        "key": "ctrl+c ctrl+v i",
+        "mac": "ctrl+c ctrl+v i",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.babel.queueBlock",
+        "key": "ctrl+c ctrl+v q",
+        "mac": "ctrl+c ctrl+v q",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
         "command": "scimax.org.exportDispatcher",
         "key": "ctrl+c ctrl+e",
         "mac": "ctrl+c ctrl+e",
@@ -1907,6 +2139,18 @@
         "command": "scimax.org.exportPdf",
         "key": "ctrl+c ctrl+e l p",
         "mac": "ctrl+c ctrl+e l p",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.latex.openPreview",
+        "key": "ctrl+c ctrl+e l v",
+        "mac": "ctrl+c ctrl+e l v",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.latex.forwardSync",
+        "key": "ctrl+c ctrl+e l s",
+        "mac": "ctrl+c ctrl+e l s",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
@@ -2592,6 +2836,22 @@
         "key": "ctrl+c ctrl+x s",
         "mac": "ctrl+c ctrl+x s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.table.recalculate",
+        "key": "ctrl+c *",
+        "mac": "ctrl+c *",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.capture",
+        "key": "ctrl+c c",
+        "mac": "ctrl+c c"
+      },
+      {
+        "command": "scimax.capture.todo",
+        "key": "ctrl+c t",
+        "mac": "ctrl+c t"
       }
     ],
     "configuration": {
@@ -2754,6 +3014,51 @@
           "default": "",
           "markdownDescription": "Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\\documentclass` through all `\\usepackage` commands. Example:\n```latex\n\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n```"
         },
+        "scimax.latexPreview.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable LaTeX equation preview on hover"
+        },
+        "scimax.latexPreview.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Cache rendered equations for faster hover responses"
+        },
+        "scimax.latexPreview.darkModeAware": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically adjust equation rendering for dark/light themes"
+        },
+        "scimax.latexLivePreview.buildOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically rebuild PDF when the org file is saved"
+        },
+        "scimax.latexLivePreview.buildOnIdle": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically rebuild PDF after idle period"
+        },
+        "scimax.latexLivePreview.idleDelay": {
+          "type": "number",
+          "default": 2000,
+          "description": "Delay in milliseconds before idle build triggers"
+        },
+        "scimax.latexLivePreview.compiler": {
+          "type": "string",
+          "enum": [
+            "pdflatex",
+            "xelatex",
+            "lualatex"
+          ],
+          "default": "pdflatex",
+          "description": "LaTeX compiler to use"
+        },
+        "scimax.latexLivePreview.useLatexmk": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use latexmk for smart incremental builds (recommended)"
+        },
         "scimax.notebook.directory": {
           "type": "string",
           "default": "",
@@ -2799,6 +3104,127 @@
           "type": "boolean",
           "default": true,
           "description": "Enable org-mode speed commands (single-key shortcuts at beginning of headings)"
+        },
+        "scimax.agenda.files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Directories or files to include in the agenda. If empty, scans all org files in workspace."
+        },
+        "scimax.agenda.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["**/node_modules/**", "**/.git/**", "**/archive/**"],
+          "description": "Glob patterns to exclude from agenda scanning"
+        },
+        "scimax.agenda.defaultSpan": {
+          "type": "number",
+          "default": 7,
+          "description": "Default number of days to show in agenda view"
+        },
+        "scimax.agenda.showDone": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show completed (DONE) items in agenda"
+        },
+        "scimax.agenda.showHabits": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show items tagged with :HABIT:"
+        },
+        "scimax.agenda.todoStates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["TODO", "NEXT", "WAITING"],
+          "description": "Active TODO states to show in TODO list"
+        },
+        "scimax.agenda.doneStates": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["DONE", "CANCELLED"],
+          "description": "Completed TODO states"
+        },
+        "scimax.imageOverlays.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline image thumbnails in org-mode files"
+        },
+        "scimax.imageOverlays.maxWidth": {
+          "type": "number",
+          "default": 96,
+          "description": "Maximum width in pixels for thumbnail icons"
+        },
+        "scimax.imageOverlays.maxHeight": {
+          "type": "number",
+          "default": 96,
+          "description": "Maximum height in pixels for thumbnail icons"
+        },
+        "scimax.imageOverlays.renderMode": {
+          "type": "string",
+          "enum": [
+            "gutter",
+            "after",
+            "both"
+          ],
+          "default": "gutter",
+          "description": "Where to display image thumbnails: gutter (line margin), after (inline emoji), or both"
+        },
+        "scimax.imageOverlays.onlyWhenCursorNotInLink": {
+          "type": "boolean",
+          "default": true,
+          "description": "Hide overlay when cursor is inside the image link"
+        },
+        "scimax.imageOverlays.excludePatterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Regex patterns for image paths to exclude from overlays"
+        },
+        "scimax.imageOverlays.maxOverlaysPerDocument": {
+          "type": "number",
+          "default": 200,
+          "description": "Maximum number of image overlays to display per document"
+        },
+        "scimax.imageOverlays.showDimensions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show image dimensions in the after-content decoration"
+        },
+        "scimax.imageOverlays.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Cache generated thumbnails for faster loading"
+        },
+        "scimax.capture.templates": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Capture templates for quick note-taking. Each template has: `key` (single char), `name`, `type` (entry/item/table-line), `file`, `headline` (optional), `datetree` (boolean), and `template` (with placeholders like `%^{prompt}`, `%t`, `%i`)"
+        },
+        "scimax.capture.defaultFile": {
+          "type": "string",
+          "default": "~/org/notes.org",
+          "description": "Default file for captures when no target file is specified"
+        },
+        "scimax.capture.datetreeFormat": {
+          "type": "string",
+          "enum": ["day", "week", "month"],
+          "default": "day",
+          "description": "Granularity of datetree entries"
+        },
+        "scimax.capture.autoSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically save the file after capture"
         }
       }
     },
@@ -2818,6 +3244,50 @@
         {
           "command": "scimax.journal.next",
           "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "scimax.agenda.refresh",
+          "when": "view == scimax.agenda",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.agenda.showAgenda",
+          "when": "view == scimax.agenda",
+          "group": "1_view"
+        },
+        {
+          "command": "scimax.agenda.showTodos",
+          "when": "view == scimax.agenda",
+          "group": "1_view"
+        },
+        {
+          "command": "scimax.agenda.groupByDate",
+          "when": "view == scimax.agenda",
+          "group": "2_group"
+        },
+        {
+          "command": "scimax.agenda.groupByCategory",
+          "when": "view == scimax.agenda",
+          "group": "2_group"
+        },
+        {
+          "command": "scimax.agenda.groupByPriority",
+          "when": "view == scimax.agenda",
+          "group": "2_group"
+        },
+        {
+          "command": "scimax.agenda.configure",
+          "when": "view == scimax.agenda",
+          "group": "3_config"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "scimax.agenda.gotoItem",
+          "when": "view == scimax.agenda && viewItem == agendaItem",
+          "group": "inline"
         }
       ]
     }

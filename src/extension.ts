@@ -37,11 +37,18 @@ import { registerHeadingCommands } from './org/headingProvider';
 import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
 import { registerOrgCompletionProvider } from './org/completionProvider';
 import { registerOrgHoverProvider } from './org/hoverProvider';
+import { initLatexPreviewCache, clearLatexCache, checkLatexAvailable, getCacheStats } from './org/latexPreviewProvider';
+import { registerLatexLivePreviewCommands } from './org/latexLivePreview';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
+import { registerBabelAdvancedCommands } from './parser/orgBabelAdvanced';
 import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerSpeedCommands } from './org/speedCommands';
+import { registerImageOverlayCommands } from './org/imageOverlayProvider';
+import { registerAgendaCommands } from './org/agendaProvider';
+import { registerTableFormulaCommands } from './org/tableFormula';
+import { registerCaptureCommands } from './org/captureProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
@@ -273,9 +280,41 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Org Hover Provider (for entities, timestamps, blocks, etc.)
     registerOrgHoverProvider(context);
 
+    // Initialize LaTeX preview cache for equation rendering
+    initLatexPreviewCache(context);
+
+    // Register LaTeX preview commands
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.clearLatexCache', async () => {
+            clearLatexCache();
+            vscode.window.showInformationMessage('LaTeX preview cache cleared');
+        }),
+        vscode.commands.registerCommand('scimax.checkLatexTools', async () => {
+            const result = await checkLatexAvailable();
+            if (result.available) {
+                vscode.window.showInformationMessage(`LaTeX tools: ${result.message}`);
+            } else {
+                vscode.window.showWarningMessage(`LaTeX tools: ${result.message}`);
+            }
+        }),
+        vscode.commands.registerCommand('scimax.latexCacheStats', () => {
+            const stats = getCacheStats();
+            const sizeKB = (stats.totalSize / 1024).toFixed(1);
+            vscode.window.showInformationMessage(
+                `LaTeX cache: ${stats.entryCount} entries, ${sizeKB} KB total`
+            );
+        })
+    );
+
+    // Register LaTeX Live Preview commands (PDF preview with SyncTeX)
+    registerLatexLivePreviewCommands(context);
+
     // Register Babel commands and Code Lens (for source block execution)
     registerBabelCommands(context);
     registerBabelCodeLens(context);
+
+    // Register advanced Babel features (tangling, noweb, caching, async queue)
+    registerBabelAdvancedCommands(context);
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     registerExportCommands(context);
@@ -297,6 +336,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Speed Commands (single-key shortcuts at heading start)
     registerSpeedCommands(context);
+
+    // Register Image Overlay Commands (inline image thumbnails)
+    registerImageOverlayCommands(context);
+
+    // Register Native Agenda Commands (file-scanning based agenda)
+    registerAgendaCommands(context);
+
+    // Register Table Formula Commands (spreadsheet-like calculations)
+    registerTableFormulaCommands(context);
+
+    // Register Capture Commands (org-capture quick note system)
+    registerCaptureCommands(context);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

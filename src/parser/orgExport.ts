@@ -530,3 +530,153 @@ export function exportSubtree(
     const state = createExportState({ ...options, scope: 'subtree' });
     return backend.exportElement(headline, state);
 }
+
+/**
+ * Simple export to LaTeX for live preview
+ * This is a simplified conversion that wraps org content in a LaTeX document
+ */
+export function exportToLatex(
+    orgText: string,
+    options?: { toc?: boolean; standalone?: boolean; syntexEnabled?: boolean }
+): string {
+    const lines = orgText.split('\n');
+    const latexLines: string[] = [];
+    const opts = { toc: false, standalone: true, syntexEnabled: false, ...options };
+
+    // Extract document settings
+    let title = '';
+    let author = '';
+    let documentClass = 'article';
+    const packages: string[] = [];
+    const headerLines: string[] = [];
+
+    for (const line of lines) {
+        const titleMatch = line.match(/^#\+TITLE:\s*(.*)$/i);
+        const authorMatch = line.match(/^#\+AUTHOR:\s*(.*)$/i);
+        const classMatch = line.match(/^#\+LATEX_CLASS:\s*(.*)$/i);
+        const headerMatch = line.match(/^#\+LATEX_HEADER:\s*(.*)$/i);
+
+        if (titleMatch) title = titleMatch[1];
+        else if (authorMatch) author = authorMatch[1];
+        else if (classMatch) documentClass = classMatch[1];
+        else if (headerMatch) headerLines.push(headerMatch[1]);
+    }
+
+    if (opts.standalone) {
+        latexLines.push(`\\documentclass{${documentClass}}`);
+        latexLines.push('\\usepackage[utf8]{inputenc}');
+        latexLines.push('\\usepackage{amsmath,amssymb,amsfonts}');
+        latexLines.push('\\usepackage{graphicx}');
+        latexLines.push('\\usepackage{hyperref}');
+
+        for (const header of headerLines) {
+            latexLines.push(header);
+        }
+
+        if (opts.syntexEnabled) {
+            latexLines.push('% SyncTeX enabled');
+        }
+
+        latexLines.push('');
+        if (title) latexLines.push(`\\title{${escapeString(title, 'latex')}}`);
+        if (author) latexLines.push(`\\author{${escapeString(author, 'latex')}}`);
+        latexLines.push('\\begin{document}');
+        if (title) latexLines.push('\\maketitle');
+        if (opts.toc) latexLines.push('\\tableofcontents');
+        latexLines.push('');
+    }
+
+    // Process content
+    let inSrcBlock = false;
+    let srcBlockLang = '';
+    const srcBlockContent: string[] = [];
+
+    for (const line of lines) {
+        // Skip org-mode keywords
+        if (/^#\+(TITLE|AUTHOR|DATE|OPTIONS|LATEX_CLASS|LATEX_HEADER|PROPERTY|STARTUP):/i.test(line)) {
+            continue;
+        }
+
+        // Handle headings
+        const headingMatch = line.match(/^(\*+)\s+(.*)$/);
+        if (headingMatch) {
+            const level = headingMatch[1].length;
+            const text = headingMatch[2]
+                .replace(/\s*:\w+:$/g, '') // Remove tags
+                .replace(/^\s*(TODO|DONE|WAITING|CANCELLED)\s+/i, ''); // Remove TODO keywords
+
+            const sectionCmd = level === 1 ? 'section' :
+                               level === 2 ? 'subsection' :
+                               level === 3 ? 'subsubsection' :
+                               'paragraph';
+            latexLines.push(`\\${sectionCmd}{${escapeString(text, 'latex')}}`);
+            continue;
+        }
+
+        // Handle source blocks
+        if (/^#\+BEGIN_SRC\s+(\w+)/i.test(line)) {
+            const match = line.match(/^#\+BEGIN_SRC\s+(\w+)/i);
+            srcBlockLang = match ? match[1] : 'text';
+            inSrcBlock = true;
+            continue;
+        }
+        if (/^#\+END_SRC/i.test(line)) {
+            latexLines.push('\\begin{verbatim}');
+            latexLines.push(...srcBlockContent);
+            latexLines.push('\\end{verbatim}');
+            srcBlockContent.length = 0;
+            inSrcBlock = false;
+            continue;
+        }
+        if (inSrcBlock) {
+            srcBlockContent.push(line);
+            continue;
+        }
+
+        // Handle other blocks
+        if (/^#\+BEGIN_(QUOTE|VERSE)/i.test(line)) {
+            latexLines.push('\\begin{quote}');
+            continue;
+        }
+        if (/^#\+END_(QUOTE|VERSE)/i.test(line)) {
+            latexLines.push('\\end{quote}');
+            continue;
+        }
+
+        // Handle LaTeX fragments (keep as-is)
+        if (/^\s*\\begin\{/.test(line) || /^\s*\\end\{/.test(line) ||
+            /^\\\[/.test(line) || /^\\\]/.test(line)) {
+            latexLines.push(line);
+            continue;
+        }
+
+        // Handle inline math - keep $ and \( \) as-is
+        // Handle regular text with markup conversion
+        let processedLine = line;
+
+        // Bold: *text* -> \textbf{text}
+        processedLine = processedLine.replace(/\*([^*]+)\*/g, '\\textbf{$1}');
+
+        // Italic: /text/ -> \textit{text} (but not in URLs)
+        processedLine = processedLine.replace(/(?<![:/])\/([^/]+)\//g, '\\textit{$1}');
+
+        // Underline: _text_ -> \underline{text}
+        processedLine = processedLine.replace(/_([^_]+)_/g, '\\underline{$1}');
+
+        // Code: =text= or ~text~ -> \texttt{text}
+        processedLine = processedLine.replace(/[=~]([^=~]+)[=~]/g, '\\texttt{$1}');
+
+        // Links: [[url][desc]] -> \href{url}{desc}
+        processedLine = processedLine.replace(/\[\[([^\]]+)\]\[([^\]]+)\]\]/g, '\\href{$1}{$2}');
+        processedLine = processedLine.replace(/\[\[([^\]]+)\]\]/g, '\\url{$1}');
+
+        latexLines.push(processedLine);
+    }
+
+    if (opts.standalone) {
+        latexLines.push('');
+        latexLines.push('\\end{document}');
+    }
+
+    return latexLines.join('\n');
+}

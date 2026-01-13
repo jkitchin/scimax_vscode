@@ -7,6 +7,11 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ORG_ENTITIES } from '../parser/orgEntities';
+import {
+    findLatexFragmentAtPosition,
+    createLatexHover,
+    invalidateEquationCounterCache,
+} from './latexPreviewProvider';
 
 // Entity lookup map for fast access
 const ENTITY_MAP = new Map<string, { utf8: string; latex: string; html: string }>();
@@ -136,11 +141,11 @@ const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Se
  * Org-mode hover provider
  */
 export class OrgHoverProvider implements vscode.HoverProvider {
-    provideHover(
+    async provideHover(
         document: vscode.TextDocument,
         position: vscode.Position,
-        token: vscode.CancellationToken
-    ): vscode.Hover | null {
+        _token: vscode.CancellationToken
+    ): Promise<vscode.Hover | null> {
         const line = document.lineAt(position.line).text;
 
         // Check for various hover contexts
@@ -152,6 +157,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
 
         // Entity hover (backslash entities like \alpha)
         hover = this.getEntityHover(line, position);
+        if (hover) return hover;
+
+        // LaTeX equation hover (shows rendered equation preview)
+        hover = await this.getLatexEquationHover(document, position);
         if (hover) return hover;
 
         // Keyword hover (#+KEYWORD:)
@@ -757,6 +766,31 @@ export class OrgHoverProvider implements vscode.HoverProvider {
 
         return null;
     }
+
+    /**
+     * Get hover for LaTeX equations - shows rendered equation preview
+     */
+    private async getLatexEquationHover(
+        document: vscode.TextDocument,
+        position: vscode.Position
+    ): Promise<vscode.Hover | null> {
+        // Check if LaTeX preview is enabled
+        const config = vscode.workspace.getConfiguration('scimax');
+        const latexPreviewEnabled = config.get<boolean>('latexPreview.enabled', true);
+
+        if (!latexPreviewEnabled) {
+            return null;
+        }
+
+        // Find LaTeX fragment at current position
+        const fragment = findLatexFragmentAtPosition(document, position);
+        if (!fragment) {
+            return null;
+        }
+
+        // Create hover with rendered equation
+        return createLatexHover(document, fragment, position);
+    }
 }
 
 /**
@@ -768,5 +802,14 @@ export function registerOrgHoverProvider(context: vscode.ExtensionContext): void
             { language: 'org', scheme: 'file' },
             new OrgHoverProvider()
         )
+    );
+
+    // Invalidate equation counter cache when document changes
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeTextDocument((event: vscode.TextDocumentChangeEvent) => {
+            if (event.document.languageId === 'org') {
+                invalidateEquationCounterCache(event.document);
+            }
+        })
     );
 }
