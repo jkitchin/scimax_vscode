@@ -6,8 +6,62 @@ import * as vscode from 'vscode';
 import { getKernelManager, disposeKernelManager } from './kernelManager';
 import { discoverKernelSpecsViaJupyter, findKernelForLanguage } from './kernelSpec';
 import { jupyterExecutor, shouldUseJupyter } from './jupyterExecutor';
+import { isZmqAvailable, getZmqLoadError } from './kernelConnection';
 import { executorRegistry } from '../parser/orgBabel';
 import type { KernelSpec, KernelState } from './types';
+
+// Track if ZeroMQ is available
+let zmqChecked = false;
+let zmqAvailable = false;
+
+/**
+ * Check ZeroMQ availability and show error if not available
+ */
+async function checkZmqAvailability(): Promise<boolean> {
+    if (!zmqChecked) {
+        zmqAvailable = await isZmqAvailable();
+        zmqChecked = true;
+    }
+
+    if (!zmqAvailable) {
+        const error = getZmqLoadError();
+        const message = error?.message ||
+            'ZeroMQ native module not available. Jupyter kernel support requires ZeroMQ.';
+
+        const action = await vscode.window.showErrorMessage(
+            'Jupyter: ' + message,
+            'Show Instructions',
+            'Dismiss'
+        );
+
+        if (action === 'Show Instructions') {
+            const channel = getOutputChannel();
+            channel.appendLine('');
+            channel.appendLine('='.repeat(60));
+            channel.appendLine('ZeroMQ Native Module Not Available');
+            channel.appendLine('='.repeat(60));
+            channel.appendLine('');
+            channel.appendLine('The zeromq native module needs to be rebuilt for VS Code\'s Electron version.');
+            channel.appendLine('');
+            channel.appendLine('To fix this, run the following commands in the extension directory:');
+            channel.appendLine('');
+            channel.appendLine('  npm run rebuild-zmq');
+            channel.appendLine('');
+            channel.appendLine('Or manually:');
+            channel.appendLine('');
+            channel.appendLine('  npx @electron/rebuild -f -w zeromq');
+            channel.appendLine('');
+            channel.appendLine('Then restart VS Code.');
+            channel.appendLine('');
+            channel.appendLine('='.repeat(60));
+            channel.show();
+        }
+
+        return false;
+    }
+
+    return true;
+}
 
 // =============================================================================
 // Status Bar
@@ -104,6 +158,11 @@ async function showAvailableKernels(): Promise<void> {
  * Start a kernel for a specific spec
  */
 async function startKernelForSpec(spec: KernelSpec): Promise<void> {
+    // Check ZeroMQ availability first
+    if (!await checkZmqAvailability()) {
+        return;
+    }
+
     const manager = getKernelManager();
     const channel = getOutputChannel();
 

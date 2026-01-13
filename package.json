@@ -2484,7 +2484,9 @@
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "test": "vitest",
-    "package": "vsce package"
+    "package": "vsce package",
+    "rebuild-zmq": "npx @electron/rebuild -f -w zeromq -v 39.2.7",
+    "postinstall-electron": "npm run rebuild-zmq"
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.2",

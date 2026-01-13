@@ -31,15 +31,49 @@ import type {
 
 // ZeroMQ import - will be dynamically imported
 let zmq: typeof import('zeromq') | null = null;
+let zmqLoadError: Error | null = null;
 
 /**
  * Load ZeroMQ module
  */
 async function loadZmq(): Promise<typeof import('zeromq')> {
+    if (zmqLoadError) {
+        throw zmqLoadError;
+    }
     if (!zmq) {
-        zmq = await import('zeromq');
+        try {
+            zmq = await import('zeromq');
+        } catch (error) {
+            zmqLoadError = new Error(
+                `Failed to load ZeroMQ native module. ` +
+                `This usually means the module was compiled for a different Node.js version. ` +
+                `For VS Code extensions, zeromq needs to be rebuilt for Electron. ` +
+                `Run: npm run rebuild-zmq\n\n` +
+                `Original error: ${error instanceof Error ? error.message : String(error)}`
+            );
+            throw zmqLoadError;
+        }
     }
     return zmq;
+}
+
+/**
+ * Check if ZeroMQ is available
+ */
+export async function isZmqAvailable(): Promise<boolean> {
+    try {
+        await loadZmq();
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Get ZeroMQ load error if any
+ */
+export function getZmqLoadError(): Error | null {
+    return zmqLoadError;
 }
 
 // =============================================================================
