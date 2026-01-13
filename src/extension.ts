@@ -40,6 +40,7 @@ import { registerOrgHoverProvider } from './org/hoverProvider';
 import { initLatexPreviewCache, clearLatexCache, checkLatexAvailable, getCacheStats } from './org/latexPreviewProvider';
 import { registerLatexLivePreviewCommands } from './org/latexLivePreview';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
+import { registerBabelAdvancedCommands } from './parser/orgBabelAdvanced';
 import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
@@ -307,6 +308,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Babel commands and Code Lens (for source block execution)
     registerBabelCommands(context);
     registerBabelCodeLens(context);
+
+    // Register advanced Babel features (tangling, noweb, caching, async queue)
+    registerBabelAdvancedCommands(context);
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     registerExportCommands(context);

@@ -1762,6 +1762,50 @@
       {
         "command": "scimax.latex.showOutput",
         "title": "Scimax: Show LaTeX Build Output"
+      },
+      {
+        "command": "scimax.babel.tangle",
+        "title": "Scimax: Tangle Source Blocks"
+      },
+      {
+        "command": "scimax.babel.executeToPoint",
+        "title": "Scimax: Execute Blocks to Point"
+      },
+      {
+        "command": "scimax.babel.executeInline",
+        "title": "Scimax: Execute Inline Source at Cursor"
+      },
+      {
+        "command": "scimax.babel.clearCache",
+        "title": "Scimax: Clear Babel Result Cache"
+      },
+      {
+        "command": "scimax.babel.cacheStats",
+        "title": "Scimax: Show Babel Cache Statistics"
+      },
+      {
+        "command": "scimax.babel.showQueue",
+        "title": "Scimax: Show Execution Queue"
+      },
+      {
+        "command": "scimax.babel.clearQueue",
+        "title": "Scimax: Clear Execution Queue"
+      },
+      {
+        "command": "scimax.babel.queueBlock",
+        "title": "Scimax: Queue Block for Async Execution"
+      },
+      {
+        "command": "scimax.babel.pauseQueue",
+        "title": "Scimax: Pause Execution Queue"
+      },
+      {
+        "command": "scimax.babel.resumeQueue",
+        "title": "Scimax: Resume Execution Queue"
+      },
+      {
+        "command": "scimax.babel.showOutput",
+        "title": "Scimax: Show Babel Output"
       }
     ],
     "keybindings": [
@@ -1901,6 +1945,30 @@
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
         "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock"
+      },
+      {
+        "command": "scimax.babel.tangle",
+        "key": "ctrl+c ctrl+v t",
+        "mac": "ctrl+c ctrl+v t",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.babel.executeToPoint",
+        "key": "ctrl+c ctrl+v p",
+        "mac": "ctrl+c ctrl+v p",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.babel.executeInline",
+        "key": "ctrl+c ctrl+v i",
+        "mac": "ctrl+c ctrl+v i",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.babel.queueBlock",
+        "key": "ctrl+c ctrl+v q",
+        "mac": "ctrl+c ctrl+v q",
+        "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
         "command": "scimax.org.exportDispatcher",
