@@ -62,6 +62,63 @@ const DEFAULT_TODO_KEYWORDS = ['TODO', 'NEXT', 'WAITING', 'HOLD', 'SOMEDAY'];
 const DEFAULT_DONE_KEYWORDS = ['DONE', 'CANCELLED', 'CANCELED'];
 
 // =============================================================================
+// Pre-compiled Regex Patterns (Performance Optimization)
+// =============================================================================
+
+// Headline patterns
+const RE_HEADLINE = /^(\*+)\s+(.*)$/;
+const RE_HEADLINE_SIMPLE = /^\*+ /;
+const RE_TODO_PREFIX = /^(\S+)\s+/;
+const RE_PRIORITY = /^\[#([A-Z])\]\s+/;
+const RE_TAGS = /\s+:([^:\s]+(?::[^:\s]+)*):$/;
+
+// Keyword and comment patterns
+const RE_KEYWORD = /^#\+(\w+):\s*(.*)$/;
+const RE_BEGIN_BLOCK = /^#\+BEGIN_/i;
+const RE_COMMENT_LINE = /^#\s/;
+const RE_PROPERTY_VALUE = /^(\S+)\s+(.*)$/;
+
+// Block patterns
+const RE_SRC_BLOCK_START = /^#\+BEGIN_SRC(?:\s+(\S+))?(.*)$/i;
+const RE_SRC_BLOCK_END = /^#\+END_SRC/i;
+const RE_EXAMPLE_BLOCK = /^#\+BEGIN_EXAMPLE/i;
+const RE_QUOTE_BLOCK = /^#\+BEGIN_QUOTE/i;
+const RE_CENTER_BLOCK = /^#\+BEGIN_CENTER/i;
+const RE_VERSE_BLOCK = /^#\+BEGIN_VERSE/i;
+const RE_COMMENT_BLOCK = /^#\+BEGIN_COMMENT/i;
+const RE_EXPORT_BLOCK = /^#\+BEGIN_EXPORT(?:\s+(\S+))?/i;
+const RE_SPECIAL_BLOCK = /^#\+BEGIN_(\w+)/i;
+const RE_LATEX_BEGIN = /^\\begin\{(\w+)\}/;
+const RE_DRAWER = /^:(\w+):\s*$/;
+
+// Content patterns
+const RE_HORIZONTAL_RULE = /^-{5,}\s*$/;
+const RE_FIXED_WIDTH = /^:\s/;
+const RE_FIXED_WIDTH_CONTENT = /^:\s?/;
+const RE_TABLE = /^\s*\|/;
+const RE_UNORDERED_LIST = /^\s*[-+*](?:\s|$)/;
+const RE_ORDERED_LIST = /^\s*\d+[.)]\s/;
+const RE_PROPERTIES_START = /^:PROPERTIES:\s*$/i;
+const RE_PROPERTIES_END = /^:(PROPERTIES|END):\s*$/i;
+const RE_PROPERTY_LINE = /^\s*:(\S+):\s*(.*)$/;
+const RE_DRAWER_END = ':END:';
+
+// Planning patterns
+const RE_PLANNING_LINE = /^\s*(SCHEDULED|DEADLINE|CLOSED):/;
+const RE_SCHEDULED = /SCHEDULED:\s*(<[^>]+>|\[[^\]]+\])/;
+const RE_DEADLINE = /DEADLINE:\s*(<[^>]+>|\[[^\]]+\])/;
+const RE_CLOSED = /CLOSED:\s*(<[^>]+>|\[[^\]]+\])/;
+const RE_TIMESTAMP_CONTENT = /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?/;
+
+// Paragraph end patterns
+const RE_BLOCK_START = /^#\+BEGIN_/i;
+const RE_LATEX_ENV_START = /^\\begin\{/;
+const RE_KEYWORD_LINE = /^#\+\w+:/;
+
+// Header args pattern
+const RE_HEADER_ARGS = /:(\S+)\s+(\S+)/g;
+
+// =============================================================================
 // Unified Parser Class
 // =============================================================================
 
@@ -97,34 +154,46 @@ export class OrgParserUnified {
             children: [],
         };
 
-        let offset = 0;
+        // Pre-compute line offsets for efficient offset lookups
+        const lineOffsets = this.computeLineOffsets(lines);
+
         let lineNum = 0;
 
         // Parse file-level content (before first headline)
-        const firstHeadlineIdx = lines.findIndex((line) => /^\*+ /.test(line));
+        // Use simple character check before regex for performance
+        let firstHeadlineIdx = -1;
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i][0] === '*' && RE_HEADLINE_SIMPLE.test(lines[i])) {
+                firstHeadlineIdx = i;
+                break;
+            }
+        }
         const preambleEnd = firstHeadlineIdx === -1 ? lines.length : firstHeadlineIdx;
 
         if (preambleEnd > 0) {
             const preambleLines = lines.slice(0, preambleEnd);
-            const preambleText = preambleLines.join('\n');
             const { keywords, properties, elements } = this.parsePreamble(
                 preambleLines,
-                offset,
-                lineNum
+                0,
+                lineNum,
+                lineOffsets
             );
             doc.keywords = keywords;
             doc.properties = properties;
 
             if (elements.length > 0) {
+                // Calculate preamble end offset efficiently
+                const preambleEndOffset = firstHeadlineIdx > 0
+                    ? lineOffsets[firstHeadlineIdx] - 1
+                    : lineOffsets[lines.length] - 1;
                 doc.section = {
                     type: 'section',
-                    range: { start: offset, end: offset + preambleText.length },
+                    range: { start: 0, end: preambleEndOffset },
                     postBlank: 0,
                     children: elements,
                 };
             }
 
-            offset += preambleText.length + (firstHeadlineIdx > 0 ? 1 : 0);
             lineNum = preambleEnd;
         }
 
@@ -134,30 +203,32 @@ export class OrgParserUnified {
 
             while (lineNum < lines.length) {
                 const line = lines[lineNum];
-                const lineStart = offset;
+                const lineStart = lineOffsets[lineNum];
 
-                const headlineMatch = line.match(/^(\*+)\s+(.*)$/);
+                // Fast check: headlines must start with '*'
+                if (line[0] !== '*') {
+                    lineNum++;
+                    continue;
+                }
+
+                const headlineMatch = line.match(RE_HEADLINE);
                 if (headlineMatch) {
                     const level = headlineMatch[1].length;
 
                     // Find the extent of this headline's own content (until next headline of ANY level)
                     let contentEnd = lineNum + 1;
                     while (contentEnd < lines.length) {
-                        const nextMatch = lines[contentEnd].match(/^(\*+)\s/);
-                        if (nextMatch) {
+                        // Fast check before regex
+                        if (lines[contentEnd][0] === '*' && RE_HEADLINE_SIMPLE.test(lines[contentEnd])) {
                             break; // Stop at any headline
                         }
                         contentEnd++;
                     }
 
-                    // Calculate the end offset for this headline's content
-                    let endOffset = lineStart;
-                    for (let i = lineNum; i < contentEnd; i++) {
-                        endOffset += lines[i].length + 1;
-                    }
-                    if (contentEnd < lines.length) {
-                        endOffset -= 1;
-                    }
+                    // Calculate the end offset efficiently using pre-computed offsets
+                    const endOffset = contentEnd < lines.length
+                        ? lineOffsets[contentEnd] - 1
+                        : lineOffsets[contentEnd];
 
                     const headline = this.parseHeadline(
                         lines,
@@ -166,7 +237,8 @@ export class OrgParserUnified {
                         lineStart,
                         endOffset,
                         level,
-                        headlineMatch[2]
+                        headlineMatch[2],
+                        lineOffsets
                     );
 
                     // Add to tree structure
@@ -184,14 +256,8 @@ export class OrgParserUnified {
                     }
 
                     headlineStack.push(headline);
-
-                    // Only skip to end of this headline's own content, not child headlines
-                    for (let i = lineNum; i < contentEnd; i++) {
-                        offset += lines[i].length + 1;
-                    }
                     lineNum = contentEnd;
                 } else {
-                    offset += line.length + 1;
                     lineNum++;
                 }
             }
@@ -206,12 +272,28 @@ export class OrgParserUnified {
     }
 
     /**
+     * Pre-compute line offsets for O(1) offset lookups
+     * Returns array where lineOffsets[i] = byte offset of line i
+     */
+    private computeLineOffsets(lines: string[]): number[] {
+        const offsets = new Array<number>(lines.length + 1);
+        let offset = 0;
+        for (let i = 0; i < lines.length; i++) {
+            offsets[i] = offset;
+            offset += lines[i].length + 1; // +1 for newline
+        }
+        offsets[lines.length] = offset;
+        return offsets;
+    }
+
+    /**
      * Parse file preamble (content before first headline)
      */
     private parsePreamble(
         lines: string[],
         baseOffset: number,
-        _baseLineNum: number
+        baseLineNum: number,
+        lineOffsets?: number[]
     ): {
         keywords: Record<string, string>;
         properties: Record<string, string>;
@@ -226,51 +308,58 @@ export class OrgParserUnified {
 
         while (i < lines.length) {
             const line = lines[i];
-            const lineStart = offset;
+            const lineStart = lineOffsets ? lineOffsets[baseLineNum + i] : offset;
+            const firstChar = line[0];
 
-            // Keyword line (#+KEY: value)
-            const keywordMatch = line.match(/^#\+(\w+):\s*(.*)$/);
-            if (keywordMatch && !line.match(/^#\+BEGIN_/i)) {
-                const key = keywordMatch[1].toUpperCase();
-                const value = keywordMatch[2];
+            // Fast path: check first character before regex matching
+            if (firstChar === '#') {
+                // Check for keyword vs block start
+                if (line[1] === '+') {
+                    // Could be keyword or block start - check for BEGIN_ first
+                    if (!RE_BEGIN_BLOCK.test(line)) {
+                        const keywordMatch = line.match(RE_KEYWORD);
+                        if (keywordMatch) {
+                            const key = keywordMatch[1].toUpperCase();
+                            const value = keywordMatch[2];
 
-                if (key === 'PROPERTY') {
-                    const propMatch = value.match(/^(\S+)\s+(.*)$/);
-                    if (propMatch) {
-                        properties[propMatch[1]] = propMatch[2];
+                            if (key === 'PROPERTY') {
+                                const propMatch = value.match(RE_PROPERTY_VALUE);
+                                if (propMatch) {
+                                    properties[propMatch[1]] = propMatch[2];
+                                }
+                            } else {
+                                keywords[key] = value;
+                            }
+
+                            elements.push({
+                                type: 'keyword',
+                                range: { start: lineStart, end: lineStart + line.length },
+                                postBlank: 0,
+                                properties: { key, value },
+                            } as KeywordElement);
+
+                            offset += line.length + 1;
+                            i++;
+                            continue;
+                        }
                     }
-                } else {
-                    keywords[key] = value;
+                } else if (line[1] === ' ' || line.length === 1) {
+                    // Comment line
+                    elements.push({
+                        type: 'comment',
+                        range: { start: lineStart, end: lineStart + line.length },
+                        postBlank: 0,
+                        properties: { value: line.slice(2) || '' },
+                    } as CommentElement);
+
+                    offset += line.length + 1;
+                    i++;
+                    continue;
                 }
-
-                elements.push({
-                    type: 'keyword',
-                    range: { start: lineStart, end: lineStart + line.length },
-                    postBlank: 0,
-                    properties: { key, value },
-                } as KeywordElement);
-
-                offset += line.length + 1;
-                i++;
-                continue;
             }
 
-            // Comment line
-            if (line.match(/^#\s/) || line === '#') {
-                elements.push({
-                    type: 'comment',
-                    range: { start: lineStart, end: lineStart + line.length },
-                    postBlank: 0,
-                    properties: { value: line.slice(2) || '' },
-                } as CommentElement);
-
-                offset += line.length + 1;
-                i++;
-                continue;
-            }
-
-            // Try to parse block elements
-            const blockResult = this.tryParseBlock(lines, i, offset);
+            // Try to parse block elements (uses fast path internally)
+            const blockResult = this.tryParseBlock(lines, i, offset, lineOffsets, baseLineNum);
             if (blockResult) {
                 elements.push(blockResult.element);
                 offset = blockResult.endOffset;
@@ -278,8 +367,8 @@ export class OrgParserUnified {
                 continue;
             }
 
-            // Horizontal rule
-            if (line.match(/^-{5,}\s*$/)) {
+            // Horizontal rule - fast path: must start with '-'
+            if (firstChar === '-' && RE_HORIZONTAL_RULE.test(line)) {
                 elements.push({
                     type: 'horizontal-rule',
                     range: { start: lineStart, end: lineStart + line.length },
@@ -291,14 +380,16 @@ export class OrgParserUnified {
                 continue;
             }
 
-            // Fixed width (: prefix)
-            if (line.match(/^:\s/)) {
+            // Fixed width (: prefix) - fast path
+            if (firstChar === ':' && line[1] === ' ') {
                 let endLine = i;
-                while (endLine < lines.length && lines[endLine].match(/^:\s?/)) {
+                while (endLine < lines.length && RE_FIXED_WIDTH_CONTENT.test(lines[endLine])) {
                     endLine++;
                 }
-                const fixedLines = lines.slice(i, endLine).map((l) => l.slice(2));
-                const endOffset = offset + lines.slice(i, endLine).reduce((s, l) => s + l.length + 1, 0) - 1;
+                // Cache the sliced lines to avoid double slicing
+                const slicedLines = lines.slice(i, endLine);
+                const fixedLines = slicedLines.map((l) => l.slice(2));
+                const endOffset = offset + slicedLines.reduce((s, l) => s + l.length + 1, 0) - 1;
 
                 elements.push({
                     type: 'fixed-width',
@@ -314,8 +405,8 @@ export class OrgParserUnified {
                 continue;
             }
 
-            // Table
-            if (line.match(/^\s*\|/)) {
+            // Table - fast path: first non-space char is '|'
+            if (RE_TABLE.test(line)) {
                 const tableResult = this.parseTableElement(lines, i, offset);
                 if (tableResult) {
                     elements.push(tableResult.element);
@@ -325,8 +416,12 @@ export class OrgParserUnified {
                 }
             }
 
-            // List
-            if (line.match(/^\s*[-+*](?:\s|$)/) || line.match(/^\s*\d+[.)](?:\s|$)/)) {
+            // List - check for list markers
+            const trimmedStart = line.trimStart();
+            const listFirstChar = trimmedStart[0];
+            if ((listFirstChar === '-' || listFirstChar === '+' || listFirstChar === '*' ||
+                 (listFirstChar >= '0' && listFirstChar <= '9')) &&
+                (RE_UNORDERED_LIST.test(line) || RE_ORDERED_LIST.test(line))) {
                 const listResult = this.parseListElement(lines, i, offset);
                 if (listResult) {
                     elements.push(listResult.element);
@@ -337,22 +432,21 @@ export class OrgParserUnified {
             }
 
             // Blank line
-            if (line.trim() === '') {
+            if (line.length === 0 || line.trim() === '') {
                 offset += line.length + 1;
                 i++;
                 continue;
             }
 
             // Handle stray :PROPERTIES: or :END: lines in section content
-            // (These can appear when PROPERTIES drawer isn't immediately after headline)
-            if (line.match(/^:(PROPERTIES|END):\s*$/i)) {
-                if (line.match(/^:PROPERTIES:\s*$/i)) {
+            if (firstChar === ':' && RE_PROPERTIES_END.test(line)) {
+                if (RE_PROPERTIES_START.test(line)) {
                     // Parse as properties drawer even though it's in section content
                     const drawerResult = this.parsePropertiesDrawer(lines, i, offset);
                     // Create a drawer element to hold the properties
                     elements.push({
                         type: 'drawer',
-                        range: { start: offset, end: drawerResult.endOffset - 1 },
+                        range: { start: lineStart, end: drawerResult.endOffset - 1 },
                         postBlank: 0,
                         properties: { name: 'PROPERTIES' },
                         children: [],
@@ -388,7 +482,8 @@ export class OrgParserUnified {
         startOffset: number,
         endOffset: number,
         level: number,
-        titleLine: string
+        titleLine: string,
+        lineOffsets?: number[]
     ): HeadlineElement {
         // Parse the title line
         let title = titleLine;
@@ -397,23 +492,23 @@ export class OrgParserUnified {
         let priority: string | undefined;
         const tags: string[] = [];
 
-        // Extract TODO keyword
-        const todoMatch = title.match(/^(\S+)\s+/);
+        // Extract TODO keyword - use pre-compiled pattern
+        const todoMatch = title.match(RE_TODO_PREFIX);
         if (todoMatch && this.allTodoKeywords.has(todoMatch[1])) {
             todoKeyword = todoMatch[1];
             todoType = this.doneKeywords.has(todoKeyword) ? 'done' : 'todo';
             title = title.slice(todoMatch[0].length);
         }
 
-        // Extract priority
-        const priorityMatch = title.match(/^\[#([A-Z])\]\s+/);
+        // Extract priority - use pre-compiled pattern
+        const priorityMatch = title.match(RE_PRIORITY);
         if (priorityMatch) {
             priority = priorityMatch[1];
             title = title.slice(priorityMatch[0].length);
         }
 
-        // Extract tags
-        const tagMatch = title.match(/\s+:([^:\s]+(?::[^:\s]+)*):$/);
+        // Extract tags - use pre-compiled pattern
+        const tagMatch = title.match(RE_TAGS);
         if (tagMatch) {
             tags.push(...tagMatch[1].split(':'));
             title = title.slice(0, -tagMatch[0].length);
@@ -451,14 +546,18 @@ export class OrgParserUnified {
 
         // Parse content after headline (planning, properties drawer, section)
         let contentLine = startLine + 1;
-        let contentOffset = startOffset + lines[startLine].length + 1;
+        let contentOffset = lineOffsets
+            ? lineOffsets[contentLine]
+            : startOffset + lines[startLine].length + 1;
 
         // Check for planning line
         if (contentLine < endLine) {
             const planningResult = this.tryParsePlanning(lines[contentLine], contentOffset);
             if (planningResult) {
                 headline.planning = planningResult;
-                contentOffset += lines[contentLine].length + 1;
+                contentOffset = lineOffsets
+                    ? lineOffsets[contentLine + 1]
+                    : contentOffset + lines[contentLine].length + 1;
                 contentLine++;
             }
         }
@@ -492,15 +591,15 @@ export class OrgParserUnified {
         // Parse section content - endLine is already set to stop at next headline
         if (contentLine < endLine) {
             const sectionLines = lines.slice(contentLine, endLine);
-            const { elements } = this.parsePreamble(sectionLines, contentOffset, contentLine);
+            const { elements } = this.parsePreamble(sectionLines, contentOffset, contentLine, lineOffsets);
             sectionElements.push(...elements);
         }
 
         if (sectionElements.length > 0) {
-            let sectionEnd = contentOffset;
-            for (let i = contentLine; i < endLine; i++) {
-                sectionEnd += lines[i].length + 1;
-            }
+            // Use pre-computed offsets for section end
+            const sectionEnd = lineOffsets
+                ? lineOffsets[endLine]
+                : contentOffset + lines.slice(contentLine, endLine).reduce((s, l) => s + l.length + 1, 0);
 
             headline.section = {
                 type: 'section',
@@ -519,7 +618,9 @@ export class OrgParserUnified {
     private tryParseBlock(
         lines: string[],
         startLine: number,
-        offset: number
+        offset: number,
+        lineOffsets?: number[],
+        baseLineNum?: number
     ): { element: OrgElement; endLine: number; endOffset: number } | null {
         const line = lines[startLine];
 
@@ -533,49 +634,49 @@ export class OrgParserUnified {
         // Org blocks (#+BEGIN_*)
         if (firstChar === '#') {
             // Check for #+BEGIN_ prefix before running specific regexes
-            if (!line.match(/^#\+BEGIN_/i)) {
+            if (!RE_BEGIN_BLOCK.test(line)) {
                 return null;
             }
 
-            // Source block
-            const srcMatch = line.match(/^#\+BEGIN_SRC(?:\s+(\S+))?(.*)$/i);
+            // Source block - use pre-compiled pattern
+            const srcMatch = line.match(RE_SRC_BLOCK_START);
             if (srcMatch) {
                 return this.parseSrcBlock(lines, startLine, offset, srcMatch[1] || '', srcMatch[2] || '');
             }
 
-            // Example block
-            if (line.match(/^#\+BEGIN_EXAMPLE/i)) {
+            // Example block - use pre-compiled pattern
+            if (RE_EXAMPLE_BLOCK.test(line)) {
                 return this.parseSimpleBlock(lines, startLine, offset, 'example-block', 'EXAMPLE');
             }
 
-            // Quote block
-            if (line.match(/^#\+BEGIN_QUOTE/i)) {
+            // Quote block - use pre-compiled pattern
+            if (RE_QUOTE_BLOCK.test(line)) {
                 return this.parseSimpleBlock(lines, startLine, offset, 'quote-block', 'QUOTE');
             }
 
-            // Center block
-            if (line.match(/^#\+BEGIN_CENTER/i)) {
+            // Center block - use pre-compiled pattern
+            if (RE_CENTER_BLOCK.test(line)) {
                 return this.parseSimpleBlock(lines, startLine, offset, 'center-block', 'CENTER');
             }
 
-            // Verse block
-            if (line.match(/^#\+BEGIN_VERSE/i)) {
+            // Verse block - use pre-compiled pattern
+            if (RE_VERSE_BLOCK.test(line)) {
                 return this.parseSimpleBlock(lines, startLine, offset, 'verse-block', 'VERSE');
             }
 
-            // Comment block
-            if (line.match(/^#\+BEGIN_COMMENT/i)) {
+            // Comment block - use pre-compiled pattern
+            if (RE_COMMENT_BLOCK.test(line)) {
                 return this.parseSimpleBlock(lines, startLine, offset, 'comment-block', 'COMMENT');
             }
 
-            // Export block
-            const exportMatch = line.match(/^#\+BEGIN_EXPORT(?:\s+(\S+))?/i);
+            // Export block - use pre-compiled pattern
+            const exportMatch = line.match(RE_EXPORT_BLOCK);
             if (exportMatch) {
                 return this.parseExportBlock(lines, startLine, offset, exportMatch[1] || 'html');
             }
 
             // Special block (#+BEGIN_foo) - fallback for any other BEGIN block
-            const specialMatch = line.match(/^#\+BEGIN_(\w+)/i);
+            const specialMatch = line.match(RE_SPECIAL_BLOCK);
             if (specialMatch) {
                 return this.parseSpecialBlock(lines, startLine, offset, specialMatch[1]);
             }
@@ -585,7 +686,7 @@ export class OrgParserUnified {
 
         // LaTeX environment
         if (firstChar === '\\') {
-            const latexMatch = line.match(/^\\begin\{(\w+)\}/);
+            const latexMatch = line.match(RE_LATEX_BEGIN);
             if (latexMatch) {
                 return this.parseLatexEnvironment(lines, startLine, offset, latexMatch[1]);
             }
@@ -594,7 +695,7 @@ export class OrgParserUnified {
 
         // Drawer
         if (firstChar === ':') {
-            const drawerMatch = line.match(/^:(\w+):\s*$/);
+            const drawerMatch = line.match(RE_DRAWER);
             if (drawerMatch && drawerMatch[1].toUpperCase() !== 'PROPERTIES' && drawerMatch[1].toUpperCase() !== 'END') {
                 return this.parseDrawer(lines, startLine, offset, drawerMatch[1]);
             }
@@ -617,7 +718,8 @@ export class OrgParserUnified {
         const contentLines: string[] = [];
         let i = startLine + 1;
 
-        while (i < lines.length && !lines[i].match(/^#\+END_SRC/i)) {
+        // Use pre-compiled pattern
+        while (i < lines.length && !RE_SRC_BLOCK_END.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -654,7 +756,9 @@ export class OrgParserUnified {
      */
     private parseHeaderArgs(params: string): Record<string, string> {
         const headers: Record<string, string> = {};
-        const matches = params.matchAll(/:(\S+)\s+(\S+)/g);
+        // Reset regex lastIndex for global patterns
+        RE_HEADER_ARGS.lastIndex = 0;
+        const matches = params.matchAll(RE_HEADER_ARGS);
         for (const match of matches) {
             headers[match[1]] = match[2];
         }
@@ -919,8 +1023,9 @@ export class OrgParserUnified {
         const properties: Record<string, string> = {};
         let i = startLine + 1;
 
-        while (i < lines.length && lines[i].trim() !== ':END:') {
-            const propMatch = lines[i].match(/^\s*:(\S+):\s*(.*)$/);
+        while (i < lines.length && lines[i].trim() !== RE_DRAWER_END) {
+            // Use pre-compiled pattern
+            const propMatch = lines[i].match(RE_PROPERTY_LINE);
             if (propMatch) {
                 properties[propMatch[1]] = propMatch[2];
             }
@@ -939,7 +1044,8 @@ export class OrgParserUnified {
      * Try to parse planning line
      */
     private tryParsePlanning(line: string, offset: number): PlanningElement | null {
-        if (!line.match(/^\s*(SCHEDULED|DEADLINE|CLOSED):/)) {
+        // Use pre-compiled pattern for fast early exit
+        if (!RE_PLANNING_LINE.test(line)) {
             return null;
         }
 
@@ -950,22 +1056,22 @@ export class OrgParserUnified {
             properties: {},
         };
 
-        // Parse SCHEDULED
-        const scheduledMatch = line.match(/SCHEDULED:\s*(<[^>]+>|\[[^\]]+\])/);
+        // Parse SCHEDULED - use pre-compiled pattern
+        const scheduledMatch = line.match(RE_SCHEDULED);
         if (scheduledMatch) {
             const ts = this.parseTimestampString(scheduledMatch[1], offset + line.indexOf(scheduledMatch[1]));
             if (ts) planning.properties.scheduled = ts;
         }
 
-        // Parse DEADLINE
-        const deadlineMatch = line.match(/DEADLINE:\s*(<[^>]+>|\[[^\]]+\])/);
+        // Parse DEADLINE - use pre-compiled pattern
+        const deadlineMatch = line.match(RE_DEADLINE);
         if (deadlineMatch) {
             const ts = this.parseTimestampString(deadlineMatch[1], offset + line.indexOf(deadlineMatch[1]));
             if (ts) planning.properties.deadline = ts;
         }
 
-        // Parse CLOSED
-        const closedMatch = line.match(/CLOSED:\s*(<[^>]+>|\[[^\]]+\])/);
+        // Parse CLOSED - use pre-compiled pattern
+        const closedMatch = line.match(RE_CLOSED);
         if (closedMatch) {
             const ts = this.parseTimestampString(closedMatch[1], offset + line.indexOf(closedMatch[1]));
             if (ts) planning.properties.closed = ts;
@@ -981,9 +1087,8 @@ export class OrgParserUnified {
         const isActive = str.startsWith('<');
         const content = str.slice(1, -1);
 
-        const dateMatch = content.match(
-            /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?/
-        );
+        // Use pre-compiled pattern
+        const dateMatch = content.match(RE_TIMESTAMP_CONTENT);
 
         if (!dateMatch) return null;
 
@@ -1017,26 +1122,27 @@ export class OrgParserUnified {
         // Collect paragraph lines (until blank line or block start)
         while (i < lines.length) {
             const line = lines[i];
+            const firstChar = line[0];
 
             // Stop at blank line
-            if (line.trim() === '') break;
+            if (line.length === 0 || line.trim() === '') break;
 
-            // Stop at headline
-            if (line.match(/^\*+ /)) break;
+            // Stop at headline - fast char check first
+            if (firstChar === '*' && RE_HEADLINE_SIMPLE.test(line)) break;
 
-            // Stop at block start
-            if (line.match(/^#\+BEGIN_/i)) break;
-            if (line.match(/^\\begin\{/)) break;
-            if (line.match(/^:\w+:\s*$/)) break;
+            // Stop at block start - fast char check first
+            if (firstChar === '#' && RE_BLOCK_START.test(line)) break;
+            if (firstChar === '\\' && RE_LATEX_ENV_START.test(line)) break;
+            if (firstChar === ':' && RE_DRAWER.test(line)) break;
 
-            // Stop at keyword
-            if (line.match(/^#\+\w+:/)) break;
+            // Stop at keyword - fast char check first
+            if (firstChar === '#' && RE_KEYWORD_LINE.test(line)) break;
 
             // Stop at table
-            if (line.match(/^\s*\|/)) break;
+            if (RE_TABLE.test(line)) break;
 
-            // Stop at list item (if not continuing)
-            if (i > startLine && (line.match(/^\s*[-+*]\s/) || line.match(/^\s*\d+[.)]\s/))) break;
+            // Stop at list item (if not continuing) - use pre-compiled patterns
+            if (i > startLine && (RE_UNORDERED_LIST.test(line) || RE_ORDERED_LIST.test(line))) break;
 
             paraLines.push(line);
             i++;
