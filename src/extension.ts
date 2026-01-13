@@ -38,6 +38,7 @@ import { registerDocumentSymbolProvider } from './org/documentSymbolProvider';
 import { registerOrgCompletionProvider } from './org/completionProvider';
 import { registerOrgHoverProvider } from './org/hoverProvider';
 import { initLatexPreviewCache, clearLatexCache, checkLatexAvailable, getCacheStats } from './org/latexPreviewProvider';
+import { registerLatexLivePreviewCommands } from './org/latexLivePreview';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
 import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
@@ -299,6 +300,9 @@ export async function activate(context: vscode.ExtensionContext) {
             );
         })
     );
+
+    // Register LaTeX Live Preview commands (PDF preview with SyncTeX)
+    registerLatexLivePreviewCommands(context);
 
     // Register Babel commands and Code Lens (for source block execution)
     registerBabelCommands(context);

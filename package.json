@@ -1745,6 +1745,23 @@
       {
         "command": "scimax.latexCacheStats",
         "title": "Scimax: Show LaTeX Cache Statistics"
+      },
+      {
+        "command": "scimax.latex.openPreview",
+        "title": "Scimax: Open LaTeX Live Preview",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "scimax.latex.forwardSync",
+        "title": "Scimax: Sync PDF to Cursor Position"
+      },
+      {
+        "command": "scimax.latex.rebuild",
+        "title": "Scimax: Rebuild PDF"
+      },
+      {
+        "command": "scimax.latex.showOutput",
+        "title": "Scimax: Show LaTeX Build Output"
       }
     ],
     "keybindings": [
@@ -1919,6 +1936,18 @@
         "command": "scimax.org.exportPdf",
         "key": "ctrl+c ctrl+e l p",
         "mac": "ctrl+c ctrl+e l p",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.latex.openPreview",
+        "key": "ctrl+c ctrl+e l v",
+        "mac": "ctrl+c ctrl+e l v",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.latex.forwardSync",
+        "key": "ctrl+c ctrl+e l s",
+        "mac": "ctrl+c ctrl+e l s",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
@@ -2780,6 +2809,36 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically adjust equation rendering for dark/light themes"
+        },
+        "scimax.latexLivePreview.buildOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically rebuild PDF when the org file is saved"
+        },
+        "scimax.latexLivePreview.buildOnIdle": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically rebuild PDF after idle period"
+        },
+        "scimax.latexLivePreview.idleDelay": {
+          "type": "number",
+          "default": 2000,
+          "description": "Delay in milliseconds before idle build triggers"
+        },
+        "scimax.latexLivePreview.compiler": {
+          "type": "string",
+          "enum": [
+            "pdflatex",
+            "xelatex",
+            "lualatex"
+          ],
+          "default": "pdflatex",
+          "description": "LaTeX compiler to use"
+        },
+        "scimax.latexLivePreview.useLatexmk": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use latexmk for smart incremental builds (recommended)"
         },
         "scimax.notebook.directory": {
           "type": "string",
