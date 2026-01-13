@@ -1,0 +1,651 @@
+#+TITLE: Scimax VS Code Documentation Plan
+#+AUTHOR: Documentation Team
+#+DATE: 2026-01-13
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t
+
+* Overview
+
+This document outlines the comprehensive documentation plan for Scimax VS Code,
+a scientific computing extension for Visual Studio Code inspired by Emacs Scimax.
+
+The documentation will be written entirely in org-mode format and will cover all
+features, keybindings, configuration options, and usage patterns.
+
+** Documentation Goals
+
+1. *Complete coverage* - Document every feature the extension provides
+2. *User-friendly* - Progressive disclosure from basics to advanced
+3. *Task-oriented* - Focus on what users want to accomplish
+4. *Reference material* - Quick lookup for keybindings and commands
+5. *Examples* - Show practical usage patterns
+
+** Target Audience
+
+- Scientists and researchers doing literate programming
+- Note-takers and knowledge workers
+- Developers using org-mode for documentation
+- Users migrating from Emacs org-mode/Scimax
+
+* Document Structure
+
+The documentation will consist of the following files:
+
+** Core Documentation Files
+
+| File                    | Description                              | Priority |
+|-------------------------+------------------------------------------+----------|
+| index.org               | Main landing page with overview          | P1       |
+| getting-started.org     | Installation and first steps             | P1       |
+| document-structure.org  | Headings, folding, outline navigation    | P1       |
+| todo-items.org          | Task management and TODO states          | P1       |
+| tables.org              | Table editing, formulas, import/export   | P1       |
+| links.org               | Hyperlinks and cross-references          | P1       |
+| timestamps.org          | Dates, deadlines, scheduling             | P1       |
+| source-blocks.org       | Code execution and literate programming  | P1       |
+| export.org              | Exporting to HTML, LaTeX, PDF, Markdown  | P1       |
+
+** Feature Documentation Files
+
+| File                    | Description                              | Priority |
+|-------------------------+------------------------------------------+----------|
+| agenda.org              | Agenda views and planning                | P2       |
+| journal.org             | Daily journaling system                  | P2       |
+| database-search.org     | Full-text and semantic search            | P2       |
+| references.org          | Citations and bibliography management    | P2       |
+| notebook.org            | Project-based organization               | P2       |
+| jupyter.org             | Jupyter kernel integration               | P2       |
+
+** Advanced Documentation Files
+
+| File                    | Description                              | Priority |
+|-------------------------+------------------------------------------+----------|
+| navigation.org          | Fuzzy search, Avy-style jumping          | P3       |
+| projectile.org          | Project management features              | P3       |
+| editmarks.org           | Track changes and collaboration          | P3       |
+| hydra-menus.org         | Menu system and customization            | P3       |
+| speed-commands.org      | Single-key commands at headings          | P3       |
+| capture.org             | Quick capture templates                  | P3       |
+| latex-preview.org       | LaTeX equation preview and PDF sync      | P3       |
+| image-overlays.org      | Inline image display                     | P3       |
+
+** Reference Documentation
+
+| File                    | Description                              | Priority |
+|-------------------------+------------------------------------------+----------|
+| keybindings.org         | Complete keybinding reference            | P1       |
+| commands.org            | All commands with descriptions           | P2       |
+| configuration.org       | All settings and options                 | P2       |
+| supported-languages.org | Languages for source block execution     | P2       |
+
+* Detailed Document Outlines
+
+** index.org - Main Documentation
+
+#+BEGIN_EXAMPLE
+,* Scimax VS Code
+,** What is Scimax VS Code?
+,** Key Features
+,*** Literate Programming
+,*** Scientific Computing
+,*** Knowledge Management
+,*** Task Management
+,** How This Documentation is Organized
+,** Quick Start
+,** Getting Help
+#+END_EXAMPLE
+
+** getting-started.org - Installation & First Steps
+
+#+BEGIN_EXAMPLE
+,* Getting Started
+,** System Requirements
+,*** VS Code Version
+,*** Optional Dependencies (Python, LaTeX, Jupyter)
+,** Installation
+,*** From VS Code Marketplace
+,*** From VSIX File
+,** First Steps
+,*** Opening an Org File
+,*** Creating Your First Document
+,*** Basic Navigation
+,** Understanding the Interface
+,*** Outline View
+,*** Status Bar
+,*** Tree Views (Journal, Projects, Agenda)
+,** Recommended Settings
+,** Migrating from Emacs
+#+END_EXAMPLE
+
+** document-structure.org - Document Structure
+
+#+BEGIN_EXAMPLE
+,* Document Structure
+,** Headlines
+,*** Creating Headlines
+,*** Headline Levels (1-10)
+,*** Headline Components (TODO, Priority, Title, Tags)
+,** Visibility Cycling
+,*** Folding with Tab
+,*** Global Cycling with Shift-Tab
+,*** Show All / Overview
+,** Motion Between Headlines
+,*** Next/Previous Heading
+,*** Parent Heading
+,*** Sibling Navigation
+,*** Jump to Heading (Ctrl+C Ctrl+J)
+,** Structure Editing
+,*** Promote/Demote Headlines
+,*** Move Subtrees Up/Down
+,*** Kill/Clone Subtrees
+,*** Insert New Headings
+,** Document Keywords
+,*** #+TITLE, #+AUTHOR, #+DATE
+,*** #+OPTIONS
+,*** #+PROPERTY
+,*** #+STARTUP
+,** Properties Drawers
+,*** Custom Properties
+,*** Special Properties (ID, CUSTOM_ID)
+,** Drawers
+,*** LOGBOOK
+,*** Custom Drawers
+#+END_EXAMPLE
+
+** todo-items.org - Task Management
+
+#+BEGIN_EXAMPLE
+,* TODO Items
+,** Basic TODO Functionality
+,*** Creating TODO Items
+,*** Cycling TODO States (Ctrl+C Ctrl+T)
+,*** TODO Keywords (TODO, DONE, WAITING, etc.)
+,** Priorities
+,*** Setting Priorities [#A], [#B], [#C]
+,*** Priority Commands
+,** Progress Indicators
+,*** Statistics Cookies [2/5], [40%]
+,*** Checkbox Lists
+,*** Toggling Checkboxes
+,** Extended TODO Keywords
+,*** NEXT, WAITING, HOLD, CANCELLED
+,*** Customizing TODO Keywords
+,** Logging State Changes
+,*** LOGBOOK Drawer
+,*** Timestamps on State Changes
+,** Tags for TODO Items
+,*** Inherited Tags
+,*** Tag Filtering
+#+END_EXAMPLE
+
+** tables.org - Tables
+
+#+BEGIN_EXAMPLE
+,* Tables
+,** Creating Tables
+,*** Manual Creation
+,*** Table Creation Command (Ctrl+C |)
+,** Table Navigation
+,*** Moving Between Cells (Tab, Shift-Tab)
+,*** Row/Column Movement
+,** Editing Tables
+,*** Adding/Removing Rows
+,*** Adding/Removing Columns
+,*** Moving Rows/Columns
+,*** Separator Lines (Ctrl+C -)
+,** Table Alignment
+,*** Automatic Alignment
+,*** Column Width Specification
+,*** Left/Center/Right Alignment
+,** Table Formulas
+,*** Column Formulas (@2$3)
+,*** Row References
+,*** Formula Line (#+TBLFM:)
+,*** Recalculating (Ctrl+C Ctrl+C on TBLFM)
+,*** Built-in Functions (vsum, vmean, etc.)
+,** Table Import/Export
+,*** Importing from CSV
+,*** Exporting to CSV
+,*** Table Export Command
+,** Column Operations
+,*** Sum Column
+,*** Average Column
+,*** Sort by Column
+#+END_EXAMPLE
+
+** links.org - Hyperlinks
+
+#+BEGIN_EXAMPLE
+,* Hyperlinks
+,** Link Types
+,*** External Links (https://, file:)
+,*** Internal Links (Custom IDs, Targets)
+,*** File Links with Line Numbers
+,*** ID Links
+,** Creating Links
+,*** Insert Link (Ctrl+C Ctrl+L)
+,*** Bracket Link Syntax [[link][description]]
+,*** Angle Link Syntax <URL>
+,** Following Links
+,*** Open Link (Ctrl+C Ctrl+O)
+,*** Link Types and Handlers
+,** Internal Targets
+,*** Dedicated Targets <<target>>
+,*** Radio Targets <<<radio>>>
+,*** Custom IDs (#custom-id)
+,** Search Options
+,*** File Links with Search (file:path::search)
+,*** Heading Search
+,*** Line Number Search
+#+END_EXAMPLE
+
+** timestamps.org - Dates and Timestamps
+
+#+BEGIN_EXAMPLE
+,* Timestamps
+,** Timestamp Types
+,*** Active Timestamps <2024-01-15 Mon>
+,*** Inactive Timestamps [2024-01-15 Mon]
+,*** Date Ranges
+,*** Time Ranges
+,** Creating Timestamps
+,*** Insert Timestamp (Ctrl+C .)
+,*** Manual Entry
+,** Modifying Timestamps
+,*** Shift Up/Down (change day)
+,*** Shift Left/Right (change component)
+,** Repeaters
+,*** Daily (+1d), Weekly (+1w), Monthly (+1m)
+,*** Catch-up (++1d)
+,*** Restart (.+1d)
+,*** Adding Repeaters (Ctrl+C Ctrl+R)
+,** Deadlines and Scheduling
+,*** DEADLINE: keyword
+,*** SCHEDULED: keyword
+,*** Warning Days (-5d)
+,** Time Clocking
+,*** CLOCK entries
+,*** Clock In/Out
+,*** Time Reports
+#+END_EXAMPLE
+
+** source-blocks.org - Literate Programming
+
+#+BEGIN_EXAMPLE
+,* Source Code Blocks
+,** Introduction to Literate Programming
+,** Source Block Syntax
+,*** #+BEGIN_SRC ... #+END_SRC
+,*** Language Specification
+,*** Header Arguments
+,** Executing Code
+,*** Execute Block (Ctrl+C Ctrl+C or Ctrl+Enter)
+,*** Execute All Blocks
+,*** Execute to Point
+,*** Execute and Next (Shift+Enter)
+,** Supported Languages
+,*** Direct Execution Languages
+,*** Jupyter Kernel Languages
+,** Header Arguments
+,*** :results (value, output, table, file)
+,*** :exports (code, results, both, none)
+,*** :var (variable passing)
+,*** :session (persistent sessions)
+,*** :dir (working directory)
+,*** :tangle (code extraction)
+,*** :cache (result caching)
+,** Results Handling
+,*** Result Types
+,*** Clearing Results
+,*** Toggling Result Visibility
+,** Sessions
+,*** Named Sessions
+,*** Session Persistence
+,*** Jupyter Sessions
+,** Source Block Navigation
+,*** Next/Previous Block (Ctrl+Up/Down)
+,*** Jump to Block
+,*** Jump to Results
+,** Source Block Manipulation
+,*** Insert Block Below/Above
+,*** Split Block
+,*** Merge Blocks
+,*** Clone Block
+,*** Move Block Up/Down
+,*** Kill/Copy Block
+,** Inline Source Blocks
+,*** src_lang{code} syntax
+,*** Inline Results
+,** Code Tangling
+,*** Tangle Command (Ctrl+C Ctrl+V T)
+,*** :tangle Header
+,*** Multiple Tangle Targets
+,*** Noweb References
+,** Execution Queue
+,*** Queue Management
+,*** Async Execution
+,** Named Blocks and References
+,*** #+NAME: directive
+,*** Calling Named Blocks
+,*** #+CALL: syntax
+#+END_EXAMPLE
+
+** export.org - Export System
+
+#+BEGIN_EXAMPLE
+,* Exporting Documents
+,** Export Dispatcher (Ctrl+C Ctrl+E)
+,** Export Formats
+,*** HTML Export
+,*** LaTeX Export
+,*** PDF Export (via LaTeX)
+,*** Markdown Export
+,** Export Scope
+,*** Full Document
+,*** Subtree Export
+,*** Visible Only
+,** HTML Export
+,*** HTML Options
+,*** MathJax Integration
+,*** Syntax Highlighting
+,** LaTeX Export
+,*** LaTeX Options
+,*** Custom Preamble
+,*** Document Classes
+,** PDF Export
+,*** LaTeX Compilers (pdflatex, xelatex, lualatex)
+,*** latexmk Integration
+,*** PDF Preview
+,** Markdown Export
+,*** GitHub Flavored Markdown
+,*** Markdown Variants
+,** Export Options
+,*** Table of Contents
+,*** Section Numbering
+,*** Author/Date/Title
+,*** Custom Headers
+,** In-Buffer Settings
+,*** #+OPTIONS line
+,*** Per-file Settings
+#+END_EXAMPLE
+
+** agenda.org - Agenda Views
+
+#+BEGIN_EXAMPLE
+,* Agenda Views
+,** Introduction to Agenda
+,** Agenda Menu (scimax.agenda.menu)
+,** Time-Based Views
+,*** Day View
+,*** Week View
+,*** Fortnight View
+,*** Month View
+,** TODO List View
+,*** All TODOs
+,*** By Priority
+,*** By State
+,** Deadline View
+,*** Upcoming Deadlines
+,*** Overdue Items
+,** Scheduled View
+,** Filtering
+,*** Filter by Tag
+,*** Filter by Category
+,*** Filter by Priority
+,** Grouping Options
+,*** Group by Date
+,*** Group by Category
+,*** Group by Priority
+,** Agenda Configuration
+,*** Files to Include
+,*** Exclude Patterns
+,*** TODO States
+,*** Default View
+,** Navigating from Agenda
+,*** Jump to Item
+,*** Preview Item
+#+END_EXAMPLE
+
+** journal.org - Journal System
+
+#+BEGIN_EXAMPLE
+,* Journal System
+,** Introduction
+,** Opening Journal
+,*** Today's Entry (Ctrl+Shift+J)
+,*** Navigate Entries (Alt+[ / Alt+])
+,*** Jump to Date
+,** Journal Configuration
+,*** Journal Directory
+,*** File Format (org/markdown)
+,*** Date Format
+,*** Templates
+,** Journal Tree View
+,*** Calendar Navigation
+,*** Month/Year Selection
+,** Journal Features
+,*** Auto Timestamps
+,*** Quick Log
+,*** Statistics
+,*** Week View
+,** Searching Journal
+,*** Full-text Search
+,*** Date Range Search
+#+END_EXAMPLE
+
+** database-search.org - Search System
+
+#+BEGIN_EXAMPLE
+,* Database and Search
+,** Introduction
+,** Indexing
+,*** Automatic Indexing
+,*** Manual Reindex
+,*** Index Scope
+,*** Exclude Patterns
+,** Full-Text Search
+,*** Basic Search
+,*** Heading Search
+,*** Source Block Search
+,*** Hashtag Search
+,*** Property Search
+,** Semantic Search
+,*** Introduction to Vector Search
+,*** Embedding Providers
+,**** Local (Transformers.js)
+,**** Ollama
+,**** OpenAI
+,*** Configuring Embeddings
+,** Hybrid Search
+,*** Combined FTS + Semantic
+,*** Scoring Weights
+,** Search Results
+,*** Result Navigation
+,*** Preview Snippets
+,** Database Management
+,*** Statistics
+,*** Optimization
+,*** Clearing Index
+#+END_EXAMPLE
+
+** references.org - Citations and Bibliography
+
+#+BEGIN_EXAMPLE
+,* References and Citations
+,** Introduction
+,** Bibliography Files
+,*** BibTeX Format
+,*** Configuring Bibliography Files
+,** Inserting Citations
+,*** Insert Citation (Ctrl+C ])
+,*** Citation Styles
+,**** cite, citet, citep
+,**** citeauthor, citeyear
+,** Managing References
+,*** Search References
+,*** Open Bibliography
+,*** Refresh Bibliography
+,** Adding New References
+,*** Manual Entry
+,*** Fetch from DOI
+,*** OpenAlex Search
+,** PDF Management
+,*** PDF Directory
+,*** Linking Papers
+,** Citation Manipulation
+,*** Sort Citations
+,*** Transpose Citations
+,** Extracting Bibliography
+,*** Extract Used References
+,*** Insert Bibliography Block
+,** Notes and Annotations
+,*** Notes Directory
+,*** Reference Notes
+#+END_EXAMPLE
+
+** keybindings.org - Keybinding Reference
+
+#+BEGIN_EXAMPLE
+,* Keybinding Reference
+,** Global Keybindings
+,** Document Navigation
+,** Heading Operations
+,** TODO and Checkbox
+,** Timestamps
+,** Tables
+,** Source Blocks
+,** Export
+,** Search and Jump
+,** Links
+,** Markup
+,** Journal
+,** References
+,** Agenda
+,** Project Management
+,** Speed Commands
+,** Customizing Keybindings
+#+END_EXAMPLE
+
+** configuration.org - Configuration Reference
+
+#+BEGIN_EXAMPLE
+,* Configuration Reference
+,** Journal Settings
+,** Database Settings
+,** Execution Settings
+,** Reference Settings
+,** Export Settings
+,** LaTeX Preview Settings
+,** Notebook Settings
+,** Hydra Menu Settings
+,** Speed Command Settings
+,** Agenda Settings
+,** Image Overlay Settings
+,** Capture Settings
+#+END_EXAMPLE
+
+* Implementation Plan
+
+** Phase 1: Core Documentation (Week 1-2)
+- [ ] index.org
+- [ ] getting-started.org
+- [ ] document-structure.org
+- [ ] todo-items.org
+- [ ] tables.org
+- [ ] links.org
+- [ ] timestamps.org
+- [ ] source-blocks.org
+- [ ] export.org
+- [ ] keybindings.org
+
+** Phase 2: Feature Documentation (Week 3-4)
+- [ ] agenda.org
+- [ ] journal.org
+- [ ] database-search.org
+- [ ] references.org
+- [ ] notebook.org
+- [ ] jupyter.org
+- [ ] commands.org
+- [ ] configuration.org
+- [ ] supported-languages.org
+
+** Phase 3: Advanced Documentation (Week 5-6)
+- [ ] navigation.org
+- [ ] projectile.org
+- [ ] editmarks.org
+- [ ] hydra-menus.org
+- [ ] speed-commands.org
+- [ ] capture.org
+- [ ] latex-preview.org
+- [ ] image-overlays.org
+
+** Phase 4: Review and Polish (Week 7)
+- [ ] Cross-reference all documents
+- [ ] Add screenshots/examples
+- [ ] Review for consistency
+- [ ] Create PDF/HTML exports
+
+* Document Standards
+
+** File Header Template
+
+Every documentation file should begin with:
+
+#+BEGIN_EXAMPLE
+,#+TITLE: [Document Title]
+,#+AUTHOR: Scimax VS Code Team
+,#+DATE: [Date]
+,#+STARTUP: overview
+,#+OPTIONS: toc:2 num:t H:4
+,#+PROPERTY: header-args :eval never
+
+,* Introduction
+[Brief overview of the topic]
+#+END_EXAMPLE
+
+** Section Structure
+
+- Each major section should have an introduction
+- Include practical examples where appropriate
+- Show keybindings in tables or inline with =key=
+- Use ~command-name~ for VS Code commands
+- Cross-reference related sections with links
+
+** Example Formatting
+
+Code examples should use source blocks:
+
+#+BEGIN_EXAMPLE
+,#+BEGIN_SRC org
+,* Example Heading
+This is example content.
+,#+END_SRC
+#+END_EXAMPLE
+
+Keybinding references should use tables:
+
+#+BEGIN_EXAMPLE
+| Key           | Command                | Description          |
+|---------------+------------------------+----------------------|
+| Ctrl+C Ctrl+C | Execute block          | Run current block    |
+| Tab           | Toggle fold            | Expand/collapse      |
+#+END_EXAMPLE
+
+** Cross-References
+
+Link to other documentation files:
+
+#+BEGIN_EXAMPLE
+See [[file:source-blocks.org][Source Code Blocks]] for more information.
+#+END_EXAMPLE
+
+* Approval
+
+This documentation plan covers:
+- 25+ documentation files
+- All 150+ commands documented
+- All 100+ keybindings referenced
+- All 40+ configuration options explained
+- Comprehensive coverage of all features
+
+Please review and approve this plan before implementation begins.
