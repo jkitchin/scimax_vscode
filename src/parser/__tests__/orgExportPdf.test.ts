@@ -29,152 +29,162 @@ function isPdflatexAvailable(): boolean {
     }
 }
 
-// Tests that require the local test-features.org file
-describe.skipIf(!hasTestFile)('PDF Export', () => {
-    const hasPdflatex = isPdflatexAvailable();
+// Only register these tests if the test file exists
+if (hasTestFile) {
+    describe('PDF Export', () => {
+        const hasPdflatex = isPdflatexAvailable();
 
-    beforeAll(() => {
-        // Create output directory if it doesn't exist
-        if (!fs.existsSync(OUTPUT_DIR)) {
-            fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-        }
-    });
-
-    it('should have test file available', () => {
-        expect(fs.existsSync(TEST_FILE)).toBe(true);
-        const content = fs.readFileSync(TEST_FILE, 'utf-8');
-        console.log(`Test file: ${content.length} characters, ${content.split('\n').length} lines`);
-    });
-
-    it('parses test-features.org successfully', () => {
-        const content = fs.readFileSync(TEST_FILE, 'utf-8');
-
-        const start = performance.now();
-        const doc = parseOrgFast(content);
-        const parseTime = performance.now() - start;
-
-        expect(doc.type).toBe('org-data');
-        expect(doc.children.length).toBeGreaterThan(0);
-
-        console.log(`\nParsing: ${parseTime.toFixed(2)}ms`);
-        console.log(`Headlines: ${doc.children.length}`);
-        console.log(`Keywords: ${Object.keys(doc.keywords).join(', ')}`);
-    });
-
-    it('exports to LaTeX successfully', () => {
-        const content = fs.readFileSync(TEST_FILE, 'utf-8');
-        const doc = parseOrgFast(content);
-
-        const start = performance.now();
-        const latex = exportToLatex(doc, {
-            toc: true,
-            hyperref: true,
-        });
-        const exportTime = performance.now() - start;
-
-        expect(latex.length).toBeGreaterThan(0);
-        expect(latex).toContain('\\documentclass');
-        expect(latex).toContain('\\begin{document}');
-        expect(latex).toContain('\\end{document}');
-
-        console.log(`\nLaTeX export: ${exportTime.toFixed(2)}ms`);
-        console.log(`LaTeX length: ${latex.length} characters`);
-
-        // Save LaTeX file for inspection
-        const texPath = path.join(OUTPUT_DIR, 'test-features.tex');
-        fs.writeFileSync(texPath, latex);
-        console.log(`Saved: ${texPath}`);
-    });
-
-    it.skipIf(!hasPdflatex)('compiles to PDF with pdflatex', async () => {
-        const content = fs.readFileSync(TEST_FILE, 'utf-8');
-        const doc = parseOrgFast(content);
-
-        // Export to LaTeX
-        const latex = exportToLatex(doc, {
-            toc: true,
-            hyperref: true,
+        beforeAll(() => {
+            // Create output directory if it doesn't exist
+            if (!fs.existsSync(OUTPUT_DIR)) {
+                fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+            }
         });
 
-        // Write .tex file
-        const texPath = path.join(OUTPUT_DIR, 'test-features.tex');
-        fs.writeFileSync(texPath, latex);
+        it('should have test file available', () => {
+            expect(fs.existsSync(TEST_FILE)).toBe(true);
+            const content = fs.readFileSync(TEST_FILE, 'utf-8');
+            console.log(`Test file: ${content.length} characters, ${content.split('\n').length} lines`);
+        });
 
-        // Run pdflatex twice (for references)
-        console.log('\nRunning pdflatex (pass 1)...');
-        const start1 = performance.now();
-        try {
-            await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${OUTPUT_DIR}" "${texPath}"`, {
-                cwd: OUTPUT_DIR,
-                timeout: 60000,
+        it('parses test-features.org successfully', () => {
+            const content = fs.readFileSync(TEST_FILE, 'utf-8');
+
+            const start = performance.now();
+            const doc = parseOrgFast(content);
+            const parseTime = performance.now() - start;
+
+            expect(doc.type).toBe('org-data');
+            expect(doc.children.length).toBeGreaterThan(0);
+
+            console.log(`\nParsing: ${parseTime.toFixed(2)}ms`);
+            console.log(`Headlines: ${doc.children.length}`);
+            console.log(`Keywords: ${Object.keys(doc.keywords).join(', ')}`);
+        });
+
+        it('exports to LaTeX successfully', () => {
+            const content = fs.readFileSync(TEST_FILE, 'utf-8');
+            const doc = parseOrgFast(content);
+
+            const start = performance.now();
+            const latex = exportToLatex(doc, {
+                toc: true,
+                hyperref: true,
             });
-        } catch (e: unknown) {
-            // pdflatex may return non-zero even on success with warnings
-            console.log('Pass 1 completed (with warnings)');
-        }
-        const time1 = performance.now() - start1;
+            const exportTime = performance.now() - start;
 
-        console.log(`Pass 1: ${time1.toFixed(0)}ms`);
+            expect(latex.length).toBeGreaterThan(0);
+            expect(latex).toContain('\\documentclass');
+            expect(latex).toContain('\\begin{document}');
+            expect(latex).toContain('\\end{document}');
 
-        console.log('Running pdflatex (pass 2)...');
-        const start2 = performance.now();
-        try {
-            await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${OUTPUT_DIR}" "${texPath}"`, {
-                cwd: OUTPUT_DIR,
-                timeout: 60000,
+            console.log(`\nLaTeX export: ${exportTime.toFixed(2)}ms`);
+            console.log(`LaTeX length: ${latex.length} characters`);
+
+            // Save LaTeX file for inspection
+            const texPath = path.join(OUTPUT_DIR, 'test-features.tex');
+            fs.writeFileSync(texPath, latex);
+            console.log(`Saved: ${texPath}`);
+        });
+
+        it.skipIf(!hasPdflatex)('compiles to PDF with pdflatex', async () => {
+            const content = fs.readFileSync(TEST_FILE, 'utf-8');
+            const doc = parseOrgFast(content);
+
+            // Export to LaTeX
+            const latex = exportToLatex(doc, {
+                toc: true,
+                hyperref: true,
             });
-        } catch (e: unknown) {
-            console.log('Pass 2 completed (with warnings)');
-        }
-        const time2 = performance.now() - start2;
 
-        console.log(`Pass 2: ${time2.toFixed(0)}ms`);
+            // Write .tex file
+            const texPath = path.join(OUTPUT_DIR, 'test-features.tex');
+            fs.writeFileSync(texPath, latex);
 
-        // Check if PDF was created
-        const pdfPath = path.join(OUTPUT_DIR, 'test-features.pdf');
-        const pdfExists = fs.existsSync(pdfPath);
+            // Run pdflatex twice (for references)
+            console.log('\nRunning pdflatex (pass 1)...');
+            const start1 = performance.now();
+            try {
+                await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${OUTPUT_DIR}" "${texPath}"`, {
+                    cwd: OUTPUT_DIR,
+                    timeout: 60000,
+                });
+            } catch (e: unknown) {
+                // pdflatex may return non-zero even on success with warnings
+                console.log('Pass 1 completed (with warnings)');
+            }
+            const time1 = performance.now() - start1;
 
-        if (pdfExists) {
-            const pdfStats = fs.statSync(pdfPath);
-            console.log(`\nPDF created: ${pdfPath}`);
-            console.log(`PDF size: ${(pdfStats.size / 1024).toFixed(1)} KB`);
-        } else {
-            // Check for log file to see what went wrong
-            const logPath = path.join(OUTPUT_DIR, 'test-features.log');
-            if (fs.existsSync(logPath)) {
-                const log = fs.readFileSync(logPath, 'utf-8');
-                const errorLines = log.split('\n').filter(l => l.includes('!') || l.includes('Error'));
-                if (errorLines.length > 0) {
-                    console.log('\nLaTeX errors:');
-                    errorLines.slice(0, 10).forEach(l => console.log(`  ${l}`));
+            console.log(`Pass 1: ${time1.toFixed(0)}ms`);
+
+            console.log('Running pdflatex (pass 2)...');
+            const start2 = performance.now();
+            try {
+                await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${OUTPUT_DIR}" "${texPath}"`, {
+                    cwd: OUTPUT_DIR,
+                    timeout: 60000,
+                });
+            } catch (e: unknown) {
+                console.log('Pass 2 completed (with warnings)');
+            }
+            const time2 = performance.now() - start2;
+
+            console.log(`Pass 2: ${time2.toFixed(0)}ms`);
+
+            // Check if PDF was created
+            const pdfPath = path.join(OUTPUT_DIR, 'test-features.pdf');
+            const pdfExists = fs.existsSync(pdfPath);
+
+            if (pdfExists) {
+                const pdfStats = fs.statSync(pdfPath);
+                console.log(`\nPDF created: ${pdfPath}`);
+                console.log(`PDF size: ${(pdfStats.size / 1024).toFixed(1)} KB`);
+            } else {
+                // Check for log file to see what went wrong
+                const logPath = path.join(OUTPUT_DIR, 'test-features.log');
+                if (fs.existsSync(logPath)) {
+                    const log = fs.readFileSync(logPath, 'utf-8');
+                    const errorLines = log.split('\n').filter(l => l.includes('!') || l.includes('Error'));
+                    if (errorLines.length > 0) {
+                        console.log('\nLaTeX errors:');
+                        errorLines.slice(0, 10).forEach(l => console.log(`  ${l}`));
+                    }
                 }
             }
-        }
 
-        expect(pdfExists).toBe(true);
-    }, 120000); // 2 minute timeout
+            expect(pdfExists).toBe(true);
+        }, 120000); // 2 minute timeout
 
-    it('measures full export pipeline timing', () => {
-        const content = fs.readFileSync(TEST_FILE, 'utf-8');
+        it('measures full export pipeline timing', () => {
+            const content = fs.readFileSync(TEST_FILE, 'utf-8');
 
-        // Parse
-        const parseStart = performance.now();
-        const doc = parseOrgFast(content);
-        const parseTime = performance.now() - parseStart;
+            // Parse
+            const parseStart = performance.now();
+            const doc = parseOrgFast(content);
+            const parseTime = performance.now() - parseStart;
 
-        // Export to LaTeX
-        const exportStart = performance.now();
-        const latex = exportToLatex(doc, {});
-        const exportTime = performance.now() - exportStart;
+            // Export to LaTeX
+            const exportStart = performance.now();
+            const latex = exportToLatex(doc, {});
+            const exportTime = performance.now() - exportStart;
 
-        console.log('\n--- Export Pipeline Timing ---');
-        console.log(`Parse:       ${parseTime.toFixed(2)}ms`);
-        console.log(`LaTeX:       ${exportTime.toFixed(2)}ms`);
-        console.log(`Total:       ${(parseTime + exportTime).toFixed(2)}ms`);
-        console.log(`Output size: ${latex.length} chars`);
+            console.log('\n--- Export Pipeline Timing ---');
+            console.log(`Parse:       ${parseTime.toFixed(2)}ms`);
+            console.log(`LaTeX:       ${exportTime.toFixed(2)}ms`);
+            console.log(`Total:       ${(parseTime + exportTime).toFixed(2)}ms`);
+            console.log(`Output size: ${latex.length} chars`);
 
-        // Both should be fast
-        expect(parseTime).toBeLessThan(50);
-        expect(exportTime).toBeLessThan(50);
+            // Both should be fast
+            expect(parseTime).toBeLessThan(50);
+            expect(exportTime).toBeLessThan(50);
+        });
     });
-});
+} else {
+    // Add a placeholder test so vitest doesn't complain about empty test file
+    describe('PDF Export', () => {
+        it('skipped (test-features.org not found)', () => {
+            console.log('PDF export tests skipped: test-features.org not found in repo');
+            expect(true).toBe(true);
+        });
+    });
+}
