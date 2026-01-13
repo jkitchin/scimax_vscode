@@ -23,6 +23,119 @@ interface TableInfo {
 }
 
 /**
+ * Get the display width of a string, accounting for wide characters (emojis, CJK, etc.)
+ * Most emojis and CJK characters display as 2 columns wide in monospace fonts.
+ */
+function getDisplayWidth(str: string): number {
+    let width = 0;
+    for (const char of str) {
+        const code = char.codePointAt(0);
+        if (code === undefined) continue;
+
+        // Emoji ranges (simplified - covers most common emojis)
+        // Including emoji modifiers, variation selectors, etc.
+        if (
+            (code >= 0x1F300 && code <= 0x1F9FF) || // Miscellaneous Symbols and Pictographs, Emoticons, etc.
+            (code >= 0x2600 && code <= 0x26FF) ||   // Miscellaneous Symbols
+            (code >= 0x2700 && code <= 0x27BF) ||   // Dingbats
+            (code >= 0x231A && code <= 0x231B) ||   // Watch, Hourglass
+            (code >= 0x23E9 && code <= 0x23F3) ||   // Various symbols
+            (code >= 0x23F8 && code <= 0x23FA) ||   // Various symbols
+            (code >= 0x25AA && code <= 0x25AB) ||   // Small squares
+            (code >= 0x25B6 && code <= 0x25C0) ||   // Triangles
+            (code >= 0x25FB && code <= 0x25FE) ||   // Squares
+            (code >= 0x2614 && code <= 0x2615) ||   // Umbrella, hot beverage
+            (code >= 0x2648 && code <= 0x2653) ||   // Zodiac
+            (code >= 0x267F && code <= 0x267F) ||   // Wheelchair
+            (code >= 0x2693 && code <= 0x2693) ||   // Anchor
+            (code >= 0x26A1 && code <= 0x26A1) ||   // High voltage
+            (code >= 0x26AA && code <= 0x26AB) ||   // Circles
+            (code >= 0x26BD && code <= 0x26BE) ||   // Soccer, baseball
+            (code >= 0x26C4 && code <= 0x26C5) ||   // Snowman, sun
+            (code >= 0x26CE && code <= 0x26CE) ||   // Ophiuchus
+            (code >= 0x26D4 && code <= 0x26D4) ||   // No entry
+            (code >= 0x26EA && code <= 0x26EA) ||   // Church
+            (code >= 0x26F2 && code <= 0x26F3) ||   // Fountain, golf
+            (code >= 0x26F5 && code <= 0x26F5) ||   // Sailboat
+            (code >= 0x26FA && code <= 0x26FA) ||   // Tent
+            (code >= 0x26FD && code <= 0x26FD) ||   // Fuel pump
+            (code >= 0x2702 && code <= 0x2702) ||   // Scissors
+            (code >= 0x2705 && code <= 0x2705) ||   // Check mark (✅)
+            (code >= 0x2708 && code <= 0x270D) ||   // Airplane to writing hand
+            (code >= 0x270F && code <= 0x270F) ||   // Pencil
+            (code >= 0x2712 && code <= 0x2712) ||   // Black nib
+            (code >= 0x2714 && code <= 0x2714) ||   // Check mark
+            (code >= 0x2716 && code <= 0x2716) ||   // X mark
+            (code >= 0x271D && code <= 0x271D) ||   // Cross
+            (code >= 0x2721 && code <= 0x2721) ||   // Star of David
+            (code >= 0x2728 && code <= 0x2728) ||   // Sparkles
+            (code >= 0x2733 && code <= 0x2734) ||   // Eight spoked asterisk
+            (code >= 0x2744 && code <= 0x2744) ||   // Snowflake
+            (code >= 0x2747 && code <= 0x2747) ||   // Sparkle
+            (code >= 0x274C && code <= 0x274C) ||   // Cross mark (❌)
+            (code >= 0x274E && code <= 0x274E) ||   // Cross mark
+            (code >= 0x2753 && code <= 0x2755) ||   // Question marks
+            (code >= 0x2757 && code <= 0x2757) ||   // Exclamation
+            (code >= 0x2763 && code <= 0x2764) ||   // Heart exclamation, heart
+            (code >= 0x2795 && code <= 0x2797) ||   // Plus, minus, divide
+            (code >= 0x27A1 && code <= 0x27A1) ||   // Right arrow
+            (code >= 0x27B0 && code <= 0x27B0) ||   // Curly loop
+            (code >= 0x27BF && code <= 0x27BF) ||   // Double curly loop
+            (code >= 0x2934 && code <= 0x2935) ||   // Arrows
+            (code >= 0x2B05 && code <= 0x2B07) ||   // Arrows
+            (code >= 0x2B1B && code <= 0x2B1C) ||   // Squares
+            (code >= 0x2B50 && code <= 0x2B50) ||   // Star
+            (code >= 0x2B55 && code <= 0x2B55) ||   // Circle
+            (code >= 0x3030 && code <= 0x3030) ||   // Wavy dash
+            (code >= 0x303D && code <= 0x303D) ||   // Part alternation mark
+            (code >= 0x3297 && code <= 0x3297) ||   // Circled ideograph congratulation
+            (code >= 0x3299 && code <= 0x3299) ||   // Circled ideograph secret
+            (code >= 0xFE00 && code <= 0xFE0F) ||   // Variation selectors (don't add width)
+            (code >= 0x200D && code <= 0x200D)      // Zero-width joiner (don't add width)
+        ) {
+            // Variation selectors and ZWJ don't add width
+            if ((code >= 0xFE00 && code <= 0xFE0F) || code === 0x200D) {
+                continue;
+            }
+            width += 2;
+        }
+        // CJK characters
+        else if (
+            (code >= 0x4E00 && code <= 0x9FFF) ||   // CJK Unified Ideographs
+            (code >= 0x3400 && code <= 0x4DBF) ||   // CJK Unified Ideographs Extension A
+            (code >= 0xF900 && code <= 0xFAFF) ||   // CJK Compatibility Ideographs
+            (code >= 0x3000 && code <= 0x303F) ||   // CJK Symbols and Punctuation
+            (code >= 0xFF00 && code <= 0xFFEF)      // Fullwidth Forms
+        ) {
+            width += 2;
+        }
+        // Warning sign ⚠️ (U+26A0)
+        else if (code === 0x26A0) {
+            width += 2;
+        }
+        // Refresh/cycle symbol 🔄 (U+1F504)
+        else if (code === 0x1F504) {
+            width += 2;
+        }
+        else {
+            width += 1;
+        }
+    }
+    return width;
+}
+
+/**
+ * Pad a string to a target display width
+ */
+function padEndDisplayWidth(str: string, targetWidth: number): string {
+    const currentWidth = getDisplayWidth(str);
+    if (currentWidth >= targetWidth) {
+        return str;
+    }
+    return str + ' '.repeat(targetWidth - currentWidth);
+}
+
+/**
  * Check if a line is a table row
  */
 function isTableRow(line: string): boolean {
@@ -42,12 +155,48 @@ function isSeparatorRow(line: string): boolean {
 
 /**
  * Parse a table row into cells
+ * Handles pipes inside backticks (code spans) and escaped pipes (\|)
  */
 function parseRow(line: string): string[] {
     const trimmed = line.trim();
-    // Remove leading and trailing |, then split by |
+    // Remove leading and trailing |
     const inner = trimmed.slice(1, -1);
-    return inner.split('|').map(cell => cell.trim());
+
+    const cells: string[] = [];
+    let current = '';
+    let inBackticks = false;
+    let i = 0;
+
+    while (i < inner.length) {
+        const char = inner[i];
+
+        // Track backtick state (for code spans)
+        if (char === '`') {
+            inBackticks = !inBackticks;
+            current += char;
+            i++;
+        }
+        // Handle escaped pipe
+        else if (char === '\\' && i + 1 < inner.length && inner[i + 1] === '|') {
+            current += '|';
+            i += 2;
+        }
+        // Pipe outside of backticks is a cell separator
+        else if (char === '|' && !inBackticks) {
+            cells.push(current.trim());
+            current = '';
+            i++;
+        }
+        else {
+            current += char;
+            i++;
+        }
+    }
+
+    // Don't forget the last cell
+    cells.push(current.trim());
+
+    return cells;
 }
 
 /**
@@ -55,6 +204,14 @@ function parseRow(line: string): string[] {
  */
 function findTableAtCursor(document: vscode.TextDocument, position: vscode.Position): TableInfo | null {
     const currentLine = document.lineAt(position.line).text;
+
+    // Check if we're on a #+TBLFM line - if so, look for table above
+    if (/^\s*#\+TBLFM:/i.test(currentLine)) {
+        if (position.line > 0 && isTableRow(document.lineAt(position.line - 1).text)) {
+            return findTableAtCursor(document, new vscode.Position(position.line - 1, 0));
+        }
+        return null;
+    }
 
     if (!isTableRow(currentLine)) {
         return null;
@@ -89,11 +246,11 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
         }
     }
 
-    // Calculate column widths
+    // Calculate column widths using display width (accounts for emojis)
     const columnWidths: number[] = new Array(maxColumns).fill(0);
     for (const row of rows) {
         for (let i = 0; i < row.length; i++) {
-            columnWidths[i] = Math.max(columnWidths[i], row[i].length);
+            columnWidths[i] = Math.max(columnWidths[i], getDisplayWidth(row[i]));
         }
     }
 
@@ -111,8 +268,8 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
  */
 function formatRow(cells: string[], columnWidths: number[]): string {
     const paddedCells = cells.map((cell, i) => {
-        const width = columnWidths[i] || cell.length;
-        return cell.padEnd(width);
+        const width = columnWidths[i] || getDisplayWidth(cell);
+        return padEndDisplayWidth(cell, width);
     });
     return '| ' + paddedCells.join(' | ') + ' |';
 }
@@ -122,16 +279,19 @@ function formatRow(cells: string[], columnWidths: number[]): string {
  * For org mode: dashes must be width+2 to account for the space padding in data rows
  * Data row:  | cell | = "| " + cell.padEnd(w) + " |"
  * Separator: |------+  = "|" + "-".repeat(w+2) + "+"
+ *
+ * For markdown: dashes must also be width+2 to match the data row padding
+ * Data row:  | cell | = "| " + cell.padEnd(w) + " |"
+ * Separator: |------| = "|" + "-".repeat(w+2) + "|"
  */
 function formatSeparator(columnWidths: number[], isOrg: boolean): string {
+    // Each column section in data row is: " " + cell(w) + " " = w+2 chars
+    const dashes = columnWidths.map(w => '-'.repeat(w + 2));
     if (isOrg) {
-        // Each column section in data row is: " " + cell(w) + " " = w+2 chars
-        const dashes = columnWidths.map(w => '-'.repeat(w + 2));
         return '|' + dashes.join('+') + '|';
     } else {
-        // Markdown uses spaces around the dashes too
-        const dashes = columnWidths.map(w => '-'.repeat(Math.max(w, 1)));
-        return '| ' + dashes.join(' | ') + ' |';
+        // Markdown uses | instead of + for column separators
+        return '|' + dashes.join('|') + '|';
     }
 }
 
@@ -294,11 +454,11 @@ export async function moveColumnLeft(): Promise<boolean> {
         }
     }
 
-    // Recalculate column widths after swap
+    // Recalculate column widths after swap (using display width for emojis)
     const newColumnWidths: number[] = [];
     for (const row of newRows) {
         for (let i = 0; i < row.length; i++) {
-            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, row[i].length, 1);
+            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, getDisplayWidth(row[i]), 1);
         }
     }
 
@@ -370,11 +530,11 @@ export async function moveColumnRight(): Promise<boolean> {
         }
     }
 
-    // Recalculate column widths after swap
+    // Recalculate column widths after swap (using display width for emojis)
     const newColumnWidths: number[] = [];
     for (const row of newRows) {
         for (let i = 0; i < row.length; i++) {
-            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, row[i].length, 1);
+            newColumnWidths[i] = Math.max(newColumnWidths[i] || 0, getDisplayWidth(row[i]), 1);
         }
     }
 
@@ -610,11 +770,11 @@ export async function alignTable(): Promise<boolean> {
 
     const isOrg = document.languageId === 'org';
 
-    // Recalculate column widths
+    // Recalculate column widths (using display width for emojis)
     const columnWidths: number[] = [];
     for (const row of table.rows) {
         for (let i = 0; i < row.length; i++) {
-            columnWidths[i] = Math.max(columnWidths[i] || 0, row[i].length, 1);
+            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
         }
     }
 
@@ -1164,11 +1324,11 @@ export async function importTableFromClipboard(): Promise<void> {
         }
     });
 
-    // Calculate column widths
+    // Calculate column widths (using display width for emojis)
     const columnWidths: number[] = [];
     for (const row of rows) {
         for (let i = 0; i < row.length; i++) {
-            columnWidths[i] = Math.max(columnWidths[i] || 0, row[i].length, 1);
+            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
         }
     }
 
@@ -1340,12 +1500,12 @@ export async function sortByColumn(): Promise<void> {
         return order.value === 'asc' ? cmp : -cmp;
     });
 
-    // Recalculate column widths
+    // Recalculate column widths (using display width for emojis)
     const allRows = [header, ...body];
     const columnWidths: number[] = [];
     for (const row of allRows) {
         for (let i = 0; i < row.length; i++) {
-            columnWidths[i] = Math.max(columnWidths[i] || 0, row[i].length, 1);
+            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
         }
     }
 

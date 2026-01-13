@@ -35,6 +35,7 @@ export interface ParsedTable {
     formulas: TableFormula[];
     columnCount: number;
     dataRowCount: number;
+    firstDataRow: number; // 1-indexed row number of first data row (after header separator)
 }
 
 export interface TableFormula {
@@ -80,6 +81,18 @@ export function parseTableAt(
 ): ParsedTable | null {
     const line = document.lineAt(position.line).text;
 
+    // Check if we're on a #+TBLFM line - if so, look for table above
+    if (/^\s*#\+TBLFM:/i.test(line)) {
+        if (position.line > 0) {
+            const prevLine = document.lineAt(position.line - 1).text;
+            if (isTableLine(prevLine)) {
+                // Recurse with position on the table line above
+                return parseTableAt(document, new vscode.Position(position.line - 1, 0));
+            }
+        }
+        return null;
+    }
+
     if (!isTableLine(line)) {
         return null;
     }
@@ -121,6 +134,8 @@ export function parseTableAt(
     const cells: TableCell[][] = [];
     let maxCols = 0;
     let dataRowIndex = 0;
+    let firstHlineSeen = false;
+    let firstDataRow = 1; // Default to row 1 if no hline separator
 
     for (let i = startLine; i <= endLine; i++) {
         const lineText = document.lineAt(i).text.trim();
@@ -134,13 +149,19 @@ export function parseTableAt(
                 isHeader: false,
                 isHline: true,
             }]);
+            // Track the first hline - data rows start after it
+            if (!firstHlineSeen) {
+                firstHlineSeen = true;
+                firstDataRow = dataRowIndex + 1; // Next row after hline is first data row
+            }
         } else {
             const cellValues = parseTableRow(lineText);
+            const isHeaderRow = !firstHlineSeen; // Rows before first hline are header rows
             const row: TableCell[] = cellValues.map((value, col) => ({
                 value,
                 row: dataRowIndex,
                 col: col + 1, // 1-indexed like org-mode
-                isHeader: dataRowIndex === 0 && cells.length === 0,
+                isHeader: isHeaderRow,
                 isHline: false,
             }));
             cells.push(row);
@@ -148,6 +169,11 @@ export function parseTableAt(
             dataRowIndex++;
         }
     }
+
+    // Count only non-header, non-hline rows as data rows
+    const totalRows = cells.filter(row => !row[0]?.isHline).length;
+    const headerRowCount = firstHlineSeen ? firstDataRow - 1 : 0;
+    const dataRowCount = totalRows - headerRowCount;
 
     return {
         name: tableName,
@@ -157,7 +183,8 @@ export function parseTableAt(
         tblfmLine,
         formulas,
         columnCount: maxCols,
-        dataRowCount: cells.filter(row => !row[0]?.isHline).length,
+        dataRowCount,
+        firstDataRow,
     };
 }
 
@@ -363,17 +390,19 @@ function resolveRange(rangeExpr: string, context: EvalContext): string[] {
         return values;
     }
 
-    // Parse column range $C1..$C2 (all data rows)
+    // Parse column range $C1..$C2 (current row, columns C1 to C2)
+    // When used in a column formula like $6=vsum($2..$5), this refers to
+    // columns 2-5 of the current row being evaluated
     const colRangeMatch = rangeExpr.match(/\$(\d+)\.\.\$(\d+)/);
     if (colRangeMatch) {
         const startCol = parseInt(colRangeMatch[1], 10);
         const endCol = parseInt(colRangeMatch[2], 10);
 
-        for (let r = 1; r <= context.table.dataRowCount; r++) {
-            for (let c = startCol; c <= endCol; c++) {
-                const val = getCellValue(context.table, r, c);
-                values.push(String(val));
-            }
+        // Use the current row from context (set by applyFormulas)
+        const row = context.currentRow;
+        for (let c = startCol; c <= endCol; c++) {
+            const val = getCellValue(context.table, row, c);
+            values.push(String(val));
         }
         return values;
     }
@@ -525,6 +554,13 @@ function tokenize(expr: string): Token[] {
             continue;
         }
 
+        // Check for ** (power) operator BEFORE single *
+        if (ch === '*' && expr[i + 1] === '*') {
+            tokens.push({ type: 'operator', value: '**' });
+            i += 2;
+            continue;
+        }
+
         if ('+-*/%'.includes(ch)) {
             // Handle unary minus
             if (ch === '-' && (tokens.length === 0 || tokens[tokens.length - 1].type === 'operator' || tokens[tokens.length - 1].value === '(')) {
@@ -539,12 +575,6 @@ function tokenize(expr: string): Token[] {
             }
             tokens.push({ type: 'operator', value: ch });
             i++;
-            continue;
-        }
-
-        if (ch === '*' && expr[i + 1] === '*') {
-            tokens.push({ type: 'operator', value: '**' });
-            i += 2;
             continue;
         }
 
@@ -671,9 +701,11 @@ export function applyFormulas(
 
         switch (formula.target.type) {
             case 'column': {
-                // Apply formula to all data rows in the column
+                // Apply formula to all data rows in the column (skip header rows)
                 const col = formula.target.column!;
-                for (let row = 1; row <= table.dataRowCount; row++) {
+                const startRow = table.firstDataRow;
+                const endRow = table.firstDataRow + table.dataRowCount - 1;
+                for (let row = startRow; row <= endRow; row++) {
                     context.currentRow = row;
                     context.currentCol = col;
                     const result = evaluateExpression(formula.expression, context);
@@ -892,6 +924,9 @@ export function registerTableFormulaCommands(context: vscode.ExtensionContext): 
             await editor.edit(editBuilder => {
                 editBuilder.replace(result.range, result.newText);
             });
+
+            // Align the table after recalculating
+            await vscode.commands.executeCommand('scimax.table.align');
 
             vscode.window.showInformationMessage('Table recalculated');
         }),

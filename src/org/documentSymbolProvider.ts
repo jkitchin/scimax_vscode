@@ -285,8 +285,12 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
         const startLine = headline.lineNumber;
         const endLine = headline.endLineNumber;
 
-        // Build symbol name
+        // Build symbol name - truncate long titles for cleaner outline
+        const maxTitleLength = 40;
         let name = headline.title;
+        if (name.length > maxTitleLength) {
+            name = name.slice(0, maxTitleLength - 1) + '…';
+        }
         if (headline.todoKeyword) {
             const prefix = headline.todoType === 'done' ? '✓' : '☐';
             name = `${prefix} ${name}`;

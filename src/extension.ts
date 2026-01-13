@@ -345,6 +345,11 @@ export async function activate(context: vscode.ExtensionContext) {
             if (document.languageId === 'org' || document.languageId === 'markdown') {
                 const inTable = isInTable(document, position);
                 vscode.commands.executeCommand('setContext', 'scimax.inTable', inTable);
+
+                // Check if on a #+TBLFM line
+                const lineText = document.lineAt(position.line).text;
+                const onTblfmLine = /^\s*#\+TBLFM:/i.test(lineText);
+                vscode.commands.executeCommand('setContext', 'scimax.onTblfmLine', onTblfmLine);
             }
         })
     );

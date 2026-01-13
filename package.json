@@ -2087,6 +2087,12 @@
         "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock"
       },
       {
+        "command": "scimax.table.recalculate",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onTblfmLine"
+      },
+      {
         "command": "scimax.babel.tangle",
         "key": "ctrl+c ctrl+v t",
         "mac": "ctrl+c ctrl+v t",
@@ -2168,7 +2174,7 @@
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock"
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine"
       },
       {
         "command": "scimax.markdown.insertDueDate",
@@ -2844,8 +2850,8 @@
       },
       {
         "command": "scimax.table.recalculate",
-        "key": "ctrl+c *",
-        "mac": "ctrl+c *",
+        "key": "ctrl+c shift+8",
+        "mac": "ctrl+c shift+8",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
