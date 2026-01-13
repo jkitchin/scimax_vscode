@@ -6,11 +6,16 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { parseOrg } from '../parser/orgParserUnified';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
 import type { ExportOptions } from '../parser/orgExport';
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
+
+// Pre-promisified exec for PDF compilation
+const execAsync = promisify(exec);
 
 /**
  * Export format options
@@ -168,50 +173,63 @@ function parseOptionsLine(value: string, options: Partial<ExportOptions>): void 
 }
 
 /**
- * Find the headline at cursor position for subtree export
+ * Find headline boundaries at cursor position for subtree export
+ * Returns the start and end line numbers of the headline subtree
  */
-function findHeadlineAtCursor(
-    doc: OrgDocumentNode,
-    line: number
-): HeadlineElement | null {
-    function searchHeadlines(elements: any[]): HeadlineElement | null {
-        for (const elem of elements) {
-            if (elem.type === 'headline') {
-                const headline = elem as HeadlineElement;
-                const startLine = headline.position?.start?.line ?? -1;
-                const endLine = headline.position?.end?.line ?? Infinity;
+function findHeadlineBoundaries(
+    content: string,
+    cursorLine: number
+): { startLine: number; endLine: number; level: number } | null {
+    const lines = content.split('\n');
 
-                if (line >= startLine && line <= endLine) {
-                    // Check children first for more specific match
-                    if (headline.children && headline.children.length > 0) {
-                        const childMatch = searchHeadlines(headline.children);
-                        if (childMatch) return childMatch;
-                    }
-                    return headline;
-                }
-            }
+    // Find the headline at or before cursor
+    let headlineStart = -1;
+    let headlineLevel = 0;
 
-            // Check children of sections, etc.
-            if (elem.children) {
-                const found = searchHeadlines(elem.children);
-                if (found) return found;
-            }
+    for (let i = cursorLine; i >= 0; i--) {
+        const match = lines[i].match(/^(\*+)\s+/);
+        if (match) {
+            headlineStart = i;
+            headlineLevel = match[1].length;
+            break;
         }
+    }
+
+    if (headlineStart === -1) {
         return null;
     }
 
-    return searchHeadlines(doc.children || []);
+    // Find the end of this headline (next headline at same or higher level)
+    let headlineEnd = lines.length - 1;
+    for (let i = headlineStart + 1; i < lines.length; i++) {
+        const match = lines[i].match(/^(\*+)\s+/);
+        if (match && match[1].length <= headlineLevel) {
+            headlineEnd = i - 1;
+            break;
+        }
+    }
+
+    return { startLine: headlineStart, endLine: headlineEnd, level: headlineLevel };
 }
 
 /**
- * Export to HTML format
+ * Export to HTML format - runs in chunks to avoid blocking
  */
 async function exportHtml(
     content: string,
     options: Partial<HtmlExportOptions>,
     bodyOnly: boolean
 ): Promise<string> {
-    const doc = parseOrg(content, { addPositions: true });
+    // Yield to event loop before starting
+    await new Promise(resolve => setImmediate(resolve));
+
+    console.log('Export: Parsing document...');
+    const doc = parseOrgFast(content);
+    console.log(`Export: Parsed ${doc.children.length} headlines`);
+
+    // Yield after parsing
+    await new Promise(resolve => setImmediate(resolve));
+
     const metadata = extractMetadata(doc);
 
     const htmlOptions: HtmlExportOptions = {
@@ -220,18 +238,35 @@ async function exportHtml(
         bodyOnly,
     };
 
-    return exportToHtml(doc, htmlOptions);
+    // Yield before export
+    await new Promise(resolve => setImmediate(resolve));
+
+    console.log('Export: Converting to HTML...');
+    const result = exportToHtml(doc, htmlOptions);
+    console.log(`Export: Generated ${result.length} characters of HTML`);
+
+    return result;
 }
 
 /**
- * Export to LaTeX format
+ * Export to LaTeX format - runs in chunks to avoid blocking
  */
 async function exportLatex(
     content: string,
     options: Partial<LatexExportOptions>,
     bodyOnly: boolean
 ): Promise<string> {
-    const doc = parseOrg(content, { addPositions: true });
+    // Yield to event loop before starting
+    await new Promise(resolve => setImmediate(resolve));
+
+    console.log('LaTeX Export: Parsing document...');
+    const startParse = Date.now();
+    const doc = parseOrgFast(content);
+    console.log(`LaTeX Export: Parsed ${doc.children.length} headlines in ${Date.now() - startParse}ms`);
+
+    // Yield after parsing
+    await new Promise(resolve => setImmediate(resolve));
+
     const metadata = extractMetadata(doc);
 
     const latexOptions: LatexExportOptions = {
@@ -240,7 +275,18 @@ async function exportLatex(
         bodyOnly,
     };
 
-    return exportToLatex(doc, latexOptions);
+    // Yield before export
+    await new Promise(resolve => setImmediate(resolve));
+
+    console.log('LaTeX Export: Converting to LaTeX...');
+    const startExport = Date.now();
+    const result = exportToLatex(doc, latexOptions);
+    console.log(`LaTeX Export: Generated ${result.length} characters in ${Date.now() - startExport}ms`);
+
+    // Yield after export
+    await new Promise(resolve => setImmediate(resolve));
+
+    return result;
 }
 
 /**
@@ -251,9 +297,6 @@ async function exportPdf(
     options: Partial<LatexExportOptions>,
     outputPath: string
 ): Promise<void> {
-    const { exec } = await import('child_process');
-    const { promisify } = await import('util');
-    const execAsync = promisify(exec);
 
     // First generate LaTeX
     const latexContent = await exportLatex(content, options, false);
@@ -307,7 +350,7 @@ async function exportMarkdown(
     content: string,
     _options: Partial<ExportOptions>
 ): Promise<string> {
-    const doc = parseOrg(content, { addPositions: true });
+    const doc = parseOrgFast(content);
     const lines: string[] = [];
 
     // Extract metadata
@@ -319,13 +362,20 @@ async function exportMarkdown(
         lines.push(`*${metadata.author}*`, '');
     }
 
-    // Simple markdown conversion
+    // Simple markdown conversion - uses fast parser's properties format
     function convertElement(elem: any, depth: number = 0): void {
         switch (elem.type) {
             case 'headline':
                 const level = elem.properties?.level || 1;
-                const title = elem.properties?.title || '';
+                const title = elem.properties?.rawValue || '';
                 lines.push(`${'#'.repeat(level)} ${title}`);
+                // Process section content first
+                if (elem.section?.children) {
+                    for (const child of elem.section.children) {
+                        convertElement(child, depth + 1);
+                    }
+                }
+                // Then child headlines
                 if (elem.children) {
                     for (const child of elem.children) {
                         convertElement(child, depth + 1);
@@ -433,7 +483,7 @@ async function exportMarkdown(
                     return `\`${obj.properties?.value || ''}\``;
                 case 'link':
                     const url = obj.properties?.path || '';
-                    const desc = convertObjects(obj.children || []) || url;
+                    const desc = obj.children?.[0]?.properties?.value || url;
                     return `[${desc}](${url})`;
                 default:
                     return obj.properties?.value || '';
@@ -499,18 +549,15 @@ async function showExportDispatcher(): Promise<void> {
 
     // Handle subtree export
     if (selectedScope.scope.id === 'subtree') {
-        const doc = parseOrg(content, { addPositions: true });
-        const headline = findHeadlineAtCursor(doc, editor.selection.active.line);
+        const boundaries = findHeadlineBoundaries(content, editor.selection.active.line);
 
-        if (!headline) {
+        if (!boundaries) {
             vscode.window.showWarningMessage('No headline found at cursor');
             return;
         }
 
         // Extract subtree content
-        const startLine = headline.position?.start?.line ?? 0;
-        const endLine = headline.position?.end?.line ?? editor.document.lineCount;
-        const lines = content.split('\n').slice(startLine, endLine + 1);
+        const lines = content.split('\n').slice(boundaries.startLine, boundaries.endLine + 1);
         content = lines.join('\n');
     }
 
@@ -797,4 +844,197 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
             previewHtml
         )
     );
+
+    // Export dispatcher (C-c C-e style)
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportDispatcher',
+            exportDispatcher
+        )
+    );
+
+    // Direct export commands for keybindings
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportLatexOpen',
+            async () => {
+                await quickExportPdf();
+            }
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportHtmlOpen',
+            async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || editor.document.languageId !== 'org') {
+                    vscode.window.showWarningMessage('No org-mode file open');
+                    return;
+                }
+                const content = editor.document.getText();
+                const inputPath = editor.document.uri.fsPath;
+                const outputPath = inputPath.replace(/\.org$/, '.html');
+                try {
+                    const html = await exportHtml(content, {}, false);
+                    await fs.promises.writeFile(outputPath, html, 'utf-8');
+                    await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : String(error);
+                    vscode.window.showErrorMessage(`HTML export failed: ${message}`);
+                }
+            }
+        )
+    );
+}
+
+/**
+ * Export dispatcher - org-mode style C-c C-e menu
+ * Shows all export options in a single menu with keyboard hints
+ */
+async function exportDispatcher(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'org') {
+        vscode.window.showWarningMessage('No org-mode file open');
+        return;
+    }
+
+    // All export options in one menu with hints
+    const exportOptions = [
+        // HTML exports
+        { label: '$(globe) [h h] HTML file', description: 'Export to .html file', value: 'html-file', keys: 'hh' },
+        { label: '$(globe) [h o] HTML and open', description: 'Export to .html and open in browser', value: 'html-open', keys: 'ho' },
+        { label: '$(preview) [h p] HTML preview', description: 'Preview HTML in VS Code', value: 'html-preview', keys: 'hp' },
+        { label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' },
+        // LaTeX exports
+        { label: '$(file-text) [l l] LaTeX file', description: 'Export to .tex file', value: 'latex-file', keys: 'll' },
+        { label: '$(file-pdf) [l p] PDF file', description: 'Export to PDF via LaTeX', value: 'pdf-file', keys: 'lp' },
+        { label: '$(file-pdf) [l o] PDF and open', description: 'Export to PDF and open', value: 'pdf-open', keys: 'lo' },
+        { label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' },
+        // Markdown exports
+        { label: '$(markdown) [m m] Markdown file', description: 'Export to .md file', value: 'md-file', keys: 'mm' },
+        { label: '$(markdown) [m o] Markdown and open', description: 'Export to .md and open', value: 'md-open', keys: 'mo' },
+    ];
+
+    const selected = await vscode.window.showQuickPick(exportOptions.filter(o => o.label !== ''), {
+        placeHolder: 'Select export format (type keys: hh, ho, hp, ll, lp, lo, mm, mo)',
+        title: 'Org Export Dispatcher - C-c C-e',
+        matchOnDescription: true,
+    });
+
+    if (!selected || !selected.value) return;
+
+    const content = editor.document.getText();
+    const inputPath = editor.document.uri.fsPath;
+
+    try {
+        switch (selected.value) {
+            case 'html-file': {
+                const outputPath = inputPath.replace(/\.org$/, '.html');
+                const html = await exportHtml(content, {}, false);
+                await fs.promises.writeFile(outputPath, html, 'utf-8');
+                vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
+                break;
+            }
+            case 'html-open': {
+                const outputPath = inputPath.replace(/\.org$/, '.html');
+                const html = await exportHtml(content, {}, false);
+                await fs.promises.writeFile(outputPath, html, 'utf-8');
+                await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                break;
+            }
+            case 'html-preview': {
+                await vscode.commands.executeCommand('scimax.org.previewHtml');
+                break;
+            }
+            case 'latex-file': {
+                await quickExportLatex();
+                break;
+            }
+            case 'pdf-file': {
+                const outputPath = inputPath.replace(/\.org$/, '.pdf');
+                const totalStart = Date.now();
+                await vscode.window.withProgress(
+                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF...', cancellable: false },
+                    async (progress) => {
+                        progress.report({ message: 'Parsing and generating LaTeX...' });
+                        const latexStart = Date.now();
+                        const latex = await exportLatex(content, {}, false);
+                        console.log(`PDF Export: LaTeX generation took ${Date.now() - latexStart}ms`);
+
+                        progress.report({ message: 'Writing .tex file...' });
+                        const texPath = outputPath.replace(/\.pdf$/, '.tex');
+                        await fs.promises.writeFile(texPath, latex, 'utf-8');
+
+                        const tempDir = path.dirname(outputPath);
+
+                        progress.report({ message: 'Running pdflatex (pass 1)...' });
+                        const pass1Start = Date.now();
+                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
+                        console.log(`PDF Export: pdflatex pass 1 took ${Date.now() - pass1Start}ms`);
+
+                        progress.report({ message: 'Running pdflatex (pass 2)...' });
+                        const pass2Start = Date.now();
+                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
+                        console.log(`PDF Export: pdflatex pass 2 took ${Date.now() - pass2Start}ms`);
+
+                        // Clean up aux files
+                        const baseName = path.basename(outputPath, '.pdf');
+                        for (const ext of ['.aux', '.log', '.out', '.toc', '.tex']) {
+                            try { await fs.promises.unlink(path.join(tempDir, baseName + ext)); } catch {}
+                        }
+
+                        console.log(`PDF Export: Total time ${Date.now() - totalStart}ms`);
+                        vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
+                    }
+                );
+                break;
+            }
+            case 'pdf-open': {
+                const outputPath = inputPath.replace(/\.org$/, '.pdf');
+                await vscode.window.withProgress(
+                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF...', cancellable: false },
+                    async (progress) => {
+                        progress.report({ message: 'Parsing document...' });
+                        const latex = await exportLatex(content, {}, false);
+
+                        progress.report({ message: 'Writing .tex file...' });
+                        const texPath = outputPath.replace(/\.pdf$/, '.tex');
+                        await fs.promises.writeFile(texPath, latex, 'utf-8');
+
+                        progress.report({ message: 'Running pdflatex (pass 1)...' });
+                        const tempDir = path.dirname(outputPath);
+
+                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
+
+                        progress.report({ message: 'Running pdflatex (pass 2)...' });
+                        await execAsync(`pdflatex -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, { cwd: tempDir, timeout: 60000 });
+
+                        // Clean up aux files
+                        const baseName = path.basename(outputPath, '.pdf');
+                        for (const ext of ['.aux', '.log', '.out', '.toc', '.tex']) {
+                            try { await fs.promises.unlink(path.join(tempDir, baseName + ext)); } catch {}
+                        }
+
+                        await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                    }
+                );
+                break;
+            }
+            case 'md-file': {
+                await quickExportMarkdown();
+                break;
+            }
+            case 'md-open': {
+                await quickExportMarkdown();
+                const outputPath = inputPath.replace(/\.org$/, '.md');
+                const doc = await vscode.workspace.openTextDocument(outputPath);
+                await vscode.window.showTextDocument(doc);
+                break;
+            }
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(`Export failed: ${message}`);
+    }
 }

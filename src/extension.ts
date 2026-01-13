@@ -291,17 +291,15 @@ export async function activate(context: vscode.ExtensionContext) {
     registerExportCommands(context);
     console.log('Scimax: Export commands registered');
 
-    // Jupyter kernel support disabled to prevent memory issues
-    // TODO: Investigate zeromq memory consumption
-    // try {
-    //     const { registerJupyterCommands } = await import('./jupyter/commands');
-    //     registerJupyterCommands(context);
-    //     console.log('Scimax: Jupyter kernel support registered');
-    // } catch (error) {
-    //     console.warn('Scimax: Jupyter kernel support unavailable (zeromq not loaded)');
-    //     console.log('Scimax: jupyter-* blocks will not work, but regular python/shell blocks will');
-    // }
-    console.log('Scimax: Jupyter kernel support disabled (pending investigation)');
+    // Jupyter kernel support - uses dynamic import for lazy loading
+    // Only loads zeromq when first jupyter block is executed
+    try {
+        const { registerJupyterCommands } = await import('./jupyter/commands');
+        registerJupyterCommands(context);
+        console.log('Scimax: Jupyter kernel support registered');
+    } catch (error) {
+        console.warn('Scimax: Jupyter kernel support unavailable (zeromq not loaded)');
+    }
 
     // Register Scimax-org commands (text markup, DWIM return, navigation)
     registerScimaxOrgCommands(context);
@@ -311,7 +309,6 @@ export async function activate(context: vscode.ExtensionContext) {
     registerScimaxObCommands(context);
     console.log('Scimax: Scimax-ob commands registered');
 
-    console.log('Scimax: [DEBUG] About to register selection handler...');
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading
     context.subscriptions.push(
@@ -327,9 +324,7 @@ export async function activate(context: vscode.ExtensionContext) {
             }
         })
     );
-    console.log('Scimax: [DEBUG] Selection handler registered');
 
-    console.log('Scimax: [DEBUG] About to register BibliographyCodeLensProvider...');
     // Register Bibliography Code Lens Provider
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider(
@@ -337,7 +332,6 @@ export async function activate(context: vscode.ExtensionContext) {
             new BibliographyCodeLensProvider(referenceManager)
         )
     );
-    console.log('Scimax: [DEBUG] BibliographyCodeLensProvider registered');
 
     // Additional reference commands for code lens
     context.subscriptions.push(
@@ -385,70 +379,72 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
-    console.log('Scimax: [DEBUG] About to initialize NotebookManager...');
     // Initialize Notebook Manager
     notebookManager = new NotebookManager(context);
     await notebookManager.initialize();
     context.subscriptions.push({ dispose: () => notebookManager.dispose() });
-    console.log('Scimax: [DEBUG] NotebookManager initialized');
 
     // Register Notebook Commands (passing null for scimaxDb while investigating)
     registerNotebookCommands(context, notebookManager, null as any);
-    console.log('Scimax: [DEBUG] NotebookCommands registered');
 
 
-    // Projectile Manager disabled while investigating performance issues
-    // console.log('Scimax: [DEBUG] About to initialize ProjectileManager...');
-    // // Initialize Projectile Manager (project switching)
-    // projectileManager = new ProjectileManager(context);
-    // await projectileManager.initialize();
-    // context.subscriptions.push({ dispose: () => projectileManager.dispose() });
-    // console.log('Scimax: [DEBUG] ProjectileManager initialized');
+    // Initialize Projectile Manager (deferred to avoid blocking activation)
+    projectileManager = new ProjectileManager(context);
+    context.subscriptions.push({ dispose: () => projectileManager.dispose() });
 
-    // // Register Projectile Commands
-    // registerProjectileCommands(context, projectileManager);
+    // Register Projectile Commands
+    registerProjectileCommands(context, projectileManager);
 
-    // // Register Project Tree View
-    // const projectTreeProvider = new ProjectTreeProvider(projectileManager);
-    // vscode.window.registerTreeDataProvider('scimax.projects', projectTreeProvider);
+    // Register Project Tree View
+    const projectTreeProvider = new ProjectTreeProvider(projectileManager);
+    vscode.window.registerTreeDataProvider('scimax.projects', projectTreeProvider);
 
-    // // Command to open project from tree view
-    // context.subscriptions.push(
-    //     vscode.commands.registerCommand('scimax.projectile.openProject', async (project) => {
-    //         const uri = vscode.Uri.file(project.path);
-    //         await projectileManager.touchProject(project.path);
+    // Command to open project from tree view
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.projectile.openProject', async (project) => {
+            const uri = vscode.Uri.file(project.path);
+            await projectileManager.touchProject(project.path);
 
-    //         const currentFolders = vscode.workspace.workspaceFolders || [];
-    //         if (currentFolders.some(f => f.uri.fsPath === project.path)) {
-    //             vscode.window.showInformationMessage(`Project ${project.name} is already open`);
-    //             return;
-    //         }
+            const currentFolders = vscode.workspace.workspaceFolders || [];
+            if (currentFolders.some(f => f.uri.fsPath === project.path)) {
+                vscode.window.showInformationMessage(`Project ${project.name} is already open`);
+                return;
+            }
 
-    //         const openIn = await vscode.window.showQuickPick([
-    //             { label: '$(window) New Window', value: 'new' },
-    //             { label: '$(folder-opened) Current Window', value: 'current' },
-    //             { label: '$(add) Add to Workspace', value: 'add' }
-    //         ], { placeHolder: `Open ${project.name}` });
+            const openIn = await vscode.window.showQuickPick([
+                { label: '$(window) New Window', value: 'new' },
+                { label: '$(folder-opened) Current Window', value: 'current' },
+                { label: '$(add) Add to Workspace', value: 'add' }
+            ], { placeHolder: `Open ${project.name}` });
 
-    //         if (!openIn) return;
+            if (!openIn) return;
 
-    //         switch (openIn.value) {
-    //             case 'new':
-    //                 await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
-    //                 break;
-    //             case 'current':
-    //                 await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
-    //                 break;
-    //             case 'add':
-    //                 vscode.workspace.updateWorkspaceFolders(
-    //                     vscode.workspace.workspaceFolders?.length || 0, 0, { uri }
-    //                 );
-    //                 break;
-    //         }
-    //     }),
-    //     vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh())
-    // );
-    console.log('Scimax: Projectile manager disabled (pending investigation)');
+            switch (openIn.value) {
+                case 'new':
+                    await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+                    break;
+                case 'current':
+                    await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
+                    break;
+                case 'add':
+                    vscode.workspace.updateWorkspaceFolders(
+                        vscode.workspace.workspaceFolders?.length || 0, 0, { uri }
+                    );
+                    break;
+            }
+        }),
+        vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh())
+    );
+
+    // Defer projectile initialization to avoid blocking
+    setImmediate(async () => {
+        try {
+            await projectileManager.initialize();
+            console.log('Scimax: Projectile manager initialized');
+        } catch (error) {
+            console.error('Scimax: Failed to initialize Projectile manager:', error);
+        }
+    });
 
     // Register Fuzzy Search Commands (search current/all open files)
     registerFuzzySearchCommands(context);

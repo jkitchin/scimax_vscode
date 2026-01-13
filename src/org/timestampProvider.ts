@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { isInTable, moveRowUp, moveRowDown, moveColumnLeft, moveColumnRight } from './tableProvider';
+import { updateStatisticsCookies } from './scimaxOrg';
 
 /**
  * TODO states for cycling
@@ -206,6 +207,11 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
     await editor.edit(editBuilder => {
         editBuilder.replace(line.range, newLine);
     });
+
+    // Update statistics cookies in parent headings (org-mode only)
+    if (isOrg) {
+        await updateStatisticsCookies(editor, position.line, headingInfo.level);
+    }
 
     return true;
 }

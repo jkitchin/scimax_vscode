@@ -838,6 +838,121 @@ export async function cycleTodoState(): Promise<void> {
     await editor.edit(editBuilder => {
         editBuilder.replace(line.range, newLine);
     });
+
+    // Update statistics cookies in parent headings
+    await updateStatisticsCookies(editor, position.line, stars.length);
+}
+
+/**
+ * Update statistics cookies [n/m] or [n%] in parent headings
+ * Exported for use by other modules (e.g., timestampProvider)
+ */
+export async function updateStatisticsCookies(
+    editor: vscode.TextEditor,
+    changedLine: number,
+    changedLevel: number
+): Promise<void> {
+    const document = editor.document;
+    const doneStates = new Set(['DONE', 'CANCELLED', 'CANCELED']);
+    const todoStates = new Set(['TODO', 'NEXT', 'WAITING', 'HOLD', 'SOMEDAY']);
+
+    // Find parent heading (lower level number = higher in hierarchy)
+    let parentLine = -1;
+    let parentLevel = changedLevel;
+
+    for (let i = changedLine - 1; i >= 0; i--) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/^(\*+)\s+/);
+        if (match && match[1].length < parentLevel) {
+            parentLine = i;
+            parentLevel = match[1].length;
+            break;
+        }
+    }
+
+    if (parentLine < 0) return;
+
+    const parentText = document.lineAt(parentLine).text;
+
+    // Check if parent has a statistics cookie
+    const cookieMatch = parentText.match(/\[(\d+)\/(\d+)\]|\[(\d+)%\]/);
+    if (!cookieMatch) return;
+
+    // Count children at the level directly below parent
+    const childLevel = parentLevel + 1;
+    let doneCount = 0;
+    let totalCount = 0;
+
+    // Find the end of this parent's subtree
+    let endLine = document.lineCount;
+    for (let i = parentLine + 1; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/^(\*+)\s+/);
+        if (match && match[1].length <= parentLevel) {
+            endLine = i;
+            break;
+        }
+    }
+
+    // Count direct children with TODO states
+    for (let i = parentLine + 1; i < endLine; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/^(\*+)\s+(TODO|DONE|NEXT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED)?\s*/);
+        if (match && match[1].length === childLevel) {
+            const state = match[2];
+            if (state) {
+                totalCount++;
+                if (doneStates.has(state)) {
+                    doneCount++;
+                }
+            } else if (todoStates.has('') === false) {
+                // Headings without TODO state can be counted if they exist
+                // but typically we only count those with explicit states
+            }
+        }
+    }
+
+    // Also count plain headings as part of total if cookie exists
+    // Re-scan to include all direct child headings
+    totalCount = 0;
+    doneCount = 0;
+    for (let i = parentLine + 1; i < endLine; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/^(\*+)\s+(TODO|DONE|NEXT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED)?\s*/);
+        if (match && match[1].length === childLevel) {
+            totalCount++;
+            const state = match[2];
+            if (state && doneStates.has(state)) {
+                doneCount++;
+            }
+        }
+    }
+
+    if (totalCount === 0) return;
+
+    // Build new cookie
+    let newCookie: string;
+    if (cookieMatch[3] !== undefined) {
+        // Percentage format [n%]
+        const percent = Math.round((doneCount / totalCount) * 100);
+        newCookie = `[${percent}%]`;
+    } else {
+        // Fraction format [n/m]
+        newCookie = `[${doneCount}/${totalCount}]`;
+    }
+
+    // Replace the cookie in the parent line
+    const newParentText = parentText.replace(/\[\d+\/\d+\]|\[\d+%\]/, newCookie);
+
+    if (newParentText !== parentText) {
+        await editor.edit(editBuilder => {
+            const parentRange = document.lineAt(parentLine).range;
+            editBuilder.replace(parentRange, newParentText);
+        });
+
+        // Recursively update parent's parent
+        await updateStatisticsCookies(editor, parentLine, parentLevel);
+    }
 }
 
 /**
@@ -866,6 +981,85 @@ export async function toggleCheckbox(): Promise<void> {
     await editor.edit(editBuilder => {
         editBuilder.replace(line.range, newLine);
     });
+
+    // Update checkbox statistics cookies in parent heading
+    await updateCheckboxStatistics(editor, position.line);
+}
+
+/**
+ * Update checkbox statistics cookies [n/m] or [n%] in parent heading
+ */
+async function updateCheckboxStatistics(
+    editor: vscode.TextEditor,
+    changedLine: number
+): Promise<void> {
+    const document = editor.document;
+
+    // Find parent heading
+    let parentLine = -1;
+    for (let i = changedLine - 1; i >= 0; i--) {
+        const line = document.lineAt(i).text;
+        if (line.match(/^(\*+)\s+/)) {
+            parentLine = i;
+            break;
+        }
+    }
+
+    if (parentLine < 0) return;
+
+    const parentText = document.lineAt(parentLine).text;
+
+    // Check if parent has a statistics cookie
+    const cookieMatch = parentText.match(/\[(\d+)\/(\d+)\]|\[(\d+)%\]/);
+    if (!cookieMatch) return;
+
+    // Find the end of this heading's content (next heading or end of file)
+    let endLine = document.lineCount;
+    for (let i = parentLine + 1; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+        if (line.match(/^(\*+)\s+/)) {
+            endLine = i;
+            break;
+        }
+    }
+
+    // Count checkboxes
+    let checkedCount = 0;
+    let totalCount = 0;
+
+    for (let i = parentLine + 1; i < endLine; i++) {
+        const line = document.lineAt(i).text;
+        const checkboxMatch = line.match(/^\s*[-+*]\s+\[([ Xx-])\]/);
+        if (checkboxMatch) {
+            totalCount++;
+            if (checkboxMatch[1].toLowerCase() === 'x') {
+                checkedCount++;
+            }
+        }
+    }
+
+    if (totalCount === 0) return;
+
+    // Build new cookie
+    let newCookie: string;
+    if (cookieMatch[3] !== undefined) {
+        // Percentage format [n%]
+        const percent = Math.round((checkedCount / totalCount) * 100);
+        newCookie = `[${percent}%]`;
+    } else {
+        // Fraction format [n/m]
+        newCookie = `[${checkedCount}/${totalCount}]`;
+    }
+
+    // Replace the cookie in the parent line
+    const newParentText = parentText.replace(/\[\d+\/\d+\]|\[\d+%\]/, newCookie);
+
+    if (newParentText !== parentText) {
+        await editor.edit(editBuilder => {
+            const parentRange = document.lineAt(parentLine).range;
+            editBuilder.replace(parentRange, newParentText);
+        });
+    }
 }
 
 /**

@@ -25,11 +25,9 @@ export class CitationHoverProvider implements vscode.HoverProvider {
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.Hover> {
         const line = document.lineAt(position.line).text;
-        console.log('CitationHoverProvider: checking line:', line.substring(0, 100));
 
         // Find citation at position
         const key = this.findCitationKeyAtPosition(line, position.character);
-        console.log('CitationHoverProvider: found key:', key, 'at position:', position.character);
         if (!key) return null;
 
         const entry = this.manager.getEntry(key);
@@ -187,7 +185,6 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.Hover> {
         const line = document.lineAt(position.line).text;
-        console.log('BibliographyHoverProvider: checking line:', line);
 
         // Match bibliography references
         // #+BIBLIOGRAPHY: path/to/file.bib
@@ -199,16 +196,12 @@ export class BibliographyHoverProvider implements vscode.HoverProvider {
 
         for (const { regex } of patterns) {
             const match = regex.exec(line);
-            console.log('BibliographyHoverProvider: pattern', regex, 'match:', match);
             if (match) {
                 const bibPath = match[2].trim();
                 const end = match.index + match[0].length;
 
-                console.log('BibliographyHoverProvider: bibPath:', bibPath, 'match.index:', match.index, 'end:', end, 'position.character:', position.character);
-
                 // Check if cursor is anywhere on the link
                 if (position.character >= match.index && position.character <= end) {
-                    console.log('BibliographyHoverProvider: cursor is on link, creating hover');
                     return this.createBibHover(bibPath, document);
                 }
             }

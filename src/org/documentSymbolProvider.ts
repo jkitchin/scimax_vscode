@@ -47,9 +47,6 @@ const DONE_KEYWORDS = new Set(['DONE', 'CANCELLED', 'CANCELED']);
  * Much faster than full AST parsing for document symbols
  */
 function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks: LightBlock[] } {
-    const startTime = Date.now();
-    console.log(`Scimax: [PARSE] Starting lightweight parse of ${lines.length} lines`);
-
     const rootHeadlines: LightHeadline[] = [];
     const blocks: LightBlock[] = [];
     const headlineStack: LightHeadline[] = [];
@@ -144,8 +141,6 @@ function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks
         i++;
     }
 
-    const elapsed = Date.now() - startTime;
-    console.log(`Scimax: [PARSE] Lightweight parse complete: ${rootHeadlines.length} headlines, ${blocks.length} blocks in ${elapsed}ms`);
     return { headlines: rootHeadlines, blocks };
 }
 
@@ -211,19 +206,13 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
         document: vscode.TextDocument,
         token: vscode.CancellationToken
     ): vscode.DocumentSymbol[] {
-        const startTime = Date.now();
-        const fileName = document.uri.path.split('/').pop();
-        console.log(`Scimax: [SYMBOLS] provideDocumentSymbols called for ${fileName}`);
-
         const cacheKey = document.uri.toString();
         const cached = parseCache.get(cacheKey);
 
         // Return cached symbols if document hasn't changed
         if (cached && cached.version === document.version) {
-            console.log(`Scimax: [SYMBOLS] Cache hit for ${fileName}`);
             return cached.symbols;
         }
-        console.log(`Scimax: [SYMBOLS] Cache miss for ${fileName}, parsing...`);
 
         const symbols: vscode.DocumentSymbol[] = [];
 
@@ -280,11 +269,9 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
             parseCache.set(cacheKey, { version: document.version, symbols });
 
         } catch (error) {
-            console.error('Scimax: [SYMBOLS] Error parsing document for symbols:', error);
+            console.error('Error parsing document for symbols:', error);
         }
 
-        const elapsed = Date.now() - startTime;
-        console.log(`Scimax: [SYMBOLS] Total time for ${fileName}: ${elapsed}ms, ${symbols.length} symbols`);
         return symbols;
     }
 

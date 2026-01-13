@@ -6,7 +6,8 @@ import * as vscode from 'vscode';
  *
  * - Shift-left: Transpose citation left (swap with previous)
  * - Shift-right: Transpose citation right (swap with next)
- * - Shift-up: Sort citations alphabetically
+ * - Shift-up: Sort citations by year (oldest first)
+ * - Shift-down: Sort citations by year (newest first)
  */
 
 interface CitationInfo {
@@ -247,6 +248,134 @@ function calculateKeyPosition(citation: CitationInfo, keyIndex: number): number 
 }
 
 /**
+ * Extract year from citation key or bibliography entry
+ * Handles keys like "curtin-2009-struc-activ" or "2023-jupyt-ai"
+ */
+function extractYear(key: string, getEntry?: (key: string) => any): number {
+    // First try to get year from bibliography entry
+    if (getEntry) {
+        const entry = getEntry(key);
+        if (entry?.year) {
+            const year = parseInt(entry.year);
+            if (!isNaN(year)) return year;
+        }
+    }
+
+    // Try to extract year from key name
+    // Look for 4-digit year pattern (1900-2099)
+    const yearMatch = key.match(/\b(19|20)\d{2}\b/);
+    if (yearMatch) {
+        return parseInt(yearMatch[0]);
+    }
+
+    // No year found - return high value to sort last
+    return 9999;
+}
+
+// Reference to getEntry function for sorting
+let _getEntry: ((key: string) => any) | undefined;
+
+/**
+ * Sort citations by year ascending (oldest first)
+ */
+async function sortCitationsByYearAscending(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const line = document.lineAt(position.line).text;
+
+    const citation = findCitationAtPosition(line, position.character);
+    if (!citation) {
+        vscode.window.showInformationMessage('Cursor not on a citation');
+        return;
+    }
+
+    if (citation.keys.length < 2) {
+        vscode.window.showInformationMessage('Only one citation key - nothing to sort');
+        return;
+    }
+
+    // Sort keys by year ascending
+    const originalKeys = [...citation.keys];
+    citation.keys.sort((a, b) => {
+        const yearA = extractYear(a, _getEntry);
+        const yearB = extractYear(b, _getEntry);
+        return yearA - yearB;
+    });
+
+    // Check if already sorted
+    if (originalKeys.every((k, i) => k === citation.keys[i])) {
+        vscode.window.showInformationMessage('Citations already sorted by year');
+        return;
+    }
+
+    // Replace in document
+    const newCitation = rebuildCitation(citation);
+    const range = new vscode.Range(
+        position.line, citation.start,
+        position.line, citation.end
+    );
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(range, newCitation);
+    });
+
+    vscode.window.showInformationMessage(`Sorted ${citation.keys.length} citations by year (oldest first)`);
+}
+
+/**
+ * Sort citations by year descending (newest first)
+ */
+async function sortCitationsByYearDescending(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const line = document.lineAt(position.line).text;
+
+    const citation = findCitationAtPosition(line, position.character);
+    if (!citation) {
+        vscode.window.showInformationMessage('Cursor not on a citation');
+        return;
+    }
+
+    if (citation.keys.length < 2) {
+        vscode.window.showInformationMessage('Only one citation key - nothing to sort');
+        return;
+    }
+
+    // Sort keys by year descending
+    const originalKeys = [...citation.keys];
+    citation.keys.sort((a, b) => {
+        const yearA = extractYear(a, _getEntry);
+        const yearB = extractYear(b, _getEntry);
+        return yearB - yearA;  // Descending
+    });
+
+    // Check if already sorted
+    if (originalKeys.every((k, i) => k === citation.keys[i])) {
+        vscode.window.showInformationMessage('Citations already sorted by year');
+        return;
+    }
+
+    // Replace in document
+    const newCitation = rebuildCitation(citation);
+    const range = new vscode.Range(
+        position.line, citation.start,
+        position.line, citation.end
+    );
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(range, newCitation);
+    });
+
+    vscode.window.showInformationMessage(`Sorted ${citation.keys.length} citations by year (newest first)`);
+}
+
+/**
  * Sort citations alphabetically
  */
 async function sortCitations(): Promise<void> {
@@ -289,52 +418,7 @@ async function sortCitations(): Promise<void> {
         editBuilder.replace(range, newCitation);
     });
 
-    vscode.window.showInformationMessage(`Sorted ${citation.keys.length} citations`);
-}
-
-/**
- * Sort citations by year (requires reference manager)
- */
-async function sortCitationsByYear(getEntry: (key: string) => any): Promise<void> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-
-    const document = editor.document;
-    const position = editor.selection.active;
-    const line = document.lineAt(position.line).text;
-
-    const citation = findCitationAtPosition(line, position.character);
-    if (!citation) {
-        vscode.window.showInformationMessage('Cursor not on a citation');
-        return;
-    }
-
-    if (citation.keys.length < 2) {
-        vscode.window.showInformationMessage('Only one citation key - nothing to sort');
-        return;
-    }
-
-    // Sort keys by year
-    citation.keys.sort((a, b) => {
-        const entryA = getEntry(a);
-        const entryB = getEntry(b);
-        const yearA = parseInt(entryA?.year || '9999');
-        const yearB = parseInt(entryB?.year || '9999');
-        return yearA - yearB;
-    });
-
-    // Replace in document
-    const newCitation = rebuildCitation(citation);
-    const range = new vscode.Range(
-        position.line, citation.start,
-        position.line, citation.end
-    );
-
-    await editor.edit(editBuilder => {
-        editBuilder.replace(range, newCitation);
-    });
-
-    vscode.window.showInformationMessage(`Sorted ${citation.keys.length} citations by year`);
+    vscode.window.showInformationMessage(`Sorted ${citation.keys.length} citations alphabetically`);
 }
 
 /**
@@ -400,21 +484,17 @@ export function registerCitationManipulationCommands(
     context: vscode.ExtensionContext,
     getEntry?: (key: string) => any
 ): void {
+    // Store getEntry reference for year extraction
+    _getEntry = getEntry;
+
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.transposeCitationLeft', transposeCitationLeft),
         vscode.commands.registerCommand('scimax.ref.transposeCitationRight', transposeCitationRight),
-        vscode.commands.registerCommand('scimax.ref.sortCitations', sortCitations),
+        vscode.commands.registerCommand('scimax.ref.sortCitations', sortCitationsByYearAscending),  // shift-up: year ascending
+        vscode.commands.registerCommand('scimax.ref.sortCitationsByYear', sortCitationsByYearDescending),  // shift-down: year descending
+        vscode.commands.registerCommand('scimax.ref.sortCitationsAlphabetically', sortCitations),  // alphabetical sort
         vscode.commands.registerCommand('scimax.ref.deleteCitation', deleteCitation)
     );
-
-    // Sort by year if reference manager is available
-    if (getEntry) {
-        context.subscriptions.push(
-            vscode.commands.registerCommand('scimax.ref.sortCitationsByYear', () =>
-                sortCitationsByYear(getEntry)
-            )
-        );
-    }
 
     console.log('Scimax: Citation manipulation commands registered');
 }

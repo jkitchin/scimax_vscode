@@ -14,6 +14,30 @@ import {
 } from './openalexService';
 
 /**
+ * Find citation at cursor position to check if we should append
+ */
+function findCitationAtPosition(line: string, position: number): { start: number; end: number; keys: string[]; prefix: string; separator: string } | null {
+    // Pattern for org-ref style: cite:key1,key2,key3
+    const orgRefPattern = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g;
+
+    let match;
+    while ((match = orgRefPattern.exec(line)) !== null) {
+        const start = match.index;
+        const end = start + match[0].length;
+
+        // Check if cursor is on or immediately after this citation
+        if (position >= start && position <= end + 1) {
+            const prefix = match[1] + ':';
+            const keysStr = match[2];
+            const keys = keysStr.split(',').map(k => k.trim());
+            return { start, end, keys, prefix, separator: ',' };
+        }
+    }
+
+    return null;
+}
+
+/**
  * Register all reference-related commands
  */
 export function registerReferenceCommands(
@@ -48,7 +72,45 @@ export function registerReferenceCommands(
 
             if (!selected) return;
 
-            // Ask for citation style
+            // Check if cursor is on an existing citation
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            const document = editor.document;
+            const position = editor.selection.active;
+            const line = document.lineAt(position.line).text;
+
+            const existingCitation = findCitationAtPosition(line, position.character);
+
+            if (existingCitation) {
+                // Check if key already exists in citation
+                if (existingCitation.keys.includes(selected.entry.key)) {
+                    vscode.window.showInformationMessage(`${selected.entry.key} is already in this citation`);
+                    return;
+                }
+
+                // Append to existing citation
+                const newKeys = [...existingCitation.keys, selected.entry.key];
+                const newCitation = existingCitation.prefix + newKeys.join(existingCitation.separator);
+
+                const range = new vscode.Range(
+                    position.line, existingCitation.start,
+                    position.line, existingCitation.end
+                );
+
+                await editor.edit(editBuilder => {
+                    editBuilder.replace(range, newCitation);
+                });
+
+                // Move cursor to end of citation
+                const newPosition = new vscode.Position(position.line, existingCitation.start + newCitation.length);
+                editor.selection = new vscode.Selection(newPosition, newPosition);
+
+                vscode.window.showInformationMessage(`Added ${selected.entry.key} to citation`);
+                return;
+            }
+
+            // Not on existing citation - ask for citation style and insert new citation
             const config = manager.getConfig();
             const styleItems = [
                 { label: 'cite', description: 'Basic citation', value: 'cite' as const },
@@ -72,10 +134,7 @@ export function registerReferenceCommands(
             if (!styleSelection) return;
 
             // Determine format based on current file
-            const editor = vscode.window.activeTextEditor;
-            if (!editor) return;
-
-            const langId = editor.document.languageId;
+            const langId = document.languageId;
             const format = langId === 'org' ? 'org' : langId === 'latex' ? 'latex' : 'markdown';
 
             // Insert citation
@@ -585,6 +644,63 @@ export function registerReferenceCommands(
             await editor.edit(editBuilder => {
                 editBuilder.insert(editor.selection.active, refLink);
             });
+        })
+    );
+
+    // Insert bibliography link with all bib files containing cited keys
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.insertBibliography', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            const document = editor.document;
+            const text = document.getText();
+
+            // Extract all citation keys from the document
+            const citedKeys = extractCitationKeys(text);
+
+            if (citedKeys.size === 0) {
+                vscode.window.showInformationMessage('No citations found in document');
+                return;
+            }
+
+            // Get all entries and find which bib files contain the cited keys
+            const bibFiles = new Set<string>();
+            const allEntries = manager.getAllEntries();
+
+            for (const key of citedKeys) {
+                const entry = allEntries.find(e => e.key === key);
+                if (entry && (entry as any)._sourceFile) {
+                    bibFiles.add((entry as any)._sourceFile);
+                }
+            }
+
+            if (bibFiles.size === 0) {
+                // No matches found - show available bib files
+                const config = manager.getConfig();
+                if (config.bibliographyFiles && config.bibliographyFiles.length > 0) {
+                    // Use configured bib files
+                    for (const bibFile of config.bibliographyFiles) {
+                        bibFiles.add(bibFile);
+                    }
+                } else {
+                    vscode.window.showWarningMessage('No bibliography files found for cited keys');
+                    return;
+                }
+            }
+
+            // Sort and format the bibliography link
+            const sortedFiles = Array.from(bibFiles).sort();
+            const bibLink = `bibliography:${sortedFiles.join(',')}`;
+
+            // Insert at cursor
+            await editor.edit(editBuilder => {
+                editBuilder.insert(editor.selection.active, bibLink);
+            });
+
+            vscode.window.showInformationMessage(
+                `Inserted bibliography link with ${bibFiles.size} file(s) for ${citedKeys.size} citation(s)`
+            );
         })
     );
 }

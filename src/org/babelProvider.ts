@@ -491,18 +491,28 @@ async function executeAllSourceBlocks(): Promise<void> {
 }
 
 /**
- * Command: Clear results from source block at cursor
+ * Command: Clear results from source block
+ * @param blockLine Optional line number of the source block (from CodeLens)
  */
-async function clearResultsAtCursor(): Promise<void> {
+async function clearResultsAtCursor(blockLine?: number): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showWarningMessage('No active editor');
         return;
     }
 
-    const block = findSourceBlockAtCursor(editor.document, editor.selection.active);
+    // If blockLine is provided, use it to find the block; otherwise use cursor position
+    let block: SourceBlockInfo | null;
+    if (blockLine !== undefined) {
+        // Find the block at the specified line
+        const blocks = findAllSourceBlocks(editor.document);
+        block = blocks.find(b => b.startLine === blockLine) || null;
+    } else {
+        block = findSourceBlockAtCursor(editor.document, editor.selection.active);
+    }
+
     if (!block) {
-        vscode.window.showWarningMessage('No source block at cursor position');
+        vscode.window.showWarningMessage('No source block found');
         return;
     }
 
@@ -513,14 +523,14 @@ async function clearResultsAtCursor(): Promise<void> {
 
     await editor.edit((editBuilder) => {
         // Delete the results including any preceding empty line
-        let startLine = block.resultsLine!;
+        let startLine = block!.resultsLine!;
         if (startLine > 0 && editor.document.lineAt(startLine - 1).text.trim() === '') {
             startLine--;
         }
 
         const startPos = new vscode.Position(startLine, 0);
         const endPos = new vscode.Position(
-            block.resultsEndLine! + 1,
+            block!.resultsEndLine! + 1,
             0
         );
         const range = new vscode.Range(startPos, endPos);
@@ -691,25 +701,74 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
     );
 }
 
+// Cache for source blocks to avoid re-parsing
+interface BlockCacheEntry {
+    version: number;
+    blocks: SourceBlockInfo[];
+}
+const blockCache = new Map<string, BlockCacheEntry>();
+const MAX_BLOCK_CACHE_SIZE = 10;
+
 /**
  * Code Lens provider for source blocks
+ * Optimized with caching and early cancellation checks
  */
 export class BabelCodeLensProvider implements vscode.CodeLensProvider {
     private _onDidChangeCodeLenses = new vscode.EventEmitter<void>();
     readonly onDidChangeCodeLenses = this._onDidChangeCodeLenses.event;
 
+    // Pre-cache supported languages to avoid repeated lookups
+    private supportedLanguageCache = new Map<string, boolean>();
+
     provideCodeLenses(
         document: vscode.TextDocument,
         token: vscode.CancellationToken
     ): vscode.CodeLens[] {
+        // Early cancellation check
+        if (token.isCancellationRequested) {
+            return [];
+        }
+
         if (document.languageId !== 'org') {
             return [];
         }
 
-        const blocks = findAllSourceBlocks(document);
+        // Check cache first
+        const cacheKey = document.uri.toString();
+        const cached = blockCache.get(cacheKey);
+        let blocks: SourceBlockInfo[];
+
+        if (cached && cached.version === document.version) {
+            blocks = cached.blocks;
+        } else {
+            // Early cancellation check before parsing
+            if (token.isCancellationRequested) {
+                return [];
+            }
+
+            blocks = findAllSourceBlocks(document);
+
+            // Update cache (use LRU-style eviction)
+            if (blockCache.size >= MAX_BLOCK_CACHE_SIZE) {
+                const firstKey = blockCache.keys().next().value;
+                if (firstKey) blockCache.delete(firstKey);
+            }
+            blockCache.set(cacheKey, { version: document.version, blocks });
+        }
+
+        // Another cancellation check after potentially expensive parsing
+        if (token.isCancellationRequested) {
+            return [];
+        }
+
         const codeLenses: vscode.CodeLens[] = [];
 
         for (const block of blocks) {
+            // Check cancellation periodically during CodeLens creation
+            if (token.isCancellationRequested) {
+                return [];
+            }
+
             const range = new vscode.Range(block.startLine, 0, block.startLine, 0);
 
             // Run button
@@ -721,8 +780,13 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                 })
             );
 
-            // Show language
-            const isSupported = executorRegistry.isSupported(block.language);
+            // Check supported language with caching
+            let isSupported = this.supportedLanguageCache.get(block.language);
+            if (isSupported === undefined) {
+                isSupported = executorRegistry.isSupported(block.language);
+                this.supportedLanguageCache.set(block.language, isSupported);
+            }
+
             codeLenses.push(
                 new vscode.CodeLens(range, {
                     title: `${block.language}${isSupported ? '' : ' (unsupported)'}`,
@@ -739,6 +803,7 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                     new vscode.CodeLens(range, {
                         title: '✕ Clear',
                         command: 'scimax.org.clearResults',
+                        arguments: [block.startLine],
                         tooltip: 'Clear results',
                     })
                 );

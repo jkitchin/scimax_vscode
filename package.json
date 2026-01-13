@@ -88,6 +88,24 @@
         "path": "./themes/leuven-color-theme.json"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "scimax",
+          "title": "Scimax",
+          "icon": "$(beaker)"
+        }
+      ]
+    },
+    "views": {
+      "scimax": [
+        {
+          "id": "scimax.projects",
+          "name": "Projects",
+          "icon": "$(folder)"
+        }
+      ]
+    },
     "colors": [
       {
         "id": "scimax.srcBlockBackground",
@@ -141,6 +159,384 @@
           "dark": "#2a2a2a40",
           "light": "#C8C8C820",
           "highContrast": "#80808020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.pythonBackground",
+        "description": "Background color for python source blocks",
+        "defaults": {
+          "dark": "#1e3a1e40",
+          "light": "#DFFFDF",
+          "highContrast": "#00FF0020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.pythonHeaderBackground",
+        "description": "Header background color for python source blocks",
+        "defaults": {
+          "dark": "#1e3a1e60",
+          "light": "#C8E8C8",
+          "highContrast": "#00FF0030"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jupyterPythonBackground",
+        "description": "Background color for jupyter-python source blocks",
+        "defaults": {
+          "dark": "#1e2a3e40",
+          "light": "#DFFFFF",
+          "highContrast": "#00FFFF20"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jupyterPythonHeaderBackground",
+        "description": "Header background color for jupyter-python source blocks",
+        "defaults": {
+          "dark": "#1e2a3e60",
+          "light": "#B8E8E8",
+          "highContrast": "#00FFFF30"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jupyterJuliaBackground",
+        "description": "Background color for jupyter-julia source blocks",
+        "defaults": {
+          "dark": "#2a1e3a40",
+          "light": "#E8DFFF",
+          "highContrast": "#9944FF20"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jupyterJuliaHeaderBackground",
+        "description": "Header background color for jupyter-julia source blocks",
+        "defaults": {
+          "dark": "#2a1e3a60",
+          "light": "#D0C8E8",
+          "highContrast": "#9944FF30"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jupyterRBackground",
+        "description": "Background color for jupyter-r source blocks",
+        "defaults": {
+          "dark": "#3a1e2a40",
+          "light": "#FFDFEF",
+          "highContrast": "#FF449920"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jupyterRHeaderBackground",
+        "description": "Header background color for jupyter-r source blocks",
+        "defaults": {
+          "dark": "#3a1e2a60",
+          "light": "#E8C8D8",
+          "highContrast": "#FF449930"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.bashBackground",
+        "description": "Background color for bash source blocks",
+        "defaults": {
+          "dark": "#2a3a1e40",
+          "light": "#FFFFDF",
+          "highContrast": "#FFFF0020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.bashHeaderBackground",
+        "description": "Header background color for bash source blocks",
+        "defaults": {
+          "dark": "#2a3a1e60",
+          "light": "#E8E8C8",
+          "highContrast": "#FFFF0030"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.shellBackground",
+        "description": "Background color for shell source blocks",
+        "defaults": {
+          "dark": "#2a3a1e40",
+          "light": "#FFFFDF",
+          "highContrast": "#FFFF0020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.shellHeaderBackground",
+        "description": "Header background color for shell source blocks",
+        "defaults": {
+          "dark": "#2a3a1e60",
+          "light": "#E8E8C8",
+          "highContrast": "#FFFF0030"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.shBackground",
+        "description": "Background color for sh source blocks",
+        "defaults": {
+          "dark": "#2a3a1e40",
+          "light": "#FFFFDF",
+          "highContrast": "#FFFF0020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.shHeaderBackground",
+        "description": "Header background color for sh source blocks",
+        "defaults": {
+          "dark": "#2a3a1e60",
+          "light": "#E8E8C8",
+          "highContrast": "#FFFF0030"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.emacsLispBackground",
+        "description": "Background color for emacs-lisp source blocks",
+        "defaults": {
+          "dark": "#3a1e3a40",
+          "light": "#FFDFFF",
+          "highContrast": "#FF00FF20"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.emacsLispHeaderBackground",
+        "description": "Header background color for emacs-lisp source blocks",
+        "defaults": {
+          "dark": "#3a1e3a60",
+          "light": "#E8C8E8",
+          "highContrast": "#FF00FF30"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.elispBackground",
+        "description": "Background color for elisp source blocks",
+        "defaults": {
+          "dark": "#3a1e3a40",
+          "light": "#FFDFFF",
+          "highContrast": "#FF00FF20"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.elispHeaderBackground",
+        "description": "Header background color for elisp source blocks",
+        "defaults": {
+          "dark": "#3a1e3a60",
+          "light": "#E8C8E8",
+          "highContrast": "#FF00FF30"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.javascriptBackground",
+        "description": "Background color for javascript source blocks",
+        "defaults": {
+          "dark": "#3a3a1e40",
+          "light": "#FFFFD0",
+          "highContrast": "#FFCC0020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.javascriptHeaderBackground",
+        "description": "Header background color for javascript source blocks",
+        "defaults": {
+          "dark": "#3a3a1e60",
+          "light": "#E8E8B8",
+          "highContrast": "#FFCC0030"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jsBackground",
+        "description": "Background color for js source blocks",
+        "defaults": {
+          "dark": "#3a3a1e40",
+          "light": "#FFFFD0",
+          "highContrast": "#FFCC0020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.jsHeaderBackground",
+        "description": "Header background color for js source blocks",
+        "defaults": {
+          "dark": "#3a3a1e60",
+          "light": "#E8E8B8",
+          "highContrast": "#FFCC0030"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.typescriptBackground",
+        "description": "Background color for typescript source blocks",
+        "defaults": {
+          "dark": "#1e2a3a40",
+          "light": "#DFEEFF",
+          "highContrast": "#3178C620"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.typescriptHeaderBackground",
+        "description": "Header background color for typescript source blocks",
+        "defaults": {
+          "dark": "#1e2a3a60",
+          "light": "#C8D8E8",
+          "highContrast": "#3178C630"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.tsBackground",
+        "description": "Background color for ts source blocks",
+        "defaults": {
+          "dark": "#1e2a3a40",
+          "light": "#DFEEFF",
+          "highContrast": "#3178C620"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.tsHeaderBackground",
+        "description": "Header background color for ts source blocks",
+        "defaults": {
+          "dark": "#1e2a3a60",
+          "light": "#C8D8E8",
+          "highContrast": "#3178C630"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.sqlBackground",
+        "description": "Background color for sql source blocks",
+        "defaults": {
+          "dark": "#3a2a1e40",
+          "light": "#FFEFDF",
+          "highContrast": "#FF880020"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.sqlHeaderBackground",
+        "description": "Header background color for sql source blocks",
+        "defaults": {
+          "dark": "#3a2a1e60",
+          "light": "#E8D8C8",
+          "highContrast": "#FF880030"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.rBackground",
+        "description": "Background color for R source blocks",
+        "defaults": {
+          "dark": "#3a1e2640",
+          "light": "#FFDFE8",
+          "highContrast": "#276DC320"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.rHeaderBackground",
+        "description": "Header background color for R source blocks",
+        "defaults": {
+          "dark": "#3a1e2660",
+          "light": "#E8C8D0",
+          "highContrast": "#276DC330"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.juliaBackground",
+        "description": "Background color for julia source blocks",
+        "defaults": {
+          "dark": "#2a1e3a40",
+          "light": "#E8DFFF",
+          "highContrast": "#9558B220"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.juliaHeaderBackground",
+        "description": "Header background color for julia source blocks",
+        "defaults": {
+          "dark": "#2a1e3a60",
+          "light": "#D0C8E8",
+          "highContrast": "#9558B230"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.rustBackground",
+        "description": "Background color for rust source blocks",
+        "defaults": {
+          "dark": "#3a2a2040",
+          "light": "#FFE8DF",
+          "highContrast": "#DEA58420"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.rustHeaderBackground",
+        "description": "Header background color for rust source blocks",
+        "defaults": {
+          "dark": "#3a2a2060",
+          "light": "#E8D0C8",
+          "highContrast": "#DEA58430"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.goBackground",
+        "description": "Background color for go source blocks",
+        "defaults": {
+          "dark": "#1e3a3a40",
+          "light": "#DFFFE8",
+          "highContrast": "#00ADD820"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.goHeaderBackground",
+        "description": "Header background color for go source blocks",
+        "defaults": {
+          "dark": "#1e3a3a60",
+          "light": "#C8E8D0",
+          "highContrast": "#00ADD830"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.cBackground",
+        "description": "Background color for c source blocks",
+        "defaults": {
+          "dark": "#2a2a3a40",
+          "light": "#E8E8FF",
+          "highContrast": "#555DD220"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.cHeaderBackground",
+        "description": "Header background color for c source blocks",
+        "defaults": {
+          "dark": "#2a2a3a60",
+          "light": "#D0D0E8",
+          "highContrast": "#555DD230"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.cppBackground",
+        "description": "Background color for cpp source blocks",
+        "defaults": {
+          "dark": "#2a2a3a40",
+          "light": "#E8E8FF",
+          "highContrast": "#004482FF"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.cppHeaderBackground",
+        "description": "Header background color for cpp source blocks",
+        "defaults": {
+          "dark": "#2a2a3a60",
+          "light": "#D0D0E8",
+          "highContrast": "#00448230"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.javaBackground",
+        "description": "Background color for java source blocks",
+        "defaults": {
+          "dark": "#3a2a2a40",
+          "light": "#FFE8E8",
+          "highContrast": "#B0721420"
+        }
+      },
+      {
+        "id": "scimax.srcBlock.javaHeaderBackground",
+        "description": "Header background color for java source blocks",
+        "defaults": {
+          "dark": "#3a2a2a60",
+          "light": "#E8D0D0",
+          "highContrast": "#B0721430"
         }
       }
     ],
@@ -414,6 +810,18 @@
         "title": "Scimax: Export to PDF"
       },
       {
+        "command": "scimax.org.exportDispatcher",
+        "title": "Scimax: Export Dispatcher (C-c C-e)"
+      },
+      {
+        "command": "scimax.org.exportLatexOpen",
+        "title": "Scimax: Export to PDF and Open"
+      },
+      {
+        "command": "scimax.org.exportHtmlOpen",
+        "title": "Scimax: Export to HTML and Open"
+      },
+      {
         "command": "scimax.org.exportMarkdown",
         "title": "Scimax: Export to Markdown"
       },
@@ -577,6 +985,10 @@
         "title": "Scimax: Insert Reference Link"
       },
       {
+        "command": "scimax.ref.insertBibliography",
+        "title": "Scimax: Insert Bibliography Link"
+      },
+      {
         "command": "scimax.ref.extractBibliography",
         "title": "Scimax: Extract Bibliography from File"
       },
@@ -602,11 +1014,15 @@
       },
       {
         "command": "scimax.ref.sortCitations",
-        "title": "Scimax: Sort Citations Alphabetically"
+        "title": "Scimax: Sort Citations by Year (Oldest First)"
       },
       {
         "command": "scimax.ref.sortCitationsByYear",
-        "title": "Scimax: Sort Citations by Year"
+        "title": "Scimax: Sort Citations by Year (Newest First)"
+      },
+      {
+        "command": "scimax.ref.sortCitationsAlphabetically",
+        "title": "Scimax: Sort Citations Alphabetically"
       },
       {
         "command": "scimax.ref.deleteCitation",
@@ -1325,6 +1741,48 @@
         "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock"
       },
       {
+        "command": "scimax.org.exportDispatcher",
+        "key": "ctrl+c ctrl+e",
+        "mac": "ctrl+c ctrl+e",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.org.exportLatexOpen",
+        "key": "ctrl+c ctrl+e l o",
+        "mac": "ctrl+c ctrl+e l o",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.org.exportHtmlOpen",
+        "key": "ctrl+c ctrl+e h o",
+        "mac": "ctrl+c ctrl+e h o",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.org.exportLatex",
+        "key": "ctrl+c ctrl+e l l",
+        "mac": "ctrl+c ctrl+e l l",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.org.exportHtml",
+        "key": "ctrl+c ctrl+e h h",
+        "mac": "ctrl+c ctrl+e h h",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.org.exportPdf",
+        "key": "ctrl+c ctrl+e l p",
+        "mac": "ctrl+c ctrl+e l p",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.org.exportMarkdown",
+        "key": "ctrl+c ctrl+e m m",
+        "mac": "ctrl+c ctrl+e m m",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
@@ -2029,6 +2487,7 @@
     "package": "vsce package"
   },
   "devDependencies": {
+    "@electron/rebuild": "^4.0.2",
     "@types/node": "^20.10.0",
     "@types/uuid": "^10.0.0",
     "@types/vscode": "^1.85.0",

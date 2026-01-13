@@ -1,6 +1,7 @@
 /**
  * Block Decorations for org-mode
  * Adds background colors to source blocks, example blocks, etc.
+ * Supports per-language colors for source blocks
  */
 
 import * as vscode from 'vscode';
@@ -12,6 +13,35 @@ let exampleBlockDecoration: vscode.TextEditorDecorationType;
 let quoteBlockDecoration: vscode.TextEditorDecorationType;
 let resultsDecoration: vscode.TextEditorDecorationType;
 let tableDecoration: vscode.TextEditorDecorationType;
+
+// Per-language decoration types for source blocks
+const languageDecorations: Map<string, vscode.TextEditorDecorationType> = new Map();
+const languageHeaderDecorations: Map<string, vscode.TextEditorDecorationType> = new Map();
+
+// Languages with specific colors (others fall back to default)
+const SUPPORTED_LANGUAGES = [
+    'python',
+    'jupyter-python',
+    'jupyter-julia',
+    'jupyter-r',
+    'bash',
+    'shell',
+    'sh',
+    'emacs-lisp',
+    'elisp',
+    'javascript',
+    'js',
+    'typescript',
+    'ts',
+    'sql',
+    'r',
+    'julia',
+    'rust',
+    'go',
+    'c',
+    'cpp',
+    'java',
+];
 
 /**
  * Initialize decoration types with theme-configurable colors
@@ -26,17 +56,46 @@ function createDecorationTypes(): void {
     resultsDecoration?.dispose();
     tableDecoration?.dispose();
 
-    // Source block body - uses theme color 'scimax.srcBlockBackground'
+    // Dispose language-specific decorations
+    for (const decoration of languageDecorations.values()) {
+        decoration.dispose();
+    }
+    languageDecorations.clear();
+
+    for (const decoration of languageHeaderDecorations.values()) {
+        decoration.dispose();
+    }
+    languageHeaderDecorations.clear();
+
+    // Default source block body - uses theme color 'scimax.srcBlockBackground'
     srcBlockDecoration = vscode.window.createTextEditorDecorationType({
         backgroundColor: new vscode.ThemeColor('scimax.srcBlockBackground'),
         isWholeLine: true,
     });
 
-    // Source block header/footer - uses theme color 'scimax.srcBlockHeaderBackground'
+    // Default source block header/footer - uses theme color 'scimax.srcBlockHeaderBackground'
     srcBlockHeaderDecoration = vscode.window.createTextEditorDecorationType({
         backgroundColor: new vscode.ThemeColor('scimax.srcBlockHeaderBackground'),
         isWholeLine: true,
     });
+
+    // Create per-language decoration types
+    for (const lang of SUPPORTED_LANGUAGES) {
+        // Normalize language name for theme color key (replace hyphens with camelCase)
+        const colorKey = normalizeLanguageKey(lang);
+
+        // Body decoration for this language
+        languageDecorations.set(lang, vscode.window.createTextEditorDecorationType({
+            backgroundColor: new vscode.ThemeColor(`scimax.srcBlock.${colorKey}Background`),
+            isWholeLine: true,
+        }));
+
+        // Header decoration for this language
+        languageHeaderDecorations.set(lang, vscode.window.createTextEditorDecorationType({
+            backgroundColor: new vscode.ThemeColor(`scimax.srcBlock.${colorKey}HeaderBackground`),
+            isWholeLine: true,
+        }));
+    }
 
     // Example block - uses theme color 'scimax.exampleBlockBackground'
     exampleBlockDecoration = vscode.window.createTextEditorDecorationType({
@@ -64,6 +123,14 @@ function createDecorationTypes(): void {
 }
 
 /**
+ * Normalize language name to camelCase for theme color keys
+ * e.g., 'jupyter-python' -> 'jupyterPython', 'emacs-lisp' -> 'emacsLisp'
+ */
+function normalizeLanguageKey(lang: string): string {
+    return lang.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+/**
  * Update decorations for the given editor
  */
 function updateDecorations(editor: vscode.TextEditor): void {
@@ -74,8 +141,20 @@ function updateDecorations(editor: vscode.TextEditor): void {
     const text = editor.document.getText();
     const lines = text.split('\n');
 
+    // Default source block decorations (for languages without specific colors)
     const srcBlockHeaders: vscode.DecorationOptions[] = [];
     const srcBlockBodies: vscode.DecorationOptions[] = [];
+
+    // Per-language source block decorations
+    const languageBlockHeaders: Map<string, vscode.DecorationOptions[]> = new Map();
+    const languageBlockBodies: Map<string, vscode.DecorationOptions[]> = new Map();
+
+    // Initialize arrays for each supported language
+    for (const lang of SUPPORTED_LANGUAGES) {
+        languageBlockHeaders.set(lang, []);
+        languageBlockBodies.set(lang, []);
+    }
+
     const exampleBlocks: vscode.DecorationOptions[] = [];
     const quoteBlocks: vscode.DecorationOptions[] = [];
     const resultsBlocks: vscode.DecorationOptions[] = [];
@@ -87,26 +166,48 @@ function updateDecorations(editor: vscode.TextEditor): void {
         const lineLower = line.toLowerCase();
 
         // Source blocks
-        if (lineLower.match(/^#\+begin_src/i)) {
+        const srcMatch = line.match(/^#\+begin_src\s+(\S+)/i);
+        if (srcMatch || lineLower.match(/^#\+begin_src\s*$/i)) {
+            const language = srcMatch ? srcMatch[1].toLowerCase() : '';
+            const hasLanguageColor = languageDecorations.has(language);
+
             // Header line
-            srcBlockHeaders.push({
-                range: new vscode.Range(i, 0, i, line.length),
-            });
+            if (hasLanguageColor) {
+                languageBlockHeaders.get(language)!.push({
+                    range: new vscode.Range(i, 0, i, line.length),
+                });
+            } else {
+                srcBlockHeaders.push({
+                    range: new vscode.Range(i, 0, i, line.length),
+                });
+            }
             i++;
 
             // Body lines
             while (i < lines.length && !lines[i].toLowerCase().match(/^#\+end_src/i)) {
-                srcBlockBodies.push({
-                    range: new vscode.Range(i, 0, i, lines[i].length),
-                });
+                if (hasLanguageColor) {
+                    languageBlockBodies.get(language)!.push({
+                        range: new vscode.Range(i, 0, i, lines[i].length),
+                    });
+                } else {
+                    srcBlockBodies.push({
+                        range: new vscode.Range(i, 0, i, lines[i].length),
+                    });
+                }
                 i++;
             }
 
             // Footer line
             if (i < lines.length) {
-                srcBlockHeaders.push({
-                    range: new vscode.Range(i, 0, i, lines[i].length),
-                });
+                if (hasLanguageColor) {
+                    languageBlockHeaders.get(language)!.push({
+                        range: new vscode.Range(i, 0, i, lines[i].length),
+                    });
+                } else {
+                    srcBlockHeaders.push({
+                        range: new vscode.Range(i, 0, i, lines[i].length),
+                    });
+                }
             }
             i++;
             continue;
@@ -228,9 +329,26 @@ function updateDecorations(editor: vscode.TextEditor): void {
         i++;
     }
 
-    // Apply decorations
+    // Apply default source block decorations
     editor.setDecorations(srcBlockHeaderDecoration, srcBlockHeaders);
     editor.setDecorations(srcBlockDecoration, srcBlockBodies);
+
+    // Apply per-language source block decorations
+    for (const lang of SUPPORTED_LANGUAGES) {
+        const headerDecoration = languageHeaderDecorations.get(lang);
+        const bodyDecoration = languageDecorations.get(lang);
+        const headers = languageBlockHeaders.get(lang) || [];
+        const bodies = languageBlockBodies.get(lang) || [];
+
+        if (headerDecoration) {
+            editor.setDecorations(headerDecoration, headers);
+        }
+        if (bodyDecoration) {
+            editor.setDecorations(bodyDecoration, bodies);
+        }
+    }
+
+    // Apply other block decorations
     editor.setDecorations(exampleBlockDecoration, exampleBlocks);
     editor.setDecorations(quoteBlockDecoration, quoteBlocks);
     editor.setDecorations(resultsDecoration, resultsBlocks);
@@ -300,6 +418,14 @@ export function registerBlockDecorations(context: vscode.ExtensionContext): void
             quoteBlockDecoration?.dispose();
             resultsDecoration?.dispose();
             tableDecoration?.dispose();
+
+            // Dispose language-specific decorations
+            for (const decoration of languageDecorations.values()) {
+                decoration.dispose();
+            }
+            for (const decoration of languageHeaderDecorations.values()) {
+                decoration.dispose();
+            }
         }
     });
 

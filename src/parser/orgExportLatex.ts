@@ -743,6 +743,52 @@ export class LatexExportBackend implements ExportBackend {
             case 'mailto':
                 return `\\href{mailto:${path}}{${description}}`;
 
+            case 'doi':
+                // DOI links - use href to doi.org
+                return `\\href{https://doi.org/${path}}{${description}}`;
+
+            // Citation types - org-ref style
+            case 'cite':
+                return `\\cite{${path}}`;
+            case 'citep':
+            case 'Citep':
+                return `\\citep{${path}}`;
+            case 'citet':
+            case 'Citet':
+                return `\\citet{${path}}`;
+            case 'citeauthor':
+                return `\\citeauthor{${path}}`;
+            case 'citeyear':
+                return `\\citeyear{${path}}`;
+            case 'citealp':
+                return `\\citealp{${path}}`;
+            case 'citealt':
+                return `\\citealt{${path}}`;
+
+            // Cross-reference types - org-ref style
+            case 'ref':
+                return `\\ref{${path}}`;
+            case 'eqref':
+                return `\\eqref{${path}}`;
+            case 'pageref':
+                return `\\pageref{${path}}`;
+            case 'nameref':
+                return `\\nameref{${path}}`;
+            case 'autoref':
+                return `\\autoref{${path}}`;
+            case 'cref':
+                return `\\cref{${path}}`;
+            case 'Cref':
+                return `\\Cref{${path}}`;
+            case 'label':
+                return `\\label{${path}}`;
+
+            case 'bibliography':
+                // bibliography:file1.bib,file2.bib -> \bibliography{file1,file2}
+                // Remove .bib extensions if present
+                const bibFiles = path.split(',').map(f => f.trim().replace(/\.bib$/i, ''));
+                return `\\bibliography{${bibFiles.join(',')}}`;
+
             default:
                 // Check for cross-reference
                 if (state.customIds.has(path)) {
