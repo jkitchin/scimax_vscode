@@ -4,11 +4,9 @@ import { JournalTreeProvider } from './journal/journalTreeProvider';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
-// Database imports disabled to prevent SQLite module loading on startup
-// These will be imported dynamically when database is re-enabled
-// import { ScimaxDb } from './database/scimaxDb';
-// import { registerDbCommands } from './database/commands';
-// import { createEmbeddingService } from './database/embeddingService';
+// Database uses lazy loading to avoid blocking extension activation
+import { setExtensionContext, closeDatabase } from './database/lazyDb';
+import { registerDbCommands } from './database/commands';
 import { ReferenceManager } from './references/referenceManager';
 import { registerReferenceCommands } from './references/commands';
 import {
@@ -63,7 +61,6 @@ import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
 let journalStatusBar: JournalStatusBar;
-// let scimaxDb: ScimaxDb;  // Disabled while investigating memory issues
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 let projectileManager: ProjectileManager;
@@ -88,16 +85,8 @@ export async function activate(context: vscode.ExtensionContext) {
     // Initialize Journal Manager
     journalManager = new JournalManager(context);
 
-    // Database initialization disabled to investigate memory issues
-    // TODO: Make database lazy-load on first use
-    // scimaxDb = new ScimaxDb(context);
-    // await scimaxDb.initialize();
-    // const embeddingService = createEmbeddingService();
-    // if (embeddingService) {
-    //     scimaxDb.setEmbeddingService(embeddingService);
-    //     console.log('Scimax: Semantic search enabled');
-    // }
-    console.log('Scimax: Database disabled (pending investigation)');
+    // Set up lazy database loading - database initializes on first use
+    setExtensionContext(context);
 
     // Journal Tree View (uses async caching for performance)
     const journalTreeProvider = new JournalTreeProvider(journalManager);
@@ -116,13 +105,8 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Journal Commands
     registerJournalCommands(context, journalManager, journalTreeProvider);
 
-    // Register Database Commands (disabled while investigating memory issues)
-    // registerDbCommands(context, scimaxDb);
-
-    // Auto-indexing and file watching disabled while investigating memory issues
-    // const config = vscode.workspace.getConfiguration('scimax.db');
-    // const autoIndex = config.get<boolean>('autoIndex', false);
-    // if (autoIndex) { ... }
+    // Register Database Commands (uses lazy loading - db initializes on first command use)
+    registerDbCommands(context);
 
     // Watch for configuration changes
     context.subscriptions.push(
@@ -424,8 +408,8 @@ export async function activate(context: vscode.ExtensionContext) {
     await notebookManager.initialize();
     context.subscriptions.push({ dispose: () => notebookManager.dispose() });
 
-    // Register Notebook Commands (passing null for scimaxDb while investigating)
-    registerNotebookCommands(context, notebookManager, null as any);
+    // Register Notebook Commands (uses lazy database loading internally)
+    registerNotebookCommands(context, notebookManager);
 
 
     // Initialize Projectile Manager (deferred to avoid blocking activation)
@@ -509,8 +493,6 @@ export async function deactivate() {
         journalManager.dispose();
     }
 
-    // Close database connection (disabled while investigating)
-    // if (scimaxDb) {
-    //     await scimaxDb.close();
-    // }
+    // Close database connection if it was initialized
+    await closeDatabase();
 }

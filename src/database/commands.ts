@@ -15,14 +15,30 @@ import {
     OllamaEmbeddingService,
     OpenAIEmbeddingService
 } from './embeddingService';
+import { getDatabase } from './lazyDb';
+
+/**
+ * Helper to get database with user notification on failure
+ */
+async function requireDatabase(): Promise<ScimaxDb | null> {
+    const db = await getDatabase();
+    if (!db) {
+        vscode.window.showWarningMessage(
+            'Database is not available. Please check the extension logs for errors.'
+        );
+    }
+    return db;
+}
 
 export function registerDbCommands(
-    context: vscode.ExtensionContext,
-    db: ScimaxDb
+    context: vscode.ExtensionContext
 ): void {
     // Reindex all files
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.reindex', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const workspaceFolders = vscode.workspace.workspaceFolders;
             if (!workspaceFolders || workspaceFolders.length === 0) {
                 vscode.window.showWarningMessage('No workspace folder open');
@@ -67,6 +83,9 @@ export function registerDbCommands(
             });
 
             if (!query) return;
+
+            const db = await requireDatabase();
+            if (!db) return;
 
             const results = await db.searchFullText(query, { limit: 100 });
 
@@ -118,6 +137,9 @@ export function registerDbCommands(
 
             if (!query) return;
 
+            const db = await requireDatabase();
+            if (!db) return;
+
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: 'Searching...',
@@ -158,6 +180,9 @@ export function registerDbCommands(
             });
 
             if (!query) return;
+
+            const db = await requireDatabase();
+            if (!db) return;
 
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
@@ -255,7 +280,10 @@ export function registerDbCommands(
                     await config.update('embeddingProvider', 'local', vscode.ConfigurationTarget.Global);
                     await config.update('localModel', modelChoice.label, vscode.ConfigurationTarget.Global);
 
-                    db.setEmbeddingService(testService);
+                    const db = await getDatabase();
+                    if (db) {
+                        db.setEmbeddingService(testService);
+                    }
                     vscode.window.showInformationMessage(
                         `Configured local embeddings with ${modelChoice.label}. Run "Reindex Files" to enable semantic search.`
                     );
@@ -288,7 +316,10 @@ export function registerDbCommands(
                 await config.update('embeddingProvider', 'ollama', vscode.ConfigurationTarget.Global);
                 await config.update('ollamaModel', modelChoice.label, vscode.ConfigurationTarget.Global);
 
-                db.setEmbeddingService(testService);
+                const db = await getDatabase();
+                if (db) {
+                    db.setEmbeddingService(testService);
+                }
                 vscode.window.showInformationMessage(
                     `Configured Ollama with ${modelChoice.label}. Run "Reindex Files" to enable semantic search.`
                 );
@@ -313,7 +344,10 @@ export function registerDbCommands(
                 await config.update('embeddingProvider', 'openai', vscode.ConfigurationTarget.Global);
                 await config.update('openaiApiKey', apiKey, vscode.ConfigurationTarget.Global);
 
-                db.setEmbeddingService(testService);
+                const db = await getDatabase();
+                if (db) {
+                    db.setEmbeddingService(testService);
+                }
                 vscode.window.showInformationMessage(
                     'Configured OpenAI embeddings. Run "Reindex Files" to enable semantic search.'
                 );
@@ -334,6 +368,9 @@ export function registerDbCommands(
             });
 
             if (!query) return;
+
+            const db = await requireDatabase();
+            if (!db) return;
 
             const results = await db.searchHeadings(query);
 
@@ -364,6 +401,9 @@ export function registerDbCommands(
     // Search by tag
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchByTag', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const tags = await db.getAllTags();
 
             if (tags.length === 0) {
@@ -421,6 +461,9 @@ export function registerDbCommands(
                 placeHolder: 'Enter value (leave empty for any value)'
             });
 
+            const db = await requireDatabase();
+            if (!db) return;
+
             const results = await db.searchByProperty(propName, value || undefined);
 
             if (results.length === 0) {
@@ -453,6 +496,9 @@ export function registerDbCommands(
     // Search source blocks
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchBlocks', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const languages = await db.getAllLanguages();
 
             const languageItems = [
@@ -502,6 +548,9 @@ export function registerDbCommands(
     // Search by hashtag
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchHashtags', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const hashtags = await db.getAllHashtags();
 
             if (hashtags.length === 0) {
@@ -545,6 +594,9 @@ export function registerDbCommands(
     // Show TODOs
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.showTodos', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const todos = await db.getTodos();
 
             if (todos.length === 0) {
@@ -604,6 +656,9 @@ export function registerDbCommands(
 
             if (!periodChoice) return;
 
+            const db = await requireDatabase();
+            if (!db) return;
+
             const agendaItems = await db.getAgenda({
                 before: periodChoice.period,
                 includeUnscheduled: true
@@ -634,6 +689,9 @@ export function registerDbCommands(
     // Show Deadlines
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.deadlines', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const agendaItems = (await db.getAgenda({ before: '+2w' }))
                 .filter(item => item.type === 'deadline');
 
@@ -662,6 +720,9 @@ export function registerDbCommands(
     // Set search scope
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.setScope', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const currentScope = db.getSearchScope();
 
             const scopeItems = [
@@ -705,6 +766,9 @@ export function registerDbCommands(
     // Browse files
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.browseFiles', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const files = await db.getFiles();
 
             if (files.length === 0) {
@@ -736,6 +800,9 @@ export function registerDbCommands(
     // Optimize database
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.optimize', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: 'Optimizing database...',
@@ -757,6 +824,9 @@ export function registerDbCommands(
             );
 
             if (confirm === 'Yes, clear') {
+                const db = await requireDatabase();
+                if (!db) return;
+
                 await db.clear();
                 vscode.window.showInformationMessage('Database cleared');
             }
@@ -766,6 +836,9 @@ export function registerDbCommands(
     // Show database stats
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.stats', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
             const stats = await db.getStats();
             const lastIndexed = stats.last_indexed
                 ? new Date(stats.last_indexed).toLocaleString()

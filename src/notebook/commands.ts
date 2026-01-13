@@ -1,13 +1,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { NotebookManager, Notebook, Collaborator } from './notebookManager';
-// Database import disabled to prevent libsql module loading on startup
-// import { ScimaxDb } from '../database/scimaxDb';
+import { getDatabase } from '../database/lazyDb';
 
 export function registerNotebookCommands(
     context: vscode.ExtensionContext,
-    notebookManager: NotebookManager,
-    scimaxDb: any  // ScimaxDb - disabled while investigating memory issues
+    notebookManager: NotebookManager
 ): void {
     // Create new notebook
     context.subscriptions.push(
@@ -165,9 +163,10 @@ export function registerNotebookCommands(
 
             if (!query) return;
 
-            // Database features disabled while investigating memory issues
+            // Get database lazily
+            const scimaxDb = await getDatabase();
             if (!scimaxDb) {
-                vscode.window.showWarningMessage('Database features are currently disabled');
+                vscode.window.showWarningMessage('Database is not available');
                 return;
             }
 
@@ -214,9 +213,10 @@ export function registerNotebookCommands(
             const notebook = await getCurrentOrSelectNotebook(notebookManager);
             if (!notebook) return;
 
-            // Database features disabled while investigating memory issues
+            // Get database lazily
+            const scimaxDb = await getDatabase();
             if (!scimaxDb) {
-                vscode.window.showWarningMessage('Database features are currently disabled');
+                vscode.window.showWarningMessage('Database is not available');
                 return;
             }
 
@@ -337,9 +337,10 @@ export function registerNotebookCommands(
             const notebook = await getCurrentOrSelectNotebook(notebookManager);
             if (!notebook) return;
 
-            // Database features disabled while investigating memory issues
+            // Get database lazily
+            const scimaxDb = await getDatabase();
             if (!scimaxDb) {
-                vscode.window.showWarningMessage('Database features are currently disabled');
+                vscode.window.showWarningMessage('Database is not available');
                 return;
             }
 
