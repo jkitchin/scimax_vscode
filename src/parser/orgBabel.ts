@@ -723,8 +723,14 @@ export function formatResult(
         return '#+RESULTS:';
     }
 
-    // Determine format
-    const type = format.type || result.resultType || 'verbatim';
+    // Determine format type
+    // Note: When there are separate files (e.g., images), format stdout as verbatim
+    // regardless of resultType, since resultType='file' just indicates files exist
+    let type = format.type || result.resultType || 'verbatim';
+    if (type === 'file' && files.length > 0 && output) {
+        // stdout is text, not a file path - format as verbatim
+        type = 'verbatim';
+    }
 
     let resultText = '';
 
@@ -750,6 +756,7 @@ export function formatResult(
                 resultText = `#+RESULTS:\n:RESULTS:\n${output}\n:END:`;
                 break;
             case 'file':
+                // Only use file format when stdout IS the file path (no separate files array)
                 resultText = `#+RESULTS:\n[[file:${output}]]`;
                 break;
             case 'verbatim':
