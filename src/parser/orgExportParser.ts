@@ -42,10 +42,12 @@ import type {
 // Pre-compiled regex patterns to avoid re-creation on each call
 // Using simpler patterns without lookbehind/lookahead to prevent catastrophic backtracking
 const LINK_PATTERN = /\[\[([^\]]+)\](?:\[([^\]]+)\])?\]/g;
-const CITATION_PATTERN = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g;
+// Citation pattern: cite:key1,key2 but not trailing comma (cite:key, should be cite:key)
+const CITATION_PATTERN = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+(?:,[a-zA-Z0-9_:-]+)*)/g;
 const REF_PATTERN = /(ref|eqref|pageref|nameref|autoref|cref|Cref|label):([a-zA-Z0-9_:-]+)/g;
 const DOI_PATTERN = /doi:(10\.\d{4,9}\/[^\s<>\[\](){}]+)/g;
 const BIBLIOGRAPHY_PATTERN = /bibliography:([^\s<>\[\](){}]+)/g;
+const BIBSTYLE_PATTERN = /bibstyle:([^\s<>\[\](){}]+)/g;
 
 // Simplified markup patterns - use non-greedy matching with length limits
 // These are more permissive but much faster and won't cause backtracking
@@ -171,6 +173,19 @@ export function parseObjectsFast(text: string): OrgObject[] {
         },
     }));
 
+    // Bibliography style links
+    collectMatches(BIBSTYLE_PATTERN, (m) => ({
+        type: 'link' as const,
+        range: { start: m.index!, end: m.index! + m[0].length },
+        postBlank: 0,
+        properties: {
+            linkType: 'bibstyle',
+            path: m[1],
+            format: 'plain' as const,
+            rawLink: m[0],
+        },
+    }));
+
     // Text markup (only if text contains the marker characters)
     if (text.includes('*')) {
         collectMatches(BOLD_PATTERN, (m) => ({
@@ -210,7 +225,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
 
     if (text.includes('=')) {
         collectMatches(CODE_PATTERN, (m) => ({
-            type: 'code' as const,
+            type: 'verbatim' as const,  // =text= is verbatim in org-mode
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
             properties: { value: m[1] },
@@ -219,7 +234,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
 
     if (text.includes('~')) {
         collectMatches(VERBATIM_PATTERN, (m) => ({
-            type: 'verbatim' as const,
+            type: 'code' as const,  // ~text~ is code in org-mode
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
             properties: { value: m[1] },
@@ -484,6 +499,16 @@ function parseElement(state: FastParserState): OrgElement | null {
         return parseSimpleBlock(state, 'quote-block', 'QUOTE');
     }
 
+    // Verse block
+    if (line.match(/^#\+BEGIN_VERSE/i)) {
+        return parseSimpleBlock(state, 'verse-block', 'VERSE');
+    }
+
+    // Center block
+    if (line.match(/^#\+BEGIN_CENTER/i)) {
+        return parseSimpleBlock(state, 'center-block', 'CENTER');
+    }
+
     // Export block
     if (line.match(/^#\+BEGIN_EXPORT\s+(\w+)/i)) {
         return parseExportBlock(state);
@@ -581,7 +606,7 @@ function parseSrcBlock(state: FastParserState): SrcBlockElement | null {
     } as SrcBlockElement;
 }
 
-function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote-block', blockName: string): OrgElement | null {
+function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote-block' | 'verse-block' | 'center-block', blockName: string): OrgElement | null {
     state.lineIndex++;
     const contentLines: string[] = [];
 
@@ -605,9 +630,9 @@ function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote
             },
         } as ExampleBlockElement;
     } else {
-        // Quote block contains parsed content
+        // Quote/verse/center blocks contain parsed content
         return {
-            type: 'quote-block',
+            type: type,
             range: { start: 0, end: 0 },
             postBlank: 0,
             children: contentLines.map(line => ({
@@ -710,6 +735,9 @@ function parseList(state: FastParserState): PlainListElement {
             state.lineIndex++;
             continue;
         }
+
+        // Stop at headlines (unindented asterisks followed by space are headlines, not list items)
+        if (line.match(/^\*+\s+/)) break;
 
         if (indent < baseIndent) break;
 

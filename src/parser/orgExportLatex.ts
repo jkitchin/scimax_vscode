@@ -789,6 +789,10 @@ export class LatexExportBackend implements ExportBackend {
                 const bibFiles = path.split(',').map(f => f.trim().replace(/\.bib$/i, ''));
                 return `\\bibliography{${bibFiles.join(',')}}`;
 
+            case 'bibstyle':
+                // bibstyle:unsrtnat -> \bibliographystyle{unsrtnat}
+                return `\\bibliographystyle{${path}}`;
+
             default:
                 // Check for cross-reference
                 if (state.customIds.has(path)) {
