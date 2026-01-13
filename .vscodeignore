@@ -38,6 +38,7 @@ node_modules/**
 !node_modules/balanced-match/**
 !node_modules/uuid/**
 !node_modules/zeromq/**
+!node_modules/cmake-ts/**
 *.vsix
 .claude/**
 !syntaxes/**
