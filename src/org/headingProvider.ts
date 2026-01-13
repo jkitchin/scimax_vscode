@@ -23,8 +23,79 @@ function getMarkdownHeadingLevel(line: string): number {
     return match ? match[1].length : 0;
 }
 
+// List item patterns
+const UNORDERED_LIST_PATTERN = /^(\s*)([-+*])\s+/;
+const ORDERED_LIST_PATTERN = /^(\s*)(\d+[.)])\s+/;
+
 /**
- * Promote heading (decrease level, e.g., ** → *)
+ * Get list item info if line is a list item
+ * Returns indentation level (number of leading spaces) or -1 if not a list item
+ */
+function getListItemIndent(line: string): number {
+    const unorderedMatch = line.match(UNORDERED_LIST_PATTERN);
+    if (unorderedMatch) {
+        return unorderedMatch[1].length;
+    }
+    const orderedMatch = line.match(ORDERED_LIST_PATTERN);
+    if (orderedMatch) {
+        return orderedMatch[1].length;
+    }
+    return -1;
+}
+
+/**
+ * Check if a line is a continuation of a list item (indented more than the bullet)
+ */
+function isListContinuation(line: string, listIndent: number): boolean {
+    if (line.trim() === '') return true; // Empty lines can be part of a list item
+    const lineIndent = line.match(/^(\s*)/)?.[1].length ?? 0;
+    // Continuation lines must be indented more than the list bullet position
+    return lineIndent > listIndent && getListItemIndent(line) === -1;
+}
+
+/**
+ * Find the end of a list item (includes nested items but stops at siblings)
+ * For simple list items without nested content, this returns the same line.
+ */
+function findListItemEnd(document: vscode.TextDocument, startLine: number, listIndent: number): number {
+    let end = startLine;
+    for (let i = startLine + 1; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+
+        // Empty line - could be end of item or just spacing
+        // For simplicity, treat empty lines as end of item
+        if (line.trim() === '') {
+            break;
+        }
+
+        // Check if this is another list item
+        const nextIndent = getListItemIndent(line);
+        if (nextIndent !== -1) {
+            // It's a list item - stop if same or lower indent
+            if (nextIndent <= listIndent) {
+                break;
+            }
+            // Nested list item, include it
+            end = i;
+            continue;
+        }
+
+        // Check if it's a continuation line (indented content)
+        const lineIndent = line.match(/^(\s*)/)?.[1].length ?? 0;
+        if (lineIndent > listIndent) {
+            // Continuation of the list item
+            end = i;
+            continue;
+        }
+
+        // Not a continuation, stop here
+        break;
+    }
+    return end;
+}
+
+/**
+ * Promote heading or list item (decrease level/indentation)
  */
 export async function promoteHeading(): Promise<boolean> {
     const editor = vscode.window.activeTextEditor;
@@ -35,6 +106,12 @@ export async function promoteHeading(): Promise<boolean> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
     const isOrg = document.languageId === 'org';
+
+    // Check if on a list item first
+    const listIndent = getListItemIndent(lineText);
+    if (listIndent !== -1) {
+        return promoteListItem(editor, line, lineText, position, listIndent);
+    }
 
     if (isOrg) {
         const level = getOrgHeadingLevel(lineText);
@@ -73,7 +150,35 @@ export async function promoteHeading(): Promise<boolean> {
 }
 
 /**
- * Demote heading (increase level, e.g., * → **)
+ * Promote a list item (decrease indentation)
+ */
+async function promoteListItem(
+    editor: vscode.TextEditor,
+    line: vscode.TextLine,
+    lineText: string,
+    position: vscode.Position,
+    listIndent: number
+): Promise<boolean> {
+    if (listIndent === 0) return false; // Already at minimum indentation
+
+    // Remove up to 2 spaces of indentation (standard org-mode indent step)
+    const spacesToRemove = Math.min(2, listIndent);
+    const newLine = lineText.substring(spacesToRemove);
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(line.range, newLine);
+    });
+
+    // Adjust cursor position
+    const newCol = Math.max(0, position.character - spacesToRemove);
+    const newPosition = new vscode.Position(position.line, newCol);
+    editor.selection = new vscode.Selection(newPosition, newPosition);
+
+    return true;
+}
+
+/**
+ * Demote heading or list item (increase level/indentation)
  */
 export async function demoteHeading(): Promise<boolean> {
     const editor = vscode.window.activeTextEditor;
@@ -84,6 +189,12 @@ export async function demoteHeading(): Promise<boolean> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
     const isOrg = document.languageId === 'org';
+
+    // Check if on a list item first
+    const listIndent = getListItemIndent(lineText);
+    if (listIndent !== -1) {
+        return demoteListItem(editor, line, lineText, position);
+    }
 
     if (isOrg) {
         const level = getOrgHeadingLevel(lineText);
@@ -118,6 +229,29 @@ export async function demoteHeading(): Promise<boolean> {
 
         return true;
     }
+}
+
+/**
+ * Demote a list item (increase indentation)
+ */
+async function demoteListItem(
+    editor: vscode.TextEditor,
+    line: vscode.TextLine,
+    lineText: string,
+    position: vscode.Position
+): Promise<boolean> {
+    // Add 2 spaces of indentation (standard org-mode indent step)
+    const newLine = '  ' + lineText;
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(line.range, newLine);
+    });
+
+    // Adjust cursor position
+    const newPosition = new vscode.Position(position.line, position.character + 2);
+    editor.selection = new vscode.Selection(newPosition, newPosition);
+
+    return true;
 }
 
 /**
@@ -221,7 +355,7 @@ export async function demoteSubtree(): Promise<boolean> {
 }
 
 /**
- * Move heading up (swap with previous sibling)
+ * Move heading or list item up (swap with previous sibling)
  */
 export async function moveHeadingUp(): Promise<boolean> {
     const editor = vscode.window.activeTextEditor;
@@ -235,7 +369,13 @@ export async function moveHeadingUp(): Promise<boolean> {
     const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
     const headingLevel = getLevel(lineText);
 
-    if (headingLevel === 0) return false; // Not a heading
+    // Check if we're on a list item
+    const listIndent = getListItemIndent(lineText);
+    if (listIndent !== -1) {
+        return moveListItemUp(editor, document, position, listIndent);
+    }
+
+    if (headingLevel === 0) return false; // Not a heading or list item
 
     // Find the start and end of current subtree
     const currentStart = position.line;
@@ -295,7 +435,71 @@ export async function moveHeadingUp(): Promise<boolean> {
 }
 
 /**
- * Move heading down (swap with next sibling)
+ * Move list item up (swap with previous sibling at same indentation)
+ */
+async function moveListItemUp(
+    editor: vscode.TextEditor,
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    listIndent: number
+): Promise<boolean> {
+    const currentStart = position.line;
+    const currentEnd = findListItemEnd(document, currentStart, listIndent);
+
+    // Find the previous sibling list item by scanning backward
+    // We need to find where the previous item STARTS
+    let prevStart = -1;
+    for (let i = currentStart - 1; i >= 0; i--) {
+        const line = document.lineAt(i).text;
+        const itemIndent = getListItemIndent(line);
+
+        if (itemIndent === listIndent) {
+            // Found previous sibling at same level
+            prevStart = i;
+            break;
+        }
+        if (itemIndent !== -1 && itemIndent < listIndent) {
+            // Hit a parent list item, no previous sibling
+            return false;
+        }
+        // Check if we've exited the list entirely (non-list, non-continuation line)
+        if (line.trim() !== '' && itemIndent === -1 && !isListContinuation(line, listIndent)) {
+            return false;
+        }
+    }
+
+    if (prevStart < 0) return false;
+
+    // The previous item ends right before current item starts
+    const prevEnd = currentStart - 1;
+
+    // Get the text of both items
+    const currentText: string[] = [];
+    for (let i = currentStart; i <= currentEnd; i++) {
+        currentText.push(document.lineAt(i).text);
+    }
+
+    const prevText: string[] = [];
+    for (let i = prevStart; i <= prevEnd; i++) {
+        prevText.push(document.lineAt(i).text);
+    }
+
+    // Swap them
+    await editor.edit(editBuilder => {
+        const range = new vscode.Range(prevStart, 0, currentEnd, document.lineAt(currentEnd).text.length);
+        const newContent = currentText.join('\n') + '\n' + prevText.join('\n');
+        editBuilder.replace(range, newContent);
+    });
+
+    // Move cursor to new position
+    const newPosition = new vscode.Position(prevStart, position.character);
+    editor.selection = new vscode.Selection(newPosition, newPosition);
+
+    return true;
+}
+
+/**
+ * Move heading or list item down (swap with next sibling)
  */
 export async function moveHeadingDown(): Promise<boolean> {
     const editor = vscode.window.activeTextEditor;
@@ -309,7 +513,13 @@ export async function moveHeadingDown(): Promise<boolean> {
     const getLevel = isOrg ? getOrgHeadingLevel : getMarkdownHeadingLevel;
     const headingLevel = getLevel(lineText);
 
-    if (headingLevel === 0) return false; // Not a heading
+    // Check if we're on a list item
+    const listIndent = getListItemIndent(lineText);
+    if (listIndent !== -1) {
+        return moveListItemDown(editor, document, position, listIndent);
+    }
+
+    if (headingLevel === 0) return false; // Not a heading or list item
 
     // Find the start and end of current subtree
     const currentStart = position.line;
@@ -364,6 +574,56 @@ export async function moveHeadingDown(): Promise<boolean> {
     });
 
     // Move cursor to new position of the heading
+    const newLine = currentStart + nextText.length;
+    const newPosition = new vscode.Position(newLine, position.character);
+    editor.selection = new vscode.Selection(newPosition, newPosition);
+
+    return true;
+}
+
+/**
+ * Move list item down (swap with next sibling at same indentation)
+ */
+async function moveListItemDown(
+    editor: vscode.TextEditor,
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    listIndent: number
+): Promise<boolean> {
+    const currentStart = position.line;
+    const currentEnd = findListItemEnd(document, currentStart, listIndent);
+
+    // Find the next sibling list item
+    const nextStart = currentEnd + 1;
+    if (nextStart >= document.lineCount) return false;
+
+    const nextLine = document.lineAt(nextStart).text;
+    const nextIndent = getListItemIndent(nextLine);
+
+    // Must be a list item at the same indent level
+    if (nextIndent !== listIndent) return false;
+
+    const nextEnd = findListItemEnd(document, nextStart, nextIndent);
+
+    // Get the text of both items
+    const currentText: string[] = [];
+    for (let i = currentStart; i <= currentEnd; i++) {
+        currentText.push(document.lineAt(i).text);
+    }
+
+    const nextText: string[] = [];
+    for (let i = nextStart; i <= nextEnd; i++) {
+        nextText.push(document.lineAt(i).text);
+    }
+
+    // Swap them
+    await editor.edit(editBuilder => {
+        const range = new vscode.Range(currentStart, 0, nextEnd, document.lineAt(nextEnd).text.length);
+        const newContent = nextText.join('\n') + '\n' + currentText.join('\n');
+        editBuilder.replace(range, newContent);
+    });
+
+    // Move cursor to new position
     const newLine = currentStart + nextText.length;
     const newPosition = new vscode.Position(newLine, position.character);
     editor.selection = new vscode.Selection(newPosition, newPosition);

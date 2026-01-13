@@ -606,8 +606,8 @@ async function shiftTimestampUp(): Promise<void> {
         if (cycled) return;
     }
 
-    // No timestamp or heading found, let default shift-up behavior happen
-    await vscode.commands.executeCommand('editor.action.moveLinesUpAction');
+    // No timestamp or heading found, fall back to default text selection
+    await vscode.commands.executeCommand('cursorUpSelect');
 }
 
 /**
@@ -655,8 +655,8 @@ async function shiftTimestampDown(): Promise<void> {
         if (cycled) return;
     }
 
-    // No timestamp or heading found, let default shift-down behavior happen
-    await vscode.commands.executeCommand('editor.action.moveLinesDownAction');
+    // No timestamp or heading found, fall back to default text selection
+    await vscode.commands.executeCommand('cursorDownSelect');
 }
 
 /**
@@ -799,7 +799,11 @@ async function shiftTimestampLeft(): Promise<void> {
     if (cycled) return;
 
     const ts = findTimestampAtCursor(document, position);
-    if (!ts) return;
+    if (!ts) {
+        // Not on a timestamp, table, or heading - fall back to default text selection
+        await vscode.commands.executeCommand('cursorLeftSelect');
+        return;
+    }
 
     // Shift left decreases the day by 1
     const date = new Date(ts.year, ts.month - 1, ts.day);
@@ -837,7 +841,11 @@ async function shiftTimestampRight(): Promise<void> {
     if (cycled) return;
 
     const ts = findTimestampAtCursor(document, position);
-    if (!ts) return;
+    if (!ts) {
+        // Not on a timestamp, table, or heading - fall back to default text selection
+        await vscode.commands.executeCommand('cursorRightSelect');
+        return;
+    }
 
     // Shift right increases the day by 1
     const date = new Date(ts.year, ts.month - 1, ts.day);
