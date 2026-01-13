@@ -1,6 +1,12 @@
 import * as vscode from 'vscode';
 import { isInTable, moveRowUp, moveRowDown, moveColumnLeft, moveColumnRight } from './tableProvider';
 import { updateStatisticsCookies } from './scimaxOrg';
+import {
+    advanceDateByRepeater,
+    getDayOfWeek,
+    REPEATER_TIMESTAMP_PATTERN,
+    findRepeaterInLines,
+} from '../parser/orgRepeater';
 
 /**
  * TODO states for cycling
@@ -176,7 +182,35 @@ function formatHeading(prefix: string, todoState: string, rest: string): string 
 }
 
 /**
+ * Find DEADLINE or SCHEDULED line with repeater for a heading
+ * Wrapper around pure findRepeaterInLines for VS Code documents
+ */
+function findRepeaterTimestamp(
+    document: vscode.TextDocument,
+    headingLine: number
+): { lineNumber: number; match: RegExpMatchArray; type: 'DEADLINE' | 'SCHEDULED' } | null {
+    // Extract lines from document
+    const lines: string[] = [];
+    const endLine = Math.min(headingLine + 10, document.lineCount);
+    for (let i = headingLine; i < endLine; i++) {
+        lines.push(document.lineAt(i).text);
+    }
+
+    // Use pure function
+    const result = findRepeaterInLines(lines, 0);
+    if (!result) return null;
+
+    return {
+        lineNumber: headingLine + result.lineIndex,
+        match: result.match,
+        type: result.type
+    };
+}
+
+/**
  * Cycle TODO state on heading
+ * Handles repeating tasks: when transitioning to DONE with a repeater,
+ * advances the timestamp and resets to TODO
  */
 async function cycleTodoState(forward: boolean): Promise<boolean> {
     const editor = vscode.window.activeTextEditor;
@@ -194,7 +228,7 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
 
     if (!headingInfo) return false;
 
-    const newState = forward
+    let newState = forward
         ? cycleTodoForward(headingInfo.todoState)
         : cycleTodoBackward(headingInfo.todoState);
 
@@ -202,11 +236,65 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
         ? '*'.repeat(headingInfo.level)
         : '#'.repeat(headingInfo.level);
 
-    const newLine = formatHeading(prefix, newState, headingInfo.rest);
+    // Check for repeating task when transitioning to DONE
+    let repeaterInfo: ReturnType<typeof findRepeaterTimestamp> = null;
+    if (isOrg && newState === 'DONE') {
+        repeaterInfo = findRepeaterTimestamp(document, position.line);
+    }
 
-    await editor.edit(editBuilder => {
-        editBuilder.replace(line.range, newLine);
-    });
+    if (repeaterInfo) {
+        // This is a repeating task - advance the timestamp and reset to TODO
+        const match = repeaterInfo.match;
+        const year = parseInt(match[3]);
+        const month = parseInt(match[4]);
+        const day = parseInt(match[5]);
+        const hour = match[6] ? parseInt(match[6]) : undefined;
+        const minute = match[7] ? parseInt(match[7]) : undefined;
+        const repeater = match[8];
+
+        // Advance the date
+        const newDate = advanceDateByRepeater(year, month, day, repeater);
+        const newYear = newDate.getFullYear();
+        const newMonth = String(newDate.getMonth() + 1).padStart(2, '0');
+        const newDay = String(newDate.getDate()).padStart(2, '0');
+        const dow = getDayOfWeek(newDate);
+
+        // Build new timestamp
+        let newTimestamp = `<${newYear}-${newMonth}-${newDay} ${dow}`;
+        if (hour !== undefined && minute !== undefined) {
+            newTimestamp += ` ${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+        }
+        newTimestamp += ` ${repeater}>`;
+
+        // Build the new DEADLINE/SCHEDULED line
+        const indent = match[1];
+        const keyword = match[2];
+        const newDeadlineLine = `${indent}${keyword}: ${newTimestamp}`;
+
+        // Reset to TODO instead of DONE
+        newState = 'TODO';
+        const newLine = formatHeading(prefix, newState, headingInfo.rest);
+
+        // Apply both edits
+        await editor.edit(editBuilder => {
+            editBuilder.replace(line.range, newLine);
+            editBuilder.replace(
+                document.lineAt(repeaterInfo!.lineNumber).range,
+                newDeadlineLine
+            );
+        });
+
+        vscode.window.showInformationMessage(
+            `Repeating task: ${keyword} shifted to ${newYear}-${newMonth}-${newDay}`
+        );
+    } else {
+        // Normal TODO cycling
+        const newLine = formatHeading(prefix, newState, headingInfo.rest);
+
+        await editor.edit(editBuilder => {
+            editBuilder.replace(line.range, newLine);
+        });
+    }
 
     // Update statistics cookies in parent headings (org-mode only)
     if (isOrg) {
@@ -356,14 +444,6 @@ function getTimestampComponent(
 
     // Default to day
     return 'day';
-}
-
-/**
- * Get day of week abbreviation
- */
-function getDayOfWeek(date: Date): string {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return days[date.getDay()];
 }
 
 /**

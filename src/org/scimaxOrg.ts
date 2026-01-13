@@ -1217,6 +1217,48 @@ export function setupLinkContext(context: vscode.ExtensionContext): void {
     );
 }
 
+/**
+ * Check if the current line is a heading
+ */
+function isOnHeading(document: vscode.TextDocument, position: vscode.Position): boolean {
+    const line = document.lineAt(position.line).text;
+
+    if (document.languageId === 'org') {
+        // Org heading: starts with one or more asterisks followed by space
+        return /^\*+\s/.test(line);
+    } else if (document.languageId === 'markdown') {
+        // Markdown heading: starts with one or more hashes followed by space
+        return /^#+\s/.test(line);
+    } else if (document.languageId === 'latex') {
+        // LaTeX section commands
+        return /^\\(section|subsection|subsubsection|chapter|part)\{/.test(line);
+    }
+
+    return false;
+}
+
+/**
+ * Setup heading context tracking for Tab folding
+ */
+export function setupHeadingContext(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(e => {
+            const editor = e.textEditor;
+            const document = editor.document;
+
+            // Only check for supported file types
+            if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
+                vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
+                return;
+            }
+
+            const position = editor.selection.active;
+            const onHeading = isOnHeading(document, position);
+            vscode.commands.executeCommand('setContext', 'scimax.onHeading', onHeading);
+        })
+    );
+}
+
 // =============================================================================
 // Command Registration
 // =============================================================================
@@ -1276,6 +1318,9 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
 
     // Setup link context tracking for Enter key
     setupLinkContext(context);
+
+    // Setup heading context tracking for Tab folding
+    setupHeadingContext(context);
 
     // DWIM Return
     context.subscriptions.push(
