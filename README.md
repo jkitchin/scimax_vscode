@@ -1,5 +1,7 @@
 # Scimax for VS Code
 
+[![Tests](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml/badge.svg)](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml)
+
 A scientific computing environment for VS Code inspired by [Scimax](https://github.com/jkitchin/scimax), the Emacs-based starter kit for scientists and engineers.
 
 ## Features
