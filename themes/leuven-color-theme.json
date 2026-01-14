@@ -552,6 +552,20 @@
       }
     },
     {
+      "name": "LaTeX Math (Inline and Display)",
+      "scope": [
+        "markup.math.inline.latex.org",
+        "markup.math.display.latex.org",
+        "markup.math.display.bracket.latex.org",
+        "markup.math.inline.paren.latex.org",
+        "markup.math.content.org",
+        "markup.math.block.latex.org"
+      ],
+      "settings": {
+        "foreground": "#3465A4"
+      }
+    },
+    {
       "name": "JSON Key",
       "scope": ["support.type.property-name.json"],
       "settings": {

@@ -10,19 +10,19 @@ This document outlines a comprehensive plan for implementing a full-featured org
 
 The reference implementation consists of these major subsystems:
 
-| Category | Files | Description |
-|----------|-------|-------------|
-| **Core** | org.el, org-macs.el, org-compat.el, org-keys.el | Foundation, macros, compatibility |
-| **Parser** | org-element.el, org-element-ast.el | Complete syntax parser, AST manipulation |
-| **Babel** | ob-core.el + 40 ob-*.el language files | Literate programming, code execution |
-| **Export** | ox.el + 12 ox-*.el backends | Export to HTML, LaTeX, PDF, Markdown, etc. |
-| **Citations** | oc.el + 5 oc-*.el processors | Citation management |
-| **Links** | ol.el + 13 ol-*.el types | Link handling for various protocols |
-| **Agenda** | org-agenda.el | Timeline views, scheduling |
-| **Capture** | org-capture.el, org-refile.el | Quick capture, refiling |
-| **Time** | org-clock.el, org-timer.el, org-habit.el | Time tracking, habits |
-| **Tables** | org-table.el | Spreadsheet-like tables |
-| **UI** | org-faces.el, org-fold.el, org-indent.el | Visual presentation |
+| Category      | Files                                           | Description                                |
+| ----------    | -------                                         | -------------                              |
+| **Core**      | org.el, org-macs.el, org-compat.el, org-keys.el | Foundation, macros, compatibility          |
+| **Parser**    | org-element.el, org-element-ast.el              | Complete syntax parser, AST manipulation   |
+| **Babel**     | ob-core.el + 40 ob-*.el language files          | Literate programming, code execution       |
+| **Export**    | ox.el + 12 ox-*.el backends                     | Export to HTML, LaTeX, PDF, Markdown, etc. |
+| **Citations** | oc.el + 5 oc-*.el processors                    | Citation management                        |
+| **Links**     | ol.el + 13 ol-*.el types                        | Link handling for various protocols        |
+| **Agenda**    | org-agenda.el                                   | Timeline views, scheduling                 |
+| **Capture**   | org-capture.el, org-refile.el                   | Quick capture, refiling                    |
+| **Time**      | org-clock.el, org-timer.el, org-habit.el        | Time tracking, habits                      |
+| **Tables**    | org-table.el                                    | Spreadsheet-like tables                    |
+| **UI**        | org-faces.el, org-fold.el, org-indent.el        | Visual presentation                        |
 
 ### Existing scimax_vscode Foundation
 
@@ -100,14 +100,14 @@ type OrgElementType =
 
 **Key Parser Functions:**
 
-| Function | Purpose |
-|----------|---------|
-| `parseBuffer()` | Full document parse to AST |
-| `parseElement()` | Parse element at point |
-| `elementAt(position)` | Get element at buffer position |
-| `elementContext(position)` | Get context (parent chain) |
-| `elementMap(tree, callback, types?)` | Traverse AST with type filter |
-| `interpretData(ast)` | Convert AST back to org text |
+| Function                             | Purpose                        |
+| ----------                           | ---------                      |
+| `parseBuffer()`                      | Full document parse to AST     |
+| `parseElement()`                     | Parse element at point         |
+| `elementAt(position)`                | Get element at buffer position |
+| `elementContext(position)`           | Get context (parent chain)     |
+| `elementMap(tree, callback, types?)` | Traverse AST with type filter  |
+| `interpretData(ast)`                 | Convert AST back to org text   |
 
 **Files:**
 - `src/parser/orgElement.ts` - Core element definitions
@@ -330,16 +330,16 @@ async function tangleFile(document: vscode.TextDocument): Promise<string[]> {
 
 #### 2.7 Priority Languages
 
-| Priority | Language | Rationale |
-|----------|----------|-----------|
-| P0 | Python | Most common for scientific computing |
-| P0 | JavaScript/TypeScript | Native to VS Code ecosystem |
-| P0 | Shell (bash) | Universal scripting |
-| P1 | SQL | Data analysis workflows |
-| P1 | R | Statistical computing |
-| P2 | Julia | Emerging scientific language |
-| P2 | Rust | Systems programming |
-| P2 | Go | Cloud/DevOps workflows |
+| Priority   | Language              | Rationale                            |
+| ---------- | ----------            | -----------                          |
+| P0         | Python                | Most common for scientific computing |
+| P0         | JavaScript/TypeScript | Native to VS Code ecosystem          |
+| P0         | Shell (bash)          | Universal scripting                  |
+| P1         | SQL                   | Data analysis workflows              |
+| P1         | R                     | Statistical computing                |
+| P2         | Julia                 | Emerging scientific language         |
+| P2         | Rust                  | Systems programming                  |
+| P2         | Go                    | Cloud/DevOps workflows               |
 
 ---
 
@@ -942,18 +942,18 @@ class ClockStatusBar {
 
 #### 7.1 Link Protocols
 
-| Protocol | Example | Handler |
-|----------|---------|---------|
-| `file:` | `file:path/to.org::*heading` | Open file, navigate to heading |
-| `id:` | `id:abc-123-def` | Find by CUSTOM_ID |
-| `http/https:` | `https://example.com` | Open browser |
-| `mailto:` | `mailto:user@example.com` | Open email client |
-| `shell:` | `shell:ls -la` | Execute shell command |
-| `elisp:` | `elisp:(message "hi")` | N/A (Emacs only) |
-| `doi:` | `doi:10.1000/xyz` | Open DOI resolver |
-| `cite:` | `cite:author2020` | Navigate to bibliography |
-| `attachment:` | `attachment:file.pdf` | Open attachment |
-| `custom:` | `jira:PROJ-123` | Custom handlers |
+| Protocol      | Example                      | Handler                        |
+| ----------    | ---------                    | ---------                      |
+| `file:`       | `file:path/to.org::*heading` | Open file, navigate to heading |
+| `id:`         | `id:abc-123-def`             | Find by CUSTOM_ID              |
+| `http/https:` | `https://example.com`        | Open browser                   |
+| `mailto:`     | `mailto:user@example.com`    | Open email client              |
+| `shell:`      | `shell:ls -la`               | Execute shell command          |
+| `elisp:`      | `elisp:(message "hi")`       | N/A (Emacs only)               |
+| `doi:`        | `doi:10.1000/xyz`            | Open DOI resolver              |
+| `cite:`       | `cite:author2020`            | Navigate to bibliography       |
+| `attachment:` | `attachment:file.pdf`        | Open attachment                |
+| `custom:`     | `jira:PROJ-123`              | Custom handlers                |
 
 #### 7.2 Custom Link Types
 
@@ -1094,23 +1094,23 @@ interface SyncManager {
 
 ## Implementation Priority Matrix
 
-| Phase | Feature | Impact | Effort | Priority | Status |
-|-------|---------|--------|--------|----------|--------|
-| 2 | Babel (Python/JS/Shell) | Very High | High | P0 | ✅ Done |
-| 2 | Jupyter Kernels | Very High | High | P0 | ✅ Done |
-| 3 | HTML Export | High | Medium | P1 | ✅ Done |
-| 3 | Markdown Export | Medium | Low | P1 | ✅ Done |
-| 3 | LaTeX/PDF Export | Medium | High | P2 | ✅ Done |
-| 6 | Time Tracking (Basic) | High | Medium | P1 | ✅ Done |
-| 1 | Full org-element parser | Medium | High | P2 | ✅ Done |
-| - | Scimax-org | High | Medium | P1 | ✅ Done |
-| - | Scimax-ob | High | Medium | P1 | ✅ Done |
-| - | Enhanced Tables | Medium | Medium | P1 | ✅ Done |
-| 4 | Capture Templates | Very High | Medium | P0 | 🔲 Todo |
-| 5 | Enhanced Agenda | High | Medium | P0 | 🔲 Partial |
-| 7 | Backlinks/Graph | High | High | P1 | 🔲 Todo |
-| 8 | LaTeX Preview | Medium | Medium | P2 | 🔲 Todo |
-| 5 | Habit Tracking | Medium | Medium | P2 | 🔲 Todo |
+| Phase   | Feature                 | Impact    | Effort   | Priority   | Status     |
+| ------- | ---------               | --------  | -------- | ---------- | --------   |
+| 2       | Babel (Python/JS/Shell) | Very High | High     | P0         | ✅ Done    |
+| 2       | Jupyter Kernels         | Very High | High     | P0         | ✅ Done    |
+| 3       | HTML Export             | High      | Medium   | P1         | ✅ Done    |
+| 3       | Markdown Export         | Medium    | Low      | P1         | ✅ Done    |
+| 3       | LaTeX/PDF Export        | Medium    | High     | P2         | ✅ Done    |
+| 6       | Time Tracking (Basic)   | High      | Medium   | P1         | ✅ Done    |
+| 1       | Full org-element parser | Medium    | High     | P2         | ✅ Done    |
+| -       | Scimax-org              | High      | Medium   | P1         | ✅ Done    |
+| -       | Scimax-ob               | High      | Medium   | P1         | ✅ Done    |
+| -       | Enhanced Tables         | Medium    | Medium   | P1         | ✅ Done    |
+| 4       | Capture Templates       | Very High | Medium   | P0         | 🔲 Todo    |
+| 5       | Enhanced Agenda         | High      | Medium   | P0         | 🔲 Partial |
+| 7       | Backlinks/Graph         | High      | High     | P1         | 🔲 Todo    |
+| 8       | LaTeX Preview           | Medium    | Medium   | P2         | 🔲 Todo    |
+| 5       | Habit Tracking          | Medium    | Medium   | P2         | 🔲 Todo    |
 
 ---
 

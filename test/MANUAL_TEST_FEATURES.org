@@ -75,9 +75,9 @@ This task is completed.
 *** Table:
 | Item   | Price | Quantity | Total |
 |--------+-------+----------+-------|
-| Apple  |  1.50 |        3 |     0 |
-| Banana |  0.75 |        6 |     0 |
-| Orange |  2.00 |        2 |     0 |
+| Apple  | 1.50  | 3        | 4.5   |
+| Banana | 0.75  | 6        | 4.5   |
+| Orange | 2.00  | 2        | 4     |
 #+TBLFM: $4=$2*$3
 
 *** Expected:
@@ -95,9 +95,9 @@ This task is completed.
 *** Table with Functions:
 | Category | Q1 | Q2 | Q3 | Q4 | Total | Average |
 |----------+----+----+----+----+-------+---------|
-| Sales    | 10 | 20 | 30 | 40 |     0 |       0 |
-| Support  |  5 | 10 | 15 | 20 |     0 |       0 |
-| R&D      | 15 | 25 | 35 | 45 |     0 |       0 |
+| Sales    | 10 | 20 | 30 | 40 | 100   | 25      |
+| Support  | 5  | 10 | 15 | 20 | 50    | 12.5    |
+| R&D      | 15 | 25 | 35 | 45 | 120   | 30      |
 #+TBLFM: $6=vsum($2..$5)::$7=vmean($2..$5)
 
 *** Expected:
@@ -114,9 +114,9 @@ This task is completed.
 *** Table with Field References:
 | ID | Value | Running Sum |
 |----+-------+-------------|
-|  1 |    10 |          10 |
-|  2 |    20 |          30 |
-|  3 |    30 |           0 |
+| 1  | 10    | 10          |
+| 2  | 20    | 30          |
+| 3  | 30    | 60          |
 #+TBLFM: @2$3=$2::@3$3=@2$3+$2::@4$3=vsum(@2$2..@4$2)
 
 *** Expected:
@@ -130,11 +130,11 @@ This task is completed.
 1. Recalculate this table to verify math operations
 
 *** Math Table:
-| A | B | A+B | A*B | A/B |    A^2 |
-|---+---+-----+-----+-----+--------|
-| 3 | 4 |   0 |   0 |   0 |      0 |
-| 5 | 2 |   0 |   0 |   0 |      0 |
-| 8 | 3 |   0 |   0 |   0 |      0 |
+| A | B | A+B | A*B | A/B  | A^2 |
+|---+---+-----+-----+------+-----|
+| 3 | 4 | 7   | 12  | 0.75 | 9   |
+| 5 | 2 | 7   | 10  | 2.50 | 25  |
+| 8 | 3 | 11  | 24  | 2.67 | 64  |
 #+TBLFM: $3=$1+$2::$4=$1*$2::$5=$1/$2;%.2f::$6=$1**2
 
 *** Expected:
@@ -288,14 +288,14 @@ A template configured as:
 
 ** Configuration Options:
 
-| Setting                    | Description                         | Default            |
-|----------------------------+-------------------------------------+--------------------|
-| scimax.agenda.files        | Glob patterns for org files         | []                 |
-| scimax.agenda.excludePatterns | Patterns to exclude              | ["archive"]        |
-| scimax.agenda.defaultSpan  | Days to show in agenda              | 7                  |
-| scimax.agenda.showDone     | Show completed tasks                | false              |
-| scimax.agenda.todoStates   | Active TODO keywords                | TODO, NEXT, WAITING |
-| scimax.agenda.doneStates   | Completed keywords                  | DONE, CANCELLED    |
+| Setting                       | Description                 | Default             |
+|-------------------------------+-----------------------------+---------------------|
+| scimax.agenda.files           | Glob patterns for org files | []                  |
+| scimax.agenda.excludePatterns | Patterns to exclude         | ["archive"]         |
+| scimax.agenda.defaultSpan     | Days to show in agenda      | 7                   |
+| scimax.agenda.showDone        | Show completed tasks        | false               |
+| scimax.agenda.todoStates      | Active TODO keywords        | TODO, NEXT, WAITING |
+| scimax.agenda.doneStates      | Completed keywords          | DONE, CANCELLED     |
 
 * Capture Configuration
 :PROPERTIES:

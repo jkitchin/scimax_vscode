@@ -154,36 +154,36 @@ This documentation is organized into several sections:
 
 *** Core Documentation
 
-| Document                          | Description                           |
-|-----------------------------------+---------------------------------------|
-| [[file:getting-started.org][Getting Started]]                   | Installation and first steps          |
-| [[file:document-structure.org][Document Structure]]                | Headings, folding, navigation         |
-| [[file:todo-items.org][TODO Items]]                        | Task management                       |
-| [[file:tables.org][Tables]]                            | Table editing and formulas            |
-| [[file:links.org][Links]]                             | Hyperlinks and references             |
-| [[file:timestamps.org][Timestamps]]                        | Dates, deadlines, scheduling          |
-| [[file:source-blocks.org][Source Code Blocks]]                | Code execution                        |
-| [[file:export.org][Export]]                            | Exporting documents                   |
+| Document                                            | Description                   |
+|-----------------------------------------------------+-------------------------------|
+| [[file:getting-started.org][Getting Started]]       | Installation and first steps  |
+| [[file:document-structure.org][Document Structure]] | Headings, folding, navigation |
+| [[file:todo-items.org][TODO Items]]                 | Task management               |
+| [[file:tables.org][Tables]]                         | Table editing and formulas    |
+| [[file:links.org][Links]]                           | Hyperlinks and references     |
+| [[file:timestamps.org][Timestamps]]                 | Dates, deadlines, scheduling  |
+| [[file:source-blocks.org][Source Code Blocks]]      | Code execution                |
+| [[file:export.org][Export]]                         | Exporting documents           |
 
 *** Feature Documentation
 
-| Document                          | Description                           |
-|-----------------------------------+---------------------------------------|
-| [[file:agenda.org][Agenda]]                            | Agenda views and planning             |
-| [[file:journal.org][Journal]]                           | Daily journaling system               |
-| [[file:database-search.org][Database and Search]]               | Full-text and semantic search         |
-| [[file:references.org][References]]                        | Citations and bibliography            |
-| [[file:notebook.org][Notebook]]                          | Project-based organization            |
-| [[file:jupyter.org][Jupyter]]                           | Jupyter kernel integration            |
+| Document                                          | Description                   |
+|---------------------------------------------------+-------------------------------|
+| [[file:agenda.org][Agenda]]                       | Agenda views and planning     |
+| [[file:journal.org][Journal]]                     | Daily journaling system       |
+| [[file:database-search.org][Database and Search]] | Full-text and semantic search |
+| [[file:references.org][References]]               | Citations and bibliography    |
+| [[file:notebook.org][Notebook]]                   | Project-based organization    |
+| [[file:jupyter.org][Jupyter]]                     | Jupyter kernel integration    |
 
 *** Reference Documentation
 
-| Document                          | Description                           |
-|-----------------------------------+---------------------------------------|
-| [[file:keybindings.org][Keybindings]]                       | Complete keybinding reference         |
-| [[file:commands.org][Commands]]                          | All commands with descriptions        |
-| [[file:configuration.org][Configuration]]                     | All settings and options              |
-| [[file:supported-languages.org][Supported Languages]]               | Languages for code execution          |
+| Document                                              | Description                    |
+|-------------------------------------------------------+--------------------------------|
+| [[file:keybindings.org][Keybindings]]                 | Complete keybinding reference  |
+| [[file:commands.org][Commands]]                       | All commands with descriptions |
+| [[file:configuration.org][Configuration]]             | All settings and options       |
+| [[file:supported-languages.org][Supported Languages]] | Languages for code execution   |
 
 ** Quick Start
 
@@ -244,41 +244,41 @@ This section provides a comprehensive index of all documentation topics with lin
 
 ** Navigation Guides
 
-| Document                        | Topics Covered                                  |
-|---------------------------------+-------------------------------------------------|
-| [[file:getting-started.org][Getting Started]]                 | Installation, first steps, basic usage          |
-| [[file:navigation.org][Navigation]]                      | Fuzzy search, avy-style jump, outline navigation |
-| [[file:hydra-menus.org][Hydra Menus]]                     | Keyboard-driven menus, customization            |
-| [[file:keybindings.org][Keybindings]]                     | Complete keybinding reference                   |
-| [[file:speed-commands.org][Speed Commands]]                  | Single-key commands at heading start            |
-| [[file:commands.org][Commands]]                        | All available commands                          |
+| Document                                      | Topics Covered                                   |
+|-----------------------------------------------+--------------------------------------------------|
+| [[file:getting-started.org][Getting Started]] | Installation, first steps, basic usage           |
+| [[file:navigation.org][Navigation]]           | Fuzzy search, avy-style jump, outline navigation |
+| [[file:hydra-menus.org][Hydra Menus]]         | Keyboard-driven menus, customization             |
+| [[file:keybindings.org][Keybindings]]         | Complete keybinding reference                    |
+| [[file:speed-commands.org][Speed Commands]]   | Single-key commands at heading start             |
+| [[file:commands.org][Commands]]               | All available commands                           |
 
 ** Document Editing
 
-| Document                        | Topics Covered                                  |
-|---------------------------------+-------------------------------------------------|
-| [[file:document-structure.org][Document Structure]]              | Headings, folding, properties, drawers          |
-| [[file:todo-items.org][TODO Items]]                      | Tasks, priorities, checkboxes, states           |
-| [[file:timestamps.org][Timestamps]]                      | Dates, deadlines, scheduling, repeaters         |
-| [[file:tables.org][Tables]]                          | Table creation, editing, formulas               |
-| [[file:links.org][Links]]                           | Hyperlinks, internal links, citations           |
-| [[file:editmarks.org][Editmarks]]                       | Track changes, revision marks                   |
+| Document                                            | Topics Covered                          |
+|-----------------------------------------------------+-----------------------------------------|
+| [[file:document-structure.org][Document Structure]] | Headings, folding, properties, drawers  |
+| [[file:todo-items.org][TODO Items]]                 | Tasks, priorities, checkboxes, states   |
+| [[file:timestamps.org][Timestamps]]                 | Dates, deadlines, scheduling, repeaters |
+| [[file:tables.org][Tables]]                         | Table creation, editing, formulas       |
+| [[file:links.org][Links]]                           | Hyperlinks, internal links, citations   |
+| [[file:editmarks.org][Editmarks]]                   | Track changes, revision marks           |
 
 ** Code Execution
 
-| Document                        | Topics Covered                                  |
-|---------------------------------+-------------------------------------------------|
-| [[file:source-blocks.org][Source Code Blocks]]              | Babel execution, header arguments               |
-| [[file:supported-languages.org][Supported Languages]]             | Python, R, Julia, Shell, and more               |
-| [[file:jupyter.org][Jupyter Integration]]             | Kernel management, rich output                  |
+| Document                                              | Topics Covered                    |
+|-------------------------------------------------------+-----------------------------------|
+| [[file:source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments |
+| [[file:supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more |
+| [[file:jupyter.org][Jupyter Integration]]             | Kernel management, rich output    |
 
 ** Export and Preview
 
-| Document                        | Topics Covered                                  |
-|---------------------------------+-------------------------------------------------|
-| [[file:export.org][Export]]                          | HTML, LaTeX, PDF, Markdown export               |
-| [[file:latex-preview.org][LaTeX Preview]]                   | Math rendering, equation preview                |
-| [[file:image-overlays.org][Image Overlays]]                  | Inline image display                            |
+| Document                                    | Topics Covered                    |
+|---------------------------------------------+-----------------------------------|
+| [[file:export.org][Export]]                 | HTML, LaTeX, PDF, Markdown export |
+| [[file:latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  |
+| [[file:image-overlays.org][Image Overlays]] | Inline image display              |
 
 ** Organization and Planning
 

@@ -33,9 +33,9 @@ Inline math appears within text paragraphs and uses the following delimiters:
 The most common inline math syntax. Text between single dollar signs is rendered as mathematics.
 
 *Example:*
-#+BEGIN_EXAMPLE
+
 The quadratic formula is $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ for equation $ax^2 + bx + c = 0$.
-#+END_EXAMPLE
+
 
 *Renders as:* The quadratic formula is x = (-b ± √(b² - 4ac)) / 2a for equation ax² + bx + c = 0.
 
@@ -44,9 +44,8 @@ The quadratic formula is $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ for equation $
 Alternative inline math syntax, preferred in some LaTeX style guides.
 
 *Example:*
-#+BEGIN_EXAMPLE
+
 Einstein's mass-energy equivalence is \(E = mc^2\), where \(c\) is the speed of light.
-#+END_EXAMPLE
 
 *Renders as:* Einstein's mass-energy equivalence is E = mc², where c is the speed of light.
 
@@ -63,9 +62,8 @@ Display math appears on its own line, centered and larger than inline math.
 Creates unnumbered display equations.
 
 *Example:*
-#+BEGIN_EXAMPLE
+
 $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
-#+END_EXAMPLE
 
 *Renders as a centered display equation:*
 ∫₋∞^∞ e^(-x²) dx = √π

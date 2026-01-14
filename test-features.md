@@ -237,4 +237,8 @@ Tasks can have multiple tags:
 
 ---
 
+
+[img](.ob-jupyter/output-1768342795701-0.png)
+
+
 *End of test file*
