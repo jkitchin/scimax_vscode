@@ -1,0 +1,894 @@
+#+TITLE: References and Citations
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-13
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+
+* Overview
+
+Scimax VS Code provides comprehensive bibliography and citation management inspired by Emacs org-ref. This system allows you to:
+- Manage BibTeX bibliography files
+- Insert and format citations in multiple styles
+- Follow citation links to PDFs, URLs, and notes
+- Search and browse your reference library
+- Export citations to various formats
+- Integrate with CrossRef and OpenAlex for metadata
+
+The reference system seamlessly integrates with org-mode documents while also supporting Markdown and LaTeX formats.
+
+* Setting Up Bibliography Files
+
+** Configuration
+
+Configure your bibliography files in VS Code settings (=Preferences: Open Settings (UI)= → search for "scimax ref"):
+
+| Setting                            | Description                                   |
+|------------------------------------+-----------------------------------------------|
+| =scimax.ref.bibliographyFiles=     | Array of .bib file paths (global)             |
+| =scimax.ref.pdfDirectory=          | Directory containing PDF files                |
+| =scimax.ref.notesDirectory=        | Directory for reference notes (.org files)    |
+| =scimax.ref.defaultCiteStyle=      | Default citation style (cite, citet, citep)   |
+| =scimax.ref.autoDownloadPdf=       | Auto-download PDFs from DOI (experimental)    |
+
+*** Example Configuration
+
+#+BEGIN_SRC json
+{
+  "scimax.ref.bibliographyFiles": [
+    "~/Documents/references.bib",
+    "~/research/bibliography.bib"
+  ],
+  "scimax.ref.pdfDirectory": "~/Documents/papers/",
+  "scimax.ref.notesDirectory": "~/Documents/notes/",
+  "scimax.ref.defaultCiteStyle": "cite"
+}
+#+END_SRC
+
+** Document-Local Bibliography Files
+
+You can specify bibliography files per document using:
+
+*** Bibliography Links
+
+#+BEGIN_SRC org
+bibliography:~/Documents/refs.bib
+bibliography:./local-refs.bib,~/global-refs.bib
+#+END_SRC
+
+Multiple files are comma-separated. Paths can be:
+- Absolute: =/path/to/file.bib=
+- Home-relative: =~/Documents/refs.bib=
+- Document-relative: =./refs.bib= or =../shared/refs.bib=
+
+*** Bibliography Keywords
+
+Alternative org-mode syntax:
+
+#+BEGIN_SRC org
+#+BIBLIOGRAPHY: ~/Documents/references.bib
+#+END_SRC
+
+** Workspace Bibliography Files
+
+The extension automatically discovers all =.bib= files in your workspace and makes them available for citation completion.
+
+** Creating a Bibliography File
+
+Create a new =.bib= file manually or use the command:
+- =scimax.ref.openBibliography= - Opens bibliography file or creates new one
+
+Basic BibTeX entry structure:
+
+#+BEGIN_SRC bibtex
+@article{smith2024machine,
+  author = {Smith, John and Doe, Jane},
+  title = {Machine Learning for Scientific Computing},
+  journal = {Journal of Computational Science},
+  year = {2024},
+  volume = {15},
+  number = {3},
+  pages = {123--145},
+  doi = {10.1000/jcs.2024.0001}
+}
+#+END_SRC
+
+* Citation Link Types
+
+Scimax VS Code supports multiple citation styles for different contexts:
+
+** Citation Styles
+
+| Style         | Syntax                | Rendered As (typical)        | Use Case                 |
+|---------------+-----------------------+------------------------------+--------------------------|
+| =cite=        | =cite:key=            | [1] or (Smith, 2024)         | Basic citation           |
+| =citet=       | =citet:key=           | Smith (2024)                 | Textual citation         |
+| =citep=       | =citep:key=           | (Smith, 2024)                | Parenthetical citation   |
+| =citeauthor=  | =citeauthor:key=      | Smith                        | Author name only         |
+| =citeyear=    | =citeyear:key=        | 2024                         | Year only                |
+
+** Multiple Citations
+
+Cite multiple sources by separating keys with commas:
+
+#+BEGIN_SRC org
+cite:smith2024,jones2023,doe2022
+citet:nguyen2023,chen2024
+#+END_SRC
+
+Renders as: (Smith, 2024; Jones, 2023; Doe, 2022) or [1-3]
+
+** Citation Formats by File Type
+
+Citations adapt to your document format:
+
+*** Org-Mode Format
+
+#+BEGIN_SRC org
+cite:smith2024
+citet:jones2023
+citep:doe2022,nguyen2023
+#+END_SRC
+
+*** Markdown/Pandoc Format
+
+The insert citation command generates Pandoc-style citations in Markdown files:
+
+#+BEGIN_SRC markdown
+[@smith2024]
+[@jones2023, p. 42]
+[see @smith2024; also @jones2023]
+#+END_SRC
+
+*** LaTeX Format
+
+For LaTeX documents, citations use standard LaTeX commands:
+
+#+BEGIN_SRC latex
+\cite{smith2024}
+\citet{jones2023}
+\citep{doe2022,nguyen2023}
+#+END_SRC
+
+** Org-Mode 9.5+ Citation Syntax
+
+Modern org-mode citation syntax is also supported:
+
+#+BEGIN_SRC org
+[cite:@smith2024]
+[cite/t:@jones2023]
+[cite/p:@doe2022;@nguyen2023]
+#+END_SRC
+
+* Inserting Citations
+
+** Insert Citation Command
+
+| Key         | Command                              |
+|-------------+--------------------------------------|
+| =Ctrl+C ]=  | Insert citation (=scimax.ref.insertCitation=) |
+
+*** Interactive Citation Insertion
+
+1. Press =Ctrl+C ]= or run command =scimax.ref.insertCitation=
+2. Search and select a reference (searches key, author, title, year)
+3. Choose citation style (cite, citet, citep, citeauthor, citeyear)
+4. Citation is inserted at cursor
+
+*** Appending to Existing Citations
+
+When cursor is on an existing citation:
+1. Press =Ctrl+C ]=
+2. Select additional reference
+3. Key is automatically appended: =cite:key1,key2=
+
+The command detects when you're on a citation and adds the new key to the list.
+
+** Citation Completion
+
+Auto-completion triggers after typing:
+- =cite:= (org-mode)
+- =@= (Markdown/Pandoc)
+- =\cite{= (LaTeX)
+
+Completion shows:
+- Citation key
+- Author and year
+- Full formatted citation on hover
+
+** Quick Citation Commands
+
+| Command                            | Description                        |
+|------------------------------------+------------------------------------|
+| =scimax.ref.insertCitation=        | Insert/append citation             |
+| =scimax.ref.insertRef=             | Insert cross-reference (ref:, eqref:) |
+| =scimax.ref.insertBibliography=    | Insert bibliography link           |
+
+* Following Citation Links
+
+** Citation Link Actions
+
+Click on a citation or press =Ctrl+C Ctrl+O= on a citation to open an action menu:
+
+*** For Known Citations
+
+| Action                  | Description                                    |
+|-------------------------+------------------------------------------------|
+| Open BibTeX Entry       | Jump to entry in .bib file                     |
+| Open DOI                | Open DOI URL in browser                        |
+| Open URL                | Open entry's URL field in browser              |
+| Open PDF                | Open PDF file if available                     |
+| Open/Create Notes       | Open reference notes file                      |
+| Citing Works (OpenAlex) | Show papers that cite this work                |
+| Related Works (OpenAlex)| Show related papers                            |
+| View in OpenAlex        | Open in OpenAlex web interface                 |
+| Copy Citation Key       | Copy key to clipboard                          |
+| Copy BibTeX             | Copy full BibTeX entry to clipboard            |
+
+*** For Unknown Citations
+
+If citation key is not found in bibliography:
+
+| Action                  | Description                                    |
+|-------------------------+------------------------------------------------|
+| Search Google Scholar   | Search for the key on Google Scholar           |
+| Search CrossRef         | Search CrossRef database                       |
+| Add from DOI            | Fetch BibTeX from DOI                          |
+| Copy Key                | Copy citation key to clipboard                 |
+
+** Citation Hover Information
+
+Hover over a citation to see:
+- Full title and authors
+- Publication venue and year
+- Abstract (if available)
+- DOI and URL links
+- Citation count (via OpenAlex)
+- Open Access status
+- Quick action links
+
+** Opening PDFs
+
+The system looks for PDF files in =scimax.ref.pdfDirectory= using these patterns:
+1. =key.pdf= (exact key match)
+2. =Author_Year.pdf= (first author and year)
+3. =DOI.pdf= (DOI with slashes replaced by underscores)
+
+If no local PDF is found but the entry has a DOI:
+- Prompts to open DOI in browser
+- OpenAlex integration may provide Open Access PDF link
+
+** Reference Notes
+
+Each reference can have an associated notes file:
+
+#+BEGIN_SRC org
+#+TITLE: Notes on Machine Learning for Scientific Computing
+#+AUTHOR: Smith and Doe
+#+DATE: 2024
+#+CITE_KEY: smith2024machine
+
+,* Summary
+
+,* Key Points
+-
+
+,* Quotes
+#+BEGIN_QUOTE
+
+#+END_QUOTE
+
+,* Notes
+
+,* References
+#+END_SRC
+
+Notes are stored in =scimax.ref.notesDirectory= as =key.org= files and created automatically with a template when first opened.
+
+* Citation Manipulation
+
+When cursor is on a citation with multiple keys:
+
+** Transpose Citations
+
+| Key                | Command                                      | Action                    |
+|--------------------+----------------------------------------------+---------------------------|
+| =Shift+Left Arrow= | =scimax.ref.transposeCitationLeft=           | Swap with previous key    |
+| =Shift+Right Arrow=| =scimax.ref.transposeCitationRight=          | Swap with next key        |
+
+Example:
+#+BEGIN_EXAMPLE
+cite:jones2023,smith2024,doe2022
+       ^cursor here
+
+Press Shift+Right:
+cite:jones2023,doe2022,smith2024
+                      ^cursor follows
+#+END_EXAMPLE
+
+** Sort Citations
+
+| Key              | Command                                  | Action                           |
+|------------------+------------------------------------------+----------------------------------|
+| =Shift+Up Arrow= | =scimax.ref.sortCitations=               | Sort by year (oldest first)      |
+| =Shift+Down=     | =scimax.ref.sortCitationsByYear=         | Sort by year (newest first)      |
+|                  | =scimax.ref.sortCitationsAlphabetically= | Sort alphabetically by key       |
+
+Citations are sorted by extracting year from:
+1. Bibliography entry year field
+2. Year pattern in citation key (e.g., =smith-2024-machine=)
+
+** Delete Citation Key
+
+| Command                     | Action                                       |
+|-----------------------------+----------------------------------------------|
+| =scimax.ref.deleteCitation= | Delete current key or entire citation        |
+
+- If multiple keys: Removes current key only
+- If single key: Deletes entire citation
+
+* Bibliography Display
+
+** References Tree View
+
+The References view shows your bibliography organized by entry type:
+
+#+BEGIN_EXAMPLE
+REFERENCES
+├─ article (45)
+│  ├─ smith2024machine: Smith (2024)
+│  ├─ jones2023deep: Jones (2023)
+│  └─ ...
+├─ book (12)
+│  ├─ doe2022python: Doe (2022)
+│  └─ ...
+└─ inproceedings (23)
+   └─ ...
+#+END_EXAMPLE
+
+Click an entry to open the action menu.
+
+** Search References
+
+| Command                        | Description                              |
+|--------------------------------+------------------------------------------|
+| =scimax.ref.searchReferences=  | Search bibliography by author/title/year |
+
+Searches across:
+- Citation keys
+- Author names
+- Titles
+- Years
+- Journals
+- Keywords
+
+Results are ranked by relevance (key matches first, then author, then title).
+
+** Find Citations
+
+| Command                      | Description                               |
+|------------------------------+-------------------------------------------|
+| =scimax.ref.findCitations=   | Find all citations of a reference         |
+
+Searches workspace for citations of a selected key in all org, markdown, and LaTeX files. Results shown in peek view for quick navigation.
+
+* Fetching References from DOI
+
+** Add Reference from DOI
+
+| Command                    | Description                                |
+|----------------------------+--------------------------------------------|
+| =scimax.ref.fetchFromDOI=  | Fetch BibTeX entry from DOI via CrossRef   |
+
+*** Usage
+
+1. Run =scimax.ref.fetchFromDOI=
+2. Enter DOI (accepts =10.xxx/xxx= or =https://doi.org/10.xxx/xxx=)
+3. Preview the fetched entry
+4. Choose action:
+   - Add to Bibliography - Appends to first configured .bib file
+   - Copy BibTeX - Copies to clipboard
+   - Cancel
+
+*** DOI Resolution
+
+The system fetches metadata from CrossRef API and converts it to BibTeX format. If the key already exists, you can:
+- Replace the existing entry
+- Generate a new unique key
+- Cancel
+
+** OpenAlex Integration
+
+OpenAlex provides enhanced metadata for academic works:
+
+*** Show Citing Works
+
+| Command                        | Description                            |
+|--------------------------------+----------------------------------------|
+| =scimax.ref.showCitingWorks=   | Show papers citing this work           |
+
+Displays papers that cite the selected reference with:
+- Title, authors, year
+- Citation count
+- Open Access status and PDF link
+- Publication venue
+
+*** Show Related Works
+
+| Command                         | Description                           |
+|---------------------------------+---------------------------------------|
+| =scimax.ref.showRelatedWorks=   | Show related papers                   |
+
+Shows papers related to the selected reference based on OpenAlex's relatedness algorithm.
+
+*** Search OpenAlex
+
+| Command                       | Description                             |
+|-------------------------------+-----------------------------------------|
+| =scimax.ref.searchOpenAlex=   | Search OpenAlex database                |
+
+Search the global OpenAlex database for works by title, author, or keywords. Results include:
+- Citation counts
+- Open Access status
+- Topic classification
+- Abstracts
+
+** DOI Hover Information
+
+Hover over DOI links (=doi:10.xxx=, =https://doi.org/10.xxx=) to see:
+- Title, authors, publication info
+- Citation count (via OpenAlex)
+- Open Access status and PDF link
+- Abstract
+- Quick actions: Add to bibliography, open DOI, view citing works
+
+* Cross-References
+
+Beyond citations, Scimax supports cross-references to figures, tables, equations, and sections.
+
+** Reference Link Types
+
+| Type      | Example           | References                              |
+|-----------+-------------------+-----------------------------------------|
+| =ref=     | =ref:fig-results= | Figures, tables, sections               |
+| =eqref=   | =eqref:eq-1=      | Equations (with parentheses)            |
+| =pageref= | =pageref:intro=   | Page number reference                   |
+| =nameref= | =nameref:methods= | Name/title of section                   |
+| =autoref= | =autoref:tbl-1=   | Auto-formatted (Figure 1, Table 2, etc.)|
+
+** Insert Cross-Reference
+
+| Key             | Command                        |
+|-----------------+--------------------------------|
+| =Ctrl+Shift+]= | Insert ref (=scimax.ref.insertRef=) |
+
+1. Run =scimax.ref.insertRef=
+2. Select label from workspace
+3. Choose reference type (ref, eqref, pageref, etc.)
+4. Reference inserted at cursor
+
+** Label Definitions
+
+Define labels for cross-referencing:
+
+*** Org-Mode Labels
+
+#+BEGIN_SRC org
+,#+NAME: fig-results
+,#+CAPTION: Experimental results
+[[file:./images/results.png]]
+
+,#+NAME: tbl-data
+,#+CAPTION: Data summary
+| Column 1 | Column 2 |
+|----------+----------|
+| Data     | Values   |
+
+label:eq-main  \[ E = mc^2 \]
+
+,* Methods
+:PROPERTIES:
+:CUSTOM_ID: methods
+:END:
+#+END_SRC
+
+References:
+#+BEGIN_SRC org
+See ref:fig-results for the results.
+As shown in eqref:eq-main, energy equals...
+The ref:methods section describes our approach.
+#+END_SRC
+
+*** LaTeX Labels
+
+#+BEGIN_SRC latex
+\begin{equation}
+  \label{eq:main}
+  E = mc^2
+\end{equation}
+
+See equation \eqref{eq:main} for details.
+#+END_SRC
+
+** Reference Hover
+
+Hover over cross-references to see:
+- Label type (figure, table, equation, heading)
+- Caption or heading text
+- Surrounding context
+- Link to jump to definition
+
+* Export of Citations
+
+** HTML Export
+
+Citations in HTML export:
+
+#+BEGIN_SRC org
+cite:smith2024
+#+END_SRC
+
+Exports to:
+#+BEGIN_SRC html
+<a href="#smith2024" class="citation">Smith (2024)</a>
+#+END_SRC
+
+Bibliography sections are formatted as lists with anchors.
+
+** LaTeX Export
+
+Citations convert to LaTeX commands:
+
+| Org Citation        | LaTeX Output            |
+|---------------------+-------------------------|
+| =cite:key=          | =\cite{key}=            |
+| =citet:key=         | =\citet{key}=           |
+| =citep:key=         | =\citep{key}=           |
+| =citeauthor:key=    | =\citeauthor{key}=      |
+| =citeyear:key=      | =\citeyear{key}=        |
+
+Bibliography links export to =\bibliography{file}= commands.
+
+** Markdown Export
+
+Citations export to Pandoc citation syntax:
+
+| Org Citation    | Pandoc Markdown Output  |
+|-----------------+-------------------------|
+| =cite:key=      | =[@key]=                |
+| =citet:key=     | =@key=                  |
+| =citep:key=     | =[@key]=                |
+
+** Extract Bibliography for Document
+
+| Command                           | Description                                  |
+|-----------------------------------+----------------------------------------------|
+| =scimax.ref.extractBibliography=  | Extract cited references to new .bib file    |
+
+Useful for creating document-specific bibliography files:
+1. Scans current document for all citations
+2. Looks up entries in your bibliography
+3. Saves to new .bib file or copies to clipboard
+
+Generates a portable .bib file containing only the references cited in your document.
+
+* Managing Your Bibliography
+
+** Opening Bibliography Files
+
+| Command                         | Description                              |
+|---------------------------------+------------------------------------------|
+| =scimax.ref.openBibliography=   | Open configured bibliography file        |
+
+If multiple files configured, shows a picker.
+
+** Copy BibTeX Entry
+
+| Command                    | Description                                |
+|----------------------------+--------------------------------------------|
+| =scimax.ref.copyBibTeX=    | Copy BibTeX entry for selected reference   |
+
+Select a reference and copy its BibTeX source to clipboard.
+
+** Refresh Bibliography
+
+| Command                  | Description                                  |
+|--------------------------+----------------------------------------------|
+| =scimax.ref.refresh=     | Reload all bibliography files                |
+
+Reloads all configured and workspace .bib files. Useful after external changes.
+
+** Bibliography File Diagnostics
+
+The extension validates bibliography links in org files:
+- Highlights missing bibliography files
+- Shows error diagnostics for invalid paths
+- Suggests creating missing files
+
+** Code Lenses in .bib Files
+
+When viewing a .bib file, code lenses appear for each entry:
+- =Find citations= - Search workspace for citations of this key
+- =Copy key= - Copy citation key to clipboard
+
+* Command Reference
+
+** Citation Commands
+
+| Command                                  | Default Key     | Description                     |
+|------------------------------------------+-----------------+---------------------------------|
+| =scimax.ref.insertCitation=              | =Ctrl+C ]=      | Insert/append citation          |
+| =scimax.ref.insertRef=                   | =Ctrl+Shift+]=  | Insert cross-reference          |
+| =scimax.ref.insertBibliography=          |                 | Insert bibliography link        |
+| =scimax.ref.transposeCitationLeft=       | =Shift+Left=    | Swap citation left              |
+| =scimax.ref.transposeCitationRight=      | =Shift+Right=   | Swap citation right             |
+| =scimax.ref.sortCitations=               | =Shift+Up=      | Sort by year ascending          |
+| =scimax.ref.sortCitationsByYear=         | =Shift+Down=    | Sort by year descending         |
+| =scimax.ref.sortCitationsAlphabetically= |                 | Sort alphabetically             |
+| =scimax.ref.deleteCitation=              |                 | Delete citation key             |
+
+** Bibliography Commands
+
+| Command                          | Description                              |
+|----------------------------------+------------------------------------------|
+| =scimax.ref.openBibliography=    | Open bibliography file                   |
+| =scimax.ref.searchReferences=    | Search bibliography                      |
+| =scimax.ref.findCitations=       | Find citations of reference              |
+| =scimax.ref.copyBibTeX=          | Copy BibTeX entry                        |
+| =scimax.ref.refresh=             | Reload bibliography files                |
+| =scimax.ref.extractBibliography= | Extract cited references                 |
+
+** DOI and External Commands
+
+| Command                         | Description                               |
+|---------------------------------+-------------------------------------------|
+| =scimax.ref.fetchFromDOI=       | Add reference from DOI                    |
+| =scimax.ref.showCitingWorks=    | Show citing works (OpenAlex)              |
+| =scimax.ref.showRelatedWorks=   | Show related works (OpenAlex)             |
+| =scimax.ref.searchOpenAlex=     | Search OpenAlex database                  |
+
+* Best Practices
+
+** Organizing Your Bibliography
+
+*** Use Consistent Citation Keys
+
+Good key format: =author-year-keyword=
+
+Examples:
+- =smith-2024-machine-learning=
+- =jones-2023-deep-neural=
+- =doe-2022-python-scientific=
+
+Benefits:
+- Easy to remember and type
+- Sorting by name is meaningful
+- Year visible in key
+- Keyword aids recall
+
+*** Maintain Multiple .bib Files
+
+Organize by topic or project:
+
+#+BEGIN_EXAMPLE
+~/Documents/
+├── machine-learning.bib      # ML papers
+├── statistics.bib             # Statistics references
+└── projects/
+    └── thesis/
+        └── thesis-refs.bib    # Thesis-specific
+#+END_EXAMPLE
+
+Configure global files + use document-local links for project-specific references.
+
+*** Store PDFs Systematically
+
+Use consistent naming in PDF directory:
+- =smith-2024-machine-learning.pdf=
+- Match citation keys when possible
+- Or use =FirstAuthor_Year.pdf= format
+
+** Citation Workflow
+
+*** Literature Review Workflow
+
+1. Search OpenAlex: =scimax.ref.searchOpenAlex=
+2. Find relevant paper
+3. Add to bibliography via DOI
+4. Check citing works: =scimax.ref.showCitingWorks=
+5. Explore related works: =scimax.ref.showRelatedWorks=
+6. Create notes file for each key reference
+7. Download PDFs to configured directory
+
+*** Writing Workflow
+
+1. Write draft with placeholder citations
+2. Insert citations: =Ctrl+C ]=
+3. Search references interactively
+4. Hover citations to verify
+5. Before final export: =scimax.ref.extractBibliography=
+6. Creates portable .bib file with your document
+
+** Managing Notes
+
+Create comprehensive notes for key papers:
+
+#+BEGIN_SRC org
+,#+TITLE: Notes on Smith (2024) - Machine Learning
+,#+CITE_KEY: smith2024machine
+
+,* Summary
+Three-sentence summary of the paper
+
+,* Key Points
+- Main contribution 1
+- Main contribution 2
+- Methodology highlights
+
+,* Quotes
+,#+BEGIN_QUOTE
+"Important quote from the paper" (p. 42)
+,#+END_QUOTE
+
+,* Personal Notes
+Connections to my research...
+
+,* Follow-up References
+- cite:jones2023deep - Related deep learning work
+- cite:nguyen2024neural - Extends their methodology
+#+END_SRC
+
+Link notes from your main document:
+#+BEGIN_SRC org
+Recent work on machine learning cite:smith2024machine (see also [[file:~/notes/smith2024machine.org][my notes]])
+#+END_SRC
+
+** Export Considerations
+
+*** For LaTeX/PDF Export
+
+Ensure bibliography link includes all cited .bib files:
+
+#+BEGIN_SRC org
+bibliography:~/Documents/refs.bib,./local-refs.bib
+#+END_SRC
+
+Use standard citation styles LaTeX understands (cite, citet, citep).
+
+*** For HTML Export
+
+Citations export as links. For proper bibliography rendering:
+1. Ensure =#+BIBLIOGRAPHY:= keyword is present
+2. Or include =bibliography:= link
+3. HTML export generates bibliography section automatically
+
+*** For Standalone Documents
+
+Before sharing:
+1. Run =scimax.ref.extractBibliography=
+2. Save extracted .bib alongside document
+3. Update bibliography link to local file:
+   #+BEGIN_SRC org
+   bibliography:./references.bib
+   #+END_SRC
+
+** BibTeX Entry Quality
+
+Ensure complete entries for best results:
+
+#+BEGIN_SRC bibtex
+@article{key,
+  author = {Required},
+  title = {Required},
+  journal = {Recommended for articles},
+  year = {Required},
+  volume = {Recommended},
+  number = {Recommended},
+  pages = {Recommended},
+  doi = {Highly recommended - enables OpenAlex integration},
+  url = {Useful if no DOI},
+  abstract = {Helpful for hover info},
+  keywords = {Aids search}
+}
+#+END_SRC
+
+* Troubleshooting
+
+** Citation Not Found
+
+If citation shows "not found in bibliography":
+1. Check spelling of citation key
+2. Verify .bib file is configured or linked in document
+3. Run =scimax.ref.refresh= to reload bibliography
+4. Check .bib file for entry with that exact key
+
+** PDF Not Found
+
+If "PDF not found" when trying to open:
+1. Check =scimax.ref.pdfDirectory= is set correctly
+2. Verify PDF filename matches key or =Author_Year.pdf= pattern
+3. Check file exists with =ls= or file explorer
+4. Try opening from DOI if available
+
+** DOI Fetch Fails
+
+If fetching from DOI fails:
+1. Verify DOI is correct (should start with 10.)
+2. Check internet connection
+3. Try searching on https://crossref.org directly
+4. Some DOIs may not be in CrossRef database
+5. Try OpenAlex search as alternative
+
+** Bibliography Link Not Recognized
+
+If bibliography link isn't recognized:
+1. Check path is correct (try absolute path first)
+2. Ensure .bib extension is included
+3. Verify file exists at that location
+4. Check for typos in filename
+5. Use =~= for home directory, not =$HOME=
+
+** Export Issues
+
+If citations don't export correctly:
+1. Check export format supports citations
+2. Verify bibliography link is present in document
+3. Ensure citation keys are in bibliography
+4. For LaTeX: check LaTeX citation package is available
+5. For Pandoc: use Pandoc-compatible citation syntax
+
+* Related Topics
+
+- [[file:links.org][Hyperlinks]] - General link syntax and usage
+- [[file:export.org][Export System]] - Exporting documents with citations
+- [[file:source-blocks.org][Source Blocks]] - BibTeX as source blocks
+- [[file:configuration.org][Configuration]] - Reference system settings
+
+* Quick Reference Card
+
+** Essential Keybindings
+
+| Key            | Action                           |
+|----------------+----------------------------------|
+| =Ctrl+C ]=     | Insert citation                  |
+| =Ctrl+Shift+]= | Insert cross-reference           |
+| =Ctrl+C Ctrl+O=| Open link/citation at point      |
+| =Shift+Left=   | Transpose citation left          |
+| =Shift+Right=  | Transpose citation right         |
+| =Shift+Up=     | Sort citations (oldest first)    |
+| =Shift+Down=   | Sort citations (newest first)    |
+
+** Citation Syntax Quick Reference
+
+| Format        | Org-Mode          | Markdown        | LaTeX              |
+|---------------+-------------------+-----------------+--------------------|
+| Basic         | =cite:key=        | =[@key]=        | =\cite{key}=       |
+| Textual       | =citet:key=       | =@key=          | =\citet{key}=      |
+| Parenthetical | =citep:key=       | =[@key]=        | =\citep{key}=      |
+| Author only   | =citeauthor:key=  | N/A             | =\citeauthor{key}= |
+| Year only     | =citeyear:key=    | N/A             | =\citeyear{key}=   |
+| Multiple      | =cite:k1,k2,k3=   | =[@k1; @k2]=    | =\cite{k1,k2,k3}=  |
+
+** Common Workflows
+
+*** Add New Reference
+1. =scimax.ref.fetchFromDOI= or =scimax.ref.searchOpenAlex=
+2. Review metadata
+3. Add to bibliography
+
+*** Insert Citation
+1. =Ctrl+C ]=
+2. Search for reference
+3. Select citation style
+4. Citation inserted
+
+*** Find Related Papers
+1. Hover over citation or DOI
+2. Click "Citing Works" or "Related Works"
+3. Browse results
+4. Add relevant papers
+
+*** Prepare for Export
+1. =scimax.ref.extractBibliography=
+2. Save to document directory
+3. Update bibliography link
+4. Export document

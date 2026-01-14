@@ -140,6 +140,73 @@ const html = exportToHtml(document, { toc: true, standalone: true });
 const latex = exportToLatex(document, { documentClass: 'article' });
 ```
 
+## Development Workflow
+
+### Always Rebuild and Install
+
+After making changes, always rebuild and install the extension to verify it works:
+
+```bash
+make                    # Full build: compile + package VSIX
+code --install-extension scimax-vscode-*.vsix --force
+```
+
+Then reload VS Code (`Ctrl+Shift+P` → "Developer: Reload Window") to test changes.
+
+### Performance Regression Testing
+
+Before committing parser or database changes, run the performance baseline test:
+
+```bash
+npm run test -- --testNamePattern="baseline"
+```
+
+Compare results against the baseline in `src/parser/__tests__/orgParser.performance.test.ts`. Key metrics:
+- Parse time for 1000-line files should be < 50ms
+- Heading extraction should be < 10ms
+- Source block detection should be < 15ms
+
+If performance degrades significantly, investigate before committing.
+
+### Documentation Updates
+
+When adding new features, update the corresponding documentation in `docs/`:
+
+| Change Type | Documentation Files to Update |
+|-------------|------------------------------|
+| New command | `docs/keybindings.org`, relevant feature doc |
+| New keybinding | `docs/keybindings.org`, `docs/speed-commands.org` |
+| New setting | `docs/configuration.org`, `package.json` contributes.configuration |
+| New feature | Create or update feature-specific doc in `docs/` |
+| Database changes | `docs/database-search.org` |
+| Any doc change | Update `docs/index.org` TOC and Topic Index |
+
+**Important**: When modifying any documentation file:
+1. Add a "Related Topics" section with cross-links to related documentation
+2. Update `docs/index.org` to include new topics in the Topic Index table
+3. Ensure tables are properly aligned using org-mode table format (`|` separators)
+
+Documentation structure:
+```
+docs/
+├── getting-started.org      # Installation and first steps
+├── keybindings.org          # All keyboard shortcuts
+├── speed-commands.org       # Single-key commands at headings
+├── configuration.org        # All settings reference
+├── database-search.org      # FTS5 and semantic search
+├── source-blocks.org        # Code execution
+├── todo-items.org           # Task management
+├── timestamps.org           # Dates, scheduling, clocking
+├── document-structure.org   # Headlines, folding, navigation
+└── ...                      # Other feature docs
+```
+
+Always include:
+- Command names (e.g., `scimax.org.cycleTodo`)
+- Keybindings with proper format (`Ctrl+C Ctrl+T`)
+- Speed command keys when applicable
+- Examples showing usage
+
 ## References
 
 - **Org-mode Syntax Specification**: https://orgmode.org/worg/org-syntax.html

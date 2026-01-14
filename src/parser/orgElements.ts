@@ -27,6 +27,54 @@ import type {
 import { parseObjects } from './orgObjects';
 
 // =============================================================================
+// Pre-compiled Regex Patterns (Performance Optimization)
+// =============================================================================
+
+// Table patterns
+const RE_TABLE_EL_LINE = /^\s*\+[-+]+\+\s*$/;
+const RE_TABLE_RULE_FULL = /^\|[-+]+\|$/;
+const RE_TABLE_RULE_START = /^\|-/;
+const RE_TABLE_CELLS = /^\|(.+)\|$/;
+const RE_ALIGNMENT_COOKIE = /^<([lcr])(\d*)>$/;
+
+// List patterns - pre-compiled for performance
+const RE_UNORDERED_BULLET = /^(\s*)([-+*])\s+/;
+const RE_ORDERED_BULLET = /^(\s*)(\d+[.)])\s+/;
+const RE_DESCRIPTIVE = /^(\s*)([-+*])\s+(.+?)\s*::\s*/;
+const RE_CHECKBOX = /^\[([X \-])\]\s*/;
+const RE_DESCRIPTIVE_TAG = /^(\s*[-+*]\s+)(.+?)\s*::\s*/;
+
+// Planning patterns
+const RE_PLANNING_START = /^(SCHEDULED:|DEADLINE:|CLOSED:)/;
+const RE_SCHEDULED_TS = /SCHEDULED:\s*(<[^>]+>|\[[^\]]+\])/;
+const RE_DEADLINE_TS = /DEADLINE:\s*(<[^>]+>|\[[^\]]+\])/;
+const RE_CLOSED_TS = /CLOSED:\s*(\[[^\]]+\])/;
+
+// Clock pattern
+const RE_CLOCK = /^CLOCK:\s*(\[[^\]]+\])(?:--(\[[^\]]+\]))?\s*(?:=>\s*(\d+:\d+))?/;
+
+// Timestamp pattern
+const RE_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2})(?:-(\d{2}):(\d{2}))?)?(?:\s+([.+]?\+\d+[hdwmy]))?(?:\s+(-{1,2}\d+[hdwmy]))?$/;
+const RE_REPEATER = /^([.+]?\+)(\d+)([hdwmy])$/;
+const RE_WARNING = /^(-{1,2})(\d+)([hdwmy])$/;
+
+// Drawer patterns
+const RE_DRAWER_START = /^:(\w+):$/;
+const RE_PROPERTY_LINE = /^:(\S+):\s*(.*)$/;
+
+// Keyword pattern
+const RE_KEYWORD = /^#\+(\w+):\s*(.*)$/;
+
+// Horizontal rule
+const RE_HORIZONTAL_RULE = /^\s*-{5,}\s*$/;
+
+// Fixed width
+const RE_FIXED_WIDTH_CONTENT = /^:\s?(.*)$/;
+
+// Comment
+const RE_COMMENT = /^#\s+(.*)$|^#$/;
+
+// =============================================================================
 // Table Parser
 // =============================================================================
 
@@ -71,7 +119,11 @@ export function parseTable(
 
     // Determine table type (org vs table.el)
     // table.el tables have + characters at intersections
-    const isTableEl = lines.some(line => /^\s*\+[-+]+\+\s*$/.test(line));
+    // Fast path: check first char before regex
+    const isTableEl = lines.some(line => {
+        const trimmed = line.trimStart();
+        return trimmed[0] === '+' && RE_TABLE_EL_LINE.test(line);
+    });
 
     return {
         type: 'table',
@@ -96,8 +148,10 @@ function parseTableRow(
 ): TableRowElement {
     const trimmed = line.trim();
 
+    // Fast path: check first char for rule detection
     // Check for rule row (horizontal separator)
-    if (/^\|[-+]+\|$/.test(trimmed) || /^\|-/.test(trimmed)) {
+    if (trimmed[0] === '|' && trimmed[1] === '-') {
+        // It's a rule row - full regex only needed for edge cases
         return {
             type: 'table-row',
             range: { start: charOffset, end: charOffset + line.length },
@@ -112,7 +166,10 @@ function parseTableRow(
 
     // Split by | and extract cell contents
     // Handle the leading and trailing |
-    const cellMatch = trimmed.match(/^\|(.+)\|$/);
+    // Fast path: only run regex if line starts and ends with |
+    const cellMatch = trimmed[0] === '|' && trimmed[trimmed.length - 1] === '|'
+        ? trimmed.match(RE_TABLE_CELLS)
+        : null;
     if (cellMatch) {
         const cellsStr = cellMatch[1];
         const cellValues = cellsStr.split('|');
@@ -165,10 +222,12 @@ export function getTableAlignments(table: TableElement): (string | undefined)[] 
             const cell = row.children[i];
             const value = cell.properties.value;
 
-            // Check for alignment cookie
-            const alignMatch = value.match(/^<([lcr])(\d*)>$/);
-            if (alignMatch) {
-                alignments[i] = alignMatch[1];
+            // Check for alignment cookie - fast path: must start with '<'
+            if (value[0] === '<') {
+                const alignMatch = value.match(RE_ALIGNMENT_COOKIE);
+                if (alignMatch) {
+                    alignments[i] = alignMatch[1];
+                }
             }
         }
     }
@@ -178,10 +237,15 @@ export function getTableAlignments(table: TableElement): (string | undefined)[] 
 
 /**
  * Check if a line starts a table
+ * Uses fast character checks before regex
  */
 export function isTableLine(line: string): boolean {
-    const trimmed = line.trim();
-    return trimmed.startsWith('|') || /^\s*\+[-+]+\+\s*$/.test(trimmed);
+    const trimmed = line.trimStart();
+    const firstChar = trimmed[0];
+    // Fast path: org tables start with |, table.el with +
+    if (firstChar === '|') return true;
+    if (firstChar === '+') return RE_TABLE_EL_LINE.test(line);
+    return false;
 }
 
 // =============================================================================
@@ -203,44 +267,50 @@ export function parsePlanningLine(
 ): PlanningElement | null {
     const trimmed = line.trim();
 
-    // Planning line pattern
-    const planningPattern = /^(SCHEDULED:|DEADLINE:|CLOSED:)\s*(<[^>]+>|\[[^\]]+\])/g;
+    // Fast path: planning lines must start with S, D, or C
+    const firstChar = trimmed[0];
+    if (firstChar !== 'S' && firstChar !== 'D' && firstChar !== 'C') {
+        return null;
+    }
 
     let scheduled: TimestampObject | undefined;
     let deadline: TimestampObject | undefined;
     let closed: TimestampObject | undefined;
-
-    let match;
     let foundAny = false;
 
-    // Reset lastIndex for global regex
-    planningPattern.lastIndex = 0;
-
-    // Try each keyword
-    const schedMatch = trimmed.match(/SCHEDULED:\s*(<[^>]+>|\[[^\]]+\])/);
-    if (schedMatch) {
-        const ts = parseTimestampString(schedMatch[1], charOffset + trimmed.indexOf(schedMatch[0]));
-        if (ts) {
-            scheduled = ts;
-            foundAny = true;
+    // Only check for SCHEDULED if line contains it (fast indexOf before regex)
+    if (trimmed.includes('SCHEDULED:')) {
+        const schedMatch = trimmed.match(RE_SCHEDULED_TS);
+        if (schedMatch) {
+            const ts = parseTimestampString(schedMatch[1], charOffset + trimmed.indexOf(schedMatch[0]));
+            if (ts) {
+                scheduled = ts;
+                foundAny = true;
+            }
         }
     }
 
-    const deadMatch = trimmed.match(/DEADLINE:\s*(<[^>]+>|\[[^\]]+\])/);
-    if (deadMatch) {
-        const ts = parseTimestampString(deadMatch[1], charOffset + trimmed.indexOf(deadMatch[0]));
-        if (ts) {
-            deadline = ts;
-            foundAny = true;
+    // Only check for DEADLINE if line contains it
+    if (trimmed.includes('DEADLINE:')) {
+        const deadMatch = trimmed.match(RE_DEADLINE_TS);
+        if (deadMatch) {
+            const ts = parseTimestampString(deadMatch[1], charOffset + trimmed.indexOf(deadMatch[0]));
+            if (ts) {
+                deadline = ts;
+                foundAny = true;
+            }
         }
     }
 
-    const closedMatch = trimmed.match(/CLOSED:\s*(\[[^\]]+\])/);
-    if (closedMatch) {
-        const ts = parseTimestampString(closedMatch[1], charOffset + trimmed.indexOf(closedMatch[0]));
-        if (ts) {
-            closed = ts;
-            foundAny = true;
+    // Only check for CLOSED if line contains it
+    if (trimmed.includes('CLOSED:')) {
+        const closedMatch = trimmed.match(RE_CLOSED_TS);
+        if (closedMatch) {
+            const ts = parseTimestampString(closedMatch[1], charOffset + trimmed.indexOf(closedMatch[0]));
+            if (ts) {
+                closed = ts;
+                foundAny = true;
+            }
         }
     }
 
@@ -262,10 +332,16 @@ export function parsePlanningLine(
 
 /**
  * Check if a line is a planning line
+ * Uses fast character check before regex
  */
 export function isPlanningLine(line: string): boolean {
     const trimmed = line.trim();
-    return /^(SCHEDULED:|DEADLINE:|CLOSED:)/.test(trimmed);
+    const firstChar = trimmed[0];
+    // Fast path: planning lines must start with S, D, or C
+    if (firstChar !== 'S' && firstChar !== 'D' && firstChar !== 'C') {
+        return false;
+    }
+    return RE_PLANNING_START.test(trimmed);
 }
 
 // =============================================================================
@@ -287,10 +363,14 @@ export function parseClockLine(
 ): ClockElement | null {
     const trimmed = line.trim();
 
+    // Fast path: clock lines must start with 'C'
+    if (trimmed[0] !== 'C') {
+        return null;
+    }
+
     // CLOCK: [timestamp]--[timestamp] => duration
     // or CLOCK: [timestamp] (running)
-    const clockPattern = /^CLOCK:\s*(\[[^\]]+\])(?:--(\[[^\]]+\]))?\s*(?:=>\s*(\d+:\d+))?/;
-    const match = trimmed.match(clockPattern);
+    const match = trimmed.match(RE_CLOCK);
 
     if (!match) {
         return null;
@@ -342,12 +422,12 @@ export function isClockLine(line: string): boolean {
  * Parse a timestamp string into a TimestampObject
  */
 function parseTimestampString(tsStr: string, charOffset: number): TimestampObject | null {
-    const isActive = tsStr.startsWith('<');
+    const isActive = tsStr[0] === '<';
     const inner = tsStr.slice(1, -1); // Remove brackets
 
     // Parse: YYYY-MM-DD DAY HH:MM[-HH:MM] [REPEATER] [WARNING]
-    const pattern = /^(\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2})(?:-(\d{2}):(\d{2}))?)?(?:\s+([.+]?\+\d+[hdwmy]))?(?:\s+(-{1,2}\d+[hdwmy]))?$/;
-    const match = inner.match(pattern);
+    // Use pre-compiled pattern
+    const match = inner.match(RE_TIMESTAMP);
 
     if (!match) {
         return null;
@@ -379,9 +459,9 @@ function parseTimestampString(tsStr: string, charOffset: number): TimestampObjec
         properties.minuteEnd = parseInt(minuteEndStr, 10);
     }
 
-    // Parse repeater
+    // Parse repeater - use pre-compiled pattern
     if (repeaterStr) {
-        const repMatch = repeaterStr.match(/^([.+]?\+)(\d+)([hdwmy])$/);
+        const repMatch = repeaterStr.match(RE_REPEATER);
         if (repMatch) {
             properties.repeaterType = repMatch[1] as '+' | '++' | '.+';
             properties.repeaterValue = parseInt(repMatch[2], 10);
@@ -389,9 +469,9 @@ function parseTimestampString(tsStr: string, charOffset: number): TimestampObjec
         }
     }
 
-    // Parse warning
+    // Parse warning - use pre-compiled pattern
     if (warningStr) {
-        const warnMatch = warningStr.match(/^(-{1,2})(\d+)([hdwmy])$/);
+        const warnMatch = warningStr.match(RE_WARNING);
         if (warnMatch) {
             properties.warningType = warnMatch[1] as '-' | '--';
             properties.warningValue = parseInt(warnMatch[2], 10);
@@ -427,7 +507,11 @@ export function parseDrawer(
     if (lines.length < 2) return null;
 
     const firstLine = lines[0].trim();
-    const drawerMatch = firstLine.match(/^:(\w+):$/);
+
+    // Fast path: drawer lines must start with ':'
+    if (firstLine[0] !== ':') return null;
+
+    const drawerMatch = firstLine.match(RE_DRAWER_START);
 
     if (!drawerMatch) return null;
 
@@ -472,18 +556,23 @@ export function parsePropertiesDrawer(
 
     for (let i = 1; i < lines.length - 1; i++) {
         const line = lines[i];
-        const propMatch = line.trim().match(/^:(\S+):\s*(.*)$/);
+        const trimmedLine = line.trim();
 
-        if (propMatch) {
-            properties.push({
-                type: 'node-property',
-                range: { start: offset, end: offset + line.length },
-                postBlank: 0,
-                properties: {
-                    key: propMatch[1],
-                    value: propMatch[2],
-                },
-            });
+        // Fast path: property lines must start with ':'
+        if (trimmedLine[0] === ':') {
+            const propMatch = trimmedLine.match(RE_PROPERTY_LINE);
+
+            if (propMatch) {
+                properties.push({
+                    type: 'node-property',
+                    range: { start: offset, end: offset + line.length },
+                    postBlank: 0,
+                    properties: {
+                        key: propMatch[1],
+                        value: propMatch[2],
+                    },
+                });
+            }
         }
 
         offset += line.length + 1;
@@ -505,9 +594,13 @@ export function parsePropertiesDrawer(
 
 /**
  * Check if a line starts a drawer
+ * Uses fast character check before regex
  */
 export function isDrawerStart(line: string): boolean {
-    return /^\s*:\w+:\s*$/.test(line);
+    const trimmed = line.trim();
+    // Fast path: drawer lines must start with ':'
+    if (trimmed[0] !== ':') return false;
+    return RE_DRAWER_START.test(trimmed);
 }
 
 /**
@@ -522,11 +615,29 @@ export function isDrawerEnd(line: string): boolean {
 // =============================================================================
 
 /**
- * List item bullet patterns
+ * Fast check if a line looks like it could be a list item
+ * Uses character checks before regex
  */
-const UNORDERED_BULLET_PATTERN = /^(\s*)([-+*])\s+/;
-const ORDERED_BULLET_PATTERN = /^(\s*)(\d+[.)])\s+/;
-const DESCRIPTIVE_PATTERN = /^(\s*)([-+*])\s+(.+?)\s*::\s*/;
+function isLikelyListItem(line: string): boolean {
+    const trimmed = line.trimStart();
+    const firstChar = trimmed[0];
+    // Unordered: -, +, *
+    if (firstChar === '-' || firstChar === '+' || firstChar === '*') {
+        return trimmed.length > 1 && (trimmed[1] === ' ' || trimmed[1] === '\t');
+    }
+    // Ordered: digit followed by . or )
+    if (firstChar >= '0' && firstChar <= '9') {
+        // Look for . or ) after digits
+        for (let i = 1; i < trimmed.length; i++) {
+            if (trimmed[i] >= '0' && trimmed[i] <= '9') continue;
+            if (trimmed[i] === '.' || trimmed[i] === ')') {
+                return i + 1 < trimmed.length && (trimmed[i + 1] === ' ' || trimmed[i + 1] === '\t');
+            }
+            break;
+        }
+    }
+    return false;
+}
 
 /**
  * Parse a plain list from lines
@@ -539,13 +650,20 @@ export function parseList(
     if (lines.length === 0) return null;
 
     const firstLine = lines[0];
+
+    // Fast path: check if line looks like a list item
+    if (!isLikelyListItem(firstLine)) {
+        return null;
+    }
+
     let listType: 'ordered' | 'unordered' | 'descriptive';
 
-    if (DESCRIPTIVE_PATTERN.test(firstLine)) {
+    // Use pre-compiled patterns
+    if (RE_DESCRIPTIVE.test(firstLine)) {
         listType = 'descriptive';
-    } else if (ORDERED_BULLET_PATTERN.test(firstLine)) {
+    } else if (RE_ORDERED_BULLET.test(firstLine)) {
         listType = 'ordered';
-    } else if (UNORDERED_BULLET_PATTERN.test(firstLine)) {
+    } else if (RE_UNORDERED_BULLET.test(firstLine)) {
         listType = 'unordered';
     } else {
         return null;
@@ -559,8 +677,12 @@ export function parseList(
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const bulletMatch = line.match(UNORDERED_BULLET_PATTERN) ||
-                           line.match(ORDERED_BULLET_PATTERN);
+
+        // Fast path: check if line looks like a list item before regex
+        let bulletMatch: RegExpMatchArray | null = null;
+        if (isLikelyListItem(line)) {
+            bulletMatch = line.match(RE_UNORDERED_BULLET) || line.match(RE_ORDERED_BULLET);
+        }
 
         if (bulletMatch) {
             const indent = bulletMatch[1].length;
@@ -623,9 +745,9 @@ function parseListItem(
     let tag: OrgObject[] | undefined;
     let contentStart: number;
 
-    // Parse bullet
-    const bulletMatch = firstLine.match(UNORDERED_BULLET_PATTERN) ||
-                       firstLine.match(ORDERED_BULLET_PATTERN);
+    // Parse bullet - use pre-compiled patterns
+    const bulletMatch = firstLine.match(RE_UNORDERED_BULLET) ||
+                       firstLine.match(RE_ORDERED_BULLET);
 
     if (!bulletMatch) return null;
 
@@ -634,17 +756,21 @@ function parseListItem(
 
     // Check for checkbox [ ], [X], [-]
     const afterBullet = firstLine.slice(bulletMatch[0].length);
-    const checkboxMatch = afterBullet.match(/^\[([X \-])\]\s*/);
 
-    if (checkboxMatch) {
-        const checkChar = checkboxMatch[1];
-        checkbox = checkChar === 'X' ? 'on' : checkChar === '-' ? 'trans' : 'off';
-        contentStart += checkboxMatch[0].length;
+    // Fast path: checkbox must start with '['
+    if (afterBullet[0] === '[') {
+        const checkboxMatch = afterBullet.match(RE_CHECKBOX);
+
+        if (checkboxMatch) {
+            const checkChar = checkboxMatch[1];
+            checkbox = checkChar === 'X' ? 'on' : checkChar === '-' ? 'trans' : 'off';
+            contentStart += checkboxMatch[0].length;
+        }
     }
 
-    // Check for descriptive tag
+    // Check for descriptive tag - use pre-compiled pattern
     if (listType === 'descriptive') {
-        const tagMatch = firstLine.match(/^(\s*[-+*]\s+)(.+?)\s*::\s*/);
+        const tagMatch = firstLine.match(RE_DESCRIPTIVE_TAG);
         if (tagMatch) {
             const tagText = tagMatch[2];
             tag = parseObjects(tagText, { baseOffset: charOffset + tagMatch[1].length });
@@ -687,9 +813,12 @@ function parseListItem(
 
 /**
  * Check if a line starts a list item
+ * Uses fast character check before regex
  */
 export function isListItemLine(line: string): boolean {
-    return UNORDERED_BULLET_PATTERN.test(line) || ORDERED_BULLET_PATTERN.test(line);
+    // Use the fast check first
+    if (!isLikelyListItem(line)) return false;
+    return RE_UNORDERED_BULLET.test(line) || RE_ORDERED_BULLET.test(line);
 }
 
 // =============================================================================
@@ -698,13 +827,17 @@ export function isListItemLine(line: string): boolean {
 
 /**
  * Parse a keyword line (#+KEY: value)
+ * Uses fast character check before regex
  */
 export function parseKeyword(
     line: string,
     lineNumber: number,
     charOffset: number
 ): KeywordElement | null {
-    const match = line.match(/^#\+(\w+):\s*(.*)$/);
+    // Fast path: keywords must start with '#+'
+    if (line[0] !== '#' || line[1] !== '+') return null;
+
+    const match = line.match(RE_KEYWORD);
     if (!match) return null;
 
     return {
@@ -720,13 +853,18 @@ export function parseKeyword(
 
 /**
  * Parse a horizontal rule (5+ dashes)
+ * Uses fast character check before regex
  */
 export function parseHorizontalRule(
     line: string,
     lineNumber: number,
     charOffset: number
 ): HorizontalRuleElement | null {
-    if (!/^\s*-{5,}\s*$/.test(line)) return null;
+    // Fast path: must start with '-' or whitespace followed by '-'
+    const trimmed = line.trimStart();
+    if (trimmed[0] !== '-') return null;
+
+    if (!RE_HORIZONTAL_RULE.test(line)) return null;
 
     return {
         type: 'horizontal-rule',
@@ -748,7 +886,10 @@ export function parseFixedWidth(
     const contentLines: string[] = [];
 
     for (const line of lines) {
-        const match = line.match(/^:\s?(.*)$/);
+        // Fast path: fixed width lines must start with ':'
+        if (line[0] !== ':') continue;
+
+        const match = line.match(RE_FIXED_WIDTH_CONTENT);
         if (match) {
             contentLines.push(match[1]);
         }
@@ -773,20 +914,28 @@ export function parseFixedWidth(
 
 /**
  * Check if a line is a fixed-width line
+ * Uses fast character check
  */
 export function isFixedWidthLine(line: string): boolean {
-    return /^:\s/.test(line) || line === ':';
+    // Fast path: must start with ':'
+    if (line[0] !== ':') return false;
+    return line.length === 1 || line[1] === ' ' || line[1] === '\t';
 }
 
 /**
  * Parse a comment line (# prefix, not #+)
+ * Uses fast character check before regex
  */
 export function parseComment(
     line: string,
     lineNumber: number,
     charOffset: number
 ): CommentElement | null {
-    const match = line.match(/^#\s+(.*)$|^#$/);
+    // Fast path: comments must start with '#' but not '#+'
+    if (line[0] !== '#') return null;
+    if (line[1] === '+') return null;
+
+    const match = line.match(RE_COMMENT);
     if (!match) return null;
 
     return {
@@ -801,9 +950,13 @@ export function parseComment(
 
 /**
  * Check if a line is a comment line
+ * Uses fast character check
  */
 export function isCommentLine(line: string): boolean {
-    return /^#(\s|$)/.test(line) && !line.startsWith('#+');
+    // Fast path: must start with '#' but not '#+'
+    if (line[0] !== '#') return false;
+    if (line[1] === '+') return false;
+    return line.length === 1 || line[1] === ' ' || line[1] === '\t';
 }
 
 // =============================================================================

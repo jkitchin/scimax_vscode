@@ -1,0 +1,48 @@
+#+TITLE: Small Test Document
+#+AUTHOR: Test User
+#+DATE: 2024-01-15
+
+* TODO [#A] First Heading :tag1:tag2:
+SCHEDULED: <2024-01-20 Sat 10:00 +1w>
+:PROPERTIES:
+:CUSTOM_ID: heading-1
+:ID: uuid-12345
+:END:
+
+This is a paragraph with *bold*, /italic/, _underline_, +strikethrough+, =code=, and ~verbatim~ text.
+
+Also has [[https://example.com][a link]] and an entity \alpha and \rightarrow.
+
+** DONE Subheading
+CLOSED: [2024-01-10 Wed 14:30]
+
+A table:
+
+| Name  | Value |
+|-------|-------|
+| Alpha | 10    |
+| Beta  | 20    |
+
+#+BEGIN_SRC python :results output
+print("Hello, World!")
+#+END_SRC
+
+* Second Heading
+
+- Item 1
+- Item 2 with [[file:test.org][file link]]
+- Item 3
+
+1. Ordered item
+2. Another ordered item
+
+-----
+
+This is after a horizontal rule.
+
+: Fixed width line 1
+: Fixed width line 2
+
+#+BEGIN_QUOTE
+This is a quoted block with *emphasis*.
+#+END_QUOTE

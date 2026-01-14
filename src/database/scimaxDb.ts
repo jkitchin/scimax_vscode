@@ -111,6 +111,8 @@ export interface DbStats {
     links: number;
     chunks: number;
     has_embeddings: boolean;
+    vector_search_supported: boolean;
+    vector_search_error: string | null;
     last_indexed?: number;
     by_type: { org: number; md: number; ipynb: number };
 }
@@ -130,6 +132,10 @@ export class ScimaxDb {
     private indexQueue: Set<string> = new Set();
     private isIndexing: boolean = false;
     private ignorePatterns: string[] = [];
+
+    // Vector search support tracking
+    private vectorSearchSupported: boolean = false;
+    private vectorSearchError: string | null = null;
 
     // Embedding dimensions (384 for all-MiniLM-L6-v2, 1536 for OpenAI)
     private embeddingDimensions: number = 384;
@@ -267,15 +273,48 @@ export class ScimaxDb {
             `CREATE INDEX IF NOT EXISTS idx_files_type ON files(file_type)`
         ]);
 
-        // Create vector index if embeddings are enabled
+        // Test and create vector index if libsql supports it
+        await this.testVectorSupport();
+    }
+
+    /**
+     * Test if libsql vector search is supported
+     */
+    private async testVectorSupport(): Promise<void> {
+        if (!this.db) return;
+
         try {
+            // Test vector support by creating the index
             await this.db.execute(`
                 CREATE INDEX IF NOT EXISTS idx_chunks_embedding
                 ON chunks(libsql_vector_idx(embedding, 'metric=cosine'))
             `);
-        } catch (e) {
-            console.log('ScimaxDb: Vector index will be created when embeddings are added');
+            this.vectorSearchSupported = true;
+            console.log('ScimaxDb: Vector search is supported');
+        } catch (e: any) {
+            this.vectorSearchSupported = false;
+            this.vectorSearchError = e?.message || 'Vector search not available';
+            console.log('ScimaxDb: Vector search not available - using FTS5 only');
+            console.log('ScimaxDb: Vector error:', this.vectorSearchError);
         }
+    }
+
+    /**
+     * Check if vector/semantic search is available
+     */
+    public isVectorSearchAvailable(): boolean {
+        return this.vectorSearchSupported && this.embeddingService !== null;
+    }
+
+    /**
+     * Get vector search status for diagnostics
+     */
+    public getVectorSearchStatus(): { supported: boolean; error: string | null; hasEmbeddings: boolean } {
+        return {
+            supported: this.vectorSearchSupported,
+            error: this.vectorSearchError,
+            hasEmbeddings: this.embeddingService !== null
+        };
     }
 
     /**
@@ -733,6 +772,11 @@ export class ScimaxDb {
     ): Promise<void> {
         if (!this.db || !this.embeddingService) return;
 
+        // Skip if vector search is not supported
+        if (!this.vectorSearchSupported) {
+            return;
+        }
+
         const lines = content.split('\n');
         const chunkSize = 2000;
         const chunks: { text: string; lineStart: number; lineEnd: number }[] = [];
@@ -767,20 +811,27 @@ export class ScimaxDb {
             });
         }
 
-        const texts = chunks.map(c => c.text);
-        const embeddings = await this.embeddingService.embedBatch(texts);
+        try {
+            const texts = chunks.map(c => c.text);
+            const embeddings = await this.embeddingService.embedBatch(texts);
 
-        for (let i = 0; i < chunks.length; i++) {
-            await this.db.execute({
-                sql: `INSERT INTO chunks
-                      (file_id, file_path, content, line_start, line_end, embedding)
-                      VALUES (?, ?, ?, ?, ?, vector(?))`,
-                args: [
-                    fileId, filePath, chunks[i].text,
-                    chunks[i].lineStart, chunks[i].lineEnd,
-                    JSON.stringify(embeddings[i])
-                ]
-            });
+            for (let i = 0; i < chunks.length; i++) {
+                // Convert embedding array to vector format for libsql
+                const vectorStr = `[${embeddings[i].join(',')}]`;
+                await this.db.execute({
+                    sql: `INSERT INTO chunks
+                          (file_id, file_path, content, line_start, line_end, embedding)
+                          VALUES (?, ?, ?, ?, ?, vector32(?))`,
+                    args: [
+                        fileId, filePath, chunks[i].text,
+                        chunks[i].lineStart, chunks[i].lineEnd,
+                        vectorStr
+                    ]
+                });
+            }
+        } catch (error: any) {
+            console.error('ScimaxDb: Failed to create embeddings for', filePath, error);
+            // Don't fail the whole indexing, just skip embeddings
         }
     }
 
@@ -874,28 +925,42 @@ export class ScimaxDb {
     }): Promise<SearchResult[]> {
         if (!this.db || !this.embeddingService) return [];
 
-        const limit = options?.limit || 20;
-        const queryEmbedding = await this.embeddingService.embed(query);
-        const scope = this.getScopeClause('c.file_path');
+        // Check if vector search is available
+        if (!this.vectorSearchSupported) {
+            console.log('ScimaxDb: Semantic search unavailable - vector search not supported');
+            return [];
+        }
 
-        const result = await this.db.execute({
-            sql: `SELECT c.file_path, c.content, c.line_start, c.line_end,
-                         vector_distance_cos(c.embedding, vector(?)) as distance
-                  FROM chunks c
-                  WHERE c.embedding IS NOT NULL${scope.sql}
-                  ORDER BY distance ASC
-                  LIMIT ?`,
-            args: [JSON.stringify(queryEmbedding), ...scope.args, limit]
-        });
+        try {
+            const limit = options?.limit || 20;
+            const queryEmbedding = await this.embeddingService.embed(query);
+            const scope = this.getScopeClause('c.file_path');
 
-        return result.rows.map(row => ({
-            type: 'semantic' as const,
-            file_path: row.file_path as string,
-            line_number: row.line_start as number,
-            preview: (row.content as string).slice(0, 200),
-            score: 1 - (row.distance as number),
-            distance: row.distance as number
-        }));
+            // Convert embedding to vector format
+            const vectorStr = `[${queryEmbedding.join(',')}]`;
+
+            const result = await this.db.execute({
+                sql: `SELECT c.file_path, c.content, c.line_start, c.line_end,
+                             vector_distance_cos(c.embedding, vector32(?)) as distance
+                      FROM chunks c
+                      WHERE c.embedding IS NOT NULL${scope.sql}
+                      ORDER BY distance ASC
+                      LIMIT ?`,
+                args: [vectorStr, ...scope.args, limit]
+            });
+
+            return result.rows.map(row => ({
+                type: 'semantic' as const,
+                file_path: row.file_path as string,
+                line_number: row.line_start as number,
+                preview: (row.content as string).slice(0, 200),
+                score: 1 - (row.distance as number),
+                distance: row.distance as number
+            }));
+        } catch (error: any) {
+            console.error('ScimaxDb: Semantic search failed', error);
+            return [];
+        }
     }
 
     /**
@@ -1241,7 +1306,8 @@ export class ScimaxDb {
     public async getStats(): Promise<DbStats> {
         if (!this.db) return {
             files: 0, headings: 0, blocks: 0, links: 0, chunks: 0,
-            has_embeddings: false, by_type: { org: 0, md: 0, ipynb: 0 }
+            has_embeddings: false, vector_search_supported: false,
+            vector_search_error: null, by_type: { org: 0, md: 0, ipynb: 0 }
         };
 
         const [files, headings, blocks, links, chunks, embeddings, orgFiles, mdFiles, ipynbFiles] = await Promise.all([
@@ -1267,6 +1333,8 @@ export class ScimaxDb {
             links: links.rows[0].count as number,
             chunks: chunks.rows[0].count as number,
             has_embeddings: (embeddings.rows[0].count as number) > 0,
+            vector_search_supported: this.vectorSearchSupported,
+            vector_search_error: this.vectorSearchError,
             last_indexed: lastFile.rows[0].last as number | undefined,
             by_type: {
                 org: orgFiles.rows[0].count as number,

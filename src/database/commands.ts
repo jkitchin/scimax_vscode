@@ -116,6 +116,18 @@ export function registerDbCommands(
     // Semantic search (vector)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchSemantic', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            // Check if vector search is supported by libsql
+            const vectorStatus = db.getVectorSearchStatus();
+            if (!vectorStatus.supported) {
+                vscode.window.showWarningMessage(
+                    `Semantic search unavailable: ${vectorStatus.error || 'Vector search not supported by database'}. Use full-text search (Ctrl+Shift+F) instead.`
+                );
+                return;
+            }
+
             const config = vscode.workspace.getConfiguration('scimax.db');
             const provider = config.get<string>('embeddingProvider') || 'none';
 
@@ -136,9 +148,6 @@ export function registerDbCommands(
             });
 
             if (!query) return;
-
-            const db = await requireDatabase();
-            if (!db) return;
 
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
@@ -844,9 +853,15 @@ export function registerDbCommands(
                 ? new Date(stats.last_indexed).toLocaleString()
                 : 'Never';
 
-            const embeddingStatus = stats.has_embeddings
-                ? `Semantic search: Enabled (${stats.chunks} chunks)`
-                : 'Semantic search: Disabled';
+            // Build semantic search status message
+            let semanticStatus: string;
+            if (!stats.vector_search_supported) {
+                semanticStatus = `Semantic search: Unavailable (${stats.vector_search_error || 'not supported'})`;
+            } else if (stats.has_embeddings) {
+                semanticStatus = `Semantic search: Enabled (${stats.chunks} chunks)`;
+            } else {
+                semanticStatus = 'Semantic search: Ready (no embeddings yet - configure provider)';
+            }
 
             const fileTypes = stats.by_type
                 ? `(${stats.by_type.org} org, ${stats.by_type.md} md, ${stats.by_type.ipynb} ipynb)`
@@ -855,7 +870,7 @@ export function registerDbCommands(
             vscode.window.showInformationMessage(
                 `Scimax DB: ${stats.files} files ${fileTypes}, ${stats.headings} headings, ` +
                 `${stats.blocks} code blocks, ${stats.links} links. ` +
-                `${embeddingStatus}. Last indexed: ${lastIndexed}`
+                `${semanticStatus}. Last indexed: ${lastIndexed}`
             );
         })
     );

@@ -1,0 +1,949 @@
+#+TITLE: Hydra Menus
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-13
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+
+* Introduction
+
+Hydra menus are a powerful keyboard-driven menu system inspired by Emacs hydra and transient packages. They provide quick access to Scimax commands through persistent, modal menus that remain open until you explicitly close them or execute an exit command.
+
+** What Are Hydra Menus?
+
+A hydra menu is a quick pick interface that displays available commands organized into logical groups. Each command is associated with a single keyboard shortcut, allowing you to rapidly execute actions without navigating through multiple menus or remembering complex key combinations.
+
+Think of hydra menus as command palettes optimized for keyboard efficiency:
+
+- Single-key selection (no Enter needed)
+- Commands stay organized in logical groups
+- Menus can stay open for repeated actions
+- Hierarchical navigation with submenus
+- Visual indicators for toggles and persistent actions
+
+** Key Features
+
+- Fast keyboard-driven navigation with single-key selection
+- Organized command groups with descriptive labels and icons
+- Persistent menus that stay open for repeated actions (red heads)
+- Exit-after-action commands (blue heads)
+- Submenu navigation for hierarchical organization
+- Toggle indicators showing on/off state
+- Conditional visibility based on context
+- Customizable through VS Code settings
+- Full integration with all Scimax features
+
+** Philosophy
+
+The hydra system is designed around the principle of discoverability and efficiency. Instead of memorizing dozens of keyboard shortcuts, you can press =Ctrl+C M= to open the main menu and see all available commands with their shortcuts. Once you learn commonly-used shortcuts, you can invoke them directly without opening the menu.
+
+* Getting Started
+
+** Opening the Main Menu
+
+The fastest way to access hydra menus is through the main menu:
+
+- Press =Ctrl+C M= (=Cmd+C M= on Mac) to open the main Scimax menu
+- Press =Ctrl+C Ctrl+M= for a context-aware menu based on the current file type
+
+You can also open menus through the command palette:
+
+1. Press =Ctrl+Shift+P= (=Cmd+Shift+P= on Mac)
+2. Type "Scimax: Main Menu" or "Scimax: Show Hydra Menu"
+3. Press Enter
+
+** Basic Navigation
+
+When a hydra menu is open:
+
+1. Press a single key to execute the corresponding command
+2. Type multiple characters to filter the list
+3. Use arrow keys to navigate
+4. Press Enter to execute the selected command
+5. Press Escape or Backspace (when a parent menu exists) to close or go back
+
+** Understanding Exit Behaviors
+
+Each menu item has one of three exit behaviors, indicated visually in the interface:
+
+*** Exit (Blue Head)
+
+The menu closes after executing the command. Most commands use this behavior.
+
+#+begin_example
+[t] Today               → Opens today's journal and closes menu
+[s] Search              → Starts search and closes menu
+#+end_example
+
+*** Stay (Red Head - Persistent)
+
+The menu remains open after executing the command, allowing you to execute it multiple times or try different commands. These items are marked with a =$(sync)= icon.
+
+#+begin_example
+[r] Refresh $(sync)     → Refreshes data and keeps menu open
+[i] Index File $(sync)  → Indexes file and keeps menu open
+#+end_example
+
+*** Submenu
+
+Navigates to a child menu. These items are marked with a =$(chevron-right)= icon.
+
+#+begin_example
+[j] Journal $(chevron-right)     → Opens journal submenu
+[r] References $(chevron-right)  → Opens references submenu
+#+end_example
+
+* Available Hydras
+
+Scimax comes with eight pre-built hydra menus covering all major features:
+
+** Main Menu (=scimax.main=)
+
+The main entry point for all Scimax features.
+
+*Access*: =Ctrl+C M= or command "Scimax: Main Menu"
+
+#+begin_example
+Scimax
+
+Features:
+  [j] Journal       - Date-based journaling
+  [r] References    - Bibliography management
+  [n] Notebook      - Project notebooks
+  [p] Projects      - Project switching (projectile)
+
+Search & Navigation:
+  [s] Search        - Search across files
+  [g] Jump (Avy)    - Quick navigation
+
+Database:
+  [d] Database      - Org database operations
+#+end_example
+
+** Journal Menu (=scimax.journal=)
+
+Date-based journaling commands for creating and navigating entries.
+
+*Parent*: Main Menu
+
+#+begin_example
+Journal
+
+Open Entry:
+  [t] Today           - Open today's journal entry
+  [y] Yesterday       - Open yesterday's entry
+  [w] Tomorrow        - Open tomorrow's entry
+  [g] Go to Date      - Open entry for specific date
+
+Navigation:
+  [p] Previous Entry  - Navigate to previous entry
+  [n] Next Entry      - Navigate to next entry
+  [v] Week View       - View entries for the week
+
+Create & Search:
+  [c] New Entry       - Create new entry with template
+  [s] Search          - Search journal entries
+
+Insert:
+  [h] Insert Heading  - Insert timestamped heading
+#+end_example
+
+*Example Usage*:
+
+1. Press =Ctrl+C M= to open main menu
+2. Press =j= to open journal menu
+3. Press =t= to open today's entry
+
+** References Menu (=scimax.references=)
+
+Bibliography and citation management powered by org-ref.
+
+*Parent*: Main Menu
+
+#+begin_example
+References
+
+Citations:
+  [c] Insert Citation - Search and insert a citation
+  [o] Open Entry      - Open a bibliography entry
+  [u] Open URL        - Open URL for reference
+
+Add References:
+  [d] Fetch from DOI    - Add entry from DOI
+  [b] Fetch from BibTeX - Add entry from BibTeX string
+  [n] New Entry         - Create new bibliography entry
+
+Search:
+  [s] Search References - Search bibliography
+  [w] Citing Works      - Find works citing this reference
+  [r] Related Works     - Find related works
+
+Citation Actions:
+  [a] Citation Actions  - Actions for citation at point
+
+Management:
+  [l] Reload Bibliography - Reload all bibliography files
+#+end_example
+
+*Example Usage*:
+
+1. Press =Ctrl+C M=, then =r= to open references menu
+2. Press =c= to insert a citation
+3. Search for your reference and select it
+
+** Notebook Menu (=scimax.notebook=)
+
+Project-based organization for scientific computing.
+
+*Parent*: Main Menu
+
+#+begin_example
+Notebook
+
+Navigation:
+  [o] Open Notebook   - Open an existing notebook
+  [l] List Notebooks  - Show all notebooks
+
+Create:
+  [n] New Notebook  - Create a new notebook
+  [e] New Entry     - Add entry to current notebook
+
+Search:
+  [s] Search Notebook - Search within current notebook
+
+Files:
+  [f] Open File      - Open file from notebook
+  [r] Recent Files   - Show recent notebook files
+#+end_example
+
+*Example Usage*:
+
+1. Press =Ctrl+C M=, then =n= to open notebook menu
+2. Press =n= to create a new notebook
+3. Enter notebook name and location
+
+** Projectile Menu (=scimax.projectile=)
+
+Project management and switching inspired by Emacs projectile.
+
+*Parent*: Main Menu
+
+#+begin_example
+Projects (Projectile)
+
+Switch:
+  [p] Switch Project  - Switch to another project
+
+Manage:
+  [a] Add Project       - Add current folder as project
+  [r] Remove Project    - Remove a project from list
+  [s] Scan for Projects - Scan directories for projects
+
+Files:
+  [f] Find File         - Find file in project
+  [g] Search in Project - Search text in project
+#+end_example
+
+*Example Usage*:
+
+1. Press =Ctrl+C M=, then =p= to open projectile menu
+2. Press =p= again to switch to another project
+3. Select project from the list
+
+** Search Menu (=scimax.search=)
+
+Comprehensive search across files and content.
+
+*Parent*: Main Menu
+
+#+begin_example
+Search
+
+Fuzzy Search:
+  [f] Search Current File - Fuzzy search in current file
+  [o] Search Open Files   - Search across all open files
+  [h] Search Headings     - Search headings in current file
+
+Database Search:
+  [s] Full-text Search  - Search all indexed content
+  [v] Vector Search     - Semantic similarity search
+
+Tasks & Agenda:
+  [t] Search TODOs  - Find TODO items
+  [a] Agenda        - View agenda items
+#+end_example
+
+*Example Usage*:
+
+1. Press =Ctrl+C M=, then =s= to open search menu
+2. Press =f= to search current file
+3. Type your search query
+
+** Jump Menu (=scimax.jump=)
+
+Avy-style quick navigation for jumping to visible text.
+
+*Parent*: Main Menu
+
+#+begin_example
+Jump (Avy)
+
+Jump to Character:
+  [c] Jump to Char    - Jump to a character
+  [2] Jump to 2 Chars - Jump to two characters
+
+Jump to Word:
+  [w] Jump to Word - Jump to start of word
+
+Jump to Line:
+  [l] Jump to Line  - Jump to a line
+  [a] Jump Above    - Jump to line above cursor
+  [b] Jump Below    - Jump to line below cursor
+#+end_example
+
+*Example Usage*:
+
+1. Press =Ctrl+C M=, then =g= to open jump menu
+2. Press =w= to jump to a word
+3. Type the first letter of target word
+4. Type the hint character shown at that location
+
+** Database Menu (=scimax.database=)
+
+Org database operations including search and indexing.
+
+*Parent*: Main Menu
+
+#+begin_example
+Database
+
+Search:
+  [s] Full-text Search  - Search all content
+  [v] Vector Search     - Semantic similarity search
+  [h] Search Headings   - Search by heading text
+
+Tasks:
+  [t] Search TODOs  - Find TODO items
+  [a] Agenda        - View scheduled items
+
+Links:
+  [l] Search Links  - Find org links
+  [b] Backlinks     - Find backlinks to current file
+
+Index:
+  [i] Index Current File  - Re-index the current file
+  [I] Index All Files     - Re-index all files
+
+Statistics:
+  [S] Database Stats  - Show database statistics
+#+end_example
+
+*Example Usage*:
+
+1. Press =Ctrl+C M=, then =d= to open database menu
+2. Press =s= to perform full-text search
+3. Enter your search query
+
+* Commands and Keybindings
+
+** Global Keybindings
+
+| Keybinding              | Command                       | Description                      |
+|-------------------------+-------------------------------+----------------------------------|
+| =Ctrl+C M=              | =scimax.hydra.main=           | Open main menu                   |
+| =Ctrl+C Ctrl+M=         | =scimax.hydra.contextMenu=    | Open context-aware menu          |
+
+** Available Commands
+
+All hydra commands can be invoked through the command palette (=Ctrl+Shift+P=):
+
+*** =scimax.hydra.show=
+
+Show a specific hydra menu by ID. If no ID is provided, shows a picker to select from available menus.
+
+#+begin_src typescript
+// Show main menu
+await vscode.commands.executeCommand('scimax.hydra.show', 'scimax.main');
+
+// Show menu picker
+await vscode.commands.executeCommand('scimax.hydra.show');
+#+end_src
+
+*** =scimax.hydra.hide=
+
+Hide the currently visible hydra menu.
+
+*** =scimax.hydra.back=
+
+Navigate back to the parent menu. If there's no parent, closes the menu.
+
+*** =scimax.hydra.main=
+
+Open the main Scimax menu (=scimax.main=).
+
+*** =scimax.hydra.contextMenu=
+
+Open a context-aware menu based on the current file type. Falls back to the main menu if no language-specific menu exists.
+
+*** =scimax.hydra.toggle=
+
+Toggle visibility of a specific menu.
+
+#+begin_src typescript
+await vscode.commands.executeCommand('scimax.hydra.toggle', 'scimax.journal');
+#+end_src
+
+* Configuration
+
+** Settings
+
+Configure hydra behavior through VS Code settings (=File > Preferences > Settings= or =Ctrl+,=):
+
+*** scimax.hydra.showKeyHints
+
+Show keyboard shortcuts inline with menu items.
+
+- Type: =boolean=
+- Default: =true=
+
+When enabled, shows shortcuts like =[t]= before each menu item:
+
+#+begin_example
+[t] Today           - With key hints
+Today               - Without key hints
+#+end_example
+
+#+begin_src json
+{
+  "scimax.hydra.showKeyHints": true
+}
+#+end_src
+
+*** scimax.hydra.singleKeySelection
+
+Select menu items with a single keypress (no Enter needed).
+
+- Type: =boolean=
+- Default: =true=
+
+When enabled, pressing a key immediately executes the command. When disabled, you must press Enter after selecting.
+
+#+begin_src json
+{
+  "scimax.hydra.singleKeySelection": true
+}
+#+end_src
+
+*** scimax.hydra.dimNonMatching
+
+Dim menu items that don't match the current filter.
+
+- Type: =boolean=
+- Default: =true=
+
+When typing to filter, non-matching items are dimmed rather than hidden.
+
+#+begin_src json
+{
+  "scimax.hydra.dimNonMatching": true
+}
+#+end_src
+
+*** scimax.hydra.sortByKey
+
+Sort menu items by their keyboard shortcut instead of definition order.
+
+- Type: =boolean=
+- Default: =false=
+
+When enabled, items are alphabetically sorted by key (a, b, c...) rather than their logical grouping.
+
+#+begin_src json
+{
+  "scimax.hydra.sortByKey": false
+}
+#+end_src
+
+** Example Configuration
+
+A complete hydra configuration might look like:
+
+#+begin_src json
+{
+  "scimax.hydra.showKeyHints": true,
+  "scimax.hydra.singleKeySelection": true,
+  "scimax.hydra.dimNonMatching": true,
+  "scimax.hydra.sortByKey": false
+}
+#+end_src
+
+* Creating Custom Hydras
+
+You can create custom hydra menus programmatically in extension code or through configuration.
+
+** Menu Structure
+
+A hydra menu definition consists of:
+
+- Unique ID
+- Title and optional hint text
+- Groups of menu items
+- Optional parent menu for hierarchical navigation
+- Optional lifecycle hooks
+
+** Using the Fluent Builder API
+
+The easiest way to create a custom menu is with the fluent builder:
+
+#+begin_src typescript
+import { HydraManager } from './hydra';
+
+// Get the hydra manager instance
+const hydraManager = getHydraManager();
+
+// Build a custom menu
+const menu = hydraManager.createMenuBuilder('my.custom.menu')
+    .title('My Custom Menu')
+    .hint('Press a key to select an action')
+    .command('a', 'Action A', 'my.command.a')
+    .persistentCommand('r', 'Refresh', 'my.command.refresh')
+    .submenu('s', 'Settings', 'my.settings.menu')
+    .parent('scimax.main')
+    .build();
+
+// Register the menu
+hydraManager.registerMenu(menu);
+#+end_src
+
+** Menu Item Types
+
+*** Exit Commands (Blue Heads)
+
+Close the menu after executing:
+
+#+begin_src typescript
+.command('t', 'Today', 'scimax.journal.today')
+#+end_src
+
+*** Persistent Commands (Red Heads)
+
+Keep the menu open after executing:
+
+#+begin_src typescript
+.persistentCommand('r', 'Refresh', 'my.refresh.command')
+#+end_src
+
+*** Submenu Links
+
+Navigate to a child menu:
+
+#+begin_src typescript
+.submenu('j', 'Journal', 'scimax.journal')
+#+end_src
+
+** Manual Menu Definition
+
+For more control, you can define menus manually:
+
+#+begin_src typescript
+import { HydraMenuDefinition } from './hydra/types';
+
+const customMenu: HydraMenuDefinition = {
+    id: 'my.custom',
+    title: 'Custom Menu',
+    hint: 'My custom commands',
+    parent: 'scimax.main',
+    groups: [
+        {
+            title: 'Actions',
+            items: [
+                {
+                    key: 'a',
+                    label: 'Action A',
+                    description: 'Performs action A',
+                    icon: 'zap',
+                    exit: 'exit',
+                    action: 'my.command.a'
+                },
+                {
+                    key: 'b',
+                    label: 'Action B',
+                    exit: 'stay',
+                    action: async () => {
+                        // Custom async function
+                        await performActionB();
+                    }
+                }
+            ]
+        },
+        {
+            title: 'Navigation',
+            items: [
+                {
+                    key: 's',
+                    label: 'Settings',
+                    exit: 'submenu',
+                    action: 'my.settings.menu'
+                }
+            ]
+        }
+    ]
+};
+
+hydraManager.registerMenu(customMenu);
+#+end_src
+
+** Advanced Features
+
+*** Conditional Visibility
+
+Show items only when certain conditions are met:
+
+#+begin_src typescript
+{
+    key: 'x',
+    label: 'Advanced Feature',
+    exit: 'exit',
+    action: 'my.advanced.command',
+    when: () => {
+        const config = vscode.workspace.getConfiguration('myext');
+        return config.get('enableAdvanced', false);
+    }
+}
+#+end_src
+
+*** Toggle Items
+
+Display on/off state for toggle commands:
+
+#+begin_src typescript
+{
+    key: 't',
+    label: 'Auto Save',
+    exit: 'stay',
+    action: 'my.toggle.autosave',
+    isToggle: true,
+    getToggleState: async () => {
+        const config = vscode.workspace.getConfiguration('myext');
+        return config.get('autoSave', false);
+    }
+}
+#+end_src
+
+Toggle items display $(check)= when on and =$(circle-outline)= when off.
+
+*** Lifecycle Hooks
+
+Execute code when menus are shown or hidden:
+
+#+begin_src typescript
+const menu: HydraMenuDefinition = {
+    id: 'my.menu',
+    title: 'My Menu',
+    groups: [],
+    onShow: async () => {
+        console.log('Menu opened');
+        await refreshData();
+    },
+    onHide: async () => {
+        console.log('Menu closed');
+        await cleanup();
+    }
+};
+#+end_src
+
+** Registering Multiple Menus
+
+Register several menus at once:
+
+#+begin_src typescript
+const menus = [menu1, menu2, menu3];
+hydraManager.registerMenus(menus);
+#+end_src
+
+** Unregistering Menus
+
+Remove a menu from the registry:
+
+#+begin_src typescript
+hydraManager.unregisterMenu('my.custom.menu');
+#+end_src
+
+* Practical Examples
+
+** Example 1: Opening Today's Journal
+
+The quickest way to open today's journal entry:
+
+1. Press =Ctrl+C M= → opens main menu
+2. Press =j= → opens journal submenu
+3. Press =t= → opens today's entry and closes menu
+
+Or, if you remember the keybinding, press =Ctrl+Shift+J= directly.
+
+** Example 2: Inserting a Citation
+
+To insert a citation in your document:
+
+1. Position cursor where you want the citation
+2. Press =Ctrl+C M= → opens main menu
+3. Press =r= → opens references submenu
+4. Press =c= → starts citation insertion
+5. Type to search for your reference
+6. Select the reference to insert it
+
+** Example 3: Quick Navigation with Jump
+
+To jump to a visible word on screen:
+
+1. Press =Ctrl+C M= → opens main menu
+2. Press =g= → opens jump submenu
+3. Press =w= → starts word jump mode
+4. Type first letter of target word
+5. Type the hint character shown at target location
+6. Cursor jumps to that word
+
+** Example 4: Searching TODO Items
+
+To find all TODO items in your org files:
+
+1. Press =Ctrl+C M= → opens main menu
+2. Press =s= → opens search submenu
+3. Press =t= → searches for TODO items
+4. View results in quick pick
+5. Select an item to navigate to it
+
+** Example 5: Persistent Actions
+
+To index multiple files in sequence:
+
+1. Press =Ctrl+C M= → opens main menu
+2. Press =d= → opens database submenu
+3. Press =i= → indexes current file, menu stays open
+4. Switch to another file (menu remains visible)
+5. Press =i= again → indexes that file
+6. Press =Escape= when done
+
+** Example 6: Navigating Back
+
+When in a deep submenu:
+
+1. Press =Ctrl+C M= → main menu
+2. Press =d= → database menu
+3. Press =Backspace= or select "Back" → returns to main menu
+4. Press =Escape= → closes all menus
+
+* Differences from Emacs Hydra
+
+While inspired by Emacs hydra, the VS Code implementation has some differences due to platform constraints and design choices:
+
+** Similarities
+
+- Keyboard-driven navigation with single-key selection
+- Persistent menus that stay open for repeated actions
+- Exit vs. stay behavior (blue vs. red heads)
+- Hierarchical menu organization
+- Visual indicators and hints
+
+** Differences
+
+*** Quick Pick vs. Minibuffer
+
+VS Code uses the native quick pick interface instead of Emacs's minibuffer. This provides:
+
+- Native VS Code look and feel
+- Fuzzy filtering built-in
+- Mouse support (if desired)
+- Icon support
+- Better accessibility
+
+*** No Dedicated Hydra Mode
+
+VS Code doesn't have a dedicated "hydra mode" like Emacs. Hydras appear as quick picks that temporarily take focus but don't create a new modal mode.
+
+*** Async Command Execution
+
+Commands execute asynchronously and can return Promises, supporting VS Code's async command pattern.
+
+*** No Color Customization
+
+Unlike Emacs hydra, you cannot customize the colors of menu items. The theme is determined by VS Code's active color theme.
+
+*** Menu State Persistence
+
+The hydra state is not persisted across VS Code restarts. Each session starts fresh.
+
+*** Configuration Through Settings
+
+Configuration uses VS Code's settings system (JSON) rather than Emacs Lisp variables.
+
+*** No Posframe Support
+
+Menus don't appear at specific screen positions like Emacs posframe. They always appear in the standard quick pick location (top center).
+
+** Migration Tips
+
+If you're coming from Emacs hydra:
+
+1. *Keybindings*: Map =Ctrl+C M= (or your preferred binding) to =scimax.hydra.main=
+2. *Menu Definition*: Use the fluent builder API for a declarative style similar to Emacs
+3. *Exit Behavior*: =exit= = blue head, =stay= = red head
+4. *Submenus*: Use the =submenu= exit behavior instead of =(exit)= with another hydra call
+5. *Hooks*: Use =onShow= and =onHide= instead of =:before-exit= and =:after-exit=
+
+* Tips and Best Practices
+
+** Discoverability
+
+- Keep menus organized in logical groups
+- Use descriptive labels and helpful descriptions
+- Add icons to make items visually distinct
+- Use consistent key assignments (e.g., =s= for search, =n= for new)
+
+** Performance
+
+- Use conditional visibility (=when=) to hide irrelevant items
+- Don't create too many nested submenus (2-3 levels max)
+- Keep async actions fast to avoid blocking the UI
+- Use persistent commands (=stay=) for repeated actions
+
+** Keyboard Shortcuts
+
+- Assign memorable single-letter keys
+- Use uppercase for destructive or advanced operations
+- Group related commands under similar keys across menus
+- Reserve common keys (=q= for quit, =?= for help, =b= for back)
+
+** User Experience
+
+- Provide clear hints in menu titles
+- Show toggle state for boolean options
+- Use submenus to reduce cognitive load
+- Test both keyboard and mouse interaction
+- Ensure menus work in all relevant contexts
+
+** Debugging
+
+To debug custom menus:
+
+1. Open the Developer Console (=Help > Toggle Developer Tools=)
+2. Set breakpoints in menu actions
+3. Use =console.log= in =onShow= and =onHide= hooks
+4. Check for errors in command execution
+5. Verify menu registration with =hydraManager.getMenuIds()=
+
+* Troubleshooting
+
+** Menu Not Appearing
+
+- Verify the menu is registered: Check =hydraManager.getMenuIds()=
+- Ensure the menu ID is correct
+- Check for errors in the Developer Console
+- Verify keybindings are not conflicting
+
+** Commands Not Executing
+
+- Verify the command is registered in VS Code
+- Check command arguments are correct
+- Look for errors in the Developer Console
+- Test the command directly from command palette
+
+** Items Not Showing
+
+- Check the =when= condition if present
+- Verify group visibility conditions
+- Ensure items are not filtered by current search
+- Check that =sortByKey= setting isn't hiding items
+
+** Single-Key Selection Not Working
+
+- Verify =scimax.hydra.singleKeySelection= is =true=
+- Check for key conflicts with other extensions
+- Ensure the hydra menu has focus
+- Try pressing keys slowly (avoid double-press)
+
+** Submenus Not Navigating
+
+- Verify submenu ID exists and is registered
+- Check =exit= is set to ='submenu'=
+- Ensure =action= contains the submenu ID string
+- Verify parent menu is properly configured
+
+* Frequently Asked Questions
+
+** Can I create hydras for non-Scimax commands?
+
+Yes! You can create hydras that execute any VS Code command, including those from other extensions.
+
+** How do I add a hydra to the command palette?
+
+Hydra commands like =scimax.hydra.show= are automatically available in the command palette. To show a specific menu, register it first, then call:
+
+#+begin_src typescript
+await vscode.commands.executeCommand('scimax.hydra.show', 'your.menu.id');
+#+end_src
+
+** Can I bind a hydra to a custom keybinding?
+
+Yes! Add a keybinding in =keybindings.json=:
+
+#+begin_src json
+{
+  "key": "ctrl+alt+h",
+  "command": "scimax.hydra.show",
+  "args": "my.custom.menu"
+}
+#+end_src
+
+** How do I share custom hydras with my team?
+
+Custom hydras defined in extension code are automatically shared. For configuration-based hydras, share your workspace =.vscode/settings.json= file.
+
+** Can hydras work with multiple workspaces?
+
+Yes! Hydras are global to the VS Code window and work across all workspace folders.
+
+** How do I disable hydras?
+
+Unmap the keybindings in your =keybindings.json=:
+
+#+begin_src json
+{
+  "key": "ctrl+c m",
+  "command": "-scimax.hydra.main"
+}
+#+end_src
+
+The hydras remain available through the command palette.
+
+* Additional Resources
+
+** Source Code
+
+The hydra framework source is located in =src/hydra/=:
+
+- =src/hydra/types.ts= - Type definitions
+- =src/hydra/hydraManager.ts= - Core manager implementation
+- =src/hydra/commands.ts= - Command registrations
+- =src/hydra/menus/= - Pre-built menu definitions
+
+** Related Documentation
+
+- [[file:keybindings.org][Keybindings]] - All Scimax keyboard shortcuts
+- [[file:configuration.org][Configuration]] - Complete settings reference
+- [[file:journal.org][Journal]] - Journal-specific commands and workflows
+- [[file:references.org][References]] - Bibliography management
+- [[file:database-search.org][Database Search]] - Search and query system
+
+** External References
+
+- [[https://github.com/abo-abo/hydra][Emacs Hydra Package]] - Original inspiration
+- [[https://github.com/magit/transient][Emacs Transient Package]] - Alternative approach
+- [[https://code.visualstudio.com/api/references/vscode-api#QuickPick][VS Code QuickPick API]] - Underlying implementation
+
+* Conclusion
+
+Hydra menus provide a powerful and discoverable way to access Scimax features. Whether you're a new user exploring available commands or an experienced user building custom workflows, hydras help you work efficiently without memorizing dozens of keyboard shortcuts.
+
+Start with =Ctrl+C M= to open the main menu and explore. Over time, you'll develop muscle memory for frequently-used commands and can invoke them directly or through submenus.
+
+Happy hydra-ing!

@@ -1,0 +1,706 @@
+#+TITLE: Scimax VS Code Command Reference
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-14
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+
+* Introduction
+
+This document provides a comprehensive reference of all commands available in the Scimax VS Code extension. Commands are organized by feature area for easy lookup.
+
+*Note on Keybindings:* All keybindings shown use the format =key= for standard keys and =C-x= for Ctrl+x (or Cmd+x on macOS). When (org) or (md) appears, the binding is context-sensitive.
+
+* Document Structure
+
+** Folding and Visibility
+
+| Command ID                  | Description              | Default Keybinding |
+|-----------------------------+--------------------------+--------------------|
+| scimax.org.toggleFold       | Toggle Fold at Cursor    | =TAB= (on heading) |
+| scimax.org.cycleGlobalFold  | Cycle Global Folding     | =S-TAB=            |
+
+** Headings
+
+| Command ID                    | Description            | Default Keybinding              |
+|-------------------------------+------------------------+---------------------------------|
+| scimax.heading.insert         | Insert Heading         | =C-RET= / =M-RET=               |
+| scimax.heading.insertSub      | Insert Subheading      | -                               |
+| scimax.heading.promote        | Promote Heading        | =M-LEFT= (on heading)           |
+| scimax.heading.demote         | Demote Heading         | =M-RIGHT= (on heading)          |
+| scimax.heading.promoteSubtree | Promote Subtree        | =M-S-LEFT= (not in table)       |
+| scimax.heading.demoteSubtree  | Demote Subtree         | =M-S-RIGHT= (not in table)      |
+| scimax.heading.moveUp         | Move Heading Up        | =M-UP=                          |
+| scimax.heading.moveDown       | Move Heading Down      | =M-DOWN=                        |
+
+** Org-Mode Heading Navigation
+
+| Command ID                  | Description           | Default Keybinding |
+|-----------------------------+-----------------------+--------------------|
+| scimax.org.jumpToHeading    | Jump to Heading       | =C-c C-j=          |
+| scimax.org.nextHeading      | Next Heading          | =C-c n=            |
+| scimax.org.previousHeading  | Previous Heading      | =C-c p=            |
+| scimax.org.parentHeading    | Parent Heading        | -                  |
+| scimax.org.promoteHeading   | Promote Heading       | =M-LEFT= (heading) |
+| scimax.org.demoteHeading    | Demote Heading        | =M-RIGHT= (heading)|
+| scimax.org.promoteSubtree   | Promote Subtree       | =M-S-LEFT=         |
+| scimax.org.demoteSubtree    | Demote Subtree        | =M-S-RIGHT=        |
+| scimax.org.moveSubtreeUp    | Move Subtree Up       | =M-UP= (heading)   |
+| scimax.org.moveSubtreeDown  | Move Subtree Down     | =M-DOWN= (heading) |
+| scimax.org.insertHeading    | Insert Heading        | =C-RET= (heading)  |
+| scimax.org.insertSubheading | Insert Subheading     | -                  |
+| scimax.org.killSubtree      | Kill Subtree          | -                  |
+| scimax.org.cloneSubtree     | Clone Subtree         | -                  |
+
+** DWIM Commands
+
+| Command ID           | Description  | Default Keybinding |
+|----------------------+--------------+--------------------|
+| scimax.org.dwimReturn| DWIM Return  | -                  |
+
+* TODO and Tasks
+
+** TODO Keywords
+
+| Command ID            | Description       | Default Keybinding |
+|-----------------------+-------------------+--------------------|
+| scimax.org.cycleTodo  | Cycle TODO State  | =C-c C-t=          |
+
+** Checkboxes
+
+| Command ID                | Description       | Default Keybinding |
+|---------------------------+-------------------+--------------------|
+| scimax.org.toggleCheckbox | Toggle Checkbox   | -                  |
+| scimax.org.insertCheckbox | Insert Checkbox   | -                  |
+
+** Markdown Tasks
+
+| Command ID                        | Description             | Default Keybinding |
+|-----------------------------------+-------------------------+--------------------|
+| scimax.markdown.toggleCheckbox    | Toggle Checkbox         | =C-c C-c=          |
+| scimax.markdown.insertTask        | Insert Task             | -                  |
+| scimax.markdown.insertDueDate     | Insert Due Date         | =C-c C-d=          |
+| scimax.markdown.insertScheduledDate| Insert Scheduled Date  | =C-c C-s=          |
+| scimax.markdown.insertPriority    | Insert Priority         | -                  |
+| scimax.markdown.showAgenda        | Show Agenda             | -                  |
+| scimax.markdown.showTodaysTasks   | Show Today's Tasks      | -                  |
+| scimax.markdown.showTasksByProject| Show Tasks by Project   | -                  |
+| scimax.markdown.showTasksByTag    | Show Tasks by Tag       | -                  |
+
+* Tables
+
+** Basic Table Operations
+
+| Command ID                  | Description              | Default Keybinding     |
+|-----------------------------+--------------------------+------------------------|
+| scimax.table.create         | Create Table             | =C-c \vert=            |
+| scimax.table.align          | Align Table              | -                      |
+| scimax.table.nextCell       | Next Table Cell          | -                      |
+| scimax.table.prevCell       | Previous Table Cell      | -                      |
+| scimax.table.insertSeparator| Insert Table Separator   | =C-c -=                |
+
+** Row and Column Operations
+
+| Command ID                   | Description               | Default Keybinding        |
+|------------------------------+---------------------------+---------------------------|
+| scimax.table.insertRowBelow  | Insert Table Row Below    | =M-RET=                   |
+| scimax.table.insertRowAbove  | Insert Table Row Above    | =M-S-RET=                 |
+| scimax.table.deleteRow       | Delete Table Row          | =M-S-BACKSPACE=           |
+| scimax.table.insertColumnRight| Insert Table Column Right| =M-S-RIGHT= (in table)    |
+| scimax.table.deleteColumn    | Delete Table Column       | =M-S-LEFT= (in table)     |
+| scimax.table.moveRowUp       | Move Table Row Up         | -                         |
+| scimax.table.moveRowDown     | Move Table Row Down       | -                         |
+| scimax.table.moveColumnLeft  | Move Table Column Left    | -                         |
+| scimax.table.moveColumnRight | Move Table Column Right   | -                         |
+
+** Advanced Table Operations
+
+| Command ID                    | Description              | Default Keybinding |
+|-------------------------------+--------------------------+--------------------|
+| scimax.table.gotoNamed        | Go to Named Table        | -                  |
+| scimax.table.export           | Export Table             | =C-c C-e t=        |
+| scimax.table.import           | Import Table from Clipboard| -                |
+| scimax.table.sumColumn        | Sum Column               | -                  |
+| scimax.table.averageColumn    | Average Column           | -                  |
+| scimax.table.sortByColumn     | Sort by Column           | =C-c ^=            |
+
+** Table Formulas
+
+| Command ID                      | Description               | Default Keybinding |
+|---------------------------------+---------------------------+--------------------|
+| scimax.table.recalculate        | Recalculate Table Formulas| =C-c C-c= (tblfm)  |
+|                                 |                           | =C-c *= (org)      |
+| scimax.table.insertColumnFormula| Insert Column Formula     | -                  |
+| scimax.table.insertFieldFormula | Insert Field Formula      | -                  |
+| scimax.table.formulaHelp        | Table Formula Help        | -                  |
+
+* Source Blocks
+
+** Basic Babel Operations
+
+| Command ID                    | Description                 | Default Keybinding |
+|-------------------------------+-----------------------------+--------------------|
+| scimax.org.executeBlock       | Execute Code Block          | =C-RET=            |
+|                               |                             | =C-c C-c= (in src) |
+| scimax.org.executeAllBlocks   | Execute All Code Blocks     | -                  |
+| scimax.org.insertBlock        | Insert Code Block           | -                  |
+| scimax.org.nextBlock          | Go to Next Code Block       | -                  |
+| scimax.org.prevBlock          | Go to Previous Code Block   | -                  |
+| scimax.org.clearResults       | Clear Block Results         | -                  |
+| scimax.org.clearAllResults    | Clear All Results           | -                  |
+| scimax.org.showBabelOutput    | Show Babel Output           | -                  |
+| scimax.org.checkExecutors     | Check Available Executors   | -                  |
+
+** Advanced Babel Operations (scimax-ob)
+
+| Command ID                      | Description                     | Default Keybinding |
+|---------------------------------+---------------------------------+--------------------|
+| scimax.ob.insertBlockAbove      | Insert Block Above              | -                  |
+| scimax.ob.insertBlockBelow      | Insert Block Below              | =C-c C-n=          |
+| scimax.ob.insertBlockBelowSame  | Insert Block Below (Same Lang)  | -                  |
+| scimax.ob.splitBlock            | Split Block                     | =C-c -= (src)      |
+| scimax.ob.cloneBlock            | Clone Block                     | -                  |
+| scimax.ob.killBlock             | Kill Block and Results          | -                  |
+| scimax.ob.copyBlock             | Copy Block and Results          | -                  |
+| scimax.ob.moveBlockUp           | Move Block Up                   | -                  |
+| scimax.ob.moveBlockDown         | Move Block Down                 | -                  |
+| scimax.ob.mergeWithPrevious     | Merge with Previous Block       | -                  |
+| scimax.ob.mergeWithNext         | Merge with Next Block           | -                  |
+| scimax.ob.nextBlock             | Next Source Block               | =C-DOWN=           |
+| scimax.ob.previousBlock         | Previous Source Block           | =C-UP=             |
+| scimax.ob.jumpToBlock           | Jump to Source Block            | =C-c C-b=          |
+| scimax.ob.jumpToResults         | Jump to Results                 | -                  |
+| scimax.ob.executeAndNext        | Execute and Next                | =S-RET=            |
+| scimax.ob.executeToPoint        | Execute to Point                | -                  |
+| scimax.ob.executeAll            | Execute All Blocks              | -                  |
+| scimax.ob.clearResults          | Clear Results                   | -                  |
+| scimax.ob.clearAllResults       | Clear All Results               | -                  |
+| scimax.ob.toggleResults         | Toggle Results Visibility       | -                  |
+| scimax.ob.editHeader            | Edit Block Header               | -                  |
+
+** Extended Babel Features
+
+| Command ID                 | Description                      | Default Keybinding |
+|----------------------------+----------------------------------+--------------------|
+| scimax.babel.tangle        | Tangle Source Blocks             | =C-c C-v t=        |
+| scimax.babel.executeToPoint| Execute Blocks to Point          | =C-c C-v p=        |
+| scimax.babel.executeInline | Execute Inline Source at Cursor  | =C-c C-v i=        |
+| scimax.babel.clearCache    | Clear Babel Result Cache         | -                  |
+| scimax.babel.cacheStats    | Show Babel Cache Statistics      | -                  |
+| scimax.babel.showQueue     | Show Execution Queue             | -                  |
+| scimax.babel.clearQueue    | Clear Execution Queue            | -                  |
+| scimax.babel.queueBlock    | Queue Block for Async Execution  | =C-c C-v q=        |
+| scimax.babel.pauseQueue    | Pause Execution Queue            | -                  |
+| scimax.babel.resumeQueue   | Resume Execution Queue           | -                  |
+| scimax.babel.showOutput    | Show Babel Output                | -                  |
+
+* Export
+
+** Export Dispatcher
+
+| Command ID                   | Description           | Default Keybinding |
+|------------------------------+-----------------------+--------------------|
+| scimax.org.export            | Export Org Document   | -                  |
+| scimax.org.exportDispatcher  | Export Dispatcher     | =C-c C-e=          |
+| scimax.org.previewHtml       | Preview HTML          | -                  |
+
+** HTML Export
+
+| Command ID                 | Description            | Default Keybinding |
+|----------------------------+------------------------+--------------------|
+| scimax.org.exportHtml      | Export to HTML         | =C-c C-e h h=      |
+| scimax.org.exportHtmlOpen  | Export to HTML and Open| =C-c C-e h o=      |
+
+** LaTeX/PDF Export
+
+| Command ID                  | Description             | Default Keybinding |
+|-----------------------------+-------------------------+--------------------|
+| scimax.org.exportLatex      | Export to LaTeX         | =C-c C-e l l=      |
+| scimax.org.exportPdf        | Export to PDF           | =C-c C-e l p=      |
+| scimax.org.exportLatexOpen  | Export to PDF and Open  | =C-c C-e l o=      |
+
+** Other Export Formats
+
+| Command ID                  | Description         | Default Keybinding |
+|-----------------------------+---------------------+--------------------|
+| scimax.org.exportMarkdown   | Export to Markdown  | =C-c C-e m m=      |
+
+* Links
+
+| Command ID            | Description         | Default Keybinding            |
+|-----------------------+---------------------+-------------------------------|
+| scimax.org.insertLink | Insert Link         | =C-c C-l=                     |
+| scimax.org.openLink   | Open Link at Point  | =C-c C-o= / =RET= (on link)   |
+
+* Timestamps
+
+| Command ID                     | Description                   | Default Keybinding |
+|--------------------------------+-------------------------------+--------------------|
+| scimax.org.insertTimestamp     | Insert Timestamp              | =C-c .=            |
+| scimax.org.shiftTimestampUp    | Shift Timestamp Up            | =S-UP=             |
+| scimax.org.shiftTimestampDown  | Shift Timestamp Down          | =S-DOWN=           |
+| scimax.org.shiftTimestampLeft  | Shift Timestamp Left (Prev Day)| =S-LEFT=          |
+| scimax.org.shiftTimestampRight | Shift Timestamp Right (Next Day)| =S-RIGHT=        |
+| scimax.org.addRepeater         | Add/Change Repeater on Timestamp| =C-c C-r=        |
+
+* Agenda
+
+** Agenda Views
+
+| Command ID                    | Description            | Default Keybinding |
+|-------------------------------+------------------------+--------------------|
+| scimax.db.agenda              | Show Agenda            | -                  |
+| scimax.db.showTodos           | Show TODO Items        | -                  |
+| scimax.db.deadlines           | Show Upcoming Deadlines| -                  |
+
+** Advanced Agenda
+
+| Command ID                    | Description                | Default Keybinding |
+|-------------------------------+----------------------------+--------------------|
+| scimax.agenda.menu            | Open Agenda Menu           | -                  |
+| scimax.agenda.day             | Day Agenda                 | -                  |
+| scimax.agenda.week            | Week Agenda                | -                  |
+| scimax.agenda.fortnight       | Fortnight Agenda           | -                  |
+| scimax.agenda.month           | Month Agenda               | -                  |
+| scimax.agenda.todoList        | TODO List                  | -                  |
+| scimax.agenda.deadlines       | Upcoming Deadlines         | -                  |
+| scimax.agenda.scheduled       | Scheduled Items            | -                  |
+| scimax.agenda.filterByTag     | Agenda Filter by Tag       | -                  |
+| scimax.agenda.refresh         | Refresh Agenda             | -                  |
+| scimax.agenda.showAgenda      | Show Agenda View           | -                  |
+| scimax.agenda.showTodos       | Show TODO List View        | -                  |
+| scimax.agenda.groupByDate     | Group Agenda by Date       | -                  |
+| scimax.agenda.groupByCategory | Group Agenda by Category   | -                  |
+| scimax.agenda.groupByPriority | Group Agenda by Priority   | -                  |
+| scimax.agenda.configure       | Configure Agenda Files     | -                  |
+| scimax.agenda.gotoItem        | Go to Agenda Item          | -                  |
+
+* Journal
+
+** Basic Journal Operations
+
+| Command ID                 | Description                | Default Keybinding |
+|----------------------------+----------------------------+--------------------|
+| scimax.journal.today       | Open Today's Journal       | =C-S-j=            |
+| scimax.journal.new         | New Journal Entry          | -                  |
+| scimax.journal.prev        | Previous Journal Entry     | =M-[= (in journal) |
+| scimax.journal.next        | Next Journal Entry         | =M-]= (in journal) |
+| scimax.journal.goto        | Go to Journal Date         | -                  |
+| scimax.journal.search      | Search Journal             | -                  |
+| scimax.journal.calendar    | Show Journal Calendar      | -                  |
+
+** Journal Utilities
+
+| Command ID                    | Description              | Default Keybinding |
+|-------------------------------+--------------------------+--------------------|
+| scimax.journal.refresh        | Refresh Journal View     | -                  |
+| scimax.journal.openDirectory  | Open Journal Directory   | -                  |
+| scimax.journal.insertTimestamp| Insert Timestamp         | -                  |
+| scimax.journal.quickLog       | Quick Log Entry          | -                  |
+| scimax.journal.stats          | Show Journal Statistics  | -                  |
+| scimax.journal.weekView       | This Week's Entries      | -                  |
+
+* Database and Search
+
+** Basic Database Operations
+
+| Command ID              | Description             | Default Keybinding |
+|-------------------------+-------------------------+--------------------|
+| scimax.db.reindex       | Reindex Files           | -                  |
+| scimax.db.search        | Search All Files        | -                  |
+| scimax.db.searchHeadings| Search Headings         | -                  |
+| scimax.db.browseFiles   | Browse Indexed Files    | -                  |
+| scimax.db.setScope      | Set Search Scope        | -                  |
+| scimax.showDbMenu       | Database Menu           | =C-M-v=            |
+
+** Advanced Search
+
+| Command ID                 | Description                 | Default Keybinding |
+|----------------------------+-----------------------------+--------------------|
+| scimax.db.searchBlocks     | Search Code Blocks          | -                  |
+| scimax.db.searchHashtags   | Search by Hashtag           | -                  |
+| scimax.db.searchByTag      | Search by Tag               | -                  |
+| scimax.db.searchByProperty | Search by Property          | -                  |
+
+** Semantic Search (AI)
+
+| Command ID                  | Description                   | Default Keybinding |
+|-----------------------------+-------------------------------+--------------------|
+| scimax.db.searchSemantic    | Semantic Search (AI)          | -                  |
+| scimax.db.searchHybrid      | Hybrid Search (Keywords + AI) | -                  |
+| scimax.db.configureEmbeddings| Configure Embedding Service  | -                  |
+
+** Database Maintenance
+
+| Command ID         | Description             | Default Keybinding |
+|--------------------+-------------------------+--------------------|
+| scimax.db.optimize | Optimize Database       | -                  |
+| scimax.db.clear    | Clear Database          | -                  |
+| scimax.db.stats    | Show Database Stats     | -                  |
+
+* References (org-ref)
+
+** Citation Management
+
+| Command ID                   | Description               | Default Keybinding       |
+|------------------------------+---------------------------+--------------------------|
+| scimax.ref.insertCitation    | Insert Citation           | =C-c ]= (org/md/latex)   |
+| scimax.ref.insertRef         | Insert Reference Link     | =C-u C-c ]=              |
+| scimax.ref.insertBibliography| Insert Bibliography Link  | -                        |
+| scimax.ref.copyBibTeX        | Copy BibTeX Entry         | -                        |
+
+** Citation Editing
+
+| Command ID                         | Description                      | Default Keybinding      |
+|------------------------------------+----------------------------------+-------------------------|
+| scimax.ref.transposeCitationLeft   | Transpose Citation Left          | =S-LEFT= (on citation)  |
+| scimax.ref.transposeCitationRight  | Transpose Citation Right         | =S-RIGHT= (on citation) |
+| scimax.ref.sortCitations           | Sort Citations (Oldest First)    | =S-UP= (on citation)    |
+| scimax.ref.sortCitationsByYear     | Sort Citations (Newest First)    | =S-DOWN= (on citation)  |
+| scimax.ref.sortCitationsAlphabetically| Sort Citations Alphabetically | -                       |
+| scimax.ref.deleteCitation          | Delete Citation at Cursor        | =C-S-k= (on citation)   |
+
+** Bibliography Management
+
+| Command ID                    | Description                 | Default Keybinding |
+|-------------------------------+-----------------------------+--------------------|
+| scimax.ref.openBibliography   | Open Bibliography           | -                  |
+| scimax.ref.fetchFromDOI       | Fetch BibTeX from DOI       | -                  |
+| scimax.ref.searchReferences   | Search References           | -                  |
+| scimax.ref.findCitations      | Find Citations of Reference | -                  |
+| scimax.ref.refresh            | Refresh References          | -                  |
+| scimax.ref.extractBibliography| Extract Bibliography from File| -                |
+
+** OpenAlex Integration
+
+| Command ID                  | Description               | Default Keybinding |
+|-----------------------------+---------------------------+--------------------|
+| scimax.ref.showCitingWorks  | Show Citing Works (OpenAlex)| -                |
+| scimax.ref.showRelatedWorks | Show Related Works (OpenAlex)| -               |
+| scimax.ref.searchOpenAlex   | Search OpenAlex           | -                  |
+
+* Notebook
+
+| Command ID                       | Description                  | Default Keybinding |
+|----------------------------------+------------------------------+--------------------|
+| scimax.notebook.new              | New Notebook                 | -                  |
+| scimax.notebook.open             | Open Notebook                | -                  |
+| scimax.notebook.openMasterFile   | Open Notebook Master File    | -                  |
+| scimax.notebook.recentFiles      | Recent Files in Notebook     | -                  |
+| scimax.notebook.search           | Search in Notebook           | -                  |
+| scimax.notebook.agenda           | Notebook Agenda              | -                  |
+| scimax.notebook.addCollaborator  | Add Collaborator             | -                  |
+| scimax.notebook.archive          | Archive Notebook             | -                  |
+| scimax.notebook.settings         | Notebook Settings            | -                  |
+| scimax.notebook.index            | Index Notebook               | -                  |
+| scimax.notebook.info             | Notebook Info                | -                  |
+| scimax.notebook.remove           | Remove Notebook from Tracking| -                  |
+
+* Navigation
+
+** Fuzzy Search (Swiper)
+
+| Command ID                   | Description               | Default Keybinding |
+|------------------------------+---------------------------+--------------------|
+| scimax.fuzzySearch           | Fuzzy Search (Current File)| =C-c s=           |
+| scimax.fuzzySearchOpenFiles  | Fuzzy Search (Open Files) | =C-c S-s=          |
+| scimax.fuzzySearchOutline    | Fuzzy Search (Outline)    | =C-c M-s=          |
+
+** Jump (Avy)
+
+| Command ID               | Description                  | Default Keybinding |
+|--------------------------+------------------------------+--------------------|
+| scimax.jump.gotoChar     | Jump to Character            | =C-c j c=          |
+| scimax.jump.gotoChar2    | Jump to 2-Character Sequence | =C-c j j=          |
+| scimax.jump.gotoWord     | Jump to Word                 | =C-c j w=          |
+| scimax.jump.gotoLine     | Jump to Line                 | =C-c j l=          |
+| scimax.jump.gotoSymbol   | Jump to Symbol               | =C-c j o=          |
+| scimax.jump.gotoSubword  | Jump to Subword              | =C-c j s=          |
+| scimax.jump.copyLine     | Jump Copy Line               | -                  |
+| scimax.jump.killLine     | Jump Kill Line               | -                  |
+
+* Projectile
+
+| Command ID                  | Description                     | Default Keybinding |
+|-----------------------------+---------------------------------+--------------------|
+| scimax.projectile.switch    | Switch Project                  | =C-c p p=          |
+| scimax.projectile.findFile  | Find File in Project            | =C-c p f=          |
+| scimax.projectile.search    | Search in Project               | =C-c p s=          |
+| scimax.projectile.root      | Open Project Root               | =C-c p d=          |
+| scimax.projectile.add       | Add Project                     | =C-c p a=          |
+| scimax.projectile.remove    | Remove Project                  | -                  |
+| scimax.projectile.scan      | Scan Directory for Projects     | -                  |
+| scimax.projectile.info      | Project Info                    | -                  |
+| scimax.projectile.cleanup   | Cleanup Non-existent Projects   | -                  |
+| scimax.projectile.refreshTree| Refresh Projects               | -                  |
+
+* Editmarks
+
+** Mark Edits
+
+| Command ID                 | Description         | Default Keybinding |
+|----------------------------+---------------------+--------------------|
+| scimax.editmarks.insertion | Mark Insertion      | =C-c e i=          |
+| scimax.editmarks.deletion  | Mark Deletion       | =C-c e d=          |
+| scimax.editmarks.comment   | Insert Edit Comment | =C-c e c=          |
+| scimax.editmarks.typo      | Mark Typo Correction| =C-c e t=          |
+
+** Review Edits
+
+| Command ID                  | Description              | Default Keybinding |
+|-----------------------------+--------------------------+--------------------|
+| scimax.editmarks.accept     | Accept Edit Mark         | =C-c e a=          |
+| scimax.editmarks.reject     | Reject Edit Mark         | =C-c e r=          |
+| scimax.editmarks.acceptAll  | Accept All Edit Marks    | -                  |
+| scimax.editmarks.rejectAll  | Reject All Edit Marks    | -                  |
+| scimax.editmarks.next       | Next Edit Mark           | =C-c e ]=          |
+| scimax.editmarks.prev       | Previous Edit Mark       | =C-c e [=          |
+| scimax.editmarks.summary    | Show Edit Marks Summary  | =C-c e s=          |
+
+* Hydra
+
+| Command ID                | Description      | Default Keybinding |
+|---------------------------+------------------+--------------------|
+| scimax.hydra.show         | Show Hydra Menu  | -                  |
+| scimax.hydra.hide         | Hide Hydra Menu  | -                  |
+| scimax.hydra.back         | Hydra Menu Back  | -                  |
+| scimax.hydra.main         | Main Menu        | =C-c m=            |
+| scimax.hydra.contextMenu  | Context Menu     | =C-c C-m=          |
+
+* Markup
+
+| Command ID                    | Description              | Default Keybinding |
+|-------------------------------+--------------------------+--------------------|
+| scimax.markup.bold            | Bold (Markup)            | =C-c b=            |
+| scimax.markup.italic          | Italic (Markup)          | =C-c i=            |
+| scimax.markup.underline       | Underline (Markup)       | =C-c u=            |
+| scimax.markup.code            | Code (Markup)            | =C-c `=            |
+| scimax.markup.verbatim        | Verbatim (Markup)        | =C-c ==            |
+| scimax.markup.strikethrough   | Strikethrough (Markup)   | =C-c +=            |
+| scimax.markup.subscript       | Subscript (Markup)       | -                  |
+| scimax.markup.superscript     | Superscript (Markup)     | -                  |
+| scimax.markup.latexMath       | LaTeX Math (Markup)      | -                  |
+| scimax.markup.latexDisplayMath| LaTeX Display Math (Markup)| -                |
+
+* Speed Commands
+
+Speed commands are single-key commands available when cursor is at the beginning of a heading line (with =scimax.speedCommandsEnabled=).
+
+** Navigation
+
+| Command ID                 | Description          | Speed Key |
+|----------------------------+----------------------+-----------|
+| scimax.speed.nextSibling   | Next Sibling Heading | =f=       |
+| scimax.speed.previousSibling| Previous Sibling    | =b=       |
+| scimax.org.nextHeading     | Next Heading         | =n=       |
+| scimax.org.previousHeading | Previous Heading     | =p=       |
+| scimax.org.parentHeading   | Parent Heading       | =u=       |
+| scimax.org.jumpToHeading   | Jump to Heading      | =j=       |
+| scimax.speed.gotoMenu      | Go To Menu           | =g=       |
+| scimax.speed.firstHeading  | First Heading        | -         |
+| scimax.speed.lastHeading   | Last Heading         | -         |
+
+** Visibility
+
+| Command ID                  | Description        | Speed Key |
+|-----------------------------+--------------------+-----------|
+| scimax.org.cycleGlobalFold  | Cycle Global Fold  | =c=       |
+| scimax.speed.showChildren   | Show All Children  | =C= (S-c) |
+| scimax.speed.overview       | Overview (Fold All)| =o=       |
+
+** Structure Editing
+
+| Command ID                   | Description         | Speed Key   |
+|------------------------------+---------------------+-------------|
+| scimax.heading.moveUp        | Move Heading Up     | =U= (S-u)   |
+| scimax.heading.moveDown      | Move Heading Down   | =D= (S-d)   |
+| scimax.heading.demoteSubtree | Demote Subtree      | =r=         |
+| scimax.heading.promoteSubtree| Promote Subtree     | =l=         |
+| scimax.heading.demote        | Demote Heading      | =R= (S-r)   |
+| scimax.heading.promote       | Promote Heading     | =L= (S-l)   |
+| scimax.org.killSubtree       | Kill Subtree        | =w=         |
+| scimax.speed.yankSubtree     | Yank (Paste) Subtree| =y=         |
+| scimax.org.cloneSubtree      | Clone Subtree       | =W= (S-w)   |
+
+** TODO and Tags
+
+| Command ID                | Description        | Speed Key |
+|---------------------------+--------------------+-----------|
+| scimax.org.cycleTodo      | Cycle TODO State   | =t=       |
+| scimax.speed.setTags      | Set Tags           | =:= (S-;) |
+| scimax.speed.priorityA    | Set Priority A     | =1=       |
+| scimax.speed.priorityB    | Set Priority B     | =2=       |
+| scimax.speed.priorityC    | Set Priority C     | =3=       |
+| scimax.speed.priorityNone | Remove Priority    | =0=       |
+
+** Scheduling and Timestamps
+
+| Command ID                 | Description           | Speed Key |
+|----------------------------+-----------------------+-----------|
+| scimax.speed.schedule      | Add/Edit SCHEDULED    | =s=       |
+| scimax.speed.deadline      | Add/Edit DEADLINE     | =d=       |
+| scimax.org.insertTimestamp | Insert Timestamp      | =.=       |
+| scimax.org.shiftTimestampUp| Shift Timestamp Up    | =,=       |
+
+** Properties and Clocking
+
+| Command ID               | Description     | Speed Key   |
+|--------------------------+-----------------|-------------|
+| scimax.speed.setProperty | Set Property    | =P= (S-p)   |
+| scimax.speed.setEffort   | Set Effort      | =e=         |
+| scimax.speed.clockIn     | Clock In        | =I= (S-i)   |
+| scimax.speed.clockOut    | Clock Out       | =O= (S-o)   |
+
+** Archiving
+
+| Command ID                     | Description           | Speed Key   |
+|--------------------------------+-----------------------+-------------|
+| scimax.speed.archiveSubtree    | Archive Subtree       | =a=         |
+| scimax.speed.toggleArchiveTag  | Toggle Archive Tag    | =A= (S-a)   |
+| scimax.speed.archiveToSibling  | Archive to Sibling    | =$= (S-4)   |
+
+** Narrowing
+
+| Command ID                   | Description         | Speed Key   |
+|------------------------------+---------------------+-------------|
+| scimax.speed.narrowToSubtree | Narrow to Subtree   | =N= (S-n)   |
+| scimax.speed.widen           | Widen               | =S= (S-s)   |
+
+** Help
+
+| Command ID          | Description         | Speed Key    |
+|---------------------+---------------------+--------------|
+| scimax.speed.help   | Speed Commands Help | =?= (S-/)    |
+| scimax.speed.toggle | Toggle Speed Commands| =C-c C-x s= |
+
+* LaTeX
+
+** LaTeX Preview and Compilation
+
+| Command ID                 | Description                  | Default Keybinding |
+|----------------------------+------------------------------+--------------------|
+| scimax.latex.openPreview   | Open LaTeX Live Preview      | =C-c C-e l v=      |
+| scimax.latex.forwardSync   | Sync PDF to Cursor Position  | =C-c C-e l s=      |
+| scimax.latex.rebuild       | Rebuild PDF                  | -                  |
+| scimax.latex.showOutput    | Show LaTeX Build Output      | -                  |
+
+** LaTeX Cache Management
+
+| Command ID               | Description                     | Default Keybinding |
+|--------------------------+---------------------------------+--------------------|
+| scimax.clearLatexCache   | Clear LaTeX Preview Cache       | -                  |
+| scimax.checkLatexTools   | Check LaTeX Tools Availability  | -                  |
+| scimax.latexCacheStats   | Show LaTeX Cache Statistics     | -                  |
+
+* Capture
+
+| Command ID                    | Description               | Default Keybinding |
+|-------------------------------+---------------------------+--------------------|
+| scimax.capture                | Capture                   | =C-c c=            |
+| scimax.captureByKey           | Capture by Key            | -                  |
+| scimax.capture.todo           | Quick Capture TODO        | =C-c t=            |
+| scimax.capture.note           | Quick Capture Note        | -                  |
+| scimax.capture.createTemplate | Create Capture Template   | -                  |
+| scimax.capture.listTemplates  | List Capture Templates    | -                  |
+| scimax.capture.configure      | Configure Capture Templates| -                 |
+
+* Image Overlays
+
+| Command ID                         | Description                       | Default Keybinding |
+|------------------------------------+-----------------------------------+--------------------|
+| scimax.imageOverlays.toggle        | Toggle Image Overlays             | -                  |
+| scimax.imageOverlays.toggleCurrentFile| Toggle Image Overlays for Current File| -           |
+| scimax.imageOverlays.refresh       | Refresh Image Overlays            | -                  |
+| scimax.imageOverlays.clearCache    | Clear Image Overlay Cache         | -                  |
+| scimax.imageOverlays.showStats     | Show Image Overlay Cache Statistics| -                |
+
+* Jupyter
+
+** Kernel Management
+
+| Command ID                    | Description                   | Default Keybinding |
+|-------------------------------+-------------------------------+--------------------|
+| scimax.jupyter.showKernels    | Show Available Jupyter Kernels| -                  |
+| scimax.jupyter.showRunning    | Show Running Kernels          | -                  |
+| scimax.jupyter.startKernel    | Start Jupyter Kernel          | -                  |
+| scimax.jupyter.changeKernel   | Change Jupyter Kernel         | -                  |
+| scimax.jupyter.restartKernel  | Restart Jupyter Kernel        | -                  |
+| scimax.jupyter.interruptKernel| Interrupt Jupyter Kernel      | -                  |
+| scimax.jupyter.shutdownKernel | Shutdown Jupyter Kernel       | -                  |
+| scimax.jupyter.shutdownAll    | Shutdown All Jupyter Kernels  | -                  |
+
+* Appendix: Keybinding Quick Reference
+
+** Most Common Keybindings
+
+| Keybinding    | Command                        |
+|---------------+--------------------------------|
+| =C-RET=       | Execute code block / Insert heading |
+| =C-c C-e=     | Export dispatcher              |
+| =C-c C-j=     | Jump to heading                |
+| =C-c C-t=     | Cycle TODO state               |
+| =C-c C-l=     | Insert link                    |
+| =C-c C-o=     | Open link                      |
+| =C-c ]=       | Insert citation                |
+| =C-c .=       | Insert timestamp               |
+| =C-c m=       | Main hydra menu                |
+| =C-c s=       | Fuzzy search                   |
+| =C-c p p=     | Switch project                 |
+| =C-S-j=       | Open today's journal           |
+| =TAB=         | Cycle folding (on heading)     |
+| =S-TAB=       | Global cycle folding           |
+| =M-LEFT/RIGHT=| Promote/demote heading         |
+| =M-UP/DOWN=   | Move heading/subtree           |
+
+** Export Keybindings
+
+| Keybinding      | Export Target       |
+|-----------------+---------------------|
+| =C-c C-e h h=   | HTML                |
+| =C-c C-e h o=   | HTML and open       |
+| =C-c C-e l l=   | LaTeX               |
+| =C-c C-e l p=   | PDF                 |
+| =C-c C-e l o=   | PDF and open        |
+| =C-c C-e l v=   | LaTeX live preview  |
+| =C-c C-e m m=   | Markdown            |
+
+** Babel/Source Block Keybindings
+
+| Keybinding     | Action                     |
+|----------------+----------------------------|
+| =C-RET=        | Execute block              |
+| =C-c C-c=      | Execute block (in src)     |
+| =S-RET=        | Execute and next           |
+| =C-c C-v t=    | Tangle                     |
+| =C-c C-v p=    | Execute to point           |
+| =C-c C-v i=    | Execute inline             |
+| =C-c C-v q=    | Queue block                |
+| =C-DOWN=       | Next source block          |
+| =C-UP=         | Previous source block      |
+| =C-c C-n=      | Insert block below         |
+| =C-c C-b=      | Jump to block              |
+
+** Project and Navigation Keybindings
+
+| Keybinding     | Action                     |
+|----------------+----------------------------|
+| =C-c p p=      | Switch project             |
+| =C-c p f=      | Find file in project       |
+| =C-c p s=      | Search in project          |
+| =C-c p d=      | Open project root          |
+| =C-c p a=      | Add project                |
+| =C-c s=        | Fuzzy search (current)     |
+| =C-c S-s=      | Fuzzy search (open files)  |
+| =C-c M-s=      | Fuzzy search (outline)     |
+| =C-c j c=      | Jump to character          |
+| =C-c j j=      | Jump to 2-char sequence    |
+| =C-c j w=      | Jump to word               |
+
+* Index
+
+This document contains [[*Introduction][269 commands]] organized into [[*Document Structure][22 categories]] with their keybindings and descriptions.
+
+For configuration options, see the VS Code settings under =scimax.*=.
+
+For more information about the Scimax VS Code extension, visit the project repository.
+
+# End of Command Reference

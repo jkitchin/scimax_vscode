@@ -1,0 +1,1662 @@
+#+TITLE: Supported Languages in Scimax VS Code
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-14
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+
+* Overview
+
+Scimax VS Code supports a wide range of programming languages for source block execution through two primary mechanisms:
+
+1. *Native Execution* - Direct language interpreters (Python, JavaScript, Shell)
+2. *Jupyter Kernels* - Any language with a Jupyter kernel installed
+
+This document provides a comprehensive reference for all supported languages, including syntax examples, execution modes, session support, and required dependencies.
+
+* Understanding Execution Modes
+
+** Native Execution
+
+Native executors run code directly using installed command-line interpreters. They are:
+- Fast and lightweight
+- No additional setup beyond language installation
+- Limited session support (state doesn't persist between blocks)
+
+Supported natively: Python, JavaScript/Node.js, Shell/Bash
+
+** Jupyter Execution
+
+Jupyter executors use Jupyter kernels for code execution. They provide:
+- Full session support (variables persist between blocks)
+- Rich output (images, plots, formatted data)
+- Interactive features
+- Support for many languages
+
+To use Jupyter for any language:
+1. *Explicit syntax*: Use =jupyter-<language>= (e.g., =jupyter-python=)
+2. *Auto-detection*: Some languages automatically use Jupyter if available
+
+** Determining Which Executor Runs
+
+#+BEGIN_SRC org
+# Native Python (direct python3 command)
+#+BEGIN_SRC python
+print("Hello from native Python")
+#+END_SRC
+
+# Jupyter Python (uses IPython kernel)
+#+BEGIN_SRC jupyter-python
+print("Hello from Jupyter Python")
+#+END_SRC
+#+END_SRC
+
+* Scripting Languages
+
+** Python
+:PROPERTIES:
+:ID: lang-python
+:END:
+
+*** Language Identifiers
+- =python=, =python3=, =py=, =ipython=
+
+*** Execution Modes
+- *Native*: Direct execution via =python3= command
+- *Jupyter*: Use =jupyter-python= or =jupyter-ipython=
+
+*** Session Support
+- Native: No (each block runs in isolation)
+- Jupyter: Yes (full state persistence)
+
+*** Dependencies
+- *Native*: Python 3.x installed and in PATH
+- *Jupyter*: Jupyter and IPython kernel installed
+
+*** Basic Example (Native)
+
+#+BEGIN_SRC python
+# Native Python execution
+import math
+
+radius = 5
+area = math.pi * radius ** 2
+
+print(f"Circle area: {area:.2f}")
+#+END_SRC
+
+#+RESULTS:
+: Circle area: 78.54
+
+*** Session Example (Jupyter)
+
+#+BEGIN_SRC jupyter-python :session *py-session*
+# First block - define variables
+data = [1, 2, 3, 4, 5]
+print(f"Data initialized: {data}")
+#+END_SRC
+
+#+RESULTS:
+: Data initialized: [1, 2, 3, 4, 5]
+
+#+BEGIN_SRC jupyter-python :session *py-session*
+# Second block - uses variables from first block
+import statistics
+mean = statistics.mean(data)
+print(f"Mean: {mean}")
+#+END_SRC
+
+#+RESULTS:
+: Mean: 3.0
+
+*** Plotting Example
+
+#+BEGIN_SRC jupyter-python :results file :file plot.png
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.title('Sine Wave')
+plt.xlabel('x')
+plt.ylabel('sin(x)')
+plt.grid(True)
+plt.savefig('plot.png')
+plt.close()
+#+END_SRC
+
+#+RESULTS:
+[[file:plot.png]]
+
+*** Special Features
+- Rich output in Jupyter (plots, tables, HTML)
+- NumPy, pandas, matplotlib integration
+- Automatic result formatting
+
+*** Limitations
+- Native mode has no session support
+- Large output may be truncated
+
+** JavaScript/Node.js
+:PROPERTIES:
+:ID: lang-javascript
+:END:
+
+*** Language Identifiers
+- =javascript=, =js=, =node=, =nodejs=
+
+*** Execution Modes
+- *Native*: Direct execution via =node= command
+- *Jupyter*: Use =jupyter-javascript= (requires IJavascript kernel)
+
+*** Session Support
+- Native: No
+- Jupyter: Yes (with IJavascript kernel)
+
+*** Dependencies
+- *Native*: Node.js installed and in PATH
+- *Jupyter*: IJavascript kernel (=npm install -g ijavascript=)
+
+*** Basic Example
+
+#+BEGIN_SRC javascript
+// JavaScript execution
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.reduce((a, b) => a + b, 0);
+console.log(`Sum: ${sum}`);
+#+END_SRC
+
+#+RESULTS:
+: Sum: 15
+
+*** Working with JSON
+
+#+BEGIN_SRC javascript
+const data = {
+  name: "Scimax",
+  version: "1.0",
+  features: ["org-mode", "jupyter", "references"]
+};
+
+console.log(JSON.stringify(data, null, 2));
+#+END_SRC
+
+#+RESULTS:
+: {
+:   "name": "Scimax",
+:   "version": "1.0",
+:   "features": [
+:     "org-mode",
+:     "jupyter",
+:     "references"
+:   ]
+: }
+
+*** Async/Await Example
+
+#+BEGIN_SRC javascript
+async function fetchData() {
+  // Simulate async operation
+  return new Promise(resolve => {
+    setTimeout(() => resolve("Data loaded"), 100);
+  });
+}
+
+(async () => {
+  const result = await fetchData();
+  console.log(result);
+})();
+#+END_SRC
+
+*** Special Features
+- Full ES6+ support
+- NPM module access
+- Async/await support
+
+*** Limitations
+- Native mode runs in separate process each time
+- No browser APIs (runs in Node.js)
+
+** TypeScript
+:PROPERTIES:
+:ID: lang-typescript
+:END:
+
+*** Language Identifiers
+- =typescript=, =ts=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-typescript= (requires TSLab kernel)
+
+*** Session Support
+- Yes (with TSLab kernel)
+
+*** Dependencies
+- TSLab kernel: =npm install -g tslab && tslab install=
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-typescript
+interface Person {
+  name: string;
+  age: number;
+}
+
+const person: Person = {
+  name: "Alice",
+  age: 30
+};
+
+console.log(`${person.name} is ${person.age} years old`);
+#+END_SRC
+
+*** Type Checking
+
+#+BEGIN_SRC jupyter-typescript
+function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+// Type checking works
+console.log(greet("World"));
+
+// This would cause a type error:
+// console.log(greet(42));
+#+END_SRC
+
+*** Special Features
+- Full TypeScript type checking
+- Modern JavaScript features
+- Type inference
+
+** Ruby
+:PROPERTIES:
+:ID: lang-ruby
+:END:
+
+*** Language Identifiers
+- =ruby=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-ruby= (requires IRuby kernel)
+
+*** Session Support
+- Yes (with IRuby kernel)
+
+*** Dependencies
+- Ruby installed
+- IRuby kernel: =gem install iruby && iruby register=
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-ruby
+# Ruby execution
+numbers = [1, 2, 3, 4, 5]
+squared = numbers.map { |n| n ** 2 }
+puts "Squared: #{squared.inspect}"
+#+END_SRC
+
+#+RESULTS:
+: Squared: [1, 4, 9, 16, 25]
+
+*** Object-Oriented Example
+
+#+BEGIN_SRC jupyter-ruby
+class Circle
+  attr_reader :radius
+
+  def initialize(radius)
+    @radius = radius
+  end
+
+  def area
+    Math::PI * @radius ** 2
+  end
+end
+
+circle = Circle.new(5)
+puts "Area: #{circle.area.round(2)}"
+#+END_SRC
+
+** Perl
+:PROPERTIES:
+:ID: lang-perl
+:END:
+
+*** Language Identifiers
+- =perl=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-perl= (requires IPerl kernel)
+
+*** Session Support
+- Yes (with IPerl kernel)
+
+*** Dependencies
+- Perl installed
+- IPerl kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-perl
+# Perl execution
+my @numbers = (1, 2, 3, 4, 5);
+my $sum = 0;
+$sum += $_ for @numbers;
+print "Sum: $sum\n";
+#+END_SRC
+
+* Shell Languages
+
+** Bash/Shell
+:PROPERTIES:
+:ID: lang-bash
+:END:
+
+*** Language Identifiers
+- =sh=, =bash=, =shell=
+
+*** Execution Modes
+- *Native*: Direct shell execution (default on Unix, cmd.exe on Windows)
+- *Jupyter*: Use =jupyter-bash= (requires Bash kernel)
+
+*** Session Support
+- Native: No
+- Jupyter: Yes
+
+*** Dependencies
+- *Native*: Bash shell (standard on Unix/Linux/macOS)
+- *Jupyter*: Bash kernel
+
+*** Basic Example
+
+#+BEGIN_SRC bash
+# List files in current directory
+ls -la | head -n 10
+#+END_SRC
+
+#+RESULTS:
+: total 100
+: drwxr-xr-x  5 user staff  160 Jan 14 00:00 .
+: drwxr-xr-x 10 user staff  320 Jan 13 23:00 ..
+
+*** Command Pipeline
+
+#+BEGIN_SRC bash
+# Find large files
+find . -type f -size +1M | \
+  xargs ls -lh | \
+  awk '{print $5, $9}' | \
+  sort -hr | \
+  head -5
+#+END_SRC
+
+*** Environment Variables
+
+#+BEGIN_SRC bash :dir /tmp
+# Working directory and environment
+export MY_VAR="Hello from Bash"
+echo $MY_VAR
+pwd
+#+END_SRC
+
+*** Special Features
+- Full shell features (pipes, redirects, etc.)
+- Environment variable access
+- System command execution
+
+*** Limitations
+- Native mode doesn't preserve state
+- Platform-specific behavior (Unix vs Windows)
+
+** PowerShell
+:PROPERTIES:
+:ID: lang-powershell
+:END:
+
+*** Language Identifiers
+- =powershell=, =pwsh=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-powershell= (requires PowerShell kernel)
+
+*** Session Support
+- Yes (with kernel)
+
+*** Dependencies
+- PowerShell installed
+- PowerShell kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-powershell
+# PowerShell execution
+Get-ChildItem | Select-Object Name, Length | Format-Table
+#+END_SRC
+
+** Zsh
+:PROPERTIES:
+:ID: lang-zsh
+:END:
+
+*** Language Identifiers
+- =zsh=
+
+*** Execution Modes
+- Can use bash executor as fallback
+- *Jupyter*: Use =jupyter-bash= with zsh configured
+
+*** Dependencies
+- Zsh shell installed
+
+* Data Science Languages
+
+** R
+:PROPERTIES:
+:ID: lang-r
+:END:
+
+*** Language Identifiers
+- =r=, =R=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-r= (requires IRkernel)
+
+*** Session Support
+- Yes (full state persistence)
+
+*** Dependencies
+- R installed
+- IRkernel: Install from R with =install.packages('IRkernel'); IRkernel::installspec()=
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-r
+# R execution
+x <- c(1, 2, 3, 4, 5)
+y <- x^2
+print(y)
+#+END_SRC
+
+#+RESULTS:
+: [1]  1  4  9 16 25
+
+*** Data Frame Example
+
+#+BEGIN_SRC jupyter-r
+# Working with data frames
+df <- data.frame(
+  name = c("Alice", "Bob", "Charlie"),
+  age = c(25, 30, 35),
+  score = c(85, 92, 78)
+)
+
+print(df)
+summary(df)
+#+END_SRC
+
+*** Plotting Example
+
+#+BEGIN_SRC jupyter-r :results file :file rplot.png
+# Create a plot
+x <- seq(0, 2*pi, length.out=100)
+y <- sin(x)
+
+png("rplot.png")
+plot(x, y, type="l", col="blue",
+     main="Sine Wave", xlab="x", ylab="sin(x)")
+grid()
+dev.off()
+#+END_SRC
+
+#+RESULTS:
+[[file:rplot.png]]
+
+*** Statistical Analysis
+
+#+BEGIN_SRC jupyter-r
+# Statistical functions
+data <- rnorm(100, mean=0, sd=1)
+cat("Mean:", mean(data), "\n")
+cat("Std Dev:", sd(data), "\n")
+cat("Median:", median(data), "\n")
+#+END_SRC
+
+*** Special Features
+- Full R statistical functions
+- ggplot2 and tidyverse support
+- Data frame manipulation
+- Rich plotting capabilities
+
+** Julia
+:PROPERTIES:
+:ID: lang-julia
+:END:
+
+*** Language Identifiers
+- =julia=, =jl=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-julia= (requires IJulia)
+
+*** Session Support
+- Yes (full state persistence)
+
+*** Dependencies
+- Julia installed
+- IJulia: Install from Julia REPL with =using Pkg; Pkg.add("IJulia")=
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-julia
+# Julia execution
+function fibonacci(n)
+    if n <= 2
+        return 1
+    else
+        return fibonacci(n-1) + fibonacci(n-2)
+    end
+end
+
+println("First 10 Fibonacci numbers:")
+for i in 1:10
+    println("F($i) = $(fibonacci(i))")
+end
+#+END_SRC
+
+*** Array Operations
+
+#+BEGIN_SRC jupyter-julia
+# Efficient array operations
+A = [1 2 3; 4 5 6; 7 8 9]
+println("Matrix A:")
+println(A)
+
+# Element-wise operations
+B = A .^ 2
+println("\nA squared:")
+println(B)
+#+END_SRC
+
+*** Plotting Example
+
+#+BEGIN_SRC jupyter-julia :results file :file julia-plot.png
+using Plots
+
+x = range(0, 2π, length=100)
+y = sin.(x)
+
+plot(x, y, label="sin(x)", linewidth=2)
+xlabel!("x")
+ylabel!("sin(x)")
+title!("Sine Wave")
+savefig("julia-plot.png")
+#+END_SRC
+
+*** Special Features
+- High-performance numerical computing
+- Multiple dispatch
+- LaTeX in output
+- Excellent package ecosystem
+
+* Systems Programming Languages
+
+** C
+:PROPERTIES:
+:ID: lang-c
+:END:
+
+*** Language Identifiers
+- =c=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-c= (requires Jupyter kernel for C, e.g., xeus-cling)
+
+*** Session Support
+- Limited (depends on kernel)
+
+*** Dependencies
+- C compiler (gcc/clang)
+- Xeus-cling kernel for Jupyter
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-c
+#include <stdio.h>
+#include <math.h>
+
+int main() {
+    double radius = 5.0;
+    double area = M_PI * radius * radius;
+    printf("Circle area: %.2f\n", area);
+    return 0;
+}
+#+END_SRC
+
+*** Special Features
+- Low-level system programming
+- Pointer manipulation
+- Direct memory access
+
+*** Limitations
+- Requires compilation
+- Limited interactive features
+- Kernel availability varies
+
+** C++
+:PROPERTIES:
+:ID: lang-cpp
+:END:
+
+*** Language Identifiers
+- =c++=, =cpp=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-cpp= (requires xeus-cling or similar)
+
+*** Session Support
+- Yes (with appropriate kernel)
+
+*** Dependencies
+- C++ compiler
+- Xeus-cling kernel recommended
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+int main() {
+    std::vector<int> nums = {5, 2, 8, 1, 9};
+    std::sort(nums.begin(), nums.end());
+
+    std::cout << "Sorted: ";
+    for (int n : nums) {
+        std::cout << n << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
+}
+#+END_SRC
+
+*** Modern C++ Example
+
+#+BEGIN_SRC jupyter-cpp
+#include <iostream>
+#include <memory>
+#include <string>
+
+class Person {
+private:
+    std::string name;
+    int age;
+
+public:
+    Person(std::string n, int a) : name(n), age(a) {}
+
+    void print() const {
+        std::cout << name << " is " << age << " years old" << std::endl;
+    }
+};
+
+int main() {
+    auto person = std::make_unique<Person>("Alice", 30);
+    person->print();
+    return 0;
+}
+#+END_SRC
+
+** Rust
+:PROPERTIES:
+:ID: lang-rust
+:END:
+
+*** Language Identifiers
+- =rust=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-rust= (requires evcxr kernel)
+
+*** Session Support
+- Yes (with evcxr kernel)
+
+*** Dependencies
+- Rust toolchain (rustc, cargo)
+- evcxr kernel: =cargo install evcxr_jupyter && evcxr_jupyter --install=
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-rust
+// Rust execution
+fn factorial(n: u64) -> u64 {
+    match n {
+        0 | 1 => 1,
+        _ => n * factorial(n - 1)
+    }
+}
+
+println!("Factorial of 5: {}", factorial(5));
+#+END_SRC
+
+#+RESULTS:
+: Factorial of 5: 120
+
+*** Ownership Example
+
+#+BEGIN_SRC jupyter-rust
+fn main() {
+    let v = vec![1, 2, 3, 4, 5];
+    let sum: i32 = v.iter().sum();
+    println!("Sum: {}", sum);
+
+    // Vector is still accessible
+    println!("Length: {}", v.len());
+}
+
+main();
+#+END_SRC
+
+*** Special Features
+- Memory safety without garbage collection
+- Zero-cost abstractions
+- Fearless concurrency
+
+** Go
+:PROPERTIES:
+:ID: lang-go
+:END:
+
+*** Language Identifiers
+- =go=, =golang=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-go= (requires gophernotes kernel)
+
+*** Session Support
+- Limited (state resets between blocks)
+
+*** Dependencies
+- Go installed
+- gophernotes: =go install github.com/gopherdata/gophernotes@latest=
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-go
+import "fmt"
+
+func main() {
+    numbers := []int{1, 2, 3, 4, 5}
+    sum := 0
+    for _, n := range numbers {
+        sum += n
+    }
+    fmt.Printf("Sum: %d\n", sum)
+}
+
+main()
+#+END_SRC
+
+*** Goroutines Example
+
+#+BEGIN_SRC jupyter-go
+import (
+    "fmt"
+    "sync"
+)
+
+func worker(id int, wg *sync.WaitGroup) {
+    defer wg.Done()
+    fmt.Printf("Worker %d starting\n", id)
+    fmt.Printf("Worker %d done\n", id)
+}
+
+func main() {
+    var wg sync.WaitGroup
+    for i := 1; i <= 3; i++ {
+        wg.Add(1)
+        go worker(i, &wg)
+    }
+    wg.Wait()
+}
+
+main()
+#+END_SRC
+
+* JVM Languages
+
+** Java
+:PROPERTIES:
+:ID: lang-java
+:END:
+
+*** Language Identifiers
+- =java=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-java= (requires IJava kernel)
+
+*** Session Support
+- Yes (with IJava kernel)
+
+*** Dependencies
+- Java JDK 9 or later
+- IJava kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-java
+public class Example {
+    public static void main(String[] args) {
+        int[] numbers = {1, 2, 3, 4, 5};
+        int sum = 0;
+        for (int n : numbers) {
+            sum += n;
+        }
+        System.out.println("Sum: " + sum);
+    }
+}
+
+Example.main(null);
+#+END_SRC
+
+*** Object-Oriented Example
+
+#+BEGIN_SRC jupyter-java
+class Circle {
+    private double radius;
+
+    public Circle(double radius) {
+        this.radius = radius;
+    }
+
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+}
+
+Circle circle = new Circle(5);
+System.out.printf("Area: %.2f\n", circle.getArea());
+#+END_SRC
+
+** Scala
+:PROPERTIES:
+:ID: lang-scala
+:END:
+
+*** Language Identifiers
+- =scala=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-scala= (requires Almond kernel)
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- Scala installed
+- Almond kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-scala
+// Scala execution
+val numbers = List(1, 2, 3, 4, 5)
+val squared = numbers.map(x => x * x)
+println(s"Squared: $squared")
+#+END_SRC
+
+*** Functional Programming
+
+#+BEGIN_SRC jupyter-scala
+def factorial(n: Int): Int = {
+  if (n <= 1) 1
+  else n * factorial(n - 1)
+}
+
+val result = (1 to 5).map(factorial)
+println(s"Factorials: $result")
+#+END_SRC
+
+** Clojure
+:PROPERTIES:
+:ID: lang-clojure
+:END:
+
+*** Language Identifiers
+- =clojure=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-clojure= (requires clojupyter)
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- Clojure installed
+- clojupyter kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-clojure
+;; Clojure execution
+(def numbers [1 2 3 4 5])
+(def sum (reduce + numbers))
+(println "Sum:" sum)
+#+END_SRC
+
+** Kotlin
+:PROPERTIES:
+:ID: lang-kotlin
+:END:
+
+*** Language Identifiers
+- =kotlin=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-kotlin= (requires Kotlin kernel)
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- Kotlin installed
+- Kotlin Jupyter kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-kotlin
+// Kotlin execution
+val numbers = listOf(1, 2, 3, 4, 5)
+val sum = numbers.sum()
+println("Sum: $sum")
+#+END_SRC
+
+* Functional Languages
+
+** Haskell
+:PROPERTIES:
+:ID: lang-haskell
+:END:
+
+*** Language Identifiers
+- =haskell=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-haskell= (requires IHaskell)
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- GHC (Glasgow Haskell Compiler)
+- IHaskell kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-haskell
+-- Haskell execution
+factorial :: Integer -> Integer
+factorial 0 = 1
+factorial n = n * factorial (n - 1)
+
+main = do
+  putStrLn "First 5 factorials:"
+  mapM_ print [factorial n | n <- [1..5]]
+
+main
+#+END_SRC
+
+*** List Comprehension
+
+#+BEGIN_SRC jupyter-haskell
+-- Generate list of tuples
+pythagorean = [(a,b,c) | c <- [1..10],
+                          b <- [1..c],
+                          a <- [1..b],
+                          a^2 + b^2 == c^2]
+print pythagorean
+#+END_SRC
+
+** OCaml
+:PROPERTIES:
+:ID: lang-ocaml
+:END:
+
+*** Language Identifiers
+- =ocaml=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-ocaml= (requires OCaml kernel)
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- OCaml installed
+- OCaml Jupyter kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-ocaml
+(* OCaml execution *)
+let rec factorial n =
+  if n <= 1 then 1
+  else n * factorial (n - 1)
+;;
+
+List.iter (fun i ->
+  Printf.printf "factorial(%d) = %d\n" i (factorial i)
+) [1; 2; 3; 4; 5];;
+#+END_SRC
+
+** Lisp/Scheme
+:PROPERTIES:
+:ID: lang-lisp
+:END:
+
+*** Language Identifiers
+- =lisp=, =scheme=, =common-lisp=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-lisp= (requires appropriate kernel)
+
+*** Session Support
+- Yes (depends on kernel)
+
+*** Dependencies
+- Lisp/Scheme interpreter
+- Appropriate Jupyter kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-scheme
+;; Scheme execution
+(define (factorial n)
+  (if (<= n 1)
+      1
+      (* n (factorial (- n 1)))))
+
+(display "Factorial of 5: ")
+(display (factorial 5))
+(newline)
+#+END_SRC
+
+* Database Languages
+
+** SQL
+:PROPERTIES:
+:ID: lang-sql
+:END:
+
+*** Language Identifiers
+- =sql=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-sql= (requires SQL kernel and connection)
+
+*** Session Support
+- Yes (connection persists)
+
+*** Dependencies
+- Database server or SQLite
+- SQL kernel (e.g., xsql, sql_kernel)
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-sql
+-- SQL execution
+SELECT * FROM users
+WHERE age > 25
+ORDER BY name
+LIMIT 10;
+#+END_SRC
+
+*** Table Creation
+
+#+BEGIN_SRC jupyter-sql
+CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    price REAL,
+    stock INTEGER
+);
+
+INSERT INTO products (name, price, stock) VALUES
+    ('Widget', 19.99, 100),
+    ('Gadget', 29.99, 50),
+    ('Doohickey', 9.99, 200);
+
+SELECT * FROM products;
+#+END_SRC
+
+*** Aggregation Example
+
+#+BEGIN_SRC jupyter-sql
+SELECT
+    category,
+    COUNT(*) as count,
+    AVG(price) as avg_price,
+    SUM(stock) as total_stock
+FROM products
+GROUP BY category
+ORDER BY avg_price DESC;
+#+END_SRC
+
+** SQLite
+:PROPERTIES:
+:ID: lang-sqlite
+:END:
+
+*** Language Identifiers
+- =sqlite=, =sqlite3=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-sqlite=
+
+*** Session Support
+- Yes (database file persists)
+
+*** Dependencies
+- SQLite installed
+- SQLite Jupyter kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-sqlite
+-- SQLite execution
+.mode column
+.headers on
+
+SELECT * FROM sqlite_master WHERE type='table';
+#+END_SRC
+
+* Scientific and Visualization Languages
+
+** Octave/MATLAB
+:PROPERTIES:
+:ID: lang-octave
+:END:
+
+*** Language Identifiers
+- =octave=, =matlab=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-octave= or =jupyter-matlab=
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- Octave or MATLAB installed
+- Appropriate kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-octave
+% Octave/MATLAB execution
+x = linspace(0, 2*pi, 100);
+y = sin(x);
+
+plot(x, y);
+title('Sine Wave');
+xlabel('x');
+ylabel('sin(x)');
+grid on;
+#+END_SRC
+
+*** Matrix Operations
+
+#+BEGIN_SRC jupyter-octave
+A = [1 2 3; 4 5 6; 7 8 9];
+B = A * A';
+disp('A * A transpose:');
+disp(B);
+#+END_SRC
+
+** Maxima
+:PROPERTIES:
+:ID: lang-maxima
+:END:
+
+*** Language Identifiers
+- =maxima=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-maxima=
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- Maxima installed
+- Maxima Jupyter kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-maxima
+/* Maxima symbolic math */
+expr: x^2 + 2*x + 1;
+factor(expr);
+#+END_SRC
+
+*** Calculus Example
+
+#+BEGIN_SRC jupyter-maxima
+/* Differentiation and integration */
+f(x) := x^3 - 3*x^2 + 2*x;
+diff(f(x), x);
+integrate(f(x), x);
+#+END_SRC
+
+** Lua
+:PROPERTIES:
+:ID: lang-lua
+:END:
+
+*** Language Identifiers
+- =lua=
+
+*** Execution Modes
+- *Jupyter*: Use =jupyter-lua=
+
+*** Session Support
+- Yes
+
+*** Dependencies
+- Lua installed
+- iLua kernel
+
+*** Basic Example
+
+#+BEGIN_SRC jupyter-lua
+-- Lua execution
+function factorial(n)
+    if n <= 1 then
+        return 1
+    else
+        return n * factorial(n - 1)
+    end
+end
+
+print("Factorial of 5:", factorial(5))
+#+END_SRC
+
+* Markup and Document Languages
+
+** Graphviz (DOT)
+:PROPERTIES:
+:ID: lang-dot
+:END:
+
+*** Language Identifiers
+- =dot=, =graphviz=
+
+*** Execution Modes
+- Generate graph visualizations
+
+*** Dependencies
+- Graphviz installed
+
+*** Basic Example
+
+#+BEGIN_SRC dot :file graph.png :cmdline -Tpng
+digraph G {
+    rankdir=LR;
+
+    A [label="Start"];
+    B [label="Process"];
+    C [label="Decision" shape=diamond];
+    D [label="End"];
+
+    A -> B;
+    B -> C;
+    C -> D [label="Yes"];
+    C -> A [label="No"];
+}
+#+END_SRC
+
+#+RESULTS:
+[[file:graph.png]]
+
+** PlantUML
+:PROPERTIES:
+:ID: lang-plantuml
+:END:
+
+*** Language Identifiers
+- =plantuml=
+
+*** Execution Modes
+- Generate UML diagrams
+
+*** Dependencies
+- PlantUML installed
+- Java runtime
+
+*** Basic Example
+
+#+BEGIN_SRC plantuml :file sequence.png
+@startuml
+actor User
+participant "Web Server" as WS
+database "Database" as DB
+
+User -> WS: HTTP Request
+activate WS
+WS -> DB: Query
+activate DB
+DB --> WS: Result
+deactivate DB
+WS --> User: HTTP Response
+deactivate WS
+@enduml
+#+END_SRC
+
+#+RESULTS:
+[[file:sequence.png]]
+
+** Gnuplot
+:PROPERTIES:
+:ID: lang-gnuplot
+:END:
+
+*** Language Identifiers
+- =gnuplot=
+
+*** Execution Modes
+- Generate plots
+
+*** Dependencies
+- Gnuplot installed
+
+*** Basic Example
+
+#+BEGIN_SRC gnuplot :file gnuplot.png
+set terminal png
+set output 'gnuplot.png'
+
+set title "Sample Plot"
+set xlabel "X axis"
+set ylabel "Y axis"
+set grid
+
+plot sin(x) title 'sin(x)', cos(x) title 'cos(x)'
+#+END_SRC
+
+#+RESULTS:
+[[file:gnuplot.png]]
+
+* Special Purpose Languages
+
+** LaTeX
+:PROPERTIES:
+:ID: lang-latex
+:END:
+
+*** Language Identifiers
+- =latex=
+
+*** Execution Modes
+- Render LaTeX fragments
+
+*** Dependencies
+- LaTeX distribution (TeX Live, MiKTeX)
+
+*** Basic Example
+
+#+BEGIN_SRC latex :file equation.png
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+\[
+E = mc^2
+\]
+\[
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+\]
+\end{document}
+#+END_SRC
+
+* Header Arguments Reference
+
+** Common Header Arguments
+
+| Argument   | Values              | Description                          |
+|------------+---------------------+--------------------------------------|
+| =:session=   | name or =none=        | Session name for persistent state    |
+| =:results=   | output/value/silent | How to handle results                |
+| =:exports=   | code/results/both   | What to export                       |
+| =:file=      | filename            | Save output to file                  |
+| =:dir=       | path                | Working directory                    |
+| =:var=       | name=value          | Pass variables                       |
+| =:cache=     | yes/no              | Cache results                        |
+| =:eval=      | yes/no/query        | Evaluation policy                    |
+
+** Session Example
+
+#+BEGIN_SRC org
+# Define variable in first block
+#+BEGIN_SRC jupyter-python :session *analysis*
+data = [1, 2, 3, 4, 5]
+#+END_SRC
+
+# Use variable in second block
+#+BEGIN_SRC jupyter-python :session *analysis*
+import statistics
+print(f"Mean: {statistics.mean(data)}")
+#+END_SRC
+#+END_SRC
+
+** File Output Example
+
+#+BEGIN_SRC org
+#+BEGIN_SRC jupyter-python :results file :file output.png
+import matplotlib.pyplot as plt
+plt.plot([1,2,3], [1,4,9])
+plt.savefig('output.png')
+#+END_SRC
+#+END_SRC
+
+* Troubleshooting
+
+** Checking Available Executors
+
+Use the command =Scimax: Check Available Executors= to see which language executors are available.
+
+** Common Issues
+
+*** "No executor available for language: X"
+
+*Cause:* The language interpreter or Jupyter kernel is not installed.
+
+*Solution:*
+1. For native languages: Install the language (python3, node, etc.)
+2. For Jupyter languages: Install the appropriate kernel
+3. Verify installation: =jupyter kernelspec list=
+
+*** "Jupyter kernel not found"
+
+*Cause:* Jupyter is not installed or kernel is not registered.
+
+*Solution:*
+#+BEGIN_SRC bash
+# Install Jupyter
+pip install jupyter
+
+# Install specific kernel (example for Python)
+python -m ipykernel install --user
+
+# Verify kernels
+jupyter kernelspec list
+#+END_SRC
+
+*** Session state not persisting
+
+*Cause:* Using native executor instead of Jupyter, or session name not specified.
+
+*Solution:*
+- Use =jupyter-<language>= syntax
+- Add =:session <name>= header argument
+- Ensure all blocks use the same session name
+
+*** Code executes but no output appears
+
+*Cause:* Results handling configuration or silent mode enabled.
+
+*Solution:*
+- Check =:results= header (use =:results output=)
+- Ensure =:eval= is not set to =no=
+- Add explicit print statements
+- Check if =:results silent= is set
+
+*** Import/Module not found errors
+
+*Cause:* Wrong Python environment or missing packages.
+
+*Solution:*
+#+BEGIN_SRC bash
+# Check which Python is being used
+which python3
+
+# Install missing package
+pip install package-name
+
+# Use specific environment
+conda activate myenv
+#+END_SRC
+
+** Getting Help
+
+- View Babel output: =Scimax: Show Babel Output=
+- Check executor status: =Scimax: Check Available Executors=
+- View Jupyter kernel list: =jupyter kernelspec list= in terminal
+
+* Installing Jupyter Kernels
+
+** Python (IPython)
+#+BEGIN_SRC bash
+pip install ipykernel
+python -m ipykernel install --user --name=python3
+#+END_SRC
+
+** Julia (IJulia)
+#+BEGIN_SRC julia
+using Pkg
+Pkg.add("IJulia")
+#+END_SRC
+
+** R (IRkernel)
+#+BEGIN_SRC r
+install.packages('IRkernel')
+IRkernel::installspec()
+#+END_SRC
+
+** Ruby (IRuby)
+#+BEGIN_SRC bash
+gem install iruby
+iruby register --force
+#+END_SRC
+
+** JavaScript (IJavascript)
+#+BEGIN_SRC bash
+npm install -g ijavascript
+ijsinstall
+#+END_SRC
+
+** TypeScript (TSLab)
+#+BEGIN_SRC bash
+npm install -g tslab
+tslab install
+#+END_SRC
+
+** Rust (evcxr)
+#+BEGIN_SRC bash
+cargo install evcxr_jupyter
+evcxr_jupyter --install
+#+END_SRC
+
+** Go (gophernotes)
+#+BEGIN_SRC bash
+go install github.com/gopherdata/gophernotes@latest
+mkdir -p ~/.local/share/jupyter/kernels/gophernotes
+cd ~/.local/share/jupyter/kernels/gophernotes
+cp "$(go env GOPATH)"/pkg/mod/github.com/gopherdata/gophernotes@*/kernel/* .
+chmod +w ./kernel.json
+#+END_SRC
+
+** C++ (xeus-cling)
+#+BEGIN_SRC bash
+conda install xeus-cling -c conda-forge
+#+END_SRC
+
+** Scala (Almond)
+#+BEGIN_SRC bash
+coursier launch --use-bootstrap almond -- --install
+#+END_SRC
+
+** Haskell (IHaskell)
+#+BEGIN_SRC bash
+stack install ihaskell
+ihaskell install --stack
+#+END_SRC
+
+* Best Practices
+
+** Language Selection
+- Use native executors for simple, stateless scripts
+- Use Jupyter for interactive work requiring sessions
+- Use explicit =jupyter-<language>= when you need Jupyter features
+
+** Session Management
+- Name sessions descriptively (=:session *data-analysis*=)
+- Use separate sessions for independent workflows
+- Clear sessions when starting fresh work
+
+** Code Organization
+- One concept per block for clarity
+- Use named blocks (=#+NAME:=) for reusable code
+- Document complex blocks with comments
+
+** Performance
+- Cache expensive computations (=:cache yes=)
+- Use appropriate result types (=:results output= vs =value=)
+- Close unused Jupyter sessions
+
+** Reproducibility
+- Specify explicit =:dir= for file operations
+- Use =:session= consistently in related blocks
+- Document dependencies and versions
+
+* Quick Reference
+
+** Execute Commands
+- =Ctrl+Enter= / =Cmd+Enter=: Execute current block
+- =Shift+Enter=: Execute and move to next
+- =Ctrl+C Ctrl+C=: Execute (Emacs style)
+
+** Session Control
+- =:session <name>=: Use named session
+- =:session none=: Disable session
+- Sessions persist until VS Code restart or manual close
+
+** Result Handling
+- =:results output=: Capture stdout
+- =:results value=: Return last value
+- =:results silent=: No results
+- =:results file=: Save to file
+
+** Jupyter Features
+- Rich output (plots, tables, HTML)
+- Tab completion
+- Object inspection
+- Persistent state
+
+* Conclusion
+
+Scimax VS Code provides comprehensive support for executing code in dozens of programming languages, from traditional scripting languages to specialized scientific computing environments. Whether you need quick Python scripts, interactive R analysis, or complex multi-language workflows, the Babel execution system provides a powerful and flexible foundation for literate programming and reproducible research.
+
+For language-specific details, installation instructions, and troubleshooting help, refer to the relevant sections above or consult the official documentation for each language and its Jupyter kernel.
