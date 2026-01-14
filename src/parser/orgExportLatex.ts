@@ -156,11 +156,41 @@ export class LatexExportBackend implements ExportBackend {
 
     /**
      * Export a complete document to LaTeX
+     *
+     * Priority for options (highest to lowest):
+     * 1. Document keywords (#+LATEX_CLASS:, #+LATEX_CLASS_OPTIONS:, #+LATEX_HEADER:)
+     * 2. Options parameter (from VS Code settings or explicit call)
+     * 3. DEFAULT_LATEX_OPTIONS (built-in defaults)
      */
     exportDocument(doc: OrgDocumentNode, options?: Partial<LatexExportOptions>): string {
+        // Document keywords have highest priority, then options, then defaults
+        const documentClass = doc.keywords['LATEX_CLASS'] || options?.documentClass || DEFAULT_LATEX_OPTIONS.documentClass;
+
+        // Parse class options from #+LATEX_CLASS_OPTIONS: [12pt,twocolumn]
+        // Document keyword has highest priority
+        let classOptions = options?.classOptions || DEFAULT_LATEX_OPTIONS.classOptions;
+        const classOptsKeyword = doc.keywords['LATEX_CLASS_OPTIONS'];
+        if (classOptsKeyword) {
+            // Parse [opt1,opt2,...] format - document keyword overrides options
+            const match = classOptsKeyword.match(/^\[([^\]]*)\]$/);
+            if (match) {
+                classOptions = match[1].split(',').map(s => s.trim()).filter(s => s);
+            }
+        }
+
+        // Collect LATEX_HEADER lines and append to preamble (options preamble + document headers)
+        const latexHeaders = doc.keywordLists?.['LATEX_HEADER'] || [];
+        const existingPreamble = options?.preamble || '';
+        const preamble = latexHeaders.length > 0
+            ? (existingPreamble ? existingPreamble + '\n' : '') + latexHeaders.join('\n')
+            : existingPreamble;
+
         const opts: LatexExportOptions = {
             ...DEFAULT_LATEX_OPTIONS,
             ...options,
+            documentClass,
+            classOptions,
+            preamble,
             backend: 'latex',
         };
         const state = createExportState(opts);

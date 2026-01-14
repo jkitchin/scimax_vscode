@@ -85,8 +85,9 @@ export interface IncludeOptions {
 /**
  * Pattern for matching #+INCLUDE: directives
  * Groups: file, rest (block type, options)
+ * Uses multiline flag for hasIncludes() to work with multi-line content
  */
-const INCLUDE_PATTERN = /^#\+INCLUDE:\s*"([^"]+)"(.*)$/i;
+const INCLUDE_PATTERN = /^#\+INCLUDE:\s*"([^"]+)"(.*)$/im;
 
 /**
  * Parse a #+INCLUDE: line into structured directive

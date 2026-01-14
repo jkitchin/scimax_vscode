@@ -404,7 +404,9 @@ Welcome to the document.
         // Check that code was wrapped in src block with line filter
         expect(result).toContain('#+BEGIN_SRC python');
         expect(result).toContain('def hello():');
-        expect(result).not.toContain('hello()'); // Line 4 should be excluded
+        // Line 4 (the standalone hello() call) should be excluded
+        // We check that the result doesn't contain a line with just "hello()"
+        expect(result).not.toMatch(/^hello\(\)$/m);
 
         // Check that appendix was line-filtered
         expect(result).toContain('Appendix content line 2');

@@ -543,6 +543,7 @@ describe('Interpreter', () => {
                 type: 'org-data',
                 properties: {},
                 keywords: { TITLE: 'Test Document' },
+                keywordLists: {},
                 children: [
                     {
                         type: 'headline',
@@ -571,6 +572,7 @@ describe('Interpreter', () => {
                 type: 'org-data',
                 properties: {},
                 keywords: {},
+                keywordLists: {},
                 children: [
                     {
                         type: 'headline',
@@ -600,6 +602,7 @@ describe('Interpreter', () => {
                 type: 'org-data',
                 properties: {},
                 keywords: {},
+                keywordLists: {},
                 children: [
                     {
                         type: 'headline',

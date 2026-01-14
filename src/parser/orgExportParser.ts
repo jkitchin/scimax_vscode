@@ -317,6 +317,7 @@ export function parseOrgFast(content: string): OrgDocumentNode {
         type: 'org-data',
         properties: {},
         keywords: {},
+        keywordLists: {},
         children: [],
     };
 

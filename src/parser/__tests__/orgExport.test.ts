@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import { HtmlExportBackend, exportToHtml } from '../orgExportHtml';
 import { LatexExportBackend, exportToLatex } from '../orgExportLatex';
+import { parseOrg } from '../orgParserUnified';
 import {
     createExportState,
     escapeString,
@@ -56,6 +57,7 @@ function createSimpleDocument(content: string): OrgDocumentNode {
         type: 'org-data',
         properties: {},
         keywords: { TITLE: 'Test Document' },
+        keywordLists: {},
         children: [],
         section: {
             type: 'section',
@@ -1005,6 +1007,105 @@ describe('LaTeX Export', () => {
 
             expect(result).toContain('\\tableofcontents');
         });
+
+        it('uses LATEX_CLASS from document keywords', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { LATEX_CLASS: 'report' },
+                keywordLists: {},
+                children: [],
+            };
+            const result = exportToLatex(doc);
+
+            expect(result).toContain('\\documentclass');
+            expect(result).toContain('{report}');
+        });
+
+        it('parses LATEX_CLASS_OPTIONS from document keywords', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: {
+                    LATEX_CLASS: 'article',
+                    LATEX_CLASS_OPTIONS: '[12pt,twocolumn]',
+                },
+                keywordLists: {},
+                children: [],
+            };
+            const result = exportToLatex(doc);
+
+            expect(result).toContain('\\documentclass[12pt,twocolumn]{article}');
+        });
+
+        it('includes LATEX_HEADER lines in preamble', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: {},
+                keywordLists: {
+                    LATEX_HEADER: [
+                        '\\usepackage{setspace}',
+                        '\\doublespacing',
+                    ],
+                },
+                children: [],
+            };
+            const result = exportToLatex(doc);
+
+            expect(result).toContain('\\usepackage{setspace}');
+            expect(result).toContain('\\doublespacing');
+        });
+
+        it('combines all LaTeX keywords correctly', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: {
+                    TITLE: 'My Report',
+                    AUTHOR: 'Test Author',
+                    LATEX_CLASS: 'report',
+                    LATEX_CLASS_OPTIONS: '[12pt]',
+                },
+                keywordLists: {
+                    LATEX_HEADER: [
+                        '\\usepackage{setspace}',
+                        '\\doublespacing',
+                    ],
+                },
+                children: [],
+            };
+            const result = exportToLatex(doc);
+
+            expect(result).toContain('\\documentclass[12pt]{report}');
+            expect(result).toContain('\\usepackage{setspace}');
+            expect(result).toContain('\\doublespacing');
+            expect(result).toContain('\\title{My Report}');
+            expect(result).toContain('\\author{Test Author}');
+        });
+
+        it('parses and exports LaTeX keywords end-to-end', () => {
+            const orgContent = `#+TITLE: My Document
+#+AUTHOR: John Doe
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [12pt]
+#+LATEX_HEADER: \\usepackage{setspace}
+#+LATEX_HEADER: \\doublespacing
+
+* Introduction
+
+Some content here.
+`;
+            const doc = parseOrg(orgContent);
+            const result = exportToLatex(doc);
+
+            expect(result).toContain('\\documentclass[12pt]{article}');
+            expect(result).toContain('\\usepackage{setspace}');
+            expect(result).toContain('\\doublespacing');
+            expect(result).toContain('\\title{My Document}');
+            expect(result).toContain('\\author{John Doe}');
+            expect(result).toContain('\\section{Introduction}');
+        });
     });
 });
 
@@ -1018,6 +1119,7 @@ describe('Export Integration', () => {
             type: 'org-data',
             properties: {},
             keywords: {},
+            keywordLists: {},
             children: [],
             section: {
                 type: 'section',
@@ -1058,6 +1160,7 @@ describe('Export Integration', () => {
             type: 'org-data',
             properties: {},
             keywords: { TITLE: 'Test' },
+            keywordLists: {},
             children: [
                 {
                     type: 'headline',

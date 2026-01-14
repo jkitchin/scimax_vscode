@@ -196,6 +196,7 @@ describe('addPositionsToDocument', () => {
             type: 'org-data',
             properties: {},
             keywords: {},
+            keywordLists: {},
             children: [
                 {
                     type: 'headline',

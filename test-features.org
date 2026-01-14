@@ -84,14 +84,13 @@ print(f"Max value: {y.max():.4f}")
 print(f"Min value: {y.min():.4f}")
 
 import matplotlib.pyplot as plt
-plt.plot([1, 2, 4])
+plt.plot([1, 2, 4]);
 #+END_SRC
 
 #+RESULTS:
 : Max value: 0.9999
 : Min value: -0.9999
-: [<matplotlib.lines.Line2D at 0x114a368d0>]
-[[file:.ob-jupyter/output-1768342795701-0.png]]
+[[file:.ob-jupyter/output-1768393681840-0.png]]
 
 ** Python Example
 

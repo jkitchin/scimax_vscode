@@ -914,8 +914,10 @@ export interface OrgDocumentNode {
     type: 'org-data';
     /** Document properties from #+PROPERTY lines */
     properties: Record<string, string>;
-    /** Document keywords (#+TITLE, #+AUTHOR, etc.) */
+    /** Document keywords (#+TITLE, #+AUTHOR, etc.) - single value per key */
     keywords: Record<string, string>;
+    /** Document keywords that can have multiple values (#+LATEX_HEADER, etc.) */
+    keywordLists: Record<string, string[]>;
     /** Top-level section (content before first headline) */
     section?: SectionElement;
     /** Top-level headlines */

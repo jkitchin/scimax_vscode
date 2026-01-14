@@ -390,7 +390,8 @@ describe('Relative Date Parsing', () => {
     });
 
     it('should parse absolute date string', () => {
-        const result = parseRelativeDate('2026-01-15');
+        // Use ISO format with time to avoid timezone issues
+        const result = parseRelativeDate('2026-01-15T00:00:00');
         expect(result.getFullYear()).toBe(2026);
         expect(result.getMonth()).toBe(0);  // January is 0
         expect(result.getDate()).toBe(15);

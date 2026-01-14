@@ -3033,6 +3033,58 @@
           "default": "",
           "markdownDescription": "Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\\documentclass` through all `\\usepackage` commands. Example:\n```latex\n\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n```"
         },
+        "scimax.export.latex.documentClass": {
+          "type": "string",
+          "default": "article",
+          "description": "Default LaTeX document class (e.g., article, report, book). Can be overridden by #+LATEX_CLASS: in the document."
+        },
+        "scimax.export.latex.classOptions": {
+          "type": "string",
+          "default": "12pt,letterpaper",
+          "description": "Default LaTeX class options as comma-separated values (e.g., '12pt,letterpaper'). Can be overridden by #+LATEX_CLASS_OPTIONS: in the document."
+        },
+        "scimax.export.latex.defaultPreamble": {
+          "type": "string",
+          "default": "\\usepackage[utf8]{inputenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage{hyperref}\n\\usepackage{mhchem}",
+          "markdownDescription": "Default LaTeX preamble (packages and commands) added after `\\documentclass`. Can be extended by `#+LATEX_HEADER:` lines in the document. Example:\n```latex\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n```"
+        },
+        "scimax.export.pdf.compiler": {
+          "type": "string",
+          "enum": [
+            "latexmk-lualatex",
+            "latexmk-pdflatex",
+            "latexmk-xelatex",
+            "lualatex",
+            "pdflatex",
+            "xelatex"
+          ],
+          "default": "latexmk-lualatex",
+          "markdownDescription": "LaTeX compiler to use for PDF generation:\n- `latexmk-lualatex` (recommended): Uses latexmk with lualatex, handles bibliography automatically\n- `latexmk-pdflatex`: Uses latexmk with pdflatex\n- `latexmk-xelatex`: Uses latexmk with xelatex\n- `lualatex`: Direct lualatex (manual bibliography handling)\n- `pdflatex`: Direct pdflatex (manual bibliography handling)\n- `xelatex`: Direct xelatex (manual bibliography handling)"
+        },
+        "scimax.export.pdf.bibtexCommand": {
+          "type": "string",
+          "enum": [
+            "biber",
+            "bibtex"
+          ],
+          "default": "biber",
+          "description": "Bibliography processor to use (only applies when not using latexmk)"
+        },
+        "scimax.export.pdf.extraArgs": {
+          "type": "string",
+          "default": "",
+          "description": "Extra arguments to pass to the LaTeX compiler (e.g., '-shell-escape')"
+        },
+        "scimax.export.pdf.openLogOnError": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically open the log file when PDF compilation fails"
+        },
+        "scimax.export.pdf.cleanAuxFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation"
+        },
         "scimax.latexPreview.enabled": {
           "type": "boolean",
           "default": true,
@@ -3189,12 +3241,13 @@
         "scimax.imageOverlays.renderMode": {
           "type": "string",
           "enum": [
+            "hover-only",
             "gutter",
             "after",
             "both"
           ],
-          "default": "after",
-          "description": "Where to display image thumbnails: gutter (line margin), after (inline emoji), or both"
+          "default": "hover-only",
+          "description": "Where to display image thumbnails: hover-only (just hover preview, no icons), gutter (line margin), after (inline emoji), or both"
         },
         "scimax.imageOverlays.onlyWhenCursorNotInLink": {
           "type": "boolean",

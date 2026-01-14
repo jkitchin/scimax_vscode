@@ -277,12 +277,27 @@ async function exportLatex(
 
     const metadata = extractMetadata(doc);
 
-    // Get custom header from VS Code settings if not provided
+    // Get LaTeX settings from VS Code configuration
     const config = vscode.workspace.getConfiguration('scimax.export.latex');
     const customHeader = options.customHeader || config.get<string>('customHeader');
 
+    // Read default document class from settings (can be overridden by document keywords)
+    const defaultDocumentClass = config.get<string>('documentClass', 'article');
+
+    // Read default class options from settings (comma-separated string)
+    const defaultClassOptionsStr = config.get<string>('classOptions', '12pt,letterpaper');
+    const defaultClassOptions = defaultClassOptionsStr
+        ? defaultClassOptionsStr.split(',').map(s => s.trim()).filter(s => s)
+        : ['12pt', 'letterpaper'];
+
+    // Read default preamble from settings
+    const defaultPreamble = config.get<string>('defaultPreamble', '');
+
     const latexOptions: LatexExportOptions = {
         ...metadata,
+        documentClass: defaultDocumentClass,
+        classOptions: defaultClassOptions,
+        preamble: defaultPreamble,
         ...options,
         customHeader,
         bodyOnly,
@@ -300,7 +315,66 @@ async function exportLatex(
 }
 
 /**
- * Export to PDF via LaTeX using latexmk
+ * PDF compilation configuration
+ */
+interface PdfCompilerConfig {
+    compiler: 'latexmk-lualatex' | 'latexmk-pdflatex' | 'latexmk-xelatex' | 'lualatex' | 'pdflatex' | 'xelatex';
+    bibtexCommand: 'biber' | 'bibtex';
+    extraArgs: string;
+    openLogOnError: boolean;
+    cleanAuxFiles: boolean;
+}
+
+/**
+ * Load PDF compiler configuration from VS Code settings
+ */
+function loadPdfConfig(): PdfCompilerConfig {
+    const config = vscode.workspace.getConfiguration('scimax.export.pdf');
+    return {
+        compiler: config.get<PdfCompilerConfig['compiler']>('compiler', 'latexmk-lualatex'),
+        bibtexCommand: config.get<'biber' | 'bibtex'>('bibtexCommand', 'biber'),
+        extraArgs: config.get<string>('extraArgs', ''),
+        openLogOnError: config.get<boolean>('openLogOnError', true),
+        cleanAuxFiles: config.get<boolean>('cleanAuxFiles', true),
+    };
+}
+
+/**
+ * Build the LaTeX compilation command based on configuration
+ */
+function buildCompileCommand(
+    texPath: string,
+    outputDir: string,
+    config: PdfCompilerConfig
+): string {
+    const extraArgs = config.extraArgs ? ` ${config.extraArgs}` : '';
+
+    switch (config.compiler) {
+        case 'latexmk-lualatex':
+            return `latexmk -lualatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+
+        case 'latexmk-pdflatex':
+            return `latexmk -pdf -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+
+        case 'latexmk-xelatex':
+            return `latexmk -xelatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+
+        case 'lualatex':
+            return `lualatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+
+        case 'pdflatex':
+            return `pdflatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+
+        case 'xelatex':
+            return `xelatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+
+        default:
+            return `latexmk -lualatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+    }
+}
+
+/**
+ * Export to PDF via LaTeX
  * Returns the log file path if there was an error
  */
 async function exportPdf(
@@ -308,6 +382,7 @@ async function exportPdf(
     options: Partial<LatexExportOptions>,
     outputPath: string
 ): Promise<string | undefined> {
+    const pdfConfig = loadPdfConfig();
 
     // First generate LaTeX
     const latexContent = await exportLatex(content, options, false);
@@ -320,44 +395,114 @@ async function exportPdf(
 
     await fs.promises.writeFile(texPath, latexContent, 'utf-8');
 
-    // Compile with latexmk - handles bibliography and multiple passes automatically
+    // Build and execute the compile command
+    const compileCmd = buildCompileCommand(texPath, tempDir, pdfConfig);
+
     try {
-        await execAsync(`latexmk -pdf -interaction=nonstopmode -output-directory="${tempDir}" "${texPath}"`, {
+        await execAsync(compileCmd, {
             cwd: tempDir,
-            timeout: 120000, // 2 minutes for complex documents with bibliography
+            timeout: 180000, // 3 minutes for complex documents with bibliography
         });
-    } catch {
-        // latexmk may return non-zero even when PDF is produced (warnings)
+    } catch (error) {
+        // Compiler may return non-zero even when PDF is produced (warnings)
+        // We'll check for PDF existence below
+    }
+
+    // For non-latexmk compilers, we may need to run bibtex/biber and recompile
+    if (!pdfConfig.compiler.startsWith('latexmk')) {
+        const auxPath = path.join(tempDir, `${baseName}.aux`);
+        if (fs.existsSync(auxPath)) {
+            // Check if there are citations that need bibliography processing
+            const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
+            if (auxContent.includes('\\citation') || auxContent.includes('\\bibdata')) {
+                try {
+                    // Run bibtex/biber
+                    await execAsync(`${pdfConfig.bibtexCommand} "${baseName}"`, {
+                        cwd: tempDir,
+                        timeout: 60000,
+                    });
+                    // Recompile twice for references
+                    const recompileCmd = buildCompileCommand(texPath, tempDir, pdfConfig);
+                    await execAsync(recompileCmd, { cwd: tempDir, timeout: 120000 });
+                    await execAsync(recompileCmd, { cwd: tempDir, timeout: 120000 });
+                } catch {
+                    // Bibliography processing may fail, continue anyway
+                }
+            }
+        }
     }
 
     // Check if PDF was created
     const pdfCreated = fs.existsSync(outputPath);
 
-    // Clean up auxiliary files (keep .tex for debugging, latexmk creates many aux files)
-    const auxFiles = ['.aux', '.bbl', '.blg', '.fdb_latexmk', '.fls', '.out', '.toc', '.synctex.gz'];
-    for (const ext of auxFiles) {
-        try {
-            await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
-        } catch {
-            // Ignore cleanup errors
+    // Clean up auxiliary files if configured
+    if (pdfConfig.cleanAuxFiles) {
+        const auxFiles = ['.aux', '.bbl', '.blg', '.fdb_latexmk', '.fls', '.out', '.toc', '.synctex.gz', '.run.xml', '.bcf'];
+        for (const ext of auxFiles) {
+            try {
+                await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
+            } catch {
+                // Ignore cleanup errors
+            }
         }
     }
 
     if (!pdfCreated) {
         // Keep the log and tex file for debugging, return log path
+        // The caller will handle opening the log if configured
         return logPath;
     }
 
-    // Clean up log and tex on success
-    for (const ext of ['.log', '.tex']) {
-        try {
-            await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
-        } catch {
-            // Ignore cleanup errors
+    // Clean up log and tex on success (if cleanAuxFiles is enabled)
+    if (pdfConfig.cleanAuxFiles) {
+        for (const ext of ['.log', '.tex']) {
+            try {
+                await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
+            } catch {
+                // Ignore cleanup errors
+            }
         }
     }
 
     return undefined;
+}
+
+/**
+ * Handle PDF export error by showing log file
+ */
+async function handlePdfExportError(logPath: string): Promise<void> {
+    const pdfConfig = loadPdfConfig();
+    if (pdfConfig.openLogOnError && fs.existsSync(logPath)) {
+        // Automatically open log file
+        const doc = await vscode.workspace.openTextDocument(logPath);
+        await vscode.window.showTextDocument(doc);
+        vscode.window.showErrorMessage('PDF export failed. Log file opened for review.');
+    } else {
+        const action = await vscode.window.showErrorMessage(
+            'PDF export failed. View log for details.',
+            'Open Log'
+        );
+        if (action === 'Open Log' && fs.existsSync(logPath)) {
+            const doc = await vscode.workspace.openTextDocument(logPath);
+            await vscode.window.showTextDocument(doc);
+        }
+    }
+}
+
+/**
+ * Get a user-friendly description of the PDF compiler
+ */
+function getPdfCompilerDescription(): string {
+    const config = loadPdfConfig();
+    switch (config.compiler) {
+        case 'latexmk-lualatex': return 'latexmk (lualatex)';
+        case 'latexmk-pdflatex': return 'latexmk (pdflatex)';
+        case 'latexmk-xelatex': return 'latexmk (xelatex)';
+        case 'lualatex': return 'lualatex';
+        case 'pdflatex': return 'pdflatex';
+        case 'xelatex': return 'xelatex';
+        default: return 'LaTeX';
+    }
 }
 
 /**
@@ -737,26 +882,19 @@ async function quickExportPdf(): Promise<void> {
     const inputDir = path.dirname(inputPath);
     const content = preprocessContent(editor.document.getText(), inputDir);
     const outputPath = inputPath.replace(/\.org$/, '.pdf');
+    const compilerDesc = getPdfCompilerDescription();
 
     await vscode.window.withProgress(
         {
             location: vscode.ProgressLocation.Notification,
-            title: 'Exporting to PDF via latexmk...',
+            title: `Exporting to PDF via ${compilerDesc}...`,
             cancellable: false,
         },
         async () => {
             try {
                 const logPath = await exportPdf(content, {}, outputPath);
                 if (logPath) {
-                    // PDF failed to generate - open the log file
-                    const action = await vscode.window.showErrorMessage(
-                        'PDF export failed. View log for details.',
-                        'Open Log'
-                    );
-                    if (action === 'Open Log' && fs.existsSync(logPath)) {
-                        const doc = await vscode.workspace.openTextDocument(logPath);
-                        await vscode.window.showTextDocument(doc);
-                    }
+                    await handlePdfExportError(logPath);
                 } else {
                     const action = await vscode.window.showInformationMessage(
                         `Exported to ${path.basename(outputPath)}`,
@@ -994,21 +1132,14 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'pdf-file': {
                 const outputPath = inputPath.replace(/\.org$/, '.pdf');
+                const compilerDesc = getPdfCompilerDescription();
                 await vscode.window.withProgress(
-                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF via latexmk...', cancellable: false },
+                    { location: vscode.ProgressLocation.Notification, title: `Generating PDF via ${compilerDesc}...`, cancellable: false },
                     async (progress) => {
                         progress.report({ message: 'Generating LaTeX and compiling...' });
                         const logPath = await exportPdf(content, {}, outputPath);
                         if (logPath) {
-                            // PDF failed - open the log
-                            const action = await vscode.window.showErrorMessage(
-                                'PDF export failed. View log for details.',
-                                'Open Log'
-                            );
-                            if (action === 'Open Log' && fs.existsSync(logPath)) {
-                                const doc = await vscode.workspace.openTextDocument(logPath);
-                                await vscode.window.showTextDocument(doc);
-                            }
+                            await handlePdfExportError(logPath);
                         } else {
                             vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
                         }
@@ -1018,21 +1149,14 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'pdf-open': {
                 const outputPath = inputPath.replace(/\.org$/, '.pdf');
+                const compilerDesc = getPdfCompilerDescription();
                 await vscode.window.withProgress(
-                    { location: vscode.ProgressLocation.Notification, title: 'Generating PDF via latexmk...', cancellable: false },
+                    { location: vscode.ProgressLocation.Notification, title: `Generating PDF via ${compilerDesc}...`, cancellable: false },
                     async (progress) => {
                         progress.report({ message: 'Generating LaTeX and compiling...' });
                         const logPath = await exportPdf(content, {}, outputPath);
                         if (logPath) {
-                            // PDF failed - open the log
-                            const action = await vscode.window.showErrorMessage(
-                                'PDF export failed. View log for details.',
-                                'Open Log'
-                            );
-                            if (action === 'Open Log' && fs.existsSync(logPath)) {
-                                const doc = await vscode.workspace.openTextDocument(logPath);
-                                await vscode.window.showTextDocument(doc);
-                            }
+                            await handlePdfExportError(logPath);
                         } else {
                             await vscode.env.openExternal(vscode.Uri.file(outputPath));
                         }

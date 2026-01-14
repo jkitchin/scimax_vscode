@@ -217,6 +217,7 @@ export class OrgParserUnified {
             type: 'org-data',
             properties: {},
             keywords: {},
+            keywordLists: {},
             children: [],
         };
 
@@ -238,13 +239,14 @@ export class OrgParserUnified {
 
         if (preambleEnd > 0) {
             const preambleLines = lines.slice(0, preambleEnd);
-            const { keywords, properties, elements } = this.parsePreamble(
+            const { keywords, keywordLists, properties, elements } = this.parsePreamble(
                 preambleLines,
                 0,
                 lineNum,
                 lineOffsets
             );
             doc.keywords = keywords;
+            doc.keywordLists = keywordLists;
             doc.properties = properties;
 
             if (elements.length > 0) {
@@ -395,6 +397,14 @@ export class OrgParserUnified {
     /**
      * Parse file preamble (content before first headline)
      */
+    // Keywords that can appear multiple times and should be collected as arrays
+    private static readonly MULTI_VALUE_KEYWORDS = new Set([
+        'LATEX_HEADER',
+        'LATEX_HEADER_EXTRA',
+        'HTML_HEAD',
+        'HTML_HEAD_EXTRA',
+    ]);
+
     private parsePreamble(
         lines: string[],
         baseOffset: number,
@@ -402,10 +412,12 @@ export class OrgParserUnified {
         lineOffsets?: number[]
     ): {
         keywords: Record<string, string>;
+        keywordLists: Record<string, string[]>;
         properties: Record<string, string>;
         elements: OrgElement[];
     } {
         const keywords: Record<string, string> = {};
+        const keywordLists: Record<string, string[]> = {};
         const properties: Record<string, string> = {};
         const elements: OrgElement[] = [];
 
@@ -460,6 +472,12 @@ export class OrgParserUnified {
                                 if (propMatch) {
                                     properties[propMatch[1]] = propMatch[2];
                                 }
+                            } else if (OrgParserUnified.MULTI_VALUE_KEYWORDS.has(key)) {
+                                // Keywords that can appear multiple times
+                                if (!keywordLists[key]) {
+                                    keywordLists[key] = [];
+                                }
+                                keywordLists[key].push(value);
                             } else {
                                 keywords[key] = value;
                             }
@@ -638,7 +656,7 @@ export class OrgParserUnified {
             i = paraResult.endLine;
         }
 
-        return { keywords, properties, elements };
+        return { keywords, keywordLists, properties, elements };
     }
 
     /**

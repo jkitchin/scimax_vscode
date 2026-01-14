@@ -76,7 +76,7 @@ interface ImageOverlayConfig {
     enabled: boolean;
     maxWidth: number;
     maxHeight: number;
-    renderMode: 'after' | 'gutter' | 'both';
+    renderMode: 'after' | 'gutter' | 'both' | 'hover-only';
     onlyWhenCursorNotInLink: boolean;
     excludePatterns: string[];
     maxOverlaysPerDocument: number;
@@ -164,7 +164,7 @@ export class ImageOverlayManager {
             enabled: config.get<boolean>('enabled', true),
             maxWidth: config.get<number>('maxWidth', 96),
             maxHeight: config.get<number>('maxHeight', 96),
-            renderMode: config.get<'after' | 'gutter' | 'both'>('renderMode', 'gutter'),
+            renderMode: config.get<'after' | 'gutter' | 'both' | 'hover-only'>('renderMode', 'hover-only'),
             onlyWhenCursorNotInLink: config.get<boolean>('onlyWhenCursorNotInLink', true),
             excludePatterns: config.get<string[]>('excludePatterns', []),
             maxOverlaysPerDocument: config.get<number>('maxOverlaysPerDocument', 200),
@@ -546,6 +546,14 @@ export class ImageOverlayManager {
             const imageUri = vscode.Uri.file(link.resolvedPath);
             hoverMd.appendMarkdown(`<img src="${imageUri.toString()}" width="300" />\n\n`);
             hoverMd.appendMarkdown(`[Open in editor](command:vscode.open?${encodeURIComponent(JSON.stringify([imageUri]))})`);
+
+            // Hover-only mode - just add hover message without any visible decoration
+            if (this.config.renderMode === 'hover-only') {
+                afterDecorations.push({
+                    range: link.range,
+                    hoverMessage: hoverMd,
+                });
+            }
 
             // After-content decoration
             if (this.config.renderMode === 'after' || this.config.renderMode === 'both') {
