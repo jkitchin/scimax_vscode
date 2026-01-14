@@ -47,6 +47,7 @@ import { registerImageOverlayCommands } from './org/imageOverlayProvider';
 import { registerAgendaCommands } from './org/agendaProvider';
 import { registerTableFormulaCommands } from './org/tableFormula';
 import { registerCaptureCommands } from './org/captureProvider';
+import { OrgLintProvider, registerOrgLintCommands } from './org/orgLintProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
 import { ProjectileManager } from './projectile/projectileManager';
@@ -332,6 +333,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Capture Commands (org-capture quick note system)
     registerCaptureCommands(context);
+
+    // Register Org-Lint Commands (syntax checking for org files)
+    const orgLintProvider = new OrgLintProvider();
+    registerOrgLintCommands(context, orgLintProvider);
+    context.subscriptions.push(orgLintProvider);
 
     // Track cursor position to set context for keybinding differentiation
     // This enables different keybindings when cursor is in a table vs on a heading

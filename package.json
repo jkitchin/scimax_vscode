@@ -1946,6 +1946,14 @@
       {
         "command": "scimax.capture.configure",
         "title": "Scimax: Configure Capture Templates"
+      },
+      {
+        "command": "scimax.org.lint",
+        "title": "Scimax: Org Lint"
+      },
+      {
+        "command": "scimax.org.lintCheckers",
+        "title": "Scimax: Org Lint - Configure Checkers"
       }
     ],
     "keybindings": [
@@ -3170,12 +3178,12 @@
         },
         "scimax.imageOverlays.maxWidth": {
           "type": "number",
-          "default": 96,
+          "default": 400,
           "description": "Maximum width in pixels for thumbnail icons"
         },
         "scimax.imageOverlays.maxHeight": {
           "type": "number",
-          "default": 96,
+          "default": 300,
           "description": "Maximum height in pixels for thumbnail icons"
         },
         "scimax.imageOverlays.renderMode": {
@@ -3185,7 +3193,7 @@
             "after",
             "both"
           ],
-          "default": "gutter",
+          "default": "after",
           "description": "Where to display image thumbnails: gutter (line margin), after (inline emoji), or both"
         },
         "scimax.imageOverlays.onlyWhenCursorNotInLink": {
@@ -3236,6 +3244,14 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically save the file after capture"
+        },
+        "scimax.org.lint.disabledCheckers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "List of org-lint checker IDs to disable. Available checkers: duplicate-custom-id, duplicate-name, missing-language-in-src-block, invalid-block, incomplete-drawer, broken-link, undefined-footnote-reference, unreferenced-footnote-definition, timestamp-syntax, clock-issues, orphaned-affiliated-keywords, wrong-header-argument, planning-inactive, heading-level-skip"
         }
       }
     },
