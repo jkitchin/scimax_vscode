@@ -5,10 +5,12 @@
   "patterns": [
     { "include": "#comments" },
     { "include": "#headings" },
+    { "include": "#inlinetask-end" },
     { "include": "#property-drawers" },
     { "include": "#drawers" },
     { "include": "#planning" },
     { "include": "#clock" },
+    { "include": "#diary-sexp" },
     { "include": "#source-blocks" },
     { "include": "#example-blocks" },
     { "include": "#quote-blocks" },
@@ -143,6 +145,19 @@
           }
         }
       ]
+    },
+    "inlinetask-end": {
+      "comment": "Inline task END marker (many stars followed by END)",
+      "name": "markup.heading.inlinetask-end.org",
+      "match": "^(\\*{15,})\\s+END\\s*$",
+      "captures": {
+        "1": { "name": "punctuation.definition.heading.org" }
+      }
+    },
+    "diary-sexp": {
+      "comment": "Diary sexp at start of line",
+      "name": "constant.other.diary-sexp.org",
+      "match": "^%%\\(.+\\)\\s*$"
     },
     "property-drawers": {
       "name": "meta.drawer.properties.org",
@@ -875,6 +890,11 @@
         {
           "name": "constant.other.timestamp.diary.org",
           "match": "<%%\\([^>]+\\)>"
+        },
+        {
+          "comment": "Bare diary sexp (not in angle brackets)",
+          "name": "constant.other.diary-sexp.org",
+          "match": "^%%\\(.+\\)$"
         }
       ]
     },

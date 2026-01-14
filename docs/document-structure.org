@@ -356,6 +356,163 @@ Drawer names must be uppercase letters and can contain numbers and underscores.
 Drawers are typically displayed collapsed. Click or use fold commands to
 expand/collapse them.
 
+* Inline Tasks
+
+Inline tasks are special headlines at a very deep level (default: 15 stars or
+more) that are treated as inline content within a section rather than as
+document structure.
+
+** Creating Inline Tasks
+
+An inline task uses many stars (15+) and has a matching END marker:
+
+#+BEGIN_SRC org
+,* Main Headline
+Content of the headline.
+
+,*************** TODO Quick inline task
+This is an inline task that doesn't affect document structure.
+It's useful for small, self-contained TODOs within prose.
+,*************** END
+
+More content continues here.
+#+END_SRC
+
+** Inline Task Features
+
+Inline tasks support the same features as regular headlines:
+
+| Feature     | Example                                      |
+|-------------+----------------------------------------------|
+| TODO state  | =*************** TODO Task=                   |
+| Priority    | =*************** [#A] High priority=          |
+| Tags        | =*************** Task :urgent:work:=          |
+| Body text   | Content between task and END                 |
+
+** When to Use Inline Tasks
+
+- Quick TODOs embedded in documentation
+- Small tasks that don't warrant their own section
+- Notes or reminders within prose
+- Tasks that shouldn't appear in document outline
+
+** Configuration
+
+The minimum headline level for inline tasks is configurable. By default,
+headlines with 15 or more stars are treated as inline tasks.
+
+* Footnote Definitions
+
+Footnotes allow you to add supplementary information without interrupting
+the main text flow.
+
+** Footnote Definition Syntax
+
+Footnotes are defined with =[fn:LABEL]= at the start of a line:
+
+#+BEGIN_SRC org
+This paragraph has a footnote reference[fn:1].
+
+[fn:1] This is the footnote content. It can span
+  multiple lines if subsequent lines are indented.
+
+Another paragraph continues here.
+#+END_SRC
+
+** Footnote Labels
+
+Footnotes can use numeric or named labels:
+
+#+BEGIN_SRC org
+See the paper for details[fn:1].
+This is a key concept[fn:important-note].
+
+[fn:1] Smith et al., 2024.
+[fn:important-note] A named footnote for easy reference.
+#+END_SRC
+
+** Multi-line Footnotes
+
+Footnote definitions can span multiple lines with indentation:
+
+#+BEGIN_SRC org
+[fn:long-note] This is a longer footnote that spans
+  multiple lines. All continuation lines must be
+  indented to be included in the footnote.
+
+  You can even have multiple paragraphs by leaving
+  a blank line with proper indentation.
+#+END_SRC
+
+** Inline Footnotes
+
+For short footnotes, use inline syntax:
+
+#+BEGIN_SRC org
+This has an inline footnote[fn:: This is the definition].
+#+END_SRC
+
+** Related Topics
+
+See [[file:links.org][Links]] for information on footnote references.
+
+* Dynamic Blocks
+
+Dynamic blocks are special regions whose content is generated programmatically.
+They are defined with =#+BEGIN:= and =#+END:= markers.
+
+** Dynamic Block Syntax
+
+#+BEGIN_SRC org
+,#+BEGIN: block-name parameters
+Content that will be replaced when block is updated.
+,#+END:
+#+END_SRC
+
+** Clock Table Example
+
+The most common dynamic block is the clock table, which summarizes time spent:
+
+#+BEGIN_SRC org
+,#+BEGIN: clocktable :maxlevel 2 :scope file
+| Headline          | Time   |
+|-------------------+--------|
+| * Project work    |  10:30 |
+| ** Implementation |   6:00 |
+| ** Testing        |   4:30 |
+,#+END:
+#+END_SRC
+
+** Column View Example
+
+Column view displays properties in a table format:
+
+#+BEGIN_SRC org
+,#+BEGIN: columnview :hlines 1 :id global
+| ITEM         | EFFORT | PRIORITY |
+|--------------+--------+----------|
+| Task 1       | 2:00   | A        |
+| Task 2       | 1:30   | B        |
+,#+END:
+#+END_SRC
+
+** Dynamic Block Parameters
+
+Common parameters for clock tables:
+
+| Parameter   | Description                           | Example         |
+|-------------+---------------------------------------+-----------------|
+| =:maxlevel=  | Maximum headline depth                | =:maxlevel 3=    |
+| =:scope=     | Scope of clock data                   | =:scope file=    |
+| =:tstart=    | Start time for report                 | =:tstart "<-1w>"= |
+| =:tend=      | End time for report                   | =:tend "<now>"=  |
+| =:block=     | Time block (today, thisweek, etc.)    | =:block thisweek= |
+
+** Updating Dynamic Blocks
+
+Dynamic blocks are updated when explicitly requested. The content between
+=#+BEGIN:= and =#+END:= is regenerated based on the block type and parameters.
+
 * Best Practices
 
 ** Document Organization
