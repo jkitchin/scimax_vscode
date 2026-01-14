@@ -4,6 +4,11 @@
  */
 
 import * as vscode from 'vscode';
+import {
+    getTodoWorkflowForDocument,
+    getNextTodoState,
+    getAllTodoStatesForDocument
+} from './todoStates';
 
 // =============================================================================
 // Text Markup Functions
@@ -810,6 +815,7 @@ export async function insertSubheading(): Promise<void> {
 
 /**
  * Cycle TODO state on current heading
+ * Uses file-specific TODO states from #+TODO: keywords if defined
  */
 export async function cycleTodoState(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -820,16 +826,39 @@ export async function cycleTodoState(): Promise<void> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
 
-    const headingMatch = lineText.match(/^(\*+)\s+(TODO|DONE|WAITING|CANCELLED|NEXT|SOMEDAY)?\s*(.*)/);
+    // Get all recognized TODO states for this document
+    const allStates = getAllTodoStatesForDocument(document);
+    const statesPattern = Array.from(allStates).join('|');
+
+    // Build dynamic regex to match heading with any recognized TODO state
+    const headingRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*(.*)`);
+    const headingMatch = lineText.match(headingRegex);
+
     if (!headingMatch) {
-        vscode.window.showInformationMessage('Not on a heading');
+        // Try simpler match for headings without TODO states
+        const simpleMatch = lineText.match(/^(\*+)\s+(.*)/);
+        if (!simpleMatch) {
+            vscode.window.showInformationMessage('Not on a heading');
+            return;
+        }
+        // Heading without any TODO state
+        const [, stars, rest] = simpleMatch;
+        const nextState = getNextTodoState(undefined, document);
+
+        const newLine = nextState
+            ? `${stars} ${nextState} ${rest}`
+            : `${stars} ${rest}`;
+
+        await editor.edit(editBuilder => {
+            editBuilder.replace(line.range, newLine);
+        });
+
+        await updateStatisticsCookies(editor, position.line, stars.length);
         return;
     }
 
     const [, stars, currentState, rest] = headingMatch;
-    const states = ['', 'TODO', 'DONE'];
-    const currentIndex = states.indexOf(currentState || '');
-    const nextState = states[(currentIndex + 1) % states.length];
+    const nextState = getNextTodoState(currentState, document);
 
     const newLine = nextState
         ? `${stars} ${nextState} ${rest}`
@@ -846,6 +875,7 @@ export async function cycleTodoState(): Promise<void> {
 /**
  * Update statistics cookies [n/m] or [n%] in parent headings
  * Exported for use by other modules (e.g., timestampProvider)
+ * Uses file-specific TODO states from #+TODO: keywords if defined
  */
 export async function updateStatisticsCookies(
     editor: vscode.TextEditor,
@@ -853,8 +883,9 @@ export async function updateStatisticsCookies(
     changedLevel: number
 ): Promise<void> {
     const document = editor.document;
-    const doneStates = new Set(['DONE', 'CANCELLED', 'CANCELED']);
-    const todoStates = new Set(['TODO', 'NEXT', 'WAITING', 'HOLD', 'SOMEDAY']);
+    const workflow = getTodoWorkflowForDocument(document);
+    const doneStates = new Set(workflow.doneStates);
+    const todoStates = new Set(workflow.activeStates);
 
     // Find parent heading (lower level number = higher in hierarchy)
     let parentLine = -1;
@@ -894,10 +925,15 @@ export async function updateStatisticsCookies(
         }
     }
 
+    // Build dynamic regex for matching TODO states
+    const allStates = getAllTodoStatesForDocument(document);
+    const statesPattern = Array.from(allStates).join('|');
+    const headingWithStateRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*`);
+
     // Count direct children with TODO states
     for (let i = parentLine + 1; i < endLine; i++) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+(TODO|DONE|NEXT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED)?\s*/);
+        const match = line.match(headingWithStateRegex);
         if (match && match[1].length === childLevel) {
             const state = match[2];
             if (state) {
@@ -918,7 +954,7 @@ export async function updateStatisticsCookies(
     doneCount = 0;
     for (let i = parentLine + 1; i < endLine; i++) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+(TODO|DONE|NEXT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED)?\s*/);
+        const match = line.match(headingWithStateRegex);
         if (match && match[1].length === childLevel) {
             totalCount++;
             const state = match[2];

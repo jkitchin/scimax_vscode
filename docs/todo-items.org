@@ -233,6 +233,88 @@ TODO → NEXT → WAITING → NEXT → DONE
      CANCELLED
 #+END_EXAMPLE
 
+* Custom TODO Keywords
+
+You can define your own TODO workflow states for each file using the =#+TODO:=
+keyword. This is useful for project-specific workflows like code review,
+content publishing, or approval processes.
+
+** Defining Custom States
+
+Add =#+TODO:= at the top of your org file (before any headings):
+
+#+BEGIN_SRC org
+,#+TODO: DRAFT REVIEW | PUBLISHED REJECTED
+#+END_SRC
+
+The =|= separates active (incomplete) states from done (complete) states.
+When you cycle TODO states, they will follow this sequence:
+
+#+BEGIN_EXAMPLE
+(none) → DRAFT → REVIEW → PUBLISHED → (none)
+#+END_EXAMPLE
+
+** Multiple TODO Lines
+
+You can define multiple workflow sequences:
+
+#+BEGIN_SRC org
+,#+TODO: TODO IN-PROGRESS | DONE
+,#+TODO: BUG INVESTIGATING FIXING | FIXED WONTFIX
+#+END_SRC
+
+All states from all =#+TODO:= lines are recognized.
+
+** Without Pipe Separator
+
+If you omit the =|=, the last state is treated as done:
+
+#+BEGIN_SRC org
+,#+TODO: IDEA DRAFT REVIEW PUBLISHED
+#+END_SRC
+
+This makes =PUBLISHED= the done state.
+
+** Syntax Variants
+
+These keywords are all equivalent:
+
+| Keyword       | Usage                              |
+|---------------+------------------------------------|
+| =#+TODO:=      | Standard TODO keyword definition   |
+| =#+SEQ_TODO:=  | Sequential workflow (same as TODO) |
+| =#+TYP_TODO:=  | Type-based workflow                |
+
+** Example Workflows
+
+*** Code Review Workflow
+
+#+BEGIN_SRC org
+,#+TODO: DRAFT REVIEW APPROVED | MERGED REJECTED
+
+,* DRAFT Implement new feature
+,* REVIEW Fix login bug
+,* APPROVED Update documentation
+#+END_SRC
+
+*** Content Publishing Workflow
+
+#+BEGIN_SRC org
+,#+TODO: IDEA OUTLINE WRITING EDITING | PUBLISHED ARCHIVED
+
+,* WRITING Blog post about org-mode
+,* EDITING Tutorial on source blocks
+#+END_SRC
+
+*** Project Management Workflow
+
+#+BEGIN_SRC org
+,#+TODO: BACKLOG SPRINT IN-PROGRESS TESTING | DONE CANCELLED
+
+,* IN-PROGRESS User authentication
+,* TESTING Payment integration
+#+END_SRC
+
 * Logging State Changes
 
 Scimax VS Code can log when and how TODO states change.
