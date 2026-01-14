@@ -319,11 +319,14 @@ Quick reference to find specific features across documentation.
 | Code blocks              | [[file:source-blocks.org][Source Code Blocks]]              | [[file:supported-languages.org][Supported Languages]], [[file:tables.org][Tables]]                |
 | Configuration            | [[file:configuration.org][Configuration]]                   | Feature-specific docs                       |
 | Deadlines                | [[file:timestamps.org][Timestamps]]                      | [[file:agenda.org][Agenda]], [[file:todo-items.org][TODO Items]]                        |
+| Diary sexp               | [[file:timestamps.org][Timestamps]]                      | [[file:agenda.org][Agenda]]                                     |
 | DOI lookup               | [[file:references.org][References]]                      | [[file:configuration.org][Configuration]]                              |
+| Dynamic blocks           | [[file:document-structure.org][Document Structure]]              | [[file:timestamps.org][Timestamps]], [[file:tables.org][Tables]]                       |
 | Embeddings               | [[file:database-search.org][Database and Search]]             | [[file:configuration.org][Configuration]]                              |
 | Export to HTML           | [[file:export.org][Export]]                          | [[file:latex-preview.org][LaTeX Preview]]                              |
 | Export to PDF            | [[file:export.org][Export]]                          | [[file:latex-preview.org][LaTeX Preview]]                              |
 | Folding                  | [[file:document-structure.org][Document Structure]]              | [[file:navigation.org][Navigation]]                                 |
+| Footnotes                | [[file:document-structure.org][Document Structure]]              | [[file:links.org][Links]], [[file:export.org][Export]]                              |
 | Formulas                 | [[file:tables.org][Tables]]                          | [[file:latex-preview.org][LaTeX Preview]]                              |
 | Full-text search         | [[file:database-search.org][Database and Search]]             | [[file:navigation.org][Navigation]]                                 |
 | Fuzzy search             | [[file:navigation.org][Navigation]]                      | [[file:database-search.org][Database and Search]]                        |
@@ -331,6 +334,7 @@ Quick reference to find specific features across documentation.
 | Headings                 | [[file:document-structure.org][Document Structure]]              | [[file:navigation.org][Navigation]], [[file:todo-items.org][TODO Items]]                    |
 | Hydra menus              | [[file:hydra-menus.org][Hydra Menus]]                     | [[file:keybindings.org][Keybindings]], [[file:configuration.org][Configuration]]               |
 | Image display            | [[file:image-overlays.org][Image Overlays]]                  | [[file:source-blocks.org][Source Code Blocks]]                         |
+| Inline tasks             | [[file:document-structure.org][Document Structure]]              | [[file:todo-items.org][TODO Items]]                                 |
 | Journal entries          | [[file:journal.org][Journal]]                         | [[file:capture.org][Capture]], [[file:agenda.org][Agenda]]                          |
 | Jupyter kernels          | [[file:jupyter.org][Jupyter Integration]]             | [[file:source-blocks.org][Source Code Blocks]], [[file:supported-languages.org][Supported Languages]]    |
 | Keybindings              | [[file:keybindings.org][Keybindings]]                     | [[file:speed-commands.org][Speed Commands]], [[file:hydra-menus.org][Hydra Menus]]               |
