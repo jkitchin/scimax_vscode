@@ -158,6 +158,40 @@ export class OrgParserUnified {
     private todoKeywords: Set<string>;
     private doneKeywords: Set<string>;
     private allTodoKeywords: Set<string>;
+    // Pre-compiled patterns for inline task END markers (performance optimization)
+    private static readonly inlinetaskEndPatterns: Map<number, RegExp> = OrgParserUnified.initEndPatterns();
+    // Cache for block end patterns (lazily populated)
+    private static readonly blockEndPatterns: Map<string, RegExp> = new Map();
+    // Cache for LaTeX environment end patterns (lazily populated)
+    private static readonly latexEndPatterns: Map<string, RegExp> = new Map();
+
+    private static initEndPatterns(): Map<number, RegExp> {
+        const patterns = new Map<number, RegExp>();
+        // Pre-compile patterns for levels 15-30 (common inline task levels)
+        for (let level = 15; level <= 30; level++) {
+            patterns.set(level, new RegExp(`^\\*{${level}}\\s+END\\s*$`));
+        }
+        return patterns;
+    }
+
+    private static getBlockEndPattern(blockType: string): RegExp {
+        const key = blockType.toUpperCase();
+        let pattern = OrgParserUnified.blockEndPatterns.get(key);
+        if (!pattern) {
+            pattern = new RegExp(`^#\\+END_${blockType}`, 'i');
+            OrgParserUnified.blockEndPatterns.set(key, pattern);
+        }
+        return pattern;
+    }
+
+    private static getLatexEndPattern(envName: string): RegExp {
+        let pattern = OrgParserUnified.latexEndPatterns.get(envName);
+        if (!pattern) {
+            pattern = new RegExp(`^\\\\end\\{${envName}\\}`);
+            OrgParserUnified.latexEndPatterns.set(envName, pattern);
+        }
+        return pattern;
+    }
 
     constructor(config: OrgParserConfig = {}) {
         this.config = {
@@ -387,27 +421,35 @@ export class OrgParserUnified {
             if (firstChar === '#') {
                 // Check for keyword vs block start
                 if (line[1] === '+') {
-                    // Check for dynamic block first (#+BEGIN: name args)
-                    const dynamicMatch = line.match(RE_DYNAMIC_BLOCK_START);
-                    if (dynamicMatch) {
-                        const dynResult = this.parseDynamicBlock(lines, i, offset, dynamicMatch[1], dynamicMatch[2] || '');
-                        elements.push(dynResult.element);
-                        offset = dynResult.endOffset;
-                        i = dynResult.endLine;
-                        continue;
+                    // Pre-filter by checking characters 2-6 to avoid unnecessary regex matches
+                    const char2 = line[2]?.toUpperCase();
+                    const char3 = line[3]?.toUpperCase();
+
+                    // Check for dynamic block (#+BEGIN: name args) - note the colon after BEGIN
+                    if (char2 === 'B' && char3 === 'E' && line.slice(2, 8).toUpperCase() === 'BEGIN:') {
+                        const dynamicMatch = line.match(RE_DYNAMIC_BLOCK_START);
+                        if (dynamicMatch) {
+                            const dynResult = this.parseDynamicBlock(lines, i, offset, dynamicMatch[1], dynamicMatch[2] || '');
+                            elements.push(dynResult.element);
+                            offset = dynResult.endOffset;
+                            i = dynResult.endLine;
+                            continue;
+                        }
                     }
 
                     // Check for babel call (#+CALL: name[header](args)[header])
-                    const babelCall = this.parseBabelCall(line, lineStart);
-                    if (babelCall) {
-                        elements.push(babelCall);
-                        offset += line.length + 1;
-                        i++;
-                        continue;
+                    if (char2 === 'C' && char3 === 'A' && line.slice(2, 7).toUpperCase() === 'CALL:') {
+                        const babelCall = this.parseBabelCall(line, lineStart);
+                        if (babelCall) {
+                            elements.push(babelCall);
+                            offset += line.length + 1;
+                            i++;
+                            continue;
+                        }
                     }
 
                     // Could be keyword or block start - check for BEGIN_ first
-                    if (!RE_BEGIN_BLOCK.test(line)) {
+                    if (!(char2 === 'B' && char3 === 'E' && RE_BEGIN_BLOCK.test(line))) {
                         const keywordMatch = line.match(RE_KEYWORD);
                         if (keywordMatch) {
                             const key = keywordMatch[1].toUpperCase();
@@ -508,8 +550,10 @@ export class OrgParserUnified {
             }
 
             // List - check for list markers
-            const trimmedStart = line.trimStart();
-            const listFirstChar = trimmedStart[0];
+            // Only call trimStart() if line starts with whitespace (optimization)
+            const listFirstChar = (firstChar === ' ' || firstChar === '\t')
+                ? line.trimStart()[0]
+                : firstChar;
             if ((listFirstChar === '-' || listFirstChar === '+' || listFirstChar === '*' ||
                  (listFirstChar >= '0' && listFirstChar <= '9')) &&
                 (RE_UNORDERED_LIST.test(line) || RE_ORDERED_LIST.test(line))) {
@@ -544,8 +588,9 @@ export class OrgParserUnified {
                 }
             }
 
-            // Clock entry - CLOCK: line
-            if (firstChar === 'C' || (line.trimStart()[0] === 'C')) {
+            // Clock entry - CLOCK: line (may be indented)
+            // Only check if line starts with 'C' or whitespace (tryParseClockEntry handles trimming)
+            if (firstChar === 'C' || firstChar === ' ' || firstChar === '\t') {
                 const clockEntry = this.tryParseClockEntry(line, lineStart);
                 if (clockEntry) {
                     elements.push(clockEntry);
@@ -907,9 +952,10 @@ export class OrgParserUnified {
     ): { element: OrgElement; endLine: number; endOffset: number } {
         const contentLines: string[] = [];
         let i = startLine + 1;
-        const endPattern = new RegExp(`^#\\+END_${endTag}`, 'i');
+        // Use cached pattern for performance
+        const endPattern = OrgParserUnified.getBlockEndPattern(endTag);
 
-        while (i < lines.length && !lines[i].match(endPattern)) {
+        while (i < lines.length && !endPattern.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1036,9 +1082,10 @@ export class OrgParserUnified {
     ): { element: SpecialBlockElement; endLine: number; endOffset: number } {
         const contentLines: string[] = [];
         let i = startLine + 1;
-        const endPattern = new RegExp(`^#\\+END_${blockType}`, 'i');
+        // Use cached pattern for performance
+        const endPattern = OrgParserUnified.getBlockEndPattern(blockType);
 
-        while (i < lines.length && !lines[i].match(endPattern)) {
+        while (i < lines.length && !endPattern.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1074,9 +1121,10 @@ export class OrgParserUnified {
     ): { element: LatexEnvironmentElement; endLine: number; endOffset: number } {
         const contentLines: string[] = [lines[startLine]];
         let i = startLine + 1;
-        const endPattern = new RegExp(`^\\\\end\\{${envName}\\}`);
+        // Use cached pattern for performance
+        const endPattern = OrgParserUnified.getLatexEndPattern(envName);
 
-        while (i < lines.length && !lines[i].match(endPattern)) {
+        while (i < lines.length && !endPattern.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1685,14 +1733,15 @@ export class OrgParserUnified {
         // Find extent (until END or next headline at same/lower level)
         let i = startLine + 1;
         const contentLines: string[] = [];
-        let hasEnd = false;
+
+        // Use pre-compiled pattern from cache (or create one for unusual levels)
+        const endPattern = OrgParserUnified.inlinetaskEndPatterns.get(level)
+            ?? new RegExp(`^\\*{${level}}\\s+END\\s*$`);
 
         while (i < lines.length) {
             const line = lines[i];
             // Check for END marker (stars at same level followed by END)
-            const endPattern = new RegExp(`^\\*{${level}}\\s+END\\s*$`);
             if (endPattern.test(line)) {
-                hasEnd = true;
                 i++;
                 break;
             }
