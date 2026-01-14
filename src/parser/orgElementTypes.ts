@@ -20,7 +20,9 @@ export type GreaterElementType =
     | 'center-block'
     | 'quote-block'
     | 'special-block'
-    | 'footnote-definition';
+    | 'dynamic-block'
+    | 'footnote-definition'
+    | 'inlinetask';
 
 /**
  * Lesser elements - cannot contain other elements, only objects
@@ -561,6 +563,56 @@ export interface FootnoteDefinitionElement extends OrgElement {
     children: OrgElement[];
 }
 
+/**
+ * Dynamic block element (#+BEGIN: name params ... #+END:)
+ */
+export interface DynamicBlockElement extends OrgElement {
+    type: 'dynamic-block';
+    properties: {
+        /** Block name (e.g., 'clocktable', 'columnview') */
+        name: string;
+        /** Arguments/parameters string */
+        arguments?: string;
+    };
+    children: OrgElement[];
+}
+
+/**
+ * Inline task element (deeply nested headline treated as inline)
+ * In org-mode, headlines with level >= org-inlinetask-min-level (default 15)
+ */
+export interface InlinetaskElement extends OrgElement {
+    type: 'inlinetask';
+    properties: {
+        /** Heading level (typically 15+) */
+        level: number;
+        /** Raw title text */
+        rawValue: string;
+        /** Parsed title objects */
+        title?: OrgObject[];
+        /** TODO keyword if present */
+        todoKeyword?: string;
+        /** TODO type: 'todo' or 'done' */
+        todoType?: 'todo' | 'done';
+        /** Priority character */
+        priority?: string;
+        /** Tags */
+        tags: string[];
+    };
+    children: OrgElement[];
+}
+
+/**
+ * Diary sexp element (%%(diary-sexp) in timestamp context)
+ */
+export interface DiarySexpElement extends OrgElement {
+    type: 'diary-sexp';
+    properties: {
+        /** The s-expression content */
+        value: string;
+    };
+}
+
 // =============================================================================
 // Specific Object Types
 // =============================================================================
@@ -938,7 +990,8 @@ export const OBJECT_RESTRICTIONS: Record<string, ObjectType[]> = {
 export function isGreaterElement(type: ElementType): type is GreaterElementType {
     return [
         'headline', 'section', 'plain-list', 'item', 'property-drawer',
-        'drawer', 'center-block', 'quote-block', 'special-block', 'footnote-definition'
+        'drawer', 'center-block', 'quote-block', 'special-block', 'dynamic-block',
+        'footnote-definition', 'inlinetask'
     ].includes(type);
 }
 

@@ -4,7 +4,19 @@
 
 import { describe, it, expect } from 'vitest';
 import { OrgParserUnified, parseOrg } from '../orgParserUnified';
-import type { HeadlineElement, SrcBlockElement, ParagraphElement, TableElement, PlainListElement } from '../orgElementTypes';
+import type {
+    HeadlineElement,
+    SrcBlockElement,
+    ParagraphElement,
+    TableElement,
+    PlainListElement,
+    DynamicBlockElement,
+    InlinetaskElement,
+    DiarySexpElement,
+    ClockElement,
+    FootnoteDefinitionElement,
+    BabelCallElement
+} from '../orgElementTypes';
 
 describe('OrgParserUnified', () => {
     describe('basic parsing', () => {
@@ -443,6 +455,331 @@ Some general notes.
 
             // Check second top-level headline
             expect(doc.children[1].properties.tags).toContain('notes');
+        });
+    });
+
+    describe('dynamic block parsing', () => {
+        it('parses simple dynamic block', () => {
+            const content = `#+BEGIN: clocktable :maxlevel 2
+| Headline | Time |
+#+END:`;
+
+            const doc = parseOrg(content);
+            const dynBlock = doc.section?.children.find(e => e.type === 'dynamic-block') as DynamicBlockElement;
+            expect(dynBlock).toBeDefined();
+            expect(dynBlock.properties.name).toBe('clocktable');
+            expect(dynBlock.properties.arguments).toBe(':maxlevel 2');
+        });
+
+        it('parses dynamic block without arguments', () => {
+            const content = `#+BEGIN: columnview
+| Col1 | Col2 |
+#+END:`;
+
+            const doc = parseOrg(content);
+            const dynBlock = doc.section?.children.find(e => e.type === 'dynamic-block') as DynamicBlockElement;
+            expect(dynBlock).toBeDefined();
+            expect(dynBlock.properties.name).toBe('columnview');
+            expect(dynBlock.properties.arguments).toBeUndefined();
+        });
+
+        it('parses dynamic block with nested content', () => {
+            const content = `#+BEGIN: clocktable :scope file
+| Headline     | Time |
+|--------------|------|
+| * Task       | 1:30 |
+| ** Subtask   | 0:45 |
+#+END:`;
+
+            const doc = parseOrg(content);
+            const dynBlock = doc.section?.children.find(e => e.type === 'dynamic-block') as DynamicBlockElement;
+            expect(dynBlock).toBeDefined();
+            expect(dynBlock.children.length).toBeGreaterThan(0);
+        });
+    });
+
+    describe('inline task parsing', () => {
+        it('parses inline task with default min level', () => {
+            const content = `* Headline
+*************** TODO Inline task
+This is an inline task body
+*************** END`;
+
+            const doc = parseOrg(content);
+            const headline = doc.children[0];
+            expect(headline.section).toBeDefined();
+            const inlinetask = headline.section?.children.find(e => e.type === 'inlinetask') as InlinetaskElement;
+            expect(inlinetask).toBeDefined();
+            expect(inlinetask.properties.level).toBe(15);
+            expect(inlinetask.properties.todoKeyword).toBe('TODO');
+            expect(inlinetask.properties.rawValue).toBe('Inline task');
+        });
+
+        it('parses inline task with priority and tags', () => {
+            const content = `* Headline
+*************** [#A] Priority inline task :tag1:tag2:
+Content
+*************** END`;
+
+            const doc = parseOrg(content);
+            const headline = doc.children[0];
+            const inlinetask = headline.section?.children.find(e => e.type === 'inlinetask') as InlinetaskElement;
+            expect(inlinetask).toBeDefined();
+            expect(inlinetask.properties.priority).toBe('A');
+            expect(inlinetask.properties.tags).toContain('tag1');
+            expect(inlinetask.properties.tags).toContain('tag2');
+        });
+
+        it('respects custom inlinetask min level', () => {
+            const parser = new OrgParserUnified({
+                inlinetaskMinLevel: 5
+            });
+
+            const content = `* Headline
+***** TODO Custom level inline task
+Content
+***** END`;
+
+            const doc = parser.parse(content);
+            const headline = doc.children[0];
+            const inlinetask = headline.section?.children.find(e => e.type === 'inlinetask') as InlinetaskElement;
+            expect(inlinetask).toBeDefined();
+            expect(inlinetask.properties.level).toBe(5);
+        });
+    });
+
+    describe('diary sexp parsing', () => {
+        it('parses standalone diary sexp', () => {
+            const content = `%%(diary-anniversary 1 15 1990)`;
+
+            const doc = parseOrg(content);
+            const diarySexp = doc.section?.children.find(e => e.type === 'diary-sexp') as DiarySexpElement;
+            expect(diarySexp).toBeDefined();
+            expect(diarySexp.properties.value).toBe('diary-anniversary 1 15 1990');
+        });
+
+        it('parses diary sexp with complex expression', () => {
+            const content = `%%(org-class 2024 1 15 2024 5 15 1)`;
+
+            const doc = parseOrg(content);
+            const diarySexp = doc.section?.children.find(e => e.type === 'diary-sexp') as DiarySexpElement;
+            expect(diarySexp).toBeDefined();
+            expect(diarySexp.properties.value).toContain('org-class');
+        });
+    });
+
+    describe('clock entry parsing', () => {
+        it('parses clock entry with duration', () => {
+            const content = `* Task
+CLOCK: [2024-01-15 Mon 10:00]--[2024-01-15 Mon 11:30] =>  1:30`;
+
+            const doc = parseOrg(content);
+            const headline = doc.children[0];
+            const clock = headline.section?.children.find(e => e.type === 'clock') as ClockElement;
+            expect(clock).toBeDefined();
+            expect(clock.properties.duration).toBe('1:30');
+        });
+
+        it('parses clock entry without duration (running)', () => {
+            const content = `* Task
+CLOCK: [2024-01-15 Mon 10:00]`;
+
+            const doc = parseOrg(content);
+            const headline = doc.children[0];
+            const clock = headline.section?.children.find(e => e.type === 'clock') as ClockElement;
+            expect(clock).toBeDefined();
+            expect(clock.properties.status).toBe('running');
+        });
+
+        it('parses multiple clock entries', () => {
+            const content = `* Task
+CLOCK: [2024-01-15 Mon 10:00]--[2024-01-15 Mon 11:00] =>  1:00
+CLOCK: [2024-01-15 Mon 14:00]--[2024-01-15 Mon 15:30] =>  1:30`;
+
+            const doc = parseOrg(content);
+            const headline = doc.children[0];
+            const clocks = headline.section?.children.filter(e => e.type === 'clock');
+            expect(clocks).toHaveLength(2);
+        });
+    });
+
+    describe('footnote definition parsing', () => {
+        it('parses simple footnote definition', () => {
+            const content = `Some text with a footnote reference.
+
+[fn:1] This is the footnote definition.`;
+
+            const doc = parseOrg(content);
+            const fnDef = doc.section?.children.find(e => e.type === 'footnote-definition') as FootnoteDefinitionElement;
+            expect(fnDef).toBeDefined();
+            expect(fnDef.properties.label).toBe('1');
+        });
+
+        it('parses footnote definition with named label', () => {
+            const content = `[fn:my-note] This is a named footnote definition.`;
+
+            const doc = parseOrg(content);
+            const fnDef = doc.section?.children.find(e => e.type === 'footnote-definition') as FootnoteDefinitionElement;
+            expect(fnDef).toBeDefined();
+            expect(fnDef.properties.label).toBe('my-note');
+        });
+
+        it('parses footnote definition with multi-line content', () => {
+            const content = `[fn:1] This footnote spans
+  multiple lines because it's
+  indented properly.
+
+Normal paragraph here.`;
+
+            const doc = parseOrg(content);
+            const fnDef = doc.section?.children.find(e => e.type === 'footnote-definition') as FootnoteDefinitionElement;
+            expect(fnDef).toBeDefined();
+            expect(fnDef.children.length).toBeGreaterThan(0);
+        });
+
+        it('parses multiple footnote definitions', () => {
+            const content = `[fn:1] First footnote.
+[fn:2] Second footnote.
+[fn:3] Third footnote.`;
+
+            const doc = parseOrg(content);
+            const fnDefs = doc.section?.children.filter(e => e.type === 'footnote-definition');
+            expect(fnDefs).toHaveLength(3);
+        });
+    });
+
+    describe('babel call parsing', () => {
+        it('parses simple babel call', () => {
+            const content = `#+CALL: my-block()`;
+
+            const doc = parseOrg(content);
+            const babelCall = doc.section?.children.find(e => e.type === 'babel-call') as BabelCallElement;
+            expect(babelCall).toBeDefined();
+            expect(babelCall.properties.call).toBe('my-block');
+        });
+
+        it('parses babel call with arguments', () => {
+            const content = `#+CALL: my-block(x=1, y=2)`;
+
+            const doc = parseOrg(content);
+            const babelCall = doc.section?.children.find(e => e.type === 'babel-call') as BabelCallElement;
+            expect(babelCall).toBeDefined();
+            expect(babelCall.properties.call).toBe('my-block');
+            expect(babelCall.properties.arguments).toBe('x=1, y=2');
+        });
+
+        it('parses babel call with inside header', () => {
+            const content = `#+CALL: my-block[:results output](x=1)`;
+
+            const doc = parseOrg(content);
+            const babelCall = doc.section?.children.find(e => e.type === 'babel-call') as BabelCallElement;
+            expect(babelCall).toBeDefined();
+            expect(babelCall.properties.insideHeader).toBe(':results output');
+        });
+
+        it('parses babel call with end header', () => {
+            const content = `#+CALL: my-block(x=1)[:exports results]`;
+
+            const doc = parseOrg(content);
+            const babelCall = doc.section?.children.find(e => e.type === 'babel-call') as BabelCallElement;
+            expect(babelCall).toBeDefined();
+            expect(babelCall.properties.endHeader).toBe(':exports results');
+        });
+
+        it('parses babel call with all headers', () => {
+            const content = `#+CALL: my-block[:results output](x=1, y=2)[:exports both]`;
+
+            const doc = parseOrg(content);
+            const babelCall = doc.section?.children.find(e => e.type === 'babel-call') as BabelCallElement;
+            expect(babelCall).toBeDefined();
+            expect(babelCall.properties.call).toBe('my-block');
+            expect(babelCall.properties.insideHeader).toBe(':results output');
+            expect(babelCall.properties.arguments).toBe('x=1, y=2');
+            expect(babelCall.properties.endHeader).toBe(':exports both');
+        });
+    });
+
+    describe('affiliated keywords', () => {
+        it('collects NAME keyword', () => {
+            const content = `#+NAME: my-table
+| A | B |
+| 1 | 2 |`;
+
+            const doc = parseOrg(content);
+            // The table should have the affiliated keywords
+            const table = doc.section?.children.find(e => e.type === 'table') as TableElement;
+            expect(table).toBeDefined();
+        });
+
+        it('collects CAPTION keyword', () => {
+            const content = `#+CAPTION: My caption
+| A | B |`;
+
+            const doc = parseOrg(content);
+            const table = doc.section?.children.find(e => e.type === 'table');
+            expect(table).toBeDefined();
+        });
+
+        it('collects ATTR keywords', () => {
+            const content = `#+ATTR_HTML: :width 100%
+#+ATTR_LATEX: :placement [H]
+| A | B |`;
+
+            const doc = parseOrg(content);
+            const table = doc.section?.children.find(e => e.type === 'table');
+            expect(table).toBeDefined();
+        });
+    });
+
+    describe('full org syntax coverage integration', () => {
+        it('parses document with all new element types', () => {
+            const content = `#+TITLE: Full Coverage Test
+
+%%(diary-anniversary 1 15 1990)
+
+#+BEGIN: clocktable :scope file
+| Headline | Time |
+#+END:
+
+[fn:1] Footnote definition in preamble.
+
+#+CALL: named-block(x=1)
+
+* Task with clock entries
+CLOCK: [2024-01-15 Mon 10:00]--[2024-01-15 Mon 11:00] =>  1:00
+
+Some paragraph text.
+
+* Level 1 headline
+** Level 2 headline
+
+*************** TODO Inline task
+Inline task content
+*************** END`;
+
+            const doc = parseOrg(content);
+
+            // Check diary sexp (in doc.section - before first headline)
+            expect(doc.section?.children.some(e => e.type === 'diary-sexp')).toBe(true);
+
+            // Check dynamic block (in doc.section - before first headline)
+            expect(doc.section?.children.some(e => e.type === 'dynamic-block')).toBe(true);
+
+            // Check footnote definition (in doc.section - before first headline)
+            expect(doc.section?.children.some(e => e.type === 'footnote-definition')).toBe(true);
+
+            // Check babel call (in doc.section - before first headline)
+            expect(doc.section?.children.some(e => e.type === 'babel-call')).toBe(true);
+
+            // Check clock entry (in first headline's section)
+            const task = doc.children[0];
+            expect(task.section?.children.some(e => e.type === 'clock')).toBe(true);
+
+            // Check inline task (in level 2 headline's section)
+            const level1 = doc.children[1];
+            const level2 = level1.children[0];
+            const hasInlinetask = level2.section?.children.some(e => e.type === 'inlinetask');
+            expect(hasInlinetask).toBe(true);
         });
     });
 });

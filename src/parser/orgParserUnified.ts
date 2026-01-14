@@ -28,6 +28,9 @@ import type {
     BabelCallElement,
     LatexEnvironmentElement,
     FootnoteDefinitionElement,
+    DynamicBlockElement,
+    InlinetaskElement,
+    DiarySexpElement,
     PlanningElement,
     ClockElement,
     TableElement,
@@ -35,6 +38,7 @@ import type {
     PlainListElement,
     ItemElement,
     TimestampObject,
+    AffiliatedKeywords,
     OrgRange,
 } from './orgElementTypes';
 import { parseObjects } from './orgObjects';
@@ -56,10 +60,13 @@ export interface OrgParserConfig {
     addPositions?: boolean;
     /** File path for context */
     filePath?: string;
+    /** Minimum level for inline tasks (default: 15 per org-mode) */
+    inlinetaskMinLevel?: number;
 }
 
 const DEFAULT_TODO_KEYWORDS = ['TODO', 'NEXT', 'WAITING', 'HOLD', 'SOMEDAY'];
 const DEFAULT_DONE_KEYWORDS = ['DONE', 'CANCELLED', 'CANCELED'];
+const DEFAULT_INLINETASK_MIN_LEVEL = 15;
 
 // =============================================================================
 // Pre-compiled Regex Patterns (Performance Optimization)
@@ -118,6 +125,30 @@ const RE_KEYWORD_LINE = /^#\+\w+:/;
 // Header args pattern
 const RE_HEADER_ARGS = /:(\S+)\s+(\S+)/g;
 
+// Dynamic block patterns
+const RE_DYNAMIC_BLOCK_START = /^#\+BEGIN:\s*(\S+)(.*)$/i;
+const RE_DYNAMIC_BLOCK_END = /^#\+END:?\s*$/i;
+
+// Footnote definition pattern
+const RE_FOOTNOTE_DEF = /^\[fn:([^\]]+)\]\s*/;
+
+// Babel call pattern (#+CALL: name[header](args)[end-header])
+const RE_BABEL_CALL = /^#\+CALL:\s*(\S+?)(?:\[([^\]]*)\])?\(([^)]*)\)(?:\[([^\]]*)\])?\s*$/i;
+
+// Diary sexp pattern
+const RE_DIARY_SEXP = /^%%\((.+)\)\s*$/;
+
+// Clock pattern
+const RE_CLOCK_LINE = /^CLOCK:\s*/;
+
+// Affiliated keywords patterns
+const RE_AFFILIATED_NAME = /^#\+NAME:\s*(.+)$/i;
+const RE_AFFILIATED_CAPTION = /^#\+CAPTION(?:\[([^\]]*)\])?:\s*(.+)$/i;
+const RE_AFFILIATED_ATTR = /^#\+ATTR_(\w+):\s*(.*)$/i;
+const RE_AFFILIATED_HEADER = /^#\+HEADER:\s*(.*)$/i;
+const RE_AFFILIATED_RESULTS = /^#\+RESULTS(?:\[([^\]]*)\])?:\s*(.*)$/i;
+const RE_AFFILIATED_PLOT = /^#\+PLOT:\s*(.*)$/i;
+
 // =============================================================================
 // Unified Parser Class
 // =============================================================================
@@ -135,6 +166,7 @@ export class OrgParserUnified {
             parseInlineObjects: config.parseInlineObjects ?? true,
             addPositions: config.addPositions ?? true,
             filePath: config.filePath ?? '',
+            inlinetaskMinLevel: config.inlinetaskMinLevel ?? DEFAULT_INLINETASK_MIN_LEVEL,
         };
 
         this.todoKeywords = new Set(this.config.todoKeywords);
@@ -214,6 +246,46 @@ export class OrgParserUnified {
                 const headlineMatch = line.match(RE_HEADLINE);
                 if (headlineMatch) {
                     const level = headlineMatch[1].length;
+
+                    // Check if this is an inline task (level >= inlinetaskMinLevel)
+                    if (level >= this.config.inlinetaskMinLevel) {
+                        // Parse as inline task - it goes into the current headline's section
+                        const inlinetaskResult = this.parseInlinetask(
+                            lines,
+                            lineNum,
+                            lineStart,
+                            level,
+                            headlineMatch[2]
+                        );
+
+                        // Add to parent headline's section if there is one
+                        if (headlineStack.length > 0) {
+                            const parent = headlineStack[headlineStack.length - 1];
+                            if (!parent.section) {
+                                parent.section = {
+                                    type: 'section',
+                                    range: { start: lineStart, end: inlinetaskResult.endOffset - 1 },
+                                    postBlank: 0,
+                                    children: [],
+                                };
+                            }
+                            parent.section.children.push(inlinetaskResult.element);
+                        } else {
+                            // No parent headline, add to doc section
+                            if (!doc.section) {
+                                doc.section = {
+                                    type: 'section',
+                                    range: { start: lineStart, end: inlinetaskResult.endOffset - 1 },
+                                    postBlank: 0,
+                                    children: [],
+                                };
+                            }
+                            doc.section.children.push(inlinetaskResult.element);
+                        }
+
+                        lineNum = inlinetaskResult.endLine;
+                        continue;
+                    }
 
                     // Find the extent of this headline's own content (until next headline of ANY level)
                     let contentEnd = lineNum + 1;
@@ -315,6 +387,25 @@ export class OrgParserUnified {
             if (firstChar === '#') {
                 // Check for keyword vs block start
                 if (line[1] === '+') {
+                    // Check for dynamic block first (#+BEGIN: name args)
+                    const dynamicMatch = line.match(RE_DYNAMIC_BLOCK_START);
+                    if (dynamicMatch) {
+                        const dynResult = this.parseDynamicBlock(lines, i, offset, dynamicMatch[1], dynamicMatch[2] || '');
+                        elements.push(dynResult.element);
+                        offset = dynResult.endOffset;
+                        i = dynResult.endLine;
+                        continue;
+                    }
+
+                    // Check for babel call (#+CALL: name[header](args)[header])
+                    const babelCall = this.parseBabelCall(line, lineStart);
+                    if (babelCall) {
+                        elements.push(babelCall);
+                        offset += line.length + 1;
+                        i++;
+                        continue;
+                    }
+
                     // Could be keyword or block start - check for BEGIN_ first
                     if (!RE_BEGIN_BLOCK.test(line)) {
                         const keywordMatch = line.match(RE_KEYWORD);
@@ -427,6 +518,39 @@ export class OrgParserUnified {
                     elements.push(listResult.element);
                     offset = listResult.endOffset;
                     i = listResult.endLine;
+                    continue;
+                }
+            }
+
+            // Footnote definition - starts with [fn:
+            if (firstChar === '[' && line[1] === 'f' && line[2] === 'n' && line[3] === ':') {
+                const fnResult = this.parseFootnoteDefinition(lines, i, offset);
+                if (fnResult) {
+                    elements.push(fnResult.element);
+                    offset = fnResult.endOffset;
+                    i = fnResult.endLine;
+                    continue;
+                }
+            }
+
+            // Diary sexp - starts with %%
+            if (firstChar === '%' && line[1] === '%') {
+                const diarySexp = this.parseDiarySexp(line, lineStart);
+                if (diarySexp) {
+                    elements.push(diarySexp);
+                    offset += line.length + 1;
+                    i++;
+                    continue;
+                }
+            }
+
+            // Clock entry - CLOCK: line
+            if (firstChar === 'C' || (line.trimStart()[0] === 'C')) {
+                const clockEntry = this.tryParseClockEntry(line, lineStart);
+                if (clockEntry) {
+                    elements.push(clockEntry);
+                    offset += line.length + 1;
+                    i++;
                     continue;
                 }
             }
@@ -631,8 +755,14 @@ export class OrgParserUnified {
             return null;
         }
 
-        // Org blocks (#+BEGIN_*)
+        // Org blocks (#+BEGIN_* and #+BEGIN:)
         if (firstChar === '#') {
+            // Check for dynamic block first (#+BEGIN: name args)
+            const dynamicMatch = line.match(RE_DYNAMIC_BLOCK_START);
+            if (dynamicMatch) {
+                return this.parseDynamicBlock(lines, startLine, offset, dynamicMatch[1], dynamicMatch[2] || '');
+            }
+
             // Check for #+BEGIN_ prefix before running specific regexes
             if (!RE_BEGIN_BLOCK.test(line)) {
                 return null;
@@ -1260,6 +1390,347 @@ export class OrgParserUnified {
 
         return {
             element: list,
+            endLine: i,
+            endOffset,
+        };
+    }
+
+    /**
+     * Parse a dynamic block (#+BEGIN: name args ... #+END:)
+     */
+    private parseDynamicBlock(
+        lines: string[],
+        startLine: number,
+        offset: number,
+        blockName: string,
+        args: string
+    ): { element: DynamicBlockElement; endLine: number; endOffset: number } {
+        const contentLines: string[] = [];
+        let i = startLine + 1;
+
+        while (i < lines.length && !RE_DYNAMIC_BLOCK_END.test(lines[i])) {
+            contentLines.push(lines[i]);
+            i++;
+        }
+
+        let endOffset = offset;
+        for (let j = startLine; j <= i && j < lines.length; j++) {
+            endOffset += lines[j].length + 1;
+        }
+
+        // Parse content as elements
+        const { elements } = this.parsePreamble(contentLines, offset + lines[startLine].length + 1, startLine + 1);
+
+        return {
+            element: {
+                type: 'dynamic-block',
+                range: { start: offset, end: endOffset - 1 },
+                postBlank: 0,
+                properties: {
+                    name: blockName,
+                    arguments: args.trim() || undefined,
+                },
+                children: elements,
+            },
+            endLine: i + 1,
+            endOffset,
+        };
+    }
+
+    /**
+     * Parse a babel call (#+CALL: name[header](args)[end-header])
+     */
+    private parseBabelCall(
+        line: string,
+        offset: number
+    ): BabelCallElement | null {
+        const match = line.match(RE_BABEL_CALL);
+        if (!match) return null;
+
+        return {
+            type: 'babel-call',
+            range: { start: offset, end: offset + line.length },
+            postBlank: 0,
+            properties: {
+                call: match[1],
+                insideHeader: match[2] || undefined,
+                arguments: match[3] || undefined,
+                endHeader: match[4] || undefined,
+            },
+        };
+    }
+
+    /**
+     * Parse a footnote definition ([fn:label] content)
+     */
+    private parseFootnoteDefinition(
+        lines: string[],
+        startLine: number,
+        offset: number
+    ): { element: FootnoteDefinitionElement; endLine: number; endOffset: number } | null {
+        const line = lines[startLine];
+        const match = line.match(RE_FOOTNOTE_DEF);
+        if (!match) return null;
+
+        const label = match[1];
+        const firstLineContent = line.slice(match[0].length);
+
+        // Find extent of footnote definition (continues until next footnote def, headline, or blank line)
+        let i = startLine + 1;
+        while (i < lines.length) {
+            const nextLine = lines[i];
+            // Stop at headline
+            if (nextLine[0] === '*' && RE_HEADLINE_SIMPLE.test(nextLine)) break;
+            // Stop at another footnote definition
+            if (nextLine[0] === '[' && RE_FOOTNOTE_DEF.test(nextLine)) break;
+            // Stop at blank line followed by non-indented content
+            if (nextLine.trim() === '') {
+                const afterBlank = lines[i + 1];
+                if (!afterBlank || (afterBlank[0] !== ' ' && afterBlank[0] !== '\t')) break;
+            }
+            i++;
+        }
+
+        let endOffset = offset;
+        for (let j = startLine; j < i; j++) {
+            endOffset += lines[j].length + 1;
+        }
+
+        // Parse content
+        const contentLines = [firstLineContent, ...lines.slice(startLine + 1, i)];
+        const { elements } = this.parsePreamble(contentLines, offset + match[0].length, startLine);
+
+        return {
+            element: {
+                type: 'footnote-definition',
+                range: { start: offset, end: endOffset - 1 },
+                postBlank: 0,
+                properties: { label },
+                children: elements,
+            },
+            endLine: i,
+            endOffset,
+        };
+    }
+
+    /**
+     * Parse a diary sexp (%%(sexp))
+     */
+    private parseDiarySexp(
+        line: string,
+        offset: number
+    ): DiarySexpElement | null {
+        const match = line.match(RE_DIARY_SEXP);
+        if (!match) return null;
+
+        return {
+            type: 'diary-sexp',
+            range: { start: offset, end: offset + line.length },
+            postBlank: 0,
+            properties: {
+                value: match[1],
+            },
+        };
+    }
+
+    /**
+     * Parse a clock entry line
+     */
+    private tryParseClockEntry(line: string, offset: number): ClockElement | null {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith('CLOCK:')) return null;
+        return parseClockLine(line, 0, offset);
+    }
+
+    /**
+     * Collect affiliated keywords from preceding lines
+     * Returns the keywords and the number of lines consumed
+     */
+    private collectAffiliatedKeywords(
+        lines: string[],
+        startLine: number
+    ): { keywords: AffiliatedKeywords; linesConsumed: number } {
+        const keywords: AffiliatedKeywords = { attr: {} };
+        let linesConsumed = 0;
+        let i = startLine;
+
+        while (i < lines.length) {
+            const line = lines[i];
+
+            // Fast path: affiliated keywords must start with #+
+            if (line[0] !== '#' || line[1] !== '+') break;
+
+            // Try #+NAME:
+            const nameMatch = line.match(RE_AFFILIATED_NAME);
+            if (nameMatch) {
+                keywords.name = nameMatch[1];
+                linesConsumed++;
+                i++;
+                continue;
+            }
+
+            // Try #+CAPTION:
+            const captionMatch = line.match(RE_AFFILIATED_CAPTION);
+            if (captionMatch) {
+                if (captionMatch[1]) {
+                    // Short caption syntax: #+CAPTION[short]: long
+                    keywords.caption = [captionMatch[1], captionMatch[2]];
+                } else {
+                    keywords.caption = captionMatch[2];
+                }
+                linesConsumed++;
+                i++;
+                continue;
+            }
+
+            // Try #+ATTR_BACKEND:
+            const attrMatch = line.match(RE_AFFILIATED_ATTR);
+            if (attrMatch) {
+                const backend = attrMatch[1].toLowerCase();
+                if (!keywords.attr[backend]) {
+                    keywords.attr[backend] = {};
+                }
+                // Parse attribute key-value pairs
+                const attrStr = attrMatch[2];
+                const attrPairs = attrStr.match(/:(\S+)\s+([^\s:]+(?:\s+[^:]+)?)/g);
+                if (attrPairs) {
+                    for (const pair of attrPairs) {
+                        const pairMatch = pair.match(/:(\S+)\s+(.+)/);
+                        if (pairMatch) {
+                            keywords.attr[backend]![pairMatch[1]] = pairMatch[2].trim();
+                        }
+                    }
+                }
+                linesConsumed++;
+                i++;
+                continue;
+            }
+
+            // Try #+HEADER:
+            const headerMatch = line.match(RE_AFFILIATED_HEADER);
+            if (headerMatch) {
+                if (!keywords.header) keywords.header = [];
+                keywords.header.push(headerMatch[1]);
+                linesConsumed++;
+                i++;
+                continue;
+            }
+
+            // Try #+RESULTS:
+            const resultsMatch = line.match(RE_AFFILIATED_RESULTS);
+            if (resultsMatch) {
+                keywords.results = resultsMatch[2] || resultsMatch[1] || '';
+                linesConsumed++;
+                i++;
+                continue;
+            }
+
+            // Try #+PLOT:
+            const plotMatch = line.match(RE_AFFILIATED_PLOT);
+            if (plotMatch) {
+                keywords.plot = plotMatch[1];
+                linesConsumed++;
+                i++;
+                continue;
+            }
+
+            // Not an affiliated keyword
+            break;
+        }
+
+        return { keywords, linesConsumed };
+    }
+
+    /**
+     * Parse an inline task (headline with level >= inlinetaskMinLevel)
+     */
+    private parseInlinetask(
+        lines: string[],
+        startLine: number,
+        offset: number,
+        level: number,
+        titleLine: string
+    ): { element: InlinetaskElement; endLine: number; endOffset: number } {
+        // Parse title similar to headline
+        let title = titleLine;
+        let todoKeyword: string | undefined;
+        let todoType: 'todo' | 'done' | undefined;
+        let priority: string | undefined;
+        const tags: string[] = [];
+
+        // Extract TODO keyword
+        const todoMatch = title.match(RE_TODO_PREFIX);
+        if (todoMatch && this.allTodoKeywords.has(todoMatch[1])) {
+            todoKeyword = todoMatch[1];
+            todoType = this.doneKeywords.has(todoKeyword) ? 'done' : 'todo';
+            title = title.slice(todoMatch[0].length);
+        }
+
+        // Extract priority
+        const priorityMatch = title.match(RE_PRIORITY);
+        if (priorityMatch) {
+            priority = priorityMatch[1];
+            title = title.slice(priorityMatch[0].length);
+        }
+
+        // Extract tags
+        const tagMatch = title.match(RE_TAGS);
+        if (tagMatch) {
+            tags.push(...tagMatch[1].split(':'));
+            title = title.slice(0, -tagMatch[0].length);
+        }
+
+        const titleObjects = this.config.parseInlineObjects ? parseObjects(title) : undefined;
+
+        // Find extent (until END or next headline at same/lower level)
+        let i = startLine + 1;
+        const contentLines: string[] = [];
+        let hasEnd = false;
+
+        while (i < lines.length) {
+            const line = lines[i];
+            // Check for END marker (stars at same level followed by END)
+            const endPattern = new RegExp(`^\\*{${level}}\\s+END\\s*$`);
+            if (endPattern.test(line)) {
+                hasEnd = true;
+                i++;
+                break;
+            }
+            // Check for another headline
+            if (line[0] === '*' && RE_HEADLINE_SIMPLE.test(line)) {
+                const headlineMatch = line.match(RE_HEADLINE);
+                if (headlineMatch && headlineMatch[1].length <= level) {
+                    break;
+                }
+            }
+            contentLines.push(line);
+            i++;
+        }
+
+        let endOffset = offset;
+        for (let j = startLine; j < i; j++) {
+            endOffset += lines[j].length + 1;
+        }
+
+        // Parse content
+        const { elements } = this.parsePreamble(contentLines, offset + lines[startLine].length + 1, startLine + 1);
+
+        return {
+            element: {
+                type: 'inlinetask',
+                range: { start: offset, end: endOffset - 1 },
+                postBlank: 0,
+                properties: {
+                    level,
+                    rawValue: title.trim(),
+                    title: titleObjects,
+                    todoKeyword,
+                    todoType,
+                    priority,
+                    tags,
+                },
+                children: elements,
+            },
             endLine: i,
             endOffset,
         };
