@@ -3,16 +3,18 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* Overview
+* ⚠️ Overview
 
 The Scimax projectile system provides project-aware file management inspired by Emacs Projectile. It enables quick switching between projects, intelligent project detection, and project-scoped operations for efficient multi-project workflows.
 
-** What is Projectile?
+** ⚠️ What is Projectile?
 
 Projectile is a project management system that:
 
-- Automatically detects projects based on version control markers (=.git=), special files (=.projectile=), or manual registration
+- Automatically detects projects based on version control markers (.git), special files (.projectile), or manual registration
 - Maintains a list of known projects with quick-switch capabilities
 - Provides project-scoped file search and text search
 - Remembers recently accessed projects
@@ -21,33 +23,33 @@ Projectile is a project management system that:
 
 Projects can be:
 
-- *Git repositories*: Directories containing a =.git= folder
-- *Projectile-marked*: Directories with a =.projectile= marker file
+- *Git repositories*: Directories containing a .git folder
+- *Projectile-marked*: Directories with a .projectile marker file
 - *Manual projects*: Any directory you explicitly add to the project list
 
-** Key Features
+** ⚠️ Key Features
 
 - *Automatic Detection*: Discovers git repos and projectile-marked directories
-- *Quick Switching*: Fast navigation between known projects with =C-c p p=
+- *Quick Switching*: Fast navigation between known projects with C-c p p
 - *Project History*: Shows when each project was last opened
 - *Batch Scanning*: Scan directories to discover multiple projects at once
-- *File Finding*: Project-scoped file search with =C-c p f=
-- *Text Search*: Search within project files with =C-c p s=
+- *File Finding*: Project-scoped file search with C-c p f
+- *Text Search*: Search within project files with C-c p s
 - *Tree View*: Sidebar showing all known projects with visual indicators
 - *Cleanup Tools*: Remove non-existent projects from the list
 - *Notebook Integration*: Works seamlessly with scimax-notebook for research projects
 
-* Project Detection
+* ⚠️ Project Detection
 
-** Detection Methods
+** ⚠️ Detection Methods
 
 Scimax uses three methods to detect projects, in this priority order:
 
-1. *Git Repositories*: Any directory containing a =.git/ subdirectory
-2. *Projectile Markers*: Directories with a =.projectile= file
+1. *Git Repositories*: Any directory containing a .git/ subdirectory
+2. *Projectile Markers*: Directories with a .projectile file
 3. *Manual Registration*: Projects you explicitly add via commands
 
-** Automatic Detection
+** ⚠️ Automatic Detection
 
 When you open a workspace folder, Scimax automatically registers it as a project:
 
@@ -59,9 +61,9 @@ $ code /home/user/my-project/
 # Type: git (if it has .git) or manual (otherwise)
 #+end_example
 
-** Creating a Projectile Marker
+** ⚠️ Creating a Projectile Marker
 
-To mark a directory as a projectile project, create an empty =.projectile= file in the root:
+To mark a directory as a projectile project, create an empty .projectile file in the root:
 
 #+begin_src sh
 # Create marker file
@@ -70,25 +72,25 @@ touch .projectile
 # Now Scimax recognizes this as a project
 #+end_src
 
-The =.projectile= file can be empty or contain patterns for ignoring files (reserved for future use).
+The .projectile file can be empty or contain patterns for ignoring files (reserved for future use).
 
-** Project Types
+** ⚠️ Project Types
 
 Projects are classified into three types:
 
 | Type         | Marker        | Icon         | Description                         |
 |--------------+---------------+--------------+-------------------------------------|
-| =git=        | =.git/=       | Git branch   | Git repository                      |
-| =projectile= | =.projectile= | File icon    | Marked with .projectile file        |
-| =manual=     | (none)        | Folder icon  | Manually added directory            |
+| git          | .git/         | Git branch   | Git repository                      |
+| projectile   | .projectile   | File icon    | Marked with .projectile file        |
+| manual       | (none)        | Folder icon  | Manually added directory            |
 
 The type is automatically detected when adding a project.
 
-* Managing Projects
+* ⚠️ Managing Projects
 
-** Switching Between Projects
+** ⚠️ Switching Between Projects
 
-The primary projectile command is *Switch Project* (=C-c p p=):
+The primary projectile command is *Switch Project* (C-c p p):
 
 #+begin_src
 Command: Scimax: Switch Project
@@ -122,11 +124,11 @@ Example workflow:
 → Last opened time is updated
 #+end_example
 
-** Adding Projects
+** ⚠️ Adding Projects
 
-*** Manually Adding a Project
+*** ⚠️ Manually Adding a Project
 
-Use =Scimax: Add Project= (=C-c p a=):
+Use Scimax: Add Project (C-c p a):
 
 #+begin_src
 Command: Scimax: Add Project
@@ -144,9 +146,9 @@ This opens a folder picker. Select any directory to add it to your project list.
 → Project appears in the list
 #+end_example
 
-*** Scanning for Projects
+*** ⚠️ Scanning for Projects
 
-To discover multiple projects at once, use =Scimax: Scan Directory for Projects=:
+To discover multiple projects at once, use Scimax: Scan Directory for Projects:
 
 #+begin_src
 Command: Scimax: Scan Directory for Projects
@@ -177,14 +179,14 @@ Result: "Found 4 projects"
 #+end_example
 
 The scanner:
-- Skips hidden directories (starting with =.=)
+- Skips hidden directories (starting with .)
 - Stops descending into detected projects
 - Handles permission errors gracefully
 - Shows progress notification
 
-** Removing Projects
+** ⚠️ Removing Projects
 
-Remove projects from the list with =Scimax: Remove Project=:
+Remove projects from the list with Scimax: Remove Project:
 
 #+begin_src
 Command: Scimax: Remove Project
@@ -197,9 +199,9 @@ Notes:
 - It does *not* delete any files from disk
 - The project can be re-added at any time
 
-** Cleaning Up Projects
+** ⚠️ Cleaning Up Projects
 
-Over time, projects may be moved or deleted. Use =Scimax: Cleanup Non-existent Projects=:
+Over time, projects may be moved or deleted. Use Scimax: Cleanup Non-existent Projects:
 
 #+begin_src
 Command: Scimax: Cleanup Non-existent Projects
@@ -218,11 +220,11 @@ Result: "Cleaned up 2 non-existent projects"
 
 Run this periodically to keep your project list clean.
 
-* Project Operations
+* ⚠️ Project Operations
 
-** Finding Files in Projects
+** ⚠️ Finding Files in Projects
 
-Find files within the current project using =Scimax: Find File in Project= (=C-c p f=):
+Find files within the current project using Scimax: Find File in Project (C-c p f):
 
 #+begin_src
 Command: Scimax: Find File in Project
@@ -230,7 +232,7 @@ Keybinding: C-c p f
 Hydra: Projects → f (Find File)
 #+end_src
 
-This delegates to VS Code's built-in quick open (=Ctrl+P=), which automatically scopes to workspace folders.
+This delegates to VS Code's built-in quick open (Ctrl+P), which automatically scopes to workspace folders.
 
 Features:
 - Fuzzy matching (e.g., "orgpar" matches "orgParser.ts")
@@ -247,9 +249,9 @@ Type: "babelProv"
 → Press Enter to open
 #+end_example
 
-** Searching in Projects
+** ⚠️ Searching in Projects
 
-Search for text within project files using =Scimax: Search in Project= (=C-c p s=):
+Search for text within project files using Scimax: Search in Project (C-c p s):
 
 #+begin_src
 Command: Scimax: Search in Project
@@ -276,9 +278,9 @@ Example workflow:
 5. Click to navigate to each match
 #+end_example
 
-** Opening Project Root
+** ⚠️ Opening Project Root
 
-Navigate to the project root in the file explorer with =Scimax: Open Project Root= (=C-c p d=):
+Navigate to the project root in the file explorer with Scimax: Open Project Root (C-c p d):
 
 #+begin_src
 Command: Scimax: Open Project Root
@@ -288,9 +290,9 @@ Hydra: (none)
 
 For multi-root workspaces, you'll be asked to select which project root to reveal.
 
-** Project Information
+** ⚠️ Project Information
 
-View details about the current project with =Scimax: Project Info=:
+View details about the current project with Scimax: Project Info:
 
 #+begin_src
 Command: Scimax: Project Info
@@ -313,9 +315,9 @@ Type: git
 Last opened: 2026-01-13 14:32:15
 #+end_example
 
-* Projects Tree View
+* ⚠️ Projects Tree View
 
-** Sidebar Panel
+** ⚠️ Sidebar Panel
 
 The Projects tree view appears in the Scimax sidebar, showing all known projects.
 
@@ -325,7 +327,7 @@ To open the sidebar:
 View → Open View... → Scimax Projects
 #+end_src
 
-** Tree View Elements
+** ⚠️ Tree View Elements
 
 Each project in the tree shows:
 
@@ -342,10 +344,10 @@ Each project in the tree shows:
   - Relative time (e.g., "2h ago", "3d ago") for recent projects
   - Empty for never-opened projects
 
-** Tree Interactions
+** ⚠️ Tree Interactions
 
 Click a project to open it:
-- Same behavior as =C-c p p= (Switch Project)
+- Same behavior as C-c p p (Switch Project)
 - Choose New Window, Current Window, or Add to Workspace
 
 Right-click (context menu) actions:
@@ -353,7 +355,7 @@ Right-click (context menu) actions:
 - Remove project
 - Show project info
 
-** Refreshing the Tree
+** ⚠️ Refreshing the Tree
 
 The tree auto-refreshes when:
 - Projects are added or removed
@@ -367,9 +369,9 @@ Command: Scimax: Refresh Projects
 Icon: Refresh button in tree view toolbar
 #+end_src
 
-* Recent Projects
+* ⚠️ Recent Projects
 
-** Sorting by Last Access
+** ⚠️ Sorting by Last Access
 
 Projects are sorted by last opened time, with the most recently accessed appearing first:
 
@@ -383,17 +385,17 @@ Project List:
 
 This ordering makes it quick to switch back to recently used projects.
 
-** Automatic Time Tracking
+** ⚠️ Automatic Time Tracking
 
 Last opened time is updated automatically when:
 
-- Opening a project via =C-c p p= (Switch Project)
+- Opening a project via C-c p p (Switch Project)
 - Clicking a project in the tree view
 - Opening a workspace folder that's a known project
 
 The timestamp is stored in VS Code's global state, persisting across sessions.
 
-** Time Format
+** ⚠️ Time Format
 
 Relative times are shown for recent access:
 
@@ -405,26 +407,26 @@ Relative times are shown for recent access:
 | < 30 days       | days ago       | 12d ago    |
 | ≥ 30 days       | date           | 11/23/2024 |
 
-* Commands Reference
+* ⚠️ Commands Reference
 
-** All Projectile Commands
+** ⚠️ All Projectile Commands
 
 | Command                                    | Keybinding | Hydra Key | Description                      |
 |--------------------------------------------+------------+-----------+----------------------------------|
-| =Scimax: Switch Project=                   | =C-c p p=  | p         | Switch to another project        |
-| =Scimax: Find File in Project=             | =C-c p f=  | f         | Find file in current project     |
-| =Scimax: Search in Project=                | =C-c p s=  | g         | Search text in project           |
-| =Scimax: Open Project Root=                | =C-c p d=  |           | Reveal project root in explorer  |
-| =Scimax: Add Project=                      | =C-c p a=  | a         | Add folder to project list       |
-| =Scimax: Remove Project=                   |            | r         | Remove project from list         |
-| =Scimax: Scan Directory for Projects=      |            | s         | Find projects in directory       |
-| =Scimax: Project Info=                     |            |           | Show current project details     |
-| =Scimax: Cleanup Non-existent Projects=    |            |           | Remove invalid project entries   |
-| =Scimax: Refresh Projects=                 |            |           | Refresh tree view                |
+| Scimax: Switch Project                     | C-c p p    | p         | Switch to another project        |
+| Scimax: Find File in Project               | C-c p f    | f         | Find file in current project     |
+| Scimax: Search in Project                  | C-c p s    | g         | Search text in project           |
+| Scimax: Open Project Root                  | C-c p d    |           | Reveal project root in explorer  |
+| Scimax: Add Project                        | C-c p a    | a         | Add folder to project list       |
+| Scimax: Remove Project                     |            | r         | Remove project from list         |
+| Scimax: Scan Directory for Projects        |            | s         | Find projects in directory       |
+| Scimax: Project Info                       |            |           | Show current project details     |
+| Scimax: Cleanup Non-existent Projects      |            |           | Remove invalid project entries   |
+| Scimax: Refresh Projects                   |            |           | Refresh tree view                |
 
-** Keybindings
+** ⚠️ Keybindings
 
-All projectile keybindings use the =C-c p= prefix, matching Emacs Projectile conventions:
+All projectile keybindings use the C-c p prefix, matching Emacs Projectile conventions:
 
 #+begin_src
 C-c p p    Switch project
@@ -436,7 +438,7 @@ C-c p a    Add project
 
 These bindings work in all editors, regardless of file type.
 
-** Hydra Menu Access
+** ⚠️ Hydra Menu Access
 
 Open the Projects hydra menu:
 
@@ -465,20 +467,20 @@ The hydra shows all projectile commands with single-key access:
 └─────────────────────────────────────┘
 #+end_example
 
-* Integration with Notebook System
+* ⚠️ Integration with Notebook System
 
-** Notebook-Projectile Relationship
+** ⚠️ Notebook-Projectile Relationship
 
 The notebook and projectile systems work together:
 
-- *Notebooks are projects*: Creating a notebook automatically creates a =.projectile= marker
-- *Projects can be notebooks*: Any project can have a =.scimax/= directory to become a notebook
-- *Shared markers*: Both systems recognize =.projectile= files
+- *Notebooks are projects*: Creating a notebook automatically creates a .projectile marker
+- *Projects can be notebooks*: Any project can have a .scimax/ directory to become a notebook
+- *Shared markers*: Both systems recognize .projectile files
 - *Unified workflow*: Switch projects with projectile, manage research structure with notebooks
 
-** Creating Projectile-Enabled Notebooks
+** ⚠️ Creating Projectile-Enabled Notebooks
 
-When you create a notebook with =Scimax: New Notebook=:
+When you create a notebook with Scimax: New Notebook:
 
 #+begin_src org
 my-notebook/
@@ -492,9 +494,9 @@ my-notebook/
 The notebook is automatically:
 1. Added to the projectile projects list
 2. Detected as type "projectile" (or "git" if git was initialized)
-3. Available via =C-c p p= for quick switching
+3. Available via C-c p p for quick switching
 
-** Converting Projects to Notebooks
+** ⚠️ Converting Projects to Notebooks
 
 Convert any existing project into a notebook:
 
@@ -512,9 +514,9 @@ The project remains in your projectile list and gains notebook features:
 - Notebook-scoped agenda
 - Archive capabilities
 
-** Notebook Metadata in Projects
+** ⚠️ Notebook Metadata in Projects
 
-Notebooks store additional metadata in =.scimax/config.json=:
+Notebooks store additional metadata in .scimax/config.json:
 
 #+begin_src json
 {
@@ -539,7 +541,7 @@ This metadata is available to both systems:
 - Projectile shows the project in its list
 - Notebook commands provide research-specific features
 
-** Workflow Example: Research Projects
+** ⚠️ Workflow Example: Research Projects
 
 Typical workflow for managing multiple research projects:
 
@@ -570,19 +572,19 @@ The integration provides:
 - Project-scoped search and navigation
 - Consistent marker files
 
-* Best Practices
+* ⚠️ Best Practices
 
-** Project Organization
+** ⚠️ Project Organization
 
-*** Use Consistent Markers
+*** ⚠️ Use Consistent Markers
 
 Choose one marker style per project:
 
-- Git projects: Let =.git/= serve as the marker
-- Non-git projects: Add =.projectile= explicitly
-- Notebooks: Use notebook creation (adds both =.projectile= and =.scimax/=)
+- Git projects: Let .git/ serve as the marker
+- Non-git projects: Add .projectile explicitly
+- Notebooks: Use notebook creation (adds both .projectile and .scimax/)
 
-*** Project Naming
+*** ⚠️ Project Naming
 
 Use descriptive, scannable directory names:
 
@@ -600,7 +602,7 @@ Less good:
 
 Project names appear in the quick pick list, so clarity helps with quick selection.
 
-*** Directory Structure
+*** ⚠️ Directory Structure
 
 Organize related projects together:
 
@@ -618,13 +620,13 @@ Organize related projects together:
       └── dotfiles/
 #+end_example
 
-Use =Scimax: Scan Directory for Projects= on parent directories to bulk-add.
+Use Scimax: Scan Directory for Projects on parent directories to bulk-add.
 
-** Efficient Workflows
+** ⚠️ Efficient Workflows
 
-*** Quick Switching Pattern
+*** ⚠️ Quick Switching Pattern
 
-Develop muscle memory for =C-c p p=:
+Develop muscle memory for C-c p p:
 
 #+begin_example
 C-c p p → type few chars → Enter → choose window option
@@ -635,7 +637,7 @@ This is faster than:
 - File → Open Folder → navigate → select
 - Clicking through GUI menus
 
-*** Recent Project Access
+*** ⚠️ Recent Project Access
 
 The most recent 3-5 projects appear at the top of the list. Use this for:
 
@@ -645,7 +647,7 @@ Afternoon: Switch to project B (becomes #1, A becomes #2)
 Evening: Back to A (already #2, quick to select)
 #+end_example
 
-*** Search Before Switching
+*** ⚠️ Search Before Switching
 
 If you know what file you need:
 
@@ -657,9 +659,9 @@ If you know what file you need:
 # Faster than navigating manually
 #+end_example
 
-** Maintenance
+** ⚠️ Maintenance
 
-*** Regular Cleanup
+*** ⚠️ Regular Cleanup
 
 Run cleanup monthly:
 
@@ -672,7 +674,7 @@ This prevents clutter from:
 - Moved directories
 - External drive projects (when unmounted)
 
-*** Curate Your List
+*** ⚠️ Curate Your List
 
 Remove projects you no longer use:
 
@@ -680,9 +682,9 @@ Remove projects you no longer use:
 - Completed client work
 - Temporary test projects
 
-A smaller project list means faster selection in =C-c p p=.
+A smaller project list means faster selection in C-c p p.
 
-*** Backup Project List
+*** ⚠️ Backup Project List
 
 The project list is stored in VS Code's global state. To backup:
 
@@ -696,9 +698,9 @@ The project list is stored in VS Code's global state. To backup:
 # Backup this file to preserve project list
 #+end_src
 
-** Multi-Root Workspaces
+** ⚠️ Multi-Root Workspaces
 
-*** When to Use Multi-Root
+*** ⚠️ When to Use Multi-Root
 
 Use multi-root workspaces for:
 
@@ -721,7 +723,7 @@ Benefits:
   - Unified git operations
 #+end_example
 
-*** When to Use Separate Windows
+*** ⚠️ When to Use Separate Windows
 
 Use separate windows for:
 
@@ -742,11 +744,11 @@ Benefits:
   - Clearer taskbar
 #+end_example
 
-* Advanced Usage
+* ⚠️ Advanced Usage
 
-** Custom Project Markers
+** ⚠️ Custom Project Markers
 
-While =.projectile= is the standard marker, you can manually add any directory:
+While .projectile is the standard marker, you can manually add any directory:
 
 #+begin_src
 Scimax: Add Project → select any folder
@@ -757,7 +759,7 @@ Use this for:
 - Shared network directories
 - Temporary project workspaces
 
-** Scanning Large Directories
+** ⚠️ Scanning Large Directories
 
 When scanning directories with many subdirectories:
 
@@ -780,7 +782,7 @@ Max depth: 3
 
 Balance depth vs. speed based on your directory structure.
 
-** Project Type Prioritization
+** ⚠️ Project Type Prioritization
 
 If a directory has multiple markers:
 
@@ -793,13 +795,13 @@ Type: git (git takes priority)
 #+end_example
 
 Priority order:
-1. =.git/= → type "git"
-2. =.projectile= → type "projectile"
+1. .git/ → type "git"
+2. .projectile → type "projectile"
 3. Manual add → type "manual"
 
-This ensures git projects are recognized as such, even if they also have =.projectile= markers.
+This ensures git projects are recognized as such, even if they also have .projectile markers.
 
-** Programmatic Access
+** ⚠️ Programmatic Access
 
 Other extensions can access the projectile manager:
 
@@ -818,14 +820,14 @@ This enables:
 - Integration with external tools
 - Automated project management
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Projects Not Appearing
+** ⚠️ Projects Not Appearing
 
-*** Symptom
-Project doesn't appear in =C-c p p= list.
+*** ⚠️ Symptom
+Project doesn't appear in C-c p p list.
 
-*** Solutions
+*** ⚠️ Solutions
 
 1. Check if directory exists:
    #+begin_src sh
@@ -848,12 +850,12 @@ Project doesn't appear in =C-c p p= list.
    Scimax: Cleanup Non-existent Projects
    #+end_src
 
-** Project List Too Long
+** ⚠️ Project List Too Long
 
-*** Symptom
-=C-c p p= shows dozens of old projects.
+*** ⚠️ Symptom
+C-c p p shows dozens of old projects.
 
-*** Solutions
+*** ⚠️ Solutions
 
 1. Remove unused projects individually:
    #+begin_src
@@ -872,12 +874,12 @@ Project doesn't appear in =C-c p p= list.
    # Remove scimax.projects entry
    #+end_src
 
-** Tree View Not Updating
+** ⚠️ Tree View Not Updating
 
-*** Symptom
+*** ⚠️ Symptom
 Projects tree shows outdated information.
 
-*** Solutions
+*** ⚠️ Solutions
 
 1. Manual refresh:
    #+begin_src
@@ -896,12 +898,12 @@ Projects tree shows outdated information.
    Developer: Reload Window
    #+end_src
 
-** Scanning Not Finding Projects
+** ⚠️ Scanning Not Finding Projects
 
-*** Symptom
-=Scimax: Scan Directory for Projects= reports "Found 0 projects".
+*** ⚠️ Symptom
+Scimax: Scan Directory for Projects reports "Found 0 projects".
 
-*** Solutions
+*** ⚠️ Solutions
 
 1. Increase scan depth:
    #+begin_example
@@ -925,12 +927,12 @@ Projects tree shows outdated information.
    ls -la /path/to/scan
    #+end_src
 
-** Slow Project Operations
+** ⚠️ Slow Project Operations
 
-*** Symptom
-=C-c p p= or tree view is slow to load.
+*** ⚠️ Symptom
+C-c p p or tree view is slow to load.
 
-*** Causes & Solutions
+*** ⚠️ Causes & Solutions
 
 1. *Too many projects*:
    - Remove unused projects
@@ -948,62 +950,62 @@ Projects tree shows outdated information.
    - Keep project list under 50-100 entries
    - Archive old projects
 
-* Comparison with Emacs Projectile
+* ⚠️ Comparison with Emacs Projectile
 
 For users familiar with Emacs Projectile:
 
-** Similarities
+** ⚠️ Similarities
 
 | Emacs Projectile           | Scimax VS Code          | Notes                           |
 |----------------------------+-------------------------+---------------------------------|
-| =C-c p p= switch           | =C-c p p= switch        | Same keybinding                 |
-| =C-c p f= find file        | =C-c p f= find file     | Delegates to VS Code picker     |
-| =C-c p s= search           | =C-c p s= search        | Opens VS Code search panel      |
-| =.projectile= marker       | =.projectile= marker    | Compatible format               |
+| C-c p p switch             | C-c p p switch          | Same keybinding                 |
+| C-c p f find file          | C-c p f find file       | Delegates to VS Code picker     |
+| C-c p s search             | C-c p s search          | Opens VS Code search panel      |
+| .projectile marker         | .projectile marker      | Compatible format               |
 | Git detection              | Git detection           | Automatic                       |
 | Recent projects            | Recent projects         | Sorted by last accessed         |
 | Project types              | Project types           | git/projectile/manual           |
 
-** Differences
+** ⚠️ Differences
 
-*** File Finding
+*** ⚠️ File Finding
 - *Emacs*: Custom projectile completion
-- *VS Code*: Uses built-in Quick Open (=Ctrl+P=)
+- *VS Code*: Uses built-in Quick Open (Ctrl+P)
 - *Advantage*: VS Code's picker is faster and more familiar
 
-*** Search
+*** ⚠️ Search
 - *Emacs*: helm-projectile or ivy integration
 - *VS Code*: Uses built-in Search panel
 - *Advantage*: VS Code's search is more visual with inline results
 
-*** Project Caching
+*** ⚠️ Project Caching
 - *Emacs*: Caches project file lists
 - *VS Code*: Uses VS Code's file indexing
 - *Advantage*: Automatic, no manual cache management
 
-*** Buffer Management
-- *Emacs*: =C-c p b= switch buffer within project
+*** ⚠️ Buffer Management
+- *Emacs*: C-c p b switch buffer within project
 - *VS Code*: Not needed (tabs and Quick Open serve this role)
 
-*** Project Commands
-- *Emacs*: Many specialized commands (=C-c p c= compile, =C-c p t= test)
+*** ⚠️ Project Commands
+- *Emacs*: Many specialized commands (C-c p c compile, C-c p t test)
 - *VS Code*: Fewer commands, uses VS Code's task system instead
 
-** Migration Tips
+** ⚠️ Migration Tips
 
 If migrating from Emacs Projectile:
 
-1. *Muscle memory*: Core keybindings (=C-c p p=, =C-c p f=, =C-c p s=) are the same
-2. *Markers*: Your =.projectile= files work without changes
+1. *Muscle memory*: Core keybindings (C-c p p, C-c p f, C-c p s) are the same
+2. *Markers*: Your .projectile files work without changes
 3. *Workflows*: File finding and search feel similar but use VS Code UI
-4. *Project list*: Use =Scimax: Scan Directory for Projects= to import existing projects
+4. *Project list*: Use Scimax: Scan Directory for Projects to import existing projects
 5. *Customization*: VS Code settings replace most projectile variables
 
-* Configuration
+* ⚠️ Configuration
 
-Projectile settings in VS Code settings (=settings.json=):
+Projectile settings in VS Code settings (settings.json):
 
-** No Configuration Required
+** ⚠️ No Configuration Required
 
 Projectile works out-of-the-box with no configuration. The extension:
 
@@ -1011,7 +1013,7 @@ Projectile works out-of-the-box with no configuration. The extension:
 - Persists project list in global state
 - Uses sensible defaults for all operations
 
-** Future Configuration Options
+** ⚠️ Future Configuration Options
 
 Potential future settings (not currently implemented):
 
@@ -1036,7 +1038,7 @@ Potential future settings (not currently implemented):
 
 Note: These settings are planned but not yet available. Check extension documentation for current configuration options.
 
-* Conclusion
+* ⚠️ Conclusion
 
 The Scimax projectile system brings Emacs-style project management to VS Code, enabling:
 
@@ -1048,21 +1050,21 @@ The Scimax projectile system brings Emacs-style project management to VS Code, e
 
 Whether you're managing multiple research projects, client work, or personal repositories, projectile streamlines your workflow by keeping all your projects accessible with a few keystrokes.
 
-** Next Steps
+** ⚠️ Next Steps
 
-- Create a =.projectile= marker in your important projects
-- Use =C-c p p= to build muscle memory for project switching
+- Create a .projectile marker in your important projects
+- Use C-c p p to build muscle memory for project switching
 - Scan your development directory to populate the project list
 - Explore integration with notebooks for research projects
 - Set up keybindings for your most-used projectile commands
 
-** Related Documentation
+** ⚠️ Related Documentation
 
 - [[file:notebook.org][Notebook (Project Organization)]] - Research project structure with notebooks
 - [[file:keybindings.org][Keybindings]] - Complete keybinding reference
 - [[file:configuration.org][Configuration]] - Extension settings and customization
 
-** Feedback
+** ⚠️ Feedback
 
 If you encounter issues or have feature requests for projectile:
 

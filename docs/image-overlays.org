@@ -3,8 +3,11 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Introduction
 
 Image overlays provide inline image display functionality in org-mode files, similar to Emacs org-mode's image display feature. When enabled, image links are rendered as thumbnails directly in the editor, allowing you to preview images without opening them separately.
 
@@ -15,7 +18,7 @@ This feature enhances the visual experience of working with org documents that c
 - Journal entries with photos
 - Results from source block executions (especially Jupyter)
 
-** How Image Overlays Work
+** ⚠️ How Image Overlays Work
 
 Due to VS Code's limitations compared to Emacs overlays, the extension uses a combination of:
 
@@ -25,24 +28,24 @@ Due to VS Code's limitations compared to Emacs overlays, the extension uses a co
 
 Thumbnails are automatically generated and cached for performance, using ImageMagick or native macOS tools when available.
 
-* Supported Image Formats
+* ⚠️ Supported Image Formats
 
 The image overlay system supports the following image formats:
 
 | Format | Extension(s)      | Notes                           |
 |--------+-------------------+---------------------------------|
-| PNG    | =.png=            | Fully supported                 |
-| JPEG   | =.jpg=, =.jpeg=   | Fully supported                 |
-| GIF    | =.gif=            | Fully supported (static frames) |
-| SVG    | =.svg=            | Scalable vector graphics        |
-| WebP   | =.webp=           | Modern web format               |
-| BMP    | =.bmp=            | Bitmap images                   |
-| TIFF   | =.tiff=, =.tif=   | Tagged image format             |
-| ICO    | =.ico=            | Icon files                      |
+| PNG    | .png              | Fully supported                 |
+| JPEG   | .jpg, .jpeg       | Fully supported                 |
+| GIF    | .gif              | Fully supported (static frames) |
+| SVG    | .svg              | Scalable vector graphics        |
+| WebP   | .webp             | Modern web format               |
+| BMP    | .bmp              | Bitmap images                   |
+| TIFF   | .tiff, .tif       | Tagged image format             |
+| ICO    | .ico              | Icon files                      |
 
-* Image Link Syntax
+* ⚠️ Image Link Syntax
 
-** Basic Image Links
+** ⚠️ Basic Image Links
 
 The simplest way to include an image is with a basic link:
 
@@ -52,17 +55,17 @@ The simplest way to include an image is with a basic link:
 
 This displays the image inline and can be clicked to open.
 
-** File Protocol Links
+** ⚠️ File Protocol Links
 
-You can explicitly use the =file:= protocol:
+You can explicitly use the file: protocol:
 
 #+BEGIN_SRC org
 [[file:./path/to/image.png]]
 #+END_SRC
 
-Both formats work identically - the =file:= prefix is optional for local files.
+Both formats work identically - the file: prefix is optional for local files.
 
-** Links with Descriptions
+** ⚠️ Links with Descriptions
 
 Add descriptive text that appears as a clickable link:
 
@@ -73,7 +76,7 @@ Add descriptive text that appears as a clickable link:
 
 The description text is shown in the editor, while the image overlay appears in the gutter or inline.
 
-** Absolute vs Relative Paths
+** ⚠️ Absolute vs Relative Paths
 
 Both absolute and relative paths are supported:
 
@@ -87,9 +90,9 @@ Both absolute and relative paths are supported:
 [[file:~/Pictures/photo.jpg]]
 #+END_SRC
 
-The =~= (tilde) is expanded to the home directory on Unix-like systems.
+The ~ (tilde) is expanded to the home directory on Unix-like systems.
 
-** Remote Images
+** ⚠️ Remote Images
 
 Remote image URLs are *not* displayed as overlays but are still valid links:
 
@@ -100,30 +103,30 @@ Remote image URLs are *not* displayed as overlays but are still valid links:
 
 These links work for navigation but won't show thumbnails in the editor.
 
-* Image Sizing and Attributes
+* ⚠️ Image Sizing and Attributes
 
-** ATTR_ORG Keyword
+** ⚠️ ATTR_ORG Keyword
 
-Control how images are displayed using the =#+ATTR_ORG:= keyword above the image link:
+Control how images are displayed using the #+ATTR_ORG: keyword above the image link:
 
 #+BEGIN_SRC org
 #+ATTR_ORG: :width 400
 [[./diagram.png]]
 #+END_SRC
 
-*Note:* Currently, the =#+ATTR_ORG:= keyword is parsed but the :width and :height attributes primarily affect *export* output rather than the overlay display size. The overlay thumbnail size is controlled by the [[*Configuration Settings][configuration settings]].
+*Note:* Currently, the #+ATTR_ORG: keyword is parsed but the :width and :height attributes primarily affect *export* output rather than the overlay display size. The overlay thumbnail size is controlled by the [[*Configuration Settings][configuration settings]].
 
-** Supported Attributes
+** ⚠️ Supported Attributes
 
 | Attribute | Purpose                      | Example              |
 |-----------+------------------------------+----------------------|
-| :width    | Image width (export)         | =:width 400=         |
-| :height   | Image height (export)        | =:height 300=        |
-| :scale    | Scale factor (export)        | =:scale 0.5=         |
-| :align    | Alignment (export)           | =:align center=      |
-| :alt      | Alt text (export)            | =:alt "Description"= |
+| :width    | Image width (export)         | :width 400           |
+| :height   | Image height (export)        | :height 300          |
+| :scale    | Scale factor (export)        | :scale 0.5           |
+| :align    | Alignment (export)           | :align center        |
+| :alt      | Alt text (export)            | :alt "Description"   |
 
-** Export-Specific Attributes
+** ⚠️ Export-Specific Attributes
 
 For LaTeX and HTML export, use backend-specific attributes:
 
@@ -135,7 +138,7 @@ For LaTeX and HTML export, use backend-specific attributes:
 
 See [[file:export.org][Export Documentation]] for more details on export attributes.
 
-** Adding Captions
+** ⚠️ Adding Captions
 
 Add captions that appear in exports:
 
@@ -145,27 +148,27 @@ Add captions that appear in exports:
 [[file:./architecture.png]]
 #+END_SRC
 
-* Enabling and Disabling Image Display
+* ⚠️ Enabling and Disabling Image Display
 
-** Global Toggle
+** ⚠️ Global Toggle
 
 Toggle image overlays for all org files:
 
-- *Command:* =Scimax: Toggle Image Overlays=
-- *Command ID:* =scimax.imageOverlays.toggle=
+- *Command:* Scimax: Toggle Image Overlays
+- *Command ID:* scimax.imageOverlays.toggle
 
 Use the command palette (Ctrl+Shift+P / Cmd+Shift+P) and search for "Toggle Image Overlays".
 
-** Per-File Toggle
+** ⚠️ Per-File Toggle
 
 Toggle image overlays for the current file only:
 
-- *Command:* =Scimax: Toggle Image Overlays for Current File=
-- *Command ID:* =scimax.imageOverlays.toggleCurrentFile=
+- *Command:* Scimax: Toggle Image Overlays for Current File
+- *Command ID:* scimax.imageOverlays.toggleCurrentFile
 
 This is useful when you want overlays disabled for one specific large document but enabled globally.
 
-** Via Configuration
+** ⚠️ Via Configuration
 
 Permanently enable or disable in your settings.json:
 
@@ -175,14 +178,14 @@ Permanently enable or disable in your settings.json:
 }
 #+END_SRC
 
-Set to =false= to disable by default.
+Set to false to disable by default.
 
-* Configuration Settings
+* ⚠️ Configuration Settings
 
-** scimax.imageOverlays.enabled
+** ⚠️ scimax.imageOverlays.enabled
 
 *Type:* boolean
-*Default:* =true=
+*Default:* true
 
 Enable or disable inline image thumbnails globally.
 
@@ -192,10 +195,10 @@ Enable or disable inline image thumbnails globally.
 }
 #+END_SRC
 
-** scimax.imageOverlays.maxWidth
+** ⚠️ scimax.imageOverlays.maxWidth
 
 *Type:* number
-*Default:* =96=
+*Default:* 96
 
 Maximum width in pixels for thumbnail icons. Thumbnails are scaled down to fit within these dimensions while maintaining aspect ratio.
 
@@ -205,10 +208,10 @@ Maximum width in pixels for thumbnail icons. Thumbnails are scaled down to fit w
 }
 #+END_SRC
 
-** scimax.imageOverlays.maxHeight
+** ⚠️ scimax.imageOverlays.maxHeight
 
 *Type:* number
-*Default:* =96=
+*Default:* 96
 
 Maximum height in pixels for thumbnail icons.
 
@@ -218,17 +221,17 @@ Maximum height in pixels for thumbnail icons.
 }
 #+END_SRC
 
-** scimax.imageOverlays.renderMode
+** ⚠️ scimax.imageOverlays.renderMode
 
 *Type:* string (enum)
-*Default:* ="gutter"=
-*Options:* =gutter=, =after=, =both=
+*Default:* "gutter"
+*Options:* gutter, after, both
 
 Controls where image thumbnails are displayed:
 
-- =gutter= - Show thumbnail in the editor gutter (line margin) - *recommended*
-- =after= - Show emoji and dimensions inline after the link text
-- =both= - Show both gutter thumbnail and inline decoration
+- gutter - Show thumbnail in the editor gutter (line margin) - *recommended*
+- after - Show emoji and dimensions inline after the link text
+- both - Show both gutter thumbnail and inline decoration
 
 #+BEGIN_SRC json
 {
@@ -237,14 +240,14 @@ Controls where image thumbnails are displayed:
 #+END_SRC
 
 *Recommendations:*
-- Use =gutter= for a clean, unobtrusive experience
-- Use =after= if you prefer inline indicators
-- Use =both= for maximum visibility
+- Use gutter for a clean, unobtrusive experience
+- Use after if you prefer inline indicators
+- Use both for maximum visibility
 
-** scimax.imageOverlays.onlyWhenCursorNotInLink
+** ⚠️ scimax.imageOverlays.onlyWhenCursorNotInLink
 
 *Type:* boolean
-*Default:* =true=
+*Default:* true
 
 Hide the overlay when your cursor is inside the image link. This prevents the thumbnail from obscuring the link text you're editing.
 
@@ -254,12 +257,12 @@ Hide the overlay when your cursor is inside the image link. This prevents the th
 }
 #+END_SRC
 
-Set to =false= to always show overlays, even when editing.
+Set to false to always show overlays, even when editing.
 
-** scimax.imageOverlays.excludePatterns
+** ⚠️ scimax.imageOverlays.excludePatterns
 
 *Type:* array of strings
-*Default:* =[ ]=
+*Default:* [ ]
 
 Regex patterns for image paths to exclude from overlay display. Useful for hiding certain directories or file patterns.
 
@@ -274,14 +277,14 @@ Regex patterns for image paths to exclude from overlay display. Useful for hidin
 #+END_SRC
 
 Examples:
-- ="\\.tmp/"= - Exclude images in .tmp directories
-- ="^http"= - Exclude remote URLs (already excluded by default)
-- ="screenshot-.*"= - Exclude files starting with "screenshot-"
+- "\\.tmp/" - Exclude images in .tmp directories
+- "^http" - Exclude remote URLs (already excluded by default)
+- "screenshot-.*" - Exclude files starting with "screenshot-"
 
-** scimax.imageOverlays.maxOverlaysPerDocument
+** ⚠️ scimax.imageOverlays.maxOverlaysPerDocument
 
 *Type:* number
-*Default:* =200=
+*Default:* 200
 
 Maximum number of image overlays to display per document. This prevents performance issues in documents with hundreds of images.
 
@@ -293,12 +296,12 @@ Maximum number of image overlays to display per document. This prevents performa
 
 If your document exceeds this limit, you'll see a warning message.
 
-** scimax.imageOverlays.showDimensions
+** ⚠️ scimax.imageOverlays.showDimensions
 
 *Type:* boolean
-*Default:* =true=
+*Default:* true
 
-When using =after= or =both= render modes, show image dimensions (e.g., "800×600") in the inline decoration.
+When using after or both render modes, show image dimensions (e.g., "800x600") in the inline decoration.
 
 #+BEGIN_SRC json
 {
@@ -306,10 +309,10 @@ When using =after= or =both= render modes, show image dimensions (e.g., "800×60
 }
 #+END_SRC
 
-** scimax.imageOverlays.cacheEnabled
+** ⚠️ scimax.imageOverlays.cacheEnabled
 
 *Type:* boolean
-*Default:* =true=
+*Default:* true
 
 Enable thumbnail caching for faster loading. Thumbnails are stored in the extension's global storage directory.
 
@@ -319,11 +322,11 @@ Enable thumbnail caching for faster loading. Thumbnails are stored in the extens
 }
 #+END_SRC
 
-Set to =false= to disable caching (may impact performance).
+Set to false to disable caching (may impact performance).
 
-* Images from Source Block Results
+* ⚠️ Images from Source Block Results
 
-** Automatic Image Display
+** ⚠️ Automatic Image Display
 
 When source blocks produce image output, the results are automatically displayed as overlays:
 
@@ -344,11 +347,11 @@ plt.savefig('plot.png')
 [[file:plot.png]]
 #+END_SRC
 
-The resulting =[[file:plot.png]]= link automatically shows as an overlay.
+The resulting [[file:plot.png]] link automatically shows as an overlay.
 
-** Jupyter Kernel Output
+** ⚠️ Jupyter Kernel Output
 
-Jupyter kernels automatically save image output to the =.ob-jupyter/= directory:
+Jupyter kernels automatically save image output to the .ob-jupyter/ directory:
 
 #+BEGIN_SRC org
 ,#+BEGIN_SRC jupyter-python :session py
@@ -367,7 +370,7 @@ These images are automatically displayed as overlays when image overlays are ena
 
 See [[file:jupyter.org][Jupyter Documentation]] for more details on Jupyter integration.
 
-** R and Other Languages
+** ⚠️ R and Other Languages
 
 R, Julia, and other languages that produce image files work similarly:
 
@@ -380,32 +383,32 @@ plot(1:10, (1:10)^2)
 [[file:myplot.png]]
 #+END_SRC
 
-* Available Commands
+* ⚠️ Available Commands
 
-** Scimax: Toggle Image Overlays
+** ⚠️ Scimax: Toggle Image Overlays
 
-*Command ID:* =scimax.imageOverlays.toggle=
+*Command ID:* scimax.imageOverlays.toggle
 
 Toggle image overlays globally for all org files. When disabled, no thumbnails are shown but links remain functional.
 
-** Scimax: Toggle Image Overlays for Current File
+** ⚠️ Scimax: Toggle Image Overlays for Current File
 
-*Command ID:* =scimax.imageOverlays.toggleCurrentFile=
+*Command ID:* scimax.imageOverlays.toggleCurrentFile
 
 Toggle image overlays for the currently active org file only. Useful for temporarily hiding overlays in specific documents.
 
-** Scimax: Refresh Image Overlays
+** ⚠️ Scimax: Refresh Image Overlays
 
-*Command ID:* =scimax.imageOverlays.refresh=
+*Command ID:* scimax.imageOverlays.refresh
 
 Manually refresh all image overlays in visible editors. This can be useful if:
 - You've modified image files externally
 - Overlays aren't updating correctly
 - You've changed configuration settings
 
-** Scimax: Clear Image Overlay Cache
+** ⚠️ Scimax: Clear Image Overlay Cache
 
-*Command ID:* =scimax.imageOverlays.clearCache=
+*Command ID:* scimax.imageOverlays.clearCache
 
 Clear the thumbnail cache. This will:
 - Delete all cached thumbnails
@@ -414,9 +417,9 @@ Clear the thumbnail cache. This will:
 
 Useful if thumbnails are corrupted or you want to reclaim space.
 
-** Scimax: Show Image Overlay Cache Statistics
+** ⚠️ Scimax: Show Image Overlay Cache Statistics
 
-*Command ID:* =scimax.imageOverlays.showStats=
+*Command ID:* scimax.imageOverlays.showStats
 
 Display information about the thumbnail cache:
 - Number of cached thumbnails
@@ -424,15 +427,15 @@ Display information about the thumbnail cache:
 
 Useful for monitoring cache usage.
 
-* Troubleshooting Image Display
+* ⚠️ Troubleshooting Image Display
 
-** Images Not Showing
+** ⚠️ Images Not Showing
 
 If image overlays aren't displaying:
 
 1. *Check if overlays are enabled:*
-   - Run command: =Scimax: Toggle Image Overlays=
-   - Check setting: =scimax.imageOverlays.enabled=
+   - Run command: Scimax: Toggle Image Overlays
+   - Check setting: scimax.imageOverlays.enabled
 
 2. *Verify the image file exists:*
    - Hover over the link to see the full path
@@ -441,18 +444,18 @@ If image overlays aren't displaying:
 
 3. *Check the file extension:*
    - Ensure the file has a supported image extension
-   - Extensions are case-insensitive (=.PNG= works like =.png=)
+   - Extensions are case-insensitive (.PNG works like .png)
 
 4. *Try refreshing:*
-   - Run command: =Scimax: Refresh Image Overlays=
+   - Run command: Scimax: Refresh Image Overlays
 
 5. *Check exclude patterns:*
-   - Review =scimax.imageOverlays.excludePatterns= setting
+   - Review scimax.imageOverlays.excludePatterns setting
    - Ensure your image path doesn't match an exclude pattern
 
-** Overlays Disappear When Editing
+** ⚠️ Overlays Disappear When Editing
 
-This is *normal behavior* when =scimax.imageOverlays.onlyWhenCursorNotInLink= is =true= (default). The overlay hides when your cursor is inside the link to prevent obscuring the text you're editing.
+This is *normal behavior* when scimax.imageOverlays.onlyWhenCursorNotInLink is true (default). The overlay hides when your cursor is inside the link to prevent obscuring the text you're editing.
 
 To always show overlays:
 
@@ -462,7 +465,7 @@ To always show overlays:
 }
 #+END_SRC
 
-** Performance Issues
+** ⚠️ Performance Issues
 
 If you experience slow performance:
 
@@ -489,21 +492,21 @@ If you experience slow performance:
    #+END_SRC
 
 4. *Disable overlays for specific files:*
-   - Use command: =Scimax: Toggle Image Overlays for Current File=
+   - Use command: Scimax: Toggle Image Overlays for Current File
 
-** Thumbnails Are Blurry or Corrupted
+** ⚠️ Thumbnails Are Blurry or Corrupted
 
 1. *Clear the cache:*
-   - Run command: =Scimax: Clear Image Overlay Cache=
+   - Run command: Scimax: Clear Image Overlay Cache
 
 2. *Check if ImageMagick is installed:*
-   - The extension uses ImageMagick (=convert=) or macOS =sips= for thumbnail generation
-   - Install ImageMagick: =brew install imagemagick= (macOS) or =apt install imagemagick= (Linux)
+   - The extension uses ImageMagick (convert) or macOS sips for thumbnail generation
+   - Install ImageMagick: brew install imagemagick (macOS) or apt install imagemagick (Linux)
 
 3. *Verify the original image isn't corrupted:*
    - Open the image in an external viewer
 
-** Remote Images Don't Show
+** ⚠️ Remote Images Don't Show
 
 Remote HTTP/HTTPS images are *not displayed* as overlays by design. Only local files are supported for security and performance reasons.
 
@@ -511,11 +514,11 @@ To display remote images:
 1. Download them locally
 2. Reference the local copy in your org file
 
-** Relative Paths Not Resolving
+** ⚠️ Relative Paths Not Resolving
 
 If relative paths aren't working:
 
-1. *Use =./= prefix for clarity:*
+1. *Use ./ prefix for clarity:*
    #+BEGIN_SRC org
    [[./images/photo.png]]  # Better
    [[images/photo.png]]    # Also works, but less clear
@@ -529,7 +532,7 @@ If relative paths aren't working:
    [[file:/full/path/to/image.png]]
    #+END_SRC
 
-** Hover Preview Not Working
+** ⚠️ Hover Preview Not Working
 
 If hover previews aren't showing:
 
@@ -545,9 +548,9 @@ If hover previews aren't showing:
    - Some formats may not preview well
    - SVG and PNG typically work best
 
-* Example Configuration
+* ⚠️ Example Configuration
 
-** Minimal Configuration
+** ⚠️ Minimal Configuration
 
 For basic image overlay functionality:
 
@@ -558,7 +561,7 @@ For basic image overlay functionality:
 }
 #+END_SRC
 
-** Power User Configuration
+** ⚠️ Power User Configuration
 
 For maximum visual feedback:
 
@@ -575,7 +578,7 @@ For maximum visual feedback:
 }
 #+END_SRC
 
-** Performance-Focused Configuration
+** ⚠️ Performance-Focused Configuration
 
 For large documents with many images:
 
@@ -593,7 +596,7 @@ For large documents with many images:
 }
 #+END_SRC
 
-* Complete Example
+* ⚠️ Complete Example
 
 Here's a complete example showing various image link formats:
 
@@ -647,7 +650,7 @@ Note: Remote images don't show overlays but are clickable:
 [[https://example.com/logo.png][Company Logo]]
 #+END_SRC
 
-* See Also
+* ⚠️ See Also
 
 - [[file:links.org][Links]] - General link syntax and functionality
 - [[file:source-blocks.org][Source Blocks]] - Executing code that generates images
@@ -655,13 +658,13 @@ Note: Remote images don't show overlays but are clickable:
 - [[file:export.org][Export]] - Exporting documents with images
 - [[file:configuration.org][Configuration]] - Full configuration reference
 
-* Technical Details
+* ⚠️ Technical Details
 
-** Thumbnail Generation
+** ⚠️ Thumbnail Generation
 
 Thumbnails are generated using:
 
-1. *ImageMagick* (=convert= command) - Preferred, works on all platforms
+1. *ImageMagick* (convert command) - Preferred, works on all platforms
 2. *macOS sips* - Native macOS tool, used as fallback on Mac
 3. *Direct copy* - If no tools available, original images are used
 
@@ -670,23 +673,23 @@ Thumbnails are cached in the extension's global storage directory with filenames
 - Configured thumbnail dimensions
 - Original file extension
 
-** Cache Location
+** ⚠️ Cache Location
 
 Thumbnails are stored in:
 
-- *Linux:* =~/.config/Code/User/globalStorage/scimax-vscode/image-overlay-cache/=
-- *macOS:* =~/Library/Application Support/Code/User/globalStorage/scimax-vscode/image-overlay-cache/=
-- *Windows:* =%APPDATA%\Code\User\globalStorage\scimax-vscode\image-overlay-cache\=
+- *Linux:* ~/.config/Code/User/globalStorage/scimax-vscode/image-overlay-cache/
+- *macOS:* ~/Library/Application Support/Code/User/globalStorage/scimax-vscode/image-overlay-cache/
+- *Windows:* %APPDATA%\Code\User\globalStorage\scimax-vscode\image-overlay-cache\
 
-** Performance Considerations
+** ⚠️ Performance Considerations
 
 - Thumbnail generation is asynchronous and doesn't block the editor
 - The cache prevents regenerating thumbnails on each file open
-- The =maxOverlaysPerDocument= setting prevents memory issues with large documents
+- The maxOverlaysPerDocument setting prevents memory issues with large documents
 - Overlays are debounced during typing to avoid excessive updates
 - Gutter mode is more performant than after/both modes
 
-** VS Code Limitations
+** ⚠️ VS Code Limitations
 
 Unlike Emacs, VS Code cannot:
 - Display arbitrary-sized inline images in the editor

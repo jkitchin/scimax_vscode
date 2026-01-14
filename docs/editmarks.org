@@ -3,14 +3,16 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* Introduction
+* ⚠️ Introduction
 
-Editmarks is a track changes system for scientific writing and collaborative editing in VS Code. Inspired by =scimax-editmarks= from Emacs Scimax, it provides a lightweight markup syntax for tracking insertions, deletions, comments, and typo corrections directly in your documents.
+Editmarks is a track changes system for scientific writing and collaborative editing in VS Code. Inspired by scimax-editmarks from Emacs Scimax, it provides a lightweight markup syntax for tracking insertions, deletions, comments, and typo corrections directly in your documents.
 
 Unlike traditional track changes systems that rely on binary formats or external tools, editmarks uses plain text markup that works seamlessly across org-mode, Markdown, and LaTeX files. Changes remain visible and editable as plain text, making them perfect for version control systems like Git.
 
-** Key Features
+** ⚠️ Key Features
 
 - *Plain text markup*: Changes are visible in any text editor
 - *Language-agnostic*: Works in org-mode, Markdown, LaTeX, and plain text
@@ -21,7 +23,7 @@ Unlike traditional track changes systems that rely on binary formats or external
 - *Hover actions*: Quick accept/reject from hover tooltips
 - *Summary view*: Overview of all changes in the document
 
-** Use Cases
+** ⚠️ Use Cases
 
 1. *Document review*: Mark suggested changes when reviewing a colleague's work
 2. *Collaborative editing*: Track your edits when working on shared documents
@@ -29,11 +31,11 @@ Unlike traditional track changes systems that rely on binary formats or external
 4. *Teaching and feedback*: Provide inline suggestions to students or mentees
 5. *Version control*: Complement Git commits with inline change tracking
 
-* Markup Syntax
+* ⚠️ Markup Syntax
 
 Editmarks supports two markup formats to maximize compatibility:
 
-** Universal Format (Recommended)
+** ⚠️ Universal Format (Recommended)
 
 The universal format works in all document types:
 
@@ -44,7 +46,7 @@ The universal format works in all document types:
 @@~old text|new text~@@   # Typo correction
 #+end_example
 
-** CriticMarkup Format (Alternative)
+** ⚠️ CriticMarkup Format (Alternative)
 
 An alternative format inspired by CriticMarkup:
 
@@ -57,13 +59,13 @@ An alternative format inspired by CriticMarkup:
 
 Both formats are recognized and rendered identically. Choose whichever you prefer or is required by your workflow.
 
-* Types of Editmarks
+* ⚠️ Types of Editmarks
 
-** Insertion
+** ⚠️ Insertion
 
 *Purpose*: Mark text that should be added to the document.
 
-*Syntax*: =@@+text+@@= or ={++text++}=
+*Syntax*: @@+text+@@ or {++text++}
 
 *Visual appearance*: Green background with green border
 
@@ -77,11 +79,11 @@ The quick brown fox @@+gracefully+@@ jumps over the lazy dog.
 - Adding missing words or phrases
 - Inserting clarifications or examples
 
-** Deletion
+** ⚠️ Deletion
 
 *Purpose*: Mark text that should be removed from the document.
 
-*Syntax*: =@@-text-@@= or ={--text--}=
+*Syntax*: @@-text-@@ or {--text--}
 
 *Visual appearance*: Red background with red border and strikethrough text
 
@@ -95,11 +97,11 @@ The quick brown @@-very-@@ fox jumps over the lazy dog.
 - Deleting incorrect information
 - Suggesting text removal during review
 
-** Comment
+** ⚠️ Comment
 
 *Purpose*: Add inline comments or notes without changing the document text.
 
-*Syntax*: =@@>comment<@@= or ={>>comment<<}=
+*Syntax*: @@>comment<@@ or {>>comment<<}
 
 *Visual appearance*: Yellow background with yellow border and italic text
 
@@ -114,11 +116,11 @@ The results were statistically significant @@>verify p-value<@@.
 - Marking sections that need attention
 - Providing context for other changes
 
-** Typo Correction
+** ⚠️ Typo Correction
 
 *Purpose*: Mark a typo or error and suggest the correct text.
 
-*Syntax*: =@@~wrong|correct~@@= or ={~~wrong~>correct~~}=
+*Syntax*: @@~wrong|correct~@@ or {~~wrong~>correct~~}
 
 *Visual appearance*: Orange background with orange border
 
@@ -133,12 +135,12 @@ The experment @@~experment|experiment~@@ was successful.
 - Suggesting better word choices
 - Standardizing terminology
 
-* Creating Editmarks
+* ⚠️ Creating Editmarks
 
-** Mark Insertion
+** ⚠️ Mark Insertion
 
-*Command*: =Scimax: Mark Insertion=
-*Keybinding*: =Ctrl+C e i= (same on Mac)
+*Command*: Scimax: Mark Insertion
+*Keybinding*: Ctrl+C e i (same on Mac)
 
 *Behavior*:
 1. *With text selected*: Wraps selection with insertion markup
@@ -146,14 +148,14 @@ The experment @@~experment|experiment~@@ was successful.
 
 *Example workflow*:
 1. Select "quickly" in your text (or place cursor where text should be inserted)
-2. Press =Ctrl+C e i=
+2. Press Ctrl+C e i
 3. If no selection, type the text to insert
-4. Result: =@@+quickly+@@=
+4. Result: @@+quickly+@@
 
-** Mark Deletion
+** ⚠️ Mark Deletion
 
-*Command*: =Scimax: Mark Deletion=
-*Keybinding*: =Ctrl+C e d=
+*Command*: Scimax: Mark Deletion
+*Keybinding*: Ctrl+C e d
 
 *Behavior*:
 - Requires text selection
@@ -161,13 +163,13 @@ The experment @@~experment|experiment~@@ was successful.
 
 *Example workflow*:
 1. Select "very" in your text
-2. Press =Ctrl+C e d=
-3. Result: =@@-very-@@=
+2. Press Ctrl+C e d
+3. Result: @@-very-@@
 
-** Insert Comment
+** ⚠️ Insert Comment
 
-*Command*: =Scimax: Insert Edit Comment=
-*Keybinding*: =Ctrl+C e c=
+*Command*: Scimax: Insert Edit Comment
+*Keybinding*: Ctrl+C e c
 
 *Behavior*:
 1. *With text selected*: Uses selection as comment text
@@ -175,14 +177,14 @@ The experment @@~experment|experiment~@@ was successful.
 
 *Example workflow*:
 1. Place cursor at the relevant location
-2. Press =Ctrl+C e c=
+2. Press Ctrl+C e c
 3. Type: "Check this citation"
-4. Result: =@@>Check this citation<@@=
+4. Result: @@>Check this citation<@@
 
-** Mark Typo Correction
+** ⚠️ Mark Typo Correction
 
-*Command*: =Scimax: Mark Typo Correction=
-*Keybinding*: =Ctrl+C e t=
+*Command*: Scimax: Mark Typo Correction
+*Keybinding*: Ctrl+C e t
 
 *Behavior*:
 - Requires text selection (the incorrect text)
@@ -191,22 +193,22 @@ The experment @@~experment|experiment~@@ was successful.
 
 *Example workflow*:
 1. Select "teh" in your text
-2. Press =Ctrl+C e t=
+2. Press Ctrl+C e t
 3. Type: "the"
-4. Result: =@@~teh|the~@@=
+4. Result: @@~teh|the~@@
 
-* Reviewing and Processing Editmarks
+* ⚠️ Reviewing and Processing Editmarks
 
-** Accept Edit Mark
+** ⚠️ Accept Edit Mark
 
-*Command*: =Scimax: Accept Edit Mark=
-*Keybinding*: =Ctrl+C e a=
+*Command*: Scimax: Accept Edit Mark
+*Keybinding*: Ctrl+C e a
 
 Accepts the editmark at the cursor position:
-- *Insertion*: Keeps the inserted text, removes markup (=@@+text+@@= → =text=)
-- *Deletion*: Removes the deleted text entirely (=@@-text-@@= → empty)
-- *Comment*: Removes the comment (=@@>text<@@= → empty)
-- *Typo*: Applies the correction (=@@~old|new~@@= → =new=)
+- *Insertion*: Keeps the inserted text, removes markup (@@+text+@@ → text)
+- *Deletion*: Removes the deleted text entirely (@@-text-@@ → empty)
+- *Comment*: Removes the comment (@@>text<@@ → empty)
+- *Typo*: Applies the correction (@@~old|new~@@ → new)
 
 *Example*:
 #+begin_example
@@ -214,16 +216,16 @@ Before: The quick @@+brown+@@ fox
 After:  The quick brown fox
 #+end_example
 
-** Reject Edit Mark
+** ⚠️ Reject Edit Mark
 
-*Command*: =Scimax: Reject Edit Mark=
-*Keybinding*: =Ctrl+C e r=
+*Command*: Scimax: Reject Edit Mark
+*Keybinding*: Ctrl+C e r
 
 Rejects the editmark at the cursor position:
-- *Insertion*: Removes the inserted text (=@@+text+@@= → empty)
-- *Deletion*: Keeps the original text (=@@-text-@@= → =text=)
-- *Comment*: Removes the comment (=@@>text<@@= → empty)
-- *Typo*: Keeps the original text (=@@~old|new~@@= → =old=)
+- *Insertion*: Removes the inserted text (@@+text+@@ → empty)
+- *Deletion*: Keeps the original text (@@-text-@@ → text)
+- *Comment*: Removes the comment (@@>text<@@ → empty)
+- *Typo*: Keeps the original text (@@~old|new~@@ → old)
 
 *Example*:
 #+begin_example
@@ -231,9 +233,9 @@ Before: The quick @@+brown+@@ fox
 After:  The quick fox
 #+end_example
 
-** Accept All Edit Marks
+** ⚠️ Accept All Edit Marks
 
-*Command*: =Scimax: Accept All Edit Marks=
+*Command*: Scimax: Accept All Edit Marks
 
 Accepts all editmarks in the current document:
 1. Shows confirmation dialog with count
@@ -242,9 +244,9 @@ Accepts all editmarks in the current document:
 
 *Use case*: After reviewing all changes and deciding to incorporate them all.
 
-** Reject All Edit Marks
+** ⚠️ Reject All Edit Marks
 
-*Command*: =Scimax: Reject All Edit Marks=
+*Command*: Scimax: Reject All Edit Marks
 
 Rejects all editmarks in the current document:
 1. Shows confirmation dialog with count
@@ -253,7 +255,7 @@ Rejects all editmarks in the current document:
 
 *Use case*: When you want to discard all suggested changes and revert to the original text.
 
-** Hover Actions
+** ⚠️ Hover Actions
 
 Position your cursor over any editmark to see a hover tooltip with:
 - Mark type and content
@@ -262,37 +264,37 @@ Position your cursor over any editmark to see a hover tooltip with:
 
 This provides a quick way to review and act on individual changes without remembering keybindings.
 
-* Navigation
+* ⚠️ Navigation
 
-** Next Edit Mark
+** ⚠️ Next Edit Mark
 
-*Command*: =Scimax: Next Edit Mark=
-*Keybinding*: =Ctrl+C e ]=
+*Command*: Scimax: Next Edit Mark
+*Keybinding*: Ctrl+C e ]
 
 Moves the cursor to the next editmark in the document:
 - Wraps around to the first mark if at the end
 - Centers the mark in the viewport
 - Useful for systematic review
 
-** Previous Edit Mark
+** ⚠️ Previous Edit Mark
 
-*Command*: =Scimax: Previous Edit Mark=
-*Keybinding*: =Ctrl+C e [=
+*Command*: Scimax: Previous Edit Mark
+*Keybinding*: Ctrl+C e [
 
 Moves the cursor to the previous editmark:
 - Wraps around to the last mark if at the beginning
 - Centers the mark in the viewport
 
-** Keyboard Navigation Pattern
+** ⚠️ Keyboard Navigation Pattern
 
-The bracket keys (=[= and =]=) create an intuitive navigation pattern:
-- =Ctrl+C e ]= → next (forward, like closing bracket points right)
-- =Ctrl+C e [= → previous (backward, like opening bracket points left)
+The bracket keys ([ and ]) create an intuitive navigation pattern:
+- Ctrl+C e ] → next (forward, like closing bracket points right)
+- Ctrl+C e [ → previous (backward, like opening bracket points left)
 
-* Summary View
+* ⚠️ Summary View
 
-*Command*: =Scimax: Show Edit Marks Summary=
-*Keybinding*: =Ctrl+C e s=
+*Command*: Scimax: Show Edit Marks Summary
+*Keybinding*: Ctrl+C e s
 
 Opens a quick pick menu showing:
 1. *Summary statistics*: Total count and breakdown by type
@@ -321,7 +323,7 @@ Summary
 ...
 #+end_example
 
-* Visual Appearance
+* ⚠️ Visual Appearance
 
 Editmarks are rendered with distinctive decorations:
 
@@ -337,112 +339,112 @@ All decorations include:
 - Solid border for clear delimitation
 - 2px border radius for rounded corners
 
-* Complete Command Reference
+* ⚠️ Complete Command Reference
 
-** Insertion Commands
-
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.insertion=  | =Ctrl+C e i=  | Mark text as insertion     |
-
-** Deletion Commands
+** ⚠️ Insertion Commands
 
 | Command                     | Keybinding  | Description                |
 |-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.deletion=   | =Ctrl+C e d=  | Mark text for deletion     |
+| scimax.editmarks.insertion  | Ctrl+C e i  | Mark text as insertion     |
 
-** Comment Commands
-
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.comment=    | =Ctrl+C e c=  | Insert edit comment        |
-
-** Typo Correction Commands
+** ⚠️ Deletion Commands
 
 | Command                     | Keybinding  | Description                |
 |-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.typo=       | =Ctrl+C e t=  | Mark typo correction       |
+| scimax.editmarks.deletion   | Ctrl+C e d  | Mark text for deletion     |
 
-** Review Commands
+** ⚠️ Comment Commands
+
+| Command                     | Keybinding  | Description                |
+|-----------------------------+-------------+----------------------------|
+| scimax.editmarks.comment    | Ctrl+C e c  | Insert edit comment        |
+
+** ⚠️ Typo Correction Commands
+
+| Command                     | Keybinding  | Description                |
+|-----------------------------+-------------+----------------------------|
+| scimax.editmarks.typo       | Ctrl+C e t  | Mark typo correction       |
+
+** ⚠️ Review Commands
 
 | Command                      | Keybinding  | Description                |
 |------------------------------+-------------+----------------------------|
-| =scimax.editmarks.accept=      | =Ctrl+C e a=  | Accept mark at cursor      |
-| =scimax.editmarks.reject=      | =Ctrl+C e r=  | Reject mark at cursor      |
-| =scimax.editmarks.acceptAll=   | (none)      | Accept all marks           |
-| =scimax.editmarks.rejectAll=   | (none)      | Reject all marks           |
+| scimax.editmarks.accept      | Ctrl+C e a  | Accept mark at cursor      |
+| scimax.editmarks.reject      | Ctrl+C e r  | Reject mark at cursor      |
+| scimax.editmarks.acceptAll   | (none)      | Accept all marks           |
+| scimax.editmarks.rejectAll   | (none)      | Reject all marks           |
 
-** Navigation Commands
-
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.next=       | =Ctrl+C e ]=  | Jump to next mark          |
-| =scimax.editmarks.prev=       | =Ctrl+C e [=  | Jump to previous mark      |
-
-** Utility Commands
+** ⚠️ Navigation Commands
 
 | Command                     | Keybinding  | Description                |
 |-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.summary=    | =Ctrl+C e s=  | Show all marks summary     |
+| scimax.editmarks.next       | Ctrl+C e ]  | Jump to next mark          |
+| scimax.editmarks.prev       | Ctrl+C e [  | Jump to previous mark      |
 
-* Keybinding Pattern
+** ⚠️ Utility Commands
 
-All editmarks keybindings follow the pattern =Ctrl+C e <letter>=:
+| Command                     | Keybinding  | Description                |
+|-----------------------------+-------------+----------------------------|
+| scimax.editmarks.summary    | Ctrl+C e s  | Show all marks summary     |
 
-- =Ctrl+C e= → Editmarks prefix
-- =i= → Insertion
-- =d= → Deletion
-- =c= → Comment
-- =t= → Typo
-- =a= → Accept
-- =r= → Reject
-- =s= → Summary
-- =[= → Previous
-- =]= → Next
+* ⚠️ Keybinding Pattern
+
+All editmarks keybindings follow the pattern Ctrl+C e <letter>:
+
+- Ctrl+C e → Editmarks prefix
+- i → Insertion
+- d → Deletion
+- c → Comment
+- t → Typo
+- a → Accept
+- r → Reject
+- s → Summary
+- [ → Previous
+- ] → Next
 
 This consistent pattern makes the commands easy to remember and discover.
 
-* Typical Workflows
+* ⚠️ Typical Workflows
 
-** Workflow 1: Peer Review
+** ⚠️ Workflow 1: Peer Review
 
 *Scenario*: You're reviewing a colleague's research paper draft.
 
 1. *Open the document* in VS Code
 2. *Read through* and identify areas needing changes
 3. *Mark suggestions*:
-   - Select unclear text, press =Ctrl+C e c=, add comment: "Can you clarify this?"
-   - Select redundant phrase, press =Ctrl+C e d= to mark for deletion
-   - Place cursor after a sentence, press =Ctrl+C e i=, suggest additional text
+   - Select unclear text, press Ctrl+C e c, add comment: "Can you clarify this?"
+   - Select redundant phrase, press Ctrl+C e d to mark for deletion
+   - Place cursor after a sentence, press Ctrl+C e i, suggest additional text
 4. *Add typo corrections*:
-   - Select "occured", press =Ctrl+C e t=, type "occurred"
+   - Select "occured", press Ctrl+C e t, type "occurred"
 5. *Save the document* and send back to colleague
-6. *Colleague reviews* using =Ctrl+C e ]= to navigate between marks
+6. *Colleague reviews* using Ctrl+C e ] to navigate between marks
 7. *Colleague processes* each mark:
-   - Press =Ctrl+C e a= to accept
-   - Press =Ctrl+C e r= to reject
+   - Press Ctrl+C e a to accept
+   - Press Ctrl+C e r to reject
    - Or use hover tooltips for quick decisions
 8. *Save final version* with all changes resolved
 
-** Workflow 2: Self-Editing
+** ⚠️ Workflow 2: Self-Editing
 
 *Scenario*: You're revising your own manuscript and want to track changes.
 
 1. *Enable editmarks mode* (always on - no toggle needed)
 2. *As you edit*, use editmarks instead of direct changes:
-   - Instead of deleting text: select it and =Ctrl+C e d=
-   - Instead of adding text: =Ctrl+C e i= to insert
-   - Mark uncertainties: =Ctrl+C e c= with "TODO: verify this"
+   - Instead of deleting text: select it and Ctrl+C e d
+   - Instead of adding text: Ctrl+C e i to insert
+   - Mark uncertainties: Ctrl+C e c with "TODO: verify this"
 3. *Take a break* - changes are preserved in plain text
 4. *Review later*:
-   - Open document and press =Ctrl+C e s= for summary
+   - Open document and press Ctrl+C e s for summary
    - See all your pending changes at a glance
 5. *Process systematically*:
-   - Use =Ctrl+C e ]= to jump between marks
+   - Use Ctrl+C e ] to jump between marks
    - Accept or reject each change thoughtfully
 6. *Commit to version control* with clear change history
 
-** Workflow 3: Collaborative Writing
+** ⚠️ Workflow 3: Collaborative Writing
 
 *Scenario*: Multiple authors working on a shared document in a Git repository.
 
@@ -458,30 +460,30 @@ This consistent pattern makes the commands easy to remember and discover.
    showed @@+significant+@@ results @@>(Author C: p < 0.01)+@@.
    #+end_example
 4. *Authors meet* to review:
-   - Open document and press =Ctrl+C e s=
+   - Open document and press Ctrl+C e s
    - Discuss each mark in the summary
-   - Navigate with =Ctrl+C e ]= / =Ctrl+C e [=
+   - Navigate with Ctrl+C e ] / Ctrl+C e [
 5. *Accept/reject collaboratively*
 6. *Commit final version* to Git with all changes incorporated
 
-** Workflow 4: Student Feedback
+** ⚠️ Workflow 4: Student Feedback
 
 *Scenario*: Providing detailed feedback on student writing.
 
 1. *Open student's submission*
 2. *Read through once* without marking
 3. *Second pass - mark issues*:
-   - Grammar/spelling: Use =Ctrl+C e t= for typos
-   - Clarity issues: =Ctrl+C e c= with specific questions
-   - Structural problems: =Ctrl+C e i= to suggest additional sentences
-   - Verbose sections: =Ctrl+C e d= with comments explaining why
+   - Grammar/spelling: Use Ctrl+C e t for typos
+   - Clarity issues: Ctrl+C e c with specific questions
+   - Structural problems: Ctrl+C e i to suggest additional sentences
+   - Verbose sections: Ctrl+C e d with comments explaining why
 4. *Add pedagogical comments*:
    #+begin_example
    @@>Good use of evidence here! Consider adding more analysis of what
    this means for your thesis.<@@
    #+end_example
 5. *Generate summary report*:
-   - Press =Ctrl+C e s=
+   - Press Ctrl+C e s
    - Show student: "You have 5 typos, 3 clarity issues, 2 structural suggestions"
 6. *Student processes feedback*:
    - Uses navigation to review each mark
@@ -489,7 +491,7 @@ This consistent pattern makes the commands easy to remember and discover.
    - Accepts corrections, addresses comments
    - Removes comment marks after addressing them
 
-** Workflow 5: Document Review Cycle
+** ⚠️ Workflow 5: Document Review Cycle
 
 *Scenario*: Multiple rounds of review with stakeholder feedback.
 
@@ -508,42 +510,42 @@ The project will @@+likely+@@ be completed @@+ahead of schedule+@@.
 
 *Round 3 - Final acceptance*:
 1. Reviewer opens document
-2. Presses =Ctrl+C e s= to see all outstanding marks
-3. Navigates with =Ctrl+C e ]= through each change
-4. Presses =Ctrl+C e a= to accept all approved changes
+2. Presses Ctrl+C e s to see all outstanding marks
+3. Navigates with Ctrl+C e ] through each change
+4. Presses Ctrl+C e a to accept all approved changes
 5. Final document is clean and ready for publication
 
-* Best Practices
+* ⚠️ Best Practices
 
-** Do's
+** ⚠️ Do's
 
-1. *Use descriptive comments*: Instead of =@@>fix this<@@=, write =@@>fix grammar: subject-verb agreement<@@=
+1. *Use descriptive comments*: Instead of @@>fix this<@@, write @@>fix grammar: subject-verb agreement<@@
 2. *Be specific with insertions*: Show exactly what you're suggesting
 3. *One change per mark*: Don't combine multiple edits in one mark
 4. *Review systematically*: Use navigation commands to ensure you don't miss any marks
 5. *Preserve marks in Git*: Commit documents with editmarks to track review history
 6. *Use hover tooltips*: Quick way to remind yourself what each mark does
 
-** Don'ts
+** ⚠️ Don'ts
 
-1. *Don't nest editmarks*: Avoid =@@+text @@-with-@@ nesting+@@= - it's confusing
+1. *Don't nest editmarks*: Avoid @@+text @@-with-@@ nesting+@@ - it's confusing
 2. *Don't mix formats randomly*: Pick either universal or CriticMarkup and stick with it
 3. *Don't leave marks indefinitely*: Process them regularly to keep documents clean
 4. *Don't delete marks manually*: Use accept/reject commands to ensure proper processing
 5. *Don't use for version control*: Editmarks complement Git but don't replace it
 
-** Tips
+** ⚠️ Tips
 
-- *Quick review*: Use =Ctrl+C e s= at the start of each editing session to see pending changes
+- *Quick review*: Use Ctrl+C e s at the start of each editing session to see pending changes
 - *Batch processing*: For documents with many trivial changes, use "Accept All" after review
 - *Comments as TODO*: Use comment marks as inline TODO items during writing
 - *Color awareness*: Learn to recognize mark types by color for faster visual scanning
 - *Git integration*: Create commits after processing editmarks with descriptive messages
-- *Keyboard efficiency*: The navigation keys (=[= and =]=) combined with =a=/=r= enable fast review
+- *Keyboard efficiency*: The navigation keys ([ and ]) combined with a/r enable fast review
 
-* Integration with Other Features
+* ⚠️ Integration with Other Features
 
-** Source Blocks
+** ⚠️ Source Blocks
 
 Editmarks work inside source blocks:
 
@@ -554,7 +556,7 @@ def calculate(x):
 
 This is useful when reviewing code snippets in documentation or educational materials.
 
-** Tables
+** ⚠️ Tables
 
 Use editmarks in table cells:
 
@@ -563,14 +565,14 @@ Use editmarks in table cells:
 | Budget | @@-$100K-@@   | @@+$120K+@@      | @@>approved by CFO<@@    |
 | Time   | 6 months  | @@+8 months+@@   | @@>realistic estimate<@@ |
 
-** Export Compatibility
+** ⚠️ Export Compatibility
 
 When exporting documents (HTML, LaTeX, PDF):
 - *Unprocessed marks* appear in the exported output
 - *Process marks first* before final export
 - Or use regex to strip marks during export if needed
 
-** Version Control
+** ⚠️ Version Control
 
 Editmarks are perfect for version control workflows:
 
@@ -588,42 +590,42 @@ git commit -m "Incorporate reviewer suggestions"
 
 The diff shows both the markup and the final changes, providing complete review history.
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Editmarks Not Showing
+** ⚠️ Editmarks Not Showing
 
 *Problem*: Markup is visible but not decorated with colors.
 
 *Solutions*:
 1. Check that you're in a supported file (any text file works)
-2. Reload window: =Ctrl+Shift+P= → "Developer: Reload Window"
-3. Verify syntax: Ensure markup is exactly correct (e.g., =@@+text+@@= not =@@+ text +@@=)
+2. Reload window: Ctrl+Shift+P → "Developer: Reload Window"
+3. Verify syntax: Ensure markup is exactly correct (e.g., @@+text+@@ not @@+ text +@@)
 
-** Navigation Not Working
+** ⚠️ Navigation Not Working
 
-*Problem*: =Ctrl+C e ]= doesn't jump to next mark.
+*Problem*: Ctrl+C e ] doesn't jump to next mark.
 
 *Solutions*:
-1. Verify editmarks exist: Press =Ctrl+C e s= to see summary
+1. Verify editmarks exist: Press Ctrl+C e s to see summary
 2. Ensure cursor is in the editor window
 3. Check keybinding conflicts: File → Preferences → Keyboard Shortcuts
 
-** Accept/Reject Not Working
+** ⚠️ Accept/Reject Not Working
 
-*Problem*: Nothing happens when pressing =Ctrl+C e a=.
+*Problem*: Nothing happens when pressing Ctrl+C e a.
 
 *Solutions*:
 1. Position cursor *inside* the editmark (between the markup symbols)
 2. Hover over the mark to see the tooltip - if visible, cursor is positioned correctly
 3. Check that the editmark syntax is valid
 
-** Nested Marks Issue
+** ⚠️ Nested Marks Issue
 
 *Problem*: Marks inside other marks behave unexpectedly.
 
 *Solution*: Don't nest editmarks. Instead, process the inner mark first, then add the outer mark.
 
-** Performance with Many Marks
+** ⚠️ Performance with Many Marks
 
 *Problem*: Editor becomes slow with hundreds of editmarks.
 
@@ -632,55 +634,55 @@ The diff shows both the markup and the final changes, providing complete review 
 2. Use "Accept All" or "Reject All" for bulk processing
 3. Split large documents into smaller files
 
-* FAQ
+* ⚠️ FAQ
 
-** Q: Can I customize the colors?
+** ⚠️ Q: Can I customize the colors?
 
 A: Currently, colors are fixed (green for insertion, red for deletion, yellow for comments, orange for typos). Custom theme support may be added in future versions.
 
-** Q: Do editmarks work in any file type?
+** ⚠️ Q: Do editmarks work in any file type?
 
 A: Yes! Editmarks work in any text file: .org, .md, .tex, .txt, .py, etc. The markup is plain text.
 
-** Q: Can I export documents with editmarks?
+** ⚠️ Q: Can I export documents with editmarks?
 
 A: Yes, but the markup will appear in the exported output. It's recommended to process all editmarks before final export.
 
-** Q: How do I see who made which mark?
+** ⚠️ Q: How do I see who made which mark?
 
 A: Editmarks don't automatically track authors. Add author names manually in comments:
 #+begin_example
 @@>(Author: John Doe) This needs clarification<@@
 #+end_example
 
-** Q: Can I use editmarks with Word documents?
+** ⚠️ Q: Can I use editmarks with Word documents?
 
 A: No, editmarks require plain text files. Convert Word documents to Markdown or use Word's built-in track changes.
 
-** Q: Do editmarks interfere with syntax highlighting?
+** ⚠️ Q: Do editmarks interfere with syntax highlighting?
 
 A: No, they're implemented as decorations that overlay the text without modifying syntax highlighting.
 
-** Q: Can I undo an accept/reject action?
+** ⚠️ Q: Can I undo an accept/reject action?
 
-A: Yes, use VS Code's regular undo (=Ctrl+Z=) immediately after accepting or rejecting a mark.
+A: Yes, use VS Code's regular undo (Ctrl+Z) immediately after accepting or rejecting a mark.
 
-** Q: Are editmarks saved with the file?
+** ⚠️ Q: Are editmarks saved with the file?
 
 A: Yes! Editmarks are plain text markup, so they're saved as part of the document content.
 
-** Q: Can I search for editmarks?
+** ⚠️ Q: Can I search for editmarks?
 
-A: Yes, use regular search (=Ctrl+F=) for =@@+= or ={++= to find all insertions, etc. Or use =Ctrl+C e s= for the summary view.
+A: Yes, use regular search (Ctrl+F) for @@+ or {++ to find all insertions, etc. Or use Ctrl+C e s for the summary view.
 
-* Related Features
+* ⚠️ Related Features
 
 - *Source Blocks*: See [[file:source-blocks.org][Source Blocks documentation]] for code execution
 - *Export*: See [[file:export.org][Export documentation]] for converting documents with editmarks
 - *Document Structure*: See [[file:document-structure.org][Document Structure documentation]] for heading navigation
 - *Tables*: See [[file:tables.org][Tables documentation]] for working with tables containing editmarks
 
-* Conclusion
+* ⚠️ Conclusion
 
 Editmarks provide a powerful, plain-text approach to track changes that integrates seamlessly with modern developer workflows. By using simple markup instead of complex binary formats, editmarks offer:
 
@@ -693,9 +695,9 @@ Whether you're reviewing papers, collaborating on documentation, or tracking you
 
 Start using editmarks today:
 1. Open any document
-2. Press =Ctrl+C e i= to insert your first mark
-3. Press =Ctrl+C e s= to see the summary
-4. Navigate with =Ctrl+C e ]= and =Ctrl+C e [=
-5. Accept or reject with =Ctrl+C e a= and =Ctrl+C e r=
+2. Press Ctrl+C e i to insert your first mark
+3. Press Ctrl+C e s to see the summary
+4. Navigate with Ctrl+C e ] and Ctrl+C e [
+5. Accept or reject with Ctrl+C e a and Ctrl+C e r
 
-Happy editing! 🎯
+Happy editing!

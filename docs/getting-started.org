@@ -3,25 +3,28 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Getting Started
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Getting Started
 
 This guide will help you install Scimax VS Code and get started with its core
 features. By the end, you'll be able to create structured documents, execute
 code, and navigate efficiently.
 
-* System Requirements
+* ⚠️ System Requirements
 
-** VS Code Version
+** ⚠️ VS Code Version
 
 Scimax VS Code requires Visual Studio Code version *1.85 or later*.
 
-** Optional Dependencies
+** ⚠️ Optional Dependencies
 
 While Scimax VS Code works out of the box, some features require additional
 software:
 
-*** For Code Execution
+*** ⚠️ For Code Execution
 
 | Language   | Requirement                                    |
 |------------+------------------------------------------------|
@@ -31,57 +34,57 @@ software:
 | R          | R installed with Rscript in PATH               |
 | Julia      | Julia installed and in PATH                    |
 
-*** For Jupyter Integration
+*** ⚠️ For Jupyter Integration
 
-- Jupyter installed (=pip install jupyter=)
+- Jupyter installed (pip install jupyter)
 - Jupyter kernels for desired languages
 
-*** For LaTeX/PDF Export
+*** ⚠️ For LaTeX/PDF Export
 
 - TeX distribution (TeX Live, MiKTeX, or MacTeX)
 - pdflatex, xelatex, or lualatex compiler
 
-*** For LaTeX Equation Preview
+*** ⚠️ For LaTeX Equation Preview
 
 - LaTeX distribution with dvipng or dvisvgm
 
-* Installation
+* ⚠️ Installation
 
-** From VS Code Marketplace
+** ⚠️ From VS Code Marketplace
 
 1. Open VS Code
-2. Press =Ctrl+Shift+X= to open the Extensions view
+2. Press Ctrl+Shift+X (Cmd+Shift+X on Mac) to open the Extensions view
 3. Search for "Scimax"
 4. Click *Install*
 
-** From VSIX File
+** ⚠️ From VSIX File
 
-1. Download the =.vsix= file
+1. Download the .vsix file
 2. Open VS Code
-3. Press =Ctrl+Shift+X= to open the Extensions view
-4. Click the =...= menu (top right)
+3. Press Ctrl+Shift+X (Cmd+Shift+X on Mac) to open the Extensions view
+4. Click the ... menu (top right)
 5. Select "Install from VSIX..."
 6. Choose the downloaded file
 
-** Verify Installation
+** ⚠️ Verify Installation
 
 After installation:
 
-1. Open the Command Palette (=Ctrl+Shift+P=)
+1. Open the Command Palette (Ctrl+Shift+P / Cmd+Shift+P on Mac)
 2. Type "Scimax"
 3. You should see Scimax commands listed
 
-* First Steps
+* ⚠️ First Steps
 
-** Opening an Org File
+** ⚠️ Opening an Org File
 
-Org files use the =.org= extension. To create your first file:
+Org files use the .org extension. To create your first file:
 
-1. Press =Ctrl+N= to create a new file
-2. Save it with =Ctrl+S= and give it a =.org= extension (e.g., =notes.org=)
+1. Press Ctrl+N (Cmd+N on Mac) to create a new file
+2. Save it with Ctrl+S (Cmd+S on Mac) and give it a .org extension (e.g., notes.org)
 3. The file will automatically use org-mode syntax highlighting
 
-** Creating Your First Document
+** ⚠️ Creating Your First Document
 
 Type the following to create a basic document structure:
 
@@ -113,119 +116,119 @@ print("Hello from Scimax VS Code!")
 ,#+END_SRC
 #+END_SRC
 
-** Basic Navigation
+** ⚠️ Basic Navigation
 
-*** Folding
+*** ⚠️ Folding
 
-- Press =Tab= on a heading to cycle its visibility (folded/children/subtree)
-- Press =Shift+Tab= anywhere to cycle global visibility
+- Press Tab on a heading to cycle its visibility (folded/children/subtree)
+- Press Shift+Tab anywhere to cycle global visibility
 
-*** Moving Between Headings
+*** ⚠️ Moving Between Headings
 
 | Key            | Action                    |
 |----------------+---------------------------|
-| =Ctrl+C Ctrl+J= | Jump to any heading       |
-| =Alt+Up=        | Move heading up           |
-| =Alt+Down=      | Move heading down         |
-| =Alt+Left=      | Promote heading (←level)  |
-| =Alt+Right=     | Demote heading (→level)   |
+| Ctrl+C Ctrl+J  | Jump to any heading       |
+| Alt+Up         | Move heading up           |
+| Alt+Down       | Move heading down         |
+| Alt+Left       | Promote heading (←level)  |
+| Alt+Right      | Demote heading (→level)   |
 
-*** Executing Code
+*** ⚠️ Executing Code
 
 1. Place your cursor inside a source block
-2. Press =Ctrl+Enter= or =Ctrl+C Ctrl+C=
+2. Press Ctrl+Enter (Cmd+Enter on Mac) or Ctrl+C Ctrl+C
 3. Results appear below the block
 
-* Understanding the Interface
+* ⚠️ Understanding the Interface
 
-** Outline View
+** ⚠️ Outline View
 
 The Outline view in VS Code's sidebar shows your document structure:
 
-1. Click the Outline icon in the sidebar (or press =Ctrl+Shift+O=)
+1. Click the Outline icon in the sidebar (or press Ctrl+Shift+O / Cmd+Shift+O on Mac)
 2. See all headings hierarchically
 3. Click a heading to jump to it
 
-** Tree Views
+** ⚠️ Tree Views
 
 Scimax VS Code adds several tree views to the Explorer sidebar:
 
-*** Journal Tree
+*** ⚠️ Journal Tree
 
 Shows your journal entries organized by date. Access today's entry with
-=Ctrl+Shift+J= (or =Cmd+Shift+J= on Mac).
+Ctrl+Shift+J (Cmd+Shift+J on Mac).
 
-*** Projects Tree
+*** ⚠️ Projects Tree
 
 Shows your registered projects for quick navigation.
 
-*** Agenda Tree
+*** ⚠️ Agenda Tree
 
 Shows TODO items, deadlines, and scheduled tasks across your files.
 
-** Status Bar
+** ⚠️ Status Bar
 
 The status bar shows:
 
 - Current journal date (when in journal files)
 - Kernel status (when using Jupyter)
 
-** Hydra Menus
+** ⚠️ Hydra Menus
 
 Hydra menus provide discoverable access to commands:
 
-- =Ctrl+C M= - Open main menu
-- =Ctrl+C Ctrl+M= - Open context-sensitive menu
-- =Ctrl+Alt+V= - Open database/search menu
+- Ctrl+C M - Open main menu
+- Ctrl+C Ctrl+M - Open context-sensitive menu
+- Ctrl+Alt+V (Ctrl+Cmd+V on Mac) - Open database/search menu
 
 Menus show available commands with their keybindings. Press a key to execute
-a command or =Escape= to close the menu.
+a command or Escape to close the menu.
 
-* Essential Commands
+* ⚠️ Essential Commands
 
-** Document Commands
-
-| Key              | Command                          |
-|------------------+----------------------------------|
-| =Tab=             | Cycle fold at heading            |
-| =Shift+Tab=       | Cycle global fold                |
-| =Ctrl+C Ctrl+J=   | Jump to heading                  |
-| =Ctrl+Enter=      | Insert new heading (at heading)  |
-| =Ctrl+C Ctrl+T=   | Cycle TODO state                 |
-| =Ctrl+C Ctrl+C=   | Context action (execute/toggle)  |
-
-** Source Block Commands
+** ⚠️ Document Commands
 
 | Key              | Command                          |
 |------------------+----------------------------------|
-| =Ctrl+Enter=      | Execute current block            |
-| =Shift+Enter=     | Execute block and move to next   |
-| =Ctrl+Up=         | Go to previous block             |
-| =Ctrl+Down=       | Go to next block                 |
+| Tab              | Cycle fold at heading            |
+| Shift+Tab        | Cycle global fold                |
+| Ctrl+C Ctrl+J    | Jump to heading                  |
+| Ctrl+Enter       | Insert new heading (at heading)  |
+| Ctrl+C Ctrl+T    | Cycle TODO state                 |
+| Ctrl+C Ctrl+C    | Context action (execute/toggle)  |
 
-** Export Commands
+** ⚠️ Source Block Commands
+
+| Key              | Command                          |
+|------------------+----------------------------------|
+| Ctrl+Enter       | Execute current block            |
+| Shift+Enter      | Execute block and move to next   |
+| Ctrl+Up          | Go to previous block             |
+| Ctrl+Down        | Go to next block                 |
+
+** ⚠️ Export Commands
 
 | Key                | Command                        |
 |--------------------+--------------------------------|
-| =Ctrl+C Ctrl+E=     | Open export dispatcher         |
-| =Ctrl+C Ctrl+E H H= | Export to HTML                 |
-| =Ctrl+C Ctrl+E L L= | Export to LaTeX                |
-| =Ctrl+C Ctrl+E L P= | Export to PDF                  |
+| Ctrl+C Ctrl+E      | Open export dispatcher         |
+| Ctrl+C Ctrl+E H H  | Export to HTML                 |
+| Ctrl+C Ctrl+E L L  | Export to LaTeX                |
+| Ctrl+C Ctrl+E L P  | Export to PDF                  |
 
-** Navigation Commands
+** ⚠️ Navigation Commands
 
 | Key            | Command                          |
 |----------------+----------------------------------|
-| =Ctrl+C S=      | Fuzzy search current file        |
-| =Ctrl+C J C=    | Jump to character (Avy-style)    |
-| =Ctrl+C J W=    | Jump to word                     |
-| =Ctrl+C J L=    | Jump to line                     |
+| Ctrl+C S       | Fuzzy search current file        |
+| Ctrl+C J C     | Jump to character (Avy-style)    |
+| Ctrl+C J W     | Jump to word                     |
+| Ctrl+C J L     | Jump to line                     |
 
-* Recommended Settings
+* ⚠️ Recommended Settings
 
-Open VS Code settings (=Ctrl+,=) and search for "scimax" to see all options.
+Open VS Code settings (Ctrl+, / Cmd+, on Mac) and search for "scimax" to see all options.
 
-** Essential Settings
+** ⚠️ Essential Settings
 
 #+BEGIN_SRC json
 {
@@ -246,7 +249,7 @@ Open VS Code settings (=Ctrl+,=) and search for "scimax" to see all options.
 }
 #+END_SRC
 
-** Python Configuration
+** ⚠️ Python Configuration
 
 If Python isn't automatically detected:
 
@@ -256,7 +259,7 @@ If Python isn't automatically detected:
 }
 #+END_SRC
 
-** LaTeX Configuration
+** ⚠️ LaTeX Configuration
 
 For PDF export:
 
@@ -267,32 +270,32 @@ For PDF export:
 }
 #+END_SRC
 
-* Migrating from Emacs
+* ⚠️ Migrating from Emacs
 
 If you're coming from Emacs Org-mode or Scimax, here are key differences:
 
-** Similar Features
+** ⚠️ Similar Features
 
 | Emacs                | VS Code                          |
 |----------------------+----------------------------------|
-| =C-c C-c=             | =Ctrl+C Ctrl+C=                   |
-| =C-c C-t=             | =Ctrl+C Ctrl+T=                   |
-| =C-c C-e=             | =Ctrl+C Ctrl+E=                   |
-| =TAB= on heading      | =Tab= on heading                  |
-| =S-TAB=               | =Shift+Tab=                       |
-| =M-RET=               | =Ctrl+Enter= (at heading)         |
-| =M-left/right=        | =Alt+Left/Right=                  |
-| =M-up/down=           | =Alt+Up/Down=                     |
-| Speed commands        | Same keys (when enabled)         |
+| C-c C-c              | Ctrl+C Ctrl+C                    |
+| C-c C-t              | Ctrl+C Ctrl+T                    |
+| C-c C-e              | Ctrl+C Ctrl+E                    |
+| TAB on heading       | Tab on heading                   |
+| S-TAB                | Shift+Tab                        |
+| M-RET                | Ctrl+Enter (at heading)          |
+| M-left/right         | Alt+Left/Right                   |
+| M-up/down            | Alt+Up/Down                      |
+| Speed commands       | Same keys (when enabled)         |
 
-** Different Behaviors
+** ⚠️ Different Behaviors
 
 - *Completion*: Uses VS Code's completion system, triggered automatically
 - *Folding*: Uses VS Code's native folding with org-specific ranges
 - *Buffer management*: VS Code tabs instead of Emacs buffers
 - *Customization*: JSON settings instead of Emacs Lisp
 
-** Missing Features
+** ⚠️ Missing Features
 
 Some advanced Emacs features may not be available:
 
@@ -301,7 +304,7 @@ Some advanced Emacs features may not be available:
 - Some specialized agenda views
 - Custom link types (limited set supported)
 
-* Next Steps
+* ⚠️ Next Steps
 
 Now that you're set up, explore these topics:
 
@@ -310,29 +313,29 @@ Now that you're set up, explore these topics:
 3. [[file:source-blocks.org][Source Code Blocks]] - Execute code in your documents
 4. [[file:keybindings.org][Keybindings]] - Learn all keyboard shortcuts
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Code Blocks Not Executing
+** ⚠️ Code Blocks Not Executing
 
 1. Check that the language is installed (e.g., Python, Node.js)
 2. Verify the language is in your PATH
-3. Check the Output panel (=Ctrl+Shift+U=) for errors
-4. Run =scimax.org.checkExecutors= to verify available executors
+3. Check the Output panel (Ctrl+Shift+U / Cmd+Shift+U on Mac) for errors
+4. Run scimax.org.checkExecutors to verify available executors
 
-** LaTeX Preview Not Working
+** ⚠️ LaTeX Preview Not Working
 
-1. Ensure LaTeX is installed (=latex --version= in terminal)
+1. Ensure LaTeX is installed (latex --version in terminal)
 2. Check that dvipng or dvisvgm is available
-3. Run =scimax.checkLatexTools= to verify installation
+3. Run scimax.checkLatexTools to verify installation
 
-** Search Not Finding Results
+** ⚠️ Search Not Finding Results
 
-1. Run =scimax.db.reindex= to rebuild the search index
+1. Run scimax.db.reindex to rebuild the search index
 2. Check that files aren't in excluded patterns
-3. Verify the search scope (=scimax.db.setScope=)
+3. Verify the search scope (scimax.db.setScope)
 
-** Journal Not Opening
+** ⚠️ Journal Not Opening
 
-1. Check that =scimax.journal.directory= is set correctly
+1. Check that scimax.journal.directory is set correctly
 2. Ensure the directory exists and is writable
 3. Try creating the directory manually if needed
