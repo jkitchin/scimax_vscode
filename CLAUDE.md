@@ -179,6 +179,12 @@ When adding new features, update the corresponding documentation in `docs/`:
 | New setting | `docs/configuration.org`, `package.json` contributes.configuration |
 | New feature | Create or update feature-specific doc in `docs/` |
 | Database changes | `docs/database-search.org` |
+| Any doc change | Update `docs/index.org` TOC and Topic Index |
+
+**Important**: When modifying any documentation file:
+1. Add a "Related Topics" section with cross-links to related documentation
+2. Update `docs/index.org` to include new topics in the Topic Index table
+3. Ensure tables are properly aligned using org-mode table format (`|` separators)
 
 Documentation structure:
 ```
