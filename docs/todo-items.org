@@ -1,0 +1,515 @@
+#+TITLE: TODO Items and Task Management
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-13
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+
+* TODO Items
+
+Scimax VS Code provides a comprehensive task management system built into your
+documents. TODO items are headlines with a special keyword that indicates their
+status.
+
+* Basic TODO Functionality
+
+** Creating TODO Items
+
+Add =TODO= after the headline stars to create a task:
+
+#+BEGIN_SRC org
+,* TODO Write documentation
+,** TODO Complete first draft
+,** TODO Review and edit
+#+END_SRC
+
+** Cycling TODO States
+
+Press =Ctrl+C Ctrl+T= on a headline to cycle through TODO states:
+
+#+BEGIN_EXAMPLE
+(no keyword) → TODO → DONE → (no keyword)
+#+END_EXAMPLE
+
+Or use the command =scimax.org.cycleTodo=.
+
+With speed commands enabled, press =t= at the beginning of a headline.
+
+** TODO Keywords
+
+The default TODO keywords are:
+
+| Keyword   | Meaning                                |
+|-----------+----------------------------------------|
+| =TODO=     | Task that needs to be done             |
+| =DONE=     | Completed task                         |
+
+Additional states available:
+
+| Keyword     | Meaning                              |
+|-------------+--------------------------------------|
+| =NEXT=       | Next action to take                  |
+| =WAITING=    | Waiting for external input           |
+| =HOLD=       | On hold / paused                     |
+| =CANCELLED=  | Task cancelled (won't be done)       |
+
+** Logging Completion
+
+When you mark a task as =DONE=, a =CLOSED= timestamp is automatically added:
+
+#+BEGIN_SRC org
+,* DONE Write introduction
+CLOSED: [2026-01-13 Mon 15:30]
+#+END_SRC
+
+* Priorities
+
+Priorities help you identify the most important tasks.
+
+** Setting Priorities
+
+Add a priority cookie after the TODO keyword:
+
+#+BEGIN_SRC org
+,* TODO [#A] Urgent and important task
+,* TODO [#B] Important but not urgent
+,* TODO [#C] Nice to have
+#+END_SRC
+
+** Priority Levels
+
+| Priority | Meaning                                |
+|----------+----------------------------------------|
+| =[#A]=    | High priority - do first               |
+| =[#B]=    | Medium priority - do soon              |
+| =[#C]=    | Low priority - do when possible        |
+
+** Priority Commands
+
+| Key/Command                | Action                    |
+|----------------------------+---------------------------|
+| Speed key =1=               | Set priority A            |
+| Speed key =2=               | Set priority B            |
+| Speed key =3=               | Set priority C            |
+| Speed key =0=               | Remove priority           |
+| Speed key =,=               | Increase priority (C→B→A) |
+
+You can also set priority through the command palette:
+=scimax.org.setPriority=
+
+* Progress Indicators
+
+Track progress through subtasks using statistics cookies and checkboxes.
+
+** Statistics Cookies
+
+*** Fraction Format
+
+Shows completed/total count:
+
+#+BEGIN_SRC org
+,* Project Tasks [2/4]
+,** DONE Task 1
+,** DONE Task 2
+,** TODO Task 3
+,** TODO Task 4
+#+END_SRC
+
+*** Percentage Format
+
+Shows completion percentage:
+
+#+BEGIN_SRC org
+,* Project Progress [50%]
+,** DONE Design
+,** DONE Implementation
+,** TODO Testing
+,** TODO Deployment
+#+END_SRC
+
+Statistics cookies update automatically when child TODO states change.
+
+** Checkbox Lists
+
+For simpler task lists within a section, use checkboxes:
+
+#+BEGIN_SRC org
+,* Shopping List [2/4]
+- [X] Milk
+- [X] Bread
+- [ ] Eggs
+- [ ] Butter
+#+END_SRC
+
+*** Checkbox States
+
+| Syntax | State                                  |
+|--------+----------------------------------------|
+| =[ ]=   | Unchecked / not done                   |
+| =[X]=   | Checked / done                         |
+| =[-]=   | Partially complete (has mixed children)|
+
+*** Toggling Checkboxes
+
+Press =Ctrl+C Ctrl+C= with cursor on a checkbox line to toggle it.
+
+Or use =scimax.org.toggleCheckbox=.
+
+*** Nested Checkboxes
+
+Checkboxes can be nested. Parent checkboxes show aggregate state:
+
+#+BEGIN_SRC org
+,* Packing List [1/2]
+- [-] Clothes [2/3]
+  - [X] Shirts
+  - [X] Pants
+  - [ ] Socks
+- [X] Toiletries [3/3]
+  - [X] Toothbrush
+  - [X] Soap
+  - [X] Towel
+#+END_SRC
+
+*** Inserting Checkboxes
+
+| Command                       | Description                  |
+|-------------------------------+------------------------------|
+| =scimax.org.insertCheckbox=    | Insert checkbox at cursor    |
+
+Type =- [ ]= followed by space to manually create a checkbox item.
+
+* Extended TODO Keywords
+
+Beyond =TODO= and =DONE=, use these states for workflow management:
+
+** NEXT
+
+Indicates the very next action to take:
+
+#+BEGIN_SRC org
+,* NEXT Call client about project requirements
+#+END_SRC
+
+Use =NEXT= for tasks you're actively working on or will work on immediately.
+
+** WAITING
+
+Task is blocked waiting for someone or something:
+
+#+BEGIN_SRC org
+,* WAITING Review from manager
+:PROPERTIES:
+:WAITING_ON: John Smith
+:END:
+#+END_SRC
+
+** HOLD
+
+Task is paused but not cancelled:
+
+#+BEGIN_SRC org
+,* HOLD Website redesign
+Paused until Q2 budget approval.
+#+END_SRC
+
+** CANCELLED
+
+Task won't be done (but kept for records):
+
+#+BEGIN_SRC org
+,* CANCELLED Old feature request
+No longer relevant after product pivot.
+#+END_SRC
+
+** Workflow Example
+
+A typical task progression:
+
+#+BEGIN_EXAMPLE
+TODO → NEXT → WAITING → NEXT → DONE
+         ↓
+       HOLD → NEXT → DONE
+         ↓
+     CANCELLED
+#+END_EXAMPLE
+
+* Logging State Changes
+
+Scimax VS Code can log when and how TODO states change.
+
+** LOGBOOK Drawer
+
+State changes are recorded in the =LOGBOOK= drawer:
+
+#+BEGIN_SRC org
+,* DONE Complete documentation
+CLOSED: [2026-01-13 Mon 16:00]
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2026-01-13 Mon 16:00]
+- State "TODO"       from "WAITING"    [2026-01-12 Sun 10:00]
+- State "WAITING"    from "TODO"       [2026-01-10 Fri 14:30]
+:END:
+#+END_SRC
+
+** Timestamps on State Changes
+
+When enabled, each state change adds:
+- A timestamp showing when the change occurred
+- The previous state
+
+This creates a complete history of task progress.
+
+* Tags for TODO Items
+
+Tags provide additional categorization beyond the headline hierarchy.
+
+** Adding Tags
+
+Tags appear at the end of the headline, enclosed in colons:
+
+#+BEGIN_SRC org
+,* TODO Review quarterly report                               :work:urgent:
+,* TODO Buy groceries                                         :personal:errands:
+#+END_SRC
+
+** Tag Commands
+
+| Key/Command                | Action                    |
+|----------------------------+---------------------------|
+| Speed key =Shift+;=         | Edit tags                 |
+| =scimax.org.setTags=        | Set tags via command      |
+
+** Inherited Tags
+
+Child headlines inherit their parent's tags:
+
+#+BEGIN_SRC org
+,* Work Projects                                              :work:
+,** TODO Project A                                            :client1:
+This task has both :work: and :client1: tags.
+,** TODO Project B                                            :internal:
+This task has both :work: and :internal: tags.
+#+END_SRC
+
+** Common Tag Conventions
+
+| Tag         | Usage                                 |
+|-------------+---------------------------------------|
+| =@office=    | Context: at office                    |
+| =@home=      | Context: at home                      |
+| =@computer=  | Context: needs computer               |
+| =@phone=     | Context: phone call                   |
+| =urgent=     | Priority indicator                    |
+| =project=    | Part of larger project                |
+
+** Filtering by Tags
+
+Use agenda views or search to filter tasks by tag:
+
+- =scimax.db.searchByTag= - Search for specific tags
+- =scimax.agenda.filterByTag= - Filter agenda by tag
+
+* Scheduling and Deadlines
+
+Assign dates to tasks for planning.
+
+** SCHEDULED
+
+When you plan to start or work on a task:
+
+#+BEGIN_SRC org
+,* TODO Write report
+SCHEDULED: <2026-01-15 Wed>
+#+END_SRC
+
+** DEADLINE
+
+When a task must be completed by:
+
+#+BEGIN_SRC org
+,* TODO Submit proposal
+DEADLINE: <2026-01-20 Mon>
+#+END_SRC
+
+** Both Together
+
+#+BEGIN_SRC org
+,* TODO Complete project
+SCHEDULED: <2026-01-15 Wed> DEADLINE: <2026-01-25 Sat>
+#+END_SRC
+
+** Adding Dates
+
+| Speed Key | Action                               |
+|-----------+--------------------------------------|
+| =s=        | Add/edit SCHEDULED date              |
+| =d=        | Add/edit DEADLINE date               |
+| =.=        | Insert timestamp                     |
+
+Or use commands:
+- =scimax.org.schedule=
+- =scimax.org.deadline=
+
+See [[file:timestamps.org][Timestamps]] for more on date formats.
+
+* Time Tracking
+
+Track time spent on tasks using clock entries.
+
+** Clocking In/Out
+
+| Speed Key  | Action                              |
+|------------+-------------------------------------|
+| =Shift+I=   | Clock in (start timing)             |
+| =Shift+O=   | Clock out (stop timing)             |
+
+** Clock Entries
+
+Clock entries are stored in the =LOGBOOK= drawer:
+
+#+BEGIN_SRC org
+,* TODO Working on documentation
+:LOGBOOK:
+CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 10:30] =>  1:30
+CLOCK: [2026-01-12 Sun 14:00]--[2026-01-12 Sun 16:00] =>  2:00
+:END:
+#+END_SRC
+
+** Total Time
+
+The total clocked time appears in the properties or can be calculated for
+reports.
+
+* Effort Estimates
+
+Estimate how long tasks will take.
+
+** Setting Effort
+
+Add an =EFFORT= property:
+
+#+BEGIN_SRC org
+,* TODO Review document
+:PROPERTIES:
+:EFFORT: 1:30
+:END:
+#+END_SRC
+
+| Speed Key | Action                               |
+|-----------+--------------------------------------|
+| =e=        | Set effort estimate                  |
+
+** Effort Format
+
+Use =H:MM= format:
+- =0:30= - 30 minutes
+- =1:00= - 1 hour
+- =2:30= - 2 hours 30 minutes
+
+* Agenda Integration
+
+TODO items appear in agenda views for planning and review.
+
+** Viewing All TODOs
+
+Use =scimax.agenda.todoList= or =scimax.db.showTodos= to see all tasks.
+
+** Deadline View
+
+Use =scimax.agenda.deadlines= to see upcoming and overdue deadlines.
+
+** Filtering Options
+
+- By priority (A, B, C)
+- By tag
+- By date range
+- By TODO state
+
+See [[file:agenda.org][Agenda]] for complete agenda documentation.
+
+* Best Practices
+
+** Task Granularity
+
+Make tasks actionable:
+
+#+BEGIN_SRC org
+,* TODO "Write documentation"           ; Too vague
+,* TODO Write introduction section      ; Better - specific and actionable
+#+END_SRC
+
+** Use NEXT for Clarity
+
+Always have at least one =NEXT= task to know what to work on:
+
+#+BEGIN_SRC org
+,* Project: New Feature
+,** DONE Design architecture
+,** NEXT Implement core module           ; ← Clear next step
+,** TODO Write tests
+,** TODO Deploy to staging
+#+END_SRC
+
+** Regular Review
+
+Periodically review tasks to:
+- Move stale =TODO= items to =HOLD= or =CANCELLED=
+- Update =WAITING= items
+- Identify next actions
+
+** Tags vs Hierarchy
+
+Use hierarchy for project structure, tags for cross-cutting concerns:
+
+#+BEGIN_SRC org
+,* Work                                                       :work:
+,** Project A
+,*** TODO Task requiring phone                                :@phone:
+,*** TODO Task requiring computer                             :@computer:
+,** Project B
+,*** TODO Another phone task                                  :@phone:
+#+END_SRC
+
+Now you can filter by =@phone= to see all phone tasks across projects.
+
+* Quick Reference
+
+** Keybindings
+
+| Key             | Action                               |
+|-----------------+--------------------------------------|
+| =Ctrl+C Ctrl+T=  | Cycle TODO state                     |
+| =Ctrl+C Ctrl+C=  | Toggle checkbox                      |
+
+** Speed Commands (at heading start)
+
+| Key      | Action                               |
+|----------+--------------------------------------|
+| =t=       | Cycle TODO state                     |
+| =1/2/3=   | Set priority A/B/C                   |
+| =0=       | Clear priority                       |
+| =,=       | Increase priority                    |
+| =s=       | Schedule                             |
+| =d=       | Deadline                             |
+| =e=       | Set effort                           |
+| =Shift+;= | Set tags                             |
+| =Shift+I= | Clock in                             |
+| =Shift+O= | Clock out                            |
+
+** Commands
+
+| Command                      | Description                    |
+|------------------------------+--------------------------------|
+| =scimax.org.cycleTodo=        | Cycle TODO state               |
+| =scimax.org.toggleCheckbox=   | Toggle checkbox                |
+| =scimax.org.insertCheckbox=   | Insert checkbox                |
+| =scimax.org.schedule=         | Add SCHEDULED timestamp        |
+| =scimax.org.deadline=         | Add DEADLINE timestamp         |
+| =scimax.db.showTodos=         | Show all TODO items            |
+| =scimax.agenda.todoList=      | Open TODO agenda view          |
+
+* Related Topics
+
+- [[file:timestamps.org][Timestamps]] - Date formats for scheduling and deadlines
+- [[file:agenda.org][Agenda]] - Viewing and filtering tasks
+- [[file:document-structure.org][Document Structure]] - Headlines and organization

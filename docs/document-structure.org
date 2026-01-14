@@ -1,0 +1,391 @@
+#+TITLE: Document Structure
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-13
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+
+* Document Structure
+
+Org documents are structured around *headlines*, which create a hierarchical
+outline that can be folded, navigated, and manipulated. This chapter covers how
+to create and work with document structure in Scimax VS Code.
+
+* Headlines
+
+Headlines are the backbone of org documents. They define the structure and allow
+for powerful outline-based navigation and organization.
+
+** Creating Headlines
+
+A headline starts with one or more asterisks (=*=) at the beginning of a line,
+followed by a space:
+
+#+BEGIN_SRC org
+,* Top Level Headline
+,** Second Level
+,*** Third Level
+,**** Fourth Level
+#+END_SRC
+
+There is no hard limit on headline levels, but most documents use 3-5 levels.
+
+** Headline Components
+
+A headline can contain several components:
+
+#+BEGIN_SRC org
+,* TODO [#A] Headline Title                                    :tag1:tag2:
+#+END_SRC
+
+| Component     | Description                         | Example        |
+|---------------+-------------------------------------+----------------|
+| Stars         | Define the level (required)         | =*=, =**=, =***= |
+| TODO keyword  | Task state (optional)               | =TODO=, =DONE=   |
+| Priority      | Importance marker (optional)        | =[#A]=, =[#B]=   |
+| Title         | The headline text (required)        | Any text       |
+| Tags          | Categorization labels (optional)    | =:work:urgent:= |
+
+** Headline Levels
+
+Headlines can be nested to any depth:
+
+#+BEGIN_SRC org
+,* Level 1: Main Section
+,** Level 2: Subsection
+,*** Level 3: Sub-subsection
+,**** Level 4: Paragraph grouping
+,***** Level 5: Fine detail
+#+END_SRC
+
+Use consistent levels throughout your document. Skipping levels (e.g., going
+from =*= to =***=) works but may cause confusion.
+
+* Visibility Cycling
+
+One of the most powerful features of org documents is the ability to fold
+(collapse) and unfold (expand) sections to manage complexity.
+
+** Folding with Tab
+
+Press =Tab= on a headline to cycle through visibility states:
+
+| State    | Shows                                    |
+|----------+------------------------------------------|
+| Folded   | Only the headline, children hidden       |
+| Children | Headline and immediate child headlines   |
+| Subtree  | All content under this headline          |
+
+Example cycle:
+1. =* Heading...= (folded - ellipsis shows hidden content)
+2. =* Heading= with child headlines visible
+3. =* Heading= with all content visible
+
+** Global Cycling with Shift-Tab
+
+Press =Shift+Tab= anywhere in the document to cycle global visibility:
+
+| State    | Shows                                    |
+|----------+------------------------------------------|
+| Overview | Only top-level headlines                 |
+| Contents | All headlines at all levels              |
+| Show All | Everything expanded                      |
+
+** Visibility Commands
+
+| Key              | Command                              |
+|------------------+--------------------------------------|
+| =Tab=             | Cycle visibility at current heading  |
+| =Shift+Tab=       | Cycle global visibility              |
+
+Additional visibility can be controlled through speed commands (see [[file:speed-commands.org][Speed Commands]]):
+
+| Speed Key | Action                               |
+|-----------+--------------------------------------|
+| =c=        | Cycle visibility                     |
+| =Shift+C=  | Show children                        |
+| =o=        | Overview (fold all)                  |
+
+* Motion Between Headlines
+
+Efficient navigation between headlines is essential for working with large
+documents.
+
+** Navigation Commands
+
+| Key                    | Command                          |
+|------------------------+----------------------------------|
+| =Ctrl+C Ctrl+J=         | Jump to any heading (with menu)  |
+| Next/Previous heading  | Built-in VS Code outline         |
+
+** Using the Outline View
+
+The VS Code Outline view provides visual navigation:
+
+1. Open the Outline view (sidebar or =Ctrl+Shift+O=)
+2. Click any heading to jump to it
+3. Use the filter box to search headings
+
+** Jump to Heading
+
+Press =Ctrl+C Ctrl+J= to open a quick-pick menu of all headings. Type to filter
+and press Enter to jump.
+
+** Speed Command Navigation
+
+With speed commands enabled (=scimax.speedCommands.enabled: true=), when your
+cursor is at the beginning of a headline, single keys navigate:
+
+| Key | Action                                 |
+|-----+----------------------------------------|
+| =n=  | Next heading (any level)               |
+| =p=  | Previous heading (any level)           |
+| =f=  | Next heading (same level - forward)    |
+| =b=  | Previous heading (same level - back)   |
+| =u=  | Up to parent heading                   |
+| =j=  | Jump to heading (opens menu)           |
+| =g=  | Go to... (opens navigation menu)       |
+
+* Structure Editing
+
+Scimax VS Code provides commands to restructure your document without
+manual cut-and-paste.
+
+** Promote/Demote Headlines
+
+Change the level of a headline:
+
+| Key           | Command                              |
+|---------------+--------------------------------------|
+| =Alt+Left=     | Promote heading (decrease level)     |
+| =Alt+Right=    | Demote heading (increase level)      |
+| =Alt+Shift+Left=  | Promote subtree                   |
+| =Alt+Shift+Right= | Demote subtree                    |
+
+*Promote* means moving toward the root (=**= → =*=).
+*Demote* means moving away from the root (=*= → =**=).
+
+*** Single Heading vs Subtree
+
+- *Promote/Demote Heading*: Changes only the current headline's level
+- *Promote/Demote Subtree*: Changes the headline AND all its children
+
+Example - promoting a subtree:
+#+BEGIN_SRC org
+,** Parent                    * Parent
+,*** Child 1          →       ** Child 1
+,*** Child 2                  ** Child 2
+#+END_SRC
+
+** Move Subtrees Up/Down
+
+Reorder sections without changing their level:
+
+| Key         | Command                              |
+|-------------+--------------------------------------|
+| =Alt+Up=     | Move subtree up (swap with previous) |
+| =Alt+Down=   | Move subtree down (swap with next)   |
+
+The entire subtree (heading and all its content/children) moves together.
+
+** Kill/Clone Subtrees
+
+| Command                    | Description                        |
+|----------------------------+------------------------------------|
+| =scimax.org.killSubtree=    | Cut the current subtree            |
+| =scimax.org.cloneSubtree=   | Duplicate the current subtree      |
+
+Speed command keys (at heading start):
+| Key      | Action                               |
+|----------+--------------------------------------|
+| =w=       | Kill (cut) subtree                   |
+| =Shift+W= | Clone (duplicate) subtree            |
+| =y=       | Yank (paste) subtree                 |
+
+** Insert New Headings
+
+| Key           | Command                              |
+|---------------+--------------------------------------|
+| =Ctrl+Enter=   | Insert heading at same level         |
+
+The command =scimax.org.insertHeading= inserts a new heading. The behavior
+depends on context:
+
+- On a heading line: Insert new heading at same level
+- In body text: Insert new heading after current section
+
+For subheadings:
+| Command                       | Description                      |
+|-------------------------------+----------------------------------|
+| =scimax.org.insertSubheading=  | Insert heading one level deeper  |
+
+* Document Keywords
+
+Document keywords appear at the beginning of the file and configure
+document-wide settings.
+
+** Common Keywords
+
+#+BEGIN_SRC org
+,#+TITLE: Document Title
+,#+AUTHOR: Author Name
+,#+DATE: 2026-01-13
+,#+EMAIL: author@example.com
+#+END_SRC
+
+** Options Keyword
+
+The =#+OPTIONS:= keyword controls export and display behavior:
+
+#+BEGIN_SRC org
+,#+OPTIONS: toc:2 num:t H:4 ^:nil
+#+END_SRC
+
+| Option  | Values          | Description                      |
+|---------+-----------------+----------------------------------|
+| =toc=    | =t=, =nil=, number | Table of contents depth          |
+| =num=    | =t=, =nil=         | Section numbering                |
+| =H=      | number          | Headline levels for export       |
+| =^=      | =t=, =nil=, ={}=    | Subscript/superscript handling   |
+| =author= | =t=, =nil=         | Include author in export         |
+| =date=   | =t=, =nil=         | Include date in export           |
+
+** Startup Keyword
+
+Control initial visibility:
+
+#+BEGIN_SRC org
+,#+STARTUP: overview    # Start with all headings folded
+,#+STARTUP: content     # Show all headings, hide body
+,#+STARTUP: showall     # Show everything
+#+END_SRC
+
+** Property Keyword
+
+Set default properties for source blocks:
+
+#+BEGIN_SRC org
+,#+PROPERTY: header-args :exports both
+,#+PROPERTY: header-args:python :session *python*
+#+END_SRC
+
+* Properties Drawers
+
+Properties drawers store metadata about a headline in key-value pairs.
+
+** Creating Properties Drawers
+
+Properties appear in a =:PROPERTIES:= drawer immediately after the headline:
+
+#+BEGIN_SRC org
+,* My Headline
+:PROPERTIES:
+:CUSTOM_ID: my-headline
+:CATEGORY: work
+:EFFORT: 2:00
+:END:
+#+END_SRC
+
+** Special Properties
+
+Certain properties have special meaning:
+
+| Property    | Description                              |
+|-------------+------------------------------------------|
+| =ID=         | Globally unique identifier (UUID)        |
+| =CUSTOM_ID=  | Document-unique identifier for linking   |
+| =CATEGORY=   | Category for agenda views                |
+| =EFFORT=     | Estimated time (H:MM format)             |
+| =COLUMNS=    | Column view format specification         |
+| =VISIBILITY= | Initial visibility (folded, children, all)|
+
+** Adding Properties
+
+To add a property via speed commands, press =Shift+P= at a heading start.
+
+You can also add properties manually by typing inside the drawer.
+
+** Inherited Properties
+
+Some properties are inherited by child headlines. The =CATEGORY= property, for
+example, applies to all children unless overridden.
+
+* Drawers
+
+Drawers are collapsible sections that hide auxiliary information.
+
+** Standard Drawers
+
+*** PROPERTIES Drawer
+
+Stores headline metadata (see above).
+
+*** LOGBOOK Drawer
+
+Stores clock entries and state change history:
+
+#+BEGIN_SRC org
+,* TODO My Task
+:LOGBOOK:
+CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 10:30] =>  1:30
+- State "TODO"       from "WAITING"    [2026-01-12 Sun 14:00]
+:END:
+#+END_SRC
+
+** Custom Drawers
+
+Create custom drawers for any purpose:
+
+#+BEGIN_SRC org
+,* Research Notes
+:NOTES:
+These are private notes that won't be exported.
+- Reference: Smith et al. 2024
+- Follow up with collaborator
+:END:
+
+:REFERENCES:
+- [[cite:smith-2024]]
+- [[cite:jones-2023]]
+:END:
+#+END_SRC
+
+Drawer names must be uppercase letters and can contain numbers and underscores.
+
+** Drawer Visibility
+
+Drawers are typically displayed collapsed. Click or use fold commands to
+expand/collapse them.
+
+* Best Practices
+
+** Document Organization
+
+1. *Start with an outline* - Create your heading structure before adding content
+2. *Use consistent levels* - Don't skip levels arbitrarily
+3. *Keep headings concise* - Use brief, descriptive titles
+4. *Use tags for cross-cutting concerns* - Don't rely solely on hierarchy
+
+** Heading Depth Guidelines
+
+| Level | Typical Use                              |
+|-------+------------------------------------------|
+| 1     | Major sections/chapters                  |
+| 2     | Subsections                              |
+| 3     | Topics within subsections                |
+| 4     | Detailed points                          |
+| 5+    | Rarely needed; consider restructuring    |
+
+** Navigation Efficiency
+
+1. *Use =Ctrl+C Ctrl+J=* for direct jumps to any heading
+2. *Use outline view* for visual navigation in long documents
+3. *Enable speed commands* for rapid single-key navigation
+4. *Use =Shift+Tab=* to get an overview before diving in
+
+* Related Topics
+
+- [[file:todo-items.org][TODO Items]] - Task states and priorities in headlines
+- [[file:timestamps.org][Timestamps]] - Adding dates to headlines
+- [[file:links.org][Links]] - Linking to headlines
+- [[file:speed-commands.org][Speed Commands]] - Single-key commands at headlines
+- [[file:export.org][Export]] - How structure affects exported documents
