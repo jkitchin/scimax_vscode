@@ -334,6 +334,7 @@ Quick reference to find specific features across documentation.
 | Headings                 | [[file:document-structure.org][Document Structure]]              | [[file:navigation.org][Navigation]], [[file:todo-items.org][TODO Items]]                    |
 | Hydra menus              | [[file:hydra-menus.org][Hydra Menus]]                     | [[file:keybindings.org][Keybindings]], [[file:configuration.org][Configuration]]               |
 | Image display            | [[file:image-overlays.org][Image Overlays]]                  | [[file:source-blocks.org][Source Code Blocks]]                         |
+| Include files            | [[file:export.org][Export]]                          | Modular documents with #+INCLUDE:          |
 | Inline tasks             | [[file:document-structure.org][Document Structure]]              | [[file:todo-items.org][TODO Items]]                                 |
 | Journal entries          | [[file:journal.org][Journal]]                         | [[file:capture.org][Capture]], [[file:agenda.org][Agenda]]                          |
 | Jupyter kernels          | [[file:jupyter.org][Jupyter Integration]]             | [[file:source-blocks.org][Source Code Blocks]], [[file:supported-languages.org][Supported Languages]]    |
@@ -355,6 +356,7 @@ Quick reference to find specific features across documentation.
 | Tables                   | [[file:tables.org][Tables]]                          | [[file:export.org][Export]]                                     |
 | Tags                     | [[file:document-structure.org][Document Structure]]              | [[file:agenda.org][Agenda]], [[file:todo-items.org][TODO Items]]                        |
 | TODO states              | [[file:todo-items.org][TODO Items]]                      | [[file:agenda.org][Agenda]], [[file:configuration.org][Configuration]]                    |
+| TODO custom keywords     | [[file:todo-items.org][TODO Items]]                      | Per-file #+TODO: definitions               |
 | Track changes            | [[file:editmarks.org][Editmarks]]                       | [[file:document-structure.org][Document Structure]]                         |
 | Vector search            | [[file:database-search.org][Database and Search]]             | [[file:configuration.org][Configuration]]                              |
 

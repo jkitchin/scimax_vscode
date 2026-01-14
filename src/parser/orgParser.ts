@@ -49,10 +49,58 @@ export interface OrgDocument {
 // Common TODO states
 const DEFAULT_TODO_STATES = ['TODO', 'NEXT', 'WAIT', 'DONE', 'CANCELLED', 'IN-PROGRESS', 'WAITING'];
 
+/**
+ * Parse #+TODO: or #+SEQ_TODO: line to extract workflow states
+ * Format: #+TODO: STATE1 STATE2 | DONE1 DONE2
+ */
+function parseTodoKeywordLine(line: string): string[] | null {
+    const match = line.match(/^#\+(TODO|SEQ_TODO|TYP_TODO):\s*(.*)$/i);
+    if (!match) {
+        return null;
+    }
+
+    const statesString = match[2].trim();
+    if (!statesString) {
+        return null;
+    }
+
+    // Remove the | separator and parse all states
+    const allStates = statesString
+        .replace('|', ' ')
+        .split(/\s+/)
+        .filter(s => s.length > 0);
+
+    return allStates.length > 0 ? allStates : null;
+}
+
+/**
+ * Scan document for #+TODO: keywords and extract all custom states
+ */
+function extractTodoStatesFromContent(content: string): string[] {
+    const lines = content.split('\n');
+    const customStates: string[] = [];
+
+    for (const line of lines) {
+        // Stop at first heading - keywords must be before content
+        if (line.match(/^\*+\s/)) {
+            break;
+        }
+
+        const states = parseTodoKeywordLine(line);
+        if (states) {
+            customStates.push(...states);
+        }
+    }
+
+    return customStates;
+}
+
 export class OrgParser {
     private todoStates: Set<string>;
+    private customStatesProvided: boolean;
 
     constructor(customTodoStates?: string[]) {
+        this.customStatesProvided = !!customTodoStates;
         this.todoStates = new Set(customTodoStates || DEFAULT_TODO_STATES);
     }
 
@@ -69,6 +117,15 @@ export class OrgParser {
             properties: {},
             keywords: {}
         };
+
+        // Extract custom TODO states from #+TODO: keywords if not provided via constructor
+        if (!this.customStatesProvided) {
+            const fileStates = extractTodoStatesFromContent(content);
+            if (fileStates.length > 0) {
+                // Merge file-specific states with defaults for better compatibility
+                this.todoStates = new Set([...fileStates, ...DEFAULT_TODO_STATES]);
+            }
+        }
 
         let i = 0;
         const headingStack: OrgHeading[] = [];
