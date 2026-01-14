@@ -182,6 +182,30 @@ Benefits:
 
 Example: Searching for "machine learning algorithms" will also find documents about "neural networks", "deep learning models", and "classification methods" even if they don't contain those exact words.
 
+** Requirements
+
+Semantic search requires:
+
+1. *Vector search support in libsql* - The database must support vector operations
+2. *Embedding provider configured* - One of: local (Transformers.js), Ollama, or OpenAI
+3. *Files indexed with embeddings* - Run =scimax.db.reindex= after configuring
+
+*** Checking Availability
+
+Run =Scimax: Show Database Stats= (=scimax.db.stats=) to see:
+- Whether vector search is supported
+- Number of embeddings stored
+- Any error messages
+
+If vector search is unavailable, the stats will show:
+#+BEGIN_EXAMPLE
+Semantic search: Unavailable (vector search not supported)
+#+END_EXAMPLE
+
+*** Fallback to Full-Text Search
+
+If semantic search is unavailable, use full-text search (=scimax.db.search=) instead. FTS5 is always available and very fast for keyword-based queries.
+
 ** Embedding Providers
 
 Scimax supports three embedding providers:
@@ -946,9 +970,31 @@ OpenAI API key for embeddings.
 ** Semantic Search Not Working
 
 *** Problem
-Semantic search returns no results or shows configuration error.
+Semantic search returns no results, shows "unavailable", or displays an error.
 
-*** Solutions
+*** First: Check Vector Search Support
+
+Run =Scimax: Show Database Stats= (=scimax.db.stats=) to see the semantic search status:
+
+| Status Message                              | Meaning                                     |
+|---------------------------------------------+---------------------------------------------|
+| =Semantic search: Enabled (N chunks)=       | Working, N chunks with embeddings           |
+| =Semantic search: Ready (no embeddings)=    | Supported, but no provider configured       |
+| =Semantic search: Unavailable (error)=      | Vector search not supported by database     |
+
+*** Vector Search Unavailable
+
+If you see "Semantic search: Unavailable", the libsql database doesn't support vector operations. This can happen if:
+
+- The libsql version doesn't include vector support
+- The vector index failed to create
+
+*Workaround*: Use full-text search (=scimax.db.search=) instead. FTS5 is always available and fast.
+
+*** Embedding Provider Issues
+
+If vector search is supported but not working:
+
 1. Check embedding provider is configured: =scimax.db.embeddingProvider=
 2. Test connection: Run =Scimax: Configure Embedding Service=
 3. Ensure files are reindexed after configuring embeddings
