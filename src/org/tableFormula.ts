@@ -13,6 +13,7 @@
  */
 
 import * as vscode from 'vscode';
+import { parseRow } from './tableProvider';
 
 // =============================================================================
 // Types
@@ -193,9 +194,11 @@ function isTableLine(line: string): boolean {
     return trimmed.startsWith('|') && trimmed.endsWith('|');
 }
 
+/**
+ * Parse a table row into cells (delegates to tableProvider's robust parser)
+ */
 function parseTableRow(line: string): string[] {
-    const trimmed = line.trim().slice(1, -1); // Remove outer |
-    return trimmed.split('|').map(cell => cell.trim());
+    return parseRow(line);
 }
 
 // =============================================================================

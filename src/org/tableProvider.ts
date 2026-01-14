@@ -154,43 +154,145 @@ function isSeparatorRow(line: string): boolean {
 }
 
 /**
- * Parse a table row into cells
- * Handles pipes inside backticks (code spans) and escaped pipes (\|)
+ * Org-mode inline markup delimiters
+ * Each maps to its closing delimiter (same character for symmetric markup)
  */
-function parseRow(line: string): string[] {
+const MARKUP_DELIMITERS: Record<string, string> = {
+    '`': '`',   // code
+    '~': '~',   // code (org-mode)
+    '=': '=',   // verbatim
+    '*': '*',   // bold
+    '/': '/',   // italic
+    '_': '_',   // underline
+    '+': '+',   // strikethrough
+};
+
+/**
+ * Check if a character at position is a valid markup opener
+ * Org-mode markup rules:
+ * - Must be preceded by whitespace, start of string, or certain punctuation
+ * - The next character cannot be whitespace
+ */
+function isValidMarkupOpener(str: string, pos: number, marker: string): boolean {
+    // Check PRE condition: preceded by whitespace, start, or punctuation
+    if (pos > 0) {
+        const prevChar = str[pos - 1];
+        const preChars = ' \t\n\r-({\'\"';
+        if (!preChars.includes(prevChar)) {
+            return false;
+        }
+    }
+
+    // Check BORDER condition: next char cannot be whitespace
+    if (pos + 1 < str.length) {
+        const nextChar = str[pos + 1];
+        if (' \t\n\r'.includes(nextChar)) {
+            return false;
+        }
+    } else {
+        // Marker at end of string - not valid opener
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Check if a character at position is a valid markup closer
+ * Org-mode markup rules:
+ * - The previous character cannot be whitespace
+ * - Must be followed by whitespace, end of string, or certain punctuation
+ */
+function isValidMarkupCloser(str: string, pos: number, marker: string): boolean {
+    // Check BORDER condition: prev char cannot be whitespace
+    if (pos > 0) {
+        const prevChar = str[pos - 1];
+        if (' \t\n\r'.includes(prevChar)) {
+            return false;
+        }
+    } else {
+        // Marker at start of string - not valid closer
+        return false;
+    }
+
+    // Check POST condition: followed by whitespace, end, or punctuation
+    if (pos + 1 < str.length) {
+        const nextChar = str[pos + 1];
+        const postChars = ' \t\n\r-.,;:!?\'\")}|';
+        if (!postChars.includes(nextChar)) {
+            return false;
+        }
+    }
+    // End of string is valid
+
+    return true;
+}
+
+/**
+ * Parse a table row into cells
+ * Handles pipes inside markup spans (code, verbatim, bold, etc.) and escaped pipes (\|)
+ */
+export function parseRow(line: string): string[] {
     const trimmed = line.trim();
     // Remove leading and trailing |
     const inner = trimmed.slice(1, -1);
 
     const cells: string[] = [];
     let current = '';
-    let inBackticks = false;
+    let markupStack: string[] = []; // Stack of open markup delimiters
     let i = 0;
 
     while (i < inner.length) {
         const char = inner[i];
 
-        // Track backtick state (for code spans)
-        if (char === '`') {
-            inBackticks = !inBackticks;
-            current += char;
-            i++;
-        }
         // Handle escaped pipe
-        else if (char === '\\' && i + 1 < inner.length && inner[i + 1] === '|') {
+        if (char === '\\' && i + 1 < inner.length && inner[i + 1] === '|') {
             current += '|';
             i += 2;
+            continue;
         }
-        // Pipe outside of backticks is a cell separator
-        else if (char === '|' && !inBackticks) {
-            cells.push(current.trim());
-            current = '';
-            i++;
-        }
-        else {
+
+        // Check if this is a markup delimiter
+        if (char in MARKUP_DELIMITERS) {
+            const expectedCloser = MARKUP_DELIMITERS[char];
+
+            if (markupStack.length > 0 && markupStack[markupStack.length - 1] === expectedCloser) {
+                // Potential closer - check if valid
+                if (isValidMarkupCloser(inner, i, char)) {
+                    markupStack.pop();
+                    current += char;
+                    i++;
+                    continue;
+                }
+            }
+
+            // Check if valid opener (only if not already in same markup type)
+            if (!markupStack.includes(char) && isValidMarkupOpener(inner, i, char)) {
+                markupStack.push(expectedCloser);
+                current += char;
+                i++;
+                continue;
+            }
+
+            // Not valid markup, treat as literal
             current += char;
             i++;
+            continue;
         }
+
+        // Pipe outside of markup is a cell separator
+        if (char === '|' && markupStack.length === 0) {
+            cells.push(current.trim());
+            current = '';
+            // Reset markup stack at cell boundary (unclosed markup doesn't span cells)
+            markupStack = [];
+            i++;
+            continue;
+        }
+
+        // Regular character
+        current += char;
+        i++;
     }
 
     // Don't forget the last cell
