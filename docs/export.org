@@ -1104,13 +1104,116 @@ Built-in macros:
 
 ** Include Files
 
-Include content from other files:
+Include content from other files using the =#+INCLUDE:= directive. Files are
+processed during export, allowing modular document organization.
+
+*** Basic Syntax
 
 #+BEGIN_SRC org
-#+INCLUDE: "chapter1.org"
-#+INCLUDE: "code/example.py" src python
-#+INCLUDE: "data.org" :lines "1-10"
-#+INCLUDE: "appendix.org" :minlevel 2
+,#+INCLUDE: "chapter1.org"
+,#+INCLUDE: "path/to/file.org"
+#+END_SRC
+
+Paths can be relative (to the current document) or absolute.
+
+*** Block Wrappers
+
+Wrap included content in a block:
+
+#+BEGIN_SRC org
+,# Include as source code block
+,#+INCLUDE: "code/example.py" src python
+,#+INCLUDE: "script.sh" src bash
+
+,# Include as example (verbatim) block
+,#+INCLUDE: "output.txt" example
+
+,# Include as quote block
+,#+INCLUDE: "excerpt.txt" quote
+
+,# Include as export block (raw format)
+,#+INCLUDE: "custom.html" export html
+#+END_SRC
+
+*** Line Selection with :lines
+
+Include only specific lines from a file:
+
+#+BEGIN_SRC org
+,# Lines 10 through 20 (inclusive, 1-indexed)
+,#+INCLUDE: "data.org" :lines "10-20"
+
+,# From line 10 to end of file
+,#+INCLUDE: "data.org" :lines "10-"
+
+,# From beginning to line 20
+,#+INCLUDE: "data.org" :lines "-20"
+
+,# Single line
+,#+INCLUDE: "data.org" :lines "15"
+#+END_SRC
+
+*** Headline Level Adjustment with :minlevel
+
+Shift all headlines in the included file to a minimum level:
+
+#+BEGIN_SRC org
+,# Shift headlines so the minimum level is 2
+,#+INCLUDE: "chapter.org" :minlevel 2
+#+END_SRC
+
+This is useful for including a standalone document as a section:
+- A file with =* Heading= becomes =** Heading= with =:minlevel 2=
+- Sub-headlines are adjusted proportionally
+
+*** Content Only with :only-contents
+
+Strip the first headline and include only its contents:
+
+#+BEGIN_SRC org
+,#+INCLUDE: "section.org" :only-contents t
+#+END_SRC
+
+This extracts the body of the first headline without including the headline
+itself.
+
+*** Combining Options
+
+Options can be combined:
+
+#+BEGIN_SRC org
+,# Include lines 5-25 of Python file, shift headlines to level 3
+,#+INCLUDE: "code.py" src python :lines "5-25"
+
+,# Include chapter, make it a subsection (minlevel 2)
+,#+INCLUDE: "chapter.org" :minlevel 2 :only-contents t
+#+END_SRC
+
+*** Recursive Includes
+
+Included files can themselves contain =#+INCLUDE:= directives, which are
+processed recursively. A maximum depth of 10 levels prevents infinite loops.
+
+*** Example: Modular Book Structure
+
+#+BEGIN_SRC org
+,#+TITLE: My Book
+,#+AUTHOR: Author Name
+
+,#+INCLUDE: "frontmatter.org"
+
+,* Part I: Introduction
+,#+INCLUDE: "chapters/intro.org" :minlevel 2
+
+,* Part II: Main Content
+,#+INCLUDE: "chapters/chapter1.org" :minlevel 2
+,#+INCLUDE: "chapters/chapter2.org" :minlevel 2
+
+,* Appendices
+,#+INCLUDE: "appendices/code-samples.org" :minlevel 2
+
+,* Index
+,#+INCLUDE: "backmatter/index.org" :only-contents t
 #+END_SRC
 
 ** Custom Link Types

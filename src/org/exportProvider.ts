@@ -11,11 +11,26 @@ import { promisify } from 'util';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
+import { processIncludes, hasIncludes } from '../parser/orgInclude';
 import type { ExportOptions } from '../parser/orgExport';
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
 
 // Pre-promisified exec for PDF compilation
 const execAsync = promisify(exec);
+
+/**
+ * Preprocess content before export - handles #+INCLUDE: directives
+ */
+function preprocessContent(content: string, basePath: string): string {
+    if (!hasIncludes(content)) {
+        return content;
+    }
+    return processIncludes(content, {
+        basePath,
+        recursive: true,
+        maxDepth: 10,
+    });
+}
 
 /**
  * Export format options
@@ -544,7 +559,13 @@ async function showExportDispatcher(): Promise<void> {
     if (!selectedScope) return;
 
     // Get content to export
+    const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
     let content = editor.document.getText();
+
+    // Preprocess content - expand #+INCLUDE: directives
+    content = preprocessContent(content, inputDir);
+
     const options: Partial<ExportOptions> = {
         scope: selectedScope.scope.id,
     };
@@ -563,9 +584,7 @@ async function showExportDispatcher(): Promise<void> {
         content = lines.join('\n');
     }
 
-    // Determine output path
-    const inputPath = editor.document.uri.fsPath;
-    const inputDir = path.dirname(inputPath);
+    // Determine output path (inputPath and inputDir already defined above)
     const inputName = path.basename(inputPath, '.org');
     const defaultOutputPath = path.join(inputDir, inputName + selectedFormat.format.extension);
 
@@ -664,8 +683,9 @@ async function quickExportHtml(): Promise<void> {
         return;
     }
 
-    const content = editor.document.getText();
     const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const content = preprocessContent(editor.document.getText(), inputDir);
     const outputPath = inputPath.replace(/\.org$/, '.html');
 
     try {
@@ -688,8 +708,9 @@ async function quickExportLatex(): Promise<void> {
         return;
     }
 
-    const content = editor.document.getText();
     const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const content = preprocessContent(editor.document.getText(), inputDir);
     const outputPath = inputPath.replace(/\.org$/, '.tex');
 
     try {
@@ -712,8 +733,9 @@ async function quickExportPdf(): Promise<void> {
         return;
     }
 
-    const content = editor.document.getText();
     const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const content = preprocessContent(editor.document.getText(), inputDir);
     const outputPath = inputPath.replace(/\.org$/, '.pdf');
 
     await vscode.window.withProgress(
@@ -762,8 +784,9 @@ async function quickExportMarkdown(): Promise<void> {
         return;
     }
 
-    const content = editor.document.getText();
     const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const content = preprocessContent(editor.document.getText(), inputDir);
     const outputPath = inputPath.replace(/\.org$/, '.md');
 
     try {
@@ -786,8 +809,10 @@ async function previewHtml(): Promise<void> {
         return;
     }
 
-    const content = editor.document.getText();
-    const fileName = path.basename(editor.document.uri.fsPath);
+    const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const content = preprocessContent(editor.document.getText(), inputDir);
+    const fileName = path.basename(inputPath);
 
     try {
         const htmlContent = await exportHtml(content, {}, false);
@@ -886,8 +911,9 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                     vscode.window.showWarningMessage('No org-mode file open');
                     return;
                 }
-                const content = editor.document.getText();
                 const inputPath = editor.document.uri.fsPath;
+                const inputDir = path.dirname(inputPath);
+                const content = preprocessContent(editor.document.getText(), inputDir);
                 const outputPath = inputPath.replace(/\.org$/, '.html');
                 try {
                     const html = await exportHtml(content, {}, false);
@@ -938,8 +964,9 @@ async function exportDispatcher(): Promise<void> {
 
     if (!selected || !selected.value) return;
 
-    const content = editor.document.getText();
     const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const content = preprocessContent(editor.document.getText(), inputDir);
 
     try {
         switch (selected.value) {
