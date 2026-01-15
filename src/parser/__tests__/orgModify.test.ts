@@ -32,6 +32,35 @@ import {
     sortHeadlines,
     promoteHeadline,
     demoteHeadline,
+    // Tree manipulation
+    createHeadline,
+    insertHeadline,
+    deleteHeadline,
+    copyHeadline,
+    findParent,
+    getHeadlinePath,
+    // Timestamp utilities
+    createTimestamp,
+    timestampFromDate,
+    timestampToDate,
+    setScheduled,
+    setDeadline,
+    setClosed,
+    getScheduled,
+    getDeadline,
+    getClosed,
+    // Link utilities
+    getLinks,
+    getLinksByType,
+    createLink,
+    // Clock utilities
+    getClockEntries,
+    getAllClockEntries,
+    getTotalClockTime,
+    formatDuration,
+    // Property inheritance
+    getInheritedProperty,
+    getEffectiveProperties,
 } from '../orgModify';
 import type { HeadlineElement, SrcBlockElement, TableElement } from '../orgElementTypes';
 
@@ -725,6 +754,432 @@ print("py2")
 
             const done = org.query(doc, { hasTodo: true, todoType: 'done' });
             expect(done).toHaveLength(3);
+        });
+    });
+
+    describe('tree manipulation', () => {
+        describe('createHeadline', () => {
+            it('creates a basic headline', () => {
+                const h = createHeadline('New Task', 2);
+                expect(h.type).toBe('headline');
+                expect(h.properties.rawValue).toBe('New Task');
+                expect(h.properties.level).toBe(2);
+            });
+
+            it('creates headline with TODO and priority', () => {
+                const h = createHeadline('Important Task', 1, {
+                    todoKeyword: 'TODO',
+                    todoType: 'todo',
+                    priority: 'A',
+                    tags: ['urgent'],
+                });
+                expect(h.properties.todoKeyword).toBe('TODO');
+                expect(h.properties.priority).toBe('A');
+                expect(h.properties.tags).toContain('urgent');
+            });
+
+            it('creates headline with properties', () => {
+                const h = createHeadline('Task', 1, {
+                    properties: { CUSTOM_ID: 'my-task', CATEGORY: 'work' },
+                });
+                expect(h.propertiesDrawer).toBeDefined();
+                expect(h.propertiesDrawer!['CUSTOM_ID']).toBe('my-task');
+            });
+        });
+
+        describe('insertHeadline', () => {
+            it('inserts headline at end by default', () => {
+                const doc = parse(`* First
+* Second
+`);
+                const h = createHeadline('Third', 1);
+                insertHeadline(doc, h);
+                expect(doc.children).toHaveLength(3);
+                expect(doc.children[2].properties.rawValue).toBe('Third');
+            });
+
+            it('inserts headline at specific index', () => {
+                const doc = parse(`* First
+* Third
+`);
+                const h = createHeadline('Second', 1);
+                insertHeadline(doc, h, 1);
+                expect(doc.children).toHaveLength(3);
+                expect(doc.children[1].properties.rawValue).toBe('Second');
+            });
+
+            it('adjusts level when inserting into headline', () => {
+                const doc = parse(`* Parent
+`);
+                const h = createHeadline('Child', 1);
+                insertHeadline(doc.children[0], h);
+                expect(doc.children[0].children).toHaveLength(1);
+                expect(doc.children[0].children[0].properties.level).toBe(2);
+            });
+        });
+
+        describe('deleteHeadline', () => {
+            it('deletes headline by reference', () => {
+                const doc = parse(`* First
+* Second
+* Third
+`);
+                const deleted = deleteHeadline(doc, doc.children[1]);
+                expect(deleted).toBeDefined();
+                expect(deleted!.properties.rawValue).toBe('Second');
+                expect(doc.children).toHaveLength(2);
+            });
+
+            it('deletes headline by index', () => {
+                const doc = parse(`* First
+* Second
+* Third
+`);
+                const deleted = deleteHeadline(doc, 0);
+                expect(deleted!.properties.rawValue).toBe('First');
+                expect(doc.children).toHaveLength(2);
+            });
+
+            it('returns undefined for invalid index', () => {
+                const doc = parse(`* First
+`);
+                const deleted = deleteHeadline(doc, 99);
+                expect(deleted).toBeUndefined();
+            });
+        });
+
+        describe('copyHeadline', () => {
+            it('creates a deep copy', () => {
+                const doc = parse(`* Original
+** Child
+`);
+                const original = doc.children[0];
+                const copy = copyHeadline(original);
+
+                expect(copy).not.toBe(original);
+                expect(copy.properties.rawValue).toBe('Original');
+                expect(copy.children).toHaveLength(1);
+
+                // Modify copy should not affect original
+                copy.properties.rawValue = 'Modified';
+                expect(original.properties.rawValue).toBe('Original');
+            });
+        });
+
+        describe('findParent', () => {
+            it('finds document as parent of top-level headline', () => {
+                const doc = parse(`* Top Level
+`);
+                const parent = findParent(doc, doc.children[0]);
+                expect(parent).toBe(doc);
+            });
+
+            it('finds headline as parent of child', () => {
+                const doc = parse(`* Parent
+** Child
+`);
+                const parent = findParent(doc, doc.children[0].children[0]);
+                expect(parent).toBe(doc.children[0]);
+            });
+        });
+
+        describe('getHeadlinePath', () => {
+            it('returns path from root to headline', () => {
+                const doc = parse(`* Level 1
+** Level 2
+*** Level 3
+`);
+                const target = doc.children[0].children[0].children[0];
+                const path = getHeadlinePath(doc, target);
+
+                expect(path).toHaveLength(3);
+                expect(path[0].properties.rawValue).toBe('Level 1');
+                expect(path[1].properties.rawValue).toBe('Level 2');
+                expect(path[2].properties.rawValue).toBe('Level 3');
+            });
+        });
+    });
+
+    describe('timestamp utilities', () => {
+        describe('createTimestamp', () => {
+            it('creates a basic date timestamp', () => {
+                const ts = createTimestamp({ year: 2024, month: 3, day: 15 });
+                expect(ts.type).toBe('timestamp');
+                expect(ts.properties.yearStart).toBe(2024);
+                expect(ts.properties.monthStart).toBe(3);
+                expect(ts.properties.dayStart).toBe(15);
+                expect(ts.properties.rawValue).toBe('<2024-03-15>');
+            });
+
+            it('creates timestamp with time', () => {
+                const ts = createTimestamp({ year: 2024, month: 3, day: 15, hour: 14, minute: 30 });
+                expect(ts.properties.hourStart).toBe(14);
+                expect(ts.properties.minuteStart).toBe(30);
+                expect(ts.properties.rawValue).toBe('<2024-03-15 14:30>');
+            });
+
+            it('creates inactive timestamp', () => {
+                const ts = createTimestamp({ year: 2024, month: 3, day: 15, active: false });
+                expect(ts.properties.timestampType).toBe('inactive');
+                expect(ts.properties.rawValue).toBe('[2024-03-15]');
+            });
+
+            it('creates timestamp with repeater', () => {
+                const ts = createTimestamp({
+                    year: 2024, month: 3, day: 15,
+                    repeaterType: '+',
+                    repeaterValue: 1,
+                    repeaterUnit: 'w',
+                });
+                expect(ts.properties.repeaterType).toBe('+');
+                expect(ts.properties.repeaterValue).toBe(1);
+                expect(ts.properties.repeaterUnit).toBe('w');
+            });
+        });
+
+        describe('timestampFromDate', () => {
+            it('creates timestamp from Date object', () => {
+                const date = new Date(2024, 2, 15); // March 15, 2024
+                const ts = timestampFromDate(date);
+                expect(ts.properties.yearStart).toBe(2024);
+                expect(ts.properties.monthStart).toBe(3);
+                expect(ts.properties.dayStart).toBe(15);
+            });
+
+            it('includes time when requested', () => {
+                const date = new Date(2024, 2, 15, 14, 30);
+                const ts = timestampFromDate(date, { includeTime: true });
+                expect(ts.properties.hourStart).toBe(14);
+                expect(ts.properties.minuteStart).toBe(30);
+            });
+        });
+
+        describe('timestampToDate', () => {
+            it('converts timestamp to Date', () => {
+                const ts = createTimestamp({ year: 2024, month: 3, day: 15, hour: 14, minute: 30 });
+                const date = timestampToDate(ts);
+                expect(date.getFullYear()).toBe(2024);
+                expect(date.getMonth()).toBe(2); // 0-indexed
+                expect(date.getDate()).toBe(15);
+                expect(date.getHours()).toBe(14);
+                expect(date.getMinutes()).toBe(30);
+            });
+        });
+
+        describe('setScheduled and getScheduled', () => {
+            it('sets scheduled timestamp', () => {
+                const doc = parse(`* Task
+`);
+                const ts = createTimestamp({ year: 2024, month: 3, day: 15 });
+                setScheduled(doc.children[0], ts);
+
+                expect(doc.children[0].planning).toBeDefined();
+                expect(getScheduled(doc.children[0])).toBe(ts);
+            });
+
+            it('removes scheduled when undefined', () => {
+                const doc = parse(`* Task
+SCHEDULED: <2024-03-15>
+`);
+                setScheduled(doc.children[0], undefined);
+                expect(getScheduled(doc.children[0])).toBeUndefined();
+            });
+        });
+
+        describe('setDeadline and getDeadline', () => {
+            it('sets deadline timestamp', () => {
+                const doc = parse(`* Task
+`);
+                const ts = createTimestamp({ year: 2024, month: 3, day: 20 });
+                setDeadline(doc.children[0], ts);
+
+                expect(getDeadline(doc.children[0])).toBe(ts);
+            });
+        });
+
+        describe('setClosed and getClosed', () => {
+            it('sets closed timestamp', () => {
+                const doc = parse(`* DONE Task
+`);
+                const ts = createTimestamp({ year: 2024, month: 3, day: 15, active: false });
+                setClosed(doc.children[0], ts);
+
+                expect(getClosed(doc.children[0])).toBe(ts);
+            });
+        });
+    });
+
+    describe('link utilities', () => {
+        describe('getLinks', () => {
+            it('finds all links in document', () => {
+                const doc = parse(`* Heading
+Check out [[https://example.com][Example]] and [[file:notes.org][notes]].
+`);
+                const links = getLinks(doc);
+                expect(links.length).toBeGreaterThanOrEqual(2);
+            });
+        });
+
+        describe('getLinksByType', () => {
+            it('filters links by type', () => {
+                const doc = parse(`* Links
+[[https://example.com]]
+[[file:notes.org]]
+`);
+                const httpLinks = getLinksByType(doc, 'https');
+                const fileLinks = getLinksByType(doc, 'file');
+
+                expect(httpLinks.length).toBeGreaterThanOrEqual(1);
+                expect(fileLinks.length).toBeGreaterThanOrEqual(1);
+            });
+        });
+
+        describe('createLink', () => {
+            it('creates a basic link', () => {
+                const link = createLink('https://example.com', 'Example Site');
+                expect(link.type).toBe('link');
+                expect(link.properties.path).toBe('https://example.com');
+                expect(link.properties.linkType).toBe('https');
+                expect(link.children).toBeDefined();
+            });
+
+            it('auto-detects link type', () => {
+                expect(createLink('https://foo.com').properties.linkType).toBe('https');
+                expect(createLink('http://foo.com').properties.linkType).toBe('http');
+                expect(createLink('file:notes.org').properties.linkType).toBe('file');
+            });
+        });
+    });
+
+    describe('clock utilities', () => {
+        describe('getClockEntries', () => {
+            it('gets clock entries from headline', () => {
+                const doc = parse(`* Task
+CLOCK: [2024-03-15 Fri 09:00]--[2024-03-15 Fri 10:30] =>  1:30
+CLOCK: [2024-03-15 Fri 14:00]--[2024-03-15 Fri 15:00] =>  1:00
+`);
+                const clocks = getClockEntries(doc.children[0]);
+                expect(clocks).toHaveLength(2);
+            });
+        });
+
+        describe('getAllClockEntries', () => {
+            it('gets all clock entries with headlines', () => {
+                const doc = parse(`* Task 1
+CLOCK: [2024-03-15 Fri 09:00]--[2024-03-15 Fri 10:00] =>  1:00
+* Task 2
+CLOCK: [2024-03-15 Fri 11:00]--[2024-03-15 Fri 12:00] =>  1:00
+`);
+                const entries = getAllClockEntries(doc);
+                expect(entries).toHaveLength(2);
+                expect(entries[0].headline.properties.rawValue).toBe('Task 1');
+                expect(entries[1].headline.properties.rawValue).toBe('Task 2');
+            });
+        });
+
+        describe('getTotalClockTime', () => {
+            it('calculates total time from duration strings', () => {
+                const doc = parse(`* Task
+CLOCK: [2024-03-15 Fri 09:00]--[2024-03-15 Fri 10:30] =>  1:30
+CLOCK: [2024-03-15 Fri 14:00]--[2024-03-15 Fri 15:00] =>  1:00
+`);
+                const total = getTotalClockTime(doc.children[0]);
+                expect(total).toBe(150); // 1:30 + 1:00 = 150 minutes
+            });
+
+            it('includes children when recursive', () => {
+                const doc = parse(`* Parent
+CLOCK: [2024-03-15 Fri 09:00]--[2024-03-15 Fri 10:00] =>  1:00
+** Child
+CLOCK: [2024-03-15 Fri 11:00]--[2024-03-15 Fri 12:00] =>  1:00
+`);
+                const parentOnly = getTotalClockTime(doc.children[0], false);
+                const withChildren = getTotalClockTime(doc.children[0], true);
+
+                expect(parentOnly).toBe(60);
+                expect(withChildren).toBe(120);
+            });
+        });
+
+        describe('formatDuration', () => {
+            it('formats minutes as HH:MM', () => {
+                expect(formatDuration(90)).toBe('1:30');
+                expect(formatDuration(60)).toBe('1:00');
+                expect(formatDuration(5)).toBe('0:05');
+                expect(formatDuration(125)).toBe('2:05');
+            });
+        });
+    });
+
+    describe('property inheritance', () => {
+        describe('getInheritedProperty', () => {
+            it('returns own property if present', () => {
+                const doc = parse(`* Heading
+:PROPERTIES:
+:CATEGORY: work
+:END:
+`);
+                const value = getInheritedProperty(doc, doc.children[0], 'CATEGORY');
+                expect(value).toBe('work');
+            });
+
+            it('inherits from parent headline', () => {
+                const doc = parse(`* Parent
+:PROPERTIES:
+:CATEGORY: work
+:END:
+** Child
+`);
+                const child = doc.children[0].children[0];
+                const value = getInheritedProperty(doc, child, 'CATEGORY');
+                expect(value).toBe('work');
+            });
+
+            it('inherits from document properties', () => {
+                const doc = parse(`#+PROPERTY: CATEGORY global
+
+* Heading
+`);
+                const value = getInheritedProperty(doc, doc.children[0], 'CATEGORY');
+                expect(value).toBe('global');
+            });
+
+            it('own property overrides inherited', () => {
+                const doc = parse(`* Parent
+:PROPERTIES:
+:CATEGORY: parent-cat
+:END:
+** Child
+:PROPERTIES:
+:CATEGORY: child-cat
+:END:
+`);
+                const child = doc.children[0].children[0];
+                const value = getInheritedProperty(doc, child, 'CATEGORY');
+                expect(value).toBe('child-cat');
+            });
+        });
+
+        describe('getEffectiveProperties', () => {
+            it('combines all inherited properties', () => {
+                const doc = parse(`#+PROPERTY: DOC_PROP doc-value
+
+* Parent
+:PROPERTIES:
+:PARENT_PROP: parent-value
+:END:
+** Child
+:PROPERTIES:
+:CHILD_PROP: child-value
+:END:
+`);
+                const child = doc.children[0].children[0];
+                const props = getEffectiveProperties(doc, child);
+
+                expect(props['DOC_PROP']).toBe('doc-value');
+                expect(props['PARENT_PROP']).toBe('parent-value');
+                expect(props['CHILD_PROP']).toBe('child-value');
+            });
         });
     });
 });

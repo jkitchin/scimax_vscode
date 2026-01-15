@@ -37,6 +37,9 @@ import type {
     TimestampObject,
     LinkObject,
     PlanningElement,
+    ClockElement,
+    ParagraphElement,
+    PlainTextObject,
 } from './orgElementTypes';
 
 // =============================================================================
@@ -57,9 +60,44 @@ export type {
     TimestampObject,
     LinkObject,
     PlanningElement,
+    ClockElement,
 };
 
 export { parseOrg, serialize };
+
+// =============================================================================
+// Timestamp Types
+// =============================================================================
+
+/**
+ * Options for creating a timestamp
+ */
+export interface TimestampOptions {
+    /** Year (e.g., 2024) */
+    year: number;
+    /** Month (1-12) */
+    month: number;
+    /** Day (1-31) */
+    day: number;
+    /** Hour (0-23, optional) */
+    hour?: number;
+    /** Minute (0-59, optional) */
+    minute?: number;
+    /** Whether timestamp is active (default: true) */
+    active?: boolean;
+    /** Repeater type ('+', '++', '.+') */
+    repeaterType?: '+' | '++' | '.+';
+    /** Repeater value */
+    repeaterValue?: number;
+    /** Repeater unit ('h', 'd', 'w', 'm', 'y') */
+    repeaterUnit?: 'h' | 'd' | 'w' | 'm' | 'y';
+    /** Warning type ('-', '--') */
+    warningType?: '-' | '--';
+    /** Warning value */
+    warningValue?: number;
+    /** Warning unit ('h', 'd', 'w', 'm', 'y') */
+    warningUnit?: 'h' | 'd' | 'w' | 'm' | 'y';
+}
 
 // =============================================================================
 // File I/O
@@ -809,6 +847,704 @@ export function demoteHeadline(headline: HeadlineElement, recursive = true): voi
 }
 
 // =============================================================================
+// Tree Manipulation
+// =============================================================================
+
+/**
+ * Create a new headline element
+ *
+ * @param title - Headline title text
+ * @param level - Headline level (default: 1)
+ * @param options - Additional headline options
+ * @returns New headline element
+ *
+ * @example
+ * ```typescript
+ * const h = org.createHeadline('New Task', 2, { todoKeyword: 'TODO' });
+ * org.insertHeadline(doc, h, 0);
+ * ```
+ */
+export function createHeadline(
+    title: string,
+    level = 1,
+    options?: {
+        todoKeyword?: string;
+        todoType?: 'todo' | 'done';
+        priority?: string;
+        tags?: string[];
+        properties?: Record<string, string>;
+    }
+): HeadlineElement {
+    const headline: HeadlineElement = {
+        type: 'headline',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        properties: {
+            level,
+            rawValue: title,
+            tags: options?.tags ?? [],
+            archivedp: options?.tags?.includes('ARCHIVE') ?? false,
+            commentedp: false,
+            footnoteSection: false,
+            lineNumber: 0,
+            todoKeyword: options?.todoKeyword,
+            todoType: options?.todoType,
+            priority: options?.priority,
+        },
+        children: [],
+    };
+
+    if (options?.properties) {
+        headline.propertiesDrawer = { ...options.properties };
+    }
+
+    return headline;
+}
+
+/**
+ * Insert a headline into a document or parent headline
+ *
+ * @param parent - Document or parent headline
+ * @param headline - Headline to insert
+ * @param index - Position to insert at (default: end)
+ *
+ * @example
+ * ```typescript
+ * const newHeadline = org.createHeadline('New Section', 1);
+ * org.insertHeadline(doc, newHeadline, 0); // Insert at beginning
+ * ```
+ */
+export function insertHeadline(
+    parent: OrgDocumentNode | HeadlineElement,
+    headline: HeadlineElement,
+    index?: number
+): void {
+    const children = parent.children;
+    const insertIndex = index ?? children.length;
+
+    // Adjust headline level if inserting into a headline
+    if ('properties' in parent && parent.type === 'headline') {
+        const parentLevel = (parent as HeadlineElement).properties.level;
+        const levelDiff = parentLevel + 1 - headline.properties.level;
+        if (levelDiff !== 0) {
+            adjustHeadlineLevel(headline, levelDiff);
+        }
+    }
+
+    children.splice(insertIndex, 0, headline);
+}
+
+/**
+ * Delete a headline from its parent
+ *
+ * @param parent - Document or parent headline containing the headline
+ * @param headline - Headline to delete (or index)
+ * @returns The deleted headline, or undefined if not found
+ *
+ * @example
+ * ```typescript
+ * const deleted = org.deleteHeadline(doc, doc.children[0]);
+ * ```
+ */
+export function deleteHeadline(
+    parent: OrgDocumentNode | HeadlineElement,
+    headline: HeadlineElement | number
+): HeadlineElement | undefined {
+    const children = parent.children;
+    const index = typeof headline === 'number' ? headline : children.indexOf(headline);
+
+    if (index >= 0 && index < children.length) {
+        const [deleted] = children.splice(index, 1);
+        return deleted;
+    }
+    return undefined;
+}
+
+/**
+ * Create a deep copy of a headline
+ *
+ * @param headline - Headline to copy
+ * @returns Deep copy of the headline
+ *
+ * @example
+ * ```typescript
+ * const copy = org.copyHeadline(doc.children[0]);
+ * org.insertHeadline(doc, copy);
+ * ```
+ */
+export function copyHeadline(headline: HeadlineElement): HeadlineElement {
+    return JSON.parse(JSON.stringify(headline));
+}
+
+/**
+ * Adjust headline level by a delta (positive or negative)
+ */
+function adjustHeadlineLevel(headline: HeadlineElement, delta: number): void {
+    headline.properties.level = Math.max(1, headline.properties.level + delta);
+    for (const child of headline.children) {
+        adjustHeadlineLevel(child, delta);
+    }
+}
+
+/**
+ * Find the parent of a headline in a document
+ *
+ * @param doc - Document to search
+ * @param headline - Headline to find parent of
+ * @returns Parent headline or document, or undefined if not found
+ */
+export function findParent(
+    doc: OrgDocumentNode,
+    headline: HeadlineElement
+): OrgDocumentNode | HeadlineElement | undefined {
+    // Check top-level
+    if (doc.children.includes(headline)) {
+        return doc;
+    }
+
+    // Search recursively
+    let foundParent: HeadlineElement | undefined;
+    mapHeadlines(doc, (h) => {
+        if (h.children.includes(headline)) {
+            foundParent = h;
+        }
+    });
+    return foundParent;
+}
+
+/**
+ * Get the path from root to a headline
+ *
+ * @param doc - Document to search
+ * @param headline - Target headline
+ * @returns Array of headlines from root to target (inclusive)
+ */
+export function getHeadlinePath(
+    doc: OrgDocumentNode,
+    headline: HeadlineElement
+): HeadlineElement[] {
+    const path: HeadlineElement[] = [];
+
+    function search(headlines: HeadlineElement[], target: HeadlineElement): boolean {
+        for (const h of headlines) {
+            if (h === target) {
+                path.push(h);
+                return true;
+            }
+            if (search(h.children, target)) {
+                path.unshift(h);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    search(doc.children, headline);
+    return path;
+}
+
+// =============================================================================
+// Timestamp Utilities
+// =============================================================================
+
+/**
+ * Create a timestamp object
+ *
+ * @param options - Timestamp options
+ * @returns TimestampObject
+ *
+ * @example
+ * ```typescript
+ * const ts = org.createTimestamp({ year: 2024, month: 3, day: 15, hour: 14, minute: 30 });
+ * org.setDeadline(headline, ts);
+ * ```
+ */
+export function createTimestamp(options: TimestampOptions): TimestampObject {
+    const isActive = options.active !== false;
+    const open = isActive ? '<' : '[';
+    const close = isActive ? '>' : ']';
+
+    // Build raw value string
+    let rawValue = `${open}${options.year}-${String(options.month).padStart(2, '0')}-${String(options.day).padStart(2, '0')}`;
+
+    if (options.hour !== undefined && options.minute !== undefined) {
+        rawValue += ` ${String(options.hour).padStart(2, '0')}:${String(options.minute).padStart(2, '0')}`;
+    }
+
+    if (options.repeaterType && options.repeaterValue && options.repeaterUnit) {
+        rawValue += ` ${options.repeaterType}${options.repeaterValue}${options.repeaterUnit}`;
+    }
+
+    if (options.warningType && options.warningValue && options.warningUnit) {
+        rawValue += ` ${options.warningType}${options.warningValue}${options.warningUnit}`;
+    }
+
+    rawValue += close;
+
+    return {
+        type: 'timestamp',
+        range: { start: 0, end: rawValue.length },
+        postBlank: 0,
+        properties: {
+            timestampType: isActive ? 'active' : 'inactive',
+            rawValue,
+            yearStart: options.year,
+            monthStart: options.month,
+            dayStart: options.day,
+            hourStart: options.hour,
+            minuteStart: options.minute,
+            repeaterType: options.repeaterType,
+            repeaterValue: options.repeaterValue,
+            repeaterUnit: options.repeaterUnit,
+            warningType: options.warningType,
+            warningValue: options.warningValue,
+            warningUnit: options.warningUnit,
+        },
+    };
+}
+
+/**
+ * Create a timestamp from a Date object
+ *
+ * @param date - JavaScript Date object
+ * @param options - Additional options (time, active, repeater, etc.)
+ * @returns TimestampObject
+ *
+ * @example
+ * ```typescript
+ * const ts = org.timestampFromDate(new Date(), { includeTime: true });
+ * ```
+ */
+export function timestampFromDate(
+    date: Date,
+    options?: {
+        includeTime?: boolean;
+        active?: boolean;
+        repeaterType?: '+' | '++' | '.+';
+        repeaterValue?: number;
+        repeaterUnit?: 'h' | 'd' | 'w' | 'm' | 'y';
+    }
+): TimestampObject {
+    return createTimestamp({
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
+        hour: options?.includeTime ? date.getHours() : undefined,
+        minute: options?.includeTime ? date.getMinutes() : undefined,
+        active: options?.active,
+        repeaterType: options?.repeaterType,
+        repeaterValue: options?.repeaterValue,
+        repeaterUnit: options?.repeaterUnit,
+    });
+}
+
+/**
+ * Convert a TimestampObject to a JavaScript Date
+ *
+ * @param ts - Timestamp object
+ * @returns JavaScript Date
+ */
+export function timestampToDate(ts: TimestampObject): Date {
+    const date = new Date(
+        ts.properties.yearStart,
+        ts.properties.monthStart - 1,
+        ts.properties.dayStart,
+        ts.properties.hourStart ?? 0,
+        ts.properties.minuteStart ?? 0
+    );
+    return date;
+}
+
+/**
+ * Set the SCHEDULED timestamp on a headline
+ *
+ * @param headline - Headline to modify
+ * @param timestamp - Timestamp to set, or undefined to remove
+ *
+ * @example
+ * ```typescript
+ * const tomorrow = new Date();
+ * tomorrow.setDate(tomorrow.getDate() + 1);
+ * org.setScheduled(headline, org.timestampFromDate(tomorrow));
+ * ```
+ */
+export function setScheduled(headline: HeadlineElement, timestamp: TimestampObject | undefined): void {
+    if (!timestamp) {
+        if (headline.planning) {
+            headline.planning.properties.scheduled = undefined;
+            cleanupPlanning(headline);
+        }
+        return;
+    }
+
+    ensurePlanning(headline);
+    headline.planning!.properties.scheduled = timestamp;
+}
+
+/**
+ * Set the DEADLINE timestamp on a headline
+ *
+ * @param headline - Headline to modify
+ * @param timestamp - Timestamp to set, or undefined to remove
+ */
+export function setDeadline(headline: HeadlineElement, timestamp: TimestampObject | undefined): void {
+    if (!timestamp) {
+        if (headline.planning) {
+            headline.planning.properties.deadline = undefined;
+            cleanupPlanning(headline);
+        }
+        return;
+    }
+
+    ensurePlanning(headline);
+    headline.planning!.properties.deadline = timestamp;
+}
+
+/**
+ * Set the CLOSED timestamp on a headline
+ *
+ * @param headline - Headline to modify
+ * @param timestamp - Timestamp to set, or undefined to remove
+ */
+export function setClosed(headline: HeadlineElement, timestamp: TimestampObject | undefined): void {
+    if (!timestamp) {
+        if (headline.planning) {
+            headline.planning.properties.closed = undefined;
+            cleanupPlanning(headline);
+        }
+        return;
+    }
+
+    ensurePlanning(headline);
+    headline.planning!.properties.closed = timestamp;
+}
+
+/**
+ * Get the SCHEDULED timestamp from a headline
+ */
+export function getScheduled(headline: HeadlineElement): TimestampObject | undefined {
+    return headline.planning?.properties.scheduled;
+}
+
+/**
+ * Get the DEADLINE timestamp from a headline
+ */
+export function getDeadline(headline: HeadlineElement): TimestampObject | undefined {
+    return headline.planning?.properties.deadline;
+}
+
+/**
+ * Get the CLOSED timestamp from a headline
+ */
+export function getClosed(headline: HeadlineElement): TimestampObject | undefined {
+    return headline.planning?.properties.closed;
+}
+
+function ensurePlanning(headline: HeadlineElement): void {
+    if (!headline.planning) {
+        headline.planning = {
+            type: 'planning',
+            range: { start: 0, end: 0 },
+            postBlank: 0,
+            properties: {},
+        };
+    }
+}
+
+function cleanupPlanning(headline: HeadlineElement): void {
+    if (headline.planning) {
+        const props = headline.planning.properties;
+        if (!props.scheduled && !props.deadline && !props.closed) {
+            headline.planning = undefined;
+        }
+    }
+}
+
+// =============================================================================
+// Link Utilities
+// =============================================================================
+
+/**
+ * Get all links in a document
+ *
+ * @param doc - Document to search
+ * @returns Array of link objects with their context
+ *
+ * @example
+ * ```typescript
+ * const links = org.getLinks(doc);
+ * links.forEach(link => console.log(link.path));
+ * ```
+ */
+export function getLinks(doc: OrgDocumentNode): LinkObject[] {
+    const links: LinkObject[] = [];
+
+    function extractFromObjects(objects: OrgObject[]): void {
+        for (const obj of objects) {
+            if (obj.type === 'link') {
+                links.push(obj as LinkObject);
+            }
+            if ('children' in obj && obj.children) {
+                extractFromObjects(obj.children);
+            }
+        }
+    }
+
+    function extractFromElements(elements: OrgElement[]): void {
+        for (const element of elements) {
+            if (element.type === 'paragraph') {
+                const para = element as ParagraphElement;
+                if (para.children) {
+                    extractFromObjects(para.children);
+                }
+            }
+            if ('children' in element && Array.isArray(element.children)) {
+                extractFromElements(element.children as OrgElement[]);
+            }
+        }
+    }
+
+    // Search document section
+    if (doc.section) {
+        extractFromElements(doc.section.children);
+    }
+
+    // Search headlines
+    mapHeadlines(doc, h => {
+        // Search title
+        if (h.properties.title) {
+            extractFromObjects(h.properties.title);
+        }
+        // Search section
+        if (h.section) {
+            extractFromElements(h.section.children);
+        }
+    });
+
+    return links;
+}
+
+/**
+ * Get links filtered by type
+ *
+ * @param doc - Document to search
+ * @param linkType - Link type to filter by ('http', 'https', 'file', etc.)
+ * @returns Array of matching link objects
+ */
+export function getLinksByType(doc: OrgDocumentNode, linkType: string): LinkObject[] {
+    return getLinks(doc).filter(link => link.properties.linkType === linkType);
+}
+
+/**
+ * Create a link object
+ *
+ * @param path - Link target path
+ * @param description - Optional link description
+ * @param linkType - Link type (default: auto-detected)
+ * @returns LinkObject
+ */
+export function createLink(
+    path: string,
+    description?: string,
+    linkType?: string
+): LinkObject {
+    // Auto-detect link type
+    let detectedType = linkType;
+    if (!detectedType) {
+        if (path.startsWith('https://')) detectedType = 'https';
+        else if (path.startsWith('http://')) detectedType = 'http';
+        else if (path.startsWith('file:')) detectedType = 'file';
+        else if (path.startsWith('#')) detectedType = 'custom-id';
+        else if (path.startsWith('*')) detectedType = 'fuzzy';
+        else detectedType = 'fuzzy';
+    }
+
+    const link: LinkObject = {
+        type: 'link',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        properties: {
+            linkType: detectedType,
+            path,
+            format: 'bracket',
+        },
+    };
+
+    if (description) {
+        const textObj: PlainTextObject = {
+            type: 'plain-text',
+            range: { start: 0, end: description.length },
+            postBlank: 0,
+            properties: { value: description },
+        };
+        link.children = [textObj];
+    }
+
+    return link;
+}
+
+// =============================================================================
+// Clock Utilities
+// =============================================================================
+
+/**
+ * Get all clock entries from a headline
+ *
+ * @param headline - Headline to search
+ * @returns Array of clock elements
+ */
+export function getClockEntries(headline: HeadlineElement): ClockElement[] {
+    const clocks: ClockElement[] = [];
+
+    if (headline.section) {
+        for (const element of headline.section.children) {
+            if (element.type === 'clock') {
+                clocks.push(element as ClockElement);
+            }
+        }
+    }
+
+    return clocks;
+}
+
+/**
+ * Get all clock entries from a document
+ *
+ * @param doc - Document to search
+ * @returns Array of clock elements with their parent headlines
+ */
+export function getAllClockEntries(doc: OrgDocumentNode): Array<{ clock: ClockElement; headline: HeadlineElement }> {
+    const entries: Array<{ clock: ClockElement; headline: HeadlineElement }> = [];
+
+    mapHeadlines(doc, h => {
+        const clocks = getClockEntries(h);
+        for (const clock of clocks) {
+            entries.push({ clock, headline: h });
+        }
+    });
+
+    return entries;
+}
+
+/**
+ * Calculate total clocked time for a headline in minutes
+ *
+ * @param headline - Headline to calculate
+ * @param recursive - Include child headlines (default: false)
+ * @returns Total time in minutes
+ */
+export function getTotalClockTime(headline: HeadlineElement, recursive = false): number {
+    let total = 0;
+
+    function addClockTime(h: HeadlineElement): void {
+        const clocks = getClockEntries(h);
+        for (const clock of clocks) {
+            if (clock.properties.duration) {
+                const [hours, minutes] = clock.properties.duration.split(':').map(Number);
+                total += hours * 60 + minutes;
+            } else if (clock.properties.start && clock.properties.end) {
+                const start = timestampToDate(clock.properties.start);
+                const end = timestampToDate(clock.properties.end);
+                total += Math.round((end.getTime() - start.getTime()) / 60000);
+            }
+        }
+    }
+
+    addClockTime(headline);
+
+    if (recursive) {
+        for (const child of headline.children) {
+            total += getTotalClockTime(child, true);
+        }
+    }
+
+    return total;
+}
+
+/**
+ * Format minutes as HH:MM string
+ */
+export function formatDuration(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}:${String(mins).padStart(2, '0')}`;
+}
+
+// =============================================================================
+// Property Inheritance
+// =============================================================================
+
+/**
+ * Get a property value, checking inherited properties from ancestors
+ *
+ * @param doc - Document containing the headline
+ * @param headline - Headline to get property from
+ * @param key - Property key
+ * @returns Property value or undefined
+ *
+ * @example
+ * ```typescript
+ * // Get CATEGORY, inheriting from parent if not set
+ * const category = org.getInheritedProperty(doc, headline, 'CATEGORY');
+ * ```
+ */
+export function getInheritedProperty(
+    doc: OrgDocumentNode,
+    headline: HeadlineElement,
+    key: string
+): string | undefined {
+    // Check headline's own properties
+    if (headline.propertiesDrawer?.[key]) {
+        return headline.propertiesDrawer[key];
+    }
+
+    // Get path to root
+    const path = getHeadlinePath(doc, headline);
+
+    // Check ancestors from closest to root
+    for (let i = path.length - 2; i >= 0; i--) {
+        const value = path[i].propertiesDrawer?.[key];
+        if (value) {
+            return value;
+        }
+    }
+
+    // Check document properties
+    if (doc.properties[key]) {
+        return doc.properties[key];
+    }
+
+    return undefined;
+}
+
+/**
+ * Get all effective properties for a headline (including inherited)
+ *
+ * @param doc - Document containing the headline
+ * @param headline - Headline to get properties for
+ * @returns Object with all effective properties
+ */
+export function getEffectiveProperties(
+    doc: OrgDocumentNode,
+    headline: HeadlineElement
+): Record<string, string> {
+    const properties: Record<string, string> = {};
+
+    // Start with document properties
+    Object.assign(properties, doc.properties);
+
+    // Get path and apply properties from root to headline
+    const path = getHeadlinePath(doc, headline);
+    for (const h of path) {
+        if (h.propertiesDrawer) {
+            Object.assign(properties, h.propertiesDrawer);
+        }
+    }
+
+    return properties;
+}
+
+// =============================================================================
 // Convenience Export Object
 // =============================================================================
 
@@ -870,6 +1606,40 @@ export const org = {
     moveHeadline,
     promoteHeadline,
     demoteHeadline,
+
+    // Tree manipulation
+    createHeadline,
+    insertHeadline,
+    deleteHeadline,
+    copyHeadline,
+    findParent,
+    getHeadlinePath,
+
+    // Timestamp utilities
+    createTimestamp,
+    timestampFromDate,
+    timestampToDate,
+    setScheduled,
+    setDeadline,
+    setClosed,
+    getScheduled,
+    getDeadline,
+    getClosed,
+
+    // Link utilities
+    getLinks,
+    getLinksByType,
+    createLink,
+
+    // Clock utilities
+    getClockEntries,
+    getAllClockEntries,
+    getTotalClockTime,
+    formatDuration,
+
+    // Property inheritance
+    getInheritedProperty,
+    getEffectiveProperties,
 
     // Serialization
     serializeHeadline,
