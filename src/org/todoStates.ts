@@ -188,3 +188,17 @@ export function getNextTodoState(currentState: string | undefined, document: vsc
 
     return allStates[nextIndex];
 }
+
+/**
+ * Get the previous state in the TODO cycle for a document
+ * Cycles backward: (no state) -> last done -> ... -> first active -> (no state)
+ */
+export function getPreviousTodoState(currentState: string | undefined, document: vscode.TextDocument): string {
+    const workflow = getTodoWorkflowForDocument(document);
+    const allStates = ['', ...workflow.allStates]; // Include empty state for cycling
+
+    const currentIndex = allStates.indexOf(currentState || '');
+    const prevIndex = (currentIndex - 1 + allStates.length) % allStates.length;
+
+    return allStates[prevIndex];
+}

@@ -154,6 +154,10 @@ async function fuzzySearch(): Promise<void> {
  * Searches across all open buffers
  */
 async function fuzzySearchOpenFiles(): Promise<void> {
+    const originalEditor = vscode.window.activeTextEditor;
+    const originalPosition = originalEditor?.selection.active;
+    const originalDocument = originalEditor?.document;
+
     // Get all open text documents
     const openDocuments = vscode.workspace.textDocuments.filter(doc => {
         // Filter out internal VS Code documents
@@ -203,12 +207,25 @@ async function fuzzySearchOpenFiles(): Promise<void> {
     quickPick.matchOnDetail = false;
     quickPick.items = buildItemsWithSeparators(allLines);
 
-    // Live preview: navigate to selected line
-    quickPick.onDidChangeActive(items => {
+    let accepted = false;
+    let lastPreviewedFile: string | undefined;
+
+    // Live preview: show line in current editor if same file, otherwise just show file name
+    quickPick.onDidChangeActive(async items => {
         if (items.length > 0) {
             const item = items[0] as LineItem;
-            if (item.filePath && item.lineNumber !== undefined) {
-                goToLine(item.filePath, item.lineNumber);
+            // Check if this is a real line item (not a separator)
+            if (item.filePath && typeof item.lineNumber === 'number') {
+                // Only do live preview for the current document to avoid focus issues
+                if (originalEditor && item.filePath === originalDocument?.uri.fsPath) {
+                    const position = new vscode.Position(item.lineNumber, 0);
+                    originalEditor.selection = new vscode.Selection(position, position);
+                    originalEditor.revealRange(
+                        new vscode.Range(position, position),
+                        vscode.TextEditorRevealType.InCenter
+                    );
+                }
+                lastPreviewedFile = item.filePath;
             }
         }
     });
@@ -222,13 +239,23 @@ async function fuzzySearchOpenFiles(): Promise<void> {
     // Handle selection
     quickPick.onDidAccept(() => {
         const selected = quickPick.selectedItems[0] as LineItem;
-        if (selected && selected.filePath) {
+        if (selected && selected.filePath && typeof selected.lineNumber === 'number') {
+            accepted = true;
+            quickPick.hide();
+            // Navigate to the selected line after hiding the quick pick
             goToLine(selected.filePath, selected.lineNumber);
         }
-        quickPick.hide();
     });
 
     quickPick.onDidHide(() => {
+        // Restore original position if cancelled
+        if (!accepted && originalEditor && originalPosition) {
+            originalEditor.selection = new vscode.Selection(originalPosition, originalPosition);
+            originalEditor.revealRange(
+                new vscode.Range(originalPosition, originalPosition),
+                vscode.TextEditorRevealType.InCenter
+            );
+        }
         quickPick.dispose();
     });
 

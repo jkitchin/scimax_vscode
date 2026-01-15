@@ -793,7 +793,7 @@ export async function executeAndNext(): Promise<void> {
     if (!editor) return;
 
     // Execute current block
-    await vscode.commands.executeCommand('scimax.babel.executeBlock');
+    await vscode.commands.executeCommand('scimax.org.executeBlock');
 
     // Wait a moment for execution to complete
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -838,7 +838,7 @@ export async function executeToPoint(): Promise<void> {
             // Move cursor to block and execute
             const pos = new vscode.Position(bp.block.codeStartLine, 0);
             editor.selection = new vscode.Selection(pos, pos);
-            await vscode.commands.executeCommand('scimax.babel.executeBlock');
+            await vscode.commands.executeCommand('scimax.org.executeBlock');
 
             // Small delay between executions
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -850,7 +850,7 @@ export async function executeToPoint(): Promise<void> {
  * Execute all blocks in the buffer
  */
 export async function executeAllBlocks(): Promise<void> {
-    await vscode.commands.executeCommand('scimax.babel.executeAllBlocks');
+    await vscode.commands.executeCommand('scimax.org.executeAllBlocks');
 }
 
 // =============================================================================

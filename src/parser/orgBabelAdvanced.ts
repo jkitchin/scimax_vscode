@@ -272,6 +272,14 @@ export function buildBlockMap(blocks: TangleBlock[]): Map<string, TangleBlock> {
     return map;
 }
 
+/**
+ * Build a map of named blocks from document text
+ */
+export function buildNamedBlocksMap(text: string): Map<string, TangleBlock> {
+    const blocks = extractSourceBlocks(text);
+    return buildBlockMap(blocks);
+}
+
 // =============================================================================
 // Tangling
 // =============================================================================
@@ -722,6 +730,101 @@ export function findInlineSrcAtPosition(
     return null;
 }
 
+/**
+ * Inline babel call information
+ */
+export interface InlineBabelCall {
+    name: string;
+    insideHeaders: string;
+    arguments: string;
+    endHeaders: string;
+    start: number;
+    end: number;
+    line: number;
+}
+
+/**
+ * Pattern for inline babel call: call_name(args) or call_name[headers](args)[end]
+ */
+const INLINE_BABEL_PATTERN = /call_([a-zA-Z0-9_-]+)(?:\[([^\]]*)\])?\(([^)]*)\)(?:\[([^\]]*)\])?/g;
+
+/**
+ * Find all inline babel calls in text
+ */
+export function findInlineBabelCalls(text: string): InlineBabelCall[] {
+    const results: InlineBabelCall[] = [];
+    const lines = text.split('\n');
+    let offset = 0;
+
+    for (let lineNum = 0; lineNum < lines.length; lineNum++) {
+        const line = lines[lineNum];
+        let match;
+        INLINE_BABEL_PATTERN.lastIndex = 0;
+
+        while ((match = INLINE_BABEL_PATTERN.exec(line)) !== null) {
+            results.push({
+                name: match[1],
+                insideHeaders: match[2] || '',
+                arguments: match[3] || '',
+                endHeaders: match[4] || '',
+                start: offset + match.index,
+                end: offset + match.index + match[0].length,
+                line: lineNum,
+            });
+        }
+
+        offset += line.length + 1; // +1 for newline
+    }
+
+    return results;
+}
+
+/**
+ * Find inline babel call at position
+ */
+export function findInlineBabelCallAtPosition(
+    text: string,
+    offset: number
+): InlineBabelCall | null {
+    const calls = findInlineBabelCalls(text);
+
+    for (const call of calls) {
+        if (offset >= call.start && offset <= call.end) {
+            return call;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Execute an inline babel call
+ */
+export async function executeInlineBabelCall(
+    call: InlineBabelCall,
+    blocks: Map<string, TangleBlock>,
+    baseContext: ExecutionContext = {}
+): Promise<ExecutionResult> {
+    // Convert to CallSpec format
+    const callSpec: CallSpec = {
+        name: call.name,
+        insideHeaders: call.insideHeaders,
+        endHeaders: call.endHeaders,
+        arguments: {},
+    };
+
+    // Parse arguments
+    if (call.arguments) {
+        const argPattern = /(\w+)=([^,]+)/g;
+        let argMatch;
+        while ((argMatch = argPattern.exec(call.arguments)) !== null) {
+            callSpec.arguments[argMatch[1]] = argMatch[2].trim();
+        }
+    }
+
+    return executeCall(callSpec, blocks, baseContext);
+}
+
 // =============================================================================
 // #+CALL: Support
 // =============================================================================
@@ -1164,13 +1267,99 @@ export function registerBabelAdvancedCommands(context: vscode.ExtensionContext):
             });
 
             if (result.success) {
-                // Show result in output
+                // Format and insert result after the inline src block
+                const resultValue = (result.stdout || '').trim();
+                const formattedResult = ` {{{results(=${resultValue}=)}}}`;
+
+                // Find position after the inline src block
+                const endPos = editor.document.positionAt(inline.end);
+
+                // Check if there's already a results macro after the block and remove it
+                const lineText = editor.document.lineAt(endPos.line).text;
+                const afterBlock = lineText.slice(endPos.character);
+                const existingResultMatch = afterBlock.match(/^\s*\{\{\{results\([^)]*\)\}\}\}/);
+
+                await editor.edit(editBuilder => {
+                    if (existingResultMatch) {
+                        // Replace existing result
+                        const startReplace = endPos;
+                        const endReplace = endPos.translate(0, existingResultMatch[0].length);
+                        editBuilder.replace(new vscode.Range(startReplace, endReplace), formattedResult);
+                    } else {
+                        // Insert new result
+                        editBuilder.insert(endPos, formattedResult);
+                    }
+                });
+
+                // Show result in output as well
                 outputChannel?.appendLine(`=== Inline ${inline.language} result ===`);
-                outputChannel?.appendLine(result.stdout || '(no output)');
-                outputChannel?.show();
+                outputChannel?.appendLine(resultValue || '(no output)');
             } else {
                 vscode.window.showErrorMessage(
                     `Inline execution failed: ${result.error?.message || result.stderr}`
+                );
+            }
+        })
+    );
+
+    // Execute inline babel call at cursor
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.babel.executeInlineBabelCall', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            const text = editor.document.getText();
+            const offset = editor.document.offsetAt(editor.selection.active);
+            const call = findInlineBabelCallAtPosition(text, offset);
+
+            if (!call) {
+                vscode.window.showWarningMessage('No inline babel call at cursor');
+                return;
+            }
+
+            // Build a map of named blocks from the document
+            const blocks = buildNamedBlocksMap(text);
+
+            if (!blocks.has(call.name)) {
+                vscode.window.showErrorMessage(`Named block not found: ${call.name}`);
+                return;
+            }
+
+            const result = await executeInlineBabelCall(call, blocks, {
+                cwd: path.dirname(editor.document.uri.fsPath),
+            });
+
+            if (result.success) {
+                // Format and insert result after the inline call
+                const resultValue = (result.stdout || '').trim();
+                const formattedResult = ` {{{results(=${resultValue}=)}}}`;
+
+                // Find position after the inline call
+                const endPos = editor.document.positionAt(call.end);
+
+                // Check if there's already a results macro after the call and remove it
+                const lineText = editor.document.lineAt(endPos.line).text;
+                const afterCall = lineText.slice(endPos.character);
+                const existingResultMatch = afterCall.match(/^\s*\{\{\{results\([^)]*\)\}\}\}/);
+
+                await editor.edit(editBuilder => {
+                    if (existingResultMatch) {
+                        // Replace existing result
+                        const startReplace = endPos;
+                        const endReplace = endPos.translate(0, existingResultMatch[0].length);
+                        editBuilder.replace(new vscode.Range(startReplace, endReplace), formattedResult);
+                    } else {
+                        // Insert new result
+                        editBuilder.insert(endPos, formattedResult);
+                    }
+                });
+
+                // Show result in output as well
+                outputChannel?.appendLine(`=== Inline call_${call.name} result ===`);
+                outputChannel?.appendLine(resultValue || '(no output)');
+            } else {
+                vscode.window.showErrorMessage(
+                    `Inline call execution failed: ${result.error?.message || result.stderr}`
                 );
             }
         })

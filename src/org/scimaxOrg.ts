@@ -9,6 +9,7 @@ import {
     getNextTodoState,
     getAllTodoStatesForDocument
 } from './todoStates';
+import { getDayOfWeek } from '../parser/orgRepeater';
 
 // =============================================================================
 // Text Markup Functions
@@ -814,6 +815,107 @@ export async function insertSubheading(): Promise<void> {
 // =============================================================================
 
 /**
+ * Format an inactive timestamp for CLOSED
+ */
+function formatClosedTimestamp(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dow = getDayOfWeek(now);
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `[${year}-${month}-${day} ${dow} ${hours}:${minutes}]`;
+}
+
+/**
+ * Find existing CLOSED line for a heading
+ * Returns the line number if found, -1 otherwise
+ */
+function findClosedLine(document: vscode.TextDocument, headingLine: number): number {
+    // Look at lines immediately after the heading for CLOSED:
+    // Stop at next heading or content that's not a planning line
+    for (let i = headingLine + 1; i < document.lineCount; i++) {
+        const lineText = document.lineAt(i).text;
+
+        // Check for CLOSED line
+        if (lineText.match(/^\s*CLOSED:\s*\[/)) {
+            return i;
+        }
+
+        // Skip DEADLINE and SCHEDULED lines
+        if (lineText.match(/^\s*(DEADLINE|SCHEDULED):/)) {
+            continue;
+        }
+
+        // Stop at next heading
+        if (lineText.match(/^\*+\s/)) {
+            break;
+        }
+
+        // Stop at non-planning content (property drawers are OK)
+        if (lineText.match(/^\s*:/) || lineText.trim() === '') {
+            continue;
+        }
+
+        // Any other content, stop looking
+        break;
+    }
+    return -1;
+}
+
+/**
+ * Update CLOSED timestamp when transitioning TODO states
+ * @param editor The active text editor
+ * @param headingLine The line number of the heading
+ * @param wasInDoneState Whether the previous state was a done state
+ * @param isNowInDoneState Whether the new state is a done state
+ */
+export async function updateClosedTimestamp(
+    editor: vscode.TextEditor,
+    headingLine: number,
+    wasInDoneState: boolean,
+    isNowInDoneState: boolean
+): Promise<void> {
+    const document = editor.document;
+    const existingClosedLine = findClosedLine(document, headingLine);
+
+    if (isNowInDoneState && !wasInDoneState) {
+        // Transitioning TO done state - add CLOSED timestamp
+        if (existingClosedLine === -1) {
+            // No existing CLOSED, add one after heading
+            const headingText = document.lineAt(headingLine).text;
+            const indent = headingText.match(/^(\s*)/)?.[1] || '';
+            const closedLine = `${indent}CLOSED: ${formatClosedTimestamp()}`;
+
+            // Insert after heading line
+            await editor.edit(editBuilder => {
+                editBuilder.insert(
+                    new vscode.Position(headingLine + 1, 0),
+                    closedLine + '\n'
+                );
+            });
+        } else {
+            // Update existing CLOSED line
+            const lineRange = document.lineAt(existingClosedLine).range;
+            const existingText = document.lineAt(existingClosedLine).text;
+            const indent = existingText.match(/^(\s*)/)?.[1] || '';
+            await editor.edit(editBuilder => {
+                editBuilder.replace(lineRange, `${indent}CLOSED: ${formatClosedTimestamp()}`);
+            });
+        }
+    } else if (!isNowInDoneState && wasInDoneState) {
+        // Transitioning FROM done state - remove CLOSED timestamp
+        if (existingClosedLine !== -1) {
+            const lineRange = document.lineAt(existingClosedLine).rangeIncludingLineBreak;
+            await editor.edit(editBuilder => {
+                editBuilder.delete(lineRange);
+            });
+        }
+    }
+}
+
+/**
  * Cycle TODO state on current heading
  * Uses file-specific TODO states from #+TODO: keywords if defined
  */
@@ -826,9 +928,15 @@ export async function cycleTodoState(): Promise<void> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
 
+    // Get TODO workflow for this document
+    const workflow = getTodoWorkflowForDocument(document);
+    const doneStates = new Set(workflow.doneStates);
+
     // Get all recognized TODO states for this document
     const allStates = getAllTodoStatesForDocument(document);
-    const statesPattern = Array.from(allStates).join('|');
+    const statesPattern = Array.from(allStates)
+        .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|');
 
     // Build dynamic regex to match heading with any recognized TODO state
     const headingRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*(.*)`);
@@ -853,12 +961,20 @@ export async function cycleTodoState(): Promise<void> {
             editBuilder.replace(line.range, newLine);
         });
 
+        // Handle CLOSED timestamp (was not done, check if now done)
+        const isNowDone = doneStates.has(nextState);
+        await updateClosedTimestamp(editor, position.line, false, isNowDone);
+
         await updateStatisticsCookies(editor, position.line, stars.length);
         return;
     }
 
     const [, stars, currentState, rest] = headingMatch;
     const nextState = getNextTodoState(currentState, document);
+
+    // Determine done state transitions
+    const wasDone = currentState ? doneStates.has(currentState) : false;
+    const isNowDone = nextState ? doneStates.has(nextState) : false;
 
     const newLine = nextState
         ? `${stars} ${nextState} ${rest}`
@@ -867,6 +983,9 @@ export async function cycleTodoState(): Promise<void> {
     await editor.edit(editBuilder => {
         editBuilder.replace(line.range, newLine);
     });
+
+    // Handle CLOSED timestamp
+    await updateClosedTimestamp(editor, position.line, wasDone, isNowDone);
 
     // Update statistics cookies in parent headings
     await updateStatisticsCookies(editor, position.line, stars.length);

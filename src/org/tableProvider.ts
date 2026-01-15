@@ -280,8 +280,9 @@ export function parseRow(line: string): string[] {
             continue;
         }
 
-        // Pipe outside of markup is a cell separator
-        if (char === '|' && markupStack.length === 0) {
+        // Pipe is always a cell separator - unclosed markup doesn't span cells
+        // This handles cases like `| *Heading |` where * is not bold markup
+        if (char === '|') {
             cells.push(current.trim());
             current = '';
             // Reset markup stack at cell boundary (unclosed markup doesn't span cells)
@@ -951,6 +952,7 @@ export async function createTable(): Promise<void> {
 
 /**
  * Navigate to next cell (Tab)
+ * At end of last row, creates a new row below
  */
 export async function nextCell(): Promise<boolean> {
     const editor = vscode.window.activeTextEditor;
@@ -961,29 +963,52 @@ export async function nextCell(): Promise<boolean> {
 
     if (!isInTable(document, position)) return false;
 
+    // First align the table to ensure consistent formatting
+    await alignTable();
+
     const line = document.lineAt(position.line).text;
 
     // Find next | after cursor
     let nextPipe = line.indexOf('|', position.character + 1);
 
     if (nextPipe === -1 || nextPipe >= line.length - 1) {
-        // Move to next row
+        // At end of row - try to move to next row
         if (position.line < document.lineCount - 1) {
-            const nextLine = document.lineAt(position.line + 1).text;
-            if (isTableRow(nextLine)) {
-                // Skip separator rows
-                let targetLine = position.line + 1;
-                while (targetLine < document.lineCount && isSeparatorRow(document.lineAt(targetLine).text)) {
-                    targetLine++;
-                }
-                if (targetLine < document.lineCount && isTableRow(document.lineAt(targetLine).text)) {
-                    const firstPipe = document.lineAt(targetLine).text.indexOf('|');
-                    const newPos = new vscode.Position(targetLine, firstPipe + 2);
-                    editor.selection = new vscode.Selection(newPos, newPos);
-                    return true;
-                }
+            // Skip separator rows
+            let targetLine = position.line + 1;
+            while (targetLine < document.lineCount && isSeparatorRow(document.lineAt(targetLine).text)) {
+                targetLine++;
+            }
+            if (targetLine < document.lineCount && isTableRow(document.lineAt(targetLine).text)) {
+                const firstPipe = document.lineAt(targetLine).text.indexOf('|');
+                const newPos = new vscode.Position(targetLine, firstPipe + 2);
+                editor.selection = new vscode.Selection(newPos, newPos);
+                return true;
             }
         }
+
+        // At end of table - create a new row
+        const table = findTableAtCursor(document, position);
+        if (table) {
+            // Create a new empty row with same number of columns
+            const numCols = table.columnWidths.length;
+            const emptyCells = new Array(numCols).fill('');
+            const newRow = formatRow(emptyCells, table.columnWidths);
+
+            // Insert after current line (or after separator if cursor is on last data row before separator)
+            const insertLine = position.line;
+            await editor.edit(editBuilder => {
+                const insertPosition = new vscode.Position(insertLine + 1, 0);
+                editBuilder.insert(insertPosition, newRow + '\n');
+            });
+
+            // Move cursor to first cell of new row
+            const firstPipePos = 2; // "| "
+            const newPos = new vscode.Position(insertLine + 1, firstPipePos);
+            editor.selection = new vscode.Selection(newPos, newPos);
+            return true;
+        }
+
         return false;
     }
 

@@ -7,52 +7,59 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Hyperlinks
+* ✅ Hyperlinks
+CLOSED: [2026-01-14 Wed 20:50]
 
 Links in org documents connect your notes to files, websites, headings, and
 more. Scimax VS Code supports a variety of link types and provides commands for
 creating and following links.
 
-* ⚠️ Link Types
+* ✅ Link Types
+CLOSED: [2026-01-14 Wed 20:50]
 
 Org-mode supports many types of links. Scimax VS Code handles the most common
 ones:
 
-** ⚠️ External Links
+** ✅ External Links
+CLOSED: [2026-01-14 Wed 20:50]
 
 Links to resources outside your document:
 
-| Type     | Example                                    |
-|----------+--------------------------------------------|
-| HTTP(S)  | https://www.example.com                   |
-| File     | file:~/documents/report.pdf               |
-| Email    | mailto:user@example.com                   |
-| FTP      | ftp://ftp.example.com/file.txt            |
+| Type    | Example                        |
+|---------+--------------------------------|
+| HTTP(S) | https://www.example.com        |
+| File    | file:~/documents/report.pdf    |
+| Email   | mailto:user@example.com        |
+| FTP     | ftp://ftp.example.com/file.txt |
 
-** ⚠️ Internal Links
+** ✅ Internal Links
+CLOSED: [2026-01-14 Wed 20:50]
 
 Links to locations within your documents:
 
-| Type        | Example                                 |
-|-------------+-----------------------------------------|
-| Heading     | *My Heading                            |
-| Custom ID   | #my-custom-id                          |
-| Target      | <<target-name>>                        |
-| ID          | id:550e8400-e29b-41d4-a716-446655440000 |
+| Type      | Example                                 |
+|-----------+-----------------------------------------|
+| Heading   | *My Heading                             |
+| Custom ID | #my-custom-id                           |
+| Target    | <<target-name>>                         |
+| ID        | id:550e8400-e29b-41d4-a716-446655440000 |
 
-** ⚠️ Citation Links
+** ✅ Citation Links (org-ref style)
+CLOSED: [2026-01-14 Wed 20:51]
 
 For academic references (see [[file:references.org][References]]):
 
-| Type        | Example                                 |
-|-------------+-----------------------------------------|
-| Cite        | cite:smith-2024                        |
-| Citet       | citet:jones-2023                       |
-| Citep       | citep:doe-2022                         |
+| Type  | Example          |
+|-------+------------------|
+| Cite  | cite:smith-2024  |
+| Citet | citet:jones-2023 |
+| Citep | citep:doe-2022   |
 
-* ⚠️ Creating Links
+* ✅ Creating Links
+CLOSED: [2026-01-14 Wed 20:51]
 
-** ⚠️ Bracket Link Syntax
+** ✅ Bracket Link Syntax
+CLOSED: [2026-01-14 Wed 20:51]
 
 The standard link format uses double brackets:
 
@@ -84,7 +91,8 @@ This opens a dialog to enter:
 1. Link target (URL, file path, or internal reference)
 2. Description (optional)
 
-** ⚠️ Angle Link Syntax
+** ✅ Angle Link Syntax
+CLOSED: [2026-01-14 Wed 20:51]
 
 Simple URLs can be written with angle brackets:
 
@@ -92,7 +100,8 @@ Simple URLs can be written with angle brackets:
 <https://www.example.com>
 #+END_SRC
 
-** ⚠️ Plain URLs
+** ✅ Plain URLs
+CLOSED: [2026-01-14 Wed 20:51]
 
 Plain URLs are also recognized:
 
@@ -100,12 +109,14 @@ Plain URLs are also recognized:
 Visit https://www.example.com for more info.
 #+END_SRC
 
-* ⚠️ Following Links
+* ✅ Following Links
+CLOSED: [2026-01-14 Wed 20:51]
 
-** ⚠️ Open Link
+** ✅ Open Link
+CLOSED: [2026-01-14 Wed 20:52]
 
-| Key           | Command                              |
-|---------------+--------------------------------------|
+| Key           | Command                                  |
+|---------------+------------------------------------------|
 | Ctrl+C Ctrl+O | Open link at point (scimax.org.openLink) |
 
 Click on a link or use this command to:
@@ -125,9 +136,11 @@ Click on a link or use this command to:
 | *Heading    | Jumps to heading with that title      |
 | id:         | Jumps to entry with that ID property  |
 
-* ⚠️ Link Targets and Anchors
+* ✅ Link Targets and Anchors
+CLOSED: [2026-01-14 Wed 20:53]
 
-** ⚠️ Headings as Targets
+** ✅ Headings as Targets
+CLOSED: [2026-01-14 Wed 20:53]
 
 Link to headings by title using *:
 
@@ -139,7 +152,8 @@ Link to headings by title using *:
 See [[*Introduction][the introduction]] for background.
 #+END_SRC
 
-** ⚠️ Custom IDs
+** ✅ Custom IDs
+CLOSED: [2026-01-14 Wed 20:53]
 
 Create stable link targets with CUSTOM_ID property:
 
@@ -164,25 +178,24 @@ Custom IDs are preferred over heading text because:
 
 Create named anchors anywhere with <<target-name>>:
 
-#+BEGIN_SRC org
 This paragraph contains a <<important-point>> that we reference later.
 
 ...
 
 As mentioned at [[important-point]], this is significant.
-#+END_SRC
+
 
 ** ⚠️ Radio Targets
 
 Radio targets create automatic links throughout the document:
 
-#+BEGIN_SRC org
+
 We introduce the concept of <<<Machine Learning>>> here.
 
 ...
 
 Later, when we mention Machine Learning, it automatically links back.
-#+END_SRC
+
 
 Any occurrence of "Machine Learning" becomes a link to the radio target.
 
@@ -202,7 +215,8 @@ ID links work across files:
 [[id:550e8400-e29b-41d4-a716-446655440000][That important section]]
 #+END_SRC
 
-* ⚠️ File Links
+* ✅ File Links
+CLOSED: [2026-01-14 Wed 20:54]
 
 ** ⚠️ Basic File Links
 
@@ -216,13 +230,14 @@ ID links work across files:
 
 Jump to a specific line:
 
-#+BEGIN_SRC org
-[[file:code.py::42][Line 42 in code.py]]
-#+END_SRC
+[[file:references.org::42][Line 42 in references.org]]
+
 
 ** ⚠️ File Links with Search
 
 Search for text in the target file:
+
+[[links.org::*File Links with Search][File Links with Search Section]]
 
 #+BEGIN_SRC org
 [[file:notes.org::*Heading Title][That Heading]]
@@ -271,7 +286,7 @@ Link to images (see also [[file:image-overlays.org][Image Overlays]]):
 [[./images/figure1.png]]
 #+END_SRC
 
-Images are displayed inline if image overlays are enabled.
+Images are displayed in tooltips or overlays when hovering over the link.
 
 ** ⚠️ ID Links
 
@@ -361,9 +376,9 @@ for complete documentation.
 
 ** ⚠️ Quick Insert
 
-| Key         | Command                              |
-|-------------+--------------------------------------|
-| Ctrl+C ]   | Insert citation                      |
+| Key      | Command         |
+|----------+-----------------|
+| Ctrl+C ] | Insert citation |
 
 ** ⚠️ Citation Styles
 
@@ -435,34 +450,34 @@ Group related links in lists:
 
 ** ⚠️ Keybindings
 
-| Key           | Action                    |
-|---------------+---------------------------|
-| Ctrl+C Ctrl+L | Insert link               |
-| Ctrl+C Ctrl+O | Open link at point        |
-| Ctrl+C ]      | Insert citation           |
+| Key           | Action                     |
+|---------------+----------------------------|
+| Ctrl+C Ctrl+L | Insert link                |
+| Ctrl+C Ctrl+O | Open link at point         |
+| Ctrl+C ]      | Insert citation  (org-ref) |
 
 ** ⚠️ Commands
 
-| Command                   | Description                   |
-|---------------------------+-------------------------------|
-| scimax.org.insertLink    | Insert a new link             |
-| scimax.org.openLink      | Open link at cursor           |
-| scimax.ref.insertCitation| Insert citation link          |
+| Command                   | Description          |
+|---------------------------+----------------------|
+| scimax.org.insertLink     | Insert a new link    |
+| scimax.org.openLink       | Open link at cursor  |
+| scimax.ref.insertCitation | Insert citation link |
 
 ** ⚠️ Link Syntax Summary
 
-| Format                     | Example                        |
-|----------------------------+--------------------------------|
-| URL with description       | [[url][desc]]                 |
-| URL only                   | [[url]]                       |
-| Angle brackets             | <url>                         |
-| Heading link               | [[*Heading]]                  |
-| Custom ID link             | [[#id]]                       |
-| ID link                    | [[id:uuid]]                   |
-| File link                  | [[file:path]]                 |
-| File with line             | [[file:path::123]]            |
-| File with search           | [[file:path::text]]           |
-| Target                     | [[target-name]]               |
+| Format               | Example             |
+|----------------------+---------------------|
+| URL with description | [[url][desc]]       |
+| URL only             | [[url]]             |
+| Angle brackets       | <url>               |
+| Heading link         | [[*Heading]]        |
+| Custom ID link       | [[#id]]             |
+| ID link              | [[id:uuid]]         |
+| File link            | [[file:path]]       |
+| File with line       | [[file:path::123]]  |
+| File with search     | [[file:path::text]] |
+| Target               | [[target-name]]     |
 
 * ⚠️ Related Topics
 

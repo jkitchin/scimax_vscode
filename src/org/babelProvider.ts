@@ -15,6 +15,7 @@ import {
     type HeaderArguments,
 } from '../parser/orgBabel';
 import type { SrcBlockElement } from '../parser/orgElementTypes';
+import { findInlineSrcAtPosition, findInlineBabelCallAtPosition } from '../parser/orgBabelAdvanced';
 
 // Output channel for Babel execution
 let outputChannel: vscode.OutputChannel | undefined;
@@ -831,12 +832,21 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
             // Only check for org files
             if (document.languageId !== 'org') {
                 vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
+                vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
                 return;
             }
 
             const position = editor.selection.active;
             const inBlock = findSourceBlockAtCursor(document, position) !== null;
             vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inBlock);
+
+            // Check for inline src block or inline babel call
+            const text = document.getText();
+            const offset = document.offsetAt(position);
+            const inInlineSrc = findInlineSrcAtPosition(text, offset) !== null;
+            const inInlineBabelCall = findInlineBabelCallAtPosition(text, offset) !== null;
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', inInlineSrc);
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', inInlineBabelCall);
         })
     );
 }

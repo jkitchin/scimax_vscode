@@ -34,6 +34,20 @@ export function isAtHeadingStart(document: vscode.TextDocument, position: vscode
 }
 
 /**
+ * Check if cursor is at the start of a source block (column 0 on #+begin_src line)
+ */
+export function isAtSrcBlockStart(document: vscode.TextDocument, position: vscode.Position): boolean {
+    // Must be at column 0
+    if (position.character !== 0) return false;
+
+    // Only for org files
+    if (document.languageId !== 'org') return false;
+
+    const line = document.lineAt(position.line).text;
+    return /^#\+begin_src\s/i.test(line);
+}
+
+/**
  * Get heading level from line
  */
 export function getHeadingLevel(document: vscode.TextDocument, lineNum: number): number {
@@ -91,7 +105,7 @@ export function setupSpeedCommandContext(context: vscode.ExtensionContext): void
     // Set initial context
     vscode.commands.executeCommand('setContext', 'scimax.speedCommandsEnabled', enabled);
 
-    // Track cursor position for atHeadingStart context
+    // Track cursor position for atHeadingStart and atSrcBlockStart contexts
     context.subscriptions.push(
         vscode.window.onDidChangeTextEditorSelection(e => {
             const editor = e.textEditor;
@@ -100,12 +114,18 @@ export function setupSpeedCommandContext(context: vscode.ExtensionContext): void
             // Only check for org/markdown files
             if (!['org', 'markdown'].includes(document.languageId)) {
                 vscode.commands.executeCommand('setContext', 'scimax.atHeadingStart', false);
+                vscode.commands.executeCommand('setContext', 'scimax.atSrcBlockStart', false);
                 return;
             }
 
             const position = editor.selection.active;
-            const atStart = isAtHeadingStart(document, position) && editor.selection.isEmpty;
-            vscode.commands.executeCommand('setContext', 'scimax.atHeadingStart', atStart);
+            const isEmpty = editor.selection.isEmpty;
+
+            const atHeadingStart = isAtHeadingStart(document, position) && isEmpty;
+            vscode.commands.executeCommand('setContext', 'scimax.atHeadingStart', atHeadingStart);
+
+            const atSrcBlockStart = isAtSrcBlockStart(document, position) && isEmpty;
+            vscode.commands.executeCommand('setContext', 'scimax.atSrcBlockStart', atSrcBlockStart);
         })
     );
 

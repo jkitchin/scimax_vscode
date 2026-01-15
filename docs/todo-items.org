@@ -7,15 +7,15 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ TODO Items
+* ✅ TODO Items
 
 Scimax VS Code provides a comprehensive task management system built into your
 documents. TODO items are headlines with a special keyword that indicates their
 status.
 
-* ⚠️ Basic TODO Functionality
+* ✅ Basic TODO Functionality
 
-** ⚠️ Creating TODO Items
+** ✅ Creating TODO Items
 
 Add TODO after the headline stars to create a task:
 
@@ -25,7 +25,7 @@ Add TODO after the headline stars to create a task:
 ,** TODO Review and edit
 #+END_SRC
 
-** ⚠️ Cycling TODO States
+** ✅ Cycling TODO States
 
 Press Ctrl+C Ctrl+T on a headline to cycle through TODO states:
 
@@ -37,14 +37,14 @@ Or use the command scimax.org.cycleTodo.
 
 With speed commands enabled, press t at the beginning of a headline.
 
-** ⚠️ TODO Keywords
+** ✅ TODO Keywords
 
 The default TODO keywords are:
 
-| Keyword   | Meaning                                |
-|-----------+----------------------------------------|
-| TODO     | Task that needs to be done             |
-| DONE     | Completed task                         |
+| Keyword | Meaning                    |
+|---------+----------------------------|
+| TODO    | Task that needs to be done |
+| DONE    | Completed task             |
 
 Additional states available:
 
@@ -64,11 +64,11 @@ When you mark a task as DONE, a CLOSED timestamp is automatically added:
 CLOSED: [2026-01-13 Mon 15:30]
 #+END_SRC
 
-* ⚠️ Priorities
+* ✅ Priorities
 
 Priorities help you identify the most important tasks.
 
-** ⚠️ Setting Priorities
+** ✅ Setting Priorities
 
 Add a priority cookie after the TODO keyword:
 
@@ -78,15 +78,15 @@ Add a priority cookie after the TODO keyword:
 ,* TODO [#C] Nice to have
 #+END_SRC
 
-** ⚠️ Priority Levels
+** ✅ Priority Levels
 
-| Priority | Meaning                                |
-|----------+----------------------------------------|
-| [#A]    | High priority - do first               |
-| [#B]    | Medium priority - do soon              |
-| [#C]    | Low priority - do when possible        |
+| Priority | Meaning                         |
+|----------+---------------------------------|
+| [#A]     | High priority - do first        |
+| [#B]     | Medium priority - do soon       |
+| [#C]     | Low priority - do when possible |
 
-** ⚠️ Priority Commands
+** ✅ Priority Commands
 
 | Key/Command                | Action                    |
 |----------------------------+---------------------------|
@@ -99,65 +99,62 @@ Add a priority cookie after the TODO keyword:
 You can also set priority through the command palette:
 scimax.org.setPriority
 
-* ⚠️ Progress Indicators
+* ✅ Progress Indicators
 
 Track progress through subtasks using statistics cookies and checkboxes.
 
-** ⚠️ Statistics Cookies
+** ✅ Statistics Cookies [/]
 
 *** ⚠️ Fraction Format
 
 Shows completed/total count:
 
-#+BEGIN_SRC org
-,* Project Tasks [2/4]
-,** DONE Task 1
-,** DONE Task 2
-,** TODO Task 3
-,** TODO Task 4
-#+END_SRC
+
+**** Project Tasks [3/4]
+***** ⚠️ Task 1
+***** ✅ Task 2
+***** ✅ Task 3
+***** ✅ [#C] Task 4
+
 
 *** ⚠️ Percentage Format
 
 Shows completion percentage:
 
-#+BEGIN_SRC org
-,* Project Progress [50%]
-,** DONE Design
-,** DONE Implementation
-,** TODO Testing
-,** TODO Deployment
-#+END_SRC
+**** Project Progress [25%]
+***** DONE Design
+***** DONE Implementation
+***** ✅ Testing
+***** TODO Deployment
 
 Statistics cookies update automatically when child TODO states change.
 
-** ⚠️ Checkbox Lists
+*** ✅ Checkbox Lists
 
 For simpler task lists within a section, use checkboxes:
 
-#+BEGIN_SRC org
-,* Shopping List [2/4]
+* Shopping List [2/4]
 - [X] Milk
 - [X] Bread
 - [ ] Eggs
-- [ ] Butter
-#+END_SRC
+- [x] Butter
 
-*** ⚠️ Checkbox States
 
-| Syntax | State                                  |
-|--------+----------------------------------------|
-| [ ]   | Unchecked / not done                   |
-| [X]   | Checked / done                         |
-| [-]   | Partially complete (has mixed children)|
+*** ✅ Checkbox States
 
-*** ⚠️ Toggling Checkboxes
+| Syntax | State                                   |
+|--------+-----------------------------------------|
+| [ ]    | Unchecked / not done                    |
+| [X]    | Checked / done                          |
+| [-]    | Partially complete (has mixed children) |
+
+*** ✅ Toggling Checkboxes
 
 Press Ctrl+C Ctrl+C with cursor on a checkbox line to toggle it.
 
 Or use scimax.org.toggleCheckbox.
 
-*** ⚠️ Nested Checkboxes
+**** ✅ Nested Checkboxes
 
 Checkboxes can be nested. Parent checkboxes show aggregate state:
 
@@ -173,19 +170,19 @@ Checkboxes can be nested. Parent checkboxes show aggregate state:
   - [X] Towel
 #+END_SRC
 
-*** ⚠️ Inserting Checkboxes
+*** ✅ Inserting Checkboxes
 
-| Command                       | Description                  |
-|-------------------------------+------------------------------|
-| scimax.org.insertCheckbox    | Insert checkbox at cursor    |
+| Command                   | Description               |
+|---------------------------+---------------------------|
+| scimax.org.insertCheckbox | Insert checkbox at cursor |
 
 Type - [ ] followed by space to manually create a checkbox item.
 
-* ⚠️ Extended TODO Keywords
+* ✅ Extended TODO Keywords
 
 Beyond TODO and DONE, use these states for workflow management:
 
-** ⚠️ NEXT
+** ✅ NEXT
 
 Indicates the very next action to take:
 
@@ -195,7 +192,7 @@ Indicates the very next action to take:
 
 Use NEXT for tasks you're actively working on or will work on immediately.
 
-** ⚠️ WAITING
+** ✅ WAITING
 
 Task is blocked waiting for someone or something:
 
@@ -206,7 +203,7 @@ Task is blocked waiting for someone or something:
 :END:
 #+END_SRC
 
-** ⚠️ HOLD
+** ✅ HOLD
 
 Task is paused but not cancelled:
 
@@ -215,7 +212,7 @@ Task is paused but not cancelled:
 Paused until Q2 budget approval.
 #+END_SRC
 
-** ⚠️ CANCELLED
+** ✅ CANCELLED
 
 Task won't be done (but kept for records):
 
@@ -224,7 +221,7 @@ Task won't be done (but kept for records):
 No longer relevant after product pivot.
 #+END_SRC
 
-** ⚠️ Workflow Example
+** ✅ Workflow Example
 
 A typical task progression:
 
@@ -236,13 +233,13 @@ TODO → NEXT → WAITING → NEXT → DONE
      CANCELLED
 #+END_EXAMPLE
 
-* ⚠️ Custom TODO Keywords
+* ✅ Custom TODO Keywords
 
 You can define your own TODO workflow states for each file using the #+TODO:
 keyword. This is useful for project-specific workflows like code review,
 content publishing, or approval processes.
 
-** ⚠️ Defining Custom States
+** ✅ Defining Custom States
 
 Add #+TODO: at the top of your org file (before any headings):
 
@@ -257,7 +254,7 @@ When you cycle TODO states, they will follow this sequence:
 (none) → DRAFT → REVIEW → PUBLISHED → (none)
 #+END_EXAMPLE
 
-** ⚠️ Multiple TODO Lines
+** ✅ Multiple TODO Lines
 
 You can define multiple workflow sequences:
 
@@ -268,7 +265,7 @@ You can define multiple workflow sequences:
 
 All states from all #+TODO: lines are recognized.
 
-** ⚠️ Without Pipe Separator
+** ✅ Without Pipe Separator
 
 If you omit the |, the last state is treated as done:
 
@@ -278,7 +275,7 @@ If you omit the |, the last state is treated as done:
 
 This makes PUBLISHED the done state.
 
-** ⚠️ Syntax Variants
+** ✅ Syntax Variants
 
 These keywords are all equivalent:
 
@@ -288,9 +285,9 @@ These keywords are all equivalent:
 | #+SEQ_TODO:  | Sequential workflow (same as TODO) |
 | #+TYP_TODO:  | Type-based workflow                |
 
-** ⚠️ Example Workflows
+** ✅ Example Workflows
 
-*** ⚠️ Code Review Workflow
+*** ✅ Code Review Workflow
 
 #+BEGIN_SRC org
 ,#+TODO: DRAFT REVIEW APPROVED | MERGED REJECTED
@@ -300,7 +297,7 @@ These keywords are all equivalent:
 ,* APPROVED Update documentation
 #+END_SRC
 
-*** ⚠️ Content Publishing Workflow
+*** ✅ Content Publishing Workflow
 
 #+BEGIN_SRC org
 ,#+TODO: IDEA OUTLINE WRITING EDITING | PUBLISHED ARCHIVED
@@ -309,8 +306,7 @@ These keywords are all equivalent:
 ,* EDITING Tutorial on source blocks
 #+END_SRC
 
-*** ⚠️ Project Management Workflow
-
+*** ✅ Project Management Workflow
 #+BEGIN_SRC org
 ,#+TODO: BACKLOG SPRINT IN-PROGRESS TESTING | DONE CANCELLED
 
@@ -318,7 +314,7 @@ These keywords are all equivalent:
 ,* TESTING Payment integration
 #+END_SRC
 
-* ⚠️ Logging State Changes
+* ✅ Logging State Changes
 
 Scimax VS Code can log when and how TODO states change.
 

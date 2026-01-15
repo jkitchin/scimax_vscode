@@ -41,56 +41,56 @@ it to a table.
 
 ** Moving Between Cells
 
-| Key        | Action                              |
-|------------+-------------------------------------|
+| Key         | Action                                 |
+|-------------+----------------------------------------|
 | =Tab=       | Move to next cell (creates row at end) |
-| =Shift+Tab= | Move to previous cell               |
-| Arrow keys | Move in that direction              |
+| =Shift+Tab= | Move to previous cell                  |
+| Arrow keys  | Move in that direction                 |
 
 ** Quick Navigation
 
-| Command                    | Description                    |
-|----------------------------+--------------------------------|
-| =scimax.table.nextCell=     | Go to next cell                |
-| =scimax.table.prevCell=     | Go to previous cell            |
-| =scimax.table.gotoNamed=    | Jump to a named table          |
+| Command                  | Description           |
+|--------------------------+-----------------------|
+| =scimax.table.nextCell=  | Go to next cell       |
+| =scimax.table.prevCell=  | Go to previous cell   |
+| =scimax.table.gotoNamed= | Jump to a named table |
 
 * Editing Tables
 
 ** Adding/Removing Rows
 
-| Key/Command                   | Action                        |
-|-------------------------------+-------------------------------|
-| =Alt+Enter= or =Shift+Enter=   | Insert row below              |
-| =scimax.table.insertRowAbove=  | Insert row above current      |
-| =scimax.table.insertRowBelow=  | Insert row below current      |
-| =Alt+Shift+Backspace=          | Delete current row            |
-| =scimax.table.deleteRow=       | Delete current row            |
+| Key/Command                   | Action                   |
+|-------------------------------+--------------------------|
+| =Alt+Enter= or =Shift+Enter=  | Insert row below         |
+| =scimax.table.insertRowAbove= | Insert row above current |
+| =scimax.table.insertRowBelow= | Insert row below current |
+| =Alt+Shift+Backspace=         | Delete current row       |
+| =scimax.table.deleteRow=      | Delete current row       |
 
 ** Adding/Removing Columns
 
 | Key/Command                      | Action                     |
 |----------------------------------+----------------------------|
-| =Alt+Shift+Right=                 | Insert column to the right |
-| =scimax.table.insertColumnRight=  | Insert column right        |
-| =scimax.table.deleteColumn=       | Delete current column      |
+| =Alt+Shift+Right=                | Insert column to the right |
+| =scimax.table.insertColumnRight= | Insert column right        |
+| =scimax.table.deleteColumn=      | Delete current column      |
 
 ** Moving Rows/Columns
 
-| Key/Command                     | Action                      |
-|---------------------------------+-----------------------------|
-| =scimax.table.moveRowUp=         | Move row up                 |
-| =scimax.table.moveRowDown=       | Move row down               |
-| =scimax.table.moveColumnLeft=    | Move column left            |
-| =scimax.table.moveColumnRight=   | Move column right           |
+| Key/Command                    | Action            |
+|--------------------------------+-------------------|
+| =scimax.table.moveRowUp=       | Move row up       |
+| =scimax.table.moveRowDown=     | Move row down     |
+| =scimax.table.moveColumnLeft=  | Move column left  |
+| =scimax.table.moveColumnRight= | Move column right |
 
 ** Separator Lines
 
 Insert horizontal separator lines to divide table sections:
 
-| Key       | Action                              |
-|-----------+-------------------------------------|
-| =Ctrl+C -= | Insert separator line (=|---+---|=)   |
+| Key        | Action                              |
+|------------+-------------------------------------|
+| =Ctrl+C -= | Insert separator line (=|---+---|=) |
 
 Example with separators:
 #+BEGIN_SRC org
@@ -177,19 +177,19 @@ Formulas are defined in a =#+TBLFM:= line below the table:
 
 *** Combined References
 
-| Reference | Meaning                              |
-|-----------+--------------------------------------|
-| =@2$3=     | Row 2, column 3                      |
-| =@3$>=     | Row 3, last column                   |
-| =@>$4=     | Last row, column 4                   |
+| Reference | Meaning            |
+|-----------+--------------------|
+| =@2$3=    | Row 2, column 3    |
+| =@3$>=    | Row 3, last column |
+| =@>$4=    | Last row, column 4 |
 
 *** Ranges
 
-| Reference        | Meaning                         |
-|------------------+---------------------------------|
-| =@2$1..@5$1=      | Column 1, rows 2 through 5      |
-| =@2$1..@2$4=      | Row 2, columns 1 through 4      |
-| =@2$1..@5$4=      | Rectangle from @2$1 to @5$4     |
+| Reference    | Meaning                     |
+|--------------+-----------------------------|
+| =@2$1..@5$1= | Column 1, rows 2 through 5  |
+| =@2$1..@2$4= | Row 2, columns 1 through 4  |
+| =@2$1..@5$4= | Rectangle from @2$1 to @5$4 |
 
 ** Formula Syntax
 
@@ -209,13 +209,13 @@ Multiple formulas separated by =::=:
 
 ** Built-in Functions
 
-| Function   | Description                          |
-|------------+--------------------------------------|
-| =vsum=      | Sum of values in range               |
-| =vmean=     | Average of values                    |
-| =vmin=      | Minimum value                        |
-| =vmax=      | Maximum value                        |
-| =vcount=    | Count of values                      |
+| Function | Description            |
+|----------+------------------------|
+| =vsum=   | Sum of values in range |
+| =vmean=  | Average of values      |
+| =vmin=   | Minimum value          |
+| =vmax=   | Maximum value          |
+| =vcount= | Count of values        |
 
 Example:
 #+BEGIN_SRC org
@@ -231,10 +231,10 @@ Example:
 
 ** Recalculating Formulas
 
-| Key/Command                  | Action                       |
-|------------------------------+------------------------------|
-| =Ctrl+C Ctrl+C= (on TBLFM)    | Recalculate all formulas     |
-| =scimax.table.recalculate=    | Recalculate table            |
+| Key/Command                | Action                   |
+|----------------------------+--------------------------|
+| =Ctrl+C Ctrl+C= (on TBLFM) | Recalculate all formulas |
+| =scimax.table.recalculate= | Recalculate table        |
 
 Place your cursor on the =#+TBLFM:= line and press =Ctrl+C Ctrl+C= to apply
 all formulas.
@@ -293,10 +293,10 @@ The import command will prompt for the file path and delimiter.
 
 ** Exporting Tables
 
-| Key/Command              | Description                      |
-|--------------------------+----------------------------------|
-| =Ctrl+C Ctrl+E T=         | Export table                     |
-| =scimax.table.export=     | Export table to file             |
+| Key/Command           | Description          |
+|-----------------------+----------------------|
+| =Ctrl+C Ctrl+E T=     | Export table         |
+| =scimax.table.export= | Export table to file |
 
 Export formats:
 - CSV (comma-separated values)
@@ -307,17 +307,17 @@ Export formats:
 
 Perform quick calculations on columns:
 
-| Command                      | Description                   |
-|------------------------------+-------------------------------|
-| =scimax.table.sumColumn=      | Sum values in current column  |
-| =scimax.table.averageColumn=  | Average of current column     |
+| Command                      | Description                  |
+|------------------------------+------------------------------|
+| =scimax.table.sumColumn=     | Sum values in current column |
+| =scimax.table.averageColumn= | Average of current column    |
 
 ** Sorting
 
-| Key/Command                | Description                    |
-|----------------------------+--------------------------------|
-| =Ctrl+C ^=                  | Sort table by current column   |
-| =scimax.table.sortByColumn=  | Sort by column                 |
+| Key/Command                 | Description                  |
+|-----------------------------+------------------------------|
+| =Ctrl+C ^=                  | Sort table by current column |
+| =scimax.table.sortByColumn= | Sort by column               |
 
 Sorting options:
 - Alphabetic (A-Z or Z-A)
@@ -397,40 +397,40 @@ For large datasets:
 
 ** Keybindings
 
-| Key               | Action                         |
-|-------------------+--------------------------------|
-| =Ctrl+C \vert{}=           | Create table                   |
-| =Tab=              | Next cell / align              |
-| =Shift+Tab=        | Previous cell                  |
-| =Ctrl+C -=         | Insert separator               |
-| =Alt+Enter=        | Insert row below               |
-| =Alt+Shift+Right=  | Insert column right            |
-| =Alt+Shift+Backspace= | Delete row                  |
-| =Ctrl+C ^=         | Sort by column                 |
-| =Ctrl+C Ctrl+C=    | Recalculate (on TBLFM)         |
-| =Ctrl+C Ctrl+E T=  | Export table                   |
+| Key                   | Action                 |
+|-----------------------+------------------------|
+| =Ctrl+C \vert{}=      | Create table           |
+| =Tab=                 | Next cell / align      |
+| =Shift+Tab=           | Previous cell          |
+| =Ctrl+C -=            | Insert separator       |
+| =Alt+Enter=           | Insert row below       |
+| =Alt+Shift+Right=     | Insert column right    |
+| =Alt+Shift+Backspace= | Delete row             |
+| =Ctrl+C ^=            | Sort by column         |
+| =Ctrl+C Ctrl+C=       | Recalculate (on TBLFM) |
+| =Ctrl+C Ctrl+E T=     | Export table           |
 
 ** Commands
 
-| Command                        | Description                |
-|--------------------------------+----------------------------|
-| =scimax.table.create=           | Create new table           |
-| =scimax.table.insertRowAbove=   | Insert row above           |
-| =scimax.table.insertRowBelow=   | Insert row below           |
-| =scimax.table.deleteRow=        | Delete current row         |
-| =scimax.table.insertColumnRight=| Insert column right        |
-| =scimax.table.deleteColumn=     | Delete current column      |
-| =scimax.table.moveRowUp=        | Move row up                |
-| =scimax.table.moveRowDown=      | Move row down              |
-| =scimax.table.moveColumnLeft=   | Move column left           |
-| =scimax.table.moveColumnRight=  | Move column right          |
-| =scimax.table.recalculate=      | Recalculate formulas       |
-| =scimax.table.sumColumn=        | Sum current column         |
-| =scimax.table.averageColumn=    | Average current column     |
-| =scimax.table.sortByColumn=     | Sort by current column     |
-| =scimax.table.export=           | Export table               |
-| =scimax.table.import=           | Import table               |
-| =scimax.table.gotoNamed=        | Go to named table          |
+| Command                          | Description            |
+|----------------------------------+------------------------|
+| =scimax.table.create=            | Create new table       |
+| =scimax.table.insertRowAbove=    | Insert row above       |
+| =scimax.table.insertRowBelow=    | Insert row below       |
+| =scimax.table.deleteRow=         | Delete current row     |
+| =scimax.table.insertColumnRight= | Insert column right    |
+| =scimax.table.deleteColumn=      | Delete current column  |
+| =scimax.table.moveRowUp=         | Move row up            |
+| =scimax.table.moveRowDown=       | Move row down          |
+| =scimax.table.moveColumnLeft=    | Move column left       |
+| =scimax.table.moveColumnRight=   | Move column right      |
+| =scimax.table.recalculate=       | Recalculate formulas   |
+| =scimax.table.sumColumn=         | Sum current column     |
+| =scimax.table.averageColumn=     | Average current column |
+| =scimax.table.sortByColumn=      | Sort by current column |
+| =scimax.table.export=            | Export table           |
+| =scimax.table.import=            | Import table           |
+| =scimax.table.gotoNamed=         | Go to named table      |
 
 * Related Topics
 

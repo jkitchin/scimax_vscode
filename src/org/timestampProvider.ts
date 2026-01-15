@@ -1,29 +1,66 @@
 import * as vscode from 'vscode';
 import { isInTable, moveRowUp, moveRowDown, moveColumnLeft, moveColumnRight } from './tableProvider';
-import { updateStatisticsCookies } from './scimaxOrg';
+import { updateStatisticsCookies, updateClosedTimestamp } from './scimaxOrg';
 import {
     advanceDateByRepeater,
     getDayOfWeek,
     REPEATER_TIMESTAMP_PATTERN,
     findRepeaterInLines,
 } from '../parser/orgRepeater';
-
-/**
- * TODO states for cycling
- */
-const TODO_STATES = ['', 'TODO', 'DONE'];
+import {
+    getTodoWorkflowForDocument,
+    getNextTodoState,
+    getPreviousTodoState,
+} from './todoStates';
 
 /**
  * Check if line is an org heading and return match info
+ * @param line The line text to check
+ * @param validTodoStates Optional set of valid TODO states for the document
  */
-function getOrgHeadingInfo(line: string): { level: number; todoState: string; rest: string } | null {
-    // Match: stars, optional TODO/DONE, rest of heading
-    const match = line.match(/^(\*+)\s+(?:(TODO|DONE)\s+)?(.*)$/);
-    if (!match) return null;
+function getOrgHeadingInfo(line: string, validTodoStates?: Set<string>): { level: number; todoState: string; rest: string } | null {
+    // First check if it's a heading at all
+    const headingMatch = line.match(/^(\*+)\s+(.*)$/);
+    if (!headingMatch) return null;
+
+    const stars = headingMatch[1];
+    const afterStars = headingMatch[2];
+
+    // If we have valid states, check for any of them
+    if (validTodoStates && validTodoStates.size > 0) {
+        // Build regex pattern from valid states (escape special regex chars)
+        const escapedStates = Array.from(validTodoStates)
+            .filter(s => s.length > 0)
+            .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+        if (escapedStates.length > 0) {
+            const statesPattern = new RegExp(`^(${escapedStates.join('|')})\\s+(.*)$`);
+            const stateMatch = afterStars.match(statesPattern);
+            if (stateMatch) {
+                return {
+                    level: stars.length,
+                    todoState: stateMatch[1],
+                    rest: stateMatch[2]
+                };
+            }
+        }
+    }
+
+    // Fallback: check for common TODO/DONE states
+    const defaultMatch = afterStars.match(/^(TODO|DONE|NEXT|WAIT|WAITING|HOLD|SOMEDAY|CANCELLED|CANCELED|IN-PROGRESS)\s+(.*)$/);
+    if (defaultMatch) {
+        return {
+            level: stars.length,
+            todoState: defaultMatch[1],
+            rest: defaultMatch[2]
+        };
+    }
+
+    // No TODO state found
     return {
-        level: match[1].length,
-        todoState: match[2] || '',
-        rest: match[3]
+        level: stars.length,
+        todoState: '',
+        rest: afterStars
     };
 }
 
@@ -39,22 +76,6 @@ function getMarkdownHeadingInfo(line: string): { level: number; todoState: strin
         todoState: match[2] || '',
         rest: match[3]
     };
-}
-
-/**
- * Cycle TODO state forward: (none) → TODO → DONE → (none)
- */
-function cycleTodoForward(current: string): string {
-    const idx = TODO_STATES.indexOf(current);
-    return TODO_STATES[(idx + 1) % TODO_STATES.length];
-}
-
-/**
- * Cycle TODO state backward: (none) → DONE → TODO → (none)
- */
-function cycleTodoBackward(current: string): string {
-    const idx = TODO_STATES.indexOf(current);
-    return TODO_STATES[(idx - 1 + TODO_STATES.length) % TODO_STATES.length];
 }
 
 /**
@@ -222,23 +243,37 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
     const lineText = line.text;
     const isOrg = document.languageId === 'org';
 
+    // Get document-specific TODO workflow for org files
+    const workflow = isOrg ? getTodoWorkflowForDocument(document) : null;
+    const validStates = workflow ? new Set(workflow.allStates) : undefined;
+    const doneStates = workflow ? new Set(workflow.doneStates) : new Set(['DONE']);
+
     const headingInfo = isOrg
-        ? getOrgHeadingInfo(lineText)
+        ? getOrgHeadingInfo(lineText, validStates)
         : getMarkdownHeadingInfo(lineText);
 
     if (!headingInfo) return false;
 
-    let newState = forward
-        ? cycleTodoForward(headingInfo.todoState)
-        : cycleTodoBackward(headingInfo.todoState);
+    // Track previous done state for CLOSED timestamp handling
+    const wasDone = headingInfo.todoState ? doneStates.has(headingInfo.todoState) : false;
+
+    // Use document-aware TODO cycling for org files
+    let newState = isOrg
+        ? (forward
+            ? getNextTodoState(headingInfo.todoState || undefined, document)
+            : getPreviousTodoState(headingInfo.todoState || undefined, document))
+        : (forward
+            ? (headingInfo.todoState === '' ? 'TODO' : headingInfo.todoState === 'TODO' ? 'DONE' : '')
+            : (headingInfo.todoState === '' ? 'DONE' : headingInfo.todoState === 'DONE' ? 'TODO' : ''));
 
     const prefix = isOrg
         ? '*'.repeat(headingInfo.level)
         : '#'.repeat(headingInfo.level);
 
-    // Check for repeating task when transitioning to DONE
+    // Check for repeating task when transitioning to a done state
     let repeaterInfo: ReturnType<typeof findRepeaterTimestamp> = null;
-    if (isOrg && newState === 'DONE') {
+    const isDoneState = newState ? doneStates.has(newState) : false;
+    if (isOrg && isDoneState) {
         repeaterInfo = findRepeaterTimestamp(document, position.line);
     }
 
@@ -271,8 +306,8 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
         const keyword = match[2];
         const newDeadlineLine = `${indent}${keyword}: ${newTimestamp}`;
 
-        // Reset to TODO instead of DONE
-        newState = 'TODO';
+        // Reset to first active state instead of done state
+        newState = workflow?.activeStates[0] || 'TODO';
         const newLine = formatHeading(prefix, newState, headingInfo.rest);
 
         // Apply both edits
@@ -287,6 +322,7 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
         vscode.window.showInformationMessage(
             `Repeating task: ${keyword} shifted to ${newYear}-${newMonth}-${newDay}`
         );
+        // No CLOSED timestamp for repeating tasks - they reset to active state
     } else {
         // Normal TODO cycling
         const newLine = formatHeading(prefix, newState, headingInfo.rest);
@@ -294,6 +330,12 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
         await editor.edit(editBuilder => {
             editBuilder.replace(line.range, newLine);
         });
+
+        // Handle CLOSED timestamp (org-mode only)
+        if (isOrg) {
+            const isNowDone = newState ? doneStates.has(newState) : false;
+            await updateClosedTimestamp(editor, position.line, wasDone, isNowDone);
+        }
     }
 
     // Update statistics cookies in parent headings (org-mode only)

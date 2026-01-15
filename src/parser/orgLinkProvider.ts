@@ -124,14 +124,11 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             );
         }
 
-        // If there's a line number search
+        // If there's a line number search, use VS Code's fragment syntax
         if (search && /^\d+$/.test(search)) {
-            return vscode.Uri.parse(
-                `command:scimax.org.gotoLine?${encodeURIComponent(JSON.stringify({
-                    file: filePath,
-                    line: parseInt(search)
-                }))}`
-            );
+            const lineNum = parseInt(search);
+            // VS Code supports #L<line> fragment for jumping to lines
+            return vscode.Uri.file(filePath).with({ fragment: `L${lineNum}` });
         }
 
         // If there's a text search

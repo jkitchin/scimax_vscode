@@ -72,6 +72,7 @@ You can also use the newer org-cite syntax:
 
 * Code Blocks :code:
 
+
 ** Jupyter-python example
 
 #+BEGIN_SRC jupyter-python
@@ -139,6 +140,23 @@ console.log(greeting("World"));
 E = mc^2
 \end{equation}
 #+END_SRC
+
+** inline code
+
+The area is src_python{20 * 4 + 5}.
+
+#+NAME: double
+#+BEGIN_SRC python :results value :var n=2 
+return n * 2
+#+END_SRC
+
+#+RESULTS:
+
+Twice the number 4 is call_double(n=5).
+
+#+CALL: double(n=4)
+
+#+CALL: test-features.org:double(6)
 
 * Tables :tables:
 
