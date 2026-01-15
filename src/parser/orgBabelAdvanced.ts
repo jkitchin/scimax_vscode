@@ -12,6 +12,7 @@ import {
     ExecutionContext,
     HeaderArguments,
     parseHeaderArguments,
+    parseResultsFormat,
     executeSourceBlock,
     executorRegistry,
 } from '../parser/orgBabel';
@@ -689,14 +690,20 @@ export async function executeInlineSrc(
     inline: InlineSrc,
     baseContext: ExecutionContext = {}
 ): Promise<ExecutionResult> {
+    // Reconstruct header string for the block
+    const headerStr = Object.entries(inline.headers)
+        .filter(([k]) => k !== 'var') // var is handled separately
+        .map(([k, v]) => `:${k} ${v}`)
+        .join(' ');
+
     // Create a minimal block for execution
     const block: SrcBlockElement = {
         type: 'src-block',
         properties: {
             language: inline.language,
             value: inline.code,
-            parameters: '',
-            headers: {},
+            parameters: headerStr,
+            headers: inline.headers as Record<string, string>,
             lineNumber: inline.line,
             endLineNumber: inline.line,
         },
@@ -704,9 +711,11 @@ export async function executeInlineSrc(
         postBlank: 0,
     };
 
+    // Build context with results format from headers
     const context: ExecutionContext = {
         ...baseContext,
-        cwd: inline.headers.dir || baseContext.cwd,
+        cwd: inline.headers.dir as string || baseContext.cwd,
+        results: inline.headers.results ? parseResultsFormat(inline.headers.results as string) : baseContext.results,
     };
 
     return executeSourceBlock(block, context);

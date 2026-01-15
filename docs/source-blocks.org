@@ -7,7 +7,8 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Source Code Blocks
+* ✅ Source Code Blocks
+CLOSED: [2026-01-15 Thu 08:04]
 
 Source code blocks are the foundation of literate programming in org-mode. They
 allow you to embed executable code within your documents, creating notebooks
@@ -16,13 +17,15 @@ that combine narrative text, code, and results.
 This guide covers everything you need to know about working with source blocks
 in Scimax VS Code.
 
-* ⚠️ Introduction to Literate Programming
+* ✅ Introduction to Literate Programming
+CLOSED: [2026-01-15 Thu 08:04]
 
 Literate programming, pioneered by Donald Knuth, is a programming paradigm that
 treats programs as works of literature. Instead of writing code with comments,
 you write documentation with embedded code.
 
-** ⚠️ Benefits of Literate Programming
+** ✅ Benefits of Literate Programming
+CLOSED: [2026-01-15 Thu 08:04]
 
 - *Documentation and code stay synchronized* - Your explanations live alongside
   the code they describe
@@ -31,7 +34,8 @@ you write documentation with embedded code.
 - *Exploratory programming* - Test ideas interactively like a notebook
 - *Multiple outputs from one source* - Tangle code files and export documentation
 
-** ⚠️ Literate Programming in Org-Mode
+** ✅ Literate Programming in Org-Mode
+CLOSED: [2026-01-15 Thu 08:04]
 
 Org-mode's Babel system brings literate programming to org documents:
 
@@ -41,23 +45,28 @@ Org-mode's Babel system brings literate programming to org documents:
 - Extract (tangle) code to external files
 - Include or exclude code/results in exports
 
-* ⚠️ Source Block Syntax
+* ✅ Source Block Syntax
+CLOSED: [2026-01-15 Thu 08:04]
 
-** ⚠️ Basic Structure
+** ✅ Basic Structure
+CLOSED: [2026-01-15 Thu 08:04]
 
 A source block begins with #+BEGIN_SRC and ends with #+END_SRC:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python
 print("Hello, world!")
 #+END_SRC
-#+END_SRC
 
-** ⚠️ Language Declaration
+#+RESULTS:
+: Hello, world!
+
+
+** ✅ Language Declaration
+CLOSED: [2026-01-15 Thu 08:05]
 
 The language comes immediately after #+BEGIN_SRC:
 
-#+BEGIN_SRC org
 #+BEGIN_SRC python
 # Python code here
 #+END_SRC
@@ -69,52 +78,53 @@ The language comes immediately after #+BEGIN_SRC:
 #+BEGIN_SRC shell
 # Shell commands here
 #+END_SRC
-#+END_SRC
+
 
 ** ⚠️ Header Arguments
 
 Header arguments control block behavior and appear after the language:
 
-#+BEGIN_SRC org
 #+BEGIN_SRC python :results output :session *python*
 # This block prints results and uses a persistent session
-#+END_SRC
 #+END_SRC
 
 ** ⚠️ Results Section
 
 When you execute a block, results appear immediately below in a #+RESULTS: section:
 
-#+BEGIN_SRC org
 #+BEGIN_SRC python
-2 + 2
+print(2 + 2)
 #+END_SRC
 
 #+RESULTS:
 : 4
-#+END_SRC
+
 
 * ⚠️ Executing Code
 
 ** ⚠️ Execution Keybindings
 
-| Keybinding                 | Action                              | Platform |
-|----------------------------+-------------------------------------|----------|
-| Ctrl+Enter / Cmd+Enter   | Execute current block               | All      |
-| Ctrl+C Ctrl+C             | Execute current block (Emacs style) | All      |
-| Shift+Enter               | Execute and move to next block      | All      |
+| Keybinding                                                         | Action                              | Platform |
+| ----------------------------+------------------------------------- | ----------                          |          |
+| Ctrl+Enter / Cmd+Enter                                             | Execute current block               | All      |
+| Ctrl+C Ctrl+C                                                      | Execute current block (Emacs style) | All      |
+| Shift+Enter                                                        | Execute and move to next block      | All      |
 
-** ⚠️ Execution Commands
+** ✅ Execution Commands
+CLOSED: [2026-01-15 Thu 08:11]
 
-| Command                           | Description                         |
-|-----------------------------------+-------------------------------------|
-| scimax.org.executeBlock          | Execute the current source block    |
-| scimax.ob.executeAndNext         | Execute and jump to next block      |
-| scimax.ob.executeToPoint         | Execute all blocks up to cursor     |
-| scimax.ob.executeAll             | Execute all blocks in document      |
-| scimax.babel.executeAllBlocks    | Execute all blocks in document      |
+| Command                     | Key Binding | Description                      |
+|-----------------------------+-------------+----------------------------------|
+| scimax.org.executeBlock     | C-c C-c     | Execute the current source block |
+| scimax.ob.executeAndNext    | S-Enter     | Execute and jump to next block   |
+| scimax.ob.executeAndNew     | M-S-Enter   | Execute and new                  |
+| scimax.ob.executeToPoint    |             | Execute all blocks up to cursor  |
+| scimax.org.executeAllBlocks |             | Execute all blocks in document   |
 
-** ⚠️ Execution Flow
+
+
+** ✅ Execution Flow
+CLOSED: [2026-01-15 Thu 08:26]
 
 1. Place cursor inside a source block
 2. Press Ctrl+Enter (or Cmd+Enter on Mac)
@@ -122,9 +132,10 @@ When you execute a block, results appear immediately below in a #+RESULTS: secti
 4. Results appear below the block in a #+RESULTS: section
 5. Previous results are replaced automatically
 
-** ⚠️ Example
+** ✅ Example
+CLOSED: [2026-01-15 Thu 08:11]
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python
 import math
 result = math.sqrt(16)
@@ -133,44 +144,48 @@ print(f"The square root of 16 is {result}")
 
 #+RESULTS:
 : The square root of 16 is 4.0
-#+END_SRC
 
-* ⚠️ Supported Languages
+
+* ✅ Supported Languages
+CLOSED: [2026-01-15 Thu 08:10]
 
 Scimax VS Code supports a wide range of programming languages through both
 direct execution and Jupyter kernel integration.
 
-** ⚠️ Direct Execution Languages
+** ✅ Direct Execution Languages
+CLOSED: [2026-01-15 Thu 08:10]
 
 These languages execute directly without requiring Jupyter:
 
-| Language       | Identifiers                    | Requirement           |
-|----------------+--------------------------------+-----------------------|
-| Python         | python, python3, py         | Python 3.x in PATH    |
-| JavaScript     | javascript, js, node       | Node.js installed     |
-| TypeScript     | typescript, ts               | TypeScript installed  |
-| Shell/Bash     | sh, bash, shell             | Bash shell            |
-| SQL            | sql, sqlite                  | Database configured   |
+| Language   | Identifiers          | Requirement          |
+|------------+----------------------+----------------------|
+| Python     | python, python3, py  | Python 3.x in PATH   |
+| JavaScript | javascript, js, node | Node.js installed    |
+| TypeScript | typescript, ts       | TypeScript installed |
+| Shell/Bash | sh, bash, shell      | Bash shell           |
+| SQL        | sql, sqlite          | Database configured  |
 
-** ⚠️ Jupyter Kernel Languages
+** ✅ Jupyter Kernel Languages
+CLOSED: [2026-01-15 Thu 08:10]
 
 For enhanced interactive features, use Jupyter kernels by prefixing the
 language with jupyter- or relying on automatic Jupyter detection:
 
-| Language       | Explicit Syntax      | Auto-Detect | Kernel Required       |
-|----------------+----------------------+-------------+-----------------------|
-| Python         | jupyter-python      | Yes         | ipykernel             |
-| R              | jupyter-r           | Yes         | IRkernel              |
-| Julia          | jupyter-julia       | Yes         | IJulia                |
-| Ruby           | jupyter-ruby        | Yes         | iruby                 |
-| Go             | jupyter-go          | No          | gophernotes           |
-| Rust           | jupyter-rust        | No          | evcxr                 |
-| Perl           | jupyter-perl        | No          | IPerl                 |
-| C              | jupyter-c           | No          | jupyter-c-kernel      |
-| C++            | jupyter-cpp         | No          | xeus-cling            |
-| Java           | jupyter-java        | No          | IJava                 |
+| Language | Explicit Syntax | Auto-Detect | Kernel Required  |
+|----------+-----------------+-------------+------------------|
+| Python   | jupyter-python  | Yes         | ipykernel        |
+| R        | jupyter-r       | Yes         | IRkernel         |
+| Julia    | jupyter-julia   | Yes         | IJulia           |
+| Ruby     | jupyter-ruby    | Yes         | iruby            |
+| Go       | jupyter-go      | No          | gophernotes      |
+| Rust     | jupyter-rust    | No          | evcxr            |
+| Perl     | jupyter-perl    | No          | IPerl            |
+| C        | jupyter-c       | No          | jupyter-c-kernel |
+| C++      | jupyter-cpp     | No          | xeus-cling       |
+| Java     | jupyter-java    | No          | IJava            |
 
-** ⚠️ Jupyter Benefits
+** ✅ Jupyter Benefits
+CLOSED: [2026-01-15 Thu 08:26]
 
 Using Jupyter kernels provides:
 
@@ -179,15 +194,15 @@ Using Jupyter kernels provides:
 - *Interactive widgets* - Use ipywidgets and similar libraries
 - *Automatic display* - Images from matplotlib, plots, etc. appear automatically
 
-** ⚠️ Example: Mixing Languages
+** ✅ Example: Mixing Languages
+CLOSED: [2026-01-15 Thu 08:26]
 
-#+BEGIN_SRC org
 #+BEGIN_SRC shell
 echo "System: $(uname -s)"
 #+END_SRC
 
 #+RESULTS:
-: System: Linux
+: System: Darwin
 
 #+BEGIN_SRC python
 import platform
@@ -195,67 +210,77 @@ print(f"Python version: {platform.python_version()}")
 #+END_SRC
 
 #+RESULTS:
-: Python version: 3.11.0
+: Python version: 3.12.11
 
 #+BEGIN_SRC javascript
 console.log(`Node version: ${process.version}`);
 #+END_SRC
 
 #+RESULTS:
-: Node version: v18.12.0
-#+END_SRC
+: Node version: v25.2.1
 
-* ⚠️ Header Arguments
+
+* ✅ Header Arguments
+CLOSED: [2026-01-15 Thu 08:27]
 
 Header arguments customize how source blocks execute and how results are
 handled. They appear after the language name.
 
-** ⚠️ Syntax
+** ✅ Syntax
+CLOSED: [2026-01-15 Thu 08:33]
 
-#+BEGIN_SRC org
-#+BEGIN_SRC language :arg1 value1 :arg2 value2
-code
+#+BEGIN_SRC python :var arg1="value1" arg2=5 :results output
+print(arg1, arg2)
 #+END_SRC
-#+END_SRC
 
-** ⚠️ Results Arguments
+#+RESULTS:
+: value1 5
 
-*** ⚠️ :results - Control Output Format
+
+** ✅ Results Arguments
+CLOSED: [2026-01-15 Thu 08:33]
+
+*** ✅ :results - Control Output Format
+CLOSED: [2026-01-15 Thu 08:33]
 
 The :results argument controls how execution results are formatted and
 displayed.
 
-**** ⚠️ Collection Types
+**** ✅ Collection Types
+CLOSED: [2026-01-15 Thu 08:33]
 
-| Value      | Description                                |
-|------------+--------------------------------------------|
-| output    | Capture stdout/stderr (default for most)   |
-| value     | Capture return value (last expression)     |
+| Value  | Description                              |
+|--------+------------------------------------------|
+| output | Capture stdout/stderr (default for most) |
+| value  | Capture return value (last expression)   |
 
-**** ⚠️ Format Types
+**** ✅ Format Types
+CLOSED: [2026-01-15 Thu 08:34]
 
-| Value      | Description                                |
-|------------+--------------------------------------------|
-| table     | Format output as an org table              |
-| list      | Format output as a list                    |
-| verbatim  | Fixed-width verbatim text (default)        |
-| file      | Result is a file path/link                 |
-| html      | Wrap in #+BEGIN_EXPORT html block         |
-| latex     | Wrap in #+BEGIN_EXPORT latex block        |
-| drawer    | Wrap in :RESULTS: drawer                  |
+| Value    | Description                         |
+|----------+-------------------------------------|
+| table    | Format output as an org table       |
+| list     | Format output as a list             |
+| verbatim | Fixed-width verbatim text (default) |
+| file     | Result is a file path/link          |
+| html     | Wrap in #+BEGIN_EXPORT html block   |
+| latex    | Wrap in #+BEGIN_EXPORT latex block  |
+| drawer   | Wrap in :RESULTS: drawer            |
 
-**** ⚠️ Handling Types
+**** ✅ Handling Types
+CLOSED: [2026-01-15 Thu 08:34]
 
-| Value     | Description                                 |
-|-----------+---------------------------------------------|
-| replace  | Replace previous results (default)          |
-| append   | Append to previous results                  |
-| prepend  | Insert before previous results              |
-| silent   | Don't insert results                        |
+| Value   | Description                        |
+|---------+------------------------------------|
+| replace | Replace previous results (default) |
+| append  | Append to previous results         |
+| prepend | Insert before previous results     |
+| silent  | Don't insert results               |
 
-**** ⚠️ Examples
+**** ✅ Examples
+CLOSED: [2026-01-15 Thu 08:34]
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :results output
 print("Line 1")
 print("Line 2")
@@ -270,7 +295,6 @@ print("Line 2")
 #+END_SRC
 
 #+RESULTS:
-: 42
 
 #+BEGIN_SRC python :results output table
 print("Name,Age,City")
@@ -279,9 +303,9 @@ print("Bob,25,Boston")
 #+END_SRC
 
 #+RESULTS:
-| Name  | Age | City   |
-| Alice | 30  | NYC    |
-| Bob   | 25  | Boston |
+| Name | Age | City |
+| Alice | 30 | NYC |
+| Bob | 25 | Boston |
 
 #+BEGIN_SRC python :results output file :file plot.png
 import matplotlib.pyplot as plt
@@ -292,20 +316,21 @@ print('plot.png')
 
 #+RESULTS:
 [[file:plot.png]]
-#+END_SRC
 
-** ⚠️ Export Arguments
+
+** ✅ Export Arguments
+CLOSED: [2026-01-15 Thu 08:35]
 
 *** ⚠️ :exports - Control What Gets Exported
 
-| Value      | Description                             |
-|------------+-----------------------------------------|
-| code      | Export only the code block              |
-| results   | Export only the results                 |
-| both      | Export both code and results (default)  |
-| none      | Don't export anything                   |
+| Value   | Description                            |
+|---------+----------------------------------------|
+| code    | Export only the code block             |
+| results | Export only the results                |
+| both    | Export both code and results (default) |
+| none    | Don't export anything                  |
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :exports code
 # Only this code appears in PDF/HTML export
 print("Secret result")
@@ -315,7 +340,7 @@ print("Secret result")
 # Only the output appears in export
 print("Public data")
 #+END_SRC
-#+END_SRC
+
 
 ** ⚠️ Variable Arguments
 
@@ -323,30 +348,29 @@ print("Public data")
 
 Define input variables for the code block:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :var name="Alice" age=30
 print(f"{name} is {age} years old")
 #+END_SRC
 
 #+RESULTS:
 : Alice is 30 years old
-#+END_SRC
+
 
 Multiple variables:
 
-#+BEGIN_SRC org
-#+BEGIN_SRC python :var x=10 :var y=20
+#+BEGIN_SRC python :var x=40 :var y=20
 result = x + y
 print(f"{x} + {y} = {result}")
 #+END_SRC
 
 #+RESULTS:
-: 10 + 20 = 30
-#+END_SRC
+: 40 + 20 = 60
+
 
 Reference named blocks or tables:
 
-#+BEGIN_SRC org
+
 #+NAME: my-data
 | Name  | Score |
 |-------+-------|
@@ -359,9 +383,7 @@ for row in data:
 #+END_SRC
 
 #+RESULTS:
-: Alice: 95
-: Bob: 87
-#+END_SRC
+
 
 ** ⚠️ Session Arguments
 
@@ -369,7 +391,7 @@ for row in data:
 
 Use sessions to maintain state between block executions:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :session *mysession*
 x = 42
 print("x defined")
@@ -378,13 +400,12 @@ print("x defined")
 #+RESULTS:
 : x defined
 
-#+BEGIN_SRC python :session *mysession*
+#+BEGIN_SRC python :session *mysession* 
 print(f"x = {x}")
 #+END_SRC
 
 #+RESULTS:
-: x = 42
-#+END_SRC
+
 
 Session names:
 
@@ -570,17 +591,14 @@ return data
 When using :results file or Jupyter with plotting libraries, results are file
 links:
 
-#+BEGIN_SRC org
 #+BEGIN_SRC jupyter-python :results file
 import matplotlib.pyplot as plt
-plt.plot([1, 2, 3], [1, 4, 9])
-plt.savefig('.ob-jupyter/plot.png')
-'.ob-jupyter/plot.png'
+plt.plot([1, 2, 3], [1, 4, 9]);
 #+END_SRC
 
 #+RESULTS:
-[[file:.ob-jupyter/plot.png]]
-#+END_SRC
+[[file:.ob-jupyter/output-1768484533710-2.png]]
+
 
 Images are automatically saved to .ob-jupyter/ directory when using Jupyter
 kernels.
@@ -589,7 +607,6 @@ kernels.
 
 Blocks can produce rich formatted output:
 
-#+BEGIN_SRC org
 #+BEGIN_SRC python :results html
 html = "<h1>Title</h1><p>Paragraph</p>"
 print(html)
@@ -599,13 +616,13 @@ print(html)
 #+BEGIN_EXPORT html
 <h1>Title</h1><p>Paragraph</p>
 #+END_EXPORT
-#+END_SRC
 
-*** ⚠️ Drawers
+
+*** ✅ Drawers
+CLOSED: [2026-01-15 Thu 08:43]
 
 Use drawers to fold long output:
 
-#+BEGIN_SRC org
 #+BEGIN_SRC python :results drawer
 for i in range(20):
     print(f"Line {i}")
@@ -615,31 +632,45 @@ for i in range(20):
 :RESULTS:
 Line 0
 Line 1
-...
+Line 2
+Line 3
+Line 4
+Line 5
+Line 6
+Line 7
+Line 8
+Line 9
+Line 10
+Line 11
+Line 12
+Line 13
+Line 14
+Line 15
+Line 16
+Line 17
+Line 18
 Line 19
 :END:
-#+END_SRC
+
 
 ** ⚠️ Error Handling
 
 When execution fails, error messages appear in results:
 
-#+BEGIN_SRC org
 #+BEGIN_SRC python
 undefined_variable
 #+END_SRC
 
-#+RESULTS:
-: Error: name 'undefined_variable' is not defined
-#+END_SRC
+
+
 
 ** ⚠️ Clearing Results
 
-| Command                         | Description                    |
-|---------------------------------+--------------------------------|
-| scimax.ob.clearResults         | Clear results of current block |
-| scimax.ob.clearAllResults      | Clear all results in document  |
-| scimax.babel.clearResults      | Clear all results in document  |
+| Command                   | Description                    |
+|---------------------------+--------------------------------|
+| scimax.ob.clearResults    | Clear results of current block |
+| scimax.ob.clearAllResults | Clear all results in document  |
+| scimax.babel.clearResults | Clear all results in document  |
 
 * ⚠️ Sessions for Stateful Execution
 
@@ -653,11 +684,13 @@ functions, and imports persist.
 
 Add :session header argument:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :session
 x = 42
 y = 10
 #+END_SRC
+
+#+RESULTS:
 
 #+BEGIN_SRC python :session
 result = x + y
@@ -665,14 +698,13 @@ print(result)
 #+END_SRC
 
 #+RESULTS:
-: 52
-#+END_SRC
+
 
 ** ⚠️ Named Sessions
 
 Use different session names to maintain separate contexts:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :session *analysis*
 import pandas as pd
 df = pd.read_csv('data.csv')
@@ -687,7 +719,7 @@ import unittest
 # Can still access df here
 print(df.head())
 #+END_SRC
-#+END_SRC
+
 
 ** ⚠️ Session Scope
 
@@ -701,18 +733,22 @@ print(df.head())
 When using Jupyter kernels (e.g., jupyter-python), sessions automatically use
 Jupyter kernel instances:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC jupyter-python :session *notebook*
 import numpy as np
 data = np.random.randn(100)
 #+END_SRC
 
+#+RESULTS:
+
 #+BEGIN_SRC jupyter-python :session *notebook*
 import matplotlib.pyplot as plt
-plt.hist(data, bins=20)
-plt.savefig('.ob-jupyter/hist.png')
+plt.hist(data, bins=20);
 #+END_SRC
-#+END_SRC
+
+#+RESULTS:
+[[file:.ob-jupyter/output-1768484909875-0.png]]
+
 
 ** ⚠️ Benefits of Sessions
 
@@ -728,29 +764,31 @@ plt.savefig('.ob-jupyter/hist.png')
 - Restart VS Code to clear all sessions
 - Session state is not saved to disk
 
-* ⚠️ Navigation
+* ✅ Navigation
+CLOSED: [2026-01-15 Thu 08:50]
 
 Moving between source blocks efficiently is essential for productive literate
 programming.
 
 ** ⚠️ Block Navigation Keybindings
 
-| Keybinding  | Action                    | Platform |
-|-------------+---------------------------|----------|
-| Ctrl+Down  | Next source block         | All      |
-| Ctrl+Up    | Previous source block     | All      |
-| Shift+Enter| Execute and next block    | All      |
+| Keybinding                               | Action                 | Platform |
+| ---------------------------------------- | ----------             |          |
+| Ctrl+Down                                | Next source block      | All      |
+| Ctrl+Up                                  | Previous source block  | All      |
+| Shift+Enter                              | Execute and next block | All      |
 
 ** ⚠️ Navigation Commands
 
-| Command                       | Description                        |
-|-------------------------------+------------------------------------|
-| scimax.ob.nextBlock          | Jump to next source block          |
-| scimax.ob.previousBlock      | Jump to previous source block      |
-| scimax.ob.jumpToBlock        | Quick pick menu of all blocks      |
-| scimax.ob.jumpToResults      | Jump to results of current block   |
+| Command                 |       | Description                      |
+|-------------------------+-------+----------------------------------|
+| scimax.ob.nextBlock     | C-c n | Jump to next source block        |
+| scimax.ob.previousBlock | C-c p | Jump to previous source block    |
+| scimax.ob.jumpToBlock   |       | Quick pick menu of all blocks    |
+| scimax.ob.jumpToResults |       | Jump to results of current block |
 
-** ⚠️ Quick Block Selection
+** ✅ Quick Block Selection
+CLOSED: [2026-01-15 Thu 08:51]
 
 Use scimax.ob.jumpToBlock to see a searchable list of all source blocks:
 
@@ -759,7 +797,8 @@ Use scimax.ob.jumpToBlock to see a searchable list of all source blocks:
 - Filter by language or content
 - Jump instantly to any block
 
-** ⚠️ Example Workflow
+** ✅ Example Workflow
+CLOSED: [2026-01-15 Thu 08:51]
 
 1. Write code in first block
 2. Press Shift+Enter to execute and move to next block
@@ -767,49 +806,55 @@ Use scimax.ob.jumpToBlock to see a searchable list of all source blocks:
 4. Press Shift+Enter again
 5. Continue building up your analysis sequentially
 
-* ⚠️ Block Manipulation
+* ✅ Block Manipulation
+CLOSED: [2026-01-15 Thu 08:51]
 
 Scimax VS Code provides powerful commands for creating, modifying, and
 reorganizing source blocks.
 
-** ⚠️ Creating Blocks
+** ✅ Creating Blocks
+CLOSED: [2026-01-15 Thu 08:51]
 
-*** ⚠️ Insert Block Above
+*** ✅ Insert Block Above
+CLOSED: [2026-01-15 Thu 08:55]
 
-| Command                         | Description                      |
-|---------------------------------+----------------------------------|
-| scimax.ob.insertBlockAbove     | Insert new block above cursor    |
+| Command                    | Key Binding | Description                   |
+|----------------------------+-------------+-------------------------------|
+| scimax.ob.insertBlockAbove | Esc-a       | Insert new block above cursor |
 
 Prompts for language, creates block, and places cursor inside.
 
-*** ⚠️ Insert Block Below
+*** ✅ Insert Block Below
+CLOSED: [2026-01-15 Thu 08:55]
 
-| Command                         | Description                      |
-|---------------------------------+----------------------------------|
-| scimax.ob.insertBlockBelow     | Insert new block below cursor    |
-| scimax.ob.insertBlockBelowSame | Insert block with same language  |
+| Command                        | Key Binding | Description                     |
+|--------------------------------+-------------+---------------------------------|
+| scimax.ob.insertBlockBelow     | Esc-b       | Insert new block below cursor   |
+| scimax.ob.insertBlockBelowSame |             | Insert block with same language |
 
 The "same language" variant copies the language from the current block.
 
-** ⚠️ Splitting Blocks
+** ✅ Splitting Blocks
+CLOSED: [2026-01-15 Thu 08:55]
 
-*** ⚠️ Split at Cursor
+*** ✅ Split at Cursor
+CLOSED: [2026-01-15 Thu 08:55]
 
-| Command                    | Description                           |
-|----------------------------|---------------------------------------|
-| scimax.ob.splitBlock      | Split current block at cursor         |
+| Command              | Key Binding | Description                   |
+|----------------------+-------------+-------------------------------|
+| scimax.ob.splitBlock | Esc--       | Split current block at cursor |
 
 Place your cursor in the middle of a source block and split it into two blocks:
 
 Before:
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python
 x = 1
 y = 2
 z = x + y
 print(z)
 #+END_SRC
-#+END_SRC
+
 
 After splitting at line 3:
 #+BEGIN_SRC org
@@ -822,7 +867,7 @@ y = 2
 z = x + y
 print(z)
 #+END_SRC
-#+END_SRC
+
 
 Both blocks inherit the original header arguments.
 
@@ -830,10 +875,10 @@ Both blocks inherit the original header arguments.
 
 *** ⚠️ Merge with Previous/Next
 
-| Command                         | Description                      |
-|---------------------------------+----------------------------------|
-| scimax.ob.mergeWithPrevious    | Merge with previous block        |
-| scimax.ob.mergeWithNext        | Merge with next block            |
+| Command                     | Description               |
+|-----------------------------+---------------------------|
+| scimax.ob.mergeWithPrevious | Merge with previous block |
+| scimax.ob.mergeWithNext     | Merge with next block     |
 
 Combines code from two adjacent blocks into one. If languages differ, prompts
 for confirmation.
@@ -842,26 +887,26 @@ for confirmation.
 
 *** ⚠️ Clone Block
 
-| Command                    | Description                           |
-|----------------------------|---------------------------------------|
-| scimax.ob.cloneBlock      | Duplicate current block below         |
+| Command              | Description                   |
+|----------------------+-------------------------------|
+| scimax.ob.cloneBlock | Duplicate current block below |
 
 Creates an exact copy of the current block including its header arguments.
 
 *** ⚠️ Copy Block and Results
 
-| Command                    | Description                           |
-|----------------------------|---------------------------------------|
-| scimax.ob.copyBlock       | Copy block and results to clipboard   |
+| Command             | Description                         |
+|---------------------+-------------------------------------|
+| scimax.ob.copyBlock | Copy block and results to clipboard |
 
 Copies the entire block including #+NAME: line (if present) and results
 section.
 
 *** ⚠️ Kill Block
 
-| Command                    | Description                           |
-|----------------------------|---------------------------------------|
-| scimax.ob.killBlock       | Delete block and copy to clipboard    |
+| Command             | Description                        |
+|---------------------+------------------------------------|
+| scimax.ob.killBlock | Delete block and copy to clipboard |
 
 Removes the block and its results, copying everything to clipboard for pasting
 elsewhere.
@@ -870,10 +915,10 @@ elsewhere.
 
 *** ⚠️ Move Up/Down
 
-| Command                    | Description                           |
-|----------------------------|---------------------------------------|
-| scimax.ob.moveBlockUp     | Swap with previous block              |
-| scimax.ob.moveBlockDown   | Swap with next block                  |
+| Command                 | Description              |
+|-------------------------+--------------------------|
+| scimax.ob.moveBlockUp   | Swap with previous block |
+| scimax.ob.moveBlockDown | Swap with next block     |
 
 Swaps the current block (including results) with the adjacent block,
 maintaining all content.
@@ -917,9 +962,9 @@ src_LANGUAGE[HEADERS]{CODE}
 
 *** ⚠️ Simple Inline Computation
 
-#+BEGIN_SRC org
+
 The answer is src_python{return 2 + 2} which equals 4.
-#+END_SRC
+
 
 Result after execution:
 #+BEGIN_SRC org
@@ -928,9 +973,9 @@ The answer is 4 which equals 4.
 
 *** ⚠️ With Headers
 
-#+BEGIN_SRC org
+
 Today is src_python[:results value]{import datetime; return datetime.date.today()}.
-#+END_SRC
+
 
 *** ⚠️ Accessing Variables
 
@@ -974,11 +1019,12 @@ files:
 - Extract all code to build/run your project
 - Keep docs and code in perfect sync
 
-** ⚠️ Enabling Tangling
+** ✅ Enabling Tangling
+CLOSED: [2026-01-15 Thu 08:57]
 
 Add :tangle filename.ext to source blocks:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :tangle myapp.py
 #!/usr/bin/env python3
 
@@ -988,15 +1034,17 @@ def main():
 if __name__ == "__main__":
     main()
 #+END_SRC
-#+END_SRC
 
-** ⚠️ Tangling Commands
 
-*** ⚠️ Execute Tangle
+** ✅ Tangling Commands
+CLOSED: [2026-01-15 Thu 08:57]
 
-| Keybinding        | Command                  | Description              |
-|-------------------+--------------------------+--------------------------|
-| Ctrl+C Ctrl+V T  | scimax.babel.tangle     | Extract all tangle blocks |
+*** ✅ Execute Tangle
+CLOSED: [2026-01-15 Thu 08:58]
+
+| Keybinding      | Command             | Description               |
+|-----------------+---------------------+---------------------------|
+| Ctrl+C Ctrl+V T | scimax.babel.tangle | Extract all tangle blocks |
 
 This command:
 1. Finds all blocks with :tangle headers
@@ -1007,15 +1055,15 @@ This command:
 
 *** ⚠️ Don't Tangle (Default)
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python
 # Not tangled by default
 #+END_SRC
-#+END_SRC
+
 
 *** ⚠️ Tangle to Specific File
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :tangle src/utils.py
 def utility_function():
     return "useful"
@@ -1025,17 +1073,16 @@ def utility_function():
 def another_utility():
     return "also useful"
 #+END_SRC
-#+END_SRC
+
 
 Both blocks tangle to src/utils.py in order.
 
 *** ⚠️ Tangle with Yes
 
-#+BEGIN_SRC org
 #+BEGIN_SRC python :tangle yes
 # Tangles to default file (based on org filename)
 #+END_SRC
-#+END_SRC
+
 
 If your org file is project.org, this tangles to project.py.
 

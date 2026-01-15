@@ -70,6 +70,155 @@ function hideStatus(): void {
     item.hide();
 }
 
+// =============================================================================
+// Named Element Resolution
+// =============================================================================
+
+/**
+ * Find a named table in the document and return its data as a 2D array
+ */
+function findNamedTable(document: vscode.TextDocument, name: string): unknown[][] | null {
+    const text = document.getText();
+    const lines = text.split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const nameMatch = line.match(/^#\+(NAME|TBLNAME):\s*(.+?)\s*$/i);
+
+        if (nameMatch && nameMatch[2] === name) {
+            // Found the name, look for table on next lines
+            if (i + 1 < lines.length && lines[i + 1].trim().startsWith('|')) {
+                const tableData: unknown[][] = [];
+
+                for (let j = i + 1; j < lines.length; j++) {
+                    const tableLine = lines[j].trim();
+                    if (!tableLine.startsWith('|')) break;
+
+                    // Skip separator lines (|---+---|)
+                    if (tableLine.match(/^\|[-+]+\|?$/)) continue;
+
+                    // Parse table row
+                    const cells = tableLine
+                        .split('|')
+                        .slice(1, -1)  // Remove first and last empty strings
+                        .map(cell => {
+                            const trimmed = cell.trim();
+                            // Try to convert to number
+                            const num = Number(trimmed);
+                            return isNaN(num) ? trimmed : num;
+                        });
+
+                    if (cells.length > 0) {
+                        tableData.push(cells);
+                    }
+                }
+
+                return tableData.length > 0 ? tableData : null;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Find named results (#+RESULTS: name or from a named source block)
+ */
+function findNamedResults(document: vscode.TextDocument, name: string): string | null {
+    const text = document.getText();
+    const lines = text.split('\n');
+
+    // First, look for #+NAME: followed by #+RESULTS:
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+
+        // Check for named source block
+        const nameMatch = line.match(/^#\+NAME:\s*(.+?)\s*$/i);
+        if (nameMatch && nameMatch[1] === name) {
+            // Look for #+RESULTS: after this block
+            for (let j = i + 1; j < lines.length; j++) {
+                const checkLine = lines[j].trim();
+                if (checkLine.match(/^#\+RESULTS/i)) {
+                    // Collect result lines
+                    const resultLines: string[] = [];
+                    for (let k = j + 1; k < lines.length; k++) {
+                        const resultLine = lines[k];
+                        // Results end at empty line or new element
+                        if (resultLine.trim() === '' ||
+                            (resultLine.trim().startsWith('#+') && !resultLine.trim().startsWith(': '))) {
+                            break;
+                        }
+                        // Remove verbatim prefix
+                        resultLines.push(resultLine.replace(/^: /, ''));
+                    }
+                    return resultLines.join('\n');
+                }
+                // Stop if we hit another block
+                if (checkLine.match(/^#\+(BEGIN_|NAME:)/i)) break;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Resolve a variable value - if it references a named element, fetch its data
+ */
+function resolveVariableValue(
+    document: vscode.TextDocument,
+    value: string
+): unknown {
+    // Check if value looks like a reference (not a literal)
+    // References are typically simple identifiers without quotes or special chars
+    if (/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(value)) {
+        // Try to find as a named table
+        const tableData = findNamedTable(document, value);
+        if (tableData) {
+            return tableData;
+        }
+
+        // Try to find as named results
+        const results = findNamedResults(document, value);
+        if (results) {
+            // Try to parse as JSON, otherwise return as string
+            try {
+                return JSON.parse(results);
+            } catch {
+                return results;
+            }
+        }
+    }
+
+    // Return as-is (literal value)
+    // Try to parse as number or JSON
+    const num = Number(value);
+    if (!isNaN(num)) return num;
+
+    try {
+        return JSON.parse(value);
+    } catch {
+        return value;
+    }
+}
+
+/**
+ * Resolve all variables in header arguments
+ */
+function resolveVariables(
+    document: vscode.TextDocument,
+    headers: HeaderArguments
+): Record<string, unknown> | undefined {
+    if (!headers.var) return undefined;
+
+    const resolved: Record<string, unknown> = {};
+    for (const [varName, varValue] of Object.entries(headers.var)) {
+        resolved[varName] = resolveVariableValue(document, varValue as string);
+    }
+
+    return resolved;
+}
+
 /**
  * Information about a source block found in the document
  */
@@ -479,9 +628,13 @@ async function executeBlock(
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     const documentDir = editor.document.uri.fsPath.replace(/[/\\][^/\\]+$/, '');
 
+    // Resolve variable references (e.g., :var data=my-table)
+    const resolvedVars = resolveVariables(editor.document, headers);
+
     const context: ExecutionContext = {
         cwd: headers.dir || documentDir || workspaceFolder,
         timeout: 60000, // 60 second default timeout
+        variables: resolvedVars,
     };
 
     // Create the SrcBlockElement for the executor

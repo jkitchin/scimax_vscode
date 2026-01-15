@@ -803,6 +803,50 @@ export async function executeAndNext(): Promise<void> {
 }
 
 /**
+ * Execute current block and insert a new empty block after results
+ * The new block has the same language and header arguments
+ */
+export async function executeAndNew(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    // Find current block first to get language and parameters
+    const initialBlockPos = findBlockAtCursor(editor.document, editor.selection.active);
+    if (!initialBlockPos) {
+        vscode.window.showInformationMessage('Not inside a source block');
+        return;
+    }
+
+    const { language, parameters } = initialBlockPos.block;
+
+    // Execute current block
+    await vscode.commands.executeCommand('scimax.org.executeBlock');
+
+    // Wait for execution to complete
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Re-find block position (results may have been added/modified)
+    const blockPos = findBlockAtCursor(editor.document, editor.selection.active);
+    if (!blockPos) return;
+
+    // Determine where to insert new block (after results or after #+END_SRC)
+    const insertLine = (blockPos.resultsEnd !== undefined ? blockPos.resultsEnd : blockPos.block.endLine) + 1;
+
+    // Build new block with same language and parameters
+    const paramStr = parameters ? ' ' + parameters : '';
+    const newBlockText = `\n#+BEGIN_SRC ${language}${paramStr}\n\n#+END_SRC\n`;
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(new vscode.Position(insertLine, 0), newBlockText);
+    });
+
+    // Move cursor into the new block (empty line between BEGIN_SRC and END_SRC)
+    const newPos = new vscode.Position(insertLine + 2, 0);
+    editor.selection = new vscode.Selection(newPos, newPos);
+    editor.revealRange(new vscode.Range(newPos, newPos), vscode.TextEditorRevealType.InCenter);
+}
+
+/**
  * Execute all blocks up to the current position
  */
 export async function executeToPoint(): Promise<void> {
@@ -1054,6 +1098,7 @@ export function registerScimaxObCommands(context: vscode.ExtensionContext): void
     // Execution
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ob.executeAndNext', executeAndNext),
+        vscode.commands.registerCommand('scimax.ob.executeAndNew', executeAndNew),
         vscode.commands.registerCommand('scimax.ob.executeToPoint', executeToPoint),
         vscode.commands.registerCommand('scimax.ob.executeAll', executeAllBlocks)
     );

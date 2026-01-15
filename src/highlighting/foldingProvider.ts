@@ -106,6 +106,53 @@ export class OrgFoldingRangeProvider implements vscode.FoldingRangeProvider {
                     }
                 }
             }
+
+            // Check for #+RESULTS: blocks (verbatim output until blank or different content)
+            if (line.match(/^\s*#\+RESULTS(\[.*\])?:/i)) {
+                let endLine = i;
+                for (let j = i + 1; j < lines.length; j++) {
+                    const resultLine = lines[j];
+                    // Results continue with : prefix, | (table), or empty line within block
+                    if (resultLine.match(/^: /) || resultLine.match(/^\|/) ||
+                        resultLine.match(/^\s*#\+BEGIN_/i) || resultLine.trim() === '') {
+                        // Check if empty line ends results
+                        if (resultLine.trim() === '') {
+                            // Look ahead - if next non-empty line is still a result, continue
+                            let nextNonEmpty = j + 1;
+                            while (nextNonEmpty < lines.length && lines[nextNonEmpty].trim() === '') {
+                                nextNonEmpty++;
+                            }
+                            if (nextNonEmpty < lines.length &&
+                                (lines[nextNonEmpty].match(/^: /) || lines[nextNonEmpty].match(/^\|/))) {
+                                endLine = j;
+                                continue;
+                            }
+                            break;
+                        }
+                        endLine = j;
+                        // If it's a BEGIN block, find its end
+                        if (resultLine.match(/^\s*#\+BEGIN_(\w+)/i)) {
+                            const blockName = resultLine.match(/^\s*#\+BEGIN_(\w+)/i)![1];
+                            for (let k = j + 1; k < lines.length; k++) {
+                                if (lines[k].match(new RegExp(`^\\s*#\\+END_${blockName}`, 'i'))) {
+                                    endLine = k;
+                                    j = k;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        break;
+                    }
+                }
+                if (endLine > i) {
+                    ranges.push(new vscode.FoldingRange(
+                        i,
+                        endLine,
+                        vscode.FoldingRangeKind.Region
+                    ));
+                }
+            }
         }
 
         // Close any remaining headings at end of document
@@ -411,6 +458,16 @@ async function toggleFoldAtCursor(): Promise<void> {
     if (isInTable(document, position)) {
         const moved = await nextCell();
         if (moved) return;
+    }
+
+    // Check if we're on a results line (#+RESULTS: or :RESULTS: drawer)
+    const isResults = /^\s*#\+RESULTS(\[.*\])?:/i.test(line) || /^\s*:RESULTS:\s*$/i.test(line);
+    if (isResults) {
+        // Toggle fold at this line
+        await vscode.commands.executeCommand('editor.toggleFold', {
+            selectionLines: [position.line]
+        });
+        return;
     }
 
     // Determine the heading check function based on language

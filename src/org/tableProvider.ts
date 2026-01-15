@@ -149,8 +149,22 @@ function isTableRow(line: string): boolean {
 function isSeparatorRow(line: string): boolean {
     const trimmed = line.trim();
     if (!isTableRow(line)) return false;
-    // Separator rows contain only |, -, +, :, and spaces
-    return /^\|[\s\-\+\:]+\|$/.test(trimmed.replace(/\|/g, '|'));
+
+    // Standard org separator: |---+---| or |---|---|
+    if (/^\|[\s\-\+\:]+\|$/.test(trimmed.replace(/\|/g, '|'))) {
+        return true;
+    }
+
+    // Also detect rows where all cells contain only dashes/colons/spaces
+    // This handles user-typed separators like | ---- | ---- |
+    const cells = trimmed.split('|').slice(1, -1); // Remove first/last empty from split
+    if (cells.length === 0) return false;
+
+    return cells.every(cell => {
+        const content = cell.trim();
+        // Cell is separator-like if empty or contains only dashes, colons, spaces
+        return content === '' || /^[\-\:]+$/.test(content);
+    });
 }
 
 /**

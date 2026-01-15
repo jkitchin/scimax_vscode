@@ -1404,12 +1404,19 @@ export function setupHeadingContext(context: vscode.ExtensionContext): void {
             // Only check for supported file types
             if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
                 vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
+                vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
                 return;
             }
 
             const position = editor.selection.active;
+            const line = document.lineAt(position.line).text;
+
             const onHeading = isOnHeading(document, position);
             vscode.commands.executeCommand('setContext', 'scimax.onHeading', onHeading);
+
+            // Check if on results line (#+RESULTS: or :RESULTS: drawer)
+            const onResults = /^\s*#\+RESULTS(\[.*\])?:/i.test(line) || /^\s*:RESULTS:\s*$/i.test(line);
+            vscode.commands.executeCommand('setContext', 'scimax.onResults', onResults);
         })
     );
 }

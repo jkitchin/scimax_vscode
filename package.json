@@ -1588,6 +1588,10 @@
         "title": "Scimax: Execute and Next"
       },
       {
+        "command": "scimax.ob.executeAndNew",
+        "title": "Scimax: Execute and New Block"
+      },
+      {
         "command": "scimax.ob.executeToPoint",
         "title": "Scimax: Execute to Point"
       },
@@ -2101,6 +2105,11 @@
         "command": "scimax.org.toggleFold",
         "key": "tab",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
+        "command": "scimax.org.toggleFold",
+        "key": "tab",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onResults && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
@@ -2675,9 +2684,33 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
+        "command": "scimax.ob.insertBlockAbove",
+        "key": "escape a",
+        "mac": "escape a",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.insertBlockBelow",
+        "key": "escape b",
+        "mac": "escape b",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.splitBlock",
+        "key": "escape -",
+        "mac": "escape -",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
         "command": "scimax.ob.executeAndNext",
         "key": "shift+enter",
         "mac": "shift+enter",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.ob.executeAndNew",
+        "key": "alt+shift+enter",
+        "mac": "alt+shift+enter",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {

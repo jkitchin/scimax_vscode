@@ -148,6 +148,12 @@ export function parseHeaderArguments(headerStr: string): HeaderArguments {
     const args: HeaderArguments = {};
     if (!headerStr.trim()) return args;
 
+    // First, handle flag-style arguments (e.g., :session without value means default session)
+    // Check for :session alone (not followed by a value before next : or end)
+    if (/:session(?:\s*$|\s+:)/i.test(headerStr)) {
+        args.session = 'default';
+    }
+
     // Match :key value pairs
     const pattern = /:(\S+)\s+([^:]+?)(?=\s+:|$)/g;
     let match;
@@ -158,11 +164,16 @@ export function parseHeaderArguments(headerStr: string): HeaderArguments {
 
         switch (key) {
             case 'var':
-                // Parse variable assignments: name=value
+                // Parse variable assignments: name=value (may have multiple space-separated)
                 if (!args.var) args.var = {};
-                const varMatch = value.match(/^(\S+)=(.+)$/);
-                if (varMatch) {
-                    args.var[varMatch[1]] = varMatch[2];
+                // Match all name=value pairs (value can be quoted or unquoted)
+                const varPattern = /(\S+?)=(?:"([^"]+)"|'([^']+)'|(\S+))/g;
+                let varMatch;
+                while ((varMatch = varPattern.exec(value)) !== null) {
+                    const varName = varMatch[1];
+                    // Use quoted value if present, otherwise unquoted
+                    const varValue = varMatch[2] ?? varMatch[3] ?? varMatch[4];
+                    args.var[varName] = varValue;
                 }
                 break;
 
@@ -471,6 +482,198 @@ export const shellExecutor: LanguageExecutor = {
     },
 };
 
+// =============================================================================
+// Python Session Manager
+// =============================================================================
+
+interface PythonSession {
+    process: ReturnType<typeof import('child_process').spawn>;
+    pending: Array<{
+        resolve: (result: ExecutionResult) => void;
+        startTime: number;
+    }>;
+    cwd?: string;
+}
+
+const pythonSessions = new Map<string, PythonSession>();
+
+// Unique markers for output delimiting
+const OUTPUT_START_MARKER = '___ORG_BABEL_OUTPUT_START___';
+const OUTPUT_END_MARKER = '___ORG_BABEL_OUTPUT_END___';
+const ERROR_MARKER = '___ORG_BABEL_ERROR___';
+
+/**
+ * Get or create a Python session
+ */
+async function getPythonSession(sessionName: string, cwd?: string): Promise<PythonSession> {
+    let session = pythonSessions.get(sessionName);
+
+    if (session && session.process.exitCode === null) {
+        return session;
+    }
+
+    // Create new session with persistent Python process
+    const { spawn } = await import('child_process');
+
+    // Python wrapper script that reads code blocks and executes them
+    const wrapperCode = `
+import sys
+import traceback
+
+OUTPUT_START = "${OUTPUT_START_MARKER}"
+OUTPUT_END = "${OUTPUT_END_MARKER}"
+ERROR_MARKER = "${ERROR_MARKER}"
+
+# Shared namespace for the session
+__session_globals__ = {}
+__session_globals__['__name__'] = '__main__'
+
+while True:
+    try:
+        # Read number of lines
+        line_count_str = sys.stdin.readline()
+        if not line_count_str:
+            break
+        line_count = int(line_count_str.strip())
+
+        # Read the code
+        code_lines = []
+        for _ in range(line_count):
+            code_lines.append(sys.stdin.readline().rstrip('\\n'))
+        code = '\\n'.join(code_lines)
+
+        # Execute and capture output
+        print(OUTPUT_START, flush=True)
+        try:
+            exec(compile(code, '<org-babel>', 'exec'), __session_globals__)
+        except Exception as e:
+            print(f"{ERROR_MARKER}{traceback.format_exc()}", flush=True)
+        print(OUTPUT_END, flush=True)
+        sys.stdout.flush()
+        sys.stderr.flush()
+
+    except Exception as e:
+        print(OUTPUT_START, flush=True)
+        print(f"{ERROR_MARKER}{traceback.format_exc()}", flush=True)
+        print(OUTPUT_END, flush=True)
+        sys.stdout.flush()
+`;
+
+    const proc = spawn('python3', ['-u', '-c', wrapperCode], {
+        cwd,
+        env: { ...process.env, PYTHONUNBUFFERED: '1' },
+        stdio: ['pipe', 'pipe', 'pipe'],
+    });
+
+    session = {
+        process: proc,
+        pending: [],
+        cwd,
+    };
+
+    let outputBuffer = '';
+
+    proc.stdout?.on('data', (data) => {
+        outputBuffer += data.toString();
+
+        // Check for complete output blocks
+        while (true) {
+            const startIdx = outputBuffer.indexOf(OUTPUT_START_MARKER);
+            const endIdx = outputBuffer.indexOf(OUTPUT_END_MARKER);
+
+            if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+                // Extract output between markers
+                const output = outputBuffer
+                    .substring(startIdx + OUTPUT_START_MARKER.length, endIdx)
+                    .trim();
+
+                // Remove processed output from buffer
+                outputBuffer = outputBuffer.substring(endIdx + OUTPUT_END_MARKER.length);
+
+                // Resolve pending request
+                const pending = session!.pending.shift();
+                if (pending) {
+                    const hasError = output.includes(ERROR_MARKER);
+                    const cleanOutput = output.replace(ERROR_MARKER, '').trim();
+
+                    pending.resolve({
+                        success: !hasError,
+                        stdout: hasError ? '' : cleanOutput,
+                        stderr: hasError ? cleanOutput : '',
+                        executionTime: Date.now() - pending.startTime,
+                        resultType: 'output',
+                    });
+                }
+            } else {
+                break;
+            }
+        }
+    });
+
+    proc.stderr?.on('data', (data) => {
+        // Stderr is captured but we handle errors through stdout markers
+        console.error(`[Python Session ${sessionName}] stderr:`, data.toString());
+    });
+
+    proc.on('close', () => {
+        // Reject any pending requests
+        for (const pending of session!.pending) {
+            pending.resolve({
+                success: false,
+                error: new Error('Python session closed unexpectedly'),
+                executionTime: Date.now() - pending.startTime,
+            });
+        }
+        pythonSessions.delete(sessionName);
+    });
+
+    pythonSessions.set(sessionName, session);
+    return session;
+}
+
+/**
+ * Execute code in a Python session
+ */
+async function executeInPythonSession(
+    sessionName: string,
+    code: string,
+    context: ExecutionContext
+): Promise<ExecutionResult> {
+    const session = await getPythonSession(sessionName, context.cwd);
+    const startTime = Date.now();
+
+    return new Promise((resolve) => {
+        // Add variable definitions if present
+        let fullCode = context.variables
+            ? Object.entries(context.variables)
+                .map(([k, v]) => `${k} = ${JSON.stringify(v)}`)
+                .join('\n') + '\n' + code
+            : code;
+
+        // Queue the request
+        session.pending.push({ resolve, startTime });
+
+        // Send code to the session
+        const lines = fullCode.split('\n');
+        session.process.stdin?.write(`${lines.length}\n`);
+        for (const line of lines) {
+            session.process.stdin?.write(line + '\n');
+        }
+    });
+}
+
+/**
+ * Close a Python session
+ */
+async function closePythonSession(sessionName: string): Promise<void> {
+    const session = pythonSessions.get(sessionName);
+    if (session) {
+        session.process.stdin?.end();
+        session.process.kill();
+        pythonSessions.delete(sessionName);
+    }
+}
+
 /**
  * Python executor
  */
@@ -478,17 +681,55 @@ export const pythonExecutor: LanguageExecutor = {
     languages: ['python', 'python3', 'py'],
 
     async execute(code: string, context: ExecutionContext): Promise<ExecutionResult> {
+        // Use session if specified
+        if (context.session) {
+            return executeInPythonSession(context.session, code, context);
+        }
+
         const { spawn } = await import('child_process');
 
         return new Promise((resolve) => {
             const startTime = Date.now();
 
-            // Wrap code to capture return value if needed
-            const wrappedCode = context.variables
+            // Add variable definitions
+            let wrappedCode = context.variables
                 ? Object.entries(context.variables)
                     .map(([k, v]) => `${k} = ${JSON.stringify(v)}`)
                     .join('\n') + '\n' + code
                 : code;
+
+            // Handle :results value - evaluate and print the last expression
+            if (context.results?.collection === 'value') {
+                // Wrap code to capture the value of the last expression
+                // We use exec() for statements and eval() for the final expression
+                wrappedCode = `
+import sys
+__org_babel_code__ = ${JSON.stringify(wrappedCode)}
+__org_babel_lines__ = __org_babel_code__.strip().split('\\n')
+
+# Find the last non-empty, non-comment line
+__org_babel_last_idx__ = len(__org_babel_lines__) - 1
+while __org_babel_last_idx__ >= 0:
+    __org_babel_line__ = __org_babel_lines__[__org_babel_last_idx__].strip()
+    if __org_babel_line__ and not __org_babel_line__.startswith('#'):
+        break
+    __org_babel_last_idx__ -= 1
+
+if __org_babel_last_idx__ >= 0:
+    # Execute all lines except the last
+    __org_babel_setup__ = '\\n'.join(__org_babel_lines__[:__org_babel_last_idx__])
+    if __org_babel_setup__.strip():
+        exec(__org_babel_setup__)
+    # Try to eval the last line (expression), fall back to exec (statement)
+    __org_babel_last__ = __org_babel_lines__[__org_babel_last_idx__]
+    try:
+        __org_babel_result__ = eval(__org_babel_last__)
+        if __org_babel_result__ is not None:
+            print(__org_babel_result__)
+    except SyntaxError:
+        exec(__org_babel_last__)
+`;
+            }
 
             const proc = spawn('python3', ['-c', wrappedCode], {
                 cwd: context.cwd,
@@ -534,6 +775,14 @@ export const pythonExecutor: LanguageExecutor = {
             proc.on('close', (code) => resolve(code === 0));
             proc.on('error', () => resolve(false));
         });
+    },
+
+    async initSession(sessionName: string, context: ExecutionContext): Promise<void> {
+        await getPythonSession(sessionName, context.cwd);
+    },
+
+    async closeSession(sessionName: string): Promise<void> {
+        await closePythonSession(sessionName);
     },
 };
 
