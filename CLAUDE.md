@@ -185,6 +185,10 @@ When adding new features, update the corresponding documentation in `docs/`:
 1. Add a "Related Topics" section with cross-links to related documentation
 2. Update `docs/index.org` to include new topics in the Topic Index table
 3. Ensure tables are properly aligned using org-mode table format (`|` separators)
+4. Mark changed/new headings with status emojis using the `#+TODO: ⚠️ 👀 | ✅` workflow:
+   - `⚠️` - New heading (needs review)
+   - `👀` - Changed heading (needs review)
+   - The user will change to `✅` after inspection
 
 Documentation structure:
 ```

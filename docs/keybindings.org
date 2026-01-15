@@ -1,15 +1,17 @@
 #+TITLE: Scimax VS Code - Keybinding Reference
 #+AUTHOR: Scimax Team
 #+DATE: 2026-01-14
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* ⚠️ Introduction
+* Introduction
 
 This document provides a comprehensive reference for all keybindings in Scimax VS Code. The extension brings Emacs-style org-mode functionality to Visual Studio Code, with keybindings designed to match the familiar Emacs Scimax experience.
 
 *Note for Mac Users:* On macOS, most keybindings use Ctrl (not Cmd) to match Emacs conventions, except where explicitly noted with alternative Mac bindings.
 
-* ⚠️ Global Commands
+* Global Commands
 
 | Key           | Action                              |
 |---------------+-------------------------------------|
@@ -26,7 +28,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Alt+[         | Previous journal entry (in journal) |
 | Alt+]         | Next journal entry (in journal)     |
 
-* ⚠️ Emacs-Style Editor Keybindings
+* Emacs-Style Editor Keybindings
 
 | Key           | Action                       |
 |---------------+------------------------------|
@@ -48,7 +50,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Alt+W         | Copy (with selection)        |
 | Ctrl+;        | Toggle comment               |
 
-* ⚠️ Navigation
+* Navigation
 
 | Key           | Action                   |
 |---------------+--------------------------|
@@ -60,7 +62,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+Up       | Previous source block    |
 | Ctrl+Down     | Next source block        |
 
-* ⚠️ Headings
+* Headings
 
 | Key             | Action                         |
 |-----------------+--------------------------------|
@@ -73,7 +75,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+Enter      | Insert new heading             |
 | Cmd+Enter       | (Mac) Insert new heading       |
 
-* ⚠️ TODO Items
+* TODO Items
 
 | Key           | Action                             |
 |---------------+------------------------------------|
@@ -82,7 +84,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C Ctrl+D | Insert due date (DEADLINE)         |
 | Ctrl+C Ctrl+S | Insert scheduled date (SCHEDULED)  |
 
-* ⚠️ Timestamps
+* Timestamps
 
 | Key           | Action                               |
 |---------------+--------------------------------------|
@@ -95,7 +97,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 
 *Note:* Shift+arrow keys work on timestamps. When on a citation, they have different behavior (see Citations section).
 
-* ⚠️ Tables
+* Tables
 
 | Key                 | Action                            |
 |---------------------+-----------------------------------|
@@ -111,9 +113,9 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Alt+Shift+Right     | Insert column right (in table)    |
 | Alt+Shift+Left      | Delete column (in table)          |
 
-* ⚠️ Source Blocks (Babel)
+* Source Blocks (Babel)
 
-** ⚠️ Execution
+** Execution
 
 | Key           | Action                              |
 |---------------+-------------------------------------|
@@ -122,7 +124,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C Ctrl+C | Execute source block (in src block) |
 | Shift+Enter   | Execute and move to next block      |
 
-** ⚠️ Navigation & Manipulation
+** Navigation & Manipulation
 
 | Key           | Action                       |
 |---------------+------------------------------|
@@ -132,7 +134,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C Ctrl+N | Insert source block below    |
 | Ctrl+C -      | Split source block at cursor |
 
-** ⚠️ Advanced Babel Operations
+** Advanced Babel Operations
 
 | Key             | Action                      |
 |-----------------+-----------------------------|
@@ -141,7 +143,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C Ctrl+V I | Execute inline code         |
 | Ctrl+C Ctrl+V Q | Queue block for execution   |
 
-* ⚠️ Export
+* Export
 
 | Key               | Action                        |
 |-------------------+-------------------------------|
@@ -155,7 +157,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C Ctrl+E L S | LaTeX forward sync            |
 | Ctrl+C Ctrl+E M M | Export to Markdown            |
 
-* ⚠️ Links
+* Links
 
 | Key           | Action                   |
 |---------------+--------------------------|
@@ -163,7 +165,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C Ctrl+O | Open link                |
 | Enter         | Open link (when on link) |
 
-* ⚠️ Citations & References
+* Citations & References
 
 | Key             | Action                                 |
 |-----------------+----------------------------------------|
@@ -176,7 +178,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+Shift+K    | Delete citation (on citation)          |
 | Cmd+Shift+K     | (Mac) Delete citation                  |
 
-* ⚠️ Text Markup
+* Text Markup
 
 | Key      | Action        |
 |----------+---------------|
@@ -187,9 +189,9 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C = | Verbatim      |
 | Ctrl+C + | Strikethrough |
 
-* ⚠️ Search & Navigation
+* Search & Navigation
 
-** ⚠️ Fuzzy Search (Swiper-style)
+** Fuzzy Search (Swiper-style)
 
 | Key            | Action                         |
 |----------------+--------------------------------|
@@ -197,7 +199,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C Shift+S | Fuzzy search in open files     |
 | Ctrl+C Alt+S   | Fuzzy search outline/headings  |
 
-** ⚠️ Jump (Avy-style)
+** Jump (Avy-style)
 
 | Key        | Action                 |
 |------------+------------------------|
@@ -208,7 +210,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C J O | Jump to symbol/outline |
 | Ctrl+C J S | Jump to subword        |
 
-** ⚠️ Projectile
+** Projectile
 
 | Key              | Action                                  |
 |------------------+-----------------------------------------|
@@ -218,7 +220,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C P D     | Open project root directory             |
 | Ctrl+C P A     | Add project                             |
 
-* ⚠️ Edit Marks (Track Changes)
+* Edit Marks (Track Changes)
 
 | Key              | Action                                  |
 |------------------+-----------------------------------------|
@@ -232,11 +234,11 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | Ctrl+C E [     | Previous edit mark                      |
 | Ctrl+C E S     | Show edit marks summary                 |
 
-* ⚠️ Speed Commands
+* Speed Commands
 
 Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).
 
-** ⚠️ Navigation Speed Commands
+** Navigation Speed Commands
 
 | Key | Action                            |
 |-----+-----------------------------------|
@@ -248,7 +250,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | j   | Jump to heading (quick picker)    |
 | g   | Goto menu (additional navigation) |
 
-** ⚠️ Visibility Speed Commands
+** Visibility Speed Commands
 
 | Key     | Action                            |
 |---------+-----------------------------------|
@@ -261,7 +263,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | 3       | Show level 3 headings             |
 | 0       | Show all headings                 |
 
-** ⚠️ Structure Editing Speed Commands
+** Structure Editing Speed Commands
 
 | Key     | Action               |
 |---------+----------------------|
@@ -272,7 +274,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | Shift+U | Move subtree up      |
 | Shift+D | Move subtree down    |
 
-** ⚠️ TODO & Content Speed Commands
+** TODO & Content Speed Commands
 
 | Key | Action              |
 |-----+---------------------|
@@ -281,7 +283,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | s   | Insert SCHEDULED    |
 | e   | Set effort estimate |
 
-** ⚠️ Editing Speed Commands
+** Editing Speed Commands
 
 | Key     | Action               |
 |---------+----------------------|
@@ -290,21 +292,21 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | Shift+W | Clone subtree        |
 | a       | Archive subtree      |
 
-** ⚠️ Other Speed Commands
+** Other Speed Commands
 
 | Key     | Action                   |
 |---------+--------------------------|
 | Shift+? | Show speed commands help |
 
-* ⚠️ Toggle Speed Commands
+* Toggle Speed Commands
 
 | Key             | Action                       |
 |-----------------+------------------------------|
 | Ctrl+C Ctrl+X S | Toggle speed commands on/off |
 
-* ⚠️ Additional Notes
+* Additional Notes
 
-** ⚠️ Context-Dependent Keybindings
+** Context-Dependent Keybindings
 
 Many keybindings are context-aware and behave differently depending on cursor position:
 
@@ -313,7 +315,7 @@ Many keybindings are context-aware and behave differently depending on cursor po
 - Alt+Shift+Left/Right promote/demote subtrees normally, but delete/insert columns when in a table
 - Enter opens links when cursor is on a link
 
-** ⚠️ When Conditions
+** When Conditions
 
 Some keybindings only work in specific contexts:
 - Org-mode/Markdown files: Most document structure commands
@@ -322,7 +324,7 @@ Some keybindings only work in specific contexts:
 - In source blocks: Block execution
 - At heading start: Speed commands
 
-** ⚠️ Mac vs Windows/Linux
+** Mac vs Windows/Linux
 
 Most keybindings use Ctrl on all platforms to match Emacs conventions. Exceptions where Mac uses Cmd:
 - Cmd+Shift+J (journal)
@@ -331,9 +333,9 @@ Most keybindings use Ctrl on all platforms to match Emacs conventions. Exception
 - Cmd+Shift+R (reload window)
 - Ctrl+Cmd+V (database menu)
 
-* ⚠️ Quick Reference Card
+* Quick Reference Card
 
-** ⚠️ Most Common Commands
+** Most Common Commands
 
 | Command            | Keybinding    |
 |--------------------+---------------|
@@ -348,7 +350,7 @@ Most keybindings use Ctrl on all platforms to match Emacs conventions. Exception
 | Fuzzy search       | Ctrl+C S      |
 | Hydra menu         | Ctrl+C M      |
 
-** ⚠️ Most Common Speed Commands
+** Most Common Speed Commands
 
 | Speed Key | Action                 |
 |-----------+------------------------|
@@ -359,13 +361,14 @@ Most keybindings use Ctrl on all platforms to match Emacs conventions. Exception
 | t         | Cycle TODO             |
 | l/r       | Promote/Demote subtree |
 
-* ⚠️ Further Help
+* Further Help
 
 - Use Ctrl+C M to open the Hydra menu for guided command discovery
 - Use Alt+X to search all commands by name
 - Enable speed commands help with Shift+? when at heading start
 - See [[file:index.org][Documentation Index]] for comprehensive guides
 
----
+* Navigation
 
-/Last updated: 2026-01-14/
+- Previous: [[file:speed-commands.org][Speed Commands]]
+- Next: [[file:commands.org][Commands]]

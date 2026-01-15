@@ -1855,6 +1855,11 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "scimax.agenda.cancelScan",
+        "title": "Scimax: Cancel Agenda Scan",
+        "icon": "$(stop)"
+      },
+      {
         "command": "scimax.agenda.showAgenda",
         "title": "Scimax: Show Agenda View"
       },
@@ -3223,6 +3228,26 @@
           "default": ["DONE", "CANCELLED"],
           "description": "Completed TODO states"
         },
+        "scimax.agenda.maxFiles": {
+          "type": "number",
+          "default": 500,
+          "minimum": 0,
+          "description": "Maximum number of files to scan for agenda items (0 = unlimited). Helps prevent memory issues in large workspaces."
+        },
+        "scimax.agenda.batchSize": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Number of files to process per batch during agenda scanning. Lower values reduce memory pressure but increase scan time."
+        },
+        "scimax.agenda.batchDelayMs": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Delay in milliseconds between processing batches. Allows the event loop to remain responsive during large scans."
+        },
         "scimax.imageOverlays.enabled": {
           "type": "boolean",
           "default": true,
@@ -3329,6 +3354,11 @@
       "view/title": [
         {
           "command": "scimax.agenda.refresh",
+          "when": "view == scimax.agenda",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.agenda.cancelScan",
           "when": "view == scimax.agenda",
           "group": "navigation"
         },

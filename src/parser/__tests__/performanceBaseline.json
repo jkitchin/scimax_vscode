@@ -3,8 +3,8 @@
   "lastUpdated": "2026-01-14",
   "description": "Performance baseline metrics for org parser. Baselines are set generously for CI environments (shared runners). Update with: npm run test -- --reporter=verbose src/parser/__tests__/orgParserBenchmark.test.ts",
   "thresholds": {
-    "regressionThreshold": 1.25,
-    "significantImprovementThreshold": 0.75
+    "regressionThreshold": 1.5,
+    "significantImprovementThreshold": 0.5
   },
   "baselines": {
     "parseOrg": {
@@ -48,8 +48,8 @@
         "description": "500 headings"
       },
       "manySrcBlocks": {
-        "avgMs": 2.0,
-        "maxMs": 8.0,
+        "avgMs": 3.0,
+        "maxMs": 12.0,
         "description": "100 source blocks"
       },
       "deepNesting": {

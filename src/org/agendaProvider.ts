@@ -45,6 +45,12 @@ export interface AgendaConfig {
     todoStates: string[];
     /** Done states */
     doneStates: string[];
+    /** Maximum number of files to scan (0 = unlimited) */
+    maxFiles: number;
+    /** Batch size for lazy loading */
+    batchSize: number;
+    /** Delay between batches in ms (for rate limiting) */
+    batchDelayMs: number;
 }
 
 // =============================================================================
@@ -92,6 +98,9 @@ export class AgendaManager {
             showHabits: config.get<boolean>('showHabits', true),
             todoStates: config.get<string[]>('todoStates', ['TODO', 'NEXT', 'WAITING']),
             doneStates: config.get<string[]>('doneStates', ['DONE', 'CANCELLED']),
+            maxFiles: config.get<number>('maxFiles', 500),
+            batchSize: config.get<number>('batchSize', 10),
+            batchDelayMs: config.get<number>('batchDelayMs', 5),
         };
     }
 
@@ -118,6 +127,104 @@ export class AgendaManager {
 
     private invalidateFile(filePath: string): void {
         this.fileCache.delete(filePath);
+    }
+
+    // Cancellation support for long-running scans
+    private currentScanCts: vscode.CancellationTokenSource | null = null;
+    private scanInProgress: boolean = false;
+
+    /**
+     * Cancel any ongoing file scan
+     */
+    public cancelScan(): void {
+        if (this.currentScanCts) {
+            this.currentScanCts.cancel();
+            this.currentScanCts.dispose();
+            this.currentScanCts = null;
+        }
+        this.scanInProgress = false;
+    }
+
+    /**
+     * Check if a scan is currently in progress
+     */
+    public isScanInProgress(): boolean {
+        return this.scanInProgress;
+    }
+
+    /**
+     * Delay helper for rate limiting
+     */
+    private delay(ms: number): Promise<void> {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /**
+     * Yield to event loop to prevent blocking
+     */
+    private yieldToEventLoop(): Promise<void> {
+        return new Promise(resolve => setImmediate(resolve));
+    }
+
+    /**
+     * Async generator that lazily yields agenda files in batches
+     * Supports cancellation and rate limiting
+     */
+    async *getAgendaFilesLazy(
+        token?: vscode.CancellationToken
+    ): AsyncGenerator<string[], void, unknown> {
+        const allFiles: string[] = [];
+
+        // Collect file paths first (this is fast - just file listing)
+        for (const pattern of this.config.agendaFiles) {
+            if (token?.isCancellationRequested) return;
+            const expanded = await this.expandPattern(pattern);
+            allFiles.push(...expanded);
+        }
+
+        // If no specific files configured, scan workspace
+        if (allFiles.length === 0) {
+            const workspaceFolders = vscode.workspace.workspaceFolders || [];
+            for (const folder of workspaceFolders) {
+                if (token?.isCancellationRequested) return;
+                const orgFiles = await vscode.workspace.findFiles(
+                    new vscode.RelativePattern(folder, '**/*.org'),
+                    `{${this.config.excludePatterns.join(',')}}`
+                );
+                allFiles.push(...orgFiles.map(uri => uri.fsPath));
+            }
+        }
+
+        // Deduplicate
+        const uniqueFiles = [...new Set(allFiles)];
+
+        // Apply max files limit
+        const maxFiles = this.config.maxFiles;
+        const filesToProcess = maxFiles > 0 ? uniqueFiles.slice(0, maxFiles) : uniqueFiles;
+
+        if (filesToProcess.length < uniqueFiles.length) {
+            this.outputChannel.appendLine(
+                `Agenda: Limited scan to ${maxFiles} files (${uniqueFiles.length} total found). ` +
+                `Configure 'scimax.agenda.files' to specify directories or increase 'scimax.agenda.maxFiles'.`
+            );
+        }
+
+        // Yield files in batches
+        const batchSize = this.config.batchSize;
+        for (let i = 0; i < filesToProcess.length; i += batchSize) {
+            if (token?.isCancellationRequested) return;
+
+            const batch = filesToProcess.slice(i, i + batchSize);
+            yield batch;
+
+            // Rate limiting: delay between batches and yield to event loop
+            if (i + batchSize < filesToProcess.length) {
+                if (this.config.batchDelayMs > 0) {
+                    await this.delay(this.config.batchDelayMs);
+                }
+                await this.yieldToEventLoop();
+            }
+        }
     }
 
     /**
@@ -225,20 +332,51 @@ export class AgendaManager {
     }
 
     /**
-     * Generate agenda view
+     * Generate agenda view with lazy loading and rate limiting
      */
     async getAgendaView(config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
-        const files = await this.getAgendaFiles();
+        // Cancel any previous scan
+        this.cancelScan();
+
+        // Create new cancellation token
+        this.currentScanCts = new vscode.CancellationTokenSource();
+        const token = this.currentScanCts.token;
+        this.scanInProgress = true;
+
         const allHeadlines: HeadlineElement[] = [];
         const fileMap = new Map<string, string>();
+        let filesProcessed = 0;
 
-        for (const filePath of files) {
-            const agendaFile = await this.parseFile(filePath);
-            if (agendaFile) {
-                for (const headline of agendaFile.headlines) {
-                    this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
+        try {
+            // Use lazy generator for rate-limited file processing
+            for await (const batch of this.getAgendaFilesLazy(token)) {
+                if (token.isCancellationRequested) {
+                    this.outputChannel.appendLine('Agenda scan cancelled');
+                    break;
+                }
+
+                // Process each file in the batch
+                for (const filePath of batch) {
+                    if (token.isCancellationRequested) break;
+
+                    const agendaFile = await this.parseFile(filePath);
+                    if (agendaFile) {
+                        for (const headline of agendaFile.headlines) {
+                            this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
+                        }
+                    }
+                    filesProcessed++;
+                }
+
+                // Log progress for large scans
+                if (filesProcessed % 50 === 0) {
+                    this.outputChannel.appendLine(`Agenda: Processed ${filesProcessed} files...`);
                 }
             }
+
+            this.outputChannel.appendLine(`Agenda: Scan complete. Processed ${filesProcessed} files, found ${allHeadlines.length} headlines.`);
+        } finally {
+            this.scanInProgress = false;
         }
 
         return generateAgendaView(allHeadlines, fileMap, {
@@ -264,24 +402,50 @@ export class AgendaManager {
     }
 
     /**
-     * Generate TODO list
+     * Generate TODO list with lazy loading and rate limiting
      */
     async getTodoList(options?: {
         states?: string[];
         excludeDone?: boolean;
         tags?: string[];
     }): Promise<TodoListView> {
-        const files = await this.getAgendaFiles();
+        // Cancel any previous scan
+        this.cancelScan();
+
+        // Create new cancellation token
+        this.currentScanCts = new vscode.CancellationTokenSource();
+        const token = this.currentScanCts.token;
+        this.scanInProgress = true;
+
         const allHeadlines: HeadlineElement[] = [];
         const fileMap = new Map<string, string>();
+        let filesProcessed = 0;
 
-        for (const filePath of files) {
-            const agendaFile = await this.parseFile(filePath);
-            if (agendaFile) {
-                for (const headline of agendaFile.headlines) {
-                    this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
+        try {
+            // Use lazy generator for rate-limited file processing
+            for await (const batch of this.getAgendaFilesLazy(token)) {
+                if (token.isCancellationRequested) {
+                    this.outputChannel.appendLine('TODO list scan cancelled');
+                    break;
+                }
+
+                // Process each file in the batch
+                for (const filePath of batch) {
+                    if (token.isCancellationRequested) break;
+
+                    const agendaFile = await this.parseFile(filePath);
+                    if (agendaFile) {
+                        for (const headline of agendaFile.headlines) {
+                            this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
+                        }
+                    }
+                    filesProcessed++;
                 }
             }
+
+            this.outputChannel.appendLine(`TODO list: Scan complete. Processed ${filesProcessed} files.`);
+        } finally {
+            this.scanInProgress = false;
         }
 
         return generateTodoList(allHeadlines, fileMap, {
@@ -299,6 +463,9 @@ export class AgendaManager {
     }
 
     dispose(): void {
+        // Cancel any ongoing scan
+        this.cancelScan();
+
         for (const d of this.disposables) {
             d.dispose();
         }
@@ -493,6 +660,16 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
         // Refresh
         vscode.commands.registerCommand('scimax.agenda.refresh', () => {
             manager.refresh();
+        }),
+
+        // Cancel ongoing scan
+        vscode.commands.registerCommand('scimax.agenda.cancelScan', () => {
+            if (manager.isScanInProgress()) {
+                manager.cancelScan();
+                vscode.window.showInformationMessage('Agenda scan cancelled');
+            } else {
+                vscode.window.showInformationMessage('No agenda scan in progress');
+            }
         }),
 
         // View modes

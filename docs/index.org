@@ -4,16 +4,15 @@
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
-*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Scimax VS Code
+* Scimax VS Code
 
 Scimax VS Code is a comprehensive scientific computing extension for Visual
 Studio Code, inspired by the powerful [[https://github.com/jkitchin/scimax][Scimax]] package for Emacs. It brings
 literate programming, knowledge management, and scientific writing capabilities
 to VS Code users.
 
-** ⚠️ What is Scimax VS Code?
+** What is Scimax VS Code?
 
 Scimax VS Code transforms Visual Studio Code into a powerful environment for:
 
@@ -25,9 +24,9 @@ Scimax VS Code transforms Visual Studio Code into a powerful environment for:
 The extension provides first-class support for org-mode files (.org), with
 additional support for Markdown documents.
 
-** ⚠️ Key Features
+** Key Features
 
-*** ⚠️ Document Structure
+*** Document Structure
 
 Create hierarchical documents with collapsible headings, properties, and tags.
 Navigate efficiently with outline views, heading jumps, and fuzzy search.
@@ -39,7 +38,7 @@ Navigate efficiently with outline views, heading jumps, and fuzzy search.
 
 See [[file:document-structure.org][Document Structure]] for details.
 
-*** ⚠️ Task Management
+*** Task Management
 
 Track tasks with TODO states, priorities, deadlines, and scheduling.
 
@@ -50,7 +49,7 @@ Track tasks with TODO states, priorities, deadlines, and scheduling.
 
 See [[file:todo-items.org][TODO Items]] for details.
 
-*** ⚠️ Tables
+*** Tables
 
 Create and edit tables with spreadsheet-like formulas.
 
@@ -61,7 +60,7 @@ Create and edit tables with spreadsheet-like formulas.
 
 See [[file:tables.org][Tables]] for details.
 
-*** ⚠️ Source Code Execution
+*** Source Code Execution
 
 Execute code blocks in 30+ programming languages directly in your documents.
 
@@ -73,7 +72,7 @@ Execute code blocks in 30+ programming languages directly in your documents.
 
 See [[file:source-blocks.org][Source Code Blocks]] for details.
 
-*** ⚠️ Export
+*** Export
 
 Export documents to multiple formats with customizable options.
 
@@ -84,7 +83,7 @@ Export documents to multiple formats with customizable options.
 
 See [[file:export.org][Export]] for details.
 
-*** ⚠️ Timestamps and Planning
+*** Timestamps and Planning
 
 Manage dates, deadlines, and scheduling with rich timestamp support.
 
@@ -95,7 +94,7 @@ Manage dates, deadlines, and scheduling with rich timestamp support.
 
 See [[file:timestamps.org][Timestamps]] for details.
 
-*** ⚠️ Links and References
+*** Links and References
 
 Create hyperlinks to files, URLs, headings, and more.
 
@@ -106,7 +105,7 @@ Create hyperlinks to files, URLs, headings, and more.
 
 See [[file:links.org][Links]] for details.
 
-*** ⚠️ Agenda Views
+*** Agenda Views
 
 View and filter tasks across multiple files.
 
@@ -117,7 +116,7 @@ View and filter tasks across multiple files.
 
 See [[file:agenda.org][Agenda]] for details.
 
-*** ⚠️ Journal System
+*** Journal System
 
 Maintain a daily journal with calendar navigation.
 
@@ -128,7 +127,7 @@ Maintain a daily journal with calendar navigation.
 
 See [[file:journal.org][Journal]] for details.
 
-*** ⚠️ Database and Search
+*** Database and Search
 
 Full-text and semantic search across your documents.
 
@@ -139,7 +138,7 @@ Full-text and semantic search across your documents.
 
 See [[file:database-search.org][Database and Search]] for details.
 
-*** ⚠️ Citations and Bibliography
+*** Citations and Bibliography
 
 Manage academic references with BibTeX integration.
 
@@ -150,11 +149,11 @@ Manage academic references with BibTeX integration.
 
 See [[file:references.org][References]] for details.
 
-** ⚠️ How This Documentation is Organized
+** How This Documentation is Organized
 
 This documentation is organized into several sections:
 
-*** ⚠️ Core Documentation
+*** Core Documentation
 
 | Document                                            | Description                   |
 |-----------------------------------------------------+-------------------------------|
@@ -167,7 +166,7 @@ This documentation is organized into several sections:
 | [[file:source-blocks.org][Source Code Blocks]]      | Code execution                |
 | [[file:export.org][Export]]                         | Exporting documents           |
 
-*** ⚠️ Feature Documentation
+*** Feature Documentation
 
 | Document                                          | Description                   |
 |---------------------------------------------------+-------------------------------|
@@ -178,7 +177,7 @@ This documentation is organized into several sections:
 | [[file:notebook.org][Notebook]]                   | Project-based organization    |
 | [[file:jupyter.org][Jupyter]]                     | Jupyter kernel integration    |
 
-*** ⚠️ Reference Documentation
+*** Reference Documentation
 
 | Document                                              | Description                    |
 |-------------------------------------------------------+--------------------------------|
@@ -187,13 +186,13 @@ This documentation is organized into several sections:
 | [[file:configuration.org][Configuration]]             | All settings and options       |
 | [[file:supported-languages.org][Supported Languages]] | Languages for code execution   |
 
-** ⚠️ Quick Start
+** Quick Start
 
 1. *Install the extension* from the VS Code marketplace or from a VSIX file
 
-2. *Open or create an org file* with the .org extension
+2. *Open or create an org file* with the =.org= extension
 
-3. *Create a heading* by typing * My First Heading
+3. *Create a heading* by typing =* My First Heading=
 
 4. *Add a source block* and execute it:
    #+BEGIN_SRC org
@@ -201,34 +200,34 @@ This documentation is organized into several sections:
    print("Hello, Scimax VS Code!")
    ,#+END_SRC
    #+END_SRC
-   Press Ctrl+Enter or Ctrl+C Ctrl+C to execute.
+   Press =Ctrl+Enter= or =Ctrl+C Ctrl+C= to execute.
 
-5. *Explore the menus* with Ctrl+C M (main menu) or Ctrl+C Ctrl+M (context menu)
+5. *Explore the menus* with =Ctrl+C M= (main menu) or =Ctrl+C Ctrl+M= (context menu)
 
 See [[file:getting-started.org][Getting Started]] for a complete introduction.
 
-** ⚠️ Getting Help
+** Getting Help
 
-*** ⚠️ Within VS Code
+*** Within VS Code
 
-- Press Ctrl+C M to open the main Hydra menu
-- Press Ctrl+C Ctrl+M for context-sensitive menus
-- Use Ctrl+Shift+P and search for "Scimax" commands
+- Press =Ctrl+C M= to open the main Hydra menu
+- Press =Ctrl+C Ctrl+M= for context-sensitive menus
+- Use =Ctrl+Shift+P= and search for "Scimax" commands
 - Hover over elements for tooltips and information
 
-*** ⚠️ Online Resources
+*** Online Resources
 
 - GitHub Issues: Report bugs and request features
 - Documentation: This documentation set
 
-*** ⚠️ Keybinding Help
+*** Keybinding Help
 
-Press Shift+/ at the beginning of a heading (with speed commands enabled) to
+Press =Shift+/= at the beginning of a heading (with speed commands enabled) to
 see available speed commands.
 
 See [[file:keybindings.org][Keybindings]] for the complete reference.
 
-** ⚠️ Acknowledgments
+** Acknowledgments
 
 Scimax VS Code is inspired by:
 
@@ -236,15 +235,15 @@ Scimax VS Code is inspired by:
 - [[https://orgmode.org][Org-mode]] - The powerful Emacs major mode for notes and planning
 - [[https://orgmode.org/worg/org-contrib/babel/][Org Babel]] - Literate programming in Org-mode
 
-** ⚠️ License
+** License
 
 Scimax VS Code is open source software. See the LICENSE file for details.
 
-* ⚠️ Complete Documentation Index
+* Complete Documentation Index
 
 This section provides a comprehensive index of all documentation topics with links for quick navigation.
 
-** ⚠️ Navigation Guides
+** Navigation Guides
 
 | Document                                      | Topics Covered                                   |
 |-----------------------------------------------+--------------------------------------------------|
@@ -255,7 +254,7 @@ This section provides a comprehensive index of all documentation topics with lin
 | [[file:speed-commands.org][Speed Commands]]   | Single-key commands at heading start             |
 | [[file:commands.org][Commands]]               | All available commands                           |
 
-** ⚠️ Document Editing
+** Document Editing
 
 | Document                                            | Topics Covered                          |
 |-----------------------------------------------------+-----------------------------------------|
@@ -266,7 +265,7 @@ This section provides a comprehensive index of all documentation topics with lin
 | [[file:links.org][Links]]                           | Hyperlinks, internal links, citations   |
 | [[file:editmarks.org][Editmarks]]                   | Track changes, revision marks           |
 
-** ⚠️ Code Execution
+** Code Execution
 
 | Document                                              | Topics Covered                    |
 |-------------------------------------------------------+-----------------------------------|
@@ -274,7 +273,7 @@ This section provides a comprehensive index of all documentation topics with lin
 | [[file:supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more |
 | [[file:jupyter.org][Jupyter Integration]]             | Kernel management, rich output    |
 
-** ⚠️ Export and Preview
+** Export and Preview
 
 | Document                                    | Topics Covered                    |
 |---------------------------------------------+-----------------------------------|
@@ -282,7 +281,7 @@ This section provides a comprehensive index of all documentation topics with lin
 | [[file:latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  |
 | [[file:image-overlays.org][Image Overlays]] | Inline image display              |
 
-** ⚠️ Organization and Planning
+** Organization and Planning
 
 | Document                        | Topics Covered                                  |
 |---------------------------------+-------------------------------------------------|
@@ -292,20 +291,20 @@ This section provides a comprehensive index of all documentation topics with lin
 | [[file:notebook.org][Notebook]]                        | Project-based organization                      |
 | [[file:projectile.org][Projectile]]                      | Project management, switching                   |
 
-** ⚠️ Search and Database
+** Search and Database
 
 | Document                        | Topics Covered                                  |
 |---------------------------------+-------------------------------------------------|
 | [[file:database-search.org][Database and Search]]             | Full-text search, semantic search, embeddings   |
 | [[file:references.org][References]]                      | Citations, bibliography, DOI lookup             |
 
-** ⚠️ Configuration
+** Configuration
 
 | Document                        | Topics Covered                                  |
 |---------------------------------+-------------------------------------------------|
 | [[file:configuration.org][Configuration]]                   | All settings, customization options             |
 
-* ⚠️ Topic Index
+* Topic Index
 
 Quick reference to find specific features across documentation.
 
@@ -362,40 +361,44 @@ Quick reference to find specific features across documentation.
 | Track changes            | [[file:editmarks.org][Editmarks]]                       | [[file:document-structure.org][Document Structure]]                         |
 | Vector search            | [[file:database-search.org][Database and Search]]             | [[file:configuration.org][Configuration]]                              |
 
-* ⚠️ Quick Start by Use Case
+* Quick Start by Use Case
 
-** ⚠️ I want to...
+** I want to...
 
-*** ⚠️ Take notes and organize information
+*** Take notes and organize information
 - Start with [[file:getting-started.org][Getting Started]]
 - Learn [[file:document-structure.org][Document Structure]] for headings and organization
 - Use [[file:capture.org][Capture]] for quick note-taking
 - Search with [[file:database-search.org][Database and Search]]
 
-*** ⚠️ Manage tasks and projects
+*** Manage tasks and projects
 - Set up tasks with [[file:todo-items.org][TODO Items]]
 - Add dates with [[file:timestamps.org][Timestamps]]
 - View agenda with [[file:agenda.org][Agenda]]
 - Organize projects with [[file:projectile.org][Projectile]] or [[file:notebook.org][Notebook]]
 
-*** ⚠️ Write scientific documents
+*** Write scientific documents
 - Execute code with [[file:source-blocks.org][Source Code Blocks]]
 - Preview math with [[file:latex-preview.org][LaTeX Preview]]
 - Manage citations with [[file:references.org][References]]
 - Export with [[file:export.org][Export]]
 
-*** ⚠️ Keep a journal
+*** Keep a journal
 - Set up with [[file:journal.org][Journal]]
 - Use templates from [[file:capture.org][Capture]]
 - Navigate entries with [[file:navigation.org][Navigation]]
 
-*** ⚠️ Navigate efficiently
+*** Navigate efficiently
 - Learn [[file:navigation.org][Navigation]] techniques
 - Master [[file:speed-commands.org][Speed Commands]]
 - Use [[file:hydra-menus.org][Hydra Menus]] for discovery
 - Reference [[file:keybindings.org][Keybindings]]
 
-*** ⚠️ Configure the extension
+*** Configure the extension
 - See all options in [[file:configuration.org][Configuration]]
 - Set up keybindings with [[file:keybindings.org][Keybindings]]
 - Customize menus with [[file:hydra-menus.org][Hydra Menus]]
+
+* Navigation
+
+- Next: [[file:getting-started.org][Getting Started]]

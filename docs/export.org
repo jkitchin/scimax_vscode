@@ -1,49 +1,50 @@
 #+TITLE: Org Export System
 #+AUTHOR: Scimax VS Code
+#+DATE: 2026-01-13
+#+STARTUP: overview
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
-*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Overview
+* Overview
 
-The Scimax VS Code extension provides a comprehensive export system for converting org-mode documents to various formats including HTML, LaTeX, PDF, and Markdown. The export system follows the familiar org-mode export dispatcher interface (C-c C-e) from Emacs.
+The Scimax VS Code extension provides a comprehensive export system for converting org-mode documents to various formats including HTML, LaTeX, PDF, and Markdown. The export system follows the familiar org-mode export dispatcher interface (=C-c C-e=) from Emacs.
 
-* ⚠️ Export Dispatcher
+* Export Dispatcher
 
-** ⚠️ Opening the Export Dispatcher
+** Opening the Export Dispatcher
 
-Press Ctrl+C Ctrl+E (or C-c C-e in Emacs notation) to open the export dispatcher menu. This provides a quick-pick interface showing all available export formats and options.
+Press =Ctrl+C Ctrl+E= (or =C-c C-e= in Emacs notation) to open the export dispatcher menu. This provides a quick-pick interface showing all available export formats and options.
 
 The export dispatcher presents options with keyboard hints, similar to Emacs org-mode:
 - Type the letter keys shown in square brackets to select an option
-- For example, type h h for HTML export or l p for PDF export
+- For example, type =h h= for HTML export or =l p= for PDF export
 
-** ⚠️ Export Dispatcher Menu Structure
+** Export Dispatcher Menu Structure
 
 The dispatcher menu is organized into logical groups:
 
-*** ⚠️ HTML Exports
-- [h h] HTML file - Export to .html file
-- [h o] HTML and open - Export to .html and open in browser
-- [h p] HTML preview - Preview HTML in VS Code webview
+*** HTML Exports
+- =[h h]= HTML file - Export to .html file
+- =[h o]= HTML and open - Export to .html and open in browser
+- =[h p]= HTML preview - Preview HTML in VS Code webview
 
-*** ⚠️ LaTeX/PDF Exports
-- [l l] LaTeX file - Export to .tex file
-- [l p] PDF file - Export to PDF via LaTeX compilation
-- [l o] PDF and open - Export to PDF and open with system viewer
+*** LaTeX/PDF Exports
+- =[l l]= LaTeX file - Export to .tex file
+- =[l p]= PDF file - Export to PDF via LaTeX compilation
+- =[l o]= PDF and open - Export to PDF and open with system viewer
 
-*** ⚠️ Markdown Exports
-- [m m] Markdown file - Export to .md file
-- [m o] Markdown and open - Export to .md and open in VS Code
+*** Markdown Exports
+- =[m m]= Markdown file - Export to .md file
+- =[m o]= Markdown and open - Export to .md and open in VS Code
 
-* ⚠️ Export Formats
+* Export Formats
 
-** ⚠️ HTML Export
+** HTML Export
 
 HTML export generates semantic HTML5 documents with modern styling.
 
-*** ⚠️ Features
-- Semantic HTML5 structure (<section>, <header>, <nav>)
+*** Features
+- Semantic HTML5 structure (=<section>=, =<header>=, =<nav>=)
 - Syntax highlighting via highlight.js
 - MathJax support for mathematical equations
 - Responsive design with mobile-friendly layout
@@ -51,14 +52,14 @@ HTML export generates semantic HTML5 documents with modern styling.
 - Footnote support
 - Custom CSS and JavaScript support
 
-*** ⚠️ MathJax Integration
+*** MathJax Integration
 
 HTML exports automatically include MathJax for rendering mathematical content:
-- Inline math: $x^2 + y^2 = r^2$ → \(x^2 + y^2 = r^2\)
-- Display math: $$\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$$ → \[\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}\]
+- Inline math: =$x^2 + y^2 = r^2$= → \(x^2 + y^2 = r^2\)
+- Display math: =$$\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$$= → \[\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}\]
 - LaTeX environments work directly
 
-*** ⚠️ Example
+*** Example
 
 #+BEGIN_SRC org
 #+TITLE: My Research Notes
@@ -69,24 +70,24 @@ HTML exports automatically include MathJax for rendering mathematical content:
 This document demonstrates HTML export with math: $E = mc^2$
 #+END_SRC
 
-Export with C-c C-e h h to produce a standalone HTML file.
+Export with =C-c C-e h h= to produce a standalone HTML file.
 
-** ⚠️ LaTeX Export
+** LaTeX Export
 
 LaTeX export converts org documents to LaTeX source suitable for academic papers, reports, and books.
 
-*** ⚠️ Document Classes
+*** Document Classes
 
-The default document class is article. You can specify alternatives:
+The default document class is =article=. You can specify alternatives:
 
 #+BEGIN_SRC org
 #+LATEX_CLASS: report
 #+LATEX_CLASS_OPTIONS: [11pt,a4paper,twoside]
 #+END_SRC
 
-Supported classes: article, report, book, beamer (for presentations)
+Supported classes: =article=, =report=, =book=, =beamer= (for presentations)
 
-*** ⚠️ Custom Preambles
+*** Custom Preambles
 
 Add custom LaTeX packages and settings in the preamble:
 
@@ -96,13 +97,13 @@ Add custom LaTeX packages and settings in the preamble:
 #+LATEX_HEADER: \usepackage{tcolorbox}
 #+END_SRC
 
-*** ⚠️ Global Custom Header
+*** Global Custom Header
 
 Configure a complete custom LaTeX preamble in VS Code settings:
 
-1. Open Settings (Ctrl+,)
-2. Search for scimax.export.latex.customHeader
-3. Enter your complete preamble (from \documentclass through packages)
+1. Open Settings (=Ctrl+,=)
+2. Search for =scimax.export.latex.customHeader=
+3. Enter your complete preamble (from =\documentclass= through packages)
 
 Example:
 #+BEGIN_SRC latex
@@ -114,11 +115,11 @@ Example:
 \usepackage[colorlinks=true]{hyperref}
 #+END_SRC
 
-*** ⚠️ Code Listings
+*** Code Listings
 
 LaTeX export supports two code highlighting backends:
 
-**** ⚠️ listings Package (default)
+**** listings Package (default)
 #+BEGIN_SRC org
 #+BEGIN_SRC python
 def fibonacci(n):
@@ -134,15 +135,15 @@ def fibonacci(n):
 \end{lstlisting}
 #+END_SRC
 
-**** ⚠️ minted Package (for advanced highlighting)
+**** minted Package (for advanced highlighting)
 Enable in export options (requires Pygments):
 #+BEGIN_SRC org
 #+LATEX_COMPILER: pdflatex -shell-escape
 #+END_SRC
 
-*** ⚠️ Tables with booktabs
+*** Tables with booktabs
 
-Tables are exported using the booktabs package for professional appearance:
+Tables are exported using the =booktabs= package for professional appearance:
 
 #+BEGIN_SRC org
 #+CAPTION: Experimental Results
@@ -170,9 +171,9 @@ B & 0.97 & 15.6 \\
 \end{table}
 #+END_SRC
 
-*** ⚠️ Cross-References
+*** Cross-References
 
-Use #+NAME: for labeled elements and link to them:
+Use =#+NAME:= for labeled elements and link to them:
 
 #+BEGIN_SRC org
 #+NAME: fig:diagram
@@ -181,42 +182,42 @@ Use #+NAME: for labeled elements and link to them:
 See Figure [[fig:diagram]] for the system architecture.
 #+END_SRC
 
-** ⚠️ PDF Export
+** PDF Export
 
 PDF export works by first generating LaTeX and then compiling with a LaTeX engine.
 
-*** ⚠️ Compilation Process
+*** Compilation Process
 
-The system uses latexmk for smart incremental builds:
+The system uses =latexmk= for smart incremental builds:
 1. Org → LaTeX conversion
-2. latexmk compilation (handles multiple passes automatically)
+2. =latexmk= compilation (handles multiple passes automatically)
 3. Bibliography processing if needed
 4. PDF generation
 
-*** ⚠️ Supported Compilers
+*** Supported Compilers
 
-Configure the LaTeX compiler in VS Code settings (scimax.latexLivePreview.compiler):
-- pdflatex (default) - Standard LaTeX compiler
-- xelatex - For Unicode and system fonts
-- lualatex - For advanced features and LuaTeX
+Configure the LaTeX compiler in VS Code settings (=scimax.latexLivePreview.compiler=):
+- =pdflatex= (default) - Standard LaTeX compiler
+- =xelatex= - For Unicode and system fonts
+- =lualatex= - For advanced features and LuaTeX
 
-*** ⚠️ Requirements
+*** Requirements
 
 PDF export requires:
 - LaTeX distribution (TeX Live, MiKTeX, or MacTeX)
-- latexmk utility (included with most distributions)
+- =latexmk= utility (included with most distributions)
 
-*** ⚠️ Error Handling
+*** Error Handling
 
 If PDF compilation fails:
-1. The extension offers to open the .log file
+1. The extension offers to open the =.log= file
 2. Review the log for LaTeX errors
 3. Common issues:
    - Missing packages → Install via your TeX distribution
    - Syntax errors → Check LaTeX syntax in export
    - Image paths → Ensure images exist and paths are correct
 
-*** ⚠️ Build on Save
+*** Build on Save
 
 Enable automatic PDF building in settings:
 #+BEGIN_SRC json
@@ -226,20 +227,20 @@ Enable automatic PDF building in settings:
 }
 #+END_SRC
 
-** ⚠️ Markdown Export
+** Markdown Export
 
 Markdown export produces GitHub-flavored Markdown (GFM) suitable for GitHub, GitLab, and other platforms.
 
-*** ⚠️ Features
-- Headings (# ## ###)
-- Emphasis (*bold*, _italic_, ~~strikethrough~~)
+*** Features
+- Headings (=# ## ###=)
+- Emphasis (=*bold*=, =_italic_=, =~~strikethrough~~=)
 - Lists (ordered and unordered)
 - Code blocks with syntax highlighting
 - Tables (GFM format)
 - Links and images
 - Blockquotes
 
-*** ⚠️ Example Conversion
+*** Example Conversion
 
 *Org input:*
 #+BEGIN_SRC org
@@ -271,51 +272,51 @@ print("Hello, world!")
 ```
 #+END_SRC
 
-* ⚠️ Export Keybindings
+* Export Keybindings
 
-** ⚠️ Primary Keybindings
+** Primary Keybindings
 
 | Keybinding            | Command                        | Description                    |
 |-----------------------+--------------------------------+--------------------------------|
-| C-c C-e               | Export dispatcher              | Open export menu               |
-| C-c C-e h h           | HTML export                    | Export to HTML file            |
-| C-c C-e h o           | HTML export and open           | Export HTML and open in browser|
-| C-c C-e l l           | LaTeX export                   | Export to .tex file            |
-| C-c C-e l p           | PDF export                     | Export to PDF via LaTeX        |
-| C-c C-e l o           | PDF export and open            | Export PDF and open viewer     |
-| C-c C-e m m           | Markdown export                | Export to .md file             |
+| =C-c C-e=             | Export dispatcher              | Open export menu               |
+| =C-c C-e h h=         | HTML export                    | Export to HTML file            |
+| =C-c C-e h o=         | HTML export and open           | Export HTML and open in browser|
+| =C-c C-e l l=         | LaTeX export                   | Export to .tex file            |
+| =C-c C-e l p=         | PDF export                     | Export to PDF via LaTeX        |
+| =C-c C-e l o=         | PDF export and open            | Export PDF and open viewer     |
+| =C-c C-e m m=         | Markdown export                | Export to .md file             |
 
-** ⚠️ Additional LaTeX Keybindings
+** Additional LaTeX Keybindings
 
-| Keybinding    | Command                   | Description                          |
-|---------------+---------------------------+--------------------------------------|
-| C-c C-e l v   | Open LaTeX preview        | Open PDF preview (if built)          |
-| C-c C-e l s   | Forward sync              | Sync cursor position to PDF (SyncTeX)|
+| Keybinding   | Command                   | Description                          |
+|--------------+---------------------------+--------------------------------------|
+| =C-c C-e l v= | Open LaTeX preview        | Open PDF preview (if built)          |
+| =C-c C-e l s= | Forward sync              | Sync cursor position to PDF (SyncTeX)|
 
-** ⚠️ Quick Access
+** Quick Access
 
 For frequently used exports, use the quick commands:
-- Ctrl+Shift+P → "Scimax: Export to HTML"
-- Ctrl+Shift+P → "Scimax: Export to PDF"
-- Ctrl+Shift+P → "Scimax: Export to Markdown"
+- =Ctrl+Shift+P= → "Scimax: Export to HTML"
+- =Ctrl+Shift+P= → "Scimax: Export to PDF"
+- =Ctrl+Shift+P= → "Scimax: Export to Markdown"
 
-* ⚠️ Export Scope
+* Export Scope
 
 The export system supports three scope modes:
 
-** ⚠️ Full Document Export (default)
+** Full Document Export (default)
 
 Exports the entire org file from beginning to end.
 
 Usage: Select "Full document" when prompted for export scope.
 
-** ⚠️ Subtree Export
+** Subtree Export
 
 Exports only the current headline and its children.
 
 Usage:
 1. Place cursor on or within a headline
-2. Invoke export dispatcher (C-c C-e)
+2. Invoke export dispatcher (=C-c C-e=)
 3. Select "Current subtree" as scope
 
 Example:
@@ -336,19 +337,19 @@ Exporting with subtree scope from "Methods" exports:
 - Analysis subsection
 - (Results is NOT included)
 
-*** ⚠️ Use Cases for Subtree Export
+*** Use Cases for Subtree Export
 - Export a single chapter from a book
 - Generate standalone reports from sections
 - Create focused documentation for specific topics
 - Share individual project components
 
-** ⚠️ Visible Content Export
+** Visible Content Export
 
 Exports only content that is currently visible (not folded).
 
 Usage:
-1. Fold sections you want to exclude (Tab on headings)
-2. Invoke export (C-c C-e)
+1. Fold sections you want to exclude (=Tab= on headings)
+2. Invoke export (=C-c C-e=)
 3. Select "Visible content" as scope
 
 This is useful for:
@@ -356,11 +357,11 @@ This is useful for:
 - Generating public versions (hide private notes)
 - Focusing on high-level structure
 
-* ⚠️ HTML Export Options
+* HTML Export Options
 
-** ⚠️ Standalone vs. Body-Only
+** Standalone vs. Body-Only
 
-*** ⚠️ Standalone (default)
+*** Standalone (default)
 Generates complete HTML document:
 #+BEGIN_SRC html
 <!DOCTYPE html>
@@ -378,7 +379,7 @@ Generates complete HTML document:
 </html>
 #+END_SRC
 
-*** ⚠️ Body-Only
+*** Body-Only
 Generates only the content (for embedding):
 #+BEGIN_SRC html
 <div class="org-content">
@@ -394,7 +395,7 @@ Use body-only for:
 - CMS integration
 - Email newsletters
 
-** ⚠️ Custom CSS
+** Custom CSS
 
 Add custom styles via export options:
 
@@ -411,7 +412,7 @@ Or link external CSS:
 #+HTML_HEAD: <link rel="stylesheet" href="custom.css" />
 #+END_SRC
 
-** ⚠️ JavaScript Support
+** JavaScript Support
 
 Include custom JavaScript:
 
@@ -422,7 +423,7 @@ Include custom JavaScript:
 #+HTML_HEAD: </script>
 #+END_SRC
 
-** ⚠️ MathJax Configuration
+** MathJax Configuration
 
 HTML exports use MathJax 3 by default. The CDN URL is:
 #+BEGIN_EXAMPLE
@@ -430,11 +431,11 @@ https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 #+END_EXAMPLE
 
 MathJax automatically renders:
-- Inline math: \(...\) or $...$
-- Display math: \[...\] or $$...$$
-- LaTeX environments: \begin{equation}...\end{equation}
+- Inline math: =\(...\)= or =$...$=
+- Display math: =\[...\]= or =$$...$$=
+- LaTeX environments: =\begin{equation}...\end{equation}=
 
-** ⚠️ Syntax Highlighting
+** Syntax Highlighting
 
 Code blocks use highlight.js for syntax highlighting:
 
@@ -447,11 +448,11 @@ def greet(name):
 
 Supported languages: Python, JavaScript, Java, C, C++, Rust, Go, Ruby, Shell, SQL, and many more.
 
-* ⚠️ LaTeX Export Options
+* LaTeX Export Options
 
-** ⚠️ Document Structure
+** Document Structure
 
-*** ⚠️ Headline Levels
+*** Headline Levels
 
 Control which headline levels become sections:
 
@@ -459,12 +460,12 @@ Control which headline levels become sections:
 #+OPTIONS: H:4
 #+END_SRC
 
-- H:1 → Only top-level headlines become sections
-- H:2 → Two levels (section, subsection)
-- H:3 → Three levels (section, subsection, subsubsection)
-- H:4 → Four levels (adds paragraph)
+- =H:1= → Only top-level headlines become sections
+- =H:2= → Two levels (section, subsection)
+- =H:3= → Three levels (section, subsection, subsubsection)
+- =H:4= → Four levels (adds paragraph)
 
-*** ⚠️ Section Numbering
+*** Section Numbering
 
 Control section numbering:
 
@@ -479,7 +480,7 @@ In LaTeX output, this sets:
 \setcounter{secnumdepth}{3}
 #+END_SRC
 
-*** ⚠️ Table of Contents
+*** Table of Contents
 
 #+BEGIN_SRC org
 #+OPTIONS: toc:t      % Include TOC
@@ -493,7 +494,7 @@ Generates:
 \newpage
 #+END_SRC
 
-** ⚠️ Images and Figures
+** Images and Figures
 
 Include images with captions and labels:
 
@@ -514,16 +515,16 @@ Exports to:
 \end{figure}
 #+END_SRC
 
-*** ⚠️ Image Attributes
+*** Image Attributes
 
-- :width - Image width (e.g., 0.8\textwidth, 12cm)
-- :height - Image height
-- :placement - Float placement ([htbp])
-- :scale - Scale factor (0.5 for 50%)
+- =:width= - Image width (e.g., =0.8\textwidth=, =12cm=)
+- =:height= - Image height
+- =:placement= - Float placement (=[htbp]=)
+- =:scale= - Scale factor (=0.5= for 50%)
 
-** ⚠️ Bibliography Support
+** Bibliography Support
 
-*** ⚠️ BibTeX Integration
+*** BibTeX Integration
 
 Include bibliography:
 
@@ -536,20 +537,20 @@ bibliography:~/references.bib
 bibliographystyle:plainnat
 #+END_SRC
 
-*** ⚠️ Citation Links
+*** Citation Links
 
 Org-ref style citations work directly:
-- cite:key → \cite{key}
-- citep:key → \citep{key} (parenthetical)
-- citet:key → \citet{key} (textual)
-- citeauthor:key → \citeauthor{key}
-- citeyear:key → \citeyear{key}
+- =cite:key= → =\cite{key}=
+- =citep:key= → =\citep{key}= (parenthetical)
+- =citet:key= → =\citet{key}= (textual)
+- =citeauthor:key= → =\citeauthor{key}=
+- =citeyear:key= → =\citeyear{key}=
 
-** ⚠️ Advanced LaTeX Features
+** Advanced LaTeX Features
 
-*** ⚠️ Custom Environments
+*** Custom Environments
 
-Use #+BEGIN_LATEX blocks for raw LaTeX:
+Use =#+BEGIN_LATEX= blocks for raw LaTeX:
 
 #+BEGIN_SRC org
 #+BEGIN_LATEX
@@ -560,7 +561,7 @@ For a right triangle with legs $a$ and $b$ and hypotenuse $c$:
 #+END_LATEX
 #+END_SRC
 
-*** ⚠️ Special Blocks
+*** Special Blocks
 
 Special blocks map to LaTeX environments:
 
@@ -578,7 +579,7 @@ Assume $P$. Then...
 #+END_proof
 #+END_SRC
 
-*** ⚠️ Math Environments
+*** Math Environments
 
 LaTeX math environments work directly:
 
@@ -594,13 +595,13 @@ y &= c + d
 \end{align}
 #+END_SRC
 
-* ⚠️ PDF Export Configuration
+* PDF Export Configuration
 
-** ⚠️ Compiler Selection
+** Compiler Selection
 
 Set the LaTeX compiler in VS Code settings:
 
-*** ⚠️ pdflatex (default)
+*** pdflatex (default)
 - Fast compilation
 - Wide compatibility
 - Standard LaTeX packages
@@ -613,7 +614,7 @@ Configuration:
 }
 #+END_SRC
 
-*** ⚠️ xelatex
+*** xelatex
 - Unicode support (UTF-8)
 - System fonts (TrueType, OpenType)
 - Modern typography
@@ -633,7 +634,7 @@ Example with system fonts:
 #+LATEX_HEADER: \setmonofont{Fira Code}
 #+END_SRC
 
-*** ⚠️ lualatex
+*** lualatex
 - Unicode support
 - Lua scripting in LaTeX
 - Advanced typography
@@ -646,19 +647,19 @@ Configuration:
 }
 #+END_SRC
 
-** ⚠️ latexmk Configuration
+** latexmk Configuration
 
-The export system uses latexmk for reliable compilation:
+The export system uses =latexmk= for reliable compilation:
 
-*** ⚠️ Benefits
+*** Benefits
 - Automatic multiple passes (for TOC, references, etc.)
 - Bibliography processing (BibTeX/Biber)
 - Dependency tracking
 - Incremental builds
 
-*** ⚠️ Configuration File
+*** Configuration File
 
-Create .latexmkrc in your project directory:
+Create =.latexmkrc= in your project directory:
 
 #+BEGIN_SRC perl
 # Use pdflatex
@@ -671,7 +672,7 @@ $clean_ext = "synctex.gz synctex.gz(busy) run.xml";
 $pdflatex = 'pdflatex -interaction=nonstopmode -shell-escape %O %S';
 #+END_SRC
 
-*** ⚠️ Disabling latexmk
+*** Disabling latexmk
 
 If you prefer direct compiler invocation:
 #+BEGIN_SRC json
@@ -680,9 +681,9 @@ If you prefer direct compiler invocation:
 }
 #+END_SRC
 
-** ⚠️ Build Automation
+** Build Automation
 
-*** ⚠️ Build on Save
+*** Build on Save
 
 Automatically rebuild PDF when saving:
 #+BEGIN_SRC json
@@ -691,7 +692,7 @@ Automatically rebuild PDF when saving:
 }
 #+END_SRC
 
-*** ⚠️ Build on Idle
+*** Build on Idle
 
 Build after idle period (useful for live preview):
 #+BEGIN_SRC json
@@ -701,34 +702,34 @@ Build after idle period (useful for live preview):
 }
 #+END_SRC
 
-** ⚠️ SyncTeX Integration
+** SyncTeX Integration
 
 SyncTeX enables bidirectional sync between source and PDF:
 
-*** ⚠️ Forward Sync (Source → PDF)
+*** Forward Sync (Source → PDF)
 1. Place cursor in org file
-2. Press C-c C-e l s
+2. Press =C-c C-e l s=
 3. PDF viewer jumps to corresponding location
 
-*** ⚠️ Reverse Sync (PDF → Source)
+*** Reverse Sync (PDF → Source)
 Ctrl+click in PDF viewer (if supported) to jump to source line.
 
-* ⚠️ Markdown Export Details
+* Markdown Export Details
 
-** ⚠️ GitHub-Flavored Markdown (GFM)
+** GitHub-Flavored Markdown (GFM)
 
 The Markdown export follows GitHub's flavor for maximum compatibility.
 
-** ⚠️ Supported Elements
+** Supported Elements
 
-*** ⚠️ Headings
+*** Headings
 #+BEGIN_SRC org
 ,* Level 1      →  # Level 1
 ,** Level 2     →  ## Level 2
 ,*** Level 3    →  ### Level 3
 #+END_SRC
 
-*** ⚠️ Text Formatting
+*** Text Formatting
 #+BEGIN_SRC org
 *bold*          →  **bold**
 /italic/        →  *italic*
@@ -738,7 +739,7 @@ _underline_     →  _underline_
 ~verbatim~      →  `verbatim`
 #+END_SRC
 
-*** ⚠️ Lists
+*** Lists
 
 *Unordered:*
 #+BEGIN_SRC org
@@ -754,7 +755,7 @@ _underline_     →  _underline_
 3. Third
 #+END_SRC
 
-*** ⚠️ Code Blocks
+*** Code Blocks
 
 #+BEGIN_SRC org
 #+BEGIN_SRC python
@@ -771,7 +772,7 @@ def hello():
 ```
 #+END_SRC
 
-*** ⚠️ Tables
+*** Tables
 
 #+BEGIN_SRC org
 | Name  | Age | City       |
@@ -788,20 +789,20 @@ Exports to:
 | Bob   | 25  | London     |
 #+END_SRC
 
-*** ⚠️ Links
+*** Links
 
 #+BEGIN_SRC org
 [[https://example.com][Example Site]]  →  [Example Site](https://example.com)
 [[file:image.png]]                     →  [image.png](image.png)
 #+END_SRC
 
-*** ⚠️ Images
+*** Images
 
 #+BEGIN_SRC org
 [[file:diagram.png]]  →  ![](diagram.png)
 #+END_SRC
 
-** ⚠️ Metadata Handling
+** Metadata Handling
 
 Document metadata is converted:
 #+BEGIN_SRC org
@@ -819,34 +820,34 @@ Becomes:
 2024-01-15
 #+END_SRC
 
-* ⚠️ Export Options Reference
+* Export Options Reference
 
-** ⚠️ #+OPTIONS Keyword
+** #+OPTIONS Keyword
 
-The #+OPTIONS keyword controls various export behaviors:
+The =#+OPTIONS= keyword controls various export behaviors:
 
-*** ⚠️ Syntax
+*** Syntax
 #+BEGIN_SRC org
 #+OPTIONS: key1:value1 key2:value2 ...
 #+END_SRC
 
-*** ⚠️ Common Options
+*** Common Options
 
 | Option  | Values           | Description                           |
 |---------+------------------+---------------------------------------|
-| toc     | t, nil, N        | Table of contents (N = depth)         |
-| num     | t, nil, N        | Section numbering (N = depth)         |
-| H       | N                | Headline levels to export             |
-| author  | t, nil           | Include author                        |
-| date    | t, nil           | Include date                          |
-| title   | t, nil           | Include title                         |
-| tags    | t, nil           | Include tags                          |
-| todo    | t, nil           | Include TODO keywords                 |
-| <>      | t, nil           | Include timestamps                    |
-| *       | t, nil           | Include emphasized text               |
-| ^       | t, nil, {        | Sub/superscripts ({ requires braces)  |
+| =toc=   | =t=, =nil=, =N=  | Table of contents (N = depth)         |
+| =num=   | =t=, =nil=, =N=  | Section numbering (N = depth)         |
+| =H=     | =N=              | Headline levels to export             |
+| =author= | =t=, =nil=       | Include author                        |
+| =date=  | =t=, =nil=       | Include date                          |
+| =title= | =t=, =nil=       | Include title                         |
+| =tags=  | =t=, =nil=       | Include tags                          |
+| =todo=  | =t=, =nil=       | Include TODO keywords                 |
+| =<>=    | =t=, =nil=       | Include timestamps                    |
+| =*=     | =t=, =nil=       | Include emphasized text               |
+| =^=     | =t=, =nil=, ={=  | Sub/superscripts (={= requires braces)|
 
-*** ⚠️ Examples
+*** Examples
 
 *Full configuration:*
 #+BEGIN_SRC org
@@ -863,9 +864,9 @@ The #+OPTIONS keyword controls various export behaviors:
 #+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t
 #+END_SRC
 
-** ⚠️ Document Keywords
+** Document Keywords
 
-*** ⚠️ Required Keywords
+*** Required Keywords
 
 #+BEGIN_SRC org
 #+TITLE: Document Title
@@ -874,7 +875,7 @@ The #+OPTIONS keyword controls various export behaviors:
 #+LANGUAGE: en
 #+END_SRC
 
-*** ⚠️ HTML-Specific Keywords
+*** HTML-Specific Keywords
 
 #+BEGIN_SRC org
 #+HTML_HEAD: <style>body { font-family: sans-serif; }</style>
@@ -883,7 +884,7 @@ The #+OPTIONS keyword controls various export behaviors:
 #+HTML_LINK_UP: ../index.html
 #+END_SRC
 
-*** ⚠️ LaTeX-Specific Keywords
+*** LaTeX-Specific Keywords
 
 #+BEGIN_SRC org
 #+LATEX_CLASS: article
@@ -893,7 +894,7 @@ The #+OPTIONS keyword controls various export behaviors:
 #+LATEX_COMPILER: pdflatex
 #+END_SRC
 
-*** ⚠️ Export Settings
+*** Export Settings
 
 #+BEGIN_SRC org
 #+EXPORT_FILE_NAME: custom-name
@@ -901,20 +902,20 @@ The #+OPTIONS keyword controls various export behaviors:
 #+SELECT_TAGS: export
 #+END_SRC
 
-* ⚠️ Configuration Settings
+* Configuration Settings
 
-** ⚠️ Export Settings Location
+** Export Settings Location
 
 All export settings are in VS Code preferences:
-1. Ctrl+, (Cmd+, on Mac) to open Settings
+1. =Ctrl+,= (=Cmd+,= on Mac) to open Settings
 2. Search for "scimax export" or "scimax latex"
 3. Modify settings as needed
 
-** ⚠️ LaTeX Export Configuration
+** LaTeX Export Configuration
 
-*** ⚠️ Custom Header
+*** Custom Header
 
-*Setting:* scimax.export.latex.customHeader
+*Setting:* =scimax.export.latex.customHeader=
 
 *Type:* String (multiline)
 
@@ -927,7 +928,7 @@ All export settings are in VS Code preferences:
 }
 #+END_SRC
 
-Or in settings.json:
+Or in =settings.json=:
 #+BEGIN_SRC json
 {
   "scimax.export.latex.customHeader": [
@@ -940,15 +941,15 @@ Or in settings.json:
 }
 #+END_SRC
 
-** ⚠️ LaTeX Preview Settings
+** LaTeX Preview Settings
 
-*** ⚠️ Compiler
+*** Compiler
 
-*Setting:* scimax.latexLivePreview.compiler
+*Setting:* =scimax.latexLivePreview.compiler=
 
-*Values:* "pdflatex", "xelatex", "lualatex"
+*Values:* ="pdflatex"=, ="xelatex"=, ="lualatex"=
 
-*Default:* "pdflatex"
+*Default:* ="pdflatex"=
 
 *Example:*
 #+BEGIN_SRC json
@@ -957,47 +958,47 @@ Or in settings.json:
 }
 #+END_SRC
 
-*** ⚠️ Use latexmk
+*** Use latexmk
 
-*Setting:* scimax.latexLivePreview.useLatexmk
+*Setting:* =scimax.latexLivePreview.useLatexmk=
 
 *Type:* Boolean
 
-*Default:* true
+*Default:* =true=
 
 *Description:* Use latexmk for smart incremental builds (recommended).
 
-*** ⚠️ Build on Save
+*** Build on Save
 
-*Setting:* scimax.latexLivePreview.buildOnSave
+*Setting:* =scimax.latexLivePreview.buildOnSave=
 
 *Type:* Boolean
 
-*Default:* true
+*Default:* =true=
 
 *Description:* Automatically rebuild PDF when org file is saved.
 
-*** ⚠️ Build on Idle
+*** Build on Idle
 
-*Setting:* scimax.latexLivePreview.buildOnIdle
+*Setting:* =scimax.latexLivePreview.buildOnIdle=
 
 *Type:* Boolean
 
-*Default:* false
+*Default:* =false=
 
 *Description:* Rebuild PDF after idle period (for live preview).
 
-*** ⚠️ Idle Delay
+*** Idle Delay
 
-*Setting:* scimax.latexLivePreview.idleDelay
+*Setting:* =scimax.latexLivePreview.idleDelay=
 
 *Type:* Number (milliseconds)
 
-*Default:* 2000
+*Default:* =2000=
 
 *Description:* Delay before idle build triggers.
 
-** ⚠️ Complete Configuration Example
+** Complete Configuration Example
 
 #+BEGIN_SRC json
 {
@@ -1018,11 +1019,11 @@ Or in settings.json:
 }
 #+END_SRC
 
-* ⚠️ Advanced Export Techniques
+* Advanced Export Techniques
 
-** ⚠️ Conditional Export
+** Conditional Export
 
-*** ⚠️ Exclude Content by Tag
+*** Exclude Content by Tag
 
 Tag headlines to exclude them from export:
 
@@ -1039,7 +1040,7 @@ Internal notes not included in export.
 Work in progress, excluded.
 #+END_SRC
 
-*** ⚠️ Select Content by Tag
+*** Select Content by Tag
 
 Only export tagged content:
 
@@ -1053,9 +1054,9 @@ This section won't be exported.
 This section will be exported.
 #+END_SRC
 
-** ⚠️ Backend-Specific Content
+** Backend-Specific Content
 
-*** ⚠️ HTML-Only Content
+*** HTML-Only Content
 
 #+BEGIN_SRC org
 #+BEGIN_EXPORT html
@@ -1065,7 +1066,7 @@ This section will be exported.
 #+END_EXPORT
 #+END_SRC
 
-*** ⚠️ LaTeX-Only Content
+*** LaTeX-Only Content
 
 #+BEGIN_SRC org
 #+BEGIN_EXPORT latex
@@ -1075,7 +1076,7 @@ This appears only in LaTeX/PDF export.
 #+END_EXPORT
 #+END_SRC
 
-*** ⚠️ Export Snippets
+*** Export Snippets
 
 Inline backend-specific content:
 
@@ -1085,7 +1086,7 @@ Click @@html:<button>@@here@@html:</button>@@ to continue.
 The value is @@latex:\textcolor{red}{@@important@@latex:}@@.
 #+END_SRC
 
-** ⚠️ Macros for Reusable Content
+** Macros for Reusable Content
 
 Define macros for repeated content:
 
@@ -1099,17 +1100,17 @@ Contact: {{{author-email}}}
 #+END_SRC
 
 Built-in macros:
-- {{{date}}} - Current date
-- {{{time}}} - Current time
-- {{{title}}} - Document title
-- {{{author}}} - Document author
+- ={{{date}}}= - Current date
+- ={{{time}}}= - Current time
+- ={{{title}}}= - Document title
+- ={{{author}}}= - Document author
 
-** ⚠️ Include Files
+** Include Files
 
-Include content from other files using the #+INCLUDE: directive. Files are
+Include content from other files using the =#+INCLUDE:= directive. Files are
 processed during export, allowing modular document organization.
 
-*** ⚠️ Basic Syntax
+*** Basic Syntax
 
 #+BEGIN_SRC org
 ,#+INCLUDE: "chapter1.org"
@@ -1118,7 +1119,7 @@ processed during export, allowing modular document organization.
 
 Paths can be relative (to the current document) or absolute.
 
-*** ⚠️ Block Wrappers
+*** Block Wrappers
 
 Wrap included content in a block:
 
@@ -1137,7 +1138,7 @@ Wrap included content in a block:
 ,#+INCLUDE: "custom.html" export html
 #+END_SRC
 
-*** ⚠️ Line Selection with :lines
+*** Line Selection with :lines
 
 Include only specific lines from a file:
 
@@ -1155,7 +1156,7 @@ Include only specific lines from a file:
 ,#+INCLUDE: "data.org" :lines "15"
 #+END_SRC
 
-*** ⚠️ Headline Level Adjustment with :minlevel
+*** Headline Level Adjustment with :minlevel
 
 Shift all headlines in the included file to a minimum level:
 
@@ -1165,10 +1166,10 @@ Shift all headlines in the included file to a minimum level:
 #+END_SRC
 
 This is useful for including a standalone document as a section:
-- A file with * Heading becomes ** Heading with :minlevel 2
+- A file with =* Heading= becomes =** Heading= with =:minlevel 2=
 - Sub-headlines are adjusted proportionally
 
-*** ⚠️ Content Only with :only-contents
+*** Content Only with :only-contents
 
 Strip the first headline and include only its contents:
 
@@ -1179,7 +1180,7 @@ Strip the first headline and include only its contents:
 This extracts the body of the first headline without including the headline
 itself.
 
-*** ⚠️ Combining Options
+*** Combining Options
 
 Options can be combined:
 
@@ -1191,12 +1192,12 @@ Options can be combined:
 ,#+INCLUDE: "chapter.org" :minlevel 2 :only-contents t
 #+END_SRC
 
-*** ⚠️ Recursive Includes
+*** Recursive Includes
 
-Included files can themselves contain #+INCLUDE: directives, which are
+Included files can themselves contain =#+INCLUDE:= directives, which are
 processed recursively. A maximum depth of 10 levels prevents infinite loops.
 
-*** ⚠️ Example: Modular Book Structure
+*** Example: Modular Book Structure
 
 #+BEGIN_SRC org
 ,#+TITLE: My Book
@@ -1218,7 +1219,7 @@ processed recursively. A maximum depth of 10 levels prevents infinite loops.
 ,#+INCLUDE: "backmatter/index.org" :only-contents t
 #+END_SRC
 
-** ⚠️ Custom Link Types
+** Custom Link Types
 
 Define custom export behavior for link types:
 
@@ -1230,40 +1231,40 @@ Define custom export behavior for link types:
 [[commit:abc123][View commit]]
 #+END_SRC
 
-* ⚠️ Troubleshooting
+* Troubleshooting
 
-** ⚠️ HTML Export Issues
+** HTML Export Issues
 
-*** ⚠️ MathJax Not Rendering
+*** MathJax Not Rendering
 
 *Problem:* Math equations appear as plain text.
 
 *Solution:*
 1. Ensure internet connection (MathJax loads from CDN)
 2. Check browser console for errors
-3. Verify math syntax (use \(...\) or $...$ for inline, \[...\] for display)
+3. Verify math syntax (use =\(...\)= or =$...$= for inline, =\[...\]= for display)
 
-*** ⚠️ Broken Images
+*** Broken Images
 
 *Problem:* Images don't appear in exported HTML.
 
 *Solution:*
-1. Use relative paths: [[file:./images/plot.png]]
+1. Use relative paths: =[[file:./images/plot.png]]=
 2. Ensure images are in same directory or subdirectory
 3. Check image file names (case-sensitive on Linux)
 
-*** ⚠️ CSS Not Applied
+*** CSS Not Applied
 
 *Problem:* Custom CSS doesn't show.
 
 *Solution:*
-1. Verify #+HTML_HEAD: syntax
+1. Verify =#+HTML_HEAD:= syntax
 2. Check CSS selector specificity
 3. Inspect generated HTML for CSS inclusion
 
-** ⚠️ LaTeX/PDF Export Issues
+** LaTeX/PDF Export Issues
 
-*** ⚠️ Missing Packages
+*** Missing Packages
 
 *Problem:* Compilation fails with "! LaTeX Error: File `xyz.sty' not found"
 
@@ -1279,7 +1280,7 @@ miktex packages install xyz
 sudo tlmgr install xyz
 #+END_SRC
 
-*** ⚠️ Unicode Errors
+*** Unicode Errors
 
 *Problem:* "! Package inputenc Error: Unicode character ... not set up"
 
@@ -1291,17 +1292,17 @@ sudo tlmgr install xyz
 
 2. Or use LaTeX-safe characters
 
-*** ⚠️ Bibliography Not Generated
+*** Bibliography Not Generated
 
-*Problem:* Citations show as [?] in PDF.
+*Problem:* Citations show as =[?]= in PDF.
 
 *Solution:*
-1. Ensure .bib file exists
-2. Use latexmk (handles BibTeX automatically)
+1. Ensure =.bib= file exists
+2. Use =latexmk= (handles BibTeX automatically)
 3. Check citation keys match bibliography entries
-4. Verify bibliography: and bibliographystyle: links
+4. Verify =bibliography:= and =bibliographystyle:= links
 
-*** ⚠️ Images Not Found
+*** Images Not Found
 
 *Problem:* LaTeX can't find image files.
 
@@ -1309,79 +1310,79 @@ sudo tlmgr install xyz
 1. Use relative paths from org file location
 2. Avoid spaces in filenames
 3. Use supported formats: PNG, JPG, PDF, EPS
-4. Check \graphicspath if using custom image directories
+4. Check =\graphicspath= if using custom image directories
 
-*** ⚠️ Compilation Timeout
+*** Compilation Timeout
 
 *Problem:* PDF export hangs or times out.
 
 *Solution:*
 1. Check for infinite loops in LaTeX code
 2. Reduce document size
-3. Disable auto-build: buildOnSave: false
-4. Review .log file for warnings
+3. Disable auto-build: =buildOnSave: false=
+4. Review =.log= file for warnings
 
-** ⚠️ Markdown Export Issues
+** Markdown Export Issues
 
-*** ⚠️ Table Alignment
+*** Table Alignment
 
 *Problem:* Tables don't align properly.
 
 *Solution:*
 - GitHub-flavored Markdown tables are left-aligned by default
-- Org-mode alignment hints (<l>, <c>, <r>) are not supported
+- Org-mode alignment hints (=<l>=, =<c>=, =<r>=) are not supported
 - Consider using HTML tables for complex layouts
 
-*** ⚠️ Math Not Rendering
+*** Math Not Rendering
 
 *Problem:* Math equations don't work.
 
 *Solution:*
-- GitHub supports some math via $$...$$ (display) and $...$ (inline)
+- GitHub supports some math via =$$...$$= (display) and =$...$= (inline)
 - Other platforms may require MathJax integration
 - Consider exporting to HTML for math-heavy content
 
-** ⚠️ General Export Issues
+** General Export Issues
 
-*** ⚠️ Empty Export
+*** Empty Export
 
 *Problem:* Export produces empty or minimal file.
 
 *Solution:*
 1. Check export scope (full vs. subtree)
 2. Verify content isn't excluded by tags
-3. Ensure headlines match H: level setting
-4. Review #+OPTIONS settings
+3. Ensure headlines match =H:= level setting
+4. Review =#+OPTIONS= settings
 
-*** ⚠️ Slow Export
+*** Slow Export
 
 *Problem:* Export takes very long.
 
 *Solution:*
-1. Disable buildOnIdle for PDF export
-2. Reduce toc depth
+1. Disable =buildOnIdle= for PDF export
+2. Reduce =toc= depth
 3. Split large documents into smaller files
-4. Use #+INCLUDE: for modular organization
+4. Use =#+INCLUDE:= for modular organization
 
-*** ⚠️ Wrong Output Location
+*** Wrong Output Location
 
 *Problem:* Export file appears in unexpected location.
 
 *Solution:*
-1. Check #+EXPORT_FILE_NAME: keyword
+1. Check =#+EXPORT_FILE_NAME:= keyword
 2. Verify save dialog selection
 3. Review file permissions in target directory
 
-* ⚠️ Best Practices
+* Best Practices
 
-** ⚠️ Document Organization
+** Document Organization
 
-*** ⚠️ Use Meaningful Headings
+*** Use Meaningful Headings
 - Clear, descriptive headline text
 - Logical hierarchy (avoid jumping levels)
 - Consistent depth for similar content
 
-*** ⚠️ Metadata at Top
+*** Metadata at Top
 #+BEGIN_SRC org
 #+TITLE: Document Title
 #+AUTHOR: Your Name
@@ -1390,16 +1391,16 @@ sudo tlmgr install xyz
 #+LATEX_CLASS: article
 #+END_SRC
 
-*** ⚠️ Separate Concerns
+*** Separate Concerns
 - Content in main file
-- References in .bib file
-- Images in images/ directory
-- Custom styles in .css file
+- References in =.bib= file
+- Images in =images/= directory
+- Custom styles in =.css= file
 
-** ⚠️ Version Control
+** Version Control
 
-*** ⚠️ Track Generated Files Separately
-Add to .gitignore:
+*** Track Generated Files Separately
+Add to =.gitignore=:
 #+BEGIN_SRC text
 *.pdf
 *.html
@@ -1410,30 +1411,30 @@ Add to .gitignore:
 *.toc
 #+END_SRC
 
-*** ⚠️ Use Meaningful Commit Messages
+*** Use Meaningful Commit Messages
 #+BEGIN_SRC text
 Update export configuration for XeLaTeX support
 Add custom LaTeX preamble for ACM format
 Fix image paths in HTML export
 #+END_SRC
 
-** ⚠️ Performance Optimization
+** Performance Optimization
 
-*** ⚠️ For Large Documents
+*** For Large Documents
 1. Disable auto-build during editing
-2. Use #+INCLUDE: for modular structure
+2. Use =#+INCLUDE:= for modular structure
 3. Cache expensive computations
 4. Optimize image sizes
 
-*** ⚠️ For Fast Iteration
+*** For Fast Iteration
 1. Use HTML preview for quick checks
-2. Enable buildOnIdle with appropriate delay
+2. Enable =buildOnIdle= with appropriate delay
 3. Use body-only export for faster generation
 4. Minimize custom packages
 
-** ⚠️ Quality Assurance
+** Quality Assurance
 
-*** ⚠️ Pre-Export Checklist
+*** Pre-Export Checklist
 - [ ] Spell check content
 - [ ] Verify all links work
 - [ ] Check image references
@@ -1442,7 +1443,7 @@ Fix image paths in HTML export
 - [ ] Test code examples
 - [ ] Proofread metadata
 
-*** ⚠️ Post-Export Verification
+*** Post-Export Verification
 - [ ] Open exported file
 - [ ] Check table of contents
 - [ ] Verify images display
@@ -1451,11 +1452,11 @@ Fix image paths in HTML export
 - [ ] Validate math rendering
 - [ ] Check code highlighting
 
-* ⚠️ Example Workflows
+* Example Workflows
 
-** ⚠️ Academic Paper Workflow
+** Academic Paper Workflow
 
-*** ⚠️ 1. Initial Setup
+*** 1. Initial Setup
 #+BEGIN_SRC org
 #+TITLE: Novel Approach to Machine Learning
 #+AUTHOR: Dr. Jane Smith
@@ -1467,7 +1468,7 @@ Fix image paths in HTML export
 #+BIBLIOGRAPHY: references.bib
 #+END_SRC
 
-*** ⚠️ 2. Write Content
+*** 2. Write Content
 Structure with standard sections:
 - Abstract
 - Introduction
@@ -1477,20 +1478,20 @@ Structure with standard sections:
 - Discussion
 - Conclusion
 
-*** ⚠️ 3. Add Citations
+*** 3. Add Citations
 #+BEGIN_SRC org
 Recent work cite:smith2023 has shown...
 #+END_SRC
 
-*** ⚠️ 4. Export to PDF
-C-c C-e l p → PDF via LaTeX
+*** 4. Export to PDF
+=C-c C-e l p= → PDF via LaTeX
 
-*** ⚠️ 5. Submit
+*** 5. Submit
 Review generated PDF, make final edits, submit.
 
-** ⚠️ Technical Documentation Workflow
+** Technical Documentation Workflow
 
-*** ⚠️ 1. Setup
+*** 1. Setup
 #+BEGIN_SRC org
 #+TITLE: API Documentation
 #+AUTHOR: Development Team
@@ -1498,21 +1499,21 @@ Review generated PDF, make final edits, submit.
 #+HTML_HEAD: <link rel="stylesheet" href="docs.css" />
 #+END_SRC
 
-*** ⚠️ 2. Write Sections
+*** 2. Write Sections
 - Getting Started
 - API Reference
 - Examples
 - Troubleshooting
 
-*** ⚠️ 3. Export to HTML
-C-c C-e h h → HTML
+*** 3. Export to HTML
+=C-c C-e h h= → HTML
 
-*** ⚠️ 4. Deploy
+*** 4. Deploy
 Copy HTML and CSS to docs server or GitHub Pages.
 
-** ⚠️ Blog Post Workflow
+** Blog Post Workflow
 
-*** ⚠️ 1. Write in Org
+*** 1. Write in Org
 #+BEGIN_SRC org
 #+TITLE: 10 Tips for Better Python Code
 #+AUTHOR: Tech Blogger
@@ -1520,15 +1521,15 @@ Copy HTML and CSS to docs server or GitHub Pages.
 #+OPTIONS: toc:nil num:nil
 #+END_SRC
 
-*** ⚠️ 2. Export to Markdown
-C-c C-e m m → Markdown
+*** 2. Export to Markdown
+=C-c C-e m m= → Markdown
 
-*** ⚠️ 3. Publish
+*** 3. Publish
 Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)
 
-** ⚠️ Presentation Workflow
+** Presentation Workflow
 
-*** ⚠️ 1. Use Beamer
+*** 1. Use Beamer
 #+BEGIN_SRC org
 #+TITLE: Quarterly Results
 #+AUTHOR: Finance Team
@@ -1537,7 +1538,7 @@ Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)
 #+BEAMER_THEME: Madrid
 #+END_SRC
 
-*** ⚠️ 2. Create Slides
+*** 2. Create Slides
 #+BEGIN_SRC org
 ,* Introduction
 ,** Key Achievements
@@ -1549,148 +1550,148 @@ Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)
 - Market competition
 #+END_SRC
 
-*** ⚠️ 3. Export to PDF
-C-c C-e l p → Beamer PDF presentation
+*** 3. Export to PDF
+=C-c C-e l p= → Beamer PDF presentation
 
-* ⚠️ Resources
+* Resources
 
-** ⚠️ External Links
+** External Links
 
-*** ⚠️ Org-Mode Documentation
+*** Org-Mode Documentation
 - [[https://orgmode.org/manual/Exporting.html][Official Export Documentation]]
 - [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][LaTeX Export Tutorial]]
 - [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][HTML Export Tutorial]]
 
-*** ⚠️ LaTeX Resources
+*** LaTeX Resources
 - [[https://www.latex-project.org/][LaTeX Project]]
 - [[https://ctan.org/][CTAN - Package Archive]]
 - [[https://www.overleaf.com/learn][Overleaf Learn LaTeX]]
 
-*** ⚠️ Tools
+*** Tools
 - [[https://www.mathjax.org/][MathJax Documentation]]
 - [[https://highlightjs.org/][highlight.js]]
 - [[https://pandoc.org/][Pandoc - Universal Document Converter]]
 
-** ⚠️ Related Scimax Documentation
+** Related Scimax Documentation
 
 - [[file:getting-started.org][Getting Started with Scimax]]
 - [[file:tables.org][Working with Tables]]
 - [[file:links.org][Links and Cross-References]]
 - [[file:todo-items.org][TODO Items and Planning]]
 
-** ⚠️ Community
+** Community
 
 - [[https://github.com/jkitchin/scimax_vscode][Scimax VS Code Repository]]
 - [[https://github.com/jkitchin/scimax_vscode/issues][Issue Tracker]]
 - [[https://github.com/jkitchin/scimax_vscode/discussions][Discussions]]
 
-* ⚠️ Appendix
+* Appendix
 
-** ⚠️ Complete Keybinding Reference
+** Complete Keybinding Reference
 
 | Keybinding       | Command                    | Description                      |
 |------------------+----------------------------+----------------------------------|
-| C-c C-e          | Export dispatcher          | Open export menu                 |
-| C-c C-e h h      | HTML export                | Export to .html                  |
-| C-c C-e h o      | HTML export and open       | Export and open in browser       |
-| C-c C-e h p      | HTML preview               | Preview in VS Code webview       |
-| C-c C-e l l      | LaTeX export               | Export to .tex                   |
-| C-c C-e l p      | PDF export                 | Export to PDF                    |
-| C-c C-e l o      | PDF export and open        | Export and open PDF              |
-| C-c C-e l v      | LaTeX preview              | Open PDF preview                 |
-| C-c C-e l s      | Forward sync               | Sync cursor to PDF (SyncTeX)     |
-| C-c C-e m m      | Markdown export            | Export to .md                    |
-| C-c C-e m o      | Markdown export and open   | Export and open in editor        |
+| =C-c C-e=        | Export dispatcher          | Open export menu                 |
+| =C-c C-e h h=    | HTML export                | Export to .html                  |
+| =C-c C-e h o=    | HTML export and open       | Export and open in browser       |
+| =C-c C-e h p=    | HTML preview               | Preview in VS Code webview       |
+| =C-c C-e l l=    | LaTeX export               | Export to .tex                   |
+| =C-c C-e l p=    | PDF export                 | Export to PDF                    |
+| =C-c C-e l o=    | PDF export and open        | Export and open PDF              |
+| =C-c C-e l v=    | LaTeX preview              | Open PDF preview                 |
+| =C-c C-e l s=    | Forward sync               | Sync cursor to PDF (SyncTeX)     |
+| =C-c C-e m m=    | Markdown export            | Export to .md                    |
+| =C-c C-e m o=    | Markdown export and open   | Export and open in editor        |
 
-** ⚠️ Export Options Quick Reference
+** Export Options Quick Reference
 
 | Option   | Values         | Effect                                |
 |----------+----------------+---------------------------------------|
-| toc      | t/nil/N        | Table of contents (N = depth)         |
-| num      | t/nil/N        | Section numbering (N = depth)         |
-| H        | N              | Export headlines up to level N        |
-| author   | t/nil          | Include author name                   |
-| date     | t/nil          | Include date                          |
-| title    | t/nil          | Include title                         |
-| ^        | t/nil/{}       | Interpret sub/superscripts            |
-| *        | t/nil          | Include emphasized text               |
-| <>       | t/nil          | Include timestamps                    |
-| tags     | t/nil/not-in-toc | Include tags                        |
-| todo     | t/nil          | Include TODO keywords                 |
-| \n       | t/nil          | Preserve line breaks                  |
+| =toc=    | t/nil/N        | Table of contents (N = depth)         |
+| =num=    | t/nil/N        | Section numbering (N = depth)         |
+| =H=      | N              | Export headlines up to level N        |
+| =author= | t/nil          | Include author name                   |
+| =date=   | t/nil          | Include date                          |
+| =title=  | t/nil          | Include title                         |
+| =^=      | t/nil/{}       | Interpret sub/superscripts            |
+| =*=      | t/nil          | Include emphasized text               |
+| =<>=     | t/nil          | Include timestamps                    |
+| =tags=   | t/nil/not-in-toc | Include tags                       |
+| =todo=   | t/nil          | Include TODO keywords                 |
+| =\n=     | t/nil          | Preserve line breaks                  |
 
-** ⚠️ LaTeX Package Reference
+** LaTeX Package Reference
 
-*** ⚠️ Essential Packages (Auto-Included)
+*** Essential Packages (Auto-Included)
 
 | Package       | Purpose                              |
 |---------------+--------------------------------------|
-| inputenc      | Character encoding (UTF-8)           |
-| fontenc       | Font encoding (T1)                   |
-| hyperref      | Hyperlinks and PDF metadata          |
-| graphicx      | Image inclusion                      |
-| amsmath       | Mathematical typesetting             |
-| amssymb       | Math symbols                         |
-| booktabs      | Professional tables                  |
-| listings      | Code listing (if enabled)            |
-| ulem          | Strike-through support               |
+| =inputenc=    | Character encoding (UTF-8)           |
+| =fontenc=     | Font encoding (T1)                   |
+| =hyperref=    | Hyperlinks and PDF metadata          |
+| =graphicx=    | Image inclusion                      |
+| =amsmath=     | Mathematical typesetting             |
+| =amssymb=     | Math symbols                         |
+| =booktabs=    | Professional tables                  |
+| =listings=    | Code listing (if enabled)            |
+| =ulem=        | Strike-through support               |
 
-*** ⚠️ Optional Packages
+*** Optional Packages
 
 | Package       | Purpose                              | Add With                        |
 |---------------+--------------------------------------+---------------------------------|
-| geometry      | Page layout                          | #+LATEX_HEADER:                 |
-| natbib        | Bibliography                         | #+LATEX_HEADER:                 |
-| minted        | Advanced syntax highlighting         | #+LATEX_HEADER:                 |
-| tikz          | Graphics and diagrams                | #+LATEX_HEADER:                 |
-| tcolorbox     | Colored boxes                        | #+LATEX_HEADER:                 |
-| cleveref      | Smart cross-references               | #+LATEX_HEADER:                 |
-| fontspec      | System fonts (XeLaTeX/LuaLaTeX)      | #+LATEX_HEADER:                 |
+| =geometry=    | Page layout                          | =#+LATEX_HEADER:=               |
+| =natbib=      | Bibliography                         | =#+LATEX_HEADER:=               |
+| =minted=      | Advanced syntax highlighting         | =#+LATEX_HEADER:=               |
+| =tikz=        | Graphics and diagrams                | =#+LATEX_HEADER:=               |
+| =tcolorbox=   | Colored boxes                        | =#+LATEX_HEADER:=               |
+| =cleveref=    | Smart cross-references               | =#+LATEX_HEADER:=               |
+| =fontspec=    | System fonts (XeLaTeX/LuaLaTeX)      | =#+LATEX_HEADER:=               |
 
-** ⚠️ HTML Classes and IDs
+** HTML Classes and IDs
 
 Exported HTML uses semantic classes for styling:
 
-*** ⚠️ Document Structure
-- .org-content - Main content container
-- .org-section - Document section
-- .org-preamble - Document preamble
-- #title-block - Title, author, date header
+*** Document Structure
+- =.org-content= - Main content container
+- =.org-section= - Document section
+- =.org-preamble= - Document preamble
+- =#title-block= - Title, author, date header
 
-*** ⚠️ Headings and TOC
-- .org-toc - Table of contents
-- .section-number - Section number prefix
+*** Headings and TOC
+- =.org-toc= - Table of contents
+- =.section-number= - Section number prefix
 
-*** ⚠️ Text Elements
-- .org-todo - TODO keyword
-- .org-done - DONE keyword
-- .org-priority - Priority marker
-- .org-tags - Tag container
-- .org-tag - Individual tag
-- .org-timestamp - Timestamp
-- .org-underline - Underlined text
+*** Text Elements
+- =.org-todo= - TODO keyword
+- =.org-done= - DONE keyword
+- =.org-priority= - Priority marker
+- =.org-tags= - Tag container
+- =.org-tag= - Individual tag
+- =.org-timestamp= - Timestamp
+- =.org-underline= - Underlined text
 
-*** ⚠️ Blocks
-- .org-src-container - Source block wrapper
-- .src - Source block pre element
-- .example - Example block
-- .org-center - Centered content
-- .org-latex-environment - LaTeX environment
+*** Blocks
+- =.org-src-container= - Source block wrapper
+- =.src= - Source block pre element
+- =.example= - Example block
+- =.org-center= - Centered content
+- =.org-latex-environment= - LaTeX environment
 
-*** ⚠️ Tables and Lists
-- .org-table - Table element
-- .org-footnotes - Footnotes container
-- .org-footnote - Individual footnote
-- .org-footnote-ref - Footnote reference link
+*** Tables and Lists
+- =.org-table= - Table element
+- =.org-footnotes= - Footnotes container
+- =.org-footnote= - Individual footnote
+- =.org-footnote-ref= - Footnote reference link
 
-*** ⚠️ Admonitions
-- .admonition - Generic admonition
-- .org-warning - Warning box
-- .org-note - Note box
-- .org-tip - Tip box
-- .org-important - Important box
+*** Admonitions
+- =.admonition= - Generic admonition
+- =.org-warning= - Warning box
+- =.org-note= - Note box
+- =.org-tip= - Tip box
+- =.org-important= - Important box
 
-** ⚠️ Troubleshooting Decision Tree
+** Troubleshooting Decision Tree
 
 #+BEGIN_SRC text
 Export Problem?
@@ -1719,10 +1720,15 @@ Export Problem?
 This documentation covers the complete export system in Scimax VS Code. For additional help, consult the [[https://github.com/jkitchin/scimax_vscode][project repository]] or [[https://github.com/jkitchin/scimax_vscode/issues][file an issue]].
 
 
-* ⚠️ Related Topics
+* Related Topics
 
 - [[file:source-blocks.org][Source Code Blocks]] - Code execution in documents
 - [[file:latex-preview.org][LaTeX Preview]] - Math preview before export
 - [[file:references.org][References]] - Citations and bibliography in exports
 - [[file:tables.org][Tables]] - Table formatting in exports
 - [[file:configuration.org][Configuration]] - Export settings and customization
+
+* Navigation
+
+- Previous: [[file:jupyter.org][Jupyter Integration]]
+- Next: [[file:latex-preview.org][LaTeX Preview]]

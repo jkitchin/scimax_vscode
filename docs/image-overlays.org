@@ -697,3 +697,8 @@ Unlike Emacs, VS Code cannot:
 - Provide true "overlay" functionality at the text level
 
 The implementation uses VS Code's decoration API with gutter icons as the closest approximation to Emacs overlays.
+
+* Navigation
+
+- Previous: [[file:latex-preview.org][LaTeX Preview]]
+- Next: [[file:agenda.org][Agenda]]

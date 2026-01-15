@@ -4,9 +4,8 @@
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
-*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Overview
+* Overview
 
 Scimax VS Code includes a powerful database and search system that indexes your org, markdown, and Jupyter notebook files. The database provides:
 
@@ -17,23 +16,23 @@ Scimax VS Code includes a powerful database and search system that indexes your 
 - *Agenda views* for scheduled items and deadlines
 - *Code block search* filtered by programming language
 
-The database is built on SQLite (via @libsql/client) with support for vector similarity search, making it both fast and capable of sophisticated semantic queries.
+The database is built on SQLite (via =@libsql/client=) with support for vector similarity search, making it both fast and capable of sophisticated semantic queries.
 
-* ⚠️ What Gets Indexed
+* What Gets Indexed
 
-** ⚠️ File Types
+** File Types
 
 The database automatically indexes three types of files:
 
-- .org files - Org-mode documents
-- .md files - Markdown documents
-- .ipynb files - Jupyter notebooks
+- =.org= files - Org-mode documents
+- =.md= files - Markdown documents
+- =.ipynb= files - Jupyter notebooks
 
-** ⚠️ Indexed Content
+** Indexed Content
 
 For each file, the database extracts and indexes:
 
-*** ⚠️ Headings
+*** Headings
 - Heading text and level (*, **, ***, etc.)
 - TODO states (TODO, DONE, IN-PROGRESS, etc.)
 - Priority markers ([#A], [#B], [#C])
@@ -42,35 +41,35 @@ For each file, the database extracts and indexes:
 - Scheduling information (SCHEDULED, DEADLINE, CLOSED)
 - Line numbers for navigation
 
-*** ⚠️ Source Blocks
+*** Source Blocks
 - Programming language
 - Complete code content
-- Header arguments (:results, :exports, etc.)
+- Header arguments (=:results=, =:exports=, etc.)
 - Line numbers
 - For notebooks: cell indices
 
-*** ⚠️ Links
+*** Links
 - Link type (file, http, https, id, etc.)
 - Target path or URL
 - Optional description text
 - Line number
 
-*** ⚠️ Hashtags
+*** Hashtags
 - Inline hashtags (e.g., #research, #todo)
 - Associated file paths
 
-*** ⚠️ Full Text
+*** Full Text
 - Complete document content for full-text search
 - Indexed with FTS5 virtual tables
 - Porter stemming and Unicode normalization
 
-*** ⚠️ Text Chunks (for Semantic Search)
+*** Text Chunks (for Semantic Search)
 - Document divided into ~2000 character chunks
 - 3-line overlap between chunks for context
 - Vector embeddings (if embedding service configured)
 - Line ranges for each chunk
 
-** ⚠️ File Watching
+** File Watching
 
 The database automatically watches for file changes:
 
@@ -79,21 +78,21 @@ The database automatically watches for file changes:
 - Deleted files are removed from the index
 - Changes are queued and processed sequentially
 
-** ⚠️ Ignore Patterns
+** Ignore Patterns
 
 By default, the following patterns are ignored:
 
-- **/node_modules/**
-- **/.git/**
-- **/dist/**
-- **/build/**
-- **/.ipynb_checkpoints/**
+- =**/node_modules/**=
+- =**/.git/**=
+- =**/dist/**=
+- =**/build/**=
+- =**/.ipynb_checkpoints/**=
 
-Configure additional patterns in settings: scimax.db.ignorePatterns
+Configure additional patterns in settings: =scimax.db.ignorePatterns=
 
-* ⚠️ Full-Text Search
+* Full-Text Search
 
-** ⚠️ Overview
+** Overview
 
 Full-text search uses SQLite's FTS5 (Full-Text Search version 5) with:
 
@@ -102,57 +101,57 @@ Full-text search uses SQLite's FTS5 (Full-Text Search version 5) with:
 - *Unicode normalization* - Handles accented characters correctly
 - *Snippet generation* - Shows matching context with highlighting
 
-** ⚠️ Usage
+** Usage
 
-*** ⚠️ Command
-Run Scimax: Search All Files (FTS5) or use command scimax.db.search
+*** Command
+Run =Scimax: Search All Files (FTS5)= or use command =scimax.db.search=
 
-*** ⚠️ Query Syntax
+*** Query Syntax
 
 FTS5 supports rich query syntax:
 
-**** ⚠️ Basic Queries
+**** Basic Queries
 #+BEGIN_SRC org
 machine learning          # Match both words (in any order)
 "machine learning"        # Match exact phrase
 neural OR artificial      # Match either word
 #+END_SRC
 
-**** ⚠️ Boolean Operators
+**** Boolean Operators
 #+BEGIN_SRC org
 python AND jupyter        # Must contain both
 python NOT tensorflow     # Contains python but not tensorflow
 deep OR machine learning  # Contains "deep" or the phrase "machine learning"
 #+END_SRC
 
-**** ⚠️ Prefix Matching
+**** Prefix Matching
 #+BEGIN_SRC org
 comput*                   # Matches: computer, computing, computation
 data*                     # Matches: data, database, dataset
 #+END_SRC
 
-**** ⚠️ Column Queries
+**** Column Queries
 #+BEGIN_SRC org
 title: introduction       # Search only in titles
 content: python           # Search only in content
 #+END_SRC
 
-**** ⚠️ Proximity Queries
+**** Proximity Queries
 #+BEGIN_SRC org
 NEAR(neural network, 5)   # Words within 5 tokens of each other
 #+END_SRC
 
-** ⚠️ Results
+** Results
 
 Search results include:
 
 - File path and basename
 - Line number
-- Preview snippet with <mark> tags highlighting matches
+- Preview snippet with =<mark>= tags highlighting matches
 - BM25 relevance score
 - Up to 100 results (configurable)
 
-** ⚠️ Example Searches
+** Example Searches
 
 #+BEGIN_SRC org
 # Find all references to "gradient descent"
@@ -171,9 +170,9 @@ tensorflow NOT keras
 title: introduction
 #+END_SRC
 
-* ⚠️ Semantic Search
+* Semantic Search
 
-** ⚠️ Overview
+** Overview
 
 Semantic search finds content by *meaning* rather than exact keywords. It uses vector embeddings to represent text in a high-dimensional space where semantically similar content is close together.
 
@@ -184,17 +183,17 @@ Benefits:
 
 Example: Searching for "machine learning algorithms" will also find documents about "neural networks", "deep learning models", and "classification methods" even if they don't contain those exact words.
 
-** ⚠️ Requirements
+** Requirements
 
 Semantic search requires:
 
 1. *Vector search support in libsql* - The database must support vector operations
 2. *Embedding provider configured* - One of: local (Transformers.js), Ollama, or OpenAI
-3. *Files indexed with embeddings* - Run scimax.db.reindex after configuring
+3. *Files indexed with embeddings* - Run =scimax.db.reindex= after configuring
 
-*** ⚠️ Checking Availability
+*** Checking Availability
 
-Run Scimax: Show Database Stats (scimax.db.stats) to see:
+Run =Scimax: Show Database Stats= (=scimax.db.stats=) to see:
 - Whether vector search is supported
 - Number of embeddings stored
 - Any error messages
@@ -204,44 +203,44 @@ If vector search is unavailable, the stats will show:
 Semantic search: Unavailable (vector search not supported)
 #+END_EXAMPLE
 
-*** ⚠️ Fallback to Full-Text Search
+*** Fallback to Full-Text Search
 
-If semantic search is unavailable, use full-text search (scimax.db.search) instead. FTS5 is always available and very fast for keyword-based queries.
+If semantic search is unavailable, use full-text search (=scimax.db.search=) instead. FTS5 is always available and very fast for keyword-based queries.
 
-** ⚠️ Embedding Providers
+** Embedding Providers
 
 Scimax supports three embedding providers:
 
-*** ⚠️ Local (Transformers.js) - Recommended
+*** Local (Transformers.js) - Recommended
 - *Pros*: Free, private, no external services needed
 - *Cons*: Slower initial model download (~30MB)
 - *Models*:
-  - Xenova/all-MiniLM-L6-v2 (384 dims, fast, recommended)
-  - Xenova/bge-small-en-v1.5 (384 dims, high quality)
-  - Xenova/gte-small (384 dims, alternative)
+  - =Xenova/all-MiniLM-L6-v2= (384 dims, fast, recommended)
+  - =Xenova/bge-small-en-v1.5= (384 dims, high quality)
+  - =Xenova/gte-small= (384 dims, alternative)
 
-*** ⚠️ Ollama
+*** Ollama
 - *Pros*: Free, private, local control
 - *Cons*: Requires Ollama installed and running
 - *Models*:
-  - nomic-embed-text (768 dims, recommended)
-  - all-minilm (384 dims, smaller)
-  - mxbai-embed-large (1024 dims, larger)
-- *Setup*: Install Ollama, then ollama pull nomic-embed-text
+  - =nomic-embed-text= (768 dims, recommended)
+  - =all-minilm= (384 dims, smaller)
+  - =mxbai-embed-large= (1024 dims, larger)
+- *Setup*: Install Ollama, then =ollama pull nomic-embed-text=
 
-*** ⚠️ OpenAI
+*** OpenAI
 - *Pros*: High quality, fast, maintained
 - *Cons*: Requires API key, costs money, sends data to cloud
 - *Models*:
-  - text-embedding-3-small (1536 dims, recommended)
-  - text-embedding-3-large (3072 dims, highest quality)
-  - text-embedding-ada-002 (1536 dims, legacy)
+  - =text-embedding-3-small= (1536 dims, recommended)
+  - =text-embedding-3-large= (3072 dims, highest quality)
+  - =text-embedding-ada-002= (1536 dims, legacy)
 
-** ⚠️ Configuration
+** Configuration
 
-*** ⚠️ Interactive Setup
+*** Interactive Setup
 
-Run Scimax: Configure Embedding Service (scimax.db.configureEmbeddings)
+Run =Scimax: Configure Embedding Service= (=scimax.db.configureEmbeddings=)
 
 This wizard will:
 1. Let you choose a provider
@@ -250,11 +249,11 @@ This wizard will:
 4. Update your settings
 5. Prompt you to reindex files
 
-*** ⚠️ Manual Configuration
+*** Manual Configuration
 
-Add to your VS Code settings (settings.json):
+Add to your VS Code settings (=settings.json=):
 
-**** ⚠️ Local (Transformers.js)
+**** Local (Transformers.js)
 #+BEGIN_SRC json
 {
   "scimax.db.embeddingProvider": "local",
@@ -262,7 +261,7 @@ Add to your VS Code settings (settings.json):
 }
 #+END_SRC
 
-**** ⚠️ Ollama
+**** Ollama
 #+BEGIN_SRC json
 {
   "scimax.db.embeddingProvider": "ollama",
@@ -271,7 +270,7 @@ Add to your VS Code settings (settings.json):
 }
 #+END_SRC
 
-**** ⚠️ OpenAI
+**** OpenAI
 #+BEGIN_SRC json
 {
   "scimax.db.embeddingProvider": "openai",
@@ -279,12 +278,12 @@ Add to your VS Code settings (settings.json):
 }
 #+END_SRC
 
-** ⚠️ Usage
+** Usage
 
-*** ⚠️ Command
-Run Scimax: Semantic Search or use command scimax.db.searchSemantic
+*** Command
+Run =Scimax: Semantic Search= or use command =scimax.db.searchSemantic=
 
-*** ⚠️ Query Examples
+*** Query Examples
 
 Semantic search uses natural language:
 
@@ -303,7 +302,7 @@ what is gradient descent
 how does attention mechanism work
 #+END_SRC
 
-** ⚠️ Results
+** Results
 
 Results include:
 
@@ -313,18 +312,18 @@ Results include:
 - Cosine distance (lower is more similar)
 - Up to 20 results by default
 
-** ⚠️ Reindexing for Semantic Search
+** Reindexing for Semantic Search
 
 After configuring an embedding provider, you *must reindex* your files:
 
-1. Run Scimax: Reindex Files (scimax.db.reindex)
+1. Run =Scimax: Reindex Files= (=scimax.db.reindex=)
 2. Wait for indexing to complete
 3. The database will generate embeddings for all text chunks
 4. Semantic search will now be available
 
-* ⚠️ Hybrid Search
+* Hybrid Search
 
-** ⚠️ Overview
+** Overview
 
 Hybrid search combines full-text (keyword) and semantic (vector) search using *Reciprocal Rank Fusion* (RRF). This approach:
 
@@ -332,12 +331,12 @@ Hybrid search combines full-text (keyword) and semantic (vector) search using *R
 - Balances exact matches with conceptual similarity
 - Provides more robust results
 
-** ⚠️ Usage
+** Usage
 
-*** ⚠️ Command
-Run Scimax: Hybrid Search or use command scimax.db.searchHybrid
+*** Command
+Run =Scimax: Hybrid Search= or use command =scimax.db.searchHybrid=
 
-*** ⚠️ How It Works
+*** How It Works
 
 1. Query runs through both FTS5 and vector search
 2. Results from each are ranked
@@ -346,7 +345,7 @@ Run Scimax: Hybrid Search or use command scimax.db.searchHybrid
    - Results appearing in both searches rank highest
 4. Final results sorted by combined score
 
-*** ⚠️ Weights
+*** Weights
 
 Default weights are 50/50, but can be adjusted:
 
@@ -359,14 +358,14 @@ db.searchHybrid(query, {
 });
 #+END_SRC
 
-*** ⚠️ When to Use Hybrid
+*** When to Use Hybrid
 
 - Default choice for general searches
 - When you want both exact matches and related concepts
 - When query has both specific terms and broad concepts
 - Example: "python sklearn classification accuracy" - finds both sklearn-specific code and general ML accuracy discussions
 
-** ⚠️ Results
+** Results
 
 Results include:
 
@@ -375,25 +374,25 @@ Results include:
 - File location and preview
 - Up to 20 results
 
-* ⚠️ Structured Queries
+* Structured Queries
 
 Beyond free-text search, the database supports structured queries for specific content types.
 
-** ⚠️ Heading Search
+** Heading Search
 
 Search specifically in headings, with optional filtering:
 
-*** ⚠️ Command
-Scimax: Search Headings (scimax.db.searchHeadings)
+*** Command
+=Scimax: Search Headings= (=scimax.db.searchHeadings=)
 
-*** ⚠️ Features
+*** Features
 - Search by heading text
 - Filter by TODO state
 - Filter by tag
 - Shows heading level, tags, TODO state
 - Displays deadlines and scheduled dates
 
-*** ⚠️ Example Use Cases
+*** Example Use Cases
 #+BEGIN_SRC org
 # Find all headings about Python
 python
@@ -405,27 +404,27 @@ python
 <empty query>
 #+END_SRC
 
-** ⚠️ Tag Search
+** Tag Search
 
 Search headings by org-mode tags:
 
-*** ⚠️ Command
-Scimax: Search By Tag (scimax.db.searchByTag)
+*** Command
+=Scimax: Search By Tag= (=scimax.db.searchByTag=)
 
-*** ⚠️ Features
+*** Features
 - Lists all tags found in indexed files
 - Shows heading count per tag
 - Supports both direct and inherited tags
-- Tags displayed as :tagname:
+- Tags displayed as =:tagname:=
 
-** ⚠️ Property Search
+** Property Search
 
 Search headings by property drawer values:
 
-*** ⚠️ Command
-Scimax: Search By Property (scimax.db.searchByProperty)
+*** Command
+=Scimax: Search By Property= (=scimax.db.searchByProperty=)
 
-*** ⚠️ Common Properties
+*** Common Properties
 #+BEGIN_SRC org
 CUSTOM_ID    # Unique identifiers for linking
 ID           # Auto-generated UUIDs
@@ -434,7 +433,7 @@ CREATED      # Creation timestamp
 MODIFIED     # Last modification time
 #+END_SRC
 
-*** ⚠️ Examples
+*** Examples
 #+BEGIN_SRC org
 # Find all entries with CATEGORY property
 Property: CATEGORY
@@ -449,20 +448,20 @@ Property: CUSTOM_ID
 Value: <empty or specific>
 #+END_SRC
 
-** ⚠️ TODO Search
+** TODO Search
 
 Browse and filter TODO items:
 
-*** ⚠️ Command
-Scimax: Show TODOs (scimax.db.showTodos)
+*** Command
+=Scimax: Show TODOs= (=scimax.db.showTodos=)
 
-*** ⚠️ Features
+*** Features
 - Lists all TODO items across workspace
 - Filter by state (TODO, DONE, IN-PROGRESS, etc.)
 - Shows priority, tags, scheduling
 - Excludes DONE and CANCELLED by default in other views
 
-*** ⚠️ Common TODO States
+*** Common TODO States
 #+BEGIN_SRC org
 TODO          # Not started
 IN-PROGRESS   # Currently working on
@@ -472,20 +471,20 @@ DONE          # Completed
 CANCELLED     # Abandoned
 #+END_SRC
 
-** ⚠️ Source Block Search
+** Source Block Search
 
 Search code blocks by language:
 
-*** ⚠️ Command
-Scimax: Search Code Blocks (scimax.db.searchBlocks)
+*** Command
+=Scimax: Search Code Blocks= (=scimax.db.searchBlocks=)
 
-*** ⚠️ Features
+*** Features
 - Filter by programming language
 - Optional text search within code
 - Shows first line of code as preview
 - Includes both org files and notebook cells
 
-*** ⚠️ Example Workflow
+*** Example Workflow
 #+BEGIN_SRC org
 1. Select language (or "All languages")
 2. Optionally enter search text
@@ -493,20 +492,20 @@ Scimax: Search Code Blocks (scimax.db.searchBlocks)
 4. Jump to file location
 #+END_SRC
 
-** ⚠️ Hashtag Search
+** Hashtag Search
 
 Find files by inline hashtags:
 
-*** ⚠️ Command
-Scimax: Search Hashtags (scimax.db.searchHashtags)
+*** Command
+=Scimax: Search Hashtags= (=scimax.db.searchHashtags=)
 
-*** ⚠️ Features
-- Lists all hashtags found (#tagname)
+*** Features
+- Lists all hashtags found (=#tagname=)
 - Shows file count per hashtag
 - Displays files containing selected hashtag
 - Case-insensitive matching
 
-*** ⚠️ Hashtag Format
+*** Hashtag Format
 #+BEGIN_SRC org
 # In your documents
 This is a #research note about #machinelearning
@@ -516,71 +515,71 @@ research
 machinelearning
 #+END_SRC
 
-** ⚠️ File Browser
+** File Browser
 
 Browse all indexed files:
 
-*** ⚠️ Command
-Scimax: Browse Indexed Files (scimax.db.browseFiles)
+*** Command
+=Scimax: Browse Indexed Files= (=scimax.db.browseFiles=)
 
-*** ⚠️ Features
+*** Features
 - Lists all files in database
 - Shows last indexed date
 - Sorted by most recently indexed
 - Displays file type (org, md, ipynb)
 
-* ⚠️ Agenda and Time Management
+* Agenda and Time Management
 
-** ⚠️ Agenda View
+** Agenda View
 
 The agenda shows scheduled items and deadlines:
 
-*** ⚠️ Command
-Scimax: Show Agenda (scimax.db.agenda)
+*** Command
+=Scimax: Show Agenda= (=scimax.db.agenda=)
 
-*** ⚠️ Time Periods
+*** Time Periods
 - Next 2 weeks (default)
 - Next month
 - Next 3 months
 - All items (no time limit)
 
-*** ⚠️ Options
+*** Options
 - Include unscheduled TODOs
 - Filter by time range
 - Sorted by urgency (overdue first)
 
-*** ⚠️ Item Types
-**** ⚠️ Deadline
+*** Item Types
+**** Deadline
 Items with DEADLINE timestamps:
 #+BEGIN_SRC org
 ,* TODO Submit report
 DEADLINE: <2026-01-20 Mon>
 #+END_SRC
 
-**** ⚠️ Scheduled
+**** Scheduled
 Items with SCHEDULED timestamps:
 #+BEGIN_SRC org
 ,* TODO Team meeting
 SCHEDULED: <2026-01-15 Wed 14:00>
 #+END_SRC
 
-**** ⚠️ Unscheduled TODOs
+**** Unscheduled TODOs
 Items with TODO state but no scheduling
 
-** ⚠️ Deadline View
+** Deadline View
 
 Show only upcoming deadlines:
 
-*** ⚠️ Command
-Scimax: Show Deadlines (scimax.db.deadlines)
+*** Command
+=Scimax: Show Deadlines= (=scimax.db.deadlines=)
 
-*** ⚠️ Features
+*** Features
 - Next 2 weeks of deadlines
 - Overdue items highlighted
 - Shows days until deadline
 - Excludes DONE and CANCELLED
 
-*** ⚠️ Display Format
+*** Display Format
 #+BEGIN_SRC org
 ⚠️  Overdue: Submit TPS Report (3 days ago)
 🔔 Today: Code Review
@@ -588,9 +587,9 @@ Scimax: Show Deadlines (scimax.db.deadlines)
 🔔 In 5 days: Project Demo
 #+END_SRC
 
-** ⚠️ Date Formats
+** Date Formats
 
-*** ⚠️ Scheduling in Org Files
+*** Scheduling in Org Files
 #+BEGIN_SRC org
 # Simple date
 SCHEDULED: <2026-01-20>
@@ -608,7 +607,7 @@ DEADLINE: <2026-01-20 Mon -3d>
 CLOSED: [2026-01-13 Mon 10:30]
 #+END_SRC
 
-*** ⚠️ Relative Dates
+*** Relative Dates
 #+BEGIN_SRC org
 +2w    # 2 weeks from now
 +1m    # 1 month from now
@@ -616,38 +615,38 @@ CLOSED: [2026-01-13 Mon 10:30]
 +1y    # 1 year from now
 #+END_SRC
 
-* ⚠️ Search Scope
+* Search Scope
 
 Limit searches to specific directories:
 
-** ⚠️ Commands
-Scimax: Set Search Scope (scimax.db.setScope)
+** Commands
+=Scimax: Set Search Scope= (=scimax.db.setScope=)
 
-** ⚠️ Scope Types
+** Scope Types
 
-*** ⚠️ All Files (Default)
+*** All Files (Default)
 - Searches entire indexed database
 - Includes all workspace folders
 - Includes additional configured directories
 
-*** ⚠️ Current Directory
+*** Current Directory
 - Limits to active file's directory
 - Includes subdirectories
 - Useful for project-focused searches
 
-** ⚠️ Current Scope Indicator
+** Current Scope Indicator
 The current scope is shown when setting scope:
 #+BEGIN_SRC org
 Search scope: all
 Search scope: directory (my-project)
 #+END_SRC
 
-* ⚠️ Database Management
+* Database Management
 
-** ⚠️ Reindexing
+** Reindexing
 
-*** ⚠️ Full Reindex
-Command: Scimax: Reindex Files (scimax.db.reindex)
+*** Full Reindex
+Command: =Scimax: Reindex Files= (=scimax.db.reindex=)
 
 - Scans all workspace folders
 - Checks file modification times
@@ -655,7 +654,7 @@ Command: Scimax: Reindex Files (scimax.db.reindex)
 - Shows progress notification
 - Reports statistics on completion
 
-*** ⚠️ Auto-Indexing
+*** Auto-Indexing
 #+BEGIN_SRC json
 {
   "scimax.db.autoIndex": true
@@ -664,7 +663,7 @@ Command: Scimax: Reindex Files (scimax.db.reindex)
 
 Warning: Disable for very large workspaces (>10,000 files) to prevent memory issues.
 
-*** ⚠️ Additional Directories
+*** Additional Directories
 #+BEGIN_SRC json
 {
   "scimax.db.directories": [
@@ -675,41 +674,41 @@ Warning: Disable for very large workspaces (>10,000 files) to prevent memory iss
 }
 #+END_SRC
 
-** ⚠️ Optimization
+** Optimization
 
-*** ⚠️ Command
-Scimax: Optimize Database (scimax.db.optimize)
+*** Command
+=Scimax: Optimize Database= (=scimax.db.optimize=)
 
-*** ⚠️ Operations
+*** Operations
 - Removes entries for deleted files
 - Runs VACUUM to reclaim space
 - Rebuilds indexes for performance
 - Should be run periodically (monthly)
 
-** ⚠️ Clearing Database
+** Clearing Database
 
-*** ⚠️ Command
-Scimax: Clear Database (scimax.db.clear)
+*** Command
+=Scimax: Clear Database= (=scimax.db.clear=)
 
-*** ⚠️ Warning
+*** Warning
 This is destructive and requires confirmation:
 - Removes all indexed data
 - Clears embeddings
 - Resets statistics
 - Requires full reindex to restore
 
-*** ⚠️ When to Clear
+*** When to Clear
 - Database corruption
 - Major schema changes
 - Troubleshooting issues
 - Fresh start needed
 
-** ⚠️ Statistics
+** Statistics
 
-*** ⚠️ Command
-Scimax: Show Database Stats (scimax.db.stats)
+*** Command
+=Scimax: Show Database Stats= (=scimax.db.stats=)
 
-*** ⚠️ Information Displayed
+*** Information Displayed
 #+BEGIN_SRC org
 Scimax DB: 127 files (98 org, 23 md, 6 ipynb),
 1,234 headings, 456 code blocks, 789 links.
@@ -717,7 +716,7 @@ Semantic search: Enabled (243 chunks).
 Last indexed: 2026-01-13 14:30:00
 #+END_SRC
 
-*** ⚠️ Stats Include
+*** Stats Include
 - File count by type
 - Heading count
 - Code block count
@@ -726,56 +725,56 @@ Last indexed: 2026-01-13 14:30:00
 - Embedding status
 - Last index timestamp
 
-* ⚠️ Performance Considerations
+* Performance Considerations
 
-** ⚠️ Indexing Performance
+** Indexing Performance
 
-*** ⚠️ File Size
+*** File Size
 - Small files (<100KB): ~10-50ms
 - Medium files (100KB-1MB): ~50-200ms
 - Large files (>1MB): ~200ms-1s
 
-*** ⚠️ Batch Indexing
+*** Batch Indexing
 - 100 small files: ~2-5 seconds
 - 1,000 small files: ~20-60 seconds
 - With embeddings: 2-5x slower
 
-*** ⚠️ Optimization Tips
+*** Optimization Tips
 1. Use ignore patterns for large non-content directories
 2. Disable auto-indexing for huge workspaces
 3. Index incrementally (only changed files)
 4. Run optimization monthly
 
-** ⚠️ Search Performance
+** Search Performance
 
-*** ⚠️ Full-Text Search (FTS5)
+*** Full-Text Search (FTS5)
 - Query time: 10-50ms (typical)
 - Scales well to 10,000+ files
 - BM25 scoring is highly optimized
 - Results returned in rank order
 
-*** ⚠️ Semantic Search
+*** Semantic Search
 - Query time: 50-500ms depending on provider
 - Local embeddings: slower but private
 - Ollama: moderate speed
 - OpenAI: fastest but requires network
 
-*** ⚠️ Hybrid Search
+*** Hybrid Search
 - Query time: Combined FTS + vector time
 - Typically 100-600ms
 - Runs searches in parallel
 - RRF fusion adds ~10ms
 
-** ⚠️ Database Size
+** Database Size
 
-*** ⚠️ Typical Sizes
+*** Typical Sizes
 #+BEGIN_SRC org
 100 files:      ~5-10 MB
 1,000 files:    ~50-100 MB
 10,000 files:   ~500 MB-1 GB
 #+END_SRC
 
-*** ⚠️ With Embeddings
+*** With Embeddings
 #+BEGIN_SRC org
 +50-100% size increase for chunks and vectors
 384-dim embeddings: ~1.5 KB per chunk
@@ -783,49 +782,49 @@ Last indexed: 2026-01-13 14:30:00
 1536-dim embeddings: ~6 KB per chunk
 #+END_SRC
 
-** ⚠️ Memory Usage
+** Memory Usage
 
-*** ⚠️ Indexing
+*** Indexing
 - Base: ~50-100 MB
 - Peak during large batch: ~200-500 MB
 - Embedding generation: +100-300 MB
 
-*** ⚠️ Searching
+*** Searching
 - FTS5: ~10-50 MB
 - Vector search: ~50-200 MB (loads embeddings)
 - Minimal memory footprint when idle
 
-** ⚠️ Scaling Guidelines
+** Scaling Guidelines
 
-*** ⚠️ Small Workspace (<100 files)
+*** Small Workspace (<100 files)
 - Enable auto-indexing
 - Use any embedding provider
 - Full reindex in seconds
 
-*** ⚠️ Medium Workspace (100-1,000 files)
+*** Medium Workspace (100-1,000 files)
 - Enable auto-indexing
 - Local or Ollama embeddings recommended
 - Full reindex in under a minute
 
-*** ⚠️ Large Workspace (1,000-10,000 files)
+*** Large Workspace (1,000-10,000 files)
 - Consider disabling auto-indexing
 - Local embeddings may be slow
 - Use Ollama or OpenAI for better performance
 - Reindex incrementally
 
-*** ⚠️ Very Large Workspace (>10,000 files)
+*** Very Large Workspace (>10,000 files)
 - Disable auto-indexing (manual reindex)
 - Use selective directory indexing
 - Consider multiple smaller databases
 - OpenAI embeddings recommended for speed
 
-* ⚠️ Configuration Reference
+* Configuration Reference
 
-** ⚠️ Database Settings
+** Database Settings
 
-*** ⚠️ scimax.db.directories
-Type: string[]
-Default: []
+*** =scimax.db.directories=
+Type: =string[]=
+Default: =[]=
 
 Additional directories to index beyond workspace folders.
 
@@ -838,9 +837,9 @@ Additional directories to index beyond workspace folders.
 }
 #+END_SRC
 
-*** ⚠️ scimax.db.ignorePatterns
-Type: string[]
-Default: ["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**", "**/.ipynb_checkpoints/**"]
+*** =scimax.db.ignorePatterns=
+Type: =string[]=
+Default: =["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**", "**/.ipynb_checkpoints/**"]=
 
 Glob patterns for files to exclude from indexing.
 
@@ -856,9 +855,9 @@ Glob patterns for files to exclude from indexing.
 }
 #+END_SRC
 
-*** ⚠️ scimax.db.autoIndex
-Type: boolean
-Default: false
+*** =scimax.db.autoIndex=
+Type: =boolean=
+Default: =false=
 
 Automatically index workspace on activation. Disable for large workspaces.
 
@@ -868,12 +867,12 @@ Automatically index workspace on activation. Disable for large workspaces.
 }
 #+END_SRC
 
-** ⚠️ Embedding Settings
+** Embedding Settings
 
-*** ⚠️ scimax.db.embeddingProvider
-Type: enum
-Values: "none" | "local" | "ollama" | "openai"
-Default: "none"
+*** =scimax.db.embeddingProvider=
+Type: =enum=
+Values: ="none" | "local" | "ollama" | "openai"=
+Default: ="none"=
 
 Embedding provider for semantic search.
 
@@ -883,10 +882,10 @@ Embedding provider for semantic search.
 }
 #+END_SRC
 
-*** ⚠️ scimax.db.localModel
-Type: enum
-Values: "Xenova/all-MiniLM-L6-v2" | "Xenova/bge-small-en-v1.5" | "Xenova/gte-small"
-Default: "Xenova/all-MiniLM-L6-v2"
+*** =scimax.db.localModel=
+Type: =enum=
+Values: ="Xenova/all-MiniLM-L6-v2" | "Xenova/bge-small-en-v1.5" | "Xenova/gte-small"=
+Default: ="Xenova/all-MiniLM-L6-v2"=
 
 Local embedding model (Transformers.js).
 
@@ -896,9 +895,9 @@ Local embedding model (Transformers.js).
 }
 #+END_SRC
 
-*** ⚠️ scimax.db.ollamaUrl
-Type: string
-Default: "http://localhost:11434"
+*** =scimax.db.ollamaUrl=
+Type: =string=
+Default: ="http://localhost:11434"=
 
 Ollama server URL.
 
@@ -908,9 +907,9 @@ Ollama server URL.
 }
 #+END_SRC
 
-*** ⚠️ scimax.db.ollamaModel
-Type: string
-Default: "nomic-embed-text"
+*** =scimax.db.ollamaModel=
+Type: =string=
+Default: ="nomic-embed-text"=
 
 Ollama embedding model name.
 
@@ -920,9 +919,9 @@ Ollama embedding model name.
 }
 #+END_SRC
 
-*** ⚠️ scimax.db.openaiApiKey
-Type: string
-Default: ""
+*** =scimax.db.openaiApiKey=
+Type: =string=
+Default: =""=
 
 OpenAI API key for embeddings.
 
@@ -932,143 +931,143 @@ OpenAI API key for embeddings.
 }
 #+END_SRC
 
-* ⚠️ Command Reference
+* Command Reference
 
-** ⚠️ Search Commands
+** Search Commands
 
 | Command                           | Description                               |
 |-----------------------------------+-------------------------------------------|
-| scimax.db.search                  | Full-text search (FTS5)                   |
-| scimax.db.searchSemantic          | Semantic search (vector)                  |
-| scimax.db.searchHybrid            | Hybrid search (FTS + vector)              |
-| scimax.db.searchHeadings          | Search headings                           |
-| scimax.db.searchByTag             | Search by org tag                         |
-| scimax.db.searchByProperty        | Search by property value                  |
-| scimax.db.searchBlocks            | Search code blocks                        |
-| scimax.db.searchHashtags          | Search by hashtag                         |
+| =scimax.db.search=                | Full-text search (FTS5)                   |
+| =scimax.db.searchSemantic=        | Semantic search (vector)                  |
+| =scimax.db.searchHybrid=          | Hybrid search (FTS + vector)              |
+| =scimax.db.searchHeadings=        | Search headings                           |
+| =scimax.db.searchByTag=           | Search by org tag                         |
+| =scimax.db.searchByProperty=      | Search by property value                  |
+| =scimax.db.searchBlocks=          | Search code blocks                        |
+| =scimax.db.searchHashtags=        | Search by hashtag                         |
 
-** ⚠️ View Commands
+** View Commands
 
 | Command                    | Description                   |
 |----------------------------+-------------------------------|
-| scimax.db.showTodos        | Show TODO items               |
-| scimax.db.agenda           | Show agenda                   |
-| scimax.db.deadlines        | Show upcoming deadlines       |
-| scimax.db.browseFiles      | Browse indexed files          |
+| =scimax.db.showTodos=      | Show TODO items               |
+| =scimax.db.agenda=         | Show agenda                   |
+| =scimax.db.deadlines=      | Show upcoming deadlines       |
+| =scimax.db.browseFiles=    | Browse indexed files          |
 
-** ⚠️ Management Commands
+** Management Commands
 
 | Command                        | Description                           |
 |--------------------------------+---------------------------------------|
-| scimax.db.reindex              | Reindex all files                     |
-| scimax.db.optimize             | Optimize database                     |
-| scimax.db.clear                | Clear database                        |
-| scimax.db.stats                | Show database statistics              |
-| scimax.db.setScope             | Set search scope                      |
-| scimax.db.configureEmbeddings  | Configure embedding service           |
+| =scimax.db.reindex=            | Reindex all files                     |
+| =scimax.db.optimize=           | Optimize database                     |
+| =scimax.db.clear=              | Clear database                        |
+| =scimax.db.stats=              | Show database statistics              |
+| =scimax.db.setScope=           | Set search scope                      |
+| =scimax.db.configureEmbeddings= | Configure embedding service           |
 
-* ⚠️ Troubleshooting
+* Troubleshooting
 
-** ⚠️ Semantic Search Not Working
+** Semantic Search Not Working
 
-*** ⚠️ Problem
+*** Problem
 Semantic search returns no results, shows "unavailable", or displays an error.
 
-*** ⚠️ First: Check Vector Search Support
+*** First: Check Vector Search Support
 
-Run Scimax: Show Database Stats (scimax.db.stats) to see the semantic search status:
+Run =Scimax: Show Database Stats= (=scimax.db.stats=) to see the semantic search status:
 
 | Status Message                              | Meaning                                     |
 |---------------------------------------------+---------------------------------------------|
-| Semantic search: Enabled (N chunks)         | Working, N chunks with embeddings           |
-| Semantic search: Ready (no embeddings)      | Supported, but no provider configured       |
-| Semantic search: Unavailable (error)        | Vector search not supported by database     |
+| =Semantic search: Enabled (N chunks)=       | Working, N chunks with embeddings           |
+| =Semantic search: Ready (no embeddings)=    | Supported, but no provider configured       |
+| =Semantic search: Unavailable (error)=      | Vector search not supported by database     |
 
-*** ⚠️ Vector Search Unavailable
+*** Vector Search Unavailable
 
 If you see "Semantic search: Unavailable", the libsql database doesn't support vector operations. This can happen if:
 
 - The libsql version doesn't include vector support
 - The vector index failed to create
 
-*Workaround*: Use full-text search (scimax.db.search) instead. FTS5 is always available and fast.
+*Workaround*: Use full-text search (=scimax.db.search=) instead. FTS5 is always available and fast.
 
-*** ⚠️ Embedding Provider Issues
+*** Embedding Provider Issues
 
 If vector search is supported but not working:
 
-1. Check embedding provider is configured: scimax.db.embeddingProvider
-2. Test connection: Run Scimax: Configure Embedding Service
+1. Check embedding provider is configured: =scimax.db.embeddingProvider=
+2. Test connection: Run =Scimax: Configure Embedding Service=
 3. Ensure files are reindexed after configuring embeddings
-4. Check console for errors (Help: Toggle Developer Tools)
+4. Check console for errors (=Help: Toggle Developer Tools=)
 
-*** ⚠️ Local Provider Issues
+*** Local Provider Issues
 - First use downloads model (~30MB), wait for completion
 - Check extension cache directory has write permissions
 - Try different model if one fails
 
-*** ⚠️ Ollama Issues
-- Ensure Ollama is running: ollama serve
-- Pull model: ollama pull nomic-embed-text
+*** Ollama Issues
+- Ensure Ollama is running: =ollama serve=
+- Pull model: =ollama pull nomic-embed-text=
 - Check URL is correct in settings
-- Test connection: curl http://localhost:11434/api/embeddings
+- Test connection: =curl http://localhost:11434/api/embeddings=
 
-*** ⚠️ OpenAI Issues
+*** OpenAI Issues
 - Verify API key is valid
 - Check API quota and billing
 - Ensure internet connection is stable
 
-** ⚠️ Search Returns No Results
+** Search Returns No Results
 
-*** ⚠️ Problem
+*** Problem
 Searches return empty results despite having files.
 
-*** ⚠️ Solutions
-1. Run Scimax: Show Database Stats to check file count
-2. If files = 0, run Scimax: Reindex Files
+*** Solutions
+1. Run =Scimax: Show Database Stats= to check file count
+2. If files = 0, run =Scimax: Reindex Files=
 3. Check file extensions (.org, .md, .ipynb)
 4. Verify files aren't in ignored directories
 5. Check search scope is set to "All files"
 
-** ⚠️ Slow Indexing
+** Slow Indexing
 
-*** ⚠️ Problem
+*** Problem
 Indexing takes very long or appears stuck.
 
-*** ⚠️ Solutions
+*** Solutions
 1. Check workspace size (number of files)
 2. Add ignore patterns for large non-content directories
 3. Disable embedding generation if not needed
 4. Index directories incrementally
 5. Check disk I/O and available memory
 
-** ⚠️ Database Corruption
+** Database Corruption
 
-*** ⚠️ Problem
+*** Problem
 Errors mentioning "database is locked" or "disk I/O error".
 
-*** ⚠️ Solutions
+*** Solutions
 1. Close other VS Code windows accessing same workspace
 2. Restart VS Code
-3. Run Scimax: Clear Database and reindex
+3. Run =Scimax: Clear Database= and reindex
 4. Check disk space is available
 5. Verify database file permissions
 
-** ⚠️ High Memory Usage
+** High Memory Usage
 
-*** ⚠️ Problem
+*** Problem
 VS Code uses excessive memory during indexing or searching.
 
-*** ⚠️ Solutions
+*** Solutions
 1. Disable auto-indexing
 2. Reduce number of indexed directories
 3. Use more aggressive ignore patterns
 4. Clear and reindex database
 5. Restart VS Code between large indexing operations
 
-* ⚠️ Examples and Workflows
+* Examples and Workflows
 
-** ⚠️ Research Paper Management
+** Research Paper Management
 
 #+BEGIN_SRC org
 # Organize papers with properties
@@ -1095,7 +1094,7 @@ Value: research
 transformer architecture papers
 #+END_SRC
 
-** ⚠️ Project Todo Management
+** Project Todo Management
 
 #+BEGIN_SRC org
 # Use tags for organization
@@ -1116,7 +1115,7 @@ Next 2 weeks -> prioritized by deadline
 Filter by: TODO (in progress)
 #+END_SRC
 
-** ⚠️ Code Snippet Library
+** Code Snippet Library
 
 #+BEGIN_SRC org
 # Store reusable code blocks
@@ -1136,7 +1135,7 @@ Query: normalize
 how to standardize dataframe columns
 #+END_SRC
 
-** ⚠️ Personal Knowledge Base
+** Personal Knowledge Base
 
 #+BEGIN_SRC org
 # Use hybrid search for discovery
@@ -1155,9 +1154,9 @@ Results will include:
 :END:
 #+END_SRC
 
-* ⚠️ Best Practices
+* Best Practices
 
-** ⚠️ Indexing Strategy
+** Indexing Strategy
 
 1. *Start selective* - Index specific directories first
 2. *Use ignore patterns* - Exclude build artifacts and dependencies
@@ -1165,7 +1164,7 @@ Results will include:
 4. *Schedule optimization* - Run monthly for large databases
 5. *Monitor statistics* - Check file counts and sizes regularly
 
-** ⚠️ Search Strategy
+** Search Strategy
 
 1. *Start broad* - Use semantic or hybrid search for exploration
 2. *Refine with keywords* - Switch to FTS for specific terms
@@ -1173,7 +1172,7 @@ Results will include:
 4. *Set scope appropriately* - Narrow to directories for focused work
 5. *Combine approaches* - Use multiple search types for thorough research
 
-** ⚠️ Organization Tips
+** Organization Tips
 
 1. *Use consistent tags* - Establish tag naming conventions
 2. *Add properties* - Include metadata for filtering
@@ -1181,7 +1180,7 @@ Results will include:
 4. *Include hashtags* - Quick inline categorization
 5. *Write descriptive headings* - Better search results
 
-** ⚠️ Performance Tips
+** Performance Tips
 
 1. *Disable auto-indexing* - For large workspaces (manual trigger)
 2. *Choose appropriate embeddings* - Balance quality vs. speed
@@ -1189,57 +1188,57 @@ Results will include:
 4. *Use search scope* - Narrow searches to relevant directories
 5. *Cache frequent queries* - Database has 15-minute result cache
 
-* ⚠️ Technical Architecture
+* Technical Architecture
 
-** ⚠️ Database Schema
+** Database Schema
 
-*** ⚠️ Files Table
+*** Files Table
 Tracks indexed files with modification tracking:
-- path, file_type, mtime, hash, size, indexed_at
+- =path=, =file_type=, =mtime=, =hash=, =size=, =indexed_at=
 
-*** ⚠️ Headings Table
+*** Headings Table
 Org/markdown headings with full metadata:
-- level, title, todo_state, priority
-- tags, inherited_tags, properties
-- scheduled, deadline, closed
-- line_number, begin_pos
+- =level=, =title=, =todo_state=, =priority=
+- =tags=, =inherited_tags=, =properties=
+- =scheduled=, =deadline=, =closed=
+- =line_number=, =begin_pos=
 
-*** ⚠️ Source Blocks Table
+*** Source Blocks Table
 Code blocks with language and content:
-- language, content, headers
-- line_number, cell_index
+- =language=, =content=, =headers=
+- =line_number=, =cell_index=
 
-*** ⚠️ Links Table
+*** Links Table
 All link types (file, http, id, etc.):
-- link_type, target, description
-- line_number
+- =link_type=, =target=, =description=
+- =line_number=
 
-*** ⚠️ Hashtags Table
+*** Hashtags Table
 Inline hashtags:
-- tag, file_path
+- =tag=, =file_path=
 
-*** ⚠️ Chunks Table
+*** Chunks Table
 Text chunks for semantic search:
-- content, line_start, line_end
-- embedding (F32_BLOB vector)
+- =content=, =line_start=, =line_end=
+- =embedding= (F32_BLOB vector)
 
-*** ⚠️ FTS Content (Virtual Table)
+*** FTS Content (Virtual Table)
 Full-text search index:
-- file_path, title, content
+- =file_path=, =title=, =content=
 - Porter stemming, Unicode normalization
 - BM25 ranking support
 
-** ⚠️ Indexes
+** Indexes
 
 Performance indexes on:
-- headings.file_id, headings.todo_state
-- headings.deadline, headings.scheduled
-- source_blocks.language
-- hashtags.tag
-- chunks.embedding (vector index with cosine metric)
-- files.file_type
+- =headings.file_id=, =headings.todo_state=
+- =headings.deadline=, =headings.scheduled=
+- =source_blocks.language=
+- =hashtags.tag=
+- =chunks.embedding= (vector index with cosine metric)
+- =files.file_type=
 
-** ⚠️ Vector Search
+** Vector Search
 
 Using libsql's vector extension:
 - Cosine similarity metric
@@ -1247,33 +1246,38 @@ Using libsql's vector extension:
 - HNSW-like index structure
 - Efficient nearest neighbor queries
 
-** ⚠️ Parsers
+** Parsers
 
-*** ⚠️ Org Mode
-UnifiedParserAdapter - Full AST parser compatible with org-element:
+*** Org Mode
+=UnifiedParserAdapter= - Full AST parser compatible with org-element:
 - Recursive heading parsing with inheritance
 - Property drawer extraction
 - Timestamp parsing (scheduled, deadline, closed)
 - Source block with headers
 - Link extraction
 
-*** ⚠️ Markdown
+*** Markdown
 Simplified parser:
-- ATX heading syntax (#)
+- ATX heading syntax (=#=)
 - Fenced code blocks
 - Inline links
 
-*** ⚠️ Jupyter Notebooks
-ipynbParser - Notebook-specific parser:
+*** Jupyter Notebooks
+=ipynbParser= - Notebook-specific parser:
 - Markdown cells → headings and links
 - Code cells → source blocks
 - Cell indices tracked for navigation
 - Hashtags from markdown cells
 
-* ⚠️ See Also
+* See Also
 
 - [[file:getting-started.org][Getting Started]] - Initial setup and first steps
 - [[file:source-blocks.org][Source Blocks]] - Code execution and literate programming
 - [[file:todo-items.org][TODO Items]] - Task management features
 - [[file:links.org][Links]] - Link types and navigation
 - [[file:configuration.org][Configuration]] - Full settings reference
+
+* Navigation
+
+- Previous: [[file:projectile.org][Projectile]]
+- Next: [[file:references.org][References]]
