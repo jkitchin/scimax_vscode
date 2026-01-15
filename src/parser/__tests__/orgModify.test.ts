@@ -23,6 +23,8 @@ import {
     query,
     tableToJSON,
     jsonToTable,
+    tableToCSV,
+    writeTableToCSV,
     setTodo,
     addTag,
     removeTag,
@@ -559,6 +561,122 @@ print("py2")
 
             expect(table).toContain('| a');
             expect(table).toContain('| 1');
+        });
+    });
+
+    describe('tableToCSV', () => {
+        it('converts table to CSV format', () => {
+            const doc = parse(`| name  | age |
+|-------+-----|
+| Alice | 30  |
+| Bob   | 25  |
+`);
+            const tables = getTables(doc);
+            const csv = tableToCSV(tables[0]);
+
+            expect(csv).toBe('name,age\nAlice,30\nBob,25');
+        });
+
+        it('handles custom delimiter', () => {
+            const doc = parse(`| name | value |
+| test | 123   |
+`);
+            const tables = getTables(doc);
+            const csv = tableToCSV(tables[0], { delimiter: '\t' });
+
+            expect(csv).toBe('name\tvalue\ntest\t123');
+        });
+
+        it('escapes fields with special characters', () => {
+            const doc = parse(`| name  | note           |
+| Alice | hello, world   |
+| Bob   | line1          |
+`);
+            const tables = getTables(doc);
+            const csv = tableToCSV(tables[0]);
+
+            // Fields containing commas should be quoted
+            expect(csv).toContain('"hello, world"');
+        });
+
+        it('escapes fields containing quotes', () => {
+            const doc = parse(`| name  | note     |
+| Alice | say "hi" |
+`);
+            const tables = getTables(doc);
+            const csv = tableToCSV(tables[0]);
+
+            // Quotes inside should be doubled
+            expect(csv).toContain('"say ""hi"""');
+        });
+
+        it('handles empty table', () => {
+            const doc = parse(`|--|
+`);
+            const tables = getTables(doc);
+            const csv = tableToCSV(tables[0]);
+
+            expect(csv).toBe('');
+        });
+
+        it('uses custom line ending', () => {
+            const doc = parse(`| a | b |
+| 1 | 2 |
+`);
+            const tables = getTables(doc);
+            const csv = tableToCSV(tables[0], { lineEnding: '\r\n' });
+
+            expect(csv).toBe('a,b\r\n1,2');
+        });
+
+        it('trims whitespace by default', () => {
+            const doc = parse(`| name   | value   |
+| test   | 123     |
+`);
+            const tables = getTables(doc);
+            const csv = tableToCSV(tables[0]);
+
+            expect(csv).toBe('name,value\ntest,123');
+        });
+    });
+
+    describe('writeTableToCSV', () => {
+        let tempDir: string;
+
+        beforeEach(() => {
+            tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'orgModify-csv-'));
+        });
+
+        afterEach(() => {
+            fs.rmSync(tempDir, { recursive: true, force: true });
+        });
+
+        it('writes table to CSV file', () => {
+            const doc = parse(`| name  | age |
+|-------+-----|
+| Alice | 30  |
+| Bob   | 25  |
+`);
+            const tables = getTables(doc);
+            const csvPath = path.join(tempDir, 'test.csv');
+
+            writeTableToCSV(csvPath, tables[0]);
+
+            const content = fs.readFileSync(csvPath, 'utf-8');
+            expect(content).toBe('name,age\nAlice,30\nBob,25');
+        });
+
+        it('writes with custom options', () => {
+            const doc = parse(`| col1 | col2 |
+| a    | b    |
+`);
+            const tables = getTables(doc);
+            const csvPath = path.join(tempDir, 'custom.csv');
+
+            writeTableToCSV(csvPath, tables[0], { delimiter: ';' });
+
+            const content = fs.readFileSync(csvPath, 'utf-8');
+            expect(content).toBe('col1;col2\na;b');
         });
     });
 

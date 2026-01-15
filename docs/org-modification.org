@@ -267,6 +267,57 @@ const table = org.jsonToTable([
 // | Bob   | 25  |
 #+END_SRC
 
+*** org.tableToCSV(table, options?)
+
+Convert an org table to CSV format.
+
+**** Options
+
+| Option     | Default | Description                      |
+|------------+---------+----------------------------------|
+| useHeader  | true    | Include header row in output     |
+| trim       | true    | Trim whitespace from cells       |
+| delimiter  | ','     | Field separator character        |
+| quote      | '"'     | Quote character for escaping     |
+| lineEnding | '\n'    | Line ending character(s)         |
+
+#+BEGIN_SRC typescript
+const tables = org.getTables(doc);
+const csv = org.tableToCSV(tables[0]);
+// Returns:
+// name,age
+// Alice,30
+// Bob,25
+
+// With custom delimiter (TSV)
+const tsv = org.tableToCSV(tables[0], { delimiter: '\t' });
+
+// With Windows line endings
+const csvWin = org.tableToCSV(tables[0], { lineEnding: '\r\n' });
+#+END_SRC
+
+Fields containing the delimiter, quotes, or newlines are automatically escaped:
+
+#+BEGIN_SRC typescript
+// Input: | name | note |
+//        | Bob  | hello, world |
+const csv = org.tableToCSV(table);
+// Output: name,note
+//         Bob,"hello, world"
+#+END_SRC
+
+*** org.writeTableToCSV(filePath, table, options?)
+
+Write a table directly to a CSV file.
+
+#+BEGIN_SRC typescript
+const tables = org.getTables(doc);
+org.writeTableToCSV('./data.csv', tables[0]);
+
+// With semicolon delimiter
+org.writeTableToCSV('./data.csv', tables[0], { delimiter: ';' });
+#+END_SRC
+
 ** Modification Helpers
 
 *** org.setTodo(headline, keyword, doneKeywords?)
@@ -696,6 +747,55 @@ for (const file of files) {
 }
 
 return allData;
+#+END_SRC
+
+** Export Tables to CSV Files
+
+#+BEGIN_SRC typescript :results output
+import { org } from 'scimax';
+
+const doc = org.parseFile('./data.org');
+const tables = org.getTables(doc);
+
+// Export first table to CSV
+org.writeTableToCSV('./output/table1.csv', tables[0]);
+console.log('Exported table1.csv');
+
+// Export all tables with custom options
+tables.forEach((table, i) => {
+  org.writeTableToCSV(`./output/table${i + 1}.csv`, table, {
+    delimiter: ';',      // Semicolon for Excel compatibility
+    lineEnding: '\r\n'   // Windows line endings
+  });
+});
+
+console.log(`Exported ${tables.length} tables`);
+#+END_SRC
+
+** Export Named Table
+
+#+BEGIN_SRC typescript :results output
+import { org } from 'scimax';
+import * as fs from 'fs';
+
+const doc = org.parseFile('./report.org');
+
+// Find a table by the headline containing it
+const dataSection = org.findHeadline(doc, h =>
+  h.properties.rawValue === 'Results Data'
+);
+
+if (dataSection?.section) {
+  const table = dataSection.section.children.find(
+    el => el.type === 'table'
+  );
+
+  if (table) {
+    const csv = org.tableToCSV(table);
+    fs.writeFileSync('./results.csv', csv);
+    console.log('Exported results.csv');
+  }
+}
 #+END_SRC
 
 ** Bulk Update Properties

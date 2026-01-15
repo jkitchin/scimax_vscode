@@ -698,6 +698,117 @@ export function jsonToTable(
     return lines.join('\n');
 }
 
+/**
+ * Options for table to CSV conversion
+ */
+export interface TableToCSVOptions {
+    /** Use first row as header (default: true) */
+    useHeader?: boolean;
+    /** Trim whitespace from cell values (default: true) */
+    trim?: boolean;
+    /** Field delimiter (default: ',') */
+    delimiter?: string;
+    /** Quote character for escaping (default: '"') */
+    quote?: string;
+    /** Line ending (default: '\n') */
+    lineEnding?: string;
+}
+
+/**
+ * Convert an org table to CSV format
+ *
+ * @param table - Table element to convert
+ * @param options - Conversion options
+ * @returns CSV string
+ *
+ * @example
+ * ```typescript
+ * const tables = org.getTables(doc);
+ * const csv = org.tableToCSV(tables[0]);
+ * // name,age
+ * // Alice,30
+ * // Bob,25
+ *
+ * // Write to file
+ * import * as fs from 'fs';
+ * fs.writeFileSync('data.csv', csv);
+ * ```
+ */
+export function tableToCSV(
+    table: TableElement,
+    options?: TableToCSVOptions
+): string {
+    const opts = {
+        useHeader: true,
+        trim: true,
+        delimiter: ',',
+        quote: '"',
+        lineEnding: '\n',
+        ...options,
+    };
+
+    // Filter out rule rows
+    const dataRows = table.children.filter(row => row.properties.rowType !== 'rule');
+
+    if (dataRows.length === 0) {
+        return '';
+    }
+
+    // Extract cell values
+    function getCellValue(cell: TableCellObject): string {
+        let value = cell.properties.value;
+        if (cell.children && cell.children.length > 0) {
+            value = serializeObjects(cell.children);
+        }
+        return opts.trim ? value.trim() : value;
+    }
+
+    function escapeCSVField(value: string): string {
+        const needsQuoting = value.includes(opts.delimiter) ||
+            value.includes(opts.quote) ||
+            value.includes('\n') ||
+            value.includes('\r');
+
+        if (needsQuoting) {
+            // Escape quotes by doubling them
+            const escaped = value.replace(new RegExp(opts.quote, 'g'), opts.quote + opts.quote);
+            return opts.quote + escaped + opts.quote;
+        }
+        return value;
+    }
+
+    function getRowCSV(row: TableRowElement): string {
+        const cells = row.children.map(cell => escapeCSVField(getCellValue(cell)));
+        return cells.join(opts.delimiter);
+    }
+
+    const lines = dataRows.map(getRowCSV);
+    return lines.join(opts.lineEnding);
+}
+
+/**
+ * Write table data to a CSV file
+ *
+ * @param filePath - Path to write the CSV file
+ * @param table - Table element to convert
+ * @param options - CSV conversion options
+ *
+ * @example
+ * ```typescript
+ * const tables = org.getTables(doc);
+ * org.writeTableToCSV('./data.csv', tables[0]);
+ * ```
+ */
+export function writeTableToCSV(
+    filePath: string,
+    table: TableElement,
+    options?: TableToCSVOptions
+): void {
+    const absolutePath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+    const csv = tableToCSV(table, options);
+    fs.writeFileSync(absolutePath, csv, 'utf-8');
+}
+
 // =============================================================================
 // Modification Helpers
 // =============================================================================
@@ -1592,6 +1703,8 @@ export const org = {
     // Table utilities
     tableToJSON,
     jsonToTable,
+    tableToCSV,
+    writeTableToCSV,
 
     // Modification helpers
     setTodo,
