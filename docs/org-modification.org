@@ -1,0 +1,492 @@
+#+TITLE: Org File Modification API
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-15
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+
+* Introduction
+
+The Org File Modification API provides a TypeScript interface for programmatically
+reading, modifying, and writing org-mode files. This is the VS Code equivalent of
+Emacs org-mode's ability to traverse and modify parse trees using elisp.
+
+Use this API in TypeScript source blocks to:
+- Bulk update TODO states across files
+- Extract and transform data from tables
+- Rearrange document structure
+- Generate reports from org data
+- Automate repetitive org file operations
+
+* Quick Start
+
+** Basic Example: Change All TODOs to DONE
+
+#+BEGIN_SRC typescript :results silent
+import { org } from 'scimax';
+
+const doc = org.parseFile('./tasks.org');
+
+org.mapHeadlines(doc, h => {
+  if (h.properties.todoKeyword === 'TODO') {
+    org.setTodo(h, 'DONE');
+  }
+});
+
+org.writeFile('./tasks.org', doc);
+#+END_SRC
+
+** Query and Report
+
+#+BEGIN_SRC typescript :results output
+import { org } from 'scimax';
+
+const doc = org.parseFile('./projects.org');
+const todos = org.query(doc, { hasTodo: true, todoType: 'todo' });
+
+console.log(`Found ${todos.length} pending tasks:`);
+todos.forEach(h => {
+  console.log(`  - ${h.properties.rawValue}`);
+});
+#+END_SRC
+
+* API Reference
+
+** File I/O
+
+*** org.parseFile(path, config?)
+
+Parse an org file from disk into an AST.
+
+#+BEGIN_SRC typescript
+const doc = org.parseFile('./notes.org');
+const doc = org.parseFile('/absolute/path/to/file.org');
+#+END_SRC
+
+*** org.parse(content, config?)
+
+Parse org content from a string.
+
+#+BEGIN_SRC typescript
+const doc = org.parse('* TODO My task\nSome content');
+#+END_SRC
+
+*** org.writeFile(path, doc, options?)
+
+Write a document AST back to a file.
+
+#+BEGIN_SRC typescript
+org.writeFile('./notes.org', doc);
+#+END_SRC
+
+*** org.serialize(doc, options?)
+
+Convert a document AST to an org-mode string.
+
+#+BEGIN_SRC typescript
+const orgText = org.serialize(doc);
+console.log(orgText);
+#+END_SRC
+
+** Headline Traversal
+
+*** org.mapHeadlines(doc, callback)
+
+Visit every headline in the document (depth-first order).
+
+The callback receives:
+- =headline= - The current headline element
+- =parent= - Parent headline or document root
+- =index= - Position among siblings
+
+#+BEGIN_SRC typescript
+org.mapHeadlines(doc, (headline, parent, index) => {
+  console.log(`${headline.properties.level}: ${headline.properties.rawValue}`);
+});
+#+END_SRC
+
+*** org.filterHeadlines(doc, predicate)
+
+Return headlines matching a predicate function.
+
+#+BEGIN_SRC typescript
+const todos = org.filterHeadlines(doc, h =>
+  h.properties.todoKeyword === 'TODO'
+);
+#+END_SRC
+
+*** org.findHeadline(doc, predicate)
+
+Find the first headline matching a predicate.
+
+#+BEGIN_SRC typescript
+const intro = org.findHeadline(doc, h =>
+  h.properties.rawValue === 'Introduction'
+);
+#+END_SRC
+
+*** org.getAllHeadlines(doc)
+
+Get all headlines as a flat array.
+
+#+BEGIN_SRC typescript
+const all = org.getAllHeadlines(doc);
+console.log(`Document has ${all.length} headlines`);
+#+END_SRC
+
+** Element Traversal
+
+*** org.mapElements(doc, elementType, callback)
+
+Visit all elements of a specific type.
+
+#+BEGIN_SRC typescript
+org.mapElements(doc, 'src-block', (block, parent, index) => {
+  console.log(`Found ${block.properties.language} block`);
+});
+#+END_SRC
+
+*** org.filterElements(doc, elementType)
+
+Filter elements by type.
+
+#+BEGIN_SRC typescript
+const tables = org.filterElements(doc, 'table');
+#+END_SRC
+
+*** org.getSrcBlocks(doc)
+
+Get all source blocks.
+
+#+BEGIN_SRC typescript
+const blocks = org.getSrcBlocks(doc);
+blocks.forEach(b => console.log(b.properties.language));
+#+END_SRC
+
+*** org.getTables(doc)
+
+Get all tables.
+
+#+BEGIN_SRC typescript
+const tables = org.getTables(doc);
+#+END_SRC
+
+** Query API
+
+*** org.query(doc, criteria)
+
+Find elements matching multiple criteria at once.
+
+**** Query Criteria
+
+| Property       | Type                 | Description                          |
+|----------------+----------------------+--------------------------------------|
+| type           | ElementType          | Element type to match                |
+| todoKeyword    | string or string[]   | Specific TODO keyword(s)             |
+| hasTodo        | boolean              | Has any TODO keyword                 |
+| todoType       | 'todo' or 'done'     | TODO type category                   |
+| tags           | string[]             | All these tags must be present       |
+| anyTag         | string[]             | At least one of these tags           |
+| level          | number               | Exact headline level                 |
+| minLevel       | number               | Minimum headline level               |
+| maxLevel       | number               | Maximum headline level               |
+| titleContains  | string               | Title contains text (case-insensitive) |
+| hasProperty    | string               | Has property with this key           |
+| property       | {key, value}         | Property equals value                |
+| language       | string               | Source block language                |
+| predicate      | function             | Custom filter function               |
+
+**** Examples
+
+#+BEGIN_SRC typescript
+// Find all TODO headlines with :project: tag
+const projects = org.query(doc, {
+  type: 'headline',
+  hasTodo: true,
+  tags: ['project']
+});
+
+// Find headlines at level 2 or 3
+const sections = org.query(doc, {
+  type: 'headline',
+  minLevel: 2,
+  maxLevel: 3
+});
+
+// Find Python source blocks
+const pythonBlocks = org.query(doc, {
+  type: 'src-block',
+  language: 'python'
+});
+
+// Find headlines with CATEGORY property set to 'work'
+const work = org.query(doc, {
+  type: 'headline',
+  property: { key: 'CATEGORY', value: 'work' }
+});
+
+// Custom predicate
+const long = org.query(doc, {
+  type: 'headline',
+  predicate: h => h.properties.rawValue.length > 50
+});
+#+END_SRC
+
+** Table Utilities
+
+*** org.tableToJSON(table, options?)
+
+Convert an org table to JSON.
+
+**** Options
+
+| Option       | Default | Description                       |
+|--------------+---------+-----------------------------------|
+| useHeader    | true    | Use first row as object keys      |
+| trim         | true    | Trim whitespace from cells        |
+| includeRules | false   | Include horizontal rule rows      |
+
+#+BEGIN_SRC typescript
+const tables = org.getTables(doc);
+const data = org.tableToJSON(tables[0]);
+// Returns: [{ name: 'Alice', age: '30' }, { name: 'Bob', age: '25' }]
+#+END_SRC
+
+*** org.jsonToTable(data, options?)
+
+Convert JSON data to org table text.
+
+#+BEGIN_SRC typescript
+const table = org.jsonToTable([
+  { name: 'Alice', age: 30 },
+  { name: 'Bob', age: 25 }
+]);
+// Returns:
+// | name  | age |
+// |-------+-----|
+// | Alice | 30  |
+// | Bob   | 25  |
+#+END_SRC
+
+** Modification Helpers
+
+*** org.setTodo(headline, keyword, doneKeywords?)
+
+Set or remove TODO keyword.
+
+#+BEGIN_SRC typescript
+org.setTodo(headline, 'TODO');     // Set to TODO
+org.setTodo(headline, 'DONE');     // Set to DONE
+org.setTodo(headline, undefined);  // Remove TODO
+#+END_SRC
+
+*** org.addTag(headline, tag)
+
+Add a tag to a headline.
+
+#+BEGIN_SRC typescript
+org.addTag(headline, 'important');
+#+END_SRC
+
+*** org.removeTag(headline, tag)
+
+Remove a tag from a headline.
+
+#+BEGIN_SRC typescript
+org.removeTag(headline, 'obsolete');
+#+END_SRC
+
+*** org.setProperty(headline, key, value)
+
+Set a property on a headline.
+
+#+BEGIN_SRC typescript
+org.setProperty(headline, 'CUSTOM_ID', 'my-section');
+#+END_SRC
+
+*** org.removeProperty(headline, key)
+
+Remove a property from a headline.
+
+#+BEGIN_SRC typescript
+org.removeProperty(headline, 'OLD_ID');
+#+END_SRC
+
+*** org.setPriority(headline, priority)
+
+Set or remove priority.
+
+#+BEGIN_SRC typescript
+org.setPriority(headline, 'A');     // Set priority
+org.setPriority(headline, undefined); // Remove priority
+#+END_SRC
+
+** Structure Utilities
+
+*** org.sortHeadlines(headlines, compareFn)
+
+Sort headlines in place.
+
+#+BEGIN_SRC typescript
+// Sort by priority
+org.sortHeadlines(doc.children, (a, b) => {
+  const priority = { A: 0, B: 1, C: 2 };
+  return (priority[a.properties.priority] || 99) -
+         (priority[b.properties.priority] || 99);
+});
+
+// Sort alphabetically
+org.sortHeadlines(doc.children, (a, b) =>
+  a.properties.rawValue.localeCompare(b.properties.rawValue)
+);
+#+END_SRC
+
+*** org.promoteHeadline(headline, recursive?)
+
+Decrease headline level (promote).
+
+#+BEGIN_SRC typescript
+org.promoteHeadline(headline);        // Promote with children
+org.promoteHeadline(headline, false); // Promote only this headline
+#+END_SRC
+
+*** org.demoteHeadline(headline, recursive?)
+
+Increase headline level (demote).
+
+#+BEGIN_SRC typescript
+org.demoteHeadline(headline);
+#+END_SRC
+
+* Complete Examples
+
+** Archive All DONE Items
+
+#+BEGIN_SRC typescript :results silent
+import { org } from 'scimax';
+
+const doc = org.parseFile('./tasks.org');
+
+org.mapHeadlines(doc, h => {
+  if (h.properties.todoType === 'done') {
+    org.addTag(h, 'ARCHIVE');
+  }
+});
+
+org.writeFile('./tasks.org', doc);
+#+END_SRC
+
+** Generate Project Summary
+
+#+BEGIN_SRC typescript :results output
+import { org } from 'scimax';
+
+const doc = org.parseFile('./projects.org');
+const projects = org.query(doc, { tags: ['project'] });
+
+console.log('# Project Summary\n');
+
+for (const project of projects) {
+  const status = project.properties.todoKeyword || 'No status';
+  const priority = project.properties.priority || '-';
+  console.log(`- [${priority}] ${project.properties.rawValue} (${status})`);
+}
+#+END_SRC
+
+** Extract Table Data Across Files
+
+#+BEGIN_SRC typescript :results value
+import { org } from 'scimax';
+import * as fs from 'fs';
+
+const files = fs.readdirSync('.').filter(f => f.endsWith('.org'));
+const allData = [];
+
+for (const file of files) {
+  const doc = org.parseFile(file);
+  const tables = org.getTables(doc);
+
+  for (const table of tables) {
+    const data = org.tableToJSON(table);
+    allData.push(...data);
+  }
+}
+
+return allData;
+#+END_SRC
+
+** Bulk Update Properties
+
+#+BEGIN_SRC typescript :results silent
+import { org } from 'scimax';
+
+const doc = org.parseFile('./notes.org');
+
+org.mapHeadlines(doc, h => {
+  // Add CREATED property if missing
+  if (!h.propertiesDrawer?.['CREATED']) {
+    org.setProperty(h, 'CREATED', new Date().toISOString().split('T')[0]);
+  }
+
+  // Set CATEGORY based on tags
+  if (h.properties.tags.includes('work')) {
+    org.setProperty(h, 'CATEGORY', 'Work');
+  } else if (h.properties.tags.includes('personal')) {
+    org.setProperty(h, 'CATEGORY', 'Personal');
+  }
+});
+
+org.writeFile('./notes.org', doc);
+#+END_SRC
+
+** Reorganize by Priority
+
+#+BEGIN_SRC typescript :results silent
+import { org } from 'scimax';
+
+const doc = org.parseFile('./tasks.org');
+
+// Sort top-level headlines by priority
+org.sortHeadlines(doc.children, (a, b) => {
+  const priorityOrder = { A: 0, B: 1, C: 2 };
+  const aPriority = priorityOrder[a.properties.priority] ?? 99;
+  const bPriority = priorityOrder[b.properties.priority] ?? 99;
+  return aPriority - bPriority;
+});
+
+org.writeFile('./tasks.org', doc);
+#+END_SRC
+
+* Headline Element Structure
+
+When working with headlines, you have access to these properties:
+
+#+BEGIN_SRC typescript
+interface HeadlineElement {
+  type: 'headline';
+  properties: {
+    level: number;           // 1-based heading level
+    rawValue: string;        // Title text
+    todoKeyword?: string;    // 'TODO', 'DONE', etc.
+    todoType?: 'todo' | 'done';
+    priority?: string;       // 'A', 'B', 'C'
+    tags: string[];          // Tag list
+    archivedp: boolean;      // Has :ARCHIVE: tag
+    commentedp: boolean;     // Has COMMENT prefix
+    customId?: string;       // CUSTOM_ID property
+    id?: string;             // ID property
+    category?: string;       // CATEGORY property
+    lineNumber: number;      // 1-indexed line number
+  };
+  propertiesDrawer?: Record<string, string>;
+  planning?: PlanningElement;  // SCHEDULED, DEADLINE, CLOSED
+  section?: SectionElement;    // Content after headline
+  children: HeadlineElement[]; // Child headlines
+}
+#+END_SRC
+
+* Related Topics
+
+- [[file:source-blocks.org][Source Code Blocks]] - Executing code in org documents
+- [[file:todo-items.org][TODO Items]] - Task management
+- [[file:document-structure.org][Document Structure]] - Headlines and navigation
+- [[file:timestamps.org][Timestamps]] - Dates, scheduling, and clocking
