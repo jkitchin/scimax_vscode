@@ -3,15 +3,18 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Navigation
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Navigation
 
 Scimax VS Code provides powerful navigation features inspired by Emacs, including
 fuzzy search, avy-style jumping, and structured outline navigation. These features
 work seamlessly across org-mode and markdown documents, making it easy to move
 around your files quickly and efficiently.
 
-* Overview
+* ⚠️ Overview
 
 Navigation in Scimax VS Code follows three main paradigms:
 
@@ -24,23 +27,23 @@ See also:
 - [[file:document-structure.org][Document Structure]] for information about headlines and folding
 - [[file:keybindings.org][Keybindings]] for a complete reference of keyboard shortcuts
 
-* Outline Navigation
+* ⚠️ Outline Navigation
 
 Outline navigation lets you move between structural elements in your document -
 headings, source blocks, and other landmarks.
 
-** Heading Navigation
+** ⚠️ Heading Navigation
 
 Navigate between headings in org-mode and markdown documents:
 
 | Command                      | Key Binding      | Description                    |
 |------------------------------+------------------+--------------------------------|
-| =scimax.org.nextHeading=     | -                | Jump to next heading           |
-| =scimax.org.previousHeading= | -                | Jump to previous heading       |
-| =scimax.org.parentHeading=   | -                | Jump to parent heading         |
-| =scimax.org.jumpToHeading=   | =C-c C-j=        | Fuzzy search headings          |
+| scimax.org.nextHeading     | -                | Jump to next heading           |
+| scimax.org.previousHeading | -                | Jump to previous heading       |
+| scimax.org.parentHeading   | -                | Jump to parent heading         |
+| scimax.org.jumpToHeading   | C-c C-j        | Fuzzy search headings          |
 
-*** Next/Previous Heading
+*** ⚠️ Next/Previous Heading
 
 Move through all headings in document order:
 
@@ -48,33 +51,33 @@ Move through all headings in document order:
 ,* First Heading
 Content here...
 
-,** Subheading A        ← Current position
+,** Subheading A        <- Current position
 Content...
 
-,** Subheading B        ← Next heading
+,** Subheading B        <- Next heading
 More content...
 
-,* Second Heading       ← Another next heading
+,* Second Heading       <- Another next heading
 #+END_SRC
 
-The =nextHeading= command moves forward through headings regardless of level.
-Similarly, =previousHeading= moves backward.
+The nextHeading command moves forward through headings regardless of level.
+Similarly, previousHeading moves backward.
 
-*** Parent Heading
+*** ⚠️ Parent Heading
 
 Jump to the parent (containing) heading:
 
 #+BEGIN_SRC org
-,* Parent Heading       ← Jump here
+,* Parent Heading       <- Jump here
 ,** Child Heading
-,*** Current Position   ← From here
+,*** Current Position   <- From here
 #+END_SRC
 
 This is useful for quickly navigating up the document hierarchy.
 
-*** Jump to Heading
+*** ⚠️ Jump to Heading
 
-The =jumpToHeading= command (=C-c C-j=) opens a fuzzy search picker showing all
+The jumpToHeading command (C-c C-j) opens a fuzzy search picker showing all
 headings in the current document. Type to filter, and select a heading to jump to it.
 
 Features:
@@ -83,61 +86,61 @@ Features:
 - Shows heading hierarchy with indentation
 - Displays TODO states and tags
 
-** Source Block Navigation
+** ⚠️ Source Block Navigation
 
 Navigate between source blocks in org documents:
 
 | Command                   | Key Binding | Description               |
 |---------------------------+-------------+---------------------------|
-| =scimax.ob.nextBlock=     | -           | Jump to next source block |
-| =scimax.ob.previousBlock= | -           | Jump to previous block    |
-| =scimax.ob.jumpToBlock=   | -           | Fuzzy search blocks       |
-| =scimax.ob.jumpToResults= | -           | Jump to results section   |
+| scimax.ob.nextBlock     | -           | Jump to next source block |
+| scimax.ob.previousBlock | -           | Jump to previous block    |
+| scimax.ob.jumpToBlock   | -           | Fuzzy search blocks       |
+| scimax.ob.jumpToResults | -           | Jump to results section   |
 
-*** Next/Previous Source Block
+*** ⚠️ Next/Previous Source Block
 
 Move between source blocks in document order:
 
 #+BEGIN_SRC org
 Some text...
 
-,#+BEGIN_SRC python      ← Current position
+,#+BEGIN_SRC python      <- Current position
 print("Hello")
 ,#+END_SRC
 
 More text...
 
-,#+BEGIN_SRC python      ← Next block
+,#+BEGIN_SRC python      <- Next block
 print("World")
 ,#+END_SRC
 #+END_SRC
 
 These commands skip over regular text and headings, jumping directly to the next
-or previous =#+BEGIN_SRC= block.
+or previous #+BEGIN_SRC block.
 
-*** Jump to Source Block
+*** ⚠️ Jump to Source Block
 
-The =jumpToBlock= command shows a fuzzy picker of all source blocks in the
+The jumpToBlock command shows a fuzzy picker of all source blocks in the
 document. Each block is labeled with:
-- Language (e.g., =python=, =javascript=)
-- Block name (if it has a =#+NAME:= line)
+- Language (e.g., python, javascript)
+- Block name (if it has a #+NAME: line)
 - Preview of first line of code
 
-*** Jump to Results
+*** ⚠️ Jump to Results
 
-When cursor is in a source block, =jumpToResults= jumps to the =#+RESULTS:=
+When cursor is in a source block, jumpToResults jumps to the #+RESULTS:
 section below the block (if it exists). This is useful after executing a block
 to quickly review the output.
 
-** Sibling Navigation (Speed Commands)
+** ⚠️ Sibling Navigation (Speed Commands)
 
 Speed commands provide efficient navigation between sibling headings (headings
 at the same level):
 
 | Key | Command                       | Description                    |
 |-----+-------------------------------+--------------------------------|
-| =f= | =scimax.speed.nextSibling=    | Next heading at same level     |
-| =b= | =scimax.speed.previousSibling= | Previous heading at same level |
+| f | scimax.speed.nextSibling    | Next heading at same level     |
+| b | scimax.speed.previousSibling | Previous heading at same level |
 
 These commands only work when:
 1. Speed commands are enabled
@@ -148,31 +151,31 @@ Example:
 #+BEGIN_SRC org
 ,* Parent
 ,** Sibling 1
-,** Sibling 2          ← Press 'f' to jump to Sibling 3
-,** Sibling 3          ← Press 'b' to jump back to Sibling 2
+,** Sibling 2          <- Press 'f' to jump to Sibling 3
+,** Sibling 3          <- Press 'b' to jump back to Sibling 2
 ,** Sibling 4
 #+END_SRC
 
 Sibling navigation skips over child headings:
 
 #+BEGIN_SRC org
-,** Sibling 1           ← Current position
+,** Sibling 1           <- Current position
 ,*** Child of Sibling 1
 ,*** Another child
-,** Sibling 2           ← Press 'f' jumps here (skips children)
+,** Sibling 2           <- Press 'f' jumps here (skips children)
 #+END_SRC
 
-* Fuzzy Search (Swiper-Style)
+* ⚠️ Fuzzy Search (Swiper-Style)
 
 Fuzzy search provides incremental search with live preview, inspired by Emacs
 Swiper. As you type, matching lines are filtered and the cursor moves to show
 a live preview.
 
-** Search Current File
+** ⚠️ Search Current File
 
 | Command               | Key Binding      | Description                      |
 |-----------------------+------------------+----------------------------------|
-| =scimax.fuzzySearch=  | =C-c s=          | Search lines in current file     |
+| scimax.fuzzySearch  | C-c s          | Search lines in current file     |
 
 Opens a quick pick showing all non-empty lines in the current file. Features:
 
@@ -182,17 +185,17 @@ Opens a quick pick showing all non-empty lines in the current file. Features:
 - *Cancel restores position* - press Escape to return to original location
 
 Example workflow:
-1. Press =C-c s= to open fuzzy search
+1. Press C-c s to open fuzzy search
 2. Type "function calculate" to find lines with both words
 3. Use arrow keys or continue typing to narrow results
 4. Press Enter to jump to selected line
 5. Press Escape to cancel and return to original position
 
-** Search Open Files
+** ⚠️ Search Open Files
 
 | Command                       | Key Binding       | Description                     |
 |-------------------------------+-------------------+---------------------------------|
-| =scimax.fuzzySearchOpenFiles= | =C-c S-s=         | Search lines in all open files  |
+| scimax.fuzzySearchOpenFiles | C-c S-s         | Search lines in all open files  |
 
 Like fuzzy search but searches across all open buffers/files. Results are
 grouped by file with file separators.
@@ -202,16 +205,16 @@ Use this to:
 - Navigate between related files quickly
 - Review related code across different modules
 
-** Search Outline (Headings/Symbols)
+** ⚠️ Search Outline (Headings/Symbols)
 
 | Command                       | Key Binding      | Description                      |
 |-------------------------------+------------------+----------------------------------|
-| =scimax.fuzzySearchOutline=   | =C-c M-s=        | Search headings and symbols      |
+| scimax.fuzzySearchOutline   | C-c M-s        | Search headings and symbols      |
 
 Searches only structural elements:
 
-- *Org files* - Headlines (lines starting with =*=)
-- *Markdown files* - Headings (lines starting with =#=)
+- *Org files* - Headlines (lines starting with *)
+- *Markdown files* - Headings (lines starting with #)
 - *Code files* - Function/class definitions
 
 This provides a fast way to navigate document structure without seeing every line.
@@ -221,29 +224,29 @@ Icons indicate heading level:
 - $(symbol-class) $(symbol-class) - Second level
 - $(symbol-method) - Functions/methods
 
-* Jump Navigation (Avy-Style)
+* ⚠️ Jump Navigation (Avy-Style)
 
 Jump navigation provides character-based quick jumps to visible text, inspired
 by Emacs Avy. You specify what to jump to (character, word, line), and each
 match is labeled with a hint character. Type the hint to jump instantly.
 
-** Jump to Character
+** ⚠️ Jump to Character
 
 | Command                 | Key Binding | Description                        |
 |-------------------------+-------------+------------------------------------|
-| =scimax.jump.gotoChar=  | -           | Jump to any character              |
-| =scimax.jump.gotoChar2= | -           | Jump to 2-character sequence       |
+| scimax.jump.gotoChar  | -           | Jump to any character              |
+| scimax.jump.gotoChar2 | -           | Jump to 2-character sequence       |
 
-*** Single Character
+*** ⚠️ Single Character
 
-1. Invoke =scimax.jump.gotoChar=
+1. Invoke scimax.jump.gotoChar
 2. Type a character (e.g., "e")
-3. All visible occurrences of "e" are labeled: =a=, =s=, =d=, =f=, etc.
+3. All visible occurrences of "e" are labeled: a, s, d, f, etc.
 4. Type the label to jump (e.g., type "s" to jump to the second occurrence)
 
-*** Two Characters
+*** ⚠️ Two Characters
 
-For more precision, use =scimax.jump.gotoChar2=:
+For more precision, use scimax.jump.gotoChar2:
 
 1. Invoke the command
 2. Type two characters (e.g., "th")
@@ -252,98 +255,98 @@ For more precision, use =scimax.jump.gotoChar2=:
 
 This reduces the number of matches, making jumps faster.
 
-** Jump to Word
+** ⚠️ Jump to Word
 
 | Command                | Key Binding | Description                        |
 |------------------------+-------------+------------------------------------|
-| =scimax.jump.gotoWord= | -           | Jump to word starts                |
+| scimax.jump.gotoWord | -           | Jump to word starts                |
 
 Jumps to word boundaries. You can optionally filter by starting character:
 
-1. Invoke =scimax.jump.gotoWord=
+1. Invoke scimax.jump.gotoWord
 2. Enter a starting character or leave empty for all words
 3. All matching word starts are labeled
 4. Type the label to jump
 
 Example: Type "f" to see only words starting with "f" (function, for, first, etc.)
 
-** Jump to Line
+** ⚠️ Jump to Line
 
 | Command                | Key Binding | Description                        |
 |------------------------+-------------+------------------------------------|
-| =scimax.jump.gotoLine= | -           | Jump to any visible line           |
+| scimax.jump.gotoLine | -           | Jump to any visible line           |
 
 Labels every visible line for quick vertical navigation:
 
-1. Invoke =scimax.jump.gotoLine=
-2. Every visible line gets a label (=a=, =s=, =d=, etc.)
+1. Invoke scimax.jump.gotoLine
+2. Every visible line gets a label (a, s, d, etc.)
 3. Type the label to jump to that line
 
 The cursor is placed at the first non-whitespace character of the selected line.
 
-** Jump to Symbol
+** ⚠️ Jump to Symbol
 
 | Command                  | Key Binding | Description                        |
 |--------------------------+-------------+------------------------------------|
-| =scimax.jump.gotoSymbol= | -           | Jump to symbols and headings       |
+| scimax.jump.gotoSymbol | -           | Jump to symbols and headings       |
 
 Jumps to structural elements in the visible area:
 
 - Function/class definitions
-- Org headings (=* Heading=)
-- Markdown headings (=# Heading=)
+- Org headings (* Heading)
+- Markdown headings (# Heading)
 - Comment markers (TODO, FIXME, NOTE, etc.)
 
 Only visible symbols are labeled, making it very fast for navigating code structure.
 
-** Jump to Subword
+** ⚠️ Jump to Subword
 
 | Command                   | Key Binding | Description                        |
 |---------------------------+-------------+------------------------------------|
-| =scimax.jump.gotoSubword= | -           | Jump to subword boundaries         |
+| scimax.jump.gotoSubword | -           | Jump to subword boundaries         |
 
 Jumps to camelCase and snake_case boundaries:
 
-- =myVariableName= - Labels 'm', 'V', 'N'
-- =my_variable_name= - Labels 'm', 'v', 'n'
-- =MY_CONSTANT= - Labels 'M', 'C'
+- myVariableName - Labels 'm', 'V', 'N'
+- my_variable_name - Labels 'm', 'v', 'n'
+- MY_CONSTANT - Labels 'M', 'C'
 
 Useful for navigating within identifiers in code.
 
-** Jump Actions
+** ⚠️ Jump Actions
 
 Beyond navigation, jump commands can perform actions:
 
 | Command                | Description                        |
 |------------------------+------------------------------------|
-| =scimax.jump.copyLine= | Select a line and copy it          |
-| =scimax.jump.killLine= | Select a line and delete it        |
+| scimax.jump.copyLine | Select a line and copy it          |
+| scimax.jump.killLine | Select a line and delete it        |
 
 These commands use the same labeling system but perform actions instead of
 just moving the cursor.
 
-** Label Characters
+** ⚠️ Label Characters
 
 Jump labels use home row keys for efficiency, ordered by ease of typing:
 
 : a s d f j k l g h q w e r u i o p z x c v b n m t y
 
 - Small numbers of matches use single characters
-- Larger numbers of matches use two-character combinations (=aa=, =as=, =ad=, etc.)
+- Larger numbers of matches use two-character combinations (aa, as, ad, etc.)
 
-* Document Symbol Provider
+* ⚠️ Document Symbol Provider
 
 VS Code's built-in outline view and breadcrumb navigation are enhanced with
 org-mode support.
 
-** Outline View
+** ⚠️ Outline View
 
-The Outline panel (View → Outline) shows document structure:
+The Outline panel (View -> Outline) shows document structure:
 
 For org files:
-- Document title (from =#+TITLE:=)
+- Document title (from #+TITLE:)
 - All headings in hierarchical structure
-- TODO state indicators (☐ for TODO, ✓ for DONE)
+- TODO state indicators (box for TODO, check for DONE)
 - Tags and priorities shown as details
 - Source blocks (labeled with language)
 - Tables
@@ -356,7 +359,7 @@ Symbols use semantic icons:
 - $(symbol-key) - TODO items
 - $(symbol-event) - DONE items
 
-** Breadcrumb Navigation
+** ⚠️ Breadcrumb Navigation
 
 The breadcrumb bar at the top of the editor shows your location in the
 document hierarchy:
@@ -365,17 +368,17 @@ document hierarchy:
 
 Click any breadcrumb to see siblings and navigate quickly.
 
-** Quick Outline
+** ⚠️ Quick Outline
 
-Press =Ctrl+Shift+O= (or =Cmd+Shift+O= on Mac) to open VS Code's quick outline:
+Press Ctrl+Shift+O (or Cmd+Shift+O on Mac) to open VS Code's quick outline:
 
 - Shows all document symbols
 - Type to filter
 - Press Enter to jump to symbol
 
-This works similar to =fuzzySearchOutline= but uses VS Code's native UI.
+This works similar to fuzzySearchOutline but uses VS Code's native UI.
 
-* Go to Definition
+* ⚠️ Go to Definition
 
 While not Scimax-specific, VS Code's go to definition works in org files for:
 
@@ -385,18 +388,18 @@ While not Scimax-specific, VS Code's go to definition works in org files for:
 
 | Command                           | Key Binding | Description              |
 |-----------------------------------+-------------+--------------------------|
-| =editor.action.revealDefinition=  | =F12=       | Go to definition         |
-| =editor.action.peekDefinition=    | =Alt+F12=   | Peek definition          |
-| =editor.action.goToReferences=    | =Shift+F12= | Find all references      |
+| editor.action.revealDefinition  | F12       | Go to definition         |
+| editor.action.peekDefinition    | Alt+F12   | Peek definition          |
+| editor.action.goToReferences    | Shift+F12 | Find all references      |
 
-* Navigation History
+* ⚠️ Navigation History
 
 VS Code tracks your navigation history across files:
 
 | Command                        | Key Binding      | Description                |
 |--------------------------------+------------------+----------------------------|
-| =workbench.action.navigateBack= | =Alt+Left= / =C-c [= | Go to previous location |
-| =workbench.action.navigateForward= | =Alt+Right= / =C-c ]= | Go to next location  |
+| workbench.action.navigateBack | Alt+Left / C-c [ | Go to previous location |
+| workbench.action.navigateForward | Alt+Right / C-c ] | Go to next location  |
 
 Every jump creates a history entry:
 - Jump to heading
@@ -406,26 +409,26 @@ Every jump creates a history entry:
 
 Use these commands to backtrack through your navigation path.
 
-* Speed Commands
+* ⚠️ Speed Commands
 
 Speed commands provide single-key navigation when the cursor is at the start
 of a heading. See the table in [[*Sibling Navigation (Speed Commands)]] above, or
-press =?= at a heading start to see all speed commands.
+press ? at a heading start to see all speed commands.
 
 Navigation speed commands (available at heading start):
 
 | Key | Command                       | Description                    |
 |-----+-------------------------------+--------------------------------|
-| =n= | Next visible heading          | Move to next heading           |
-| =p= | Previous visible heading      | Move to previous heading       |
-| =f= | Next sibling heading          | Next heading at same level     |
-| =b= | Previous sibling heading      | Previous heading at same level |
-| =u= | Parent heading                | Jump to parent heading         |
-| =j= | Jump to heading               | Fuzzy search headings          |
-| =g= | Go to... submenu              | More navigation options        |
+| n | Next visible heading          | Move to next heading           |
+| p | Previous visible heading      | Move to previous heading       |
+| f | Next sibling heading          | Next heading at same level     |
+| b | Previous sibling heading      | Previous heading at same level |
+| u | Parent heading                | Jump to parent heading         |
+| j | Jump to heading               | Fuzzy search headings          |
+| g | Go to... submenu              | More navigation options        |
 
 To enable speed commands:
-1. Open settings (=Ctrl+,=)
+1. Open settings (Ctrl+,)
 2. Search for "scimax speed commands"
 3. Enable "Scimax: Speed Commands Enabled"
 
@@ -437,87 +440,87 @@ Or add to settings.json:
 }
 #+END_SRC
 
-* Keybinding Reference
+* ⚠️ Keybinding Reference
 
 All navigation keybindings:
 
-** Global (All Modes)
+** ⚠️ Global (All Modes)
 
 | Key Binding           | Command                                | Description                  |
 |-----------------------+----------------------------------------+------------------------------|
-| =C-c s=               | =scimax.fuzzySearch=                   | Fuzzy search current file    |
-| =C-c S-s=             | =scimax.fuzzySearchOpenFiles=          | Fuzzy search open files      |
-| =C-c M-s=             | =scimax.fuzzySearchOutline=            | Fuzzy search outline         |
-| =Alt+Left= / =C-c [=  | =workbench.action.navigateBack=        | Navigate back in history     |
-| =Alt+Right= / =C-c ]= | =workbench.action.navigateForward=     | Navigate forward in history  |
-| =Ctrl+Shift+O=        | VS Code Quick Outline                  | Jump to symbol               |
+| C-c s               | scimax.fuzzySearch                   | Fuzzy search current file    |
+| C-c S-s             | scimax.fuzzySearchOpenFiles          | Fuzzy search open files      |
+| C-c M-s             | scimax.fuzzySearchOutline            | Fuzzy search outline         |
+| Alt+Left / C-c [  | workbench.action.navigateBack        | Navigate back in history     |
+| Alt+Right / C-c ] | workbench.action.navigateForward     | Navigate forward in history  |
+| Ctrl+Shift+O        | VS Code Quick Outline                  | Jump to symbol               |
 
-** Org/Markdown Mode
+** ⚠️ Org/Markdown Mode
 
 | Key Binding  | Command                          | Description              |
 |--------------+----------------------------------+--------------------------|
-| =C-c C-j=    | =scimax.org.jumpToHeading=       | Jump to heading          |
+| C-c C-j    | scimax.org.jumpToHeading       | Jump to heading          |
 
-** Speed Commands (at heading start)
+** ⚠️ Speed Commands (at heading start)
 
 | Key | Command          | Description                    |
 |-----+------------------+--------------------------------|
-| =n= | Next heading     | Move to next heading           |
-| =p= | Previous heading | Move to previous heading       |
-| =f= | Next sibling     | Next heading at same level     |
-| =b= | Previous sibling | Previous heading at same level |
-| =u= | Parent heading   | Jump to parent heading         |
-| =j= | Jump to heading  | Fuzzy search headings          |
+| n | Next heading     | Move to next heading           |
+| p | Previous heading | Move to previous heading       |
+| f | Next sibling     | Next heading at same level     |
+| b | Previous sibling | Previous heading at same level |
+| u | Parent heading   | Jump to parent heading         |
+| j | Jump to heading  | Fuzzy search headings          |
 
-* Tips and Workflows
+* ⚠️ Tips and Workflows
 
-** Quick Heading Navigation
+** ⚠️ Quick Heading Navigation
 
 Combine speed commands and fuzzy search:
 
-1. Use =j= speed command for fuzzy heading search (when at heading start)
-2. Use =C-c C-j= for heading search (from anywhere)
-3. Use =f=/=b= speed commands to move between siblings
-4. Use =n=/=p= speed commands to scan all headings
+1. Use j speed command for fuzzy heading search (when at heading start)
+2. Use C-c C-j for heading search (from anywhere)
+3. Use f/b speed commands to move between siblings
+4. Use n/p speed commands to scan all headings
 
-** Finding Code in Large Files
+** ⚠️ Finding Code in Large Files
 
 For code files:
 
-1. =C-c M-s= - Search outline to find function/class
-2. =scimax.jump.gotoSymbol= - Jump to visible function
-3. =Ctrl+Shift+O= - VS Code quick outline for all symbols
+1. C-c M-s - Search outline to find function/class
+2. scimax.jump.gotoSymbol - Jump to visible function
+3. Ctrl+Shift+O - VS Code quick outline for all symbols
 
-** Cross-File Navigation
+** ⚠️ Cross-File Navigation
 
 When working across multiple files:
 
-1. =C-c S-s= - Search all open files
+1. C-c S-s - Search all open files
 2. Open related files
-3. Use navigation history (=Alt+Left=/=Alt+Right=) to move between locations
+3. Use navigation history (Alt+Left/Alt+Right) to move between locations
 4. Use breadcrumbs to see context
 
-** Precision Jumping
+** ⚠️ Precision Jumping
 
 For maximum precision:
 
-1. =scimax.jump.gotoChar2= - Two characters gives fewer matches
-2. =scimax.jump.gotoSubword= - Jump within camelCase names
-3. =scimax.jump.gotoWord= with starting character - Filter words
+1. scimax.jump.gotoChar2 - Two characters gives fewer matches
+2. scimax.jump.gotoSubword - Jump within camelCase names
+3. scimax.jump.gotoWord with starting character - Filter words
 
-** Source Block Workflows
+** ⚠️ Source Block Workflows
 
 When working with literate programming:
 
-1. =scimax.ob.jumpToBlock= - Find block by name/language
-2. =scimax.ob.nextBlock=/=previousBlock= - Navigate between blocks
-3. =scimax.ob.jumpToResults= - Check execution results
-4. Execute block (=C-c C-c=)
+1. scimax.ob.jumpToBlock - Find block by name/language
+2. scimax.ob.nextBlock/previousBlock - Navigate between blocks
+3. scimax.ob.jumpToResults - Check execution results
+4. Execute block (C-c C-c)
 5. Jump to results to verify output
 
-* Configuration
+* ⚠️ Configuration
 
-** Enable/Disable Features
+** ⚠️ Enable/Disable Features
 
 #+BEGIN_SRC json
 {
@@ -529,7 +532,7 @@ When working with literate programming:
 }
 #+END_SRC
 
-** Custom Keybindings
+** ⚠️ Custom Keybindings
 
 Add custom keybindings in keybindings.json:
 
@@ -551,27 +554,27 @@ Add custom keybindings in keybindings.json:
 ]
 #+END_SRC
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Fuzzy Search Not Working
+** ⚠️ Fuzzy Search Not Working
 
 If fuzzy search doesn't show results:
 
 1. Check that the file has non-empty lines
 2. Try searching with simpler terms
-3. Check if file is too large (increase =maxResults= setting)
+3. Check if file is too large (increase maxResults setting)
 
-** Speed Commands Not Triggering
+** ⚠️ Speed Commands Not Triggering
 
 Speed commands require:
 
-1. =scimax.speedCommandsEnabled= set to =true=
+1. scimax.speedCommandsEnabled set to true
 2. Cursor at column 0 (start of line)
-3. Cursor on a heading line (starts with =*= in org, =#= in markdown)
+3. Cursor on a heading line (starts with * in org, # in markdown)
 
-Move cursor to beginning of heading with =Home= key, then try speed command.
+Move cursor to beginning of heading with Home key, then try speed command.
 
-** Jump Labels Not Appearing
+** ⚠️ Jump Labels Not Appearing
 
 If jump commands don't show labels:
 
@@ -579,7 +582,7 @@ If jump commands don't show labels:
 2. Check that the editor has focus
 3. Try scrolling to ensure matches are visible
 
-** Navigation History Not Working
+** ⚠️ Navigation History Not Working
 
 VS Code's navigation history works best when:
 
@@ -589,21 +592,21 @@ VS Code's navigation history works best when:
 
 Cursor movement with arrow keys doesn't create history entries.
 
-* See Also
+* ⚠️ See Also
 
 - [[file:document-structure.org][Document Structure]] - Headlines, folding, and outline manipulation
 - [[file:keybindings.org][Keybindings]] - Complete keybinding reference
 - [[file:source-blocks.org][Source Blocks]] - Working with code blocks
 - [[file:links.org][Links]] - Following and managing links
 
-* Comparison with Emacs
+* ⚠️ Comparison with Emacs
 
 Scimax VS Code navigation is inspired by Emacs packages:
 
 | Emacs Package | VS Code Equivalent           | Notes                          |
 |---------------+------------------------------+--------------------------------|
-| Avy           | =scimax.jump.*= commands     | Character-based jumping        |
-| Swiper        | =scimax.fuzzySearch=         | Incremental search with preview|
+| Avy           | scimax.jump.* commands     | Character-based jumping        |
+| Swiper        | scimax.fuzzySearch         | Incremental search with preview|
 | Helm/Ivy      | Quick Pick UI                | VS Code native fuzzy picker    |
 | Org speed keys| Speed commands               | Single-key commands at heading |
 | Imenu         | Document symbol provider     | Outline view and breadcrumbs   |
@@ -615,7 +618,7 @@ Key differences:
 - VS Code navigation history is cross-file by default
 - Speed commands in VS Code require explicit enable
 
-* Index
+* ⚠️ Index
 
 - Avy-style navigation: [[*Jump Navigation (Avy-Style)]]
 - Breadcrumbs: [[*Breadcrumb Navigation]]

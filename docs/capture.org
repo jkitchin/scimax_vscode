@@ -3,12 +3,14 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* Introduction
+* ⚠️ Introduction
 
 The Scimax Capture system provides a quick and efficient way to capture notes, tasks, ideas, and snippets without interrupting your workflow. Inspired by Emacs org-capture, it allows you to define templates that automatically format and file your captured content to the right location.
 
-** What is Capture?
+** ⚠️ What is Capture?
 
 Capture is a fast note-taking system that:
 
@@ -18,7 +20,7 @@ Capture is a fast note-taking system that:
 - Supports various capture types (TODOs, notes, journal entries, code snippets, etc.)
 - Includes context from where you initiated the capture (links, selection, clipboard)
 
-** Key Features
+** ⚠️ Key Features
 
 - *Template-based capture*: Define reusable templates for different types of content
 - *Flexible targeting*: Capture to end of file, under specific headlines, or in date trees
@@ -27,61 +29,61 @@ Capture is a fast note-taking system that:
 - *Preview before saving*: Optional preview of captured content before filing
 - *Custom variables*: Rich template language with placeholders, timestamps, and prompts
 
-** Philosophy
+** ⚠️ Philosophy
 
 The capture system follows the principle of "capture first, organize later." Instead of interrupting your flow to decide where something belongs or how to format it, you simply invoke a capture template and let the system handle the details. This reduces friction and helps you maintain focus on your primary task.
 
-* Getting Started
+* ⚠️ Getting Started
 
-** Your First Capture
+** ⚠️ Your First Capture
 
 The quickest way to capture a TODO is:
 
-1. Press =Ctrl+C C= (or run =Scimax: Capture=)
-2. Select the "Todo" template (or press =t=)
+1. Press Ctrl+C C (or run Scimax: Capture)
+2. Select the "Todo" template (or press t)
 3. Enter your task description
 4. Press Enter
 
-Your TODO is now filed to =todo.org= without leaving your current context.
+Your TODO is now filed to todo.org without leaving your current context.
 
-** Quick TODO Capture
+** ⚠️ Quick TODO Capture
 
 For even faster TODO capture, use the dedicated quick capture command:
 
-1. Press =Ctrl+C T= (or run =Scimax: Quick Capture TODO=)
+1. Press Ctrl+C T (or run Scimax: Quick Capture TODO)
 2. Type your task
 3. Press Enter
 
 This bypasses the template picker and goes straight to TODO capture.
 
-** Capturing with Context
+** ⚠️ Capturing with Context
 
 When you invoke capture with text selected:
 
 1. Select some text in your editor
-2. Press =Ctrl+C C=
+2. Press Ctrl+C C
 3. Choose a template (e.g., "Code Snippet")
 4. The selected text is automatically included in your capture
 
 The capture system also includes a link back to where you initiated the capture, making it easy to return to context later.
 
-* Capture Templates
+* ⚠️ Capture Templates
 
-** Built-in Templates
+** ⚠️ Built-in Templates
 
 Scimax comes with several built-in templates:
 
-*** Todo Template (=t=)
+*** ⚠️ Todo Template (t)
 
-Captures a TODO item to =todo.org=:
+Captures a TODO item to todo.org:
 
 #+begin_src org
 ,* TODO Task description
 #+end_src
 
-*** Note Template (=n=)
+*** ⚠️ Note Template (n)
 
-Captures a quick note to =notes.org=:
+Captures a quick note to notes.org:
 
 #+begin_src org
 ,* Note title
@@ -90,9 +92,9 @@ Captures a quick note to =notes.org=:
 Note content here...
 #+end_src
 
-*** Journal Template (=j=)
+*** ⚠️ Journal Template (j)
 
-Captures a journal entry to =journal.org= in a date tree:
+Captures a journal entry to journal.org in a date tree:
 
 #+begin_src org
 ,* 2026
@@ -102,9 +104,9 @@ Captures a journal entry to =journal.org= in a date tree:
 Entry content...
 #+end_src
 
-*** Meeting Template (=m=)
+*** ⚠️ Meeting Template (m)
 
-Captures structured meeting notes to =meetings.org=:
+Captures structured meeting notes to meetings.org:
 
 #+begin_src org
 ,* Meeting: Subject
@@ -118,9 +120,9 @@ Names...
 ,** Action Items
 #+end_src
 
-*** Code Snippet Template (=s=)
+*** ⚠️ Code Snippet Template (s)
 
-Captures code snippets to =snippets.org=:
+Captures code snippets to snippets.org:
 
 #+begin_src org
 ,* Description
@@ -134,9 +136,9 @@ selected code here
 ,#+END_SRC
 #+end_src
 
-*** Bookmark Template (=b=)
+*** ⚠️ Bookmark Template (b)
 
-Saves bookmarks to =bookmarks.org=:
+Saves bookmarks to bookmarks.org:
 
 #+begin_src org
 ,* [[https://example.com][Page Title]]
@@ -145,36 +147,36 @@ Saves bookmarks to =bookmarks.org=:
 Optional notes about the bookmark...
 #+end_src
 
-** Viewing All Templates
+** ⚠️ Viewing All Templates
 
 To see all available templates:
 
-- Run =Scimax: List Capture Templates=
-- Or press =Ctrl+C C= to see the template picker
+- Run Scimax: List Capture Templates
+- Or press Ctrl+C C to see the template picker
 
 Each template shows:
 - Its key (single letter shortcut)
 - Template name and description
 - Target file
 
-* Creating Custom Templates
+* ⚠️ Creating Custom Templates
 
-** Using the Template Creator
+** ⚠️ Using the Template Creator
 
 The easiest way to create a template is with the interactive creator:
 
-1. Run =Scimax: Create Capture Template=
-2. Enter a key (e.g., =r= for "Research note")
+1. Run Scimax: Create Capture Template
+2. Enter a key (e.g., r for "Research note")
 3. Enter a name (e.g., "Research Note")
-4. Specify the target file (e.g., =research.org=)
+4. Specify the target file (e.g., research.org)
 5. Choose where to insert (end of file, under headline, date tree)
 6. Enter the template content
 
 The template is saved to your VS Code settings and immediately available.
 
-** Manual Template Configuration
+** ⚠️ Manual Template Configuration
 
-You can also define templates directly in =settings.json=:
+You can also define templates directly in settings.json:
 
 #+begin_src json
 {
@@ -194,68 +196,68 @@ You can also define templates directly in =settings.json=:
 }
 #+end_src
 
-** Template Structure
+** ⚠️ Template Structure
 
 Each template has these properties:
 
-| Property      | Type    | Required | Description                           |
-|---------------+---------+----------+---------------------------------------|
-| =key=         | string  | Yes      | Single character or short key         |
-| =name=        | string  | Yes      | Display name                          |
-| =description= | string  | No       | Longer description                    |
-| =file=        | string  | Yes      | Target file path                      |
-| =template=    | string  | Yes      | Template content with placeholders    |
-| =target=      | object  | No       | Where to insert content (see below)   |
-| =properties=  | object  | No       | Properties to add to entry            |
-| =tags=        | array   | No       | Tags to add to entry                  |
+| Property    | Type   | Required | Description                         |
+|-------------+--------+----------+-------------------------------------|
+| key         | string | Yes      | Single character or short key       |
+| name        | string | Yes      | Display name                        |
+| description | string | No       | Longer description                  |
+| file        | string | Yes      | Target file path                    |
+| template    | string | Yes      | Template content with placeholders  |
+| target      | object | No       | Where to insert content (see below) |
+| properties  | object | No       | Properties to add to entry          |
+| tags        | array  | No       | Tags to add to entry                |
 
-* Template Syntax
+* ⚠️ Template Syntax
 
 Templates use a powerful placeholder system to insert dynamic content.
 
-** Basic Placeholders
+** ⚠️ Basic Placeholders
 
-| Placeholder | Description                              | Example                  |
-|-------------+------------------------------------------+--------------------------|
-| =%?=        | Final cursor position                    | =* TODO Task%?=          |
-| =%i=        | Initial content (selection or clipboard) | =Description: %i=        |
-| =%t=        | Date (inactive timestamp)                | =[2026-01-13 Mon]=       |
-| =%T=        | Date and time (active timestamp)         | =<2026-01-13 Mon 14:30>= |
-| =%u=        | Date (inactive timestamp)                | =[2026-01-13 Mon]=       |
-| =%U=        | Date and time (inactive timestamp)       | =[2026-01-13 Mon 14:30]= |
-| =%n=        | User name                                | =john=                   |
-| =%f=        | Source file name                         | =source.ts=              |
-| =%F=        | Source file full path                    | =/path/to/source.ts=     |
-| =%%=        | Literal percent sign                     | =%=                      |
+| Placeholder | Description                              | Example                |
+|-------------+------------------------------------------+------------------------|
+| %?          | Final cursor position                    | * TODO Task%?          |
+| %i          | Initial content (selection or clipboard) | Description: %i        |
+| %t          | Date (inactive timestamp)                | [2026-01-13 Mon]       |
+| %T          | Date and time (active timestamp)         | <2026-01-13 Mon 14:30> |
+| %u          | Date (inactive timestamp)                | [2026-01-13 Mon]       |
+| %U          | Date and time (inactive timestamp)       | [2026-01-13 Mon 14:30] |
+| %n          | User name                                | john                   |
+| %f          | Source file name                         | source.ts              |
+| %F          | Source file full path                    | /path/to/source.ts     |
+| %%          | Literal percent sign                     | %                      |
 
-** Interactive Prompts
+** ⚠️ Interactive Prompts
 
 | Placeholder           | Description                     | Example                        |
 |-----------------------+---------------------------------+--------------------------------|
-| =%^{prompt}=          | Prompt for input                | =%^{Task description}=         |
-| =%^{prompt\vert{}default}= | Prompt with default value       | =%^{Priority\vert{}HIGH}=           |
-| =%^t=                 | Prompt for date                 | Asks for date input            |
-| =%^T=                 | Prompt for date and time        | Asks for date/time input       |
-| =%^g=                 | Prompt for tags                 | Prompts for comma-separated tags |
+| %^{prompt}            | Prompt for input                | %^{Task description}           |
+| %^{prompt\vert{}default} | Prompt with default value       | %^{Priority\vert{}HIGH}             |
+| %^t                   | Prompt for date                 | Asks for date input            |
+| %^T                   | Prompt for date and time        | Asks for date/time input       |
+| %^g                   | Prompt for tags                 | Prompts for comma-separated tags |
 
-** Link Placeholders
+** ⚠️ Link Placeholders
 
 | Placeholder | Description                         | Result                                       |
 |-------------+-------------------------------------+----------------------------------------------|
-| =%a=        | Annotation (link to source)         | =[[file:/path/to/source.ts::42]]=            |
-| =%A=        | Annotation with description         | =[[file:/path/to/source.ts::42][source.ts:42]]= |
-| =%l=        | Literal link                        | =file:/path/to/source.ts::42=                |
+| %a          | Annotation (link to source)         | [[file:/path/to/source.ts::42]]              |
+| %A          | Annotation with description         | [[file:/path/to/source.ts::42][source.ts:42]] |
+| %l          | Literal link                        | file:/path/to/source.ts::42                  |
 
-** Expression Placeholders
+** ⚠️ Expression Placeholders
 
-| Placeholder                      | Description           | Example              |
-|----------------------------------+-----------------------+----------------------|
-| =%(format-time-string "%Y-%m")=  | Custom date format    | =2026-01=            |
-| =%(current-time)=                | ISO timestamp         | =2026-01-13T14:30:00.000Z= |
+| Placeholder                    | Description         | Example                      |
+|--------------------------------+---------------------+------------------------------|
+| %(format-time-string "%Y-%m")  | Custom date format  | 2026-01                      |
+| %(current-time)                | ISO timestamp       | 2026-01-13T14:30:00.000Z     |
 
-** Examples
+** ⚠️ Examples
 
-*** Simple TODO with prompt
+*** ⚠️ Simple TODO with prompt
 
 #+begin_src org
 ,* TODO %^{Task}
@@ -266,7 +268,7 @@ When captured, prompts for "Task" and creates:
 ,* TODO Write documentation
 #+end_src
 
-*** Note with timestamp and link back to source
+*** ⚠️ Note with timestamp and link back to source
 
 #+begin_src org
 ,* %^{Title}
@@ -287,7 +289,7 @@ Discussed project timeline
 Source: [[file:/home/user/project.org::25]]
 #+end_src
 
-*** Meeting template with multiple prompts
+*** ⚠️ Meeting template with multiple prompts
 
 #+begin_src org
 ,* %^{Meeting subject}
@@ -300,11 +302,11 @@ Source: [[file:/home/user/project.org::25]]
 
 Prompts for subject and attendees, places cursor under Agenda.
 
-* Capture Targets
+* ⚠️ Capture Targets
 
 Capture targets determine where your captured content is inserted.
 
-** File Target (=file=)
+** ⚠️ File Target (file)
 
 Appends to the end of the file.
 
@@ -316,7 +318,7 @@ Appends to the end of the file.
 }
 #+end_src
 
-With =prepend: true=, inserts at the beginning (after file-level keywords):
+With prepend: true, inserts at the beginning (after file-level keywords):
 
 #+begin_src json
 {
@@ -327,7 +329,7 @@ With =prepend: true=, inserts at the beginning (after file-level keywords):
 }
 #+end_src
 
-** Headline Target (=file+headline=)
+** ⚠️ Headline Target (file+headline)
 
 Inserts under a specific headline. If the headline doesn't exist, it's created.
 
@@ -340,9 +342,9 @@ Inserts under a specific headline. If the headline doesn't exist, it's created.
 }
 #+end_src
 
-This finds or creates a headline =* Inbox= and appends content as a child.
+This finds or creates a headline * Inbox and appends content as a child.
 
-With =prepend: true=, inserts right after the headline:
+With prepend: true, inserts right after the headline:
 
 #+begin_src json
 {
@@ -354,7 +356,7 @@ With =prepend: true=, inserts right after the headline:
 }
 #+end_src
 
-** Date Tree Target (=file+datetree=)
+** ⚠️ Date Tree Target (file+datetree)
 
 Creates a hierarchical date tree structure:
 
@@ -375,7 +377,7 @@ Creates a hierarchical date tree structure:
 
 Perfect for journal entries and time-based organization.
 
-** Default Target
+** ⚠️ Default Target
 
 If no target is specified, content is appended to the end of the file:
 
@@ -386,73 +388,73 @@ If no target is specified, content is appended to the end of the file:
 }
 #+end_src
 
-* Running Capture
+* ⚠️ Running Capture
 
-** Capture Command
+** ⚠️ Capture Command
 
 The main capture command opens the template picker:
 
-- *Command*: =Scimax: Capture=
-- *Keybinding*: =Ctrl+C C=
+- *Command*: Scimax: Capture
+- *Keybinding*: Ctrl+C C
 
 This shows all available templates. Select one to begin capture.
 
-** Capture by Key
+** ⚠️ Capture by Key
 
 If you know the template key, you can capture directly:
 
-- *Command*: =Scimax: Capture by Key=
-- Enter the template key (e.g., =t= for TODO)
+- *Command*: Scimax: Capture by Key
+- Enter the template key (e.g., t for TODO)
 
-** Quick Capture Commands
+** ⚠️ Quick Capture Commands
 
 For common captures, use dedicated quick capture commands:
 
-*** Quick TODO
+*** ⚠️ Quick TODO
 
-- *Command*: =Scimax: Quick Capture TODO=
-- *Keybinding*: =Ctrl+C T=
+- *Command*: Scimax: Quick Capture TODO
+- *Keybinding*: Ctrl+C T
 
 Directly captures a TODO without showing the template picker.
 
-*** Quick Note
+*** ⚠️ Quick Note
 
-- *Command*: =Scimax: Quick Capture Note=
+- *Command*: Scimax: Quick Capture Note
 
 Directly captures a note.
 
-** Capture Process
+** ⚠️ Capture Process
 
-1. *Invoke capture*: Press =Ctrl+C C= or run a quick capture command
+1. *Invoke capture*: Press Ctrl+C C or run a quick capture command
 2. *Select template*: Choose from the picker (or skip if using quick capture)
-3. *Fill prompts*: Enter values for any =%^{prompt}= placeholders
+3. *Fill prompts*: Enter values for any %^{prompt} placeholders
 4. *Preview* (optional): Review the captured content
 5. *Confirm*: Press "Capture" to file the content
 
 The captured content is inserted at the target location, and you receive a confirmation message.
 
-* Advanced Capture Features
+* ⚠️ Advanced Capture Features
 
-** Capturing with Selection
+** ⚠️ Capturing with Selection
 
 When you have text selected:
 
 1. Select text in the editor
-2. Press =Ctrl+C C=
+2. Press Ctrl+C C
 3. Choose a template
 
-The selected text is available as =%i= in your template. Perfect for:
+The selected text is available as %i in your template. Perfect for:
 - Capturing code snippets
 - Quoting text
 - Collecting research excerpts
 
-** Capturing with Context Links
+** ⚠️ Capturing with Context Links
 
 Templates can include links back to where you initiated the capture:
 
-- =%a= creates a link to the source location
-- =%A= creates a link with description (filename:line)
-- =%l= creates a literal link string
+- %a creates a link to the source location
+- %A creates a link with description (filename:line)
+- %l creates a literal link string
 
 Example template:
 #+begin_src org
@@ -474,7 +476,7 @@ Selected text here
 Source: [[file:/home/user/research.org::42][research.org:42]]
 #+end_src
 
-** Capture Preview
+** ⚠️ Capture Preview
 
 Enable preview to review content before filing:
 
@@ -489,7 +491,7 @@ When enabled, you can:
 - Review formatting and placement
 - Cancel or confirm the capture
 
-** Auto-open After Capture
+** ⚠️ Auto-open After Capture
 
 Configure whether to open the target file after capture:
 
@@ -501,13 +503,13 @@ Configure whether to open the target file after capture:
 
 When enabled, the target file opens and the cursor jumps to the captured content.
 
-* Capture to Journal
+* ⚠️ Capture to Journal
 
 Capture integrates seamlessly with the journal system.
 
-** Journal Capture Template
+** ⚠️ Journal Capture Template
 
-The built-in journal template (=j=) uses date tree targeting:
+The built-in journal template (j) uses date tree targeting:
 
 #+begin_src json
 {
@@ -521,11 +523,11 @@ The built-in journal template (=j=) uses date tree targeting:
 }
 #+end_src
 
-** Custom Journal Captures
+** ⚠️ Custom Journal Captures
 
 Create specialized journal capture templates:
 
-*** Daily Reflection
+*** ⚠️ Daily Reflection
 
 #+begin_src json
 {
@@ -539,7 +541,7 @@ Create specialized journal capture templates:
 }
 #+end_src
 
-*** Quick Log Entry
+*** ⚠️ Quick Log Entry
 
 #+begin_src json
 {
@@ -553,7 +555,7 @@ Create specialized journal capture templates:
 }
 #+end_src
 
-** Integrating with Journal Directory
+** ⚠️ Integrating with Journal Directory
 
 You can point capture templates to your journal directory:
 
@@ -573,13 +575,13 @@ You can point capture templates to your journal directory:
 
 Or use the journal's date structure dynamically with date tree targeting.
 
-* Capture to Inbox
+* ⚠️ Capture to Inbox
 
 A common GTD workflow uses an "inbox" for quick captures that are processed later.
 
-** Inbox Setup
+** ⚠️ Inbox Setup
 
-1. Create an inbox file (=inbox.org=)
+1. Create an inbox file (inbox.org)
 2. Define a capture template targeting it
 
 #+begin_src json
@@ -591,7 +593,7 @@ A common GTD workflow uses an "inbox" for quick captures that are processed late
 }
 #+end_src
 
-** Inbox with Categories
+** ⚠️ Inbox with Categories
 
 Use headlines to organize inbox items:
 
@@ -632,18 +634,18 @@ Creates structure:
 [2026-01-13 Mon 14:35]
 #+end_src
 
-* Configuration
+* ⚠️ Configuration
 
-** Settings Overview
+** ⚠️ Settings Overview
 
-| Setting                            | Type    | Default | Description                       |
-|------------------------------------+---------+---------+-----------------------------------|
-| =scimax.capture.templates=         | array   | =[ ]=   | Custom capture templates          |
-| =scimax.capture.defaultDirectory=  | string  | =""=    | Default directory for capture files |
-| =scimax.capture.showPreview=       | boolean | =true=  | Show preview before capture       |
-| =scimax.capture.openAfterCapture=  | boolean | =true=  | Open file after capture           |
+| Setting                          | Type    | Default | Description                         |
+|----------------------------------+---------+---------+-------------------------------------|
+| scimax.capture.templates         | array   | [ ]     | Custom capture templates            |
+| scimax.capture.defaultDirectory  | string  | ""      | Default directory for capture files |
+| scimax.capture.showPreview       | boolean | true    | Show preview before capture         |
+| scimax.capture.openAfterCapture  | boolean | true    | Open file after capture             |
 
-** Default Directory
+** ⚠️ Default Directory
 
 Set a default directory for all capture files:
 
@@ -669,16 +671,16 @@ Template file paths are resolved relative to this directory:
 }
 #+end_src
 
-** File Path Resolution
+** ⚠️ File Path Resolution
 
 Capture resolves file paths in this order:
 
-1. *Absolute paths*: =/home/user/notes/todo.org= - used as-is
-2. *Home directory*: =~/org/todo.org= - expands =~= to home directory
-3. *Default directory*: =todo.org= - resolves relative to =defaultDirectory=
-4. *Workspace*: =todo.org= - resolves relative to first workspace folder
+1. *Absolute paths*: /home/user/notes/todo.org - used as-is
+2. *Home directory*: ~/org/todo.org - expands ~ to home directory
+3. *Default directory*: todo.org - resolves relative to defaultDirectory
+4. *Workspace*: todo.org - resolves relative to first workspace folder
 
-** Configuring Preview
+** ⚠️ Configuring Preview
 
 Control whether to show preview before saving:
 
@@ -697,7 +699,7 @@ When disabled:
 - Content is captured immediately
 - Faster workflow for trusted templates
 
-** Auto-open Behavior
+** ⚠️ Auto-open Behavior
 
 Control whether the target file opens after capture:
 
@@ -717,7 +719,7 @@ When disabled:
 - You stay in your current file
 - Faster workflow for quick captures
 
-** Complete Example Configuration
+** ⚠️ Complete Example Configuration
 
 #+begin_src json
 {
@@ -765,18 +767,18 @@ When disabled:
 }
 #+end_src
 
-* Common Capture Workflows
+* ⚠️ Common Capture Workflows
 
-** GTD Workflow
+** ⚠️ GTD Workflow
 
-*** Inbox Processing
+*** ⚠️ Inbox Processing
 
-1. *Quick capture everything*: Use =Ctrl+C C= → =i= to capture to inbox
+1. *Quick capture everything*: Use Ctrl+C C -> i to capture to inbox
 2. *Process inbox regularly*: Review inbox.org daily
 3. *Refile to projects*: Move items to appropriate project files
 4. *Archive processed items*: Keep inbox clean
 
-*** Inbox Template
+*** ⚠️ Inbox Template
 
 #+begin_src json
 {
@@ -787,9 +789,9 @@ When disabled:
 }
 #+end_src
 
-** Research Workflow
+** ⚠️ Research Workflow
 
-*** Collect Sources
+*** ⚠️ Collect Sources
 
 #+begin_src json
 {
@@ -806,13 +808,13 @@ When disabled:
 
 Usage:
 1. Select a quote from a paper/article
-2. Press =Ctrl+C C= → =r=
+2. Press Ctrl+C C -> r
 3. Enter source name and URL
 4. The quote is captured in the "Quotes" section
 
-** Code Documentation Workflow
+** ⚠️ Code Documentation Workflow
 
-*** Capture Code Examples
+*** ⚠️ Capture Code Examples
 
 #+begin_src json
 {
@@ -826,13 +828,13 @@ Usage:
 
 Usage:
 1. Select code in editor
-2. Press =Ctrl+C C= → =c=
+2. Press Ctrl+C C -> c
 3. Describe the code and specify language
 4. Creates a documented code snippet with link back to source
 
-** Meeting Notes Workflow
+** ⚠️ Meeting Notes Workflow
 
-*** Before Meeting
+*** ⚠️ Before Meeting
 
 Capture meeting agenda:
 #+begin_src json
@@ -847,7 +849,7 @@ Capture meeting agenda:
 }
 #+end_src
 
-*** During Meeting
+*** ⚠️ During Meeting
 
 Use quick note capture for rapid notes:
 #+begin_src json
@@ -863,7 +865,7 @@ Use quick note capture for rapid notes:
 }
 #+end_src
 
-*** After Meeting
+*** ⚠️ After Meeting
 
 Capture action items:
 #+begin_src json
@@ -876,9 +878,9 @@ Capture action items:
 }
 #+end_src
 
-** Daily Planning Workflow
+** ⚠️ Daily Planning Workflow
 
-*** Morning Review
+*** ⚠️ Morning Review
 
 #+begin_src json
 {
@@ -892,7 +894,7 @@ Capture action items:
 }
 #+end_src
 
-*** Evening Review
+*** ⚠️ Evening Review
 
 #+begin_src json
 {
@@ -906,9 +908,9 @@ Capture action items:
 }
 #+end_src
 
-** Knowledge Base Building
+** ⚠️ Knowledge Base Building
 
-*** Capture Learnings
+*** ⚠️ Capture Learnings
 
 #+begin_src json
 {
@@ -920,7 +922,7 @@ Capture action items:
 }
 #+end_src
 
-*** Capture Questions
+*** ⚠️ Capture Questions
 
 #+begin_src json
 {
@@ -934,42 +936,42 @@ Capture action items:
 
 When you find the answer, update the "Resolution" section.
 
-* Commands Reference
+* ⚠️ Commands Reference
 
-** Main Commands
+** ⚠️ Main Commands
 
-| Command                                | Description                          | Keybinding  |
-|----------------------------------------+--------------------------------------+-------------|
-| =Scimax: Capture=                      | Open capture template picker         | =Ctrl+C C=  |
-| =Scimax: Capture by Key=               | Capture using template key           |             |
-| =Scimax: Quick Capture TODO=           | Fast TODO capture                    | =Ctrl+C T=  |
-| =Scimax: Quick Capture Note=           | Fast note capture                    |             |
-| =Scimax: Create Capture Template=      | Create new template interactively    |             |
-| =Scimax: List Capture Templates=       | View all available templates         |             |
-| =Scimax: Configure Capture Templates=  | Open capture settings                |             |
+| Command                              | Description                    | Keybinding |
+|--------------------------------------+--------------------------------+------------|
+| Scimax: Capture                      | Open capture template picker   | Ctrl+C C   |
+| Scimax: Capture by Key               | Capture using template key     |            |
+| Scimax: Quick Capture TODO           | Fast TODO capture              | Ctrl+C T   |
+| Scimax: Quick Capture Note           | Fast note capture              |            |
+| Scimax: Create Capture Template      | Create new template interactively |         |
+| Scimax: List Capture Templates       | View all available templates   |            |
+| Scimax: Configure Capture Templates  | Open capture settings          |            |
 
-** Template Management Commands
+** ⚠️ Template Management Commands
 
 | Command                              | Description                    |
 |--------------------------------------+--------------------------------|
-| =Scimax: Create Capture Template=    | Interactive template creation  |
-| =Scimax: List Capture Templates=     | Show all templates             |
-| =Scimax: Configure Capture Templates= | Open settings.json for capture |
+| Scimax: Create Capture Template      | Interactive template creation  |
+| Scimax: List Capture Templates       | Show all templates             |
+| Scimax: Configure Capture Templates  | Open settings.json for capture |
 
-* Keybindings
+* ⚠️ Keybindings
 
-** Default Keybindings
+** ⚠️ Default Keybindings
 
-| Keybinding  | Action                   | Context        |
-|-------------+--------------------------+----------------|
-| =Ctrl+C C=  | Open capture picker      | Global         |
-| =Ctrl+C T=  | Quick TODO capture       | Global         |
+| Keybinding | Action                 | Context |
+|------------+------------------------+---------|
+| Ctrl+C C   | Open capture picker    | Global  |
+| Ctrl+C T   | Quick TODO capture     | Global  |
 
-** Custom Keybindings
+** ⚠️ Custom Keybindings
 
-Add custom keybindings in =keybindings.json= (=Ctrl+K Ctrl+S= to open):
+Add custom keybindings in keybindings.json (Ctrl+K Ctrl+S to open):
 
-*** Quick Capture Note
+*** ⚠️ Quick Capture Note
 
 #+begin_src json
 {
@@ -978,7 +980,7 @@ Add custom keybindings in =keybindings.json= (=Ctrl+K Ctrl+S= to open):
 }
 #+end_src
 
-*** Capture to Inbox
+*** ⚠️ Capture to Inbox
 
 #+begin_src json
 {
@@ -988,7 +990,7 @@ Add custom keybindings in =keybindings.json= (=Ctrl+K Ctrl+S= to open):
 }
 #+end_src
 
-*** Journal Capture
+*** ⚠️ Journal Capture
 
 #+begin_src json
 {
@@ -998,7 +1000,7 @@ Add custom keybindings in =keybindings.json= (=Ctrl+K Ctrl+S= to open):
 }
 #+end_src
 
-** Context-aware Keybindings
+** ⚠️ Context-aware Keybindings
 
 Capture only when editing org files:
 
@@ -1010,9 +1012,9 @@ Capture only when editing org files:
 }
 #+end_src
 
-* Tips and Best Practices
+* ⚠️ Tips and Best Practices
 
-** Start Simple
+** ⚠️ Start Simple
 
 Begin with a few basic templates:
 - TODO capture
@@ -1021,7 +1023,7 @@ Begin with a few basic templates:
 
 Add specialized templates as needs emerge.
 
-** Use Consistent File Organization
+** ⚠️ Use Consistent File Organization
 
 Keep capture files organized:
 
@@ -1037,15 +1039,15 @@ Keep capture files organized:
 └── archive.org        # Completed items
 #+end_example
 
-** Process Inbox Regularly
+** ⚠️ Process Inbox Regularly
 
 Set a schedule to process inbox.org:
 - Daily: Quick review and refile urgent items
 - Weekly: Deep review, refile everything
 
-** Leverage Context Links
+** ⚠️ Leverage Context Links
 
-Always include =%a= or =%A= in templates to link back to source:
+Always include %a or %A in templates to link back to source:
 
 #+begin_src org
 Source: %a
@@ -1053,7 +1055,7 @@ Source: %a
 
 This makes it easy to jump back to context when reviewing captures.
 
-** Use Tags for Filtering
+** ⚠️ Use Tags for Filtering
 
 Add tags to templates for easy filtering:
 
@@ -1063,9 +1065,9 @@ Add tags to templates for easy filtering:
 }
 #+end_src
 
-Later, search for =:meeting:= to find all meeting-related captures.
+Later, search for :meeting: to find all meeting-related captures.
 
-** Combine with Agenda
+** ⚠️ Combine with Agenda
 
 Capture TODO items with timestamps to make them appear in the agenda:
 
@@ -1075,11 +1077,11 @@ SCHEDULED: %^t
 %?
 #+end_src
 
-** Create Domain-Specific Templates
+** ⚠️ Create Domain-Specific Templates
 
 For specialized work, create focused templates:
 
-*** Bug Report Template
+*** ⚠️ Bug Report Template
 
 #+begin_src json
 {
@@ -1091,7 +1093,7 @@ For specialized work, create focused templates:
 }
 #+end_src
 
-*** Feature Request Template
+*** ⚠️ Feature Request Template
 
 #+begin_src json
 {
@@ -1103,7 +1105,7 @@ For specialized work, create focused templates:
 }
 #+end_src
 
-** Disable Preview for Speed
+** ⚠️ Disable Preview for Speed
 
 For templates you trust, disable preview for faster capture:
 
@@ -1116,78 +1118,78 @@ For templates you trust, disable preview for faster capture:
 
 This makes capture nearly instantaneous.
 
-** Use Keyboard-driven Workflow
+** ⚠️ Use Keyboard-driven Workflow
 
 Memorize keys for your most common captures:
-- =Ctrl+C C= → =t= → Task description → Enter (TODO)
-- =Ctrl+C C= → =j= → Entry title → Enter (Journal)
-- =Ctrl+C T= → Task → Enter (Quick TODO)
+- Ctrl+C C -> t -> Task description -> Enter (TODO)
+- Ctrl+C C -> j -> Entry title -> Enter (Journal)
+- Ctrl+C T -> Task -> Enter (Quick TODO)
 
 With practice, capture becomes muscle memory.
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Template Not Appearing in Picker
+** ⚠️ Template Not Appearing in Picker
 
-- Check =settings.json= for syntax errors
-- Ensure template has required fields: =key=, =name=, =file=, =template=
-- Reload window (=Ctrl+Shift+P= → =Reload Window=)
+- Check settings.json for syntax errors
+- Ensure template has required fields: key, name, file, template
+- Reload window (Ctrl+Shift+P -> Reload Window)
 
-** Capture File Not Created
+** ⚠️ Capture File Not Created
 
 - Check file path in template configuration
 - Ensure directory exists or use absolute path
-- Check =scimax.capture.defaultDirectory= setting
+- Check scimax.capture.defaultDirectory setting
 - Verify write permissions
 
-** Template Placeholders Not Expanding
+** ⚠️ Template Placeholders Not Expanding
 
-- Verify placeholder syntax: =%^{Prompt}= not =$^{Prompt}=
+- Verify placeholder syntax: %^{Prompt} not $^{Prompt}
 - Check for typos in placeholder names
-- Some placeholders require context (e.g., =%a= needs source file)
+- Some placeholders require context (e.g., %a needs source file)
 
-** Cursor Position (=%?=) Not Working
+** ⚠️ Cursor Position (%?) Not Working
 
-- Ensure =%?= is in template
-- Open file after capture (=scimax.capture.openAfterCapture: true=)
-- The cursor jumps to =%?= position when file opens
+- Ensure %? is in template
+- Open file after capture (scimax.capture.openAfterCapture: true)
+- The cursor jumps to %? position when file opens
 
-** Date Tree Not Creating Structure
+** ⚠️ Date Tree Not Creating Structure
 
-- Verify target type: ="type": "file+datetree"=
+- Verify target type: "type": "file+datetree"
 - Ensure template is capturing to correct file
 - Check file for malformed existing date tree structure
 
-* Related Features
+* ⚠️ Related Features
 
-** Journal Integration
+** ⚠️ Journal Integration
 
-Capture complements the journal system. Use capture templates with =file+datetree= targeting for seamless journal integration.
+Capture complements the journal system. Use capture templates with file+datetree targeting for seamless journal integration.
 
 See [[file:journal.org][Journal Documentation]] for details.
 
-** Agenda Integration
+** ⚠️ Agenda Integration
 
 Captured TODO items with timestamps appear in the agenda view.
 
 See [[file:agenda.org][Agenda Documentation]] for details.
 
-** Database Search
+** ⚠️ Database Search
 
 All captured content is indexed and searchable via the database.
 
 See [[file:database-search.org][Database Search Documentation]] for details.
 
-** Quick Links
+** ⚠️ Quick Links
 
 - [[file:getting-started.org][Getting Started Guide]]
 - [[file:configuration.org][Configuration Reference]]
 - [[file:keybindings.org][Keybinding Reference]]
 - [[file:todo-items.org][TODO Items Documentation]]
 
-* Advanced Topics
+* ⚠️ Advanced Topics
 
-** Template Hooks (Future)
+** ⚠️ Template Hooks (Future)
 
 Future versions may support JavaScript hooks for advanced template behavior:
 
@@ -1198,69 +1200,69 @@ Future versions may support JavaScript hooks for advanced template behavior:
 }
 #+end_src
 
-** Dynamic Template Selection (Future)
+** ⚠️ Dynamic Template Selection (Future)
 
 Future versions may support conditional template selection based on context.
 
-** Template Inheritance (Future)
+** ⚠️ Template Inheritance (Future)
 
 Future versions may support template inheritance for sharing common configuration.
 
-* Appendix
+* ⚠️ Appendix
 
-** Complete Template Reference
+** ⚠️ Complete Template Reference
 
-| Field           | Type     | Required | Description                              |
-|-----------------+----------+----------+------------------------------------------|
-| =key=           | string   | Yes      | Unique template key (1-5 characters)     |
-| =name=          | string   | Yes      | Display name                             |
-| =description=   | string   | No       | Long description                         |
-| =file=          | string   | Yes      | Target file path                         |
-| =template=      | string   | Yes      | Template content with placeholders       |
-| =type=          | string   | No       | Entry type (entry, item, table-line)     |
-| =target=        | object   | No       | Target location configuration            |
-| =properties=    | object   | No       | Properties to add to entry               |
-| =tags=          | array    | No       | Tags to add to entry                     |
-| =timestamp=     | boolean  | No       | Whether to add timestamp                 |
-| =immediate=     | boolean  | No       | Skip confirmation before saving          |
+| Field       | Type    | Required | Description                            |
+|-------------+---------+----------+----------------------------------------|
+| key         | string  | Yes      | Unique template key (1-5 characters)   |
+| name        | string  | Yes      | Display name                           |
+| description | string  | No       | Long description                       |
+| file        | string  | Yes      | Target file path                       |
+| template    | string  | Yes      | Template content with placeholders     |
+| type        | string  | No       | Entry type (entry, item, table-line)   |
+| target      | object  | No       | Target location configuration          |
+| properties  | object  | No       | Properties to add to entry             |
+| tags        | array   | No       | Tags to add to entry                   |
+| timestamp   | boolean | No       | Whether to add timestamp               |
+| immediate   | boolean | No       | Skip confirmation before saving        |
 
-** Placeholder Reference
+** ⚠️ Placeholder Reference
 
-| Placeholder                | Expansion                          |
-|----------------------------+------------------------------------|
-| =%?=                       | Cursor position                    |
-| =%i=                       | Initial content (selection)        |
-| =%a=                       | Annotation link                    |
-| =%A=                       | Annotation link with description   |
-| =%l=                       | Literal link                       |
-| =%c=                       | Clipboard content                  |
-| =%t=                       | Date (inactive)                    |
-| =%T=                       | Date and time (active)             |
-| =%u=                       | Date (inactive)                    |
-| =%U=                       | Date and time (inactive)           |
-| =%^t=                      | Prompt for date                    |
-| =%^T=                      | Prompt for date and time           |
-| =%^g=                      | Prompt for tags                    |
-| =%^{prompt}=               | Interactive prompt                 |
-| =%^{prompt\vert{}default}=      | Prompt with default                |
-| =%k=                       | Template key                       |
-| =%K=                       | Template name                      |
-| =%n=                       | User name                          |
-| =%f=                       | Source file name                   |
-| =%F=                       | Source file path                   |
-| =%%=                       | Literal %                          |
-| =%\n=                      | Newline                            |
-| =%(expression)=            | Evaluated expression               |
+| Placeholder                  | Expansion                        |
+|------------------------------+----------------------------------|
+| %?                           | Cursor position                  |
+| %i                           | Initial content (selection)      |
+| %a                           | Annotation link                  |
+| %A                           | Annotation link with description |
+| %l                           | Literal link                     |
+| %c                           | Clipboard content                |
+| %t                           | Date (inactive)                  |
+| %T                           | Date and time (active)           |
+| %u                           | Date (inactive)                  |
+| %U                           | Date and time (inactive)         |
+| %^t                          | Prompt for date                  |
+| %^T                          | Prompt for date and time         |
+| %^g                          | Prompt for tags                  |
+| %^{prompt}                   | Interactive prompt               |
+| %^{prompt\vert{}default}     | Prompt with default              |
+| %k                           | Template key                     |
+| %K                           | Template name                    |
+| %n                           | User name                        |
+| %f                           | Source file name                 |
+| %F                           | Source file path                 |
+| %%                           | Literal %                        |
+| %\n                          | Newline                          |
+| %(expression)                | Evaluated expression             |
 
-** Target Type Reference
+** ⚠️ Target Type Reference
 
-| Target Type       | Description                           |
-|-------------------+---------------------------------------|
-| =file=            | End or beginning of file              |
-| =headline=        | Under specific headline               |
-| =file+headline=   | File then headline                    |
-| =file+datetree=   | Hierarchical date tree                |
+| Target Type     | Description                   |
+|-----------------+-------------------------------|
+| file            | End or beginning of file      |
+| headline        | Under specific headline       |
+| file+headline   | File then headline            |
+| file+datetree   | Hierarchical date tree        |
 
-** Example Templates Library
+** ⚠️ Example Templates Library
 
-See =examples/capture-templates.json= in the Scimax repository for a collection of ready-to-use templates for various workflows.
+See examples/capture-templates.json in the Scimax repository for a collection of ready-to-use templates for various workflows.

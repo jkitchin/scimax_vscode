@@ -3,8 +3,11 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Introduction
 
 The Agenda system in Scimax VS Code provides powerful views of your scheduled
 tasks, deadlines, and TODO items. It helps you stay organized by showing what
@@ -21,15 +24,15 @@ tasks from all your org files and presents them in meaningful ways:
 The Agenda system works with both file-based scanning and database indexing,
 giving you flexibility for different workflows.
 
-* What is the Agenda?
+* ⚠️ What is the Agenda?
 
 The Agenda is a dynamic view that displays TODO items, scheduled tasks, and
 deadlines from your org files. Unlike browsing individual files, the Agenda
 aggregates information across all your documents.
 
-** Key Concepts
+** ⚠️ Key Concepts
 
-*** Agenda Items
+*** ⚠️ Agenda Items
 
 An agenda item is any headline with:
 - A TODO keyword (TODO, DONE, NEXT, WAITING, etc.)
@@ -37,9 +40,9 @@ An agenda item is any headline with:
 - A DEADLINE timestamp
 - An active timestamp
 
-*** Scheduled Items
+*** ⚠️ Scheduled Items
 
-Tasks with =SCHEDULED= timestamps appear in the agenda on their scheduled date:
+Tasks with SCHEDULED timestamps appear in the agenda on their scheduled date:
 
 #+BEGIN_SRC org
 * TODO Write report
@@ -48,9 +51,9 @@ SCHEDULED: <2026-01-15 Wed>
 
 This appears in the agenda starting January 15.
 
-*** Deadlines
+*** ⚠️ Deadlines
 
-Tasks with =DEADLINE= timestamps appear with warning indicators:
+Tasks with DEADLINE timestamps appear with warning indicators:
 
 #+BEGIN_SRC org
 * TODO Submit proposal
@@ -60,49 +63,49 @@ DEADLINE: <2026-01-20 Mon>
 Shows in the agenda with countdown (e.g., "in 7 days") and becomes overdue if
 not completed.
 
-*** Overdue Items
+*** ⚠️ Overdue Items
 
 Items past their deadline appear prominently with warning indicators and show
 how many days overdue they are.
 
-*** Unscheduled TODOs
+*** ⚠️ Unscheduled TODOs
 
 TODO items without dates can be included in agenda views to ensure nothing is
 forgotten.
 
-** Two Agenda Systems
+** ⚠️ Two Agenda Systems
 
 Scimax VS Code provides two complementary agenda implementations:
 
-*** Native/File-Based Agenda
+*** ⚠️ Native/File-Based Agenda
 
 - Scans org files on-demand
 - Works immediately without indexing
 - Provides tree view in sidebar
-- Commands: =scimax.agenda.*=
+- Commands: scimax.agenda.*
 - Best for: Quick views, smaller document sets
 
-*** Database-Backed Agenda
+*** ⚠️ Database-Backed Agenda
 
 - Uses indexed data for fast queries
 - Requires indexing files first
 - Integrates with search and filtering
-- Commands: =scimax.db.agenda=, =scimax.db.deadlines=
+- Commands: scimax.db.agenda, scimax.db.deadlines
 - Best for: Large document collections, complex queries
 
 Both systems can be used together - choose based on your needs.
 
-* Agenda View Modes
+* ⚠️ Agenda View Modes
 
 The agenda can display information in different time-based views.
 
-** Day Agenda
+** ⚠️ Day Agenda
 
 Shows items for a single day.
 
 | Command               | Description              |
 |-----------------------+--------------------------|
-| =scimax.agenda.day=    | Today's agenda           |
+| scimax.agenda.day    | Today's agenda           |
 
 The day view displays:
 - Scheduled items for the day
@@ -120,13 +123,13 @@ Today (Wednesday, Jan 15, 2026)
          TODO Review pull requests                 :code:
 #+END_EXAMPLE
 
-** Week Agenda
+** ⚠️ Week Agenda
 
 Shows a 7-day view starting from today.
 
 | Command                | Description              |
 |------------------------+--------------------------|
-| =scimax.agenda.week=    | Next 7 days              |
+| scimax.agenda.week    | Next 7 days              |
 
 Groups items by date, making it easy to plan your week:
 
@@ -146,27 +149,27 @@ Friday, Jan 17
   TODO Weekly review
 #+END_EXAMPLE
 
-** Fortnight Agenda
+** ⚠️ Fortnight Agenda
 
 Shows the next 14 days.
 
 | Command                     | Description              |
 |-----------------------------+--------------------------|
-| =scimax.agenda.fortnight=    | Next 14 days             |
+| scimax.agenda.fortnight    | Next 14 days             |
 
 Useful for medium-term planning and catching upcoming deadlines.
 
-** Month Agenda
+** ⚠️ Month Agenda
 
 Shows the next 30 days.
 
 | Command                  | Description              |
 |--------------------------+--------------------------|
-| =scimax.agenda.month=     | Next 30 days             |
+| scimax.agenda.month     | Next 30 days             |
 
 Good for long-term planning and ensuring nothing falls through the cracks.
 
-** Custom Time Ranges
+** ⚠️ Custom Time Ranges
 
 The database-backed agenda supports custom time ranges:
 
@@ -184,16 +187,16 @@ Command: scimax.db.agenda → "Next 3 months"
 Command: scimax.db.agenda → "All items"
 #+END_SRC
 
-* TODO List View
+* ⚠️ TODO List View
 
 The TODO list shows all incomplete tasks regardless of date.
 
 | Command                   | Description                    |
 |---------------------------+--------------------------------|
-| =scimax.agenda.todoList=   | All TODO items (native)        |
-| =scimax.db.showTodos=      | All TODO items (database)      |
+| scimax.agenda.todoList   | All TODO items (native)        |
+| scimax.db.showTodos      | All TODO items (database)      |
 
-** Grouping by State
+** ⚠️ Grouping by State
 
 TODOs are grouped by their keyword state:
 
@@ -215,7 +218,7 @@ WAITING (5 items)
   Design feedback                                 :design:
 #+END_EXAMPLE
 
-** Filtering TODO List
+** ⚠️ Filtering TODO List
 
 Filter by state when viewing TODOs:
 
@@ -226,16 +229,16 @@ Command: scimax.db.showTodos
 
 Shows only items in the selected state.
 
-* Deadline Views
+* ⚠️ Deadline Views
 
 Focus specifically on items with deadlines.
 
-** Upcoming Deadlines
+** ⚠️ Upcoming Deadlines
 
 | Command                    | Description                     |
 |----------------------------+---------------------------------|
-| =scimax.agenda.deadlines=   | Show upcoming deadlines         |
-| =scimax.db.deadlines=       | Database deadline view          |
+| scimax.agenda.deadlines   | Show upcoming deadlines         |
+| scimax.db.deadlines       | Database deadline view          |
 
 Displays deadlines with time-until indicators:
 
@@ -249,7 +252,7 @@ Upcoming Deadlines (8 items)
   🔔 TODO File taxes                              (in 14 days)
 #+END_EXAMPLE
 
-** Deadline Display
+** ⚠️ Deadline Display
 
 Deadlines show:
 - Overdue indicator (⚠) if past due
@@ -257,7 +260,7 @@ Deadlines show:
 - Priority and tags
 - File location
 
-** Warning Periods
+** ⚠️ Warning Periods
 
 Deadlines with warning periods appear in the agenda before they're due:
 
@@ -268,15 +271,15 @@ DEADLINE: <2026-01-31 Fri -7d>
 
 This appears 7 days early (January 24) with "in 7 days" indicator.
 
-* Scheduled Item View
+* ⚠️ Scheduled Item View
 
 View all scheduled items.
 
 | Command                      | Description                    |
 |------------------------------+--------------------------------|
-| =scimax.agenda.scheduled=     | All scheduled items            |
+| scimax.agenda.scheduled     | All scheduled items            |
 
-Shows items with =SCHEDULED= timestamps:
+Shows items with SCHEDULED timestamps:
 
 #+BEGIN_EXAMPLE
 Scheduled Items (12 items)
@@ -287,7 +290,7 @@ Scheduled Items (12 items)
 📅 TODO Monthly review                           (in 5 days)
 #+END_EXAMPLE
 
-** Repeating Items
+** ⚠️ Repeating Items
 
 Recurring tasks with repeater syntax appear in the agenda:
 
@@ -304,13 +307,13 @@ DEADLINE: <2026-01-31 Fri +1m>
 
 See [[file:timestamps.org][Timestamps]] for more on repeaters.
 
-* Grouping and Sorting
+* ⚠️ Grouping and Sorting
 
 Agenda views can be grouped and sorted in different ways.
 
-** Group By Options
+** ⚠️ Group By Options
 
-*** By Date (Default)
+*** ⚠️ By Date (Default)
 
 Groups items by their date:
 
@@ -324,7 +327,7 @@ Tomorrow
   Item 4
 #+END_EXAMPLE
 
-*** By Category
+*** ⚠️ By Category
 
 Groups items by their CATEGORY property or file:
 
@@ -338,7 +341,7 @@ Personal
   Errands
 #+END_EXAMPLE
 
-*** By Priority
+*** ⚠️ By Priority
 
 Groups items by priority level:
 
@@ -355,7 +358,7 @@ No Priority
   Regular tasks
 #+END_EXAMPLE
 
-*** By TODO State
+*** ⚠️ By TODO State
 
 Groups items by their keyword:
 
@@ -371,17 +374,17 @@ WAITING
   Task 4
 #+END_EXAMPLE
 
-** Changing Grouping
+** ⚠️ Changing Grouping
 
 | Command                            | Description                |
 |------------------------------------+----------------------------|
-| =scimax.agenda.groupByDate=         | Group by date              |
-| =scimax.agenda.groupByCategory=     | Group by category          |
-| =scimax.agenda.groupByPriority=     | Group by priority          |
+| scimax.agenda.groupByDate         | Group by date              |
+| scimax.agenda.groupByCategory     | Group by category          |
+| scimax.agenda.groupByPriority     | Group by priority          |
 
 Tree view groups update immediately.
 
-** Sort Options
+** ⚠️ Sort Options
 
 Items within groups are sorted by:
 
@@ -391,18 +394,18 @@ Items within groups are sorted by:
 4. *TODO state* - By keyword
 5. *Tag* - By first tag alphabetically
 
-* Filtering
+* ⚠️ Filtering
 
 Focus the agenda on specific criteria.
 
-** Filter by Tag
+** ⚠️ Filter by Tag
 
 Show only items with a specific tag.
 
 | Command                          | Description                  |
 |----------------------------------+------------------------------|
-| =scimax.agenda.filterByTag=       | Filter by tag (native)       |
-| =scimax.db.searchByTag=           | Filter by tag (database)     |
+| scimax.agenda.filterByTag       | Filter by tag (native)       |
+| scimax.db.searchByTag           | Filter by tag (database)     |
 
 Workflow:
 1. Run command
@@ -420,7 +423,7 @@ Items with :urgent: (7 items)
   TODO Submit incident report                     :urgent:admin:
 #+END_EXAMPLE
 
-** Filter by Priority
+** ⚠️ Filter by Priority
 
 Database filtering supports priority:
 
@@ -429,7 +432,7 @@ Query: priority:A
 Shows: Only [#A] priority items
 #+END_SRC
 
-** Filter by TODO State
+** ⚠️ Filter by TODO State
 
 Show only specific TODO states:
 
@@ -439,7 +442,7 @@ Command: scimax.db.showTodos
 Shows: Only NEXT items
 #+END_SRC
 
-** Filter by Date Range
+** ⚠️ Filter by Date Range
 
 Combine time ranges with other filters:
 
@@ -449,7 +452,7 @@ Command: scimax.db.agenda
 Shows: Items in next 14 days only
 #+END_SRC
 
-** Combining Filters
+** ⚠️ Combining Filters
 
 Database queries support multiple filters:
 
@@ -462,9 +465,9 @@ Show TODOs:
 
 Use the database search commands for complex filtering.
 
-* Navigating and Acting on Items
+* ⚠️ Navigating and Acting on Items
 
-** Tree View Interface
+** ⚠️ Tree View Interface
 
 The Agenda tree view appears in the VS Code sidebar:
 
@@ -479,7 +482,7 @@ AGENDA
    └─ ⚪ TODO Update documentation
 #+END_EXAMPLE
 
-** Opening Items
+** ⚠️ Opening Items
 
 Click any item in the tree view or quick pick to:
 - Open the file containing the item
@@ -488,7 +491,7 @@ Click any item in the tree view or quick pick to:
 
 The item is centered in the editor for easy viewing.
 
-** Quick Pick Navigation
+** ⚠️ Quick Pick Navigation
 
 Commands show items in a searchable quick pick:
 
@@ -508,7 +511,7 @@ Features:
 - File location in detail
 - Icons indicate item type
 
-** Item Icons
+** ⚠️ Item Icons
 
 | Icon | Meaning                     |
 |------+-----------------------------|
@@ -520,7 +523,7 @@ Features:
 | ▶    | NEXT item                   |
 | ⏸    | WAITING item                |
 
-** Keyboard Navigation
+** ⚠️ Keyboard Navigation
 
 In tree view:
 - Arrow keys: Navigate items
@@ -533,17 +536,17 @@ In quick pick:
 - Enter: Open item
 - Escape: Cancel
 
-* Agenda Configuration
+* ⚠️ Agenda Configuration
 
 Configure agenda behavior through VS Code settings.
 
-** Agenda Files
+** ⚠️ Agenda Files
 
 Specify which files to include in the agenda.
 
 | Setting                  | Default      | Description                    |
 |--------------------------|--------------|--------------------------------|
-| =scimax.agenda.files=     | =[]= (empty)  | Files/directories for agenda   |
+| scimax.agenda.files     | [] (empty)  | Files/directories for agenda   |
 
 When empty, scans all org files in workspace.
 
@@ -567,13 +570,13 @@ Or manually in settings:
 }
 #+END_SRC
 
-** Exclude Patterns
+** ⚠️ Exclude Patterns
 
 Exclude certain files from agenda:
 
 | Setting                         | Default                           |
 |---------------------------------+-----------------------------------|
-| =scimax.agenda.excludePatterns=  | =**/node_modules/**, **/.git/**=   |
+| scimax.agenda.excludePatterns  | **/node_modules/**, **/.git/**   |
 
 #+BEGIN_SRC json
 {
@@ -586,13 +589,13 @@ Exclude certain files from agenda:
 }
 #+END_SRC
 
-** Default Time Span
+** ⚠️ Default Time Span
 
 Set the default number of days for agenda views:
 
 | Setting                    | Default | Description                |
 |----------------------------+---------+----------------------------|
-| =scimax.agenda.defaultSpan= | =7=      | Days to show in agenda     |
+| scimax.agenda.defaultSpan | 7      | Days to show in agenda     |
 
 #+BEGIN_SRC json
 {
@@ -600,13 +603,13 @@ Set the default number of days for agenda views:
 }
 #+END_SRC
 
-** Show Done Items
+** ⚠️ Show Done Items
 
 Include or exclude completed items:
 
 | Setting                  | Default | Description                    |
 |--------------------------+---------+--------------------------------|
-| =scimax.agenda.showDone=  | =false=  | Show DONE items in agenda      |
+| scimax.agenda.showDone  | false  | Show DONE items in agenda      |
 
 #+BEGIN_SRC json
 {
@@ -614,22 +617,22 @@ Include or exclude completed items:
 }
 #+END_SRC
 
-** Show Habits
+** ⚠️ Show Habits
 
 Control display of recurring habit tasks:
 
 | Setting                    | Default | Description                  |
 |----------------------------+---------+------------------------------|
-| =scimax.agenda.showHabits=  | =true=   | Show habit items in agenda   |
+| scimax.agenda.showHabits  | true   | Show habit items in agenda   |
 
-** TODO States
+** ⚠️ TODO States
 
 Define which TODO keywords to include:
 
 | Setting                      | Default                      |
 |------------------------------+------------------------------|
-| =scimax.agenda.todoStates=    | =[TODO, NEXT, WAITING]=       |
-| =scimax.agenda.doneStates=    | =[DONE, CANCELLED]=           |
+| scimax.agenda.todoStates    | [TODO, NEXT, WAITING]       |
+| scimax.agenda.doneStates    | [DONE, CANCELLED]           |
 
 #+BEGIN_SRC json
 {
@@ -648,52 +651,52 @@ Define which TODO keywords to include:
 }
 #+END_SRC
 
-* Database Integration
+* ⚠️ Database Integration
 
 The database-backed agenda provides additional capabilities.
 
-** Database Agenda Features
+** ⚠️ Database Agenda Features
 
-The database agenda (=scimax.db.agenda=) offers:
+The database agenda (scimax.db.agenda) offers:
 
 1. *Fast queries* - Indexed data for instant results
 2. *Complex filtering* - Search by property, tag, etc.
 3. *Semantic search* - Find items by meaning
 4. *Hybrid views* - Combine agenda with search
 
-** Indexing for Agenda
+** ⚠️ Indexing for Agenda
 
 Before using database agenda, index your files:
 
 | Command                 | Description                    |
 |-------------------------|--------------------------------|
-| =scimax.db.reindex=      | Index all org files            |
+| scimax.db.reindex      | Index all org files            |
 
 The database automatically tracks changes, but manual reindex ensures
 everything is current.
 
-** Database Agenda Commands
+** ⚠️ Database Agenda Commands
 
 | Command                 | Description                         |
 |-------------------------|-------------------------------------|
-| =scimax.db.agenda=       | Time-based agenda view              |
-| =scimax.db.deadlines=    | Upcoming deadlines                  |
-| =scimax.db.showTodos=    | All TODO items                      |
-| =scimax.db.searchByTag=  | Items with specific tag             |
+| scimax.db.agenda       | Time-based agenda view              |
+| scimax.db.deadlines    | Upcoming deadlines                  |
+| scimax.db.showTodos    | All TODO items                      |
+| scimax.db.searchByTag  | Items with specific tag             |
 
-** Search Scope
+** ⚠️ Search Scope
 
 Limit agenda queries to specific directories:
 
 | Command                | Description                      |
 |------------------------|----------------------------------|
-| =scimax.db.setScope=    | Set search scope                 |
+| scimax.db.setScope    | Set search scope                 |
 
 Options:
 - *All files* - Search entire database
 - *Current directory* - Only files in current directory
 
-** Agenda Item Data
+** ⚠️ Agenda Item Data
 
 Database agenda items include:
 
@@ -708,13 +711,13 @@ interface AgendaItem {
 #+END_SRC
 
 Properties:
-- =type= - Item category
-- =heading= - Full heading info (title, tags, priority, etc.)
-- =date= - Scheduled/deadline date
-- =days_until= - Days until/past date (negative = overdue)
-- =overdue= - Boolean flag for past deadlines
+- type - Item category
+- heading - Full heading info (title, tags, priority, etc.)
+- date - Scheduled/deadline date
+- days_until - Days until/past date (negative = overdue)
+- overdue - Boolean flag for past deadlines
 
-** Querying Agenda
+** ⚠️ Querying Agenda
 
 Programmatic access to agenda data:
 
@@ -734,41 +737,41 @@ const overdue = items.filter(item => item.overdue);
 
 See [[file:database-search.org][Database Search]] for more on database queries.
 
-* Agenda Workflows
+* ⚠️ Agenda Workflows
 
 Practical approaches to using the agenda effectively.
 
-** Morning Planning
+** ⚠️ Morning Planning
 
 Start your day with the day agenda:
 
-1. Run =scimax.agenda.day=
+1. Run scimax.agenda.day
 2. Review today's items
 3. Mark priorities
 4. Identify blockers
 5. Clock in to first task
 
-** Weekly Review
+** ⚠️ Weekly Review
 
 Every week:
 
-1. Run =scimax.agenda.week=
+1. Run scimax.agenda.week
 2. Check for overdue items
 3. Reschedule as needed
 4. Add new scheduled items
 5. Review WAITING tasks
 
-** Deadline Management
+** ⚠️ Deadline Management
 
 Stay on top of deadlines:
 
-1. Run =scimax.agenda.deadlines= or =scimax.db.deadlines=
+1. Run scimax.agenda.deadlines or scimax.db.deadlines
 2. Note items due soon
 3. Start working on items with warnings
 4. Address overdue items immediately
 5. Update estimates for late items
 
-** Context-Based Work
+** ⚠️ Context-Based Work
 
 Use tags to filter by context:
 
@@ -787,7 +790,7 @@ Make all phone calls
 Handle computer-required tasks
 #+END_SRC
 
-** Project Review
+** ⚠️ Project Review
 
 Review project status:
 
@@ -797,7 +800,7 @@ Review project status:
 4. Update completed items
 5. Add new tasks as needed
 
-** Priority Triage
+** ⚠️ Priority Triage
 
 Focus on high-priority items:
 
@@ -806,9 +809,9 @@ Focus on high-priority items:
 3. Move to [#B] items
 4. Reschedule [#C] if needed
 
-* Agenda Best Practices
+* ⚠️ Agenda Best Practices
 
-** Keep Agenda Files Organized
+** ⚠️ Keep Agenda Files Organized
 
 Structure agenda files logically:
 
@@ -824,7 +827,7 @@ Structure agenda files logically:
 
 Configure agenda to scan ~/org/ and exclude archive/.
 
-** Use Meaningful Categories
+** ⚠️ Use Meaningful Categories
 
 Set CATEGORY properties for better grouping:
 
@@ -837,7 +840,7 @@ Set CATEGORY properties for better grouping:
 :END:
 #+END_SRC
 
-** Schedule Realistically
+** ⚠️ Schedule Realistically
 
 Don't over-schedule:
 
@@ -849,7 +852,7 @@ Don't over-schedule:
 * TODO 3-5 priority tasks per day
 #+END_SRC
 
-** Use Deadlines Sparingly
+** ⚠️ Use Deadlines Sparingly
 
 Only use deadlines for true hard deadlines:
 
@@ -864,7 +867,7 @@ DEADLINE: <2026-01-20 Mon>
 ; Use SCHEDULED instead
 #+END_SRC
 
-** Regular Cleanup
+** ⚠️ Regular Cleanup
 
 Weekly maintenance:
 - Archive completed items
@@ -872,7 +875,7 @@ Weekly maintenance:
 - Update dates on delayed items
 - Remove duplicate entries
 
-** Leverage Repeaters
+** ⚠️ Leverage Repeaters
 
 Use repeaters for recurring items:
 
@@ -890,7 +893,7 @@ SCHEDULED: <2026-01-15 Wed ++1d>
 SCHEDULED: <2026-01-15 Wed .+7d>
 #+END_SRC
 
-** Balance Time Spans
+** ⚠️ Balance Time Spans
 
 Use different views for different purposes:
 
@@ -901,9 +904,9 @@ Use different views for different purposes:
 | Fortnight | Medium-term awareness            | Weekly review  |
 | Month     | Long-term planning               | Monthly review |
 
-* Practical Examples
+* ⚠️ Practical Examples
 
-** Example: Software Developer
+** ⚠️ Example: Software Developer
 
 #+BEGIN_SRC org
 ; work.org
@@ -935,7 +938,7 @@ Agenda shows:
 - Tomorrow: Start user settings
 - Next Monday: Settings deadline
 
-** Example: Project Manager
+** ⚠️ Example: Project Manager
 
 #+BEGIN_SRC org
 ; projects.org
@@ -969,7 +972,7 @@ Agenda grouped by priority shows:
 - WAITING: Client approval (needs follow-up)
 - Priority B: Roadmap update
 
-** Example: Academic/Researcher
+** ⚠️ Example: Academic/Researcher
 
 #+BEGIN_SRC org
 ; research.org
@@ -1012,9 +1015,9 @@ Week view shows balanced schedule:
 - Weekly: Advisor meeting
 - Deadline: Grading due Monday
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Agenda Shows No Items
+** ⚠️ Agenda Shows No Items
 
 *Issue*: Agenda view is empty or shows fewer items than expected.
 
@@ -1041,9 +1044,9 @@ Week view shows balanced schedule:
 
 5. *Check exclude patterns*:
    - Ensure files aren't excluded
-   - Review =scimax.agenda.excludePatterns=
+   - Review scimax.agenda.excludePatterns
 
-** Items Not Updating
+** ⚠️ Items Not Updating
 
 *Issue*: Changed items don't appear or update in agenda.
 
@@ -1067,7 +1070,7 @@ Week view shows balanced schedule:
    - Ensure file is saved (Ctrl+S)
    - Agenda reads from disk
 
-** Tree View Not Showing
+** ⚠️ Tree View Not Showing
 
 *Issue*: Agenda tree view not visible in sidebar.
 
@@ -1085,14 +1088,14 @@ Week view shows balanced schedule:
    - View extension logs
    - Check for parsing errors in org files
 
-** Slow Performance
+** ⚠️ Slow Performance
 
 *Issue*: Agenda is slow to load or refresh.
 
 *Solutions*:
 
 1. *Use database agenda*:
-   - =scimax.db.agenda= is faster for large collections
+   - scimax.db.agenda is faster for large collections
    - Index files once, query quickly
 
 2. *Limit agenda files*:
@@ -1114,7 +1117,7 @@ Week view shows balanced schedule:
    - Archive old DONE items
    - Split large files into smaller ones
 
-** Date Display Issues
+** ⚠️ Date Display Issues
 
 *Issue*: Dates show incorrectly or items appear on wrong days.
 
@@ -1131,7 +1134,7 @@ Week view shows balanced schedule:
 
 2. *Verify day of week*:
    - Day must match date
-   - Use =Shift+Right= to recalculate
+   - Use Shift+Right to recalculate
 
 3. *Check repeaters*:
    #+BEGIN_SRC org
@@ -1139,76 +1142,76 @@ Week view shows balanced schedule:
    SCHEDULED: <2026-01-15 Wed +1w>
    #+END_SRC
 
-* Quick Reference
+* ⚠️ Quick Reference
 
-** Main Agenda Commands
+** ⚠️ Main Agenda Commands
 
 | Command                         | Description                      |
 |---------------------------------+----------------------------------|
-| =scimax.agenda.menu=             | Show agenda menu                 |
-| =scimax.agenda.day=              | Today's agenda                   |
-| =scimax.agenda.week=             | 7-day agenda                     |
-| =scimax.agenda.fortnight=        | 14-day agenda                    |
-| =scimax.agenda.month=            | 30-day agenda                    |
-| =scimax.agenda.todoList=         | All TODO items                   |
-| =scimax.agenda.deadlines=        | Upcoming deadlines               |
-| =scimax.agenda.scheduled=        | Scheduled items                  |
-| =scimax.agenda.filterByTag=      | Filter by tag                    |
-| =scimax.agenda.refresh=          | Refresh agenda                   |
-| =scimax.agenda.configure=        | Configure agenda files           |
+| scimax.agenda.menu             | Show agenda menu                 |
+| scimax.agenda.day              | Today's agenda                   |
+| scimax.agenda.week             | 7-day agenda                     |
+| scimax.agenda.fortnight        | 14-day agenda                    |
+| scimax.agenda.month            | 30-day agenda                    |
+| scimax.agenda.todoList         | All TODO items                   |
+| scimax.agenda.deadlines        | Upcoming deadlines               |
+| scimax.agenda.scheduled        | Scheduled items                  |
+| scimax.agenda.filterByTag      | Filter by tag                    |
+| scimax.agenda.refresh          | Refresh agenda                   |
+| scimax.agenda.configure        | Configure agenda files           |
 
-** Database Agenda Commands
+** ⚠️ Database Agenda Commands
 
 | Command                     | Description                      |
 |-----------------------------|----------------------------------|
-| =scimax.db.agenda=           | Database agenda view             |
-| =scimax.db.deadlines=        | Database deadline view           |
-| =scimax.db.showTodos=        | Database TODO list               |
-| =scimax.db.searchByTag=      | Database tag search              |
-| =scimax.db.setScope=         | Set search scope                 |
-| =scimax.db.reindex=          | Reindex all files                |
+| scimax.db.agenda           | Database agenda view             |
+| scimax.db.deadlines        | Database deadline view           |
+| scimax.db.showTodos        | Database TODO list               |
+| scimax.db.searchByTag      | Database tag search              |
+| scimax.db.setScope         | Set search scope                 |
+| scimax.db.reindex          | Reindex all files                |
 
-** Tree View Commands
+** ⚠️ Tree View Commands
 
 | Command                             | Description                    |
 |-------------------------------------|--------------------------------|
-| =scimax.agenda.showAgenda=           | Show agenda in tree view       |
-| =scimax.agenda.showTodos=            | Show TODOs in tree view        |
-| =scimax.agenda.groupByDate=          | Group by date                  |
-| =scimax.agenda.groupByCategory=      | Group by category              |
-| =scimax.agenda.groupByPriority=      | Group by priority              |
-| =scimax.agenda.gotoItem=             | Go to item in file             |
+| scimax.agenda.showAgenda           | Show agenda in tree view       |
+| scimax.agenda.showTodos            | Show TODOs in tree view        |
+| scimax.agenda.groupByDate          | Group by date                  |
+| scimax.agenda.groupByCategory      | Group by category              |
+| scimax.agenda.groupByPriority      | Group by priority              |
+| scimax.agenda.gotoItem             | Go to item in file             |
 
-** Configuration Settings
+** ⚠️ Configuration Settings
 
 | Setting                            | Default       | Description                   |
 |------------------------------------|---------------|-------------------------------|
-| =scimax.agenda.files=               | =[]= (empty)   | Agenda file list              |
-| =scimax.agenda.excludePatterns=     | =node_modules= | Files to exclude              |
-| =scimax.agenda.defaultSpan=         | =7=            | Default days to show          |
-| =scimax.agenda.showDone=            | =false=        | Show DONE items               |
-| =scimax.agenda.showHabits=          | =true=         | Show habit items              |
-| =scimax.agenda.todoStates=          | =[TODO, ...]=  | TODO keyword list             |
-| =scimax.agenda.doneStates=          | =[DONE, ...]=  | DONE keyword list             |
+| scimax.agenda.files               | [] (empty)   | Agenda file list              |
+| scimax.agenda.excludePatterns     | node_modules | Files to exclude              |
+| scimax.agenda.defaultSpan         | 7            | Default days to show          |
+| scimax.agenda.showDone            | false        | Show DONE items               |
+| scimax.agenda.showHabits          | true         | Show habit items              |
+| scimax.agenda.todoStates          | [TODO, ...]  | TODO keyword list             |
+| scimax.agenda.doneStates          | [DONE, ...]  | DONE keyword list             |
 
-** Agenda Item Properties
+** ⚠️ Agenda Item Properties
 
 | Property          | Description                           |
 |-------------------|---------------------------------------|
-| =title=            | Headline text                         |
-| =todoState=        | TODO keyword (TODO, NEXT, etc.)       |
-| =priority=         | Priority (A, B, C)                    |
-| =tags=             | Tag list                              |
-| =scheduled=        | Scheduled date                        |
-| =deadline=         | Deadline date                         |
-| =time=             | Time of day                           |
-| =daysUntil=        | Days until/past date                  |
-| =overdue=          | Boolean: past deadline                |
-| =category=         | Category (from CATEGORY property)     |
-| =file=             | Source file path                      |
-| =line=             | Line number in file                   |
+| title            | Headline text                         |
+| todoState        | TODO keyword (TODO, NEXT, etc.)       |
+| priority         | Priority (A, B, C)                    |
+| tags             | Tag list                              |
+| scheduled        | Scheduled date                        |
+| deadline         | Deadline date                         |
+| time             | Time of day                           |
+| daysUntil        | Days until/past date                  |
+| overdue          | Boolean: past deadline                |
+| category         | Category (from CATEGORY property)     |
+| file             | Source file path                      |
+| line             | Line number in file                   |
 
-** Item Type Icons
+** ⚠️ Item Type Icons
 
 | Icon | Type                | Description                        |
 |------|---------------------|------------------------------------|
@@ -1221,15 +1224,15 @@ Week view shows balanced schedule:
 | ⏸    | WAITING             | Waiting/blocked item               |
 | ⏱    | Clocked             | Has time tracking                  |
 
-** Quick Workflow
+** ⚠️ Quick Workflow
 
-1. *Morning*: =scimax.agenda.day= - See today's tasks
-2. *Planning*: =scimax.agenda.week= - Plan upcoming work
-3. *Triage*: =scimax.agenda.deadlines= - Handle urgent items
-4. *Context work*: =scimax.agenda.filterByTag= - Focus by context
-5. *Review*: =scimax.agenda.todoList= - Review all TODOs
+1. *Morning*: scimax.agenda.day - See today's tasks
+2. *Planning*: scimax.agenda.week - Plan upcoming work
+3. *Triage*: scimax.agenda.deadlines - Handle urgent items
+4. *Context work*: scimax.agenda.filterByTag - Focus by context
+5. *Review*: scimax.agenda.todoList - Review all TODOs
 
-* Related Topics
+* ⚠️ Related Topics
 
 - [[file:todo-items.org][TODO Items]] - Creating and managing TODO items
 - [[file:timestamps.org][Timestamps]] - Date formats, scheduling, deadlines, repeaters

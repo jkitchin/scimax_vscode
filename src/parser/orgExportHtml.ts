@@ -47,6 +47,7 @@ import type {
     LineBreakObject,
     PlainTextObject,
     InlineSrcBlockObject,
+    InlineBabelCallObject,
     ExportSnippetObject,
     MacroObject,
     TableCellObject,
@@ -311,6 +312,8 @@ export class HtmlExportBackend implements ExportBackend {
                 return escapeString((object as PlainTextObject).properties.value, 'html');
             case 'inline-src-block':
                 return this.exportInlineSrcBlock(object as InlineSrcBlockObject, state);
+            case 'inline-babel-call':
+                return this.exportInlineBabelCall(object as InlineBabelCallObject, state);
             case 'export-snippet':
                 return this.exportExportSnippet(object as ExportSnippetObject, state);
             case 'macro':
@@ -807,6 +810,19 @@ export class HtmlExportBackend implements ExportBackend {
         const lang = obj.properties.language;
         const code = escapeString(obj.properties.value, 'html');
         return `<code class="src src-${lang}">${code}</code>`;
+    }
+
+    private exportInlineBabelCall(obj: InlineBabelCallObject, state: ExportState): string {
+        // Inline babel calls like call_name(args) - render as code
+        let result = `call_${escapeString(obj.properties.call, 'html')}`;
+        if (obj.properties.insideHeader) {
+            result += `[${escapeString(obj.properties.insideHeader, 'html')}]`;
+        }
+        result += `(${escapeString(obj.properties.arguments || '', 'html')})`;
+        if (obj.properties.endHeader) {
+            result += `[${escapeString(obj.properties.endHeader, 'html')}]`;
+        }
+        return `<code class="babel-call">${result}</code>`;
     }
 
     private exportExportSnippet(obj: ExportSnippetObject, state: ExportState): string {

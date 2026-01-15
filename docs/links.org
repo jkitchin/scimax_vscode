@@ -3,53 +3,56 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Hyperlinks
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Hyperlinks
 
 Links in org documents connect your notes to files, websites, headings, and
 more. Scimax VS Code supports a variety of link types and provides commands for
 creating and following links.
 
-* Link Types
+* ⚠️ Link Types
 
 Org-mode supports many types of links. Scimax VS Code handles the most common
 ones:
 
-** External Links
+** ⚠️ External Links
 
 Links to resources outside your document:
 
 | Type     | Example                                    |
 |----------+--------------------------------------------|
-| HTTP(S)  | =https://www.example.com=                   |
-| File     | =file:~/documents/report.pdf=               |
-| Email    | =mailto:user@example.com=                   |
-| FTP      | =ftp://ftp.example.com/file.txt=            |
+| HTTP(S)  | https://www.example.com                   |
+| File     | file:~/documents/report.pdf               |
+| Email    | mailto:user@example.com                   |
+| FTP      | ftp://ftp.example.com/file.txt            |
 
-** Internal Links
+** ⚠️ Internal Links
 
 Links to locations within your documents:
 
 | Type        | Example                                 |
 |-------------+-----------------------------------------|
-| Heading     | =*My Heading=                            |
-| Custom ID   | =#my-custom-id=                          |
-| Target      | =<<target-name>>=                        |
-| ID          | =id:550e8400-e29b-41d4-a716-446655440000= |
+| Heading     | *My Heading                            |
+| Custom ID   | #my-custom-id                          |
+| Target      | <<target-name>>                        |
+| ID          | id:550e8400-e29b-41d4-a716-446655440000 |
 
-** Citation Links
+** ⚠️ Citation Links
 
 For academic references (see [[file:references.org][References]]):
 
 | Type        | Example                                 |
 |-------------+-----------------------------------------|
-| Cite        | =cite:smith-2024=                        |
-| Citet       | =citet:jones-2023=                       |
-| Citep       | =citep:doe-2022=                         |
+| Cite        | cite:smith-2024                        |
+| Citet       | citet:jones-2023                       |
+| Citep       | citep:doe-2022                         |
 
-* Creating Links
+* ⚠️ Creating Links
 
-** Bracket Link Syntax
+** ⚠️ Bracket Link Syntax
 
 The standard link format uses double brackets:
 
@@ -71,17 +74,17 @@ If no description is provided, the link target is displayed:
 [[https://www.example.com]]
 #+END_SRC
 
-** Insert Link Command
+** ⚠️ Insert Link Command
 
 | Key           | Command                              |
 |---------------+--------------------------------------|
-| =Ctrl+C Ctrl+L= | Insert link (=scimax.org.insertLink=)  |
+| Ctrl+C Ctrl+L | Insert link (scimax.org.insertLink)  |
 
 This opens a dialog to enter:
 1. Link target (URL, file path, or internal reference)
 2. Description (optional)
 
-** Angle Link Syntax
+** ⚠️ Angle Link Syntax
 
 Simple URLs can be written with angle brackets:
 
@@ -89,7 +92,7 @@ Simple URLs can be written with angle brackets:
 <https://www.example.com>
 #+END_SRC
 
-** Plain URLs
+** ⚠️ Plain URLs
 
 Plain URLs are also recognized:
 
@@ -97,36 +100,36 @@ Plain URLs are also recognized:
 Visit https://www.example.com for more info.
 #+END_SRC
 
-* Following Links
+* ⚠️ Following Links
 
-** Open Link
+** ⚠️ Open Link
 
 | Key           | Command                              |
 |---------------+--------------------------------------|
-| =Ctrl+C Ctrl+O= | Open link at point (=scimax.org.openLink=) |
+| Ctrl+C Ctrl+O | Open link at point (scimax.org.openLink) |
 
 Click on a link or use this command to:
 - Open URLs in your default browser
 - Open files in VS Code (or associated application)
 - Jump to internal targets
 
-** Link Behavior by Type
+** ⚠️ Link Behavior by Type
 
 | Link Type    | Behavior                              |
 |--------------+---------------------------------------|
-| =https://=    | Opens in default browser              |
-| =http://=     | Opens in default browser              |
-| =file:=       | Opens in VS Code or associated app    |
-| =mailto:=     | Opens default email client            |
-| =#custom-id=  | Jumps to heading with CUSTOM_ID       |
-| =*Heading=    | Jumps to heading with that title      |
-| =id:=         | Jumps to entry with that ID property  |
+| https://    | Opens in default browser              |
+| http://     | Opens in default browser              |
+| file:       | Opens in VS Code or associated app    |
+| mailto:     | Opens default email client            |
+| #custom-id  | Jumps to heading with CUSTOM_ID       |
+| *Heading    | Jumps to heading with that title      |
+| id:         | Jumps to entry with that ID property  |
 
-* Link Targets and Anchors
+* ⚠️ Link Targets and Anchors
 
-** Headings as Targets
+** ⚠️ Headings as Targets
 
-Link to headings by title using =*=:
+Link to headings by title using *:
 
 #+BEGIN_SRC org
 ,* Introduction
@@ -136,9 +139,9 @@ Link to headings by title using =*=:
 See [[*Introduction][the introduction]] for background.
 #+END_SRC
 
-** Custom IDs
+** ⚠️ Custom IDs
 
-Create stable link targets with =CUSTOM_ID= property:
+Create stable link targets with CUSTOM_ID property:
 
 #+BEGIN_SRC org
 ,* Introduction
@@ -157,9 +160,9 @@ Custom IDs are preferred over heading text because:
 - They're shorter and cleaner
 - They're unique within the document
 
-** Dedicated Targets
+** ⚠️ Dedicated Targets
 
-Create named anchors anywhere with =<<target-name>>=:
+Create named anchors anywhere with <<target-name>>:
 
 #+BEGIN_SRC org
 This paragraph contains a <<important-point>> that we reference later.
@@ -169,7 +172,7 @@ This paragraph contains a <<important-point>> that we reference later.
 As mentioned at [[important-point]], this is significant.
 #+END_SRC
 
-** Radio Targets
+** ⚠️ Radio Targets
 
 Radio targets create automatic links throughout the document:
 
@@ -183,9 +186,9 @@ Later, when we mention Machine Learning, it automatically links back.
 
 Any occurrence of "Machine Learning" becomes a link to the radio target.
 
-** ID Properties
+** ⚠️ ID Properties
 
-The =ID= property provides globally unique identifiers:
+The ID property provides globally unique identifiers:
 
 #+BEGIN_SRC org
 ,* Important Section
@@ -199,9 +202,9 @@ ID links work across files:
 [[id:550e8400-e29b-41d4-a716-446655440000][That important section]]
 #+END_SRC
 
-* File Links
+* ⚠️ File Links
 
-** Basic File Links
+** ⚠️ Basic File Links
 
 #+BEGIN_SRC org
 [[file:document.org][My Document]]
@@ -209,7 +212,7 @@ ID links work across files:
 [[file:../data/results.csv][Results Data]]
 #+END_SRC
 
-** File Links with Line Numbers
+** ⚠️ File Links with Line Numbers
 
 Jump to a specific line:
 
@@ -217,7 +220,7 @@ Jump to a specific line:
 [[file:code.py::42][Line 42 in code.py]]
 #+END_SRC
 
-** File Links with Search
+** ⚠️ File Links with Search
 
 Search for text in the target file:
 
@@ -230,12 +233,12 @@ Search for text in the target file:
 Search options:
 | Syntax            | Searches for                         |
 |-------------------+--------------------------------------|
-| =::*Heading=       | Heading with that title              |
-| =::#id=            | Entry with that CUSTOM_ID            |
-| =::search text=    | First occurrence of text             |
-| =::123=            | Line number 123                      |
+| ::*Heading       | Heading with that title              |
+| ::#id            | Entry with that CUSTOM_ID            |
+| ::search text    | First occurrence of text             |
+| ::123            | Line number 123                      |
 
-** Relative vs Absolute Paths
+** ⚠️ Relative vs Absolute Paths
 
 #+BEGIN_SRC org
 [[file:./local.org]]          ; Same directory
@@ -246,9 +249,9 @@ Search options:
 
 Prefer relative paths for portability.
 
-* Special Link Types
+* ⚠️ Special Link Types
 
-** Protocol Links
+** ⚠️ Protocol Links
 
 Various protocols are supported:
 
@@ -259,7 +262,7 @@ Various protocols are supported:
 [[news:comp.lang.python][Python Newsgroup]]
 #+END_SRC
 
-** Image Links
+** ⚠️ Image Links
 
 Link to images (see also [[file:image-overlays.org][Image Overlays]]):
 
@@ -270,7 +273,7 @@ Link to images (see also [[file:image-overlays.org][Image Overlays]]):
 
 Images are displayed inline if image overlays are enabled.
 
-** ID Links
+** ⚠️ ID Links
 
 Universal identifiers for cross-file linking:
 
@@ -278,9 +281,9 @@ Universal identifiers for cross-file linking:
 [[id:550e8400-e29b-41d4-a716-446655440000][Section in another file]]
 #+END_SRC
 
-* Link Descriptions
+* ⚠️ Link Descriptions
 
-** With Description
+** ⚠️ With Description
 
 #+BEGIN_SRC org
 [[https://www.example.com][Visit Example.com]]
@@ -288,7 +291,7 @@ Universal identifiers for cross-file linking:
 
 Displays as: Visit Example.com
 
-** Without Description
+** ⚠️ Without Description
 
 #+BEGIN_SRC org
 [[https://www.example.com]]
@@ -296,7 +299,7 @@ Displays as: Visit Example.com
 
 Displays as: https://www.example.com
 
-** Description Formatting
+** ⚠️ Description Formatting
 
 Descriptions can contain emphasis:
 
@@ -306,11 +309,11 @@ Descriptions can contain emphasis:
 
 But descriptions cannot contain other links.
 
-* Links in Export
+* ⚠️ Links in Export
 
-** HTML Export
+** ⚠️ HTML Export
 
-Links become =<a href="...">= elements:
+Links become <a href="..."> elements:
 
 #+BEGIN_SRC html
 <a href="https://www.example.com">Visit Example.com</a>
@@ -318,17 +321,17 @@ Links become =<a href="...">= elements:
 
 Internal links become anchor references.
 
-** LaTeX Export
+** ⚠️ LaTeX Export
 
-Links become =\href{}{}= commands:
+Links become \href{}{} commands:
 
 #+BEGIN_SRC latex
 \href{https://www.example.com}{Visit Example.com}
 #+END_SRC
 
-Internal links become =\ref{}= or =\hyperref[]{}= commands.
+Internal links become \ref{} or \hyperref[]{} commands.
 
-** Markdown Export
+** ⚠️ Markdown Export
 
 Links become standard Markdown format:
 
@@ -336,33 +339,33 @@ Links become standard Markdown format:
 [Visit Example.com](https://www.example.com)
 #+END_SRC
 
-* Managing Links
+* ⚠️ Managing Links
 
-** Finding Broken Links
+** ⚠️ Finding Broken Links
 
 Use search to find potentially broken links:
-- =scimax.db.searchLinks= - Search all links in indexed files
-- Check for =file:= links to non-existent files
+- scimax.db.searchLinks - Search all links in indexed files
+- Check for file: links to non-existent files
 
-** Updating Links
+** ⚠️ Updating Links
 
 When files move:
-1. Update =file:= links manually
-2. Use =id:= links which are location-independent
+1. Update file: links manually
+2. Use id: links which are location-independent
 3. Use relative paths that move with your file structure
 
-* Citation Links
+* ⚠️ Citation Links
 
 For academic documents, Scimax VS Code supports citation links. See [[file:references.org][References]]
 for complete documentation.
 
-** Quick Insert
+** ⚠️ Quick Insert
 
 | Key         | Command                              |
 |-------------+--------------------------------------|
-| =Ctrl+C ]=   | Insert citation                      |
+| Ctrl+C ]   | Insert citation                      |
 
-** Citation Styles
+** ⚠️ Citation Styles
 
 #+BEGIN_SRC org
 cite:smith-2024       ; Basic citation
@@ -372,9 +375,9 @@ citeauthor:smith-2024 ; Author only: Smith
 citeyear:smith-2024   ; Year only: 2024
 #+END_SRC
 
-* Best Practices
+* ⚠️ Best Practices
 
-** Use Stable Link Targets
+** ⚠️ Use Stable Link Targets
 
 Prefer stable identifiers over content-based links:
 
@@ -389,7 +392,7 @@ Prefer stable identifiers over content-based links:
 [[id:uuid-here]]
 #+END_SRC
 
-** Organize File Links
+** ⚠️ Organize File Links
 
 Keep related files together with relative paths:
 
@@ -404,7 +407,7 @@ project/
     └── paper.pdf      ; [[file:./references/paper.pdf]]
 #+END_EXAMPLE
 
-** Descriptive Link Text
+** ⚠️ Descriptive Link Text
 
 Good:
 #+BEGIN_SRC org
@@ -417,7 +420,7 @@ See [[file:methods.org][here]] for details.
 Click [[https://example.com][this link]].
 #+END_SRC
 
-** Link Collections
+** ⚠️ Link Collections
 
 Group related links in lists:
 
@@ -428,40 +431,40 @@ Group related links in lists:
 - [[file:notes.org][My Notes]]
 #+END_SRC
 
-* Quick Reference
+* ⚠️ Quick Reference
 
-** Keybindings
+** ⚠️ Keybindings
 
 | Key           | Action                    |
 |---------------+---------------------------|
-| =Ctrl+C Ctrl+L= | Insert link               |
-| =Ctrl+C Ctrl+O= | Open link at point        |
-| =Ctrl+C ]=      | Insert citation           |
+| Ctrl+C Ctrl+L | Insert link               |
+| Ctrl+C Ctrl+O | Open link at point        |
+| Ctrl+C ]      | Insert citation           |
 
-** Commands
+** ⚠️ Commands
 
 | Command                   | Description                   |
 |---------------------------+-------------------------------|
-| =scimax.org.insertLink=    | Insert a new link             |
-| =scimax.org.openLink=      | Open link at cursor           |
-| =scimax.ref.insertCitation=| Insert citation link          |
+| scimax.org.insertLink    | Insert a new link             |
+| scimax.org.openLink      | Open link at cursor           |
+| scimax.ref.insertCitation| Insert citation link          |
 
-** Link Syntax Summary
+** ⚠️ Link Syntax Summary
 
 | Format                     | Example                        |
 |----------------------------+--------------------------------|
-| URL with description       | =[[url][desc]]=                 |
-| URL only                   | =[[url]]=                       |
-| Angle brackets             | =<url>=                         |
-| Heading link               | =[[*Heading]]=                  |
-| Custom ID link             | =[[#id]]=                       |
-| ID link                    | =[[id:uuid]]=                   |
-| File link                  | =[[file:path]]=                 |
-| File with line             | =[[file:path::123]]=            |
-| File with search           | =[[file:path::text]]=           |
-| Target                     | =[[target-name]]=               |
+| URL with description       | [[url][desc]]                 |
+| URL only                   | [[url]]                       |
+| Angle brackets             | <url>                         |
+| Heading link               | [[*Heading]]                  |
+| Custom ID link             | [[#id]]                       |
+| ID link                    | [[id:uuid]]                   |
+| File link                  | [[file:path]]                 |
+| File with line             | [[file:path::123]]            |
+| File with search           | [[file:path::text]]           |
+| Target                     | [[target-name]]               |
 
-* Related Topics
+* ⚠️ Related Topics
 
 - [[file:references.org][References]] - Citation links and bibliography
 - [[file:export.org][Export]] - How links appear in exports

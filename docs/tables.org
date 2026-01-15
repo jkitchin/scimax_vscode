@@ -3,18 +3,20 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* Tables
+* ⚠️ Tables
 
 Org-mode tables provide spreadsheet-like functionality directly in your text
 documents. Scimax VS Code supports creating, editing, navigating, and
 calculating with tables.
 
-* Creating Tables
+* ⚠️ Creating Tables
 
-** Manual Creation
+** ⚠️ Manual Creation
 
-Type a table using pipe characters (=|=) as column separators:
+Type a table using pipe characters (|) as column separators:
 
 #+BEGIN_SRC org
 | Name  | Age | City     |
@@ -23,73 +25,73 @@ Type a table using pipe characters (=|=) as column separators:
 | Bob   | 25  | Boston   |
 #+END_SRC
 
-When you press =Tab= after entering content, the table auto-aligns.
+When you press Tab after entering content, the table auto-aligns.
 
-** Table Creation Command
+** ⚠️ Table Creation Command
 
-Press =Ctrl+C |= or use =scimax.table.create= to insert a table template.
+Press Ctrl+C | or use scimax.table.create to insert a table template.
 
 You'll be prompted for the number of columns and rows.
 
-** Converting Text to Table
+** ⚠️ Converting Text to Table
 
-Select comma-separated or tab-separated text, then use =Ctrl+C |= to convert
+Select comma-separated or tab-separated text, then use Ctrl+C | to convert
 it to a table.
 
-* Table Navigation
+* ⚠️ Table Navigation
 
-** Moving Between Cells
+** ⚠️ Moving Between Cells
 
 | Key        | Action                              |
 |------------+-------------------------------------|
-| =Tab=       | Move to next cell (creates row at end) |
-| =Shift+Tab= | Move to previous cell               |
+| Tab       | Move to next cell (creates row at end) |
+| Shift+Tab | Move to previous cell               |
 | Arrow keys | Move in that direction              |
 
-** Quick Navigation
+** ⚠️ Quick Navigation
 
 | Command                    | Description                    |
 |----------------------------+--------------------------------|
-| =scimax.table.nextCell=     | Go to next cell                |
-| =scimax.table.prevCell=     | Go to previous cell            |
-| =scimax.table.gotoNamed=    | Jump to a named table          |
+| scimax.table.nextCell     | Go to next cell                |
+| scimax.table.prevCell     | Go to previous cell            |
+| scimax.table.gotoNamed    | Jump to a named table          |
 
-* Editing Tables
+* ⚠️ Editing Tables
 
-** Adding/Removing Rows
+** ⚠️ Adding/Removing Rows
 
 | Key/Command                   | Action                        |
 |-------------------------------+-------------------------------|
-| =Alt+Enter= or =Shift+Enter=   | Insert row below              |
-| =scimax.table.insertRowAbove=  | Insert row above current      |
-| =scimax.table.insertRowBelow=  | Insert row below current      |
-| =Alt+Shift+Backspace=          | Delete current row            |
-| =scimax.table.deleteRow=       | Delete current row            |
+| Alt+Enter or Shift+Enter   | Insert row below              |
+| scimax.table.insertRowAbove  | Insert row above current      |
+| scimax.table.insertRowBelow  | Insert row below current      |
+| Alt+Shift+Backspace          | Delete current row            |
+| scimax.table.deleteRow       | Delete current row            |
 
-** Adding/Removing Columns
+** ⚠️ Adding/Removing Columns
 
 | Key/Command                      | Action                     |
 |----------------------------------+----------------------------|
-| =Alt+Shift+Right=                 | Insert column to the right |
-| =scimax.table.insertColumnRight=  | Insert column right        |
-| =scimax.table.deleteColumn=       | Delete current column      |
+| Alt+Shift+Right                 | Insert column to the right |
+| scimax.table.insertColumnRight  | Insert column right        |
+| scimax.table.deleteColumn       | Delete current column      |
 
-** Moving Rows/Columns
+** ⚠️ Moving Rows/Columns
 
 | Key/Command                     | Action                      |
 |---------------------------------+-----------------------------|
-| =scimax.table.moveRowUp=         | Move row up                 |
-| =scimax.table.moveRowDown=       | Move row down               |
-| =scimax.table.moveColumnLeft=    | Move column left            |
-| =scimax.table.moveColumnRight=   | Move column right           |
+| scimax.table.moveRowUp         | Move row up                 |
+| scimax.table.moveRowDown       | Move row down               |
+| scimax.table.moveColumnLeft    | Move column left            |
+| scimax.table.moveColumnRight   | Move column right           |
 
-** Separator Lines
+** ⚠️ Separator Lines
 
 Insert horizontal separator lines to divide table sections:
 
 | Key       | Action                              |
 |-----------+-------------------------------------|
-| =Ctrl+C -= | Insert separator line (=|---+---|=)   |
+| Ctrl+C - | Insert separator line (|---+---|)   |
 
 Example with separators:
 #+BEGIN_SRC org
@@ -101,15 +103,15 @@ Example with separators:
 | Total    | 25.00 |
 #+END_SRC
 
-* Table Alignment
+* ⚠️ Table Alignment
 
-** Automatic Alignment
+** ⚠️ Automatic Alignment
 
-Tables auto-align when you press =Tab=. Column widths adjust to fit content.
+Tables auto-align when you press Tab. Column widths adjust to fit content.
 
-** Column Width Specification
+** ⚠️ Column Width Specification
 
-Specify fixed column widths using =<N>= in a cell:
+Specify fixed column widths using <N> in a cell:
 
 #+BEGIN_SRC org
 | <10>       | <5>   |
@@ -119,9 +121,9 @@ Specify fixed column widths using =<N>= in a cell:
 
 Text exceeding the width is truncated in display (but preserved internally).
 
-** Horizontal Alignment
+** ⚠️ Horizontal Alignment
 
-Specify alignment using =<l>=, =<c>=, or =<r>=:
+Specify alignment using <l>, <c>, or <r>:
 
 #+BEGIN_SRC org
 | <l>          |     <c>      |          <r> |
@@ -131,19 +133,19 @@ Specify alignment using =<l>=, =<c>=, or =<r>=:
 
 | Marker | Alignment    |
 |--------+--------------|
-| =<l>=   | Left         |
-| =<c>=   | Center       |
-| =<r>=   | Right        |
+| <l>   | Left         |
+| <c>   | Center       |
+| <r>   | Right        |
 
-Combine with width: =<l10>= for left-aligned, 10 characters wide.
+Combine with width: <l10> for left-aligned, 10 characters wide.
 
-* Table Formulas
+* ⚠️ Table Formulas
 
 Tables can include formulas for calculations, similar to spreadsheets.
 
-** Formula Line
+** ⚠️ Formula Line
 
-Formulas are defined in a =#+TBLFM:= line below the table:
+Formulas are defined in a #+TBLFM: line below the table:
 
 #+BEGIN_SRC org
 | Item   | Qty | Price | Total |
@@ -155,44 +157,44 @@ Formulas are defined in a =#+TBLFM:= line below the table:
 ,#+TBLFM: $4=$2*$3::@4$4=vsum(@2$4..@3$4)
 #+END_SRC
 
-** Cell References
+** ⚠️ Cell References
 
-*** Column References
-
-| Reference | Meaning                              |
-|-----------+--------------------------------------|
-| =$1=       | First column                         |
-| =$2=       | Second column                        |
-| =$N=       | Nth column                           |
-
-*** Row References
+*** ⚠️ Column References
 
 | Reference | Meaning                              |
 |-----------+--------------------------------------|
-| =@1=       | First row                            |
-| =@2=       | Second row                           |
-| =@N=       | Nth row                              |
-| =@>=       | Last row                             |
+| $1       | First column                         |
+| $2       | Second column                        |
+| $N       | Nth column                           |
 
-*** Combined References
+*** ⚠️ Row References
 
 | Reference | Meaning                              |
 |-----------+--------------------------------------|
-| =@2$3=     | Row 2, column 3                      |
-| =@3$>=     | Row 3, last column                   |
-| =@>$4=     | Last row, column 4                   |
+| @1       | First row                            |
+| @2       | Second row                           |
+| @N       | Nth row                              |
+| @>       | Last row                             |
 
-*** Ranges
+*** ⚠️ Combined References
+
+| Reference | Meaning                              |
+|-----------+--------------------------------------|
+| @2$3     | Row 2, column 3                      |
+| @3$>     | Row 3, last column                   |
+| @>$4     | Last row, column 4                   |
+
+*** ⚠️ Ranges
 
 | Reference        | Meaning                         |
 |------------------+---------------------------------|
-| =@2$1..@5$1=      | Column 1, rows 2 through 5      |
-| =@2$1..@2$4=      | Row 2, columns 1 through 4      |
-| =@2$1..@5$4=      | Rectangle from @2$1 to @5$4     |
+| @2$1..@5$1      | Column 1, rows 2 through 5      |
+| @2$1..@2$4      | Row 2, columns 1 through 4      |
+| @2$1..@5$4      | Rectangle from @2$1 to @5$4     |
 
-** Formula Syntax
+** ⚠️ Formula Syntax
 
-Formulas use the syntax: =target=expression=
+Formulas use the syntax: target=expression
 
 #+BEGIN_SRC org
 ,#+TBLFM: $4=$2*$3
@@ -200,21 +202,21 @@ Formulas use the syntax: =target=expression=
 
 This sets column 4 to the product of columns 2 and 3.
 
-Multiple formulas separated by =::=:
+Multiple formulas separated by :::
 
 #+BEGIN_SRC org
 ,#+TBLFM: $4=$2*$3::@>$4=vsum(@2$4..@-1$4)
 #+END_SRC
 
-** Built-in Functions
+** ⚠️ Built-in Functions
 
 | Function   | Description                          |
 |------------+--------------------------------------|
-| =vsum=      | Sum of values in range               |
-| =vmean=     | Average of values                    |
-| =vmin=      | Minimum value                        |
-| =vmax=      | Maximum value                        |
-| =vcount=    | Count of values                      |
+| vsum      | Sum of values in range               |
+| vmean     | Average of values                    |
+| vmin      | Minimum value                        |
+| vmax      | Maximum value                        |
+| vcount    | Count of values                      |
 
 Example:
 #+BEGIN_SRC org
@@ -228,19 +230,19 @@ Example:
 ,#+TBLFM: @5$1=vsum(@2$1..@4$1)
 #+END_SRC
 
-** Recalculating Formulas
+** ⚠️ Recalculating Formulas
 
 | Key/Command                  | Action                       |
 |------------------------------+------------------------------|
-| =Ctrl+C Ctrl+C= (on TBLFM)    | Recalculate all formulas     |
-| =scimax.table.recalculate=    | Recalculate table            |
+| Ctrl+C Ctrl+C (on TBLFM)    | Recalculate all formulas     |
+| scimax.table.recalculate    | Recalculate table            |
 
-Place your cursor on the =#+TBLFM:= line and press =Ctrl+C Ctrl+C= to apply
+Place your cursor on the #+TBLFM: line and press Ctrl+C Ctrl+C to apply
 all formulas.
 
-** Formula Examples
+** ⚠️ Formula Examples
 
-*** Row Formula
+*** ⚠️ Row Formula
 
 Calculate total for each row:
 #+BEGIN_SRC org
@@ -251,7 +253,7 @@ Calculate total for each row:
 ,#+TBLFM: $6=$2+$3+$4+$5
 #+END_SRC
 
-*** Column Formula
+*** ⚠️ Column Formula
 
 Sum a column:
 #+BEGIN_SRC org
@@ -265,7 +267,7 @@ Sum a column:
 ,#+TBLFM: @>$2=vsum(@2$2..@-1$2)
 #+END_SRC
 
-*** Percentage Calculation
+*** ⚠️ Percentage Calculation
 
 #+BEGIN_SRC org
 | Category | Amount | Percent |
@@ -278,51 +280,51 @@ Sum a column:
 ,#+TBLFM: $3=100*$2/@>$2;%.0f%%::@>$2=vsum(@2$2..@-1$2)
 #+END_SRC
 
-* Table Import/Export
+* ⚠️ Table Import/Export
 
-** Importing Tables
+** ⚠️ Importing Tables
 
 Import data from CSV files:
 
 | Command                   | Description                     |
 |---------------------------+---------------------------------|
-| =scimax.table.import=      | Import table from file          |
+| scimax.table.import      | Import table from file          |
 
 The import command will prompt for the file path and delimiter.
 
-** Exporting Tables
+** ⚠️ Exporting Tables
 
 | Key/Command              | Description                      |
 |--------------------------+----------------------------------|
-| =Ctrl+C Ctrl+E T=         | Export table                     |
-| =scimax.table.export=     | Export table to file             |
+| Ctrl+C Ctrl+E T         | Export table                     |
+| scimax.table.export     | Export table to file             |
 
 Export formats:
 - CSV (comma-separated values)
 - TSV (tab-separated values)
 - Other delimited formats
 
-* Column Operations
+* ⚠️ Column Operations
 
 Perform quick calculations on columns:
 
 | Command                      | Description                   |
 |------------------------------+-------------------------------|
-| =scimax.table.sumColumn=      | Sum values in current column  |
-| =scimax.table.averageColumn=  | Average of current column     |
+| scimax.table.sumColumn      | Sum values in current column  |
+| scimax.table.averageColumn  | Average of current column     |
 
-** Sorting
+** ⚠️ Sorting
 
 | Key/Command                | Description                    |
 |----------------------------+--------------------------------|
-| =Ctrl+C ^=                  | Sort table by current column   |
-| =scimax.table.sortByColumn=  | Sort by column                 |
+| Ctrl+C ^                  | Sort table by current column   |
+| scimax.table.sortByColumn  | Sort by column                 |
 
 Sorting options:
 - Alphabetic (A-Z or Z-A)
 - Numeric (ascending or descending)
 
-* Named Tables
+* ⚠️ Named Tables
 
 Give tables names for reference:
 
@@ -337,18 +339,18 @@ Give tables names for reference:
 
 Named tables can be:
 - Referenced in other source blocks
-- Jumped to with =scimax.table.gotoNamed=
+- Jumped to with scimax.table.gotoNamed
 - Used as input for calculations
 
-* Table Appearance in Export
+* ⚠️ Table Appearance in Export
 
-** HTML Export
+** ⚠️ HTML Export
 
-Tables export as HTML =<table>= elements with proper styling.
+Tables export as HTML <table> elements with proper styling.
 
-** LaTeX Export
+** ⚠️ LaTeX Export
 
-Tables export as LaTeX =tabular= environments:
+Tables export as LaTeX tabular environments:
 
 #+BEGIN_SRC latex
 \begin{tabular}{llr}
@@ -359,7 +361,7 @@ Bob & 25 & Boston \\
 \end{tabular}
 #+END_SRC
 
-** Markdown Export
+** ⚠️ Markdown Export
 
 Tables export in GitHub-flavored Markdown format:
 
@@ -370,68 +372,68 @@ Tables export in GitHub-flavored Markdown format:
 | Bob   | 25  | Boston   |
 #+END_SRC
 
-* Best Practices
+* ⚠️ Best Practices
 
-** Table Design
+** ⚠️ Table Design
 
 1. *Use headers* - Always include a header row with column names
-2. *Add separators* - Use =|---|= lines to separate headers from data
+2. *Add separators* - Use |---| lines to separate headers from data
 3. *Align numbers right* - Numeric columns are easier to read right-aligned
 4. *Keep columns focused* - One type of data per column
 
-** Formula Organization
+** ⚠️ Formula Organization
 
 1. *Comment complex formulas* - Add explanations for non-obvious calculations
 2. *Build incrementally* - Test formulas one at a time
 3. *Use named tables* - For tables referenced elsewhere
 
-** Large Tables
+** ⚠️ Large Tables
 
 For large datasets:
 1. Consider using source blocks with pandas/R for complex analysis
 2. Import data rather than typing manually
 3. Export results to tables for presentation
 
-* Quick Reference
+* ⚠️ Quick Reference
 
-** Keybindings
+** ⚠️ Keybindings
 
 | Key               | Action                         |
 |-------------------+--------------------------------|
-| =Ctrl+C \vert{}=           | Create table                   |
-| =Tab=              | Next cell / align              |
-| =Shift+Tab=        | Previous cell                  |
-| =Ctrl+C -=         | Insert separator               |
-| =Alt+Enter=        | Insert row below               |
-| =Alt+Shift+Right=  | Insert column right            |
-| =Alt+Shift+Backspace= | Delete row                  |
-| =Ctrl+C ^=         | Sort by column                 |
-| =Ctrl+C Ctrl+C=    | Recalculate (on TBLFM)         |
-| =Ctrl+C Ctrl+E T=  | Export table                   |
+| Ctrl+C \vert{}           | Create table                   |
+| Tab              | Next cell / align              |
+| Shift+Tab        | Previous cell                  |
+| Ctrl+C -         | Insert separator               |
+| Alt+Enter        | Insert row below               |
+| Alt+Shift+Right  | Insert column right            |
+| Alt+Shift+Backspace | Delete row                  |
+| Ctrl+C ^         | Sort by column                 |
+| Ctrl+C Ctrl+C    | Recalculate (on TBLFM)         |
+| Ctrl+C Ctrl+E T  | Export table                   |
 
-** Commands
+** ⚠️ Commands
 
 | Command                        | Description                |
 |--------------------------------+----------------------------|
-| =scimax.table.create=           | Create new table           |
-| =scimax.table.insertRowAbove=   | Insert row above           |
-| =scimax.table.insertRowBelow=   | Insert row below           |
-| =scimax.table.deleteRow=        | Delete current row         |
-| =scimax.table.insertColumnRight=| Insert column right        |
-| =scimax.table.deleteColumn=     | Delete current column      |
-| =scimax.table.moveRowUp=        | Move row up                |
-| =scimax.table.moveRowDown=      | Move row down              |
-| =scimax.table.moveColumnLeft=   | Move column left           |
-| =scimax.table.moveColumnRight=  | Move column right          |
-| =scimax.table.recalculate=      | Recalculate formulas       |
-| =scimax.table.sumColumn=        | Sum current column         |
-| =scimax.table.averageColumn=    | Average current column     |
-| =scimax.table.sortByColumn=     | Sort by current column     |
-| =scimax.table.export=           | Export table               |
-| =scimax.table.import=           | Import table               |
-| =scimax.table.gotoNamed=        | Go to named table          |
+| scimax.table.create           | Create new table           |
+| scimax.table.insertRowAbove   | Insert row above           |
+| scimax.table.insertRowBelow   | Insert row below           |
+| scimax.table.deleteRow        | Delete current row         |
+| scimax.table.insertColumnRight| Insert column right        |
+| scimax.table.deleteColumn     | Delete current column      |
+| scimax.table.moveRowUp        | Move row up                |
+| scimax.table.moveRowDown      | Move row down              |
+| scimax.table.moveColumnLeft   | Move column left           |
+| scimax.table.moveColumnRight  | Move column right          |
+| scimax.table.recalculate      | Recalculate formulas       |
+| scimax.table.sumColumn        | Sum current column         |
+| scimax.table.averageColumn    | Average current column     |
+| scimax.table.sortByColumn     | Sort by current column     |
+| scimax.table.export           | Export table               |
+| scimax.table.import           | Import table               |
+| scimax.table.gotoNamed        | Go to named table          |
 
-* Related Topics
+* ⚠️ Related Topics
 
 - [[file:source-blocks.org][Source Code Blocks]] - Process tables with code
 - [[file:export.org][Export]] - Table appearance in exports

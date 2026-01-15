@@ -3,8 +3,11 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Jupyter Integration
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Jupyter Integration
 
 Scimax VS Code provides comprehensive integration with Jupyter kernels, allowing you
 to execute source code blocks using Jupyter's powerful kernel infrastructure. This
@@ -14,35 +17,35 @@ output (plots, images, HTML), and persistent sessions with state management.
 This guide covers everything you need to know about using Jupyter kernels in Scimax
 VS Code org-mode documents.
 
-* Overview
+* ⚠️ Overview
 
-** What is Jupyter?
+** ⚠️ What is Jupyter?
 
 Jupyter is an open-source project that provides interactive computing environments
 across dozens of programming languages. At its core, Jupyter uses "kernels" -
 language-specific execution engines that run code and return results.
 
-** What Jupyter Integration Provides
+** ⚠️ What Jupyter Integration Provides
 
 The Jupyter integration in Scimax VS Code brings the following capabilities:
 
 - *Multi-language support* - Execute Python, Julia, R, and 20+ other languages
 - *Interactive sessions* - Maintain kernel state across multiple code blocks
 - *Rich output* - Display plots, images, HTML, LaTeX, and other media types
-- *Automatic image saving* - Graphics automatically saved to =.ob-jupyter/= directory
+- *Automatic image saving* - Graphics automatically saved to .ob-jupyter/ directory
 - *ZeroMQ protocol* - Native communication with Jupyter kernels via ZeroMQ
 - *Session management* - Run multiple kernels simultaneously with named sessions
 - *Kernel lifecycle control* - Start, stop, restart, and interrupt kernels
 - *VS Code integration* - Kernel status in status bar, output channel logging
 
-** Jupyter vs Native Executors
+** ⚠️ Jupyter vs Native Executors
 
 Scimax provides two ways to execute code blocks:
 
-1. *Native executors* - Direct execution via system commands (=python=, =node=, etc.)
-2. *Jupyter executors* - Execution via Jupyter kernels (=jupyter-python=, etc.)
+1. *Native executors* - Direct execution via system commands (python, node, etc.)
+2. *Jupyter executors* - Execution via Jupyter kernels (jupyter-python, etc.)
 
-*** When to Use Jupyter
+*** ⚠️ When to Use Jupyter
 
 Use Jupyter kernels when you need:
 - Persistent sessions with shared state across blocks
@@ -51,7 +54,7 @@ Use Jupyter kernels when you need:
 - Code completion and introspection
 - Multiple parallel sessions
 
-*** When to Use Native Executors
+*** ⚠️ When to Use Native Executors
 
 Use native executors when you need:
 - Quick one-off script execution
@@ -59,9 +62,9 @@ Use native executors when you need:
 - Shell integration (pipes, redirects)
 - System-level operations
 
-* Installation and Setup
+* ⚠️ Installation and Setup
 
-** Prerequisites
+** ⚠️ Prerequisites
 
 Before using Jupyter kernels, you need:
 
@@ -69,9 +72,9 @@ Before using Jupyter kernels, you need:
 2. *ZeroMQ native module* (automatically included with Scimax)
 3. *Kernel specifications* for your languages of interest
 
-** Installing Jupyter
+** ⚠️ Installing Jupyter
 
-*** Python Users
+*** ⚠️ Python Users
 
 If you have Python installed, install Jupyter using pip:
 
@@ -83,7 +86,7 @@ pip install jupyter ipykernel
 conda install jupyter
 #+END_SRC
 
-*** System Package Managers
+*** ⚠️ System Package Managers
 
 On Linux systems, Jupyter may be available via package managers:
 
@@ -98,15 +101,15 @@ sudo dnf install jupyter-core python3-ipykernel
 sudo pacman -S jupyter jupyter-core python-ipykernel
 #+END_SRC
 
-*** macOS with Homebrew
+*** ⚠️ macOS with Homebrew
 
 #+BEGIN_SRC shell :eval never
 brew install jupyter
 #+END_SRC
 
-** Installing Kernels
+** ⚠️ Installing Kernels
 
-*** Python (IPython Kernel)
+*** ⚠️ Python (IPython Kernel)
 
 The IPython kernel is installed automatically with Jupyter:
 
@@ -114,7 +117,7 @@ The IPython kernel is installed automatically with Jupyter:
 pip install ipykernel
 #+END_SRC
 
-*** Julia
+*** ⚠️ Julia
 
 Install the IJulia kernel from Julia:
 
@@ -123,7 +126,7 @@ using Pkg
 Pkg.add("IJulia")
 #+END_SRC
 
-*** R
+*** ⚠️ R
 
 Install the IRkernel from R:
 
@@ -132,23 +135,23 @@ install.packages('IRkernel')
 IRkernel::installspec()
 #+END_SRC
 
-*** Other Languages
+*** ⚠️ Other Languages
 
 Jupyter supports many languages through community kernels:
 
 | Language   | Kernel Name     | Installation                                  |
 |------------+-----------------+-----------------------------------------------|
-| JavaScript | ijavascript     | =npm install -g ijavascript && ijsinstall=    |
-| TypeScript | tslab           | =npm install -g tslab && tslab install=       |
-| Ruby       | iruby           | =gem install iruby && iruby register=         |
-| Rust       | evcxr           | =cargo install evcxr_jupyter && evcxr_jupyter --install= |
-| Go         | gophernotes     | =go install github.com/gopherdata/gophernotes@latest= |
-| C++        | xeus-cling      | =conda install -c conda-forge xeus-cling=     |
+| JavaScript | ijavascript     | npm install -g ijavascript && ijsinstall    |
+| TypeScript | tslab           | npm install -g tslab && tslab install       |
+| Ruby       | iruby           | gem install iruby && iruby register         |
+| Rust       | evcxr           | cargo install evcxr_jupyter && evcxr_jupyter --install |
+| Go         | gophernotes     | go install github.com/gopherdata/gophernotes@latest |
+| C++        | xeus-cling      | conda install -c conda-forge xeus-cling     |
 | Java       | IJava           | Download from https://github.com/SpencerPark/IJava |
 | Scala      | almond          | Follow instructions at https://almond.sh      |
-| Haskell    | IHaskell        | =stack install ihaskell && ihaskell install=  |
+| Haskell    | IHaskell        | stack install ihaskell && ihaskell install  |
 
-** Verifying Installation
+** ⚠️ Verifying Installation
 
 Check which kernels are installed:
 
@@ -158,7 +161,7 @@ jupyter kernelspec list
 
 This will display all available kernels with their installation paths.
 
-** Troubleshooting ZeroMQ
+** ⚠️ Troubleshooting ZeroMQ
 
 If you encounter ZeroMQ-related errors, the native module may need rebuilding for
 VS Code's Electron version. Scimax will display instructions if this is required.
@@ -172,13 +175,13 @@ compiled for a different Node.js version.
 
 Follow the on-screen instructions or consult the extension documentation.
 
-* Using Jupyter Kernels
+* ⚠️ Using Jupyter Kernels
 
-** Basic Execution
+** ⚠️ Basic Execution
 
-*** Explicit Jupyter Syntax
+*** ⚠️ Explicit Jupyter Syntax
 
-To explicitly use a Jupyter kernel, prefix the language name with =jupyter-=:
+To explicitly use a Jupyter kernel, prefix the language name with jupyter-:
 
 #+BEGIN_SRC org
 #+BEGIN_SRC jupyter-python
@@ -190,32 +193,32 @@ print(np.array([1, 2, 3, 4, 5]).mean())
 : 3.0
 #+END_SRC
 
-The =jupyter-= prefix forces Babel to use the Jupyter executor for that language.
+The jupyter- prefix forces Babel to use the Jupyter executor for that language.
 
-*** Supported Languages
+*** ⚠️ Supported Languages
 
 The Jupyter executor recognizes these language prefixes:
 
 | Org Language        | Kernel Language | Common Kernel Names          |
 |---------------------+-----------------+------------------------------|
-| =jupyter-python=    | python          | =python3=, =python=          |
-| =jupyter-julia=     | julia           | =julia-1.9=, =julia=         |
-| =jupyter-r=         | r               | =ir=                         |
-| =jupyter-ruby=      | ruby            | =ruby=                       |
-| =jupyter-rust=      | rust            | =rust=, =evcxr=              |
-| =jupyter-go=        | go              | =gophernotes=                |
-| =jupyter-c++=       | c++             | =xcpp=, =xeus-cling=         |
-| =jupyter-java=      | java            | =java=, =ijava=              |
-| =jupyter-scala=     | scala           | =scala=, =almond=            |
-| =jupyter-haskell=   | haskell         | =haskell=, =ihaskell=        |
-| =jupyter-javascript= | javascript      | =javascript=, =nodejs=       |
-| =jupyter-typescript= | typescript      | =typescript=, =tslab=        |
+| jupyter-python    | python          | python3, python          |
+| jupyter-julia     | julia           | julia-1.9, julia         |
+| jupyter-r         | r               | ir                         |
+| jupyter-ruby      | ruby            | ruby                       |
+| jupyter-rust      | rust            | rust, evcxr              |
+| jupyter-go        | go              | gophernotes                |
+| jupyter-c++       | c++             | xcpp, xeus-cling         |
+| jupyter-java      | java            | java, ijava              |
+| jupyter-scala     | scala           | scala, almond            |
+| jupyter-haskell   | haskell         | haskell, ihaskell        |
+| jupyter-javascript | javascript      | javascript, nodejs       |
+| jupyter-typescript | typescript      | typescript, tslab        |
 
-** Session Management
+** ⚠️ Session Management
 
-*** Named Sessions
+*** ⚠️ Named Sessions
 
-Use the =:session= header argument to maintain persistent kernel state:
+Use the :session header argument to maintain persistent kernel state:
 
 #+BEGIN_SRC org
 #+BEGIN_SRC jupyter-python :session my-analysis
@@ -244,9 +247,9 @@ print(data.describe())
 : max    3.000000  6.000000
 #+END_SRC
 
-All blocks with the same =:session= name share the same kernel and namespace.
+All blocks with the same :session name share the same kernel and namespace.
 
-*** Default Session
+*** ⚠️ Default Session
 
 If no session name is specified, blocks use a language-specific default session:
 
@@ -262,7 +265,7 @@ print(x)
 #+END_SRC
 #+END_SRC
 
-*** Multiple Sessions
+*** ⚠️ Multiple Sessions
 
 You can run multiple independent sessions simultaneously:
 
@@ -285,15 +288,15 @@ print(f"Loaded {len(data)} rows")
 
 Each session runs in its own kernel with isolated state.
 
-** Rich Output and Visualization
+** ⚠️ Rich Output and Visualization
 
-*** Image Output
+*** ⚠️ Image Output
 
 Jupyter kernels can produce rich output including images. When a code block generates
 an image (matplotlib plot, Julia plot, etc.), it is automatically saved to the
-=.ob-jupyter/= directory in your document's folder.
+.ob-jupyter/ directory in your document's folder.
 
-**** Python Matplotlib Example
+**** ⚠️ Python Matplotlib Example
 
 #+BEGIN_SRC org
 #+BEGIN_SRC jupyter-python :session :results file
@@ -318,7 +321,7 @@ plt.show()
 The image is automatically linked in the results, and you'll see it rendered in
 VS Code's org-mode preview.
 
-**** Julia Plots Example
+**** ⚠️ Julia Plots Example
 
 #+BEGIN_SRC org
 #+BEGIN_SRC jupyter-julia :session :results file
@@ -332,7 +335,7 @@ plot(x, [sin.(x) cos.(x)], label=["sin" "cos"],
 [[.ob-jupyter/output-1705171200001-0.png]]
 #+END_SRC
 
-**** R Graphics Example
+**** ⚠️ R Graphics Example
 
 #+BEGIN_SRC org
 #+BEGIN_SRC jupyter-r :session :results file
@@ -346,21 +349,21 @@ legend('topright', c('sin(x)', 'cos(x)'), col=c('blue', 'red'), lty=1)
 [[.ob-jupyter/output-1705171200002-0.png]]
 #+END_SRC
 
-*** Supported Output Types
+*** ⚠️ Supported Output Types
 
 The Jupyter integration automatically handles these MIME types:
 
-- =image/png= - PNG images (most common for plots)
-- =image/svg+xml= - SVG vector graphics
-- =image/jpeg= - JPEG images
-- =application/pdf= - PDF documents
-- =text/html= - HTML content (saved as =.html= for complex output)
-- =text/plain= - Plain text output
-- =text/latex= - LaTeX equations
+- image/png - PNG images (most common for plots)
+- image/svg+xml - SVG vector graphics
+- image/jpeg - JPEG images
+- application/pdf - PDF documents
+- text/html - HTML content (saved as .html for complex output)
+- text/plain - Plain text output
+- text/latex - LaTeX equations
 
-*** The .ob-jupyter Directory
+*** ⚠️ The .ob-jupyter Directory
 
-All Jupyter output files are saved to =.ob-jupyter/= in your document's directory:
+All Jupyter output files are saved to .ob-jupyter/ in your document's directory:
 
 #+BEGIN_EXAMPLE
 my-analysis.org
@@ -370,19 +373,19 @@ my-analysis.org
   └── output-1705171200002-0.html
 #+END_EXAMPLE
 
-Files are named =output-<timestamp>-<counter>.<ext>= to ensure uniqueness.
+Files are named output-<timestamp>-<counter>.<ext> to ensure uniqueness.
 
-*Note:* Add =.ob-jupyter/= to your =.gitignore= if you don't want to commit
+*Note:* Add .ob-jupyter/ to your .gitignore if you don't want to commit
 generated outputs to version control.
 
-** Header Arguments
+** ⚠️ Header Arguments
 
 Jupyter blocks support all standard Babel header arguments plus Jupyter-specific
 options.
 
-*** Common Header Arguments
+*** ⚠️ Common Header Arguments
 
-**** :session
+**** ⚠️ :session
 
 Controls which kernel session to use:
 
@@ -400,7 +403,7 @@ Controls which kernel session to use:
 #+END_SRC
 #+END_SRC
 
-**** :results
+**** ⚠️ :results
 
 Controls how results are collected and displayed:
 
@@ -429,7 +432,7 @@ x = expensive_computation()
 #+END_SRC
 #+END_SRC
 
-**** :exports
+**** ⚠️ :exports
 
 Controls what gets exported to HTML/PDF/LaTeX:
 
@@ -456,7 +459,7 @@ matplotlib.use('Agg')  # Backend setup not shown
 #+END_SRC
 #+END_SRC
 
-**** :dir
+**** ⚠️ :dir
 
 Set the working directory for code execution:
 
@@ -467,7 +470,7 @@ print(os.getcwd())  # Prints: /path/to/project
 #+END_SRC
 #+END_SRC
 
-**** :var
+**** ⚠️ :var
 
 Pass variables between blocks:
 
@@ -498,7 +501,7 @@ for line in lines:
 : Carol is 35 years old
 #+END_SRC
 
-**** :file
+**** ⚠️ :file
 
 Explicitly specify output file path (overrides auto-naming):
 
@@ -513,9 +516,9 @@ plt.savefig('my-plot.png')
 [[file:my-plot.png]]
 #+END_SRC
 
-*** Less Common Header Arguments
+*** ⚠️ Less Common Header Arguments
 
-**** :cache
+**** ⚠️ :cache
 
 Cache results to avoid re-execution:
 
@@ -530,7 +533,7 @@ print(result)
 
 Results are cached based on code content. Changes to code invalidate the cache.
 
-**** :async
+**** ⚠️ :async
 
 Run block asynchronously (non-blocking):
 
@@ -545,7 +548,7 @@ print("Done!")
 
 *Note:* Async support depends on the execution backend implementation.
 
-**** :prologue / :epilogue
+**** ⚠️ :prologue / :epilogue
 
 Add code before/after the block:
 
@@ -558,38 +561,38 @@ print(x.mean())
 #+END_SRC
 #+END_SRC
 
-* Kernel Management
+* ⚠️ Kernel Management
 
-** Starting Kernels
+** ⚠️ Starting Kernels
 
-*** Automatic Start
+*** ⚠️ Automatic Start
 
 Kernels start automatically when you execute a Jupyter block. The first execution
 creates the kernel; subsequent blocks reuse it.
 
-*** Manual Start
+*** ⚠️ Manual Start
 
 You can manually start a kernel before executing code:
 
-*Command:* =Jupyter: Start Kernel=
+*Command:* Jupyter: Start Kernel
 
 This command:
 1. Detects the language of the current block (or file)
 2. Finds an appropriate kernel
 3. Starts the kernel in a default session
 
-*** Selecting a Specific Kernel
+*** ⚠️ Selecting a Specific Kernel
 
-*Command:* =Jupyter: Show Available Kernels=
+*Command:* Jupyter: Show Available Kernels
 
 This command:
 1. Lists all installed Jupyter kernels
 2. Allows you to select and start one
 3. Shows kernel display name, language, and installation path
 
-** Viewing Running Kernels
+** ⚠️ Viewing Running Kernels
 
-*Command:* =Jupyter: Show Running Kernels=
+*Command:* Jupyter: Show Running Kernels
 
 This displays all active kernels with:
 - Session name
@@ -603,22 +606,22 @@ From this menu you can:
 - Shutdown a kernel
 - View kernel information
 
-** Kernel States
+** ⚠️ Kernel States
 
 Kernels can be in one of several states:
 
 | State     | Description                                      | Status Bar Icon    |
 |-----------+--------------------------------------------------+--------------------|
-| starting  | Kernel is launching                              | =$(loading~spin)=  |
-| idle      | Kernel is ready and waiting                      | =$(check)=         |
-| busy      | Kernel is executing code                         | =$(sync~spin)=     |
-| dead      | Kernel has stopped or crashed                    | =$(error)=         |
+| starting  | Kernel is launching                              | $(loading~spin)  |
+| idle      | Kernel is ready and waiting                      | $(check)         |
+| busy      | Kernel is executing code                         | $(sync~spin)     |
+| dead      | Kernel has stopped or crashed                    | $(error)         |
 
 The kernel state is shown in the VS Code status bar when a kernel is active.
 
-** Restarting Kernels
+** ⚠️ Restarting Kernels
 
-*Command:* =Jupyter: Restart Kernel=
+*Command:* Jupyter: Restart Kernel
 
 Restarting a kernel:
 - Terminates the current kernel process
@@ -632,9 +635,9 @@ Use restart when:
 - You need to reload modified modules
 - Memory usage grows too large
 
-** Interrupting Kernels
+** ⚠️ Interrupting Kernels
 
-*Command:* =Jupyter: Interrupt Kernel=
+*Command:* Jupyter: Interrupt Kernel
 
 Interrupting sends a SIGINT (Ctrl+C) to the kernel:
 - Stops currently executing code
@@ -646,22 +649,22 @@ Use interrupt when:
 - You notice an error in the running code
 - You want to stop an infinite loop
 
-** Stopping Kernels
+** ⚠️ Stopping Kernels
 
-*Command:* =Jupyter: Shutdown Kernel=
+*Command:* Jupyter: Shutdown Kernel
 
 Stopping a kernel:
 - Gracefully terminates the kernel process
 - Frees system resources
 - Removes the session (state is lost)
 
-*Command:* =Jupyter: Shutdown All Kernels=
+*Command:* Jupyter: Shutdown All Kernels
 
 Shuts down all running kernels simultaneously.
 
-## Changing Kernels
+** ⚠️ Changing Kernels
 
-*Command:* =Jupyter: Change Kernel=
+*Command:* Jupyter: Change Kernel
 
 This allows you to:
 1. Select a new kernel spec
@@ -671,9 +674,9 @@ This allows you to:
 
 Use this to switch languages or kernel versions without changing session names.
 
-* Advanced Usage
+* ⚠️ Advanced Usage
 
-** Mixing Languages
+** ⚠️ Mixing Languages
 
 You can use multiple Jupyter kernels in a single document:
 
@@ -706,7 +709,7 @@ barplot(data$values, main="Values", col="steelblue")
 Each language runs in its own kernel with isolated state. Use files or other IPC
 mechanisms to pass data between languages.
 
-** IPython Magics
+** ⚠️ IPython Magics
 
 When using Python kernels, you have access to IPython magic commands:
 
@@ -736,15 +739,15 @@ for i in range(1000):
 #+END_SRC
 
 Common magic commands:
-- =%timeit= / =%%timeit= - Time execution
-- =%run= - Run external Python file
-- =%load= - Load code from file into cell
-- =%who= / =%whos= - List variables
-- =%matplotlib= - Set matplotlib backend
-- =%load_ext= - Load IPython extensions
-- =!command= - Run shell command
+- %timeit / %%timeit - Time execution
+- %run - Run external Python file
+- %load - Load code from file into cell
+- %who / %whos - List variables
+- %matplotlib - Set matplotlib backend
+- %load_ext - Load IPython extensions
+- !command - Run shell command
 
-** Kernel Introspection
+** ⚠️ Kernel Introspection
 
 Jupyter kernels support code introspection (when exposed via VS Code APIs):
 
@@ -754,28 +757,28 @@ Jupyter kernels support code introspection (when exposed via VS Code APIs):
 
 The level of support depends on the specific kernel implementation.
 
-** Custom Kernel Discovery
+** ⚠️ Custom Kernel Discovery
 
 Jupyter looks for kernels in standard locations:
 
 *Linux/macOS:*
-- =~/.local/share/jupyter/kernels/=
-- =/usr/local/share/jupyter/kernels/=
-- =/usr/share/jupyter/kernels/=
+- ~/.local/share/jupyter/kernels/
+- /usr/local/share/jupyter/kernels/
+- /usr/share/jupyter/kernels/
 
 *Windows:*
-- =%APPDATA%\jupyter\kernels=
-- =%PROGRAMDATA%\jupyter\kernels=
+- %APPDATA%\jupyter\kernels
+- %PROGRAMDATA%\jupyter\kernels
 
 *Environment Variables:*
-- =JUPYTER_DATA_DIR= - Override default data directory
-- =JUPYTER_PATH= - Additional search paths (colon-separated)
+- JUPYTER_DATA_DIR - Override default data directory
+- JUPYTER_PATH - Additional search paths (colon-separated)
 
-To make a custom kernel available, place its =kernel.json= in one of these directories.
+To make a custom kernel available, place its kernel.json in one of these directories.
 
-** Performance Considerations
+** ⚠️ Performance Considerations
 
-*** Kernel Startup Time
+*** ⚠️ Kernel Startup Time
 
 First execution in a new session incurs kernel startup overhead:
 - Python: ~1-3 seconds
@@ -784,23 +787,23 @@ First execution in a new session incurs kernel startup overhead:
 
 Keep sessions running to avoid repeated startup costs.
 
-*** Memory Usage
+*** ⚠️ Memory Usage
 
 Each kernel is a separate process with its own memory:
 - Monitor memory usage with system tools
 - Restart kernels to free memory
-- Use =del= (Python), =clear= (Julia), =rm()= (R) to free objects
+- Use del (Python), clear (Julia), rm() (R) to free objects
 
-*** Image Output
+*** ⚠️ Image Output
 
 Large images increase document size:
-- Matplotlib: Use =plt.savefig(dpi=..., bbox_inches='tight')= to control size
+- Matplotlib: Use plt.savefig(dpi=..., bbox_inches='tight') to control size
 - Consider using SVG for vector graphics (smaller, scalable)
-- Use =:results silent= for intermediate plots
+- Use :results silent for intermediate plots
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Kernel Not Found
+** ⚠️ Kernel Not Found
 
 *Symptom:* Error message "No Jupyter kernel found for language: <language>"
 
@@ -813,14 +816,14 @@ Large images increase document size:
 
 2. Install the kernel if missing (see Installation section)
 
-3. Check that =jupyter= is in your PATH:
+3. Check that jupyter is in your PATH:
    #+BEGIN_SRC shell :eval never
    which jupyter
    #+END_SRC
 
 4. If using a virtual environment, ensure it's activated
 
-** Kernel Dies Immediately
+** ⚠️ Kernel Dies Immediately
 
 *Symptom:* Kernel starts but immediately transitions to "dead" state
 
@@ -835,16 +838,16 @@ Large images increase document size:
    #+END_SRC
 
 3. Check kernel logs in Jupyter runtime directory:
-   - Linux: =~/.local/share/jupyter/runtime/=
-   - macOS: =~/Library/Jupyter/runtime/=
-   - Windows: =%APPDATA%\jupyter\runtime=
+   - Linux: ~/.local/share/jupyter/runtime/
+   - macOS: ~/Library/Jupyter/runtime/
+   - Windows: %APPDATA%\jupyter\runtime
 
 4. Common issues:
-   - Missing dependencies (check kernel's =kernel.json= argv)
+   - Missing dependencies (check kernel's kernel.json argv)
    - Incorrect Python/Julia/R path
    - Conflicting package versions
 
-** ZeroMQ Errors
+** ⚠️ ZeroMQ Errors
 
 *Symptom:* "Failed to load ZeroMQ native module"
 
@@ -859,7 +862,7 @@ Large images increase document size:
    #+END_SRC
 4. Restart VS Code after rebuilding
 
-** Connection Timeout
+** ⚠️ Connection Timeout
 
 *Symptom:* "Timeout waiting for kernel to start"
 
@@ -870,34 +873,34 @@ Large images increase document size:
 3. Verify ports are available (not blocked by other processes)
 4. Check system resources (CPU, memory)
 
-** Output Not Appearing
+** ⚠️ Output Not Appearing
 
 *Symptom:* Code executes but no results shown
 
 *Possible causes:*
 
-1. =:results silent= header argument
-2. =:exports none= or =:exports code=
+1. :results silent header argument
+2. :exports none or :exports code
 3. Code doesn't produce output (no print/return)
 4. Error occurred but was suppressed
 
 *Solutions:*
 
-1. Remove =:results silent=
-2. Check =:exports= setting
-3. Add explicit =print()= statements
+1. Remove :results silent
+2. Check :exports setting
+3. Add explicit print() statements
 4. Check stderr in output channel
 
-** Images Not Saving
+** ⚠️ Images Not Saving
 
 *Symptom:* Plots execute but no image file created
 
 *Solutions:*
 
-1. Ensure =:results file= is set (or omitted, file is default for graphics)
-2. Check =.ob-jupyter/= directory exists and is writable
+1. Ensure :results file is set (or omitted, file is default for graphics)
+2. Check .ob-jupyter/ directory exists and is writable
 3. Verify the plotting library is properly configured:
-   - Python: =plt.show()= or =display(fig)=
+   - Python: plt.show() or display(fig)
    - Julia: Just evaluate the plot object
    - R: Plotting functions automatically display
 
@@ -908,18 +911,18 @@ Large images increase document size:
    plt.show()  # Important for matplotlib
    #+END_SRC
 
-** Kernel State Confusion
+** ⚠️ Kernel State Confusion
 
 *Symptom:* Variables not found or unexpected state
 
 *Solutions:*
 
-1. Verify you're using the same =:session= name
+1. Verify you're using the same :session name
 2. Check execution order (blocks may be out of sequence)
 3. Restart the kernel to clear state
 4. Use explicit session names to avoid confusion
 
-** Multiple Kernel Versions
+** ⚠️ Multiple Kernel Versions
 
 *Symptom:* Wrong kernel version selected
 
@@ -930,72 +933,72 @@ Large images increase document size:
    jupyter kernelspec list
    #+END_SRC
 
-2. Use specific kernel names in =kernel.json= (e.g., =julia-1.9=)
+2. Use specific kernel names in kernel.json (e.g., julia-1.9)
 3. Remove unwanted kernel specs:
    #+BEGIN_SRC shell :eval never
    jupyter kernelspec uninstall <kernel-name>
    #+END_SRC
 
-** Session Conflicts
+** ⚠️ Session Conflicts
 
 *Symptom:* Unexpected shared state between blocks
 
-This is by design! Blocks with the same =:session= name share state.
+This is by design! Blocks with the same :session name share state.
 
 *Solutions:*
 
 1. Use different session names for independent computations
-2. Use no =:session= for isolated executions
+2. Use no :session for isolated executions
 3. Restart the kernel to clear shared state
 
-* Tips and Best Practices
+* ⚠️ Tips and Best Practices
 
-** Session Naming
+** ⚠️ Session Naming
 
-- Use descriptive session names: =:session data-preprocessing=
+- Use descriptive session names: :session data-preprocessing
 - Group related blocks in the same session
 - Use separate sessions for independent analyses
-- Omit =:session= for quick one-off computations
+- Omit :session for quick one-off computations
 
-** Image Management
+** ⚠️ Image Management
 
-- Add =.ob-jupyter/= to =.gitignore= if outputs are generated
-- Use =:file custom-name.png= for important plots you want to keep
-- Periodically clean up =.ob-jupyter/= to save disk space
+- Add .ob-jupyter/ to .gitignore if outputs are generated
+- Use :file custom-name.png for important plots you want to keep
+- Periodically clean up .ob-jupyter/ to save disk space
 - Use SVG format for publication-quality vector graphics
 
-** Performance Optimization
+** ⚠️ Performance Optimization
 
 - Keep kernels running during active development
 - Shutdown unused kernels to free memory
-- Use =:cache yes= for expensive computations
-- Consider =:results silent= for intermediate steps
+- Use :cache yes for expensive computations
+- Consider :results silent for intermediate steps
 - Break large computations into smaller blocks
 
-** Reproducibility
+** ⚠️ Reproducibility
 
 - Document kernel versions and dependencies
-- Use =:session= to ensure execution order
-- Include setup blocks with =:exports none=
-- Consider =:prologue= for common imports
+- Use :session to ensure execution order
+- Include setup blocks with :exports none
+- Consider :prologue for common imports
 - Test the full document with a fresh kernel
 
-** Error Handling
+** ⚠️ Error Handling
 
 - Check the "Jupyter Kernels" output channel for detailed errors
-- Use explicit =print()= statements for debugging
+- Use explicit print() statements for debugging
 - Interrupt kernels rather than restarting when possible
 - Add try/except blocks for robust error handling
 
-** Literate Programming
+** ⚠️ Literate Programming
 
 - Explain code intent before each block
-- Use =:exports code= for implementation details
-- Use =:exports results= to show only output
+- Use :exports code for implementation details
+- Use :exports results to show only output
 - Group related blocks under headings
-- Use =:tangle= to extract code to files
+- Use :tangle to extract code to files
 
-** Mixed Language Workflows
+** ⚠️ Mixed Language Workflows
 
 - Use JSON/CSV files to pass data between languages
 - Keep each language in its own session
@@ -1003,9 +1006,9 @@ This is by design! Blocks with the same =:session= name share state.
 - Consider temporary files for large data transfers
 - Use each language for its strengths
 
-* Examples
+* ⚠️ Examples
 
-** Complete Data Analysis Example
+** ⚠️ Complete Data Analysis Example
 
 Here's a complete example showing a data analysis workflow:
 
@@ -1074,7 +1077,7 @@ The analysis reveals clear seasonal patterns in sales data with peak performance
 during summer months.
 #+END_SRC
 
-** Julia Scientific Computing Example
+** ⚠️ Julia Scientific Computing Example
 
 #+BEGIN_SRC org
 ,* Numerical Methods: Newton's Method
@@ -1117,7 +1120,7 @@ title!("Finding √2 using Newton's Method")
 ,#+END_SRC
 #+END_SRC
 
-** R Statistical Analysis Example
+** ⚠️ R Statistical Analysis Example
 
 #+BEGIN_SRC org
 ,* Statistical Analysis: t-test
@@ -1148,28 +1151,28 @@ legend("topright", "Mean", pch=19, col="red")
 ,#+END_SRC
 #+END_SRC
 
-* Further Reading
+* ⚠️ Further Reading
 
-** Official Documentation
+** ⚠️ Official Documentation
 
 - [[https://jupyter.org/][Jupyter Project Website]]
 - [[https://jupyter-client.readthedocs.io/][Jupyter Client Documentation]]
 - [[https://ipython.readthedocs.io/][IPython Documentation]]
 - [[https://github.com/jupyter/jupyter/wiki/Jupyter-kernels][List of Jupyter Kernels]]
 
-** Org-Mode and Babel
+** ⚠️ Org-Mode and Babel
 
 - [[https://orgmode.org/manual/Working-with-Source-Code.html][Org Manual: Working with Source Code]]
 - [[https://orgmode.org/worg/org-contrib/babel/intro.html][Babel Introduction]]
 - [[file:source-blocks.org][Scimax Source Blocks Documentation]]
 
-** Language-Specific Resources
+** ⚠️ Language-Specific Resources
 
 - [[https://ipython.readthedocs.io/en/stable/interactive/magics.html][IPython Magic Commands]]
 - [[https://docs.julialang.org/en/v1/stdlib/IJulia/][IJulia Documentation]]
 - [[https://irkernel.github.io/][IRkernel Documentation]]
 
-* Appendix: Jupyter Protocol
+* ⚠️ Appendix: Jupyter Protocol
 
 The Jupyter integration uses the Jupyter Messaging Protocol (version 5.3) over
 ZeroMQ sockets. This provides:
@@ -1182,7 +1185,7 @@ ZeroMQ sockets. This provides:
 
 Message signing uses HMAC-SHA256 to ensure message integrity.
 
-** Connection Files
+** ⚠️ Connection Files
 
 Kernels are started with connection files containing:
 
@@ -1204,7 +1207,7 @@ These files are stored in the Jupyter runtime directory and cleaned up when
 kernels stop.
 
 
-* Related Topics
+* ⚠️ Related Topics
 
 - [[file:source-blocks.org][Source Code Blocks]] - Code execution and header arguments
 - [[file:supported-languages.org][Supported Languages]] - All available languages

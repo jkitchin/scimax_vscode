@@ -3,8 +3,11 @@
 #+DATE: 2026-01-14
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Overview
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Overview
 
 Scimax VS Code supports a wide range of programming languages for source block execution through two primary mechanisms:
 
@@ -13,9 +16,9 @@ Scimax VS Code supports a wide range of programming languages for source block e
 
 This document provides a comprehensive reference for all supported languages, including syntax examples, execution modes, session support, and required dependencies.
 
-* Understanding Execution Modes
+* ⚠️ Understanding Execution Modes
 
-** Native Execution
+** ⚠️ Native Execution
 
 Native executors run code directly using installed command-line interpreters. They are:
 - Fast and lightweight
@@ -24,7 +27,7 @@ Native executors run code directly using installed command-line interpreters. Th
 
 Supported natively: Python, JavaScript/Node.js, Shell/Bash
 
-** Jupyter Execution
+** ⚠️ Jupyter Execution
 
 Jupyter executors use Jupyter kernels for code execution. They provide:
 - Full session support (variables persist between blocks)
@@ -33,10 +36,10 @@ Jupyter executors use Jupyter kernels for code execution. They provide:
 - Support for many languages
 
 To use Jupyter for any language:
-1. *Explicit syntax*: Use =jupyter-<language>= (e.g., =jupyter-python=)
+1. *Explicit syntax*: Use jupyter-<language> (e.g., jupyter-python)
 2. *Auto-detection*: Some languages automatically use Jupyter if available
 
-** Determining Which Executor Runs
+** ⚠️ Determining Which Executor Runs
 
 #+BEGIN_SRC org
 # Native Python (direct python3 command)
@@ -50,29 +53,29 @@ print("Hello from Jupyter Python")
 #+END_SRC
 #+END_SRC
 
-* Scripting Languages
+* ⚠️ Scripting Languages
 
-** Python
+** ⚠️ Python
 :PROPERTIES:
 :ID: lang-python
 :END:
 
-*** Language Identifiers
-- =python=, =python3=, =py=, =ipython=
+*** ⚠️ Language Identifiers
+- python, python3, py, ipython
 
-*** Execution Modes
-- *Native*: Direct execution via =python3= command
-- *Jupyter*: Use =jupyter-python= or =jupyter-ipython=
+*** ⚠️ Execution Modes
+- *Native*: Direct execution via python3 command
+- *Jupyter*: Use jupyter-python or jupyter-ipython
 
-*** Session Support
+*** ⚠️ Session Support
 - Native: No (each block runs in isolation)
 - Jupyter: Yes (full state persistence)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - *Native*: Python 3.x installed and in PATH
 - *Jupyter*: Jupyter and IPython kernel installed
 
-*** Basic Example (Native)
+*** ⚠️ Basic Example (Native)
 
 #+BEGIN_SRC python
 # Native Python execution
@@ -87,7 +90,7 @@ print(f"Circle area: {area:.2f}")
 #+RESULTS:
 : Circle area: 78.54
 
-*** Session Example (Jupyter)
+*** ⚠️ Session Example (Jupyter)
 
 #+BEGIN_SRC jupyter-python :session *py-session*
 # First block - define variables
@@ -108,7 +111,7 @@ print(f"Mean: {mean}")
 #+RESULTS:
 : Mean: 3.0
 
-*** Plotting Example
+*** ⚠️ Plotting Example
 
 #+BEGIN_SRC jupyter-python :results file :file plot.png
 import matplotlib.pyplot as plt
@@ -129,36 +132,36 @@ plt.close()
 #+RESULTS:
 [[file:plot.png]]
 
-*** Special Features
+*** ⚠️ Special Features
 - Rich output in Jupyter (plots, tables, HTML)
 - NumPy, pandas, matplotlib integration
 - Automatic result formatting
 
-*** Limitations
+*** ⚠️ Limitations
 - Native mode has no session support
 - Large output may be truncated
 
-** JavaScript/Node.js
+** ⚠️ JavaScript/Node.js
 :PROPERTIES:
 :ID: lang-javascript
 :END:
 
-*** Language Identifiers
-- =javascript=, =js=, =node=, =nodejs=
+*** ⚠️ Language Identifiers
+- javascript, js, node, nodejs
 
-*** Execution Modes
-- *Native*: Direct execution via =node= command
-- *Jupyter*: Use =jupyter-javascript= (requires IJavascript kernel)
+*** ⚠️ Execution Modes
+- *Native*: Direct execution via node command
+- *Jupyter*: Use jupyter-javascript (requires IJavascript kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Native: No
 - Jupyter: Yes (with IJavascript kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - *Native*: Node.js installed and in PATH
-- *Jupyter*: IJavascript kernel (=npm install -g ijavascript=)
+- *Jupyter*: IJavascript kernel (npm install -g ijavascript)
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC javascript
 // JavaScript execution
@@ -170,7 +173,7 @@ console.log(`Sum: ${sum}`);
 #+RESULTS:
 : Sum: 15
 
-*** Working with JSON
+*** ⚠️ Working with JSON
 
 #+BEGIN_SRC javascript
 const data = {
@@ -193,7 +196,7 @@ console.log(JSON.stringify(data, null, 2));
 :   ]
 : }
 
-*** Async/Await Example
+*** ⚠️ Async/Await Example
 
 #+BEGIN_SRC javascript
 async function fetchData() {
@@ -209,33 +212,33 @@ async function fetchData() {
 })();
 #+END_SRC
 
-*** Special Features
+*** ⚠️ Special Features
 - Full ES6+ support
 - NPM module access
 - Async/await support
 
-*** Limitations
+*** ⚠️ Limitations
 - Native mode runs in separate process each time
 - No browser APIs (runs in Node.js)
 
-** TypeScript
+** ⚠️ TypeScript
 :PROPERTIES:
 :ID: lang-typescript
 :END:
 
-*** Language Identifiers
-- =typescript=, =ts=
+*** ⚠️ Language Identifiers
+- typescript, ts
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-typescript= (requires TSLab kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-typescript (requires TSLab kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (with TSLab kernel)
 
-*** Dependencies
-- TSLab kernel: =npm install -g tslab && tslab install=
+*** ⚠️ Dependencies
+- TSLab kernel: npm install -g tslab && tslab install
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-typescript
 interface Person {
@@ -251,7 +254,7 @@ const person: Person = {
 console.log(`${person.name} is ${person.age} years old`);
 #+END_SRC
 
-*** Type Checking
+*** ⚠️ Type Checking
 
 #+BEGIN_SRC jupyter-typescript
 function greet(name: string): string {
@@ -265,30 +268,30 @@ console.log(greet("World"));
 // console.log(greet(42));
 #+END_SRC
 
-*** Special Features
+*** ⚠️ Special Features
 - Full TypeScript type checking
 - Modern JavaScript features
 - Type inference
 
-** Ruby
+** ⚠️ Ruby
 :PROPERTIES:
 :ID: lang-ruby
 :END:
 
-*** Language Identifiers
-- =ruby=
+*** ⚠️ Language Identifiers
+- ruby
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-ruby= (requires IRuby kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-ruby (requires IRuby kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (with IRuby kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Ruby installed
-- IRuby kernel: =gem install iruby && iruby register=
+- IRuby kernel: gem install iruby && iruby register
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-ruby
 # Ruby execution
@@ -300,7 +303,7 @@ puts "Squared: #{squared.inspect}"
 #+RESULTS:
 : Squared: [1, 4, 9, 16, 25]
 
-*** Object-Oriented Example
+*** ⚠️ Object-Oriented Example
 
 #+BEGIN_SRC jupyter-ruby
 class Circle
@@ -319,25 +322,25 @@ circle = Circle.new(5)
 puts "Area: #{circle.area.round(2)}"
 #+END_SRC
 
-** Perl
+** ⚠️ Perl
 :PROPERTIES:
 :ID: lang-perl
 :END:
 
-*** Language Identifiers
-- =perl=
+*** ⚠️ Language Identifiers
+- perl
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-perl= (requires IPerl kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-perl (requires IPerl kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (with IPerl kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Perl installed
 - IPerl kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-perl
 # Perl execution
@@ -347,29 +350,29 @@ $sum += $_ for @numbers;
 print "Sum: $sum\n";
 #+END_SRC
 
-* Shell Languages
+* ⚠️ Shell Languages
 
-** Bash/Shell
+** ⚠️ Bash/Shell
 :PROPERTIES:
 :ID: lang-bash
 :END:
 
-*** Language Identifiers
-- =sh=, =bash=, =shell=
+*** ⚠️ Language Identifiers
+- sh, bash, shell
 
-*** Execution Modes
+*** ⚠️ Execution Modes
 - *Native*: Direct shell execution (default on Unix, cmd.exe on Windows)
-- *Jupyter*: Use =jupyter-bash= (requires Bash kernel)
+- *Jupyter*: Use jupyter-bash (requires Bash kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Native: No
 - Jupyter: Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - *Native*: Bash shell (standard on Unix/Linux/macOS)
 - *Jupyter*: Bash kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC bash
 # List files in current directory
@@ -381,7 +384,7 @@ ls -la | head -n 10
 : drwxr-xr-x  5 user staff  160 Jan 14 00:00 .
 : drwxr-xr-x 10 user staff  320 Jan 13 23:00 ..
 
-*** Command Pipeline
+*** ⚠️ Command Pipeline
 
 #+BEGIN_SRC bash
 # Find large files
@@ -392,7 +395,7 @@ find . -type f -size +1M | \
   head -5
 #+END_SRC
 
-*** Environment Variables
+*** ⚠️ Environment Variables
 
 #+BEGIN_SRC bash :dir /tmp
 # Working directory and environment
@@ -401,76 +404,76 @@ echo $MY_VAR
 pwd
 #+END_SRC
 
-*** Special Features
+*** ⚠️ Special Features
 - Full shell features (pipes, redirects, etc.)
 - Environment variable access
 - System command execution
 
-*** Limitations
+*** ⚠️ Limitations
 - Native mode doesn't preserve state
 - Platform-specific behavior (Unix vs Windows)
 
-** PowerShell
+** ⚠️ PowerShell
 :PROPERTIES:
 :ID: lang-powershell
 :END:
 
-*** Language Identifiers
-- =powershell=, =pwsh=
+*** ⚠️ Language Identifiers
+- powershell, pwsh
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-powershell= (requires PowerShell kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-powershell (requires PowerShell kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (with kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - PowerShell installed
 - PowerShell kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-powershell
 # PowerShell execution
 Get-ChildItem | Select-Object Name, Length | Format-Table
 #+END_SRC
 
-** Zsh
+** ⚠️ Zsh
 :PROPERTIES:
 :ID: lang-zsh
 :END:
 
-*** Language Identifiers
-- =zsh=
+*** ⚠️ Language Identifiers
+- zsh
 
-*** Execution Modes
+*** ⚠️ Execution Modes
 - Can use bash executor as fallback
-- *Jupyter*: Use =jupyter-bash= with zsh configured
+- *Jupyter*: Use jupyter-bash with zsh configured
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Zsh shell installed
 
-* Data Science Languages
+* ⚠️ Data Science Languages
 
-** R
+** ⚠️ R
 :PROPERTIES:
 :ID: lang-r
 :END:
 
-*** Language Identifiers
-- =r=, =R=
+*** ⚠️ Language Identifiers
+- r, R
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-r= (requires IRkernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-r (requires IRkernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (full state persistence)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - R installed
-- IRkernel: Install from R with =install.packages('IRkernel'); IRkernel::installspec()=
+- IRkernel: Install from R with install.packages('IRkernel'); IRkernel::installspec()
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-r
 # R execution
@@ -482,7 +485,7 @@ print(y)
 #+RESULTS:
 : [1]  1  4  9 16 25
 
-*** Data Frame Example
+*** ⚠️ Data Frame Example
 
 #+BEGIN_SRC jupyter-r
 # Working with data frames
@@ -496,7 +499,7 @@ print(df)
 summary(df)
 #+END_SRC
 
-*** Plotting Example
+*** ⚠️ Plotting Example
 
 #+BEGIN_SRC jupyter-r :results file :file rplot.png
 # Create a plot
@@ -513,7 +516,7 @@ dev.off()
 #+RESULTS:
 [[file:rplot.png]]
 
-*** Statistical Analysis
+*** ⚠️ Statistical Analysis
 
 #+BEGIN_SRC jupyter-r
 # Statistical functions
@@ -523,31 +526,31 @@ cat("Std Dev:", sd(data), "\n")
 cat("Median:", median(data), "\n")
 #+END_SRC
 
-*** Special Features
+*** ⚠️ Special Features
 - Full R statistical functions
 - ggplot2 and tidyverse support
 - Data frame manipulation
 - Rich plotting capabilities
 
-** Julia
+** ⚠️ Julia
 :PROPERTIES:
 :ID: lang-julia
 :END:
 
-*** Language Identifiers
-- =julia=, =jl=
+*** ⚠️ Language Identifiers
+- julia, jl
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-julia= (requires IJulia)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-julia (requires IJulia)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (full state persistence)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Julia installed
-- IJulia: Install from Julia REPL with =using Pkg; Pkg.add("IJulia")=
+- IJulia: Install from Julia REPL with using Pkg; Pkg.add("IJulia")
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-julia
 # Julia execution
@@ -565,7 +568,7 @@ for i in 1:10
 end
 #+END_SRC
 
-*** Array Operations
+*** ⚠️ Array Operations
 
 #+BEGIN_SRC jupyter-julia
 # Efficient array operations
@@ -579,7 +582,7 @@ println("\nA squared:")
 println(B)
 #+END_SRC
 
-*** Plotting Example
+*** ⚠️ Plotting Example
 
 #+BEGIN_SRC jupyter-julia :results file :file julia-plot.png
 using Plots
@@ -594,33 +597,33 @@ title!("Sine Wave")
 savefig("julia-plot.png")
 #+END_SRC
 
-*** Special Features
+*** ⚠️ Special Features
 - High-performance numerical computing
 - Multiple dispatch
 - LaTeX in output
 - Excellent package ecosystem
 
-* Systems Programming Languages
+* ⚠️ Systems Programming Languages
 
-** C
+** ⚠️ C
 :PROPERTIES:
 :ID: lang-c
 :END:
 
-*** Language Identifiers
-- =c=
+*** ⚠️ Language Identifiers
+- c
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-c= (requires Jupyter kernel for C, e.g., xeus-cling)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-c (requires Jupyter kernel for C, e.g., xeus-cling)
 
-*** Session Support
+*** ⚠️ Session Support
 - Limited (depends on kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - C compiler (gcc/clang)
 - Xeus-cling kernel for Jupyter
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-c
 #include <stdio.h>
@@ -634,35 +637,35 @@ int main() {
 }
 #+END_SRC
 
-*** Special Features
+*** ⚠️ Special Features
 - Low-level system programming
 - Pointer manipulation
 - Direct memory access
 
-*** Limitations
+*** ⚠️ Limitations
 - Requires compilation
 - Limited interactive features
 - Kernel availability varies
 
-** C++
+** ⚠️ C++
 :PROPERTIES:
 :ID: lang-cpp
 :END:
 
-*** Language Identifiers
-- =c++=, =cpp=
+*** ⚠️ Language Identifiers
+- c++, cpp
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-cpp= (requires xeus-cling or similar)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-cpp (requires xeus-cling or similar)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (with appropriate kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - C++ compiler
 - Xeus-cling kernel recommended
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-cpp
 #include <iostream>
@@ -683,7 +686,7 @@ int main() {
 }
 #+END_SRC
 
-*** Modern C++ Example
+*** ⚠️ Modern C++ Example
 
 #+BEGIN_SRC jupyter-cpp
 #include <iostream>
@@ -710,25 +713,25 @@ int main() {
 }
 #+END_SRC
 
-** Rust
+** ⚠️ Rust
 :PROPERTIES:
 :ID: lang-rust
 :END:
 
-*** Language Identifiers
-- =rust=
+*** ⚠️ Language Identifiers
+- rust
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-rust= (requires evcxr kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-rust (requires evcxr kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (with evcxr kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Rust toolchain (rustc, cargo)
-- evcxr kernel: =cargo install evcxr_jupyter && evcxr_jupyter --install=
+- evcxr kernel: cargo install evcxr_jupyter && evcxr_jupyter --install
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-rust
 // Rust execution
@@ -745,7 +748,7 @@ println!("Factorial of 5: {}", factorial(5));
 #+RESULTS:
 : Factorial of 5: 120
 
-*** Ownership Example
+*** ⚠️ Ownership Example
 
 #+BEGIN_SRC jupyter-rust
 fn main() {
@@ -760,30 +763,30 @@ fn main() {
 main();
 #+END_SRC
 
-*** Special Features
+*** ⚠️ Special Features
 - Memory safety without garbage collection
 - Zero-cost abstractions
 - Fearless concurrency
 
-** Go
+** ⚠️ Go
 :PROPERTIES:
 :ID: lang-go
 :END:
 
-*** Language Identifiers
-- =go=, =golang=
+*** ⚠️ Language Identifiers
+- go, golang
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-go= (requires gophernotes kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-go (requires gophernotes kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Limited (state resets between blocks)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Go installed
-- gophernotes: =go install github.com/gopherdata/gophernotes@latest=
+- gophernotes: go install github.com/gopherdata/gophernotes@latest
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-go
 import "fmt"
@@ -800,7 +803,7 @@ func main() {
 main()
 #+END_SRC
 
-*** Goroutines Example
+*** ⚠️ Goroutines Example
 
 #+BEGIN_SRC jupyter-go
 import (
@@ -826,27 +829,27 @@ func main() {
 main()
 #+END_SRC
 
-* JVM Languages
+* ⚠️ JVM Languages
 
-** Java
+** ⚠️ Java
 :PROPERTIES:
 :ID: lang-java
 :END:
 
-*** Language Identifiers
-- =java=
+*** ⚠️ Language Identifiers
+- java
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-java= (requires IJava kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-java (requires IJava kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (with IJava kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Java JDK 9 or later
 - IJava kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-java
 public class Example {
@@ -863,7 +866,7 @@ public class Example {
 Example.main(null);
 #+END_SRC
 
-*** Object-Oriented Example
+*** ⚠️ Object-Oriented Example
 
 #+BEGIN_SRC jupyter-java
 class Circle {
@@ -882,25 +885,25 @@ Circle circle = new Circle(5);
 System.out.printf("Area: %.2f\n", circle.getArea());
 #+END_SRC
 
-** Scala
+** ⚠️ Scala
 :PROPERTIES:
 :ID: lang-scala
 :END:
 
-*** Language Identifiers
-- =scala=
+*** ⚠️ Language Identifiers
+- scala
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-scala= (requires Almond kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-scala (requires Almond kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Scala installed
 - Almond kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-scala
 // Scala execution
@@ -909,7 +912,7 @@ val squared = numbers.map(x => x * x)
 println(s"Squared: $squared")
 #+END_SRC
 
-*** Functional Programming
+*** ⚠️ Functional Programming
 
 #+BEGIN_SRC jupyter-scala
 def factorial(n: Int): Int = {
@@ -921,25 +924,25 @@ val result = (1 to 5).map(factorial)
 println(s"Factorials: $result")
 #+END_SRC
 
-** Clojure
+** ⚠️ Clojure
 :PROPERTIES:
 :ID: lang-clojure
 :END:
 
-*** Language Identifiers
-- =clojure=
+*** ⚠️ Language Identifiers
+- clojure
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-clojure= (requires clojupyter)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-clojure (requires clojupyter)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Clojure installed
 - clojupyter kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-clojure
 ;; Clojure execution
@@ -948,25 +951,25 @@ println(s"Factorials: $result")
 (println "Sum:" sum)
 #+END_SRC
 
-** Kotlin
+** ⚠️ Kotlin
 :PROPERTIES:
 :ID: lang-kotlin
 :END:
 
-*** Language Identifiers
-- =kotlin=
+*** ⚠️ Language Identifiers
+- kotlin
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-kotlin= (requires Kotlin kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-kotlin (requires Kotlin kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Kotlin installed
 - Kotlin Jupyter kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-kotlin
 // Kotlin execution
@@ -975,27 +978,27 @@ val sum = numbers.sum()
 println("Sum: $sum")
 #+END_SRC
 
-* Functional Languages
+* ⚠️ Functional Languages
 
-** Haskell
+** ⚠️ Haskell
 :PROPERTIES:
 :ID: lang-haskell
 :END:
 
-*** Language Identifiers
-- =haskell=
+*** ⚠️ Language Identifiers
+- haskell
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-haskell= (requires IHaskell)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-haskell (requires IHaskell)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - GHC (Glasgow Haskell Compiler)
 - IHaskell kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-haskell
 -- Haskell execution
@@ -1010,7 +1013,7 @@ main = do
 main
 #+END_SRC
 
-*** List Comprehension
+*** ⚠️ List Comprehension
 
 #+BEGIN_SRC jupyter-haskell
 -- Generate list of tuples
@@ -1021,25 +1024,25 @@ pythagorean = [(a,b,c) | c <- [1..10],
 print pythagorean
 #+END_SRC
 
-** OCaml
+** ⚠️ OCaml
 :PROPERTIES:
 :ID: lang-ocaml
 :END:
 
-*** Language Identifiers
-- =ocaml=
+*** ⚠️ Language Identifiers
+- ocaml
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-ocaml= (requires OCaml kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-ocaml (requires OCaml kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - OCaml installed
 - OCaml Jupyter kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-ocaml
 (* OCaml execution *)
@@ -1053,25 +1056,25 @@ List.iter (fun i ->
 ) [1; 2; 3; 4; 5];;
 #+END_SRC
 
-** Lisp/Scheme
+** ⚠️ Lisp/Scheme
 :PROPERTIES:
 :ID: lang-lisp
 :END:
 
-*** Language Identifiers
-- =lisp=, =scheme=, =common-lisp=
+*** ⚠️ Language Identifiers
+- lisp, scheme, common-lisp
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-lisp= (requires appropriate kernel)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-lisp (requires appropriate kernel)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (depends on kernel)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Lisp/Scheme interpreter
 - Appropriate Jupyter kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-scheme
 ;; Scheme execution
@@ -1085,27 +1088,27 @@ List.iter (fun i ->
 (newline)
 #+END_SRC
 
-* Database Languages
+* ⚠️ Database Languages
 
-** SQL
+** ⚠️ SQL
 :PROPERTIES:
 :ID: lang-sql
 :END:
 
-*** Language Identifiers
-- =sql=
+*** ⚠️ Language Identifiers
+- sql
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-sql= (requires SQL kernel and connection)
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-sql (requires SQL kernel and connection)
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (connection persists)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Database server or SQLite
 - SQL kernel (e.g., xsql, sql_kernel)
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-sql
 -- SQL execution
@@ -1115,7 +1118,7 @@ ORDER BY name
 LIMIT 10;
 #+END_SRC
 
-*** Table Creation
+*** ⚠️ Table Creation
 
 #+BEGIN_SRC jupyter-sql
 CREATE TABLE IF NOT EXISTS products (
@@ -1133,7 +1136,7 @@ INSERT INTO products (name, price, stock) VALUES
 SELECT * FROM products;
 #+END_SRC
 
-*** Aggregation Example
+*** ⚠️ Aggregation Example
 
 #+BEGIN_SRC jupyter-sql
 SELECT
@@ -1146,25 +1149,25 @@ GROUP BY category
 ORDER BY avg_price DESC;
 #+END_SRC
 
-** SQLite
+** ⚠️ SQLite
 :PROPERTIES:
 :ID: lang-sqlite
 :END:
 
-*** Language Identifiers
-- =sqlite=, =sqlite3=
+*** ⚠️ Language Identifiers
+- sqlite, sqlite3
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-sqlite=
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-sqlite
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes (database file persists)
 
-*** Dependencies
+*** ⚠️ Dependencies
 - SQLite installed
 - SQLite Jupyter kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-sqlite
 -- SQLite execution
@@ -1174,27 +1177,27 @@ ORDER BY avg_price DESC;
 SELECT * FROM sqlite_master WHERE type='table';
 #+END_SRC
 
-* Scientific and Visualization Languages
+* ⚠️ Scientific and Visualization Languages
 
-** Octave/MATLAB
+** ⚠️ Octave/MATLAB
 :PROPERTIES:
 :ID: lang-octave
 :END:
 
-*** Language Identifiers
-- =octave=, =matlab=
+*** ⚠️ Language Identifiers
+- octave, matlab
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-octave= or =jupyter-matlab=
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-octave or jupyter-matlab
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Octave or MATLAB installed
 - Appropriate kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-octave
 % Octave/MATLAB execution
@@ -1208,7 +1211,7 @@ ylabel('sin(x)');
 grid on;
 #+END_SRC
 
-*** Matrix Operations
+*** ⚠️ Matrix Operations
 
 #+BEGIN_SRC jupyter-octave
 A = [1 2 3; 4 5 6; 7 8 9];
@@ -1217,25 +1220,25 @@ disp('A * A transpose:');
 disp(B);
 #+END_SRC
 
-** Maxima
+** ⚠️ Maxima
 :PROPERTIES:
 :ID: lang-maxima
 :END:
 
-*** Language Identifiers
-- =maxima=
+*** ⚠️ Language Identifiers
+- maxima
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-maxima=
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-maxima
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Maxima installed
 - Maxima Jupyter kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-maxima
 /* Maxima symbolic math */
@@ -1243,7 +1246,7 @@ expr: x^2 + 2*x + 1;
 factor(expr);
 #+END_SRC
 
-*** Calculus Example
+*** ⚠️ Calculus Example
 
 #+BEGIN_SRC jupyter-maxima
 /* Differentiation and integration */
@@ -1252,25 +1255,25 @@ diff(f(x), x);
 integrate(f(x), x);
 #+END_SRC
 
-** Lua
+** ⚠️ Lua
 :PROPERTIES:
 :ID: lang-lua
 :END:
 
-*** Language Identifiers
-- =lua=
+*** ⚠️ Language Identifiers
+- lua
 
-*** Execution Modes
-- *Jupyter*: Use =jupyter-lua=
+*** ⚠️ Execution Modes
+- *Jupyter*: Use jupyter-lua
 
-*** Session Support
+*** ⚠️ Session Support
 - Yes
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Lua installed
 - iLua kernel
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC jupyter-lua
 -- Lua execution
@@ -1285,23 +1288,23 @@ end
 print("Factorial of 5:", factorial(5))
 #+END_SRC
 
-* Markup and Document Languages
+* ⚠️ Markup and Document Languages
 
-** Graphviz (DOT)
+** ⚠️ Graphviz (DOT)
 :PROPERTIES:
 :ID: lang-dot
 :END:
 
-*** Language Identifiers
-- =dot=, =graphviz=
+*** ⚠️ Language Identifiers
+- dot, graphviz
 
-*** Execution Modes
+*** ⚠️ Execution Modes
 - Generate graph visualizations
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Graphviz installed
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC dot :file graph.png :cmdline -Tpng
 digraph G {
@@ -1322,22 +1325,22 @@ digraph G {
 #+RESULTS:
 [[file:graph.png]]
 
-** PlantUML
+** ⚠️ PlantUML
 :PROPERTIES:
 :ID: lang-plantuml
 :END:
 
-*** Language Identifiers
-- =plantuml=
+*** ⚠️ Language Identifiers
+- plantuml
 
-*** Execution Modes
+*** ⚠️ Execution Modes
 - Generate UML diagrams
 
-*** Dependencies
+*** ⚠️ Dependencies
 - PlantUML installed
 - Java runtime
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC plantuml :file sequence.png
 @startuml
@@ -1359,21 +1362,21 @@ deactivate WS
 #+RESULTS:
 [[file:sequence.png]]
 
-** Gnuplot
+** ⚠️ Gnuplot
 :PROPERTIES:
 :ID: lang-gnuplot
 :END:
 
-*** Language Identifiers
-- =gnuplot=
+*** ⚠️ Language Identifiers
+- gnuplot
 
-*** Execution Modes
+*** ⚠️ Execution Modes
 - Generate plots
 
-*** Dependencies
+*** ⚠️ Dependencies
 - Gnuplot installed
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC gnuplot :file gnuplot.png
 set terminal png
@@ -1390,23 +1393,23 @@ plot sin(x) title 'sin(x)', cos(x) title 'cos(x)'
 #+RESULTS:
 [[file:gnuplot.png]]
 
-* Special Purpose Languages
+* ⚠️ Special Purpose Languages
 
-** LaTeX
+** ⚠️ LaTeX
 :PROPERTIES:
 :ID: lang-latex
 :END:
 
-*** Language Identifiers
-- =latex=
+*** ⚠️ Language Identifiers
+- latex
 
-*** Execution Modes
+*** ⚠️ Execution Modes
 - Render LaTeX fragments
 
-*** Dependencies
+*** ⚠️ Dependencies
 - LaTeX distribution (TeX Live, MiKTeX)
 
-*** Basic Example
+*** ⚠️ Basic Example
 
 #+BEGIN_SRC latex :file equation.png
 \documentclass{article}
@@ -1421,22 +1424,22 @@ E = mc^2
 \end{document}
 #+END_SRC
 
-* Header Arguments Reference
+* ⚠️ Header Arguments Reference
 
-** Common Header Arguments
+** ⚠️ Common Header Arguments
 
 | Argument   | Values              | Description                          |
 |------------+---------------------+--------------------------------------|
-| =:session=   | name or =none=        | Session name for persistent state    |
-| =:results=   | output/value/silent | How to handle results                |
-| =:exports=   | code/results/both   | What to export                       |
-| =:file=      | filename            | Save output to file                  |
-| =:dir=       | path                | Working directory                    |
-| =:var=       | name=value          | Pass variables                       |
-| =:cache=     | yes/no              | Cache results                        |
-| =:eval=      | yes/no/query        | Evaluation policy                    |
+| :session   | name or none        | Session name for persistent state    |
+| :results   | output/value/silent | How to handle results                |
+| :exports   | code/results/both   | What to export                       |
+| :file      | filename            | Save output to file                  |
+| :dir       | path                | Working directory                    |
+| :var       | name=value          | Pass variables                       |
+| :cache     | yes/no              | Cache results                        |
+| :eval      | yes/no/query        | Evaluation policy                    |
 
-** Session Example
+** ⚠️ Session Example
 
 #+BEGIN_SRC org
 # Define variable in first block
@@ -1451,7 +1454,7 @@ print(f"Mean: {statistics.mean(data)}")
 #+END_SRC
 #+END_SRC
 
-** File Output Example
+** ⚠️ File Output Example
 
 #+BEGIN_SRC org
 #+BEGIN_SRC jupyter-python :results file :file output.png
@@ -1461,24 +1464,24 @@ plt.savefig('output.png')
 #+END_SRC
 #+END_SRC
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Checking Available Executors
+** ⚠️ Checking Available Executors
 
-Use the command =Scimax: Check Available Executors= to see which language executors are available.
+Use the command Scimax: Check Available Executors to see which language executors are available.
 
-** Common Issues
+** ⚠️ Common Issues
 
-*** "No executor available for language: X"
+*** ⚠️ "No executor available for language: X"
 
 *Cause:* The language interpreter or Jupyter kernel is not installed.
 
 *Solution:*
 1. For native languages: Install the language (python3, node, etc.)
 2. For Jupyter languages: Install the appropriate kernel
-3. Verify installation: =jupyter kernelspec list=
+3. Verify installation: jupyter kernelspec list
 
-*** "Jupyter kernel not found"
+*** ⚠️ "Jupyter kernel not found"
 
 *Cause:* Jupyter is not installed or kernel is not registered.
 
@@ -1494,26 +1497,26 @@ python -m ipykernel install --user
 jupyter kernelspec list
 #+END_SRC
 
-*** Session state not persisting
+*** ⚠️ Session state not persisting
 
 *Cause:* Using native executor instead of Jupyter, or session name not specified.
 
 *Solution:*
-- Use =jupyter-<language>= syntax
-- Add =:session <name>= header argument
+- Use jupyter-<language> syntax
+- Add :session <name> header argument
 - Ensure all blocks use the same session name
 
-*** Code executes but no output appears
+*** ⚠️ Code executes but no output appears
 
 *Cause:* Results handling configuration or silent mode enabled.
 
 *Solution:*
-- Check =:results= header (use =:results output=)
-- Ensure =:eval= is not set to =no=
+- Check :results header (use :results output)
+- Ensure :eval is not set to no
 - Add explicit print statements
-- Check if =:results silent= is set
+- Check if :results silent is set
 
-*** Import/Module not found errors
+*** ⚠️ Import/Module not found errors
 
 *Cause:* Wrong Python environment or missing packages.
 
@@ -1529,57 +1532,57 @@ pip install package-name
 conda activate myenv
 #+END_SRC
 
-** Getting Help
+** ⚠️ Getting Help
 
-- View Babel output: =Scimax: Show Babel Output=
-- Check executor status: =Scimax: Check Available Executors=
-- View Jupyter kernel list: =jupyter kernelspec list= in terminal
+- View Babel output: Scimax: Show Babel Output
+- Check executor status: Scimax: Check Available Executors
+- View Jupyter kernel list: jupyter kernelspec list in terminal
 
-* Installing Jupyter Kernels
+* ⚠️ Installing Jupyter Kernels
 
-** Python (IPython)
+** ⚠️ Python (IPython)
 #+BEGIN_SRC bash
 pip install ipykernel
 python -m ipykernel install --user --name=python3
 #+END_SRC
 
-** Julia (IJulia)
+** ⚠️ Julia (IJulia)
 #+BEGIN_SRC julia
 using Pkg
 Pkg.add("IJulia")
 #+END_SRC
 
-** R (IRkernel)
+** ⚠️ R (IRkernel)
 #+BEGIN_SRC r
 install.packages('IRkernel')
 IRkernel::installspec()
 #+END_SRC
 
-** Ruby (IRuby)
+** ⚠️ Ruby (IRuby)
 #+BEGIN_SRC bash
 gem install iruby
 iruby register --force
 #+END_SRC
 
-** JavaScript (IJavascript)
+** ⚠️ JavaScript (IJavascript)
 #+BEGIN_SRC bash
 npm install -g ijavascript
 ijsinstall
 #+END_SRC
 
-** TypeScript (TSLab)
+** ⚠️ TypeScript (TSLab)
 #+BEGIN_SRC bash
 npm install -g tslab
 tslab install
 #+END_SRC
 
-** Rust (evcxr)
+** ⚠️ Rust (evcxr)
 #+BEGIN_SRC bash
 cargo install evcxr_jupyter
 evcxr_jupyter --install
 #+END_SRC
 
-** Go (gophernotes)
+** ⚠️ Go (gophernotes)
 #+BEGIN_SRC bash
 go install github.com/gopherdata/gophernotes@latest
 mkdir -p ~/.local/share/jupyter/kernels/gophernotes
@@ -1588,74 +1591,74 @@ cp "$(go env GOPATH)"/pkg/mod/github.com/gopherdata/gophernotes@*/kernel/* .
 chmod +w ./kernel.json
 #+END_SRC
 
-** C++ (xeus-cling)
+** ⚠️ C++ (xeus-cling)
 #+BEGIN_SRC bash
 conda install xeus-cling -c conda-forge
 #+END_SRC
 
-** Scala (Almond)
+** ⚠️ Scala (Almond)
 #+BEGIN_SRC bash
 coursier launch --use-bootstrap almond -- --install
 #+END_SRC
 
-** Haskell (IHaskell)
+** ⚠️ Haskell (IHaskell)
 #+BEGIN_SRC bash
 stack install ihaskell
 ihaskell install --stack
 #+END_SRC
 
-* Best Practices
+* ⚠️ Best Practices
 
-** Language Selection
+** ⚠️ Language Selection
 - Use native executors for simple, stateless scripts
 - Use Jupyter for interactive work requiring sessions
-- Use explicit =jupyter-<language>= when you need Jupyter features
+- Use explicit jupyter-<language> when you need Jupyter features
 
-** Session Management
-- Name sessions descriptively (=:session *data-analysis*=)
+** ⚠️ Session Management
+- Name sessions descriptively (:session *data-analysis*)
 - Use separate sessions for independent workflows
 - Clear sessions when starting fresh work
 
-** Code Organization
+** ⚠️ Code Organization
 - One concept per block for clarity
-- Use named blocks (=#+NAME:=) for reusable code
+- Use named blocks (#+NAME:) for reusable code
 - Document complex blocks with comments
 
-** Performance
-- Cache expensive computations (=:cache yes=)
-- Use appropriate result types (=:results output= vs =value=)
+** ⚠️ Performance
+- Cache expensive computations (:cache yes)
+- Use appropriate result types (:results output vs value)
 - Close unused Jupyter sessions
 
-** Reproducibility
-- Specify explicit =:dir= for file operations
-- Use =:session= consistently in related blocks
+** ⚠️ Reproducibility
+- Specify explicit :dir for file operations
+- Use :session consistently in related blocks
 - Document dependencies and versions
 
-* Quick Reference
+* ⚠️ Quick Reference
 
-** Execute Commands
-- =Ctrl+Enter= / =Cmd+Enter=: Execute current block
-- =Shift+Enter=: Execute and move to next
-- =Ctrl+C Ctrl+C=: Execute (Emacs style)
+** ⚠️ Execute Commands
+- Ctrl+Enter / Cmd+Enter: Execute current block
+- Shift+Enter: Execute and move to next
+- Ctrl+C Ctrl+C: Execute (Emacs style)
 
-** Session Control
-- =:session <name>=: Use named session
-- =:session none=: Disable session
+** ⚠️ Session Control
+- :session <name>: Use named session
+- :session none: Disable session
 - Sessions persist until VS Code restart or manual close
 
-** Result Handling
-- =:results output=: Capture stdout
-- =:results value=: Return last value
-- =:results silent=: No results
-- =:results file=: Save to file
+** ⚠️ Result Handling
+- :results output: Capture stdout
+- :results value: Return last value
+- :results silent: No results
+- :results file: Save to file
 
-** Jupyter Features
+** ⚠️ Jupyter Features
 - Rich output (plots, tables, HTML)
 - Tab completion
 - Object inspection
 - Persistent state
 
-* Conclusion
+* ⚠️ Conclusion
 
 Scimax VS Code provides comprehensive support for executing code in dozens of programming languages, from traditional scripting languages to specialized scientific computing environments. Whether you need quick Python scripts, interactive R analysis, or complex multi-language workflows, the Babel execution system provides a powerful and flexible foundation for literate programming and reproducible research.
 

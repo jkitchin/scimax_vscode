@@ -3,12 +3,15 @@
 #+DATE: 2026-01-13
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ⚠️ Introduction
 
 Speed commands are single-letter keyboard shortcuts that work when the cursor is positioned at the very beginning (column 0) of a heading line. This feature, borrowed from Emacs org-mode, provides lightning-fast navigation and editing without the need for complex key chords.
 
-** What are Speed Commands?
+** ⚠️ What are Speed Commands?
 
 Speed commands transform the beginning of each heading into a powerful command interface. When your cursor is at column 0 of a heading (the first star ~*~ in org-mode or the first hash ~#~ in markdown), you can press a single key to execute common operations:
 
@@ -23,26 +26,26 @@ Speed commands transform the beginning of each heading into a powerful command i
 
 This approach is significantly faster than using traditional keybindings or menu commands for frequent operations.
 
-** Why Use Speed Commands?
+** ⚠️ Why Use Speed Commands?
 
 - *Efficiency*: Single keystrokes instead of multi-key combinations
 - *Contextual*: Only active at heading starts, so no conflicts with normal typing
 - *Discoverable*: Press ~?~ at a heading start to see all available commands
 - *Emacs-compatible*: Familiar workflow for Emacs org-mode users
 
-* Configuration
+* ⚠️ Configuration
 
-** Enabling Speed Commands
+** ⚠️ Enabling Speed Commands
 
 Speed commands are enabled by default in Scimax VS Code. To toggle them on or off:
 
-*** Via Settings UI
+*** ⚠️ Via Settings UI
 
 1. Open VS Code Settings (~Ctrl+,~ or ~Cmd+,~ on Mac)
 2. Search for "speed commands"
 3. Toggle the checkbox for *Scimax: Speed Commands > Enabled*
 
-*** Via settings.json
+*** ⚠️ Via settings.json
 
 Add or modify this setting in your ~settings.json~:
 
@@ -52,18 +55,18 @@ Add or modify this setting in your ~settings.json~:
 }
 #+END_SRC
 
-*** Via Command Palette
+*** ⚠️ Via Command Palette
 
 1. Open Command Palette (~Ctrl+Shift+P~ or ~Cmd+Shift+P~ on Mac)
 2. Type "speed" and select *Scimax: Toggle Speed Commands*
 
-** Supported File Types
+** ⚠️ Supported File Types
 
 Speed commands work in:
 - Org-mode files (~.org~)
 - Markdown files (~.md~, ~.markdown~)
 
-* When Speed Commands are Active
+* ⚠️ When Speed Commands are Active
 
 Speed commands are only active when *all* of the following conditions are met:
 
@@ -72,7 +75,7 @@ Speed commands are only active when *all* of the following conditions are met:
 3. *Line is a heading* (starts with ~*~ for org-mode or ~#~ for markdown)
 4. *No text is selected* (cursor position only, not a selection)
 
-** Visual Indicator
+** ⚠️ Visual Indicator
 
 When speed commands are active, you'll notice that single key presses trigger actions immediately. If speed commands aren't working:
 
@@ -81,11 +84,11 @@ When speed commands are active, you'll notice that single key presses trigger ac
 3. Verify the file type is org or markdown
 4. Check settings to confirm speed commands are enabled
 
-* Speed Command Reference
+* ⚠️ Speed Command Reference
 
 This section provides a complete listing of all available speed commands, organized by functional category.
 
-** Navigation Commands
+** ⚠️ Navigation Commands
 
 Move efficiently through your document structure.
 
@@ -99,7 +102,7 @@ Move efficiently through your document structure.
 | ~j~ | Jump to heading          | Quick picker to jump to any heading in file       |
 | ~g~ | Go to... (submenu)       | Show navigation submenu with more options         |
 
-*** Go To Submenu Options
+*** ⚠️ Go To Submenu Options
 
 The ~g~ key opens a submenu with additional navigation choices:
 
@@ -114,7 +117,7 @@ The ~g~ key opens a submenu with additional navigation choices:
 | ~1~ | First heading            | Jump to first heading in document          |
 | ~$~ | Last heading             | Jump to last heading in document           |
 
-** Visibility/Folding Commands
+** ⚠️ Visibility/Folding Commands
 
 Control how much content is visible in your document.
 
@@ -125,7 +128,7 @@ Control how much content is visible in your document.
 | ~o~     | Overview                 | Fold all headings (show only top-level)        |
 | ~Tab~   | Cycle fold at point      | Toggle folding of current heading              |
 
-** Structure Editing Commands
+** ⚠️ Structure Editing Commands
 
 Reorganize and modify your document structure.
 
@@ -141,7 +144,7 @@ Reorganize and modify your document structure.
 | ~y~ | Yank (paste) subtree     | Paste subtree from clipboard with level adjust    |
 | ~W~ | Clone subtree            | Duplicate the current subtree                     |
 
-*** Structure Editing Notes
+*** ⚠️ Structure Editing Notes
 
 - *Promote* (left) decreases the heading level (fewer stars/hashes)
 - *Demote* (right) increases the heading level (more stars/hashes)
@@ -149,7 +152,7 @@ Reorganize and modify your document structure.
 - Lowercase ~l~/~r~ affect the entire subtree
 - ~y~ (yank) intelligently adjusts heading levels to match context
 
-** TODO and Priority Commands
+** ⚠️ TODO and Priority Commands
 
 Manage task states and priorities.
 
@@ -162,7 +165,7 @@ Manage task states and priorities.
 | ~3~ | Priority [#C]            | Set priority to C (lowest)                        |
 | ~0~ | Remove priority          | Remove priority marker entirely                   |
 
-*** Priority System
+*** ⚠️ Priority System
 
 Org-mode uses a three-level priority system:
 - *[#A]* - High priority (critical, urgent)
@@ -171,7 +174,7 @@ Org-mode uses a three-level priority system:
 
 Priorities appear after the TODO keyword: ~** TODO [#A] Important task~
 
-** Planning/Timestamp Commands
+** ⚠️ Planning/Timestamp Commands
 
 Add scheduling and deadline information to tasks.
 
@@ -181,7 +184,7 @@ Add scheduling and deadline information to tasks.
 | ~d~ | Add/edit DEADLINE        | Set when this task must be completed              |
 | ~.~ | Insert timestamp         | Insert an inactive timestamp at point             |
 
-*** Timestamp Types
+*** ⚠️ Timestamp Types
 
 - *SCHEDULED*: When you plan to start working on the task
   - Format: ~SCHEDULED: <2026-01-13 Mon>~
@@ -195,7 +198,7 @@ Add scheduling and deadline information to tasks.
   - Format: ~[2026-01-13 Mon 14:30]~
   - For documentation purposes
 
-** Metadata Commands
+** ⚠️ Metadata Commands
 
 Add tags, properties, and effort estimates to headings.
 
@@ -205,7 +208,7 @@ Add tags, properties, and effort estimates to headings.
 | ~e~ | Set effort               | Set estimated effort/duration for task            |
 | ~P~ | Set property             | Set a custom property in the properties drawer    |
 
-*** Tags
+*** ⚠️ Tags
 
 Tags are keywords attached to headings for categorization and filtering:
 
@@ -220,7 +223,7 @@ Tags are:
 - Used for agenda filtering and searches
 - Automatically aligned to column 77 (Emacs-style)
 
-*** Effort Estimates
+*** ⚠️ Effort Estimates
 
 Effort is stored as a property in ~H:MM~ format:
 
@@ -239,7 +242,7 @@ Common effort values:
 - ~4:00~ - Half day
 - ~8:00~ - Full day
 
-*** Properties
+*** ⚠️ Properties
 
 Properties are key-value pairs stored in a properties drawer:
 
@@ -261,7 +264,7 @@ Common property names:
 - ~LOGGING~ - Log state changes
 - ~COLUMNS~ - Column view format
 
-** Clocking Commands
+** ⚠️ Clocking Commands
 
 Track time spent on tasks.
 
@@ -270,7 +273,7 @@ Track time spent on tasks.
 | ~I~ | Clock in                 | Start time tracking for current task              |
 | ~O~ | Clock out                | Stop time tracking                                |
 
-*** Clocking Workflow
+*** ⚠️ Clocking Workflow
 
 1. Position cursor at column 0 of a task heading
 2. Press ~I~ to clock in - starts timer
@@ -287,14 +290,14 @@ CLOCK: [2026-01-12 Fri 14:00]--[2026-01-12 Fri 15:45] =>  1:45
 :END:
 #+END_EXAMPLE
 
-*** Clocking Notes
+*** ⚠️ Clocking Notes
 
 - Only one task can be clocked in at a time
 - Clocking in a new task automatically clocks out the previous one
 - Clock duration is automatically calculated
 - Clock data is used for time reports and agenda views
 
-** Archive Commands
+** ⚠️ Archive Commands
 
 Move completed tasks to archive storage.
 
@@ -304,7 +307,7 @@ Move completed tasks to archive storage.
 | ~A~ | Toggle :ARCHIVE: tag     | Add/remove ARCHIVE tag (marks for archiving)      |
 | ~$~ | Archive to sibling       | Move subtree under an "Archive" sibling heading   |
 
-*** Archive File
+*** ⚠️ Archive File
 
 By default, ~a~ moves the subtree to a file named ~{basename}_archive.org~:
 - ~notes.org~ → ~notes_archive.org~
@@ -320,7 +323,7 @@ The archived subtree is tagged with ~:ARCHIVE:~ and includes metadata:
 :END:
 #+END_EXAMPLE
 
-*** Archive to Sibling
+*** ⚠️ Archive to Sibling
 
 The ~$~ command creates or finds an "Archive" heading at the same level and moves the subtree under it (demoted by one level):
 
@@ -334,7 +337,7 @@ The ~$~ command creates or finds an "Archive" heading at the same level and move
 *** DONE Old project 2
 #+END_EXAMPLE
 
-** Special Commands
+** ⚠️ Special Commands
 
 Additional utility commands.
 
@@ -344,7 +347,7 @@ Additional utility commands.
 | ~S~ | Widen                    | Show all content (undo narrowing)                 |
 | ~?~ | Speed commands help      | Show this help in quick pick menu                 |
 
-*** Narrowing
+*** ⚠️ Narrowing
 
 Narrowing focuses your view on a single subtree, hiding all other content. This is useful for:
 - Focusing on a specific section while writing
@@ -354,9 +357,9 @@ Narrowing focuses your view on a single subtree, hiding all other content. This 
 
 After narrowing with ~N~, press ~S~ (at any heading) to restore the full view.
 
-* Tips for Effective Use
+* ⚠️ Tips for Effective Use
 
-** Learning the Commands
+** ⚠️ Learning the Commands
 
 1. *Start with navigation*: ~n~, ~p~, ~f~, ~b~, ~u~ are the most frequently used
 2. *Use the help*: Press ~?~ at any heading start to see all commands
@@ -367,9 +370,9 @@ After narrowing with ~N~, press ~S~ (at any heading) to restore the full view.
    - ~I~/~O~ = In/Out (clocking)
    - ~l~/~r~ = left/right (promote/demote)
 
-** Common Workflows
+** ⚠️ Common Workflows
 
-*** Quick Task Management
+*** ⚠️ Quick Task Management
 
 1. Create heading with ~Ctrl+Enter~
 2. Move to beginning of line (~Home~ or ~Ctrl+A~)
@@ -378,7 +381,7 @@ After narrowing with ~N~, press ~S~ (at any heading) to restore the full view.
 5. Press ~s~ to schedule it
 6. Press ~:~ to add tags
 
-*** Organizing Content
+*** ⚠️ Organizing Content
 
 1. Navigate to a heading
 2. Use ~U~/~D~ to reorder siblings
@@ -386,14 +389,14 @@ After narrowing with ~N~, press ~S~ (at any heading) to restore the full view.
 4. Use ~w~ to cut and ~y~ to paste sections
 5. Use ~a~ to archive completed work
 
-*** Reviewing Documents
+*** ⚠️ Reviewing Documents
 
 1. Press ~o~ to see overview (all headings folded)
 2. Use ~n~/~p~ to navigate between sections
 3. Press ~Tab~ to expand interesting sections
 4. Press ~c~ to cycle through visibility levels
 
-** Combining with Regular Keybindings
+** ⚠️ Combining with Regular Keybindings
 
 Speed commands complement (don't replace) regular keybindings:
 
@@ -401,7 +404,7 @@ Speed commands complement (don't replace) regular keybindings:
 - Use regular keybindings (~Ctrl+C Ctrl+T~, etc.) when cursor is elsewhere
 - Use ~Ctrl+A~ or ~Home~ to quickly jump to column 0 to activate speed commands
 
-** Cursor Position Matters
+** ⚠️ Cursor Position Matters
 
 Remember: speed commands *only* work at column 0. If a speed command doesn't trigger:
 
@@ -409,13 +412,13 @@ Remember: speed commands *only* work at column 0. If a speed command doesn't tri
 2. Verify you're on a heading line (starts with ~*~ or ~#~)
 3. Check that no text is selected
 
-** Customization
+** ⚠️ Customization
 
 Currently, speed command keys are pre-defined and cannot be customized. The key mappings follow standard Emacs org-mode conventions for consistency and muscle memory compatibility.
 
 If you need custom keybindings, use VS Code's keybinding system to bind the underlying commands (e.g., ~scimax.org.nextHeading~, ~scimax.org.cycleTodo~) to your preferred key combinations.
 
-* Reference: All Speed Commands
+* ⚠️ Reference: All Speed Commands
 
 Complete alphabetical reference of all speed commands.
 
@@ -462,9 +465,9 @@ Complete alphabetical reference of all speed commands.
 | ~W~     | Structure   | Clone subtree            |
 | ~y~     | Structure   | Yank (paste) subtree     |
 
-* Troubleshooting
+* ⚠️ Troubleshooting
 
-** Speed Commands Not Working
+** ⚠️ Speed Commands Not Working
 
 *Problem*: Pressing keys doesn't trigger speed commands
 
@@ -475,7 +478,7 @@ Complete alphabetical reference of all speed commands.
 4. Verify speed commands are enabled: ~scimax.speedCommands.enabled: true~
 5. Restart VS Code after changing settings
 
-** Wrong Command Executes
+** ⚠️ Wrong Command Executes
 
 *Problem*: Different command executes than expected
 
@@ -485,13 +488,13 @@ Complete alphabetical reference of all speed commands.
 3. Ensure you're in an org or markdown file
 4. Update extension to latest version
 
-** Help Menu Shows Wrong Commands
+** ⚠️ Help Menu Shows Wrong Commands
 
 *Problem*: Help menu (~?~) shows outdated information
 
 *Solution*: The help is generated from code, so this shouldn't occur. If it does, report as a bug.
 
-* Related Documentation
+* ⚠️ Related Documentation
 
 - [[file:keybindings.org][Keybindings Reference]] - Regular keybindings for all features
 - [[file:document-structure.org][Document Structure]] - Headings, folding, and outline management
@@ -499,14 +502,14 @@ Complete alphabetical reference of all speed commands.
 - [[file:timestamps.org][Timestamps]] - Date and time handling
 - [[file:agenda.org][Agenda]] - Task planning and scheduling views
 
-* See Also
+* ⚠️ See Also
 
-** External Resources
+** ⚠️ External Resources
 
 - [[https://orgmode.org/manual/Speed-Keys.html][Org-mode Manual: Speed Keys]]
 - [[https://orgmode.org/worg/org-tutorials/org-speed-keys.html][Org-mode Speed Keys Tutorial]]
 
-** Implementation Details
+** ⚠️ Implementation Details
 
 Speed commands are implemented in:
 - ~/src/org/speedCommands/~ - Core implementation
