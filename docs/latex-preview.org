@@ -368,19 +368,19 @@ When enabled, equations render with white text on dark backgrounds when using da
 
 ** Relations and Operators
 
-| Command    | Symbol | Command    | Symbol |
-|------------+--------+------------+--------|
-| =\leq=     | ≤      | =\geq=     | ≥      |
-| =\neq=     | ≠      | =\approx=  | ≈      |
-| =\equiv=   | ≡      | =\sim=     | ∼      |
-| =\propto=  | ∝      | =\in=      | ∈      |
-| =\notin=   | ∉      | =\subset=  | ⊂      |
-| =\supset=  | ⊃      | =\cup=     | ∪      |
-| =\cap=     | ∩      | =\wedge=   | ∧      |
-| =\vee=     | ∨      | =\neg=     | ¬      |
-| =\times=   | ×      | =\div=     | ÷      |
-| =\pm=      | ±      | =\mp=      | ∓      |
-| =\cdot=    | ·      | =\circ=    | ∘      |
+| Command   | Symbol | Command   | Symbol |
+|-----------+--------+-----------+--------|
+| =\leq=    | ≤      | =\geq=    | ≥      |
+| =\neq=    | ≠      | =\approx= | ≈      |
+| =\equiv=  | ≡      | =\sim=    | ∼      |
+| =\propto= | ∝      | =\in=     | ∈      |
+| =\notin=  | ∉      | =\subset= | ⊂      |
+| =\supset= | ⊃      | =\cup=    | ∪      |
+| =\cap=    | ∩      | =\wedge=  | ∧      |
+| =\vee=    | ∨      | =\neg=    | ¬      |
+| =\times=  | ×      | =\div=    | ÷      |
+| =\pm=     | ±      | =\mp=     | ∓      |
+| =\cdot=   | ·      | =\circ=   | ∘      |
 
 ** Arrows
 
@@ -653,26 +653,26 @@ What you see in hover preview should match the exported output, but note:
 
 ** Preview Commands
 
-| Command                                | Description                       | Keybinding               |
-|----------------------------------------+-----------------------------------+--------------------------|
-| =Scimax: Clear LaTeX Cache=            | Clear all cached equation renders | None (use Command Palette) |
-| =Scimax: Show LaTeX Cache Statistics=  | Display cache size and entry count | None                     |
+| Command                             | Description                        | Keybinding                 |
+|-------------------------------------+------------------------------------+----------------------------|
+| Scimax: Clear LaTeX Cache           | Clear all cached equation renders  | None (use Command Palette) |
+| Scimax: Show LaTeX Cache Statistics | Display cache size and entry count | None                       |
 
 ** Live PDF Preview Commands
 
-| Command                               | Description                           | Keybinding             |
-|---------------------------------------+---------------------------------------+------------------------|
-| =Scimax: Open LaTeX Live Preview=     | Open live PDF preview of document     | =Ctrl+C Ctrl+E L V=    |
-| =Scimax: Sync PDF to Cursor Position= | Jump to cursor location in PDF        | =Ctrl+C Ctrl+E L S=    |
-| =Scimax: Rebuild PDF=                 | Manually trigger PDF rebuild          | None                   |
-| =Scimax: Show LaTeX Build Output=     | Show compiler output and errors       | None                   |
+| Command                             | Description                       | Keybinding        |
+|-------------------------------------+-----------------------------------+-------------------|
+| Scimax: Open LaTeX Live Preview     | Open live PDF preview of document | Ctrl+C Ctrl+E L V |
+| Scimax: Sync PDF to Cursor Position | Jump to cursor location in PDF    | Ctrl+C Ctrl+E L S |
+| Scimax: Rebuild PDF                 | Manually trigger PDF rebuild      | None              |
+| Scimax: Show LaTeX Build Output     | Show compiler output and errors   | None              |
 
 ** Markup Commands
 
-| Command                              | Description                  | Keybinding |
-|--------------------------------------+------------------------------+------------|
-| =Scimax: LaTeX Math (Markup)=        | Insert inline math =$...$=   | None       |
-| =Scimax: LaTeX Display Math (Markup)= | Insert display math =$$...$$= | None       |
+| Command                             | Description                 | Keybinding |
+|-------------------------------------+-----------------------------+------------|
+| Scimax: LaTeX Math (Markup)         | Insert inline math $...$    | None       |
+| Scimax: LaTeX Display Math (Markup) | Insert display math $$...$$ | None       |
 
 ** Using Commands
 

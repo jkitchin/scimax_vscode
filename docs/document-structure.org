@@ -7,18 +7,21 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Document Structure
+* ✅ Document Structure
+CLOSED: [2026-01-15 Thu 14:25]
 
 Org documents are structured around *headlines*, which create a hierarchical
 outline that can be folded, navigated, and manipulated. This chapter covers how
 to create and work with document structure in Scimax VS Code.
 
-* ⚠️ Headlines
+* ✅ Headlines
+CLOSED: [2026-01-15 Thu 14:25]
 
 Headlines are the backbone of org documents. They define the structure and allow
 for powerful outline-based navigation and organization.
 
-** ⚠️ Creating Headlines
+** ✅ Creating Headlines
+CLOSED: [2026-01-15 Thu 14:25]
 
 A headline starts with one or more asterisks (*) at the beginning of a line,
 followed by a space:
@@ -32,7 +35,8 @@ followed by a space:
 
 There is no hard limit on headline levels, but most documents use 3-5 levels.
 
-** ⚠️ Headline Components
+** ✅ Headline Components
+CLOSED: [2026-01-15 Thu 14:25]
 
 A headline can contain several components:
 
@@ -40,15 +44,16 @@ A headline can contain several components:
 ,* TODO [#A] Headline Title                                    :tag1:tag2:
 #+END_SRC
 
-| Component     | Description                         | Example        |
-|---------------+-------------------------------------+----------------|
-| Stars         | Define the level (required)         | *, **, *** |
-| TODO keyword  | Task state (optional)               | TODO, DONE   |
-| Priority      | Importance marker (optional)        | [#A], [#B]   |
-| Title         | The headline text (required)        | Any text       |
-| Tags          | Categorization labels (optional)    | :work:urgent: |
+| Component    | Description                      | Example       |
+|--------------+----------------------------------+---------------|
+| Stars        | Define the level (required)      | *, **, ***    |
+| TODO keyword | Task state (optional)            | TODO, DONE    |
+| Priority     | Importance marker (optional)     | [#A], [#B]    |
+| Title        | The headline text (required)     | Any text      |
+| Tags         | Categorization labels (optional) | :work:urgent: |
 
-** ⚠️ Headline Levels
+** ✅ Headline Levels
+CLOSED: [2026-01-15 Thu 14:26]
 
 Headlines can be nested to any depth:
 
@@ -63,12 +68,14 @@ Headlines can be nested to any depth:
 Use consistent levels throughout your document. Skipping levels (e.g., going
 from * to ***) works but may cause confusion.
 
-* ⚠️ Visibility Cycling
+* ✅ Visibility Cycling
+CLOSED: [2026-01-15 Thu 14:26]
 
 One of the most powerful features of org documents is the ability to fold
 (collapse) and unfold (expand) sections to manage complexity.
 
-** ⚠️ Folding with Tab
+** ✅ Folding with Tab
+CLOSED: [2026-01-15 Thu 14:26]
 
 Press Tab on a headline to cycle through visibility states:
 
@@ -83,7 +90,8 @@ Example cycle:
 2. * Heading with child headlines visible
 3. * Heading with all content visible
 
-** ⚠️ Global Cycling with Shift-Tab
+** ✅ Global Cycling with Shift-Tab
+CLOSED: [2026-01-15 Thu 14:26]
 
 Press Shift+Tab anywhere in the document to cycle global visibility:
 
@@ -93,81 +101,90 @@ Press Shift+Tab anywhere in the document to cycle global visibility:
 | Contents | All headlines at all levels              |
 | Show All | Everything expanded                      |
 
-** ⚠️ Visibility Commands
+** ✅ Visibility Commands
+CLOSED: [2026-01-15 Thu 14:26]
 
-| Key              | Command                              |
-|------------------+--------------------------------------|
-| Tab             | Cycle visibility at current heading  |
-| Shift+Tab       | Cycle global visibility              |
+| Key       | Command                             |
+|-----------+-------------------------------------|
+| Tab       | Cycle visibility at current heading |
+| Shift+Tab | Cycle global visibility             |
 
 Additional visibility can be controlled through speed commands (see [[file:speed-commands.org][Speed Commands]]):
 
-| Speed Key | Action                               |
-|-----------+--------------------------------------|
-| c        | Cycle visibility                     |
-| Shift+C  | Show children                        |
-| o        | Overview (fold all)                  |
+| Speed Key | Action              |
+|-----------+---------------------|
+| c         | Cycle visibility    |
+| Shift+C   | Show children       |
+| o         | Overview (fold all) |
 
-* ⚠️ Motion Between Headlines
+* ✅ Motion Between Headlines
+CLOSED: [2026-01-15 Thu 14:27]
 
 Efficient navigation between headlines is essential for working with large
 documents.
 
-** ⚠️ Navigation Commands
+** ✅ Navigation Commands
+CLOSED: [2026-01-15 Thu 14:27]
 
-| Key                    | Command                          |
-|------------------------+----------------------------------|
-| Ctrl+C Ctrl+J         | Jump to any heading (with menu)  |
-| Next/Previous heading  | Built-in VS Code outline         |
+| Key                   | Command                         |
+|-----------------------+---------------------------------|
+| Ctrl+C Ctrl+J         | Jump to any heading (with menu) |
+| Next/Previous heading | Built-in VS Code outline        |
 
-** ⚠️ Using the Outline View
+** ✅ Using the Outline View
+CLOSED: [2026-01-15 Thu 14:27]
 
 The VS Code Outline view provides visual navigation:
 
-1. Open the Outline view (sidebar or Ctrl+Shift+O)
+1. Open the Outline view (sidebar or Cmd/Ctrl+Shift+O)
 2. Click any heading to jump to it
 3. Use the filter box to search headings
 
-** ⚠️ Jump to Heading
+** ✅ Jump to Heading
+CLOSED: [2026-01-15 Thu 14:27]
 
 Press Ctrl+C Ctrl+J to open a quick-pick menu of all headings. Type to filter
 and press Enter to jump.
 
-** ⚠️ Speed Command Navigation
+** ✅ Speed Command Navigation
+CLOSED: [2026-01-15 Thu 14:27]
 
 With speed commands enabled (scimax.speedCommands.enabled: true), when your
 cursor is at the beginning of a headline, single keys navigate:
 
-| Key | Action                                 |
-|-----+----------------------------------------|
-| n  | Next heading (any level)               |
-| p  | Previous heading (any level)           |
-| f  | Next heading (same level - forward)    |
-| b  | Previous heading (same level - back)   |
-| u  | Up to parent heading                   |
-| j  | Jump to heading (opens menu)           |
-| g  | Go to... (opens navigation menu)       |
+| Key | Action                               |
+|-----+--------------------------------------|
+| n   | Next heading (any level)             |
+| p   | Previous heading (any level)         |
+| f   | Next heading (same level - forward)  |
+| b   | Previous heading (same level - back) |
+| u   | Up to parent heading                 |
+| j   | Jump to heading (opens menu)         |
+| g   | Go to... (opens navigation menu)     |
 
-* ⚠️ Structure Editing
+* ✅ Structure Editing
+CLOSED: [2026-01-15 Thu 14:28]
 
 Scimax VS Code provides commands to restructure your document without
 manual cut-and-paste.
 
-** ⚠️ Promote/Demote Headlines
+** ✅ Promote/Demote Headlines
+CLOSED: [2026-01-15 Thu 14:28]
 
 Change the level of a headline:
 
-| Key           | Command                              |
-|---------------+--------------------------------------|
-| Alt+Left     | Promote heading (decrease level)     |
-| Alt+Right    | Demote heading (increase level)      |
-| Alt+Shift+Left  | Promote subtree                   |
-| Alt+Shift+Right | Demote subtree                    |
+| Key             | Command                          |
+|-----------------+----------------------------------|
+| Alt+Left        | Promote heading (decrease level) |
+| Alt+Right       | Demote heading (increase level)  |
+| Alt+Shift+Left  | Promote subtree                  |
+| Alt+Shift+Right | Demote subtree                   |
 
 *Promote* means moving toward the root (** -> *).
 *Demote* means moving away from the root (* -> **).
 
-*** ⚠️ Single Heading vs Subtree
+*** ✅ Single Heading vs Subtree
+CLOSED: [2026-01-15 Thu 14:28]
 
 - *Promote/Demote Heading*: Changes only the current headline's level
 - *Promote/Demote Subtree*: Changes the headline AND all its children
@@ -183,32 +200,34 @@ Example - promoting a subtree:
 
 Reorder sections without changing their level:
 
-| Key         | Command                              |
-|-------------+--------------------------------------|
-| Alt+Up     | Move subtree up (swap with previous) |
-| Alt+Down   | Move subtree down (swap with next)   |
+| Key      | Command                              |
+|----------+--------------------------------------|
+| Alt+Up   | Move subtree up (swap with previous) |
+| Alt+Down | Move subtree down (swap with next)   |
 
 The entire subtree (heading and all its content/children) moves together.
 
-** ⚠️ Kill/Clone Subtrees
+** ✅ Kill/Clone Subtrees
+CLOSED: [2026-01-15 Thu 14:31]
 
-| Command                    | Description                        |
-|----------------------------+------------------------------------|
-| scimax.org.killSubtree    | Cut the current subtree            |
-| scimax.org.cloneSubtree   | Duplicate the current subtree      |
+| Command                 | Description                   |
+|-------------------------+-------------------------------|
+| scimax.org.killSubtree  | Cut the current subtree       |
+| scimax.org.cloneSubtree | Duplicate the current subtree |
 
 Speed command keys (at heading start):
-| Key      | Action                               |
-|----------+--------------------------------------|
-| w       | Kill (cut) subtree                   |
-| Shift+W | Clone (duplicate) subtree            |
-| y       | Yank (paste) subtree                 |
+| Key     | Action                    |
+|---------+---------------------------|
+| w       | Kill (cut) subtree        |
+| Shift+W | Clone (duplicate) subtree |
+| y       | Yank (paste) subtree      |
 
-** ⚠️ Insert New Headings
+** ✅ Insert New Headings
+CLOSED: [2026-01-15 Thu 14:31]
 
-| Key           | Command                              |
-|---------------+--------------------------------------|
-| Ctrl+Enter   | Insert heading at same level         |
+| Key        | Command                      |
+|------------+------------------------------|
+| Ctrl+Enter | Insert heading at same level |
 
 The command scimax.org.insertHeading inserts a new heading. The behavior
 depends on context:
@@ -217,16 +236,18 @@ depends on context:
 - In body text: Insert new heading after current section
 
 For subheadings:
-| Command                       | Description                      |
-|-------------------------------+----------------------------------|
-| scimax.org.insertSubheading  | Insert heading one level deeper  |
+| Command                     | Description                     |
+|-----------------------------+---------------------------------|
+| scimax.org.insertSubheading | Insert heading one level deeper |
 
-* ⚠️ Document Keywords
+* ✅ Document Keywords
+CLOSED: [2026-01-15 Thu 14:32]
 
 Document keywords appear at the beginning of the file and configure
 document-wide settings.
 
-** ⚠️ Common Keywords
+** ✅ Common Keywords
+CLOSED: [2026-01-15 Thu 14:32]
 
 #+BEGIN_SRC org
 ,#+TITLE: Document Title
@@ -235,7 +256,8 @@ document-wide settings.
 ,#+EMAIL: author@example.com
 #+END_SRC
 
-** ⚠️ Options Keyword
+** ✅ Options Keyword
+CLOSED: [2026-01-15 Thu 14:32]
 
 The #+OPTIONS: keyword controls export and display behavior:
 
@@ -271,11 +293,13 @@ Set default properties for source blocks:
 ,#+PROPERTY: header-args:python :session *python*
 #+END_SRC
 
-* ⚠️ Properties Drawers
+* ✅ Properties Drawers
+CLOSED: [2026-01-15 Thu 14:32]
 
 Properties drawers store metadata about a headline in key-value pairs.
 
-** ⚠️ Creating Properties Drawers
+** ✅ Creating Properties Drawers
+CLOSED: [2026-01-15 Thu 14:32]
 
 Properties appear in a :PROPERTIES: drawer immediately after the headline:
 
@@ -288,7 +312,8 @@ Properties appear in a :PROPERTIES: drawer immediately after the headline:
 :END:
 #+END_SRC
 
-** ⚠️ Special Properties
+** ✅ Special Properties
+CLOSED: [2026-01-15 Thu 14:33]
 
 Certain properties have special meaning:
 
@@ -301,7 +326,8 @@ Certain properties have special meaning:
 | COLUMNS    | Column view format specification         |
 | VISIBILITY | Initial visibility (folded, children, all)|
 
-** ⚠️ Adding Properties
+** ✅ Adding Properties
+CLOSED: [2026-01-15 Thu 14:33]
 
 To add a property via speed commands, press Shift+P at a heading start.
 
@@ -359,13 +385,15 @@ Drawer names must be uppercase letters and can contain numbers and underscores.
 Drawers are typically displayed collapsed. Click or use fold commands to
 expand/collapse them.
 
-* ⚠️ Inline Tasks
+* ✅ Inline Tasks
+CLOSED: [2026-01-15 Thu 14:34]
 
 Inline tasks are special headlines at a very deep level (default: 15 stars or
 more) that are treated as inline content within a section rather than as
 document structure.
 
-** ⚠️ Creating Inline Tasks
+** ✅ Creating Inline Tasks
+CLOSED: [2026-01-15 Thu 14:34]
 
 An inline task uses many stars (15+) and has a matching END marker:
 
@@ -381,7 +409,8 @@ It's useful for small, self-contained TODOs within prose.
 More content continues here.
 #+END_SRC
 
-** ⚠️ Inline Task Features
+** ✅ Inline Task Features
+CLOSED: [2026-01-15 Thu 14:34]
 
 Inline tasks support the same features as regular headlines:
 
@@ -392,24 +421,28 @@ Inline tasks support the same features as regular headlines:
 | Tags        | *************** Task :urgent:work:          |
 | Body text   | Content between task and END                 |
 
-** ⚠️ When to Use Inline Tasks
+** ✅ When to Use Inline Tasks
+CLOSED: [2026-01-15 Thu 14:35]
 
 - Quick TODOs embedded in documentation
 - Small tasks that don't warrant their own section
 - Notes or reminders within prose
 - Tasks that shouldn't appear in document outline
 
-** ⚠️ Configuration
+** ✅ Configuration
+CLOSED: [2026-01-15 Thu 14:35]
 
 The minimum headline level for inline tasks is configurable. By default,
 headlines with 15 or more stars are treated as inline tasks.
 
-* ⚠️ Footnote Definitions
+* ✅ Footnote Definitions
+CLOSED: [2026-01-15 Thu 14:35]
 
 Footnotes allow you to add supplementary information without interrupting
 the main text flow.
 
-** ⚠️ Footnote Definition Syntax
+** ✅ Footnote Definition Syntax
+CLOSED: [2026-01-15 Thu 14:35]
 
 Footnotes are defined with [fn:LABEL] at the start of a line:
 
@@ -422,7 +455,8 @@ This paragraph has a footnote reference[fn:1].
 Another paragraph continues here.
 #+END_SRC
 
-** ⚠️ Footnote Labels
+** ✅ Footnote Labels
+CLOSED: [2026-01-15 Thu 14:35]
 
 Footnotes can use numeric or named labels:
 
@@ -434,7 +468,8 @@ This is a key concept[fn:important-note].
 [fn:important-note] A named footnote for easy reference.
 #+END_SRC
 
-** ⚠️ Multi-line Footnotes
+** ✅ Multi-line Footnotes
+CLOSED: [2026-01-15 Thu 14:35]
 
 Footnote definitions can span multiple lines with indentation:
 
@@ -447,7 +482,8 @@ Footnote definitions can span multiple lines with indentation:
   a blank line with proper indentation.
 #+END_SRC
 
-** ⚠️ Inline Footnotes
+** ✅ Inline Footnotes
+CLOSED: [2026-01-15 Thu 14:35]
 
 For short footnotes, use inline syntax:
 
@@ -455,16 +491,19 @@ For short footnotes, use inline syntax:
 This has an inline footnote[fn:: This is the definition].
 #+END_SRC
 
-** ⚠️ Related Topics
+** ✅ Related Topics
+CLOSED: [2026-01-15 Thu 14:35]
 
 See [[file:links.org][Links]] for information on footnote references.
 
-* ⚠️ Dynamic Blocks
+* ✅ Dynamic Blocks
+CLOSED: [2026-01-15 Thu 14:35]
 
 Dynamic blocks are special regions whose content is generated programmatically.
 They are defined with #+BEGIN: and #+END: markers.
 
-** ⚠️ Dynamic Block Syntax
+** ✅ Dynamic Block Syntax
+CLOSED: [2026-01-15 Thu 14:35]
 
 #+BEGIN_SRC org
 ,#+BEGIN: block-name parameters
@@ -472,7 +511,8 @@ Content that will be replaced when block is updated.
 ,#+END:
 #+END_SRC
 
-** ⚠️ Clock Table Example
+** ✅ Clock Table Example
+CLOSED: [2026-01-15 Thu 14:35]
 
 The most common dynamic block is the clock table, which summarizes time spent:
 
@@ -490,42 +530,45 @@ The most common dynamic block is the clock table, which summarizes time spent:
 
 Column view displays properties in a table format:
 
-#+BEGIN_SRC org
-,#+BEGIN: columnview :hlines 1 :id global
-| ITEM         | EFFORT | PRIORITY |
-|--------------+--------+----------|
-| Task 1       | 2:00   | A        |
-| Task 2       | 1:30   | B        |
-,#+END:
-#+END_SRC
+
+#+BEGIN: columnview :hlines 1 
+| ITEM   | EFFORT | PRIORITY |
+|--------+--------+----------|
+| Task 1 | 2:00   | A        |
+| Task 2 | 1:30   | B        |
+#+END:
+
 
 ** ⚠️ Dynamic Block Parameters
 
 Common parameters for clock tables:
 
-| Parameter   | Description                           | Example         |
-|-------------+---------------------------------------+-----------------|
-| :maxlevel  | Maximum headline depth                | :maxlevel 3    |
-| :scope     | Scope of clock data                   | :scope file    |
-| :tstart    | Start time for report                 | :tstart "<-1w>" |
-| :tend      | End time for report                   | :tend "<now>"  |
-| :block     | Time block (today, thisweek, etc.)    | :block thisweek |
+| Parameter | Description                        | Example         |
+|-----------+------------------------------------+-----------------|
+| :maxlevel | Maximum headline depth             | :maxlevel 3     |
+| :scope    | Scope of clock data                | :scope file     |
+| :tstart   | Start time for report              | :tstart "<-1w>" |
+| :tend     | End time for report                | :tend "<now>"   |
+| :block    | Time block (today, thisweek, etc.) | :block thisweek |
 
 ** ⚠️ Updating Dynamic Blocks
 
 Dynamic blocks are updated when explicitly requested. The content between
 #+BEGIN: and #+END: is regenerated based on the block type and parameters.
 
-* ⚠️ Best Practices
+* ✅ Best Practices
+CLOSED: [2026-01-15 Thu 14:38]
 
-** ⚠️ Document Organization
+** ✅ Document Organization
+CLOSED: [2026-01-15 Thu 14:38]
 
 1. *Start with an outline* - Create your heading structure before adding content
 2. *Use consistent levels* - Don't skip levels arbitrarily
 3. *Keep headings concise* - Use brief, descriptive titles
 4. *Use tags for cross-cutting concerns* - Don't rely solely on hierarchy
 
-** ⚠️ Heading Depth Guidelines
+** ✅ Heading Depth Guidelines
+CLOSED: [2026-01-15 Thu 14:38]
 
 | Level | Typical Use                              |
 |-------+------------------------------------------|
@@ -535,14 +578,16 @@ Dynamic blocks are updated when explicitly requested. The content between
 | 4     | Detailed points                          |
 | 5+    | Rarely needed; consider restructuring    |
 
-** ⚠️ Navigation Efficiency
+** ✅ Navigation Efficiency
+CLOSED: [2026-01-15 Thu 14:38]
 
 1. *Use Ctrl+C Ctrl+J* for direct jumps to any heading
 2. *Use outline view* for visual navigation in long documents
 3. *Enable speed commands* for rapid single-key navigation
 4. *Use Shift+Tab* to get an overview before diving in
 
-* ⚠️ Related Topics
+* ✅ Related Topics
+CLOSED: [2026-01-15 Thu 14:38]
 
 - [[file:todo-items.org][TODO Items]] - Task states and priorities in headlines
 - [[file:timestamps.org][Timestamps]] - Adding dates to headlines
@@ -550,7 +595,7 @@ Dynamic blocks are updated when explicitly requested. The content between
 - [[file:speed-commands.org][Speed Commands]] - Single-key commands at headlines
 - [[file:export.org][Export]] - How structure affects exported documents
 
-* Navigation
+* 👀 Navigation
 
 - Previous: [[file:getting-started.org][Getting Started]]
 - Next: [[file:todo-items.org][TODO Items]]

@@ -351,25 +351,25 @@ function buildCompileCommand(
 
     switch (config.compiler) {
         case 'latexmk-lualatex':
-            return `latexmk -lualatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -lualatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'latexmk-pdflatex':
-            return `latexmk -pdf -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -pdf -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'latexmk-xelatex':
-            return `latexmk -xelatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -xelatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'lualatex':
-            return `lualatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `lualatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'pdflatex':
-            return `pdflatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `pdflatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'xelatex':
-            return `xelatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `xelatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         default:
-            return `latexmk -lualatex -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -lualatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
     }
 }
 
@@ -1035,7 +1035,37 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             'scimax.org.exportLatexOpen',
             async () => {
-                await quickExportPdf();
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || editor.document.languageId !== 'org') {
+                    vscode.window.showWarningMessage('No org-mode file open');
+                    return;
+                }
+                const inputPath = editor.document.uri.fsPath;
+                const inputDir = path.dirname(inputPath);
+                const content = preprocessContent(editor.document.getText(), inputDir);
+                const outputPath = inputPath.replace(/\.org$/, '.pdf');
+                const compilerDesc = getPdfCompilerDescription();
+
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: `Exporting to PDF via ${compilerDesc}...`,
+                        cancellable: false,
+                    },
+                    async () => {
+                        try {
+                            const logPath = await exportPdf(content, {}, outputPath);
+                            if (logPath) {
+                                await handlePdfExportError(logPath);
+                            } else {
+                                await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                            }
+                        } catch (error) {
+                            const message = error instanceof Error ? error.message : String(error);
+                            vscode.window.showErrorMessage(`PDF export failed: ${message}`);
+                        }
+                    }
+                );
             }
         )
     );
@@ -1061,6 +1091,43 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                     const message = error instanceof Error ? error.message : String(error);
                     vscode.window.showErrorMessage(`HTML export failed: ${message}`);
                 }
+            }
+        )
+    );
+
+    // Export Markdown and open
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportMarkdownOpen',
+            async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || editor.document.languageId !== 'org') {
+                    vscode.window.showWarningMessage('No org-mode file open');
+                    return;
+                }
+                const inputPath = editor.document.uri.fsPath;
+                const inputDir = path.dirname(inputPath);
+                const content = preprocessContent(editor.document.getText(), inputDir);
+                const outputPath = inputPath.replace(/\.org$/, '.md');
+                try {
+                    const result = await exportMarkdown(content, {});
+                    await fs.promises.writeFile(outputPath, result, 'utf-8');
+                    const doc = await vscode.workspace.openTextDocument(outputPath);
+                    await vscode.window.showTextDocument(doc);
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : String(error);
+                    vscode.window.showErrorMessage(`Markdown export failed: ${message}`);
+                }
+            }
+        )
+    );
+
+    // Export menu via hydra (C-c C-e)
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportMenu',
+            async () => {
+                await vscode.commands.executeCommand('scimax.hydra.show', 'scimax.export');
             }
         )
     );

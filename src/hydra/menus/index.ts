@@ -11,6 +11,13 @@ import { projectileMenu } from './projectileMenu';
 import { searchMenu } from './searchMenu';
 import { jumpMenu } from './jumpMenu';
 import { databaseMenu } from './databaseMenu';
+import {
+    exportMenu,
+    htmlExportMenu,
+    latexExportMenu,
+    markdownExportMenu,
+    exportMenus,
+} from './exportMenu';
 
 /**
  * All pre-built Scimax menus
@@ -24,6 +31,7 @@ export const scimaxMenus: HydraMenuDefinition[] = [
     searchMenu,
     jumpMenu,
     databaseMenu,
+    ...exportMenus,
 ];
 
 export {
@@ -35,4 +43,9 @@ export {
     searchMenu,
     jumpMenu,
     databaseMenu,
+    exportMenu,
+    htmlExportMenu,
+    latexExportMenu,
+    markdownExportMenu,
+    exportMenus,
 };

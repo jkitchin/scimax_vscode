@@ -827,7 +827,11 @@
       },
       {
         "command": "scimax.org.exportDispatcher",
-        "title": "Scimax: Export Dispatcher (C-c C-e)"
+        "title": "Scimax: Export Dispatcher (flat menu)"
+      },
+      {
+        "command": "scimax.org.exportMenu",
+        "title": "Scimax: Export Menu (C-c C-e)"
       },
       {
         "command": "scimax.org.exportLatexOpen",
@@ -1161,6 +1165,14 @@
         "title": "Scimax: Insert Timestamp"
       },
       {
+        "command": "scimax.org.insertInactiveTimestamp",
+        "title": "Scimax: Insert Inactive Timestamp"
+      },
+      {
+        "command": "scimax.org.insertActiveTimestamp",
+        "title": "Scimax: Insert Active Timestamp"
+      },
+      {
         "command": "scimax.org.addRepeater",
         "title": "Scimax: Add/Change Repeater on Timestamp"
       },
@@ -1191,6 +1203,10 @@
       {
         "command": "scimax.table.deleteRow",
         "title": "Scimax: Delete Table Row"
+      },
+      {
+        "command": "scimax.table.insertColumnLeft",
+        "title": "Scimax: Insert Table Column Left"
       },
       {
         "command": "scimax.table.insertColumnRight",
@@ -1492,12 +1508,20 @@
         "title": "Scimax: Clone Subtree"
       },
       {
+        "command": "scimax.org.markSubtree",
+        "title": "Scimax: Mark (Select) Subtree"
+      },
+      {
         "command": "scimax.org.insertHeading",
         "title": "Scimax: Insert Heading"
       },
       {
         "command": "scimax.org.insertSubheading",
         "title": "Scimax: Insert Subheading"
+      },
+      {
+        "command": "scimax.org.insertInlineTask",
+        "title": "Scimax: Insert Inline Task"
       },
       {
         "command": "scimax.org.cycleTodo",
@@ -1510,6 +1534,14 @@
       {
         "command": "scimax.org.insertCheckbox",
         "title": "Scimax: Insert Checkbox"
+      },
+      {
+        "command": "scimax.org.renumberList",
+        "title": "Scimax: Renumber Ordered List"
+      },
+      {
+        "command": "scimax.org.updateDynamicBlock",
+        "title": "Scimax: Update Dynamic Block"
       },
       {
         "command": "scimax.org.insertLink",
@@ -2064,6 +2096,31 @@
         "mac": "cmd+shift+j"
       },
       {
+        "command": "scimax.agenda.menu",
+        "key": "ctrl+c a a",
+        "mac": "ctrl+c a a"
+      },
+      {
+        "command": "scimax.agenda.week",
+        "key": "ctrl+c a w",
+        "mac": "ctrl+c a w"
+      },
+      {
+        "command": "scimax.agenda.month",
+        "key": "ctrl+c a m",
+        "mac": "ctrl+c a m"
+      },
+      {
+        "command": "scimax.agenda.todoList",
+        "key": "ctrl+c a t",
+        "mac": "ctrl+c a t"
+      },
+      {
+        "command": "scimax.agenda.deadlines",
+        "key": "ctrl+c a d",
+        "mac": "ctrl+c a d"
+      },
+      {
         "command": "scimax.journal.prev",
         "key": "alt+[",
         "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
@@ -2165,7 +2222,7 @@
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
-        "command": "scimax.org.exportDispatcher",
+        "command": "scimax.org.exportMenu",
         "key": "ctrl+c ctrl+e",
         "mac": "ctrl+c ctrl+e",
         "when": "editorTextFocus && editorLangId == 'org'"
@@ -2237,10 +2294,22 @@
         "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock"
       },
       {
+        "command": "scimax.org.renumberList",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.inOrderedList"
+      },
+      {
+        "command": "scimax.org.updateDynamicBlock",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.inDynamicBlock"
+      },
+      {
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine"
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock"
       },
       {
         "command": "scimax.markdown.insertDueDate",
@@ -2295,28 +2364,34 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
+        "command": "scimax.org.insertInactiveTimestamp",
+        "key": "ctrl+c shift+1",
+        "mac": "ctrl+c shift+1",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
         "command": "scimax.org.addRepeater",
         "key": "ctrl+c ctrl+r",
         "mac": "ctrl+c ctrl+r",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
-        "command": "scimax.table.insertRowBelow",
-        "key": "alt+enter",
-        "mac": "alt+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
-      },
-      {
         "command": "scimax.table.insertRowAbove",
-        "key": "alt+shift+enter",
-        "mac": "alt+shift+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "key": "alt+shift+up",
+        "mac": "alt+shift+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       },
       {
-        "command": "scimax.table.deleteRow",
-        "key": "alt+shift+backspace",
-        "mac": "alt+shift+backspace",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "command": "scimax.table.insertRowBelow",
+        "key": "alt+shift+down",
+        "mac": "alt+shift+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.insertColumnLeft",
+        "key": "alt+shift+left",
+        "mac": "alt+shift+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       },
       {
         "command": "scimax.table.insertColumnRight",
@@ -2325,22 +2400,22 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       },
       {
-        "command": "scimax.table.deleteColumn",
-        "key": "alt+shift+left",
-        "mac": "alt+shift+left",
+        "command": "scimax.table.deleteRow",
+        "key": "alt+shift+backspace",
+        "mac": "alt+shift+backspace",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       },
       {
         "command": "scimax.table.create",
-        "key": "ctrl+c |",
-        "mac": "ctrl+c |",
+        "key": "ctrl+c shift+\\",
+        "mac": "ctrl+c shift+\\",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
         "command": "scimax.table.insertSeparator",
         "key": "ctrl+c -",
         "mac": "ctrl+c -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       },
       {
         "command": "scimax.heading.promote",
@@ -2699,7 +2774,7 @@
         "command": "scimax.ob.splitBlock",
         "key": "escape -",
         "mac": "escape -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock"
       },
       {
         "command": "scimax.ob.executeAndNext",
@@ -2717,7 +2792,7 @@
         "command": "scimax.ob.splitBlock",
         "key": "ctrl+c -",
         "mac": "ctrl+c -",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock"
       },
       {
         "command": "scimax.ob.jumpToBlock",
@@ -2733,8 +2808,8 @@
       },
       {
         "command": "scimax.table.sortByColumn",
-        "key": "ctrl+c ^",
-        "mac": "ctrl+c ^",
+        "key": "ctrl+c shift+6",
+        "mac": "ctrl+c shift+6",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
       },
       {
@@ -2820,6 +2895,11 @@
       {
         "command": "scimax.org.killSubtree",
         "key": "w",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.markSubtree",
+        "key": "shift+2",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
       },
       {
@@ -2952,6 +3032,12 @@
         "key": "ctrl+c ctrl+x s",
         "mac": "ctrl+c ctrl+x s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.org.insertInlineTask",
+        "key": "ctrl+c ctrl+x t",
+        "mac": "ctrl+c ctrl+x t",
+        "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
         "command": "scimax.table.recalculate",

@@ -9,7 +9,16 @@ import {
     getNextTodoState,
     getAllTodoStatesForDocument
 } from './todoStates';
-import { getDayOfWeek } from '../parser/orgRepeater';
+import {
+    getDayOfWeek,
+    findRepeaterInLines,
+    advanceDateByRepeater,
+    formatOrgTimestamp
+} from '../parser/orgRepeater';
+import {
+    updateDynamicBlockAtCursor,
+    isInDynamicBlock
+} from '../parser/orgDynamicBlocks';
 
 // =============================================================================
 // Text Markup Functions
@@ -614,7 +623,7 @@ function getSubtreeRange(document: vscode.TextDocument, line: number): { startLi
 }
 
 /**
- * Move subtree up
+ * Move subtree up (swap with previous sibling)
  */
 export async function moveSubtreeUp(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -622,47 +631,62 @@ export async function moveSubtreeUp(): Promise<void> {
 
     const document = editor.document;
     const position = editor.selection.active;
-    const { startLine, endLine } = getSubtreeRange(document, position.line);
+    const current = getSubtreeRange(document, position.line);
 
-    if (startLine === 0) {
+    if (current.startLine === 0) {
         vscode.window.showInformationMessage('Already at top');
         return;
     }
 
-    // Find the previous subtree
-    let prevStart = startLine - 1;
-    const lineText = document.lineAt(startLine).text;
+    // Get the level of current heading
+    const lineText = document.lineAt(current.startLine).text;
     const match = lineText.match(/^(\*+)\s/);
     const level = match ? match[1].length : 0;
 
-    // Find start of previous sibling or just move up one line
-    for (let i = startLine - 1; i >= 0; i--) {
+    // Find the previous sibling at the same level
+    let prevStart = -1;
+    for (let i = current.startLine - 1; i >= 0; i--) {
         const prevMatch = document.lineAt(i).text.match(/^(\*+)\s/);
-        if (prevMatch && prevMatch[1].length <= level) {
-            prevStart = i;
-            break;
-        }
-        if (i === 0) {
-            prevStart = 0;
+        if (prevMatch) {
+            if (prevMatch[1].length === level) {
+                prevStart = i;
+                break;
+            } else if (prevMatch[1].length < level) {
+                // Hit a parent heading, no previous sibling
+                break;
+            }
         }
     }
 
-    // Get the text to move
-    const subtreeRange = new vscode.Range(startLine, 0, endLine + 1, 0);
-    const subtreeText = document.getText(subtreeRange);
+    if (prevStart === -1) {
+        vscode.window.showInformationMessage('No previous sibling to swap with');
+        return;
+    }
+
+    // Get the previous subtree range
+    const prev = getSubtreeRange(document, prevStart);
+
+    // Get both subtrees' text
+    const currentText = document.getText(new vscode.Range(current.startLine, 0, current.endLine + 1, 0));
+    const prevText = document.getText(new vscode.Range(prev.startLine, 0, prev.endLine + 1, 0));
+
+    // Replace the combined range with swapped content
+    const combinedRange = new vscode.Range(prev.startLine, 0, current.endLine + 1, 0);
+    const swappedText = currentText + prevText;
 
     await editor.edit(editBuilder => {
-        editBuilder.delete(subtreeRange);
-        editBuilder.insert(new vscode.Position(prevStart, 0), subtreeText);
+        editBuilder.replace(combinedRange, swappedText);
     });
 
     // Move cursor with the subtree
-    const newPos = new vscode.Position(prevStart + (position.line - startLine), position.character);
+    const newLine = prev.startLine + (position.line - current.startLine);
+    const newPos = new vscode.Position(newLine, position.character);
     editor.selection = new vscode.Selection(newPos, newPos);
+    editor.revealRange(new vscode.Range(newPos, newPos), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
 }
 
 /**
- * Move subtree down
+ * Move subtree down (swap with next sibling)
  */
 export async function moveSubtreeDown(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -670,42 +694,81 @@ export async function moveSubtreeDown(): Promise<void> {
 
     const document = editor.document;
     const position = editor.selection.active;
-    const { startLine, endLine } = getSubtreeRange(document, position.line);
+    const current = getSubtreeRange(document, position.line);
 
-    if (endLine >= document.lineCount - 1) {
+    if (current.endLine >= document.lineCount - 1) {
         vscode.window.showInformationMessage('Already at bottom');
         return;
     }
 
-    // Find the next subtree end
-    const lineText = document.lineAt(startLine).text;
+    // Get the level of current heading
+    const lineText = document.lineAt(current.startLine).text;
     const match = lineText.match(/^(\*+)\s/);
     const level = match ? match[1].length : 0;
 
-    let nextEnd = endLine + 1;
-    for (let i = endLine + 2; i < document.lineCount; i++) {
+    // Find the next sibling at the same level
+    let nextStart = -1;
+    for (let i = current.endLine + 1; i < document.lineCount; i++) {
         const nextMatch = document.lineAt(i).text.match(/^(\*+)\s/);
-        if (nextMatch && nextMatch[1].length <= level) {
-            nextEnd = i - 1;
-            break;
+        if (nextMatch) {
+            if (nextMatch[1].length === level) {
+                nextStart = i;
+                break;
+            } else if (nextMatch[1].length < level) {
+                // Hit a parent heading, no next sibling
+                break;
+            }
         }
-        nextEnd = i;
     }
 
-    // Get the text to move
-    const subtreeRange = new vscode.Range(startLine, 0, endLine + 1, 0);
-    const subtreeText = document.getText(subtreeRange);
-    const subtreeLines = endLine - startLine + 1;
+    if (nextStart === -1) {
+        vscode.window.showInformationMessage('No next sibling to swap with');
+        return;
+    }
+
+    // Get the next subtree range
+    const next = getSubtreeRange(document, nextStart);
+
+    // Get both subtrees' text
+    const currentText = document.getText(new vscode.Range(current.startLine, 0, current.endLine + 1, 0));
+    const nextText = document.getText(new vscode.Range(next.startLine, 0, next.endLine + 1, 0));
+
+    // Replace the combined range with swapped content
+    const combinedRange = new vscode.Range(current.startLine, 0, next.endLine + 1, 0);
+    const swappedText = nextText + currentText;
 
     await editor.edit(editBuilder => {
-        editBuilder.delete(subtreeRange);
-        editBuilder.insert(new vscode.Position(nextEnd - subtreeLines + 1, 0), subtreeText);
+        editBuilder.replace(combinedRange, swappedText);
     });
 
-    // Move cursor with the subtree
-    const newStart = nextEnd - subtreeLines + 1;
-    const newPos = new vscode.Position(newStart + (position.line - startLine), position.character);
+    // Move cursor with the subtree (it moves down by the size of the next subtree)
+    const nextLines = next.endLine - next.startLine + 1;
+    const newLine = current.startLine + nextLines + (position.line - current.startLine);
+    const newPos = new vscode.Position(newLine, position.character);
     editor.selection = new vscode.Selection(newPos, newPos);
+    editor.revealRange(new vscode.Range(newPos, newPos), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+}
+
+/**
+ * Mark (select) the current subtree
+ * This selects the entire subtree so you can cut, copy, or delete it
+ */
+export async function markSubtree(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const { startLine, endLine } = getSubtreeRange(document, position.line);
+
+    // Select from start of heading to end of subtree (including trailing newline if present)
+    const startPos = new vscode.Position(startLine, 0);
+    const endPos = endLine < document.lineCount - 1
+        ? new vscode.Position(endLine + 1, 0)
+        : new vscode.Position(endLine, document.lineAt(endLine).text.length);
+
+    editor.selection = new vscode.Selection(startPos, endPos);
+    editor.revealRange(new vscode.Range(startPos, endPos), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
 }
 
 /**
@@ -807,6 +870,43 @@ export async function insertSubheading(): Promise<void> {
     });
 
     const newPos = new vscode.Position(position.line + 1, level + 1);
+    editor.selection = new vscode.Selection(newPos, newPos);
+}
+
+/**
+ * Insert an inline task at the current position
+ * Inline tasks use 15 stars (the default inlinetask-min-level)
+ */
+export async function insertInlineTask(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const line = document.lineAt(position.line);
+
+    // Inline tasks use 15 stars by default
+    const stars = '*'.repeat(15);
+    const taskLine = `${stars} TODO `;
+    const endLine = `${stars} END`;
+
+    // Insert at end of current line or on new line if line has content
+    const insertText = line.text.trim() === ''
+        ? `${taskLine}\n${endLine}`
+        : `\n${taskLine}\n${endLine}`;
+
+    const insertPos = line.text.trim() === ''
+        ? new vscode.Position(position.line, 0)
+        : new vscode.Position(position.line, line.text.length);
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(insertPos, insertText);
+    });
+
+    // Position cursor after "TODO "
+    const newLine = line.text.trim() === '' ? position.line : position.line + 1;
+    const cursorCol = stars.length + 6; // "*************** TODO " = 15 + 6
+    const newPos = new vscode.Position(newLine, cursorCol);
     editor.selection = new vscode.Selection(newPos, newPos);
 }
 
@@ -916,6 +1016,36 @@ export async function updateClosedTimestamp(
 }
 
 /**
+ * Find DEADLINE or SCHEDULED with repeater for a heading
+ * Only looks at lines immediately after the heading (before next heading or content)
+ */
+function findRepeaterForHeading(
+    document: vscode.TextDocument,
+    headingLine: number
+): { lineNumber: number; match: RegExpMatchArray; type: 'DEADLINE' | 'SCHEDULED' } | null {
+    // Extract lines from heading to next heading (or up to 10 lines)
+    const lines: string[] = [];
+    for (let i = headingLine; i < document.lineCount && lines.length < 10; i++) {
+        const lineText = document.lineAt(i).text;
+        lines.push(lineText);
+        // Stop at next heading (but include the first line which is the current heading)
+        if (i > headingLine && /^\*+\s/.test(lineText)) {
+            lines.pop(); // Don't include the next heading
+            break;
+        }
+    }
+
+    const result = findRepeaterInLines(lines, 0);
+    if (!result) return null;
+
+    return {
+        lineNumber: headingLine + result.lineIndex,
+        match: result.match,
+        type: result.type
+    };
+}
+
+/**
  * Cycle TODO state on current heading
  * Uses file-specific TODO states from #+TODO: keywords if defined
  */
@@ -970,12 +1100,64 @@ export async function cycleTodoState(): Promise<void> {
     }
 
     const [, stars, currentState, rest] = headingMatch;
-    const nextState = getNextTodoState(currentState, document);
+    let nextState = getNextTodoState(currentState, document);
 
     // Determine done state transitions
     const wasDone = currentState ? doneStates.has(currentState) : false;
     const isNowDone = nextState ? doneStates.has(nextState) : false;
 
+    // Check for repeater when transitioning TO done state
+    let repeaterInfo: ReturnType<typeof findRepeaterForHeading> = null;
+    if (isNowDone && !wasDone) {
+        repeaterInfo = findRepeaterForHeading(document, position.line);
+    }
+
+    if (repeaterInfo) {
+        // This is a repeating task - advance the timestamp and reset to first active state
+        const match = repeaterInfo.match;
+        const year = parseInt(match[3]);
+        const month = parseInt(match[4]);
+        const day = parseInt(match[5]);
+        const hour = match[6] ? parseInt(match[6]) : undefined;
+        const minute = match[7] ? parseInt(match[7]) : undefined;
+        const repeater = match[8];
+
+        // Advance the date
+        const newDate = advanceDateByRepeater(year, month, day, repeater);
+
+        // Build new timestamp
+        const newTimestamp = formatOrgTimestamp(newDate, {
+            hour,
+            minute,
+            repeater,
+            active: true
+        });
+
+        // Build the new DEADLINE/SCHEDULED line
+        const indent = match[1];
+        const keyword = match[2];
+        const newDeadlineLine = `${indent}${keyword}: ${newTimestamp}`;
+
+        // Reset to first active state instead of done state
+        nextState = workflow.activeStates[0] || 'TODO';
+
+        const newLine = `${stars} ${nextState} ${rest}`;
+
+        // Apply both edits: update heading and timestamp
+        await editor.edit(editBuilder => {
+            editBuilder.replace(line.range, newLine);
+            editBuilder.replace(
+                document.lineAt(repeaterInfo!.lineNumber).range,
+                newDeadlineLine
+            );
+        });
+
+        // Don't add CLOSED for repeating tasks
+        await updateStatisticsCookies(editor, position.line, stars.length);
+        return;
+    }
+
+    // Non-repeating task - normal TODO cycling
     const newLine = nextState
         ? `${stars} ${nextState} ${rest}`
         : `${stars} ${rest}`;
@@ -1244,6 +1426,223 @@ export async function insertCheckbox(): Promise<void> {
 }
 
 // =============================================================================
+// List Functions
+// =============================================================================
+
+/**
+ * Check if cursor is on an ordered list item
+ */
+export function isOnOrderedListItem(document: vscode.TextDocument, line: number): boolean {
+    const lineText = document.lineAt(line).text;
+    return /^\s*\d+[.)]\s/.test(lineText);
+}
+
+/**
+ * Check if cursor is on any list item (ordered or unordered)
+ */
+export function isOnListItem(document: vscode.TextDocument, line: number): boolean {
+    const lineText = document.lineAt(line).text;
+    return /^\s*(?:[-+*]|\d+[.)])\s/.test(lineText);
+}
+
+/**
+ * Find the start and end of an ordered list containing the given line
+ */
+function findOrderedListBounds(document: vscode.TextDocument, line: number): { start: number; end: number } | null {
+    const lineText = document.lineAt(line).text;
+
+    // Check if current line is an ordered list item
+    if (!/^\s*\d+[.)]\s/.test(lineText)) {
+        return null;
+    }
+
+    // Get the indentation of the current item
+    const currentIndent = lineText.match(/^(\s*)/)?.[1].length ?? 0;
+
+    // Find start of list (search backwards)
+    let start = line;
+    for (let i = line - 1; i >= 0; i--) {
+        const text = document.lineAt(i).text;
+
+        // Empty line might end list section
+        if (text.trim() === '') {
+            // Check if previous line continues the list
+            if (i > 0) {
+                const prevText = document.lineAt(i - 1).text;
+                const prevIndent = prevText.match(/^(\s*)/)?.[1].length ?? 0;
+                if (/^\s*\d+[.)]\s/.test(prevText) && prevIndent === currentIndent) {
+                    continue; // Skip blank line within list
+                }
+            }
+            break;
+        }
+
+        // Check for ordered list item at same indentation
+        const match = text.match(/^(\s*)\d+[.)]\s/);
+        if (match && match[1].length === currentIndent) {
+            start = i;
+            continue;
+        }
+
+        // Check for continuation (more indented content)
+        const indent = text.match(/^(\s*)/)?.[1].length ?? 0;
+        if (indent > currentIndent) {
+            continue; // Part of previous item's content
+        }
+
+        // Different structure, stop
+        break;
+    }
+
+    // Find end of list (search forwards)
+    let end = line;
+    for (let i = line + 1; i < document.lineCount; i++) {
+        const text = document.lineAt(i).text;
+
+        // Empty line might end list
+        if (text.trim() === '') {
+            // Check if next non-blank continues list
+            let j = i + 1;
+            while (j < document.lineCount && document.lineAt(j).text.trim() === '') {
+                j++;
+            }
+            if (j < document.lineCount) {
+                const nextText = document.lineAt(j).text;
+                const nextIndent = nextText.match(/^(\s*)/)?.[1].length ?? 0;
+                if (/^\s*\d+[.)]\s/.test(nextText) && nextIndent === currentIndent) {
+                    i = j - 1; // Will be incremented
+                    continue;
+                }
+            }
+            break;
+        }
+
+        // Check for ordered list item at same indentation
+        const match = text.match(/^(\s*)\d+[.)]\s/);
+        if (match && match[1].length === currentIndent) {
+            end = i;
+            continue;
+        }
+
+        // Check for continuation (more indented content)
+        const indent = text.match(/^(\s*)/)?.[1].length ?? 0;
+        if (indent > currentIndent) {
+            end = i; // Part of current item's content
+            continue;
+        }
+
+        // Different structure, stop
+        break;
+    }
+
+    return { start, end };
+}
+
+/**
+ * Renumber an ordered list
+ * Fixes the numbers to be sequential starting from 1
+ */
+export async function renumberList(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+
+    // Find list bounds
+    const bounds = findOrderedListBounds(document, position.line);
+    if (!bounds) {
+        vscode.window.showInformationMessage('Not on an ordered list item');
+        return;
+    }
+
+    // Get indentation level of list items
+    const firstItemText = document.lineAt(bounds.start).text;
+    const listIndent = firstItemText.match(/^(\s*)/)?.[1].length ?? 0;
+
+    // Detect the separator style (. or ))
+    const separatorMatch = firstItemText.match(/^\s*\d+([.)]\s)/);
+    const separator = separatorMatch ? separatorMatch[1] : '. ';
+
+    // Collect all edits
+    const edits: { range: vscode.Range; newText: string }[] = [];
+    let counter = 1;
+
+    for (let i = bounds.start; i <= bounds.end; i++) {
+        const lineText = document.lineAt(i).text;
+        const match = lineText.match(/^(\s*)(\d+)([.)]\s)(.*)/);
+
+        if (match) {
+            const [, indent, , sep, rest] = match;
+
+            // Only renumber items at the same indentation level
+            if (indent.length === listIndent) {
+                const newLine = `${indent}${counter}${sep}${rest}`;
+                if (newLine !== lineText) {
+                    edits.push({
+                        range: document.lineAt(i).range,
+                        newText: newLine
+                    });
+                }
+                counter++;
+            }
+        }
+    }
+
+    if (edits.length === 0) {
+        vscode.window.showInformationMessage('List is already correctly numbered');
+        return;
+    }
+
+    // Apply all edits
+    await editor.edit(editBuilder => {
+        for (const edit of edits) {
+            editBuilder.replace(edit.range, edit.newText);
+        }
+    });
+
+    vscode.window.showInformationMessage(`Renumbered ${counter - 1} list items`);
+}
+
+/**
+ * Setup list context tracking
+ */
+export function setupListContext(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(e => {
+            const editor = e.textEditor;
+            if (editor.document.languageId !== 'org') {
+                vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', false);
+                return;
+            }
+
+            const position = editor.selection.active;
+            const onOrderedList = isOnOrderedListItem(editor.document, position.line);
+            vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', onOrderedList);
+        })
+    );
+}
+
+/**
+ * Setup dynamic block context tracking
+ */
+export function setupDynamicBlockContext(context: vscode.ExtensionContext): void {
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(e => {
+            const editor = e.textEditor;
+            if (editor.document.languageId !== 'org') {
+                vscode.commands.executeCommand('setContext', 'scimax.inDynamicBlock', false);
+                return;
+            }
+
+            const position = editor.selection.active;
+            const inBlock = isInDynamicBlock(editor.document, position);
+            vscode.commands.executeCommand('setContext', 'scimax.inDynamicBlock', inBlock);
+        })
+    );
+}
+
+// =============================================================================
 // Link Functions
 // =============================================================================
 
@@ -1461,8 +1860,10 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.org.moveSubtreeDown', moveSubtreeDown),
         vscode.commands.registerCommand('scimax.org.killSubtree', killSubtree),
         vscode.commands.registerCommand('scimax.org.cloneSubtree', cloneSubtree),
+        vscode.commands.registerCommand('scimax.org.markSubtree', markSubtree),
         vscode.commands.registerCommand('scimax.org.insertHeading', insertHeading),
-        vscode.commands.registerCommand('scimax.org.insertSubheading', insertSubheading)
+        vscode.commands.registerCommand('scimax.org.insertSubheading', insertSubheading),
+        vscode.commands.registerCommand('scimax.org.insertInlineTask', insertInlineTask)
     );
 
     // TODO/Checkbox
@@ -1478,11 +1879,27 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.org.openLink', openLinkAtPoint)
     );
 
+    // List commands
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.renumberList', renumberList)
+    );
+
     // Setup link context tracking for Enter key
     setupLinkContext(context);
 
     // Setup heading context tracking for Tab folding
     setupHeadingContext(context);
+
+    // Setup list context tracking
+    setupListContext(context);
+
+    // Setup dynamic block context tracking
+    setupDynamicBlockContext(context);
+
+    // Dynamic block commands
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.updateDynamicBlock', updateDynamicBlockAtCursor)
+    );
 
     // DWIM Return
     context.subscriptions.push(

@@ -1,0 +1,52 @@
+#+TITLE: Archive
+#+ARCHIVE: speed-commands_archive.org
+
+
+*** ⚠️ Archive to Sibling :ARCHIVE:
+:PROPERTIES:
+:ARCHIVE_TIME: [2026-01-15 Thu 14:50]
+:ARCHIVE_FILE: /Users/jkitchin/Dropbox/emacs/projects/scimax_vscode/docs/speed-commands.org
+:END:
+
+The ~$~ command creates or finds an "Archive" heading at the same level and moves the subtree under it (demoted by one level):
+
+#+BEGIN_EXAMPLE
+
+* Active Projects :ARCHIVE:
+:PROPERTIES:
+:ARCHIVE_TIME: [2026-01-15 Thu 14:50]
+:ARCHIVE_FILE: /Users/jkitchin/Dropbox/emacs/projects/scimax_vscode/docs/speed-commands.org
+:END:
+** TODO Project A
+** TODO Project B
+
+
+* Archive :ARCHIVE:
+:PROPERTIES:
+:ARCHIVE_TIME: [2026-01-15 Thu 14:50]
+:ARCHIVE_FILE: /Users/jkitchin/Dropbox/emacs/projects/scimax_vscode/docs/speed-commands.org
+:END:
+*** DONE Old project 1
+*** DONE Old project 2
+#+END_EXAMPLE
+
+** ⚠️ Special Commands
+
+Additional utility commands.
+
+| Key | Command                  | Description                                       |
+|-----+--------------------------+---------------------------------------------------|
+| ~N~ | Narrow to subtree        | Focus only on current subtree (hide others)       |
+| ~S~ | Widen                    | Show all content (undo narrowing)                 |
+| ~?~ | Speed commands help      | Show this help in quick pick menu                 |
+
+*** ⚠️ Narrowing
+
+Narrowing focuses your view on a single subtree, hiding all other content. This is useful for:
+- Focusing on a specific section while writing
+- Reducing distractions
+- Presenting a single topic
+- Temporarily isolating content for editing
+
+After narrowing with ~N~, press ~S~ (at any heading) to restore the full view.
+

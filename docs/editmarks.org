@@ -5,13 +5,15 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+* ✅ Introduction
+CLOSED: [2026-01-15 Thu 14:10]
 
 Editmarks is a track changes system for scientific writing and collaborative editing in VS Code. Inspired by =scimax-editmarks= from Emacs Scimax, it provides a lightweight markup syntax for tracking insertions, deletions, comments, and typo corrections directly in your documents.
 
 Unlike traditional track changes systems that rely on binary formats or external tools, editmarks uses plain text markup that works seamlessly across org-mode, Markdown, and LaTeX files. Changes remain visible and editable as plain text, making them perfect for version control systems like Git.
 
-** Key Features
+** ✅ Key Features
+CLOSED: [2026-01-15 Thu 14:10]
 
 - *Plain text markup*: Changes are visible in any text editor
 - *Language-agnostic*: Works in org-mode, Markdown, LaTeX, and plain text
@@ -22,7 +24,8 @@ Unlike traditional track changes systems that rely on binary formats or external
 - *Hover actions*: Quick accept/reject from hover tooltips
 - *Summary view*: Overview of all changes in the document
 
-** Use Cases
+** ✅ Use Cases
+CLOSED: [2026-01-15 Thu 14:10]
 
 1. *Document review*: Mark suggested changes when reviewing a colleague's work
 2. *Collaborative editing*: Track your edits when working on shared documents
@@ -30,11 +33,13 @@ Unlike traditional track changes systems that rely on binary formats or external
 4. *Teaching and feedback*: Provide inline suggestions to students or mentees
 5. *Version control*: Complement Git commits with inline change tracking
 
-* Markup Syntax
+* ✅ Markup Syntax
+CLOSED: [2026-01-15 Thu 14:10]
 
 Editmarks supports two markup formats to maximize compatibility:
 
-** Universal Format (Recommended)
+** ✅ Universal Format (Recommended)
+CLOSED: [2026-01-15 Thu 14:10]
 
 The universal format works in all document types:
 
@@ -45,7 +50,8 @@ The universal format works in all document types:
 @@~old text|new text~@@   # Typo correction
 #+end_example
 
-** CriticMarkup Format (Alternative)
+** ✅ CriticMarkup Format (Alternative)
+CLOSED: [2026-01-15 Thu 14:10]
 
 An alternative format inspired by CriticMarkup:
 
@@ -58,9 +64,11 @@ An alternative format inspired by CriticMarkup:
 
 Both formats are recognized and rendered identically. Choose whichever you prefer or is required by your workflow.
 
-* Types of Editmarks
+* ✅ Types of Editmarks
+CLOSED: [2026-01-15 Thu 14:10]
 
-** Insertion
+** ✅ Insertion
+CLOSED: [2026-01-15 Thu 14:10]
 
 *Purpose*: Mark text that should be added to the document.
 
@@ -78,7 +86,8 @@ The quick brown fox @@+gracefully+@@ jumps over the lazy dog.
 - Adding missing words or phrases
 - Inserting clarifications or examples
 
-** Deletion
+** ✅ Deletion
+CLOSED: [2026-01-15 Thu 14:11]
 
 *Purpose*: Mark text that should be removed from the document.
 
@@ -96,7 +105,8 @@ The quick brown @@-very-@@ fox jumps over the lazy dog.
 - Deleting incorrect information
 - Suggesting text removal during review
 
-** Comment
+** ✅ Comment
+CLOSED: [2026-01-15 Thu 14:11]
 
 *Purpose*: Add inline comments or notes without changing the document text.
 
@@ -115,7 +125,8 @@ The results were statistically significant @@>verify p-value<@@.
 - Marking sections that need attention
 - Providing context for other changes
 
-** Typo Correction
+** ✅ Typo Correction
+CLOSED: [2026-01-15 Thu 14:11]
 
 *Purpose*: Mark a typo or error and suggest the correct text.
 
@@ -134,9 +145,11 @@ The experment @@~experment|experiment~@@ was successful.
 - Suggesting better word choices
 - Standardizing terminology
 
-* Creating Editmarks
+* ✅ Creating Editmarks
+CLOSED: [2026-01-15 Thu 14:11]
 
-** Mark Insertion
+** ✅ Mark Insertion
+CLOSED: [2026-01-15 Thu 14:11]
 
 *Command*: =Scimax: Mark Insertion=
 *Keybinding*: =Ctrl+C e i= (same on Mac)
@@ -151,7 +164,8 @@ The experment @@~experment|experiment~@@ was successful.
 3. If no selection, type the text to insert
 4. Result: =@@+quickly+@@=
 
-** Mark Deletion
+** ✅ Mark Deletion
+CLOSED: [2026-01-15 Thu 14:11]
 
 *Command*: =Scimax: Mark Deletion=
 *Keybinding*: =Ctrl+C e d=
@@ -165,7 +179,8 @@ The experment @@~experment|experiment~@@ was successful.
 2. Press =Ctrl+C e d=
 3. Result: =@@-very-@@=
 
-** Insert Comment
+** ✅ Insert Comment
+CLOSED: [2026-01-15 Thu 14:12]
 
 *Command*: =Scimax: Insert Edit Comment=
 *Keybinding*: =Ctrl+C e c=
@@ -180,7 +195,7 @@ The experment @@~experment|experiment~@@ was successful.
 3. Type: "Check this citation"
 4. Result: =@@>Check this citation<@@=
 
-** Mark Typo Correction
+** ⚠️ Mark Typo Correction
 
 *Command*: =Scimax: Mark Typo Correction=
 *Keybinding*: =Ctrl+C e t=
@@ -196,9 +211,11 @@ The experment @@~experment|experiment~@@ was successful.
 3. Type: "the"
 4. Result: =@@~teh|the~@@=
 
-* Reviewing and Processing Editmarks
+* ✅ Reviewing and Processing Editmarks
+CLOSED: [2026-01-15 Thu 14:13]
 
-** Accept Edit Mark
+** ✅ Accept Edit Mark
+CLOSED: [2026-01-15 Thu 14:13]
 
 *Command*: =Scimax: Accept Edit Mark=
 *Keybinding*: =Ctrl+C e a=
@@ -209,13 +226,14 @@ Accepts the editmark at the cursor position:
 - *Comment*: Removes the comment (=@@>text<@@= → empty)
 - *Typo*: Applies the correction (=@@~old|new~@@= → =new=)
 
-*Example*:
+*Example:*
 #+begin_example
 Before: The quick @@+brown+@@ fox
 After:  The quick brown fox
 #+end_example
 
-** Reject Edit Mark
+** ✅ Reject Edit Mark
+CLOSED: [2026-01-15 Thu 14:14]
 
 *Command*: =Scimax: Reject Edit Mark=
 *Keybinding*: =Ctrl+C e r=
@@ -232,7 +250,8 @@ Before: The quick @@+brown+@@ fox
 After:  The quick fox
 #+end_example
 
-** Accept All Edit Marks
+** ✅ Accept All Edit Marks
+CLOSED: [2026-01-15 Thu 14:14]
 
 *Command*: =Scimax: Accept All Edit Marks=
 
@@ -243,7 +262,8 @@ Accepts all editmarks in the current document:
 
 *Use case*: After reviewing all changes and deciding to incorporate them all.
 
-** Reject All Edit Marks
+** ✅ Reject All Edit Marks
+CLOSED: [2026-01-15 Thu 14:14]
 
 *Command*: =Scimax: Reject All Edit Marks=
 
@@ -254,7 +274,8 @@ Rejects all editmarks in the current document:
 
 *Use case*: When you want to discard all suggested changes and revert to the original text.
 
-** Hover Actions
+** ✅ Hover Actions
+CLOSED: [2026-01-15 Thu 14:14]
 
 Position your cursor over any editmark to see a hover tooltip with:
 - Mark type and content
@@ -263,9 +284,11 @@ Position your cursor over any editmark to see a hover tooltip with:
 
 This provides a quick way to review and act on individual changes without remembering keybindings.
 
-* Navigation
+* ✅ Navigation
+CLOSED: [2026-01-15 Thu 14:14]
 
-** Next Edit Mark
+** ✅ Next Edit Mark
+CLOSED: [2026-01-15 Thu 14:15]
 
 *Command*: =Scimax: Next Edit Mark=
 *Keybinding*: =Ctrl+C e ]=
@@ -275,7 +298,8 @@ Moves the cursor to the next editmark in the document:
 - Centers the mark in the viewport
 - Useful for systematic review
 
-** Previous Edit Mark
+** ✅ Previous Edit Mark
+CLOSED: [2026-01-15 Thu 14:15]
 
 *Command*: =Scimax: Previous Edit Mark=
 *Keybinding*: =Ctrl+C e [=
@@ -284,13 +308,15 @@ Moves the cursor to the previous editmark:
 - Wraps around to the last mark if at the beginning
 - Centers the mark in the viewport
 
-** Keyboard Navigation Pattern
+** ✅ Keyboard Navigation Pattern
+CLOSED: [2026-01-15 Thu 14:15]
 
 The bracket keys (=[= and =]=) create an intuitive navigation pattern:
 - =Ctrl+C e ]= → next (forward, like closing bracket points right)
 - =Ctrl+C e [= → previous (backward, like opening bracket points left)
 
-* Summary View
+* ✅ Summary View
+CLOSED: [2026-01-15 Thu 14:15]
 
 *Command*: =Scimax: Show Edit Marks Summary=
 *Keybinding*: =Ctrl+C e s=
@@ -322,9 +348,10 @@ Summary
 ...
 #+end_example
 
-* Visual Appearance
+* ✅ Visual Appearance
+CLOSED: [2026-01-15 Thu 14:15]
 
-Editmarks are rendered with distinctive decorations:
+Editmarks are rendered with distinctive decorations (The icons are similar to what is shown in the summary view):
 
 | Type      | Background Color | Border           | Text Style   | Icon |
 |-----------+------------------+------------------+--------------+------|
@@ -342,49 +369,51 @@ All decorations include:
 
 ** Insertion Commands
 
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.insertion=  | =Ctrl+C e i=  | Mark text as insertion     |
+| Command                      | Keybinding   | Description            |
+|------------------------------+--------------+------------------------|
+| =scimax.editmarks.insertion= | Ctrl+C e i | Mark text as insertion |
 
 ** Deletion Commands
 
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.deletion=   | =Ctrl+C e d=  | Mark text for deletion     |
+| Command                     | Keybinding | Description            |
+|-----------------------------+------------+------------------------|
+| =scimax.editmarks.deletion= | Ctrl+C e d | Mark text for deletion |
+
 
 ** Comment Commands
 
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.comment=    | =Ctrl+C e c=  | Insert edit comment        |
+| Command                    | Keybinding | Description         |
+|----------------------------+------------+---------------------|
+| =scimax.editmarks.comment= | Ctrl+C e c | Insert edit comment |
 
 ** Typo Correction Commands
 
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.typo=       | =Ctrl+C e t=  | Mark typo correction       |
+| Command                 | Keybinding | Description          |
+|-------------------------+------------+----------------------|
+| =scimax.editmarks.typo= | Ctrl+C e t | Mark typo correction |
+
 
 ** Review Commands
 
-| Command                      | Keybinding  | Description                |
-|------------------------------+-------------+----------------------------|
-| =scimax.editmarks.accept=      | =Ctrl+C e a=  | Accept mark at cursor      |
-| =scimax.editmarks.reject=      | =Ctrl+C e r=  | Reject mark at cursor      |
-| =scimax.editmarks.acceptAll=   | (none)      | Accept all marks           |
-| =scimax.editmarks.rejectAll=   | (none)      | Reject all marks           |
+| Command                      | Keybinding | Description           |
+|------------------------------+------------+-----------------------|
+| =scimax.editmarks.accept=    | Ctrl+C e a | Accept mark at cursor |
+| =scimax.editmarks.reject=    | Ctrl+C e r | Reject mark at cursor |
+| =scimax.editmarks.acceptAll= | (none)     | Accept all marks      |
+| =scimax.editmarks.rejectAll= | (none)     | Reject all marks      |
 
 ** Navigation Commands
 
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.next=       | =Ctrl+C e ]=  | Jump to next mark          |
-| =scimax.editmarks.prev=       | =Ctrl+C e [=  | Jump to previous mark      |
+| Command                 | Keybinding | Description           |
+|-------------------------+------------+-----------------------|
+| =scimax.editmarks.next= | Ctrl+C e ] | Jump to next mark     |
+| =scimax.editmarks.prev= | Ctrl+C e [ | Jump to previous mark |
 
 ** Utility Commands
 
-| Command                     | Keybinding  | Description                |
-|-----------------------------+-------------+----------------------------|
-| =scimax.editmarks.summary=    | =Ctrl+C e s=  | Show all marks summary     |
+| Command                    | Keybinding | Description            |
+|----------------------------+------------+------------------------|
+| =scimax.editmarks.summary= | Ctrl+C e s | Show all marks summary |
 
 * Keybinding Pattern
 
@@ -514,9 +543,11 @@ The project will @@+likely+@@ be completed @@+ahead of schedule+@@.
 4. Presses =Ctrl+C e a= to accept all approved changes
 5. Final document is clean and ready for publication
 
-* Best Practices
+* ✅ Best Practices
+CLOSED: [2026-01-15 Thu 14:17]
 
-** Do's
+** ✅ Do's
+CLOSED: [2026-01-15 Thu 14:17]
 
 1. *Use descriptive comments*: Instead of =@@>fix this<@@=, write =@@>fix grammar: subject-verb agreement<@@=
 2. *Be specific with insertions*: Show exactly what you're suggesting
@@ -525,7 +556,8 @@ The project will @@+likely+@@ be completed @@+ahead of schedule+@@.
 5. *Preserve marks in Git*: Commit documents with editmarks to track review history
 6. *Use hover tooltips*: Quick way to remind yourself what each mark does
 
-** Don'ts
+** ✅ Don'ts
+CLOSED: [2026-01-15 Thu 14:17]
 
 1. *Don't nest editmarks*: Avoid =@@+text @@-with-@@ nesting+@@= - it's confusing
 2. *Don't mix formats randomly*: Pick either universal or CriticMarkup and stick with it
@@ -533,7 +565,8 @@ The project will @@+likely+@@ be completed @@+ahead of schedule+@@.
 4. *Don't delete marks manually*: Use accept/reject commands to ensure proper processing
 5. *Don't use for version control*: Editmarks complement Git but don't replace it
 
-** Tips
+** ✅ Tips
+CLOSED: [2026-01-15 Thu 14:17]
 
 - *Quick review*: Use =Ctrl+C e s= at the start of each editing session to see pending changes
 - *Batch processing*: For documents with many trivial changes, use "Accept All" after review
@@ -542,11 +575,13 @@ The project will @@+likely+@@ be completed @@+ahead of schedule+@@.
 - *Git integration*: Create commits after processing editmarks with descriptive messages
 - *Keyboard efficiency*: The navigation keys (=[= and =]=) combined with =a=/=r= enable fast review
 
-* Integration with Other Features
+* ✅ Integration with Other Features
+CLOSED: [2026-01-15 Thu 14:18]
 
-** Source Blocks
+** ✅ Source Blocks
+CLOSED: [2026-01-15 Thu 14:18]
 
-Editmarks work inside source blocks:
+Editmarks work inside source blocks (although they likely break the code unless you use them in comments.):
 
 #+begin_src python
 def calculate(x):
@@ -555,23 +590,25 @@ def calculate(x):
 
 This is useful when reviewing code snippets in documentation or educational materials.
 
-** Tables
+** ✅ Tables
+CLOSED: [2026-01-15 Thu 14:19]
 
 Use editmarks in table cells:
 
-| Item   | Original  | Revised        | Notes                  |
-|--------+-----------+----------------+------------------------|
-| Budget | @@-$100K-@@   | @@+$120K+@@      | @@>approved by CFO<@@    |
-| Time   | 6 months  | @@+8 months+@@   | @@>realistic estimate<@@ |
+| Item   | Original    | Revised        | Notes                    |
+|--------+-------------+----------------+--------------------------|
+| Budget | @@-$100K-@@ | @@+$120K+@@    | @@>approved by CFO<@@    |
+| Time   | 6 months    | @@+8 months+@@ | @@>realistic estimate<@@ |
 
-** Export Compatibility
+** ⚠️ Export Compatibility
 
 When exporting documents (HTML, LaTeX, PDF):
 - *Unprocessed marks* appear in the exported output
 - *Process marks first* before final export
 - Or use regex to strip marks during export if needed
 
-** Version Control
+** ✅ Version Control
+CLOSED: [2026-01-15 Thu 14:19]
 
 Editmarks are perfect for version control workflows:
 
@@ -589,9 +626,11 @@ git commit -m "Incorporate reviewer suggestions"
 
 The diff shows both the markup and the final changes, providing complete review history.
 
-* Troubleshooting
+* ✅ Troubleshooting
+CLOSED: [2026-01-15 Thu 14:19]
 
-** Editmarks Not Showing
+** ✅ Editmarks Not Showing
+CLOSED: [2026-01-15 Thu 14:19]
 
 *Problem*: Markup is visible but not decorated with colors.
 
@@ -600,7 +639,8 @@ The diff shows both the markup and the final changes, providing complete review 
 2. Reload window: =Ctrl+Shift+P= → "Developer: Reload Window"
 3. Verify syntax: Ensure markup is exactly correct (e.g., =@@+text+@@= not =@@+ text +@@=)
 
-** Navigation Not Working
+** ✅ Navigation Not Working
+CLOSED: [2026-01-15 Thu 14:19]
 
 *Problem*: =Ctrl+C e ]= doesn't jump to next mark.
 
@@ -618,13 +658,15 @@ The diff shows both the markup and the final changes, providing complete review 
 2. Hover over the mark to see the tooltip - if visible, cursor is positioned correctly
 3. Check that the editmark syntax is valid
 
-** Nested Marks Issue
+** ✅ Nested Marks Issue
+CLOSED: [2026-01-15 Thu 14:19]
 
 *Problem*: Marks inside other marks behave unexpectedly.
 
 *Solution*: Don't nest editmarks. Instead, process the inner mark first, then add the outer mark.
 
-** Performance with Many Marks
+** ✅ Performance with Many Marks
+CLOSED: [2026-01-15 Thu 14:19]
 
 *Problem*: Editor becomes slow with hundreds of editmarks.
 
@@ -633,7 +675,8 @@ The diff shows both the markup and the final changes, providing complete review 
 2. Use "Accept All" or "Reject All" for bulk processing
 3. Split large documents into smaller files
 
-* FAQ
+* ✅ FAQ
+CLOSED: [2026-01-15 Thu 14:19]
 
 ** Q: Can I customize the colors?
 
@@ -674,14 +717,16 @@ A: Yes! Editmarks are plain text markup, so they're saved as part of the documen
 
 A: Yes, use regular search (=Ctrl+F=) for =@@+= or ={++= to find all insertions, etc. Or use =Ctrl+C e s= for the summary view.
 
-* Related Features
+* ✅ Related Features
+CLOSED: [2026-01-15 Thu 14:19]
 
 - *Source Blocks*: See [[file:source-blocks.org][Source Blocks documentation]] for code execution
 - *Export*: See [[file:export.org][Export documentation]] for converting documents with editmarks
 - *Document Structure*: See [[file:document-structure.org][Document Structure documentation]] for heading navigation
 - *Tables*: See [[file:tables.org][Tables documentation]] for working with tables containing editmarks
 
-* Conclusion
+* ✅ Conclusion
+CLOSED: [2026-01-15 Thu 14:20]
 
 Editmarks provide a powerful, plain-text approach to track changes that integrates seamlessly with modern developer workflows. By using simple markup instead of complex binary formats, editmarks offer:
 
@@ -701,7 +746,8 @@ Start using editmarks today:
 
 Happy editing!
 
-* Navigation
+* ✅ Navigation
+CLOSED: [2026-01-15 Thu 14:20]
 
 - Previous: [[file:references.org][References]]
 - Next: [[file:navigation.org][Navigation]]

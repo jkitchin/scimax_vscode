@@ -318,7 +318,8 @@ These keywords are all equivalent:
 
 Scimax VS Code can log when and how TODO states change.
 
-** ⚠️ LOGBOOK Drawer
+** ✅ LOGBOOK Drawer
+CLOSED: [2026-01-15 Thu 14:42]
 
 State changes are recorded in the LOGBOOK drawer:
 
@@ -332,7 +333,8 @@ CLOSED: [2026-01-13 Mon 16:00]
 :END:
 #+END_SRC
 
-** ⚠️ Timestamps on State Changes
+** ✅ Timestamps on State Changes
+CLOSED: [2026-01-15 Thu 14:39]
 
 When enabled, each state change adds:
 - A timestamp showing when the change occurred
@@ -340,11 +342,13 @@ When enabled, each state change adds:
 
 This creates a complete history of task progress.
 
-* ⚠️ Tags for TODO Items
+* ✅ Tags for TODO Items
+CLOSED: [2026-01-15 Thu 14:39]
 
 Tags provide additional categorization beyond the headline hierarchy.
 
-** ⚠️ Adding Tags
+** ✅ Adding Tags
+CLOSED: [2026-01-15 Thu 14:39]
 
 Tags appear at the end of the headline, enclosed in colons:
 
@@ -353,14 +357,16 @@ Tags appear at the end of the headline, enclosed in colons:
 ,* TODO Buy groceries                                         :personal:errands:
 #+END_SRC
 
-** ⚠️ Tag Commands
+** ✅ Tag Commands
+CLOSED: [2026-01-15 Thu 14:39]
 
-| Key/Command                | Action                    |
-|----------------------------+---------------------------|
-| Speed key Shift+;         | Edit tags                 |
-| scimax.org.setTags        | Set tags via command      |
+| Key/Command        | Action               |
+|--------------------+----------------------|
+| Speed key Shift+;  | Edit tags            |
+| scimax.org.setTags | Set tags via command |
 
-** ⚠️ Inherited Tags
+** ✅ Inherited Tags
+CLOSED: [2026-01-15 Thu 14:39]
 
 Child headlines inherit their parent's tags:
 
@@ -372,29 +378,33 @@ This task has both :work: and :client1: tags.
 This task has both :work: and :internal: tags.
 #+END_SRC
 
-** ⚠️ Common Tag Conventions
+** ✅ Common Tag Conventions
+CLOSED: [2026-01-15 Thu 14:42]
 
-| Tag         | Usage                                 |
-|-------------+---------------------------------------|
-| @office    | Context: at office                    |
-| @home      | Context: at home                      |
-| @computer  | Context: needs computer               |
-| @phone     | Context: phone call                   |
-| urgent     | Priority indicator                    |
-| project    | Part of larger project                |
+| Tag       | Usage                   |
+|-----------+-------------------------|
+| @office   | Context: at office      |
+| @home     | Context: at home        |
+| @computer | Context: needs computer |
+| @phone    | Context: phone call     |
+| urgent    | Priority indicator      |
+| project   | Part of larger project  |
 
-** ⚠️ Filtering by Tags
+** ✅ Filtering by Tags
+CLOSED: [2026-01-15 Thu 14:42]
 
 Use agenda views or search to filter tasks by tag:
 
 - scimax.db.searchByTag - Search for specific tags
 - scimax.agenda.filterByTag - Filter agenda by tag
 
-* ⚠️ Scheduling and Deadlines
+* ✅ Scheduling and Deadlines
+CLOSED: [2026-01-15 Thu 14:40]
 
 Assign dates to tasks for planning.
 
-** ⚠️ SCHEDULED
+** ✅ SCHEDULED
+CLOSED: [2026-01-15 Thu 14:40]
 
 When you plan to start or work on a task:
 
@@ -403,7 +413,8 @@ When you plan to start or work on a task:
 SCHEDULED: <2026-01-15 Wed>
 #+END_SRC
 
-** ⚠️ DEADLINE
+** ✅ DEADLINE
+CLOSED: [2026-01-15 Thu 14:40]
 
 When a task must be completed by:
 
@@ -412,20 +423,22 @@ When a task must be completed by:
 DEADLINE: <2026-01-20 Mon>
 #+END_SRC
 
-** ⚠️ Both Together
+** ✅ Both Together
+CLOSED: [2026-01-15 Thu 14:40]
 
 #+BEGIN_SRC org
 ,* TODO Complete project
 SCHEDULED: <2026-01-15 Wed> DEADLINE: <2026-01-25 Sat>
 #+END_SRC
 
-** ⚠️ Adding Dates
+** ✅ Adding Dates
+CLOSED: [2026-01-15 Thu 14:40]
 
-| Speed Key | Action                               |
-|-----------+--------------------------------------|
-| s        | Add/edit SCHEDULED date              |
-| d        | Add/edit DEADLINE date               |
-| .        | Insert timestamp                     |
+| Speed Key | Action                  |
+|-----------+-------------------------|
+| s         | Add/edit SCHEDULED date |
+| d         | Add/edit DEADLINE date  |
+| .         | Insert timestamp        |
 
 Or use commands:
 - scimax.org.schedule
@@ -433,18 +446,25 @@ Or use commands:
 
 See [[file:timestamps.org][Timestamps]] for more on date formats.
 
-* ⚠️ Time Tracking
+* ✅ Time Tracking
+CLOSED: [2026-01-15 Thu 14:40]
 
 Track time spent on tasks using clock entries.
 
-** ⚠️ Clocking In/Out
+** ✅ Clocking In/Out
+CLOSED: [2026-01-15 Thu 14:40]
+:LOGBOOK:
+CLOCK: [2026-01-15 Thu 14:40]--[2026-01-15 Thu 14:43] => 0:03
+CLOCK: [2026-01-15 Thu 14:40]--[2026-01-15 Thu 14:40] => 0:00
+:END:
 
-| Speed Key  | Action                              |
-|------------+-------------------------------------|
-| Shift+I   | Clock in (start timing)             |
-| Shift+O   | Clock out (stop timing)             |
+| Speed Key | Action                  |
+|-----------+-------------------------|
+| Shift+I   | Clock in (start timing) |
+| Shift+O   | Clock out (stop timing) |
 
-** ⚠️ Clock Entries
+** ✅ Clock Entries
+CLOSED: [2026-01-15 Thu 14:41]
 
 Clock entries are stored in the LOGBOOK drawer:
 
@@ -456,16 +476,22 @@ CLOCK: [2026-01-12 Sun 14:00]--[2026-01-12 Sun 16:00] =>  2:00
 :END:
 #+END_SRC
 
-** ⚠️ Total Time
+** ✅ Total Time
+CLOSED: [2026-01-15 Thu 14:41]
 
 The total clocked time appears in the properties or can be calculated for
 reports.
 
-* ⚠️ Effort Estimates
+* ✅ Effort Estimates
+CLOSED: [2026-01-15 Thu 14:41]
 
 Estimate how long tasks will take.
 
-** ⚠️ Setting Effort
+** ✅ Setting Effort
+CLOSED: [2026-01-15 Thu 14:41]
+:PROPERTIES:
+:Effort: 0:30
+:END:
 
 Add an EFFORT property:
 
@@ -476,30 +502,35 @@ Add an EFFORT property:
 :END:
 #+END_SRC
 
-| Speed Key | Action                               |
-|-----------+--------------------------------------|
-| e        | Set effort estimate                  |
+| Speed Key | Action              |
+|-----------+---------------------|
+| e         | Set effort estimate |
 
-** ⚠️ Effort Format
+** ✅ Effort Format
+CLOSED: [2026-01-15 Thu 14:41]
 
 Use H:MM format:
 - 0:30 - 30 minutes
 - 1:00 - 1 hour
 - 2:30 - 2 hours 30 minutes
 
-* ⚠️ Agenda Integration
+* ✅ Agenda Integration
+CLOSED: [2026-01-15 Thu 14:41]
 
 TODO items appear in agenda views for planning and review.
 
-** ⚠️ Viewing All TODOs
+** ✅ Viewing All TODOs
+CLOSED: [2026-01-15 Thu 14:41]
 
 Use scimax.agenda.todoList or scimax.db.showTodos to see all tasks.
 
-** ⚠️ Deadline View
+** ✅ Deadline View
+CLOSED: [2026-01-15 Thu 14:41]
 
 Use scimax.agenda.deadlines to see upcoming and overdue deadlines.
 
-** ⚠️ Filtering Options
+** ✅ Filtering Options
+CLOSED: [2026-01-15 Thu 14:41]
 
 - By priority (A, B, C)
 - By tag
@@ -508,9 +539,11 @@ Use scimax.agenda.deadlines to see upcoming and overdue deadlines.
 
 See [[file:agenda.org][Agenda]] for complete agenda documentation.
 
-* ⚠️ Best Practices
+* ✅ Best Practices
+CLOSED: [2026-01-15 Thu 14:41]
 
-** ⚠️ Task Granularity
+** ✅ Task Granularity
+CLOSED: [2026-01-15 Thu 14:41]
 
 Make tasks actionable:
 
@@ -519,7 +552,8 @@ Make tasks actionable:
 ,* TODO Write introduction section      ; Better - specific and actionable
 #+END_SRC
 
-** ⚠️ Use NEXT for Clarity
+** ✅ Use NEXT for Clarity
+CLOSED: [2026-01-15 Thu 14:41]
 
 Always have at least one NEXT task to know what to work on:
 
@@ -531,14 +565,16 @@ Always have at least one NEXT task to know what to work on:
 ,** TODO Deploy to staging
 #+END_SRC
 
-** ⚠️ Regular Review
+** ✅ Regular Review
+CLOSED: [2026-01-15 Thu 14:41]
 
 Periodically review tasks to:
 - Move stale TODO items to HOLD or CANCELLED
 - Update WAITING items
 - Identify next actions
 
-** ⚠️ Tags vs Hierarchy
+** ✅ Tags vs Hierarchy
+CLOSED: [2026-01-15 Thu 14:41]
 
 Use hierarchy for project structure, tags for cross-cutting concerns:
 
@@ -553,43 +589,48 @@ Use hierarchy for project structure, tags for cross-cutting concerns:
 
 Now you can filter by @phone to see all phone tasks across projects.
 
-* ⚠️ Quick Reference
+* ✅ Quick Reference
+CLOSED: [2026-01-15 Thu 14:41]
 
-** ⚠️ Keybindings
+** ✅ Keybindings
+CLOSED: [2026-01-15 Thu 14:41]
 
-| Key             | Action                               |
-|-----------------+--------------------------------------|
-| Ctrl+C Ctrl+T  | Cycle TODO state                     |
-| Ctrl+C Ctrl+C  | Toggle checkbox                      |
+| Key           | Action           |
+|---------------+------------------|
+| Ctrl+C Ctrl+T | Cycle TODO state |
+| Ctrl+C Ctrl+C | Toggle checkbox  |
 
-** ⚠️ Speed Commands (at heading start)
+** ✅ Speed Commands (at heading start)
+CLOSED: [2026-01-15 Thu 14:42]
 
-| Key      | Action                               |
-|----------+--------------------------------------|
-| t       | Cycle TODO state                     |
-| 1/2/3   | Set priority A/B/C                   |
-| 0       | Clear priority                       |
-| ,       | Increase priority                    |
-| s       | Schedule                             |
-| d       | Deadline                             |
-| e       | Set effort                           |
-| Shift+; | Set tags                             |
-| Shift+I | Clock in                             |
-| Shift+O | Clock out                            |
+| Key     | Action             |
+|---------+--------------------|
+| t       | Cycle TODO state   |
+| 1/2/3   | Set priority A/B/C |
+| 0       | Clear priority     |
+| ,       | Increase priority  |
+| s       | Schedule           |
+| d       | Deadline           |
+| e       | Set effort         |
+| Shift+; | Set tags           |
+| Shift+I | Clock in           |
+| Shift+O | Clock out          |
 
-** ⚠️ Commands
+** ✅ Commands
+CLOSED: [2026-01-15 Thu 14:42]
 
-| Command                      | Description                    |
-|------------------------------+--------------------------------|
-| scimax.org.cycleTodo        | Cycle TODO state               |
-| scimax.org.toggleCheckbox   | Toggle checkbox                |
-| scimax.org.insertCheckbox   | Insert checkbox                |
-| scimax.org.schedule         | Add SCHEDULED timestamp        |
-| scimax.org.deadline         | Add DEADLINE timestamp         |
-| scimax.db.showTodos         | Show all TODO items            |
-| scimax.agenda.todoList      | Open TODO agenda view          |
+| Command                   | Description             |
+|---------------------------+-------------------------|
+| scimax.org.cycleTodo      | Cycle TODO state        |
+| scimax.org.toggleCheckbox | Toggle checkbox         |
+| scimax.org.insertCheckbox | Insert checkbox         |
+| scimax.org.schedule       | Add SCHEDULED timestamp |
+| scimax.org.deadline       | Add DEADLINE timestamp  |
+| scimax.db.showTodos       | Show all TODO items     |
+| scimax.agenda.todoList    | Open TODO agenda view   |
 
-* ⚠️ Related Topics
+* ✅ Related Topics
+CLOSED: [2026-01-15 Thu 14:42]
 
 - [[file:timestamps.org][Timestamps]] - Date formats for scheduling and deadlines
 - [[file:agenda.org][Agenda]] - Viewing and filtering tasks

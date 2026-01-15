@@ -854,10 +854,144 @@ export const nodeExecutor: LanguageExecutor = {
     },
 };
 
+/**
+ * TypeScript executor using tsx, ts-node, or bun
+ */
+export const typescriptExecutor: LanguageExecutor = {
+    languages: ['ts', 'typescript'],
+
+    async execute(code: string, context: ExecutionContext): Promise<ExecutionResult> {
+        const { spawn } = await import('child_process');
+        const fs = await import('fs');
+        const path = await import('path');
+        const os = await import('os');
+
+        const startTime = Date.now();
+
+        // Inject variables
+        const varCode = context.variables
+            ? Object.entries(context.variables)
+                .map(([k, v]) => `const ${k} = ${JSON.stringify(v)};`)
+                .join('\n') + '\n'
+            : '';
+
+        const fullCode = varCode + code;
+
+        // Write code to a temp file (tsx/ts-node need a file)
+        const tmpDir = os.tmpdir();
+        const tmpFile = path.join(tmpDir, `babel-${Date.now()}.ts`);
+
+        try {
+            fs.writeFileSync(tmpFile, fullCode, 'utf-8');
+
+            // Try different TypeScript runners in order of preference
+            const runners = [
+                { cmd: 'tsx', args: [tmpFile] },
+                { cmd: 'npx', args: ['tsx', tmpFile] },
+                { cmd: 'ts-node', args: [tmpFile] },
+                { cmd: 'bun', args: ['run', tmpFile] },
+            ];
+
+            // Find first available runner
+            const findRunner = async (): Promise<{ cmd: string; args: string[] } | null> => {
+                for (const runner of runners) {
+                    const available = await new Promise<boolean>((resolve) => {
+                        const proc = spawn(runner.cmd, ['--version'], { stdio: 'ignore' });
+                        proc.on('close', (code) => resolve(code === 0));
+                        proc.on('error', () => resolve(false));
+                    });
+                    if (available) return runner;
+                }
+                return null;
+            };
+
+            const runner = await findRunner();
+            if (!runner) {
+                return {
+                    success: false,
+                    error: new Error('No TypeScript runner found. Install tsx, ts-node, or bun.'),
+                    executionTime: Date.now() - startTime,
+                };
+            }
+
+            return new Promise((resolve) => {
+                const proc = spawn(runner.cmd, runner.args, {
+                    cwd: context.cwd,
+                    env: { ...process.env, ...context.env },
+                    timeout: context.timeout,
+                });
+
+                let stdout = '';
+                let stderr = '';
+
+                proc.stdout?.on('data', (data) => {
+                    stdout += data.toString();
+                });
+
+                proc.stderr?.on('data', (data) => {
+                    stderr += data.toString();
+                });
+
+                proc.on('close', (exitCode) => {
+                    // Clean up temp file
+                    try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
+
+                    resolve({
+                        success: exitCode === 0,
+                        stdout: stdout.trim(),
+                        stderr: stderr.trim(),
+                        executionTime: Date.now() - startTime,
+                        resultType: 'output',
+                    });
+                });
+
+                proc.on('error', (error) => {
+                    // Clean up temp file
+                    try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
+
+                    resolve({
+                        success: false,
+                        error,
+                        executionTime: Date.now() - startTime,
+                    });
+                });
+            });
+        } catch (error) {
+            // Clean up temp file on error
+            try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
+
+            return {
+                success: false,
+                error: error instanceof Error ? error : new Error(String(error)),
+                executionTime: Date.now() - startTime,
+            };
+        }
+    },
+
+    async isAvailable(): Promise<boolean> {
+        const { spawn } = await import('child_process');
+
+        // Check for any TypeScript runner (including npx which can run tsx)
+        const runners = ['tsx', 'ts-node', 'bun', 'npx'];
+
+        for (const runner of runners) {
+            const available = await new Promise<boolean>((resolve) => {
+                const proc = spawn(runner, ['--version'], { stdio: 'ignore' });
+                proc.on('close', (code) => resolve(code === 0));
+                proc.on('error', () => resolve(false));
+            });
+            if (available) return true;
+        }
+
+        return false;
+    },
+};
+
 // Register built-in executors
 executorRegistry.register(shellExecutor);
 executorRegistry.register(pythonExecutor);
 executorRegistry.register(nodeExecutor);
+executorRegistry.register(typescriptExecutor);
 
 // =============================================================================
 // Babel Execution Functions

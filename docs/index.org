@@ -272,7 +272,7 @@ This section provides a comprehensive index of all documentation topics with lin
 | [[file:source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments     |
 | [[file:supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more     |
 | [[file:jupyter.org][Jupyter Integration]]             | Kernel management, rich output        |
-| [[file:org-modification.org][Org Modification API]]     | Programmatic file modification in TypeScript |
+| [[file:org-api.org][Org API]]     | Programmatic file modification in TypeScript |
 
 ** Export and Preview
 
@@ -345,7 +345,7 @@ Quick reference to find specific features across documentation.
 | Links                    | [[file:links.org][Links]]                           | [[file:references.org][References]], [[file:navigation.org][Navigation]]                    |
 | Math preview             | [[file:latex-preview.org][LaTeX Preview]]                   | [[file:export.org][Export]]                                     |
 | Notebooks                | [[file:notebook.org][Notebook]]                        | [[file:projectile.org][Projectile]], [[file:journal.org][Journal]]                       |
-| Org file modification    | [[file:org-modification.org][Org Modification API]]            | [[file:source-blocks.org][Source Code Blocks]], [[file:tables.org][Tables]]                |
+| Org file modification    | [[file:org-api.org][Org API]]            | [[file:source-blocks.org][Source Code Blocks]], [[file:tables.org][Tables]]                |
 | Org-mode syntax          | [[file:document-structure.org][Document Structure]]              | [[file:source-blocks.org][Source Code Blocks]], [[file:tables.org][Tables]]                |
 | PDF export               | [[file:export.org][Export]]                          | [[file:latex-preview.org][LaTeX Preview]]                              |
 | Priorities               | [[file:todo-items.org][TODO Items]]                      | [[file:agenda.org][Agenda]]                                     |
@@ -397,7 +397,7 @@ Quick reference to find specific features across documentation.
 - Reference [[file:keybindings.org][Keybindings]]
 
 *** ⚠️ Programmatically modify org files
-- Use the [[file:org-modification.org][Org Modification API]] in TypeScript source blocks
+- Use the [[file:org-api.org][Org API]] in TypeScript source blocks
 - Bulk update TODO states, properties, and tags
 - Extract and transform table data
 - Automate repetitive org file operations

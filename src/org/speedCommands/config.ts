@@ -46,6 +46,7 @@ export const SPEED_COMMAND_DEFINITIONS: SpeedCommandDefinition[] = [
     { key: 'w', command: 'scimax.org.killSubtree', description: 'Kill (cut) subtree', category: 'structure' },
     { key: 'y', command: 'scimax.speed.yankSubtree', description: 'Yank (paste) subtree', category: 'structure' },
     { key: 'W', command: 'scimax.org.cloneSubtree', description: 'Clone subtree', category: 'structure' },
+    { key: '@', command: 'scimax.org.markSubtree', description: 'Mark (select) subtree', category: 'structure' },
 
     // TODO/State
     { key: 't', command: 'scimax.org.cycleTodo', description: 'Cycle TODO state', category: 'todo' },

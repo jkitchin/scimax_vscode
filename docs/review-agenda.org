@@ -1,0 +1,94 @@
+#+TITLE: Documentation Review Agenda
+#+AUTHOR: Scimax VSCode
+#+TODO: ⚠️ 👀 | ✅
+
+This file generates a dynamic agenda of documentation headings that need review.
+Headings marked with ⚠️ are new and need inspection before being marked ✅.
+
+* Generate Review Agenda
+
+Run this block (C-c C-c) to generate the current review agenda from docs/*.org files.
+
+#+begin_src typescript :results output raw
+import * as fs from 'fs';
+import * as path from 'path';
+import { org } from '../src/parser/orgModify';
+
+// Get docs directory
+const docsDir = '/Users/jkitchin/Dropbox/emacs/projects/scimax_vscode/docs';
+
+// Custom TODO keywords used in documentation files
+const parserConfig = {
+    todoKeywords: ['⚠️', '👀'],  // In-progress states
+    doneKeywords: ['✅']          // Done state
+};
+
+// Collect all items needing review, grouped by file
+const itemsByFile = new Map<string, Array<{level: number; title: string; line: number}>>();
+
+const orgFiles = fs.readdirSync(docsDir)
+    .filter(f => f.endsWith('.org') && f !== 'review-agenda.org')
+    .sort();
+
+for (const filename of orgFiles) {
+    const filePath = path.join(docsDir, filename);
+    const doc = org.parseFile(filePath, parserConfig);
+
+    // Query all headlines with ⚠️ TODO keyword (needs review)
+    const warnings = org.filterHeadlines(doc, h =>
+        h.properties.todoKeyword === '⚠️'
+    );
+
+    if (warnings.length > 0) {
+        itemsByFile.set(filename, warnings.map(h => ({
+            level: h.properties.level,
+            title: h.properties.rawValue,
+            line: h.location?.start.line ?? 0
+        })));
+    }
+}
+
+// Output org-formatted agenda
+const total = Array.from(itemsByFile.values()).reduce((sum, items) => sum + items.length, 0);
+console.log(`* Review Agenda (${total} items)`);
+console.log();
+
+if (itemsByFile.size === 0) {
+    console.log('No items marked with ⚠️ found. All documentation reviewed!');
+} else {
+    for (const [filename, items] of itemsByFile) {
+        console.log(`** [[file:${filename}][${filename}]] (${items.length} items)`);
+        for (const item of items) {
+            const link = `[[file:${filename}::${item.line}][${item.title}]]`;
+            console.log(`${'*'.repeat(item.level + 2)} ⚠️ ${link}`);
+        }
+        console.log();
+    }
+}
+#+end_src
+
+#+RESULTS:
+
+* Current Review Status
+:PROPERTIES:
+:VISIBILITY: folded
+:END:
+
+The results from running the above block will appear here after execution.
+Items link directly to the source file and line number for quick navigation.
+
+** Workflow
+
+1. Run the source block above with =C-c C-c=
+2. Click on any item link to jump to that heading
+3. Review the content
+4. Change the heading's TODO state from ⚠️ to ✅ when satisfied
+5. Re-run the block to update the agenda
+
+** Legend
+
+| State | Meaning |
+|-------+---------|
+| ⚠️    | New heading, needs review |
+| 👀    | Changed heading, needs review |
+| ✅    | Reviewed and approved |

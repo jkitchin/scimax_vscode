@@ -499,10 +499,16 @@ function buildLatexDocument(
  * Check if LaTeX tools are available
  */
 export async function checkLatexAvailable(): Promise<{ available: boolean; message: string }> {
+    const env = {
+        ...process.env,
+        PATH: getEnhancedPath(),
+    };
+
     return new Promise((resolve) => {
         const proc = spawn('pdflatex', ['--version'], {
             shell: true,
             timeout: 5000,
+            env,
         });
 
         let output = '';
@@ -523,6 +529,7 @@ export async function checkLatexAvailable(): Promise<{ available: boolean; messa
                 const dviProc = spawn('dvisvgm', ['--version'], {
                     shell: true,
                     timeout: 5000,
+                    env,
                 });
 
                 dviProc.on('error', () => {
@@ -664,6 +671,32 @@ export async function renderLatexToSvg(
 }
 
 /**
+ * Get enhanced PATH including common LaTeX installation locations
+ */
+function getEnhancedPath(): string {
+    const currentPath = process.env.PATH || '';
+    const latexPaths = [
+        '/Library/TeX/texbin',           // MacTeX
+        '/usr/local/texlive/2025/bin/universal-darwin',
+        '/usr/local/texlive/2024/bin/universal-darwin',
+        '/usr/local/texlive/2023/bin/universal-darwin',
+        '/opt/homebrew/bin',             // Homebrew on Apple Silicon
+        '/usr/local/bin',                // Homebrew on Intel
+        '/usr/bin',
+    ];
+
+    // Add paths that aren't already in PATH
+    const pathSet = new Set(currentPath.split(':'));
+    for (const p of latexPaths) {
+        if (!pathSet.has(p)) {
+            pathSet.add(p);
+        }
+    }
+
+    return Array.from(pathSet).join(':');
+}
+
+/**
  * Run a command and capture output
  */
 function runCommand(
@@ -673,10 +706,16 @@ function runCommand(
     timeout: number
 ): Promise<{ success: boolean; stdout: string; stderr: string }> {
     return new Promise((resolve) => {
+        const env = {
+            ...process.env,
+            PATH: getEnhancedPath(),
+        };
+
         const proc = spawn(cmd, args, {
             cwd,
             shell: true,
             timeout,
+            env,
         });
 
         let stdout = '';

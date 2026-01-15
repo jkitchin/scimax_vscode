@@ -82,4 +82,9 @@ export {
     searchMenu,
     jumpMenu,
     databaseMenu,
+    exportMenu,
+    htmlExportMenu,
+    latexExportMenu,
+    markdownExportMenu,
+    exportMenus,
 } from './menus';

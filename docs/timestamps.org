@@ -7,17 +7,20 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Timestamps
+* ✅ Timestamps
+CLOSED: [2026-01-15 Thu 14:57]
 
 Timestamps in Scimax VS Code allow you to associate dates and times with your
 content. They are essential for scheduling tasks, tracking deadlines, recording
 events, and managing time.
 
-* ⚠️ Timestamp Types
+* ✅ Timestamp Types
+CLOSED: [2026-01-15 Thu 14:57]
 
 Org-mode supports two types of timestamps that serve different purposes.
 
-** ⚠️ Active Timestamps
+** ✅ Active Timestamps
+CLOSED: [2026-01-15 Thu 14:57]
 
 Active timestamps appear in the agenda and are used for scheduling and events:
 
@@ -32,7 +35,8 @@ Active timestamps use angle brackets <...> and will:
 - Be included in time-based searches
 - Trigger reminders
 
-** ⚠️ Inactive Timestamps
+** ✅ Inactive Timestamps
+CLOSED: [2026-01-15 Thu 14:57]
 
 Inactive timestamps are for recording when something happened without agenda
 visibility:
@@ -48,20 +52,23 @@ Inactive timestamps use square brackets [...] and will:
 - Record historical information
 - Document when notes were taken
 
-** ⚠️ When to Use Each Type
+** ✅ When to Use Each Type
+CLOSED: [2026-01-15 Thu 14:57]
 
-| Use Case                          | Type     | Example                           |
-|-----------------------------------+----------+-----------------------------------|
-| Schedule a task                   | Active   | SCHEDULED: <2026-01-15 Wed>      |
-| Set a deadline                    | Active   | DEADLINE: <2026-01-20 Mon>       |
-| Record appointment                | Active   | <2026-01-18 Thu 14:00>           |
-| Log completion time               | Inactive | CLOSED: [2026-01-14 Tue 10:30]   |
-| Document when note was added      | Inactive | [2026-01-14 Tue] Added notes...  |
-| Track state change                | Inactive | State "DONE" from "TODO" [...]   |
+| Use Case                     | Type     | Example                         |
+|------------------------------+----------+---------------------------------|
+| Schedule a task              | Active   | SCHEDULED: <2026-01-15 Wed>     |
+| Set a deadline               | Active   | DEADLINE: <2026-01-20 Mon>      |
+| Record appointment           | Active   | <2026-01-18 Thu 14:00>          |
+| Log completion time          | Inactive | CLOSED: [2026-01-14 Tue 10:30]  |
+| Document when note was added | Inactive | [2026-01-14 Tue] Added notes... |
+| Track state change           | Inactive | State "DONE" from "TODO" [...]  |
 
-* ⚠️ Date and Time Formats
+* ✅ Date and Time Formats
+CLOSED: [2026-01-15 Thu 14:58]
 
-** ⚠️ Basic Date Format
+** ✅ Basic Date Format
+CLOSED: [2026-01-15 Thu 14:58]
 
 The standard date format is YYYY-MM-DD Day:
 
@@ -72,7 +79,8 @@ The standard date format is YYYY-MM-DD Day:
 
 The day of week is automatically calculated and included.
 
-** ⚠️ Date with Time
+** ✅ Date with Time
+CLOSED: [2026-01-15 Thu 14:58]
 
 Add time in 24-hour HH:MM format:
 
@@ -82,7 +90,8 @@ Add time in 24-hour HH:MM format:
 <2026-01-15 Wed 23:59>
 #+END_SRC
 
-** ⚠️ Time Only
+** ✅ Time Only
+CLOSED: [2026-01-15 Thu 14:58]
 
 You can specify just a time (assumes today):
 
@@ -90,20 +99,23 @@ You can specify just a time (assumes today):
 <14:30>
 #+END_SRC
 
-** ⚠️ Supported Date Components
+** ✅ Supported Date Components
+CLOSED: [2026-01-15 Thu 14:58]
 
-| Component   | Format      | Example  | Description              |
-|-------------+-------------+----------+--------------------------|
-| Year        | YYYY       | 2026    | Four-digit year          |
-| Month       | MM         | 01      | Two-digit month (01-12)  |
-| Day         | DD         | 15      | Two-digit day (01-31)    |
-| Day of week | Day        | Wed     | Three-letter abbreviation|
-| Hour        | HH         | 14      | Two-digit hour (00-23)   |
-| Minute      | MM         | 30      | Two-digit minute (00-59) |
+| Component   | Format | Example | Description               |
+|-------------+--------+---------+---------------------------|
+| Year        | YYYY   | 2026    | Four-digit year           |
+| Month       | MM     | 01      | Two-digit month (01-12)   |
+| Day         | DD     | 15      | Two-digit day (01-31)     |
+| Day of week | Day    | Wed     | Three-letter abbreviation |
+| Hour        | HH     | 14      | Two-digit hour (00-23)    |
+| Minute      | MM     | 30      | Two-digit minute (00-59)  |
 
-* ⚠️ Date and Time Ranges
+* ✅ Date and Time Ranges
+CLOSED: [2026-01-15 Thu 14:58]
 
-** ⚠️ Date Ranges
+** ✅ Date Ranges
+CLOSED: [2026-01-15 Thu 14:58]
 
 Specify a range of dates with --:
 
@@ -113,7 +125,8 @@ Specify a range of dates with --:
 
 This represents an event spanning multiple days, like a conference.
 
-** ⚠️ Time Ranges
+** ✅ Time Ranges
+CLOSED: [2026-01-15 Thu 14:58]
 
 Specify a time range within a single day:
 
@@ -123,7 +136,8 @@ Specify a time range within a single day:
 
 This is useful for meetings or work sessions with defined start and end times.
 
-** ⚠️ Time Range Examples
+** ✅ Time Range Examples
+CLOSED: [2026-01-15 Thu 14:58]
 
 #+BEGIN_SRC org
 ,* Meeting with client
@@ -136,15 +150,16 @@ This is useful for meetings or work sessions with defined start and end times.
 <2026-01-15 Wed 10:00-12:00>
 #+END_SRC
 
-* ⚠️ Creating Timestamps
+* ✅ Creating Timestamps
+CLOSED: [2026-01-15 Thu 14:58]
 
-** ⚠️ Insert Timestamp Command
+** 👀 Insert Timestamp Command
 
-| Key/Command               | Action                          |
-|---------------------------+---------------------------------|
-| Ctrl+C .                 | Insert active timestamp         |
-| Ctrl+C !                 | Insert inactive timestamp       |
-| Speed key .              | Insert timestamp (at heading)   |
+| Key/Command | Action                        |
+|-------------+-------------------------------|
+| Ctrl+C .    | Insert active timestamp       |
+| Ctrl+C !    | Insert inactive timestamp     |
+| Speed key . | Insert timestamp (at heading) |
 
 Press Ctrl+C . and a date picker dialog appears. You can:
 1. Type a date directly (2026-01-15)
@@ -156,16 +171,16 @@ Press Ctrl+C . and a date picker dialog appears. You can:
 
 When entering a date, use these expressions:
 
-| Expression    | Result                                |
-|---------------+---------------------------------------|
-| +2d          | Two days from now                     |
-| -1w          | One week ago                          |
-| +3m          | Three months from now                 |
-| today        | Today's date                          |
-| tomorrow     | Tomorrow's date                       |
-| monday       | Next Monday                           |
-| jan 15       | January 15 of current/next year       |
-| 2026-01-15   | Specific date                         |
+| Expression | Result                          |
+|------------+---------------------------------|
+| +2d        | Two days from now               |
+| -1w        | One week ago                    |
+| +3m        | Three months from now           |
+| today      | Today's date                    |
+| tomorrow   | Tomorrow's date                 |
+| monday     | Next Monday                     |
+| jan 15     | January 15 of current/next year |
+| 2026-01-15 | Specific date                   |
 
 ** ⚠️ Adding Time to Timestamps
 
@@ -193,20 +208,23 @@ For common cases:
   [2026-01-14 Tue 10:00]   ; Press Ctrl+C !
 #+END_SRC
 
-* ⚠️ Modifying Timestamps
+* ✅ Modifying Timestamps
+CLOSED: [2026-01-15 Thu 15:03]
 
-** ⚠️ Adjusting Dates with Keyboard
+** ✅ Adjusting Dates with Keyboard
+CLOSED: [2026-01-15 Thu 15:03]
 
 Place cursor on a timestamp component and use:
 
-| Key           | Action                              |
-|---------------+-------------------------------------|
-| Shift+Up     | Increase value (day, month, year)   |
-| Shift+Down   | Decrease value                      |
-| Shift+Right  | Move to next day                    |
-| Shift+Left   | Move to previous day                |
+| Key         | Action                            |
+|-------------+-----------------------------------|
+| Shift+Up    | Increase value (day, month, year) |
+| Shift+Down  | Decrease value                    |
+| Shift+Right | Move to next day                  |
+| Shift+Left  | Move to previous day              |
 
-** ⚠️ Component-Based Editing
+** ✅ Component-Based Editing
+CLOSED: [2026-01-15 Thu 15:03]
 
 The cursor position determines what changes:
 
@@ -224,7 +242,8 @@ The cursor position determines what changes:
 - On hour: Shift+Up/Down changes hour
 - On minute: Shift+Up/Down changes minute
 
-** ⚠️ Quick Date Adjustment Examples
+** ✅ Quick Date Adjustment Examples
+CLOSED: [2026-01-15 Thu 15:03]
 
 #+BEGIN_SRC org
 ; Move meeting to tomorrow
@@ -238,7 +257,8 @@ The cursor position determines what changes:
 <2026-02-15 Sat>
 #+END_SRC
 
-** ⚠️ Editing Timestamp Dialog
+** ✅ Editing Timestamp Dialog
+CLOSED: [2026-01-15 Thu 15:03]
 
 Press Ctrl+C . on an existing timestamp to open the editor and:
 - Modify the date
@@ -246,12 +266,14 @@ Press Ctrl+C . on an existing timestamp to open the editor and:
 - Change between active/inactive
 - Add repeaters or warnings
 
-* ⚠️ Repeating Timestamps
+* ✅ Repeating Timestamps
+CLOSED: [2026-01-15 Thu 15:04]
 
 Repeaters make timestamps recur automatically, perfect for recurring tasks and
 events.
 
-** ⚠️ Basic Repeater Syntax
+** ✅ Basic Repeater Syntax
+CLOSED: [2026-01-15 Thu 15:04]
 
 Add a repeater after the date: +Nx where:
 - + is the repeater marker
@@ -265,15 +287,16 @@ Add a repeater after the date: +Nx where:
 <2026-01-15 Wed +1y>     ; Repeats yearly
 #+END_SRC
 
-** ⚠️ Repeater Units
+** ✅ Repeater Units
+CLOSED: [2026-01-15 Thu 15:04]
 
-| Unit | Meaning        | Example           | Next Occurrence           |
-|------+----------------+-------------------+---------------------------|
-| d   | Day(s)         | +1d              | Tomorrow                  |
-| w   | Week(s)        | +1w              | Same day next week        |
-| m   | Month(s)       | +1m              | Same date next month      |
-| y   | Year(s)        | +1y              | Same date next year       |
-| h   | Hour(s)        | +2h              | Two hours later           |
+| Unit | Meaning  | Example | Next Occurrence      |
+|------+----------+---------+----------------------|
+| d    | Day(s)   | +1d     | Tomorrow             |
+| w    | Week(s)  | +1w     | Same day next week   |
+| m    | Month(s) | +1m     | Same date next month |
+| y    | Year(s)  | +1y     | Same date next year  |
+| h    | Hour(s)  | +2h     | Two hours later      |
 
 ** ⚠️ Repeater Behavior
 
@@ -291,11 +314,13 @@ SCHEDULED: <2026-01-22 Wed +1w>
 
 The task automatically returns to TODO state with the next occurrence date.
 
-** ⚠️ Repeater Type Modifiers
+** ✅ Repeater Type Modifiers
+CLOSED: [2026-01-15 Thu 15:04]
 
 Three types of repeaters handle different scenarios:
 
-*** ⚠️ Standard Repeater (+)
+*** ✅ Standard Repeater (+)
+CLOSED: [2026-01-15 Thu 15:04]
 
 Shifts from the original base date:
 
@@ -307,7 +332,8 @@ SCHEDULED: <2026-01-15 Wed +1w>
 If you complete it late (on Jan 20), it still schedules to Jan 22 (one week
 from original date).
 
-*** ⚠️ Catch-up Repeater (++)
+*** ✅ Catch-up Repeater (++)
+CLOSED: [2026-01-15 Thu 15:04]
 
 Shifts from the completion date:
 
@@ -332,11 +358,11 @@ If you complete it on Jan 18, it schedules to Jan 21 (exactly 3 days later).
 
 ** ⚠️ Repeater Comparison
 
-| Type        | Symbol | Schedules from      | Use Case                     |
-|-------------+--------+---------------------+------------------------------|
-| Standard    | +     | Original date       | Fixed appointments, meetings |
-| Catch-up    | ++    | Completion date     | Habits, daily tasks          |
-| Restart     | .+    | Completion date     | Maintenance, periodic tasks  |
+| Type     | Symbol | Schedules from  | Use Case                     |
+|----------+--------+-----------------+------------------------------|
+| Standard | +      | Original date   | Fixed appointments, meetings |
+| Catch-up | ++     | Completion date | Habits, daily tasks          |
+| Restart  | .+     | Completion date | Maintenance, periodic tasks  |
 
 ** ⚠️ Repeater Examples
 
@@ -362,11 +388,13 @@ SCHEDULED: <2026-01-15 Wed ++1d>
 ; Daily practice, catch up if missed
 #+END_SRC
 
-* ⚠️ SCHEDULED and DEADLINE
+* ✅ SCHEDULED and DEADLINE
+CLOSED: [2026-01-15 Thu 15:05]
 
 Two special keywords attach timestamps to TODO items for planning.
 
-** ⚠️ SCHEDULED Keyword
+** ✅ SCHEDULED Keyword
+CLOSED: [2026-01-15 Thu 15:05]
 
 Indicates when you plan to START working on a task:
 
@@ -375,7 +403,8 @@ Indicates when you plan to START working on a task:
 SCHEDULED: <2026-01-15 Wed>
 #+END_SRC
 
-** ⚠️ DEADLINE Keyword
+** ✅ DEADLINE Keyword
+CLOSED: [2026-01-15 Thu 15:05]
 
 Indicates when a task must be COMPLETED by:
 
@@ -384,7 +413,8 @@ Indicates when a task must be COMPLETED by:
 DEADLINE: <2026-01-20 Mon>
 #+END_SRC
 
-** ⚠️ Using Both Together
+** ✅ Using Both Together
+CLOSED: [2026-01-15 Thu 15:05]
 
 Tasks can have both:
 
@@ -396,19 +426,21 @@ DEADLINE: <2026-01-25 Sat>
 
 Start working on Jan 15, must finish by Jan 25.
 
-** ⚠️ Adding SCHEDULED and DEADLINE
+** ✅ Adding SCHEDULED and DEADLINE
+CLOSED: [2026-01-15 Thu 15:05]
 
-| Key/Command                | Action                         |
-|----------------------------+--------------------------------|
-| Speed key s               | Add/edit SCHEDULED             |
-| Speed key d               | Add/edit DEADLINE              |
-| scimax.org.schedule       | Schedule task                  |
-| scimax.org.deadline       | Set deadline                   |
+| Key/Command         | Action             |
+|---------------------+--------------------|
+| Speed key s         | Add/edit SCHEDULED |
+| Speed key d         | Add/edit DEADLINE  |
+| scimax.org.schedule | Schedule task      |
+| scimax.org.deadline | Set deadline       |
 
 Position cursor on a TODO headline and press s or d (with speed commands
 enabled).
 
-** ⚠️ SCHEDULED vs DEADLINE
+** ✅ SCHEDULED vs DEADLINE
+CLOSED: [2026-01-15 Thu 15:05]
 
 | Aspect      | SCHEDULED                      | DEADLINE                    |
 |-------------+--------------------------------+-----------------------------|
@@ -426,7 +458,7 @@ DEADLINE: <2026-01-17 Fri>
 Need to finish before weekend.
 
 ,* TODO Weekly team meeting
-SCHEDULED: <2026-01-16 Thu 10:00 +1w>
+SCHEDULED: <2026-02-13 Fri 10:00 +1w>
 Recurring Thursday meeting.
 
 ,* TODO File taxes

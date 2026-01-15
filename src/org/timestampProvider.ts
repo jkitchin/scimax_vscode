@@ -763,6 +763,46 @@ async function insertTimestamp(): Promise<void> {
 }
 
 /**
+ * Insert an inactive timestamp at cursor (C-c !)
+ */
+async function insertInactiveTimestamp(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dow = getDayOfWeek(now);
+
+    const timestamp = `[${year}-${month}-${day} ${dow}]`;
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(editor.selection.active, timestamp);
+    });
+}
+
+/**
+ * Insert an active timestamp at cursor (C-c .)
+ */
+async function insertActiveTimestamp(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dow = getDayOfWeek(now);
+
+    const timestamp = `<${year}-${month}-${day} ${dow}>`;
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(editor.selection.active, timestamp);
+    });
+}
+
+/**
  * Add or change repeater on timestamp
  */
 async function addRepeater(): Promise<void> {
@@ -914,6 +954,8 @@ export function registerTimestampCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.org.shiftTimestampLeft', shiftTimestampLeft),
         vscode.commands.registerCommand('scimax.org.shiftTimestampRight', shiftTimestampRight),
         vscode.commands.registerCommand('scimax.org.insertTimestamp', insertTimestamp),
+        vscode.commands.registerCommand('scimax.org.insertInactiveTimestamp', insertInactiveTimestamp),
+        vscode.commands.registerCommand('scimax.org.insertActiveTimestamp', insertActiveTimestamp),
         vscode.commands.registerCommand('scimax.org.addRepeater', addRepeater)
     );
 }

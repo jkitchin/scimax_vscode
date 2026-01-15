@@ -7,7 +7,8 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Introduction
+* ✅ Introduction
+CLOSED: [2026-01-15 Thu 13:34]
 
 The Agenda system in Scimax VS Code provides powerful views of your scheduled
 tasks, deadlines, and TODO items. It helps you stay organized by showing what
@@ -24,15 +25,18 @@ tasks from all your org files and presents them in meaningful ways:
 The Agenda system works with both file-based scanning and database indexing,
 giving you flexibility for different workflows.
 
-* ⚠️ What is the Agenda?
+* ✅ What is the Agenda?
+CLOSED: [2026-01-15 Thu 13:34]
 
 The Agenda is a dynamic view that displays TODO items, scheduled tasks, and
 deadlines from your org files. Unlike browsing individual files, the Agenda
 aggregates information across all your documents.
 
-** ⚠️ Key Concepts
+** ✅ Key Concepts
+CLOSED: [2026-01-15 Thu 13:34]
 
-*** ⚠️ Agenda Items
+*** ✅ Agenda Items
+CLOSED: [2026-01-15 Thu 13:34]
 
 An agenda item is any headline with:
 - A TODO keyword (TODO, DONE, NEXT, WAITING, etc.)
@@ -40,7 +44,8 @@ An agenda item is any headline with:
 - A DEADLINE timestamp
 - An active timestamp
 
-*** ⚠️ Scheduled Items
+*** ✅ Scheduled Items
+CLOSED: [2026-01-15 Thu 13:34]
 
 Tasks with SCHEDULED timestamps appear in the agenda on their scheduled date:
 
@@ -51,7 +56,8 @@ SCHEDULED: <2026-01-15 Wed>
 
 This appears in the agenda starting January 15.
 
-*** ⚠️ Deadlines
+*** ✅ Deadlines
+CLOSED: [2026-01-15 Thu 13:35]
 
 Tasks with DEADLINE timestamps appear with warning indicators:
 
@@ -63,21 +69,25 @@ DEADLINE: <2026-01-20 Mon>
 Shows in the agenda with countdown (e.g., "in 7 days") and becomes overdue if
 not completed.
 
-*** ⚠️ Overdue Items
+*** ✅ Overdue Items
+CLOSED: [2026-01-15 Thu 13:35]
 
 Items past their deadline appear prominently with warning indicators and show
 how many days overdue they are.
 
-*** ⚠️ Unscheduled TODOs
+*** ✅ Unscheduled TODOs
+CLOSED: [2026-01-15 Thu 13:35]
 
 TODO items without dates can be included in agenda views to ensure nothing is
 forgotten.
 
-** ⚠️ Two Agenda Systems
+** ✅ Two Agenda Systems
+CLOSED: [2026-01-15 Thu 13:35]
 
 Scimax VS Code provides two complementary agenda implementations:
 
-*** ⚠️ Native/File-Based Agenda
+*** ✅ Native/File-Based Agenda
+CLOSED: [2026-01-15 Thu 13:35]
 
 - Scans org files on-demand
 - Works immediately without indexing
@@ -85,7 +95,8 @@ Scimax VS Code provides two complementary agenda implementations:
 - Commands: scimax.agenda.*
 - Best for: Quick views, smaller document sets
 
-*** ⚠️ Database-Backed Agenda
+*** ✅ Database-Backed Agenda
+CLOSED: [2026-01-15 Thu 13:35]
 
 - Uses indexed data for fast queries
 - Requires indexing files first
@@ -95,17 +106,19 @@ Scimax VS Code provides two complementary agenda implementations:
 
 Both systems can be used together - choose based on your needs.
 
-* ⚠️ Agenda View Modes
+* ✅ Agenda View Modes
+CLOSED: [2026-01-15 Thu 13:35]
 
 The agenda can display information in different time-based views.
 
-** ⚠️ Day Agenda
+** ✅ Day Agenda
+CLOSED: [2026-01-15 Thu 13:51]
 
 Shows items for a single day.
 
-| Command               | Description              |
-|-----------------------+--------------------------|
-| scimax.agenda.day    | Today's agenda           |
+| Command           | Key Binding | Description    |
+|-------------------+-------------+----------------|
+| scimax.agenda.day | C-c aa      | Today's agenda |
 
 The day view displays:
 - Scheduled items for the day
@@ -127,9 +140,9 @@ Today (Wednesday, Jan 15, 2026)
 
 Shows a 7-day view starting from today.
 
-| Command                | Description              |
-|------------------------+--------------------------|
-| scimax.agenda.week    | Next 7 days              |
+| Command            |        | Description |
+|--------------------+--------+-------------|
+| scimax.agenda.week | C-c aw | Next 7 days |
 
 Groups items by date, making it easy to plan your week:
 
@@ -163,9 +176,9 @@ Useful for medium-term planning and catching upcoming deadlines.
 
 Shows the next 30 days.
 
-| Command                  | Description              |
-|--------------------------+--------------------------|
-| scimax.agenda.month     | Next 30 days             |
+| Command             | Key Binding | Description  |
+|---------------------+-------------+--------------|
+| scimax.agenda.month | C-c am      | Next 30 days |
 
 Good for long-term planning and ensuring nothing falls through the cracks.
 
@@ -173,7 +186,7 @@ Good for long-term planning and ensuring nothing falls through the cracks.
 
 The database-backed agenda supports custom time ranges:
 
-#+BEGIN_SRC elisp
+#+BEGIN_EXAMPLE
 ; Next 2 weeks
 Command: scimax.db.agenda → "Next 2 weeks"
 
@@ -185,16 +198,16 @@ Command: scimax.db.agenda → "Next 3 months"
 
 ; All items (no time limit)
 Command: scimax.db.agenda → "All items"
-#+END_SRC
+#+END_EXAMPLE
 
 * ⚠️ TODO List View
 
 The TODO list shows all incomplete tasks regardless of date.
 
-| Command                   | Description                    |
-|---------------------------+--------------------------------|
-| scimax.agenda.todoList   | All TODO items (native)        |
-| scimax.db.showTodos      | All TODO items (database)      |
+| Command                | Key Binding | Description               |
+|------------------------+-------------+---------------------------|
+| scimax.agenda.todoList | C-c at      | All TODO items (native)   |
+| scimax.db.showTodos    |             | All TODO items (database) |
 
 ** ⚠️ Grouping by State
 
@@ -235,10 +248,10 @@ Focus specifically on items with deadlines.
 
 ** ⚠️ Upcoming Deadlines
 
-| Command                    | Description                     |
-|----------------------------+---------------------------------|
-| scimax.agenda.deadlines   | Show upcoming deadlines         |
-| scimax.db.deadlines       | Database deadline view          |
+| Command                 | Key Bindings | Description             |
+|-------------------------+--------------+-------------------------|
+| scimax.agenda.deadlines | C-c ad       | Show upcoming deadlines |
+| scimax.db.deadlines     |              | Database deadline view  |
 
 Displays deadlines with time-until indicators:
 
@@ -376,11 +389,11 @@ WAITING
 
 ** ⚠️ Changing Grouping
 
-| Command                            | Description                |
-|------------------------------------+----------------------------|
-| scimax.agenda.groupByDate         | Group by date              |
-| scimax.agenda.groupByCategory     | Group by category          |
-| scimax.agenda.groupByPriority     | Group by priority          |
+| Command                       | Description       |
+|-------------------------------+-------------------|
+| scimax.agenda.groupByDate     | Group by date     |
+| scimax.agenda.groupByCategory | Group by category |
+| scimax.agenda.groupByPriority | Group by priority |
 
 Tree view groups update immediately.
 
@@ -574,9 +587,9 @@ Or manually in settings:
 
 Exclude certain files from agenda:
 
-| Setting                         | Default                           |
-|---------------------------------+-----------------------------------|
-| scimax.agenda.excludePatterns  | **/node_modules/**, **/.git/**   |
+| Setting                       | Default                        |
+|-------------------------------+--------------------------------|
+| scimax.agenda.excludePatterns | **/node_modules/**, **/.git/** |
 
 #+BEGIN_SRC json
 {
@@ -593,9 +606,9 @@ Exclude certain files from agenda:
 
 Set the default number of days for agenda views:
 
-| Setting                    | Default | Description                |
-|----------------------------+---------+----------------------------|
-| scimax.agenda.defaultSpan | 7      | Days to show in agenda     |
+| Setting                   | Default | Description            |
+|---------------------------+---------+------------------------|
+| scimax.agenda.defaultSpan | 7       | Days to show in agenda |
 
 #+BEGIN_SRC json
 {
@@ -607,9 +620,9 @@ Set the default number of days for agenda views:
 
 Include or exclude completed items:
 
-| Setting                  | Default | Description                    |
-|--------------------------+---------+--------------------------------|
-| scimax.agenda.showDone  | false  | Show DONE items in agenda      |
+| Setting                | Default | Description               |
+|------------------------+---------+---------------------------|
+| scimax.agenda.showDone | false   | Show DONE items in agenda |
 
 #+BEGIN_SRC json
 {
@@ -621,18 +634,18 @@ Include or exclude completed items:
 
 Control display of recurring habit tasks:
 
-| Setting                    | Default | Description                  |
-|----------------------------+---------+------------------------------|
-| scimax.agenda.showHabits  | true   | Show habit items in agenda   |
+| Setting                  | Default | Description                |
+|--------------------------+---------+----------------------------|
+| scimax.agenda.showHabits | true    | Show habit items in agenda |
 
 ** ⚠️ TODO States
 
 Define which TODO keywords to include:
 
-| Setting                      | Default                      |
-|------------------------------+------------------------------|
-| scimax.agenda.todoStates    | [TODO, NEXT, WAITING]       |
-| scimax.agenda.doneStates    | [DONE, CANCELLED]           |
+| Setting                  | Default               |
+|--------------------------+-----------------------|
+| scimax.agenda.todoStates | [TODO, NEXT, WAITING] |
+| scimax.agenda.doneStates | [DONE, CANCELLED]     |
 
 #+BEGIN_SRC json
 {
@@ -668,29 +681,29 @@ The database agenda (scimax.db.agenda) offers:
 
 Before using database agenda, index your files:
 
-| Command                 | Description                    |
-|-------------------------|--------------------------------|
-| scimax.db.reindex      | Index all org files            |
+| Command           | Description         |
+|-------------------+---------------------|
+| scimax.db.reindex | Index all org files |
 
 The database automatically tracks changes, but manual reindex ensures
 everything is current.
 
 ** ⚠️ Database Agenda Commands
 
-| Command                 | Description                         |
-|-------------------------|-------------------------------------|
-| scimax.db.agenda       | Time-based agenda view              |
-| scimax.db.deadlines    | Upcoming deadlines                  |
-| scimax.db.showTodos    | All TODO items                      |
-| scimax.db.searchByTag  | Items with specific tag             |
+| Command               | Description             |
+|-----------------------+-------------------------|
+| scimax.db.agenda      | Time-based agenda view  |
+| scimax.db.deadlines   | Upcoming deadlines      |
+| scimax.db.showTodos   | All TODO items          |
+| scimax.db.searchByTag | Items with specific tag |
 
 ** ⚠️ Search Scope
 
 Limit agenda queries to specific directories:
 
-| Command                | Description                      |
-|------------------------|----------------------------------|
-| scimax.db.setScope    | Set search scope                 |
+| Command            | Description      |
+|--------------------+------------------|
+| scimax.db.setScope | Set search scope |
 
 Options:
 - *All files* - Search entire database

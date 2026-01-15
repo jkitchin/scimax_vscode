@@ -7,7 +7,8 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Introduction
+* ✅ Introduction
+CLOSED: [2026-01-15 Thu 14:06]
 
 Image overlays provide inline image display functionality in org-mode files, similar to Emacs org-mode's image display feature. When enabled, image links are rendered as thumbnails directly in the editor, allowing you to preview images without opening them separately.
 
@@ -18,17 +19,15 @@ This feature enhances the visual experience of working with org documents that c
 - Journal entries with photos
 - Results from source block executions (especially Jupyter)
 
-** ⚠️ How Image Overlays Work
+** ✅ How Image Overlays Work
+CLOSED: [2026-01-15 Thu 14:07]
 
-Due to VS Code's limitations compared to Emacs overlays, the extension uses a combination of:
-
-1. *Gutter Icons* - Small thumbnails displayed in the editor gutter (line margin)
-2. *After-Content Decorations* - Emoji and dimension text displayed inline after the link
-3. *Hover Previews* - Full-size image preview when hovering over image links
+Due to VS Code's limitations compared to Emacs overlays, the extension uses *Hover Previews* - Full-size image preview when hovering over image links
 
 Thumbnails are automatically generated and cached for performance, using ImageMagick or native macOS tools when available.
 
-* ⚠️ Supported Image Formats
+* ✅ Supported Image Formats
+CLOSED: [2026-01-15 Thu 14:07]
 
 The image overlay system supports the following image formats:
 
@@ -43,24 +42,27 @@ The image overlay system supports the following image formats:
 | TIFF   | .tiff, .tif       | Tagged image format             |
 | ICO    | .ico              | Icon files                      |
 
-* ⚠️ Image Link Syntax
+* ✅ Image Link Syntax
+CLOSED: [2026-01-15 Thu 14:07]
 
-** ⚠️ Basic Image Links
+** ✅ Basic Image Links
+CLOSED: [2026-01-15 Thu 14:07]
 
 The simplest way to include an image is with a basic link:
 
 #+BEGIN_SRC org
-[[./path/to/image.png]]
+[[./plot.png]]
 #+END_SRC
 
 This displays the image inline and can be clicked to open.
 
-** ⚠️ File Protocol Links
+** ✅ File Protocol Links
+CLOSED: [2026-01-15 Thu 14:08]
 
 You can explicitly use the file: protocol:
 
 #+BEGIN_SRC org
-[[file:./path/to/image.png]]
+[[file:./plot.png]]
 #+END_SRC
 
 Both formats work identically - the file: prefix is optional for local files.

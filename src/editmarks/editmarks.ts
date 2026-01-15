@@ -298,16 +298,23 @@ async function insertComment(): Promise<void> {
 
 /**
  * Mark a typo correction (select wrong text, enter correct text)
+ * If no selection, uses the word at cursor position
  */
 async function insertTypo(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    const selection = editor.selection;
+    let selection = editor.selection;
 
+    // If no selection, select the word at cursor
     if (selection.isEmpty) {
-        vscode.window.showInformationMessage('Select the incorrect text first');
-        return;
+        const position = selection.active;
+        const wordRange = editor.document.getWordRangeAtPosition(position);
+        if (!wordRange) {
+            vscode.window.showInformationMessage('No word at cursor position');
+            return;
+        }
+        selection = new vscode.Selection(wordRange.start, wordRange.end);
     }
 
     const wrongText = editor.document.getText(selection);

@@ -7,7 +7,8 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Overview
+* ✅ Overview
+CLOSED: [2026-01-15 Thu 15:44]
 
 Scimax VS Code supports a wide range of programming languages for source block execution through two primary mechanisms:
 
@@ -16,9 +17,11 @@ Scimax VS Code supports a wide range of programming languages for source block e
 
 This document provides a comprehensive reference for all supported languages, including syntax examples, execution modes, session support, and required dependencies.
 
-* ⚠️ Understanding Execution Modes
+* ✅ Understanding Execution Modes
+CLOSED: [2026-01-15 Thu 15:44]
 
-** ⚠️ Native Execution
+** ✅ Native Execution
+CLOSED: [2026-01-15 Thu 15:44]
 
 Native executors run code directly using installed command-line interpreters. They are:
 - Fast and lightweight
@@ -27,7 +30,8 @@ Native executors run code directly using installed command-line interpreters. Th
 
 Supported natively: Python, JavaScript/Node.js, Shell/Bash
 
-** ⚠️ Jupyter Execution
+** ✅ Jupyter Execution
+CLOSED: [2026-01-15 Thu 15:44]
 
 Jupyter executors use Jupyter kernels for code execution. They provide:
 - Full session support (variables persist between blocks)
@@ -39,43 +43,57 @@ To use Jupyter for any language:
 1. *Explicit syntax*: Use jupyter-<language> (e.g., jupyter-python)
 2. *Auto-detection*: Some languages automatically use Jupyter if available
 
-** ⚠️ Determining Which Executor Runs
+** ✅ Determining Which Executor Runs
+CLOSED: [2026-01-15 Thu 15:44]
 
-#+BEGIN_SRC org
+
 # Native Python (direct python3 command)
 #+BEGIN_SRC python
 print("Hello from native Python")
 #+END_SRC
 
+#+RESULTS:
+: Hello from native Python
+
 # Jupyter Python (uses IPython kernel)
 #+BEGIN_SRC jupyter-python
 print("Hello from Jupyter Python")
 #+END_SRC
-#+END_SRC
 
-* ⚠️ Scripting Languages
+#+RESULTS:
+: Hello from Jupyter Python
 
-** ⚠️ Python
+
+* ✅ Scripting Languages
+CLOSED: [2026-01-15 Thu 15:45]
+
+** ✅ Python
+CLOSED: [2026-01-15 Thu 15:45]
 :PROPERTIES:
 :ID: lang-python
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-15 Thu 15:45]
 - python, python3, py, ipython
 
-*** ⚠️ Execution Modes
+*** ✅ Execution Modes
+CLOSED: [2026-01-15 Thu 15:45]
 - *Native*: Direct execution via python3 command
 - *Jupyter*: Use jupyter-python or jupyter-ipython
 
-*** ⚠️ Session Support
+*** ✅ Session Support
+CLOSED: [2026-01-15 Thu 15:45]
 - Native: No (each block runs in isolation)
 - Jupyter: Yes (full state persistence)
 
-*** ⚠️ Dependencies
+*** ✅ Dependencies
+CLOSED: [2026-01-15 Thu 15:45]
 - *Native*: Python 3.x installed and in PATH
 - *Jupyter*: Jupyter and IPython kernel installed
 
-*** ⚠️ Basic Example (Native)
+*** ✅ Basic Example (Native)
+CLOSED: [2026-01-15 Thu 15:45]
 
 #+BEGIN_SRC python
 # Native Python execution
@@ -90,7 +108,9 @@ print(f"Circle area: {area:.2f}")
 #+RESULTS:
 : Circle area: 78.54
 
-*** ⚠️ Session Example (Jupyter)
+*** ✅ Session Example (Jupyter)
+CLOSED: [2026-01-15 Thu 15:45]
+
 
 #+BEGIN_SRC jupyter-python :session *py-session*
 # First block - define variables
@@ -111,9 +131,10 @@ print(f"Mean: {mean}")
 #+RESULTS:
 : Mean: 3.0
 
-*** ⚠️ Plotting Example
+*** ✅ Plotting Example
+CLOSED: [2026-01-15 Thu 15:46]
 
-#+BEGIN_SRC jupyter-python :results file :file plot.png
+#+BEGIN_SRC jupyter-python 
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -125,12 +146,17 @@ plt.title('Sine Wave')
 plt.xlabel('x')
 plt.ylabel('sin(x)')
 plt.grid(True)
-plt.savefig('plot.png')
-plt.close()
 #+END_SRC
 
 #+RESULTS:
-[[file:plot.png]]
+[[file:.ob-jupyter/output-1768510006544-2.png]]
+
+#+BEGIN_SRC jupyter-python 
+plt.savefig('plot.png')
+#+END_SRC
+
+#+RESULTS:
+: Error: OSError: [Errno 30] Read-only file system: 'plot.png'
 
 *** ⚠️ Special Features
 - Rich output in Jupyter (plots, tables, HTML)
