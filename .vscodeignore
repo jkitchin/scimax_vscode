@@ -32,6 +32,12 @@ node_modules/**
 !node_modules/promise-limit/**
 # transformers.js
 !node_modules/@xenova/**
+# citation-js and dependencies
+!node_modules/@citation-js/**
+!node_modules/citeproc/**
+!node_modules/moo/**
+!node_modules/sync-fetch/**
+!node_modules/fetch-ponyfill/**
 # other runtime deps
 !node_modules/@babel/**
 !node_modules/date-fns/**

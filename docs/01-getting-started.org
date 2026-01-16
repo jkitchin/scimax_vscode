@@ -144,16 +144,17 @@ print("Hello from Scimax VS Code!")
 - Press `Tab' on a heading to cycle its visibility (folded/children/subtree)
 - Press `S-<tab>' anywhere to cycle global visibility
 
+*bold* /italics/
+
 *** Moving Between Headings
 
-| Key            | Action                    |
-|----------------+---------------------------|
-| =C-c C-j= | Jump to any heading       |
-| =M-<up>=        | Move heading up           |
-| =M-<down>=      | Move heading down         |
-| =M-<left>=      | Promote heading (←level)  |
-| =M-<right>=     | Demote heading (→level)   |
-
+| Key         | Action                   |
+|-------------+--------------------------|
+| `C-c C-j'   | Jump to any heading      |
+| `M-<up>'    | Move heading up          |
+| `M-<down>'  | Move heading down        |
+| `M-<left>'  | Promote heading (←level) |
+| `M-<right>' | Demote heading (→level)  |
 *** Executing Code
 
 1. Place your cursor inside a source block

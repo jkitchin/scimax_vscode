@@ -155,8 +155,8 @@ This documentation is organized into several sections:
 
 *** Core Documentation (01-07)
 
-| Document                                            | Description                   |
-|-----------------------------------------------------+-------------------------------|
+| Document                                               | Description                   |
+|--------------------------------------------------------+-------------------------------|
 | [[file:01-getting-started.org][Getting Started]]       | Installation and first steps  |
 | [[file:02-document-structure.org][Document Structure]] | Headings, folding, navigation |
 | [[file:03-todo-items.org][TODO Items]]                 | Task management               |
@@ -167,54 +167,56 @@ This documentation is organized into several sections:
 
 *** Code Execution (08-09)
 
-| Document                                              | Description                   |
-|-------------------------------------------------------+-------------------------------|
-| [[file:08-supported-languages.org][Supported Languages]] | Languages for code execution  |
-| [[file:09-jupyter.org][Jupyter]]                           | Jupyter kernel integration    |
+| Document                                                 | Description                  |
+|----------------------------------------------------------+------------------------------|
+| [[file:08-supported-languages.org][Supported Languages]] | Languages for code execution |
+| [[file:09-jupyter.org][Jupyter]]                         | Jupyter kernel integration   |
 
 *** Export & Preview (10-12)
 
-| Document                                      | Description                   |
-|-----------------------------------------------+-------------------------------|
-| [[file:10-export.org][Export]]                       | Exporting documents           |
-| [[file:11-latex-preview.org][LaTeX Preview]]       | Math rendering and preview    |
-| [[file:12-image-overlays.org][Image Overlays]]     | Inline image display          |
+| Document                                       | Description                |
+|------------------------------------------------+----------------------------|
+| [[file:10-export.org][Export]]                 | Exporting documents        |
+| [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering and preview |
+| [[file:12-image-overlays.org][Image Overlays]] | Inline image display       |
 
 *** Organization & Planning (13-17)
 
-| Document                                  | Description                   |
-|-------------------------------------------+-------------------------------|
-| [[file:13-agenda.org][Agenda]]               | Agenda views and planning     |
-| [[file:14-journal.org][Journal]]             | Daily journaling system       |
-| [[file:15-capture.org][Capture]]             | Quick note capture            |
-| [[file:16-notebook.org][Notebook]]           | Project-based organization    |
-| [[file:17-projectile.org][Projectile]]       | Project management            |
+| Document                               | Description                |
+|----------------------------------------+----------------------------|
+| [[file:13-agenda.org][Agenda]]         | Agenda views and planning  |
+| [[file:14-journal.org][Journal]]       | Daily journaling system    |
+| [[file:15-capture.org][Capture]]       | Quick note capture         |
+| [[file:16-notebook.org][Notebook]]     | Project-based organization |
+| [[file:17-projectile.org][Projectile]] | Project management         |
 
 *** Search & Knowledge (18-19)
 
-| Document                                          | Description                   |
-|---------------------------------------------------+-------------------------------|
+| Document                                             | Description                   |
+|------------------------------------------------------+-------------------------------|
 | [[file:18-database-search.org][Database and Search]] | Full-text and semantic search |
 | [[file:19-references.org][References]]               | Citations and bibliography    |
 
 *** Editing & Navigation (20-23)
 
-| Document                                    | Description                   |
-|---------------------------------------------+-------------------------------|
-| [[file:20-editmarks.org][Editmarks]]           | Track changes system          |
-| [[file:21-navigation.org][Navigation]]         | Fuzzy search and jump         |
-| [[file:22-hydra-menus.org][Hydra Menus]]       | Keyboard-driven menus         |
-| [[file:23-speed-commands.org][Speed Commands]] | Single-key heading commands   |
+| Document                                       | Description                 |
+|------------------------------------------------+-----------------------------|
+| [[file:20-editmarks.org][Editmarks]]           | Track changes system        |
+| [[file:21-navigation.org][Navigation]]         | Fuzzy search and jump       |
+| [[file:22-hydra-menus.org][Hydra Menus]]       | Keyboard-driven menus       |
+| [[file:23-speed-commands.org][Speed Commands]] | Single-key heading commands |
 
-*** Reference Documentation (24-28)
+*** Reference Documentation (24-30)
 
-| Document                                                  | Description                    |
-|-----------------------------------------------------------+--------------------------------|
+| Document                                                     | Description                    |
+|--------------------------------------------------------------+--------------------------------|
 | [[file:24-keybindings.org][Keybindings]]                     | Complete keybinding reference  |
 | [[file:25-commands.org][Commands]]                           | All commands with descriptions |
 | [[file:26-configuration.org][Configuration]]                 | All settings and options       |
 | [[file:27-org-api.org][Org API]]                             | Programmatic file modification |
 | [[file:28-non-standard-features.org][Non-Standard Features]] | org-ref, Emacs command markup  |
+| [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not in VS Code  |
+| [[file:30-cli.org][Command Line Interface]]                 | CLI for batch ops and scripts  |
 
 ** Quick Start
 
@@ -275,8 +277,8 @@ This section provides a comprehensive index of all documentation topics with lin
 
 ** Navigation Guides
 
-| Document                                      | Topics Covered                                   |
-|-----------------------------------------------+--------------------------------------------------|
+| Document                                         | Topics Covered                                   |
+|--------------------------------------------------+--------------------------------------------------|
 | [[file:01-getting-started.org][Getting Started]] | Installation, first steps, basic usage           |
 | [[file:21-navigation.org][Navigation]]           | Fuzzy search, avy-style jump, outline navigation |
 | [[file:22-hydra-menus.org][Hydra Menus]]         | Keyboard-driven menus, customization             |
@@ -286,8 +288,8 @@ This section provides a comprehensive index of all documentation topics with lin
 
 ** Document Editing
 
-| Document                                            | Topics Covered                          |
-|-----------------------------------------------------+-----------------------------------------|
+| Document                                               | Topics Covered                          |
+|--------------------------------------------------------+-----------------------------------------|
 | [[file:02-document-structure.org][Document Structure]] | Headings, folding, properties, drawers  |
 | [[file:03-todo-items.org][TODO Items]]                 | Tasks, priorities, checkboxes, states   |
 | [[file:06-timestamps.org][Timestamps]]                 | Dates, deadlines, scheduling, repeaters |
@@ -297,104 +299,107 @@ This section provides a comprehensive index of all documentation topics with lin
 
 ** Code Execution
 
-| Document                                              | Topics Covered                        |
-|-------------------------------------------------------+---------------------------------------|
-| [[file:07-source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments     |
-| [[file:08-supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more     |
-| [[file:09-jupyter.org][Jupyter Integration]]             | Kernel management, rich output        |
-| [[file:27-org-api.org][Org API]]     | Programmatic file modification in TypeScript |
+| Document                                                 | Topics Covered                               |
+|----------------------------------------------------------+----------------------------------------------|
+| [[file:07-source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments            |
+| [[file:08-supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more            |
+| [[file:09-jupyter.org][Jupyter Integration]]             | Kernel management, rich output               |
+| [[file:27-org-api.org][Org API]]                         | Programmatic file modification in TypeScript |
 
 ** Export and Preview
 
-| Document                                    | Topics Covered                    |
-|---------------------------------------------+-----------------------------------|
+| Document                                       | Topics Covered                    |
+|------------------------------------------------+-----------------------------------|
 | [[file:10-export.org][Export]]                 | HTML, LaTeX, PDF, Markdown export |
 | [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  |
 | [[file:12-image-overlays.org][Image Overlays]] | Inline image display              |
 
 ** Organization and Planning
 
-| Document                        | Topics Covered                                  |
-|---------------------------------+-------------------------------------------------|
-| [[file:13-agenda.org][Agenda]]                          | Agenda views, task filtering                    |
-| [[file:14-journal.org][Journal]]                         | Daily journaling, calendar navigation           |
-| [[file:15-capture.org][Capture]]                         | Quick note capture, templates                   |
-| [[file:16-notebook.org][Notebook]]                        | Project-based organization                      |
-| [[file:17-projectile.org][Projectile]]                      | Project management, switching                   |
+| Document                               | Topics Covered                        |
+|----------------------------------------+---------------------------------------|
+| [[file:13-agenda.org][Agenda]]         | Agenda views, task filtering          |
+| [[file:14-journal.org][Journal]]       | Daily journaling, calendar navigation |
+| [[file:15-capture.org][Capture]]       | Quick note capture, templates         |
+| [[file:16-notebook.org][Notebook]]     | Project-based organization            |
+| [[file:17-projectile.org][Projectile]] | Project management, switching         |
 
 ** Search and Database
 
-| Document                        | Topics Covered                                  |
-|---------------------------------+-------------------------------------------------|
-| [[file:18-database-search.org][Database and Search]]             | Full-text search, semantic search, embeddings   |
-| [[file:19-references.org][References]]                      | Citations, bibliography, DOI lookup             |
+| Document                                             | Topics Covered                                |
+|------------------------------------------------------+-----------------------------------------------|
+| [[file:18-database-search.org][Database and Search]] | Full-text search, semantic search, embeddings |
+| [[file:19-references.org][References]]               | Citations, bibliography, DOI lookup           |
 
 ** Configuration
 
-| Document                        | Topics Covered                                  |
-|---------------------------------+-------------------------------------------------|
-| [[file:26-configuration.org][Configuration]]                   | All settings, customization options             |
+| Document                                     | Topics Covered                      |
+|----------------------------------------------+-------------------------------------|
+| [[file:26-configuration.org][Configuration]] | All settings, customization options |
 
 * Topic Index
 
 Quick reference to find specific features across documentation.
 
-| Topic                    | Primary Documentation           | Related Documentation                       |
-|--------------------------+---------------------------------+---------------------------------------------|
-| Agenda views             | [[file:13-agenda.org][Agenda]]                          | [[file:03-todo-items.org][TODO Items]], [[file:06-timestamps.org][Timestamps]]                     |
-| Avy-style navigation     | [[file:21-navigation.org][Navigation]]                      | [[file:24-keybindings.org][Keybindings]]                                |
-| Babel execution          | [[file:07-source-blocks.org][Source Code Blocks]]              | [[file:08-supported-languages.org][Supported Languages]], [[file:09-jupyter.org][Jupyter]]               |
-| Bibliography             | [[file:19-references.org][References]]                      | [[file:05-links.org][Links]], [[file:10-export.org][Export]]                              |
-| Capture templates        | [[file:15-capture.org][Capture]]                         | [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]                    |
-| Checkboxes               | [[file:03-todo-items.org][TODO Items]]                      | [[file:02-document-structure.org][Document Structure]]                         |
-| Citations                | [[file:19-references.org][References]]                      | [[file:05-links.org][Links]], [[file:10-export.org][Export]], [[file:28-non-standard-features.org][Non-Standard Features]]      |
-| Code blocks              | [[file:07-source-blocks.org][Source Code Blocks]]              | [[file:08-supported-languages.org][Supported Languages]], [[file:04-tables.org][Tables]]                |
-| Command markup           | [[file:28-non-standard-features.org][Non-Standard Features]]           | [[file:24-keybindings.org][Keybindings]], [[file:10-export.org][Export]]                       |
-| Configuration            | [[file:26-configuration.org][Configuration]]                   | Feature-specific docs                       |
-| Deadlines                | [[file:06-timestamps.org][Timestamps]]                      | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                        |
-| Diary sexp               | [[file:06-timestamps.org][Timestamps]]                      | [[file:13-agenda.org][Agenda]]                                     |
-| DOI lookup               | [[file:19-references.org][References]]                      | [[file:26-configuration.org][Configuration]]                              |
-| Dynamic blocks           | [[file:02-document-structure.org][Document Structure]]              | [[file:06-timestamps.org][Timestamps]], [[file:04-tables.org][Tables]]                       |
-| Embeddings               | [[file:18-database-search.org][Database and Search]]             | [[file:26-configuration.org][Configuration]]                              |
-| Export to HTML           | [[file:10-export.org][Export]]                          | [[file:11-latex-preview.org][LaTeX Preview]]                              |
-| Export to PDF            | [[file:10-export.org][Export]]                          | [[file:11-latex-preview.org][LaTeX Preview]]                              |
-| Folding                  | [[file:02-document-structure.org][Document Structure]]              | [[file:21-navigation.org][Navigation]]                                 |
-| Footnotes                | [[file:02-document-structure.org][Document Structure]]              | [[file:05-links.org][Links]], [[file:10-export.org][Export]]                              |
-| Formulas                 | [[file:04-tables.org][Tables]]                          | [[file:11-latex-preview.org][LaTeX Preview]]                              |
-| Full-text search         | [[file:18-database-search.org][Database and Search]]             | [[file:21-navigation.org][Navigation]]                                 |
-| Fuzzy search             | [[file:21-navigation.org][Navigation]]                      | [[file:18-database-search.org][Database and Search]]                        |
-| Heading navigation       | [[file:21-navigation.org][Navigation]]                      | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]]          |
-| Headings                 | [[file:02-document-structure.org][Document Structure]]              | [[file:21-navigation.org][Navigation]], [[file:03-todo-items.org][TODO Items]]                    |
-| Hydra menus              | [[file:22-hydra-menus.org][Hydra Menus]]                     | [[file:24-keybindings.org][Keybindings]], [[file:26-configuration.org][Configuration]]               |
-| Image display            | [[file:12-image-overlays.org][Image Overlays]]                  | [[file:07-source-blocks.org][Source Code Blocks]]                         |
-| Include files            | [[file:10-export.org][Export]]                          | Modular documents with #+INCLUDE:          |
-| Inline tasks             | [[file:02-document-structure.org][Document Structure]]              | [[file:03-todo-items.org][TODO Items]]                                 |
-| Journal entries          | [[file:14-journal.org][Journal]]                         | [[file:15-capture.org][Capture]], [[file:13-agenda.org][Agenda]]                          |
-| Jupyter kernels          | [[file:09-jupyter.org][Jupyter Integration]]             | [[file:07-source-blocks.org][Source Code Blocks]], [[file:08-supported-languages.org][Supported Languages]]    |
-| Keybindings              | [[file:24-keybindings.org][Keybindings]]                     | [[file:23-speed-commands.org][Speed Commands]], [[file:22-hydra-menus.org][Hydra Menus]]               |
-| LaTeX math               | [[file:11-latex-preview.org][LaTeX Preview]]                   | [[file:10-export.org][Export]]                                     |
-| Links                    | [[file:05-links.org][Links]]                           | [[file:19-references.org][References]], [[file:21-navigation.org][Navigation]]                    |
-| Math preview             | [[file:11-latex-preview.org][LaTeX Preview]]                   | [[file:10-export.org][Export]]                                     |
-| Non-standard features    | [[file:28-non-standard-features.org][Non-Standard Features]]           | [[file:19-references.org][References]], [[file:10-export.org][Export]]                       |
-| Notebooks                | [[file:16-notebook.org][Notebook]]                        | [[file:17-projectile.org][Projectile]], [[file:14-journal.org][Journal]]                       |
-| Org file modification    | [[file:27-org-api.org][Org API]]            | [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]                |
-| Org-mode syntax          | [[file:02-document-structure.org][Document Structure]]              | [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]                |
-| org-ref citations        | [[file:28-non-standard-features.org][Non-Standard Features]]           | [[file:19-references.org][References]], [[file:05-links.org][Links]]                         |
-| PDF export               | [[file:10-export.org][Export]]                          | [[file:11-latex-preview.org][LaTeX Preview]]                              |
-| Priorities               | [[file:03-todo-items.org][TODO Items]]                      | [[file:13-agenda.org][Agenda]]                                     |
-| Projectile               | [[file:17-projectile.org][Projectile]]                      | [[file:16-notebook.org][Notebook]]                                   |
-| Properties               | [[file:02-document-structure.org][Document Structure]]              | [[file:03-todo-items.org][TODO Items]]                                 |
-| Quick capture            | [[file:15-capture.org][Capture]]                         | [[file:14-journal.org][Journal]], [[file:03-todo-items.org][TODO Items]]                      |
-| Scheduling               | [[file:06-timestamps.org][Timestamps]]                      | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                        |
-| Semantic search          | [[file:18-database-search.org][Database and Search]]             | [[file:26-configuration.org][Configuration]]                              |
-| Session execution        | [[file:07-source-blocks.org][Source Code Blocks]]              | [[file:09-jupyter.org][Jupyter Integration]]                        |
-| Speed commands           | [[file:23-speed-commands.org][Speed Commands]]                  | [[file:24-keybindings.org][Keybindings]], [[file:21-navigation.org][Navigation]]                  |
-| Tables                   | [[file:04-tables.org][Tables]]                          | [[file:10-export.org][Export]]                                     |
-| Tags                     | [[file:02-document-structure.org][Document Structure]]              | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                        |
-| TODO states              | [[file:03-todo-items.org][TODO Items]]                      | [[file:13-agenda.org][Agenda]], [[file:26-configuration.org][Configuration]]                    |
-| TODO custom keywords     | [[file:03-todo-items.org][TODO Items]]                      | Per-file #+TODO: definitions               |
-| Track changes            | [[file:20-editmarks.org][Editmarks]]                       | [[file:02-document-structure.org][Document Structure]]                         |
-| Vector search            | [[file:18-database-search.org][Database and Search]]             | [[file:26-configuration.org][Configuration]]                              |
+| Topic                 | Primary Documentation                                        | Related Documentation                                                                                                      |
+|-----------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------|
+| Agenda views          | [[file:13-agenda.org][Agenda]]                               | [[file:03-todo-items.org][TODO Items]], [[file:06-timestamps.org][Timestamps]]                                             |
+| Avy-style navigation  | [[file:21-navigation.org][Navigation]]                       | [[file:24-keybindings.org][Keybindings]]                                                                                   |
+| Babel execution       | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:09-jupyter.org][Jupyter]]                                 |
+| Bibliography          | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]]                                                               |
+| Capture templates     | [[file:15-capture.org][Capture]]                             | [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]                                             |
+| Checkboxes            | [[file:03-todo-items.org][TODO Items]]                       | [[file:02-document-structure.org][Document Structure]]                                                                     |
+| Citations             | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]], [[file:28-non-standard-features.org][Non-Standard Features]] |
+| CSL citation styles   | [[file:10-export.org][Export]]                               | [[file:19-references.org][References]] - APA, MLA, Chicago, Harvard, IEEE, Vancouver                           |
+| Code blocks           | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:04-tables.org][Tables]]                                   |
+| Command markup        | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:24-keybindings.org][Keybindings]], [[file:10-export.org][Export]]                                                   |
+| Configuration         | [[file:26-configuration.org][Configuration]]                 | Feature-specific docs                                                                                                      |
+| Deadlines             | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
+| Diary sexp            | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]]                                                                                             |
+| DOI lookup            | [[file:19-references.org][References]]                       | [[file:26-configuration.org][Configuration]]                                                                               |
+| Dynamic blocks        | [[file:02-document-structure.org][Document Structure]]       | [[file:06-timestamps.org][Timestamps]], [[file:04-tables.org][Tables]]                                                     |
+| Embeddings            | [[file:18-database-search.org][Database and Search]]         | [[file:26-configuration.org][Configuration]]                                                                               |
+| Export to HTML        | [[file:10-export.org][Export]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
+| Export to PDF         | [[file:10-export.org][Export]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
+| Folding               | [[file:02-document-structure.org][Document Structure]]       | [[file:21-navigation.org][Navigation]]                                                                                     |
+| Footnotes             | [[file:02-document-structure.org][Document Structure]]       | [[file:05-links.org][Links]], [[file:10-export.org][Export]]                                                               |
+| Formulas              | [[file:04-tables.org][Tables]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
+| Full-text search      | [[file:18-database-search.org][Database and Search]]         | [[file:21-navigation.org][Navigation]]                                                                                     |
+| Fuzzy search          | [[file:21-navigation.org][Navigation]]                       | [[file:18-database-search.org][Database and Search]]                                                                       |
+| Heading navigation    | [[file:21-navigation.org][Navigation]]                       | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]]                     |
+| Headings              | [[file:02-document-structure.org][Document Structure]]       | [[file:21-navigation.org][Navigation]], [[file:03-todo-items.org][TODO Items]]                                             |
+| Hydra menus           | [[file:22-hydra-menus.org][Hydra Menus]]                     | [[file:24-keybindings.org][Keybindings]], [[file:26-configuration.org][Configuration]]                                     |
+| Image display         | [[file:12-image-overlays.org][Image Overlays]]               | [[file:07-source-blocks.org][Source Code Blocks]]                                                                          |
+| Include files         | [[file:10-export.org][Export]]                               | Modular documents with #+INCLUDE:                                                                                          |
+| Inline tasks          | [[file:02-document-structure.org][Document Structure]]       | [[file:03-todo-items.org][TODO Items]]                                                                                     |
+| Journal entries       | [[file:14-journal.org][Journal]]                             | [[file:15-capture.org][Capture]], [[file:13-agenda.org][Agenda]]                                                           |
+| Jupyter kernels       | [[file:09-jupyter.org][Jupyter Integration]]                 | [[file:07-source-blocks.org][Source Code Blocks]], [[file:08-supported-languages.org][Supported Languages]]                |
+| Keybindings           | [[file:24-keybindings.org][Keybindings]]                     | [[file:23-speed-commands.org][Speed Commands]], [[file:22-hydra-menus.org][Hydra Menus]]                                   |
+| LaTeX math            | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
+| Links                 | [[file:05-links.org][Links]]                                 | [[file:19-references.org][References]], [[file:21-navigation.org][Navigation]]                                             |
+| Limitations           | [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not available in VS Code                                                                                    |
+| Math preview          | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
+| Non-standard features | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:10-export.org][Export]]                                                     |
+| Notebooks             | [[file:16-notebook.org][Notebook]]                           | [[file:17-projectile.org][Projectile]], [[file:14-journal.org][Journal]]                                                   |
+| Org file modification | [[file:27-org-api.org][Org API]]                             | [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]                                          |
+| Org-mode syntax       | [[file:02-document-structure.org][Document Structure]]       | [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]                                          |
+| org-ref citations     | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:05-links.org][Links]]                                                       |
+| PDF export            | [[file:10-export.org][Export]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
+| Priorities            | [[file:03-todo-items.org][TODO Items]]                       | [[file:13-agenda.org][Agenda]]                                                                                             |
+| Projectile            | [[file:17-projectile.org][Projectile]]                       | [[file:16-notebook.org][Notebook]]                                                                                         |
+| Properties            | [[file:02-document-structure.org][Document Structure]]       | [[file:03-todo-items.org][TODO Items]]                                                                                     |
+| Quick capture         | [[file:15-capture.org][Capture]]                             | [[file:14-journal.org][Journal]], [[file:03-todo-items.org][TODO Items]]                                                   |
+| Scheduling            | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
+| Semantic search       | [[file:18-database-search.org][Database and Search]]         | [[file:26-configuration.org][Configuration]]                                                                               |
+| Session execution     | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:09-jupyter.org][Jupyter Integration]]                                                                               |
+| Speed commands        | [[file:23-speed-commands.org][Speed Commands]]               | [[file:24-keybindings.org][Keybindings]], [[file:21-navigation.org][Navigation]]                                           |
+| Tables                | [[file:04-tables.org][Tables]]                               | [[file:10-export.org][Export]]                                                                                             |
+| Tags                  | [[file:02-document-structure.org][Document Structure]]       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
+| TODO states           | [[file:03-todo-items.org][TODO Items]]                       | [[file:13-agenda.org][Agenda]], [[file:26-configuration.org][Configuration]]                                               |
+| TODO custom keywords  | [[file:03-todo-items.org][TODO Items]]                       | Per-file #+TODO: definitions                                                                                               |
+| Track changes         | [[file:20-editmarks.org][Editmarks]]                         | [[file:02-document-structure.org][Document Structure]]                                                                     |
+| Unsupported features  | [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not in VS Code                                                                                              |
+| Vector search         | [[file:18-database-search.org][Database and Search]]         | [[file:26-configuration.org][Configuration]]                                                                               |
 
 * Quick Start by Use Case
 

@@ -36,6 +36,9 @@
     "workspaceContains:**/*.bib"
   ],
   "main": "./out/extension.js",
+  "bin": {
+    "scimax": "./out/cli/index.js"
+  },
   "contributes": {
     "languages": [
       {
@@ -2319,54 +2322,6 @@
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
-        "command": "scimax.org.exportLatexOpen",
-        "key": "ctrl+c ctrl+e l o",
-        "mac": "ctrl+c ctrl+e l o",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.org.exportHtmlOpen",
-        "key": "ctrl+c ctrl+e h o",
-        "mac": "ctrl+c ctrl+e h o",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.org.exportLatex",
-        "key": "ctrl+c ctrl+e l l",
-        "mac": "ctrl+c ctrl+e l l",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.org.exportHtml",
-        "key": "ctrl+c ctrl+e h h",
-        "mac": "ctrl+c ctrl+e h h",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.org.exportPdf",
-        "key": "ctrl+c ctrl+e l p",
-        "mac": "ctrl+c ctrl+e l p",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.latex.openPreview",
-        "key": "ctrl+c ctrl+e l v",
-        "mac": "ctrl+c ctrl+e l v",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.latex.forwardSync",
-        "key": "ctrl+c ctrl+e l s",
-        "mac": "ctrl+c ctrl+e l s",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.org.exportMarkdown",
-        "key": "ctrl+c ctrl+e m m",
-        "mac": "ctrl+c ctrl+e m m",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
         "command": "scimax.org.parentHeading",
         "key": "ctrl+c u",
         "mac": "ctrl+c u",
@@ -2856,10 +2811,10 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
-        "command": "scimax.org.openLink",
+        "command": "scimax.org.dwimReturn",
         "key": "enter",
         "mac": "enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onLink"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !suggestWidgetVisible && !editorHasSelection && !inSnippetMode"
       },
       {
         "command": "scimax.org.storeLink",
@@ -2931,12 +2886,6 @@
         "command": "scimax.ob.jumpToBlock",
         "key": "ctrl+c ctrl+b",
         "mac": "ctrl+c ctrl+b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
-      },
-      {
-        "command": "scimax.table.export",
-        "key": "ctrl+c ctrl+e t",
-        "mac": "ctrl+c ctrl+e t",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
@@ -3193,34 +3142,6 @@
         "command": "scimax.capture.todo",
         "key": "ctrl+c t",
         "mac": "ctrl+c t"
-      },
-      {
-        "command": "scimax.publish.project",
-        "key": "ctrl+c ctrl+e p p",
-        "mac": "ctrl+c ctrl+e p p",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.publish.file",
-        "key": "ctrl+c ctrl+e p f",
-        "mac": "ctrl+c ctrl+e p f",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.publish.all",
-        "key": "ctrl+c ctrl+e p a",
-        "mac": "ctrl+c ctrl+e p a",
-        "when": "editorTextFocus && editorLangId == 'org'"
-      },
-      {
-        "command": "scimax.publish.init",
-        "key": "ctrl+c ctrl+e p i",
-        "mac": "ctrl+c ctrl+e p i"
-      },
-      {
-        "command": "scimax.publish.preview",
-        "key": "ctrl+c ctrl+e p v",
-        "mac": "ctrl+c ctrl+e p v"
       }
     ],
     "configuration": {
@@ -3385,6 +3306,16 @@
           "default": "cite",
           "description": "Default citation style"
         },
+        "scimax.ref.citationSyntax": {
+          "type": "string",
+          "enum": [
+            "org-ref-v3",
+            "org-ref-v2",
+            "org-cite"
+          ],
+          "default": "org-ref-v3",
+          "markdownDescription": "Citation syntax for inserting new citations:\n- **org-ref-v3** (recommended): `cite:&key1;&key2` with pre/post notes\n- **org-ref-v2** (legacy): `cite:key1,key2` comma-separated\n- **org-cite**: `[cite:@key1;@key2]` org-mode 9.5+ native syntax"
+        },
         "scimax.export.latex.customHeader": {
           "type": "string",
           "default": "",
@@ -3402,7 +3333,7 @@
         },
         "scimax.export.latex.defaultPreamble": {
           "type": "string",
-          "default": "\\usepackage[utf8]{inputenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage{hyperref}\n\\usepackage{mhchem}",
+          "default": "\\usepackage[utf8]{inputenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage{mhchem}",
           "markdownDescription": "Default LaTeX preamble (packages and commands) added after `\\documentclass`. Can be extended by `#+LATEX_HEADER:` lines in the document. Example:\n```latex\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n```"
         },
         "scimax.export.pdf.compiler": {
@@ -3546,7 +3477,11 @@
           "items": {
             "type": "string"
           },
-          "default": ["**/node_modules/**", "**/.git/**", "**/archive/**"],
+          "default": [
+            "**/node_modules/**",
+            "**/.git/**",
+            "**/archive/**"
+          ],
           "description": "Glob patterns to exclude from agenda scanning"
         },
         "scimax.agenda.defaultSpan": {
@@ -3569,7 +3504,11 @@
           "items": {
             "type": "string"
           },
-          "default": ["TODO", "NEXT", "WAITING"],
+          "default": [
+            "TODO",
+            "NEXT",
+            "WAITING"
+          ],
           "description": "Active TODO states to show in TODO list"
         },
         "scimax.agenda.doneStates": {
@@ -3577,7 +3516,10 @@
           "items": {
             "type": "string"
           },
-          "default": ["DONE", "CANCELLED"],
+          "default": [
+            "DONE",
+            "CANCELLED"
+          ],
           "description": "Completed TODO states"
         },
         "scimax.agenda.maxFiles": {
@@ -3666,7 +3608,11 @@
         },
         "scimax.capture.datetreeFormat": {
           "type": "string",
-          "enum": ["day", "week", "month"],
+          "enum": [
+            "day",
+            "week",
+            "month"
+          ],
           "default": "day",
           "description": "Granularity of datetree entries"
         },
@@ -3778,6 +3724,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.24.0",
+    "@citation-js/core": "^0.7.21",
+    "@citation-js/plugin-bibtex": "^0.7.21",
+    "@citation-js/plugin-csl": "^0.7.22",
     "@libsql/client": "^0.17.0",
     "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",

@@ -546,6 +546,103 @@ Org-ref style citations work directly:
 - `citeauthor:key' → `\citeauthor{key}'
 - `citeyear:key' → `\citeyear{key}'
 
+*** HTML Citation Export
+
+HTML export includes full citation processing using citation-js, which formats citations according to standard citation styles (CSL).
+
+**** Supported Citation Formats
+
+The following citation link types are supported in HTML export:
+
+| Link Type        | Example              | Output Style                    |
+|------------------+----------------------+---------------------------------|
+| =cite:=          | =cite:knuth1984=     | Parenthetical (Smith, 2020)     |
+| =citep:=         | =citep:knuth1984=    | Parenthetical (Smith, 2020)     |
+| =citet:=         | =citet:knuth1984=    | Textual: Smith (2020)           |
+| =citeauthor:=    | =citeauthor:knuth1984= | Author only: Smith            |
+| =citeyear:=      | =citeyear:knuth1984= | Year only: 2020                 |
+| =[cite:@key]=    | =[cite:@knuth1984]=  | Org 9.5+ style                  |
+
+**** Specifying Bibliography Files
+
+To include citations in HTML export, specify your bibliography file(s):
+
+#+BEGIN_SRC org
+#+BIBLIOGRAPHY: references.bib
+
+Or use a bibliography link:
+[[bibliography:~/path/to/references.bib]]
+#+END_SRC
+
+The export system automatically:
+1. Finds all =#+BIBLIOGRAPHY:= keywords and =[[bibliography:...]]= links
+2. Loads the BibTeX entries from those files
+3. Formats citations according to the selected style
+4. Generates a bibliography section at the end of the document
+
+**** Citation Styles
+
+The default citation style is APA. You can change it with the =#+CSL_STYLE:= keyword:
+
+#+BEGIN_SRC org
+#+CSL_STYLE: apa
+#+END_SRC
+
+Available built-in styles:
+| Style        | Description                              |
+|--------------+------------------------------------------|
+| =apa=        | American Psychological Association (default) |
+| =mla=        | Modern Language Association              |
+| =chicago=    | Chicago Manual of Style                  |
+| =harvard=    | Harvard referencing                      |
+| =ieee=       | IEEE citation format                     |
+| =vancouver=  | Vancouver (numeric) style                |
+
+**** Example Document with Citations
+
+#+BEGIN_SRC org
+#+TITLE: My Research Paper
+#+AUTHOR: Jane Doe
+#+BIBLIOGRAPHY: references.bib
+#+CSL_STYLE: apa
+
+,* Introduction
+
+Recent advances in machine learning cite:lecun2015 have enabled
+remarkable progress in computer vision. According to citet:krizhevsky2012,
+deep convolutional networks outperform traditional methods.
+
+,* Methods
+
+We follow the approach of citep:he2016,simonyan2014 for our experiments.
+#+END_SRC
+
+**** Bibliography Output
+
+The bibliography section is automatically generated at the end of the HTML document with:
+- A "References" heading (customizable)
+- Properly formatted entries according to the CSL style
+- Hanging indent formatting for readability
+
+**** Missing Citations
+
+If a citation key is not found in the bibliography:
+- The citation appears with a "missing" CSS class
+- It renders as =[missing: key]= in red italic text
+- Check your =.bib= file for the correct key spelling
+
+**** Configuring Citation Defaults
+
+You can configure default citation behavior in VS Code settings:
+
+#+BEGIN_SRC json
+{
+  "scimax.references.defaultCiteStyle": "citep"
+}
+#+END_SRC
+
+Options: =cite=, =citep=, =citet=, =citeauthor=, =citeyear=
+
 ** Advanced LaTeX Features
 
 *** Custom Environments

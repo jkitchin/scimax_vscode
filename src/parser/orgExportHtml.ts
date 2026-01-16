@@ -75,6 +75,14 @@ import {
     collectFootnotes,
 } from './orgExport';
 
+import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
+import { parseCitationsFromLine, getNormalizedStyle } from '../references/citationParser';
+import type { BibEntry } from '../references/bibtexParser';
+import { ALL_CITATION_COMMANDS } from '../references/citationTypes';
+
+// Citation link types that should be processed as citations
+const CITATION_LINK_TYPES = new Set(ALL_CITATION_COMMANDS.map(c => c.toLowerCase()));
+
 // =============================================================================
 // HTML Export Options
 // =============================================================================
@@ -112,6 +120,18 @@ export interface HtmlExportOptions extends ExportOptions {
     preambleContent?: string;
     /** Custom postamble content */
     postambleContent?: string;
+
+    // Citation options
+    /** CSL style for citation formatting (default: apa) */
+    citationStyle?: CSLStyleName | string;
+    /** Whether to generate bibliography section (default: true) */
+    bibliography?: boolean;
+    /** Bibliography title (default: "References") */
+    bibliographyTitle?: string;
+    /** BibTeX entries for citation processing */
+    bibEntries?: BibEntry[];
+    /** Citation processor instance (if pre-configured) */
+    citationProcessor?: CitationProcessor;
 }
 
 const DEFAULT_HTML_OPTIONS: HtmlExportOptions = {
@@ -124,7 +144,18 @@ const DEFAULT_HTML_OPTIONS: HtmlExportOptions = {
     containerClass: 'org-content',
     postamble: true,
     preamble: false,
+    citationStyle: 'apa',
+    bibliography: true,
+    bibliographyTitle: 'References',
 };
+
+/**
+ * Extended export state with citation processor
+ */
+interface HtmlExportState extends ExportState {
+    citationProcessor?: CitationProcessor;
+    htmlOptions: HtmlExportOptions;
+}
 
 // =============================================================================
 // HTML Export Backend
@@ -142,17 +173,54 @@ export class HtmlExportBackend implements ExportBackend {
             ...options,
             backend: 'html',
         };
-        const state = createExportState(opts);
+
+        // Create base export state
+        const baseState = createExportState(opts);
+
+        // Create HTML export state with citation processor
+        const state: HtmlExportState = {
+            ...baseState,
+            htmlOptions: opts,
+        };
+
+        // Initialize citation processor if bib entries are provided
+        if (opts.citationProcessor) {
+            state.citationProcessor = opts.citationProcessor;
+        } else if (opts.bibEntries && opts.bibEntries.length > 0) {
+            state.citationProcessor = new CitationProcessor({
+                style: opts.citationStyle || 'apa',
+            });
+            state.citationProcessor.loadEntries(opts.bibEntries);
+        }
 
         // Pre-process document
         collectTargets(doc, state);
         collectFootnotes(doc, state);
+
+        // Collect document-defined macros from #+MACRO: keywords
+        if (doc.keywordLists?.['MACRO']) {
+            const docMacros: Record<string, string> = {};
+            for (const macroDef of doc.keywordLists['MACRO']) {
+                // Format: "name replacement text" or "name(args) replacement text"
+                const match = macroDef.match(/^(\S+)\s+(.*)$/);
+                if (match) {
+                    docMacros[match[1]] = match[2];
+                }
+            }
+            // Document macros override options macros
+            state.options.macros = { ...state.options.macros, ...docMacros };
+        }
 
         // Extract document metadata
         const title = opts.title || doc.keywords['TITLE'] || 'Untitled';
         const author = opts.author || doc.keywords['AUTHOR'] || '';
         const date = opts.date || doc.keywords['DATE'] || '';
         const language = opts.language || doc.keywords['LANGUAGE'] || 'en';
+
+        // Check for CSL style in document keywords
+        if (doc.keywords['CSL_STYLE'] && state.citationProcessor) {
+            state.citationProcessor.setStyle(doc.keywords['CSL_STYLE']);
+        }
 
         // Build content
         const content = this.exportDocumentContent(doc, state);
@@ -173,7 +241,7 @@ export class HtmlExportBackend implements ExportBackend {
     /**
      * Export document content (without wrapper)
      */
-    private exportDocumentContent(doc: OrgDocumentNode, state: ExportState): string {
+    private exportDocumentContent(doc: OrgDocumentNode, state: HtmlExportState): string {
         const parts: string[] = [];
 
         // Export preamble section if present
@@ -203,6 +271,14 @@ export class HtmlExportBackend implements ExportBackend {
         const footnotes = this.exportFootnotes(state);
         if (footnotes) {
             parts.push(footnotes);
+        }
+
+        // Export bibliography if enabled and there are citations
+        if (state.htmlOptions.bibliography !== false && state.citationProcessor) {
+            const bibliography = state.citationProcessor.generateBibliography();
+            if (bibliography) {
+                parts.push(bibliography);
+            }
         }
 
         return parts.join('\n');
@@ -360,11 +436,11 @@ export class HtmlExportBackend implements ExportBackend {
         }
 
         // Add TODO keyword if present
-        let todoClass = '';
         if (headline.properties.todoKeyword) {
             const todoType = headline.properties.todoType || 'todo';
-            todoClass = ` class="org-${todoType}"`;
-            title = `<span class="org-todo org-${todoType}">${escapeString(headline.properties.todoKeyword, 'html')}</span> ${title}`;
+            const keyword = headline.properties.todoKeyword.toUpperCase();
+            // Use specific class for each keyword for targeted styling
+            title = `<span class="org-todo-keyword org-todo-${todoType} org-kw-${keyword.toLowerCase()}">${escapeString(headline.properties.todoKeyword, 'html')}</span> ${title}`;
         }
 
         // Add priority if present
@@ -391,7 +467,7 @@ export class HtmlExportBackend implements ExportBackend {
         parts.push(`<div id="${id}" class="org-section org-level-${headline.properties.level}">`);
 
         // Headline
-        parts.push(`<h${level}${todoClass}>${title}</h${level}>`);
+        parts.push(`<h${level}>${title}</h${level}>`);
 
         // Section content
         if (headline.section) {
@@ -691,6 +767,11 @@ export class HtmlExportBackend implements ExportBackend {
     private exportLink(link: LinkObject, state: ExportState): string {
         const { linkType, path, rawLink } = link.properties;
 
+        // Check if this is a citation link
+        if (linkType && CITATION_LINK_TYPES.has(linkType.toLowerCase())) {
+            return this.exportCitationLink(link, state as HtmlExportState);
+        }
+
         let href = path;
         let description = link.children
             ? exportObjects(link.children, this, state)
@@ -739,6 +820,12 @@ export class HtmlExportBackend implements ExportBackend {
                     href = `#${generateId(path)}`;
                 }
                 break;
+            case 'bibliography':
+            case 'bibliographystyle':
+            case 'bibstyle':
+                // These are metadata links, don't render in HTML output
+                // Bibliography content is generated separately from bib entries
+                return '';
             default:
                 // Check for custom ID or use as-is
                 if (state.customIds.has(path)) {
@@ -757,6 +844,55 @@ export class HtmlExportBackend implements ExportBackend {
         }
 
         return `<a href="${escapeString(href, 'html')}">${description}</a>`;
+    }
+
+    /**
+     * Export a citation link (cite:key, citep:key, etc.)
+     */
+    private exportCitationLink(link: LinkObject, state: HtmlExportState): string {
+        const { linkType, path, rawLink } = link.properties;
+        const command = linkType?.toLowerCase() || 'cite';
+
+        // Parse citation keys from the path
+        // For org-ref links, path contains the keys (e.g., "key1,key2" or "&key1;&key2")
+        const citationText = `${command}:${path}`;
+        const parsedCitations = parseCitationsFromLine(citationText);
+
+        if (parsedCitations.length === 0) {
+            // Fallback: just show the keys as a simple citation
+            const keys = path.replace(/^&/, '').split(/[,;]/).map(k => k.replace(/^&/, '').trim());
+            return `<span class="citation">(${keys.join(', ')})</span>`;
+        }
+
+        const citation = parsedCitations[0];
+
+        // If we have a citation processor, use it for proper formatting
+        if (state.citationProcessor) {
+            const keys = citation.references.map(r => r.key);
+            const style = getNormalizedStyle(citation);
+
+            // Format the citation
+            const formatted = state.citationProcessor.formatCitationByKeys(
+                keys,
+                style as 'textual' | 'parenthetical' | 'author' | 'year'
+            );
+
+            // Add CSS class for styling
+            return `<span class="citation" data-keys="${keys.join(',')}">${formatted.html}</span>`;
+        }
+
+        // Fallback without citation processor: basic formatting
+        const keys = citation.references.map(r => r.key);
+
+        // Determine style based on command
+        let prefix = '(';
+        let suffix = ')';
+        if (command === 'citet' || command === 'citeauthor') {
+            prefix = '';
+            suffix = '';
+        }
+
+        return `<span class="citation citation-${command}">${prefix}${keys.join(', ')}${suffix}</span>`;
     }
 
     private exportTimestamp(ts: TimestampObject, state: ExportState): string {
@@ -780,11 +916,20 @@ export class HtmlExportBackend implements ExportBackend {
 
         switch (fragment.properties.fragmentType) {
             case 'inline-math':
-                // For MathJax: use \(...\) or keep $...$
-                return `\\(${escapeString(value.slice(1, -1), 'html')}\\)`;
+                // For MathJax: normalize to \(...\)
+                // Handle both $...$ (1-char delimiters) and \(...\) (2-char delimiters)
+                if (value.startsWith('$')) {
+                    return `\\(${escapeString(value.slice(1, -1), 'html')}\\)`;
+                } else if (value.startsWith('\\(')) {
+                    return `\\(${escapeString(value.slice(2, -2), 'html')}\\)`;
+                }
+                return escapeString(value, 'html');
             case 'display-math':
-                // For MathJax: use \[...\]
+                // For MathJax: normalize to \[...\]
+                // Handle both $$...$$ and \[...\]
                 if (value.startsWith('$$')) {
+                    return `\\[${escapeString(value.slice(2, -2), 'html')}\\]`;
+                } else if (value.startsWith('\\[')) {
                     return `\\[${escapeString(value.slice(2, -2), 'html')}\\]`;
                 }
                 return escapeString(value, 'html');
@@ -1068,9 +1213,14 @@ export class HtmlExportBackend implements ExportBackend {
         return `<style>
 .org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
 .org-section { margin-bottom: 2rem; }
-.org-todo { font-weight: bold; padding: 0.2em 0.5em; border-radius: 3px; }
-.org-todo.org-todo { background: #ff6b6b; color: white; }
-.org-todo.org-done { background: #51cf66; color: white; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
 .org-priority { color: #e67700; font-weight: bold; }
 .org-tags { float: right; font-size: 0.8em; }
 .org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
@@ -1096,6 +1246,19 @@ blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem;
 .admonition.org-note { background: #e7f5ff; border-color: #339af0; }
 .admonition.org-tip { background: #ebfbee; border-color: #40c057; }
 .admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a { color: #1971c2; text-decoration: none; }
+.citation a:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
 </style>`;
     }
 }

@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest';
 import { HtmlExportBackend, exportToHtml } from '../orgExportHtml';
 import { LatexExportBackend, exportToLatex } from '../orgExportLatex';
 import { parseOrg } from '../orgParserUnified';
+import type { BibEntry } from '../../references/bibtexParser';
 import {
     createExportState,
     escapeString,
@@ -601,6 +602,300 @@ describe('HTML Export', () => {
             const result = exportToHtml(doc, { mathJax: true });
 
             expect(result).toContain('mathjax');
+        });
+    });
+
+    describe('Citation Export', () => {
+        // Sample BibTeX entries for testing
+        const sampleBibEntries: BibEntry[] = [
+            {
+                type: 'article',
+                key: 'smith-2020',
+                title: 'A Study of Something Important',
+                author: 'Smith, John and Doe, Jane',
+                year: '2020',
+                journal: 'Journal of Important Studies',
+                fields: {} as Record<string, string>,
+                raw: '@article{smith-2020, author={Smith, John}, title={Test}, year={2020}}',
+            },
+            {
+                type: 'book',
+                key: 'jones-2021',
+                title: 'The Complete Guide',
+                author: 'Jones, Bob',
+                year: '2021',
+                fields: { publisher: 'Academic Press' } as Record<string, string>,
+                raw: '@book{jones-2021, author={Jones, Bob}, title={Guide}, year={2021}}',
+            },
+        ];
+
+        it('exports citation links with citation processor', () => {
+            // Create a document with a citation link
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test Document' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    range: createRange(0, 50),
+                    postBlank: 0,
+                    children: [
+                        {
+                            type: 'paragraph',
+                            range: createRange(0, 50),
+                            postBlank: 0,
+                            children: [
+                                createPlainText('See '),
+                                {
+                                    type: 'link',
+                                    range: createRange(4, 20),
+                                    postBlank: 0,
+                                    properties: {
+                                        linkType: 'cite',
+                                        path: 'smith-2020',
+                                        rawLink: 'cite:smith-2020',
+                                    },
+                                } as LinkObject,
+                                createPlainText(' for details.'),
+                            ],
+                        } as ParagraphElement,
+                    ],
+                },
+            };
+
+            const result = exportToHtml(doc, {
+                bibEntries: sampleBibEntries,
+                bodyOnly: true,
+            });
+
+            // Should contain formatted citation
+            expect(result).toContain('citation');
+            expect(result).toContain('Smith');
+        });
+
+        it('generates bibliography when citations are present', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test Document' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    range: createRange(0, 50),
+                    postBlank: 0,
+                    children: [
+                        {
+                            type: 'paragraph',
+                            range: createRange(0, 50),
+                            postBlank: 0,
+                            children: [
+                                {
+                                    type: 'link',
+                                    range: createRange(0, 20),
+                                    postBlank: 0,
+                                    properties: {
+                                        linkType: 'cite',
+                                        path: 'smith-2020',
+                                        rawLink: 'cite:smith-2020',
+                                    },
+                                } as LinkObject,
+                            ],
+                        } as ParagraphElement,
+                    ],
+                },
+            };
+
+            const result = exportToHtml(doc, {
+                bibEntries: sampleBibEntries,
+                bibliography: true,
+                bodyOnly: true,
+            });
+
+            // Should contain bibliography section
+            expect(result).toContain('bibliography');
+            expect(result).toContain('References');
+        });
+
+        it('handles multiple citation types (citep, citet)', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    range: createRange(0, 100),
+                    postBlank: 0,
+                    children: [
+                        {
+                            type: 'paragraph',
+                            range: createRange(0, 100),
+                            postBlank: 0,
+                            children: [
+                                {
+                                    type: 'link',
+                                    range: createRange(0, 25),
+                                    postBlank: 0,
+                                    properties: {
+                                        linkType: 'citep',
+                                        path: 'smith-2020',
+                                        rawLink: 'citep:smith-2020',
+                                    },
+                                } as LinkObject,
+                                createPlainText(' and '),
+                                {
+                                    type: 'link',
+                                    range: createRange(30, 55),
+                                    postBlank: 0,
+                                    properties: {
+                                        linkType: 'citet',
+                                        path: 'jones-2021',
+                                        rawLink: 'citet:jones-2021',
+                                    },
+                                } as LinkObject,
+                            ],
+                        } as ParagraphElement,
+                    ],
+                },
+            };
+
+            const result = exportToHtml(doc, {
+                bibEntries: sampleBibEntries,
+                bodyOnly: true,
+            });
+
+            expect(result).toContain('Smith');
+            expect(result).toContain('Jones');
+        });
+
+        it('shows missing citation placeholder for unknown keys', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    range: createRange(0, 50),
+                    postBlank: 0,
+                    children: [
+                        {
+                            type: 'paragraph',
+                            range: createRange(0, 50),
+                            postBlank: 0,
+                            children: [
+                                {
+                                    type: 'link',
+                                    range: createRange(0, 25),
+                                    postBlank: 0,
+                                    properties: {
+                                        linkType: 'cite',
+                                        path: 'nonexistent-key',
+                                        rawLink: 'cite:nonexistent-key',
+                                    },
+                                } as LinkObject,
+                            ],
+                        } as ParagraphElement,
+                    ],
+                },
+            };
+
+            const result = exportToHtml(doc, {
+                bibEntries: sampleBibEntries,
+                bodyOnly: true,
+            });
+
+            // Should show fallback with the key
+            expect(result).toContain('nonexistent-key');
+        });
+
+        it('does not generate bibliography when disabled', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    range: createRange(0, 50),
+                    postBlank: 0,
+                    children: [
+                        {
+                            type: 'paragraph',
+                            range: createRange(0, 50),
+                            postBlank: 0,
+                            children: [
+                                {
+                                    type: 'link',
+                                    range: createRange(0, 20),
+                                    postBlank: 0,
+                                    properties: {
+                                        linkType: 'cite',
+                                        path: 'smith-2020',
+                                        rawLink: 'cite:smith-2020',
+                                    },
+                                } as LinkObject,
+                            ],
+                        } as ParagraphElement,
+                    ],
+                },
+            };
+
+            const result = exportToHtml(doc, {
+                bibEntries: sampleBibEntries,
+                bibliography: false,
+                bodyOnly: true,
+            });
+
+            // Should NOT contain bibliography section
+            expect(result).not.toContain('<section class="bibliography">');
+        });
+
+        it('works without citation processor (fallback)', () => {
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    range: createRange(0, 50),
+                    postBlank: 0,
+                    children: [
+                        {
+                            type: 'paragraph',
+                            range: createRange(0, 50),
+                            postBlank: 0,
+                            children: [
+                                {
+                                    type: 'link',
+                                    range: createRange(0, 20),
+                                    postBlank: 0,
+                                    properties: {
+                                        linkType: 'cite',
+                                        path: 'some-key',
+                                        rawLink: 'cite:some-key',
+                                    },
+                                } as LinkObject,
+                            ],
+                        } as ParagraphElement,
+                    ],
+                },
+            };
+
+            // No bibEntries provided - should use fallback
+            const result = exportToHtml(doc, { bodyOnly: true });
+
+            // Should show the key in a citation span
+            expect(result).toContain('some-key');
+            expect(result).toContain('citation');
         });
     });
 });

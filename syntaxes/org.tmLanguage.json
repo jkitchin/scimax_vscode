@@ -987,6 +987,7 @@
     "citations": {
       "patterns": [
         {
+          "comment": "org-cite: [cite:@key] or [cite/style:@key]",
           "name": "entity.other.citation.bracket.org",
           "match": "\\[cite(?:/[^:]*)?:([^\\]]+)\\]",
           "captures": {
@@ -995,10 +996,20 @@
           }
         },
         {
-          "name": "entity.other.citation.org",
-          "match": "(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt):[\\w:-]+(?:,[\\w:-]+)*"
+          "comment": "org-ref v3: cite:&key1;&key2 (with & prefix)",
+          "name": "entity.other.citation.v3.org",
+          "match": "(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):(?:[^&;\\s]*;)?(?:&[\\w:-]+(?:\\s+[^;&]+)?;?)+(?:[^;]*)?",
+          "captures": {
+            "0": { "name": "markup.other.citation.org" }
+          }
         },
         {
+          "comment": "org-ref v2: cite:key1,key2 (comma-separated, no & prefix)",
+          "name": "entity.other.citation.org",
+          "match": "(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):[\\w:-]+(?:,[\\w:-]+)*(?![&])"
+        },
+        {
+          "comment": "Standalone @ citation key (pandoc style)",
           "name": "entity.other.citation.at.org",
           "match": "(?<![\\w])@([\\w:-]+)",
           "captures": {

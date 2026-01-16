@@ -12,6 +12,8 @@ import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
 import { processIncludes, hasIncludes } from '../parser/orgInclude';
+import { parseBibTeX } from '../references/bibtexParser';
+import type { BibEntry } from '../references/bibtexParser';
 import type { ExportOptions } from '../parser/orgExport';
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
 
@@ -228,12 +230,74 @@ function findHeadlineBoundaries(
 }
 
 /**
+ * Extract bibliography paths from document content
+ */
+function extractBibPaths(content: string, basePath: string): string[] {
+    const paths: string[] = [];
+    const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+
+    // Match #+BIBLIOGRAPHY: path
+    const bibKeywordRegex = /^#\+BIBLIOGRAPHY:\s*(.+?)\s*$/gm;
+    let match;
+    while ((match = bibKeywordRegex.exec(content)) !== null) {
+        let bibPath = match[1].trim();
+        // Remove any style options like "plain" at the end
+        bibPath = bibPath.split(/\s+/)[0];
+        if (!bibPath.endsWith('.bib')) {
+            bibPath += '.bib';
+        }
+        paths.push(bibPath);
+    }
+
+    // Match bibliography: links
+    const bibLinkRegex = /\[\[bibliography:([^\]]+)\]\]/g;
+    while ((match = bibLinkRegex.exec(content)) !== null) {
+        let bibPath = match[1].trim();
+        if (!bibPath.endsWith('.bib')) {
+            bibPath += '.bib';
+        }
+        paths.push(bibPath);
+    }
+
+    // Resolve paths
+    return paths.map(p => {
+        if (p.startsWith('~')) {
+            return p.replace('~', homeDir);
+        }
+        if (path.isAbsolute(p)) {
+            return p;
+        }
+        return path.resolve(basePath, p);
+    });
+}
+
+/**
+ * Load bibliography entries from paths
+ */
+async function loadBibEntries(bibPaths: string[]): Promise<BibEntry[]> {
+    const entries: BibEntry[] = [];
+
+    for (const bibPath of bibPaths) {
+        try {
+            const content = await fs.promises.readFile(bibPath, 'utf-8');
+            const result = parseBibTeX(content);
+            entries.push(...result.entries);
+        } catch {
+            // File doesn't exist or can't be read - skip silently
+        }
+    }
+
+    return entries;
+}
+
+/**
  * Export to HTML format - runs in chunks to avoid blocking
  */
 async function exportHtml(
     content: string,
     options: Partial<HtmlExportOptions>,
-    bodyOnly: boolean
+    bodyOnly: boolean,
+    basePath?: string
 ): Promise<string> {
     // Yield to event loop before starting
     await new Promise(resolve => setImmediate(resolve));
@@ -245,10 +309,20 @@ async function exportHtml(
 
     const metadata = extractMetadata(doc);
 
+    // Load bibliography entries if basePath is provided
+    let bibEntries: BibEntry[] = [];
+    if (basePath) {
+        const bibPaths = extractBibPaths(content, basePath);
+        if (bibPaths.length > 0) {
+            bibEntries = await loadBibEntries(bibPaths);
+        }
+    }
+
     const htmlOptions: HtmlExportOptions = {
         ...metadata,
         ...options,
         bodyOnly,
+        bibEntries: bibEntries.length > 0 ? bibEntries : options.bibEntries,
     };
 
     // Yield before export
@@ -332,7 +406,7 @@ function loadPdfConfig(): PdfCompilerConfig {
     const config = vscode.workspace.getConfiguration('scimax.export.pdf');
     return {
         compiler: config.get<PdfCompilerConfig['compiler']>('compiler', 'latexmk-lualatex'),
-        bibtexCommand: config.get<'biber' | 'bibtex'>('bibtexCommand', 'biber'),
+        bibtexCommand: config.get<'biber' | 'bibtex'>('bibtexCommand', 'bibtex'),
         extraArgs: config.get<string>('extraArgs', ''),
         openLogOnError: config.get<boolean>('openLogOnError', true),
         cleanAuxFiles: config.get<boolean>('cleanAuxFiles', true),
@@ -351,13 +425,13 @@ function buildCompileCommand(
 
     switch (config.compiler) {
         case 'latexmk-lualatex':
-            return `latexmk -lualatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -lualatex -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'latexmk-pdflatex':
-            return `latexmk -pdf -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -pdf -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'latexmk-xelatex':
-            return `latexmk -xelatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -xelatex -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'lualatex':
             return `lualatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
@@ -369,7 +443,7 @@ function buildCompileCommand(
             return `xelatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         default:
-            return `latexmk -lualatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -lualatex -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
     }
 }
 
@@ -759,12 +833,12 @@ async function showExportDispatcher(): Promise<void> {
 
                 switch (selectedFormat.format.id) {
                     case 'html':
-                        result = await exportHtml(content, options, false);
+                        result = await exportHtml(content, options, false, inputDir);
                         await fs.promises.writeFile(outputPath, result, 'utf-8');
                         break;
 
                     case 'html-body':
-                        result = await exportHtml(content, options, true);
+                        result = await exportHtml(content, options, true, inputDir);
                         await fs.promises.writeFile(outputPath, result, 'utf-8');
                         break;
 
@@ -834,7 +908,7 @@ async function quickExportHtml(): Promise<void> {
     const outputPath = inputPath.replace(/\.org$/, '.html');
 
     try {
-        const result = await exportHtml(content, {}, false);
+        const result = await exportHtml(content, {}, false, inputDir);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
     } catch (error) {
@@ -953,7 +1027,7 @@ async function previewHtml(): Promise<void> {
     const fileName = path.basename(inputPath);
 
     try {
-        const htmlContent = await exportHtml(content, {}, false);
+        const htmlContent = await exportHtml(content, {}, false, inputDir);
 
         // Create webview panel
         const panel = vscode.window.createWebviewPanel(
@@ -1084,7 +1158,7 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 const content = preprocessContent(editor.document.getText(), inputDir);
                 const outputPath = inputPath.replace(/\.org$/, '.html');
                 try {
-                    const html = await exportHtml(content, {}, false);
+                    const html = await exportHtml(content, {}, false, inputDir);
                     await fs.promises.writeFile(outputPath, html, 'utf-8');
                     await vscode.env.openExternal(vscode.Uri.file(outputPath));
                 } catch (error) {
@@ -1149,10 +1223,12 @@ async function exportDispatcher(): Promise<void> {
         // HTML exports
         { label: '$(globe) [h h] HTML file', description: 'Export to .html file', value: 'html-file', keys: 'hh' },
         { label: '$(globe) [h o] HTML and open', description: 'Export to .html and open in browser', value: 'html-open', keys: 'ho' },
+        { label: '$(code) [h b] HTML body only', description: 'Export HTML body without header/footer', value: 'html-body', keys: 'hb' },
         { label: '$(preview) [h p] HTML preview', description: 'Preview HTML in VS Code', value: 'html-preview', keys: 'hp' },
         { label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' },
         // LaTeX exports
         { label: '$(file-text) [l l] LaTeX file', description: 'Export to .tex file', value: 'latex-file', keys: 'll' },
+        { label: '$(file-code) [l b] LaTeX body only', description: 'Export LaTeX body without preamble', value: 'latex-body', keys: 'lb' },
         { label: '$(file-pdf) [l p] PDF file', description: 'Export to PDF via LaTeX', value: 'pdf-file', keys: 'lp' },
         { label: '$(file-pdf) [l o] PDF and open', description: 'Export to PDF and open', value: 'pdf-open', keys: 'lo' },
         { label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' },
@@ -1162,7 +1238,7 @@ async function exportDispatcher(): Promise<void> {
     ];
 
     const selected = await vscode.window.showQuickPick(exportOptions.filter(o => o.label !== ''), {
-        placeHolder: 'Select export format (type keys: hh, ho, hp, ll, lp, lo, mm, mo)',
+        placeHolder: 'Select export format (type keys: hh, ho, hb, hp, ll, lb, lp, lo, mm, mo)',
         title: 'Org Export Dispatcher - C-c C-e',
         matchOnDescription: true,
     });
@@ -1177,16 +1253,23 @@ async function exportDispatcher(): Promise<void> {
         switch (selected.value) {
             case 'html-file': {
                 const outputPath = inputPath.replace(/\.org$/, '.html');
-                const html = await exportHtml(content, {}, false);
+                const html = await exportHtml(content, {}, false, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
                 break;
             }
             case 'html-open': {
                 const outputPath = inputPath.replace(/\.org$/, '.html');
-                const html = await exportHtml(content, {}, false);
+                const html = await exportHtml(content, {}, false, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                break;
+            }
+            case 'html-body': {
+                const outputPath = inputPath.replace(/\.org$/, '.html');
+                const html = await exportHtml(content, {}, true, inputDir);
+                await fs.promises.writeFile(outputPath, html, 'utf-8');
+                vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)} (body only)`);
                 break;
             }
             case 'html-preview': {
@@ -1195,6 +1278,13 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'latex-file': {
                 await quickExportLatex();
+                break;
+            }
+            case 'latex-body': {
+                const outputPath = inputPath.replace(/\.org$/, '.tex');
+                const latex = await exportLatex(content, {}, true);
+                await fs.promises.writeFile(outputPath, latex, 'utf-8');
+                vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)} (body only)`);
                 break;
             }
             case 'pdf-file': {

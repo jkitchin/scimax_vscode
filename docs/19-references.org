@@ -525,18 +525,37 @@ Hover over cross-references to see:
 
 ** HTML Export
 
-Citations in HTML export:
+HTML export uses citation-js for full CSL-based citation formatting. Citations are processed according to standard citation styles like APA, MLA, Chicago, etc.
+
+*** Citation Link Types
+
+| Org Citation       | Rendered Output               |
+|--------------------+-------------------------------|
+| =cite:smith2024=   | (Smith, 2024)                 |
+| =citep:smith2024=  | (Smith, 2024)                 |
+| =citet:smith2024=  | Smith (2024)                  |
+| =citeauthor:smith2024= | Smith                     |
+| =citeyear:smith2024= | 2024                        |
+
+*** Specifying Citation Style
+
+Use =#+CSL_STYLE:= to set the citation format:
 
 #+BEGIN_SRC org
-cite:smith2024
+#+CSL_STYLE: apa
 #+END_SRC
 
-Exports to:
-#+BEGIN_SRC html
-<a href="#smith2024" class="citation">Smith (2024)</a>
+Available styles: =apa= (default), =mla=, =chicago=, =harvard=, =ieee=, =vancouver=
+
+*** Bibliography Generation
+
+The HTML export automatically generates a formatted bibliography section at the end of the document. Ensure your document includes a bibliography reference:
+
+#+BEGIN_SRC org
+#+BIBLIOGRAPHY: references.bib
 #+END_SRC
 
-Bibliography sections are formatted as lists with anchors.
+See [[file:10-export.org::*HTML Citation Export][Export System: HTML Citation Export]] for complete documentation.
 
 ** LaTeX Export
 

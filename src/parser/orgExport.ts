@@ -261,18 +261,18 @@ export function exportObjects(
  * Collect all targets and custom IDs from the document
  */
 export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
-    const processHeadline = (headline: HeadlineElement, index: number) => {
-        // Generate an ID for this headline
+    const processHeadline = (headline: HeadlineElement) => {
+        // Generate an ID for this headline - must match exportHeadline
         const id = headline.properties.customId ||
             headline.properties.id ||
-            `org-headline-${index}`;
+            generateId(headline.properties.rawValue);
 
         if (headline.properties.customId) {
             state.customIds.set(headline.properties.customId, id);
         }
 
-        // Add to TOC if section numbers are enabled
-        if (state.options.sectionNumbers) {
+        // Add to TOC if toc is enabled
+        if (state.options.toc) {
             state.tocEntries.push({
                 level: headline.properties.level,
                 title: headline.properties.rawValue,
@@ -281,10 +281,10 @@ export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
         }
 
         // Process children
-        headline.children.forEach((child, i) => processHeadline(child, index * 100 + i));
+        headline.children.forEach((child) => processHeadline(child));
     };
 
-    doc.children.forEach((headline, i) => processHeadline(headline, i));
+    doc.children.forEach((headline) => processHeadline(headline));
 }
 
 /**
@@ -567,7 +567,9 @@ export function exportToLatex(
         latexLines.push('\\usepackage[utf8]{inputenc}');
         latexLines.push('\\usepackage{amsmath,amssymb,amsfonts}');
         latexLines.push('\\usepackage{graphicx}');
-        latexLines.push('\\usepackage{hyperref}');
+        latexLines.push('\\usepackage[linktocpage,pdfstartview=FitH,colorlinks,');
+        latexLines.push('  linkcolor=blue,anchorcolor=blue,citecolor=blue,');
+        latexLines.push('  filecolor=blue,menucolor=blue,urlcolor=blue]{hyperref}');
 
         for (const header of headerLines) {
             latexLines.push(header);

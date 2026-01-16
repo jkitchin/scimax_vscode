@@ -1,4 +1,11 @@
 import * as vscode from 'vscode';
+import {
+    findCitationAtPosition as findCitationNew,
+    rebuildCitation as rebuildCitationNew,
+    findReferenceIndexAtPosition,
+} from './citationParser';
+import type { ParsedCitation } from './citationTypes';
+import { CITATION_PATTERN_CONFIG } from './citationTypes';
 
 /**
  * Citation manipulation commands
@@ -8,18 +15,74 @@ import * as vscode from 'vscode';
  * - Shift-right: Transpose citation right (swap with next)
  * - Shift-up: Sort citations by year (oldest first)
  * - Shift-down: Sort citations by year (newest first)
+ *
+ * Supports multiple citation syntaxes:
+ * - org-ref v2: cite:key1,key2
+ * - org-ref v3: cite:&key1;&key2
+ * - org-cite: [cite:@key1;@key2]
+ * - LaTeX: \cite{key1,key2}
  */
 
+/**
+ * Legacy CitationInfo interface for backward compatibility
+ * @deprecated Use ParsedCitation from citationTypes.ts instead
+ */
 export interface CitationInfo {
     fullMatch: string;
     prefix: string;           // e.g., "cite:", "citep:", "\cite{"
     suffix: string;           // e.g., "" or "}"
     keys: string[];           // Individual citation keys
     separator: string;        // "," or ";"
-    keyPrefix: string;        // "" or "@" for org-mode 9.5 style
+    keyPrefix: string;        // "" or "@" or "&"
     start: number;            // Start position in line
     end: number;              // End position in line
     keysStart: number;        // Start of keys within fullMatch
+    // New fields from ParsedCitation
+    parsedCitation?: ParsedCitation;
+}
+
+/**
+ * Convert ParsedCitation to CitationInfo for backward compatibility
+ */
+function parsedToCitationInfo(parsed: ParsedCitation): CitationInfo {
+    const config = CITATION_PATTERN_CONFIG[parsed.syntax];
+
+    // Calculate prefix based on syntax
+    let prefix: string;
+    let suffix: string;
+
+    switch (parsed.syntax) {
+        case 'org-cite':
+            prefix = `[cite${parsed.style ? '/' + parsed.style : ''}:`;
+            suffix = ']';
+            break;
+        case 'latex':
+            prefix = `\\${parsed.command}{`;
+            suffix = '}';
+            break;
+        default:
+            prefix = `${parsed.command}:`;
+            suffix = '';
+    }
+
+    // Calculate keysStart (position after prefix in the raw string)
+    let keysStart = parsed.range.start + prefix.length;
+    if (parsed.commonPrefix) {
+        keysStart += parsed.commonPrefix.length + config.separator.length;
+    }
+
+    return {
+        fullMatch: parsed.raw,
+        prefix,
+        suffix,
+        keys: parsed.references.map(r => r.key),
+        separator: config.separator,
+        keyPrefix: config.keyPrefix,
+        start: parsed.range.start,
+        end: parsed.range.end,
+        keysStart,
+        parsedCitation: parsed,
+    };
 }
 
 /**
@@ -27,83 +90,23 @@ export interface CitationInfo {
  * Exported for testing
  */
 export function findCitationAtPosition(line: string, position: number): CitationInfo | null {
-    // Patterns to match different citation formats
-    const patterns = [
-        // org-ref style: cite:key1,key2,key3
-        {
-            regex: /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g,
-            prefix: (m: RegExpExecArray) => m[1] + ':',
-            suffix: '',
-            separator: ',',
-            keyPrefix: '',
-            keysGroup: 2
-        },
-        // LaTeX style: \cite{key1,key2,key3}
-        {
-            regex: /(\\cite[pt]?)\{([a-zA-Z0-9_:,-]+)\}/g,
-            prefix: (m: RegExpExecArray) => m[1] + '{',
-            suffix: '}',
-            separator: ',',
-            keyPrefix: '',
-            keysGroup: 2
-        },
-        // org-mode 9.5+ style: [cite:@key1;@key2]
-        {
-            regex: /(\[cite(?:\/[^\]:]*)?\:)(@[a-zA-Z0-9_:;@-]+)(\])/g,
-            prefix: (m: RegExpExecArray) => m[1],
-            suffix: ']',
-            separator: ';',
-            keyPrefix: '@',
-            keysGroup: 2
-        }
-    ];
-
-    for (const pattern of patterns) {
-        let match;
-        while ((match = pattern.regex.exec(line)) !== null) {
-            const start = match.index;
-            const end = start + match[0].length;
-
-            if (position >= start && position <= end) {
-                const prefix = typeof pattern.prefix === 'function'
-                    ? pattern.prefix(match)
-                    : pattern.prefix;
-                const keysStr = match[pattern.keysGroup];
-
-                // Parse keys
-                let keys: string[];
-                if (pattern.keyPrefix === '@') {
-                    // org-mode 9.5 style with @key;@key2
-                    keys = keysStr.split(pattern.separator).map(k => k.trim().replace(/^@/, ''));
-                } else {
-                    keys = keysStr.split(pattern.separator).map(k => k.trim());
-                }
-
-                // Calculate keysStart position within the line
-                const keysStart = start + prefix.length;
-
-                return {
-                    fullMatch: match[0],
-                    prefix,
-                    suffix: pattern.suffix,
-                    keys,
-                    separator: pattern.separator,
-                    keyPrefix: pattern.keyPrefix,
-                    start,
-                    end,
-                    keysStart
-                };
-            }
-        }
+    const parsed = findCitationNew(line, position);
+    if (!parsed) {
+        return null;
     }
-
-    return null;
+    return parsedToCitationInfo(parsed);
 }
 
 /**
  * Find which key index the cursor is on
  */
 function findKeyIndexAtPosition(citation: CitationInfo, line: string, position: number): number {
+    // Use new parser function if parsed citation is available
+    if (citation.parsedCitation) {
+        return findReferenceIndexAtPosition(citation.parsedCitation, line, position);
+    }
+
+    // Fallback to legacy implementation
     let currentPos = citation.keysStart;
 
     for (let i = 0; i < citation.keys.length; i++) {
@@ -127,6 +130,19 @@ function findKeyIndexAtPosition(citation: CitationInfo, line: string, position: 
  * Rebuild citation string from parts
  */
 function rebuildCitation(citation: CitationInfo): string {
+    // If we have the parsed citation, use the new rebuilder to preserve notes
+    if (citation.parsedCitation) {
+        // Update the references with potentially reordered keys
+        const parsed = citation.parsedCitation;
+        parsed.references = citation.keys.map((key, i) => {
+            // Try to preserve original reference data if key exists
+            const original = citation.parsedCitation!.references.find(r => r.key === key);
+            return original || { key };
+        });
+        return rebuildCitationNew(parsed);
+    }
+
+    // Fallback for legacy usage
     const keysWithPrefix = citation.keys.map(k => citation.keyPrefix + k);
     return citation.prefix + keysWithPrefix.join(citation.separator) + citation.suffix;
 }

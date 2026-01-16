@@ -445,6 +445,7 @@ export class LatexLivePreviewManager {
                 cmd = 'latexmk';
                 args = [
                     `-${compiler}`,
+                    '-shell-escape',
                     '-interaction=nonstopmode',
                     '-synctex=1',
                     '-file-line-error',
@@ -453,6 +454,7 @@ export class LatexLivePreviewManager {
             } else {
                 cmd = compiler;
                 args = [
+                    '-shell-escape',
                     '-interaction=nonstopmode',
                     '-synctex=1',
                     '-file-line-error',
@@ -463,10 +465,24 @@ export class LatexLivePreviewManager {
             this.outputChannel.appendLine(`Running: ${cmd} ${args.join(' ')}`);
             this.outputChannel.appendLine(`Working directory: ${cwd}`);
 
+            // Extend PATH to include common locations for pygmentize (required by minted)
+            const extraPaths = [
+                '/usr/local/bin',
+                '/opt/homebrew/bin',
+                `${process.env.HOME}/.local/bin`,
+                `${process.env.HOME}/Dropbox/uv/.venv/bin`,
+                `${process.env.HOME}/.pyenv/shims`,
+            ].join(':');
+            const env = {
+                ...process.env,
+                PATH: `${extraPaths}:${process.env.PATH || ''}`,
+            };
+
             const proc = spawn(cmd, args, {
                 cwd,
                 shell: true,
                 timeout: 60000,
+                env,
             });
 
             state.buildProcess = proc;
@@ -491,15 +507,75 @@ export class LatexLivePreviewManager {
                 resolve({ success: false, error: err.message });
             });
 
-            proc.on('close', (code: number | null) => {
+            proc.on('close', async (code: number | null) => {
                 state.buildProcess = undefined;
 
-                if (code === 0) {
+                // Check if PDF was actually created - latexmk can return non-zero
+                // for warnings like "references changed" even when PDF is fine
+                const pdfPath = path.join(cwd, texFile.replace(/\.tex$/, '.pdf'));
+                const pdfCreated = fs.existsSync(pdfPath);
+
+                if (code === 0 || pdfCreated) {
                     resolve({ success: true });
                 } else {
-                    // Extract error from log
-                    const errorMatch = stdout.match(/^!.*$/m) || stderr.match(/^!.*$/m);
-                    const error = errorMatch ? errorMatch[0] : `LaTeX exited with code ${code}`;
+                    // Extract error from log - get multiple lines of context
+                    const combined = stdout + '\n' + stderr;
+
+                    // Look for LaTeX errors (lines starting with !)
+                    const errorLines: string[] = [];
+                    const lines = combined.split('\n');
+                    let inError = false;
+                    for (const line of lines) {
+                        if (line.startsWith('!')) {
+                            inError = true;
+                            errorLines.push(line);
+                        } else if (inError) {
+                            // Capture context lines after error (up to 5 lines or until empty line)
+                            if (line.trim() === '' || errorLines.length > 10) {
+                                inError = false;
+                            } else {
+                                errorLines.push(line);
+                            }
+                        }
+                    }
+
+                    let error: string;
+                    if (errorLines.length > 0) {
+                        error = errorLines.join('\n');
+                    } else {
+                        // Try to read the .log file for more details
+                        const logPath = path.join(cwd, 'document.log');
+                        let logContent = '';
+                        try {
+                            if (fs.existsSync(logPath)) {
+                                logContent = fs.readFileSync(logPath, 'utf-8');
+                                // Extract errors from log file
+                                const logLines = logContent.split('\n');
+                                for (const line of logLines) {
+                                    if (line.startsWith('!') || line.includes('Error:') || line.includes('Fatal error')) {
+                                        errorLines.push(line);
+                                        // Get a few following lines for context
+                                        const idx = logLines.indexOf(line);
+                                        for (let i = 1; i <= 3 && idx + i < logLines.length; i++) {
+                                            if (logLines[idx + i].trim()) {
+                                                errorLines.push(logLines[idx + i]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch {
+                            // Ignore log read errors
+                        }
+
+                        if (errorLines.length > 0) {
+                            error = errorLines.slice(0, 20).join('\n');
+                        } else {
+                            // Show last 30 lines of output as fallback
+                            const lastLines = lines.filter(l => l.trim()).slice(-30);
+                            error = `LaTeX exited with code ${code}.\n\n--- Last output ---\n${lastLines.join('\n')}`;
+                        }
+                    }
                     resolve({ success: false, error });
                 }
             });

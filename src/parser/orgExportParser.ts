@@ -110,18 +110,26 @@ export function parseObjectsFast(text: string): OrgObject[] {
     };
 
     // Links (highest priority)
-    collectMatches(LINK_PATTERN, (m) => ({
-        type: 'link' as const,
-        range: { start: m.index!, end: m.index! + m[0].length },
-        postBlank: 0,
-        properties: {
-            linkType: detectLinkType(m[1]),
-            path: m[1],
-            format: 'bracket' as const,
-            rawLink: m[0],
-        },
-        children: m[2] ? [createPlainText(m[2], m.index! + m[1].length + 3, m.index! + m[1].length + 3 + m[2].length)] : undefined,
-    }));
+    collectMatches(LINK_PATTERN, (m) => {
+        const linkType = detectLinkType(m[1]);
+        // Strip protocol prefix from path for file links
+        let path = m[1];
+        if (linkType === 'file' && path.startsWith('file:')) {
+            path = path.slice(5); // Remove 'file:' prefix
+        }
+        return {
+            type: 'link' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: {
+                linkType,
+                path,
+                format: 'bracket' as const,
+                rawLink: m[0],
+            },
+            children: m[2] ? [createPlainText(m[2], m.index! + m[1].length + 3, m.index! + m[1].length + 3 + m[2].length)] : undefined,
+        };
+    });
 
     // Citations
     collectMatches(CITATION_PATTERN, (m) => ({
@@ -333,14 +341,32 @@ export function parseOrgFast(content: string): OrgDocumentNode {
         children: [],
     };
 
+    // Keywords that can appear multiple times and should be collected as arrays
+    const MULTI_VALUE_KEYWORDS = new Set([
+        'LATEX_HEADER',
+        'LATEX_HEADER_EXTRA',
+        'HTML_HEAD',
+        'HTML_HEAD_EXTRA',
+    ]);
+
     // First pass: extract document keywords from the top
     while (state.lineIndex < lines.length) {
         const line = lines[state.lineIndex];
         const keywordMatch = line.match(/^#\+(\w+):\s*(.*)$/i);
         if (keywordMatch) {
             const key = keywordMatch[1].toUpperCase();
-            state.keywords[key] = keywordMatch[2];
-            doc.keywords[key] = keywordMatch[2];
+            const value = keywordMatch[2];
+
+            if (MULTI_VALUE_KEYWORDS.has(key)) {
+                // Collect multi-value keywords into arrays
+                if (!doc.keywordLists[key]) {
+                    doc.keywordLists[key] = [];
+                }
+                doc.keywordLists[key].push(value);
+            } else {
+                state.keywords[key] = value;
+                doc.keywords[key] = value;
+            }
             state.lineIndex++;
         } else if (line.trim() === '' || line.match(/^#\s/)) {
             state.lineIndex++;

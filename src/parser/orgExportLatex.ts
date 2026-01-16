@@ -112,6 +112,8 @@ export interface LatexExportOptions extends ExportOptions {
     headlineStartLevel?: number;
     /** Export only the body (no preamble/document environment) */
     bodyOnly?: boolean;
+    /** Disable all default packages (user must provide all packages via LATEX_HEADER) */
+    noDefaults?: boolean;
 }
 
 const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
@@ -120,10 +122,15 @@ const DEFAULT_LATEX_OPTIONS: LatexExportOptions = {
     packages: [],
     hyperref: true,
     hyperrefOptions: {
-        colorlinks: 'true',
+        linktocpage: '',
+        pdfstartview: 'FitH',
+        colorlinks: '',
         linkcolor: 'blue',
-        urlcolor: 'blue',
+        anchorcolor: 'blue',
         citecolor: 'blue',
+        filecolor: 'blue',
+        menucolor: 'blue',
+        urlcolor: 'blue',
     },
     listings: false,
     minted: true,
@@ -187,12 +194,17 @@ export class LatexExportBackend implements ExportBackend {
             ? (existingPreamble ? existingPreamble + '\n' : '') + latexHeaders.join('\n')
             : existingPreamble;
 
+        // Check for LATEX_NO_DEFAULTS keyword
+        const noDefaultsKeyword = doc.keywords['LATEX_NO_DEFAULTS'];
+        const noDefaults = options?.noDefaults || (noDefaultsKeyword === 't' || noDefaultsKeyword === 'true');
+
         const opts: LatexExportOptions = {
             ...DEFAULT_LATEX_OPTIONS,
             ...options,
             documentClass,
             classOptions,
             preamble,
+            noDefaults,
             backend: 'latex',
         };
         const state = createExportState(opts);
@@ -200,6 +212,20 @@ export class LatexExportBackend implements ExportBackend {
         // Pre-process document
         collectTargets(doc, state);
         collectFootnotes(doc, state);
+
+        // Collect document-defined macros from #+MACRO: keywords
+        if (doc.keywordLists?.['MACRO']) {
+            const docMacros: Record<string, string> = {};
+            for (const macroDef of doc.keywordLists['MACRO']) {
+                // Format: "name replacement text" or "name(args) replacement text"
+                const match = macroDef.match(/^(\S+)\s+(.*)$/);
+                if (match) {
+                    docMacros[match[1]] = match[2];
+                }
+            }
+            // Document macros override options macros
+            state.options.macros = { ...state.options.macros, ...docMacros };
+        }
 
         // Extract document metadata
         const title = opts.title || doc.keywords['TITLE'] || '';
@@ -474,7 +500,8 @@ export class LatexExportBackend implements ExportBackend {
         // Use minted or listings
         let codeBlock: string;
         if (opts.minted) {
-            codeBlock = `\\begin{minted}{${lang}}\n${code}\n\\end{minted}`;
+            const mintedLang = this.mapLanguageForMinted(lang);
+            codeBlock = `\\begin{minted}{${mintedLang}}\n${code}\n\\end{minted}`;
         } else if (opts.listings) {
             codeBlock = `\\begin{lstlisting}[language=${this.mapLanguage(lang)}]\n${code}\n\\end{lstlisting}`;
         } else {
@@ -988,6 +1015,27 @@ export class LatexExportBackend implements ExportBackend {
     // Document Structure
     // =========================================================================
 
+    /**
+     * Extract package names from preamble lines
+     * Returns a Set of package names that the user has explicitly specified
+     */
+    private extractUserPackages(preamble: string | undefined): Set<string> {
+        const userPackages = new Set<string>();
+        if (!preamble) return userPackages;
+
+        // Match \usepackage[options]{pkg} or \usepackage{pkg} or \usepackage{pkg1,pkg2}
+        const usepackageRegex = /\\usepackage(?:\[[^\]]*\])?\{([^}]+)\}/g;
+        let match;
+        while ((match = usepackageRegex.exec(preamble)) !== null) {
+            // Handle multiple packages in one \usepackage{pkg1,pkg2}
+            const packages = match[1].split(',').map(p => p.trim());
+            for (const pkg of packages) {
+                userPackages.add(pkg);
+            }
+        }
+        return userPackages;
+    }
+
     private wrapInLatexDocument(
         content: string,
         meta: {
@@ -1003,7 +1051,24 @@ export class LatexExportBackend implements ExportBackend {
         if (meta.customHeader) {
             parts.push(meta.customHeader);
             parts.push('');
+        } else if (meta.noDefaults) {
+            // No defaults mode: only include documentclass and user preamble
+            const classOpts = meta.classOptions?.length
+                ? `[${meta.classOptions.join(',')}]`
+                : '';
+            parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
+            parts.push('');
+
+            // Only user-provided preamble
+            if (meta.preamble) {
+                parts.push('% User preamble');
+                parts.push(meta.preamble);
+                parts.push('');
+            }
         } else {
+            // Normal mode: auto-generate packages, but skip any that user overrides
+            const userPackages = this.extractUserPackages(meta.preamble);
+
             // Document class
             const classOpts = meta.classOptions?.length
                 ? `[${meta.classOptions.join(',')}]`
@@ -1011,31 +1076,39 @@ export class LatexExportBackend implements ExportBackend {
             parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
             parts.push('');
 
-            // Standard packages
-            parts.push('% Encoding');
-            parts.push('\\usepackage[utf8]{inputenc}');
-            parts.push('\\usepackage[T1]{fontenc}');
-            parts.push('');
+            // Standard packages - skip if user provides their own
+            if (!userPackages.has('inputenc')) {
+                parts.push('% Encoding');
+                parts.push('\\usepackage[utf8]{inputenc}');
+            }
+            if (!userPackages.has('fontenc')) {
+                parts.push('\\usepackage[T1]{fontenc}');
+            }
+            if (!userPackages.has('inputenc') || !userPackages.has('fontenc')) {
+                parts.push('');
+            }
 
-            // Hyperref
-            if (meta.hyperref) {
+            // Hyperref - skip if user provides their own
+            if (meta.hyperref && !userPackages.has('hyperref')) {
                 const hyperopts = Object.entries(meta.hyperrefOptions || {})
-                    .map(([k, v]) => `${k}=${v}`)
+                    .map(([k, v]) => v ? `${k}=${v}` : k)
                     .join(',\n  ');
                 parts.push('% Hyperlinks');
                 parts.push(`\\usepackage[${hyperopts}]{hyperref}`);
                 parts.push('');
             }
 
-            // Code highlighting
-            if (meta.minted) {
+            // Code highlighting - skip if user provides their own
+            if (meta.minted && !userPackages.has('minted')) {
                 parts.push('% Code highlighting with minted');
-                parts.push('\\usepackage{minted}');
+                parts.push('\\usepackage[outputdir=.]{minted}');
                 parts.push('');
-            } else if (meta.listings) {
+            } else if (meta.listings && !userPackages.has('listings')) {
                 parts.push('% Code highlighting with listings');
                 parts.push('\\usepackage{listings}');
-                parts.push('\\usepackage{xcolor}');
+                if (!userPackages.has('xcolor')) {
+                    parts.push('\\usepackage{xcolor}');
+                }
                 parts.push('\\lstset{');
                 parts.push('  basicstyle=\\ttfamily\\small,');
                 parts.push('  breaklines=true,');
@@ -1045,41 +1118,61 @@ export class LatexExportBackend implements ExportBackend {
                 parts.push('');
             }
 
-            // Tables
-            if (meta.booktabs) {
+            // Tables - skip if user provides their own
+            if (meta.booktabs && !userPackages.has('booktabs')) {
                 parts.push('% Better tables');
                 parts.push('\\usepackage{booktabs}');
                 parts.push('');
             }
 
-            // Graphics
-            parts.push('% Graphics');
-            parts.push('\\usepackage{graphicx}');
-            parts.push('');
+            // Graphics - skip if user provides their own
+            if (!userPackages.has('graphicx')) {
+                parts.push('% Graphics');
+                parts.push('\\usepackage{graphicx}');
+                parts.push('');
+            }
 
-            // Strike-through
-            parts.push('% Strike-through');
-            parts.push('\\usepackage[normalem]{ulem}');
-            parts.push('');
+            // Strike-through - skip if user provides their own
+            if (!userPackages.has('ulem')) {
+                parts.push('% Strike-through');
+                parts.push('\\usepackage[normalem]{ulem}');
+                parts.push('');
+            }
 
-            // AMS math
-            parts.push('% Math');
-            parts.push('\\usepackage{amsmath}');
-            parts.push('\\usepackage{amssymb}');
-            parts.push('');
-
-            // Additional packages
-            if (meta.packages && meta.packages.length > 0) {
-                parts.push('% Additional packages');
-                for (const pkg of meta.packages) {
-                    parts.push(`\\usepackage{${pkg}}`);
+            // AMS math - skip if user provides their own
+            if (!userPackages.has('amsmath') || !userPackages.has('amssymb')) {
+                parts.push('% Math');
+                if (!userPackages.has('amsmath')) {
+                    parts.push('\\usepackage{amsmath}');
+                }
+                if (!userPackages.has('amssymb')) {
+                    parts.push('\\usepackage{amssymb}');
                 }
                 parts.push('');
             }
 
-            // Custom preamble (added after packages)
+            // Citations - skip if user provides their own (natbib or biblatex)
+            if (!userPackages.has('natbib') && !userPackages.has('biblatex')) {
+                parts.push('% Citations');
+                parts.push('\\usepackage[numbers,super,sort&compress]{natbib}');
+                parts.push('');
+            }
+
+            // Additional packages from options
+            if (meta.packages && meta.packages.length > 0) {
+                parts.push('% Additional packages');
+                for (const pkg of meta.packages) {
+                    if (!userPackages.has(pkg)) {
+                        parts.push(`\\usepackage{${pkg}}`);
+                    }
+                }
+                parts.push('');
+            }
+
+            // Custom preamble (added after default packages)
+            // This includes user's #+LATEX_HEADER: lines which may override packages
             if (meta.preamble) {
-                parts.push('% Custom preamble');
+                parts.push('% User preamble');
                 parts.push(meta.preamble);
                 parts.push('');
             }
@@ -1127,6 +1220,26 @@ export class LatexExportBackend implements ExportBackend {
         parts.push('\\end{document}');
 
         return parts.join('\n');
+    }
+
+    /**
+     * Map org-mode language names to Pygments/minted language names
+     */
+    private mapLanguageForMinted(lang: string): string {
+        const mapping: Record<string, string> = {
+            'jupyter-python': 'python',
+            'jupyter-julia': 'julia',
+            'jupyter-R': 'r',
+            'jupyter-r': 'r',
+            'sh': 'bash',
+            'shell': 'bash',
+            'elisp': 'common-lisp',
+            'emacs-lisp': 'common-lisp',
+            'js': 'javascript',
+            'ts': 'typescript',
+            'py': 'python',
+        };
+        return mapping[lang] || lang.toLowerCase();
     }
 
     /**

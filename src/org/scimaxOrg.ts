@@ -2521,8 +2521,14 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.org.updateDynamicBlock', updateDynamicBlockAtCursor)
     );
 
-    // DWIM Return
+    // DWIM Return - falls back to default Enter if not handled
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.org.dwimReturn', dwimReturn)
+        vscode.commands.registerCommand('scimax.org.dwimReturn', async () => {
+            const handled = await dwimReturn();
+            if (!handled) {
+                // Execute the default Enter action (type newline)
+                await vscode.commands.executeCommand('type', { text: '\n' });
+            }
+        })
     );
 }
