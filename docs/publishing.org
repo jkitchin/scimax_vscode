@@ -151,7 +151,22 @@ The wizard creates a =.org-publish.json= file in your project root. You can also
 
 Available functions:
 - =org-html-publish-to-html= - Convert org files to HTML
+- =md-html-publish-to-html= - Convert Markdown files to HTML
+- =ipynb-html-publish-to-html= - Convert Jupyter notebooks to HTML
+- =auto= - Auto-detect by file extension (default behavior)
 - =copy= - Copy files as-is (for static assets)
+
+** Supported File Types
+
+The publishing system supports multiple file types:
+
+| Extension | Description              | Conversion                            |
+|-----------+--------------------------+---------------------------------------|
+| =.org=    | Org-mode documents       | Full org parsing with code blocks     |
+| =.md=     | Markdown files           | Basic Markdown to HTML conversion     |
+| =.ipynb=  | Jupyter notebooks        | Notebook cells to HTML with syntax    |
+
+When using =auto= or =org-html-publish-to-html=, files are processed based on their extension.
 
 ** Sitemap Options
 
@@ -238,6 +253,190 @@ A component project groups multiple projects together:
 #+END_SRC
 
 When you publish "full-site", all component projects are published in order.
+
+* ⚠️ Explicit Table of Contents (=_toc.yml=)
+
+By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a =_toc.yml= file.
+
+** Overview
+
+When a =_toc.yml= file exists in your source directory, the publishing system:
+
+1. Publishes files in the order specified (not alphabetically)
+2. Generates prev/next navigation links on each page
+3. Creates an index page reflecting the TOC structure
+4. Only includes files listed in the TOC (plus unlisted if configured)
+
+** Basic =_toc.yml= Format
+
+Create a =_toc.yml= file in your source directory (e.g., =./docs/_toc.yml=):
+
+#+BEGIN_SRC yaml
+# Simple flat structure
+format: scimax
+root: index
+
+chapters:
+  - file: getting-started
+  - file: installation
+  - file: configuration
+  - file: advanced-usage
+#+END_SRC
+
+** With Sections (Nested Chapters)
+
+#+BEGIN_SRC yaml
+format: scimax
+root: index
+
+chapters:
+  - file: getting-started
+    sections:
+      - file: getting-started/installation
+      - file: getting-started/first-steps
+  - file: user-guide
+    sections:
+      - file: user-guide/basics
+      - file: user-guide/advanced
+  - file: reference
+#+END_SRC
+
+** With Parts (Book Format)
+
+For larger documentation with multiple parts/volumes:
+
+#+BEGIN_SRC yaml
+format: jb-book
+root: intro
+
+parts:
+  - caption: Getting Started
+    chapters:
+      - file: installation
+      - file: quickstart
+      - file: tutorials
+
+  - caption: User Guide
+    chapters:
+      - file: basics
+        sections:
+          - file: basics/syntax
+          - file: basics/formatting
+      - file: advanced
+
+  - caption: Reference
+    chapters:
+      - file: api-reference
+      - file: changelog
+#+END_SRC
+
+** TOC Options
+
+| Field        | Description                                    |
+|--------------+------------------------------------------------|
+| =format=     | ="scimax"=, ="jb-book"=, or ="jb-article"=     |
+| =root=       | Landing page file (without extension)          |
+| =chapters=   | List of chapter entries                        |
+| =parts=      | List of parts (with caption and chapters)      |
+
+** Entry Options
+
+| Field      | Description                                      |
+|------------+--------------------------------------------------|
+| =file=     | File path without extension (relative to baseDir)|
+| =title=    | Override display title (optional)                |
+| =sections= | Nested child entries (optional)                  |
+| =url=      | External URL link (optional)                     |
+
+** Custom Titles
+
+You can override the title from the file's =#+TITLE=:
+
+#+BEGIN_SRC yaml
+chapters:
+  - file: api
+    title: API Reference (Complete)
+  - file: changelog
+    title: Version History
+#+END_SRC
+
+** External Links
+
+Include external URLs in your TOC:
+
+#+BEGIN_SRC yaml
+chapters:
+  - file: documentation
+  - url: https://github.com/user/repo
+    title: Source Code
+  - url: https://github.com/user/repo/issues
+    title: Report Issues
+#+END_SRC
+
+** Navigation Links
+
+When using =_toc.yml=, each published page automatically gets:
+
+#+BEGIN_SRC html
+<nav class="page-navigation">
+  <a href="previous.html" class="nav-prev">← Previous</a>
+  <a href="next.html" class="nav-next">Next →</a>
+</nav>
+#+END_SRC
+
+You can style these with CSS:
+
+#+BEGIN_SRC css
+.page-navigation {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid #eee;
+  margin-top: 2rem;
+}
+.nav-prev, .nav-next {
+  color: #0066cc;
+}
+#+END_SRC
+
+** Combining with Configuration
+
+Your =.org-publish.json= works the same way - the =_toc.yml= just controls ordering:
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "docs": {
+      "baseDirectory": "./docs",
+      "publishingDirectory": "./public",
+      "autoSitemap": true,
+      "sitemapFilename": "index.org",
+      "sitemapTitle": "Documentation"
+    }
+  }
+}
+#+END_SRC
+
+With =./docs/_toc.yml=:
+
+#+BEGIN_SRC yaml
+format: scimax
+root: intro
+chapters:
+  - file: getting-started
+  - file: user-guide
+  - file: reference
+#+END_SRC
+
+** File Extension Resolution
+
+The TOC references files without extensions. The system automatically finds files with these extensions (in order):
+
+1. =.org=
+2. =.md=
+3. =.ipynb=
+
+So =file: getting-started= will match =getting-started.org=, =getting-started.md=, or =getting-started.ipynb=.
 
 * Templates
 

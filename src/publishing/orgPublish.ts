@@ -22,7 +22,13 @@ import {
     mergeWithDefaults,
     toHtmlExportOptions,
     CONFIG_FILENAME,
+    TOC_FILENAME,
     GITHUB_PAGES_PRESET,
+    TocConfig,
+    FlatTocEntry,
+    flattenToc,
+    getTocFiles,
+    findTocEntry,
 } from './publishProject';
 
 // =============================================================================
@@ -118,6 +124,155 @@ export async function saveConfig(
     const configPath = path.join(workspaceRoot, CONFIG_FILENAME);
     const content = JSON.stringify(config, null, 2);
     await fs.promises.writeFile(configPath, content, 'utf-8');
+}
+
+// =============================================================================
+// TOC Loading
+// =============================================================================
+
+/**
+ * Simple YAML parser for _toc.yml files
+ * Handles the subset of YAML used by Jupyter Book TOC format
+ */
+function parseSimpleYaml(content: string): TocConfig {
+    const lines = content.split('\n');
+    const result: Record<string, unknown> = {};
+    const stack: Array<{ obj: Record<string, unknown> | unknown[]; indent: number }> = [
+        { obj: result, indent: -1 }
+    ];
+    let currentArray: unknown[] | null = null;
+    let currentArrayKey: string | null = null;
+    let currentArrayIndent = -1;
+
+    for (const line of lines) {
+        // Skip empty lines and comments
+        if (!line.trim() || line.trim().startsWith('#')) continue;
+
+        const indent = line.search(/\S/);
+        const trimmed = line.trim();
+
+        // Handle array items
+        if (trimmed.startsWith('- ')) {
+            const itemContent = trimmed.slice(2).trim();
+
+            // Check if it's a key-value on same line as dash
+            if (itemContent.includes(':')) {
+                const colonIdx = itemContent.indexOf(':');
+                const key = itemContent.slice(0, colonIdx).trim();
+                const value = itemContent.slice(colonIdx + 1).trim();
+
+                // Create object for this array item
+                const itemObj: Record<string, unknown> = {};
+                if (value) {
+                    itemObj[key] = parseYamlValue(value);
+                }
+
+                if (currentArray && indent >= currentArrayIndent) {
+                    currentArray.push(itemObj);
+                    // Push this object for nested properties
+                    while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
+                        stack.pop();
+                    }
+                    stack.push({ obj: itemObj, indent });
+                }
+            } else {
+                // Simple value in array
+                if (currentArray) {
+                    if (itemContent) {
+                        currentArray.push(parseYamlValue(itemContent));
+                    } else {
+                        // Empty dash starts a new object
+                        const itemObj: Record<string, unknown> = {};
+                        currentArray.push(itemObj);
+                        while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
+                            stack.pop();
+                        }
+                        stack.push({ obj: itemObj, indent });
+                    }
+                }
+            }
+        } else if (trimmed.includes(':')) {
+            // Key-value pair
+            const colonIdx = trimmed.indexOf(':');
+            const key = trimmed.slice(0, colonIdx).trim();
+            const value = trimmed.slice(colonIdx + 1).trim();
+
+            // Find parent object
+            while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
+                stack.pop();
+            }
+            const parent = stack[stack.length - 1].obj;
+
+            if (Array.isArray(parent)) continue; // Can't add key to array
+
+            if (value === '' || value === null) {
+                // Could be array or nested object - check next line
+                const nextLineIdx = lines.indexOf(line) + 1;
+                if (nextLineIdx < lines.length) {
+                    const nextLine = lines[nextLineIdx].trim();
+                    if (nextLine.startsWith('- ')) {
+                        // It's an array
+                        const arr: unknown[] = [];
+                        parent[key] = arr;
+                        currentArray = arr;
+                        currentArrayKey = key;
+                        currentArrayIndent = indent + 1;
+                    } else {
+                        // Nested object
+                        const nested: Record<string, unknown> = {};
+                        parent[key] = nested;
+                        stack.push({ obj: nested, indent });
+                    }
+                }
+            } else {
+                parent[key] = parseYamlValue(value);
+            }
+        }
+    }
+
+    return result as unknown as TocConfig;
+}
+
+/**
+ * Parse a YAML value (string, number, boolean)
+ */
+function parseYamlValue(value: string): string | number | boolean {
+    // Remove quotes if present
+    if ((value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))) {
+        return value.slice(1, -1);
+    }
+
+    // Check for boolean
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+
+    // Check for number
+    const num = Number(value);
+    if (!isNaN(num) && value !== '') return num;
+
+    return value;
+}
+
+/**
+ * Load TOC configuration from _toc.yml file
+ */
+export async function loadToc(
+    project: PublishProject,
+    workspaceRoot: string
+): Promise<TocConfig | null> {
+    const baseDir = path.resolve(workspaceRoot, project.baseDirectory);
+    const tocPath = path.join(baseDir, TOC_FILENAME);
+
+    try {
+        const content = await fs.promises.readFile(tocPath, 'utf-8');
+        return parseSimpleYaml(content);
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return null;
+        }
+        throw error;
+    }
 }
 
 // =============================================================================
@@ -282,7 +437,8 @@ export async function publishFile(
     sourcePath: string,
     project: PublishProject,
     workspaceRoot: string,
-    options: PublishOptions = {}
+    options: PublishOptions = {},
+    tocEntry?: FlatTocEntry | null
 ): Promise<PublishFileResult> {
     const outputPath = computeOutputPath(sourcePath, project, workspaceRoot);
 
@@ -313,8 +469,17 @@ export async function publishFile(
         const metadata = extractMetadata(doc);
 
         // Load templates
-        const preambleContent = await loadTemplate(project.htmlPreamble, workspaceRoot);
-        const postambleContent = await loadTemplate(project.htmlPostamble, workspaceRoot);
+        let preambleContent = await loadTemplate(project.htmlPreamble, workspaceRoot);
+        let postambleContent = await loadTemplate(project.htmlPostamble, workspaceRoot);
+
+        // Add navigation links from TOC
+        if (tocEntry) {
+            const navHtml = generateNavigation(tocEntry);
+            if (navHtml) {
+                // Append navigation to postamble
+                postambleContent = (postambleContent || '') + navHtml;
+            }
+        }
 
         // Build HTML export options
         const htmlOptions: Partial<HtmlExportOptions> = {
@@ -350,6 +515,35 @@ export async function publishFile(
             error: error instanceof Error ? error.message : String(error),
         };
     }
+}
+
+/**
+ * Generate navigation HTML from TOC entry
+ */
+function generateNavigation(tocEntry: FlatTocEntry): string {
+    if (!tocEntry.prev && !tocEntry.next) {
+        return '';
+    }
+
+    const parts: string[] = ['<nav class="page-navigation">'];
+
+    if (tocEntry.prev) {
+        const prevHtml = `${tocEntry.prev}.html`;
+        parts.push(`  <a href="${prevHtml}" class="nav-prev">← Previous</a>`);
+    } else {
+        parts.push('  <span class="nav-prev"></span>');
+    }
+
+    if (tocEntry.next) {
+        const nextHtml = `${tocEntry.next}.html`;
+        parts.push(`  <a href="${nextHtml}" class="nav-next">Next →</a>`);
+    } else {
+        parts.push('  <span class="nav-next"></span>');
+    }
+
+    parts.push('</nav>');
+
+    return parts.join('\n');
 }
 
 /**
@@ -407,7 +601,8 @@ export async function publishMarkdownFile(
     sourcePath: string,
     project: PublishProject,
     workspaceRoot: string,
-    options: PublishOptions = {}
+    options: PublishOptions = {},
+    tocEntry?: FlatTocEntry | null
 ): Promise<PublishFileResult> {
     const outputPath = computeOutputPath(sourcePath, project, workspaceRoot);
 
@@ -424,7 +619,16 @@ export async function publishMarkdownFile(
         const title = titleMatch ? titleMatch[1] : path.basename(sourcePath, '.md');
 
         // Simple Markdown to HTML conversion
-        const html = convertMarkdownToHtml(content, title, project);
+        let html = convertMarkdownToHtml(content, title, project);
+
+        // Add navigation from TOC
+        if (tocEntry) {
+            const navHtml = generateNavigation(tocEntry);
+            if (navHtml) {
+                // Insert before closing </main>
+                html = html.replace('</main>', `${navHtml}\n</main>`);
+            }
+        }
 
         if (!options.dryRun) {
             const outputDir = path.dirname(outputPath);
@@ -510,7 +714,8 @@ export async function publishNotebookFile(
     sourcePath: string,
     project: PublishProject,
     workspaceRoot: string,
-    options: PublishOptions = {}
+    options: PublishOptions = {},
+    tocEntry?: FlatTocEntry | null
 ): Promise<PublishFileResult> {
     const outputPath = computeOutputPath(sourcePath, project, workspaceRoot);
 
@@ -530,7 +735,16 @@ export async function publishNotebookFile(
         }
 
         // Convert notebook to HTML
-        const html = convertNotebookToHtml(notebook, title, project);
+        let html = convertNotebookToHtml(notebook, title, project);
+
+        // Add navigation from TOC
+        if (tocEntry) {
+            const navHtml = generateNavigation(tocEntry);
+            if (navHtml) {
+                // Insert before closing </main>
+                html = html.replace('</main>', `${navHtml}\n</main>`);
+            }
+        }
 
         if (!options.dryRun) {
             const outputDir = path.dirname(outputPath);
@@ -757,9 +971,22 @@ export async function publishProject(
 ): Promise<PublishProjectResult> {
     const startTime = Date.now();
     const results: PublishFileResult[] = [];
+    const baseDir = path.resolve(workspaceRoot, project.baseDirectory);
 
-    // Discover files
-    const files = await discoverFiles(project, workspaceRoot);
+    // Try to load explicit TOC
+    const toc = await loadToc(project, workspaceRoot);
+    let flatToc: FlatTocEntry[] | null = null;
+
+    // Discover files - use TOC if available, otherwise discover
+    let files: string[];
+    if (toc) {
+        // Use TOC to determine file order
+        flatToc = flattenToc(toc);
+        files = await resolveFilesFromToc(flatToc, project, workspaceRoot);
+    } else {
+        // Fall back to directory discovery
+        files = await discoverFiles(project, workspaceRoot);
+    }
 
     // Publish each file
     for (let i = 0; i < files.length; i++) {
@@ -772,64 +999,86 @@ export async function publishProject(
         let result: PublishFileResult;
         const pubFunc = getPublishFunction(file, project);
 
+        // Get TOC entry for navigation
+        const relativePath = path.relative(baseDir, file);
+        const tocEntry = flatToc ? findTocEntryByPath(flatToc, relativePath) : null;
+
         switch (pubFunc) {
             case 'copy':
                 result = await copyStaticFile(file, project, workspaceRoot, options);
                 break;
             case 'md':
-                result = await publishMarkdownFile(file, project, workspaceRoot, options);
+                result = await publishMarkdownFile(file, project, workspaceRoot, options, tocEntry);
                 break;
             case 'ipynb':
-                result = await publishNotebookFile(file, project, workspaceRoot, options);
+                result = await publishNotebookFile(file, project, workspaceRoot, options, tocEntry);
                 break;
             case 'org':
             default:
-                result = await publishFile(file, project, workspaceRoot, options);
+                result = await publishFile(file, project, workspaceRoot, options, tocEntry);
                 break;
         }
 
         results.push(result);
     }
 
-    // Generate sitemap if enabled
+    // Generate sitemap/index
     if (project.autoSitemap && project.publishingFunction !== 'copy') {
-        const sitemapEntries: SitemapEntry[] = results
-            .filter(r => r.success)
-            .map(r => {
-                const baseDir = path.resolve(workspaceRoot, project.baseDirectory);
-                const ext = path.extname(r.sourcePath);
-                return {
-                    file: r.sourcePath,
-                    relativePath: path.relative(baseDir, r.sourcePath),
-                    title: r.title || path.basename(r.sourcePath, ext),
-                    date: r.date,
-                };
-            });
+        if (toc && flatToc) {
+            // Generate index from explicit TOC
+            const indexOrg = generateIndexFromToc(toc, flatToc, results, project);
 
-        if (sitemapEntries.length > 0) {
-            // Generate sitemap org content
-            const sitemapOrg = generateSitemapOrg(sitemapEntries, project);
-
-            // Write sitemap.org
-            const sitemapFilename = project.sitemapFilename || 'sitemap.org';
-            const sitemapOrgPath = path.join(
-                workspaceRoot,
-                project.baseDirectory,
-                sitemapFilename
-            );
+            // Write index.org
+            const indexFilename = project.sitemapFilename || 'index.org';
+            const indexOrgPath = path.join(baseDir, indexFilename);
 
             if (!options.dryRun) {
-                await fs.promises.writeFile(sitemapOrgPath, sitemapOrg, 'utf-8');
+                await fs.promises.writeFile(indexOrgPath, indexOrg, 'utf-8');
             }
 
-            // Publish sitemap
-            const sitemapResult = await publishFile(
-                sitemapOrgPath,
+            // Publish index
+            const indexResult = await publishFile(
+                indexOrgPath,
                 project,
                 workspaceRoot,
                 { ...options, force: true }
             );
-            results.push(sitemapResult);
+            results.push(indexResult);
+        } else {
+            // Fall back to auto-generated sitemap
+            const sitemapEntries: SitemapEntry[] = results
+                .filter(r => r.success)
+                .map(r => {
+                    const ext = path.extname(r.sourcePath);
+                    return {
+                        file: r.sourcePath,
+                        relativePath: path.relative(baseDir, r.sourcePath),
+                        title: r.title || path.basename(r.sourcePath, ext),
+                        date: r.date,
+                    };
+                });
+
+            if (sitemapEntries.length > 0) {
+                // Generate sitemap org content
+                const sitemapOrg = generateSitemapOrg(sitemapEntries, project);
+
+                // Write sitemap.org
+                const sitemapFilename = project.sitemapFilename || 'sitemap.org';
+                const sitemapOrgPath = path.join(baseDir, sitemapFilename);
+
+                if (!options.dryRun) {
+                    await fs.promises.writeFile(sitemapOrgPath, sitemapOrg, 'utf-8');
+                }
+
+                // Publish sitemap
+                const sitemapResult = await publishFile(
+                    sitemapOrgPath,
+                    project,
+                    workspaceRoot,
+                    { ...options, force: true }
+                );
+                results.push(sitemapResult);
+            }
         }
     }
 
@@ -845,6 +1094,135 @@ export async function publishProject(
         errorCount,
         duration,
     };
+}
+
+/**
+ * Resolve file paths from TOC entries
+ */
+async function resolveFilesFromToc(
+    flatToc: FlatTocEntry[],
+    project: PublishProject,
+    workspaceRoot: string
+): Promise<string[]> {
+    const baseDir = path.resolve(workspaceRoot, project.baseDirectory);
+    const files: string[] = [];
+
+    for (const entry of flatToc) {
+        // Try common extensions
+        const extensions = ['org', 'md', 'ipynb'];
+        let found = false;
+
+        for (const ext of extensions) {
+            const filePath = path.join(baseDir, `${entry.file}.${ext}`);
+            if (await fileExists(filePath)) {
+                files.push(filePath);
+                found = true;
+                break;
+            }
+        }
+
+        // Also try exact path (if extension already included)
+        if (!found) {
+            const exactPath = path.join(baseDir, entry.file);
+            if (await fileExists(exactPath)) {
+                files.push(exactPath);
+            }
+        }
+    }
+
+    return files;
+}
+
+/**
+ * Find TOC entry by file path
+ */
+function findTocEntryByPath(flatToc: FlatTocEntry[], relativePath: string): FlatTocEntry | null {
+    // Normalize path (remove extension for comparison)
+    const normalized = relativePath.replace(/\.(org|md|ipynb)$/i, '');
+
+    for (const entry of flatToc) {
+        if (entry.file === normalized || entry.file === relativePath) {
+            return entry;
+        }
+    }
+    return null;
+}
+
+/**
+ * Generate index page from explicit TOC
+ */
+function generateIndexFromToc(
+    toc: TocConfig,
+    flatToc: FlatTocEntry[],
+    results: PublishFileResult[],
+    project: PublishProject
+): string {
+    const title = project.sitemapTitle || 'Table of Contents';
+    const lines: string[] = [
+        `#+TITLE: ${title}`,
+        '',
+    ];
+
+    // Create a map of file paths to titles
+    const titleMap = new Map<string, string>();
+    for (const result of results) {
+        if (result.success && result.title) {
+            const relativePath = path.relative(
+                path.resolve('.', project.baseDirectory),
+                result.sourcePath
+            ).replace(/\.(org|md|ipynb)$/i, '');
+            titleMap.set(relativePath, result.title);
+        }
+    }
+
+    // Generate structure based on TOC
+    if (toc.parts) {
+        for (const part of toc.parts) {
+            lines.push(`* ${part.caption}`);
+            lines.push('');
+
+            if (part.chapters) {
+                generateTocSection(part.chapters, lines, titleMap, 0);
+            }
+        }
+    } else if (toc.chapters) {
+        generateTocSection(toc.chapters, lines, titleMap, 0);
+    }
+
+    return lines.join('\n');
+}
+
+/**
+ * Generate TOC section recursively
+ */
+function generateTocSection(
+    entries: Array<{ file?: string; title?: string; sections?: unknown[]; url?: string }>,
+    lines: string[],
+    titleMap: Map<string, string>,
+    level: number
+): void {
+    const indent = '  '.repeat(level);
+
+    for (const entry of entries) {
+        if (entry.file) {
+            const htmlPath = entry.file.replace(/\.(org|md|ipynb)$/i, '') + '.html';
+            const displayTitle = entry.title || titleMap.get(entry.file) || entry.file;
+            lines.push(`${indent}- [[file:${htmlPath}][${displayTitle}]]`);
+
+            // Handle nested sections
+            if (entry.sections && Array.isArray(entry.sections)) {
+                generateTocSection(
+                    entry.sections as Array<{ file?: string; title?: string; sections?: unknown[] }>,
+                    lines,
+                    titleMap,
+                    level + 1
+                );
+            }
+        } else if (entry.url) {
+            const displayTitle = entry.title || entry.url;
+            lines.push(`${indent}- [[${entry.url}][${displayTitle}]]`);
+        }
+    }
 }
 
 /**

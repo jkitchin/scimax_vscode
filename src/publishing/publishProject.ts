@@ -235,6 +235,102 @@ export const GITHUB_PAGES_PRESET: Partial<PublishProject> = {
  */
 export const CONFIG_FILENAME = '.org-publish.json';
 
+/**
+ * TOC file name (Jupyter Book compatible)
+ */
+export const TOC_FILENAME = '_toc.yml';
+
+// =============================================================================
+// Table of Contents Types (Jupyter Book compatible)
+// =============================================================================
+
+/**
+ * A single entry in the TOC - can be a file or a section with nested entries
+ */
+export interface TocEntry {
+    /** File path (without extension) relative to baseDirectory */
+    file?: string;
+
+    /** Custom title (overrides file's #+TITLE) */
+    title?: string;
+
+    /** Nested sections under this entry */
+    sections?: TocEntry[];
+
+    /** URL for external links */
+    url?: string;
+
+    /** Glob pattern to include multiple files */
+    glob?: string;
+}
+
+/**
+ * A part/chapter grouping in the TOC
+ */
+export interface TocPart {
+    /** Part/chapter caption shown in navigation */
+    caption: string;
+
+    /** Numbered chapters (default: false) */
+    numbered?: boolean;
+
+    /** Chapters/files in this part */
+    chapters?: TocEntry[];
+}
+
+/**
+ * Root TOC configuration (_toc.yml)
+ * Compatible with Jupyter Book format
+ */
+export interface TocConfig {
+    /** Format identifier */
+    format?: 'jb-book' | 'jb-article' | 'scimax';
+
+    /** Root/landing page file (without extension) */
+    root: string;
+
+    /** Parts (for book format with multiple sections) */
+    parts?: TocPart[];
+
+    /** Chapters (flat list, alternative to parts) */
+    chapters?: TocEntry[];
+
+    /** Default behavior for unlisted files */
+    defaults?: {
+        /** Include files not in TOC (default: false) */
+        includeUnlisted?: boolean;
+
+        /** Numbering for sections */
+        numbered?: boolean;
+    };
+}
+
+/**
+ * Flattened TOC entry with navigation info
+ */
+export interface FlatTocEntry {
+    /** File path relative to baseDirectory */
+    file: string;
+
+    /** Display title */
+    title?: string;
+
+    /** Part/chapter this belongs to */
+    part?: string;
+
+    /** Nesting level (0 = top level) */
+    level: number;
+
+    /** Index in flat list */
+    index: number;
+
+    /** Previous entry file path */
+    prev?: string;
+
+    /** Next entry file path */
+    next?: string;
+}
+
 // =============================================================================
 // Configuration Helpers
 // =============================================================================
@@ -345,4 +441,111 @@ export function validateConfig(config: Partial<PublishConfig>): ValidationError[
     }
 
     return errors;
+}
+
+// =============================================================================
+// TOC Helpers
+// =============================================================================
+
+/**
+ * Flatten a TOC config into a linear list with navigation links
+ */
+export function flattenToc(toc: TocConfig): FlatTocEntry[] {
+    const entries: FlatTocEntry[] = [];
+
+    // Add root entry first
+    entries.push({
+        file: toc.root,
+        level: 0,
+        index: 0,
+    });
+
+    // Process parts or chapters
+    if (toc.parts) {
+        for (const part of toc.parts) {
+            if (part.chapters) {
+                flattenEntries(part.chapters, entries, part.caption, 1);
+            }
+        }
+    } else if (toc.chapters) {
+        flattenEntries(toc.chapters, entries, undefined, 1);
+    }
+
+    // Add prev/next links
+    for (let i = 0; i < entries.length; i++) {
+        entries[i].index = i;
+        if (i > 0) {
+            entries[i].prev = entries[i - 1].file;
+        }
+        if (i < entries.length - 1) {
+            entries[i].next = entries[i + 1].file;
+        }
+    }
+
+    return entries;
+}
+
+/**
+ * Recursively flatten TOC entries
+ */
+function flattenEntries(
+    tocEntries: TocEntry[],
+    result: FlatTocEntry[],
+    part: string | undefined,
+    level: number
+): void {
+    for (const entry of tocEntries) {
+        if (entry.file) {
+            result.push({
+                file: entry.file,
+                title: entry.title,
+                part,
+                level,
+                index: result.length,
+            });
+        }
+
+        // Recursively process sections
+        if (entry.sections) {
+            flattenEntries(entry.sections, result, part, level + 1);
+        }
+    }
+}
+
+/**
+ * Get all files referenced in a TOC
+ */
+export function getTocFiles(toc: TocConfig): string[] {
+    const files: string[] = [toc.root];
+
+    function collectFiles(entries: TocEntry[] | undefined) {
+        if (!entries) return;
+        for (const entry of entries) {
+            if (entry.file) {
+                files.push(entry.file);
+            }
+            if (entry.sections) {
+                collectFiles(entry.sections);
+            }
+        }
+    }
+
+    if (toc.parts) {
+        for (const part of toc.parts) {
+            collectFiles(part.chapters);
+        }
+    }
+    collectFiles(toc.chapters);
+
+    return files;
+}
+
+/**
+ * Find a TOC entry by file path
+ */
+export function findTocEntry(toc: TocConfig, filePath: string): FlatTocEntry | undefined {
+    const flat = flattenToc(toc);
+    // Normalize file path (remove extension)
+    const normalized = filePath.replace(/\.(org|md|ipynb)$/i, '');
+    return flat.find(e => e.file === normalized || e.file === filePath);
 }
