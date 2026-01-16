@@ -19,6 +19,12 @@ node_modules/
 *.out
 *.toc
 *.synctex.gz
+_minted/
+*.minted
+
+# Generated export files
+docs/*.html
+docs/*.pdf
 
 # Test output
 test-output/
