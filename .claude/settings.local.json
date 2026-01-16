@@ -82,7 +82,13 @@
       "WebFetch(domain:kitchingroup.cheme.cmu.edu)",
       "WebFetch(domain:sphinx-book-theme.readthedocs.io)",
       "Bash(vsce ls:*)",
-      "Bash(python -m http.server:*)"
+      "Bash(python -m http.server:*)",
+      "Bash(pygmentize:*)",
+      "Bash(echo:*)",
+      "Bash(bibtex:*)",
+      "Bash(latexmk:*)",
+      "Skill(brainstorming)",
+      "Bash(open:*)"
     ],
     "additionalDirectories": [
       "/Users/jkitchin/Dropbox/emacs/projects/scimax_vscode",
