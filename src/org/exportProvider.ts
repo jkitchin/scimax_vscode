@@ -249,9 +249,19 @@ function extractBibPaths(content: string, basePath: string): string[] {
         paths.push(bibPath);
     }
 
-    // Match bibliography: links
+    // Match [[bibliography:path]] links
     const bibLinkRegex = /\[\[bibliography:([^\]]+)\]\]/g;
     while ((match = bibLinkRegex.exec(content)) !== null) {
+        let bibPath = match[1].trim();
+        if (!bibPath.endsWith('.bib')) {
+            bibPath += '.bib';
+        }
+        paths.push(bibPath);
+    }
+
+    // Match plain bibliography:path links (org-ref style)
+    const plainBibRegex = /(?<!\[)bibliography:([^\s\[\]]+)/g;
+    while ((match = plainBibRegex.exec(content)) !== null) {
         let bibPath = match[1].trim();
         if (!bibPath.endsWith('.bib')) {
             bibPath += '.bib';

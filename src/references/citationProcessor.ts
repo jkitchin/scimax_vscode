@@ -397,6 +397,7 @@ export class CitationProcessor {
 
     /**
      * Generate bibliography HTML for all cited entries
+     * Each entry gets an anchor id="ref-{key}" for linking from citations
      */
     generateBibliography(): string {
         if (this.citedKeys.size === 0) {
@@ -413,10 +414,22 @@ export class CitationProcessor {
 
         try {
             const cite = new Cite(cslEntries);
-            const html = cite.format('bibliography', {
+            let html = cite.format('bibliography', {
                 format: 'html',
                 template: this.style,
                 lang: this.locale,
+            });
+
+            // Add anchor IDs to each csl-entry for citation linking
+            // citation-js may output either:
+            //   <div class="csl-entry">...</div>
+            //   <div data-csl-entry-id="key" class="csl-entry">...</div>
+            // We need to add id="ref-{key}" to each one
+            let entryIndex = 0;
+            html = html.replace(/<div(?:\s+data-csl-entry-id="([^"]*)")?\s+class="csl-entry">/g, (match, dataId) => {
+                const key = dataId || cslEntries[entryIndex]?.id || `entry-${entryIndex}`;
+                entryIndex++;
+                return `<div class="csl-entry" id="ref-${key}">`;
             });
 
             return `<section class="bibliography">\n<h2>References</h2>\n${html}\n</section>`;

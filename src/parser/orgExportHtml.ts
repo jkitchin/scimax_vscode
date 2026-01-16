@@ -848,6 +848,7 @@ export class HtmlExportBackend implements ExportBackend {
 
     /**
      * Export a citation link (cite:key, citep:key, etc.)
+     * Citations link to their corresponding bibliography entries via #ref-{key}
      */
     private exportCitationLink(link: LinkObject, state: HtmlExportState): string {
         const { linkType, path, rawLink } = link.properties;
@@ -859,9 +860,10 @@ export class HtmlExportBackend implements ExportBackend {
         const parsedCitations = parseCitationsFromLine(citationText);
 
         if (parsedCitations.length === 0) {
-            // Fallback: just show the keys as a simple citation
+            // Fallback: just show the keys as a simple citation with links
             const keys = path.replace(/^&/, '').split(/[,;]/).map(k => k.replace(/^&/, '').trim());
-            return `<span class="citation">(${keys.join(', ')})</span>`;
+            const linkedKeys = keys.map(k => `<a href="#ref-${k}" class="citation-link">${k}</a>`);
+            return `<span class="citation">(${linkedKeys.join(', ')})</span>`;
         }
 
         const citation = parsedCitations[0];
@@ -877,11 +879,14 @@ export class HtmlExportBackend implements ExportBackend {
                 style as 'textual' | 'parenthetical' | 'author' | 'year'
             );
 
-            // Add CSS class for styling
-            return `<span class="citation" data-keys="${keys.join(',')}">${formatted.html}</span>`;
+            // Wrap in link to first citation's bibliography entry
+            // For single citations, link the whole thing; for multiple, link to first
+            const primaryKey = keys[0];
+            const linkedHtml = `<a href="#ref-${primaryKey}" class="citation-link">${formatted.html}</a>`;
+            return `<span class="citation" data-keys="${keys.join(',')}">${linkedHtml}</span>`;
         }
 
-        // Fallback without citation processor: basic formatting
+        // Fallback without citation processor: basic formatting with links
         const keys = citation.references.map(r => r.key);
 
         // Determine style based on command
@@ -892,7 +897,9 @@ export class HtmlExportBackend implements ExportBackend {
             suffix = '';
         }
 
-        return `<span class="citation citation-${command}">${prefix}${keys.join(', ')}${suffix}</span>`;
+        // Make each key a link to its bibliography entry
+        const linkedKeys = keys.map(k => `<a href="#ref-${k}" class="citation-link">${k}</a>`);
+        return `<span class="citation citation-${command}">${prefix}${linkedKeys.join(', ')}${suffix}</span>`;
     }
 
     private exportTimestamp(ts: TimestampObject, state: ExportState): string {
@@ -1248,8 +1255,8 @@ blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem;
 .admonition.org-important { background: #fff9db; border-color: #fab005; }
 /* Citation styles */
 .citation { color: inherit; }
-.citation a { color: #1971c2; text-decoration: none; }
-.citation a:hover { text-decoration: underline; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
 .citation-missing { color: #c92a2a; font-style: italic; }
 .citation.textual { }
 .citation.author-only { }
@@ -1257,7 +1264,8 @@ blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem;
 /* Bibliography styles */
 .bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
 .bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
-.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
 .bibliography .csl-bib-body { font-size: 0.95em; }
 </style>`;
     }

@@ -4,7 +4,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { parseOrg } from '../../parser/orgParserUnified';
+import { parseOrgFast } from '../../parser/orgExportParser';
 import { exportToHtml } from '../../parser/orgExportHtml';
 import { exportToLatex } from '../../parser/orgExportLatex';
 import { parseBibTeX } from '../../references/bibtexParser';
@@ -40,7 +40,7 @@ export async function exportCommand(config: CliConfig, args: ParsedArgs): Promis
     }
 
     const content = fs.readFileSync(inputPath, 'utf-8');
-    const doc = parseOrg(content);
+    const doc = parseOrgFast(content);
 
     // Look for bibliography file
     let bibEntries;
