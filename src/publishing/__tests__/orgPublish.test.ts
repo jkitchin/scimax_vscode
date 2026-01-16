@@ -56,7 +56,8 @@ import {
 } from '../orgPublish';
 
 describe('computeOutputPath', () => {
-    const workspaceRoot = '/home/user/project';
+    // Use path.resolve to get platform-appropriate absolute path
+    const workspaceRoot = path.resolve('/home/user/project');
 
     it('should convert .org to .html', () => {
         const project: PublishProject = {
@@ -66,7 +67,7 @@ describe('computeOutputPath', () => {
         };
 
         const result = computeOutputPath(
-            '/home/user/project/org/page.org',
+            path.join(workspaceRoot, 'org', 'page.org'),
             project,
             workspaceRoot
         );
@@ -82,7 +83,7 @@ describe('computeOutputPath', () => {
         };
 
         const result = computeOutputPath(
-            '/home/user/project/org/subdir/nested/page.org',
+            path.join(workspaceRoot, 'org', 'subdir', 'nested', 'page.org'),
             project,
             workspaceRoot
         );
@@ -98,7 +99,7 @@ describe('computeOutputPath', () => {
         };
 
         const result = computeOutputPath(
-            '/home/user/project/src/content/about.org',
+            path.join(workspaceRoot, 'src', 'content', 'about.org'),
             project,
             workspaceRoot
         );
