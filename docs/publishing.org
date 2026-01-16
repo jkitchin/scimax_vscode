@@ -68,9 +68,38 @@ Run =Scimax: Publish Project= (=C-c C-p p=) to generate HTML files.
 
 * Configuration File
 
-The wizard creates a =.org-publish.json= file in your project root. You can also create or edit this file manually.
+The publishing system supports two configuration formats:
 
-** Basic Configuration
+1. =_config.yml= - YAML format (Jupyter Book compatible, takes precedence)
+2. =.org-publish.json= - JSON format
+
+The wizard creates a =.org-publish.json= file by default. You can also create or edit either file manually.
+
+** ⚠️ YAML Configuration (=_config.yml=)
+
+For Jupyter Book compatibility, create a =_config.yml= in your project root:
+
+#+BEGIN_SRC yaml
+# _config.yml - Jupyter Book compatible
+title: "My Documentation"
+
+publish:
+  base_directory: "./docs"
+  publishing_directory: "./public"
+  recursive: true
+  auto_sitemap: true
+  sitemap_filename: "index.org"
+
+html:
+  use_default_theme: true
+  toc_depth: 3
+  css_files:
+    - "./css/custom.css"
+
+github_pages: true
+#+END_SRC
+
+** JSON Configuration (=.org-publish.json=)
 
 #+BEGIN_SRC json
 {

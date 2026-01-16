@@ -22,6 +22,7 @@ import {
     mergeWithDefaults,
     toHtmlExportOptions,
     CONFIG_FILENAME,
+    CONFIG_YAML_FILENAME,
     TOC_FILENAME,
     GITHUB_PAGES_PRESET,
     TocConfig,
@@ -98,12 +99,26 @@ export interface PublishOptions {
 
 /**
  * Load publish configuration from file
+ * Checks for _config.yml first (YAML), then .org-publish.json (JSON)
+ * YAML takes precedence for Jupyter Book compatibility
  */
 export async function loadConfig(workspaceRoot: string): Promise<PublishConfig | null> {
-    const configPath = path.join(workspaceRoot, CONFIG_FILENAME);
-
+    // Try YAML config first (_config.yml) - Jupyter Book compatible
+    const yamlConfigPath = path.join(workspaceRoot, CONFIG_YAML_FILENAME);
     try {
-        const content = await fs.promises.readFile(configPath, 'utf-8');
+        const content = await fs.promises.readFile(yamlConfigPath, 'utf-8');
+        return parseConfigYaml(content);
+    } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+            throw error;
+        }
+        // YAML not found, try JSON
+    }
+
+    // Try JSON config (.org-publish.json)
+    const jsonConfigPath = path.join(workspaceRoot, CONFIG_FILENAME);
+    try {
+        const content = await fs.promises.readFile(jsonConfigPath, 'utf-8');
         const config = JSON.parse(content) as PublishConfig;
         return config;
     } catch (error) {
@@ -112,6 +127,142 @@ export async function loadConfig(workspaceRoot: string): Promise<PublishConfig |
         }
         throw error;
     }
+}
+
+/**
+ * Parse YAML configuration file (_config.yml)
+ * Compatible with Jupyter Book _config.yml format
+ */
+function parseConfigYaml(content: string): PublishConfig {
+    const yaml = parseSimpleYamlGeneric(content);
+
+    // Convert Jupyter Book style config to our PublishConfig format
+    const config: PublishConfig = {
+        projects: {},
+    };
+
+    // Extract project settings
+    const projectName = (yaml.title as string)?.toLowerCase().replace(/\s+/g, '-') || 'default';
+    const project: Partial<PublishProject> = {
+        name: projectName,
+    };
+
+    // Map common Jupyter Book config options
+    if (yaml.title) project.sitemapTitle = yaml.title as string;
+    if (yaml.author) project.withAuthor = true;
+
+    // Source and output directories
+    if (yaml.source_directory) project.baseDirectory = yaml.source_directory as string;
+    if (yaml.publish_directory) project.publishingDirectory = yaml.publish_directory as string;
+
+    // HTML options
+    const html = yaml.html as Record<string, unknown> | undefined;
+    if (html) {
+        if (html.use_default_theme !== undefined) project.useDefaultTheme = html.use_default_theme as boolean;
+        if (html.toc_depth !== undefined) project.withToc = html.toc_depth as number;
+        if (html.css_files) project.cssFiles = html.css_files as string[];
+        if (html.js_files) project.jsFiles = html.js_files as string[];
+    }
+
+    // Publish options
+    const publish = yaml.publish as Record<string, unknown> | undefined;
+    if (publish) {
+        if (publish.base_directory) project.baseDirectory = publish.base_directory as string;
+        if (publish.publishing_directory) project.publishingDirectory = publish.publishing_directory as string;
+        if (publish.recursive !== undefined) project.recursive = publish.recursive as boolean;
+        if (publish.exclude) project.exclude = publish.exclude as string;
+        if (publish.auto_sitemap !== undefined) project.autoSitemap = publish.auto_sitemap as boolean;
+        if (publish.sitemap_filename) project.sitemapFilename = publish.sitemap_filename as string;
+    }
+
+    // GitHub Pages
+    if (yaml.github_pages !== undefined) config.githubPages = yaml.github_pages as boolean;
+    if (yaml.custom_domain) config.customDomain = yaml.custom_domain as string;
+
+    // Set defaults if not provided
+    if (!project.baseDirectory) project.baseDirectory = './';
+    if (!project.publishingDirectory) project.publishingDirectory = './_build/html';
+
+    config.projects[projectName] = project as PublishProject;
+    config.defaultProject = projectName;
+
+    return config;
+}
+
+/**
+ * Generic YAML parser that returns a plain object
+ */
+function parseSimpleYamlGeneric(content: string): Record<string, unknown> {
+    const lines = content.split('\n');
+    const result: Record<string, unknown> = {};
+    const stack: Array<{ obj: Record<string, unknown>; indent: number; key?: string }> = [
+        { obj: result, indent: -1 }
+    ];
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Skip empty lines and comments
+        if (!line.trim() || line.trim().startsWith('#')) continue;
+
+        const indent = line.search(/\S/);
+        const trimmed = line.trim();
+
+        // Pop stack to find correct parent
+        while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
+            stack.pop();
+        }
+        const parent = stack[stack.length - 1].obj;
+
+        // Handle array items
+        if (trimmed.startsWith('- ')) {
+            const itemContent = trimmed.slice(2).trim();
+            const parentKey = stack[stack.length - 1].key;
+
+            if (parentKey && !Array.isArray(parent[parentKey])) {
+                parent[parentKey] = [];
+            }
+
+            const arr = parentKey ? parent[parentKey] as unknown[] : [];
+
+            if (itemContent.includes(':')) {
+                // Object in array
+                const colonIdx = itemContent.indexOf(':');
+                const key = itemContent.slice(0, colonIdx).trim();
+                const value = itemContent.slice(colonIdx + 1).trim();
+                const itemObj: Record<string, unknown> = {};
+                if (value) {
+                    itemObj[key] = parseYamlValue(value);
+                }
+                arr.push(itemObj);
+                stack.push({ obj: itemObj, indent, key });
+            } else if (itemContent) {
+                arr.push(parseYamlValue(itemContent));
+            }
+        } else if (trimmed.includes(':')) {
+            // Key-value pair
+            const colonIdx = trimmed.indexOf(':');
+            const key = trimmed.slice(0, colonIdx).trim();
+            const value = trimmed.slice(colonIdx + 1).trim();
+
+            if (value === '' || value === null) {
+                // Nested object or array - check next line
+                const nextLine = i + 1 < lines.length ? lines[i + 1].trim() : '';
+                if (nextLine.startsWith('- ')) {
+                    parent[key] = [];
+                    stack.push({ obj: parent, indent, key });
+                } else {
+                    const nested: Record<string, unknown> = {};
+                    parent[key] = nested;
+                    stack.push({ obj: nested, indent, key });
+                }
+            } else {
+                parent[key] = parseYamlValue(value);
+            }
+        }
+    }
+
+    return result;
 }
 
 /**
@@ -124,6 +275,68 @@ export async function saveConfig(
     const configPath = path.join(workspaceRoot, CONFIG_FILENAME);
     const content = JSON.stringify(config, null, 2);
     await fs.promises.writeFile(configPath, content, 'utf-8');
+}
+
+/**
+ * Save publish configuration as YAML
+ */
+export async function saveConfigYaml(
+    workspaceRoot: string,
+    config: PublishConfig
+): Promise<void> {
+    const configPath = path.join(workspaceRoot, CONFIG_YAML_FILENAME);
+    const content = configToYaml(config);
+    await fs.promises.writeFile(configPath, content, 'utf-8');
+}
+
+/**
+ * Convert PublishConfig to YAML string
+ */
+function configToYaml(config: PublishConfig): string {
+    const lines: string[] = [
+        '# Scimax Publishing Configuration',
+        '# Compatible with Jupyter Book format',
+        '',
+    ];
+
+    // Get default project
+    const projectName = config.defaultProject || Object.keys(config.projects)[0];
+    const project = config.projects[projectName];
+
+    if (project && !('components' in project)) {
+        const p = project as PublishProject;
+
+        if (p.sitemapTitle) lines.push(`title: "${p.sitemapTitle}"`);
+        lines.push('');
+
+        // Publish settings
+        lines.push('publish:');
+        lines.push(`  base_directory: "${p.baseDirectory}"`);
+        lines.push(`  publishing_directory: "${p.publishingDirectory}"`);
+        if (p.recursive !== undefined) lines.push(`  recursive: ${p.recursive}`);
+        if (p.exclude) lines.push(`  exclude: "${p.exclude}"`);
+        if (p.autoSitemap !== undefined) lines.push(`  auto_sitemap: ${p.autoSitemap}`);
+        if (p.sitemapFilename) lines.push(`  sitemap_filename: "${p.sitemapFilename}"`);
+        lines.push('');
+
+        // HTML settings
+        lines.push('html:');
+        if (p.useDefaultTheme !== undefined) lines.push(`  use_default_theme: ${p.useDefaultTheme}`);
+        if (p.withToc !== undefined) lines.push(`  toc_depth: ${typeof p.withToc === 'number' ? p.withToc : 3}`);
+        if (p.cssFiles && p.cssFiles.length > 0) {
+            lines.push('  css_files:');
+            for (const css of p.cssFiles) {
+                lines.push(`    - "${css}"`);
+            }
+        }
+        lines.push('');
+    }
+
+    // Global settings
+    if (config.githubPages !== undefined) lines.push(`github_pages: ${config.githubPages}`);
+    if (config.customDomain) lines.push(`custom_domain: "${config.customDomain}"`);
+
+    return lines.join('\n');
 }
 
 // =============================================================================

@@ -236,6 +236,11 @@ export const GITHUB_PAGES_PRESET: Partial<PublishProject> = {
 export const CONFIG_FILENAME = '.org-publish.json';
 
 /**
+ * YAML configuration file name (Jupyter Book compatible)
+ */
+export const CONFIG_YAML_FILENAME = '_config.yml';
+
+/**
  * TOC file name (Jupyter Book compatible)
  */
 export const TOC_FILENAME = '_toc.yml';
