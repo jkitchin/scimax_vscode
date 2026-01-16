@@ -15,7 +15,7 @@ The publishing system follows a wizard-first approach - most users can get start
 
 ** Step 1: Initialize a Publishing Project
 
-Run the command =Scimax: Initialize Publishing Project= (=C-c C-p i=) to start the 5-step wizard:
+Run the command =Scimax: Initialize Publishing Project= (=C-c C-e p i=) to start the 5-step wizard:
 
 1. *Project name* - A short identifier (e.g., "my-website")
 2. *Source directory* - Where your org files are located (default: =./org=)
@@ -45,7 +45,7 @@ Welcome to my project documentation!
 
 ** Step 3: Publish
 
-Run =Scimax: Publish Project= (=C-c C-p p=) to generate HTML files.
+Run =Scimax: Publish Project= (=C-c C-e p p=) to generate HTML files.
 
 ** Step 4: Deploy to GitHub Pages
 
@@ -59,11 +59,11 @@ Run =Scimax: Publish Project= (=C-c C-p p=) to generate HTML files.
 
 | Command                              | Keybinding      | Description                       |
 |--------------------------------------+-----------------+-----------------------------------|
-| =scimax.publish.init=                | =C-c C-p i=     | Initialize publishing project     |
-| =scimax.publish.project=             | =C-c C-p p=     | Publish selected project          |
-| =scimax.publish.file=                | =C-c C-p f=     | Publish current file only         |
-| =scimax.publish.all=                 | =C-c C-p a=     | Publish all configured projects   |
-| =scimax.publish.preview=             | =C-c C-p v=     | Preview published site in browser |
+| =scimax.publish.init=                | =C-c C-e p i=   | Initialize publishing project     |
+| =scimax.publish.project=             | =C-c C-e p p=   | Publish selected project          |
+| =scimax.publish.file=                | =C-c C-e p f=   | Publish current file only         |
+| =scimax.publish.all=                 | =C-c C-e p a=   | Publish all configured projects   |
+| =scimax.publish.preview=             | =C-c C-e p v=   | Preview published site in browser |
 | =scimax.publish.openConfig=          | -               | Open .org-publish.json config     |
 
 * Configuration File
@@ -619,7 +619,7 @@ See <a href="other-page.html">the other page</a> for details.
 
 ** "No publishing configuration found"
 
-Run =Scimax: Initialize Publishing Project= (=C-c C-p i=) to create a =.org-publish.json= file.
+Run =Scimax: Initialize Publishing Project= (=C-c C-e p i=) to create a =.org-publish.json= file.
 
 ** "Base directory does not exist"
 

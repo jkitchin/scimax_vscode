@@ -3111,31 +3111,31 @@
       },
       {
         "command": "scimax.publish.project",
-        "key": "ctrl+c ctrl+p p",
-        "mac": "ctrl+c ctrl+p p",
+        "key": "ctrl+c ctrl+e p p",
+        "mac": "ctrl+c ctrl+e p p",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
         "command": "scimax.publish.file",
-        "key": "ctrl+c ctrl+p f",
-        "mac": "ctrl+c ctrl+p f",
+        "key": "ctrl+c ctrl+e p f",
+        "mac": "ctrl+c ctrl+e p f",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
         "command": "scimax.publish.all",
-        "key": "ctrl+c ctrl+p a",
-        "mac": "ctrl+c ctrl+p a",
+        "key": "ctrl+c ctrl+e p a",
+        "mac": "ctrl+c ctrl+e p a",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
         "command": "scimax.publish.init",
-        "key": "ctrl+c ctrl+p i",
-        "mac": "ctrl+c ctrl+p i"
+        "key": "ctrl+c ctrl+e p i",
+        "mac": "ctrl+c ctrl+e p i"
       },
       {
         "command": "scimax.publish.preview",
-        "key": "ctrl+c ctrl+p v",
-        "mac": "ctrl+c ctrl+p v"
+        "key": "ctrl+c ctrl+e p v",
+        "mac": "ctrl+c ctrl+e p v"
       }
     ],
     "configuration": {
