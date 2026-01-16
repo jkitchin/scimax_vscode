@@ -2011,6 +2011,30 @@
       {
         "command": "scimax.org.lintCheckers",
         "title": "Scimax: Org Lint - Configure Checkers"
+      },
+      {
+        "command": "scimax.publish.init",
+        "title": "Scimax: Initialize Publishing Project"
+      },
+      {
+        "command": "scimax.publish.project",
+        "title": "Scimax: Publish Project"
+      },
+      {
+        "command": "scimax.publish.all",
+        "title": "Scimax: Publish All Projects"
+      },
+      {
+        "command": "scimax.publish.file",
+        "title": "Scimax: Publish Current File"
+      },
+      {
+        "command": "scimax.publish.preview",
+        "title": "Scimax: Preview Published Site"
+      },
+      {
+        "command": "scimax.publish.openConfig",
+        "title": "Scimax: Open Publishing Config"
       }
     ],
     "keybindings": [
@@ -3084,6 +3108,34 @@
         "command": "scimax.capture.todo",
         "key": "ctrl+c t",
         "mac": "ctrl+c t"
+      },
+      {
+        "command": "scimax.publish.project",
+        "key": "ctrl+c ctrl+e p p",
+        "mac": "ctrl+c ctrl+e p p",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.publish.file",
+        "key": "ctrl+c ctrl+e p f",
+        "mac": "ctrl+c ctrl+e p f",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.publish.all",
+        "key": "ctrl+c ctrl+e p a",
+        "mac": "ctrl+c ctrl+e p a",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.publish.init",
+        "key": "ctrl+c ctrl+e p i",
+        "mac": "ctrl+c ctrl+e p i"
+      },
+      {
+        "command": "scimax.publish.preview",
+        "key": "ctrl+c ctrl+e p v",
+        "mac": "ctrl+c ctrl+e p v"
       }
     ],
     "configuration": {

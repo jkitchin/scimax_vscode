@@ -1,0 +1,19 @@
+{
+  "projects": {
+    "docs": {
+      "name": "docs",
+      "baseDirectory": "./docs",
+      "publishingDirectory": "./docs-html",
+      "recursive": true,
+      "autoSitemap": true,
+      "sitemapFilename": "sitemap.org",
+      "sitemapTitle": "Scimax VS Code Documentation",
+      "sitemapStyle": "list",
+      "sitemapSortFiles": "alphabetically",
+      "withToc": 2,
+      "sectionNumbers": false,
+      "useDefaultTheme": true
+    }
+  },
+  "githubPages": true
+}

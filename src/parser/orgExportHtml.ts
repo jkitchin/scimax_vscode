@@ -699,16 +699,28 @@ export class HtmlExportBackend implements ExportBackend {
         // Handle different link types
         switch (linkType) {
             case 'http':
-            case 'https':
-                href = rawLink || path;
+                // HTTP/HTTPS links - use the path directly (includes protocol)
+                href = path;
                 break;
             case 'file':
                 // Convert file links to relative paths
-                href = path.replace(/\.org$/, '.html');
+                // Strip file: prefix if present, convert .org/.md to .html
+                href = path
+                    .replace(/^file:/, '')
+                    .replace(/\.(org|md)$/i, '.html');
                 break;
             case 'id':
                 // Look up ID in targets
                 href = `#${path}`;
+                break;
+            case 'custom-id':
+                // Custom ID reference (starts with #)
+                href = path.startsWith('#') ? path : `#${path}`;
+                break;
+            case 'headline':
+                // Headline reference (starts with *)
+                const headlineText = path.startsWith('*') ? path.slice(1) : path;
+                href = `#${generateId(headlineText)}`;
                 break;
             case 'internal':
                 href = `#${generateId(path)}`;
@@ -716,8 +728,19 @@ export class HtmlExportBackend implements ExportBackend {
             case 'mailto':
                 href = `mailto:${path}`;
                 break;
+            case 'fuzzy':
+                // Fuzzy links - could be internal target or headline
+                if (state.customIds.has(path)) {
+                    href = `#${state.customIds.get(path)}`;
+                } else if (state.targets.has(path)) {
+                    href = `#${state.targets.get(path)}`;
+                } else {
+                    // Assume it's a headline reference
+                    href = `#${generateId(path)}`;
+                }
+                break;
             default:
-                // Check for custom ID
+                // Check for custom ID or use as-is
                 if (state.customIds.has(path)) {
                     href = `#${state.customIds.get(path)}`;
                 } else {

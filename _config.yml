@@ -1,0 +1,18 @@
+# Scimax VS Code Documentation
+# Jupyter Book compatible configuration
+
+title: "Scimax VS Code Documentation"
+author: "Scimax VS Code Team"
+
+publish:
+  base_directory: "./docs"
+  publishing_directory: "./docs-html"
+  recursive: true
+  auto_sitemap: true
+  sitemap_filename: "index.org"
+
+html:
+  use_default_theme: true
+  toc_depth: 3
+
+github_pages: true

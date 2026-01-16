@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>References and Citations</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo { font-weight: bold; padding: 0.2em 0.5em; border-radius: 3px; }
+.org-todo.org-todo { background: #ff6b6b; color: white; }
+.org-todo.org-done { background: #51cf66; color: white; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">References and Citations</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<div id="org-overview" class="org-section org-level-1">
+<h1>Overview</h1>
+<p>Scimax VS Code provides comprehensive bibliography and citation management inspired by Emacs org-ref. This system allows you to:</p>
+
+<ul>
+<li><p>Manage BibTeX bibliography files</p>
+</li>
+<li><p>Insert and format citations in multiple styles</p>
+</li>
+<li><p>Follow citation links to PDFs, URLs, and notes</p>
+</li>
+<li><p>Search and browse your reference library</p>
+</li>
+<li><p>Export citations to various formats</p>
+</li>
+<li><p>Integrate with CrossRef and OpenAlex for metadata</p>
+</li>
+</ul>
+
+<p>The reference system seamlessly integrates with org-mode documents while also supporting Markdown and LaTeX formats.</p>
+
+</div>
+<div id="org-setting-up-bibliography-files" class="org-section org-level-1">
+<h1>Setting Up Bibliography Files</h1>
+<div id="org-configuration" class="org-section org-level-2">
+<h2>Configuration</h2>
+<p>Configure your bibliography files in VS Code settings (<code class="verbatim">Preferences: Open Settings (UI)</code> → search for &quot;scimax ref&quot;):</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.bibliographyFiles</code></td><td>Array of .bib file paths (global)</td></tr>
+<tr><td><code class="verbatim">scimax.ref.pdfDirectory</code></td><td>Directory containing PDF files</td></tr>
+<tr><td><code class="verbatim">scimax.ref.notesDirectory</code></td><td>Directory for reference notes (.org files)</td></tr>
+<tr><td><code class="verbatim">scimax.ref.defaultCiteStyle</code></td><td>Default citation style (cite, citet, citep)</td></tr>
+<tr><td><code class="verbatim">scimax.ref.autoDownloadPdf</code></td><td>Auto-download PDFs from DOI (experimental)</td></tr>
+</tbody>
+</table>
+
+<div id="org-example-configuration" class="org-section org-level-3">
+<h3>Example Configuration</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.ref.bibliographyFiles&quot;: [
+    &quot;~/Documents/references.bib&quot;,
+    &quot;~/research/bibliography.bib&quot;
+  ],
+  &quot;scimax.ref.pdfDirectory&quot;: &quot;~/Documents/papers/&quot;,
+  &quot;scimax.ref.notesDirectory&quot;: &quot;~/Documents/notes/&quot;,
+  &quot;scimax.ref.defaultCiteStyle&quot;: &quot;cite&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-document-local-bibliography-files" class="org-section org-level-2">
+<h2>Document-Local Bibliography Files</h2>
+<p>You can specify bibliography files per document using:</p>
+
+<div id="org-bibliography-links" class="org-section org-level-3">
+<h3>Bibliography Links</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">bibliography:~/Documents/refs.bib
+bibliography:./local-refs.bib,~/global-refs.bib</code></pre>
+</div>
+
+<p>Multiple files are comma-separated. Paths can be:</p>
+
+<ul>
+<li><p>Absolute: <code class="verbatim">/path/to/file.bib</code></p>
+</li>
+<li><p>Home-relative: <code class="verbatim">~/Documents/refs.bib</code></p>
+</li>
+<li><p>Document-relative: <code class="verbatim">./refs.bib</code> or <code class="verbatim">../shared/refs.bib</code></p>
+</li>
+</ul>
+
+</div>
+<div id="org-bibliography-keywords" class="org-section org-level-3">
+<h3>Bibliography Keywords</h3>
+<p>Alternative org-mode syntax:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BIBLIOGRAPHY: ~/Documents/references.bib</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-workspace-bibliography-files" class="org-section org-level-2">
+<h2>Workspace Bibliography Files</h2>
+<p>The extension automatically discovers all <code class="verbatim">.bib</code> files in your workspace and makes them available for citation completion.</p>
+
+</div>
+<div id="org-creating-a-bibliography-file" class="org-section org-level-2">
+<h2>Creating a Bibliography File</h2>
+<p>Create a new <code class="verbatim">.bib</code> file manually or use the command:</p>
+
+<ul>
+<li><p><code class="verbatim">scimax.ref.openBibliography</code> - Opens bibliography file or creates new one</p>
+</li>
+</ul>
+
+<p>Basic BibTeX entry structure:</p>
+
+<div class="org-src-container">
+<pre class="src src-bibtex"><code class="language-bibtex">@article{smith2024machine,
+  author = {Smith, John and Doe, Jane},
+  title = {Machine Learning for Scientific Computing},
+  journal = {Journal of Computational Science},
+  year = {2024},
+  volume = {15},
+  number = {3},
+  pages = {123--145},
+  doi = {10.1000/jcs.2024.0001}
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-citation-link-types" class="org-section org-level-1">
+<h1>Citation Link Types</h1>
+<p>Scimax VS Code supports multiple citation styles for different contexts:</p>
+
+<div id="org-citation-styles" class="org-section org-level-2">
+<h2>Citation Styles</h2>
+<table class="org-table">
+<thead>
+<tr><th>Style</th><th>Syntax</th><th>Rendered As (typical)</th><th>Use Case</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">cite</code></td><td><code class="verbatim">cite:key</code></td><td>[1] or (Smith, 2024)</td><td>Basic citation</td></tr>
+<tr><td><code class="verbatim">citet</code></td><td><code class="verbatim">citet:key</code></td><td>Smith (2024)</td><td>Textual citation</td></tr>
+<tr><td><code class="verbatim">citep</code></td><td><code class="verbatim">citep:key</code></td><td>(Smith, 2024)</td><td>Parenthetical citation</td></tr>
+<tr><td><code class="verbatim">citeauthor</code></td><td><code class="verbatim">citeauthor:key</code></td><td>Smith</td><td>Author name only</td></tr>
+<tr><td><code class="verbatim">citeyear</code></td><td><code class="verbatim">citeyear:key</code></td><td>2024</td><td>Year only</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-multiple-citations" class="org-section org-level-2">
+<h2>Multiple Citations</h2>
+<p>Cite multiple sources by separating keys with commas:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">cite:smith2024,jones2023,doe2022
+citet:nguyen2023,chen2024</code></pre>
+</div>
+
+<p>Renders as: (Smith, 2024; Jones, 2023; Doe, 2022) or [1-3]</p>
+
+</div>
+<div id="org-citation-formats-by-file-type" class="org-section org-level-2">
+<h2>Citation Formats by File Type</h2>
+<p>Citations adapt to your document format:</p>
+
+<div id="org-org-mode-format" class="org-section org-level-3">
+<h3>Org-Mode Format</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">cite:smith2024
+citet:jones2023
+citep:doe2022,nguyen2023</code></pre>
+</div>
+
+</div>
+<div id="org-markdown-pandoc-format" class="org-section org-level-3">
+<h3>Markdown/Pandoc Format</h3>
+<p>The insert citation command generates Pandoc-style citations in Markdown files:</p>
+
+<div class="org-src-container">
+<pre class="src src-markdown"><code class="language-markdown">[@smith2024]
+[@jones2023, p. 42]
+[see @smith2024; also @jones2023]</code></pre>
+</div>
+
+</div>
+<div id="org-latex-format" class="org-section org-level-3">
+<h3>LaTeX Format</h3>
+<p>For LaTeX documents, citations use standard LaTeX commands:</p>
+
+<div class="org-src-container">
+<pre class="src src-latex"><code class="language-latex">\cite{smith2024}
+\citet{jones2023}
+\citep{doe2022,nguyen2023}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-org-mode-9-5-citation-syntax" class="org-section org-level-2">
+<h2>Org-Mode 9.5+ Citation Syntax</h2>
+<p>Modern org-mode citation syntax is also supported:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[cite:@smith2024]
+[cite/t:@jones2023]
+[cite/p:@doe2022;@nguyen2023]</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-inserting-citations" class="org-section org-level-1">
+<h1>Inserting Citations</h1>
+<div id="org-insert-citation-command" class="org-section org-level-2">
+<h2>Insert Citation Command</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Ctrl+C ]</code></td><td>Insert citation (<code class="verbatim">scimax.ref.insertCitation</code>)</td></tr>
+</tbody>
+</table>
+
+<div id="org-interactive-citation-insertion" class="org-section org-level-3">
+<h3>Interactive Citation Insertion</h3>
+<ol>
+<li><p>Press <code class="verbatim">Ctrl+C ]</code> or run command <code class="verbatim">scimax.ref.insertCitation</code></p>
+</li>
+<li><p>Search and select a reference (searches key, author, title, year)</p>
+</li>
+<li><p>Choose citation style (cite, citet, citep, citeauthor, citeyear)</p>
+</li>
+<li><p>Citation is inserted at cursor</p>
+</li>
+</ol>
+
+</div>
+<div id="org-appending-to-existing-citations" class="org-section org-level-3">
+<h3>Appending to Existing Citations</h3>
+<p>When cursor is on an existing citation:</p>
+
+<ol>
+<li><p>Press <code class="verbatim">Ctrl+C ]</code></p>
+</li>
+<li><p>Select additional reference</p>
+</li>
+<li><p>Key is automatically appended: <code class="verbatim">cite:key1,key2</code></p>
+</li>
+</ol>
+
+<p>The command detects when you&#39;re on a citation and adds the new key to the list.</p>
+
+</div>
+</div>
+<div id="org-citation-completion" class="org-section org-level-2">
+<h2>Citation Completion</h2>
+<p>Auto-completion triggers after typing:</p>
+
+<ul>
+<li><p><code class="verbatim">cite:</code> (org-mode)</p>
+</li>
+<li><p><code class="verbatim">@</code> (Markdown/Pandoc)</p>
+</li>
+<li><p><code class="verbatim">\cite{</code> (LaTeX)</p>
+</li>
+</ul>
+
+<p>Completion shows:</p>
+
+<ul>
+<li><p>Citation key</p>
+</li>
+<li><p>Author and year</p>
+</li>
+<li><p>Full formatted citation on hover</p>
+</li>
+</ul>
+
+</div>
+<div id="org-quick-citation-commands" class="org-section org-level-2">
+<h2>Quick Citation Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.insertCitation</code></td><td>Insert/append citation</td></tr>
+<tr><td><code class="verbatim">scimax.ref.insertRef</code></td><td>Insert cross-reference (ref:, eqref:)</td></tr>
+<tr><td><code class="verbatim">scimax.ref.insertBibliography</code></td><td>Insert bibliography link</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-following-citation-links" class="org-section org-level-1">
+<h1>Following Citation Links</h1>
+<div id="org-citation-link-actions" class="org-section org-level-2">
+<h2>Citation Link Actions</h2>
+<p>Click on a citation or press <code class="verbatim">Ctrl+C Ctrl+O</code> on a citation to open an action menu:</p>
+
+<div id="org-for-known-citations" class="org-section org-level-3">
+<h3>For Known Citations</h3>
+<table class="org-table">
+<thead>
+<tr><th>Action</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>Open BibTeX Entry</td><td>Jump to entry in .bib file</td></tr>
+<tr><td>Open DOI</td><td>Open DOI URL in browser</td></tr>
+<tr><td>Open URL</td><td>Open entry&#39;s URL field in browser</td></tr>
+<tr><td>Open PDF</td><td>Open PDF file if available</td></tr>
+<tr><td>Open/Create Notes</td><td>Open reference notes file</td></tr>
+<tr><td>Citing Works (OpenAlex)</td><td>Show papers that cite this work</td></tr>
+<tr><td>Related Works (OpenAlex)</td><td>Show related papers</td></tr>
+<tr><td>View in OpenAlex</td><td>Open in OpenAlex web interface</td></tr>
+<tr><td>Copy Citation Key</td><td>Copy key to clipboard</td></tr>
+<tr><td>Copy BibTeX</td><td>Copy full BibTeX entry to clipboard</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-for-unknown-citations" class="org-section org-level-3">
+<h3>For Unknown Citations</h3>
+<p>If citation key is not found in bibliography:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Action</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>Search Google Scholar</td><td>Search for the key on Google Scholar</td></tr>
+<tr><td>Search CrossRef</td><td>Search CrossRef database</td></tr>
+<tr><td>Add from DOI</td><td>Fetch BibTeX from DOI</td></tr>
+<tr><td>Copy Key</td><td>Copy citation key to clipboard</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-citation-hover-information" class="org-section org-level-2">
+<h2>Citation Hover Information</h2>
+<p>Hover over a citation to see:</p>
+
+<ul>
+<li><p>Full title and authors</p>
+</li>
+<li><p>Publication venue and year</p>
+</li>
+<li><p>Abstract (if available)</p>
+</li>
+<li><p>DOI and URL links</p>
+</li>
+<li><p>Citation count (via OpenAlex)</p>
+</li>
+<li><p>Open Access status</p>
+</li>
+<li><p>Quick action links</p>
+</li>
+</ul>
+
+</div>
+<div id="org-opening-pdfs" class="org-section org-level-2">
+<h2>Opening PDFs</h2>
+<p>The system looks for PDF files in <code class="verbatim">scimax.ref.pdfDirectory</code> using these patterns:</p>
+
+<ol>
+<li><p><code class="verbatim">key.pdf</code> (exact key match)</p>
+</li>
+<li><p><code class="verbatim">Author_Year.pdf</code> (first author and year)</p>
+</li>
+<li><p><code class="verbatim">DOI.pdf</code> (DOI with slashes replaced by underscores)</p>
+</li>
+</ol>
+
+<p>If no local PDF is found but the entry has a DOI:</p>
+
+<ul>
+<li><p>Prompts to open DOI in browser</p>
+</li>
+<li><p>OpenAlex integration may provide Open Access PDF link</p>
+</li>
+</ul>
+
+</div>
+<div id="org-reference-notes" class="org-section org-level-2">
+<h2>Reference Notes</h2>
+<p>Each reference can have an associated notes file:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+TITLE: Notes on Machine Learning for Scientific Computing
+#+AUTHOR: Smith and Doe
+#+DATE: 2024
+#+CITE_KEY: smith2024machine
+
+,* Summary
+
+,* Key Points
+-
+
+,* Quotes
+#+BEGIN_QUOTE
+
+#+END_QUOTE
+
+,* Notes
+
+,* References</code></pre>
+</div>
+
+<p>Notes are stored in <code class="verbatim">scimax.ref.notesDirectory</code> as <code class="verbatim">key.org</code> files and created automatically with a template when first opened.</p>
+
+</div>
+</div>
+<div id="org-citation-manipulation" class="org-section org-level-1">
+<h1>Citation Manipulation</h1>
+<p>When cursor is on a citation with multiple keys:</p>
+
+<div id="org-transpose-citations" class="org-section org-level-2">
+<h2>Transpose Citations</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Shift+Left Arrow</code></td><td><code class="verbatim">scimax.ref.transposeCitationLeft</code></td><td>Swap with previous key</td></tr>
+<tr><td><code class="verbatim">Shift+Right Arrow</code></td><td><code class="verbatim">scimax.ref.transposeCitationRight</code></td><td>Swap with next key</td></tr>
+</tbody>
+</table>
+
+<p>Example:</p>
+
+<pre class="example">cite:jones2023,smith2024,doe2022
+       ^cursor here
+
+Press Shift+Right:
+cite:jones2023,doe2022,smith2024
+                      ^cursor follows</pre>
+
+</div>
+<div id="org-sort-citations" class="org-section org-level-2">
+<h2>Sort Citations</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Shift+Up Arrow</code></td><td><code class="verbatim">scimax.ref.sortCitations</code></td><td>Sort by year (oldest first)</td></tr>
+<tr><td><code class="verbatim">Shift+Down</code></td><td><code class="verbatim">scimax.ref.sortCitationsByYear</code></td><td>Sort by year (newest first)</td></tr>
+<tr><td></td><td><code class="verbatim">scimax.ref.sortCitationsAlphabetically</code></td><td>Sort alphabetically by key</td></tr>
+</tbody>
+</table>
+
+<p>Citations are sorted by extracting year from:</p>
+
+<ol>
+<li><p>Bibliography entry year field</p>
+</li>
+<li><p>Year pattern in citation key (e.g., <code class="verbatim">smith-2024-machine</code>)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-delete-citation-key" class="org-section org-level-2">
+<h2>Delete Citation Key</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.deleteCitation</code></td><td>Delete current key or entire citation</td></tr>
+</tbody>
+</table>
+
+<ul>
+<li><p>If multiple keys: Removes current key only</p>
+</li>
+<li><p>If single key: Deletes entire citation</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-bibliography-display" class="org-section org-level-1">
+<h1>Bibliography Display</h1>
+<div id="org-references-tree-view" class="org-section org-level-2">
+<h2>References Tree View</h2>
+<p>The References view shows your bibliography organized by entry type:</p>
+
+<pre class="example">REFERENCES
+├─ article (45)
+│  ├─ smith2024machine: Smith (2024)
+│  ├─ jones2023deep: Jones (2023)
+│  └─ ...
+├─ book (12)
+│  ├─ doe2022python: Doe (2022)
+│  └─ ...
+└─ inproceedings (23)
+   └─ ...</pre>
+
+<p>Click an entry to open the action menu.</p>
+
+</div>
+<div id="org-search-references" class="org-section org-level-2">
+<h2>Search References</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.searchReferences</code></td><td>Search bibliography by author/title/year</td></tr>
+</tbody>
+</table>
+
+<p>Searches across:</p>
+
+<ul>
+<li><p>Citation keys</p>
+</li>
+<li><p>Author names</p>
+</li>
+<li><p>Titles</p>
+</li>
+<li><p>Years</p>
+</li>
+<li><p>Journals</p>
+</li>
+<li><p>Keywords</p>
+</li>
+</ul>
+
+<p>Results are ranked by relevance (key matches first, then author, then title).</p>
+
+</div>
+<div id="org-find-citations" class="org-section org-level-2">
+<h2>Find Citations</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.findCitations</code></td><td>Find all citations of a reference</td></tr>
+</tbody>
+</table>
+
+<p>Searches workspace for citations of a selected key in all org, markdown, and LaTeX files. Results shown in peek view for quick navigation.</p>
+
+</div>
+</div>
+<div id="org-fetching-references-from-doi" class="org-section org-level-1">
+<h1>Fetching References from DOI</h1>
+<div id="org-add-reference-from-doi" class="org-section org-level-2">
+<h2>Add Reference from DOI</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.fetchFromDOI</code></td><td>Fetch BibTeX entry from DOI via CrossRef</td></tr>
+</tbody>
+</table>
+
+<div id="org-usage" class="org-section org-level-3">
+<h3>Usage</h3>
+<ol>
+<li><p>Run <code class="verbatim">scimax.ref.fetchFromDOI</code></p>
+</li>
+<li><p>Enter DOI (accepts <code class="verbatim">10.xxx/xxx</code> or <code class="verbatim">https://doi.org/10.xxx/xxx</code>)</p>
+</li>
+<li><p>Preview the fetched entry</p>
+</li>
+<li><p>Choose action:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-doi-resolution" class="org-section org-level-3">
+<h3>DOI Resolution</h3>
+<p>The system fetches metadata from CrossRef API and converts it to BibTeX format. If the key already exists, you can:</p>
+
+<ul>
+<li><p>Replace the existing entry</p>
+</li>
+<li><p>Generate a new unique key</p>
+</li>
+<li><p>Cancel</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-openalex-integration" class="org-section org-level-2">
+<h2>OpenAlex Integration</h2>
+<p>OpenAlex provides enhanced metadata for academic works:</p>
+
+<div id="org-show-citing-works" class="org-section org-level-3">
+<h3>Show Citing Works</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.showCitingWorks</code></td><td>Show papers citing this work</td></tr>
+</tbody>
+</table>
+
+<p>Displays papers that cite the selected reference with:</p>
+
+<ul>
+<li><p>Title, authors, year</p>
+</li>
+<li><p>Citation count</p>
+</li>
+<li><p>Open Access status and PDF link</p>
+</li>
+<li><p>Publication venue</p>
+</li>
+</ul>
+
+</div>
+<div id="org-show-related-works" class="org-section org-level-3">
+<h3>Show Related Works</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.showRelatedWorks</code></td><td>Show related papers</td></tr>
+</tbody>
+</table>
+
+<p>Shows papers related to the selected reference based on OpenAlex&#39;s relatedness algorithm.</p>
+
+</div>
+<div id="org-search-openalex" class="org-section org-level-3">
+<h3>Search OpenAlex</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.searchOpenAlex</code></td><td>Search OpenAlex database</td></tr>
+</tbody>
+</table>
+
+<p>Search the global OpenAlex database for works by title, author, or keywords. Results include:</p>
+
+<ul>
+<li><p>Citation counts</p>
+</li>
+<li><p>Open Access status</p>
+</li>
+<li><p>Topic classification</p>
+</li>
+<li><p>Abstracts</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-doi-hover-information" class="org-section org-level-2">
+<h2>DOI Hover Information</h2>
+<p>Hover over DOI links (<code class="verbatim">doi:10.xxx</code>, <code class="verbatim">https://doi.org/10.xxx</code>) to see:</p>
+
+<ul>
+<li><p>Title, authors, publication info</p>
+</li>
+<li><p>Citation count (via OpenAlex)</p>
+</li>
+<li><p>Open Access status and PDF link</p>
+</li>
+<li><p>Abstract</p>
+</li>
+<li><p>Quick actions: Add to bibliography, open DOI, view citing works</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-cross-references" class="org-section org-level-1">
+<h1>Cross-References</h1>
+<p>Beyond citations, Scimax supports cross-references to figures, tables, equations, and sections.</p>
+
+<div id="org-reference-link-types" class="org-section org-level-2">
+<h2>Reference Link Types</h2>
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Example</th><th>References</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">ref</code></td><td><code class="verbatim">ref:fig-results</code></td><td>Figures, tables, sections</td></tr>
+<tr><td><code class="verbatim">eqref</code></td><td><code class="verbatim">eqref:eq-1</code></td><td>Equations (with parentheses)</td></tr>
+<tr><td><code class="verbatim">pageref</code></td><td><code class="verbatim">pageref:intro</code></td><td>Page number reference</td></tr>
+<tr><td><code class="verbatim">nameref</code></td><td><code class="verbatim">nameref:methods</code></td><td>Name/title of section</td></tr>
+<tr><td><code class="verbatim">autoref</code></td><td><code class="verbatim">autoref:tbl-1</code></td><td>Auto-formatted (Figure 1, Table 2, etc.)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-insert-cross-reference" class="org-section org-level-2">
+<h2>Insert Cross-Reference</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Ctrl+Shift+]</code></td><td>Insert ref (<code class="verbatim">scimax.ref.insertRef</code>)</td></tr>
+</tbody>
+</table>
+
+<ol>
+<li><p>Run <code class="verbatim">scimax.ref.insertRef</code></p>
+</li>
+<li><p>Select label from workspace</p>
+</li>
+<li><p>Choose reference type (ref, eqref, pageref, etc.)</p>
+</li>
+<li><p>Reference inserted at cursor</p>
+</li>
+</ol>
+
+</div>
+<div id="org-label-definitions" class="org-section org-level-2">
+<h2>Label Definitions</h2>
+<p>Define labels for cross-referencing:</p>
+
+<div id="org-org-mode-labels" class="org-section org-level-3">
+<h3>Org-Mode Labels</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+NAME: fig-results
+,#+CAPTION: Experimental results
+[[file:./images/results.png]]
+
+,#+NAME: tbl-data
+,#+CAPTION: Data summary
+| Column 1 | Column 2 |
+|----------+----------|
+| Data     | Values   |
+
+label:eq-main  \[ E = mc^2 \]
+
+,* Methods
+:PROPERTIES:
+:CUSTOM_ID: methods
+:END:</code></pre>
+</div>
+
+<p>References:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">See ref:fig-results for the results.
+As shown in eqref:eq-main, energy equals...
+The ref:methods section describes our approach.</code></pre>
+</div>
+
+</div>
+<div id="org-latex-labels" class="org-section org-level-3">
+<h3>LaTeX Labels</h3>
+<div class="org-src-container">
+<pre class="src src-latex"><code class="language-latex">\begin{equation}
+  \label{eq:main}
+  E = mc^2
+\end{equation}
+
+See equation \eqref{eq:main} for details.</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-reference-hover" class="org-section org-level-2">
+<h2>Reference Hover</h2>
+<p>Hover over cross-references to see:</p>
+
+<ul>
+<li><p>Label type (figure, table, equation, heading)</p>
+</li>
+<li><p>Caption or heading text</p>
+</li>
+<li><p>Surrounding context</p>
+</li>
+<li><p>Link to jump to definition</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-export-of-citations" class="org-section org-level-1">
+<h1>Export of Citations</h1>
+<div id="org-html-export" class="org-section org-level-2">
+<h2>HTML Export</h2>
+<p>Citations in HTML export:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">cite:smith2024</code></pre>
+</div>
+
+<p>Exports to:</p>
+
+<div class="org-src-container">
+<pre class="src src-html"><code class="language-html">&lt;a href=&quot;#smith2024&quot; class=&quot;citation&quot;&gt;Smith (2024)&lt;/a&gt;</code></pre>
+</div>
+
+<p>Bibliography sections are formatted as lists with anchors.</p>
+
+</div>
+<div id="org-latex-export" class="org-section org-level-2">
+<h2>LaTeX Export</h2>
+<p>Citations convert to LaTeX commands:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Org Citation</th><th>LaTeX Output</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">cite:key</code></td><td><code class="verbatim">\cite{key}</code></td></tr>
+<tr><td><code class="verbatim">citet:key</code></td><td><code class="verbatim">\citet{key}</code></td></tr>
+<tr><td><code class="verbatim">citep:key</code></td><td><code class="verbatim">\citep{key}</code></td></tr>
+<tr><td><code class="verbatim">citeauthor:key</code></td><td><code class="verbatim">\citeauthor{key}</code></td></tr>
+<tr><td><code class="verbatim">citeyear:key</code></td><td><code class="verbatim">\citeyear{key}</code></td></tr>
+</tbody>
+</table>
+
+<p>Bibliography links export to <code class="verbatim">\bibliography{file}</code> commands.</p>
+
+</div>
+<div id="org-markdown-export" class="org-section org-level-2">
+<h2>Markdown Export</h2>
+<p>Citations export to Pandoc citation syntax:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Org Citation</th><th>Pandoc Markdown Output</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">cite:key</code></td><td><code class="verbatim">[@key]</code></td></tr>
+<tr><td><code class="verbatim">citet:key</code></td><td><code class="verbatim">@key</code></td></tr>
+<tr><td><code class="verbatim">citep:key</code></td><td><code class="verbatim">[@key]</code></td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-extract-bibliography-for-document" class="org-section org-level-2">
+<h2>Extract Bibliography for Document</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.extractBibliography</code></td><td>Extract cited references to new .bib file</td></tr>
+</tbody>
+</table>
+
+<p>Useful for creating document-specific bibliography files:</p>
+
+<ol>
+<li><p>Scans current document for all citations</p>
+</li>
+<li><p>Looks up entries in your bibliography</p>
+</li>
+<li><p>Saves to new .bib file or copies to clipboard</p>
+</li>
+</ol>
+
+<p>Generates a portable .bib file containing only the references cited in your document.</p>
+
+</div>
+</div>
+<div id="org-managing-your-bibliography" class="org-section org-level-1">
+<h1>Managing Your Bibliography</h1>
+<div id="org-opening-bibliography-files" class="org-section org-level-2">
+<h2>Opening Bibliography Files</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.openBibliography</code></td><td>Open configured bibliography file</td></tr>
+</tbody>
+</table>
+
+<p>If multiple files configured, shows a picker.</p>
+
+</div>
+<div id="org-copy-bibtex-entry" class="org-section org-level-2">
+<h2>Copy BibTeX Entry</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.copyBibTeX</code></td><td>Copy BibTeX entry for selected reference</td></tr>
+</tbody>
+</table>
+
+<p>Select a reference and copy its BibTeX source to clipboard.</p>
+
+</div>
+<div id="org-refresh-bibliography" class="org-section org-level-2">
+<h2>Refresh Bibliography</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.refresh</code></td><td>Reload all bibliography files</td></tr>
+</tbody>
+</table>
+
+<p>Reloads all configured and workspace .bib files. Useful after external changes.</p>
+
+</div>
+<div id="org-bibliography-file-diagnostics" class="org-section org-level-2">
+<h2>Bibliography File Diagnostics</h2>
+<p>The extension validates bibliography links in org files:</p>
+
+<ul>
+<li><p>Highlights missing bibliography files</p>
+</li>
+<li><p>Shows error diagnostics for invalid paths</p>
+</li>
+<li><p>Suggests creating missing files</p>
+</li>
+</ul>
+
+</div>
+<div id="org-code-lenses-in-bib-files" class="org-section org-level-2">
+<h2>Code Lenses in .bib Files</h2>
+<p>When viewing a .bib file, code lenses appear for each entry:</p>
+
+<ul>
+<li><p><code class="verbatim">Find citations</code> - Search workspace for citations of this key</p>
+</li>
+<li><p><code class="verbatim">Copy key</code> - Copy citation key to clipboard</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-command-reference" class="org-section org-level-1">
+<h1>Command Reference</h1>
+<div id="org-citation-commands" class="org-section org-level-2">
+<h2>Citation Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Default Key</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.insertCitation</code></td><td><code class="verbatim">Ctrl+C ]</code></td><td>Insert/append citation</td></tr>
+<tr><td><code class="verbatim">scimax.ref.insertRef</code></td><td><code class="verbatim">Ctrl+Shift+]</code></td><td>Insert cross-reference</td></tr>
+<tr><td><code class="verbatim">scimax.ref.insertBibliography</code></td><td></td><td>Insert bibliography link</td></tr>
+<tr><td><code class="verbatim">scimax.ref.transposeCitationLeft</code></td><td><code class="verbatim">Shift+Left</code></td><td>Swap citation left</td></tr>
+<tr><td><code class="verbatim">scimax.ref.transposeCitationRight</code></td><td><code class="verbatim">Shift+Right</code></td><td>Swap citation right</td></tr>
+<tr><td><code class="verbatim">scimax.ref.sortCitations</code></td><td><code class="verbatim">Shift+Up</code></td><td>Sort by year ascending</td></tr>
+<tr><td><code class="verbatim">scimax.ref.sortCitationsByYear</code></td><td><code class="verbatim">Shift+Down</code></td><td>Sort by year descending</td></tr>
+<tr><td><code class="verbatim">scimax.ref.sortCitationsAlphabetically</code></td><td></td><td>Sort alphabetically</td></tr>
+<tr><td><code class="verbatim">scimax.ref.deleteCitation</code></td><td></td><td>Delete citation key</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-bibliography-commands" class="org-section org-level-2">
+<h2>Bibliography Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.openBibliography</code></td><td>Open bibliography file</td></tr>
+<tr><td><code class="verbatim">scimax.ref.searchReferences</code></td><td>Search bibliography</td></tr>
+<tr><td><code class="verbatim">scimax.ref.findCitations</code></td><td>Find citations of reference</td></tr>
+<tr><td><code class="verbatim">scimax.ref.copyBibTeX</code></td><td>Copy BibTeX entry</td></tr>
+<tr><td><code class="verbatim">scimax.ref.refresh</code></td><td>Reload bibliography files</td></tr>
+<tr><td><code class="verbatim">scimax.ref.extractBibliography</code></td><td>Extract cited references</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-doi-and-external-commands" class="org-section org-level-2">
+<h2>DOI and External Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.fetchFromDOI</code></td><td>Add reference from DOI</td></tr>
+<tr><td><code class="verbatim">scimax.ref.showCitingWorks</code></td><td>Show citing works (OpenAlex)</td></tr>
+<tr><td><code class="verbatim">scimax.ref.showRelatedWorks</code></td><td>Show related works (OpenAlex)</td></tr>
+<tr><td><code class="verbatim">scimax.ref.searchOpenAlex</code></td><td>Search OpenAlex database</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>Best Practices</h1>
+<div id="org-organizing-your-bibliography" class="org-section org-level-2">
+<h2>Organizing Your Bibliography</h2>
+<div id="org-use-consistent-citation-keys" class="org-section org-level-3">
+<h3>Use Consistent Citation Keys</h3>
+<p>Good key format: <code class="verbatim">author-year-keyword</code></p>
+
+<p>Examples:</p>
+
+<ul>
+<li><p><code class="verbatim">smith-2024-machine-learning</code></p>
+</li>
+<li><p><code class="verbatim">jones-2023-deep-neural</code></p>
+</li>
+<li><p><code class="verbatim">doe-2022-python-scientific</code></p>
+</li>
+</ul>
+
+<p>Benefits:</p>
+
+<ul>
+<li><p>Easy to remember and type</p>
+</li>
+<li><p>Sorting by name is meaningful</p>
+</li>
+<li><p>Year visible in key</p>
+</li>
+<li><p>Keyword aids recall</p>
+</li>
+</ul>
+
+</div>
+<div id="org-maintain-multiple-bib-files" class="org-section org-level-3">
+<h3>Maintain Multiple .bib Files</h3>
+<p>Organize by topic or project:</p>
+
+<pre class="example">~/Documents/
+├── machine-learning.bib      # ML papers
+├── statistics.bib             # Statistics references
+└── projects/
+    └── thesis/
+        └── thesis-refs.bib    # Thesis-specific</pre>
+
+<p>Configure global files + use document-local links for project-specific references.</p>
+
+</div>
+<div id="org-store-pdfs-systematically" class="org-section org-level-3">
+<h3>Store PDFs Systematically</h3>
+<p>Use consistent naming in PDF directory:</p>
+
+<ul>
+<li><p><code class="verbatim">smith-2024-machine-learning.pdf</code></p>
+</li>
+<li><p>Match citation keys when possible</p>
+</li>
+<li><p>Or use <code class="verbatim">FirstAuthor_Year.pdf</code> format</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-citation-workflow" class="org-section org-level-2">
+<h2>Citation Workflow</h2>
+<div id="org-literature-review-workflow" class="org-section org-level-3">
+<h3>Literature Review Workflow</h3>
+<ol>
+<li><p>Search OpenAlex: <code class="verbatim">scimax.ref.searchOpenAlex</code></p>
+</li>
+<li><p>Find relevant paper</p>
+</li>
+<li><p>Add to bibliography via DOI</p>
+</li>
+<li><p>Check citing works: <code class="verbatim">scimax.ref.showCitingWorks</code></p>
+</li>
+<li><p>Explore related works: <code class="verbatim">scimax.ref.showRelatedWorks</code></p>
+</li>
+<li><p>Create notes file for each key reference</p>
+</li>
+<li><p>Download PDFs to configured directory</p>
+</li>
+</ol>
+
+</div>
+<div id="org-writing-workflow" class="org-section org-level-3">
+<h3>Writing Workflow</h3>
+<ol>
+<li><p>Write draft with placeholder citations</p>
+</li>
+<li><p>Insert citations: <code class="verbatim">Ctrl+C ]</code></p>
+</li>
+<li><p>Search references interactively</p>
+</li>
+<li><p>Hover citations to verify</p>
+</li>
+<li><p>Before final export: <code class="verbatim">scimax.ref.extractBibliography</code></p>
+</li>
+<li><p>Creates portable .bib file with your document</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-managing-notes" class="org-section org-level-2">
+<h2>Managing Notes</h2>
+<p>Create comprehensive notes for key papers:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TITLE: Notes on Smith (2024) - Machine Learning
+,#+CITE_KEY: smith2024machine
+
+,* Summary
+Three-sentence summary of the paper
+
+,* Key Points
+- Main contribution 1
+- Main contribution 2
+- Methodology highlights
+
+,* Quotes
+,#+BEGIN_QUOTE
+&quot;Important quote from the paper&quot; (p. 42)
+,#+END_QUOTE
+
+,* Personal Notes
+Connections to my research...
+
+,* Follow-up References
+- cite:jones2023deep - Related deep learning work
+- cite:nguyen2024neural - Extends their methodology</code></pre>
+</div>
+
+<p>Link notes from your main document:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">Recent work on machine learning cite:smith2024machine (see also [[file:~/notes/smith2024machine.org][my notes]])</code></pre>
+</div>
+
+</div>
+<div id="org-export-considerations" class="org-section org-level-2">
+<h2>Export Considerations</h2>
+<div id="org-for-latex-pdf-export" class="org-section org-level-3">
+<h3>For LaTeX/PDF Export</h3>
+<p>Ensure bibliography link includes all cited .bib files:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">bibliography:~/Documents/refs.bib,./local-refs.bib</code></pre>
+</div>
+
+<p>Use standard citation styles LaTeX understands (cite, citet, citep).</p>
+
+</div>
+<div id="org-for-html-export" class="org-section org-level-3">
+<h3>For HTML Export</h3>
+<p>Citations export as links. For proper bibliography rendering:</p>
+
+<ol>
+<li><p>Ensure <code class="verbatim">#+BIBLIOGRAPHY:</code> keyword is present</p>
+</li>
+<li><p>Or include <code class="verbatim">bibliography:</code> link</p>
+</li>
+<li><p>HTML export generates bibliography section automatically</p>
+</li>
+</ol>
+
+</div>
+<div id="org-for-standalone-documents" class="org-section org-level-3">
+<h3>For Standalone Documents</h3>
+<p>Before sharing:</p>
+
+<ol>
+<li><p>Run <code class="verbatim">scimax.ref.extractBibliography</code></p>
+</li>
+<li><p>Save extracted .bib alongside document</p>
+</li>
+<li><p>Update bibliography link to local file:</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-bibtex-entry-quality" class="org-section org-level-2">
+<h2>BibTeX Entry Quality</h2>
+<p>Ensure complete entries for best results:</p>
+
+<div class="org-src-container">
+<pre class="src src-bibtex"><code class="language-bibtex">@article{key,
+  author = {Required},
+  title = {Required},
+  journal = {Recommended for articles},
+  year = {Required},
+  volume = {Recommended},
+  number = {Recommended},
+  pages = {Recommended},
+  doi = {Highly recommended - enables OpenAlex integration},
+  url = {Useful if no DOI},
+  abstract = {Helpful for hover info},
+  keywords = {Aids search}
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>Troubleshooting</h1>
+<div id="org-citation-not-found" class="org-section org-level-2">
+<h2>Citation Not Found</h2>
+<p>If citation shows &quot;not found in bibliography&quot;:</p>
+
+<ol>
+<li><p>Check spelling of citation key</p>
+</li>
+<li><p>Verify .bib file is configured or linked in document</p>
+</li>
+<li><p>Run <code class="verbatim">scimax.ref.refresh</code> to reload bibliography</p>
+</li>
+<li><p>Check .bib file for entry with that exact key</p>
+</li>
+</ol>
+
+</div>
+<div id="org-pdf-not-found" class="org-section org-level-2">
+<h2>PDF Not Found</h2>
+<p>If &quot;PDF not found&quot; when trying to open:</p>
+
+<ol>
+<li><p>Check <code class="verbatim">scimax.ref.pdfDirectory</code> is set correctly</p>
+</li>
+<li><p>Verify PDF filename matches key or <code class="verbatim">Author_Year.pdf</code> pattern</p>
+</li>
+<li><p>Check file exists with <code class="verbatim">ls</code> or file explorer</p>
+</li>
+<li><p>Try opening from DOI if available</p>
+</li>
+</ol>
+
+</div>
+<div id="org-doi-fetch-fails" class="org-section org-level-2">
+<h2>DOI Fetch Fails</h2>
+<p>If fetching from DOI fails:</p>
+
+<ol>
+<li><p>Verify DOI is correct (should start with 10.)</p>
+</li>
+<li><p>Check internet connection</p>
+</li>
+<li><p>Try searching on https://crossref.org directly</p>
+</li>
+<li><p>Some DOIs may not be in CrossRef database</p>
+</li>
+<li><p>Try OpenAlex search as alternative</p>
+</li>
+</ol>
+
+</div>
+<div id="org-bibliography-link-not-recognized" class="org-section org-level-2">
+<h2>Bibliography Link Not Recognized</h2>
+<p>If bibliography link isn&#39;t recognized:</p>
+
+<ol>
+<li><p>Check path is correct (try absolute path first)</p>
+</li>
+<li><p>Ensure .bib extension is included</p>
+</li>
+<li><p>Verify file exists at that location</p>
+</li>
+<li><p>Check for typos in filename</p>
+</li>
+<li><p>Use <code class="verbatim">~</code> for home directory, not <code class="verbatim">$HOME</code></p>
+</li>
+</ol>
+
+</div>
+<div id="org-export-issues" class="org-section org-level-2">
+<h2>Export Issues</h2>
+<p>If citations don&#39;t export correctly:</p>
+
+<ol>
+<li><p>Check export format supports citations</p>
+</li>
+<li><p>Verify bibliography link is present in document</p>
+</li>
+<li><p>Ensure citation keys are in bibliography</p>
+</li>
+<li><p>For LaTeX: check LaTeX citation package is available</p>
+</li>
+<li><p>For Pandoc: use Pandoc-compatible citation syntax</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>Related Topics</h1>
+<ul>
+<li><p><a href="links.html">Hyperlinks</a> - General link syntax and usage</p>
+</li>
+<li><p><a href="export.html">Export System</a> - Exporting documents with citations</p>
+</li>
+<li><p><a href="source-blocks.html">Source Blocks</a> - BibTeX as source blocks</p>
+</li>
+<li><p><a href="configuration.html">Configuration</a> - Reference system settings</p>
+</li>
+</ul>
+
+</div>
+<div id="org-quick-reference-card" class="org-section org-level-1">
+<h1>Quick Reference Card</h1>
+<div id="org-essential-keybindings" class="org-section org-level-2">
+<h2>Essential Keybindings</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Ctrl+C ]</code></td><td>Insert citation</td></tr>
+<tr><td><code class="verbatim">Ctrl+Shift+]</code></td><td>Insert cross-reference</td></tr>
+<tr><td><code class="verbatim">Ctrl+C Ctrl+O</code></td><td>Open link/citation at point</td></tr>
+<tr><td><code class="verbatim">Shift+Left</code></td><td>Transpose citation left</td></tr>
+<tr><td><code class="verbatim">Shift+Right</code></td><td>Transpose citation right</td></tr>
+<tr><td><code class="verbatim">Shift+Up</code></td><td>Sort citations (oldest first)</td></tr>
+<tr><td><code class="verbatim">Shift+Down</code></td><td>Sort citations (newest first)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-citation-syntax-quick-reference" class="org-section org-level-2">
+<h2>Citation Syntax Quick Reference</h2>
+<table class="org-table">
+<thead>
+<tr><th>Format</th><th>Org-Mode</th><th>Markdown</th><th>LaTeX</th></tr>
+</thead>
+<tbody>
+<tr><td>Basic</td><td><code class="verbatim">cite:key</code></td><td><code class="verbatim">[@key]</code></td><td><code class="verbatim">\cite{key}</code></td></tr>
+<tr><td>Textual</td><td><code class="verbatim">citet:key</code></td><td><code class="verbatim">@key</code></td><td><code class="verbatim">\citet{key}</code></td></tr>
+<tr><td>Parenthetical</td><td><code class="verbatim">citep:key</code></td><td><code class="verbatim">[@key]</code></td><td><code class="verbatim">\citep{key}</code></td></tr>
+<tr><td>Author only</td><td><code class="verbatim">citeauthor:key</code></td><td>N/A</td><td><code class="verbatim">\citeauthor{key}</code></td></tr>
+<tr><td>Year only</td><td><code class="verbatim">citeyear:key</code></td><td>N/A</td><td><code class="verbatim">\citeyear{key}</code></td></tr>
+<tr><td>Multiple</td><td><code class="verbatim">cite:k1,k2,k3</code></td><td><code class="verbatim">[@k1; @k2]</code></td><td><code class="verbatim">\cite{k1,k2,k3}</code></td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-common-workflows" class="org-section org-level-2">
+<h2>Common Workflows</h2>
+<div id="org-add-new-reference" class="org-section org-level-3">
+<h3>Add New Reference</h3>
+<ol>
+<li><p><code class="verbatim">scimax.ref.fetchFromDOI</code> or <code class="verbatim">scimax.ref.searchOpenAlex</code></p>
+</li>
+<li><p>Review metadata</p>
+</li>
+<li><p>Add to bibliography</p>
+</li>
+</ol>
+
+</div>
+<div id="org-insert-citation" class="org-section org-level-3">
+<h3>Insert Citation</h3>
+<ol>
+<li><p><code class="verbatim">Ctrl+C ]</code></p>
+</li>
+<li><p>Search for reference</p>
+</li>
+<li><p>Select citation style</p>
+</li>
+<li><p>Citation inserted</p>
+</li>
+</ol>
+
+</div>
+<div id="org-find-related-papers" class="org-section org-level-3">
+<h3>Find Related Papers</h3>
+<ol>
+<li><p>Hover over citation or DOI</p>
+</li>
+<li><p>Click &quot;Citing Works&quot; or &quot;Related Works&quot;</p>
+</li>
+<li><p>Browse results</p>
+</li>
+<li><p>Add relevant papers</p>
+</li>
+</ol>
+
+</div>
+<div id="org-prepare-for-export" class="org-section org-level-3">
+<h3>Prepare for Export</h3>
+<ol>
+<li><p><code class="verbatim">scimax.ref.extractBibliography</code></p>
+</li>
+<li><p>Save to document directory</p>
+</li>
+<li><p>Update bibliography link</p>
+</li>
+<li><p>Export document</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="database-search.html">Database and Search</a></p>
+</li>
+<li><p>Next: <a href="editmarks.html">Editmarks</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

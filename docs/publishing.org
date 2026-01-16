@@ -1,0 +1,645 @@
+#+TITLE: Org Publishing System
+#+AUTHOR: Scimax VS Code
+#+DATE: 2026-01-16
+#+STARTUP: overview
+#+OPTIONS: toc:t num:t
+#+TODO: ⚠️ 👀 | ✅
+
+* Overview
+
+The Scimax VS Code extension provides an org-publishing system for converting multiple org-mode documents into a cohesive HTML website. This is ideal for creating documentation sites, blogs, or project pages hosted on GitHub Pages.
+
+The publishing system follows a wizard-first approach - most users can get started with a few clicks, while power users can customize everything through a JSON configuration file.
+
+* Quick Start
+
+** Step 1: Initialize a Publishing Project
+
+Run the command =Scimax: Initialize Publishing Project= (=C-c C-e p i=) to start the 5-step wizard:
+
+1. *Project name* - A short identifier (e.g., "my-website")
+2. *Source directory* - Where your org files are located (default: =./org=)
+3. *Output directory* - Where HTML files will be published (default: =./docs= for GitHub Pages)
+4. *Publishing target* - GitHub Pages (recommended) or Local/Custom
+5. *Sitemap generation* - Whether to auto-generate an index page
+
+** Step 2: Add Content
+
+Create or edit =.org= files in your source directory. Each file becomes an HTML page.
+
+Example =./org/about.org=:
+#+BEGIN_SRC org
+,#+TITLE: About This Project
+,#+AUTHOR: Your Name
+,#+DATE: 2026-01-16
+
+,* Introduction
+
+Welcome to my project documentation!
+
+,* Features
+
+- Feature one
+- Feature two
+#+END_SRC
+
+** Step 3: Publish
+
+Run =Scimax: Publish Project= (=C-c C-e p p=) to generate HTML files.
+
+** Step 4: Deploy to GitHub Pages
+
+1. Commit the =./docs= folder to your repository
+2. Go to your repository's Settings → Pages
+3. Set Source to "Deploy from a branch"
+4. Select =main= branch and =/docs= folder
+5. Your site will be live at =https://username.github.io/repo-name/=
+
+* Commands
+
+| Command                              | Keybinding      | Description                       |
+|--------------------------------------+-----------------+-----------------------------------|
+| =scimax.publish.init=                | =C-c C-e p i=   | Initialize publishing project     |
+| =scimax.publish.project=             | =C-c C-e p p=   | Publish selected project          |
+| =scimax.publish.file=                | =C-c C-e p f=   | Publish current file only         |
+| =scimax.publish.all=                 | =C-c C-e p a=   | Publish all configured projects   |
+| =scimax.publish.preview=             | =C-c C-e p v=   | Preview published site in browser |
+| =scimax.publish.openConfig=          | -               | Open .org-publish.json config     |
+
+* Configuration File
+
+The publishing system supports two configuration formats:
+
+1. =_config.yml= - YAML format (Jupyter Book compatible, takes precedence)
+2. =.org-publish.json= - JSON format
+
+The wizard creates a =.org-publish.json= file by default. You can also create or edit either file manually.
+
+** ⚠️ YAML Configuration (=_config.yml=)
+
+For Jupyter Book compatibility, create a =_config.yml= in your project root:
+
+#+BEGIN_SRC yaml
+# _config.yml - Jupyter Book compatible
+title: "My Documentation"
+
+publish:
+  base_directory: "./docs"
+  publishing_directory: "./public"
+  recursive: true
+  auto_sitemap: true
+  sitemap_filename: "index.org"
+
+html:
+  use_default_theme: true
+  toc_depth: 3
+  css_files:
+    - "./css/custom.css"
+
+github_pages: true
+#+END_SRC
+
+** JSON Configuration (=.org-publish.json=)
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "website": {
+      "baseDirectory": "./org",
+      "publishingDirectory": "./docs",
+      "recursive": true,
+      "autoSitemap": true
+    }
+  },
+  "githubPages": true
+}
+#+END_SRC
+
+** Full Configuration Reference
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "my-website": {
+      "baseDirectory": "./org",
+      "baseExtension": "org",
+      "publishingDirectory": "./docs",
+      "recursive": true,
+
+      "exclude": "drafts/*",
+      "include": ["extra/special.org"],
+
+      "publishingFunction": "org-html-publish-to-html",
+
+      "autoSitemap": true,
+      "sitemapFilename": "index.org",
+      "sitemapTitle": "Home",
+      "sitemapStyle": "list",
+      "sitemapSortFiles": "alphabetically",
+      "sitemapSortFolders": "first",
+
+      "htmlPreamble": "./templates/nav.html",
+      "htmlPostamble": "./templates/footer.html",
+      "htmlHead": "<meta name=\"keywords\" content=\"org-mode, documentation\">",
+      "htmlHeadExtra": "<link rel=\"icon\" href=\"/favicon.ico\">",
+      "cssFiles": ["./css/style.css"],
+      "jsFiles": ["./js/custom.js"],
+      "useDefaultTheme": true,
+
+      "withAuthor": true,
+      "withCreator": true,
+      "withToc": true,
+      "sectionNumbers": false,
+      "defaultTitle": "Untitled"
+    }
+  },
+  "githubPages": true,
+  "customDomain": "docs.example.com",
+  "defaultProject": "my-website"
+}
+#+END_SRC
+
+* Configuration Options
+
+** File Selection Options
+
+| Option                 | Type     | Default | Description                                    |
+|------------------------+----------+---------+------------------------------------------------|
+| =baseDirectory=        | string   | -       | Source directory containing org files          |
+| =baseExtension=        | string   | ="org"= | File extension to match (without dot)          |
+| =publishingDirectory=  | string   | -       | Output directory for HTML files                |
+| =recursive=            | boolean  | =true=  | Process subdirectories                         |
+| =exclude=              | string   | -       | Glob pattern to exclude files (e.g., "drafts/*") |
+| =include=              | string[] | =[]     | Extra files to include                         |
+
+** Publishing Function Options
+
+| Option               | Type   | Default                       | Description                    |
+|----------------------+--------+-------------------------------+--------------------------------|
+| =publishingFunction= | string | ="org-html-publish-to-html"=  | How to process files           |
+
+Available functions:
+- =org-html-publish-to-html= - Convert org files to HTML
+- =md-html-publish-to-html= - Convert Markdown files to HTML
+- =ipynb-html-publish-to-html= - Convert Jupyter notebooks to HTML
+- =auto= - Auto-detect by file extension (default behavior)
+- =copy= - Copy files as-is (for static assets)
+
+** Supported File Types
+
+The publishing system supports multiple file types:
+
+| Extension | Description              | Conversion                            |
+|-----------+--------------------------+---------------------------------------|
+| =.org=    | Org-mode documents       | Full org parsing with code blocks     |
+| =.md=     | Markdown files           | Basic Markdown to HTML conversion     |
+| =.ipynb=  | Jupyter notebooks        | Notebook cells to HTML with syntax    |
+
+When using =auto= or =org-html-publish-to-html=, files are processed based on their extension.
+
+** Sitemap Options
+
+| Option              | Type             | Default           | Description                          |
+|---------------------+------------------+-------------------+--------------------------------------|
+| =autoSitemap=       | boolean          | =true=            | Generate sitemap automatically       |
+| =sitemapFilename=   | string           | ="sitemap.org"=   | Sitemap file name                    |
+| =sitemapTitle=      | string           | ="Site Map"=      | Title for sitemap page               |
+| =sitemapStyle=      | ="list"= / ="tree"= | ="list"=       | Sitemap display format               |
+| =sitemapSortFiles=  | string           | ="alphabetically"= | Sort order for files                |
+| =sitemapSortFolders= | string          | ="first"=         | Where to place folders in listing    |
+
+Sort options for =sitemapSortFiles=:
+- =alphabetically= - Sort A-Z by title
+- =chronologically= - Oldest first (by #+DATE)
+- =anti-chronologically= - Newest first (for blogs)
+
+** HTML Template Options
+
+| Option          | Type     | Description                                      |
+|-----------------+----------+--------------------------------------------------|
+| =htmlPreamble=  | string   | File path or HTML string for header/navigation   |
+| =htmlPostamble= | string   | File path or HTML string for footer              |
+| =htmlHead=      | string   | Extra content for =<head>= section               |
+| =htmlHeadExtra= | string   | Additional head content (appended)               |
+| =cssFiles=      | string[] | CSS files to include                             |
+| =jsFiles=       | string[] | JavaScript files to include                      |
+| =useDefaultTheme= | boolean | Include built-in CSS theme (default: true)      |
+
+** Export Options
+
+| Option           | Type             | Default | Description                    |
+|------------------+------------------+---------+--------------------------------|
+| =withAuthor=     | boolean          | =true=  | Include author in output       |
+| =withCreator=    | boolean          | =true=  | Include generator info         |
+| =withToc=        | boolean / number | =true=  | Table of contents (or depth)   |
+| =sectionNumbers= | boolean          | =false= | Number sections                |
+| =defaultTitle=   | string           | -       | Default title if not specified |
+
+** Global Options
+
+| Option          | Type    | Description                              |
+|-----------------+---------+------------------------------------------|
+| =githubPages=   | boolean | Enable GitHub Pages features             |
+| =customDomain=  | string  | Custom domain (creates CNAME file)       |
+| =defaultProject= | string | Project to publish when none specified   |
+
+* Multi-Project Configuration
+
+You can define multiple projects for different parts of your site:
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "pages": {
+      "baseDirectory": "./org",
+      "publishingDirectory": "./docs",
+      "recursive": true,
+      "autoSitemap": true
+    },
+    "static": {
+      "baseDirectory": "./assets",
+      "publishingDirectory": "./docs/assets",
+      "baseExtension": "css|js|png|jpg|svg",
+      "publishingFunction": "copy"
+    },
+    "full-site": {
+      "components": ["pages", "static"]
+    }
+  }
+}
+#+END_SRC
+
+** Component Projects
+
+A component project groups multiple projects together:
+
+#+BEGIN_SRC json
+{
+  "full-site": {
+    "components": ["pages", "static", "images"]
+  }
+}
+#+END_SRC
+
+When you publish "full-site", all component projects are published in order.
+
+* ⚠️ Explicit Table of Contents (=_toc.yml=)
+
+By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a =_toc.yml= file.
+
+** Overview
+
+When a =_toc.yml= file exists in your source directory, the publishing system:
+
+1. Publishes files in the order specified (not alphabetically)
+2. Generates prev/next navigation links on each page
+3. Creates an index page reflecting the TOC structure
+4. Only includes files listed in the TOC (plus unlisted if configured)
+
+** Basic =_toc.yml= Format
+
+Create a =_toc.yml= file in your source directory (e.g., =./docs/_toc.yml=):
+
+#+BEGIN_SRC yaml
+# Simple flat structure
+format: scimax
+root: index
+
+chapters:
+  - file: getting-started
+  - file: installation
+  - file: configuration
+  - file: advanced-usage
+#+END_SRC
+
+** With Sections (Nested Chapters)
+
+#+BEGIN_SRC yaml
+format: scimax
+root: index
+
+chapters:
+  - file: getting-started
+    sections:
+      - file: getting-started/installation
+      - file: getting-started/first-steps
+  - file: user-guide
+    sections:
+      - file: user-guide/basics
+      - file: user-guide/advanced
+  - file: reference
+#+END_SRC
+
+** With Parts (Book Format)
+
+For larger documentation with multiple parts/volumes:
+
+#+BEGIN_SRC yaml
+format: jb-book
+root: intro
+
+parts:
+  - caption: Getting Started
+    chapters:
+      - file: installation
+      - file: quickstart
+      - file: tutorials
+
+  - caption: User Guide
+    chapters:
+      - file: basics
+        sections:
+          - file: basics/syntax
+          - file: basics/formatting
+      - file: advanced
+
+  - caption: Reference
+    chapters:
+      - file: api-reference
+      - file: changelog
+#+END_SRC
+
+** TOC Options
+
+| Field        | Description                                    |
+|--------------+------------------------------------------------|
+| =format=     | ="scimax"=, ="jb-book"=, or ="jb-article"=     |
+| =root=       | Landing page file (without extension)          |
+| =chapters=   | List of chapter entries                        |
+| =parts=      | List of parts (with caption and chapters)      |
+
+** Entry Options
+
+| Field      | Description                                      |
+|------------+--------------------------------------------------|
+| =file=     | File path without extension (relative to baseDir)|
+| =title=    | Override display title (optional)                |
+| =sections= | Nested child entries (optional)                  |
+| =url=      | External URL link (optional)                     |
+
+** Custom Titles
+
+You can override the title from the file's =#+TITLE=:
+
+#+BEGIN_SRC yaml
+chapters:
+  - file: api
+    title: API Reference (Complete)
+  - file: changelog
+    title: Version History
+#+END_SRC
+
+** External Links
+
+Include external URLs in your TOC:
+
+#+BEGIN_SRC yaml
+chapters:
+  - file: documentation
+  - url: https://github.com/user/repo
+    title: Source Code
+  - url: https://github.com/user/repo/issues
+    title: Report Issues
+#+END_SRC
+
+** Navigation Links
+
+When using =_toc.yml=, each published page automatically gets:
+
+#+BEGIN_SRC html
+<nav class="page-navigation">
+  <a href="previous.html" class="nav-prev">← Previous</a>
+  <a href="next.html" class="nav-next">Next →</a>
+</nav>
+#+END_SRC
+
+You can style these with CSS:
+
+#+BEGIN_SRC css
+.page-navigation {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid #eee;
+  margin-top: 2rem;
+}
+.nav-prev, .nav-next {
+  color: #0066cc;
+}
+#+END_SRC
+
+** Combining with Configuration
+
+Your =.org-publish.json= works the same way - the =_toc.yml= just controls ordering:
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "docs": {
+      "baseDirectory": "./docs",
+      "publishingDirectory": "./public",
+      "autoSitemap": true,
+      "sitemapFilename": "index.org",
+      "sitemapTitle": "Documentation"
+    }
+  }
+}
+#+END_SRC
+
+With =./docs/_toc.yml=:
+
+#+BEGIN_SRC yaml
+format: scimax
+root: intro
+chapters:
+  - file: getting-started
+  - file: user-guide
+  - file: reference
+#+END_SRC
+
+** File Extension Resolution
+
+The TOC references files without extensions. The system automatically finds files with these extensions (in order):
+
+1. =.org=
+2. =.md=
+3. =.ipynb=
+
+So =file: getting-started= will match =getting-started.org=, =getting-started.md=, or =getting-started.ipynb=.
+
+* Templates
+
+** HTML Preamble (Navigation)
+
+Create a file like =./templates/nav.html=:
+
+#+BEGIN_SRC html
+<nav class="site-nav">
+    <a href="index.html">Home</a>
+    <a href="about.html">About</a>
+    <a href="sitemap.html">Contents</a>
+</nav>
+#+END_SRC
+
+Reference it in your config:
+
+#+BEGIN_SRC json
+{
+  "htmlPreamble": "./templates/nav.html"
+}
+#+END_SRC
+
+** HTML Postamble (Footer)
+
+Create =./templates/footer.html=:
+
+#+BEGIN_SRC html
+<footer>
+    <p>&copy; 2026 Your Name. Generated by scimax-vscode.</p>
+</footer>
+#+END_SRC
+
+** Custom CSS
+
+Create =./css/style.css= and reference it:
+
+#+BEGIN_SRC json
+{
+  "cssFiles": ["./css/style.css"]
+}
+#+END_SRC
+
+* GitHub Pages Integration
+
+When =githubPages= is enabled:
+
+1. A =.nojekyll= file is created in the output directory (disables Jekyll processing)
+2. If =customDomain= is set, a =CNAME= file is created
+3. The default output directory is =./docs= (GitHub Pages convention)
+4. The default sitemap becomes =index.org= → =index.html=
+
+** Custom Domain Setup
+
+To use a custom domain:
+
+#+BEGIN_SRC json
+{
+  "githubPages": true,
+  "customDomain": "docs.example.com"
+}
+#+END_SRC
+
+Then configure your DNS to point to GitHub Pages.
+
+* Cross-File Links
+
+Links between org files are automatically converted to HTML links:
+
+#+BEGIN_SRC org
+See [[file:other-page.org][the other page]] for details.
+#+END_SRC
+
+Becomes:
+
+#+BEGIN_SRC html
+See <a href="other-page.html">the other page</a> for details.
+#+END_SRC
+
+* Workflow Examples
+
+** Documentation Site
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "docs": {
+      "baseDirectory": "./docs-src",
+      "publishingDirectory": "./docs",
+      "autoSitemap": true,
+      "sitemapFilename": "index.org",
+      "sitemapTitle": "Documentation",
+      "withToc": 2
+    }
+  },
+  "githubPages": true
+}
+#+END_SRC
+
+** Blog
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "blog": {
+      "baseDirectory": "./posts",
+      "publishingDirectory": "./docs",
+      "autoSitemap": true,
+      "sitemapFilename": "index.org",
+      "sitemapTitle": "Blog",
+      "sitemapSortFiles": "anti-chronologically",
+      "htmlPreamble": "./templates/blog-header.html"
+    }
+  },
+  "githubPages": true
+}
+#+END_SRC
+
+** Project with Static Assets
+
+#+BEGIN_SRC json
+{
+  "projects": {
+    "pages": {
+      "baseDirectory": "./org",
+      "publishingDirectory": "./docs",
+      "autoSitemap": true
+    },
+    "images": {
+      "baseDirectory": "./images",
+      "publishingDirectory": "./docs/images",
+      "baseExtension": "png|jpg|gif|svg",
+      "publishingFunction": "copy"
+    },
+    "css": {
+      "baseDirectory": "./css",
+      "publishingDirectory": "./docs/css",
+      "baseExtension": "css",
+      "publishingFunction": "copy"
+    },
+    "site": {
+      "components": ["pages", "images", "css"]
+    }
+  },
+  "githubPages": true,
+  "defaultProject": "site"
+}
+#+END_SRC
+
+* Troubleshooting
+
+** "No publishing configuration found"
+
+Run =Scimax: Initialize Publishing Project= (=C-c C-e p i=) to create a =.org-publish.json= file.
+
+** "Base directory does not exist"
+
+Create the source directory specified in =baseDirectory=, or update the config to point to an existing directory.
+
+** Links not working after publish
+
+Ensure you're using =file:= links to reference other org files:
+#+BEGIN_SRC org
+[[file:other.org][Link text]]
+#+END_SRC
+
+** GitHub Pages not updating
+
+1. Ensure the =./docs= folder is committed
+2. Check that GitHub Pages is configured to serve from =/docs=
+3. Wait a few minutes for GitHub to rebuild the site
+
+* Related Topics
+
+- [[file:export.org][Export System]] - Single-file export options
+- [[file:source-blocks.org][Source Blocks]] - Code blocks in org files
+- [[file:document-structure.org][Document Structure]] - Headings and organization

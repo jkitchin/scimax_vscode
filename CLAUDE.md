@@ -211,6 +211,48 @@ Always include:
 - Speed command keys when applicable
 - Examples showing usage
 
+### Keybinding Changes
+
+When adding or changing keybindings, always check for conflicts with existing bindings:
+
+1. **Search package.json** for existing keybindings using the same key sequence:
+   ```bash
+   grep -n "ctrl+c ctrl+p" package.json  # Example: check for C-c C-p conflicts
+   ```
+
+2. **Check documentation** for references to the keybinding:
+   ```bash
+   grep -r "C-c C-p\|Ctrl+C Ctrl+P" docs/
+   ```
+
+3. **Common conflict areas**:
+   - `C-c C-n` / `C-c C-p` - heading/block navigation (scimaxOrg, scimaxOb)
+   - `C-c C-c` - execute/confirm actions
+   - `C-c C-e` - export commands
+   - Speed commands (single keys at beginning of headlines)
+
+4. **Update all documentation** when keybindings change:
+   - `docs/keybindings.org` - master keybinding reference
+   - Feature-specific docs that mention the keybinding
+   - `package.json` contributes.keybindings section
+
+### README Statistics
+
+Before pushing to GitHub, update the "Codebase Statistics" section in `README.md` with current metrics:
+
+```bash
+# Quick stats commands
+echo "TypeScript files: $(find src -name '*.ts' | wc -l)"
+echo "Lines of TS: $(find src -name '*.ts' -exec cat {} \; | wc -l)"
+echo "Test files: $(find src -name '*.test.ts' | wc -l)"
+echo "Tests: $(npm run test 2>&1 | grep 'Tests' | tail -1)"
+echo "Docs: $(find docs -name '*.org' | wc -l)"
+echo "Commands: $(grep -c '\"command\":' package.json)"
+echo "Keybindings: $(grep -c '\"key\":' package.json)"
+```
+
+Update the statistics table if counts have changed significantly (new modules, major refactors).
+
 ## References
 
 - **Org-mode Syntax Specification**: https://orgmode.org/worg/org-syntax.html
