@@ -32,6 +32,7 @@ import type {
     UnderlineObject,
     StrikeThroughObject,
     CodeObject,
+    CommandObject,
     VerbatimObject,
     LinkObject,
     TimestampObject,
@@ -323,6 +324,8 @@ export class LatexExportBackend implements ExportBackend {
                 return this.exportStrikeThrough(object as StrikeThroughObject, state);
             case 'code':
                 return this.exportCode(object as CodeObject, state);
+            case 'command':
+                return this.exportCommand(object as CommandObject, state);
             case 'verbatim':
                 return this.exportVerbatim(object as VerbatimObject, state);
             case 'link':
@@ -741,6 +744,11 @@ export class LatexExportBackend implements ExportBackend {
             }
         }
         return `\\verb${delimiter}${value}${delimiter}`;
+    }
+
+    private exportCommand(obj: CommandObject, state: ExportState): string {
+        // Emacs-style command markup `command' - export as \texttt{}
+        return `\\texttt{${escapeString(obj.properties.value, 'latex')}}`;
     }
 
     private exportVerbatim(obj: VerbatimObject, state: ExportState): string {

@@ -157,11 +157,11 @@ CLOSED: [2026-01-15 Thu 14:58]
 
 | Key/Command | Action                        |
 |-------------+-------------------------------|
-| Ctrl+C .    | Insert active timestamp       |
-| Ctrl+C !    | Insert inactive timestamp     |
+| C-c .    | Insert active timestamp       |
+| C-c !    | Insert inactive timestamp     |
 | Speed key . | Insert timestamp (at heading) |
 
-Press Ctrl+C . and a date picker dialog appears. You can:
+Press C-c . and a date picker dialog appears. You can:
 1. Type a date directly (2026-01-15)
 2. Use relative expressions (+2d, next week)
 3. Navigate with arrow keys
@@ -202,10 +202,10 @@ For common cases:
 
 #+BEGIN_SRC org
 ,* TODO Task
-  <2026-01-15 Wed>         ; Press Ctrl+C .
+  <2026-01-15 Wed>         ; Press C-c .
 
 ,* Meeting notes
-  [2026-01-14 Tue 10:00]   ; Press Ctrl+C !
+  [2026-01-14 Tue 10:00]   ; Press C-c !
 #+END_SRC
 
 * ✅ Modifying Timestamps
@@ -218,10 +218,10 @@ Place cursor on a timestamp component and use:
 
 | Key         | Action                            |
 |-------------+-----------------------------------|
-| Shift+Up    | Increase value (day, month, year) |
-| Shift+Down  | Decrease value                    |
-| Shift+Right | Move to next day                  |
-| Shift+Left  | Move to previous day              |
+| S-<up>    | Increase value (day, month, year) |
+| S-<down>  | Decrease value                    |
+| S-<right> | Move to next day                  |
+| S-<left>  | Move to previous day              |
 
 ** ✅ Component-Based Editing
 CLOSED: [2026-01-15 Thu 15:03]
@@ -236,11 +236,11 @@ The cursor position determines what changes:
             Day of week (read-only)
 #+END_EXAMPLE
 
-- On year: Shift+Up/Down changes year
-- On month: Shift+Up/Down changes month
-- On day: Shift+Up/Down or Shift+Left/Right changes day
-- On hour: Shift+Up/Down changes hour
-- On minute: Shift+Up/Down changes minute
+- On year: S-<up>/Down changes year
+- On month: S-<up>/Down changes month
+- On day: S-<up>/Down or S-<left>/Right changes day
+- On hour: S-<up>/Down changes hour
+- On minute: S-<up>/Down changes minute
 
 ** ✅ Quick Date Adjustment Examples
 CLOSED: [2026-01-15 Thu 15:03]
@@ -248,19 +248,19 @@ CLOSED: [2026-01-15 Thu 15:03]
 #+BEGIN_SRC org
 ; Move meeting to tomorrow
 <2026-01-15 Wed 14:30>
-; Place cursor anywhere in date, press Shift+Right
+; Place cursor anywhere in date, press S-<right>
 <2026-01-16 Thu 14:30>
 
 ; Postpone by one month
 <2026-01-15 Wed>
-; Place cursor on month (01), press Shift+Up
+; Place cursor on month (01), press S-<up>
 <2026-02-15 Sat>
 #+END_SRC
 
 ** ✅ Editing Timestamp Dialog
 CLOSED: [2026-01-15 Thu 15:03]
 
-Press Ctrl+C . on an existing timestamp to open the editor and:
+Press C-c . on an existing timestamp to open the editor and:
 - Modify the date
 - Add or remove time
 - Change between active/inactive
@@ -534,8 +534,8 @@ Start and stop the clock for a task:
 
 | Key/Command             | Action                            |
 |-------------------------+-----------------------------------|
-| Speed key Shift+I      | Clock in (start timer)            |
-| Speed key Shift+O      | Clock out (stop timer)            |
+| Speed key I      | Clock in (start timer)            |
+| Speed key O      | Clock out (stop timer)            |
 | scimax.org.clockIn     | Clock in via command              |
 | scimax.org.clockOut    | Clock out via command             |
 
@@ -828,8 +828,8 @@ headline.
 | .        | Insert timestamp                     |
 | s        | Add/edit SCHEDULED                   |
 | d        | Add/edit DEADLINE                    |
-| Shift+I  | Clock in                             |
-| Shift+O  | Clock out                            |
+| I  | Clock in                             |
+| O  | Clock out                            |
 
 ** ⚠️ Using Speed Commands
 
@@ -851,9 +851,9 @@ cursor position - press 's' to schedule
 
 1. Cursor at start of headline
 2. Press s - schedule for tomorrow
-3. Press Shift+I - clock in
+3. Press I - clock in
 4. Work on task...
-5. Press Shift+O - clock out
+5. Press O - clock out
 
 Result:
 
@@ -1105,7 +1105,7 @@ DEADLINE: <2026-03-31 Mon>
 
 * ⚠️ Integration with TODO Items
 
-Timestamps work seamlessly with TODO items. See [[file:todo-items.org][TODO Items]] for more on task
+Timestamps work seamlessly with TODO items. See [[file:03-todo-items.org][TODO Items]] for more on task
 management.
 
 ** ⚠️ Scheduled TODOs
@@ -1123,7 +1123,7 @@ High priority task scheduled for tomorrow.
 ** ⚠️ Deadline Warnings in Agenda
 
 Tasks with approaching deadlines appear in the agenda with warning indicators.
-See [[file:agenda.org][Agenda]] for details on agenda views.
+See [[file:13-agenda.org][Agenda]] for details on agenda views.
 
 ** ⚠️ Combining All Features
 
@@ -1150,12 +1150,12 @@ Already logged 2:30 hours.
 
 | Key                | Action                           |
 |--------------------+----------------------------------|
-| Ctrl+C .          | Insert active timestamp          |
-| Ctrl+C !          | Insert inactive timestamp        |
-| Shift+Up          | Increase timestamp component     |
-| Shift+Down        | Decrease timestamp component     |
-| Shift+Right       | Next day                         |
-| Shift+Left        | Previous day                     |
+| C-c .          | Insert active timestamp          |
+| C-c !          | Insert inactive timestamp        |
+| S-<up>          | Increase timestamp component     |
+| S-<down>        | Decrease timestamp component     |
+| S-<right>       | Next day                         |
+| S-<left>        | Previous day                     |
 
 ** ⚠️ Speed Commands (at heading start)
 
@@ -1164,8 +1164,8 @@ Already logged 2:30 hours.
 | .        | Insert timestamp                 |
 | s        | Schedule task                    |
 | d        | Set deadline                     |
-| Shift+I  | Clock in                         |
-| Shift+O  | Clock out                        |
+| I  | Clock in                         |
+| O  | Clock out                        |
 
 ** ⚠️ Commands
 
@@ -1195,12 +1195,13 @@ Already logged 2:30 hours.
 
 * ⚠️ Related Topics
 
-- [[file:todo-items.org][TODO Items]] - Task management with timestamps
-- [[file:agenda.org][Agenda]] - Viewing scheduled tasks and deadlines
-- [[file:document-structure.org][Document Structure]] - Headlines and organization
-- [[file:getting-started.org][Getting Started]] - Basic Scimax VS Code usage
+- [[file:03-todo-items.org][TODO Items]] - Task management with timestamps
+- [[file:13-agenda.org][Agenda]] - Viewing scheduled tasks and deadlines
+- [[file:02-document-structure.org][Document Structure]] - Headlines and organization
+- [[file:01-getting-started.org][Getting Started]] - Basic Scimax VS Code usage
 
 * Navigation
 
-- Previous: [[file:links.org][Links]]
-- Next: [[file:source-blocks.org][Source Code Blocks]]
+- Previous: [[file:05-links.org][Links]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:07-source-blocks.org][Source Blocks]]

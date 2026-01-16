@@ -51,7 +51,7 @@ software:
 ** From VS Code Marketplace
 
 1. Open VS Code
-2. Press =Ctrl+Shift+X= to open the Extensions view
+2. Press =C-S-X= to open the Extensions view
 3. Search for "Scimax"
 4. Click *Install*
 
@@ -59,7 +59,7 @@ software:
 
 1. Download the =.vsix= file
 2. Open VS Code
-3. Press =Ctrl+Shift+X= to open the Extensions view
+3. Press =C-S-X= to open the Extensions view
 4. Click the =...= menu (top right)
 5. Select "Install from VSIX..."
 6. Choose the downloaded file
@@ -68,7 +68,7 @@ software:
 
 After installation:
 
-1. Open the Command Palette (=Ctrl+Shift+P=)
+1. Open the Command Palette (=C-S-P=)
 2. Type "Scimax"
 3. You should see Scimax commands listed
 
@@ -78,8 +78,8 @@ After installation:
 
 Org files use the =.org= extension. To create your first file:
 
-1. Press =Ctrl+N= to create a new file (note Cmd+N on Mac)
-2. Save it with =Ctrl+S= and give it a =.org= extension (e.g., =notes.org=)
+1. Press =C-n= to create a new file (note s-n on Mac)
+2. Save it with =C-s= and give it a =.org= extension (e.g., =notes.org=)
 3. The file will automatically use org-mode syntax highlighting
 
 ** Creating Your First Document
@@ -119,22 +119,22 @@ print("Hello from Scimax VS Code!")
 *** Folding
 
 - Press =Tab= on a heading to cycle its visibility (folded/children/subtree)
-- Press =Shift+Tab= anywhere to cycle global visibility
+- Press =S-<tab>= anywhere to cycle global visibility
 
 *** Moving Between Headings
 
 | Key            | Action                    |
 |----------------+---------------------------|
-| =Ctrl+C Ctrl+J= | Jump to any heading       |
-| =Alt+Up=        | Move heading up           |
-| =Alt+Down=      | Move heading down         |
-| =Alt+Left=      | Promote heading (←level)  |
-| =Alt+Right=     | Demote heading (→level)   |
+| =C-c C-j= | Jump to any heading       |
+| =M-<up>=        | Move heading up           |
+| =M-<down>=      | Move heading down         |
+| =M-<left>=      | Promote heading (←level)  |
+| =M-<right>=     | Demote heading (→level)   |
 
 *** Executing Code
 
 1. Place your cursor inside a source block
-2. Press =Ctrl+Enter= or =Ctrl+C Ctrl+C=
+2. Press =C-<return>= or =C-c C-c=
 3. Results appear below the block
 
 * Understanding the Interface
@@ -143,7 +143,7 @@ print("Hello from Scimax VS Code!")
 
 The Outline view in VS Code's sidebar shows your document structure:
 
-1. Click the Outline icon in the sidebar (or press =Ctrl+Shift+O=)
+1. Click the Outline icon in the sidebar (or press =C-S-O=)
 2. See all headings hierarchically
 3. Click a heading to jump to it
 
@@ -154,7 +154,7 @@ Scimax VS Code adds several tree views to the Explorer sidebar:
 *** Journal Tree
 
 Shows your journal entries organized by date. Access today's entry with
-=Ctrl+Shift+J= (or =Cmd+Shift+J= on Mac).
+=C-S-J= (or =s-S-J= on Mac).
 
 *** Projects Tree
 
@@ -175,9 +175,9 @@ The status bar shows:
 
 Hydra menus provide discoverable access to commands:
 
-- =Ctrl+C M= - Open main menu
-- =Ctrl+C Ctrl+M= - Open context-sensitive menu
-- =Ctrl+Alt+V= - Open database/search menu
+- =C-c m= - Open main menu
+- =C-c C-m= - Open context-sensitive menu
+- =C-M-V= - Open database/search menu
 
 Menus show available commands with their keybindings. Press a key to execute
 a command or =Escape= to close the menu.
@@ -189,42 +189,42 @@ a command or =Escape= to close the menu.
 | Key             | Command                         |
 |-----------------+---------------------------------|
 | =Tab=           | Cycle fold at heading           |
-| =Shift+Tab=     | Cycle global fold               |
-| =Ctrl+C Ctrl+J= | Jump to heading                 |
-| =Ctrl+Enter=    | Insert new heading (at heading) |
-| =Ctrl+C Ctrl+T= | Cycle TODO state                |
-| =Ctrl+C Ctrl+C= | Context action (execute/toggle) |
+| =S-<tab>=     | Cycle global fold               |
+| =C-c C-j= | Jump to heading                 |
+| =C-<return>=    | Insert new heading (at heading) |
+| =C-c C-t= | Cycle TODO state                |
+| =C-c C-c= | Context action (execute/toggle) |
 
 ** Source Block Commands
 
 | Key           | Command                        |
 |---------------+--------------------------------|
-| =Ctrl+Enter=  | Execute current block          |
-| =Shift+Enter= | Execute block and move to next |
-| =Ctrl+Up=     | Go to previous block           |
-| =Ctrl+Down=   | Go to next block               |
+| =C-<return>=  | Execute current block          |
+| =S-<return>= | Execute block and move to next |
+| =C-<up>=     | Go to previous block           |
+| =C-<down>=   | Go to next block               |
 
 ** Export Commands
 
 | Key                 | Command                |
 |---------------------+------------------------|
-| =Ctrl+C Ctrl+E=     | Open export dispatcher |
-| =Ctrl+C Ctrl+E H H= | Export to HTML         |
-| =Ctrl+C Ctrl+E L L= | Export to LaTeX        |
-| =Ctrl+C Ctrl+E L P= | Export to PDF          |
+| =C-c C-e=     | Open export dispatcher |
+| =C-c C-e h h= | Export to HTML         |
+| =C-c C-e l l= | Export to LaTeX        |
+| =C-c C-e l p= | Export to PDF          |
 
 ** Navigation Commands
 
 | Key          | Command                       |
 |--------------+-------------------------------|
-| =Ctrl+C S=   | Fuzzy search current file     |
-| =Ctrl+C J C= | Jump to character (Avy-style) |
-| =Ctrl+C J W= | Jump to word                  |
-| =Ctrl+C J L= | Jump to line                  |
+| =C-c s=   | Fuzzy search current file     |
+| =C-c j c= | Jump to character (Avy-style) |
+| =C-c j w= | Jump to word                  |
+| =C-c j l= | Jump to line                  |
 
 * Recommended Settings
 
-Open VS Code settings (=Ctrl+,=) and search for "scimax" to see all options.
+Open VS Code settings (=C-,=) and search for "scimax" to see all options.
 
 ** Essential Settings
 
@@ -276,14 +276,14 @@ If you're coming from Emacs Org-mode or Scimax, here are key differences:
 
 | Emacs            | VS Code                   |
 |------------------+---------------------------|
-| =C-c C-c=        | =Ctrl+C Ctrl+C=           |
-| =C-c C-t=        | =Ctrl+C Ctrl+T=           |
-| =C-c C-e=        | =Ctrl+C Ctrl+E=           |
+| =C-c C-c=        | =C-c C-c=           |
+| =C-c C-t=        | =C-c C-t=           |
+| =C-c C-e=        | =C-c C-e=           |
 | =TAB= on heading | =Tab= on heading          |
-| =S-TAB=          | =Shift+Tab=               |
-| =M-RET=          | =Ctrl+Enter= (at heading) |
-| =M-left/right=   | =Alt+Left/Right=          |
-| =M-up/down=      | =Alt+Up/Down=             |
+| =S-TAB=          | =S-<tab>=               |
+| =M-RET=          | =C-<return>= (at heading) |
+| =M-left/right=   | =M-<left>/Right=          |
+| =M-up/down=      | =M-<up>/Down=             |
 | Speed commands   | Same keys (when enabled)  |
 
 ** Different Behaviors
@@ -306,10 +306,10 @@ Some advanced Emacs features may not be available:
 
 Now that you're set up, explore these topics:
 
-1. [[file:document-structure.org][Document Structure]] - Master headings, folding, and navigation
-2. [[file:todo-items.org][TODO Items]] - Learn task management
-3. [[file:source-blocks.org][Source Code Blocks]] - Execute code in your documents
-4. [[file:keybindings.org][Keybindings]] - Learn all keyboard shortcuts
+1. [[file:02-document-structure.org][Document Structure]] - Master headings, folding, and navigation
+2. [[file:03-todo-items.org][TODO Items]] - Learn task management
+3. [[file:07-source-blocks.org][Source Code Blocks]] - Execute code in your documents
+4. [[file:24-keybindings.org][Keybindings]] - Learn all keyboard shortcuts
 
 * Troubleshooting
 
@@ -317,7 +317,7 @@ Now that you're set up, explore these topics:
 
 1. Check that the language is installed (e.g., Python, Node.js)
 2. Verify the language is in your PATH
-3. Check the Output panel (=Ctrl+Shift+U=) for errors
+3. Check the Output panel (=C-S-U=) for errors
 4. Run =scimax.org.checkExecutors= to verify available executors
 
 ** LaTeX Preview Not Working
@@ -340,5 +340,6 @@ Now that you're set up, explore these topics:
 
 * Navigation
 
-- Previous: [[file:index.org][Documentation Index]]
-- Next: [[file:document-structure.org][Document Structure]]
+- Previous: [[file:00-index.org][Documentation Index]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:02-document-structure.org][Document Structure]]

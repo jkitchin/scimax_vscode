@@ -106,9 +106,9 @@ print(2 + 2)
 
 | Keybinding                                                         | Action                              | Platform |
 | ----------------------------+------------------------------------- | ----------                          |          |
-| Ctrl+Enter / Cmd+Enter                                             | Execute current block               | All      |
-| Ctrl+C Ctrl+C                                                      | Execute current block (Emacs style) | All      |
-| Shift+Enter                                                        | Execute and move to next block      | All      |
+| C-<return> / s-<return>                                             | Execute current block               | All      |
+| C-c C-c                                                      | Execute current block (Emacs style) | All      |
+| S-<return>                                                        | Execute and move to next block      | All      |
 
 ** ✅ Execution Commands
 CLOSED: [2026-01-15 Thu 08:11]
@@ -127,7 +127,7 @@ CLOSED: [2026-01-15 Thu 08:11]
 CLOSED: [2026-01-15 Thu 08:26]
 
 1. Place cursor inside a source block
-2. Press Ctrl+Enter (or Cmd+Enter on Mac)
+2. Press C-<return> (or s-<return> on Mac)
 3. Code executes using the appropriate language interpreter
 4. Results appear below the block in a #+RESULTS: section
 5. Previous results are replaced automatically
@@ -774,16 +774,16 @@ programming.
 
 | Keybinding                               | Action                 | Platform |
 | ---------------------------------------- | ----------             |          |
-| Ctrl+Down                                | Next source block      | All      |
-| Ctrl+Up                                  | Previous source block  | All      |
-| Shift+Enter                              | Execute and next block | All      |
+| C-<down>                                | Next source block      | All      |
+| C-<up>                                  | Previous source block  | All      |
+| S-<return>                              | Execute and next block | All      |
 
 ** ⚠️ Navigation Commands
 
 | Command                 |       | Description                      |
 |-------------------------+-------+----------------------------------|
-| scimax.ob.nextBlock     | C-c n | Jump to next source block        |
-| scimax.ob.previousBlock | C-c p | Jump to previous source block    |
+| scimax.ob.nextBlock     | C-c C-n | Jump to next source block        |
+| scimax.ob.previousBlock | C-c C-p | Jump to previous source block    |
 | scimax.ob.jumpToBlock   |       | Quick pick menu of all blocks    |
 | scimax.ob.jumpToResults |       | Jump to results of current block |
 
@@ -801,9 +801,9 @@ Use scimax.ob.jumpToBlock to see a searchable list of all source blocks:
 CLOSED: [2026-01-15 Thu 08:51]
 
 1. Write code in first block
-2. Press Shift+Enter to execute and move to next block
+2. Press S-<return> to execute and move to next block
 3. Write code that depends on previous block
-4. Press Shift+Enter again
+4. Press S-<return> again
 5. Continue building up your analysis sequentially
 
 * ✅ Block Manipulation
@@ -929,7 +929,7 @@ maintaining all content.
 
 1. Insert block with scimax.ob.insertBlockBelow
 2. Write code
-3. Execute with Shift+Enter (executes and moves to next)
+3. Execute with S-<return> (executes and moves to next)
 4. Repeat
 
 *** ⚠️ Refactoring Code
@@ -1044,7 +1044,7 @@ CLOSED: [2026-01-15 Thu 08:58]
 
 | Keybinding      | Command             | Description               |
 |-----------------+---------------------+---------------------------|
-| Ctrl+C Ctrl+V T | scimax.babel.tangle | Extract all tangle blocks |
+| C-c C-v t | scimax.babel.tangle | Extract all tangle blocks |
 
 This command:
 1. Finds all blocks with :tangle headers
@@ -1315,11 +1315,11 @@ else:
 
 | Keybinding         | Action                              |
 |--------------------|-------------------------------------|
-| Ctrl+Enter        | Execute current block               |
-| Shift+Enter       | Execute and move to next            |
-| Ctrl+Up           | Previous block                      |
-| Ctrl+Down         | Next block                          |
-| Ctrl+C Ctrl+V T   | Tangle all blocks                   |
+| C-<return>        | Execute current block               |
+| S-<return>       | Execute and move to next            |
+| C-<up>           | Previous block                      |
+| C-<down>         | Next block                          |
+| C-c C-v t   | Tangle all blocks                   |
 
 ** ⚠️ Common Header Arguments
 
@@ -1417,7 +1417,7 @@ def my_function():
 
 ** ⚠️ Debugging
 
-- Execute blocks one at a time with Ctrl+Enter
+- Execute blocks one at a time with C-<return>
 - Check session state in separate test blocks
 - Use :results output to see print statements
 - Clear results and re-execute from top to verify
@@ -1450,9 +1450,9 @@ documentation is valuable for understanding concepts:
 
 ** ⚠️ Scimax VS Code Docs
 
-- [[file:getting-started.org][Getting Started Guide]]
-- [[file:document-structure.org][Document Structure]]
-- [[file:tables.org][Tables]]
+- [[file:01-getting-started.org][Getting Started Guide]]
+- [[file:02-document-structure.org][Document Structure]]
+- [[file:04-tables.org][Tables]]
 
 ** ⚠️ Related Topics
 
@@ -1472,12 +1472,13 @@ environments. You can:
 - Develop software with embedded docs
 - Share knowledge with working examples
 
-Master the keybindings (Ctrl+Enter, Shift+Enter, Ctrl+Up/Down), experiment
+Master the keybindings (C-<return>, S-<return>, C-<up>/Down), experiment
 with header arguments, and leverage sessions for interactive development.
 
 Happy literate programming!
 
 * Navigation
 
-- Previous: [[file:timestamps.org][Timestamps]]
-- Next: [[file:supported-languages.org][Supported Languages]]
+- Previous: [[file:06-timestamps.org][Timestamps]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:08-supported-languages.org][Supported Languages]]

@@ -38,7 +38,7 @@ The capture system follows the principle of "capture first, organize later." Ins
 
 The quickest way to capture a TODO is:
 
-1. Press =Ctrl+C C= (or run =Scimax: Capture=)
+1. Press =C-c c= (or run =Scimax: Capture=)
 2. Select the "Todo" template (or press =t=)
 3. Enter your task description
 4. Press Enter
@@ -49,7 +49,7 @@ Your TODO is now filed to =todo.org= without leaving your current context.
 
 For even faster TODO capture, use the dedicated quick capture command:
 
-1. Press =Ctrl+C T= (or run =Scimax: Quick Capture TODO=)
+1. Press =C-c t= (or run =Scimax: Quick Capture TODO=)
 2. Type your task
 3. Press Enter
 
@@ -60,7 +60,7 @@ This bypasses the template picker and goes straight to TODO capture.
 When you invoke capture with text selected:
 
 1. Select some text in your editor
-2. Press =Ctrl+C C=
+2. Press =C-c c=
 3. Choose a template (e.g., "Code Snippet")
 4. The selected text is automatically included in your capture
 
@@ -151,7 +151,7 @@ Optional notes about the bookmark...
 To see all available templates:
 
 - Run =Scimax: List Capture Templates=
-- Or press =Ctrl+C C= to see the template picker
+- Or press =C-c c= to see the template picker
 
 Each template shows:
 - Its key (single letter shortcut)
@@ -394,7 +394,7 @@ If no target is specified, content is appended to the end of the file:
 The main capture command opens the template picker:
 
 - *Command*: =Scimax: Capture=
-- *Keybinding*: =Ctrl+C C=
+- *Keybinding*: =C-c c=
 
 This shows all available templates. Select one to begin capture.
 
@@ -412,7 +412,7 @@ For common captures, use dedicated quick capture commands:
 *** Quick TODO
 
 - *Command*: =Scimax: Quick Capture TODO=
-- *Keybinding*: =Ctrl+C T=
+- *Keybinding*: =C-c t=
 
 Directly captures a TODO without showing the template picker.
 
@@ -424,7 +424,7 @@ Directly captures a note.
 
 ** Capture Process
 
-1. *Invoke capture*: Press =Ctrl+C C= or run a quick capture command
+1. *Invoke capture*: Press =C-c c= or run a quick capture command
 2. *Select template*: Choose from the picker (or skip if using quick capture)
 3. *Fill prompts*: Enter values for any =%^{prompt}= placeholders
 4. *Preview* (optional): Review the captured content
@@ -439,7 +439,7 @@ The captured content is inserted at the target location, and you receive a confi
 When you have text selected:
 
 1. Select text in the editor
-2. Press =Ctrl+C C=
+2. Press =C-c c=
 3. Choose a template
 
 The selected text is available as =%i= in your template. Perfect for:
@@ -772,7 +772,7 @@ When disabled:
 
 *** Inbox Processing
 
-1. *Quick capture everything*: Use =Ctrl+C C= → =i= to capture to inbox
+1. *Quick capture everything*: Use =C-c c= → =i= to capture to inbox
 2. *Process inbox regularly*: Review inbox.org daily
 3. *Refile to projects*: Move items to appropriate project files
 4. *Archive processed items*: Keep inbox clean
@@ -807,7 +807,7 @@ When disabled:
 
 Usage:
 1. Select a quote from a paper/article
-2. Press =Ctrl+C C= → =r=
+2. Press =C-c c= → =r=
 3. Enter source name and URL
 4. The quote is captured in the "Quotes" section
 
@@ -827,7 +827,7 @@ Usage:
 
 Usage:
 1. Select code in editor
-2. Press =Ctrl+C C= → =c=
+2. Press =C-c c= → =c=
 3. Describe the code and specify language
 4. Creates a documented code snippet with link back to source
 
@@ -941,9 +941,9 @@ When you find the answer, update the "Resolution" section.
 
 | Command                                | Description                          | Keybinding  |
 |----------------------------------------+--------------------------------------+-------------|
-| =Scimax: Capture=                      | Open capture template picker         | =Ctrl+C C=  |
+| =Scimax: Capture=                      | Open capture template picker         | =C-c c=  |
 | =Scimax: Capture by Key=               | Capture using template key           |             |
-| =Scimax: Quick Capture TODO=           | Fast TODO capture                    | =Ctrl+C T=  |
+| =Scimax: Quick Capture TODO=           | Fast TODO capture                    | =C-c t=  |
 | =Scimax: Quick Capture Note=           | Fast note capture                    |             |
 | =Scimax: Create Capture Template=      | Create new template interactively    |             |
 | =Scimax: List Capture Templates=       | View all available templates         |             |
@@ -963,12 +963,12 @@ When you find the answer, update the "Resolution" section.
 
 | Keybinding  | Action                   | Context        |
 |-------------+--------------------------+----------------|
-| =Ctrl+C C=  | Open capture picker      | Global         |
-| =Ctrl+C T=  | Quick TODO capture       | Global         |
+| =C-c c=  | Open capture picker      | Global         |
+| =C-c t=  | Quick TODO capture       | Global         |
 
 ** Custom Keybindings
 
-Add custom keybindings in =keybindings.json= (=Ctrl+K Ctrl+S= to open):
+Add custom keybindings in =keybindings.json= (=C-k C-s= to open):
 
 *** Quick Capture Note
 
@@ -1120,9 +1120,9 @@ This makes capture nearly instantaneous.
 ** Use Keyboard-driven Workflow
 
 Memorize keys for your most common captures:
-- =Ctrl+C C= → =t= → Task description → Enter (TODO)
-- =Ctrl+C C= → =j= → Entry title → Enter (Journal)
-- =Ctrl+C T= → Task → Enter (Quick TODO)
+- =C-c c= → =t= → Task description → Enter (TODO)
+- =C-c c= → =j= → Entry title → Enter (Journal)
+- =C-c t= → Task → Enter (Quick TODO)
 
 With practice, capture becomes muscle memory.
 
@@ -1132,7 +1132,7 @@ With practice, capture becomes muscle memory.
 
 - Check =settings.json= for syntax errors
 - Ensure template has required fields: =key=, =name=, =file=, =template=
-- Reload window (=Ctrl+Shift+P= → =Reload Window=)
+- Reload window (=C-S-P= → =Reload Window=)
 
 ** Capture File Not Created
 
@@ -1165,26 +1165,26 @@ With practice, capture becomes muscle memory.
 
 Capture complements the journal system. Use capture templates with =file+datetree= targeting for seamless journal integration.
 
-See [[file:journal.org][Journal Documentation]] for details.
+See [[file:14-journal.org][Journal Documentation]] for details.
 
 ** Agenda Integration
 
 Captured TODO items with timestamps appear in the agenda view.
 
-See [[file:agenda.org][Agenda Documentation]] for details.
+See [[file:13-agenda.org][Agenda Documentation]] for details.
 
 ** Database Search
 
 All captured content is indexed and searchable via the database.
 
-See [[file:database-search.org][Database Search Documentation]] for details.
+See [[file:18-database-search.org][Database Search Documentation]] for details.
 
 ** Quick Links
 
-- [[file:getting-started.org][Getting Started Guide]]
-- [[file:configuration.org][Configuration Reference]]
-- [[file:keybindings.org][Keybinding Reference]]
-- [[file:todo-items.org][TODO Items Documentation]]
+- [[file:01-getting-started.org][Getting Started Guide]]
+- [[file:26-configuration.org][Configuration Reference]]
+- [[file:24-keybindings.org][Keybinding Reference]]
+- [[file:03-todo-items.org][TODO Items Documentation]]
 
 * Advanced Topics
 
@@ -1268,5 +1268,6 @@ See =examples/capture-templates.json= in the Scimax repository for a collection 
 
 * Navigation
 
-- Previous: [[file:journal.org][Journal]]
-- Next: [[file:notebook.org][Notebook]]
+- Previous: [[file:14-journal.org][Journal]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:16-notebook.org][Notebook]]

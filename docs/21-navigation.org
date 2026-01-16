@@ -26,8 +26,8 @@ Navigation in Scimax VS Code follows three main paradigms:
 4. *Speed Commands* - Single-key navigation when at heading start
 
 See also:
-- [[file:document-structure.org][Document Structure]] for information about headlines and folding
-- [[file:keybindings.org][Keybindings]] for a complete reference of keyboard shortcuts
+- [[file:02-document-structure.org][Document Structure]] for information about headlines and folding
+- [[file:24-keybindings.org][Keybindings]] for a complete reference of keyboard shortcuts
 
 * ✅ Outline Navigation
 CLOSED: [2026-01-15 Thu 07:32]
@@ -42,8 +42,8 @@ Navigate between headings in org-mode and markdown documents:
 
 | Command                    | Key Binding | Description              |
 |----------------------------+-------------+--------------------------|
-| scimax.org.nextHeading     | C-c n       | Jump to next heading     |
-| scimax.org.previousHeading | C-c p       | Jump to previous heading |
+| scimax.org.nextHeading     | C-c C-n       | Jump to next heading     |
+| scimax.org.previousHeading | C-c C-p       | Jump to previous heading |
 | scimax.org.parentHeading   | -           | Jump to parent heading   |
 | scimax.org.jumpToHeading   | C-c C-j     | Fuzzy search headings    |
 
@@ -102,8 +102,8 @@ Navigate between source blocks in org documents:
 
 | Command                 | Key Binding | Description               |
 |-------------------------+-------------+---------------------------|
-| scimax.ob.nextBlock     | C-c n       | Jump to next source block |
-| scimax.ob.previousBlock | C-c p       | Jump to previous block    |
+| scimax.ob.nextBlock     | C-c C-n       | Jump to next source block |
+| scimax.ob.previousBlock | C-c C-p       | Jump to previous block    |
 | scimax.ob.jumpToBlock   | -           | Fuzzy search blocks       |
 | scimax.ob.jumpToResults | -           | Jump to results section   |
 
@@ -400,7 +400,7 @@ Click any breadcrumb to see siblings and navigate quickly.
 ** ✅ Quick Outline
 CLOSED: [2026-01-15 Thu 07:54]
 
-Press Ctrl+Shift+O (or Cmd+Shift+O on Mac) to open VS Code's quick outline:
+Press C-S-O (or s-S-O on Mac) to open VS Code's quick outline:
 
 - Shows all document symbols
 - Type to filter
@@ -420,8 +420,8 @@ While not Scimax-specific, VS Code's go to definition works in org files for:
 | Command                        | Key Binding | Description         |
 |--------------------------------+-------------+---------------------|
 | editor.action.revealDefinition | F12         | Go to definition    |
-| editor.action.peekDefinition   | Alt+F12     | Peek definition     |
-| editor.action.goToReferences   | Shift+F12   | Find all references |
+| editor.action.peekDefinition   | M-F12     | Peek definition     |
+| editor.action.goToReferences   | S-F12   | Find all references |
 
 * ✅ Navigation History
 CLOSED: [2026-01-15 Thu 08:00]
@@ -461,7 +461,7 @@ Navigation speed commands (available at heading start):
 | g   | Go to... submenu         | More navigation options        |
 
 To enable speed commands:
-1. Open settings (Ctrl+,)
+1. Open settings (C-,)
 2. Search for "scimax speed commands"
 3. Enable "Scimax: Speed Commands Enabled"
 
@@ -487,9 +487,9 @@ All navigation keybindings:
 | C-c s             | scimax.fuzzySearch               | Fuzzy search current file   |
 | C-c S-s           | scimax.fuzzySearchOpenFiles      | Fuzzy search open files     |
 | C-c M-s           | scimax.fuzzySearchOutline        | Fuzzy search outline        |
-| Alt+Left / C-c [  | workbench.action.navigateBack    | Navigate back in history    |
-| Alt+Right / C-c ] | workbench.action.navigateForward | Navigate forward in history |
-| Ctrl+Shift+O      | VS Code Quick Outline            | Jump to symbol              |
+| M-<left> / C-c [  | workbench.action.navigateBack    | Navigate back in history    |
+| M-<right> / C-c ] | workbench.action.navigateForward | Navigate forward in history |
+| C-S-O      | VS Code Quick Outline            | Jump to symbol              |
 
 ** ✅ Org/Markdown Mode
 CLOSED: [2026-01-15 Thu 07:58]
@@ -530,7 +530,7 @@ For code files:
 
 1. C-c M-s - Search outline to find function/class
 2. scimax.jump.gotoSymbol - Jump to visible function
-3. Ctrl+Shift+O - VS Code quick outline for all symbols
+3. C-S-O - VS Code quick outline for all symbols
 
 ** ✅ Cross-File Navigation
 CLOSED: [2026-01-15 Thu 07:59]
@@ -539,7 +539,7 @@ When working across multiple files:
 
 1. C-c S-s - Search all open files
 2. Open related files
-3. Use navigation history (Alt+Left/Alt+Right) to move between locations
+3. Use navigation history (M-<left>/M-<right>) to move between locations
 4. Use breadcrumbs to see context
 
 ** ✅ Precision Jumping
@@ -647,10 +647,10 @@ Cursor movement with arrow keys doesn't create history entries.
 * ✅ See Also
 CLOSED: [2026-01-15 Thu 07:34]
 
-- [[file:document-structure.org][Document Structure]] - Headlines, folding, and outline manipulation
-- [[file:keybindings.org][Keybindings]] - Complete keybinding reference
-- [[file:source-blocks.org][Source Blocks]] - Working with code blocks
-- [[file:links.org][Links]] - Following and managing links
+- [[file:02-document-structure.org][Document Structure]] - Headlines, folding, and outline manipulation
+- [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference
+- [[file:07-source-blocks.org][Source Blocks]] - Working with code blocks
+- [[file:05-links.org][Links]] - Following and managing links
 
 * ✅ Comparison with Emacs
 CLOSED: [2026-01-15 Thu 07:34]
@@ -691,8 +691,8 @@ CLOSED: [2026-01-15 Thu 07:33]
 - Speed commands: [[*Speed Commands]]
 - Swiper-style search: [[*Fuzzy Search (Swiper-Style)]]
 
-* ✅ Navigation
-CLOSED: [2026-01-15 Thu 07:33]
+* Navigation
 
-- Previous: [[file:editmarks.org][Editmarks]]
-- Next: [[file:hydra-menus.org][Hydra Menus]]
+- Previous: [[file:20-editmarks.org][Editmarks]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:22-hydra-menus.org][Hydra Menus]]

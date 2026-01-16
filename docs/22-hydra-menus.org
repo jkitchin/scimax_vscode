@@ -37,7 +37,7 @@ Think of hydra menus as command palettes optimized for keyboard efficiency:
 
 ** ⚠️ Philosophy
 
-The hydra system is designed around the principle of discoverability and efficiency. Instead of memorizing dozens of keyboard shortcuts, you can press Ctrl+C M to open the main menu and see all available commands with their shortcuts. Once you learn commonly-used shortcuts, you can invoke them directly without opening the menu.
+The hydra system is designed around the principle of discoverability and efficiency. Instead of memorizing dozens of keyboard shortcuts, you can press C-c m to open the main menu and see all available commands with their shortcuts. Once you learn commonly-used shortcuts, you can invoke them directly without opening the menu.
 
 * ⚠️ Getting Started
 
@@ -45,12 +45,12 @@ The hydra system is designed around the principle of discoverability and efficie
 
 The fastest way to access hydra menus is through the main menu:
 
-- Press Ctrl+C M (Cmd+C M on Mac) to open the main Scimax menu
-- Press Ctrl+C Ctrl+M for a context-aware menu based on the current file type
+- Press C-c m (s-c m on Mac) to open the main Scimax menu
+- Press C-c C-m for a context-aware menu based on the current file type
 
 You can also open menus through the command palette:
 
-1. Press Ctrl+Shift+P (Cmd+Shift+P on Mac)
+1. Press C-S-P (s-S-P on Mac)
 2. Type "Scimax: Main Menu" or "Scimax: Show Hydra Menu"
 3. Press Enter
 
@@ -103,7 +103,7 @@ Scimax comes with eight pre-built hydra menus covering all major features:
 
 The main entry point for all Scimax features.
 
-*Access*: Ctrl+C M or command "Scimax: Main Menu"
+*Access*: C-c m or command "Scimax: Main Menu"
 
 #+begin_example
 Scimax
@@ -152,7 +152,7 @@ Insert:
 
 *Example Usage*:
 
-1. Press Ctrl+C M to open main menu
+1. Press C-c m to open main menu
 2. Press j to open journal menu
 3. Press t to open today's entry
 
@@ -189,7 +189,7 @@ Management:
 
 *Example Usage*:
 
-1. Press Ctrl+C M, then r to open references menu
+1. Press C-c M, then r to open references menu
 2. Press c to insert a citation
 3. Search for your reference and select it
 
@@ -220,7 +220,7 @@ Files:
 
 *Example Usage*:
 
-1. Press Ctrl+C M, then n to open notebook menu
+1. Press C-c M, then n to open notebook menu
 2. Press n to create a new notebook
 3. Enter notebook name and location
 
@@ -248,7 +248,7 @@ Files:
 
 *Example Usage*:
 
-1. Press Ctrl+C M, then p to open projectile menu
+1. Press C-c M, then p to open projectile menu
 2. Press p again to switch to another project
 3. Select project from the list
 
@@ -277,7 +277,7 @@ Tasks & Agenda:
 
 *Example Usage*:
 
-1. Press Ctrl+C M, then s to open search menu
+1. Press C-c M, then s to open search menu
 2. Press f to search current file
 3. Type your search query
 
@@ -305,7 +305,7 @@ Jump to Line:
 
 *Example Usage*:
 
-1. Press Ctrl+C M, then g to open jump menu
+1. Press C-c M, then g to open jump menu
 2. Press w to jump to a word
 3. Type the first letter of target word
 4. Type the hint character shown at that location
@@ -342,7 +342,7 @@ Statistics:
 
 *Example Usage*:
 
-1. Press Ctrl+C M, then d to open database menu
+1. Press C-c M, then d to open database menu
 2. Press s to perform full-text search
 3. Enter your search query
 
@@ -352,12 +352,12 @@ Statistics:
 
 | Keybinding              | Command                       | Description                      |
 |-------------------------+-------------------------------+----------------------------------|
-| Ctrl+C M                | scimax.hydra.main             | Open main menu                   |
-| Ctrl+C Ctrl+M           | scimax.hydra.contextMenu      | Open context-aware menu          |
+| C-c m                | scimax.hydra.main             | Open main menu                   |
+| C-c C-m           | scimax.hydra.contextMenu      | Open context-aware menu          |
 
 ** ⚠️ Available Commands
 
-All hydra commands can be invoked through the command palette (Ctrl+Shift+P):
+All hydra commands can be invoked through the command palette (C-S-P):
 
 *** ⚠️ scimax.hydra.show
 
@@ -399,7 +399,7 @@ await vscode.commands.executeCommand('scimax.hydra.toggle', 'scimax.journal');
 
 ** ⚠️ Settings
 
-Configure hydra behavior through VS Code settings (File > Preferences > Settings or Ctrl+,):
+Configure hydra behavior through VS Code settings (File > Preferences > Settings or C-,):
 
 *** ⚠️ scimax.hydra.showKeyHints
 
@@ -677,18 +677,18 @@ hydraManager.unregisterMenu('my.custom.menu');
 
 The quickest way to open today's journal entry:
 
-1. Press Ctrl+C M → opens main menu
+1. Press C-c m → opens main menu
 2. Press j → opens journal submenu
 3. Press t → opens today's entry and closes menu
 
-Or, if you remember the keybinding, press Ctrl+Shift+J directly.
+Or, if you remember the keybinding, press C-S-J directly.
 
 ** ⚠️ Example 2: Inserting a Citation
 
 To insert a citation in your document:
 
 1. Position cursor where you want the citation
-2. Press Ctrl+C M → opens main menu
+2. Press C-c m → opens main menu
 3. Press r → opens references submenu
 4. Press c → starts citation insertion
 5. Type to search for your reference
@@ -698,7 +698,7 @@ To insert a citation in your document:
 
 To jump to a visible word on screen:
 
-1. Press Ctrl+C M → opens main menu
+1. Press C-c m → opens main menu
 2. Press g → opens jump submenu
 3. Press w → starts word jump mode
 4. Type first letter of target word
@@ -709,7 +709,7 @@ To jump to a visible word on screen:
 
 To find all TODO items in your org files:
 
-1. Press Ctrl+C M → opens main menu
+1. Press C-c m → opens main menu
 2. Press s → opens search submenu
 3. Press t → searches for TODO items
 4. View results in quick pick
@@ -719,7 +719,7 @@ To find all TODO items in your org files:
 
 To index multiple files in sequence:
 
-1. Press Ctrl+C M → opens main menu
+1. Press C-c m → opens main menu
 2. Press d → opens database submenu
 3. Press i → indexes current file, menu stays open
 4. Switch to another file (menu remains visible)
@@ -730,7 +730,7 @@ To index multiple files in sequence:
 
 When in a deep submenu:
 
-1. Press Ctrl+C M → main menu
+1. Press C-c m → main menu
 2. Press d → database menu
 3. Press Backspace or select "Back" → returns to main menu
 4. Press Escape → closes all menus
@@ -787,7 +787,7 @@ Menus don't appear at specific screen positions like Emacs posframe. They always
 
 If you're coming from Emacs hydra:
 
-1. *Keybindings*: Map Ctrl+C M (or your preferred binding) to scimax.hydra.main
+1. *Keybindings*: Map C-c m (or your preferred binding) to scimax.hydra.main
 2. *Menu Definition*: Use the fluent builder API for a declarative style similar to Emacs
 3. *Exit Behavior*: exit = blue head, stay = red head
 4. *Submenus*: Use the submenu exit behavior instead of (exit) with another hydra call
@@ -931,11 +931,11 @@ The hydra framework source is located in src/hydra/:
 
 ** ⚠️ Related Documentation
 
-- [[file:keybindings.org][Keybindings]] - All Scimax keyboard shortcuts
-- [[file:configuration.org][Configuration]] - Complete settings reference
-- [[file:journal.org][Journal]] - Journal-specific commands and workflows
-- [[file:references.org][References]] - Bibliography management
-- [[file:database-search.org][Database Search]] - Search and query system
+- [[file:24-keybindings.org][Keybindings]] - All Scimax keyboard shortcuts
+- [[file:26-configuration.org][Configuration]] - Complete settings reference
+- [[file:14-journal.org][Journal]] - Journal-specific commands and workflows
+- [[file:19-references.org][References]] - Bibliography management
+- [[file:18-database-search.org][Database Search]] - Search and query system
 
 ** ⚠️ External References
 
@@ -947,11 +947,12 @@ The hydra framework source is located in src/hydra/:
 
 Hydra menus provide a powerful and discoverable way to access Scimax features. Whether you're a new user exploring available commands or an experienced user building custom workflows, hydras help you work efficiently without memorizing dozens of keyboard shortcuts.
 
-Start with Ctrl+C M to open the main menu and explore. Over time, you'll develop muscle memory for frequently-used commands and can invoke them directly or through submenus.
+Start with C-c m to open the main menu and explore. Over time, you'll develop muscle memory for frequently-used commands and can invoke them directly or through submenus.
 
 Happy hydra-ing!
 
 * Navigation
 
-- Previous: [[file:navigation.org][Navigation]]
-- Next: [[file:speed-commands.org][Speed Commands]]
+- Previous: [[file:21-navigation.org][Navigation]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:23-speed-commands.org][Speed Commands]]

@@ -27,7 +27,7 @@ Add TODO after the headline stars to create a task:
 
 ** ✅ Cycling TODO States
 
-Press Ctrl+C Ctrl+T on a headline to cycle through TODO states:
+Press C-c C-t on a headline to cycle through TODO states:
 
 #+BEGIN_EXAMPLE
 (no keyword) → TODO → DONE → (no keyword)
@@ -150,7 +150,7 @@ For simpler task lists within a section, use checkboxes:
 
 *** ✅ Toggling Checkboxes
 
-Press Ctrl+C Ctrl+C with cursor on a checkbox line to toggle it.
+Press C-c C-c with cursor on a checkbox line to toggle it.
 
 Or use scimax.org.toggleCheckbox.
 
@@ -362,7 +362,7 @@ CLOSED: [2026-01-15 Thu 14:39]
 
 | Key/Command        | Action               |
 |--------------------+----------------------|
-| Speed key Shift+;  | Edit tags            |
+| Speed key ;  | Edit tags            |
 | scimax.org.setTags | Set tags via command |
 
 ** ✅ Inherited Tags
@@ -444,7 +444,7 @@ Or use commands:
 - scimax.org.schedule
 - scimax.org.deadline
 
-See [[file:timestamps.org][Timestamps]] for more on date formats.
+See [[file:06-timestamps.org][Timestamps]] for more on date formats.
 
 * ✅ Time Tracking
 CLOSED: [2026-01-15 Thu 14:40]
@@ -460,8 +460,8 @@ CLOCK: [2026-01-15 Thu 14:40]--[2026-01-15 Thu 14:40] => 0:00
 
 | Speed Key | Action                  |
 |-----------+-------------------------|
-| Shift+I   | Clock in (start timing) |
-| Shift+O   | Clock out (stop timing) |
+| I   | Clock in (start timing) |
+| O   | Clock out (stop timing) |
 
 ** ✅ Clock Entries
 CLOSED: [2026-01-15 Thu 14:41]
@@ -537,7 +537,7 @@ CLOSED: [2026-01-15 Thu 14:41]
 - By date range
 - By TODO state
 
-See [[file:agenda.org][Agenda]] for complete agenda documentation.
+See [[file:13-agenda.org][Agenda]] for complete agenda documentation.
 
 * ✅ Best Practices
 CLOSED: [2026-01-15 Thu 14:41]
@@ -597,8 +597,8 @@ CLOSED: [2026-01-15 Thu 14:41]
 
 | Key           | Action           |
 |---------------+------------------|
-| Ctrl+C Ctrl+T | Cycle TODO state |
-| Ctrl+C Ctrl+C | Toggle checkbox  |
+| C-c C-t | Cycle TODO state |
+| C-c C-c | Toggle checkbox  |
 
 ** ✅ Speed Commands (at heading start)
 CLOSED: [2026-01-15 Thu 14:42]
@@ -612,9 +612,9 @@ CLOSED: [2026-01-15 Thu 14:42]
 | s       | Schedule           |
 | d       | Deadline           |
 | e       | Set effort         |
-| Shift+; | Set tags           |
-| Shift+I | Clock in           |
-| Shift+O | Clock out          |
+| ; | Set tags           |
+| I | Clock in           |
+| O | Clock out          |
 
 ** ✅ Commands
 CLOSED: [2026-01-15 Thu 14:42]
@@ -632,11 +632,12 @@ CLOSED: [2026-01-15 Thu 14:42]
 * ✅ Related Topics
 CLOSED: [2026-01-15 Thu 14:42]
 
-- [[file:timestamps.org][Timestamps]] - Date formats for scheduling and deadlines
-- [[file:agenda.org][Agenda]] - Viewing and filtering tasks
-- [[file:document-structure.org][Document Structure]] - Headlines and organization
+- [[file:06-timestamps.org][Timestamps]] - Date formats for scheduling and deadlines
+- [[file:13-agenda.org][Agenda]] - Viewing and filtering tasks
+- [[file:02-document-structure.org][Document Structure]] - Headlines and organization
 
 * Navigation
 
-- Previous: [[file:document-structure.org][Document Structure]]
-- Next: [[file:tables.org][Tables]]
+- Previous: [[file:02-document-structure.org][Document Structure]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:04-tables.org][Tables]]

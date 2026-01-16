@@ -138,7 +138,7 @@ For LaTeX and HTML export, use backend-specific attributes:
 [[file:./architecture.png]]
 #+END_SRC
 
-See [[file:export.org][Export Documentation]] for more details on export attributes.
+See [[file:10-export.org][Export Documentation]] for more details on export attributes.
 
 ** ⚠️ Adding Captions
 
@@ -159,7 +159,7 @@ Toggle image overlays for all org files:
 - *Command:* Scimax: Toggle Image Overlays
 - *Command ID:* scimax.imageOverlays.toggle
 
-Use the command palette (Ctrl+Shift+P / Cmd+Shift+P) and search for "Toggle Image Overlays".
+Use the command palette (C-S-P / s-S-P) and search for "Toggle Image Overlays".
 
 ** ⚠️ Per-File Toggle
 
@@ -370,7 +370,7 @@ plt.show()
 
 These images are automatically displayed as overlays when image overlays are enabled.
 
-See [[file:jupyter.org][Jupyter Documentation]] for more details on Jupyter integration.
+See [[file:09-jupyter.org][Jupyter Documentation]] for more details on Jupyter integration.
 
 ** ⚠️ R and Other Languages
 
@@ -654,11 +654,11 @@ Note: Remote images don't show overlays but are clickable:
 
 * ⚠️ See Also
 
-- [[file:links.org][Links]] - General link syntax and functionality
-- [[file:source-blocks.org][Source Blocks]] - Executing code that generates images
-- [[file:jupyter.org][Jupyter Integration]] - Working with Jupyter kernels
-- [[file:export.org][Export]] - Exporting documents with images
-- [[file:configuration.org][Configuration]] - Full configuration reference
+- [[file:05-links.org][Links]] - General link syntax and functionality
+- [[file:07-source-blocks.org][Source Blocks]] - Executing code that generates images
+- [[file:09-jupyter.org][Jupyter Integration]] - Working with Jupyter kernels
+- [[file:10-export.org][Export]] - Exporting documents with images
+- [[file:26-configuration.org][Configuration]] - Full configuration reference
 
 * ⚠️ Technical Details
 
@@ -702,5 +702,6 @@ The implementation uses VS Code's decoration API with gutter icons as the closes
 
 * Navigation
 
-- Previous: [[file:latex-preview.org][LaTeX Preview]]
-- Next: [[file:agenda.org][Agenda]]
+- Previous: [[file:11-latex-preview.org][LaTeX Preview]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:13-agenda.org][Agenda]]

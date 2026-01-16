@@ -93,7 +93,7 @@ Example cycle:
 ** ✅ Global Cycling with Shift-Tab
 CLOSED: [2026-01-15 Thu 14:26]
 
-Press Shift+Tab anywhere in the document to cycle global visibility:
+Press S-<tab> anywhere in the document to cycle global visibility:
 
 | State    | Shows                                    |
 |----------+------------------------------------------|
@@ -106,15 +106,15 @@ CLOSED: [2026-01-15 Thu 14:26]
 
 | Key       | Command                             |
 |-----------+-------------------------------------|
-| Tab       | Cycle visibility at current heading |
-| Shift+Tab | Cycle global visibility             |
+| <tab>       | Cycle visibility at current heading |
+| S-<tab> | Cycle global visibility             |
 
-Additional visibility can be controlled through speed commands (see [[file:speed-commands.org][Speed Commands]]):
+Additional visibility can be controlled through speed commands (see [[file:23-speed-commands.org][Speed Commands]]):
 
 | Speed Key | Action              |
 |-----------+---------------------|
 | c         | Cycle visibility    |
-| Shift+C   | Show children       |
+| C   | Show children       |
 | o         | Overview (fold all) |
 
 * ✅ Motion Between Headlines
@@ -128,7 +128,7 @@ CLOSED: [2026-01-15 Thu 14:27]
 
 | Key                   | Command                         |
 |-----------------------+---------------------------------|
-| Ctrl+C Ctrl+J         | Jump to any heading (with menu) |
+| C-c C-j         | Jump to any heading (with menu) |
 | Next/Previous heading | Built-in VS Code outline        |
 
 ** ✅ Using the Outline View
@@ -136,14 +136,14 @@ CLOSED: [2026-01-15 Thu 14:27]
 
 The VS Code Outline view provides visual navigation:
 
-1. Open the Outline view (sidebar or Cmd/Ctrl+Shift+O)
+1. Open the Outline view (sidebar or Cmd/C-S-O)
 2. Click any heading to jump to it
 3. Use the filter box to search headings
 
 ** ✅ Jump to Heading
 CLOSED: [2026-01-15 Thu 14:27]
 
-Press Ctrl+C Ctrl+J to open a quick-pick menu of all headings. Type to filter
+Press C-c C-j to open a quick-pick menu of all headings. Type to filter
 and press Enter to jump.
 
 ** ✅ Speed Command Navigation
@@ -175,10 +175,10 @@ Change the level of a headline:
 
 | Key             | Command                          |
 |-----------------+----------------------------------|
-| Alt+Left        | Promote heading (decrease level) |
-| Alt+Right       | Demote heading (increase level)  |
-| Alt+Shift+Left  | Promote subtree                  |
-| Alt+Shift+Right | Demote subtree                   |
+| M-<left>        | Promote heading (decrease level) |
+| M-<right>       | Demote heading (increase level)  |
+| M-S-Left  | Promote subtree                  |
+| M-S-Right | Demote subtree                   |
 
 *Promote* means moving toward the root (** -> *).
 *Demote* means moving away from the root (* -> **).
@@ -202,8 +202,8 @@ Reorder sections without changing their level:
 
 | Key      | Command                              |
 |----------+--------------------------------------|
-| Alt+Up   | Move subtree up (swap with previous) |
-| Alt+Down | Move subtree down (swap with next)   |
+| M-<up>   | Move subtree up (swap with previous) |
+| M-<down> | Move subtree down (swap with next)   |
 
 The entire subtree (heading and all its content/children) moves together.
 
@@ -219,7 +219,7 @@ Speed command keys (at heading start):
 | Key     | Action                    |
 |---------+---------------------------|
 | w       | Kill (cut) subtree        |
-| Shift+W | Clone (duplicate) subtree |
+| W | Clone (duplicate) subtree |
 | y       | Yank (paste) subtree      |
 
 ** ✅ Insert New Headings
@@ -227,7 +227,7 @@ CLOSED: [2026-01-15 Thu 14:31]
 
 | Key        | Command                      |
 |------------+------------------------------|
-| Ctrl+Enter | Insert heading at same level |
+| C-<return> | Insert heading at same level |
 
 The command scimax.org.insertHeading inserts a new heading. The behavior
 depends on context:
@@ -329,7 +329,7 @@ Certain properties have special meaning:
 ** ✅ Adding Properties
 CLOSED: [2026-01-15 Thu 14:33]
 
-To add a property via speed commands, press Shift+P at a heading start.
+To add a property via speed commands, press P at a heading start.
 
 You can also add properties manually by typing inside the drawer.
 
@@ -494,7 +494,7 @@ This has an inline footnote[fn:: This is the definition].
 ** ✅ Related Topics
 CLOSED: [2026-01-15 Thu 14:35]
 
-See [[file:links.org][Links]] for information on footnote references.
+See [[file:05-links.org][Links]] for information on footnote references.
 
 * ✅ Dynamic Blocks
 CLOSED: [2026-01-15 Thu 14:35]
@@ -581,21 +581,22 @@ CLOSED: [2026-01-15 Thu 14:38]
 ** ✅ Navigation Efficiency
 CLOSED: [2026-01-15 Thu 14:38]
 
-1. *Use Ctrl+C Ctrl+J* for direct jumps to any heading
+1. *Use C-c C-j* for direct jumps to any heading
 2. *Use outline view* for visual navigation in long documents
 3. *Enable speed commands* for rapid single-key navigation
-4. *Use Shift+Tab* to get an overview before diving in
+4. *Use S-<tab>* to get an overview before diving in
 
 * ✅ Related Topics
 CLOSED: [2026-01-15 Thu 14:38]
 
-- [[file:todo-items.org][TODO Items]] - Task states and priorities in headlines
-- [[file:timestamps.org][Timestamps]] - Adding dates to headlines
-- [[file:links.org][Links]] - Linking to headlines
-- [[file:speed-commands.org][Speed Commands]] - Single-key commands at headlines
-- [[file:export.org][Export]] - How structure affects exported documents
+- [[file:03-todo-items.org][TODO Items]] - Task states and priorities in headlines
+- [[file:06-timestamps.org][Timestamps]] - Adding dates to headlines
+- [[file:05-links.org][Links]] - Linking to headlines
+- [[file:23-speed-commands.org][Speed Commands]] - Single-key commands at headlines
+- [[file:10-export.org][Export]] - How structure affects exported documents
 
-* 👀 Navigation
+* Navigation
 
-- Previous: [[file:getting-started.org][Getting Started]]
-- Next: [[file:todo-items.org][TODO Items]]
+- Previous: [[file:01-getting-started.org][Getting Started]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:03-todo-items.org][TODO Items]]

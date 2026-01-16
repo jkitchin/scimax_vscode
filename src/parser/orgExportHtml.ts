@@ -33,6 +33,7 @@ import type {
     UnderlineObject,
     StrikeThroughObject,
     CodeObject,
+    CommandObject,
     VerbatimObject,
     LinkObject,
     TimestampObject,
@@ -284,6 +285,8 @@ export class HtmlExportBackend implements ExportBackend {
                 return this.exportStrikeThrough(object as StrikeThroughObject, state);
             case 'code':
                 return this.exportCode(object as CodeObject, state);
+            case 'command':
+                return this.exportCommand(object as CommandObject, state);
             case 'verbatim':
                 return this.exportVerbatim(object as VerbatimObject, state);
             case 'link':
@@ -674,6 +677,11 @@ export class HtmlExportBackend implements ExportBackend {
 
     private exportCode(obj: CodeObject, state: ExportState): string {
         return `<code>${escapeString(obj.properties.value, 'html')}</code>`;
+    }
+
+    private exportCommand(obj: CommandObject, state: ExportState): string {
+        // Emacs-style command markup `command' - export as <kbd> element
+        return `<kbd>${escapeString(obj.properties.value, 'html')}</kbd>`;
     }
 
     private exportVerbatim(obj: VerbatimObject, state: ExportState): string {

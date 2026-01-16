@@ -1168,6 +1168,14 @@
           "captures": {
             "1": { "name": "markup.strikethrough.content.org" }
           }
+        },
+        {
+          "comment": "Emacs-style command markup `command'",
+          "name": "markup.command.org",
+          "match": "(`[^`'\\n]+')",
+          "captures": {
+            "1": { "name": "markup.command.content.org" }
+          }
         }
       ]
     },

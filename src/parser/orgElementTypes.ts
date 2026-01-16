@@ -58,6 +58,7 @@ export type ElementType = GreaterElementType | LesserElementType;
 export type ObjectType =
     | 'bold'
     | 'code'
+    | 'command'  // Non-standard: Emacs-style `command' markup
     | 'entity'
     | 'export-snippet'
     | 'footnote-reference'
@@ -664,6 +665,16 @@ export interface CodeObject extends OrgObject {
  */
 export interface VerbatimObject extends OrgObject {
     type: 'verbatim';
+    properties: {
+        value: string;
+    };
+}
+
+/**
+ * Command object - Emacs-style `command' markup (non-standard)
+ */
+export interface CommandObject extends OrgObject {
+    type: 'command';
     properties: {
         value: string;
     };

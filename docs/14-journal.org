@@ -25,13 +25,13 @@ The Scimax Journal is a powerful date-based note-taking system that helps you ma
 
 ** ⚠️ Philosophy
 
-The journal system is designed around the principle of friction-free capture. With a single keyboard shortcut (Ctrl+Shift+J), you can open today's journal entry and start writing. The system handles all organization automatically, storing files in a sensible directory structure that mirrors the calendar.
+The journal system is designed around the principle of friction-free capture. With a single keyboard shortcut (C-S-J), you can open today's journal entry and start writing. The system handles all organization automatically, storing files in a sensible directory structure that mirrors the calendar.
 
 * ⚠️ Getting Started
 
 ** ⚠️ Opening Your First Journal Entry
 
-The quickest way to start journaling is to press Ctrl+Shift+J (Cmd+Shift+J on Mac). This will:
+The quickest way to start journaling is to press C-S-J (s-S-J on Mac). This will:
 
 1. Create today's journal entry if it doesn't exist
 2. Apply your default template
@@ -78,7 +78,7 @@ Each entry is stored in a path like YYYY/MM/DD/YYYY-MM-DD.org, making it easy to
 
 ** ⚠️ Configuration
 
-Configure the journal system through VS Code settings (File > Preferences > Settings or Ctrl+,):
+Configure the journal system through VS Code settings (File > Preferences > Settings or C-,):
 
 *** ⚠️ scimax.journal.directory
 
@@ -319,7 +319,7 @@ Custom Markdown templates work the same way, but use the .md extension.
 
 ** ⚠️ Today's Entry
 
-Press Ctrl+Shift+J (Cmd+Shift+J on Mac) or run the command Scimax: Open Today's Journal.
+Press C-S-J (s-S-J on Mac) or run the command Scimax: Open Today's Journal.
 
 This is the fastest way to start journaling. If today's entry doesn't exist, it will be created using your default template.
 
@@ -335,7 +335,7 @@ If an entry already exists for that date, you'll be asked if you want to open it
 
 Example workflow for creating a meeting note:
 
-1. Ctrl+Shift+P → Scimax: New Journal Entry
+1. C-S-P → Scimax: New Journal Entry
 2. Select meeting template
 3. Press Enter to use today's date
 4. Entry is created and opened
@@ -359,8 +359,8 @@ However, only one file per date is stored. To use multiple templates in one day,
 
 When viewing a journal entry:
 
-- Alt+[ - Go to previous entry
-- Alt+] - Go to next entry
+- M-[ - Go to previous entry
+- M-] - Go to next entry
 
 These shortcuts only work when the current file is a journal entry (filename matches YYYY-MM-DD.org or .md).
 
@@ -661,9 +661,9 @@ print(data.describe())
 ,#+end_src
 #+end_src
 
-Press Ctrl+Enter (Cmd+Enter on Mac) to execute blocks.
+Press C-<return> (s-<return> on Mac) to execute blocks.
 
-See [[file:source-blocks.org][Source Blocks documentation]] for details.
+See [[file:07-source-blocks.org][Source Blocks documentation]] for details.
 
 ** ⚠️ Citations and References
 
@@ -679,9 +679,9 @@ The architecture described in cite:he2016deep could be useful for our project.
 bibliography:~/references.bib
 #+end_src
 
-Press Ctrl+C ] to insert citations.
+Press C-c ] to insert citations.
 
-See [[file:references.org][References documentation]] for details.
+See [[file:19-references.org][References documentation]] for details.
 
 * ⚠️ Commands Reference
 
@@ -689,10 +689,10 @@ See [[file:references.org][References documentation]] for details.
 
 | Command                           | Keybinding       | Description                          |
 |-----------------------------------+------------------+--------------------------------------|
-| Scimax: Open Today's Journal      | Ctrl+Shift+J     | Open or create today's entry         |
+| Scimax: Open Today's Journal      | C-S-J     | Open or create today's entry         |
 | Scimax: New Journal Entry         | -                | Create entry with template selection |
-| Scimax: Previous Journal Entry    | Alt+[            | Navigate to previous entry           |
-| Scimax: Next Journal Entry        | Alt+]            | Navigate to next entry               |
+| Scimax: Previous Journal Entry    | M-[            | Navigate to previous entry           |
+| Scimax: Next Journal Entry        | M-]            | Navigate to next entry               |
 | Scimax: Go to Journal Date        | -                | Quick-pick list of all entries       |
 | Scimax: Search Journal            | -                | Search entries with date range       |
 | Scimax: Show Journal Calendar     | -                | Open calendar view                   |
@@ -705,9 +705,9 @@ See [[file:references.org][References documentation]] for details.
 
 ** ⚠️ Command Palette
 
-Access all commands via Command Palette (Ctrl+Shift+P or Cmd+Shift+P):
+Access all commands via Command Palette (C-S-P or s-S-P):
 
-1. Press Ctrl+Shift+P
+1. Press C-S-P
 2. Type "journal"
 3. Select command from filtered list
 
@@ -760,7 +760,7 @@ Add custom keybindings in keybindings.json (File > Preferences > Keyboard Shortc
 
 ** ⚠️ Daily Journaling Workflow
 
-1. *Morning*: Open today's journal (Ctrl+Shift+J), review yesterday's entry (Alt+[), plan today's tasks
+1. *Morning*: Open today's journal (C-S-J), review yesterday's entry (M-[), plan today's tasks
 2. *Throughout the day*: Use quick log (Scimax: Quick Log Entry) to capture notes
 3. *Evening*: Review entry, mark tasks complete, add reflections
 4. *Weekly*: Use This Week's Entries to review the week
@@ -847,7 +847,7 @@ If custom templates aren't appearing:
 
 ** ⚠️ Navigation Shortcuts Not Working
 
-Alt+[ and Alt+] only work when:
+M-[ and M-] only work when:
 
 - Current file is a journal entry
 - Filename matches YYYY-MM-DD.org or YYYY-MM-DD.md
@@ -971,12 +971,13 @@ Potential future features under consideration:
 
 * ⚠️ See Also
 
-- [[file:agenda.org][Agenda]] - Task management and scheduling
-- [[file:source-blocks.org][Source Blocks]] - Execute code in journal entries
-- [[file:references.org][References]] - Citations in journal entries
-- [[file:database-search.org][Database Search]] - Search and indexing system
+- [[file:13-agenda.org][Agenda]] - Task management and scheduling
+- [[file:07-source-blocks.org][Source Blocks]] - Execute code in journal entries
+- [[file:19-references.org][References]] - Citations in journal entries
+- [[file:18-database-search.org][Database Search]] - Search and indexing system
 
 * Navigation
 
-- Previous: [[file:agenda.org][Agenda]]
-- Next: [[file:capture.org][Capture]]
+- Previous: [[file:13-agenda.org][Agenda]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:15-capture.org][Capture]]

@@ -47,7 +47,7 @@ Speed commands are enabled by default in Scimax VS Code. To toggle them on or of
 *** ✅ Via Settings UI
 CLOSED: [2026-01-15 Thu 14:44]
 
-1. Open VS Code Settings (Ctrl+, or Cmd+, on Mac)
+1. Open VS Code Settings (C-, or s-, on Mac)
 2. Search for "speed commands"
 3. Toggle the checkbox for *Scimax: Speed Commands > Enabled*
 
@@ -65,7 +65,7 @@ Add or modify this setting in your ~settings.json~:
 *** ✅ Via Command Palette
 CLOSED: [2026-01-15 Thu 14:45]
 
-1. Open Command Palette (Ctrl+Shift+P or Cmd+Shift+P on Mac)
+1. Open Command Palette (C-S-P or s-S-P on Mac)
 2. Type "speed" and select *Scimax: Toggle Speed Commands*
 
 ** ✅ Supported File Types
@@ -141,7 +141,7 @@ Control how much content is visible in your document.
 | c   | Cycle global visibility | Cycle through: overview → contents → show all |
 | C   | Show all children       | Unfold all children of current subtree        |
 | o   | Overview                | Fold all headings (show only top-level)       |
-| Tab | Cycle fold at point     | Toggle folding of current heading             |
+| <tab> | Cycle fold at point     | Toggle folding of current heading             |
 
 ** 👀 Structure Editing Commands
 
@@ -370,8 +370,8 @@ CLOSED: [2026-01-15 Thu 14:50]
 *** ✅ Quick Task Management
 CLOSED: [2026-01-15 Thu 14:50]
 
-1. Create heading with ~Ctrl+Enter~
-2. Move to beginning of line (~Home~ or ~Ctrl+A~)
+1. Create heading with ~C-<return>~
+2. Move to beginning of line (~Home~ or ~C-a~)
 3. Press ~t~ to add TODO state
 4. Press ~1~ to set high priority
 5. Press ~s~ to schedule it
@@ -400,15 +400,15 @@ CLOSED: [2026-01-15 Thu 14:50]
 Speed commands complement (don't replace) regular keybindings:
 
 - Use speed commands for quick operations when cursor is at heading start
-- Use regular keybindings (~Ctrl+C Ctrl+T~, etc.) when cursor is elsewhere
-- Use ~Ctrl+A~ or ~Home~ to quickly jump to column 0 to activate speed commands
+- Use regular keybindings (~C-c C-t~, etc.) when cursor is elsewhere
+- Use ~C-a~ or ~Home~ to quickly jump to column 0 to activate speed commands
 
 ** ✅ Cursor Position Matters
 CLOSED: [2026-01-15 Thu 14:50]
 
 Remember: speed commands *only* work at column 0. If a speed command doesn't trigger:
 
-1. Press ~Home~ or ~Ctrl+A~ to move to beginning of line
+1. Press ~Home~ or ~C-a~ to move to beginning of line
 2. Verify you're on a heading line (starts with ~*~ or ~#~)
 3. Check that no text is selected
 
@@ -460,7 +460,7 @@ Complete alphabetical reference of all speed commands.
 | s   | Planning   | Add/edit SCHEDULED      |
 | S   | Special    | Widen (show all)        |
 | t   | TODO       | Cycle TODO state        |
-| Tab | Visibility | Cycle fold at point     |
+| <tab> | Visibility | Cycle fold at point     |
 | u   | Navigation | Parent heading          |
 | U   | Structure  | Move subtree up         |
 | w   | Structure  | Kill (cut) subtree      |
@@ -503,11 +503,11 @@ CLOSED: [2026-01-15 Thu 14:52]
 * ✅ Related Documentation
 CLOSED: [2026-01-15 Thu 14:52]
 
-- [[file:keybindings.org][Keybindings Reference]] - Regular keybindings for all features
-- [[file:document-structure.org][Document Structure]] - Headings, folding, and outline management
-- [[file:todo-items.org][TODO Items]] - Task management and workflow
-- [[file:timestamps.org][Timestamps]] - Date and time handling
-- [[file:agenda.org][Agenda]] - Task planning and scheduling views
+- [[file:24-keybindings.org][Keybindings Reference]] - Regular keybindings for all features
+- [[file:02-document-structure.org][Document Structure]] - Headings, folding, and outline management
+- [[file:03-todo-items.org][TODO Items]] - Task management and workflow
+- [[file:06-timestamps.org][Timestamps]] - Date and time handling
+- [[file:13-agenda.org][Agenda]] - Task planning and scheduling views
 
 * ✅ See Also
 CLOSED: [2026-01-15 Thu 14:52]
@@ -535,5 +535,6 @@ Speed commands are implemented in:
 
 * Navigation
 
-- Previous: [[file:hydra-menus.org][Hydra Menus]]
-- Next: [[file:keybindings.org][Keybindings]]
+- Previous: [[file:22-hydra-menus.org][Hydra Menus]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:24-keybindings.org][Keybindings]]

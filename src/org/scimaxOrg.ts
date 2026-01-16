@@ -103,6 +103,13 @@ export async function strikethroughRegionOrPoint(): Promise<void> {
 }
 
 /**
+ * Make text an Emacs-style command (`command')
+ */
+export async function commandRegionOrPoint(): Promise<void> {
+    await applyMarkup('`', "'");
+}
+
+/**
  * Make text subscript (_{subscript})
  */
 export async function subscriptRegionOrPoint(): Promise<void> {
@@ -136,9 +143,11 @@ export async function latexDisplayMathRegionOrPoint(): Promise<void> {
 
 /**
  * Smart return that creates appropriate content based on context:
- * - In a list item: creates new list item
- * - In a heading: creates new heading at same level
- * - In a table: moves to next row
+ * - On a link: open the link
+ * - On a heading: create new heading after subtree, or delete if empty
+ * - On a list item: create new item, or delete if empty
+ * - On a checkbox: create new checkbox item, or delete if empty
+ * - In a table: move to next row, or delete if empty
  * - In a src block: normal newline
  * - Otherwise: normal newline
  */
@@ -150,17 +159,28 @@ export async function dwimReturn(): Promise<boolean> {
     const position = editor.selection.active;
     const line = document.lineAt(position.line);
     const lineText = line.text;
-    const trimmedLine = lineText.trim();
 
-    // Check if in a src block
+    // Check if in a src block - use normal newline
     if (isInSrcBlock(document, position)) {
-        // Normal newline in src blocks
         return false;
+    }
+
+    // Check if on a link - open it (unless at end of line)
+    const linkInfo = getLinkAtPoint(document, position);
+    if (linkInfo && position.character < line.text.length) {
+        await openLinkAtPoint();
+        return true;
     }
 
     // Check if in a table
     if (isInTable(lineText)) {
         return await handleTableReturn(editor, position);
+    }
+
+    // Check if on a checkbox item (must check before regular list)
+    const checkboxMatch = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+\[[ Xx-]\]\s*(.*)$/);
+    if (checkboxMatch) {
+        return await handleCheckboxReturn(editor, position, checkboxMatch);
     }
 
     // Check if on a list item
@@ -169,15 +189,15 @@ export async function dwimReturn(): Promise<boolean> {
         return await handleListReturn(editor, position, listMatch);
     }
 
-    // Check if on a checkbox item
-    const checkboxMatch = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+\[[ Xx-]\]\s+(.*)$/);
-    if (checkboxMatch) {
-        return await handleCheckboxReturn(editor, position, checkboxMatch);
-    }
-
-    // Check if on a heading
+    // Check if on a heading (but not inline task)
     const headingMatch = lineText.match(/^(\*+)\s+/);
     if (headingMatch) {
+        // Check for inline task (starts with many stars and ends with many stars)
+        const inlineTaskMatch = lineText.match(/^\*{3,}\s+.*\s+\*{3,}$/);
+        if (inlineTaskMatch) {
+            // Don't handle inline tasks specially
+            return false;
+        }
         return await handleHeadingReturn(editor, position, headingMatch);
     }
 
@@ -217,15 +237,33 @@ function isInTable(lineText: string): boolean {
 }
 
 /**
- * Handle return in a table - move to next row or create new row
+ * Handle return in a table - move to next row, create new row, or delete empty row
  */
 async function handleTableReturn(
     editor: vscode.TextEditor,
     position: vscode.Position
 ): Promise<boolean> {
     const document = editor.document;
-    const nextLine = position.line + 1;
+    const currentLine = document.lineAt(position.line);
+    const currentLineText = currentLine.text;
 
+    // Check if current row is empty (all cells are whitespace only)
+    // Skip separator rows (containing only |, -, +)
+    const isSeparator = /^\s*\|[-+|]+\|\s*$/.test(currentLineText);
+    if (!isSeparator) {
+        const cells = currentLineText.split('|').slice(1, -1);
+        const isEmptyRow = cells.every(cell => cell.trim() === '');
+
+        if (isEmptyRow) {
+            // Delete the empty row
+            await editor.edit(editBuilder => {
+                editBuilder.delete(currentLine.rangeIncludingLineBreak);
+            });
+            return true;
+        }
+    }
+
+    const nextLine = position.line + 1;
     if (nextLine < document.lineCount) {
         const nextLineText = document.lineAt(nextLine).text;
         if (isInTable(nextLineText)) {
@@ -238,8 +276,7 @@ async function handleTableReturn(
     }
 
     // Create new row - copy structure from current row
-    const currentLine = document.lineAt(position.line).text;
-    const cells = currentLine.split('|').slice(1, -1);
+    const cells = currentLineText.split('|').slice(1, -1);
     const newRow = '|' + cells.map(c => ' '.repeat(c.length)).join('|') + '|';
 
     await editor.edit(editBuilder => {
@@ -253,25 +290,33 @@ async function handleTableReturn(
 }
 
 /**
- * Handle return on a list item - create new item or end list
+ * Handle return on a list item - create new item or delete empty item
  */
 async function handleListReturn(
     editor: vscode.TextEditor,
     position: vscode.Position,
     match: RegExpMatchArray
 ): Promise<boolean> {
-    const [, indent, bullet, content] = match;
+    const [fullMatch, indent, bullet, content] = match;
+    const document = editor.document;
+    const line = document.lineAt(position.line);
 
-    if (content.trim() === '') {
-        // Empty item - end the list (remove the bullet)
+    // Check for empty definition list item (- ::)
+    if (content.trim() === '::' || content.trim() === '') {
+        // Empty item - delete the line
         await editor.edit(editBuilder => {
-            const line = editor.document.lineAt(position.line);
-            editBuilder.replace(line.range, '');
+            editBuilder.delete(line.rangeIncludingLineBreak);
         });
         return true;
     }
 
-    // Create new item
+    // Check if we're at end of line
+    if (position.character < line.text.length) {
+        // Not at end of line - do normal return
+        return false;
+    }
+
+    // Create new item at end of line
     let newBullet = bullet;
     // If numbered list, increment
     const numMatch = bullet.match(/^(\d+)([.)])/);
@@ -279,38 +324,50 @@ async function handleListReturn(
         newBullet = `${parseInt(numMatch[1]) + 1}${numMatch[2]}`;
     }
 
-    const newItem = `\n${indent}${newBullet} `;
+    // Check if this is a definition list item (contains ::)
+    const isDefinitionItem = content.includes('::');
+    const newContent = isDefinitionItem ? ' :: ' : ' ';
+
+    const newItem = `\n${indent}${newBullet}${newContent}`;
 
     await editor.edit(editBuilder => {
-        editBuilder.insert(new vscode.Position(position.line, position.character), newItem);
+        editBuilder.insert(new vscode.Position(position.line, line.text.length), newItem);
     });
 
     // Move cursor to end of new bullet
-    const newPos = new vscode.Position(position.line + 1, indent.length + newBullet.length + 1);
+    const cursorOffset = isDefinitionItem ? indent.length + newBullet.length + 4 : indent.length + newBullet.length + 1;
+    const newPos = new vscode.Position(position.line + 1, cursorOffset);
     editor.selection = new vscode.Selection(newPos, newPos);
     return true;
 }
 
 /**
- * Handle return on a checkbox item
+ * Handle return on a checkbox item - create new checkbox or delete empty item
  */
 async function handleCheckboxReturn(
     editor: vscode.TextEditor,
     position: vscode.Position,
     match: RegExpMatchArray
 ): Promise<boolean> {
-    const [, indent, bullet, content] = match;
+    const [fullMatch, indent, bullet, content] = match;
+    const document = editor.document;
+    const line = document.lineAt(position.line);
 
+    // If content is empty, delete the line
     if (content.trim() === '') {
-        // Empty item - end the list
         await editor.edit(editBuilder => {
-            const line = editor.document.lineAt(position.line);
-            editBuilder.replace(line.range, '');
+            editBuilder.delete(line.rangeIncludingLineBreak);
         });
         return true;
     }
 
-    // Create new checkbox item
+    // Check if we're at end of line
+    if (position.character < line.text.length) {
+        // Not at end of line - do normal return
+        return false;
+    }
+
+    // Create new checkbox item at end of line
     let newBullet = bullet;
     const numMatch = bullet.match(/^(\d+)([.)])/);
     if (numMatch) {
@@ -320,7 +377,7 @@ async function handleCheckboxReturn(
     const newItem = `\n${indent}${newBullet} [ ] `;
 
     await editor.edit(editBuilder => {
-        editBuilder.insert(new vscode.Position(position.line, position.character), newItem);
+        editBuilder.insert(new vscode.Position(position.line, line.text.length), newItem);
     });
 
     const newPos = new vscode.Position(position.line + 1, indent.length + newBullet.length + 5);
@@ -329,31 +386,68 @@ async function handleCheckboxReturn(
 }
 
 /**
- * Handle return on a heading - create new heading or subheading
+ * Handle return on a heading - create new heading after subtree or delete if empty
  */
 async function handleHeadingReturn(
     editor: vscode.TextEditor,
     position: vscode.Position,
     match: RegExpMatchArray
 ): Promise<boolean> {
+    const document = editor.document;
     const stars = match[1];
-    const currentLine = editor.document.lineAt(position.line);
+    const currentLine = document.lineAt(position.line);
+    const lineText = currentLine.text;
 
-    // If at end of heading, create new heading at same level
-    if (position.character >= currentLine.text.length - 1) {
-        const newHeading = `\n\n${stars} `;
+    // Extract the heading title (after stars and space, before tags)
+    const titleMatch = lineText.match(/^\*+\s+(.*?)(?:\s+:[\w:]+:)?\s*$/);
+    const title = titleMatch ? titleMatch[1].trim() : '';
 
+    // Remove TODO keywords and priorities from title for emptiness check
+    const cleanTitle = title
+        .replace(/^(TODO|DONE|NEXT|WAIT|CANCELLED|IN-PROGRESS|WAITING)\s+/, '')
+        .replace(/^\[#[A-Z]\]\s*/, '')
+        .trim();
+
+    // If heading is empty, delete the line
+    if (cleanTitle === '') {
         await editor.edit(editBuilder => {
-            editBuilder.insert(new vscode.Position(position.line, currentLine.text.length), newHeading);
+            // Delete the entire line including newline
+            const range = currentLine.rangeIncludingLineBreak;
+            editBuilder.delete(range);
         });
-
-        const newPos = new vscode.Position(position.line + 2, stars.length + 1);
-        editor.selection = new vscode.Selection(newPos, newPos);
         return true;
     }
 
-    // Otherwise, normal newline
-    return false;
+    // Find end of subtree
+    const level = stars.length;
+    let endLine = position.line;
+
+    for (let i = position.line + 1; i < document.lineCount; i++) {
+        const nextLine = document.lineAt(i).text;
+        const nextHeadingMatch = nextLine.match(/^(\*+)\s+/);
+        if (nextHeadingMatch) {
+            // Found another heading - check if it's same level or higher (fewer stars)
+            if (nextHeadingMatch[1].length <= level) {
+                break;
+            }
+        }
+        endLine = i;
+    }
+
+    // Insert new heading after subtree
+    const insertLine = endLine;
+    const insertPos = new vscode.Position(insertLine, document.lineAt(insertLine).text.length);
+    const newHeading = `\n\n${stars} `;
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(insertPos, newHeading);
+    });
+
+    // Move cursor to the new heading
+    const newPos = new vscode.Position(insertLine + 2, stars.length + 1);
+    editor.selection = new vscode.Selection(newPos, newPos);
+    editor.revealRange(new vscode.Range(newPos, newPos));
+    return true;
 }
 
 // =============================================================================
@@ -1647,23 +1741,189 @@ export function setupDynamicBlockContext(context: vscode.ExtensionContext): void
 // =============================================================================
 
 /**
+ * Stored link for org-store-link / org-insert-link workflow
+ * Stores both full path (for cross-file) and fuzzy link (for same-file)
+ */
+let storedLink: {
+    filePath: string;      // Full path to source file
+    fuzzyLink: string;     // Link without file path (e.g., "*Heading", "#custom-id")
+    fullLink: string;      // Full link with file (e.g., "file:name.org::*Heading")
+    description: string;   // Description for the link
+} | null = null;
+
+/**
+ * Store a link based on context at point (like org-store-link)
+ * - On a heading: stores [[*heading]] / [[file:path::*heading]]
+ * - On #+NAME: line: stores [[block-name]] / [[file:path::block-name]]
+ * - Near CUSTOM_ID: stores [[#id]] / [[file:path::#id]]
+ * - At line start: stores line number
+ * - Mid-line: stores line:column
+ */
+export async function storeLink(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const lineText = document.lineAt(position.line).text;
+    const filePath = document.uri.fsPath;
+    const fileName = filePath.split('/').pop() || filePath;
+
+    // Check if on a heading - extract title without TODO state, priority, or tags
+    const headingMatch = lineText.match(/^(\*+)\s+(.+?)(?:\s+:[\w:]+:\s*)?$/);
+    if (headingMatch) {
+        let headingTitle = headingMatch[2].trim();
+        // Strip TODO keyword (any all-caps word at start)
+        headingTitle = headingTitle.replace(/^[A-Z]+\s+/, '');
+        // Strip priority like [#A]
+        headingTitle = headingTitle.replace(/^\[#[A-Z]\]\s*/, '');
+        headingTitle = headingTitle.trim();
+        storedLink = {
+            filePath,
+            fuzzyLink: `*${headingTitle}`,
+            fullLink: `file:${fileName}::*${headingTitle}`,
+            description: headingTitle
+        };
+        vscode.window.showInformationMessage(`Stored link: [[*${headingTitle}]]`);
+        return;
+    }
+
+    // Check if on a named source block
+    const namedBlockMatch = lineText.match(/^#\+NAME:\s*(.+)$/i);
+    if (namedBlockMatch) {
+        const blockName = namedBlockMatch[1].trim();
+        storedLink = {
+            filePath,
+            fuzzyLink: blockName,
+            fullLink: `file:${fileName}::${blockName}`,
+            description: blockName
+        };
+        vscode.window.showInformationMessage(`Stored link: [[${blockName}]]`);
+        return;
+    }
+
+    // Check if there's a CUSTOM_ID property nearby (search up to find heading with CUSTOM_ID)
+    for (let i = position.line; i >= 0; i--) {
+        const line = document.lineAt(i).text;
+        if (line.match(/^\*+\s/)) {
+            // Found parent heading, check for CUSTOM_ID in properties
+            for (let j = i + 1; j < Math.min(i + 10, document.lineCount); j++) {
+                const propLine = document.lineAt(j).text;
+                if (propLine.match(/^\*+\s/) || propLine.trim() === '') break;
+                const customIdMatch = propLine.match(/:CUSTOM_ID:\s*(.+)/i);
+                if (customIdMatch) {
+                    const customId = customIdMatch[1].trim();
+                    storedLink = {
+                        filePath,
+                        fuzzyLink: `#${customId}`,
+                        fullLink: `file:${fileName}::#${customId}`,
+                        description: customId
+                    };
+                    vscode.window.showInformationMessage(`Stored link: [[#${customId}]]`);
+                    return;
+                }
+                if (propLine.includes(':END:')) break;
+            }
+            break;
+        }
+    }
+
+    // Default: store file with line number or character offset
+    // Note: Line/char links always need file: prefix - no fuzzy equivalent exists
+    const lineNum = position.line + 1;
+    const charNum = position.character;
+
+    if (charNum === 0) {
+        // At beginning of line - just use line number
+        const link = `file:${fileName}::${lineNum}`;
+        storedLink = {
+            filePath,
+            fuzzyLink: link,  // No fuzzy equivalent for line numbers
+            fullLink: link,
+            description: `${fileName}:${lineNum}`
+        };
+        vscode.window.showInformationMessage(`Stored link: [[${link}]]`);
+    } else {
+        // Mid-line - use character offset from beginning of file
+        const charOffset = document.offsetAt(position);
+        const link = `file:${fileName}::c${charOffset}`;
+        storedLink = {
+            filePath,
+            fuzzyLink: link,  // No fuzzy equivalent for char offset
+            fullLink: link,
+            description: `${fileName}:${lineNum}:${charNum}`
+        };
+        vscode.window.showInformationMessage(`Stored link: [[${link}]]`);
+    }
+}
+
+/**
+ * Get the currently stored link (for use by insertLink)
+ */
+export function getStoredLink(): typeof storedLink {
+    return storedLink;
+}
+
+/**
+ * Clear the stored link
+ */
+export function clearStoredLink(): void {
+    storedLink = null;
+}
+
+/**
  * Insert an org link
+ * If a link was previously stored with storeLink, offers to use it
+ * Uses fuzzy link syntax when inserting in the same file
  */
 export async function insertLink(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    const url = await vscode.window.showInputBox({
-        prompt: 'Enter URL or path',
-        placeHolder: 'https://example.com or ./file.org'
-    });
+    let url: string | undefined;
+    let description: string | undefined;
 
-    if (!url) return;
+    // If we have a stored link, offer to use it
+    if (storedLink) {
+        // Determine if we're in the same file
+        const currentFilePath = editor.document.uri.fsPath;
+        const isSameFile = currentFilePath === storedLink.filePath;
 
-    const description = await vscode.window.showInputBox({
-        prompt: 'Enter description (optional)',
-        placeHolder: 'Link description'
-    });
+        // Use fuzzy link for same file, full link for different file
+        const linkToUse = isSameFile ? storedLink.fuzzyLink : storedLink.fullLink;
+        const displayLink = isSameFile ? `[[${storedLink.fuzzyLink}]]` : `[[${storedLink.fullLink}]]`;
+
+        const choice = await vscode.window.showQuickPick(
+            [
+                { label: 'Use stored link', description: displayLink, value: 'stored' },
+                { label: 'Enter new link', description: 'Type a URL or path', value: 'new' }
+            ],
+            { placeHolder: 'Insert link' }
+        );
+
+        if (!choice) return;
+
+        if (choice.value === 'stored') {
+            url = linkToUse;
+            description = storedLink.description;
+            // Clear the stored link after use
+            storedLink = null;
+        }
+    }
+
+    if (!url) {
+        url = await vscode.window.showInputBox({
+            prompt: 'Enter URL or path',
+            placeHolder: 'https://example.com or ./file.org'
+        });
+
+        if (!url) return;
+
+        description = await vscode.window.showInputBox({
+            prompt: 'Enter description (optional)',
+            placeHolder: 'Link description'
+        });
+    }
 
     const link = description ? `[[${url}][${description}]]` : `[[${url}]]`;
 
@@ -1735,18 +1995,375 @@ export async function openLinkAtPoint(): Promise<void> {
     if (url.startsWith('http://') || url.startsWith('https://')) {
         vscode.env.openExternal(vscode.Uri.parse(url));
     } else if (url.startsWith('file:')) {
-        const filePath = url.replace(/^file:/, '');
-        const uri = vscode.Uri.file(filePath);
-        vscode.commands.executeCommand('vscode.open', uri);
+        await openFileLink(url, document);
     } else if (url.startsWith('cite:') || url.startsWith('citep:') || url.startsWith('citet:')) {
         // Citation link - trigger citation action
         vscode.commands.executeCommand('scimax.citation.action');
+    } else if (url.startsWith('*')) {
+        // Internal heading link: [[*Heading]]
+        await searchAndJumpToHeading(document, url.slice(1));
+    } else if (url.startsWith('#')) {
+        // Internal custom ID link: [[#custom-id]]
+        await searchAndJumpToCustomId(document, url.slice(1));
+    } else if (url.startsWith('id:')) {
+        // ID link: [[id:uuid]] - search for :ID: property
+        await searchAndJumpToId(url.slice(3));
+    } else if (url.includes('::')) {
+        // File link with search component but without file: prefix
+        // e.g., [[05-links.org::#custom-id]] or [[file.org::*Heading]]
+        await openFileLink(url, document);
     } else {
-        // Treat as relative file path or internal link
+        // Treat as relative file path or internal link (fuzzy match)
         const currentDir = vscode.Uri.joinPath(document.uri, '..');
         const targetUri = vscode.Uri.joinPath(currentDir, url);
-        vscode.commands.executeCommand('vscode.open', targetUri);
+
+        // Check if it's a file that exists
+        try {
+            await vscode.workspace.fs.stat(targetUri);
+            vscode.commands.executeCommand('vscode.open', targetUri);
+        } catch {
+            // Not a file - try fuzzy search for heading or named element
+            await searchAndJumpToTarget(document, url);
+        }
     }
+}
+
+/**
+ * Open a file: link, handling :: search syntax
+ * Supports: file:name.org::123 (line), file:name.org::c456 (char offset),
+ *           file:name.org::*Heading, file:name.org::#custom-id
+ */
+async function openFileLink(url: string, currentDocument: vscode.TextDocument): Promise<void> {
+    const fileUrl = url.replace(/^file:/, '');
+
+    // Parse the :: search part if present
+    const parts = fileUrl.split('::');
+    const filePath = parts[0];
+    const searchPart = parts[1];
+
+    // Resolve the file path
+    let targetUri: vscode.Uri;
+    if (filePath.startsWith('/')) {
+        targetUri = vscode.Uri.file(filePath);
+    } else if (filePath) {
+        const currentDir = vscode.Uri.joinPath(currentDocument.uri, '..');
+        targetUri = vscode.Uri.joinPath(currentDir, filePath);
+    } else {
+        // Empty file path means current file
+        targetUri = currentDocument.uri;
+    }
+
+    // Open the file
+    const doc = await vscode.workspace.openTextDocument(targetUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    // Navigate to the target if specified
+    if (searchPart) {
+        if (/^c\d+$/.test(searchPart)) {
+            // Character offset: ::c1234
+            const charOffset = parseInt(searchPart.slice(1), 10);
+            const pos = doc.positionAt(charOffset);
+            editor.selection = new vscode.Selection(pos, pos);
+            editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+        } else if (searchPart.startsWith('*')) {
+            // Heading search: ::*Heading Title
+            await searchAndJumpToHeading(doc, searchPart.slice(1));
+        } else if (searchPart.startsWith('#')) {
+            // Custom ID: ::#custom-id
+            await searchAndJumpToCustomId(doc, searchPart.slice(1));
+        } else if (/^\d+$/.test(searchPart)) {
+            // Line number: ::123
+            const lineNum = parseInt(searchPart, 10) - 1; // 1-indexed to 0-indexed
+            if (lineNum >= 0 && lineNum < doc.lineCount) {
+                const pos = new vscode.Position(lineNum, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+            }
+        } else {
+            // Fuzzy search for target (named element, etc.)
+            await searchAndJumpToTarget(doc, searchPart);
+        }
+    }
+}
+
+/**
+ * Search for a heading and jump to it
+ * Ignores TODO keywords, priorities, and tags when matching
+ */
+async function searchAndJumpToHeading(document: vscode.TextDocument, headingTitle: string): Promise<void> {
+    const searchText = headingTitle.toLowerCase();
+
+    for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/^(\*+)\s+(.+?)(?:\s+:[\w:]+:\s*)?$/);
+        if (match) {
+            let title = match[2].trim();
+            // Strip TODO keyword (any all-caps word at start)
+            title = title.replace(/^[A-Z]+\s+/, '');
+            // Strip priority like [#A]
+            title = title.replace(/^\[#[A-Z]\]\s*/, '');
+            title = title.trim().toLowerCase();
+
+            if (title === searchText || title.includes(searchText)) {
+                const editor = vscode.window.activeTextEditor;
+                if (editor && editor.document === document) {
+                    const pos = new vscode.Position(i, 0);
+                    editor.selection = new vscode.Selection(pos, pos);
+                    editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+                    return;
+                }
+            }
+        }
+    }
+    vscode.window.showWarningMessage(`Heading not found: ${headingTitle}`);
+}
+
+/**
+ * Search for a custom ID and jump to it
+ */
+async function searchAndJumpToCustomId(document: vscode.TextDocument, customId: string): Promise<void> {
+    const searchId = customId.toLowerCase();
+
+    for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/:CUSTOM_ID:\s*(.+)/i);
+        if (match && match[1].trim().toLowerCase() === searchId) {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && editor.document === document) {
+                const pos = new vscode.Position(i, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+                return;
+            }
+        }
+    }
+    vscode.window.showWarningMessage(`Custom ID not found: #${customId}`);
+}
+
+/**
+ * Search for an ID property and jump to it
+ * Searches current document first, then all org files in workspace
+ */
+async function searchAndJumpToId(id: string): Promise<void> {
+    const searchId = id.toLowerCase();
+
+    // Helper function to find ID in a document and navigate to it
+    async function findInDocument(doc: vscode.TextDocument): Promise<boolean> {
+        for (let i = 0; i < doc.lineCount; i++) {
+            const line = doc.lineAt(i).text;
+            const match = line.match(/:ID:\s*(.+)/i);
+            if (match && match[1].trim().toLowerCase() === searchId) {
+                const editor = await vscode.window.showTextDocument(doc);
+                // Navigate to the heading above this property
+                let headingLine = i;
+                for (let j = i - 1; j >= 0; j--) {
+                    if (doc.lineAt(j).text.match(/^\*+\s/)) {
+                        headingLine = j;
+                        break;
+                    }
+                }
+                const pos = new vscode.Position(headingLine, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // First, search in the active document
+    const activeEditor = vscode.window.activeTextEditor;
+    if (activeEditor) {
+        const found = await findInDocument(activeEditor.document);
+        if (found) {
+            return;
+        }
+    }
+
+    // Search across all org files in the workspace
+    const orgFiles = await vscode.workspace.findFiles('**/*.org', '**/node_modules/**');
+
+    for (const fileUri of orgFiles) {
+        // Skip the active file (already searched)
+        if (activeEditor && fileUri.fsPath === activeEditor.document.uri.fsPath) {
+            continue;
+        }
+
+        try {
+            const doc = await vscode.workspace.openTextDocument(fileUri);
+            const found = await findInDocument(doc);
+            if (found) {
+                return;
+            }
+        } catch {
+            // Skip files that can't be opened
+            continue;
+        }
+    }
+
+    vscode.window.showWarningMessage(`ID not found: ${id}`);
+}
+
+/**
+ * Search for a target (#+NAME:, <<target>>, etc.) and jump to it
+ */
+async function searchAndJumpToTarget(document: vscode.TextDocument, target: string): Promise<void> {
+    const searchTarget = target.toLowerCase();
+
+    for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+
+        // Check for #+NAME:
+        const nameMatch = line.match(/^#\+NAME:\s*(.+)$/i);
+        if (nameMatch && nameMatch[1].trim().toLowerCase() === searchTarget) {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && editor.document === document) {
+                const pos = new vscode.Position(i, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+                return;
+            }
+        }
+
+        // Check for <<target>>
+        const targetMatch = line.match(/<<([^>]+)>>/);
+        if (targetMatch && targetMatch[1].trim().toLowerCase() === searchTarget) {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && editor.document === document) {
+                const pos = new vscode.Position(i, line.indexOf('<<'));
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+                return;
+            }
+        }
+    }
+
+    // Fallback: plain text search
+    const text = document.getText();
+    const index = text.toLowerCase().indexOf(searchTarget);
+    if (index !== -1) {
+        const editor = vscode.window.activeTextEditor;
+        if (editor && editor.document === document) {
+            const pos = document.positionAt(index);
+            editor.selection = new vscode.Selection(pos, pos);
+            editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+            return;
+        }
+    }
+
+    vscode.window.showWarningMessage(`Target not found: ${target}`);
+}
+
+// =============================================================================
+// ID Property Functions
+// =============================================================================
+
+/**
+ * Generate a UUID v4
+ */
+function generateUUID(): string {
+    // Use crypto.randomUUID if available (Node 19+), otherwise fallback
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+        return crypto.randomUUID();
+    }
+    // Fallback implementation
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+/**
+ * Add an ID property (UUID) to the current heading
+ * If already on a heading with a properties drawer, adds :ID: property
+ * If no properties drawer exists, creates one
+ */
+export async function addIdToHeading(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+
+    // Find the heading for the current position
+    let headingLine = -1;
+    for (let i = position.line; i >= 0; i--) {
+        const line = document.lineAt(i).text;
+        if (/^\*+\s/.test(line)) {
+            headingLine = i;
+            break;
+        }
+    }
+
+    if (headingLine === -1) {
+        vscode.window.showWarningMessage('Not under a heading');
+        return;
+    }
+
+    const uuid = generateUUID();
+
+    // Check if there's already a properties drawer
+    let propertiesStart = -1;
+    let propertiesEnd = -1;
+    let existingIdLine = -1;
+
+    for (let i = headingLine + 1; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+
+        // Stop if we hit another heading
+        if (/^\*+\s/.test(line)) break;
+
+        // Check for :PROPERTIES:
+        if (/^\s*:PROPERTIES:\s*$/i.test(line)) {
+            propertiesStart = i;
+            continue;
+        }
+
+        // Check for :END:
+        if (propertiesStart !== -1 && /^\s*:END:\s*$/i.test(line)) {
+            propertiesEnd = i;
+            break;
+        }
+
+        // Check for existing :ID:
+        if (propertiesStart !== -1 && /^\s*:ID:\s*/i.test(line)) {
+            existingIdLine = i;
+        }
+
+        // Stop if we hit content (non-empty line that's not a property)
+        if (propertiesStart === -1 && line.trim() !== '' && !line.match(/^\s*:/)) {
+            break;
+        }
+    }
+
+    await editor.edit(editBuilder => {
+        if (existingIdLine !== -1) {
+            // Replace existing ID
+            const existingLine = document.lineAt(existingIdLine);
+            editBuilder.replace(
+                new vscode.Range(existingIdLine, 0, existingIdLine, existingLine.text.length),
+                `:ID: ${uuid}`
+            );
+            vscode.window.showInformationMessage(`Updated ID: ${uuid}`);
+        } else if (propertiesStart !== -1 && propertiesEnd !== -1) {
+            // Add ID to existing properties drawer (before :END:)
+            editBuilder.insert(
+                new vscode.Position(propertiesEnd, 0),
+                `:ID: ${uuid}\n`
+            );
+            vscode.window.showInformationMessage(`Added ID: ${uuid}`);
+        } else {
+            // Create new properties drawer after heading
+            const headingText = document.lineAt(headingLine).text;
+            const indent = headingText.match(/^(\*+)/)?.[1].length === 1 ? '' : '';
+            editBuilder.insert(
+                new vscode.Position(headingLine + 1, 0),
+                `:PROPERTIES:\n:ID: ${uuid}\n:END:\n`
+            );
+            vscode.window.showInformationMessage(`Added ID: ${uuid}`);
+        }
+    });
 }
 
 /**
@@ -1836,6 +2453,7 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.markup.code', codeRegionOrPoint),
         vscode.commands.registerCommand('scimax.markup.verbatim', verbatimRegionOrPoint),
         vscode.commands.registerCommand('scimax.markup.strikethrough', strikethroughRegionOrPoint),
+        vscode.commands.registerCommand('scimax.markup.command', commandRegionOrPoint),
         vscode.commands.registerCommand('scimax.markup.subscript', subscriptRegionOrPoint),
         vscode.commands.registerCommand('scimax.markup.superscript', superscriptRegionOrPoint),
         vscode.commands.registerCommand('scimax.markup.latexMath', latexMathRegionOrPoint),
@@ -1863,7 +2481,8 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.org.markSubtree', markSubtree),
         vscode.commands.registerCommand('scimax.org.insertHeading', insertHeading),
         vscode.commands.registerCommand('scimax.org.insertSubheading', insertSubheading),
-        vscode.commands.registerCommand('scimax.org.insertInlineTask', insertInlineTask)
+        vscode.commands.registerCommand('scimax.org.insertInlineTask', insertInlineTask),
+        vscode.commands.registerCommand('scimax.org.addIdToHeading', addIdToHeading)
     );
 
     // TODO/Checkbox
@@ -1875,6 +2494,7 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
 
     // Links
     context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.storeLink', storeLink),
         vscode.commands.registerCommand('scimax.org.insertLink', insertLink),
         vscode.commands.registerCommand('scimax.org.openLink', openLinkAtPoint)
     );

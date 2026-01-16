@@ -32,14 +32,14 @@ When you press Tab after entering content, the table auto-aligns.
 ** ✅ Table Creation Command
 CLOSED: [2026-01-15 Thu 15:07]
 
-Press =Ctrl+C |= or use =scimax.table.create= to insert a table template.
+Press =C-c |= or use =scimax.table.create= to insert a table template.
 
 You'll be prompted for the number of columns and rows.
 
 ** ✅ Converting Text to Table
 CLOSED: [2026-01-15 Thu 15:26]
 
-Select comma-separated or tab-separated text, then use =Ctrl+C |= to convert
+Select comma-separated or tab-separated text, then use =C-c |= to convert
 it to a table.
 
 1,2
@@ -58,8 +58,8 @@ CLOSED: [2026-01-15 Thu 15:26]
 
 | Key        | Action                                 |
 |------------+----------------------------------------|
-| Tab        | Move to next cell (creates row at end) |
-| Shift+Tab  | Move to previous cell                  |
+| <tab>        | Move to next cell (creates row at end) |
+| S-<tab>  | Move to previous cell                  |
 | Arrow keys | Move in that direction                 |
 
 ** Quick Navigation
@@ -77,17 +77,17 @@ CLOSED: [2026-01-15 Thu 15:41]
 
 | Key/Command                 | Key Binding         | Action                   |
 |-----------------------------+---------------------+--------------------------|
-| scimax.table.insertRowAbove | Alt+Shift+Up        | Insert row above current |
-| scimax.table.insertRowBelow | Alt+Shift+Down      | Insert row below current |
-| scimax.table.deleteRow      | Alt+Shift+Backspace | Delete current row       |
+| scimax.table.insertRowAbove | M-S-Up        | Insert row above current |
+| scimax.table.insertRowBelow | M-S-Down      | Insert row below current |
+| scimax.table.deleteRow      | M-S-Backspace | Delete current row       |
 
 ** ✅ Adding/Removing Columns
 CLOSED: [2026-01-15 Thu 15:41]
 
 | Key/Command                    | Key Binding     | Action                     |
 |--------------------------------+-----------------+----------------------------|
-| scimax.table.insertColumnRight | Alt+Shift+Right | Insert column to the right |
-| scimax.table.insertColumnLeft  | Alt+Shift+Left  | Insert column to the left  |
+| scimax.table.insertColumnRight | M-S-Right | Insert column to the right |
+| scimax.table.insertColumnLeft  | M-S-Left  | Insert column to the left  |
 | scimax.table.deleteColumn      |                 | Delete current column      |
 
 ** ✅ Moving Rows/Columns
@@ -107,7 +107,7 @@ Insert horizontal separator lines to divide table sections:
 
 | Key      | Action                  |         |   |
 |----------+-------------------------+---------+---|
-| Ctrl+C - | Insert separator line ( | ---+--- | ) |
+| C-c - | Insert separator line ( | ---+--- | ) |
 
 Example with separators:
 #+BEGIN_SRC org
@@ -257,10 +257,10 @@ Example:
 
 | Key/Command              | Action                   |
 |--------------------------+--------------------------|
-| Ctrl+C Ctrl+C (on TBLFM) | Recalculate all formulas |
+| C-c C-c (on TBLFM) | Recalculate all formulas |
 | scimax.table.recalculate | Recalculate table        |
 
-Place your cursor on the =#+TBLFM:= line and press =Ctrl+C Ctrl+C= to apply
+Place your cursor on the =#+TBLFM:= line and press =C-c C-c= to apply
 all formulas.
 
 ** Formula Examples
@@ -319,7 +319,7 @@ The import command will prompt for the file path and delimiter.
 
 | Key/Command           | Description          |
 |-----------------------+----------------------|
-| =Ctrl+C Ctrl+E T=     | Export table         |
+| =C-c C-e t=     | Export table         |
 | =scimax.table.export= | Export table to file |
 
 Export formats:
@@ -341,7 +341,7 @@ CLOSED: [2026-01-15 Thu 15:31]
 
 | Key/Command               | Description                  |
 |---------------------------+------------------------------|
-| Ctrl+C ^                  | Sort table by current column |
+| C-c ^                  | Sort table by current column |
 | scimax.table.sortByColumn | Sort by column               |
 
 Sorting options:
@@ -436,16 +436,16 @@ CLOSED: [2026-01-15 Thu 15:24]
 
 | Key                   | Action                 |
 |-----------------------+------------------------|
-| Ctrl+C \vert{}      | Create table           |
-| Tab                 | Next cell / align      |
-| Shift+Tab           | Previous cell          |
-| Ctrl+C -            | Insert separator       |
-| Alt+Enter           | Insert row below       |
-| Alt+Shift+Right     | Insert column right    |
-| Alt+Shift+Backspace | Delete row             |
-| Ctrl+C ^            | Sort by column         |
-| Ctrl+C Ctrl+C       | Recalculate (on TBLFM) |
-| Ctrl+C Ctrl+E T     | Export table           |
+| C-c \vert{}      | Create table           |
+| <tab>                 | Next cell / align      |
+| S-<tab>           | Previous cell          |
+| C-c -            | Insert separator       |
+| M-<return>           | Insert row below       |
+| M-S-Right     | Insert column right    |
+| M-S-Backspace | Delete row             |
+| C-c ^            | Sort by column         |
+| C-c C-c       | Recalculate (on TBLFM) |
+| C-c C-e t     | Export table           |
 
 ** Commands
 
@@ -472,11 +472,11 @@ CLOSED: [2026-01-15 Thu 15:24]
 * ✅ Related Topics
 CLOSED: [2026-01-15 Thu 15:31]
 
-- [[file:source-blocks.org][Source Code Blocks]] - Process tables with code
-- [[file:export.org][Export]] - Table appearance in exports
+- [[file:07-source-blocks.org][Source Code Blocks]] - Process tables with code
+- [[file:10-export.org][Export]] - Table appearance in exports
 
-* ✅ Navigation
-CLOSED: [2026-01-15 Thu 15:31]
+* Navigation
 
-- Previous: [[file:todo-items.org][TODO Items]]
-- Next: [[file:links.org][Links]]
+- Previous: [[file:03-todo-items.org][TODO Items]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:05-links.org][Links]]

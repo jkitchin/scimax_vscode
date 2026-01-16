@@ -11,7 +11,7 @@
 
 This document provides a comprehensive reference of all commands available in the Scimax VS Code extension. Commands are organized by feature area for easy lookup.
 
-*Note on Keybindings:* All keybindings shown use the format key for standard keys and C-x for Ctrl+x (or Cmd+x on macOS). When (org) or (md) appears, the binding is context-sensitive.
+*Note on Keybindings:* All keybindings shown use the format key for standard keys and C-x for C-x (or s-x on macOS). When (org) or (md) appears, the binding is context-sensitive.
 
 * ⚠️ Document Structure
 
@@ -40,8 +40,8 @@ This document provides a comprehensive reference of all commands available in th
 | Command ID                  | Description           | Default Keybinding |
 |-----------------------------+-----------------------+--------------------|
 | scimax.org.jumpToHeading    | Jump to Heading       | C-c C-j            |
-| scimax.org.nextHeading      | Next Heading          | C-c n              |
-| scimax.org.previousHeading  | Previous Heading      | C-c p              |
+| scimax.org.nextHeading      | Next Heading          | C-c C-n              |
+| scimax.org.previousHeading  | Previous Heading      | C-c C-p              |
 | scimax.org.parentHeading    | Parent Heading        | -                  |
 | scimax.org.promoteHeading   | Promote Heading       | M-LEFT (heading)   |
 | scimax.org.demoteHeading    | Demote Heading        | M-RIGHT (heading)  |
@@ -158,7 +158,7 @@ This document provides a comprehensive reference of all commands available in th
 | Command ID                      | Description                     | Default Keybinding |
 |---------------------------------+---------------------------------+--------------------|
 | scimax.ob.insertBlockAbove      | Insert Block Above              | -                  |
-| scimax.ob.insertBlockBelow      | Insert Block Below              | C-c C-n            |
+| scimax.ob.insertBlockBelow      | Insert Block Below              | C-c C-,            |
 | scimax.ob.insertBlockBelowSame  | Insert Block Below (Same Lang)  | -                  |
 | scimax.ob.splitBlock            | Split Block                     | C-c - (src)        |
 | scimax.ob.cloneBlock            | Clone Block                     | -                  |
@@ -483,6 +483,7 @@ This document provides a comprehensive reference of all commands available in th
 | scimax.markup.superscript     | Superscript (Markup)     | -                  |
 | scimax.markup.latexMath       | LaTeX Math (Markup)      | -                  |
 | scimax.markup.latexDisplayMath| LaTeX Display Math (Markup)| -                |
+| scimax.markup.command         | Command (Emacs-style)    | C-c '              |
 
 * ⚠️ Speed Commands
 
@@ -708,5 +709,6 @@ For more information about the Scimax VS Code extension, visit the project repos
 
 * Navigation
 
-- Previous: [[file:keybindings.org][Keybindings]]
-- Next: [[file:configuration.org][Configuration]]
+- Previous: [[file:24-keybindings.org][Keybindings]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:26-configuration.org][Configuration]]

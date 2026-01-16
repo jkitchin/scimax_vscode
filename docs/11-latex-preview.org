@@ -204,7 +204,7 @@ Rendered equations are cached in your VS Code global storage directory. The cach
 
 To clear all cached equation renders:
 
-1. Open Command Palette (=Ctrl+Shift+P= / =Cmd+Shift+P=)
+1. Open Command Palette (=C-S-P= / =s-S-P=)
 2. Run: =Scimax: Clear LaTeX Cache=
 
 To view cache statistics:
@@ -549,7 +549,7 @@ After installation, restart VS Code.
 *Possible causes and solutions:*
 
 1. *LaTeX preview disabled*
-   - Open Settings (=Ctrl+,=)
+   - Open Settings (=C-,=)
    - Search for "scimax.latexPreview.enabled"
    - Ensure it is set to =true=
 
@@ -662,8 +662,8 @@ What you see in hover preview should match the exported output, but note:
 
 | Command                             | Description                       | Keybinding        |
 |-------------------------------------+-----------------------------------+-------------------|
-| Scimax: Open LaTeX Live Preview     | Open live PDF preview of document | Ctrl+C Ctrl+E L V |
-| Scimax: Sync PDF to Cursor Position | Jump to cursor location in PDF    | Ctrl+C Ctrl+E L S |
+| Scimax: Open LaTeX Live Preview     | Open live PDF preview of document | C-c C-e l v |
+| Scimax: Sync PDF to Cursor Position | Jump to cursor location in PDF    | C-c C-e l s |
 | Scimax: Rebuild PDF                 | Manually trigger PDF rebuild      | None              |
 | Scimax: Show LaTeX Build Output     | Show compiler output and errors   | None              |
 
@@ -677,19 +677,19 @@ What you see in hover preview should match the exported output, but note:
 ** Using Commands
 
 1. *Via Command Palette*:
-   - Press =Ctrl+Shift+P= (=Cmd+Shift+P= on macOS)
+   - Press =C-S-P= (=s-S-P= on macOS)
    - Type "Scimax: Clear LaTeX Cache" (or any command name)
    - Press Enter
 
 2. *Via Keybinding*:
    - For commands with keybindings, simply press the key combination
-   - Example: =Ctrl+C Ctrl+E L V= opens live preview
+   - Example: =C-c C-e l v= opens live preview
 
 ** Custom Keybindings
 
 To add custom keybindings for commands without defaults:
 
-1. Open Keyboard Shortcuts (=Ctrl+K Ctrl+S=)
+1. Open Keyboard Shortcuts (=C-k C-s=)
 2. Search for the command (e.g., "Clear LaTeX Cache")
 3. Click the + icon to add a keybinding
 4. Press your desired key combination
@@ -922,5 +922,6 @@ When sharing documents:
 
 * Navigation
 
-- Previous: [[file:export.org][Export]]
-- Next: [[file:image-overlays.org][Image Overlays]]
+- Previous: [[file:10-export.org][Export]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:12-image-overlays.org][Image Overlays]]

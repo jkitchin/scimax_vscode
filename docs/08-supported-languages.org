@@ -1663,9 +1663,9 @@ ihaskell install --stack
 * ⚠️ Quick Reference
 
 ** ⚠️ Execute Commands
-- Ctrl+Enter / Cmd+Enter: Execute current block
-- Shift+Enter: Execute and move to next
-- Ctrl+C Ctrl+C: Execute (Emacs style)
+- C-<return> / s-<return>: Execute current block
+- S-<return>: Execute and move to next
+- C-c C-c: Execute (Emacs style)
 
 ** ⚠️ Session Control
 - :session <name>: Use named session
@@ -1692,5 +1692,6 @@ For language-specific details, installation instructions, and troubleshooting he
 
 * Navigation
 
-- Previous: [[file:source-blocks.org][Source Code Blocks]]
-- Next: [[file:jupyter.org][Jupyter Integration]]
+- Previous: [[file:07-source-blocks.org][Source Blocks]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:09-jupyter.org][Jupyter]]

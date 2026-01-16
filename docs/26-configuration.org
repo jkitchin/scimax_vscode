@@ -13,10 +13,10 @@ Scimax VS Code provides extensive configuration options to customize your scient
 
 There are multiple ways to access and modify Scimax settings:
 
-1. *Settings UI*: Press =Ctrl+,= (or =Cmd+,= on macOS) to open the VS Code settings interface. Search for "scimax" to see all Scimax-related settings.
+1. *Settings UI*: Press =C-,= (or =s-,= on macOS) to open the VS Code settings interface. Search for "scimax" to see all Scimax-related settings.
 
 2. *settings.json*: Edit your settings file directly for more control:
-   - Press =Ctrl+Shift+P= (or =Cmd+Shift+P=) and search for "Preferences: Open Settings (JSON)"
+   - Press =C-S-P= (or =s-S-P=) and search for "Preferences: Open Settings (JSON)"
    - Or click the settings icon (⚙) in the top-right of the Settings UI and select "Open Settings (JSON)"
 
 ** Settings File Locations
@@ -1407,7 +1407,7 @@ If database indexing is slow or uses too much memory:
 }
 #+end_src
 
-Then manually trigger indexing with =Ctrl+Shift+P= → "Scimax: Reindex Files"
+Then manually trigger indexing with =C-S-P= → "Scimax: Reindex Files"
 
 ** Jupyter Kernels Not Found
 
@@ -1419,7 +1419,7 @@ Ensure Jupyter is in your PATH or specify the full path:
 }
 #+end_src
 
-Check available kernels with =Ctrl+Shift+P= → "Scimax: Show Available Jupyter Kernels"
+Check available kernels with =C-S-P= → "Scimax: Show Available Jupyter Kernels"
 
 ** LaTeX Preview Not Working
 
@@ -1443,11 +1443,13 @@ curl http://localhost:11434/api/version
 
 * Related Documentation
 
-- [[file:getting-started.org][Getting Started Guide]]
-- [[file:source-blocks.org][Source Blocks Documentation]]
-- [[file:export.org][Export Documentation]]
-- [[file:keybindings.org][Keybindings Reference]]
+- [[file:01-getting-started.org][Getting Started Guide]]
+- [[file:07-source-blocks.org][Source Blocks Documentation]]
+- [[file:10-export.org][Export Documentation]]
+- [[file:24-keybindings.org][Keybindings Reference]]
 
 * Navigation
 
-- Previous: [[file:commands.org][Commands]]
+- Previous: [[file:25-commands.org][Commands]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:27-org-api.org][Org API]]

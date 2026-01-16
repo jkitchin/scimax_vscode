@@ -427,6 +427,13 @@
       }
     },
     {
+      "name": "Markup Command (Emacs style)",
+      "scope": ["markup.command.org", "markup.command.content.org"],
+      "settings": {
+        "foreground": "#8B0000"
+      }
+    },
+    {
       "name": "Markup Link",
       "scope": [
         "markup.underline.link",

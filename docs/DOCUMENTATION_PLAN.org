@@ -134,7 +134,7 @@ The documentation will consist of the following files:
 ,*** Next/Previous Heading
 ,*** Parent Heading
 ,*** Sibling Navigation
-,*** Jump to Heading (Ctrl+C Ctrl+J)
+,*** Jump to Heading (C-c C-j)
 ,** Structure Editing
 ,*** Promote/Demote Headlines
 ,*** Move Subtrees Up/Down
@@ -159,7 +159,7 @@ The documentation will consist of the following files:
 ,* TODO Items
 ,** Basic TODO Functionality
 ,*** Creating TODO Items
-,*** Cycling TODO States (Ctrl+C Ctrl+T)
+,*** Cycling TODO States (C-c C-t)
 ,*** TODO Keywords (TODO, DONE, WAITING, etc.)
 ,** Priorities
 ,*** Setting Priorities [#A], [#B], [#C]
@@ -185,7 +185,7 @@ The documentation will consist of the following files:
 ,* Tables
 ,** Creating Tables
 ,*** Manual Creation
-,*** Table Creation Command (Ctrl+C |)
+,*** Table Creation Command (C-c |)
 ,** Table Navigation
 ,*** Moving Between Cells (Tab, Shift-Tab)
 ,*** Row/Column Movement
@@ -193,7 +193,7 @@ The documentation will consist of the following files:
 ,*** Adding/Removing Rows
 ,*** Adding/Removing Columns
 ,*** Moving Rows/Columns
-,*** Separator Lines (Ctrl+C -)
+,*** Separator Lines (C-c -)
 ,** Table Alignment
 ,*** Automatic Alignment
 ,*** Column Width Specification
@@ -202,7 +202,7 @@ The documentation will consist of the following files:
 ,*** Column Formulas (@2$3)
 ,*** Row References
 ,*** Formula Line (#+TBLFM:)
-,*** Recalculating (Ctrl+C Ctrl+C on TBLFM)
+,*** Recalculating (C-c C-c on TBLFM)
 ,*** Built-in Functions (vsum, vmean, etc.)
 ,** Table Import/Export
 ,*** Importing from CSV
@@ -224,11 +224,11 @@ The documentation will consist of the following files:
 ,*** File Links with Line Numbers
 ,*** ID Links
 ,** Creating Links
-,*** Insert Link (Ctrl+C Ctrl+L)
+,*** Insert Link (C-c C-l)
 ,*** Bracket Link Syntax [[link][description]]
 ,*** Angle Link Syntax <URL>
 ,** Following Links
-,*** Open Link (Ctrl+C Ctrl+O)
+,*** Open Link (C-c C-o)
 ,*** Link Types and Handlers
 ,** Internal Targets
 ,*** Dedicated Targets <<target>>
@@ -250,7 +250,7 @@ The documentation will consist of the following files:
 ,*** Date Ranges
 ,*** Time Ranges
 ,** Creating Timestamps
-,*** Insert Timestamp (Ctrl+C .)
+,*** Insert Timestamp (C-c .)
 ,*** Manual Entry
 ,** Modifying Timestamps
 ,*** Shift Up/Down (change day)
@@ -259,7 +259,7 @@ The documentation will consist of the following files:
 ,*** Daily (+1d), Weekly (+1w), Monthly (+1m)
 ,*** Catch-up (++1d)
 ,*** Restart (.+1d)
-,*** Adding Repeaters (Ctrl+C Ctrl+R)
+,*** Adding Repeaters (C-c C-r)
 ,** Deadlines and Scheduling
 ,*** DEADLINE: keyword
 ,*** SCHEDULED: keyword
@@ -280,10 +280,10 @@ The documentation will consist of the following files:
 ,*** Language Specification
 ,*** Header Arguments
 ,** Executing Code
-,*** Execute Block (Ctrl+C Ctrl+C or Ctrl+Enter)
+,*** Execute Block (C-c C-c or C-<return>)
 ,*** Execute All Blocks
 ,*** Execute to Point
-,*** Execute and Next (Shift+Enter)
+,*** Execute and Next (S-<return>)
 ,** Supported Languages
 ,*** Direct Execution Languages
 ,*** Jupyter Kernel Languages
@@ -304,7 +304,7 @@ The documentation will consist of the following files:
 ,*** Session Persistence
 ,*** Jupyter Sessions
 ,** Source Block Navigation
-,*** Next/Previous Block (Ctrl+Up/Down)
+,*** Next/Previous Block (C-<up>/Down)
 ,*** Jump to Block
 ,*** Jump to Results
 ,** Source Block Manipulation
@@ -318,7 +318,7 @@ The documentation will consist of the following files:
 ,*** src_lang{code} syntax
 ,*** Inline Results
 ,** Code Tangling
-,*** Tangle Command (Ctrl+C Ctrl+V T)
+,*** Tangle Command (C-c C-v t)
 ,*** :tangle Header
 ,*** Multiple Tangle Targets
 ,*** Noweb References
@@ -335,7 +335,7 @@ The documentation will consist of the following files:
 
 #+BEGIN_EXAMPLE
 ,* Exporting Documents
-,** Export Dispatcher (Ctrl+C Ctrl+E)
+,** Export Dispatcher (C-c C-e)
 ,** Export Formats
 ,*** HTML Export
 ,*** LaTeX Export
@@ -413,8 +413,8 @@ The documentation will consist of the following files:
 ,* Journal System
 ,** Introduction
 ,** Opening Journal
-,*** Today's Entry (Ctrl+Shift+J)
-,*** Navigate Entries (Alt+[ / Alt+])
+,*** Today's Entry (C-S-J)
+,*** Navigate Entries (M-[ / M-])
 ,*** Jump to Date
 ,** Journal Configuration
 ,*** Journal Directory
@@ -478,7 +478,7 @@ The documentation will consist of the following files:
 ,*** BibTeX Format
 ,*** Configuring Bibliography Files
 ,** Inserting Citations
-,*** Insert Citation (Ctrl+C ])
+,*** Insert Citation (C-c ])
 ,*** Citation Styles
 ,**** cite, citet, citep
 ,**** citeauthor, citeyear
@@ -628,8 +628,8 @@ Keybinding references should use tables:
 #+BEGIN_EXAMPLE
 | Key           | Command                | Description          |
 |---------------+------------------------+----------------------|
-| Ctrl+C Ctrl+C | Execute block          | Run current block    |
-| Tab           | Toggle fold            | Expand/collapse      |
+| C-c C-c | Execute block          | Run current block    |
+| <tab>           | Toggle fold            | Expand/collapse      |
 #+END_EXAMPLE
 
 ** ⚠️ Cross-References
@@ -637,7 +637,7 @@ Keybinding references should use tables:
 Link to other documentation files:
 
 #+BEGIN_EXAMPLE
-See [[file:source-blocks.org][Source Code Blocks]] for more information.
+See [[file:07-source-blocks.org][Source Code Blocks]] for more information.
 #+END_EXAMPLE
 
 * ⚠️ Approval

@@ -1,0 +1,148 @@
+#+TITLE: Non-Standard Org-Mode Features
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-15
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+* Overview
+
+Scimax VS Code implements several features that are *not part* of the official
+org-mode syntax specification at https://orgmode.org/worg/org-syntax.html.
+These features are inspired by Emacs packages like org-ref and scimax, and
+provide additional functionality for scientific writing.
+
+This document describes these non-standard features and their behavior during
+export.
+
+* ⚠️ org-ref Citation Links
+
+The citation system (=cite:=, =citet:=, =citep:=, etc.) comes from the org-ref
+package for Emacs, not from core org-mode.
+
+** Citation Styles
+
+| Style           | Syntax              | Description                    |
+|-----------------+---------------------+--------------------------------|
+| cite            | cite:key            | Basic citation                 |
+| citet           | citet:key           | Textual citation (Author, Year)|
+| citep           | citep:key           | Parenthetical citation         |
+| citeauthor      | citeauthor:key      | Author name only               |
+| citeyear        | citeyear:key        | Year only                      |
+| Multiple        | cite:key1,key2,key3 | Comma-separated keys           |
+
+** Export Behavior
+
+*** LaTeX/PDF Export
+
+Citations are converted directly to LaTeX cite commands:
+
+| Org Citation     | LaTeX Output        |
+|------------------+---------------------|
+| cite:key         | \cite{key}          |
+| citet:key        | \citet{key}         |
+| citep:key        | \citep{key}         |
+| citeauthor:key   | \citeauthor{key}    |
+| citeyear:key     | \citeyear{key}      |
+| cite:k1,k2       | \cite{k1,k2}        |
+
+Requires =natbib= or =biblatex= package in your LaTeX preamble.
+
+*** HTML Export
+
+Citations are rendered as clickable links with CSS classes for styling.
+
+*** Markdown Export
+
+Citations are converted to Pandoc-style citations:
+
+| Org Citation     | Pandoc Markdown     |
+|------------------+---------------------|
+| cite:key         | [@key]              |
+| citet:key        | @key                |
+| citep:key        | [@key]              |
+| cite:k1,k2       | [@k1; @k2]          |
+
+** Compatibility Notes
+
+- Emacs org-mode users will find this syntax familiar
+- Standard org-mode uses =[[cite:@key]]= syntax (org-cite) which is also supported
+- The org-ref style =cite:key= is more concise for scientific writing
+
+See [[file:19-references.org][References]] for full documentation.
+
+* ⚠️ Emacs-style Command Markup
+
+The command markup syntax =`command'= (backtick + text + single quote) is used
+in Emacs documentation to reference commands, functions, and key sequences.
+
+** Syntax
+
+#+BEGIN_EXAMPLE
+Use `my-command' to perform the action.
+Press `C-c C-c' to execute.
+The `save-buffer' function writes the file.
+#+END_EXAMPLE
+
+This renders with dark red highlighting in the editor.
+
+** Keybinding
+
+| Key   | Command                 | Description          |
+|-------+-------------------------+----------------------|
+| C-c ' | scimax.markup.command   | Insert command markup|
+
+When text is selected, it wraps the selection. Otherwise, it inserts the
+markers and positions the cursor between them.
+
+** Export Behavior
+
+*** HTML Export
+
+Command markup is exported as =<kbd>= elements:
+
+#+BEGIN_EXAMPLE
+`my-command' → <kbd>my-command</kbd>
+#+END_EXAMPLE
+
+The =<kbd>= element is semantically appropriate for keyboard input and command
+names.
+
+*** LaTeX Export
+
+Command markup is exported as =\texttt{}=:
+
+#+BEGIN_EXAMPLE
+`my-command' → \texttt{my-command}
+#+END_EXAMPLE
+
+** Why Non-Standard?
+
+- This syntax is not part of the org-mode specification
+- Standard org code markup uses =~code~= or ===verbatim===
+- The =`command'= style is specific to Emacs/Elisp documentation conventions
+- We implement it for Emacs users who are familiar with this convention
+
+** Alternatives
+
+If you need portable org documents, use standard markup:
+
+| Our Syntax  | Standard Alternative | Description          |
+|-------------+----------------------+----------------------|
+| `command'   | ~command~            | Org code markup      |
+| `command'   | =command=            | Org verbatim markup  |
+
+* Future Non-Standard Features
+
+This section will be updated as additional non-standard features are added.
+
+* Related Topics
+
+- [[file:19-references.org][References]] - Full citation and bibliography documentation
+- [[file:10-export.org][Export]] - Export to HTML, LaTeX, PDF
+- [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts
+
+* Navigation
+
+- Previous: [[file:27-org-api.org][Org API]]
+- Index: [[file:00-index.org][Documentation Index]]

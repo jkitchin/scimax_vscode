@@ -318,7 +318,7 @@ SCHEDULED: <2026-01-19 Sun +1w>
 DEADLINE: <2026-01-31 Fri +1m>
 #+END_SRC
 
-See [[file:timestamps.org][Timestamps]] for more on repeaters.
+See [[file:06-timestamps.org][Timestamps]] for more on repeaters.
 
 * ⚠️ Grouping and Sorting
 
@@ -748,7 +748,7 @@ const deadlines = items.filter(item => item.type === 'deadline');
 const overdue = items.filter(item => item.overdue);
 #+END_SRC
 
-See [[file:database-search.org][Database Search]] for more on database queries.
+See [[file:18-database-search.org][Database Search]] for more on database queries.
 
 * ⚠️ Agenda Workflows
 
@@ -1080,7 +1080,7 @@ Week view shows balanced schedule:
    - Manual refresh if needed
 
 4. *Save file*:
-   - Ensure file is saved (Ctrl+S)
+   - Ensure file is saved (C-s)
    - Agenda reads from disk
 
 ** ⚠️ Tree View Not Showing
@@ -1147,7 +1147,7 @@ Week view shows balanced schedule:
 
 2. *Verify day of week*:
    - Day must match date
-   - Use Shift+Right to recalculate
+   - Use S-<right> to recalculate
 
 3. *Check repeaters*:
    #+BEGIN_SRC org
@@ -1247,14 +1247,15 @@ Week view shows balanced schedule:
 
 * ⚠️ Related Topics
 
-- [[file:todo-items.org][TODO Items]] - Creating and managing TODO items
-- [[file:timestamps.org][Timestamps]] - Date formats, scheduling, deadlines, repeaters
-- [[file:document-structure.org][Document Structure]] - Organizing headlines and content
-- [[file:database-search.org][Database Search]] - Advanced search and filtering
-- [[file:configuration.org][Configuration]] - Extension settings
-- [[file:getting-started.org][Getting Started]] - Basic usage guide
+- [[file:03-todo-items.org][TODO Items]] - Creating and managing TODO items
+- [[file:06-timestamps.org][Timestamps]] - Date formats, scheduling, deadlines, repeaters
+- [[file:02-document-structure.org][Document Structure]] - Organizing headlines and content
+- [[file:18-database-search.org][Database Search]] - Advanced search and filtering
+- [[file:26-configuration.org][Configuration]] - Extension settings
+- [[file:01-getting-started.org][Getting Started]] - Basic usage guide
 
 * Navigation
 
-- Previous: [[file:image-overlays.org][Image Overlays]]
-- Next: [[file:journal.org][Journal]]
+- Previous: [[file:12-image-overlays.org][Image Overlays]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:14-journal.org][Journal]]

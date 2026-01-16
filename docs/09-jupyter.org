@@ -1164,7 +1164,7 @@ legend("topright", "Mean", pch=19, col="red")
 
 - [[https://orgmode.org/manual/Working-with-Source-Code.html][Org Manual: Working with Source Code]]
 - [[https://orgmode.org/worg/org-contrib/babel/intro.html][Babel Introduction]]
-- [[file:source-blocks.org][Scimax Source Blocks Documentation]]
+- [[file:07-source-blocks.org][Scimax Source Blocks Documentation]]
 
 ** ⚠️ Language-Specific Resources
 
@@ -1209,12 +1209,13 @@ kernels stop.
 
 * ⚠️ Related Topics
 
-- [[file:source-blocks.org][Source Code Blocks]] - Code execution and header arguments
-- [[file:supported-languages.org][Supported Languages]] - All available languages
-- [[file:configuration.org][Configuration]] - Jupyter settings
-- [[file:image-overlays.org][Image Overlays]] - Displaying Jupyter output images
+- [[file:07-source-blocks.org][Source Code Blocks]] - Code execution and header arguments
+- [[file:08-supported-languages.org][Supported Languages]] - All available languages
+- [[file:26-configuration.org][Configuration]] - Jupyter settings
+- [[file:12-image-overlays.org][Image Overlays]] - Displaying Jupyter output images
 
 * Navigation
 
-- Previous: [[file:supported-languages.org][Supported Languages]]
-- Next: [[file:export.org][Export]]
+- Previous: [[file:08-supported-languages.org][Supported Languages]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:10-export.org][Export]]

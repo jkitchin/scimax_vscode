@@ -35,6 +35,54 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             links.push(link);
         }
 
+        // Find radio targets <<<target>>> and make all occurrences of target text clickable
+        const radioTargetRegex = /<<<([^>]+)>>>/g;
+        const radioTargets: { text: string; position: number }[] = [];
+
+        while ((match = radioTargetRegex.exec(text)) !== null) {
+            radioTargets.push({
+                text: match[1],
+                position: match.index
+            });
+        }
+
+        // For each radio target, find all occurrences of its text and make them links
+        for (const radioTarget of radioTargets) {
+            const targetText = radioTarget.text;
+            const targetLower = targetText.toLowerCase();
+            const lowerText = text.toLowerCase();
+            let searchStart = 0;
+
+            while (true) {
+                const index = lowerText.indexOf(targetLower, searchStart);
+                if (index === -1) break;
+
+                // Skip if this is the radio target definition itself (<<<...>>>)
+                const prefixStart = Math.max(0, index - 3);
+                const prefix = text.substring(prefixStart, index);
+                const suffix = text.substring(index + targetText.length, index + targetText.length + 3);
+                const isDefinition = prefix.endsWith('<<<') && suffix.startsWith('>>>');
+
+                if (!isDefinition) {
+                    const startPos = document.positionAt(index);
+                    const endPos = document.positionAt(index + targetText.length);
+                    const range = new vscode.Range(startPos, endPos);
+
+                    const link = new vscode.DocumentLink(range);
+                    link.target = vscode.Uri.parse(
+                        `command:scimax.org.gotoRadioTarget?${encodeURIComponent(JSON.stringify({
+                            file: document.uri.fsPath,
+                            target: targetText
+                        }))}`
+                    );
+                    link.tooltip = `Go to radio target: <<<${targetText}>>>`;
+                    links.push(link);
+                }
+
+                searchStart = index + targetText.length;
+            }
+        }
+
         return links;
     }
 
@@ -71,6 +119,27 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             );
         }
 
+        // Internal custom ID link: #custom-id
+        if (target.startsWith('#')) {
+            const customId = target.slice(1);
+            return vscode.Uri.parse(
+                `command:scimax.org.gotoCustomId?${encodeURIComponent(JSON.stringify({
+                    file: document.uri.fsPath,
+                    customId: customId
+                }))}`
+            );
+        }
+
+        // ID link: id:uuid - searches for :ID: property across files
+        if (target.startsWith('id:')) {
+            const id = target.slice(3);
+            return vscode.Uri.parse(
+                `command:scimax.org.gotoId?${encodeURIComponent(JSON.stringify({
+                    id: id
+                }))}`
+            );
+        }
+
         // Bare file path (no file: prefix) - common in org-mode
         if (target.includes('/') || target.includes('\\') ||
             target.endsWith('.org') || target.endsWith('.md') ||
@@ -84,7 +153,13 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             return this.resolveFileLink(target, docDir);
         }
 
-        return undefined;
+        // Internal target link: [[target-name]] - searches for <<target-name>>, #+NAME:, or text
+        return vscode.Uri.parse(
+            `command:scimax.org.gotoTarget?${encodeURIComponent(JSON.stringify({
+                file: document.uri.fsPath,
+                target: target
+            }))}`
+        );
     }
 
     /**
@@ -120,6 +195,27 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
                 `command:scimax.org.gotoHeading?${encodeURIComponent(JSON.stringify({
                     file: filePath,
                     heading: search.slice(1)
+                }))}`
+            );
+        }
+
+        // If there's a custom ID search
+        if (search && search.startsWith('#')) {
+            return vscode.Uri.parse(
+                `command:scimax.org.gotoCustomId?${encodeURIComponent(JSON.stringify({
+                    file: filePath,
+                    customId: search.slice(1)
+                }))}`
+            );
+        }
+
+        // If there's a character offset search (::c1234)
+        if (search && search.startsWith('c') && /^c\d+$/.test(search)) {
+            const charOffset = parseInt(search.slice(1));
+            return vscode.Uri.parse(
+                `command:scimax.org.gotoCharOffset?${encodeURIComponent(JSON.stringify({
+                    file: filePath,
+                    charOffset: charOffset
                 }))}`
             );
         }
@@ -266,6 +362,231 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 } else {
                     vscode.window.showWarningMessage(`Search text not found: ${search}`);
                 }
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            }
+        })
+    );
+
+    // Go to custom ID in file
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.gotoCustomId', async (args: { file: string; customId: string }) => {
+            const { file, customId } = args;
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(file);
+                const editor = await vscode.window.showTextDocument(doc);
+
+                const text = doc.getText();
+                const lines = text.split('\n');
+                const customIdLower = customId.toLowerCase();
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    const match = line.match(/:CUSTOM_ID:\s*(.+)/i);
+                    if (match && match[1].trim().toLowerCase() === customIdLower) {
+                        const position = new vscode.Position(i, 0);
+                        editor.selection = new vscode.Selection(position, position);
+                        editor.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
+                        return;
+                    }
+                }
+
+                vscode.window.showWarningMessage(`Custom ID not found: #${customId}`);
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            }
+        })
+    );
+
+    // Go to character offset in file
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.gotoCharOffset', async (args: { file: string; charOffset: number }) => {
+            const { file, charOffset } = args;
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(file);
+                const editor = await vscode.window.showTextDocument(doc);
+
+                const position = doc.positionAt(charOffset);
+                editor.selection = new vscode.Selection(position, position);
+                editor.revealRange(
+                    new vscode.Range(position, position),
+                    vscode.TextEditorRevealType.InCenter
+                );
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            }
+        })
+    );
+
+    // Go to ID (search for :ID: property across files)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.gotoId', async (args: { id: string }) => {
+            const { id } = args;
+            const idLower = id.toLowerCase();
+
+            // Helper function to find ID in a document and navigate to it
+            async function findAndNavigateToId(doc: vscode.TextDocument): Promise<boolean> {
+                const text = doc.getText();
+                const lines = text.split('\n');
+
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    const match = line.match(/:ID:\s*(.+)/i);
+                    if (match && match[1].trim().toLowerCase() === idLower) {
+                        const editor = await vscode.window.showTextDocument(doc);
+                        // Navigate to the heading above this property
+                        // Search backwards for a heading
+                        let headingLine = i;
+                        for (let j = i - 1; j >= 0; j--) {
+                            if (lines[j].match(/^\*+\s/)) {
+                                headingLine = j;
+                                break;
+                            }
+                        }
+                        const position = new vscode.Position(headingLine, 0);
+                        editor.selection = new vscode.Selection(position, position);
+                        editor.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            try {
+                // First, search in the active document
+                const activeEditor = vscode.window.activeTextEditor;
+                if (activeEditor) {
+                    const found = await findAndNavigateToId(activeEditor.document);
+                    if (found) {
+                        return;
+                    }
+                }
+
+                // Search across all org files in the workspace
+                const orgFiles = await vscode.workspace.findFiles('**/*.org', '**/node_modules/**');
+
+                for (const fileUri of orgFiles) {
+                    // Skip the active file (already searched)
+                    if (activeEditor && fileUri.fsPath === activeEditor.document.uri.fsPath) {
+                        continue;
+                    }
+
+                    try {
+                        const doc = await vscode.workspace.openTextDocument(fileUri);
+                        const found = await findAndNavigateToId(doc);
+                        if (found) {
+                            return;
+                        }
+                    } catch {
+                        // Skip files that can't be opened
+                        continue;
+                    }
+                }
+
+                vscode.window.showWarningMessage(`ID not found: ${id}`);
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to search for ID: ${id}`);
+            }
+        })
+    );
+
+    // Go to target (<<target>>, #+NAME:, or text search)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.gotoTarget', async (args: { file: string; target: string }) => {
+            const { file, target } = args;
+            const targetLower = target.toLowerCase();
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(file);
+                const editor = await vscode.window.showTextDocument(doc);
+                const text = doc.getText();
+                const lines = text.split('\n');
+
+                // First, search for #+NAME:
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    const nameMatch = line.match(/^#\+NAME:\s*(.+)$/i);
+                    if (nameMatch && nameMatch[1].trim().toLowerCase() === targetLower) {
+                        const position = new vscode.Position(i, 0);
+                        editor.selection = new vscode.Selection(position, position);
+                        editor.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
+                        return;
+                    }
+                }
+
+                // Search for <<target>>
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    const targetMatch = line.match(/<<([^>]+)>>/);
+                    if (targetMatch && targetMatch[1].trim().toLowerCase() === targetLower) {
+                        const col = line.indexOf('<<');
+                        const position = new vscode.Position(i, col);
+                        editor.selection = new vscode.Selection(position, position);
+                        editor.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
+                        return;
+                    }
+                }
+
+                // Fallback: plain text search
+                const index = text.toLowerCase().indexOf(targetLower);
+                if (index !== -1) {
+                    const position = doc.positionAt(index);
+                    editor.selection = new vscode.Selection(position, position);
+                    editor.revealRange(
+                        new vscode.Range(position, position),
+                        vscode.TextEditorRevealType.InCenter
+                    );
+                    return;
+                }
+
+                vscode.window.showWarningMessage(`Target not found: ${target}`);
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            }
+        })
+    );
+
+    // Go to radio target (<<<target>>>)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.gotoRadioTarget', async (args: { file: string; target: string }) => {
+            const { file, target } = args;
+            const targetLower = target.toLowerCase();
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(file);
+                const editor = await vscode.window.showTextDocument(doc);
+                const text = doc.getText();
+
+                // Search for <<<target>>>
+                const regex = /<<<([^>]+)>>>/g;
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    if (match[1].toLowerCase() === targetLower) {
+                        const position = doc.positionAt(match.index);
+                        editor.selection = new vscode.Selection(position, position);
+                        editor.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
+                        return;
+                    }
+                }
+
+                vscode.window.showWarningMessage(`Radio target not found: <<<${target}>>>`);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }

@@ -1444,6 +1444,10 @@
         "title": "Scimax: Strikethrough (Markup)"
       },
       {
+        "command": "scimax.markup.command",
+        "title": "Scimax: Command (Emacs-style Markup)"
+      },
+      {
         "command": "scimax.markup.subscript",
         "title": "Scimax: Subscript (Markup)"
       },
@@ -1524,6 +1528,10 @@
         "title": "Scimax: Insert Inline Task"
       },
       {
+        "command": "scimax.org.addIdToHeading",
+        "title": "Scimax: Add ID to Heading"
+      },
+      {
         "command": "scimax.org.cycleTodo",
         "title": "Scimax: Cycle TODO State"
       },
@@ -1542,6 +1550,10 @@
       {
         "command": "scimax.org.updateDynamicBlock",
         "title": "Scimax: Update Dynamic Block"
+      },
+      {
+        "command": "scimax.org.storeLink",
+        "title": "Scimax: Store Link"
       },
       {
         "command": "scimax.org.insertLink",
@@ -2669,6 +2681,12 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
+        "command": "scimax.markup.command",
+        "key": "ctrl+c '",
+        "mac": "ctrl+c '",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
         "command": "scimax.org.cycleTodo",
         "key": "ctrl+c ctrl+t",
         "mac": "ctrl+c ctrl+t",
@@ -2682,14 +2700,14 @@
       },
       {
         "command": "scimax.org.nextHeading",
-        "key": "ctrl+c n",
-        "mac": "ctrl+c n",
+        "key": "ctrl+c ctrl+n",
+        "mac": "ctrl+c ctrl+n",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
         "command": "scimax.org.previousHeading",
-        "key": "ctrl+c p",
-        "mac": "ctrl+c p",
+        "key": "ctrl+c ctrl+p",
+        "mac": "ctrl+c ctrl+p",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
@@ -2735,6 +2753,12 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onLink"
       },
       {
+        "command": "scimax.org.storeLink",
+        "key": "ctrl+c l",
+        "mac": "ctrl+c l",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
         "command": "scimax.org.insertLink",
         "key": "ctrl+c ctrl+l",
         "mac": "ctrl+c ctrl+l",
@@ -2754,8 +2778,8 @@
       },
       {
         "command": "scimax.ob.insertBlockBelow",
-        "key": "ctrl+c ctrl+n",
-        "mac": "ctrl+c ctrl+n",
+        "key": "ctrl+c ctrl+,",
+        "mac": "ctrl+c ctrl+,",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
@@ -3037,6 +3061,12 @@
         "command": "scimax.org.insertInlineTask",
         "key": "ctrl+c ctrl+x t",
         "mac": "ctrl+c ctrl+x t",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
+        "command": "scimax.org.addIdToHeading",
+        "key": "ctrl+c ctrl+x i",
+        "mac": "ctrl+c ctrl+x i",
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {

@@ -13,7 +13,7 @@ The Scimax VS Code extension provides a comprehensive export system for converti
 
 ** Opening the Export Dispatcher
 
-Press =Ctrl+C Ctrl+E= (or =C-c C-e= in Emacs notation) to open the export dispatcher menu. This provides a quick-pick interface showing all available export formats and options.
+Press =C-c C-e= (or =C-c C-e= in Emacs notation) to open the export dispatcher menu. This provides a quick-pick interface showing all available export formats and options.
 
 The export dispatcher presents options with keyboard hints, similar to Emacs org-mode:
 - Type the letter keys shown in square brackets to select an option
@@ -101,7 +101,7 @@ Add custom LaTeX packages and settings in the preamble:
 
 Configure a complete custom LaTeX preamble in VS Code settings:
 
-1. Open Settings (=Ctrl+,=)
+1. Open Settings (=C-,=)
 2. Search for =scimax.export.latex.customHeader=
 3. Enter your complete preamble (from =\documentclass= through packages)
 
@@ -296,9 +296,9 @@ print("Hello, world!")
 ** Quick Access
 
 For frequently used exports, use the quick commands:
-- =Ctrl+Shift+P= → "Scimax: Export to HTML"
-- =Ctrl+Shift+P= → "Scimax: Export to PDF"
-- =Ctrl+Shift+P= → "Scimax: Export to Markdown"
+- =C-S-P= → "Scimax: Export to HTML"
+- =C-S-P= → "Scimax: Export to PDF"
+- =C-S-P= → "Scimax: Export to Markdown"
 
 * Export Scope
 
@@ -712,7 +712,7 @@ SyncTeX enables bidirectional sync between source and PDF:
 3. PDF viewer jumps to corresponding location
 
 *** Reverse Sync (PDF → Source)
-Ctrl+click in PDF viewer (if supported) to jump to source line.
+C-click in PDF viewer (if supported) to jump to source line.
 
 * Markdown Export Details
 
@@ -907,7 +907,7 @@ The =#+OPTIONS= keyword controls various export behaviors:
 ** Export Settings Location
 
 All export settings are in VS Code preferences:
-1. =Ctrl+,= (=Cmd+,= on Mac) to open Settings
+1. =C-,= (=s-,= on Mac) to open Settings
 2. Search for "scimax export" or "scimax latex"
 3. Modify settings as needed
 
@@ -1574,10 +1574,10 @@ Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)
 
 ** Related Scimax Documentation
 
-- [[file:getting-started.org][Getting Started with Scimax]]
-- [[file:tables.org][Working with Tables]]
-- [[file:links.org][Links and Cross-References]]
-- [[file:todo-items.org][TODO Items and Planning]]
+- [[file:01-getting-started.org][Getting Started with Scimax]]
+- [[file:04-tables.org][Working with Tables]]
+- [[file:05-links.org][Links and Cross-References]]
+- [[file:03-todo-items.org][TODO Items and Planning]]
 
 ** Community
 
@@ -1722,13 +1722,14 @@ This documentation covers the complete export system in Scimax VS Code. For addi
 
 * Related Topics
 
-- [[file:source-blocks.org][Source Code Blocks]] - Code execution in documents
-- [[file:latex-preview.org][LaTeX Preview]] - Math preview before export
-- [[file:references.org][References]] - Citations and bibliography in exports
-- [[file:tables.org][Tables]] - Table formatting in exports
-- [[file:configuration.org][Configuration]] - Export settings and customization
+- [[file:07-source-blocks.org][Source Code Blocks]] - Code execution in documents
+- [[file:11-latex-preview.org][LaTeX Preview]] - Math preview before export
+- [[file:19-references.org][References]] - Citations and bibliography in exports
+- [[file:04-tables.org][Tables]] - Table formatting in exports
+- [[file:26-configuration.org][Configuration]] - Export settings and customization
 
 * Navigation
 
-- Previous: [[file:jupyter.org][Jupyter Integration]]
-- Next: [[file:latex-preview.org][LaTeX Preview]]
+- Previous: [[file:09-jupyter.org][Jupyter]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:11-latex-preview.org][LaTeX Preview]]

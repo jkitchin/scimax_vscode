@@ -57,6 +57,8 @@ const UNDERLINE_PATTERN = /_([^\s_](?:[^_]{0,500}[^\s_])?)_(?![a-zA-Z])/g;
 const STRIKE_PATTERN = /\+([^\s+](?:[^+]{0,500}[^\s+])?)\+(?![a-zA-Z0-9])/g;
 const CODE_PATTERN = /=([^\s=](?:[^=]{0,500}[^\s=])?)=/g;
 const VERBATIM_PATTERN = /~([^\s~](?:[^~]{0,500}[^\s~])?)~/g;
+// Emacs-style command markup: `command'
+const COMMAND_PATTERN = /`([^`'\n]+)'/g;
 
 /**
  * Parse inline objects using regex patterns - much faster than character-by-character
@@ -235,6 +237,16 @@ export function parseObjectsFast(text: string): OrgObject[] {
     if (text.includes('~')) {
         collectMatches(VERBATIM_PATTERN, (m) => ({
             type: 'code' as const,  // ~text~ is code in org-mode
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { value: m[1] },
+        }));
+    }
+
+    // Emacs-style command markup: `command'
+    if (text.includes('`') && text.includes("'")) {
+        collectMatches(COMMAND_PATTERN, (m) => ({
+            type: 'command' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
             properties: { value: m[1] },

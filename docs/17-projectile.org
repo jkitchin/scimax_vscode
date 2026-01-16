@@ -5,11 +5,13 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* ✅ Overview
+CLOSED: [2026-01-15 Thu 19:55]
 
 The Scimax projectile system provides project-aware file management inspired by Emacs Projectile. It enables quick switching between projects, intelligent project detection, and project-scoped operations for efficient multi-project workflows.
 
-** What is Projectile?
+** ✅ What is Projectile?
+CLOSED: [2026-01-15 Thu 19:55]
 
 Projectile is a project management system that:
 
@@ -26,7 +28,8 @@ Projects can be:
 - *Projectile-marked*: Directories with a =.projectile= marker file
 - *Manual projects*: Any directory you explicitly add to the project list
 
-** Key Features
+** ✅ Key Features
+CLOSED: [2026-01-15 Thu 19:55]
 
 - *Automatic Detection*: Discovers git repos and projectile-marked directories
 - *Quick Switching*: Fast navigation between known projects with =C-c p p=
@@ -38,14 +41,15 @@ Projects can be:
 - *Cleanup Tools*: Remove non-existent projects from the list
 - *Notebook Integration*: Works seamlessly with scimax-notebook for research projects
 
-* Project Detection
+* ✅ Project Detection
+CLOSED: [2026-01-15 Thu 19:55]
 
 ** Detection Methods
 
 Scimax uses three methods to detect projects, in this priority order:
 
-1. *Git Repositories*: Any directory containing a =.git/ subdirectory
-2. *Projectile Markers*: Directories with a =.projectile= file
+1. *Git Repositories*: Any directory containing a .git/ subdirectory
+2. *Projectile Markers*: Directories with a .projectile file
 3. *Manual Registration*: Projects you explicitly add via commands
 
 ** Automatic Detection
@@ -231,7 +235,7 @@ Keybinding: C-c p f
 Hydra: Projects → f (Find File)
 #+end_src
 
-This delegates to VS Code's built-in quick open (=Ctrl+P=), which automatically scopes to workspace folders.
+This delegates to VS Code's built-in quick open (=C-p=), which automatically scopes to workspace folders.
 
 Features:
 - Fuzzy matching (e.g., "orgpar" matches "orgParser.ts")
@@ -425,7 +429,7 @@ Relative times are shown for recent access:
 
 ** Keybindings
 
-All projectile keybindings use the =C-c p= prefix, matching Emacs Projectile conventions:
+All projectile keybindings use the =C-c C-p= prefix, matching Emacs Projectile conventions:
 
 #+begin_src
 C-c p p    Switch project
@@ -969,7 +973,7 @@ For users familiar with Emacs Projectile:
 
 *** File Finding
 - *Emacs*: Custom projectile completion
-- *VS Code*: Uses built-in Quick Open (=Ctrl+P=)
+- *VS Code*: Uses built-in Quick Open (=C-p=)
 - *Advantage*: VS Code's picker is faster and more familiar
 
 *** Search
@@ -983,11 +987,11 @@ For users familiar with Emacs Projectile:
 - *Advantage*: Automatic, no manual cache management
 
 *** Buffer Management
-- *Emacs*: =C-c p b= switch buffer within project
+- *Emacs*: =C-c C-p b= switch buffer within project
 - *VS Code*: Not needed (tabs and Quick Open serve this role)
 
 *** Project Commands
-- *Emacs*: Many specialized commands (=C-c p c= compile, =C-c p t= test)
+- *Emacs*: Many specialized commands (=C-c C-p c= compile, =C-c C-p t= test)
 - *VS Code*: Fewer commands, uses VS Code's task system instead
 
 ** Migration Tips
@@ -1059,9 +1063,9 @@ Whether you're managing multiple research projects, client work, or personal rep
 
 ** Related Documentation
 
-- [[file:notebook.org][Notebook (Project Organization)]] - Research project structure with notebooks
-- [[file:keybindings.org][Keybindings]] - Complete keybinding reference
-- [[file:configuration.org][Configuration]] - Extension settings and customization
+- [[file:16-notebook.org][Notebook (Project Organization)]] - Research project structure with notebooks
+- [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference
+- [[file:26-configuration.org][Configuration]] - Extension settings and customization
 
 ** Feedback
 
@@ -1072,5 +1076,6 @@ If you encounter issues or have feature requests for projectile:
 
 * Navigation
 
-- Previous: [[file:notebook.org][Notebook]]
-- Next: [[file:database-search.org][Database and Search]]
+- Previous: [[file:16-notebook.org][Notebook]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:18-database-search.org][Database and Search]]
