@@ -58,6 +58,7 @@ import { registerJumpCommands } from './jump/commands';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 import { registerEditmarkCommands } from './editmarks/editmarks';
 import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
+import { registerPublishCommands } from './publishing';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -303,6 +304,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     registerExportCommands(context);
+
+    // Register Publishing commands (for multi-file project publishing)
+    registerPublishCommands(context);
 
     // Jupyter kernel support - uses dynamic import for lazy loading
     // Only loads zeromq when first jupyter block is executed
