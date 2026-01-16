@@ -1,5 +1,6 @@
 out/
 node_modules/
+.vscode/
 .vscode-test/
 *.vsix
 .DS_Store
@@ -20,6 +21,7 @@ node_modules/
 *.toc
 *.synctex.gz
 _minted/
+_minted-tasks/
 *.minted
 
 # Generated export files
