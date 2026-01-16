@@ -379,7 +379,7 @@ Generates complete HTML document:
 </html>
 #+END_SRC
 
-*** Body-Only
+*** ⚠️ Body-Only
 Generates only the content (for embedding):
 #+BEGIN_SRC html
 <div class="org-content">
