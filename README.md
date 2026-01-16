@@ -761,6 +761,36 @@ The extension supports:
 
 ---
 
+## Codebase Statistics
+
+| Metric | Count |
+|--------|-------|
+| TypeScript files | 133 |
+| Lines of TypeScript | ~78,000 |
+| Test files | 21 |
+| Unit tests | 815 |
+| Documentation files | 35 |
+| Commands | 531 |
+| Keybindings | 197 |
+
+### Supported Languages (Babel Execution)
+
+Python, JavaScript, TypeScript, Shell (bash/sh), SQL, R, Julia, plus any Jupyter kernel via `jupyter-*` prefix.
+
+### Parser Performance
+
+Benchmarks on typical documents (may vary by system):
+
+| Document Size | Parse Time (avg) |
+|---------------|------------------|
+| Small (~3.5K chars, 177 lines) | <5ms |
+| Medium (~9K chars, 428 lines) | <10ms |
+| Large (~34K chars, 1571 lines) | <25ms |
+
+The parser scales linearly with document size and handles documents with hundreds of headings, source blocks, and deeply nested structures efficiently.
+
+---
+
 ## Contributing
 
 Contributions welcome! Please see the [GitHub repository](https://github.com/jkitchin/scimax_vscode).
