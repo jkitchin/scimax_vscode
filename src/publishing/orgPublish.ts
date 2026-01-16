@@ -349,100 +349,194 @@ function configToYaml(config: PublishConfig): string {
  */
 function parseSimpleYaml(content: string): TocConfig {
     const lines = content.split('\n');
-    const result: Record<string, unknown> = {};
-    const stack: Array<{ obj: Record<string, unknown> | unknown[]; indent: number }> = [
-        { obj: result, indent: -1 }
-    ];
-    let currentArray: unknown[] | null = null;
-    let currentArrayKey: string | null = null;
-    let currentArrayIndent = -1;
+    let lineIndex = 0;
 
-    for (const line of lines) {
-        // Skip empty lines and comments
-        if (!line.trim() || line.trim().startsWith('#')) continue;
+    function parseValue(startIndent: number): unknown {
+        const result: Record<string, unknown> = {};
 
-        const indent = line.search(/\S/);
-        const trimmed = line.trim();
+        while (lineIndex < lines.length) {
+            const line = lines[lineIndex];
 
-        // Handle array items
-        if (trimmed.startsWith('- ')) {
-            const itemContent = trimmed.slice(2).trim();
-
-            // Check if it's a key-value on same line as dash
-            if (itemContent.includes(':')) {
-                const colonIdx = itemContent.indexOf(':');
-                const key = itemContent.slice(0, colonIdx).trim();
-                const value = itemContent.slice(colonIdx + 1).trim();
-
-                // Create object for this array item
-                const itemObj: Record<string, unknown> = {};
-                if (value) {
-                    itemObj[key] = parseYamlValue(value);
-                }
-
-                if (currentArray && indent >= currentArrayIndent) {
-                    currentArray.push(itemObj);
-                    // Push this object for nested properties
-                    while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
-                        stack.pop();
-                    }
-                    stack.push({ obj: itemObj, indent });
-                }
-            } else {
-                // Simple value in array
-                if (currentArray) {
-                    if (itemContent) {
-                        currentArray.push(parseYamlValue(itemContent));
-                    } else {
-                        // Empty dash starts a new object
-                        const itemObj: Record<string, unknown> = {};
-                        currentArray.push(itemObj);
-                        while (stack.length > 0 && stack[stack.length - 1].indent >= indent) {
-                            stack.pop();
-                        }
-                        stack.push({ obj: itemObj, indent });
-                    }
-                }
+            // Skip empty lines and comments
+            if (!line.trim() || line.trim().startsWith('#')) {
+                lineIndex++;
+                continue;
             }
-        } else if (trimmed.includes(':')) {
-            // Key-value pair
-            const colonIdx = trimmed.indexOf(':');
-            const key = trimmed.slice(0, colonIdx).trim();
-            const value = trimmed.slice(colonIdx + 1).trim();
 
-            // Find parent object
-            while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
-                stack.pop();
+            const indent = line.search(/\S/);
+
+            // If we've dedented, return to parent
+            if (indent < startIndent) {
+                return result;
             }
-            const parent = stack[stack.length - 1].obj;
 
-            if (Array.isArray(parent)) continue; // Can't add key to array
+            const trimmed = line.trim();
+            lineIndex++;
 
-            if (value === '' || value === null) {
-                // Could be array or nested object - check next line
-                const nextLineIdx = lines.indexOf(line) + 1;
-                if (nextLineIdx < lines.length) {
-                    const nextLine = lines[nextLineIdx].trim();
-                    if (nextLine.startsWith('- ')) {
+            // Handle array items at this level
+            if (trimmed.startsWith('- ')) {
+                // This shouldn't happen at object level - go back
+                lineIndex--;
+                return result;
+            }
+
+            // Handle key: value
+            if (trimmed.includes(':')) {
+                const colonIdx = trimmed.indexOf(':');
+                const key = trimmed.slice(0, colonIdx).trim();
+                const valueStr = trimmed.slice(colonIdx + 1).trim();
+
+                if (valueStr) {
+                    // Inline value
+                    result[key] = parseYamlValue(valueStr);
+                } else {
+                    // Check what follows
+                    const nextNonEmpty = peekNextNonEmpty();
+                    if (nextNonEmpty && nextNonEmpty.trimmed.startsWith('- ')) {
                         // It's an array
-                        const arr: unknown[] = [];
-                        parent[key] = arr;
-                        currentArray = arr;
-                        currentArrayKey = key;
-                        currentArrayIndent = indent + 1;
-                    } else {
-                        // Nested object
-                        const nested: Record<string, unknown> = {};
-                        parent[key] = nested;
-                        stack.push({ obj: nested, indent });
+                        result[key] = parseArray(nextNonEmpty.indent);
+                    } else if (nextNonEmpty && nextNonEmpty.indent > indent) {
+                        // It's a nested object
+                        result[key] = parseValue(nextNonEmpty.indent);
                     }
                 }
-            } else {
-                parent[key] = parseYamlValue(value);
             }
         }
+
+        return result;
     }
 
+    function parseArray(arrayIndent: number): unknown[] {
+        const arr: unknown[] = [];
+
+        while (lineIndex < lines.length) {
+            const line = lines[lineIndex];
+
+            // Skip empty lines and comments
+            if (!line.trim() || line.trim().startsWith('#')) {
+                lineIndex++;
+                continue;
+            }
+
+            const indent = line.search(/\S/);
+            const trimmed = line.trim();
+
+            // If we've dedented past the array, return
+            if (indent < arrayIndent) {
+                return arr;
+            }
+
+            // Non-array item at same or greater indent - belongs to last array item
+            if (!trimmed.startsWith('- ') && indent >= arrayIndent) {
+                // This is a property of the last array item
+                if (arr.length > 0 && typeof arr[arr.length - 1] === 'object') {
+                    const lastItem = arr[arr.length - 1] as Record<string, unknown>;
+                    // Parse this key-value into the last item
+                    const colonIdx = trimmed.indexOf(':');
+                    if (colonIdx > 0) {
+                        const key = trimmed.slice(0, colonIdx).trim();
+                        const valueStr = trimmed.slice(colonIdx + 1).trim();
+                        lineIndex++;
+
+                        if (valueStr) {
+                            lastItem[key] = parseYamlValue(valueStr);
+                        } else {
+                            const nextNonEmpty = peekNextNonEmpty();
+                            if (nextNonEmpty && nextNonEmpty.trimmed.startsWith('- ')) {
+                                lastItem[key] = parseArray(nextNonEmpty.indent);
+                            } else if (nextNonEmpty && nextNonEmpty.indent > indent) {
+                                lastItem[key] = parseValue(nextNonEmpty.indent);
+                            }
+                        }
+                        continue;
+                    }
+                }
+                lineIndex++;
+                continue;
+            }
+
+            if (!trimmed.startsWith('- ')) {
+                return arr;
+            }
+
+            lineIndex++;
+            const itemContent = trimmed.slice(2).trim();
+
+            if (itemContent.includes(':')) {
+                // Object starting on this line
+                const colonIdx = itemContent.indexOf(':');
+                const key = itemContent.slice(0, colonIdx).trim();
+                const valueStr = itemContent.slice(colonIdx + 1).trim();
+
+                const itemObj: Record<string, unknown> = {};
+                if (valueStr) {
+                    itemObj[key] = parseYamlValue(valueStr);
+                } else {
+                    // Check for nested content
+                    const nextNonEmpty = peekNextNonEmpty();
+                    if (nextNonEmpty && nextNonEmpty.trimmed.startsWith('- ')) {
+                        itemObj[key] = parseArray(nextNonEmpty.indent);
+                    } else if (nextNonEmpty && nextNonEmpty.indent > indent + 2) {
+                        itemObj[key] = parseValue(nextNonEmpty.indent);
+                    }
+                }
+                arr.push(itemObj);
+            } else if (itemContent) {
+                // Simple value
+                arr.push(parseYamlValue(itemContent));
+            } else {
+                // Empty dash - next lines define the object
+                const itemObj: Record<string, unknown> = {};
+                arr.push(itemObj);
+                // Parse properties into this object
+                while (lineIndex < lines.length) {
+                    const nextLine = lines[lineIndex];
+                    if (!nextLine.trim() || nextLine.trim().startsWith('#')) {
+                        lineIndex++;
+                        continue;
+                    }
+                    const nextIndent = nextLine.search(/\S/);
+                    if (nextIndent <= indent) break;
+
+                    const nextTrimmed = nextLine.trim();
+                    if (nextTrimmed.startsWith('- ')) break;
+
+                    lineIndex++;
+                    const nextColonIdx = nextTrimmed.indexOf(':');
+                    if (nextColonIdx > 0) {
+                        const nextKey = nextTrimmed.slice(0, nextColonIdx).trim();
+                        const nextValue = nextTrimmed.slice(nextColonIdx + 1).trim();
+
+                        if (nextValue) {
+                            itemObj[nextKey] = parseYamlValue(nextValue);
+                        } else {
+                            const peek = peekNextNonEmpty();
+                            if (peek && peek.trimmed.startsWith('- ')) {
+                                itemObj[nextKey] = parseArray(peek.indent);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return arr;
+    }
+
+    function peekNextNonEmpty(): { indent: number; trimmed: string } | null {
+        for (let i = lineIndex; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.trim() && !line.trim().startsWith('#')) {
+                return {
+                    indent: line.search(/\S/),
+                    trimmed: line.trim(),
+                };
+            }
+        }
+        return null;
+    }
+
+    const result = parseValue(0);
     return result as unknown as TocConfig;
 }
 

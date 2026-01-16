@@ -1,0 +1,55 @@
+# Scimax VS Code Documentation TOC
+# Jupyter Book compatible format
+
+format: jb-book
+root: index
+
+parts:
+  - caption: Getting Started
+    chapters:
+      - file: getting-started
+      - file: configuration
+      - file: keybindings
+      - file: commands
+
+  - caption: Document Editing
+    chapters:
+      - file: document-structure
+      - file: navigation
+      - file: speed-commands
+      - file: links
+      - file: tables
+
+  - caption: Task Management
+    chapters:
+      - file: todo-items
+      - file: agenda
+      - file: timestamps
+      - file: capture
+
+  - caption: Code & Execution
+    chapters:
+      - file: source-blocks
+      - file: supported-languages
+      - file: jupyter
+
+  - caption: Export & Publishing
+    chapters:
+      - file: export
+      - file: publishing
+      - file: latex-preview
+      - file: image-overlays
+
+  - caption: Advanced Features
+    chapters:
+      - file: database-search
+      - file: references
+      - file: journal
+      - file: notebook
+      - file: projectile
+      - file: hydra-menus
+      - file: editmarks
+
+  - caption: Reference
+    chapters:
+      - file: org-api

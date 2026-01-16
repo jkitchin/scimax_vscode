@@ -15,6 +15,10 @@ import {
     toHtmlExportOptions,
     DEFAULT_PROJECT_CONFIG,
     GITHUB_PAGES_PRESET,
+    TocConfig,
+    flattenToc,
+    getTocFiles,
+    findTocEntry,
 } from '../publishProject';
 
 describe('PublishProject Types', () => {
@@ -304,5 +308,236 @@ describe('GITHUB_PAGES_PRESET', () => {
     it('should include all default config values', () => {
         expect(GITHUB_PAGES_PRESET.baseExtension).toBe(DEFAULT_PROJECT_CONFIG.baseExtension);
         expect(GITHUB_PAGES_PRESET.recursive).toBe(DEFAULT_PROJECT_CONFIG.recursive);
+    });
+});
+
+// =============================================================================
+// TOC Helper Tests
+// =============================================================================
+
+describe('flattenToc', () => {
+    it('should flatten simple TOC with chapters', () => {
+        const toc: TocConfig = {
+            root: 'index',
+            chapters: [
+                { file: 'getting-started' },
+                { file: 'installation' },
+                { file: 'reference' },
+            ],
+        };
+
+        const flat = flattenToc(toc);
+
+        expect(flat).toHaveLength(4); // root + 3 chapters
+        expect(flat[0].file).toBe('index');
+        expect(flat[1].file).toBe('getting-started');
+        expect(flat[2].file).toBe('installation');
+        expect(flat[3].file).toBe('reference');
+    });
+
+    it('should add prev/next navigation links', () => {
+        const toc: TocConfig = {
+            root: 'index',
+            chapters: [
+                { file: 'first' },
+                { file: 'second' },
+                { file: 'third' },
+            ],
+        };
+
+        const flat = flattenToc(toc);
+
+        // First entry has no prev
+        expect(flat[0].prev).toBeUndefined();
+        expect(flat[0].next).toBe('first');
+
+        // Middle entries have both
+        expect(flat[1].prev).toBe('index');
+        expect(flat[1].next).toBe('second');
+
+        // Last entry has no next
+        expect(flat[3].prev).toBe('second');
+        expect(flat[3].next).toBeUndefined();
+    });
+
+    it('should handle nested sections', () => {
+        const toc: TocConfig = {
+            root: 'index',
+            chapters: [
+                {
+                    file: 'guide',
+                    sections: [
+                        { file: 'guide/basics' },
+                        { file: 'guide/advanced' },
+                    ],
+                },
+            ],
+        };
+
+        const flat = flattenToc(toc);
+
+        expect(flat).toHaveLength(4); // root + guide + 2 sections
+        expect(flat[0].file).toBe('index');
+        expect(flat[1].file).toBe('guide');
+        expect(flat[2].file).toBe('guide/basics');
+        expect(flat[3].file).toBe('guide/advanced');
+    });
+
+    it('should handle parts with chapters', () => {
+        const toc: TocConfig = {
+            root: 'intro',
+            parts: [
+                {
+                    caption: 'Getting Started',
+                    chapters: [
+                        { file: 'install' },
+                        { file: 'quickstart' },
+                    ],
+                },
+                {
+                    caption: 'Reference',
+                    chapters: [
+                        { file: 'api' },
+                    ],
+                },
+            ],
+        };
+
+        const flat = flattenToc(toc);
+
+        expect(flat).toHaveLength(4); // root + 3 chapters across parts
+        expect(flat[1].part).toBe('Getting Started');
+        expect(flat[2].part).toBe('Getting Started');
+        expect(flat[3].part).toBe('Reference');
+    });
+
+    it('should set correct nesting levels', () => {
+        const toc: TocConfig = {
+            root: 'index',
+            chapters: [
+                {
+                    file: 'guide',
+                    sections: [
+                        {
+                            file: 'guide/basics',
+                            sections: [
+                                { file: 'guide/basics/intro' },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        };
+
+        const flat = flattenToc(toc);
+
+        expect(flat[0].level).toBe(0); // root
+        expect(flat[1].level).toBe(1); // guide
+        expect(flat[2].level).toBe(2); // guide/basics
+        expect(flat[3].level).toBe(3); // guide/basics/intro
+    });
+});
+
+describe('getTocFiles', () => {
+    it('should return all files from simple TOC', () => {
+        const toc: TocConfig = {
+            root: 'index',
+            chapters: [
+                { file: 'first' },
+                { file: 'second' },
+            ],
+        };
+
+        const files = getTocFiles(toc);
+
+        expect(files).toContain('index');
+        expect(files).toContain('first');
+        expect(files).toContain('second');
+        expect(files).toHaveLength(3);
+    });
+
+    it('should include nested section files', () => {
+        const toc: TocConfig = {
+            root: 'index',
+            chapters: [
+                {
+                    file: 'guide',
+                    sections: [
+                        { file: 'guide/basics' },
+                    ],
+                },
+            ],
+        };
+
+        const files = getTocFiles(toc);
+
+        expect(files).toContain('guide');
+        expect(files).toContain('guide/basics');
+    });
+
+    it('should include files from all parts', () => {
+        const toc: TocConfig = {
+            root: 'intro',
+            parts: [
+                {
+                    caption: 'Part 1',
+                    chapters: [{ file: 'ch1' }],
+                },
+                {
+                    caption: 'Part 2',
+                    chapters: [{ file: 'ch2' }],
+                },
+            ],
+        };
+
+        const files = getTocFiles(toc);
+
+        expect(files).toContain('intro');
+        expect(files).toContain('ch1');
+        expect(files).toContain('ch2');
+    });
+});
+
+describe('findTocEntry', () => {
+    const toc: TocConfig = {
+        root: 'index',
+        chapters: [
+            { file: 'getting-started', title: 'Getting Started' },
+            { file: 'guide/basics' },
+        ],
+    };
+
+    it('should find entry by exact file path', () => {
+        const entry = findTocEntry(toc, 'getting-started');
+
+        expect(entry).toBeDefined();
+        expect(entry?.file).toBe('getting-started');
+    });
+
+    it('should find entry by path with extension', () => {
+        const entry = findTocEntry(toc, 'getting-started.org');
+
+        expect(entry).toBeDefined();
+        expect(entry?.file).toBe('getting-started');
+    });
+
+    it('should find entry with subdirectory path', () => {
+        const entry = findTocEntry(toc, 'guide/basics');
+
+        expect(entry).toBeDefined();
+        expect(entry?.file).toBe('guide/basics');
+    });
+
+    it('should return undefined for non-existent file', () => {
+        const entry = findTocEntry(toc, 'nonexistent');
+
+        expect(entry).toBeUndefined();
+    });
+
+    it('should include navigation info in found entry', () => {
+        const entry = findTocEntry(toc, 'getting-started');
+
+        expect(entry?.prev).toBe('index');
+        expect(entry?.next).toBe('guide/basics');
     });
 });

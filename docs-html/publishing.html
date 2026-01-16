@@ -139,10 +139,44 @@ Welcome to my project documentation!
 </div>
 <div id="org-configuration-file" class="org-section org-level-1">
 <h1>Configuration File</h1>
-<p>The wizard creates a <code class="verbatim">.org-publish.json</code> file in your project root. You can also create or edit this file manually.</p>
+<p>The publishing system supports two configuration formats:</p>
 
-<div id="org-basic-configuration" class="org-section org-level-2">
-<h2>Basic Configuration</h2>
+<ol>
+<li><p><code class="verbatim">_config.yml</code> - YAML format (Jupyter Book compatible, takes precedence)</p>
+</li>
+<li><p><code class="verbatim">.org-publish.json</code> - JSON format</p>
+</li>
+</ol>
+
+<p>The wizard creates a <code class="verbatim">.org-publish.json</code> file by default. You can also create or edit either file manually.</p>
+
+<div id="org-yaml-configuration-config-yml" class="org-section org-level-2">
+<h2>⚠️ YAML Configuration (<code class="verbatim">_config.yml</code>)</h2>
+<p>For Jupyter Book compatibility, create a <code class="verbatim">_config.yml</code> in your project root:</p>
+
+<div class="org-src-container">
+<pre class="src src-yaml"><code class="language-yaml"># _config.yml - Jupyter Book compatible
+title: &quot;My Documentation&quot;
+
+publish:
+  base_directory: &quot;./docs&quot;
+  publishing_directory: &quot;./public&quot;
+  recursive: true
+  auto_sitemap: true
+  sitemap_filename: &quot;index.org&quot;
+
+html:
+  use_default_theme: true
+  toc_depth: 3
+  css_files:
+    - &quot;./css/custom.css&quot;
+
+github_pages: true</code></pre>
+</div>
+
+</div>
+<div id="org-json-configuration-org-publish-json" class="org-section org-level-2">
+<h2>JSON Configuration (<code class="verbatim">.org-publish.json</code>)</h2>
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
   &quot;projects&quot;: {
@@ -239,9 +273,33 @@ Welcome to my project documentation!
 <ul>
 <li><p><code class="verbatim">org-html-publish-to-html</code> - Convert org files to HTML</p>
 </li>
+<li><p><code class="verbatim">md-html-publish-to-html</code> - Convert Markdown files to HTML</p>
+</li>
+<li><p><code class="verbatim">ipynb-html-publish-to-html</code> - Convert Jupyter notebooks to HTML</p>
+</li>
+<li><p><code class="verbatim">auto</code> - Auto-detect by file extension (default behavior)</p>
+</li>
 <li><p><code class="verbatim">copy</code> - Copy files as-is (for static assets)</p>
 </li>
 </ul>
+
+</div>
+<div id="org-supported-file-types" class="org-section org-level-2">
+<h2>Supported File Types</h2>
+<p>The publishing system supports multiple file types:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Extension</th><th>Description</th><th>Conversion</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">.org</code></td><td>Org-mode documents</td><td>Full org parsing with code blocks</td></tr>
+<tr><td><code class="verbatim">.md</code></td><td>Markdown files</td><td>Basic Markdown to HTML conversion</td></tr>
+<tr><td><code class="verbatim">.ipynb</code></td><td>Jupyter notebooks</td><td>Notebook cells to HTML with syntax</td></tr>
+</tbody>
+</table>
+
+<p>When using <code class="verbatim">auto</code> or <code class="verbatim">org-html-publish-to-html</code>, files are processed based on their extension.</p>
 
 </div>
 <div id="org-sitemap-options" class="org-section org-level-2">
@@ -360,6 +418,223 @@ Welcome to my project documentation!
 </div>
 
 <p>When you publish &quot;full-site&quot;, all component projects are published in order.</p>
+
+</div>
+</div>
+<div id="org-explicit-table-of-contents-toc-yml" class="org-section org-level-1">
+<h1>⚠️ Explicit Table of Contents (<code class="verbatim">_toc.yml</code>)</h1>
+<p>By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a <code class="verbatim">_toc.yml</code> file.</p>
+
+<div id="org-overview" class="org-section org-level-2">
+<h2>Overview</h2>
+<p>When a <code class="verbatim">_toc.yml</code> file exists in your source directory, the publishing system:</p>
+
+<ol>
+<li><p>Publishes files in the order specified (not alphabetically)</p>
+</li>
+<li><p>Generates prev/next navigation links on each page</p>
+</li>
+<li><p>Creates an index page reflecting the TOC structure</p>
+</li>
+<li><p>Only includes files listed in the TOC (plus unlisted if configured)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-basic-toc-yml-format" class="org-section org-level-2">
+<h2>Basic <code class="verbatim">_toc.yml</code> Format</h2>
+<p>Create a <code class="verbatim">_toc.yml</code> file in your source directory (e.g., <code class="verbatim">./docs/_toc.yml</code>):</p>
+
+<div class="org-src-container">
+<pre class="src src-yaml"><code class="language-yaml"># Simple flat structure
+format: scimax
+root: index
+
+chapters:
+  - file: getting-started
+  - file: installation
+  - file: configuration
+  - file: advanced-usage</code></pre>
+</div>
+
+</div>
+<div id="org-with-sections-nested-chapters" class="org-section org-level-2">
+<h2>With Sections (Nested Chapters)</h2>
+<div class="org-src-container">
+<pre class="src src-yaml"><code class="language-yaml">format: scimax
+root: index
+
+chapters:
+  - file: getting-started
+    sections:
+      - file: getting-started/installation
+      - file: getting-started/first-steps
+  - file: user-guide
+    sections:
+      - file: user-guide/basics
+      - file: user-guide/advanced
+  - file: reference</code></pre>
+</div>
+
+</div>
+<div id="org-with-parts-book-format" class="org-section org-level-2">
+<h2>With Parts (Book Format)</h2>
+<p>For larger documentation with multiple parts/volumes:</p>
+
+<div class="org-src-container">
+<pre class="src src-yaml"><code class="language-yaml">format: jb-book
+root: intro
+
+parts:
+  - caption: Getting Started
+    chapters:
+      - file: installation
+      - file: quickstart
+      - file: tutorials
+
+  - caption: User Guide
+    chapters:
+      - file: basics
+        sections:
+          - file: basics/syntax
+          - file: basics/formatting
+      - file: advanced
+
+  - caption: Reference
+    chapters:
+      - file: api-reference
+      - file: changelog</code></pre>
+</div>
+
+</div>
+<div id="org-toc-options" class="org-section org-level-2">
+<h2>TOC Options</h2>
+<table class="org-table">
+<thead>
+<tr><th>Field</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">format</code></td><td><code class="verbatim">&quot;scimax&quot;</code>, <code class="verbatim">&quot;jb-book&quot;</code>, or <code class="verbatim">&quot;jb-article&quot;</code></td></tr>
+<tr><td><code class="verbatim">root</code></td><td>Landing page file (without extension)</td></tr>
+<tr><td><code class="verbatim">chapters</code></td><td>List of chapter entries</td></tr>
+<tr><td><code class="verbatim">parts</code></td><td>List of parts (with caption and chapters)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-entry-options" class="org-section org-level-2">
+<h2>Entry Options</h2>
+<table class="org-table">
+<thead>
+<tr><th>Field</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">file</code></td><td>File path without extension (relative to baseDir)</td></tr>
+<tr><td><code class="verbatim">title</code></td><td>Override display title (optional)</td></tr>
+<tr><td><code class="verbatim">sections</code></td><td>Nested child entries (optional)</td></tr>
+<tr><td><code class="verbatim">url</code></td><td>External URL link (optional)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-custom-titles" class="org-section org-level-2">
+<h2>Custom Titles</h2>
+<p>You can override the title from the file&#39;s <code class="verbatim">#+TITLE</code>:</p>
+
+<div class="org-src-container">
+<pre class="src src-yaml"><code class="language-yaml">chapters:
+  - file: api
+    title: API Reference (Complete)
+  - file: changelog
+    title: Version History</code></pre>
+</div>
+
+</div>
+<div id="org-external-links" class="org-section org-level-2">
+<h2>External Links</h2>
+<p>Include external URLs in your TOC:</p>
+
+<div class="org-src-container">
+<pre class="src src-yaml"><code class="language-yaml">chapters:
+  - file: documentation
+  - url: https://github.com/user/repo
+    title: Source Code
+  - url: https://github.com/user/repo/issues
+    title: Report Issues</code></pre>
+</div>
+
+</div>
+<div id="org-navigation-links" class="org-section org-level-2">
+<h2>Navigation Links</h2>
+<p>When using <code class="verbatim">_toc.yml</code>, each published page automatically gets:</p>
+
+<div class="org-src-container">
+<pre class="src src-html"><code class="language-html">&lt;nav class=&quot;page-navigation&quot;&gt;
+  &lt;a href=&quot;previous.html&quot; class=&quot;nav-prev&quot;&gt;← Previous&lt;/a&gt;
+  &lt;a href=&quot;next.html&quot; class=&quot;nav-next&quot;&gt;Next →&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
+</div>
+
+<p>You can style these with CSS:</p>
+
+<div class="org-src-container">
+<pre class="src src-css"><code class="language-css">.page-navigation {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid #eee;
+  margin-top: 2rem;
+}
+.nav-prev, .nav-next {
+  color: #0066cc;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-combining-with-configuration" class="org-section org-level-2">
+<h2>Combining with Configuration</h2>
+<p>Your <code class="verbatim">.org-publish.json</code> works the same way - the <code class="verbatim">_toc.yml</code> just controls ordering:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;projects&quot;: {
+    &quot;docs&quot;: {
+      &quot;baseDirectory&quot;: &quot;./docs&quot;,
+      &quot;publishingDirectory&quot;: &quot;./public&quot;,
+      &quot;autoSitemap&quot;: true,
+      &quot;sitemapFilename&quot;: &quot;index.org&quot;,
+      &quot;sitemapTitle&quot;: &quot;Documentation&quot;
+    }
+  }
+}</code></pre>
+</div>
+
+<p>With <code class="verbatim">./docs/_toc.yml</code>:</p>
+
+<div class="org-src-container">
+<pre class="src src-yaml"><code class="language-yaml">format: scimax
+root: intro
+chapters:
+  - file: getting-started
+  - file: user-guide
+  - file: reference</code></pre>
+</div>
+
+</div>
+<div id="org-file-extension-resolution" class="org-section org-level-2">
+<h2>File Extension Resolution</h2>
+<p>The TOC references files without extensions. The system automatically finds files with these extensions (in order):</p>
+
+<ol>
+<li><p><code class="verbatim">.org</code></p>
+</li>
+<li><p><code class="verbatim">.md</code></p>
+</li>
+<li><p><code class="verbatim">.ipynb</code></p>
+</li>
+</ol>
+
+<p>So <code class="verbatim">file: getting-started</code> will match <code class="verbatim">getting-started.org</code>, <code class="verbatim">getting-started.md</code>, or <code class="verbatim">getting-started.ipynb</code>.</p>
 
 </div>
 </div>
