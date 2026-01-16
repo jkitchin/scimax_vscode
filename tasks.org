@@ -1,34 +1,58 @@
 #+TITLE: Scimax Tasks
-
-* TODO scimax-org-return
-
-I thought I implemented this, but it is not working right.
-
-When the cursor is at the end of a heading line, hitting return should insert a new heading below.
-
-
-* TODO org-publishing? 
-
-maybe this is what we use for GH pages to publish the docs?
-
-see https://orgmode.org/manual/Publishing.html 
+#+AUTHOR: John Kitchin
 
 * TODO test exports
 ** DONE do we need to save the file before exporting?
 CLOSED: [2026-01-15 Thu 20:34]
 
-** TODO pdf (with citations)
-** TODO html - looks pretty bad
+** DONE pdf (with citations)
+CLOSED: [2026-01-16 Fri 13:56]
 
-it is mostly from TODO states
+right now it exports, but citations are not working.
 
-** TODO latex
-** TODO lots of export features are probably missing like visible, body, etc
+** DONE latex
+CLOSED: [2026-01-16 Fri 14:19]
+** DONE latex sync does not work
+CLOSED: [2026-01-16 Fri 14:11]ho
+** TODO html 
 
+We don't have good citation support in html yet.
+
+** DONE lots of export features are probably missing like visible, body, etc
+CLOSED: [2026-01-16 Fri 16:13]
+
+
+
+* DONE scimax-org-return
+CLOSED: [2026-01-16 Fri 11:20]
+
+I thought I implemented this, but it is not working right.
+
+When the cursor is at the end of a heading line, hitting return should insert a new heading below.
+ 
+1. test
+2. tree
+
+- one
+- two
+
+
+- [ ] test
+- [ ] tree
+
+** test
+** free
+  
+  
+* DONE org-publishing? 
+CLOSED: [2026-01-16 Fri 11:20]
+
+maybe this is what we use for GH pages to publish the docs?
+
+see https://orgmode.org/manual/Publishing.html 
 
 * DONE test code block functionality
-CLOSED: [2026-01-15 Thu 20:30]
-
+CLOSED: [2026-01-16 Fri 12:53]
 
 - [x] the clear button is a little too aggressive. it clears empty lines after results sometimes. I think it should only clear the results.
 - [x] test jupyter python blocks, they are not working.
@@ -147,7 +171,7 @@ when i use shift-right here to toggle the todo state, this should update the tim
 * DONE task cookies don't update correctly
 * TODO bibtex settings
 
-why doesn't this work?
+wl doesn't this work?
 
 a citation about schnet cite:schuett-2018-schnet.
 
