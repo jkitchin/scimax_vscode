@@ -1,0 +1,2801 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Scimax VS Code Configuration Guide</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-introduction" class="org-section org-level-1">
+<h1>Introduction</h1>
+<p>Scimax VS Code provides extensive configuration options to customize your scientific computing environment. This guide covers all available settings and provides examples for common use cases.</p>
+
+<div id="org-accessing-settings" class="org-section org-level-2">
+<h2>Accessing Settings</h2>
+<p>There are multiple ways to access and modify Scimax settings:</p>
+
+<ol>
+<li><p><strong>Settings UI</strong>: Press <kbd>C-,</kbd> (or <kbd>s-,</kbd> on macOS) to open the VS Code settings interface. Search for &quot;scimax&quot; to see all Scimax-related settings.</p>
+</li>
+<li><p><strong>settings.json</strong>: Edit your settings file directly for more control:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-settings-file-locations" class="org-section org-level-2">
+<h2>Settings File Locations</h2>
+<p>VS Code uses two types of settings files:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Scope</th><th>Location</th></tr>
+</thead>
+<tbody>
+<tr><td>User</td><td>All workspaces</td><td>Linux: <code class="verbatim">~/.config/Code/User/settings.json</code></td></tr>
+<tr><td></td><td></td><td>macOS: <code class="verbatim">~/Library/Application Support/Code/User/settings.json</code></td></tr>
+<tr><td></td><td></td><td>Windows: <code class="verbatim">%APPDATA%\Code\User\settings.json</code></td></tr>
+<tr><td>Workspace</td><td>Current workspace only</td><td><code class="verbatim">.vscode/settings.json</code> in workspace root</td></tr>
+</tbody>
+</table>
+
+<p>Workspace settings override user settings for that specific workspace.</p>
+
+</div>
+<div id="org-settings-format" class="org-section org-level-2">
+<h2>Settings Format</h2>
+<p>All Scimax settings use JSON format in <kbd>settings.json</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.directory&quot;: &quot;~/my-journal&quot;,
+  &quot;scimax.journal.format&quot;: &quot;org&quot;,
+  &quot;scimax.db.autoIndex&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-journal-settings" class="org-section org-level-1">
+<h1>Journal Settings</h1>
+<p>Configure the journal system for daily note-taking and logging.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.journal.directory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Directory for journal files</td></tr>
+<tr><td><code class="verbatim">scimax.journal.format</code></td><td>string</td><td><code class="verbatim">&quot;org&quot;</code></td><td>File format (org or markdown)</td></tr>
+<tr><td><code class="verbatim">scimax.journal.template</code></td><td>string</td><td><code class="verbatim">&quot;default&quot;</code></td><td>Template name for new entries</td></tr>
+<tr><td><code class="verbatim">scimax.journal.dateFormat</code></td><td>string</td><td><code class="verbatim">&quot;YYYY-MM-DD&quot;</code></td><td>Date format for filenames</td></tr>
+<tr><td><code class="verbatim">scimax.journal.autoTimestamp</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-add timestamps to log entries</td></tr>
+<tr><td><code class="verbatim">scimax.journal.weekStartsOn</code></td><td>string</td><td><code class="verbatim">&quot;monday&quot;</code></td><td>First day of week (monday or sunday)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-journal-directory" class="org-section org-level-3">
+<h3>scimax.journal.directory</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd> (uses <kbd>~/scimax-journal</kbd>)</p>
+</li>
+<li><p><strong>Description</strong>: Directory where journal files are stored</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.directory&quot;: &quot;~/Documents/journal&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-journal-format" class="org-section org-level-3">
+<h3>scimax.journal.format</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;org&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;org&quot;</kbd>, <kbd>&quot;markdown&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: File format for journal entries</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.format&quot;: &quot;markdown&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-journal-template" class="org-section org-level-3">
+<h3>scimax.journal.template</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;default&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Template name for new journal entries. Create custom templates in your journal directory.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.template&quot;: &quot;daily-standup&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-journal-dateformat" class="org-section org-level-3">
+<h3>scimax.journal.dateFormat</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;YYYY-MM-DD&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Date format for journal file names using date-fns tokens</p>
+</li>
+</ul>
+
+<ul>
+<li><p>`YYYY-MM-DD&#39; → 2026-01-14</p>
+</li>
+<li><p><kbd>YYYY/MM/DD</kbd> → 2026/01/14</p>
+</li>
+<li><p>`YYYYMMDD&#39; → 20260114</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.dateFormat&quot;: &quot;YYYY/MM/DD&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-journal-autotimestamp" class="org-section org-level-3">
+<h3>scimax.journal.autoTimestamp</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically insert timestamps when creating log entries</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.autoTimestamp&quot;: false
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-journal-weekstartson" class="org-section org-level-3">
+<h3>scimax.journal.weekStartsOn</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;monday&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;monday&quot;</kbd>, <kbd>&quot;sunday&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: First day of the week in calendar view</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.weekStartsOn&quot;: &quot;sunday&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-database-search-settings" class="org-section org-level-1">
+<h1>Database &amp; Search Settings</h1>
+<p>Configure the full-text search database and semantic search capabilities.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.db.directories</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Additional directories to index</td></tr>
+<tr><td><code class="verbatim">scimax.db.excludePatterns</code></td><td>array</td><td>See below</td><td>Glob patterns to exclude</td></tr>
+<tr><td><code class="verbatim">scimax.db.ignorePatterns</code></td><td>array</td><td>See below</td><td>Files to ignore during indexing</td></tr>
+<tr><td><code class="verbatim">scimax.db.autoIndex</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Auto-index workspace on activation</td></tr>
+<tr><td><code class="verbatim">scimax.db.embeddingProvider</code></td><td>string</td><td><code class="verbatim">&quot;none&quot;</code></td><td>Embedding provider for semantic search</td></tr>
+<tr><td><code class="verbatim">scimax.db.localModel</code></td><td>string</td><td><code class="verbatim">&quot;Xenova/all-MiniLM-L6-v2&quot;</code></td><td>Local embedding model</td></tr>
+<tr><td><code class="verbatim">scimax.db.ollamaUrl</code></td><td>string</td><td><code class="verbatim">&quot;http://localhost:11434&quot;</code></td><td>Ollama API URL</td></tr>
+<tr><td><code class="verbatim">scimax.db.ollamaModel</code></td><td>string</td><td><code class="verbatim">&quot;nomic-embed-text&quot;</code></td><td>Ollama embedding model</td></tr>
+<tr><td><code class="verbatim">scimax.db.openaiApiKey</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>OpenAI API key</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-db-directories" class="org-section org-level-3">
+<h3>scimax.db.directories</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[ ]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Additional directories to index for search beyond the current workspace</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.directories&quot;: [
+    &quot;~/Documents/notes&quot;,
+    &quot;~/research&quot;,
+    &quot;~/teaching/courses&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-excludepatterns" class="org-section org-level-3">
+<h3>scimax.db.excludePatterns</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[&quot;**/node_modules/**&quot;, &quot;**/.git/**&quot;, &quot;**/dist/**&quot;]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Glob patterns to exclude from indexing</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.excludePatterns&quot;: [
+    &quot;**/node_modules/**&quot;,
+    &quot;**/.git/**&quot;,
+    &quot;**/dist/**&quot;,
+    &quot;**/build/**&quot;,
+    &quot;**/*.min.js&quot;,
+    &quot;**/archive/**&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-ignorepatterns" class="org-section org-level-3">
+<h3>scimax.db.ignorePatterns</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[&quot;**/node_modules/**&quot;, &quot;**/.git/**&quot;, &quot;**/dist/**&quot;, &quot;**/build/**&quot;]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Patterns for files to ignore during indexing</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.ignorePatterns&quot;: [
+    &quot;**/node_modules/**&quot;,
+    &quot;**/.git/**&quot;,
+    &quot;**/dist/**&quot;,
+    &quot;**/build/**&quot;,
+    &quot;**/.cache/**&quot;,
+    &quot;**/temp/**&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-autoindex" class="org-section org-level-3">
+<h3>scimax.db.autoIndex</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>false</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically index workspace files on activation. <strong>Warning</strong>: Disable for large workspaces to prevent memory issues.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.autoIndex&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-embeddingprovider" class="org-section org-level-3">
+<h3>scimax.db.embeddingProvider</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;none&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;none&quot;</kbd>, <kbd>&quot;local&quot;</kbd>, <kbd>&quot;ollama&quot;</kbd>, <kbd>&quot;openai&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Embedding provider for semantic/AI-powered search</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;local&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-localmodel" class="org-section org-level-3">
+<h3>scimax.db.localModel</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;Xenova/all-MiniLM-L6-v2&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>:</p>
+</li>
+<li><p><strong>Description</strong>: Local embedding model for semantic search. Downloads automatically on first use.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;local&quot;,
+  &quot;scimax.db.localModel&quot;: &quot;Xenova/bge-small-en-v1.5&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-ollamaurl" class="org-section org-level-3">
+<h3>scimax.db.ollamaUrl</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;http://localhost:11434&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Ollama API URL for embeddings</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;ollama&quot;,
+  &quot;scimax.db.ollamaUrl&quot;: &quot;http://localhost:11434&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-ollamamodel" class="org-section org-level-3">
+<h3>scimax.db.ollamaModel</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;nomic-embed-text&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Ollama model name for embeddings. Must be installed in Ollama.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;ollama&quot;,
+  &quot;scimax.db.ollamaModel&quot;: &quot;nomic-embed-text&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-openaiapikey" class="org-section org-level-3">
+<h3>scimax.db.openaiApiKey</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: OpenAI API key for embeddings. Required when using OpenAI provider.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;openai&quot;,
+  &quot;scimax.db.openaiApiKey&quot;: &quot;sk-...&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-code-execution-settings" class="org-section org-level-1">
+<h1>Code Execution Settings</h1>
+<p>Configure Python and Jupyter paths for source block execution.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.literate.pythonPath</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Path to Python executable</td></tr>
+<tr><td><code class="verbatim">scimax.literate.jupyterPath</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Path to Jupyter executable</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-literate-pythonpath" class="org-section org-level-3">
+<h3>scimax.literate.pythonPath</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd> (uses system Python)</p>
+</li>
+<li><p><strong>Description</strong>: Path to Python executable for code block execution</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.literate.pythonPath&quot;: &quot;/usr/local/bin/python3&quot;
+}</code></pre>
+</div>
+
+<p>Or with virtual environment:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.literate.pythonPath&quot;: &quot;~/projects/myproject/.venv/bin/python&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-literate-jupyterpath" class="org-section org-level-3">
+<h3>scimax.literate.jupyterPath</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd> (uses system Jupyter)</p>
+</li>
+<li><p><strong>Description</strong>: Path to Jupyter executable</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.literate.jupyterPath&quot;: &quot;~/anaconda3/bin/jupyter&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-reference-citation-settings" class="org-section org-level-1">
+<h1>Reference/Citation Settings</h1>
+<p>Configure bibliography management and citation styles.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.ref.bibliographyFiles</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Paths to BibTeX files</td></tr>
+<tr><td><code class="verbatim">scimax.ref.pdfDirectory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Directory with PDF files</td></tr>
+<tr><td><code class="verbatim">scimax.ref.notesDirectory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Directory for reference notes</td></tr>
+<tr><td><code class="verbatim">scimax.ref.defaultCiteStyle</code></td><td>string</td><td><code class="verbatim">&quot;cite&quot;</code></td><td>Default citation style</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-ref-bibliographyfiles" class="org-section org-level-3">
+<h3>scimax.ref.bibliographyFiles</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[ ]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Paths to BibTeX bibliography files</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.ref.bibliographyFiles&quot;: [
+    &quot;~/Documents/bibliography/main.bib&quot;,
+    &quot;~/research/papers.bib&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-ref-pdfdirectory" class="org-section org-level-3">
+<h3>scimax.ref.pdfDirectory</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Directory containing PDF files for references</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.ref.pdfDirectory&quot;: &quot;~/Documents/papers&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-ref-notesdirectory" class="org-section org-level-3">
+<h3>scimax.ref.notesDirectory</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Directory for reference notes and annotations</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.ref.notesDirectory&quot;: &quot;~/Documents/notes/references&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-ref-defaultcitestyle" class="org-section org-level-3">
+<h3>scimax.ref.defaultCiteStyle</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;cite&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;cite&quot;</kbd>, <kbd>&quot;citet&quot;</kbd>, <kbd>&quot;citep&quot;</kbd>, <kbd>&quot;citeauthor&quot;</kbd>, <kbd>&quot;citeyear&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Default citation style for insertions</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.ref.defaultCiteStyle&quot;: &quot;citep&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-export-settings" class="org-section org-level-1">
+<h1>Export Settings</h1>
+<p>Configure LaTeX export options.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.export.latex.customHeader</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Custom LaTeX preamble</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-export-latex-customheader" class="org-section org-level-3">
+<h3>scimax.export.latex.customHeader</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Custom LaTeX header (preamble) that replaces the auto-generated one. Should include <kbd>\documentclass</kbd> through all <kbd>\usepackage</kbd> commands.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.latex.customHeader&quot;: &quot;\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n\\usepackage[margin=1in]{geometry}&quot;
+}</code></pre>
+</div>
+
+<p>For better readability in JSON, use a single line or array of lines:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.latex.customHeader&quot;: &quot;\\documentclass[11pt]{article}\\n\\usepackage[utf8]{inputenc}\\n\\usepackage{graphicx}&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-latex-preview-settings" class="org-section org-level-1">
+<h1>LaTeX Preview Settings</h1>
+<p>Configure inline LaTeX equation previews.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.latexPreview.enabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Enable LaTeX preview on hover</td></tr>
+<tr><td><code class="verbatim">scimax.latexPreview.cacheEnabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Cache rendered equations</td></tr>
+<tr><td><code class="verbatim">scimax.latexPreview.darkModeAware</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Adjust rendering for dark themes</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-latexpreview-enabled" class="org-section org-level-3">
+<h3>scimax.latexPreview.enabled</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Enable LaTeX equation preview on hover</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexPreview.enabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-latexpreview-cacheenabled" class="org-section org-level-3">
+<h3>scimax.latexPreview.cacheEnabled</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Cache rendered equations for faster hover responses</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexPreview.cacheEnabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-latexpreview-darkmodeaware" class="org-section org-level-3">
+<h3>scimax.latexPreview.darkModeAware</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically adjust equation rendering for dark/light themes</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexPreview.darkModeAware&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-latex-live-preview-settings" class="org-section org-level-1">
+<h1>LaTeX Live Preview Settings</h1>
+<p>Configure automatic PDF building and live preview.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.latexLivePreview.buildOnSave</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-rebuild PDF on save</td></tr>
+<tr><td><code class="verbatim">scimax.latexLivePreview.buildOnIdle</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Auto-rebuild after idle period</td></tr>
+<tr><td><code class="verbatim">scimax.latexLivePreview.idleDelay</code></td><td>number</td><td><code class="verbatim">2000</code></td><td>Idle delay in milliseconds</td></tr>
+<tr><td><code class="verbatim">scimax.latexLivePreview.compiler</code></td><td>string</td><td><code class="verbatim">&quot;pdflatex&quot;</code></td><td>LaTeX compiler to use</td></tr>
+<tr><td><code class="verbatim">scimax.latexLivePreview.useLatexmk</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Use latexmk for smart builds</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-latexlivepreview-buildonsave" class="org-section org-level-3">
+<h3>scimax.latexLivePreview.buildOnSave</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically rebuild PDF when the org file is saved</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexLivePreview.buildOnSave&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-latexlivepreview-buildonidle" class="org-section org-level-3">
+<h3>scimax.latexLivePreview.buildOnIdle</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>false</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically rebuild PDF after idle period (no typing)</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexLivePreview.buildOnIdle&quot;: true,
+  &quot;scimax.latexLivePreview.idleDelay&quot;: 3000
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-latexlivepreview-idledelay" class="org-section org-level-3">
+<h3>scimax.latexLivePreview.idleDelay</h3>
+<ul>
+<li><p><strong>Type</strong>: number</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>2000</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Delay in milliseconds before idle build triggers</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexLivePreview.buildOnIdle&quot;: true,
+  &quot;scimax.latexLivePreview.idleDelay&quot;: 5000
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-latexlivepreview-compiler" class="org-section org-level-3">
+<h3>scimax.latexLivePreview.compiler</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;pdflatex&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;pdflatex&quot;</kbd>, <kbd>&quot;xelatex&quot;</kbd>, <kbd>&quot;lualatex&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: LaTeX compiler to use</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexLivePreview.compiler&quot;: &quot;xelatex&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-latexlivepreview-uselatexmk" class="org-section org-level-3">
+<h3>scimax.latexLivePreview.useLatexmk</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Use latexmk for smart incremental builds (recommended). Automatically handles multiple passes for references, bibliography, etc.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexLivePreview.useLatexmk&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-notebook-settings" class="org-section org-level-1">
+<h1>Notebook Settings</h1>
+<p>Configure the project-based notebook system.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.notebook.directory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Default parent directory</td></tr>
+<tr><td><code class="verbatim">scimax.notebook.defaultTemplate</code></td><td>string</td><td><code class="verbatim">&quot;research&quot;</code></td><td>Default template</td></tr>
+<tr><td><code class="verbatim">scimax.notebook.autoDetect</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-detect projects</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-notebook-directory" class="org-section org-level-3">
+<h3>scimax.notebook.directory</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Default parent directory for new notebooks</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.notebook.directory&quot;: &quot;~/projects&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-notebook-defaulttemplate" class="org-section org-level-3">
+<h3>scimax.notebook.defaultTemplate</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;research&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;empty&quot;</kbd>, <kbd>&quot;research&quot;</kbd>, <kbd>&quot;software&quot;</kbd>, <kbd>&quot;notes&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Default template for new notebooks</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.notebook.defaultTemplate&quot;: &quot;software&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-notebook-autodetect" class="org-section org-level-3">
+<h3>scimax.notebook.autoDetect</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically detect and track projects in workspace</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.notebook.autoDetect&quot;: false
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-hydra-menu-settings" class="org-section org-level-1">
+<h1>Hydra Menu Settings</h1>
+<p>Configure the Hydra menu system for quick command access.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.hydra.showKeyHints</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Show keyboard shortcuts inline</td></tr>
+<tr><td><code class="verbatim">scimax.hydra.singleKeySelection</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Single keypress selection</td></tr>
+<tr><td><code class="verbatim">scimax.hydra.dimNonMatching</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Dim non-matching items</td></tr>
+<tr><td><code class="verbatim">scimax.hydra.sortByKey</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Sort items by keyboard shortcut</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-hydra-showkeyhints" class="org-section org-level-3">
+<h3>scimax.hydra.showKeyHints</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Show keyboard shortcuts inline with menu items</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.hydra.showKeyHints&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-hydra-singlekeyselection" class="org-section org-level-3">
+<h3>scimax.hydra.singleKeySelection</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Select menu items with a single keypress (no Enter needed)</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.hydra.singleKeySelection&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-hydra-dimnonmatching" class="org-section org-level-3">
+<h3>scimax.hydra.dimNonMatching</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Dim menu items that don&#39;t match the current filter</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.hydra.dimNonMatching&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-hydra-sortbykey" class="org-section org-level-3">
+<h3>scimax.hydra.sortByKey</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>false</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Sort menu items by their keyboard shortcut instead of logical grouping</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.hydra.sortByKey&quot;: false
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-speed-commands-settings" class="org-section org-level-1">
+<h1>Speed Commands Settings</h1>
+<p>Configure org-mode style speed commands.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.speedCommands.enabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Enable speed commands at heading start</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-speedcommands-enabled" class="org-section org-level-3">
+<h3>scimax.speedCommands.enabled</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Enable org-mode speed commands (single-key shortcuts at beginning of headings)</p>
+</li>
+</ul>
+
+<p>When enabled, you can use single-key shortcuts (like `n&#39;, `p&#39;, `u&#39;) when the cursor is at the beginning of a heading line.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.speedCommands.enabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-agenda-settings" class="org-section org-level-1">
+<h1>Agenda Settings</h1>
+<p>Configure the agenda view and TODO tracking.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.agenda.files</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Directories/files for agenda</td></tr>
+<tr><td><code class="verbatim">scimax.agenda.excludePatterns</code></td><td>array</td><td>See below</td><td>Patterns to exclude</td></tr>
+<tr><td><code class="verbatim">scimax.agenda.defaultSpan</code></td><td>number</td><td><code class="verbatim">7</code></td><td>Days to show in agenda</td></tr>
+<tr><td><code class="verbatim">scimax.agenda.showDone</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Show completed items</td></tr>
+<tr><td><code class="verbatim">scimax.agenda.showHabits</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Show habit-tagged items</td></tr>
+<tr><td><code class="verbatim">scimax.agenda.todoStates</code></td><td>array</td><td><code class="verbatim">[&quot;TODO&quot;, &quot;NEXT&quot;, &quot;WAITING&quot;]</code></td><td>Active TODO states</td></tr>
+<tr><td><code class="verbatim">scimax.agenda.doneStates</code></td><td>array</td><td><code class="verbatim">[&quot;DONE&quot;, &quot;CANCELLED&quot;]</code></td><td>Completed states</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-agenda-files" class="org-section org-level-3">
+<h3>scimax.agenda.files</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[ ]</kbd> (scans all org files in workspace)</p>
+</li>
+<li><p><strong>Description</strong>: Directories or files to include in the agenda</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.files&quot;: [
+    &quot;~/Documents/org&quot;,
+    &quot;~/work/projects&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-agenda-excludepatterns" class="org-section org-level-3">
+<h3>scimax.agenda.excludePatterns</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[&quot;**/node_modules/**&quot;, &quot;**/.git/**&quot;, &quot;**/archive/**&quot;]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Glob patterns to exclude from agenda scanning</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.excludePatterns&quot;: [
+    &quot;**/node_modules/**&quot;,
+    &quot;**/.git/**&quot;,
+    &quot;**/archive/**&quot;,
+    &quot;**/old/**&quot;,
+    &quot;**/trash/**&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-agenda-defaultspan" class="org-section org-level-3">
+<h3>scimax.agenda.defaultSpan</h3>
+<ul>
+<li><p><strong>Type</strong>: number</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>7</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Default number of days to show in agenda view</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.defaultSpan&quot;: 14
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-agenda-showdone" class="org-section org-level-3">
+<h3>scimax.agenda.showDone</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>false</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Show completed (DONE) items in agenda view</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.showDone&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-agenda-showhabits" class="org-section org-level-3">
+<h3>scimax.agenda.showHabits</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Show items tagged with <kbd>:HABIT:</kbd></p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.showHabits&quot;: false
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-agenda-todostates" class="org-section org-level-3">
+<h3>scimax.agenda.todoStates</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[&quot;TODO&quot;, &quot;NEXT&quot;, &quot;WAITING&quot;]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Active TODO states to show in TODO list</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.todoStates&quot;: [
+    &quot;TODO&quot;,
+    &quot;NEXT&quot;,
+    &quot;IN-PROGRESS&quot;,
+    &quot;WAITING&quot;,
+    &quot;SOMEDAY&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-agenda-donestates" class="org-section org-level-3">
+<h3>scimax.agenda.doneStates</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[&quot;DONE&quot;, &quot;CANCELLED&quot;]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Completed TODO states</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.doneStates&quot;: [
+    &quot;DONE&quot;,
+    &quot;CANCELLED&quot;,
+    &quot;DEFERRED&quot;,
+    &quot;ARCHIVED&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-image-overlay-settings" class="org-section org-level-1">
+<h1>Image Overlay Settings</h1>
+<p>Configure inline image thumbnails in org-mode files.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.imageOverlays.enabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Enable inline image thumbnails</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.maxWidth</code></td><td>number</td><td><code class="verbatim">96</code></td><td>Maximum thumbnail width in pixels</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.maxHeight</code></td><td>number</td><td><code class="verbatim">96</code></td><td>Maximum thumbnail height in pixels</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.renderMode</code></td><td>string</td><td><code class="verbatim">&quot;gutter&quot;</code></td><td>Where to display thumbnails</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.onlyWhenCursorNotInLink</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Hide when cursor in link</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.excludePatterns</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Regex patterns to exclude</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.maxOverlaysPerDocument</code></td><td>number</td><td><code class="verbatim">200</code></td><td>Max overlays per document</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.showDimensions</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Show image dimensions</td></tr>
+<tr><td><code class="verbatim">scimax.imageOverlays.cacheEnabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Cache generated thumbnails</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-imageoverlays-enabled" class="org-section org-level-3">
+<h3>scimax.imageOverlays.enabled</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Enable inline image thumbnails in org-mode files</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.enabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-maxwidth" class="org-section org-level-3">
+<h3>scimax.imageOverlays.maxWidth</h3>
+<ul>
+<li><p><strong>Type</strong>: number</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>96</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Maximum width in pixels for thumbnail icons</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.maxWidth&quot;: 128
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-maxheight" class="org-section org-level-3">
+<h3>scimax.imageOverlays.maxHeight</h3>
+<ul>
+<li><p><strong>Type</strong>: number</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>96</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Maximum height in pixels for thumbnail icons</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.maxHeight&quot;: 128
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-rendermode" class="org-section org-level-3">
+<h3>scimax.imageOverlays.renderMode</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;gutter&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;gutter&quot;</kbd>, <kbd>&quot;after&quot;</kbd>, <kbd>&quot;both&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Where to display image thumbnails</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.renderMode&quot;: &quot;both&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-onlywhencursornotinlink" class="org-section org-level-3">
+<h3>scimax.imageOverlays.onlyWhenCursorNotInLink</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Hide overlay when cursor is inside the image link (prevents interference with editing)</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.onlyWhenCursorNotInLink&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-excludepatterns" class="org-section org-level-3">
+<h3>scimax.imageOverlays.excludePatterns</h3>
+<ul>
+<li><p><strong>Type</strong>: array of strings</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[ ]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Regex patterns for image paths to exclude from overlays</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.excludePatterns&quot;: [
+    &quot;.*\\.ico$&quot;,
+    &quot;.*thumbnail.*&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-maxoverlaysperdocument" class="org-section org-level-3">
+<h3>scimax.imageOverlays.maxOverlaysPerDocument</h3>
+<ul>
+<li><p><strong>Type</strong>: number</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>200</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Maximum number of image overlays to display per document (prevents performance issues)</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.maxOverlaysPerDocument&quot;: 500
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-showdimensions" class="org-section org-level-3">
+<h3>scimax.imageOverlays.showDimensions</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Show image dimensions in the after-content decoration</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.showDimensions&quot;: false
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-cacheenabled" class="org-section org-level-3">
+<h3>scimax.imageOverlays.cacheEnabled</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Cache generated thumbnails for faster loading</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.cacheEnabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-capture-settings" class="org-section org-level-1">
+<h1>Capture Settings</h1>
+<p>Configure the org-capture system for quick note-taking.</p>
+
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.capture.templates</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Capture templates</td></tr>
+<tr><td><code class="verbatim">scimax.capture.defaultFile</code></td><td>string</td><td><code class="verbatim">&quot;~/org/notes.org&quot;</code></td><td>Default capture file</td></tr>
+<tr><td><code class="verbatim">scimax.capture.datetreeFormat</code></td><td>string</td><td><code class="verbatim">&quot;day&quot;</code></td><td>Datetree granularity</td></tr>
+<tr><td><code class="verbatim">scimax.capture.autoSave</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-save after capture</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-detailed-configuration" class="org-section org-level-2">
+<h2>Detailed Configuration</h2>
+<div id="org-scimax-capture-templates" class="org-section org-level-3">
+<h3>scimax.capture.templates</h3>
+<ul>
+<li><p><strong>Type</strong>: array of objects</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>[ ]</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Capture templates for quick note-taking. Each template has:</p>
+</li>
+</ul>
+
+<ul>
+<li><p><kbd>%^{prompt}</kbd>: Prompt for input</p>
+</li>
+<li><p><kbd>%t</kbd>: Current timestamp</p>
+</li>
+<li><p><kbd>%T</kbd>: Current timestamp with time</p>
+</li>
+<li><p><kbd>%i</kbd>: Initial content (selected text)</p>
+</li>
+<li><p><kbd>%a</kbd>: Link to current location</p>
+</li>
+<li><p><kbd>%?</kbd>: Cursor position after insertion</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;t&quot;,
+      &quot;name&quot;: &quot;Task&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/org/todo.org&quot;,
+      &quot;headline&quot;: &quot;Tasks&quot;,
+      &quot;template&quot;: &quot;* TODO %^{Task}\n  SCHEDULED: %t\n  %?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;n&quot;,
+      &quot;name&quot;: &quot;Note&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/org/notes.org&quot;,
+      &quot;datetree&quot;: true,
+      &quot;template&quot;: &quot;* %^{Title}\n  %T\n\n  %?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;m&quot;,
+      &quot;name&quot;: &quot;Meeting&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/org/meetings.org&quot;,
+      &quot;template&quot;: &quot;* Meeting: %^{Topic}\n  %T\n\n  Attendees: %^{Attendees}\n\n  Notes:\n  %?&quot;
+    }
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-capture-defaultfile" class="org-section org-level-3">
+<h3>scimax.capture.defaultFile</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;~/org/notes.org&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Default file for captures when no target file is specified in template</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.defaultFile&quot;: &quot;~/Documents/inbox.org&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-capture-datetreeformat" class="org-section org-level-3">
+<h3>scimax.capture.datetreeFormat</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;day&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;day&quot;</kbd>, <kbd>&quot;week&quot;</kbd>, <kbd>&quot;month&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Granularity of datetree entries</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.datetreeFormat&quot;: &quot;week&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-capture-autosave" class="org-section org-level-3">
+<h3>scimax.capture.autoSave</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically save the file after capture</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.autoSave&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-common-configurations" class="org-section org-level-1">
+<h1>Common Configurations</h1>
+<p>This section provides complete `settings.json&#39; examples for different use cases.</p>
+
+<div id="org-academic-writing-setup" class="org-section org-level-2">
+<h2>Academic Writing Setup</h2>
+<p>Perfect for researchers, graduate students, and academic writers:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  // Journal for daily research log
+  &quot;scimax.journal.directory&quot;: &quot;~/research/journal&quot;,
+  &quot;scimax.journal.format&quot;: &quot;org&quot;,
+  &quot;scimax.journal.autoTimestamp&quot;: true,
+
+  // References and bibliography
+  &quot;scimax.ref.bibliographyFiles&quot;: [
+    &quot;~/research/bibliography/main.bib&quot;,
+    &quot;~/research/bibliography/conferences.bib&quot;
+  ],
+  &quot;scimax.ref.pdfDirectory&quot;: &quot;~/research/papers&quot;,
+  &quot;scimax.ref.notesDirectory&quot;: &quot;~/research/notes&quot;,
+  &quot;scimax.ref.defaultCiteStyle&quot;: &quot;citep&quot;,
+
+  // Database and search
+  &quot;scimax.db.directories&quot;: [
+    &quot;~/research&quot;,
+    &quot;~/teaching&quot;
+  ],
+  &quot;scimax.db.autoIndex&quot;: true,
+  &quot;scimax.db.embeddingProvider&quot;: &quot;local&quot;,
+  &quot;scimax.db.localModel&quot;: &quot;Xenova/all-MiniLM-L6-v2&quot;,
+
+  // LaTeX export and preview
+  &quot;scimax.latexPreview.enabled&quot;: true,
+  &quot;scimax.latexPreview.darkModeAware&quot;: true,
+  &quot;scimax.latexLivePreview.buildOnSave&quot;: true,
+  &quot;scimax.latexLivePreview.compiler&quot;: &quot;pdflatex&quot;,
+  &quot;scimax.latexLivePreview.useLatexmk&quot;: true,
+
+  // Agenda for deadlines and tasks
+  &quot;scimax.agenda.files&quot;: [
+    &quot;~/research/projects&quot;,
+    &quot;~/teaching&quot;
+  ],
+  &quot;scimax.agenda.defaultSpan&quot;: 14,
+  &quot;scimax.agenda.showDone&quot;: false,
+  &quot;scimax.agenda.todoStates&quot;: [&quot;TODO&quot;, &quot;NEXT&quot;, &quot;WAITING&quot;, &quot;REVIEW&quot;],
+  &quot;scimax.agenda.doneStates&quot;: [&quot;DONE&quot;, &quot;PUBLISHED&quot;],
+
+  // Capture templates
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;p&quot;,
+      &quot;name&quot;: &quot;Paper Note&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/research/notes/papers.org&quot;,
+      &quot;template&quot;: &quot;* %^{Title}\n  :PROPERTIES:\n  :CITE: %^{Citation key}\n  :END:\n\n  %?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;i&quot;,
+      &quot;name&quot;: &quot;Research Idea&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/research/ideas.org&quot;,
+      &quot;datetree&quot;: true,
+      &quot;template&quot;: &quot;* %^{Idea}\n  %T\n\n  %?&quot;
+    }
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-software-development-setup" class="org-section org-level-2">
+<h2>Software Development Setup</h2>
+<p>Optimized for software developers and programmers:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  // Journal for development log
+  &quot;scimax.journal.directory&quot;: &quot;~/devlog&quot;,
+  &quot;scimax.journal.format&quot;: &quot;markdown&quot;,
+  &quot;scimax.journal.template&quot;: &quot;daily-standup&quot;,
+
+  // Code execution
+  &quot;scimax.literate.pythonPath&quot;: &quot;~/.pyenv/shims/python&quot;,
+  &quot;scimax.literate.jupyterPath&quot;: &quot;~/.pyenv/shims/jupyter&quot;,
+
+  // Database - index project documentation
+  &quot;scimax.db.directories&quot;: [
+    &quot;~/projects&quot;,
+    &quot;~/docs&quot;
+  ],
+  &quot;scimax.db.excludePatterns&quot;: [
+    &quot;**/node_modules/**&quot;,
+    &quot;**/.git/**&quot;,
+    &quot;**/dist/**&quot;,
+    &quot;**/build/**&quot;,
+    &quot;**/.venv/**&quot;,
+    &quot;**/target/**&quot;
+  ],
+  &quot;scimax.db.autoIndex&quot;: false,
+  &quot;scimax.db.embeddingProvider&quot;: &quot;ollama&quot;,
+  &quot;scimax.db.ollamaUrl&quot;: &quot;http://localhost:11434&quot;,
+  &quot;scimax.db.ollamaModel&quot;: &quot;nomic-embed-text&quot;,
+
+  // Notebooks for project organization
+  &quot;scimax.notebook.directory&quot;: &quot;~/projects&quot;,
+  &quot;scimax.notebook.defaultTemplate&quot;: &quot;software&quot;,
+  &quot;scimax.notebook.autoDetect&quot;: true,
+
+  // Agenda for issue tracking
+  &quot;scimax.agenda.files&quot;: [
+    &quot;~/projects&quot;
+  ],
+  &quot;scimax.agenda.defaultSpan&quot;: 7,
+  &quot;scimax.agenda.todoStates&quot;: [&quot;TODO&quot;, &quot;IN-PROGRESS&quot;, &quot;BLOCKED&quot;, &quot;REVIEW&quot;],
+  &quot;scimax.agenda.doneStates&quot;: [&quot;DONE&quot;, &quot;WONTFIX&quot;, &quot;DUPLICATE&quot;],
+
+  // Capture for quick notes and TODOs
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;t&quot;,
+      &quot;name&quot;: &quot;TODO&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/projects/todo.org&quot;,
+      &quot;headline&quot;: &quot;Inbox&quot;,
+      &quot;template&quot;: &quot;* TODO %^{Task}\n  SCHEDULED: %t\n  %a\n  %?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;b&quot;,
+      &quot;name&quot;: &quot;Bug&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/projects/bugs.org&quot;,
+      &quot;template&quot;: &quot;* TODO [BUG] %^{Description}\n  %T\n\n  Steps to reproduce:\n  %?\n\n  Expected:\n  Actual:&quot;
+    }
+  ],
+
+  // Disable image overlays for cleaner code view
+  &quot;scimax.imageOverlays.enabled&quot;: false
+}</code></pre>
+</div>
+
+</div>
+<div id="org-personal-notes-pkm-setup" class="org-section org-level-2">
+<h2>Personal Notes &amp; PKM Setup</h2>
+<p>For personal knowledge management and note-taking:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  // Journal
+  &quot;scimax.journal.directory&quot;: &quot;~/notes/journal&quot;,
+  &quot;scimax.journal.format&quot;: &quot;org&quot;,
+  &quot;scimax.journal.weekStartsOn&quot;: &quot;monday&quot;,
+  &quot;scimax.journal.autoTimestamp&quot;: true,
+
+  // Database with semantic search
+  &quot;scimax.db.directories&quot;: [
+    &quot;~/notes&quot;,
+    &quot;~/books&quot;,
+    &quot;~/articles&quot;
+  ],
+  &quot;scimax.db.excludePatterns&quot;: [
+    &quot;**/archive/**&quot;,
+    &quot;**/temp/**&quot;
+  ],
+  &quot;scimax.db.autoIndex&quot;: true,
+  &quot;scimax.db.embeddingProvider&quot;: &quot;local&quot;,
+  &quot;scimax.db.localModel&quot;: &quot;Xenova/bge-small-en-v1.5&quot;,
+
+  // References for reading notes
+  &quot;scimax.ref.bibliographyFiles&quot;: [
+    &quot;~/notes/reading.bib&quot;
+  ],
+  &quot;scimax.ref.pdfDirectory&quot;: &quot;~/books&quot;,
+  &quot;scimax.ref.notesDirectory&quot;: &quot;~/notes/reading-notes&quot;,
+
+  // Agenda for personal tasks
+  &quot;scimax.agenda.files&quot;: [
+    &quot;~/notes&quot;
+  ],
+  &quot;scimax.agenda.defaultSpan&quot;: 7,
+  &quot;scimax.agenda.showDone&quot;: false,
+  &quot;scimax.agenda.showHabits&quot;: true,
+  &quot;scimax.agenda.todoStates&quot;: [&quot;TODO&quot;, &quot;NEXT&quot;, &quot;WAITING&quot;, &quot;SOMEDAY&quot;],
+  &quot;scimax.agenda.doneStates&quot;: [&quot;DONE&quot;, &quot;CANCELLED&quot;],
+
+  // Image overlays for visual notes
+  &quot;scimax.imageOverlays.enabled&quot;: true,
+  &quot;scimax.imageOverlays.maxWidth&quot;: 128,
+  &quot;scimax.imageOverlays.maxHeight&quot;: 128,
+  &quot;scimax.imageOverlays.renderMode&quot;: &quot;both&quot;,
+
+  // Rich capture templates
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;n&quot;,
+      &quot;name&quot;: &quot;Note&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/notes/inbox.org&quot;,
+      &quot;template&quot;: &quot;* %^{Title}\n  %T\n\n  %?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;b&quot;,
+      &quot;name&quot;: &quot;Book Note&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/notes/books.org&quot;,
+      &quot;template&quot;: &quot;* %^{Book Title}\n  :PROPERTIES:\n  :AUTHOR: %^{Author}\n  :GENRE: %^{Genre}\n  :RATING: %^{Rating (1-5)}\n  :END:\n\n  %?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;j&quot;,
+      &quot;name&quot;: &quot;Journal Entry&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/notes/journal.org&quot;,
+      &quot;datetree&quot;: true,
+      &quot;template&quot;: &quot;* %^{Entry}\n  %T\n\n  %?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;t&quot;,
+      &quot;name&quot;: &quot;Task&quot;,
+      &quot;type&quot;: &quot;entry&quot;,
+      &quot;file&quot;: &quot;~/notes/tasks.org&quot;,
+      &quot;headline&quot;: &quot;Inbox&quot;,
+      &quot;template&quot;: &quot;* TODO %^{Task}\n  SCHEDULED: %t\n  %?&quot;
+    }
+  ],
+  &quot;scimax.capture.datetreeFormat&quot;: &quot;day&quot;,
+  &quot;scimax.capture.autoSave&quot;: true,
+
+  // Hydra menu settings
+  &quot;scimax.hydra.showKeyHints&quot;: true,
+  &quot;scimax.hydra.singleKeySelection&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-minimal-configuration" class="org-section org-level-2">
+<h2>Minimal Configuration</h2>
+<p>Bare-bones setup with just the essentials:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.journal.directory&quot;: &quot;~/journal&quot;,
+  &quot;scimax.db.autoIndex&quot;: false,
+  &quot;scimax.agenda.files&quot;: [&quot;~/notes&quot;]
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>Troubleshooting</h1>
+<div id="org-database-performance" class="org-section org-level-2">
+<h2>Database Performance</h2>
+<p>If database indexing is slow or uses too much memory:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.autoIndex&quot;: false,
+  &quot;scimax.db.excludePatterns&quot;: [
+    &quot;**/node_modules/**&quot;,
+    &quot;**/.git/**&quot;,
+    &quot;**/dist/**&quot;,
+    &quot;**/build/**&quot;,
+    &quot;**/*.min.js&quot;,
+    &quot;**/archive/**&quot;
+  ]
+}</code></pre>
+</div>
+
+<p>Then manually trigger indexing with <kbd>C-S-P</kbd> → &quot;Scimax: Reindex Files&quot;</p>
+
+</div>
+<div id="org-jupyter-kernels-not-found" class="org-section org-level-2">
+<h2>Jupyter Kernels Not Found</h2>
+<p>Ensure Jupyter is in your PATH or specify the full path:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.literate.jupyterPath&quot;: &quot;/usr/local/bin/jupyter&quot;
+}</code></pre>
+</div>
+
+<p>Check available kernels with <kbd>C-S-P</kbd> → &quot;Scimax: Show Available Jupyter Kernels&quot;</p>
+
+</div>
+<div id="org-latex-preview-not-working" class="org-section org-level-2">
+<h2>LaTeX Preview Not Working</h2>
+<p>Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexPreview.enabled&quot;: true,
+  &quot;scimax.latexPreview.cacheEnabled&quot;: false
+}</code></pre>
+</div>
+
+</div>
+<div id="org-semantic-search-not-working" class="org-section org-level-2">
+<h2>Semantic Search Not Working</h2>
+<p>For local embeddings, ensure the model downloads on first use. Check the console (Help → Toggle Developer Tools) for download progress.</p>
+
+<p>For Ollama, ensure the server is running:</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><code class="language-bash">curl http://localhost:11434/api/version</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-related-documentation" class="org-section org-level-1">
+<h1>Related Documentation</h1>
+<ul>
+<li><p><a href="01-getting-started.html">Getting Started Guide</a></p>
+</li>
+<li><p><a href="07-source-blocks.html">Source Blocks Documentation</a></p>
+</li>
+<li><p><a href="10-export.html">Export Documentation</a></p>
+</li>
+<li><p><a href="24-keybindings.html">Keybindings Reference</a></p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="25-commands.html">Commands</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="27-org-api.html">Org API</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="01-getting-started.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="24-keybindings.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#introduction" class="toc-link">Introduction</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#accessing-settings" class="toc-link">Accessing Settings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#settings-file-locations" class="toc-link">Settings File Locations</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#settings-format" class="toc-link">Settings Format</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#journal-settings" class="toc-link">Journal Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxjournaldirectory" class="toc-link">scimax.journal.directory</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxjournalformat" class="toc-link">scimax.journal.format</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxjournaltemplate" class="toc-link">scimax.journal.template</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxjournaldateformat" class="toc-link">scimax.journal.dateFormat</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxjournalautotimestamp" class="toc-link">scimax.journal.autoTimestamp</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxjournalweekstartson" class="toc-link">scimax.journal.weekStartsOn</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#database-search-settings" class="toc-link">Database &amp; Search Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbdirectories" class="toc-link">scimax.db.directories</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbexcludepatterns" class="toc-link">scimax.db.excludePatterns</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbignorepatterns" class="toc-link">scimax.db.ignorePatterns</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbautoindex" class="toc-link">scimax.db.autoIndex</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbembeddingprovider" class="toc-link">scimax.db.embeddingProvider</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdblocalmodel" class="toc-link">scimax.db.localModel</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbollamaurl" class="toc-link">scimax.db.ollamaUrl</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbollamamodel" class="toc-link">scimax.db.ollamaModel</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxdbopenaiapikey" class="toc-link">scimax.db.openaiApiKey</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#code-execution-settings" class="toc-link">Code Execution Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxliteratepythonpath" class="toc-link">scimax.literate.pythonPath</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxliteratejupyterpath" class="toc-link">scimax.literate.jupyterPath</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#referencecitation-settings" class="toc-link">Reference/Citation Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxrefbibliographyfiles" class="toc-link">scimax.ref.bibliographyFiles</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxrefpdfdirectory" class="toc-link">scimax.ref.pdfDirectory</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxrefnotesdirectory" class="toc-link">scimax.ref.notesDirectory</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxrefdefaultcitestyle" class="toc-link">scimax.ref.defaultCiteStyle</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#export-settings" class="toc-link">Export Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxexportlatexcustomheader" class="toc-link">scimax.export.latex.customHeader</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#latex-preview-settings" class="toc-link">LaTeX Preview Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexpreviewenabled" class="toc-link">scimax.latexPreview.enabled</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexpreviewcacheenabled" class="toc-link">scimax.latexPreview.cacheEnabled</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexpreviewdarkmodeaware" class="toc-link">scimax.latexPreview.darkModeAware</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#latex-live-preview-settings" class="toc-link">LaTeX Live Preview Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexlivepreviewbuildonsave" class="toc-link">scimax.latexLivePreview.buildOnSave</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexlivepreviewbuildonidle" class="toc-link">scimax.latexLivePreview.buildOnIdle</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexlivepreviewidledelay" class="toc-link">scimax.latexLivePreview.idleDelay</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexlivepreviewcompiler" class="toc-link">scimax.latexLivePreview.compiler</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxlatexlivepreviewuselatexmk" class="toc-link">scimax.latexLivePreview.useLatexmk</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#notebook-settings" class="toc-link">Notebook Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxnotebookdirectory" class="toc-link">scimax.notebook.directory</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxnotebookdefaulttemplate" class="toc-link">scimax.notebook.defaultTemplate</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxnotebookautodetect" class="toc-link">scimax.notebook.autoDetect</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#hydra-menu-settings" class="toc-link">Hydra Menu Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxhydrashowkeyhints" class="toc-link">scimax.hydra.showKeyHints</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxhydrasinglekeyselection" class="toc-link">scimax.hydra.singleKeySelection</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxhydradimnonmatching" class="toc-link">scimax.hydra.dimNonMatching</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxhydrasortbykey" class="toc-link">scimax.hydra.sortByKey</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#speed-commands-settings" class="toc-link">Speed Commands Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxspeedcommandsenabled" class="toc-link">scimax.speedCommands.enabled</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#agenda-settings" class="toc-link">Agenda Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxagendafiles" class="toc-link">scimax.agenda.files</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxagendaexcludepatterns" class="toc-link">scimax.agenda.excludePatterns</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxagendadefaultspan" class="toc-link">scimax.agenda.defaultSpan</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxagendashowdone" class="toc-link">scimax.agenda.showDone</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxagendashowhabits" class="toc-link">scimax.agenda.showHabits</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxagendatodostates" class="toc-link">scimax.agenda.todoStates</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxagendadonestates" class="toc-link">scimax.agenda.doneStates</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#image-overlay-settings" class="toc-link">Image Overlay Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysenabled" class="toc-link">scimax.imageOverlays.enabled</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysmaxwidth" class="toc-link">scimax.imageOverlays.maxWidth</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysmaxheight" class="toc-link">scimax.imageOverlays.maxHeight</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysrendermode" class="toc-link">scimax.imageOverlays.renderMode</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysonlywhencursornotinlink" class="toc-link">scimax.imageOverlays.onlyWhenCursorNotInLink</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysexcludepatterns" class="toc-link">scimax.imageOverlays.excludePatterns</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysmaxoverlaysperdocument" class="toc-link">scimax.imageOverlays.maxOverlaysPerDocument</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlaysshowdimensions" class="toc-link">scimax.imageOverlays.showDimensions</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaximageoverlayscacheenabled" class="toc-link">scimax.imageOverlays.cacheEnabled</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#capture-settings" class="toc-link">Capture Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#settings-overview" class="toc-link">Settings Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#scimaxcapturetemplates" class="toc-link">scimax.capture.templates</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxcapturedefaultfile" class="toc-link">scimax.capture.defaultFile</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxcapturedatetreeformat" class="toc-link">scimax.capture.datetreeFormat</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scimaxcaptureautosave" class="toc-link">scimax.capture.autoSave</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#common-configurations" class="toc-link">Common Configurations</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#academic-writing-setup" class="toc-link">Academic Writing Setup</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#software-development-setup" class="toc-link">Software Development Setup</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#personal-notes-pkm-setup" class="toc-link">Personal Notes &amp; PKM Setup</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#minimal-configuration" class="toc-link">Minimal Configuration</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#database-performance" class="toc-link">Database Performance</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#jupyter-kernels-not-found" class="toc-link">Jupyter Kernels Not Found</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#latex-preview-not-working" class="toc-link">LaTeX Preview Not Working</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#semantic-search-not-working" class="toc-link">Semantic Search Not Working</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#related-documentation" class="toc-link">Related Documentation</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

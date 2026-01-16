@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hyperlinks</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-hyperlinks" class="org-section org-level-1">
+<h1>✅ Hyperlinks</h1>
+<p>CLOSED: [2026-01-14 Wed 20:50]</p>
+
+<p>Links in org documents connect your notes to files, websites, headings, and
+more. Scimax VS Code supports a variety of link types and provides commands for
+creating and following links.</p>
+
+</div>
+<div id="org-link-types" class="org-section org-level-1">
+<h1>✅ Link Types</h1>
+<p>CLOSED: [2026-01-14 Wed 20:50]</p>
+
+<p>Org-mode supports many types of links. Scimax VS Code handles the most common
+ones:</p>
+
+<div id="org-external-links" class="org-section org-level-2">
+<h2>✅ External Links</h2>
+<p>CLOSED: [2026-01-14 Wed 20:50]</p>
+
+<p>Links to resources outside your document:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>HTTP(S)</td><td>https://www.example.com</td></tr>
+<tr><td>File</td><td>file:~/documents/report.pdf</td></tr>
+<tr><td>Email</td><td>mailto:user@example.com</td></tr>
+<tr><td>FTP</td><td>ftp://ftp.example.com/file.txt</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-internal-links" class="org-section org-level-2">
+<h2>✅ Internal Links</h2>
+<p>CLOSED: [2026-01-14 Wed 20:50]</p>
+
+<p>Links to locations within your documents:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>Heading</td><td>*My Heading</td></tr>
+<tr><td>Custom ID</td><td>#my-custom-id</td></tr>
+<tr><td>Target</td><td>&lt;&lt;target-name&gt;&gt;</td></tr>
+<tr><td>ID</td><td>id:550e8400-e29b-41d4-a716-446655440000</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-citation-links-org-ref-style" class="org-section org-level-2">
+<h2>✅ Citation Links (org-ref style)</h2>
+<p>CLOSED: [2026-01-14 Wed 20:51]</p>
+
+<p>For academic references (see <a href="19-references.html">References</a>):</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>cite</td><td><a href="cite:smith-2024">cite:smith-2024</a></td></tr>
+<tr><td>citet</td><td><a href="citet:jones-2023">citet:jones-2023</a></td></tr>
+<tr><td>citep</td><td><a href="citep:doe-2022">citep:doe-2022</a></td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-creating-links" class="org-section org-level-1">
+<h1>✅ Creating Links</h1>
+<p>CLOSED: [2026-01-14 Wed 20:51]</p>
+
+<div id="org-bracket-link-syntax" class="org-section org-level-2">
+<h2>✅ Bracket Link Syntax</h2>
+<p>CLOSED: [2026-01-14 Wed 20:51]</p>
+
+<p>The standard link format uses double brackets:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[link-target][description]]</code></pre>
+</div>
+
+<p>Examples:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[https://www.example.com][Example Website]]
+[[file:report.pdf][Quarterly Report]]
+[[*Introduction][Go to Introduction]]
+[[#methods][Methods Section]]</code></pre>
+</div>
+
+<p>If no description is provided, the link target is displayed:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[https://www.example.com]]</code></pre>
+</div>
+
+</div>
+<div id="org-insert-link-command" class="org-section org-level-2">
+<h2>✅ Insert Link Command</h2>
+<p>CLOSED: [2026-01-15 Thu 19:40]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c l</td><td>Store link (scimax.org.storeLink)</td></tr>
+<tr><td>C-c C-l</td><td>Insert link (scimax.org.insertLink)</td></tr>
+</tbody>
+</table>
+
+<p>This opens a dialog to enter:</p>
+
+<ol>
+<li><p>Stored link or</p>
+</li>
+<li><p>Link target (URL, file path, or internal reference)</p>
+</li>
+<li><p>Description (optional)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-angle-link-syntax" class="org-section org-level-2">
+<h2>✅ Angle Link Syntax</h2>
+<p>CLOSED: [2026-01-14 Wed 20:51]</p>
+
+<p>Simple URLs can be written with angle brackets:
+&lt;https://www.example.com&gt;</p>
+
+</div>
+<div id="org-plain-urls" class="org-section org-level-2">
+<h2>✅ Plain URLs</h2>
+<p>CLOSED: [2026-01-14 Wed 20:51]</p>
+
+<p>Plain URLs are also recognized:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">Visit https://www.example.com for more info.</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-following-links" class="org-section org-level-1">
+<h1>✅ Following Links</h1>
+<p>CLOSED: [2026-01-14 Wed 20:51]</p>
+
+<div id="org-open-link" class="org-section org-level-2">
+<h2>✅ Open Link</h2>
+<p>CLOSED: [2026-01-14 Wed 20:52]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-o</td><td>Open link at point (scimax.org.openLink)</td></tr>
+</tbody>
+</table>
+
+<p>Click on a link or use this command to:</p>
+
+<ul>
+<li><p>Open URLs in your default browser</p>
+</li>
+<li><p>Open files in VS Code (or associated application)</p>
+</li>
+<li><p>Jump to internal targets</p>
+</li>
+</ul>
+
+</div>
+<div id="org-link-behavior-by-type" class="org-section org-level-2">
+<h2>✅ Link Behavior by Type</h2>
+<p>CLOSED: [2026-01-15 Thu 19:40]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Link Type</th><th>Behavior</th></tr>
+</thead>
+<tbody>
+<tr><td>https://</td><td>Opens in default browser</td></tr>
+<tr><td>http://</td><td>Opens in default browser</td></tr>
+<tr><td>file:</td><td>Opens in VS Code or associated app</td></tr>
+<tr><td>mailto:</td><td>Opens default email client</td></tr>
+<tr><td>#custom-id</td><td>Jumps to heading with CUSTOM_ID</td></tr>
+<tr><td>*Heading</td><td>Jumps to heading with that title</td></tr>
+<tr><td>id:</td><td>Jumps to entry with that ID property</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-link-targets-and-anchors" class="org-section org-level-1">
+<h1>✅ Link Targets and Anchors</h1>
+<p>CLOSED: [2026-01-14 Wed 20:53]</p>
+
+<div id="org-headings-as-targets" class="org-section org-level-2">
+<h2>✅ Headings as Targets</h2>
+<p>CLOSED: [2026-01-14 Wed 20:53]</p>
+
+<p>Link to headings by title using *:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Introduction
+...content...
+
+,* Methods
+See [[*Introduction][the introduction]] for background.</code></pre>
+</div>
+
+</div>
+<div id="org-custom-ids" class="org-section org-level-2">
+<h2>✅ Custom IDs</h2>
+<p>CLOSED: [2026-01-14 Wed 20:53]</p>
+
+<p>Create stable link targets with CUSTOM_ID property:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Introduction
+:PROPERTIES:
+:CUSTOM_ID: intro
+:END:</code></pre>
+</div>
+
+<p>Link to it with:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[#intro][Introduction section]]</code></pre>
+</div>
+
+<p>Custom IDs are preferred over heading text because:</p>
+
+<ul>
+<li><p>They don&#39;t break when heading text changes</p>
+</li>
+<li><p>They&#39;re shorter and cleaner</p>
+</li>
+<li><p>They&#39;re unique within the document</p>
+</li>
+</ul>
+
+</div>
+<div id="org-dedicated-targets" class="org-section org-level-2">
+<h2>✅ Dedicated Targets</h2>
+<p>CLOSED: [2026-01-15 Thu 19:38]</p>
+
+<p>Create named anchors anywhere with &lt;&lt;target-name&gt;&gt;:</p>
+
+<p>This paragraph contains a &lt;&lt;important-point&gt;&gt; that we reference later.</p>
+
+<p>...</p>
+
+<p>As mentioned at <a href="#org-important-point">[[important-point]]</a>, this is significant.</p>
+
+</div>
+<div id="org-radio-targets" class="org-section org-level-2">
+<h2>✅ Radio Targets</h2>
+<p>CLOSED: [2026-01-15 Thu 19:44]</p>
+
+<p>Radio targets create automatic links throughout the document:</p>
+
+<p>We introduce the concept of &lt;&lt;&lt;Machine Learning&gt;&gt;&gt; here.</p>
+
+<p>...</p>
+
+<p>Later, when we mention Machine Learning, it automatically links back.</p>
+
+<p>Any occurrence of &quot;Machine Learning&quot; becomes a link to the radio target.</p>
+
+</div>
+<div id="org-id-properties" class="org-section org-level-2">
+<h2>✅ ID Properties</h2>
+<p>CLOSED: [2026-01-15 Thu 19:33]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>The ID property provides globally unique identifiers:</p>
+
+<p><a href="#org-id-e22015c2-f8d4-4980-bb1f-b8d40e9e1976">That important section</a></p>
+
+<p>ID links work across files:</p>
+
+<p><a href="#org-id-c95c70d9-14b9-484a-9657-1bf847387e30">See References Document</a></p>
+
+</div>
+</div>
+<div id="org-file-links" class="org-section org-level-1">
+<h1>✅ File Links</h1>
+<p>CLOSED: [2026-01-14 Wed 20:54]</p>
+
+<div id="org-basic-file-links" class="org-section org-level-2">
+<h2>👀 Basic File Links</h2>
+<p><a href="#org-14-journal-org">[[14-journal.org]]</a></p>
+
+</div>
+<div id="org-file-links-with-line-numbers" class="org-section org-level-2">
+<h2>✅ File Links with Line Numbers</h2>
+<p>CLOSED: [2026-01-15 Thu 19:32]</p>
+
+<p>Jump to a specific line:</p>
+
+<p><a href="19-references.org::42">Line 42 in references.org</a></p>
+
+</div>
+<div id="org-file-links-with-search" class="org-section org-level-2">
+<h2>✅ File Links with Search</h2>
+<p>CLOSED: [2026-01-15 Thu 19:32]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Search for text in the target file by heading, ID, or text:</p>
+
+<p><a href="#org-05-links-org-file-links-with-search">File Links with Search Section</a></p>
+
+<p><a href="#org-05-links-org-link-search">By Custom ID in Links Document</a></p>
+
+<p><a href="#org-05-links-org-search-for-text">By Text Search in Links Document</a> </p>
+
+<p>Search options:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Syntax</th><th>Searches for</th></tr>
+</thead>
+<tbody>
+<tr><td>::*Heading</td><td>Heading with that title</td></tr>
+<tr><td>::#id</td><td>Entry with that CUSTOM_ID</td></tr>
+<tr><td>::search text</td><td>First occurrence of text</td></tr>
+<tr><td>::123</td><td>Line number 123</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-relative-vs-absolute-paths" class="org-section org-level-2">
+<h2>✅ Relative vs Absolute Paths</h2>
+<p>CLOSED: [2026-01-15 Thu 19:52]</p>
+
+<p><a href="./14-journal.html">[[file:./14-journal.org]]</a>          ; Same directory
+<a href="../tasks.html">[[file:../tasks.org]]</a>   ; Relative path
+<a href="~/Dropbox/emacs/projects/scimax_vscode/docs/14-journal.html">[[file:~/Dropbox/emacs/projects/scimax_vscode/docs/14-journal.org]]</a> ; Home-relative
+<a href="/Users/jkitchin/Dropbox/emacs/projects/scimax_vscode/docs/14-journal.html">[[file:/Users/jkitchin/Dropbox/emacs/projects/scimax_vscode/docs/14-journal.org]]</a>   ; Absolute path</p>
+
+<p>Prefer relative paths for portability.</p>
+
+</div>
+</div>
+<div id="org-special-link-types" class="org-section org-level-1">
+<h1>✅ Special Link Types</h1>
+<p>CLOSED: [2026-01-15 Thu 19:41]</p>
+
+<div id="org-protocol-links" class="org-section org-level-2">
+<h2>✅ Protocol Links</h2>
+<p>CLOSED: [2026-01-15 Thu 19:52]</p>
+
+<p>Not many protocols are supported beyond HTTP(S) and FILE, but a few useful ones include:</p>
+
+<p><a href="[[doi:10.1000/xyz123][DOI Reference]]">DOI Reference</a></p>
+
+</div>
+<div id="org-image-links" class="org-section org-level-2">
+<h2>⚠️ Image Links</h2>
+<p>Link to images (see also <a href="12-image-overlays.html">Image Overlays</a>):</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[file:./images/figure1.png]]
+[[./images/figure1.png]]</code></pre>
+</div>
+
+<p>Images are displayed in tooltips or overlays when hovering over the link.</p>
+
+</div>
+<div id="org-id-links" class="org-section org-level-2">
+<h2>✅ ID Links</h2>
+<p>CLOSED: [2026-01-15 Thu 19:44]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Universal identifiers for cross-file linking:</p>
+
+<p><a href="#org-id-550e8400-e29b-41d4-a716-446655440000">Section in another file</a></p>
+
+</div>
+</div>
+<div id="org-link-descriptions" class="org-section org-level-1">
+<h1>✅ Link Descriptions</h1>
+<p>CLOSED: [2026-01-15 Thu 19:42]</p>
+
+<div id="org-with-description" class="org-section org-level-2">
+<h2>✅ With Description</h2>
+<p>CLOSED: [2026-01-15 Thu 19:42]</p>
+
+<p><a href="https://www.example.com">Visit Example.com</a></p>
+
+<p>Note it is not currently possible to use a display mode like Emacs does, but descriptions can be used for export.</p>
+
+</div>
+<div id="org-without-description" class="org-section org-level-2">
+<h2>✅ Without Description</h2>
+<p>CLOSED: [2026-01-15 Thu 19:42]</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[https://www.example.com]]</code></pre>
+</div>
+
+<p>Displays as: https://www.example.com</p>
+
+</div>
+<div id="org-description-formatting" class="org-section org-level-2">
+<h2>✅ Description Formatting</h2>
+<p>CLOSED: [2026-01-15 Thu 19:42]</p>
+
+<p>Descriptions can contain emphasis:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[https://important.com][/Very/ *Important* Link]]</code></pre>
+</div>
+
+<p>But descriptions cannot contain other links.</p>
+
+</div>
+</div>
+<div id="org-links-in-export" class="org-section org-level-1">
+<h1>✅ Links in Export</h1>
+<p>CLOSED: [2026-01-15 Thu 19:43]</p>
+
+<div id="org-html-export" class="org-section org-level-2">
+<h2>✅ HTML Export</h2>
+<p>CLOSED: [2026-01-15 Thu 19:43]</p>
+
+<p>Links become &lt;a href=&quot;...&quot;&gt; elements:</p>
+
+<div class="org-src-container">
+<pre class="src src-html"><code class="language-html">&lt;a href=&quot;https://www.example.com&quot;&gt;Visit Example.com&lt;/a&gt;</code></pre>
+</div>
+
+<p>Internal links become anchor references.</p>
+
+</div>
+<div id="org-latex-export" class="org-section org-level-2">
+<h2>✅ LaTeX Export</h2>
+<p>CLOSED: [2026-01-15 Thu 19:43]</p>
+
+<p>Links become \href{}{} commands:</p>
+
+<div class="org-src-container">
+<pre class="src src-latex"><code class="language-latex">\href{https://www.example.com}{Visit Example.com}</code></pre>
+</div>
+
+<p>Internal links become \ref{} or \hyperref[]{} commands.</p>
+
+</div>
+<div id="org-markdown-export" class="org-section org-level-2">
+<h2>✅ Markdown Export</h2>
+<p>CLOSED: [2026-01-15 Thu 19:43]</p>
+
+<p>Links become standard Markdown format:</p>
+
+<div class="org-src-container">
+<pre class="src src-markdown"><code class="language-markdown">[Visit Example.com](https://www.example.com)</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-managing-links" class="org-section org-level-1">
+<h1>✅ Managing Links</h1>
+<p>CLOSED: [2026-01-15 Thu 19:43]</p>
+
+<div id="org-finding-broken-links" class="org-section org-level-2">
+<h2>⚠️ Finding Broken Links</h2>
+<p>Use search to find potentially broken links:</p>
+
+<ul>
+<li><p>scimax.db.searchLinks - Search all links in indexed files</p>
+</li>
+<li><p>Check for file: links to non-existent files</p>
+</li>
+</ul>
+
+</div>
+<div id="org-updating-links" class="org-section org-level-2">
+<h2>⚠️ Updating Links</h2>
+<p>When files move:</p>
+
+<ol>
+<li><p>Update file: links manually</p>
+</li>
+<li><p>Use id: links which are location-independent</p>
+</li>
+<li><p>Use relative paths that move with your file structure</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-citation-links" class="org-section org-level-1">
+<h1>✅ Citation Links</h1>
+<p>CLOSED: [2026-01-15 Thu 19:44]</p>
+
+<p>For academic documents, Scimax VS Code supports citation links. See <a href="19-references.html">References</a>
+for complete documentation.</p>
+
+<div id="org-quick-insert" class="org-section org-level-2">
+<h2>✅ Quick Insert</h2>
+<p>CLOSED: [2026-01-15 Thu 19:44]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c ]</td><td>Insert citation</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-citation-styles" class="org-section org-level-2">
+<h2>✅ Citation Styles</h2>
+<p>CLOSED: [2026-01-15 Thu 19:46]</p>
+
+<p><a href="cite:kitchin-2015-examp-effec">cite:kitchin-2015-examp-effec</a>
+<a href="cite:skitchin-2015-examp-effec">cite:skitchin-2015-examp-effec</a>       ; Basic citation
+<a href="citet:kitchin-2015-examp-effec">citet:kitchin-2015-examp-effec</a>       ; Textual: Kitchin (2015)
+<a href="citep:kitchin-2015-examp-effec">citep:kitchin-2015-examp-effec</a>       ; Parenthetical: (Kitchin, 2015)
+<a href="citeauthor:kitchin-2015-examp-effec">citeauthor:kitchin-2015-examp-effec</a>  ; Author only: Kitchin
+<a href="citeyear:kitchin-2015-examp-effec">citeyear:kitchin-2015-examp-effec</a>    ; Year only: 2015</p>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>✅ Best Practices</h1>
+<p>CLOSED: [2026-01-15 Thu 19:46]</p>
+
+<div id="org-use-stable-link-targets" class="org-section org-level-2">
+<h2>✅ Use Stable Link Targets</h2>
+<p>CLOSED: [2026-01-15 Thu 19:46]</p>
+
+<p>Prefer stable identifiers over content-based links:</p>
+
+<p>; Fragile - breaks if heading changes:
+<a href="#org-my-current-heading-title">[[*My Current Heading Title]]</a></p>
+
+<p>; Stable - survives heading changes:
+<a href="#my-heading-id">[[#my-heading-id]]</a></p>
+
+<p>; Most stable - globally unique:
+<a href="#org-id-uuid-here">[[id:uuid-here]]</a></p>
+
+</div>
+<div id="org-organize-file-links" class="org-section org-level-2">
+<h2>✅ Organize File Links</h2>
+<p>CLOSED: [2026-01-15 Thu 19:47]</p>
+
+<p>Keep related files together with relative paths:</p>
+
+<pre class="example">project/
+├── notes.org          ; Main document
+├── data/
+│   └── results.csv    ; [[file:./data/results.csv]]
+├── images/
+│   └── figure1.png    ; [[file:./images/figure1.png]]
+└── references/
+    └── paper.pdf      ; [[file:./references/paper.pdf]]</pre>
+
+</div>
+<div id="org-descriptive-link-text" class="org-section org-level-2">
+<h2>✅ Descriptive Link Text</h2>
+<p>CLOSED: [2026-01-15 Thu 19:47]</p>
+
+<p>Good:</p>
+
+<p>See <a href="methods.html">the Methods section</a> for details.</p>
+
+<p>Avoid:</p>
+
+<p>See <a href="methods.html">here</a> for details.
+Click <a href="https://example.com">this link</a>.</p>
+
+</div>
+<div id="org-link-collections" class="org-section org-level-2">
+<h2>✅ Link Collections</h2>
+<p>CLOSED: [2026-01-15 Thu 19:47]</p>
+
+<p>Group related links in lists:</p>
+
+<ul>
+<li><p><a href="https://orgmode.org">Org-mode website</a></p>
+</li>
+<li><p><a href="https://github.com">GitHub</a></p>
+</li>
+<li><p><a href="notes.html">My Notes</a></p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-quick-reference" class="org-section org-level-1">
+<h1>✅ Quick Reference</h1>
+<p>CLOSED: [2026-01-15 Thu 19:48]</p>
+
+<div id="org-keybindings" class="org-section org-level-2">
+<h2>✅ Keybindings</h2>
+<p>CLOSED: [2026-01-15 Thu 19:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c l</td><td>Store link</td></tr>
+<tr><td>C-c C-l</td><td>Insert link</td></tr>
+<tr><td>C-c C-o</td><td>Open link at point</td></tr>
+<tr><td>C-c ]</td><td>Insert citation  (org-ref)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-commands" class="org-section org-level-2">
+<h2>✅ Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 19:53]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.org.storeLink</td><td>Store a new link</td></tr>
+<tr><td>scimax.org.insertLink</td><td>Insert a new link</td></tr>
+<tr><td>scimax.org.openLink</td><td>Open link at cursor</td></tr>
+<tr><td>scimax.ref.insertCitation</td><td>Insert citation link</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-link-syntax-summary" class="org-section org-level-2">
+<h2>✅ Link Syntax Summary</h2>
+<p>CLOSED: [2026-01-15 Thu 19:53]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Format</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>URL with description</td><td><a href="#org-url">desc</a></td></tr>
+<tr><td>URL only</td><td><a href="#org-url">[[url]]</a></td></tr>
+<tr><td>Angle brackets</td><td>&lt;url&gt;</td></tr>
+<tr><td>Heading link</td><td><a href="#org-heading">[[*Heading]]</a></td></tr>
+<tr><td>Custom ID link</td><td><a href="#id">[[#id]]</a></td></tr>
+<tr><td>ID link</td><td><a href="#org-id-uuid">[[id:uuid]]</a></td></tr>
+<tr><td>File link</td><td><a href="path">[[file:path]]</a></td></tr>
+<tr><td>File with line</td><td><a href="path::123">[[file:path::123]]</a></td></tr>
+<tr><td>File with search</td><td><a href="path::text">[[file:path::text]]</a></td></tr>
+<tr><td>Target</td><td><a href="#org-target-name">[[target-name]]</a></td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>✅ Related Topics</h1>
+<ul>
+<li><p><a href="19-references.html">References</a> - Citation links and bibliography</p>
+</li>
+<li><p><a href="10-export.html">Export</a> - How links appear in exports</p>
+</li>
+<li><p><a href="12-image-overlays.html">Image Overlays</a> - Displaying linked images</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="04-tables.html">Tables</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="06-timestamps.html">Timestamps</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="23-speed-commands.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="04-tables.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#hyperlinks" class="toc-link">✅ Hyperlinks</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#link-types" class="toc-link">✅ Link Types</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#external-links" class="toc-link">✅ External Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#internal-links" class="toc-link">✅ Internal Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#citation-links-org-ref-style" class="toc-link">✅ Citation Links (org-ref style)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#creating-links" class="toc-link">✅ Creating Links</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#bracket-link-syntax" class="toc-link">✅ Bracket Link Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#insert-link-command" class="toc-link">✅ Insert Link Command</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#angle-link-syntax" class="toc-link">✅ Angle Link Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#plain-urls" class="toc-link">✅ Plain URLs</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#following-links" class="toc-link">✅ Following Links</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#open-link" class="toc-link">✅ Open Link</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#link-behavior-by-type" class="toc-link">✅ Link Behavior by Type</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#link-targets-and-anchors" class="toc-link">✅ Link Targets and Anchors</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#headings-as-targets" class="toc-link">✅ Headings as Targets</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#custom-ids" class="toc-link">✅ Custom IDs</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#dedicated-targets" class="toc-link">✅ Dedicated Targets</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#radio-targets" class="toc-link">✅ Radio Targets</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#id-properties" class="toc-link">✅ ID Properties</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#file-links" class="toc-link">✅ File Links</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#basic-file-links" class="toc-link">👀 Basic File Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#file-links-with-line-numbers" class="toc-link">✅ File Links with Line Numbers</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#file-links-with-search" class="toc-link">✅ File Links with Search</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#relative-vs-absolute-paths" class="toc-link">✅ Relative vs Absolute Paths</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#special-link-types" class="toc-link">✅ Special Link Types</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#protocol-links" class="toc-link">✅ Protocol Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#image-links" class="toc-link">⚠️ Image Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#id-links" class="toc-link">✅ ID Links</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#link-descriptions" class="toc-link">✅ Link Descriptions</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#with-description" class="toc-link">✅ With Description</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#without-description" class="toc-link">✅ Without Description</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#description-formatting" class="toc-link">✅ Description Formatting</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#links-in-export" class="toc-link">✅ Links in Export</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#html-export" class="toc-link">✅ HTML Export</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#latex-export" class="toc-link">✅ LaTeX Export</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#markdown-export" class="toc-link">✅ Markdown Export</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#managing-links" class="toc-link">✅ Managing Links</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#finding-broken-links" class="toc-link">⚠️ Finding Broken Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#updating-links" class="toc-link">⚠️ Updating Links</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#citation-links" class="toc-link">✅ Citation Links</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#quick-insert" class="toc-link">✅ Quick Insert</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#citation-styles" class="toc-link">✅ Citation Styles</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#best-practices" class="toc-link">✅ Best Practices</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#use-stable-link-targets" class="toc-link">✅ Use Stable Link Targets</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#organize-file-links" class="toc-link">✅ Organize File Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#descriptive-link-text" class="toc-link">✅ Descriptive Link Text</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#link-collections" class="toc-link">✅ Link Collections</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#quick-reference" class="toc-link">✅ Quick Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#keybindings" class="toc-link">✅ Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#commands" class="toc-link">✅ Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#link-syntax-summary" class="toc-link">✅ Link Syntax Summary</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">✅ Related Topics</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

@@ -6,3 +6,6 @@
 export * from './publishProject';
 export * from './orgPublish';
 export { registerPublishCommands } from './publishProvider';
+
+// Theme exports
+export * from './themes';

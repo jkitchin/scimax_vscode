@@ -1,0 +1,2960 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Source Code Blocks</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0 active ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-source-code-blocks" class="org-section org-level-1">
+<h1>✅ Source Code Blocks</h1>
+<p>CLOSED: [2026-01-15 Thu 08:04]</p>
+
+<p>Source code blocks are the foundation of literate programming in org-mode. They
+allow you to embed executable code within your documents, creating notebooks
+that combine narrative text, code, and results.</p>
+
+<p>This guide covers everything you need to know about working with source blocks
+in Scimax VS Code.</p>
+
+</div>
+<div id="org-introduction-to-literate-programming" class="org-section org-level-1">
+<h1>✅ Introduction to Literate Programming</h1>
+<p>CLOSED: [2026-01-15 Thu 08:04]</p>
+
+<p>Literate programming, pioneered by Donald Knuth, is a programming paradigm that
+treats programs as works of literature. Instead of writing code with comments,
+you write documentation with embedded code.</p>
+
+<div id="org-benefits-of-literate-programming" class="org-section org-level-2">
+<h2>✅ Benefits of Literate Programming</h2>
+<p>CLOSED: [2026-01-15 Thu 08:04]</p>
+
+<ul>
+<li><p><strong>Documentation and code stay synchronized</strong> - Your explanations live alongside</p>
+</li>
+<li><p><strong>Better understanding</strong> - Force yourself to explain your reasoning</p>
+</li>
+<li><p><strong>Reproducible research</strong> - Combine analysis, code, and results in one document</p>
+</li>
+<li><p><strong>Exploratory programming</strong> - Test ideas interactively like a notebook</p>
+</li>
+<li><p><strong>Multiple outputs from one source</strong> - Tangle code files and export documentation</p>
+</li>
+</ul>
+
+</div>
+<div id="org-literate-programming-in-org-mode" class="org-section org-level-2">
+<h2>✅ Literate Programming in Org-Mode</h2>
+<p>CLOSED: [2026-01-15 Thu 08:04]</p>
+
+<p>Org-mode&#39;s Babel system brings literate programming to org documents:</p>
+
+<ul>
+<li><p>Write code in source blocks with full syntax highlighting</p>
+</li>
+<li><p>Execute blocks and capture results inline</p>
+</li>
+<li><p>Pass data between blocks in different languages</p>
+</li>
+<li><p>Extract (tangle) code to external files</p>
+</li>
+<li><p>Include or exclude code/results in exports</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-source-block-syntax" class="org-section org-level-1">
+<h1>✅ Source Block Syntax</h1>
+<p>CLOSED: [2026-01-15 Thu 08:04]</p>
+
+<div id="org-basic-structure" class="org-section org-level-2">
+<h2>✅ Basic Structure</h2>
+<p>CLOSED: [2026-01-15 Thu 08:04]</p>
+
+<p>A source block begins with #+BEGIN_SRC and ends with #+END_SRC:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">print(&quot;Hello, world!&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">Hello, world!</pre>
+
+</div>
+<div id="org-language-declaration" class="org-section org-level-2">
+<h2>✅ Language Declaration</h2>
+<p>CLOSED: [2026-01-15 Thu 08:05]</p>
+
+<p>The language comes immediately after #+BEGIN_SRC:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># Python code here</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-javascript"><code class="language-javascript">// JavaScript code here</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code class="language-shell"># Shell commands here</code></pre>
+</div>
+
+</div>
+<div id="org-header-arguments" class="org-section org-level-2">
+<h2>⚠️ Header Arguments</h2>
+<p>Header arguments control block behavior and appear after the language:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># This block prints results and uses a persistent session</code></pre>
+</div>
+
+</div>
+<div id="org-results-section" class="org-section org-level-2">
+<h2>⚠️ Results Section</h2>
+<p>When you execute a block, results appear immediately below in a #+RESULTS: section:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">print(2 + 2)</code></pre>
+</div>
+
+
+<pre class="fixed-width">4</pre>
+
+</div>
+</div>
+<div id="org-executing-code" class="org-section org-level-1">
+<h1>⚠️ Executing Code</h1>
+<div id="org-execution-keybindings" class="org-section org-level-2">
+<h2>⚠️ Execution Keybindings</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Keybinding</td><td>Action</td><td>Platform</td></tr>
+<tr><td>----------------------------+-------------------------------------</td><td>----------</td><td></td></tr>
+<tr><td>C-&lt;return&gt; / s-&lt;return&gt;</td><td>Execute current block</td><td>All</td></tr>
+<tr><td>C-c C-c</td><td>Execute current block (Emacs style)</td><td>All</td></tr>
+<tr><td>S-&lt;return&gt;</td><td>Execute and move to next block</td><td>All</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-execution-commands" class="org-section org-level-2">
+<h2>✅ Execution Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 08:11]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.org.executeBlock</td><td>C-c C-c</td><td>Execute the current source block</td></tr>
+<tr><td>scimax.ob.executeAndNext</td><td>S-Enter</td><td>Execute and jump to next block</td></tr>
+<tr><td>scimax.ob.executeAndNew</td><td>M-S-Enter</td><td>Execute and new</td></tr>
+<tr><td>scimax.ob.executeToPoint</td><td></td><td>Execute all blocks up to cursor</td></tr>
+<tr><td>scimax.org.executeAllBlocks</td><td></td><td>Execute all blocks in document</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-execution-flow" class="org-section org-level-2">
+<h2>✅ Execution Flow</h2>
+<p>CLOSED: [2026-01-15 Thu 08:26]</p>
+
+<ol>
+<li><p>Place cursor inside a source block</p>
+</li>
+<li><p>Press C-&lt;return&gt; (or s-&lt;return&gt; on Mac)</p>
+</li>
+<li><p>Code executes using the appropriate language interpreter</p>
+</li>
+<li><p>Results appear below the block in a #+RESULTS: section</p>
+</li>
+<li><p>Previous results are replaced automatically</p>
+</li>
+</ol>
+
+</div>
+<div id="org-example" class="org-section org-level-2">
+<h2>✅ Example</h2>
+<p>CLOSED: [2026-01-15 Thu 08:11]</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">import math
+result = math.sqrt(16)
+print(f&quot;The square root of 16 is {result}&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">The square root of 16 is 4.0</pre>
+
+</div>
+</div>
+<div id="org-supported-languages" class="org-section org-level-1">
+<h1>✅ Supported Languages</h1>
+<p>CLOSED: [2026-01-15 Thu 08:10]</p>
+
+<p>Scimax VS Code supports a wide range of programming languages through both
+direct execution and Jupyter kernel integration.</p>
+
+<div id="org-direct-execution-languages" class="org-section org-level-2">
+<h2>✅ Direct Execution Languages</h2>
+<p>CLOSED: [2026-01-15 Thu 08:10]</p>
+
+<p>These languages execute directly without requiring Jupyter:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Language</th><th>Identifiers</th><th>Requirement</th></tr>
+</thead>
+<tbody>
+<tr><td>Python</td><td>python, python3, py</td><td>Python 3.x in PATH</td></tr>
+<tr><td>JavaScript</td><td>javascript, js, node</td><td>Node.js installed</td></tr>
+<tr><td>TypeScript</td><td>typescript, ts</td><td>TypeScript installed</td></tr>
+<tr><td>Shell/Bash</td><td>sh, bash, shell</td><td>Bash shell</td></tr>
+<tr><td>SQL</td><td>sql, sqlite</td><td>Database configured</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-jupyter-kernel-languages" class="org-section org-level-2">
+<h2>✅ Jupyter Kernel Languages</h2>
+<p>CLOSED: [2026-01-15 Thu 08:10]</p>
+
+<p>For enhanced interactive features, use Jupyter kernels by prefixing the
+language with jupyter- or relying on automatic Jupyter detection:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Language</th><th>Explicit Syntax</th><th>Auto-Detect</th><th>Kernel Required</th></tr>
+</thead>
+<tbody>
+<tr><td>Python</td><td>jupyter-python</td><td>Yes</td><td>ipykernel</td></tr>
+<tr><td>R</td><td>jupyter-r</td><td>Yes</td><td>IRkernel</td></tr>
+<tr><td>Julia</td><td>jupyter-julia</td><td>Yes</td><td>IJulia</td></tr>
+<tr><td>Ruby</td><td>jupyter-ruby</td><td>Yes</td><td>iruby</td></tr>
+<tr><td>Go</td><td>jupyter-go</td><td>No</td><td>gophernotes</td></tr>
+<tr><td>Rust</td><td>jupyter-rust</td><td>No</td><td>evcxr</td></tr>
+<tr><td>Perl</td><td>jupyter-perl</td><td>No</td><td>IPerl</td></tr>
+<tr><td>C</td><td>jupyter-c</td><td>No</td><td>jupyter-c-kernel</td></tr>
+<tr><td>C++</td><td>jupyter-cpp</td><td>No</td><td>xeus-cling</td></tr>
+<tr><td>Java</td><td>jupyter-java</td><td>No</td><td>IJava</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-jupyter-benefits" class="org-section org-level-2">
+<h2>✅ Jupyter Benefits</h2>
+<p>CLOSED: [2026-01-15 Thu 08:26]</p>
+
+<p>Using Jupyter kernels provides:</p>
+
+<ul>
+<li><p><strong>Persistent state</strong> - Variables persist between executions in the same session</p>
+</li>
+<li><p><strong>Rich output</strong> - Display plots, images, HTML, and LaTeX</p>
+</li>
+<li><p><strong>Interactive widgets</strong> - Use ipywidgets and similar libraries</p>
+</li>
+<li><p><strong>Automatic display</strong> - Images from matplotlib, plots, etc. appear automatically</p>
+</li>
+</ul>
+
+</div>
+<div id="org-example-mixing-languages" class="org-section org-level-2">
+<h2>✅ Example: Mixing Languages</h2>
+<p>CLOSED: [2026-01-15 Thu 08:26]</p>
+
+<div class="org-src-container">
+<pre class="src src-shell"><code class="language-shell">echo &quot;System: $(uname -s)&quot;</code></pre>
+</div>
+
+
+<pre class="fixed-width">System: Darwin</pre>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">import platform
+print(f&quot;Python version: {platform.python_version()}&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">Python version: 3.12.11</pre>
+
+<div class="org-src-container">
+<pre class="src src-javascript"><code class="language-javascript">console.log(`Node version: ${process.version}`);</code></pre>
+</div>
+
+
+<pre class="fixed-width">Node version: v25.2.1</pre>
+
+</div>
+</div>
+<div id="org-header-arguments" class="org-section org-level-1">
+<h1>✅ Header Arguments</h1>
+<p>CLOSED: [2026-01-15 Thu 08:27]</p>
+
+<p>Header arguments customize how source blocks execute and how results are
+handled. They appear after the language name.</p>
+
+<div id="org-syntax" class="org-section org-level-2">
+<h2>✅ Syntax</h2>
+<p>CLOSED: [2026-01-15 Thu 08:33]</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">print(arg1, arg2)</code></pre>
+</div>
+
+
+<pre class="fixed-width">value1 5</pre>
+
+</div>
+<div id="org-results-arguments" class="org-section org-level-2">
+<h2>✅ Results Arguments</h2>
+<p>CLOSED: [2026-01-15 Thu 08:33]</p>
+
+<div id="org-results-control-output-format" class="org-section org-level-3">
+<h3>✅ :results - Control Output Format</h3>
+<p>CLOSED: [2026-01-15 Thu 08:33]</p>
+
+<p>The :results argument controls how execution results are formatted and
+displayed.</p>
+
+<div id="org-collection-types" class="org-section org-level-4">
+<h4>✅ Collection Types</h4>
+<p>CLOSED: [2026-01-15 Thu 08:33]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>output</td><td>Capture stdout/stderr (default for most)</td></tr>
+<tr><td>value</td><td>Capture return value (last expression)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-format-types" class="org-section org-level-4">
+<h4>✅ Format Types</h4>
+<p>CLOSED: [2026-01-15 Thu 08:34]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>table</td><td>Format output as an org table</td></tr>
+<tr><td>list</td><td>Format output as a list</td></tr>
+<tr><td>verbatim</td><td>Fixed-width verbatim text (default)</td></tr>
+<tr><td>file</td><td>Result is a file path/link</td></tr>
+<tr><td>html</td><td>Wrap in #+BEGIN_EXPORT html block</td></tr>
+<tr><td>latex</td><td>Wrap in #+BEGIN_EXPORT latex block</td></tr>
+<tr><td>drawer</td><td>Wrap in :RESULTS: drawer</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-handling-types" class="org-section org-level-4">
+<h4>✅ Handling Types</h4>
+<p>CLOSED: [2026-01-15 Thu 08:34]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>replace</td><td>Replace previous results (default)</td></tr>
+<tr><td>append</td><td>Append to previous results</td></tr>
+<tr><td>prepend</td><td>Insert before previous results</td></tr>
+<tr><td>silent</td><td>Don&#39;t insert results</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-examples" class="org-section org-level-4">
+<h4>✅ Examples</h4>
+<p>CLOSED: [2026-01-15 Thu 08:34]</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">print(&quot;Line 1&quot;)
+print(&quot;Line 2&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">Line 1
+Line 2</pre>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">42</code></pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">print(&quot;Name,Age,City&quot;)
+print(&quot;Alice,30,NYC&quot;)
+print(&quot;Bob,25,Boston&quot;)</code></pre>
+</div>
+
+
+<table class="org-table">
+<tbody>
+<tr><td>Name</td><td>Age</td><td>City</td></tr>
+<tr><td>Alice</td><td>30</td><td>NYC</td></tr>
+<tr><td>Bob</td><td>25</td><td>Boston</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">import matplotlib.pyplot as plt
+plt.plot([1, 2, 3], [1, 4, 9])
+plt.savefig(&#39;plot.png&#39;)
+print(&#39;plot.png&#39;)</code></pre>
+</div>
+
+
+<p><img src="plot.png" alt="" /></p>
+
+</div>
+</div>
+</div>
+<div id="org-export-arguments" class="org-section org-level-2">
+<h2>✅ Export Arguments</h2>
+<p>CLOSED: [2026-01-15 Thu 08:35]</p>
+
+<div id="org-exports-control-what-gets-exported" class="org-section org-level-3">
+<h3>⚠️ :exports - Control What Gets Exported</h3>
+<table class="org-table">
+<thead>
+<tr><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>code</td><td>Export only the code block</td></tr>
+<tr><td>results</td><td>Export only the results</td></tr>
+<tr><td>both</td><td>Export both code and results (default)</td></tr>
+<tr><td>none</td><td>Don&#39;t export anything</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># Only this code appears in PDF/HTML export
+print(&quot;Secret result&quot;)</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># Only the output appears in export
+print(&quot;Public data&quot;)</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-variable-arguments" class="org-section org-level-2">
+<h2>⚠️ Variable Arguments</h2>
+<div id="org-var-pass-variables-to-code" class="org-section org-level-3">
+<h3>⚠️ :var - Pass Variables to Code</h3>
+<p>Define input variables for the code block:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">print(f&quot;{name} is {age} years old&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">Alice is 30 years old</pre>
+
+<p>Multiple variables:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">result = x + y
+print(f&quot;{x} + {y} = {result}&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">40 + 20 = 60</pre>
+
+<p>Reference named blocks or tables:</p>
+
+
+<table class="org-table">
+<thead>
+<tr><th>Name</th><th>Score</th></tr>
+</thead>
+<tbody>
+<tr><td>Alice</td><td>95</td></tr>
+<tr><td>Bob</td><td>87</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">for row in data:
+    print(f&quot;{row[0]}: {row[1]}&quot;)</code></pre>
+</div>
+
+
+</div>
+</div>
+<div id="org-session-arguments" class="org-section org-level-2">
+<h2>⚠️ Session Arguments</h2>
+<div id="org-session-enable-stateful-execution" class="org-section org-level-3">
+<h3>⚠️ :session - Enable Stateful Execution</h3>
+<p>Use sessions to maintain state between block executions:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">x = 42
+print(&quot;x defined&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">x defined</pre>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">print(f&quot;x = {x}&quot;)</code></pre>
+</div>
+
+
+<p>Session names:</p>
+
+<ul>
+<li><p>:session - Use default session for this language</p>
+</li>
+<li><p>:session <strong>name</strong> - Use named session</p>
+</li>
+<li><p>:session none - Disable session (each block is isolated)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-directory-arguments" class="org-section org-level-2">
+<h2>⚠️ Directory Arguments</h2>
+<div id="org-dir-set-working-directory" class="org-section org-level-3">
+<h3>⚠️ :dir - Set Working Directory</h3>
+<p>Execute code in a specific directory:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC shell :dir /tmp
+pwd
+ls -la</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">import os
+print(os.getcwd())</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-tangling-arguments" class="org-section org-level-2">
+<h2>⚠️ Tangling Arguments</h2>
+<div id="org-tangle-extract-code-to-files" class="org-section org-level-3">
+<h3>⚠️ :tangle - Extract Code to Files</h3>
+<p>Control whether code is extracted during tangling:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>no</td><td>Don&#39;t tangle this block (default)</td></tr>
+<tr><td>yes</td><td>Tangle to default file</td></tr>
+<tr><td>filename.ext</td><td>Tangle to specific file</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :tangle utils.py
+def helper_function():
+    &quot;&quot;&quot;This function will be extracted to utils.py&quot;&quot;&quot;
+    return &quot;helper&quot;</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">from utils import helper_function
+
+def main():
+    print(helper_function())
+
+if __name__ == &quot;__main__&quot;:
+    main()</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-cache-arguments" class="org-section org-level-2">
+<h2>⚠️ Cache Arguments</h2>
+<div id="org-cache-cache-execution-results" class="org-section org-level-3">
+<h3>⚠️ :cache - Cache Execution Results</h3>
+<p>Cache results to avoid re-execution:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>no</td><td>Don&#39;t cache (re-execute each time)</td></tr>
+<tr><td>yes</td><td>Cache results (only re-execute if code changes)</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :cache yes
+import time
+time.sleep(5)  # Expensive operation
+result = 42
+print(result)</code></pre>
+</div>
+
+<p>On first execution, this waits 5 seconds. On subsequent executions, the cached
+result is used instantly (unless the code changes).</p>
+
+</div>
+</div>
+<div id="org-other-useful-arguments" class="org-section org-level-2">
+<h2>⚠️ Other Useful Arguments</h2>
+<div id="org-eval-control-evaluation" class="org-section org-level-3">
+<h3>⚠️ :eval - Control Evaluation</h3>
+<table class="org-table">
+<thead>
+<tr><th>Value</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>yes</td><td>Evaluate normally (default)</td></tr>
+<tr><td>no</td><td>Never evaluate</td></tr>
+<tr><td>query</td><td>Ask before evaluating</td></tr>
+<tr><td>never-export</td><td>Don&#39;t evaluate on export</td></tr>
+<tr><td>no-export</td><td>Don&#39;t evaluate on export</td></tr>
+<tr><td>query-export</td><td>Ask before evaluating on export</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-wrap-wrap-results-in-block" class="org-section org-level-3">
+<h3>⚠️ :wrap - Wrap Results in Block</h3>
+<p>Wrap results in a custom block:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :wrap QUOTE
+print(&quot;This will be wrapped in a quote block&quot;)</code></pre>
+</div>
+
+
+<blockquote>
+<p>This will be wrapped in a quote block</p>
+</blockquote>
+
+</div>
+<div id="org-prologue-and-epilogue-code-injection" class="org-section org-level-3">
+<h3>⚠️ :prologue and :epilogue - Code Injection</h3>
+<p>Add code before/after the main block code:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :prologue &quot;import sys&quot; :epilogue &quot;print(&#39;Done&#39;)&quot;
+print(sys.version)</code></pre>
+</div>
+
+</div>
+<div id="org-cmdline-command-line-arguments" class="org-section org-level-3">
+<h3>⚠️ :cmdline - Command Line Arguments</h3>
+<p>Pass arguments to the interpreter:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC shell :cmdline -x
+# Shell script runs with -x flag (print commands)
+echo &quot;Hello&quot;</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-combining-arguments" class="org-section org-level-2">
+<h2>⚠️ Combining Arguments</h2>
+<p>Arguments can be combined:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :results output :session *analysis* :exports both :dir ~/data
+import pandas as pd
+df = pd.read_csv(&#39;data.csv&#39;)
+print(df.head())</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-results-handling-and-output-types" class="org-section org-level-1">
+<h1>⚠️ Results Handling and Output Types</h1>
+<div id="org-automatic-result-insertion" class="org-section org-level-2">
+<h2>⚠️ Automatic Result Insertion</h2>
+<p>When you execute a block, results automatically appear below it in a</p>
+
+
+</div>
+<div id="org-result-types-by-language" class="org-section org-level-2">
+<h2>⚠️ Result Types by Language</h2>
+<div id="org-text-output-verbatim" class="org-section org-level-3">
+<h3>⚠️ Text Output (Verbatim)</h3>
+<p>Most languages produce text output by default, formatted with : prefix:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python
+print(&quot;Hello&quot;)
+print(&quot;World&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">Hello
+World</pre>
+
+</div>
+<div id="org-tables" class="org-section org-level-3">
+<h3>⚠️ Tables</h3>
+<p>Python/R code that produces tabular data can be formatted as org tables:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :results table
+data = [[&#39;Alice&#39;, 30], [&#39;Bob&#39;, 25], [&#39;Carol&#39;, 35]]
+return data</code></pre>
+</div>
+
+
+<table class="org-table">
+<tbody>
+<tr><td>Alice</td><td>30</td></tr>
+<tr><td>Bob</td><td>25</td></tr>
+<tr><td>Carol</td><td>35</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-file-links" class="org-section org-level-3">
+<h3>⚠️ File Links</h3>
+<p>When using :results file or Jupyter with plotting libraries, results are file
+links:</p>
+
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import matplotlib.pyplot as plt
+plt.plot([1, 2, 3], [1, 4, 9]);</code></pre>
+</div>
+
+
+<p><img src=".ob-jupyter/output-1768484533710-2.png" alt="" /></p>
+
+<p>Images are automatically saved to .ob-jupyter/ directory when using Jupyter
+kernels.</p>
+
+</div>
+<div id="org-html-and-latex" class="org-section org-level-3">
+<h3>⚠️ HTML and LaTeX</h3>
+<p>Blocks can produce rich formatted output:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">html = &quot;&lt;h1&gt;Title&lt;/h1&gt;&lt;p&gt;Paragraph&lt;/p&gt;&quot;
+print(html)</code></pre>
+</div>
+
+
+<h1>Title</h1><p>Paragraph</p>
+
+</div>
+<div id="org-drawers" class="org-section org-level-3">
+<h3>✅ Drawers</h3>
+<p>CLOSED: [2026-01-15 Thu 08:43]</p>
+
+<p>Use drawers to fold long output:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">for i in range(20):
+    print(f&quot;Line {i}&quot;)</code></pre>
+</div>
+
+
+
+</div>
+</div>
+<div id="org-error-handling" class="org-section org-level-2">
+<h2>⚠️ Error Handling</h2>
+<p>When execution fails, error messages appear in results:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">undefined_variable</code></pre>
+</div>
+
+</div>
+<div id="org-clearing-results" class="org-section org-level-2">
+<h2>⚠️ Clearing Results</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.clearResults</td><td>Clear results of current block</td></tr>
+<tr><td>scimax.ob.clearAllResults</td><td>Clear all results in document</td></tr>
+<tr><td>scimax.babel.clearResults</td><td>Clear all results in document</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-sessions-for-stateful-execution" class="org-section org-level-1">
+<h1>⚠️ Sessions for Stateful Execution</h1>
+<div id="org-what-are-sessions" class="org-section org-level-2">
+<h2>⚠️ What Are Sessions?</h2>
+<p>Sessions maintain a persistent interpreter process that preserves state between
+executions. This is similar to how Jupyter notebooks work - variables,
+functions, and imports persist.</p>
+
+</div>
+<div id="org-enabling-sessions" class="org-section org-level-2">
+<h2>⚠️ Enabling Sessions</h2>
+<p>Add :session header argument:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">x = 42
+y = 10</code></pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">result = x + y
+print(result)</code></pre>
+</div>
+
+
+</div>
+<div id="org-named-sessions" class="org-section org-level-2">
+<h2>⚠️ Named Sessions</h2>
+<p>Use different session names to maintain separate contexts:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">import pandas as pd
+df = pd.read_csv(&#39;data.csv&#39;)</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">import unittest
+# Separate session for tests</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># Can still access df here
+print(df.head())</code></pre>
+</div>
+
+</div>
+<div id="org-session-scope" class="org-section org-level-2">
+<h2>⚠️ Session Scope</h2>
+<ul>
+<li><p>Sessions are per-language and per-name</p>
+</li>
+<li><p>Default session name (when you just use :session) is language-specific</p>
+</li>
+<li><p>Use :session none to explicitly disable session for a block</p>
+</li>
+<li><p>Sessions persist for the duration of the VS Code window</p>
+</li>
+</ul>
+
+</div>
+<div id="org-jupyter-sessions" class="org-section org-level-2">
+<h2>⚠️ Jupyter Sessions</h2>
+<p>When using Jupyter kernels (e.g., jupyter-python), sessions automatically use
+Jupyter kernel instances:</p>
+
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import numpy as np
+data = np.random.randn(100)</code></pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import matplotlib.pyplot as plt
+plt.hist(data, bins=20);</code></pre>
+</div>
+
+
+<p><img src=".ob-jupyter/output-1768484909875-0.png" alt="" /></p>
+
+</div>
+<div id="org-benefits-of-sessions" class="org-section org-level-2">
+<h2>⚠️ Benefits of Sessions</h2>
+<ul>
+<li><p><strong>Avoid re-computation</strong> - Load data once, use in multiple blocks</p>
+</li>
+<li><p><strong>Interactive development</strong> - Build up code incrementally</p>
+</li>
+<li><p><strong>Shared context</strong> - Split long workflows into logical chunks</p>
+</li>
+<li><p><strong>Testing</strong> - Set up fixtures in one block, test in others</p>
+</li>
+</ul>
+
+</div>
+<div id="org-session-limitations" class="org-section org-level-2">
+<h2>⚠️ Session Limitations</h2>
+<ul>
+<li><p>Sessions consume memory until VS Code closes</p>
+</li>
+<li><p>Long-running sessions can accumulate stale state</p>
+</li>
+<li><p>Restart VS Code to clear all sessions</p>
+</li>
+<li><p>Session state is not saved to disk</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>✅ Navigation</h1>
+<p>CLOSED: [2026-01-15 Thu 08:50]</p>
+
+<p>Moving between source blocks efficiently is essential for productive literate
+programming.</p>
+
+<div id="org-block-navigation-keybindings" class="org-section org-level-2">
+<h2>⚠️ Block Navigation Keybindings</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Keybinding</td><td>Action</td><td>Platform</td></tr>
+<tr><td>----------------------------------------</td><td>----------</td><td></td></tr>
+<tr><td>C-&lt;down&gt;</td><td>Next source block</td><td>All</td></tr>
+<tr><td>C-&lt;up&gt;</td><td>Previous source block</td><td>All</td></tr>
+<tr><td>S-&lt;return&gt;</td><td>Execute and next block</td><td>All</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-navigation-commands" class="org-section org-level-2">
+<h2>⚠️ Navigation Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th></th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.nextBlock</td><td>C-c C-n</td><td>Jump to next source block</td></tr>
+<tr><td>scimax.ob.previousBlock</td><td>C-c C-p</td><td>Jump to previous source block</td></tr>
+<tr><td>scimax.ob.jumpToBlock</td><td></td><td>Quick pick menu of all blocks</td></tr>
+<tr><td>scimax.ob.jumpToResults</td><td></td><td>Jump to results of current block</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-quick-block-selection" class="org-section org-level-2">
+<h2>✅ Quick Block Selection</h2>
+<p>CLOSED: [2026-01-15 Thu 08:51]</p>
+
+<p>Use scimax.ob.jumpToBlock to see a searchable list of all source blocks:</p>
+
+<ul>
+<li><p>Shows language and block name</p>
+</li>
+<li><p>Displays first line as preview</p>
+</li>
+<li><p>Filter by language or content</p>
+</li>
+<li><p>Jump instantly to any block</p>
+</li>
+</ul>
+
+</div>
+<div id="org-example-workflow" class="org-section org-level-2">
+<h2>✅ Example Workflow</h2>
+<p>CLOSED: [2026-01-15 Thu 08:51]</p>
+
+<ol>
+<li><p>Write code in first block</p>
+</li>
+<li><p>Press S-&lt;return&gt; to execute and move to next block</p>
+</li>
+<li><p>Write code that depends on previous block</p>
+</li>
+<li><p>Press S-&lt;return&gt; again</p>
+</li>
+<li><p>Continue building up your analysis sequentially</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-block-manipulation" class="org-section org-level-1">
+<h1>✅ Block Manipulation</h1>
+<p>CLOSED: [2026-01-15 Thu 08:51]</p>
+
+<p>Scimax VS Code provides powerful commands for creating, modifying, and
+reorganizing source blocks.</p>
+
+<div id="org-creating-blocks" class="org-section org-level-2">
+<h2>✅ Creating Blocks</h2>
+<p>CLOSED: [2026-01-15 Thu 08:51]</p>
+
+<div id="org-insert-block-above" class="org-section org-level-3">
+<h3>✅ Insert Block Above</h3>
+<p>CLOSED: [2026-01-15 Thu 08:55]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.insertBlockAbove</td><td>Esc-a</td><td>Insert new block above cursor</td></tr>
+</tbody>
+</table>
+
+<p>Prompts for language, creates block, and places cursor inside.</p>
+
+</div>
+<div id="org-insert-block-below" class="org-section org-level-3">
+<h3>✅ Insert Block Below</h3>
+<p>CLOSED: [2026-01-15 Thu 08:55]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.insertBlockBelow</td><td>Esc-b</td><td>Insert new block below cursor</td></tr>
+<tr><td>scimax.ob.insertBlockBelowSame</td><td></td><td>Insert block with same language</td></tr>
+</tbody>
+</table>
+
+<p>The &quot;same language&quot; variant copies the language from the current block.</p>
+
+</div>
+</div>
+<div id="org-splitting-blocks" class="org-section org-level-2">
+<h2>✅ Splitting Blocks</h2>
+<p>CLOSED: [2026-01-15 Thu 08:55]</p>
+
+<div id="org-split-at-cursor" class="org-section org-level-3">
+<h3>✅ Split at Cursor</h3>
+<p>CLOSED: [2026-01-15 Thu 08:55]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.splitBlock</td><td>Esc--</td><td>Split current block at cursor</td></tr>
+</tbody>
+</table>
+
+<p>Place your cursor in the middle of a source block and split it into two blocks:</p>
+
+<p>Before:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">x = 1
+y = 2
+z = x + y
+print(z)</code></pre>
+</div>
+
+<p>After splitting at line 3:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python
+x = 1
+y = 2</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">z = x + y
+print(z)</code></pre>
+</div>
+
+<p>Both blocks inherit the original header arguments.</p>
+
+</div>
+</div>
+<div id="org-merging-blocks" class="org-section org-level-2">
+<h2>⚠️ Merging Blocks</h2>
+<div id="org-merge-with-previous-next" class="org-section org-level-3">
+<h3>⚠️ Merge with Previous/Next</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.mergeWithPrevious</td><td>Merge with previous block</td></tr>
+<tr><td>scimax.ob.mergeWithNext</td><td>Merge with next block</td></tr>
+</tbody>
+</table>
+
+<p>Combines code from two adjacent blocks into one. If languages differ, prompts
+for confirmation.</p>
+
+</div>
+</div>
+<div id="org-copying-and-killing" class="org-section org-level-2">
+<h2>⚠️ Copying and Killing</h2>
+<div id="org-clone-block" class="org-section org-level-3">
+<h3>⚠️ Clone Block</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.cloneBlock</td><td>Duplicate current block below</td></tr>
+</tbody>
+</table>
+
+<p>Creates an exact copy of the current block including its header arguments.</p>
+
+</div>
+<div id="org-copy-block-and-results" class="org-section org-level-3">
+<h3>⚠️ Copy Block and Results</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.copyBlock</td><td>Copy block and results to clipboard</td></tr>
+</tbody>
+</table>
+
+<p>Copies the entire block including #+NAME: line (if present) and results
+section.</p>
+
+</div>
+<div id="org-kill-block" class="org-section org-level-3">
+<h3>⚠️ Kill Block</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.killBlock</td><td>Delete block and copy to clipboard</td></tr>
+</tbody>
+</table>
+
+<p>Removes the block and its results, copying everything to clipboard for pasting
+elsewhere.</p>
+
+</div>
+</div>
+<div id="org-moving-blocks" class="org-section org-level-2">
+<h2>⚠️ Moving Blocks</h2>
+<div id="org-move-up-down" class="org-section org-level-3">
+<h3>⚠️ Move Up/Down</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.moveBlockUp</td><td>Swap with previous block</td></tr>
+<tr><td>scimax.ob.moveBlockDown</td><td>Swap with next block</td></tr>
+</tbody>
+</table>
+
+<p>Swaps the current block (including results) with the adjacent block,
+maintaining all content.</p>
+
+</div>
+</div>
+<div id="org-typical-workflows" class="org-section org-level-2">
+<h2>⚠️ Typical Workflows</h2>
+<div id="org-notebook-style-development" class="org-section org-level-3">
+<h3>⚠️ Notebook-Style Development</h3>
+<ol>
+<li><p>Insert block with scimax.ob.insertBlockBelow</p>
+</li>
+<li><p>Write code</p>
+</li>
+<li><p>Execute with S-&lt;return&gt; (executes and moves to next)</p>
+</li>
+<li><p>Repeat</p>
+</li>
+</ol>
+
+</div>
+<div id="org-refactoring-code" class="org-section org-level-3">
+<h3>⚠️ Refactoring Code</h3>
+<ol>
+<li><p>Split large block into logical pieces with scimax.ob.splitBlock</p>
+</li>
+<li><p>Add session to maintain state: :session</p>
+</li>
+<li><p>Execute sequentially to verify</p>
+</li>
+<li><p>Reorganize with move commands if needed</p>
+</li>
+</ol>
+
+</div>
+<div id="org-experimenting-with-variants" class="org-section org-level-3">
+<h3>⚠️ Experimenting with Variants</h3>
+<ol>
+<li><p>Clone block with scimax.ob.cloneBlock</p>
+</li>
+<li><p>Modify clone to test alternative approach</p>
+</li>
+<li><p>Compare results</p>
+</li>
+<li><p>Kill the version you don&#39;t want</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div id="org-inline-source-blocks" class="org-section org-level-1">
+<h1>⚠️ Inline Source Blocks</h1>
+<p>Sometimes you need to execute code inline within a paragraph rather than in a
+standalone block.</p>
+
+<div id="org-syntax" class="org-section org-level-2">
+<h2>⚠️ Syntax</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">src_LANGUAGE{CODE}
+src_LANGUAGE[HEADERS]{CODE}</code></pre>
+</div>
+
+</div>
+<div id="org-examples" class="org-section org-level-2">
+<h2>⚠️ Examples</h2>
+<div id="org-simple-inline-computation" class="org-section org-level-3">
+<h3>⚠️ Simple Inline Computation</h3>
+<p>The answer is src_python{return 2 + 2} which equals 4.</p>
+
+<p>Result after execution:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">The answer is 4 which equals 4.</code></pre>
+</div>
+
+</div>
+<div id="org-with-headers" class="org-section org-level-3">
+<h3>⚠️ With Headers</h3>
+<p>Today is src_python[:results value]{import datetime; return datetime.date.today()}.</p>
+
+</div>
+<div id="org-accessing-variables" class="org-section org-level-3">
+<h3>⚠️ Accessing Variables</h3>
+<p>Inline blocks can access session variables:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :session *calc*
+total = 100
+tax_rate = 0.08</code></pre>
+</div>
+
+<p>The total with tax is src_python[:session <strong>calc</strong>]{return total * (1 + tax_rate)}.</p>
+
+</div>
+</div>
+<div id="org-use-cases" class="org-section org-level-2">
+<h2>⚠️ Use Cases</h2>
+<ul>
+<li><p>Embedding calculations in text</p>
+</li>
+<li><p>Showing dates/times</p>
+</li>
+<li><p>Inserting computed values into sentences</p>
+</li>
+<li><p>Quick one-liners that don&#39;t need a full block</p>
+</li>
+</ul>
+
+</div>
+<div id="org-limitations" class="org-section org-level-2">
+<h2>⚠️ Limitations</h2>
+<ul>
+<li><p>No syntax highlighting</p>
+</li>
+<li><p>Results replace the inline block (can&#39;t keep both)</p>
+</li>
+<li><p>Less suitable for multi-line code</p>
+</li>
+<li><p>Harder to debug than regular blocks</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-code-tangling" class="org-section org-level-1">
+<h1>⚠️ Code Tangling</h1>
+<p>Tangling is the process of extracting source code from your org document into
+separate source files. This enables the literate programming workflow where
+documentation is primary but you can still generate working software.</p>
+
+<div id="org-what-is-tangling" class="org-section org-level-2">
+<h2>⚠️ What Is Tangling?</h2>
+<p>Tangling extracts code from source blocks marked with :tangle into external
+files:</p>
+
+<ul>
+<li><p>Write narrative documentation with embedded code blocks</p>
+</li>
+<li><p>Extract all code to build/run your project</p>
+</li>
+<li><p>Keep docs and code in perfect sync</p>
+</li>
+</ul>
+
+</div>
+<div id="org-enabling-tangling" class="org-section org-level-2">
+<h2>✅ Enabling Tangling</h2>
+<p>CLOSED: [2026-01-15 Thu 08:57]</p>
+
+<p>Add :tangle filename.ext to source blocks:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">#!/usr/bin/env python3
+
+def main():
+    print(&quot;Hello from tangled code!&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    main()</code></pre>
+</div>
+
+</div>
+<div id="org-tangling-commands" class="org-section org-level-2">
+<h2>✅ Tangling Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 08:57]</p>
+
+<div id="org-execute-tangle" class="org-section org-level-3">
+<h3>✅ Execute Tangle</h3>
+<p>CLOSED: [2026-01-15 Thu 08:58]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keybinding</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-v t</td><td>scimax.babel.tangle</td><td>Extract all tangle blocks</td></tr>
+</tbody>
+</table>
+
+<p>This command:</p>
+
+<ol>
+<li><p>Finds all blocks with :tangle headers</p>
+</li>
+<li><p>Groups them by target filename</p>
+</li>
+<li><p>Writes each file with concatenated code</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-tangling-modes" class="org-section org-level-2">
+<h2>⚠️ Tangling Modes</h2>
+<div id="org-don-t-tangle-default" class="org-section org-level-3">
+<h3>⚠️ Don&#39;t Tangle (Default)</h3>
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># Not tangled by default</code></pre>
+</div>
+
+</div>
+<div id="org-tangle-to-specific-file" class="org-section org-level-3">
+<h3>⚠️ Tangle to Specific File</h3>
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">def utility_function():
+    return &quot;useful&quot;</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">def another_utility():
+    return &quot;also useful&quot;</code></pre>
+</div>
+
+<p>Both blocks tangle to src/utils.py in order.</p>
+
+</div>
+<div id="org-tangle-with-yes" class="org-section org-level-3">
+<h3>⚠️ Tangle with Yes</h3>
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># Tangles to default file (based on org filename)</code></pre>
+</div>
+
+<p>If your org file is project.org, this tangles to project.py.</p>
+
+</div>
+</div>
+<div id="org-advanced-tangling" class="org-section org-level-2">
+<h2>⚠️ Advanced Tangling</h2>
+<div id="org-no-web-style-references" class="org-section org-level-3">
+<h3>⚠️ No-Web Style References</h3>
+<p>Use :noweb to reference other named blocks:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+NAME: imports
+#+BEGIN_SRC python
+import sys
+import os</code></pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">def helper():
+    return &quot;help&quot;</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">&lt;&lt;imports&gt;&gt;
+&lt;&lt;helpers&gt;&gt;
+
+def main():
+    print(helper())</code></pre>
+</div>
+
+<p>When tangled, &lt;&lt;imports&gt;&gt; and &lt;&lt;helpers&gt;&gt; are replaced with the code from
+those named blocks.</p>
+
+</div>
+<div id="org-shebang-lines" class="org-section org-level-3">
+<h3>⚠️ Shebang Lines</h3>
+<p>Add :shebang for executable scripts:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC shell :tangle script.sh :shebang &quot;#!/bin/bash&quot;
+echo &quot;This will be executable&quot;</code></pre>
+</div>
+
+</div>
+<div id="org-comments-in-tangled-code" class="org-section org-level-3">
+<h3>⚠️ Comments in Tangled Code</h3>
+<p>By default, tangled code includes no comments about its origin. Some
+implementations add comments like:</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python"># [[file:literate.org::*Section Name][Section Name:1]]
+# code here
+# Section Name:1 ends here</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-use-cases" class="org-section org-level-2">
+<h2>⚠️ Use Cases</h2>
+<div id="org-library-development" class="org-section org-level-3">
+<h3>⚠️ Library Development</h3>
+<p>Write a tutorial document that tangles to a working library:</p>
+
+<ul>
+<li><p>README.org - Document with examples</p>
+</li>
+<li><p>Tangle to src/lib.py, tests/test_lib.py</p>
+</li>
+<li><p>Readers learn from docs, users import the library</p>
+</li>
+</ul>
+
+</div>
+<div id="org-configuration-management" class="org-section org-level-3">
+<h3>⚠️ Configuration Management</h3>
+<p>Document your configuration in config.org:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">* Database Configuration
+We use PostgreSQL with connection pooling.
+
+#+BEGIN_SRC toml :tangle config.toml
+[database]
+host = &quot;localhost&quot;
+port = 5432
+pool_size = 10</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-build-scripts" class="org-section org-level-3">
+<h3>⚠️ Build Scripts</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">* Build Process
+
+#+BEGIN_SRC makefile :tangle Makefile
+all: build test
+
+build:
+	python setup.py build
+
+test:
+	pytest tests/</code></pre>
+</div>
+
+</div>
+<div id="org-tangling-vs-export" class="org-section org-level-2">
+<h2>⚠️ Tangling vs Export</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Feature</td><td>Tangling</td><td>Export</td></tr>
+<tr><td>------------</td><td>----------------------------</td><td>-----------------------------</td></tr>
+<tr><td>Purpose</td><td>Extract code to files</td><td>Create documentation</td></tr>
+<tr><td>Output</td><td>Source code files</td><td>HTML, PDF, LaTeX, etc.</td></tr>
+<tr><td>Controls</td><td>:tangle</td><td>:exports</td></tr>
+<tr><td>Respects</td><td>Code blocks only</td><td>All org content</td></tr>
+<tr><td>Use case</td><td>Build/run software</td><td>Share/publish documentation</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-named-blocks-and-calls" class="org-section org-level-1">
+<h1>⚠️ Named Blocks and Calls</h1>
+<div id="org-named-blocks" class="org-section org-level-2">
+<h2>⚠️ Named Blocks</h2>
+<p>Give blocks names using #+NAME: so they can be referenced:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+NAME: square
+#+BEGIN_SRC python :var x=0
+return x * x</code></pre>
+</div>
+
+</div>
+<div id="org-calling-named-blocks" class="org-section org-level-2">
+<h2>⚠️ Calling Named Blocks</h2>
+<p>Use #+CALL: to invoke a named block with arguments:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+CALL: square(x=5)
+
+#+RESULTS:
+: 25
+
+#+CALL: square(x=10)
+
+#+RESULTS:
+: 100</code></pre>
+</div>
+
+</div>
+<div id="org-inline-call-syntax" class="org-section org-level-2">
+<h2>⚠️ Inline Call Syntax</h2>
+<p>You can also call blocks inline:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">The square of 7 is call_square(x=7).</code></pre>
+</div>
+
+<p>After execution:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">The square of 7 is 49.</code></pre>
+</div>
+
+<p>Reference named blocks as variables:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+NAME: raw-data
+| Name  | Value |
+|-------+-------|
+| Alpha | 100   |
+| Beta  | 200   |
+| Gamma | 150   |
+
+#+BEGIN_SRC python :var data=raw-data
+total = sum(row[1] for row in data)
+print(f&quot;Total: {total}&quot;)</code></pre>
+</div>
+
+
+<pre class="fixed-width">Total: 450</pre>
+
+</div>
+<div id="org-call-with-headers" class="org-section org-level-2">
+<h2>⚠️ Call with Headers</h2>
+<p>Override headers when calling:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+CALL: square(x=5) :results silent
+#+CALL: square(x=5) :results table</code></pre>
+</div>
+
+</div>
+<div id="org-library-of-functions" class="org-section org-level-2">
+<h2>⚠️ Library of Functions</h2>
+<p>Build a library of reusable code blocks:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+NAME: mean
+#+BEGIN_SRC python :var numbers=[]
+return sum(numbers) / len(numbers)</code></pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">sorted_nums = sorted(numbers)
+n = len(sorted_nums)
+mid = n // 2
+if n % 2 == 0:
+    return (sorted_nums[mid-1] + sorted_nums[mid]) / 2
+else:
+    return sorted_nums[mid]</code></pre>
+</div>
+
+
+<table class="org-table">
+<tbody>
+<tr><td>10</td></tr>
+<tr><td>20</td></tr>
+<tr><td>30</td></tr>
+<tr><td>40</td></tr>
+<tr><td>50</td></tr>
+</tbody>
+</table>
+
+
+
+<pre class="fixed-width">30.0</pre>
+
+
+
+<pre class="fixed-width">30.0</pre>
+
+</div>
+<div id="org-best-practices" class="org-section org-level-2">
+<h2>⚠️ Best Practices</h2>
+<ul>
+<li><p>Use descriptive names: load-data, calculate-statistics, generate-plot</p>
+</li>
+<li><p>Document block parameters in preceding text</p>
+</li>
+<li><p>Keep blocks focused and reusable</p>
+</li>
+<li><p>Use #+CALL: for parameterized re-execution</p>
+</li>
+<li><p>Consider blocks as functions in your literate program</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-quick-reference" class="org-section org-level-1">
+<h1>⚠️ Quick Reference</h1>
+<div id="org-essential-keybindings" class="org-section org-level-2">
+<h2>⚠️ Essential Keybindings</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Keybinding</td><td>Action</td></tr>
+<tr><td>--------------------</td><td>-------------------------------------</td></tr>
+<tr><td>C-&lt;return&gt;</td><td>Execute current block</td></tr>
+<tr><td>S-&lt;return&gt;</td><td>Execute and move to next</td></tr>
+<tr><td>C-&lt;up&gt;</td><td>Previous block</td></tr>
+<tr><td>C-&lt;down&gt;</td><td>Next block</td></tr>
+<tr><td>C-c C-v t</td><td>Tangle all blocks</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-common-header-arguments" class="org-section org-level-2">
+<h2>⚠️ Common Header Arguments</h2>
+<table class="org-table">
+<thead>
+<tr><th>Argument</th><th>Values</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td>:results</td><td>output, value, table, silent</td><td>Output format</td></tr>
+<tr><td>:exports</td><td>code, results, both, none</td><td>What to export</td></tr>
+<tr><td>:session</td><td>name or none</td><td>Persistent state</td></tr>
+<tr><td>:var</td><td>name=value</td><td>Input variables</td></tr>
+<tr><td>:tangle</td><td>filename or no</td><td>Extract to file</td></tr>
+<tr><td>:dir</td><td>path</td><td>Working directory</td></tr>
+<tr><td>:cache</td><td>yes or no</td><td>Cache results</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-supported-languages" class="org-section org-level-2">
+<h2>⚠️ Supported Languages</h2>
+<p>Direct: python, javascript, typescript, shell, bash, sql</p>
+
+<p>Jupyter: jupyter-python, jupyter-r, jupyter-julia, jupyter-ruby, and many more</p>
+
+</div>
+<div id="org-example-templates" class="org-section org-level-2">
+<h2>⚠️ Example Templates</h2>
+<div id="org-basic-block" class="org-section org-level-3">
+<h3>⚠️ Basic Block</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python
+# Your code here</code></pre>
+</div>
+
+</div>
+<div id="org-session-block" class="org-section org-level-3">
+<h3>⚠️ Session Block</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :session
+# Code with persistent state</code></pre>
+</div>
+
+</div>
+<div id="org-data-processing" class="org-section org-level-3">
+<h3>⚠️ Data Processing</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+NAME: input-data
+| A | B |
+|---+---|
+| 1 | 2 |
+
+#+BEGIN_SRC python :var data=input-data :results table
+# Process data
+return processed</code></pre>
+</div>
+
+</div>
+<div id="org-plot-generation" class="org-section org-level-3">
+<h3>⚠️ Plot Generation</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :results file
+import matplotlib.pyplot as plt
+plt.plot([1, 2, 3])
+plt.savefig(&#39;.ob-jupyter/plot.png&#39;)
+&#39;.ob-jupyter/plot.png&#39;</code></pre>
+</div>
+
+</div>
+<div id="org-tangled-library" class="org-section org-level-3">
+<h3>⚠️ Tangled Library</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BEGIN_SRC python :tangle mylib.py
+def my_function():
+    &quot;&quot;&quot;Documented function&quot;&quot;&quot;
+    pass</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-tips-and-best-practices" class="org-section org-level-1">
+<h1>⚠️ Tips and Best Practices</h1>
+<div id="org-organization" class="org-section org-level-2">
+<h2>⚠️ Organization</h2>
+<ul>
+<li><p>Use headings to group related blocks</p>
+</li>
+<li><p>Name important blocks with #+NAME:</p>
+</li>
+<li><p>Add #+CAPTION: to blocks that produce key results</p>
+</li>
+<li><p>Use sessions to connect related blocks</p>
+</li>
+</ul>
+
+</div>
+<div id="org-performance" class="org-section org-level-2">
+<h2>⚠️ Performance</h2>
+<ul>
+<li><p>Use :cache yes for expensive computations</p>
+</li>
+<li><p>Close unnecessary sessions to free memory</p>
+</li>
+<li><p>Use :results silent when you don&#39;t need output</p>
+</li>
+<li><p>Limit output size for large datasets</p>
+</li>
+</ul>
+
+</div>
+<div id="org-reproducibility" class="org-section org-level-2">
+<h2>⚠️ Reproducibility</h2>
+<ul>
+<li><p>Specify exact versions in documentation</p>
+</li>
+<li><p>Use :dir to set working directory explicitly</p>
+</li>
+<li><p>Document all dependencies in requirements/environment</p>
+</li>
+<li><p>Include data loading steps in the document</p>
+</li>
+</ul>
+
+</div>
+<div id="org-debugging" class="org-section org-level-2">
+<h2>⚠️ Debugging</h2>
+<ul>
+<li><p>Execute blocks one at a time with C-&lt;return&gt;</p>
+</li>
+<li><p>Check session state in separate test blocks</p>
+</li>
+<li><p>Use :results output to see print statements</p>
+</li>
+<li><p>Clear results and re-execute from top to verify</p>
+</li>
+</ul>
+
+</div>
+<div id="org-collaboration" class="org-section org-level-2">
+<h2>⚠️ Collaboration</h2>
+<ul>
+<li><p>Export to HTML/PDF for non-technical readers (:exports results)</p>
+</li>
+<li><p>Tangle to source files for developers (:tangle yes)</p>
+</li>
+<li><p>Use meaningful block names for #+CALL: references</p>
+</li>
+<li><p>Document assumptions and requirements in text</p>
+</li>
+</ul>
+
+</div>
+<div id="org-common-pitfalls" class="org-section org-level-2">
+<h2>⚠️ Common Pitfalls</h2>
+<ul>
+<li><p>Forgetting to enable sessions when blocks depend on each other</p>
+</li>
+<li><p>Using :results value when you want printed output</p>
+</li>
+<li><p>Not clearing stale results before sharing</p>
+</li>
+<li><p>Referencing blocks that haven&#39;t executed yet</p>
+</li>
+<li><p>Mixing session names unintentionally</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-additional-resources" class="org-section org-level-1">
+<h1>⚠️ Additional Resources</h1>
+<div id="org-emacs-org-mode-documentation" class="org-section org-level-2">
+<h2>⚠️ Emacs Org-Mode Documentation</h2>
+<p>While Scimax VS Code implements its own version, the Emacs org-mode
+documentation is valuable for understanding concepts:</p>
+
+<ul>
+<li><p><a href="https://orgmode.org/manual/Working-with-Source-Code.html">Working with Source Code</a></p>
+</li>
+<li><p><a href="https://orgmode.org/worg/org-contrib/babel/">Babel Introduction</a></p>
+</li>
+<li><p><a href="https://orgmode.org/worg/org-contrib/babel/languages/index.html">Babel Language Reference</a></p>
+</li>
+</ul>
+
+</div>
+<div id="org-scimax-vs-code-docs" class="org-section org-level-2">
+<h2>⚠️ Scimax VS Code Docs</h2>
+<ul>
+<li><p><a href="01-getting-started.html">Getting Started Guide</a></p>
+</li>
+<li><p><a href="02-document-structure.html">Document Structure</a></p>
+</li>
+<li><p><a href="04-tables.html">Tables</a></p>
+</li>
+</ul>
+
+</div>
+<div id="org-related-topics" class="org-section org-level-2">
+<h2>⚠️ Related Topics</h2>
+<ul>
+<li><p>Jupyter integration for rich interactive notebooks</p>
+</li>
+<li><p>Export system for generating documents</p>
+</li>
+<li><p>Database integration for storing and searching code blocks</p>
+</li>
+<li><p>Project notebooks for organizing research</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-conclusion" class="org-section org-level-1">
+<h1>⚠️ Conclusion</h1>
+<p>Source code blocks transform org documents into powerful literate programming
+environments. You can:</p>
+
+<ul>
+<li><p>Write executable documentation</p>
+</li>
+<li><p>Build reproducible analyses</p>
+</li>
+<li><p>Create interactive notebooks</p>
+</li>
+<li><p>Develop software with embedded docs</p>
+</li>
+<li><p>Share knowledge with working examples</p>
+</li>
+</ul>
+
+<p>Master the keybindings (C-&lt;return&gt;, S-&lt;return&gt;, C-&lt;up&gt;/Down), experiment
+with header arguments, and leverage sessions for interactive development.</p>
+
+<p>Happy literate programming!</p>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="06-timestamps.html">Timestamps</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="08-supported-languages.html">Supported Languages</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="15-capture.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="08-supported-languages.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#source-code-blocks" class="toc-link">✅ Source Code Blocks</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#introduction-to-literate-programming" class="toc-link">✅ Introduction to Literate Programming</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#benefits-of-literate-programming" class="toc-link">✅ Benefits of Literate Programming</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#literate-programming-in-org-mode" class="toc-link">✅ Literate Programming in Org-Mode</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#source-block-syntax" class="toc-link">✅ Source Block Syntax</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#basic-structure" class="toc-link">✅ Basic Structure</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#language-declaration" class="toc-link">✅ Language Declaration</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#header-arguments" class="toc-link">⚠️ Header Arguments</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#results-section" class="toc-link">⚠️ Results Section</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#executing-code" class="toc-link">⚠️ Executing Code</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#execution-keybindings" class="toc-link">⚠️ Execution Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#execution-commands" class="toc-link">✅ Execution Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#execution-flow" class="toc-link">✅ Execution Flow</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#example" class="toc-link">✅ Example</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#supported-languages" class="toc-link">✅ Supported Languages</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#direct-execution-languages" class="toc-link">✅ Direct Execution Languages</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#jupyter-kernel-languages" class="toc-link">✅ Jupyter Kernel Languages</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#jupyter-benefits" class="toc-link">✅ Jupyter Benefits</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#example-mixing-languages" class="toc-link">✅ Example: Mixing Languages</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#header-arguments" class="toc-link">✅ Header Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#syntax" class="toc-link">✅ Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#results-arguments" class="toc-link">✅ Results Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#results-control-output-format" class="toc-link">✅ :results - Control Output Format</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#export-arguments" class="toc-link">✅ Export Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#exports-control-what-gets-exported" class="toc-link">⚠️ :exports - Control What Gets Exported</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#variable-arguments" class="toc-link">⚠️ Variable Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#var-pass-variables-to-code" class="toc-link">⚠️ :var - Pass Variables to Code</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#session-arguments" class="toc-link">⚠️ Session Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#session-enable-stateful-execution" class="toc-link">⚠️ :session - Enable Stateful Execution</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#directory-arguments" class="toc-link">⚠️ Directory Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#dir-set-working-directory" class="toc-link">⚠️ :dir - Set Working Directory</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#tangling-arguments" class="toc-link">⚠️ Tangling Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#tangle-extract-code-to-files" class="toc-link">⚠️ :tangle - Extract Code to Files</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#cache-arguments" class="toc-link">⚠️ Cache Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#cache-cache-execution-results" class="toc-link">⚠️ :cache - Cache Execution Results</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#other-useful-arguments" class="toc-link">⚠️ Other Useful Arguments</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#eval-control-evaluation" class="toc-link">⚠️ :eval - Control Evaluation</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#wrap-wrap-results-in-block" class="toc-link">⚠️ :wrap - Wrap Results in Block</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#prologue-and-epilogue-code-injection" class="toc-link">⚠️ :prologue and :epilogue - Code Injection</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#cmdline-command-line-arguments" class="toc-link">⚠️ :cmdline - Command Line Arguments</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#combining-arguments" class="toc-link">⚠️ Combining Arguments</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#results-handling-and-output-types" class="toc-link">⚠️ Results Handling and Output Types</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#automatic-result-insertion" class="toc-link">⚠️ Automatic Result Insertion</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#result-types-by-language" class="toc-link">⚠️ Result Types by Language</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#text-output-verbatim" class="toc-link">⚠️ Text Output (Verbatim)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#tables" class="toc-link">⚠️ Tables</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#file-links" class="toc-link">⚠️ File Links</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#html-and-latex" class="toc-link">⚠️ HTML and LaTeX</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#title" class="toc-link">Title</a>
+            </li>
+        
+<ul class="toc-sublist">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#drawers" class="toc-link">✅ Drawers</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#error-handling" class="toc-link">⚠️ Error Handling</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#clearing-results" class="toc-link">⚠️ Clearing Results</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#sessions-for-stateful-execution" class="toc-link">⚠️ Sessions for Stateful Execution</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#what-are-sessions" class="toc-link">⚠️ What Are Sessions?</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#enabling-sessions" class="toc-link">⚠️ Enabling Sessions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#named-sessions" class="toc-link">⚠️ Named Sessions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#session-scope" class="toc-link">⚠️ Session Scope</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#jupyter-sessions" class="toc-link">⚠️ Jupyter Sessions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#benefits-of-sessions" class="toc-link">⚠️ Benefits of Sessions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#session-limitations" class="toc-link">⚠️ Session Limitations</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">✅ Navigation</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#block-navigation-keybindings" class="toc-link">⚠️ Block Navigation Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#navigation-commands" class="toc-link">⚠️ Navigation Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#quick-block-selection" class="toc-link">✅ Quick Block Selection</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#example-workflow" class="toc-link">✅ Example Workflow</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#block-manipulation" class="toc-link">✅ Block Manipulation</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#creating-blocks" class="toc-link">✅ Creating Blocks</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#insert-block-above" class="toc-link">✅ Insert Block Above</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#insert-block-below" class="toc-link">✅ Insert Block Below</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#splitting-blocks" class="toc-link">✅ Splitting Blocks</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#split-at-cursor" class="toc-link">✅ Split at Cursor</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#merging-blocks" class="toc-link">⚠️ Merging Blocks</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#merge-with-previousnext" class="toc-link">⚠️ Merge with Previous/Next</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#copying-and-killing" class="toc-link">⚠️ Copying and Killing</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#clone-block" class="toc-link">⚠️ Clone Block</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#copy-block-and-results" class="toc-link">⚠️ Copy Block and Results</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#kill-block" class="toc-link">⚠️ Kill Block</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#moving-blocks" class="toc-link">⚠️ Moving Blocks</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#move-updown" class="toc-link">⚠️ Move Up/Down</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#typical-workflows" class="toc-link">⚠️ Typical Workflows</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#notebook-style-development" class="toc-link">⚠️ Notebook-Style Development</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#refactoring-code" class="toc-link">⚠️ Refactoring Code</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#experimenting-with-variants" class="toc-link">⚠️ Experimenting with Variants</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#inline-source-blocks" class="toc-link">⚠️ Inline Source Blocks</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#syntax" class="toc-link">⚠️ Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#examples" class="toc-link">⚠️ Examples</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#simple-inline-computation" class="toc-link">⚠️ Simple Inline Computation</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#with-headers" class="toc-link">⚠️ With Headers</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#accessing-variables" class="toc-link">⚠️ Accessing Variables</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#use-cases" class="toc-link">⚠️ Use Cases</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#limitations" class="toc-link">⚠️ Limitations</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#code-tangling" class="toc-link">⚠️ Code Tangling</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#what-is-tangling" class="toc-link">⚠️ What Is Tangling?</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#enabling-tangling" class="toc-link">✅ Enabling Tangling</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tangling-commands" class="toc-link">✅ Tangling Commands</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#execute-tangle" class="toc-link">✅ Execute Tangle</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#tangling-modes" class="toc-link">⚠️ Tangling Modes</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#dont-tangle-default" class="toc-link">⚠️ Don't Tangle (Default)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#tangle-to-specific-file" class="toc-link">⚠️ Tangle to Specific File</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#tangle-with-yes" class="toc-link">⚠️ Tangle with Yes</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#advanced-tangling" class="toc-link">⚠️ Advanced Tangling</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#no-web-style-references" class="toc-link">⚠️ No-Web Style References</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#shebang-lines" class="toc-link">⚠️ Shebang Lines</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#comments-in-tangled-code" class="toc-link">⚠️ Comments in Tangled Code</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#use-cases" class="toc-link">⚠️ Use Cases</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#library-development" class="toc-link">⚠️ Library Development</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#configuration-management" class="toc-link">⚠️ Configuration Management</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#build-scripts" class="toc-link">⚠️ Build Scripts</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#tangling-vs-export" class="toc-link">⚠️ Tangling vs Export</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#named-blocks-and-calls" class="toc-link">⚠️ Named Blocks and Calls</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#named-blocks" class="toc-link">⚠️ Named Blocks</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#calling-named-blocks" class="toc-link">⚠️ Calling Named Blocks</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#inline-call-syntax" class="toc-link">⚠️ Inline Call Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#call-with-headers" class="toc-link">⚠️ Call with Headers</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#library-of-functions" class="toc-link">⚠️ Library of Functions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#best-practices" class="toc-link">⚠️ Best Practices</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#quick-reference" class="toc-link">⚠️ Quick Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#essential-keybindings" class="toc-link">⚠️ Essential Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#common-header-arguments" class="toc-link">⚠️ Common Header Arguments</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#supported-languages" class="toc-link">⚠️ Supported Languages</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#example-templates" class="toc-link">⚠️ Example Templates</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#basic-block" class="toc-link">⚠️ Basic Block</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#session-block" class="toc-link">⚠️ Session Block</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#data-processing" class="toc-link">⚠️ Data Processing</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#plot-generation" class="toc-link">⚠️ Plot Generation</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#tangled-library" class="toc-link">⚠️ Tangled Library</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#tips-and-best-practices" class="toc-link">⚠️ Tips and Best Practices</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#organization" class="toc-link">⚠️ Organization</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#performance" class="toc-link">⚠️ Performance</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#reproducibility" class="toc-link">⚠️ Reproducibility</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#debugging" class="toc-link">⚠️ Debugging</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#collaboration" class="toc-link">⚠️ Collaboration</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#common-pitfalls" class="toc-link">⚠️ Common Pitfalls</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#additional-resources" class="toc-link">⚠️ Additional Resources</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#emacs-org-mode-documentation" class="toc-link">⚠️ Emacs Org-Mode Documentation</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#scimax-vs-code-docs" class="toc-link">⚠️ Scimax VS Code Docs</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#related-topics" class="toc-link">⚠️ Related Topics</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#conclusion" class="toc-link">⚠️ Conclusion</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

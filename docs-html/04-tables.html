@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tables</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-tables" class="org-section org-level-1">
+<h1>✅ Tables</h1>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<p>Org-mode tables provide spreadsheet-like functionality directly in your text
+documents. Scimax VS Code supports creating, editing, navigating, and
+calculating with tables.</p>
+
+</div>
+<div id="org-creating-tables" class="org-section org-level-1">
+<h1>✅ Creating Tables</h1>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<div id="org-manual-creation" class="org-section org-level-2">
+<h2>✅ Manual Creation</h2>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<p>Type a table using pipe characters (|) as column separators:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Name</th><th>Age</th><th>City</th></tr>
+</thead>
+<tbody>
+<tr><td>Alice</td><td>30</td><td>New York</td></tr>
+<tr><td>Bob</td><td>25</td><td>Boston</td></tr>
+</tbody>
+</table>
+
+<p>When you press Tab after entering content, the table auto-aligns.</p>
+
+</div>
+<div id="org-table-creation-command" class="org-section org-level-2">
+<h2>✅ Table Creation Command</h2>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<p>Press <code class="verbatim">C-c |</code> or use <kbd>scimax.table.create</kbd> to insert a table template.</p>
+
+<p>You&#39;ll be prompted for the number of columns and rows.</p>
+
+</div>
+<div id="org-converting-text-to-table" class="org-section org-level-2">
+<h2>✅ Converting Text to Table</h2>
+<p>CLOSED: [2026-01-15 Thu 15:26]</p>
+
+<p>Select comma-separated or tab-separated text, then use <code class="verbatim">C-c |</code> to convert
+it to a table.</p>
+
+<p>1,2
+3,4</p>
+
+<p>leads to </p>
+
+<table class="org-table">
+<tbody>
+<tr><td>1</td><td>2</td></tr>
+<tr><td>3</td><td>4</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-table-navigation" class="org-section org-level-1">
+<h1>✅ Table Navigation</h1>
+<p>CLOSED: [2026-01-15 Thu 15:26]</p>
+
+<div id="org-moving-between-cells" class="org-section org-level-2">
+<h2>👀 Moving Between Cells</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>&lt;tab&gt;</td><td>Move to next cell (creates row at end)</td></tr>
+<tr><td>S-&lt;tab&gt;</td><td>Move to previous cell</td></tr>
+<tr><td>Arrow keys</td><td>Move in that direction</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-quick-navigation" class="org-section org-level-2">
+<h2>Quick Navigation</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.nextCell</td><td>Go to next cell</td></tr>
+<tr><td>scimax.table.prevCell</td><td>Go to previous cell</td></tr>
+<tr><td>scimax.table.gotoNamed</td><td>Jump to a named table</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-editing-tables" class="org-section org-level-1">
+<h1>⚠️ Editing Tables</h1>
+<div id="org-adding-removing-rows" class="org-section org-level-2">
+<h2>✅ Adding/Removing Rows</h2>
+<p>CLOSED: [2026-01-15 Thu 15:41]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Key Binding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.insertRowAbove</td><td>M-S-Up</td><td>Insert row above current</td></tr>
+<tr><td>scimax.table.insertRowBelow</td><td>M-S-Down</td><td>Insert row below current</td></tr>
+<tr><td>scimax.table.deleteRow</td><td>M-S-Backspace</td><td>Delete current row</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-adding-removing-columns" class="org-section org-level-2">
+<h2>✅ Adding/Removing Columns</h2>
+<p>CLOSED: [2026-01-15 Thu 15:41]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Key Binding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.insertColumnRight</td><td>M-S-Right</td><td>Insert column to the right</td></tr>
+<tr><td>scimax.table.insertColumnLeft</td><td>M-S-Left</td><td>Insert column to the left</td></tr>
+<tr><td>scimax.table.deleteColumn</td><td></td><td>Delete current column</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-moving-rows-columns" class="org-section org-level-2">
+<h2>✅ Moving Rows/Columns</h2>
+<p>CLOSED: [2026-01-15 Thu 15:37]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.moveRowUp</td><td>S-up</td><td>Move row up</td></tr>
+<tr><td>scimax.table.moveRowDown</td><td>S-down</td><td>Move row down</td></tr>
+<tr><td>scimax.table.moveColumnLeft</td><td>S-left</td><td>Move column left</td></tr>
+<tr><td>scimax.table.moveColumnRight</td><td>S-right</td><td>Move column right</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-separator-lines" class="org-section org-level-2">
+<h2>✅ Separator Lines</h2>
+<p>CLOSED: [2026-01-15 Thu 15:36]</p>
+
+<p>Insert horizontal separator lines to divide table sections:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th><th></th><th></th></tr>
+</thead>
+<tbody>
+<tr><td>C-c -</td><td>Insert separator line (</td><td>---+---</td><td>)</td></tr>
+</tbody>
+</table>
+
+<p>Example with separators:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">| Item     | Price |
+|----------+-------|
+| Widget A | 10.00 |
+| Widget B | 15.00 |
+|----------+-------|
+| Total    | 25.00 |</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-table-alignment" class="org-section org-level-1">
+<h1>✅ Table Alignment</h1>
+<p>CLOSED: [2026-01-15 Thu 15:15]</p>
+
+<div id="org-automatic-alignment" class="org-section org-level-2">
+<h2>✅ Automatic Alignment</h2>
+<p>CLOSED: [2026-01-15 Thu 15:15]</p>
+
+<p>Tables auto-align when you press Tab. Column widths adjust to fit content.</p>
+
+</div>
+<div id="org-column-width-specification" class="org-section org-level-2">
+<h2>⚠️ Column Width Specification</h2>
+<p>Specify fixed column widths using &lt;N&gt; in a cell:</p>
+
+<table class="org-table">
+<tbody>
+<tr><td>&lt;l&gt;</td><td>&lt;l&gt;</td></tr>
+<tr><td>Long text you don&#39;t want showing all of</td><td>Short</td></tr>
+<tr><td>More long</td><td>More</td></tr>
+</tbody>
+</table>
+
+<table class="org-table">
+<tbody>
+<tr><td>&lt;5&gt;</td><td>&lt;l&gt;</td></tr>
+<tr><td>Long text you don&#39;t want showing all of</td><td>Short</td></tr>
+<tr><td>More long</td><td>More</td></tr>
+</tbody>
+</table>
+
+<p>Text exceeding the width is truncated in display (but preserved internally).</p>
+
+</div>
+<div id="org-horizontal-alignment" class="org-section org-level-2">
+<h2>✅ Horizontal Alignment</h2>
+<p>CLOSED: [2026-01-15 Thu 15:32]</p>
+
+<p>Specify alignment using &lt;l&gt;, &lt;c&gt;, or &lt;r&gt;:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>&lt;l&gt;</th><th>&lt;c&gt;</th><th>&lt;r&gt;</th></tr>
+</thead>
+<tbody>
+<tr><td>Left aligned</td><td>Center text</td><td>Right aligned</td></tr>
+<tr><td>More left</td><td>Centered</td><td>More right</td></tr>
+</tbody>
+</table>
+
+<table class="org-table">
+<thead>
+<tr><th>Marker</th><th>Alignment</th></tr>
+</thead>
+<tbody>
+<tr><td>&lt;l&gt;</td><td>Left</td></tr>
+<tr><td>&lt;c&gt;</td><td>Center</td></tr>
+<tr><td>&lt;r&gt;</td><td>Right</td></tr>
+</tbody>
+</table>
+
+<p>Combine with width: &lt;l10&gt; for left-aligned, 10 characters wide.</p>
+
+</div>
+</div>
+<div id="org-table-formulas" class="org-section org-level-1">
+<h1>⚠️ Table Formulas</h1>
+<p>Tables can include formulas for calculations, similar to spreadsheets.</p>
+
+<div id="org-formula-line" class="org-section org-level-2">
+<h2>Formula Line</h2>
+<p>Formulas are defined in a #+TBLFM: line below the table:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+</thead>
+<tbody>
+<tr><td>Apples</td><td>10</td><td>1.50</td><td>15</td></tr>
+<tr><td>Oranges</td><td>5</td><td>2.00</td><td>10</td></tr>
+<tr><td>Sum</td><td></td><td></td><td>25</td></tr>
+</tbody>
+</table>
+
+
+</div>
+<div id="org-cell-references" class="org-section org-level-2">
+<h2>Cell References</h2>
+<div id="org-column-references" class="org-section org-level-3">
+<h3>Column References</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>$1</td><td>First column</td></tr>
+<tr><td>$2</td><td>Second column</td></tr>
+<tr><td>$N</td><td>Nth column</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-row-references" class="org-section org-level-3">
+<h3>Row References</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>@1</td><td>First row</td></tr>
+<tr><td>@2</td><td>Second row</td></tr>
+<tr><td>@N</td><td>Nth row</td></tr>
+<tr><td>@&gt;</td><td>Last row</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-combined-references" class="org-section org-level-3">
+<h3>Combined References</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>@2$3</td><td>Row 2, column 3</td></tr>
+<tr><td>@3$&gt;</td><td>Row 3, last column</td></tr>
+<tr><td>@&gt;$4</td><td>Last row, column 4</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-ranges" class="org-section org-level-3">
+<h3>Ranges</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>@2$1..@5$1</td><td>Column 1, rows 2 through 5</td></tr>
+<tr><td>@2$1..@2$4</td><td>Row 2, columns 1 through 4</td></tr>
+<tr><td>@2$1..@5$4</td><td>Rectangle from @2$1 to @5$4</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-formula-syntax" class="org-section org-level-2">
+<h2>Formula Syntax</h2>
+<p>Formulas use the syntax: <kbd>target</kbd>expression=</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TBLFM: $4=$2*$3</code></pre>
+</div>
+
+<p>This sets column 4 to the product of columns 2 and 3.</p>
+
+<p>Multiple formulas separated by <kbd>::</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TBLFM: $4=$2*$3::@&gt;$4=vsum(@2$4..@-1$4)</code></pre>
+</div>
+
+</div>
+<div id="org-built-in-functions" class="org-section org-level-2">
+<h2>Built-in Functions</h2>
+<table class="org-table">
+<thead>
+<tr><th>Function</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>vsum</td><td>Sum of values in range</td></tr>
+<tr><td>vmean</td><td>Average of values</td></tr>
+<tr><td>vmin</td><td>Minimum value</td></tr>
+<tr><td>vmax</td><td>Maximum value</td></tr>
+<tr><td>vcount</td><td>Count of values</td></tr>
+</tbody>
+</table>
+
+<p>Example:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>10</td></tr>
+<tr><td>20</td></tr>
+<tr><td>30</td></tr>
+<tr><td>60</td></tr>
+</tbody>
+</table>
+
+
+<!-- Unknown element type: comment -->
+</div>
+<div id="org-recalculating-formulas" class="org-section org-level-2">
+<h2>Recalculating Formulas</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-c (on TBLFM)</td><td>Recalculate all formulas</td></tr>
+<tr><td>scimax.table.recalculate</td><td>Recalculate table</td></tr>
+</tbody>
+</table>
+
+<p>Place your cursor on the <kbd>#+TBLFM:</kbd> line and press <kbd>C-c C-c</kbd> to apply
+all formulas.</p>
+
+</div>
+<div id="org-formula-examples" class="org-section org-level-2">
+<h2>Formula Examples</h2>
+<div id="org-row-formula" class="org-section org-level-3">
+<h3>Row Formula</h3>
+<p>Calculate total for each row:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Item</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Total</th></tr>
+</thead>
+<tbody>
+<tr><td>Sales</td><td>10</td><td>20</td><td>30</td><td>40</td><td>100</td></tr>
+<tr><td>Costs</td><td>5</td><td>8</td><td>12</td><td>15</td><td>40</td></tr>
+</tbody>
+</table>
+
+
+</div>
+<div id="org-column-formula" class="org-section org-level-3">
+<h3>Column Formula</h3>
+<p>Sum a column:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">| Month | Revenue |
+|-------+---------|
+| Jan   |   10000 |
+| Feb   |   12000 |
+| Mar   |   15000 |
+|-------+---------|
+| Total |   37000 |
+,#+TBLFM: @&gt;$2=vsum(@2$2..@-1$2)</code></pre>
+</div>
+
+</div>
+<div id="org-percentage-calculation" class="org-section org-level-3">
+<h3>Percentage Calculation</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">| Category | Amount | Percent |
+|----------+--------+---------|
+| A        |    500 |     50% |
+| B        |    300 |     30% |
+| C        |    200 |     20% |
+|----------+--------+---------|
+| Total    |   1000 |    100% |
+,#+TBLFM: $3=100*$2/@&gt;$2;%.0f%%::@&gt;$2=vsum(@2$2..@-1$2)</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-table-import-export" class="org-section org-level-1">
+<h1>⚠️ Table Import/Export</h1>
+<div id="org-importing-tables" class="org-section org-level-2">
+<h2>Importing Tables</h2>
+<p>Import data from CSV files:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.table.import</code></td><td>Import table from file</td></tr>
+</tbody>
+</table>
+
+<p>The import command will prompt for the file path and delimiter.</p>
+
+</div>
+<div id="org-exporting-tables" class="org-section org-level-2">
+<h2>Exporting Tables</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-c C-e t</code></td><td>Export table</td></tr>
+<tr><td><code class="verbatim">scimax.table.export</code></td><td>Export table to file</td></tr>
+</tbody>
+</table>
+
+<p>Export formats:</p>
+
+<ul>
+<li><p>CSV (comma-separated values)</p>
+</li>
+<li><p>TSV (tab-separated values)</p>
+</li>
+<li><p>Other delimited formats</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-column-operations" class="org-section org-level-1">
+<h1>⚠️ Column Operations</h1>
+<p>Perform quick calculations on columns:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.sumColumn</td><td>Sum values in current column</td></tr>
+<tr><td>scimax.table.averageColumn</td><td>Average of current column</td></tr>
+</tbody>
+</table>
+
+<div id="org-sorting" class="org-section org-level-2">
+<h2>✅ Sorting</h2>
+<p>CLOSED: [2026-01-15 Thu 15:31]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c ^</td><td>Sort table by current column</td></tr>
+<tr><td>scimax.table.sortByColumn</td><td>Sort by column</td></tr>
+</tbody>
+</table>
+
+<p>Sorting options:</p>
+
+<ul>
+<li><p>Alphabetic (A-Z or Z-A)</p>
+</li>
+<li><p>Numeric (ascending or descending)</p>
+</li>
+</ul>
+
+<table class="org-table">
+<thead>
+<tr><th>Category</th><th>Amount</th></tr>
+</thead>
+<tbody>
+<tr><td>Supplies</td><td>5000</td></tr>
+<tr><td>Travel</td><td>10000</td></tr>
+<tr><td>Salaries</td><td>50000</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-named-tables" class="org-section org-level-1">
+<h1>✅ Named Tables</h1>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<p>Give tables names for reference:</p>
+
+
+<table class="org-table">
+<thead>
+<tr><th>Category</th><th>Amount</th></tr>
+</thead>
+<tbody>
+<tr><td>Salaries</td><td>50000</td></tr>
+<tr><td>Supplies</td><td>5000</td></tr>
+<tr><td>Travel</td><td>10000</td></tr>
+</tbody>
+</table>
+
+<p>Named tables can be:</p>
+
+<ul>
+<li><p>Referenced in other source blocks</p>
+</li>
+<li><p>Jumped to with `scimax.table.gotoNamed&#39;</p>
+</li>
+<li><p>Used as input for calculations</p>
+</li>
+</ul>
+
+</div>
+<div id="org-table-appearance-in-export" class="org-section org-level-1">
+<h1>⚠️ Table Appearance in Export</h1>
+<div id="org-html-export" class="org-section org-level-2">
+<h2>HTML Export</h2>
+<p>Tables export as HTML `&lt;table&gt;&#39; elements with proper styling.</p>
+
+</div>
+<div id="org-latex-export" class="org-section org-level-2">
+<h2>LaTeX Export</h2>
+<p>Tables export as LaTeX <kbd>tabular</kbd> environments:</p>
+
+<div class="org-src-container">
+<pre class="src src-latex"><code class="language-latex">\begin{tabular}{llr}
+Name &amp; Age &amp; City \\
+\hline
+Alice &amp; 30 &amp; New York \\
+Bob &amp; 25 &amp; Boston \\
+\end{tabular}</code></pre>
+</div>
+
+</div>
+<div id="org-markdown-export" class="org-section org-level-2">
+<h2>Markdown Export</h2>
+<p>Tables export in GitHub-flavored Markdown format:</p>
+
+<div class="org-src-container">
+<pre class="src src-markdown"><code class="language-markdown">| Name  | Age | City     |
+|-------|-----|----------|
+| Alice | 30  | New York |
+| Bob   | 25  | Boston   |</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>✅ Best Practices</h1>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<div id="org-table-design" class="org-section org-level-2">
+<h2>✅ Table Design</h2>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<ol>
+<li><p><strong>Use headers</strong> - Always include a header row with column names</p>
+</li>
+<li><p><strong>Add separators</strong> - Use <code class="verbatim">|---|</code> lines to separate headers from data</p>
+</li>
+<li><p><strong>Align numbers right</strong> - Numeric columns are easier to read right-aligned</p>
+</li>
+<li><p><strong>Keep columns focused</strong> - One type of data per column</p>
+</li>
+</ol>
+
+</div>
+<div id="org-formula-organization" class="org-section org-level-2">
+<h2>✅ Formula Organization</h2>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<ol>
+<li><p><strong>Comment complex formulas</strong> - Add explanations for non-obvious calculations</p>
+</li>
+<li><p><strong>Build incrementally</strong> - Test formulas one at a time</p>
+</li>
+<li><p><strong>Use named tables</strong> - For tables referenced elsewhere</p>
+</li>
+</ol>
+
+</div>
+<div id="org-large-tables" class="org-section org-level-2">
+<h2>✅ Large Tables</h2>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<p>For large datasets:</p>
+
+<ol>
+<li><p>Consider using source blocks with pandas/R for complex analysis</p>
+</li>
+<li><p>Import data rather than typing manually</p>
+</li>
+<li><p>Export results to tables for presentation</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-quick-reference" class="org-section org-level-1">
+<h1>✅ Quick Reference</h1>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<div id="org-keybindings" class="org-section org-level-2">
+<h2>Keybindings</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c \vert{}</td><td>Create table</td></tr>
+<tr><td>&lt;tab&gt;</td><td>Next cell / align</td></tr>
+<tr><td>S-&lt;tab&gt;</td><td>Previous cell</td></tr>
+<tr><td>C-c -</td><td>Insert separator</td></tr>
+<tr><td>M-&lt;return&gt;</td><td>Insert row below</td></tr>
+<tr><td>M-S-Right</td><td>Insert column right</td></tr>
+<tr><td>M-S-Backspace</td><td>Delete row</td></tr>
+<tr><td>C-c ^</td><td>Sort by column</td></tr>
+<tr><td>C-c C-c</td><td>Recalculate (on TBLFM)</td></tr>
+<tr><td>C-c C-e t</td><td>Export table</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-commands" class="org-section org-level-2">
+<h2>Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.create</td><td>Create new table</td></tr>
+<tr><td>scimax.table.insertRowAbove</td><td>Insert row above</td></tr>
+<tr><td>scimax.table.insertRowBelow</td><td>Insert row below</td></tr>
+<tr><td>scimax.table.deleteRow</td><td>Delete current row</td></tr>
+<tr><td>scimax.table.insertColumnRight</td><td>Insert column right</td></tr>
+<tr><td>scimax.table.deleteColumn</td><td>Delete current column</td></tr>
+<tr><td>scimax.table.moveRowUp</td><td>Move row up</td></tr>
+<tr><td>scimax.table.moveRowDown</td><td>Move row down</td></tr>
+<tr><td>scimax.table.moveColumnLeft</td><td>Move column left</td></tr>
+<tr><td>scimax.table.moveColumnRight</td><td>Move column right</td></tr>
+<tr><td>scimax.table.recalculate</td><td>Recalculate formulas</td></tr>
+<tr><td>scimax.table.sumColumn</td><td>Sum current column</td></tr>
+<tr><td>scimax.table.averageColumn</td><td>Average current column</td></tr>
+<tr><td>scimax.table.sortByColumn</td><td>Sort by current column</td></tr>
+<tr><td>scimax.table.export</td><td>Export table</td></tr>
+<tr><td>scimax.table.import</td><td>Import table</td></tr>
+<tr><td>scimax.table.gotoNamed</td><td>Go to named table</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>✅ Related Topics</h1>
+<p>CLOSED: [2026-01-15 Thu 15:31]</p>
+
+<ul>
+<li><p><a href="07-source-blocks.html">Source Code Blocks</a> - Process tables with code</p>
+</li>
+<li><p><a href="10-export.html">Export</a> - Table appearance in exports</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="03-todo-items.html">TODO Items</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="05-links.html">Links</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="05-links.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="03-todo-items.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#tables" class="toc-link">✅ Tables</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#creating-tables" class="toc-link">✅ Creating Tables</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#manual-creation" class="toc-link">✅ Manual Creation</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#table-creation-command" class="toc-link">✅ Table Creation Command</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#converting-text-to-table" class="toc-link">✅ Converting Text to Table</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#table-navigation" class="toc-link">✅ Table Navigation</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#moving-between-cells" class="toc-link">👀 Moving Between Cells</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#quick-navigation" class="toc-link">Quick Navigation</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#editing-tables" class="toc-link">⚠️ Editing Tables</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#addingremoving-rows" class="toc-link">✅ Adding/Removing Rows</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#addingremoving-columns" class="toc-link">✅ Adding/Removing Columns</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#moving-rowscolumns" class="toc-link">✅ Moving Rows/Columns</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#separator-lines" class="toc-link">✅ Separator Lines</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#table-alignment" class="toc-link">✅ Table Alignment</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#automatic-alignment" class="toc-link">✅ Automatic Alignment</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#column-width-specification" class="toc-link">⚠️ Column Width Specification</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#horizontal-alignment" class="toc-link">✅ Horizontal Alignment</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#table-formulas" class="toc-link">⚠️ Table Formulas</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#formula-line" class="toc-link">Formula Line</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#cell-references" class="toc-link">Cell References</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#column-references" class="toc-link">Column References</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#row-references" class="toc-link">Row References</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#combined-references" class="toc-link">Combined References</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#ranges" class="toc-link">Ranges</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#formula-syntax" class="toc-link">Formula Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#built-in-functions" class="toc-link">Built-in Functions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#recalculating-formulas" class="toc-link">Recalculating Formulas</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#formula-examples" class="toc-link">Formula Examples</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#row-formula" class="toc-link">Row Formula</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#column-formula" class="toc-link">Column Formula</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#percentage-calculation" class="toc-link">Percentage Calculation</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#table-importexport" class="toc-link">⚠️ Table Import/Export</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#importing-tables" class="toc-link">Importing Tables</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#exporting-tables" class="toc-link">Exporting Tables</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#column-operations" class="toc-link">⚠️ Column Operations</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#sorting" class="toc-link">✅ Sorting</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#named-tables" class="toc-link">✅ Named Tables</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#table-appearance-in-export" class="toc-link">⚠️ Table Appearance in Export</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#html-export" class="toc-link">HTML Export</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#latex-export" class="toc-link">LaTeX Export</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#markdown-export" class="toc-link">Markdown Export</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#best-practices" class="toc-link">✅ Best Practices</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#table-design" class="toc-link">✅ Table Design</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#formula-organization" class="toc-link">✅ Formula Organization</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#large-tables" class="toc-link">✅ Large Tables</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#quick-reference" class="toc-link">✅ Quick Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#keybindings" class="toc-link">Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#commands" class="toc-link">Commands</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">✅ Related Topics</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

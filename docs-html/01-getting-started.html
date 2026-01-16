@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Getting Started with Scimax VS Code</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0 active ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-getting-started" class="org-section org-level-1">
+<h1>Getting Started</h1>
+<p>This guide will help you install Scimax VS Code and get started with its core
+features. By the end, you&#39;ll be able to create structured documents, execute
+code, and navigate efficiently.</p>
+
+</div>
+<div id="org-system-requirements" class="org-section org-level-1">
+<h1>System Requirements</h1>
+<div id="org-vs-code-version" class="org-section org-level-2">
+<h2>VS Code Version</h2>
+<p>Scimax VS Code requires Visual Studio Code version <strong>1.85 or later</strong>.</p>
+
+</div>
+<div id="org-optional-dependencies" class="org-section org-level-2">
+<h2>Optional Dependencies</h2>
+<p>While Scimax VS Code works out of the box, some features require additional
+software:</p>
+
+<div id="org-for-code-execution" class="org-section org-level-3">
+<h3>For Code Execution</h3>
+<table class="org-table">
+<thead>
+<tr><th>Language</th><th>Requirement</th></tr>
+</thead>
+<tbody>
+<tr><td>Python</td><td>Python 3.x installed and in PATH</td></tr>
+<tr><td>JavaScript</td><td>Node.js installed</td></tr>
+<tr><td>Shell</td><td>Bash or compatible shell</td></tr>
+<tr><td>R</td><td>R installed with Rscript in PATH</td></tr>
+<tr><td>Julia</td><td>Julia installed and in PATH</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-for-jupyter-integration" class="org-section org-level-3">
+<h3>For Jupyter Integration</h3>
+<ul>
+<li><p>Jupyter installed (`pip install jupyter&#39;)</p>
+</li>
+<li><p>Jupyter kernels for desired languages</p>
+</li>
+</ul>
+
+</div>
+<div id="org-for-latex-pdf-export" class="org-section org-level-3">
+<h3>For LaTeX/PDF Export</h3>
+<ul>
+<li><p>TeX distribution (TeX Live, MiKTeX, or MacTeX)</p>
+</li>
+<li><p>pdflatex, xelatex, or lualatex compiler</p>
+</li>
+</ul>
+
+</div>
+<div id="org-for-latex-equation-preview" class="org-section org-level-3">
+<h3>For LaTeX Equation Preview</h3>
+<ul>
+<li><p>LaTeX distribution with dvipng or dvisvgm</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div id="org-installation" class="org-section org-level-1">
+<h1>Installation</h1>
+<div id="org-from-vs-code-marketplace" class="org-section org-level-2">
+<h2>From VS Code Marketplace</h2>
+<ol>
+<li><p>Open VS Code</p>
+</li>
+<li><p>Press `C-S-X&#39; to open the Extensions view</p>
+</li>
+<li><p>Search for &quot;Scimax&quot;</p>
+</li>
+<li><p>Click <strong>Install</strong></p>
+</li>
+</ol>
+
+</div>
+<div id="org-from-vsix-file" class="org-section org-level-2">
+<h2>From VSIX File</h2>
+<ol>
+<li><p>Download the <kbd>.vsix</kbd> file from the <a href="https://github.com/jkitchin/scimax_vscode/releases">GitHub Releases page</a></p>
+</li>
+<li><p>Open VS Code</p>
+</li>
+<li><p>Press `C-S-X&#39; to open the Extensions view</p>
+</li>
+<li><p>Click the `...&#39; menu (top right)</p>
+</li>
+<li><p>Select &quot;Install from VSIX...&quot;</p>
+</li>
+<li><p>Choose the downloaded file</p>
+</li>
+</ol>
+
+</div>
+<div id="org-from-source-github" class="org-section org-level-2">
+<h2>From Source (GitHub)</h2>
+<p>The source code is available at <a href="https://github.com/jkitchin/scimax_vscode">[[https://github.com/jkitchin/scimax_vscode]]</a>.</p>
+
+<p>To build and install from source:</p>
+
+<ol>
+<li><p>Clone the repository:</p>
+</li>
+<li><p>Install dependencies and build:</p>
+</li>
+<li><p>Install the generated VSIX:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-verify-installation" class="org-section org-level-2">
+<h2>Verify Installation</h2>
+<p>After installation:</p>
+
+<ol>
+<li><p>Open the Command Palette (`C-S-P&#39;)</p>
+</li>
+<li><p>Type &quot;Scimax&quot;</p>
+</li>
+<li><p>You should see Scimax commands listed</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-first-steps" class="org-section org-level-1">
+<h1>First Steps</h1>
+<div id="org-opening-an-org-file" class="org-section org-level-2">
+<h2>Opening an Org File</h2>
+<p>Org files use the <kbd>.org</kbd> extension. To create your first file:</p>
+
+<ol>
+<li><p>Press `C-n&#39; to create a new file (note s-n on Mac)</p>
+</li>
+<li><p>Save it with `C-s&#39; and give it a `.org&#39; extension (e.g., `notes.org&#39;)</p>
+</li>
+<li><p>The file will automatically use org-mode syntax highlighting</p>
+</li>
+</ol>
+
+</div>
+<div id="org-creating-your-first-document" class="org-section org-level-2">
+<h2>Creating Your First Document</h2>
+<p>Type the following to create a basic document structure:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TITLE: My First Document
+,#+AUTHOR: Your Name
+,#+DATE: 2026-01-13
+
+,* Introduction
+
+This is my first Scimax VS Code document.
+
+,** A Subsection
+
+Content under the subsection.
+
+,* Tasks
+
+,** TODO Learn Scimax VS Code
+DEADLINE: &lt;2026-01-20 Mon&gt;
+
+,** DONE Install the extension
+CLOSED: [2026-01-13 Mon]
+
+,* Code Example
+
+,#+BEGIN_SRC python :results output
+print(&quot;Hello from Scimax VS Code!&quot;)
+,#+END_SRC</code></pre>
+</div>
+
+</div>
+<div id="org-basic-navigation" class="org-section org-level-2">
+<h2>Basic Navigation</h2>
+<div id="org-folding" class="org-section org-level-3">
+<h3>Folding</h3>
+<ul>
+<li><p>Press <kbd>Tab</kbd> on a heading to cycle its visibility (folded/children/subtree)</p>
+</li>
+<li><p>Press `S-&lt;tab&gt;&#39; anywhere to cycle global visibility</p>
+</li>
+</ul>
+
+</div>
+<div id="org-moving-between-headings" class="org-section org-level-3">
+<h3>Moving Between Headings</h3>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-c C-j</code></td><td>Jump to any heading</td></tr>
+<tr><td><code class="verbatim">M-&lt;up&gt;</code></td><td>Move heading up</td></tr>
+<tr><td><code class="verbatim">M-&lt;down&gt;</code></td><td>Move heading down</td></tr>
+<tr><td><code class="verbatim">M-&lt;left&gt;</code></td><td>Promote heading (←level)</td></tr>
+<tr><td><code class="verbatim">M-&lt;right&gt;</code></td><td>Demote heading (→level)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-executing-code" class="org-section org-level-3">
+<h3>Executing Code</h3>
+<ol>
+<li><p>Place your cursor inside a source block</p>
+</li>
+<li><p>Press `C-&lt;return&gt;&#39; or `C-c C-c&#39;</p>
+</li>
+<li><p>Results appear below the block</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div id="org-understanding-the-interface" class="org-section org-level-1">
+<h1>Understanding the Interface</h1>
+<div id="org-outline-view" class="org-section org-level-2">
+<h2>Outline View</h2>
+<p>The Outline view in VS Code&#39;s sidebar shows your document structure:</p>
+
+<ol>
+<li><p>Click the Outline icon in the sidebar (or press `C-S-O&#39;)</p>
+</li>
+<li><p>See all headings hierarchically</p>
+</li>
+<li><p>Click a heading to jump to it</p>
+</li>
+</ol>
+
+</div>
+<div id="org-tree-views" class="org-section org-level-2">
+<h2>Tree Views</h2>
+<p>Scimax VS Code adds several tree views to the Explorer sidebar:</p>
+
+<div id="org-journal-tree" class="org-section org-level-3">
+<h3>Journal Tree</h3>
+<p>Shows your journal entries organized by date. Access today&#39;s entry with
+`C-S-J&#39; (or `s-S-J&#39; on Mac).</p>
+
+</div>
+<div id="org-projects-tree" class="org-section org-level-3">
+<h3>Projects Tree</h3>
+<p>Shows your registered projects for quick navigation.</p>
+
+</div>
+<div id="org-agenda-tree" class="org-section org-level-3">
+<h3>Agenda Tree</h3>
+<p>Shows TODO items, deadlines, and scheduled tasks across your files.</p>
+
+</div>
+</div>
+<div id="org-status-bar" class="org-section org-level-2">
+<h2>Status Bar</h2>
+<p>The status bar shows:</p>
+
+<ul>
+<li><p>Current journal date (when in journal files)</p>
+</li>
+<li><p>Kernel status (when using Jupyter)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-hydra-menus" class="org-section org-level-2">
+<h2>Hydra Menus</h2>
+<p>Hydra menus provide discoverable access to commands:</p>
+
+<ul>
+<li><p>`C-c m&#39; - Open main menu</p>
+</li>
+<li><p>`C-c C-m&#39; - Open context-sensitive menu</p>
+</li>
+<li><p><kbd>C-M-V</kbd> - Open database/search menu</p>
+</li>
+</ul>
+
+<p>Menus show available commands with their keybindings. Press a key to execute
+a command or `Escape&#39; to close the menu.</p>
+
+</div>
+</div>
+<div id="org-essential-commands" class="org-section org-level-1">
+<h1>Essential Commands</h1>
+<div id="org-document-commands" class="org-section org-level-2">
+<h2>Document Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Tab</code></td><td>Cycle fold at heading</td></tr>
+<tr><td><code class="verbatim">S-&lt;tab&gt;</code></td><td>Cycle global fold</td></tr>
+<tr><td><code class="verbatim">C-c C-j</code></td><td>Jump to heading</td></tr>
+<tr><td><code class="verbatim">C-&lt;return&gt;</code></td><td>Insert new heading (at heading)</td></tr>
+<tr><td><code class="verbatim">C-c C-t</code></td><td>Cycle TODO state</td></tr>
+<tr><td><code class="verbatim">C-c C-c</code></td><td>Context action (execute/toggle)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-source-block-commands" class="org-section org-level-2">
+<h2>Source Block Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-&lt;return&gt;</code></td><td>Execute current block</td></tr>
+<tr><td><code class="verbatim">S-&lt;return&gt;</code></td><td>Execute block and move to next</td></tr>
+<tr><td><code class="verbatim">C-&lt;up&gt;</code></td><td>Go to previous block</td></tr>
+<tr><td><code class="verbatim">C-&lt;down&gt;</code></td><td>Go to next block</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-export-commands" class="org-section org-level-2">
+<h2>Export Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-c C-e</code></td><td>Open export dispatcher</td></tr>
+<tr><td><code class="verbatim">C-c C-e h h</code></td><td>Export to HTML</td></tr>
+<tr><td><code class="verbatim">C-c C-e l l</code></td><td>Export to LaTeX</td></tr>
+<tr><td><code class="verbatim">C-c C-e l p</code></td><td>Export to PDF</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-navigation-commands" class="org-section org-level-2">
+<h2>Navigation Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-c s</code></td><td>Fuzzy search current file</td></tr>
+<tr><td><code class="verbatim">C-c j c</code></td><td>Jump to character (Avy-style)</td></tr>
+<tr><td><code class="verbatim">C-c j w</code></td><td>Jump to word</td></tr>
+<tr><td><code class="verbatim">C-c j l</code></td><td>Jump to line</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-help-commands" class="org-section org-level-2">
+<h2>⚠️ Help Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-h k</code></td><td>Describe key (type a key to see its command)</td></tr>
+<tr><td><code class="verbatim">C-h b</code></td><td>List all keybindings</td></tr>
+<tr><td><code class="verbatim">C-h f</code></td><td>Describe command (find command by name)</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-recommended-settings" class="org-section org-level-1">
+<h1>Recommended Settings</h1>
+<p>Open VS Code settings (`C-,&#39;) and search for &quot;scimax&quot; to see all options.</p>
+
+<div id="org-essential-settings" class="org-section org-level-2">
+<h2>Essential Settings</h2>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  // Enable speed commands (single-key at heading start)
+  &quot;scimax.speedCommands.enabled&quot;: true,
+
+  // Set your journal directory
+  &quot;scimax.journal.directory&quot;: &quot;~/Documents/journal&quot;,
+
+  // Configure bibliography files for citations
+  &quot;scimax.ref.bibliographyFiles&quot;: [&quot;~/references.bib&quot;],
+
+  // Enable image overlays
+  &quot;scimax.imageOverlays.enabled&quot;: true,
+
+  // Auto-index files for search
+  &quot;scimax.db.autoIndex&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-python-configuration" class="org-section org-level-2">
+<h2>Python Configuration</h2>
+<p>If Python isn&#39;t automatically detected:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.literate.pythonPath&quot;: &quot;/usr/bin/python3&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-latex-configuration" class="org-section org-level-2">
+<h2>LaTeX Configuration</h2>
+<p>For PDF export:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.latexLivePreview.compiler&quot;: &quot;pdflatex&quot;,
+  &quot;scimax.latexLivePreview.useLatexmk&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-migrating-from-emacs" class="org-section org-level-1">
+<h1>Migrating from Emacs</h1>
+<p>If you&#39;re coming from Emacs Org-mode or Scimax, here are key differences:</p>
+
+<div id="org-similar-features" class="org-section org-level-2">
+<h2>Similar Features</h2>
+<table class="org-table">
+<thead>
+<tr><th>Emacs</th><th>VS Code</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-c C-c</code></td><td><code class="verbatim">C-c C-c</code></td></tr>
+<tr><td><code class="verbatim">C-c C-t</code></td><td><code class="verbatim">C-c C-t</code></td></tr>
+<tr><td><code class="verbatim">C-c C-e</code></td><td><code class="verbatim">C-c C-e</code></td></tr>
+<tr><td><code class="verbatim">TAB</code> on heading</td><td><code class="verbatim">Tab</code> on heading</td></tr>
+<tr><td><code class="verbatim">S-TAB</code></td><td><code class="verbatim">S-&lt;tab&gt;</code></td></tr>
+<tr><td><code class="verbatim">M-RET</code></td><td><code class="verbatim">C-&lt;return&gt;</code> (at heading)</td></tr>
+<tr><td><code class="verbatim">M-left/right</code></td><td><code class="verbatim">M-&lt;left&gt;/Right</code></td></tr>
+<tr><td><code class="verbatim">M-up/down</code></td><td><code class="verbatim">M-&lt;up&gt;/Down</code></td></tr>
+<tr><td>Speed commands</td><td>Same keys (when enabled)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-different-behaviors" class="org-section org-level-2">
+<h2>Different Behaviors</h2>
+<ul>
+<li><p><strong>Completion</strong>: Uses VS Code&#39;s completion system, triggered automatically</p>
+</li>
+<li><p><strong>Folding</strong>: Uses VS Code&#39;s native folding with org-specific ranges</p>
+</li>
+<li><p><strong>Buffer management</strong>: VS Code tabs instead of Emacs buffers</p>
+</li>
+<li><p><strong>Customization</strong>: JSON settings instead of Emacs Lisp</p>
+</li>
+</ul>
+
+</div>
+<div id="org-missing-features" class="org-section org-level-2">
+<h2>Missing Features</h2>
+<p>Some advanced Emacs features may not be available:</p>
+
+<ul>
+<li><p>Org-mode&#39;s full capture/refile system (simplified version available)</p>
+</li>
+<li><p>Column view</p>
+</li>
+<li><p>Some specialized agenda views</p>
+</li>
+<li><p>Custom link types (limited set supported)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-next-steps" class="org-section org-level-1">
+<h1>Next Steps</h1>
+<p>Now that you&#39;re set up, explore these topics:</p>
+
+<ol>
+<li><p><a href="02-document-structure.html">Document Structure</a> - Master headings, folding, and navigation</p>
+</li>
+<li><p><a href="03-todo-items.html">TODO Items</a> - Learn task management</p>
+</li>
+<li><p><a href="07-source-blocks.html">Source Code Blocks</a> - Execute code in your documents</p>
+</li>
+<li><p><a href="24-keybindings.html">Keybindings</a> - Learn all keyboard shortcuts</p>
+</li>
+</ol>
+
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>Troubleshooting</h1>
+<div id="org-code-blocks-not-executing" class="org-section org-level-2">
+<h2>Code Blocks Not Executing</h2>
+<ol>
+<li><p>Check that the language is installed (e.g., Python, Node.js)</p>
+</li>
+<li><p>Verify the language is in your PATH</p>
+</li>
+<li><p>Check the Output panel (`C-S-U&#39;) for errors</p>
+</li>
+<li><p>Run `scimax.org.checkExecutors&#39; to verify available executors</p>
+</li>
+</ol>
+
+</div>
+<div id="org-latex-preview-not-working" class="org-section org-level-2">
+<h2>LaTeX Preview Not Working</h2>
+<ol>
+<li><p>Ensure LaTeX is installed (`latex --version&#39; in terminal)</p>
+</li>
+<li><p>Check that dvipng or dvisvgm is available</p>
+</li>
+<li><p>Run `scimax.checkLatexTools&#39; to verify installation</p>
+</li>
+</ol>
+
+</div>
+<div id="org-search-not-finding-results" class="org-section org-level-2">
+<h2>Search Not Finding Results</h2>
+<ol>
+<li><p>Run `scimax.db.reindex&#39; to rebuild the search index</p>
+</li>
+<li><p>Check that files aren&#39;t in excluded patterns</p>
+</li>
+<li><p>Verify the search scope (`scimax.db.setScope&#39;)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-journal-not-opening" class="org-section org-level-2">
+<h2>Journal Not Opening</h2>
+<ol>
+<li><p>Check that `scimax.journal.directory&#39; is set correctly</p>
+</li>
+<li><p>Ensure the directory exists and is writable</p>
+</li>
+<li><p>Try creating the directory manually if needed</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="02-document-structure.html">Document Structure</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="00-index.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="26-configuration.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#getting-started" class="toc-link">Getting Started</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#system-requirements" class="toc-link">System Requirements</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#vs-code-version" class="toc-link">VS Code Version</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#optional-dependencies" class="toc-link">Optional Dependencies</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#for-code-execution" class="toc-link">For Code Execution</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#for-jupyter-integration" class="toc-link">For Jupyter Integration</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#for-latexpdf-export" class="toc-link">For LaTeX/PDF Export</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#for-latex-equation-preview" class="toc-link">For LaTeX Equation Preview</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#installation" class="toc-link">Installation</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#from-vs-code-marketplace" class="toc-link">From VS Code Marketplace</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#from-vsix-file" class="toc-link">From VSIX File</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#from-source-github" class="toc-link">From Source (GitHub)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#verify-installation" class="toc-link">Verify Installation</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#first-steps" class="toc-link">First Steps</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#opening-an-org-file" class="toc-link">Opening an Org File</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#creating-your-first-document" class="toc-link">Creating Your First Document</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#basic-navigation" class="toc-link">Basic Navigation</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#folding" class="toc-link">Folding</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#moving-between-headings" class="toc-link">Moving Between Headings</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#executing-code" class="toc-link">Executing Code</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#understanding-the-interface" class="toc-link">Understanding the Interface</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#outline-view" class="toc-link">Outline View</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tree-views" class="toc-link">Tree Views</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#journal-tree" class="toc-link">Journal Tree</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#projects-tree" class="toc-link">Projects Tree</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#agenda-tree" class="toc-link">Agenda Tree</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#status-bar" class="toc-link">Status Bar</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#hydra-menus" class="toc-link">Hydra Menus</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#essential-commands" class="toc-link">Essential Commands</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#document-commands" class="toc-link">Document Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#source-block-commands" class="toc-link">Source Block Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#export-commands" class="toc-link">Export Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#navigation-commands" class="toc-link">Navigation Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#help-commands" class="toc-link">⚠️ Help Commands</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#recommended-settings" class="toc-link">Recommended Settings</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#essential-settings" class="toc-link">Essential Settings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#python-configuration" class="toc-link">Python Configuration</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#latex-configuration" class="toc-link">LaTeX Configuration</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#migrating-from-emacs" class="toc-link">Migrating from Emacs</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#similar-features" class="toc-link">Similar Features</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#different-behaviors" class="toc-link">Different Behaviors</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#missing-features" class="toc-link">Missing Features</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#next-steps" class="toc-link">Next Steps</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#code-blocks-not-executing" class="toc-link">Code Blocks Not Executing</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#latex-preview-not-working" class="toc-link">LaTeX Preview Not Working</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#search-not-finding-results" class="toc-link">Search Not Finding Results</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#journal-not-opening" class="toc-link">Journal Not Opening</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

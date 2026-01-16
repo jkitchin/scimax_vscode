@@ -4,6 +4,7 @@
  */
 
 import type { HtmlExportOptions } from '../parser/orgExportHtml';
+import type { ThemeConfig } from './themes/themeTypes';
 
 // =============================================================================
 // Project Configuration Types
@@ -172,6 +173,9 @@ export interface PublishConfig {
 
     /** Default project to publish when none specified */
     defaultProject?: string;
+
+    /** Theme configuration for styled output */
+    theme?: ThemeConfig;
 }
 
 // =============================================================================

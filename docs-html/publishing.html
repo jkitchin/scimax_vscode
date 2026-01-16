@@ -1,55 +1,260 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Org Publishing System</title>
-<meta name="author" content="Scimax VS Code" />
-<style>
-.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
-.org-section { margin-bottom: 2rem; }
-.org-todo { font-weight: bold; padding: 0.2em 0.5em; border-radius: 3px; }
-.org-todo.org-todo { background: #ff6b6b; color: white; }
-.org-todo.org-done { background: #51cf66; color: white; }
-.org-priority { color: #e67700; font-weight: bold; }
-.org-tags { float: right; font-size: 0.8em; }
-.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
-.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
-.org-src-container { margin: 1rem 0; }
-.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
-pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
-blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
-.org-center { text-align: center; }
-.verse { white-space: pre-line; font-style: italic; }
-.org-table { border-collapse: collapse; margin: 1rem 0; }
-.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
-.org-table th { background: #f8f9fa; }
-.org-footnote-ref { font-size: 0.8em; }
-.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
-.org-underline { text-decoration: underline; }
-.org-statistics-cookie { font-family: monospace; }
-.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
-.org-toc ul { list-style: none; padding-left: 1rem; }
-.section-number { color: #868e96; margin-right: 0.5em; }
-.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
-.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
-.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
-.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
-.admonition.org-important { background: #fff9db; border-color: #fab005; }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-<script>hljs.highlightAll();</script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Org Publishing System</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
 </head>
 <body>
-<main class="org-content">
-<header id="title-block">
-<h1 class="title">Org Publishing System</h1>
-<p class="author">Scimax VS Code</p>
-<p class="date">2026-01-16</p>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
 </header>
-<div id="org-overview" class="org-section org-level-1">
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-overview" class="org-section org-level-1">
 <h1>Overview</h1>
 <p>The Scimax VS Code extension provides an org-publishing system for converting multiple org-mode documents into a cohesive HTML website. This is ideal for creating documentation sites, blogs, or project pages hosted on GitHub Pages.</p>
 
@@ -60,14 +265,14 @@ blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem;
 <h1>Quick Start</h1>
 <div id="org-step-1-initialize-a-publishing-project" class="org-section org-level-2">
 <h2>Step 1: Initialize a Publishing Project</h2>
-<p>Run the command <code class="verbatim">Scimax: Initialize Publishing Project</code> (<code class="verbatim">C-c C-p i</code>) to start the 5-step wizard:</p>
+<p>Run the command <kbd>Scimax: Initialize Publishing Project</kbd> (<kbd>C-c C-e p i</kbd>) to start the 5-step wizard:</p>
 
 <ol>
 <li><p><strong>Project name</strong> - A short identifier (e.g., &quot;my-website&quot;)</p>
 </li>
-<li><p><strong>Source directory</strong> - Where your org files are located (default: <code class="verbatim">./org</code>)</p>
+<li><p><strong>Source directory</strong> - Where your org files are located (default: <kbd>./org</kbd>)</p>
 </li>
-<li><p><strong>Output directory</strong> - Where HTML files will be published (default: <code class="verbatim">./docs</code> for GitHub Pages)</p>
+<li><p><strong>Output directory</strong> - Where HTML files will be published (default: <kbd>./docs</kbd> for GitHub Pages)</p>
 </li>
 <li><p><strong>Publishing target</strong> - GitHub Pages (recommended) or Local/Custom</p>
 </li>
@@ -78,9 +283,9 @@ blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem;
 </div>
 <div id="org-step-2-add-content" class="org-section org-level-2">
 <h2>Step 2: Add Content</h2>
-<p>Create or edit <code class="verbatim">.org</code> files in your source directory. Each file becomes an HTML page.</p>
+<p>Create or edit `.org&#39; files in your source directory. Each file becomes an HTML page.</p>
 
-<p>Example <code class="verbatim">./org/about.org</code>:</p>
+<p>Example <kbd>./org/about.org</kbd>:</p>
 
 <div class="org-src-container">
 <pre class="src src-org"><code class="language-org">,#+TITLE: About This Project
@@ -100,21 +305,21 @@ Welcome to my project documentation!
 </div>
 <div id="org-step-3-publish" class="org-section org-level-2">
 <h2>Step 3: Publish</h2>
-<p>Run <code class="verbatim">Scimax: Publish Project</code> (<code class="verbatim">C-c C-p p</code>) to generate HTML files.</p>
+<p>Run <kbd>Scimax: Publish Project</kbd> (<kbd>C-c C-e p p</kbd>) to generate HTML files.</p>
 
 </div>
 <div id="org-step-4-deploy-to-github-pages" class="org-section org-level-2">
 <h2>Step 4: Deploy to GitHub Pages</h2>
 <ol>
-<li><p>Commit the <code class="verbatim">./docs</code> folder to your repository</p>
+<li><p>Commit the <kbd>./docs</kbd> folder to your repository</p>
 </li>
 <li><p>Go to your repository&#39;s Settings → Pages</p>
 </li>
 <li><p>Set Source to &quot;Deploy from a branch&quot;</p>
 </li>
-<li><p>Select <code class="verbatim">main</code> branch and <code class="verbatim">/docs</code> folder</p>
+<li><p>Select <kbd>main</kbd> branch and <kbd>/docs</kbd> folder</p>
 </li>
-<li><p>Your site will be live at <code class="verbatim">https://username.github.io/repo-name/</code></p>
+<li><p>Your site will be live at <kbd>https://username.github.io/repo-name/</kbd></p>
 </li>
 </ol>
 
@@ -127,11 +332,11 @@ Welcome to my project documentation!
 <tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.publish.init</code></td><td><code class="verbatim">C-c C-p i</code></td><td>Initialize publishing project</td></tr>
-<tr><td><code class="verbatim">scimax.publish.project</code></td><td><code class="verbatim">C-c C-p p</code></td><td>Publish selected project</td></tr>
-<tr><td><code class="verbatim">scimax.publish.file</code></td><td><code class="verbatim">C-c C-p f</code></td><td>Publish current file only</td></tr>
-<tr><td><code class="verbatim">scimax.publish.all</code></td><td><code class="verbatim">C-c C-p a</code></td><td>Publish all configured projects</td></tr>
-<tr><td><code class="verbatim">scimax.publish.preview</code></td><td><code class="verbatim">C-c C-p v</code></td><td>Preview published site in browser</td></tr>
+<tr><td><code class="verbatim">scimax.publish.init</code></td><td><code class="verbatim">C-c C-e p i</code></td><td>Initialize publishing project</td></tr>
+<tr><td><code class="verbatim">scimax.publish.project</code></td><td><code class="verbatim">C-c C-e p p</code></td><td>Publish selected project</td></tr>
+<tr><td><code class="verbatim">scimax.publish.file</code></td><td><code class="verbatim">C-c C-e p f</code></td><td>Publish current file only</td></tr>
+<tr><td><code class="verbatim">scimax.publish.all</code></td><td><code class="verbatim">C-c C-e p a</code></td><td>Publish all configured projects</td></tr>
+<tr><td><code class="verbatim">scimax.publish.preview</code></td><td><code class="verbatim">C-c C-e p v</code></td><td>Preview published site in browser</td></tr>
 <tr><td><code class="verbatim">scimax.publish.openConfig</code></td><td>-</td><td>Open .org-publish.json config</td></tr>
 </tbody>
 </table>
@@ -142,17 +347,17 @@ Welcome to my project documentation!
 <p>The publishing system supports two configuration formats:</p>
 
 <ol>
-<li><p><code class="verbatim">_config.yml</code> - YAML format (Jupyter Book compatible, takes precedence)</p>
+<li><p><kbd>_config.yml</kbd> - YAML format (Jupyter Book compatible, takes precedence)</p>
 </li>
-<li><p><code class="verbatim">.org-publish.json</code> - JSON format</p>
+<li><p>`.org-publish.json&#39; - JSON format</p>
 </li>
 </ol>
 
-<p>The wizard creates a <code class="verbatim">.org-publish.json</code> file by default. You can also create or edit either file manually.</p>
+<p>The wizard creates a `.org-publish.json&#39; file by default. You can also create or edit either file manually.</p>
 
 <div id="org-yaml-configuration-config-yml" class="org-section org-level-2">
-<h2>⚠️ YAML Configuration (<code class="verbatim">_config.yml</code>)</h2>
-<p>For Jupyter Book compatibility, create a <code class="verbatim">_config.yml</code> in your project root:</p>
+<h2>⚠️ YAML Configuration (<kbd>_config.yml</kbd>)</h2>
+<p>For Jupyter Book compatibility, create a <kbd>_config.yml</kbd> in your project root:</p>
 
 <div class="org-src-container">
 <pre class="src src-yaml"><code class="language-yaml"># _config.yml - Jupyter Book compatible
@@ -176,7 +381,7 @@ github_pages: true</code></pre>
 
 </div>
 <div id="org-json-configuration-org-publish-json" class="org-section org-level-2">
-<h2>JSON Configuration (<code class="verbatim">.org-publish.json</code>)</h2>
+<h2>JSON Configuration (`.org-publish.json&#39;)</h2>
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
   &quot;projects&quot;: {
@@ -271,15 +476,15 @@ github_pages: true</code></pre>
 <p>Available functions:</p>
 
 <ul>
-<li><p><code class="verbatim">org-html-publish-to-html</code> - Convert org files to HTML</p>
+<li><p>`org-html-publish-to-html&#39; - Convert org files to HTML</p>
 </li>
-<li><p><code class="verbatim">md-html-publish-to-html</code> - Convert Markdown files to HTML</p>
+<li><p>`md-html-publish-to-html&#39; - Convert Markdown files to HTML</p>
 </li>
-<li><p><code class="verbatim">ipynb-html-publish-to-html</code> - Convert Jupyter notebooks to HTML</p>
+<li><p>`ipynb-html-publish-to-html&#39; - Convert Jupyter notebooks to HTML</p>
 </li>
-<li><p><code class="verbatim">auto</code> - Auto-detect by file extension (default behavior)</p>
+<li><p>`auto&#39; - Auto-detect by file extension (default behavior)</p>
 </li>
-<li><p><code class="verbatim">copy</code> - Copy files as-is (for static assets)</p>
+<li><p>`copy&#39; - Copy files as-is (for static assets)</p>
 </li>
 </ul>
 
@@ -299,7 +504,7 @@ github_pages: true</code></pre>
 </tbody>
 </table>
 
-<p>When using <code class="verbatim">auto</code> or <code class="verbatim">org-html-publish-to-html</code>, files are processed based on their extension.</p>
+<p>When using `auto&#39; or `org-html-publish-to-html&#39;, files are processed based on their extension.</p>
 
 </div>
 <div id="org-sitemap-options" class="org-section org-level-2">
@@ -318,14 +523,14 @@ github_pages: true</code></pre>
 </tbody>
 </table>
 
-<p>Sort options for <code class="verbatim">sitemapSortFiles</code>:</p>
+<p>Sort options for <kbd>sitemapSortFiles</kbd>:</p>
 
 <ul>
-<li><p><code class="verbatim">alphabetically</code> - Sort A-Z by title</p>
+<li><p>`alphabetically&#39; - Sort A-Z by title</p>
 </li>
-<li><p><code class="verbatim">chronologically</code> - Oldest first (by #+DATE)</p>
+<li><p><kbd>chronologically</kbd> - Oldest first (by #+DATE)</p>
 </li>
-<li><p><code class="verbatim">anti-chronologically</code> - Newest first (for blogs)</p>
+<li><p>`anti-chronologically&#39; - Newest first (for blogs)</p>
 </li>
 </ul>
 
@@ -422,12 +627,12 @@ github_pages: true</code></pre>
 </div>
 </div>
 <div id="org-explicit-table-of-contents-toc-yml" class="org-section org-level-1">
-<h1>⚠️ Explicit Table of Contents (<code class="verbatim">_toc.yml</code>)</h1>
-<p>By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a <code class="verbatim">_toc.yml</code> file.</p>
+<h1>⚠️ Explicit Table of Contents (<kbd>_toc.yml</kbd>)</h1>
+<p>By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a <kbd>_toc.yml</kbd> file.</p>
 
 <div id="org-overview" class="org-section org-level-2">
 <h2>Overview</h2>
-<p>When a <code class="verbatim">_toc.yml</code> file exists in your source directory, the publishing system:</p>
+<p>When a <kbd>_toc.yml</kbd> file exists in your source directory, the publishing system:</p>
 
 <ol>
 <li><p>Publishes files in the order specified (not alphabetically)</p>
@@ -442,8 +647,8 @@ github_pages: true</code></pre>
 
 </div>
 <div id="org-basic-toc-yml-format" class="org-section org-level-2">
-<h2>Basic <code class="verbatim">_toc.yml</code> Format</h2>
-<p>Create a <code class="verbatim">_toc.yml</code> file in your source directory (e.g., <code class="verbatim">./docs/_toc.yml</code>):</p>
+<h2>Basic <kbd>_toc.yml</kbd> Format</h2>
+<p>Create a <kbd>_toc.yml</kbd> file in your source directory (e.g., <kbd>./docs/_toc.yml</kbd>):</p>
 
 <div class="org-src-container">
 <pre class="src src-yaml"><code class="language-yaml"># Simple flat structure
@@ -539,7 +744,7 @@ parts:
 </div>
 <div id="org-custom-titles" class="org-section org-level-2">
 <h2>Custom Titles</h2>
-<p>You can override the title from the file&#39;s <code class="verbatim">#+TITLE</code>:</p>
+<p>You can override the title from the file&#39;s <kbd>#+TITLE</kbd>:</p>
 
 <div class="org-src-container">
 <pre class="src src-yaml"><code class="language-yaml">chapters:
@@ -566,7 +771,7 @@ parts:
 </div>
 <div id="org-navigation-links" class="org-section org-level-2">
 <h2>Navigation Links</h2>
-<p>When using <code class="verbatim">_toc.yml</code>, each published page automatically gets:</p>
+<p>When using <kbd>_toc.yml</kbd>, each published page automatically gets:</p>
 
 <div class="org-src-container">
 <pre class="src src-html"><code class="language-html">&lt;nav class=&quot;page-navigation&quot;&gt;
@@ -593,7 +798,7 @@ parts:
 </div>
 <div id="org-combining-with-configuration" class="org-section org-level-2">
 <h2>Combining with Configuration</h2>
-<p>Your <code class="verbatim">.org-publish.json</code> works the same way - the <code class="verbatim">_toc.yml</code> just controls ordering:</p>
+<p>Your <kbd>.org-publish.json</kbd> works the same way - the <kbd>_toc.yml</kbd> just controls ordering:</p>
 
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
@@ -609,7 +814,7 @@ parts:
 }</code></pre>
 </div>
 
-<p>With <code class="verbatim">./docs/_toc.yml</code>:</p>
+<p>With <kbd>./docs/_toc.yml</kbd>:</p>
 
 <div class="org-src-container">
 <pre class="src src-yaml"><code class="language-yaml">format: scimax
@@ -626,15 +831,15 @@ chapters:
 <p>The TOC references files without extensions. The system automatically finds files with these extensions (in order):</p>
 
 <ol>
-<li><p><code class="verbatim">.org</code></p>
+<li><p>`.org&#39;</p>
 </li>
-<li><p><code class="verbatim">.md</code></p>
+<li><p>`.md&#39;</p>
 </li>
-<li><p><code class="verbatim">.ipynb</code></p>
+<li><p>`.ipynb&#39;</p>
 </li>
 </ol>
 
-<p>So <code class="verbatim">file: getting-started</code> will match <code class="verbatim">getting-started.org</code>, <code class="verbatim">getting-started.md</code>, or <code class="verbatim">getting-started.ipynb</code>.</p>
+<p>So <kbd>file: getting-started</kbd> will match <kbd>getting-started.org</kbd>, <kbd>getting-started.md</kbd>, or <kbd>getting-started.ipynb</kbd>.</p>
 
 </div>
 </div>
@@ -642,7 +847,7 @@ chapters:
 <h1>Templates</h1>
 <div id="org-html-preamble-navigation" class="org-section org-level-2">
 <h2>HTML Preamble (Navigation)</h2>
-<p>Create a file like <code class="verbatim">./templates/nav.html</code>:</p>
+<p>Create a file like <kbd>./templates/nav.html</kbd>:</p>
 
 <div class="org-src-container">
 <pre class="src src-html"><code class="language-html">&lt;nav class=&quot;site-nav&quot;&gt;
@@ -663,7 +868,7 @@ chapters:
 </div>
 <div id="org-html-postamble-footer" class="org-section org-level-2">
 <h2>HTML Postamble (Footer)</h2>
-<p>Create <code class="verbatim">./templates/footer.html</code>:</p>
+<p>Create <kbd>./templates/footer.html</kbd>:</p>
 
 <div class="org-src-container">
 <pre class="src src-html"><code class="language-html">&lt;footer&gt;
@@ -674,7 +879,7 @@ chapters:
 </div>
 <div id="org-custom-css" class="org-section org-level-2">
 <h2>Custom CSS</h2>
-<p>Create <code class="verbatim">./css/style.css</code> and reference it:</p>
+<p>Create <kbd>./css/style.css</kbd> and reference it:</p>
 
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
@@ -686,16 +891,16 @@ chapters:
 </div>
 <div id="org-github-pages-integration" class="org-section org-level-1">
 <h1>GitHub Pages Integration</h1>
-<p>When <code class="verbatim">githubPages</code> is enabled:</p>
+<p>When <kbd>githubPages</kbd> is enabled:</p>
 
 <ol>
-<li><p>A <code class="verbatim">.nojekyll</code> file is created in the output directory (disables Jekyll processing)</p>
+<li><p>A `.nojekyll&#39; file is created in the output directory (disables Jekyll processing)</p>
 </li>
-<li><p>If <code class="verbatim">customDomain</code> is set, a <code class="verbatim">CNAME</code> file is created</p>
+<li><p>If `customDomain&#39; is set, a `CNAME&#39; file is created</p>
 </li>
-<li><p>The default output directory is <code class="verbatim">./docs</code> (GitHub Pages convention)</p>
+<li><p>The default output directory is <kbd>./docs</kbd> (GitHub Pages convention)</p>
 </li>
-<li><p>The default sitemap becomes <code class="verbatim">index.org</code> → <code class="verbatim">index.html</code></p>
+<li><p>The default sitemap becomes `index.org&#39; → `index.html&#39;</p>
 </li>
 </ol>
 
@@ -807,17 +1012,17 @@ chapters:
 <h1>Troubleshooting</h1>
 <div id="org-no-publishing-configuration-found" class="org-section org-level-2">
 <h2>&quot;No publishing configuration found&quot;</h2>
-<p>Run <code class="verbatim">Scimax: Initialize Publishing Project</code> (<code class="verbatim">C-c C-p i</code>) to create a <code class="verbatim">.org-publish.json</code> file.</p>
+<p>Run <kbd>Scimax: Initialize Publishing Project</kbd> (<kbd>C-c C-e p i</kbd>) to create a <kbd>.org-publish.json</kbd> file.</p>
 
 </div>
 <div id="org-base-directory-does-not-exist" class="org-section org-level-2">
 <h2>&quot;Base directory does not exist&quot;</h2>
-<p>Create the source directory specified in <code class="verbatim">baseDirectory</code>, or update the config to point to an existing directory.</p>
+<p>Create the source directory specified in `baseDirectory&#39;, or update the config to point to an existing directory.</p>
 
 </div>
 <div id="org-links-not-working-after-publish" class="org-section org-level-2">
 <h2>Links not working after publish</h2>
-<p>Ensure you&#39;re using <code class="verbatim">file:</code> links to reference other org files:</p>
+<p>Ensure you&#39;re using <kbd>file:</kbd> links to reference other org files:</p>
 
 <div class="org-src-container">
 <pre class="src src-org"><code class="language-org">[[file:other.org][Link text]]</code></pre>
@@ -827,9 +1032,9 @@ chapters:
 <div id="org-github-pages-not-updating" class="org-section org-level-2">
 <h2>GitHub Pages not updating</h2>
 <ol>
-<li><p>Ensure the <code class="verbatim">./docs</code> folder is committed</p>
+<li><p>Ensure the <kbd>./docs</kbd> folder is committed</p>
 </li>
-<li><p>Check that GitHub Pages is configured to serve from <code class="verbatim">/docs</code></p>
+<li><p>Check that GitHub Pages is configured to serve from <kbd>/docs</kbd></p>
 </li>
 <li><p>Wait a few minutes for GitHub to rebuild the site</p>
 </li>
@@ -849,6 +1054,326 @@ chapters:
 </ul>
 
 </div>
-</main>
+            </article>
+            <nav class="page-nav">
+
+            <a href="10-export.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="11-latex-preview.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#overview" class="toc-link">Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#quick-start" class="toc-link">Quick Start</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#step-1-initialize-a-publishing-project" class="toc-link">Step 1: Initialize a Publishing Project</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#step-2-add-content" class="toc-link">Step 2: Add Content</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#step-3-publish" class="toc-link">Step 3: Publish</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#step-4-deploy-to-github-pages" class="toc-link">Step 4: Deploy to GitHub Pages</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#commands" class="toc-link">Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#configuration-file" class="toc-link">Configuration File</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#yaml-configuration-_configyml" class="toc-link">⚠️ YAML Configuration (_config.yml)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#json-configuration-org-publishjson" class="toc-link">JSON Configuration (`.org-publish.json')</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#full-configuration-reference" class="toc-link">Full Configuration Reference</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#configuration-options" class="toc-link">Configuration Options</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#file-selection-options" class="toc-link">File Selection Options</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#publishing-function-options" class="toc-link">Publishing Function Options</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#supported-file-types" class="toc-link">Supported File Types</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#sitemap-options" class="toc-link">Sitemap Options</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#html-template-options" class="toc-link">HTML Template Options</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#export-options" class="toc-link">Export Options</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#global-options" class="toc-link">Global Options</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#multi-project-configuration" class="toc-link">Multi-Project Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#component-projects" class="toc-link">Component Projects</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#explicit-table-of-contents-_tocyml" class="toc-link">⚠️ Explicit Table of Contents (_toc.yml)</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#overview" class="toc-link">Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#basic-_tocyml-format" class="toc-link">Basic _toc.yml Format</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#with-sections-nested-chapters" class="toc-link">With Sections (Nested Chapters)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#with-parts-book-format" class="toc-link">With Parts (Book Format)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#toc-options" class="toc-link">TOC Options</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#entry-options" class="toc-link">Entry Options</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#custom-titles" class="toc-link">Custom Titles</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#external-links" class="toc-link">External Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#navigation-links" class="toc-link">Navigation Links</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#combining-with-configuration" class="toc-link">Combining with Configuration</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#file-extension-resolution" class="toc-link">File Extension Resolution</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#templates" class="toc-link">Templates</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#html-preamble-navigation" class="toc-link">HTML Preamble (Navigation)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#html-postamble-footer" class="toc-link">HTML Postamble (Footer)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#custom-css" class="toc-link">Custom CSS</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#github-pages-integration" class="toc-link">GitHub Pages Integration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#custom-domain-setup" class="toc-link">Custom Domain Setup</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#cross-file-links" class="toc-link">Cross-File Links</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#workflow-examples" class="toc-link">Workflow Examples</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#documentation-site" class="toc-link">Documentation Site</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#blog" class="toc-link">Blog</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#project-with-static-assets" class="toc-link">Project with Static Assets</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#no-publishing-configuration-found" class="toc-link">&quot;No publishing configuration found&quot;</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#base-directory-does-not-exist" class="toc-link">&quot;Base directory does not exist&quot;</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#links-not-working-after-publish" class="toc-link">Links not working after publish</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#github-pages-not-updating" class="toc-link">GitHub Pages not updating</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">Related Topics</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
 </body>
 </html>

@@ -8,11 +8,41 @@ publish:
   base_directory: "./docs"
   publishing_directory: "./docs-html"
   recursive: true
-  auto_sitemap: true
-  sitemap_filename: "index.org"
+  auto_sitemap: false
 
 html:
-  use_default_theme: true
   toc_depth: 3
 
 github_pages: true
+
+# Book theme configuration
+theme:
+  name: "book"
+
+  layout:
+    show_left_sidebar: true
+    show_right_sidebar: true
+    toc_depth: 3
+
+  header:
+    logo: "_static/logo.svg"
+    title: "Scimax VS Code"
+    navbar_links:
+      - text: "GitHub"
+        url: "https://github.com/jkitchin/scimax-vscode"
+      - text: "VS Code Marketplace"
+        url: "https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode"
+
+  footer:
+    copyright: "2024-2026 John Kitchin"
+    links:
+      - text: "License"
+        url: "https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE"
+
+  appearance:
+    primary_color: "#0d6efd"
+    enable_dark_mode: true
+    default_mode: "auto"
+
+  search:
+    enabled: true

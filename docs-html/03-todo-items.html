@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TODO Items and Task Management</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0 active ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-todo-items" class="org-section org-level-1">
+<h1>✅ TODO Items</h1>
+<p>Scimax VS Code provides a comprehensive task management system built into your
+documents. TODO items are headlines with a special keyword that indicates their
+status.</p>
+
+</div>
+<div id="org-basic-todo-functionality" class="org-section org-level-1">
+<h1>✅ Basic TODO Functionality</h1>
+<div id="org-creating-todo-items" class="org-section org-level-2">
+<h2>✅ Creating TODO Items</h2>
+<p>Add TODO after the headline stars to create a task:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Write documentation
+,** TODO Complete first draft
+,** TODO Review and edit</code></pre>
+</div>
+
+</div>
+<div id="org-cycling-todo-states" class="org-section org-level-2">
+<h2>✅ Cycling TODO States</h2>
+<p>Press C-c C-t on a headline to cycle through TODO states:</p>
+
+<pre class="example">(no keyword) → TODO → DONE → (no keyword)</pre>
+
+<p>Or use the command scimax.org.cycleTodo.</p>
+
+<p>With speed commands enabled, press t at the beginning of a headline.</p>
+
+</div>
+<div id="org-todo-keywords" class="org-section org-level-2">
+<h2>✅ TODO Keywords</h2>
+<p>The default TODO keywords are:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keyword</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>TODO</td><td>Task that needs to be done</td></tr>
+<tr><td>DONE</td><td>Completed task</td></tr>
+</tbody>
+</table>
+
+<p>Additional states available:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keyword</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>NEXT</td><td>Next action to take</td></tr>
+<tr><td>WAITING</td><td>Waiting for external input</td></tr>
+<tr><td>HOLD</td><td>On hold / paused</td></tr>
+<tr><td>CANCELLED</td><td>Task cancelled (won&#39;t be done)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-logging-completion" class="org-section org-level-2">
+<h2>⚠️ Logging Completion</h2>
+<p>When you mark a task as DONE, a CLOSED timestamp is automatically added:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* DONE Write introduction
+CLOSED: [2026-01-13 Mon 15:30]</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-priorities" class="org-section org-level-1">
+<h1>✅ Priorities</h1>
+<p>Priorities help you identify the most important tasks.</p>
+
+<div id="org-setting-priorities" class="org-section org-level-2">
+<h2>✅ Setting Priorities</h2>
+<p>Add a priority cookie after the TODO keyword:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO [#A] Urgent and important task
+,* TODO [#B] Important but not urgent
+,* TODO [#C] Nice to have</code></pre>
+</div>
+
+</div>
+<div id="org-priority-levels" class="org-section org-level-2">
+<h2>✅ Priority Levels</h2>
+<table class="org-table">
+<thead>
+<tr><th>Priority</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>[#A]</td><td>High priority - do first</td></tr>
+<tr><td>[#B]</td><td>Medium priority - do soon</td></tr>
+<tr><td>[#C]</td><td>Low priority - do when possible</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-priority-commands" class="org-section org-level-2">
+<h2>✅ Priority Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Speed key 1</td><td>Set priority A</td></tr>
+<tr><td>Speed key 2</td><td>Set priority B</td></tr>
+<tr><td>Speed key 3</td><td>Set priority C</td></tr>
+<tr><td>Speed key 0</td><td>Remove priority</td></tr>
+<tr><td>Speed key ,</td><td>Increase priority (C→B→A)</td></tr>
+</tbody>
+</table>
+
+<p>You can also set priority through the command palette:
+scimax.org.setPriority</p>
+
+</div>
+</div>
+<div id="org-progress-indicators" class="org-section org-level-1">
+<h1>✅ Progress Indicators</h1>
+<p>Track progress through subtasks using statistics cookies and checkboxes.</p>
+
+<div id="org-statistics-cookies" class="org-section org-level-2">
+<h2>✅ Statistics Cookies [/]</h2>
+<div id="org-fraction-format" class="org-section org-level-3">
+<h3>⚠️ Fraction Format</h3>
+<p>Shows completed/total count:</p>
+
+<div id="org-project-tasks-3-4" class="org-section org-level-4">
+<h4>Project Tasks [3/4]</h4>
+<div id="org-task-1" class="org-section org-level-5">
+<h5>⚠️ Task 1</h5>
+</div>
+<div id="org-task-2" class="org-section org-level-5">
+<h5>✅ Task 2</h5>
+</div>
+<div id="org-task-3" class="org-section org-level-5">
+<h5>✅ Task 3</h5>
+</div>
+<div id="org-c-task-4" class="org-section org-level-5">
+<h5>✅ [#C] Task 4</h5>
+</div>
+</div>
+</div>
+<div id="org-percentage-format" class="org-section org-level-3">
+<h3>⚠️ Percentage Format</h3>
+<p>Shows completion percentage:</p>
+
+<div id="org-project-progress-25" class="org-section org-level-4">
+<h4>Project Progress [25%]</h4>
+<div id="org-design" class="org-section org-level-5">
+<h5 class="org-done"><span class="org-todo org-done">DONE</span> Design</h5>
+</div>
+<div id="org-implementation" class="org-section org-level-5">
+<h5 class="org-done"><span class="org-todo org-done">DONE</span> Implementation</h5>
+</div>
+<div id="org-testing" class="org-section org-level-5">
+<h5>✅ Testing</h5>
+</div>
+<div id="org-deployment" class="org-section org-level-5">
+<h5 class="org-todo"><span class="org-todo org-todo">TODO</span> Deployment</h5>
+<p>Statistics cookies update automatically when child TODO states change.</p>
+
+</div>
+</div>
+</div>
+<div id="org-checkbox-lists" class="org-section org-level-3">
+<h3>✅ Checkbox Lists</h3>
+<p>For simpler task lists within a section, use checkboxes:</p>
+
+</div>
+</div>
+</div>
+<div id="org-shopping-list-2-4" class="org-section org-level-1">
+<h1>Shopping List [2/4]</h1>
+<ul>
+<li><input type="checkbox" checked  disabled /> <p>Milk</p>
+</li>
+<li><input type="checkbox" checked  disabled /> <p>Bread</p>
+</li>
+<li><input type="checkbox"   disabled /> <p>Eggs</p>
+</li>
+<li><input type="checkbox" checked  disabled /> <p>Butter</p>
+</li>
+</ul>
+
+<div id="org-checkbox-states" class="org-section org-level-3">
+<h3>✅ Checkbox States</h3>
+<table class="org-table">
+<thead>
+<tr><th>Syntax</th><th>State</th></tr>
+</thead>
+<tbody>
+<tr><td>[ ]</td><td>Unchecked / not done</td></tr>
+<tr><td>[X]</td><td>Checked / done</td></tr>
+<tr><td>[-]</td><td>Partially complete (has mixed children)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-toggling-checkboxes" class="org-section org-level-3">
+<h3>✅ Toggling Checkboxes</h3>
+<p>Press C-c C-c with cursor on a checkbox line to toggle it.</p>
+
+<p>Or use scimax.org.toggleCheckbox.</p>
+
+<div id="org-nested-checkboxes" class="org-section org-level-4">
+<h4>✅ Nested Checkboxes</h4>
+<p>Checkboxes can be nested. Parent checkboxes show aggregate state:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Packing List [1/2]
+- [-] Clothes [2/3]
+  - [X] Shirts
+  - [X] Pants
+  - [ ] Socks
+- [X] Toiletries [3/3]
+  - [X] Toothbrush
+  - [X] Soap
+  - [X] Towel</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-inserting-checkboxes" class="org-section org-level-3">
+<h3>✅ Inserting Checkboxes</h3>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.org.insertCheckbox</td><td>Insert checkbox at cursor</td></tr>
+</tbody>
+</table>
+
+<p>Type - [ ] followed by space to manually create a checkbox item.</p>
+
+</div>
+</div>
+<div id="org-extended-todo-keywords" class="org-section org-level-1">
+<h1>✅ Extended TODO Keywords</h1>
+<p>Beyond TODO and DONE, use these states for workflow management:</p>
+
+<div id="org-next" class="org-section org-level-2">
+<h2>✅ NEXT</h2>
+<p>Indicates the very next action to take:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* NEXT Call client about project requirements</code></pre>
+</div>
+
+<p>Use NEXT for tasks you&#39;re actively working on or will work on immediately.</p>
+
+</div>
+<div id="org-waiting" class="org-section org-level-2">
+<h2>✅ WAITING</h2>
+<p>Task is blocked waiting for someone or something:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* WAITING Review from manager
+:PROPERTIES:
+:WAITING_ON: John Smith
+:END:</code></pre>
+</div>
+
+</div>
+<div id="org-hold" class="org-section org-level-2">
+<h2>✅ HOLD</h2>
+<p>Task is paused but not cancelled:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* HOLD Website redesign
+Paused until Q2 budget approval.</code></pre>
+</div>
+
+</div>
+<div id="org-cancelled" class="org-section org-level-2">
+<h2>✅ CANCELLED</h2>
+<p>Task won&#39;t be done (but kept for records):</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* CANCELLED Old feature request
+No longer relevant after product pivot.</code></pre>
+</div>
+
+</div>
+<div id="org-workflow-example" class="org-section org-level-2">
+<h2>✅ Workflow Example</h2>
+<p>A typical task progression:</p>
+
+<pre class="example">TODO → NEXT → WAITING → NEXT → DONE
+         ↓
+       HOLD → NEXT → DONE
+         ↓
+     CANCELLED</pre>
+
+</div>
+</div>
+<div id="org-custom-todo-keywords" class="org-section org-level-1">
+<h1>✅ Custom TODO Keywords</h1>
+<p>You can define your own TODO workflow states for each file using the #+TODO:
+keyword. This is useful for project-specific workflows like code review,
+content publishing, or approval processes.</p>
+
+<div id="org-defining-custom-states" class="org-section org-level-2">
+<h2>✅ Defining Custom States</h2>
+<p>Add #+TODO: at the top of your org file (before any headings):</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TODO: DRAFT REVIEW | PUBLISHED REJECTED</code></pre>
+</div>
+
+<p>The | separates active (incomplete) states from done (complete) states.
+When you cycle TODO states, they will follow this sequence:</p>
+
+<pre class="example">(none) → DRAFT → REVIEW → PUBLISHED → (none)</pre>
+
+</div>
+<div id="org-multiple-todo-lines" class="org-section org-level-2">
+<h2>✅ Multiple TODO Lines</h2>
+<p>You can define multiple workflow sequences:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TODO: TODO IN-PROGRESS | DONE
+,#+TODO: BUG INVESTIGATING FIXING | FIXED WONTFIX</code></pre>
+</div>
+
+<p>All states from all #+TODO: lines are recognized.</p>
+
+</div>
+<div id="org-without-pipe-separator" class="org-section org-level-2">
+<h2>✅ Without Pipe Separator</h2>
+<p>If you omit the |, the last state is treated as done:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TODO: IDEA DRAFT REVIEW PUBLISHED</code></pre>
+</div>
+
+<p>This makes PUBLISHED the done state.</p>
+
+</div>
+<div id="org-syntax-variants" class="org-section org-level-2">
+<h2>✅ Syntax Variants</h2>
+<p>These keywords are all equivalent:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keyword</th><th>Usage</th></tr>
+</thead>
+<tbody>
+<tr><td>#+TODO:</td><td>Standard TODO keyword definition</td></tr>
+<tr><td>#+SEQ_TODO:</td><td>Sequential workflow (same as TODO)</td></tr>
+<tr><td>#+TYP_TODO:</td><td>Type-based workflow</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-example-workflows" class="org-section org-level-2">
+<h2>✅ Example Workflows</h2>
+<div id="org-code-review-workflow" class="org-section org-level-3">
+<h3>✅ Code Review Workflow</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TODO: DRAFT REVIEW APPROVED | MERGED REJECTED
+
+,* DRAFT Implement new feature
+,* REVIEW Fix login bug
+,* APPROVED Update documentation</code></pre>
+</div>
+
+</div>
+<div id="org-content-publishing-workflow" class="org-section org-level-3">
+<h3>✅ Content Publishing Workflow</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TODO: IDEA OUTLINE WRITING EDITING | PUBLISHED ARCHIVED
+
+,* WRITING Blog post about org-mode
+,* EDITING Tutorial on source blocks</code></pre>
+</div>
+
+</div>
+<div id="org-project-management-workflow" class="org-section org-level-3">
+<h3>✅ Project Management Workflow</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TODO: BACKLOG SPRINT IN-PROGRESS TESTING | DONE CANCELLED
+
+,* IN-PROGRESS User authentication
+,* TESTING Payment integration</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-logging-state-changes" class="org-section org-level-1">
+<h1>✅ Logging State Changes</h1>
+<p>Scimax VS Code can log when and how TODO states change.</p>
+
+<div id="org-logbook-drawer" class="org-section org-level-2">
+<h2>✅ LOGBOOK Drawer</h2>
+<p>CLOSED: [2026-01-15 Thu 14:42]</p>
+
+<p>State changes are recorded in the LOGBOOK drawer:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* DONE Complete documentation
+CLOSED: [2026-01-13 Mon 16:00]
+:LOGBOOK:
+- State &quot;DONE&quot;       from &quot;TODO&quot;       [2026-01-13 Mon 16:00]
+- State &quot;TODO&quot;       from &quot;WAITING&quot;    [2026-01-12 Sun 10:00]
+- State &quot;WAITING&quot;    from &quot;TODO&quot;       [2026-01-10 Fri 14:30]
+:END:</code></pre>
+</div>
+
+</div>
+<div id="org-timestamps-on-state-changes" class="org-section org-level-2">
+<h2>✅ Timestamps on State Changes</h2>
+<p>CLOSED: [2026-01-15 Thu 14:39]</p>
+
+<p>When enabled, each state change adds:</p>
+
+<ul>
+<li><p>A timestamp showing when the change occurred</p>
+</li>
+<li><p>The previous state</p>
+</li>
+</ul>
+
+<p>This creates a complete history of task progress.</p>
+
+</div>
+</div>
+<div id="org-tags-for-todo-items" class="org-section org-level-1">
+<h1>✅ Tags for TODO Items</h1>
+<p>CLOSED: [2026-01-15 Thu 14:39]</p>
+
+<p>Tags provide additional categorization beyond the headline hierarchy.</p>
+
+<div id="org-adding-tags" class="org-section org-level-2">
+<h2>✅ Adding Tags</h2>
+<p>CLOSED: [2026-01-15 Thu 14:39]</p>
+
+<p>Tags appear at the end of the headline, enclosed in colons:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Review quarterly report                               :work:urgent:
+,* TODO Buy groceries                                         :personal:errands:</code></pre>
+</div>
+
+</div>
+<div id="org-tag-commands" class="org-section org-level-2">
+<h2>✅ Tag Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:39]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Speed key ;</td><td>Edit tags</td></tr>
+<tr><td>scimax.org.setTags</td><td>Set tags via command</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-inherited-tags" class="org-section org-level-2">
+<h2>✅ Inherited Tags</h2>
+<p>CLOSED: [2026-01-15 Thu 14:39]</p>
+
+<p>Child headlines inherit their parent&#39;s tags:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Work Projects                                              :work:
+,** TODO Project A                                            :client1:
+This task has both :work: and :client1: tags.
+,** TODO Project B                                            :internal:
+This task has both :work: and :internal: tags.</code></pre>
+</div>
+
+</div>
+<div id="org-common-tag-conventions" class="org-section org-level-2">
+<h2>✅ Common Tag Conventions</h2>
+<p>CLOSED: [2026-01-15 Thu 14:42]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Tag</th><th>Usage</th></tr>
+</thead>
+<tbody>
+<tr><td>@office</td><td>Context: at office</td></tr>
+<tr><td>@home</td><td>Context: at home</td></tr>
+<tr><td>@computer</td><td>Context: needs computer</td></tr>
+<tr><td>@phone</td><td>Context: phone call</td></tr>
+<tr><td>urgent</td><td>Priority indicator</td></tr>
+<tr><td>project</td><td>Part of larger project</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-filtering-by-tags" class="org-section org-level-2">
+<h2>✅ Filtering by Tags</h2>
+<p>CLOSED: [2026-01-15 Thu 14:42]</p>
+
+<p>Use agenda views or search to filter tasks by tag:</p>
+
+<ul>
+<li><p>scimax.db.searchByTag - Search for specific tags</p>
+</li>
+<li><p>scimax.agenda.filterByTag - Filter agenda by tag</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-scheduling-and-deadlines" class="org-section org-level-1">
+<h1>✅ Scheduling and Deadlines</h1>
+<p>CLOSED: [2026-01-15 Thu 14:40]</p>
+
+<p>Assign dates to tasks for planning.</p>
+
+<div id="org-scheduled" class="org-section org-level-2">
+<h2>✅ SCHEDULED</h2>
+<p>CLOSED: [2026-01-15 Thu 14:40]</p>
+
+<p>When you plan to start or work on a task:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Write report
+SCHEDULED: &lt;2026-01-15 Wed&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-deadline" class="org-section org-level-2">
+<h2>✅ DEADLINE</h2>
+<p>CLOSED: [2026-01-15 Thu 14:40]</p>
+
+<p>When a task must be completed by:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Submit proposal
+DEADLINE: &lt;2026-01-20 Mon&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-both-together" class="org-section org-level-2">
+<h2>✅ Both Together</h2>
+<p>CLOSED: [2026-01-15 Thu 14:40]</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Complete project
+SCHEDULED: &lt;2026-01-15 Wed&gt; DEADLINE: &lt;2026-01-25 Sat&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-adding-dates" class="org-section org-level-2">
+<h2>✅ Adding Dates</h2>
+<p>CLOSED: [2026-01-15 Thu 14:40]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Speed Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>s</td><td>Add/edit SCHEDULED date</td></tr>
+<tr><td>d</td><td>Add/edit DEADLINE date</td></tr>
+<tr><td>.</td><td>Insert timestamp</td></tr>
+</tbody>
+</table>
+
+<p>Or use commands:</p>
+
+<ul>
+<li><p>scimax.org.schedule</p>
+</li>
+<li><p>scimax.org.deadline</p>
+</li>
+</ul>
+
+<p>See <a href="06-timestamps.html">Timestamps</a> for more on date formats.</p>
+
+</div>
+</div>
+<div id="org-time-tracking" class="org-section org-level-1">
+<h1>✅ Time Tracking</h1>
+<p>CLOSED: [2026-01-15 Thu 14:40]</p>
+
+<p>Track time spent on tasks using clock entries.</p>
+
+<div id="org-clocking-in-out" class="org-section org-level-2">
+<h2>✅ Clocking In/Out</h2>
+<p>CLOSED: [2026-01-15 Thu 14:40]</p>
+
+
+<table class="org-table">
+<thead>
+<tr><th>Speed Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>I</td><td>Clock in (start timing)</td></tr>
+<tr><td>O</td><td>Clock out (stop timing)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-clock-entries" class="org-section org-level-2">
+<h2>✅ Clock Entries</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Clock entries are stored in the LOGBOOK drawer:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Working on documentation
+:LOGBOOK:
+CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 10:30] =&gt;  1:30
+CLOCK: [2026-01-12 Sun 14:00]--[2026-01-12 Sun 16:00] =&gt;  2:00
+:END:</code></pre>
+</div>
+
+</div>
+<div id="org-total-time" class="org-section org-level-2">
+<h2>✅ Total Time</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>The total clocked time appears in the properties or can be calculated for
+reports.</p>
+
+</div>
+</div>
+<div id="org-effort-estimates" class="org-section org-level-1">
+<h1>✅ Effort Estimates</h1>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Estimate how long tasks will take.</p>
+
+<div id="org-setting-effort" class="org-section org-level-2">
+<h2>✅ Setting Effort</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Add an EFFORT property:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Review document
+:PROPERTIES:
+:EFFORT: 1:30
+:END:</code></pre>
+</div>
+
+<table class="org-table">
+<thead>
+<tr><th>Speed Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>e</td><td>Set effort estimate</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-effort-format" class="org-section org-level-2">
+<h2>✅ Effort Format</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Use H:MM format:</p>
+
+<ul>
+<li><p>0:30 - 30 minutes</p>
+</li>
+<li><p>1:00 - 1 hour</p>
+</li>
+<li><p>2:30 - 2 hours 30 minutes</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-agenda-integration" class="org-section org-level-1">
+<h1>✅ Agenda Integration</h1>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>TODO items appear in agenda views for planning and review.</p>
+
+<div id="org-viewing-all-todos" class="org-section org-level-2">
+<h2>✅ Viewing All TODOs</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Use scimax.agenda.todoList or scimax.db.showTodos to see all tasks.</p>
+
+</div>
+<div id="org-deadline-view" class="org-section org-level-2">
+<h2>✅ Deadline View</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Use scimax.agenda.deadlines to see upcoming and overdue deadlines.</p>
+
+</div>
+<div id="org-filtering-options" class="org-section org-level-2">
+<h2>✅ Filtering Options</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<ul>
+<li><p>By priority (A, B, C)</p>
+</li>
+<li><p>By tag</p>
+</li>
+<li><p>By date range</p>
+</li>
+<li><p>By TODO state</p>
+</li>
+</ul>
+
+<p>See <a href="13-agenda.html">Agenda</a> for complete agenda documentation.</p>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>✅ Best Practices</h1>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<div id="org-task-granularity" class="org-section org-level-2">
+<h2>✅ Task Granularity</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Make tasks actionable:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO &quot;Write documentation&quot;           ; Too vague
+,* TODO Write introduction section      ; Better - specific and actionable</code></pre>
+</div>
+
+</div>
+<div id="org-use-next-for-clarity" class="org-section org-level-2">
+<h2>✅ Use NEXT for Clarity</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Always have at least one NEXT task to know what to work on:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Project: New Feature
+,** DONE Design architecture
+,** NEXT Implement core module           ; ← Clear next step
+,** TODO Write tests
+,** TODO Deploy to staging</code></pre>
+</div>
+
+</div>
+<div id="org-regular-review" class="org-section org-level-2">
+<h2>✅ Regular Review</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Periodically review tasks to:</p>
+
+<ul>
+<li><p>Move stale TODO items to HOLD or CANCELLED</p>
+</li>
+<li><p>Update WAITING items</p>
+</li>
+<li><p>Identify next actions</p>
+</li>
+</ul>
+
+</div>
+<div id="org-tags-vs-hierarchy" class="org-section org-level-2">
+<h2>✅ Tags vs Hierarchy</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<p>Use hierarchy for project structure, tags for cross-cutting concerns:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Work                                                       :work:
+,** Project A
+,*** TODO Task requiring phone                                :@phone:
+,*** TODO Task requiring computer                             :@computer:
+,** Project B
+,*** TODO Another phone task                                  :@phone:</code></pre>
+</div>
+
+<p>Now you can filter by @phone to see all phone tasks across projects.</p>
+
+</div>
+</div>
+<div id="org-quick-reference" class="org-section org-level-1">
+<h1>✅ Quick Reference</h1>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<div id="org-keybindings" class="org-section org-level-2">
+<h2>✅ Keybindings</h2>
+<p>CLOSED: [2026-01-15 Thu 14:41]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-t</td><td>Cycle TODO state</td></tr>
+<tr><td>C-c C-c</td><td>Toggle checkbox</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-speed-commands-at-heading-start" class="org-section org-level-2">
+<h2>✅ Speed Commands (at heading start)</h2>
+<p>CLOSED: [2026-01-15 Thu 14:42]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>t</td><td>Cycle TODO state</td></tr>
+<tr><td>1<em>2</em>3</td><td>Set priority A/B/C</td></tr>
+<tr><td>0</td><td>Clear priority</td></tr>
+<tr><td>,</td><td>Increase priority</td></tr>
+<tr><td>s</td><td>Schedule</td></tr>
+<tr><td>d</td><td>Deadline</td></tr>
+<tr><td>e</td><td>Set effort</td></tr>
+<tr><td>;</td><td>Set tags</td></tr>
+<tr><td>I</td><td>Clock in</td></tr>
+<tr><td>O</td><td>Clock out</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-commands" class="org-section org-level-2">
+<h2>✅ Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:42]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.org.cycleTodo</td><td>Cycle TODO state</td></tr>
+<tr><td>scimax.org.toggleCheckbox</td><td>Toggle checkbox</td></tr>
+<tr><td>scimax.org.insertCheckbox</td><td>Insert checkbox</td></tr>
+<tr><td>scimax.org.schedule</td><td>Add SCHEDULED timestamp</td></tr>
+<tr><td>scimax.org.deadline</td><td>Add DEADLINE timestamp</td></tr>
+<tr><td>scimax.db.showTodos</td><td>Show all TODO items</td></tr>
+<tr><td>scimax.agenda.todoList</td><td>Open TODO agenda view</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>✅ Related Topics</h1>
+<p>CLOSED: [2026-01-15 Thu 14:42]</p>
+
+<ul>
+<li><p><a href="06-timestamps.html">Timestamps</a> - Date formats for scheduling and deadlines</p>
+</li>
+<li><p><a href="13-agenda.html">Agenda</a> - Viewing and filtering tasks</p>
+</li>
+<li><p><a href="02-document-structure.html">Document Structure</a> - Headlines and organization</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="02-document-structure.html">Document Structure</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="04-tables.html">Tables</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="04-tables.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="13-agenda.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#todo-items" class="toc-link">✅ TODO Items</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#basic-todo-functionality" class="toc-link">✅ Basic TODO Functionality</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#creating-todo-items" class="toc-link">✅ Creating TODO Items</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#cycling-todo-states" class="toc-link">✅ Cycling TODO States</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#todo-keywords" class="toc-link">✅ TODO Keywords</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#logging-completion" class="toc-link">⚠️ Logging Completion</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#priorities" class="toc-link">✅ Priorities</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#setting-priorities" class="toc-link">✅ Setting Priorities</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#priority-levels" class="toc-link">✅ Priority Levels</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#priority-commands" class="toc-link">✅ Priority Commands</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#progress-indicators" class="toc-link">✅ Progress Indicators</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#statistics-cookies" class="toc-link">✅ Statistics Cookies [/]</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#fraction-format" class="toc-link">⚠️ Fraction Format</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#percentage-format" class="toc-link">⚠️ Percentage Format</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#checkbox-lists" class="toc-link">✅ Checkbox Lists</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#shopping-list-24" class="toc-link">Shopping List [2/4]</a>
+            </li>
+        
+<ul class="toc-sublist">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#checkbox-states" class="toc-link">✅ Checkbox States</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#toggling-checkboxes" class="toc-link">✅ Toggling Checkboxes</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#inserting-checkboxes" class="toc-link">✅ Inserting Checkboxes</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#extended-todo-keywords" class="toc-link">✅ Extended TODO Keywords</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#next" class="toc-link">✅ NEXT</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#waiting" class="toc-link">✅ WAITING</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#hold" class="toc-link">✅ HOLD</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#cancelled" class="toc-link">✅ CANCELLED</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#workflow-example" class="toc-link">✅ Workflow Example</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#custom-todo-keywords" class="toc-link">✅ Custom TODO Keywords</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#defining-custom-states" class="toc-link">✅ Defining Custom States</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#multiple-todo-lines" class="toc-link">✅ Multiple TODO Lines</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#without-pipe-separator" class="toc-link">✅ Without Pipe Separator</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#syntax-variants" class="toc-link">✅ Syntax Variants</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#example-workflows" class="toc-link">✅ Example Workflows</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#code-review-workflow" class="toc-link">✅ Code Review Workflow</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#content-publishing-workflow" class="toc-link">✅ Content Publishing Workflow</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#project-management-workflow" class="toc-link">✅ Project Management Workflow</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#logging-state-changes" class="toc-link">✅ Logging State Changes</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#logbook-drawer" class="toc-link">✅ LOGBOOK Drawer</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#timestamps-on-state-changes" class="toc-link">✅ Timestamps on State Changes</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#tags-for-todo-items" class="toc-link">✅ Tags for TODO Items</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#adding-tags" class="toc-link">✅ Adding Tags</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tag-commands" class="toc-link">✅ Tag Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#inherited-tags" class="toc-link">✅ Inherited Tags</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#common-tag-conventions" class="toc-link">✅ Common Tag Conventions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#filtering-by-tags" class="toc-link">✅ Filtering by Tags</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#scheduling-and-deadlines" class="toc-link">✅ Scheduling and Deadlines</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#scheduled" class="toc-link">✅ SCHEDULED</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#deadline" class="toc-link">✅ DEADLINE</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#both-together" class="toc-link">✅ Both Together</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#adding-dates" class="toc-link">✅ Adding Dates</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#time-tracking" class="toc-link">✅ Time Tracking</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#clocking-inout" class="toc-link">✅ Clocking In/Out</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#clock-entries" class="toc-link">✅ Clock Entries</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#total-time" class="toc-link">✅ Total Time</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#effort-estimates" class="toc-link">✅ Effort Estimates</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#setting-effort" class="toc-link">✅ Setting Effort</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#effort-format" class="toc-link">✅ Effort Format</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#agenda-integration" class="toc-link">✅ Agenda Integration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#viewing-all-todos" class="toc-link">✅ Viewing All TODOs</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#deadline-view" class="toc-link">✅ Deadline View</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#filtering-options" class="toc-link">✅ Filtering Options</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#best-practices" class="toc-link">✅ Best Practices</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#task-granularity" class="toc-link">✅ Task Granularity</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#use-next-for-clarity" class="toc-link">✅ Use NEXT for Clarity</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#regular-review" class="toc-link">✅ Regular Review</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tags-vs-hierarchy" class="toc-link">✅ Tags vs Hierarchy</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#quick-reference" class="toc-link">✅ Quick Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#keybindings" class="toc-link">✅ Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#speed-commands-at-heading-start" class="toc-link">✅ Speed Commands (at heading start)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#commands" class="toc-link">✅ Commands</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">✅ Related Topics</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

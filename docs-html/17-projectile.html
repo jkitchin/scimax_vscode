@@ -1,0 +1,2187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Projectile (Project Management)</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-overview" class="org-section org-level-1">
+<h1>✅ Overview</h1>
+<p>CLOSED: [2026-01-15 Thu 19:55]</p>
+
+<p>The Scimax projectile system provides project-aware file management inspired by Emacs Projectile. It enables quick switching between projects, intelligent project detection, and project-scoped operations for efficient multi-project workflows.</p>
+
+<div id="org-what-is-projectile" class="org-section org-level-2">
+<h2>✅ What is Projectile?</h2>
+<p>CLOSED: [2026-01-15 Thu 19:55]</p>
+
+<p>Projectile is a project management system that:</p>
+
+<ul>
+<li><p>Automatically detects projects based on version control markers (`.git&#39;), special files (`.projectile&#39;), or manual registration</p>
+</li>
+<li><p>Maintains a list of known projects with quick-switch capabilities</p>
+</li>
+<li><p>Provides project-scoped file search and text search</p>
+</li>
+<li><p>Remembers recently accessed projects</p>
+</li>
+<li><p>Integrates with the notebook system for research project organization</p>
+</li>
+<li><p>Tracks project metadata including type and last access time</p>
+</li>
+</ul>
+
+<p>Projects can be:</p>
+
+<ul>
+<li><p><strong>Git repositories</strong>: Directories containing a <kbd>.git</kbd> folder</p>
+</li>
+<li><p><strong>Projectile-marked</strong>: Directories with a <kbd>.projectile</kbd> marker file</p>
+</li>
+<li><p><strong>Manual projects</strong>: Any directory you explicitly add to the project list</p>
+</li>
+</ul>
+
+</div>
+<div id="org-key-features" class="org-section org-level-2">
+<h2>✅ Key Features</h2>
+<p>CLOSED: [2026-01-15 Thu 19:55]</p>
+
+<ul>
+<li><p><strong>Automatic Detection</strong>: Discovers git repos and projectile-marked directories</p>
+</li>
+<li><p><strong>Quick Switching</strong>: Fast navigation between known projects with <kbd>C-c p p</kbd></p>
+</li>
+<li><p><strong>Project History</strong>: Shows when each project was last opened</p>
+</li>
+<li><p><strong>Batch Scanning</strong>: Scan directories to discover multiple projects at once</p>
+</li>
+<li><p><strong>File Finding</strong>: Project-scoped file search with <kbd>C-c p f</kbd></p>
+</li>
+<li><p><strong>Text Search</strong>: Search within project files with <kbd>C-c p s</kbd></p>
+</li>
+<li><p><strong>Tree View</strong>: Sidebar showing all known projects with visual indicators</p>
+</li>
+<li><p><strong>Cleanup Tools</strong>: Remove non-existent projects from the list</p>
+</li>
+<li><p><strong>Notebook Integration</strong>: Works seamlessly with scimax-notebook for research projects</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-project-detection" class="org-section org-level-1">
+<h1>✅ Project Detection</h1>
+<p>CLOSED: [2026-01-15 Thu 19:55]</p>
+
+<div id="org-detection-methods" class="org-section org-level-2">
+<h2>Detection Methods</h2>
+<p>Scimax uses three methods to detect projects, in this priority order:</p>
+
+<ol>
+<li><p><strong>Git Repositories</strong>: Any directory containing a .git/ subdirectory</p>
+</li>
+<li><p><strong>Projectile Markers</strong>: Directories with a .projectile file</p>
+</li>
+<li><p><strong>Manual Registration</strong>: Projects you explicitly add via commands</p>
+</li>
+</ol>
+
+</div>
+<div id="org-automatic-detection" class="org-section org-level-2">
+<h2>Automatic Detection</h2>
+<p>When you open a workspace folder, Scimax automatically registers it as a project:</p>
+
+<pre class="example"># Opening a folder registers it automatically
+$ code /home/user/my-project/
+
+# The folder is now in your project list
+# Type: git (if it has .git) or manual (otherwise)</pre>
+
+</div>
+<div id="org-creating-a-projectile-marker" class="org-section org-level-2">
+<h2>Creating a Projectile Marker</h2>
+<p>To mark a directory as a projectile project, create an empty <kbd>.projectile</kbd> file in the root:</p>
+
+<div class="org-src-container">
+<pre class="src src-sh"><code class="language-sh"># Create marker file
+touch .projectile
+
+# Now Scimax recognizes this as a project</code></pre>
+</div>
+
+<p>The `.projectile&#39; file can be empty or contain patterns for ignoring files (reserved for future use).</p>
+
+</div>
+<div id="org-project-types" class="org-section org-level-2">
+<h2>Project Types</h2>
+<p>Projects are classified into three types:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Marker</th><th>Icon</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">git</code></td><td><code class="verbatim">.git/</code></td><td>Git branch</td><td>Git repository</td></tr>
+<tr><td><code class="verbatim">projectile</code></td><td><code class="verbatim">.projectile</code></td><td>File icon</td><td>Marked with .projectile file</td></tr>
+<tr><td><code class="verbatim">manual</code></td><td>(none)</td><td>Folder icon</td><td>Manually added directory</td></tr>
+</tbody>
+</table>
+
+<p>The type is automatically detected when adding a project.</p>
+
+</div>
+</div>
+<div id="org-managing-projects" class="org-section org-level-1">
+<h1>Managing Projects</h1>
+<div id="org-switching-between-projects" class="org-section org-level-2">
+<h2>Switching Between Projects</h2>
+<p>The primary projectile command is <strong>Switch Project</strong> (<kbd>C-c p p</kbd>):</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Switch Project
+Keybinding: C-c p p
+Hydra: Projects → p (Switch Project)</code></pre>
+</div>
+
+<p>This opens a quick pick menu showing:</p>
+
+<ul>
+<li><p>Project name</p>
+</li>
+<li><p>Full path</p>
+</li>
+<li><p>Project type (git, projectile, or manual)</p>
+</li>
+<li><p>Last opened time (e.g., &quot;2h ago&quot;, &quot;3d ago&quot;)</p>
+</li>
+</ul>
+
+<p>Select a project to choose how to open it:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Option</th><th>Result</th></tr>
+</thead>
+<tbody>
+<tr><td>New Window</td><td>Opens project in a new VS Code window</td></tr>
+<tr><td>Current Window</td><td>Replaces current workspace with project</td></tr>
+<tr><td>Add to Workspace</td><td>Adds project to current multi-root workspace</td></tr>
+</tbody>
+</table>
+
+<p>Example workflow:</p>
+
+<pre class="example">1. Press C-c p p
+2. Type to filter: &quot;scimax&quot;
+3. Select &quot;scimax_vscode&quot;
+4. Choose &quot;New Window&quot;
+→ Project opens in new VS Code window
+→ Last opened time is updated</pre>
+
+</div>
+<div id="org-adding-projects" class="org-section org-level-2">
+<h2>Adding Projects</h2>
+<div id="org-manually-adding-a-project" class="org-section org-level-3">
+<h3>Manually Adding a Project</h3>
+<p>Use <kbd>Scimax: Add Project</kbd> (<kbd>C-c p a</kbd>):</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Add Project
+Keybinding: C-c p a
+Hydra: Projects → a (Add Project)</code></pre>
+</div>
+
+<p>This opens a folder picker. Select any directory to add it to your project list.</p>
+
+<pre class="example">1. Press C-c p a
+2. Navigate to /home/user/projects/my-app/
+3. Select folder
+→ &quot;Added project: my-app&quot;
+→ Project appears in the list</pre>
+
+</div>
+<div id="org-scanning-for-projects" class="org-section org-level-3">
+<h3>Scanning for Projects</h3>
+<p>To discover multiple projects at once, use <kbd>Scimax: Scan Directory for Projects</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Scan Directory for Projects
+Keybinding: (none)
+Hydra: Projects → s (Scan for Projects)</code></pre>
+</div>
+
+<p>Scanning process:</p>
+
+<ol>
+<li><p>Select a parent directory to scan</p>
+</li>
+<li><p>Enter maximum depth (default: 2 levels deep)</p>
+</li>
+<li><p>Scimax searches for git repos and .projectile markers</p>
+</li>
+<li><p>Found projects are added automatically</p>
+</li>
+</ol>
+
+<p>Example:</p>
+
+<pre class="example">Scan directory: /home/user/projects/
+Max depth: 2
+
+# Finds and adds:
+/home/user/projects/project-a/         (git)
+/home/user/projects/project-b/         (git)
+/home/user/projects/work/client-site/  (git)
+/home/user/projects/notes/journal/     (projectile)
+
+Result: &quot;Found 4 projects&quot;</pre>
+
+<p>The scanner:</p>
+
+<ul>
+<li><p>Skips hidden directories (starting with `.&#39;)</p>
+</li>
+<li><p>Stops descending into detected projects</p>
+</li>
+<li><p>Handles permission errors gracefully</p>
+</li>
+<li><p>Shows progress notification</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-removing-projects" class="org-section org-level-2">
+<h2>Removing Projects</h2>
+<p>Remove projects from the list with <kbd>Scimax: Remove Project</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Remove Project
+Keybinding: (none)
+Hydra: Projects → r (Remove Project)</code></pre>
+</div>
+
+<p>Notes:</p>
+
+<ul>
+<li><p>This removes the project from the <strong>known projects list only</strong></p>
+</li>
+<li><p>It does <strong>not</strong> delete any files from disk</p>
+</li>
+<li><p>The project can be re-added at any time</p>
+</li>
+</ul>
+
+</div>
+<div id="org-cleaning-up-projects" class="org-section org-level-2">
+<h2>Cleaning Up Projects</h2>
+<p>Over time, projects may be moved or deleted. Use <kbd>Scimax: Cleanup Non-existent Projects</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Cleanup Non-existent Projects
+Keybinding: (none)</code></pre>
+</div>
+
+<p>This scans all known projects and removes entries for directories that no longer exist on disk.</p>
+
+<pre class="example">Known projects: 15
+Checking each path...
+Removed: /home/user/old-project (not found)
+Removed: /tmp/temp-project (not found)
+Result: &quot;Cleaned up 2 non-existent projects&quot;</pre>
+
+<p>Run this periodically to keep your project list clean.</p>
+
+</div>
+</div>
+<div id="org-project-operations" class="org-section org-level-1">
+<h1>Project Operations</h1>
+<div id="org-finding-files-in-projects" class="org-section org-level-2">
+<h2>Finding Files in Projects</h2>
+<p>Find files within the current project using <kbd>Scimax: Find File in Project</kbd> (<kbd>C-c p f</kbd>):</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Find File in Project
+Keybinding: C-c p f
+Hydra: Projects → f (Find File)</code></pre>
+</div>
+
+<p>This delegates to VS Code&#39;s built-in quick open (`C-p&#39;), which automatically scopes to workspace folders.</p>
+
+<p>Features:</p>
+
+<ul>
+<li><p>Fuzzy matching (e.g., &quot;orgpar&quot; matches &quot;orgParser.ts&quot;)</p>
+</li>
+<li><p>Recent files appear first</p>
+</li>
+<li><p>Respects .gitignore and VS Code ignore patterns</p>
+</li>
+<li><p>Fast indexing with intelligent caching</p>
+</li>
+</ul>
+
+<p>Example:</p>
+
+<pre class="example">C-c p f
+Type: &quot;babelProv&quot;
+→ Matches: src/org/babelProvider.ts
+→ Press Enter to open</pre>
+
+</div>
+<div id="org-searching-in-projects" class="org-section org-level-2">
+<h2>Searching in Projects</h2>
+<p>Search for text within project files using <kbd>Scimax: Search in Project</kbd> (<kbd>C-c p s</kbd>):</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Search in Project
+Keybinding: C-c p s
+Hydra: Projects → g (Search in Project)</code></pre>
+</div>
+
+<p>This opens VS Code&#39;s search panel pre-scoped to the current workspace.</p>
+
+<p>Search features:</p>
+
+<ul>
+<li><p>Regular expression support</p>
+</li>
+<li><p>Case sensitivity toggle</p>
+</li>
+<li><p>Whole word matching</p>
+</li>
+<li><p>Include/exclude file patterns</p>
+</li>
+<li><p>Replace across all matches</p>
+</li>
+</ul>
+
+<p>Example workflow:</p>
+
+<pre class="example">1. Press C-c p s
+2. Search panel opens
+3. Enter search: &quot;executeSourceBlock&quot;
+4. Results show all matches in project
+5. Click to navigate to each match</pre>
+
+</div>
+<div id="org-opening-project-root" class="org-section org-level-2">
+<h2>Opening Project Root</h2>
+<p>Navigate to the project root in the file explorer with <kbd>Scimax: Open Project Root</kbd> (<kbd>C-c p d</kbd>):</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Open Project Root
+Keybinding: C-c p d
+Hydra: (none)</code></pre>
+</div>
+
+<p>For multi-root workspaces, you&#39;ll be asked to select which project root to reveal.</p>
+
+</div>
+<div id="org-project-information" class="org-section org-level-2">
+<h2>Project Information</h2>
+<p>View details about the current project with <kbd>Scimax: Project Info</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Project Info
+Keybinding: (none)</code></pre>
+</div>
+
+<p>Displays:</p>
+
+<ul>
+<li><p>Project name</p>
+</li>
+<li><p>Full path</p>
+</li>
+<li><p>Project type (git, projectile, manual)</p>
+</li>
+<li><p>Last opened timestamp</p>
+</li>
+<li><p>Whether it&#39;s tracked by projectile</p>
+</li>
+</ul>
+
+<p>Example output:</p>
+
+<pre class="example">Name: scimax_vscode
+Path: /home/user/scimax_vscode
+Type: git
+Last opened: 2026-01-13 14:32:15</pre>
+
+</div>
+</div>
+<div id="org-projects-tree-view" class="org-section org-level-1">
+<h1>Projects Tree View</h1>
+<div id="org-sidebar-panel" class="org-section org-level-2">
+<h2>Sidebar Panel</h2>
+<p>The Projects tree view appears in the Scimax sidebar, showing all known projects.</p>
+
+<p>To open the sidebar:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">View → Open View... → Scimax Projects</code></pre>
+</div>
+
+</div>
+<div id="org-tree-view-elements" class="org-section org-level-2">
+<h2>Tree View Elements</h2>
+<p>Each project in the tree shows:</p>
+
+<ul>
+<li><p><strong>Icon</strong>:</p>
+</li>
+<li><p><strong>Name</strong>: Project directory name</p>
+</li>
+<li><p><strong>Description</strong>:</p>
+</li>
+</ul>
+
+</div>
+<div id="org-tree-interactions" class="org-section org-level-2">
+<h2>Tree Interactions</h2>
+<p>Click a project to open it:</p>
+
+<ul>
+<li><p>Same behavior as `C-c p p&#39; (Switch Project)</p>
+</li>
+<li><p>Choose New Window, Current Window, or Add to Workspace</p>
+</li>
+</ul>
+
+<p>Right-click (context menu) actions:</p>
+
+<ul>
+<li><p>Refresh tree view</p>
+</li>
+<li><p>Remove project</p>
+</li>
+<li><p>Show project info</p>
+</li>
+</ul>
+
+</div>
+<div id="org-refreshing-the-tree" class="org-section org-level-2">
+<h2>Refreshing the Tree</h2>
+<p>The tree auto-refreshes when:</p>
+
+<ul>
+<li><p>Projects are added or removed</p>
+</li>
+<li><p>Workspace folders change</p>
+</li>
+<li><p>Projects are accessed (last opened time updates)</p>
+</li>
+</ul>
+
+<p>Manual refresh:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: Scimax: Refresh Projects
+Icon: Refresh button in tree view toolbar</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-recent-projects" class="org-section org-level-1">
+<h1>Recent Projects</h1>
+<div id="org-sorting-by-last-access" class="org-section org-level-2">
+<h2>Sorting by Last Access</h2>
+<p>Projects are sorted by last opened time, with the most recently accessed appearing first:</p>
+
+<pre class="example">Project List:
+1. scimax_vscode        (just now)     # ← Currently open
+2. my-research          (2h ago)       # ← Recently used
+3. client-website       (3d ago)
+4. old-notes            (2024-11-15)   # ← Long time ago</pre>
+
+<p>This ordering makes it quick to switch back to recently used projects.</p>
+
+</div>
+<div id="org-automatic-time-tracking" class="org-section org-level-2">
+<h2>Automatic Time Tracking</h2>
+<p>Last opened time is updated automatically when:</p>
+
+<ul>
+<li><p>Opening a project via `C-c p p&#39; (Switch Project)</p>
+</li>
+<li><p>Clicking a project in the tree view</p>
+</li>
+<li><p>Opening a workspace folder that&#39;s a known project</p>
+</li>
+</ul>
+
+<p>The timestamp is stored in VS Code&#39;s global state, persisting across sessions.</p>
+
+</div>
+<div id="org-time-format" class="org-section org-level-2">
+<h2>Time Format</h2>
+<p>Relative times are shown for recent access:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Time Difference</th><th>Format</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>&lt; 1 minute</td><td>&quot;just now&quot;</td><td>just now</td></tr>
+<tr><td>&lt; 60 minutes</td><td>minutes ago</td><td>23m ago</td></tr>
+<tr><td>&lt; 24 hours</td><td>hours ago</td><td>5h ago</td></tr>
+<tr><td>&lt; 30 days</td><td>days ago</td><td>12d ago</td></tr>
+<tr><td>≥ 30 days</td><td>date</td><td>11<em>23</em>2024</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-commands-reference" class="org-section org-level-1">
+<h1>Commands Reference</h1>
+<div id="org-all-projectile-commands" class="org-section org-level-2">
+<h2>All Projectile Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Hydra Key</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Scimax: Switch Project</code></td><td><code class="verbatim">C-c p p</code></td><td>p</td><td>Switch to another project</td></tr>
+<tr><td><code class="verbatim">Scimax: Find File in Project</code></td><td><code class="verbatim">C-c p f</code></td><td>f</td><td>Find file in current project</td></tr>
+<tr><td><code class="verbatim">Scimax: Search in Project</code></td><td><code class="verbatim">C-c p s</code></td><td>g</td><td>Search text in project</td></tr>
+<tr><td><code class="verbatim">Scimax: Open Project Root</code></td><td><code class="verbatim">C-c p d</code></td><td></td><td>Reveal project root in explorer</td></tr>
+<tr><td><code class="verbatim">Scimax: Add Project</code></td><td><code class="verbatim">C-c p a</code></td><td>a</td><td>Add folder to project list</td></tr>
+<tr><td><code class="verbatim">Scimax: Remove Project</code></td><td></td><td>r</td><td>Remove project from list</td></tr>
+<tr><td><code class="verbatim">Scimax: Scan Directory for Projects</code></td><td></td><td>s</td><td>Find projects in directory</td></tr>
+<tr><td><code class="verbatim">Scimax: Project Info</code></td><td></td><td></td><td>Show current project details</td></tr>
+<tr><td><code class="verbatim">Scimax: Cleanup Non-existent Projects</code></td><td></td><td></td><td>Remove invalid project entries</td></tr>
+<tr><td><code class="verbatim">Scimax: Refresh Projects</code></td><td></td><td></td><td>Refresh tree view</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-keybindings" class="org-section org-level-2">
+<h2>Keybindings</h2>
+<p>All projectile keybindings use the <kbd>C-c C-p</kbd> prefix, matching Emacs Projectile conventions:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">C-c p p    Switch project
+C-c p f    Find file
+C-c p s    Search in project
+C-c p d    Open project root (directory)
+C-c p a    Add project</code></pre>
+</div>
+
+<p>These bindings work in all editors, regardless of file type.</p>
+
+</div>
+<div id="org-hydra-menu-access" class="org-section org-level-2">
+<h2>Hydra Menu Access</h2>
+<p>Open the Projects hydra menu:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">1. Open main hydra: C-c h (or Command Palette → Scimax: Hydra Menu)
+2. Press &#39;p&#39; for Projects</code></pre>
+</div>
+
+<p>The hydra shows all projectile commands with single-key access:</p>
+
+<pre class="example">┌─────────────────────────────────────┐
+│ Projects (Projectile)               │
+├─────────────────────────────────────┤
+│ Switch                              │
+│  p  Switch Project                  │
+│                                     │
+│ Manage                              │
+│  a  Add Project                     │
+│  r  Remove Project                  │
+│  s  Scan for Projects               │
+│                                     │
+│ Files                               │
+│  f  Find File                       │
+│  g  Search in Project               │
+└─────────────────────────────────────┘</pre>
+
+</div>
+</div>
+<div id="org-integration-with-notebook-system" class="org-section org-level-1">
+<h1>Integration with Notebook System</h1>
+<div id="org-notebook-projectile-relationship" class="org-section org-level-2">
+<h2>Notebook-Projectile Relationship</h2>
+<p>The notebook and projectile systems work together:</p>
+
+<ul>
+<li><p><strong>Notebooks are projects</strong>: Creating a notebook automatically creates a <kbd>.projectile</kbd> marker</p>
+</li>
+<li><p><strong>Projects can be notebooks</strong>: Any project can have a <kbd>.scimax/</kbd> directory to become a notebook</p>
+</li>
+<li><p><strong>Shared markers</strong>: Both systems recognize <kbd>.projectile</kbd> files</p>
+</li>
+<li><p><strong>Unified workflow</strong>: Switch projects with projectile, manage research structure with notebooks</p>
+</li>
+</ul>
+
+</div>
+<div id="org-creating-projectile-enabled-notebooks" class="org-section org-level-2">
+<h2>Creating Projectile-Enabled Notebooks</h2>
+<p>When you create a notebook with <kbd>Scimax: New Notebook</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">my-notebook/
+├── .scimax/
+│   └── config.json        # Notebook metadata
+├── .projectile            # ← Projectile marker (auto-created)
+├── .git/                  # Optional: if &quot;Initialize Git&quot; was checked
+└── README.org</code></pre>
+</div>
+
+<p>The notebook is automatically:</p>
+
+<ol>
+<li><p>Added to the projectile projects list</p>
+</li>
+<li><p>Detected as type &quot;projectile&quot; (or &quot;git&quot; if git was initialized)</p>
+</li>
+<li><p>Available via `C-c p p&#39; for quick switching</p>
+</li>
+</ol>
+
+</div>
+<div id="org-converting-projects-to-notebooks" class="org-section org-level-2">
+<h2>Converting Projects to Notebooks</h2>
+<p>Convert any existing project into a notebook:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">1. Open the project
+2. Run: Scimax: New Notebook
+3. Choose the project directory as the location
+→ Adds .scimax/ configuration
+→ Project becomes a full notebook with metadata</code></pre>
+</div>
+
+<p>The project remains in your projectile list and gains notebook features:</p>
+
+<ul>
+<li><p>Master file tracking</p>
+</li>
+<li><p>Collaborator management</p>
+</li>
+<li><p>Notebook-scoped agenda</p>
+</li>
+<li><p>Archive capabilities</p>
+</li>
+</ul>
+
+</div>
+<div id="org-notebook-metadata-in-projects" class="org-section org-level-2">
+<h2>Notebook Metadata in Projects</h2>
+<p>Notebooks store additional metadata in <kbd>.scimax/config.json</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;name&quot;: &quot;Research Project&quot;,
+  &quot;description&quot;: &quot;My research on topic X&quot;,
+  &quot;masterFile&quot;: &quot;README.org&quot;,
+  &quot;collaborators&quot;: [
+    {
+      &quot;name&quot;: &quot;Jane Doe&quot;,
+      &quot;email&quot;: &quot;jane@example.com&quot;,
+      &quot;role&quot;: &quot;lead&quot;
+    }
+  ],
+  &quot;keywords&quot;: [&quot;research&quot;, &quot;machine-learning&quot;],
+  &quot;custom&quot;: {
+    &quot;grant&quot;: &quot;NSF-12345&quot;
+  }
+}</code></pre>
+</div>
+
+<p>This metadata is available to both systems:</p>
+
+<ul>
+<li><p>Projectile shows the project in its list</p>
+</li>
+<li><p>Notebook commands provide research-specific features</p>
+</li>
+</ul>
+
+</div>
+<div id="org-workflow-example-research-projects" class="org-section org-level-2">
+<h2>Workflow Example: Research Projects</h2>
+<p>Typical workflow for managing multiple research projects:</p>
+
+<pre class="example"># Create notebooks for each research topic
+Scimax: New Notebook → &quot;ml-experiments&quot;
+Scimax: New Notebook → &quot;paper-writing&quot;
+Scimax: New Notebook → &quot;data-analysis&quot;
+
+# Each is now in projectile list
+C-c p p → Shows all three projects
+
+# Quick switching between research
+C-c p p → ml-experiments → open README.org
+  (run experiments, update notes)
+C-c p p → paper-writing → edit paper.org
+  (write, cite references)
+C-c p p → data-analysis → explore data/
+  (analyze results)
+
+# Search across specific project
+C-c p s → &quot;neural network&quot; → find all mentions</pre>
+
+<p>The integration provides:</p>
+
+<ul>
+<li><p>Fast project switching (projectile)</p>
+</li>
+<li><p>Organized research structure (notebook)</p>
+</li>
+<li><p>Project-scoped search and navigation</p>
+</li>
+<li><p>Consistent marker files</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>Best Practices</h1>
+<div id="org-project-organization" class="org-section org-level-2">
+<h2>Project Organization</h2>
+<div id="org-use-consistent-markers" class="org-section org-level-3">
+<h3>Use Consistent Markers</h3>
+<p>Choose one marker style per project:</p>
+
+<ul>
+<li><p>Git projects: Let <kbd>.git/</kbd> serve as the marker</p>
+</li>
+<li><p>Non-git projects: Add <kbd>.projectile</kbd> explicitly</p>
+</li>
+<li><p>Notebooks: Use notebook creation (adds both <kbd>.projectile</kbd> and <kbd>.scimax/</kbd>)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-project-naming" class="org-section org-level-3">
+<h3>Project Naming</h3>
+<p>Use descriptive, scannable directory names:</p>
+
+<pre class="example">Good:
+  my-research-project/
+  client-website-2024/
+  ml-experiments/
+
+Less good:
+  proj1/
+  tmp/
+  stuff/</pre>
+
+<p>Project names appear in the quick pick list, so clarity helps with quick selection.</p>
+
+</div>
+<div id="org-directory-structure" class="org-section org-level-3">
+<h3>Directory Structure</h3>
+<p>Organize related projects together:</p>
+
+<pre class="example">~/projects/
+  ├── research/
+  │   ├── ml-experiments/
+  │   ├── data-analysis/
+  │   └── paper-writing/
+  ├── work/
+  │   ├── client-a/
+  │   └── client-b/
+  └── personal/
+      ├── blog/
+      └── dotfiles/</pre>
+
+<p>Use <kbd>Scimax: Scan Directory for Projects</kbd> on parent directories to bulk-add.</p>
+
+</div>
+</div>
+<div id="org-efficient-workflows" class="org-section org-level-2">
+<h2>Efficient Workflows</h2>
+<div id="org-quick-switching-pattern" class="org-section org-level-3">
+<h3>Quick Switching Pattern</h3>
+<p>Develop muscle memory for <kbd>C-c p p</kbd>:</p>
+
+<pre class="example">C-c p p → type few chars → Enter → choose window option
+# Takes ~2 seconds to switch projects</pre>
+
+<p>This is faster than:</p>
+
+<ul>
+<li><p>File → Open Folder → navigate → select</p>
+</li>
+<li><p>Clicking through GUI menus</p>
+</li>
+</ul>
+
+</div>
+<div id="org-recent-project-access" class="org-section org-level-3">
+<h3>Recent Project Access</h3>
+<p>The most recent 3-5 projects appear at the top of the list. Use this for:</p>
+
+<pre class="example">Morning: Open project A (becomes #1)
+Afternoon: Switch to project B (becomes #1, A becomes #2)
+Evening: Back to A (already #2, quick to select)</pre>
+
+</div>
+<div id="org-search-before-switching" class="org-section org-level-3">
+<h3>Search Before Switching</h3>
+<p>If you know what file you need:</p>
+
+<pre class="example">1. C-c p p → select project
+2. C-c p f → find file
+3. Start working
+
+# Faster than navigating manually</pre>
+
+</div>
+</div>
+<div id="org-maintenance" class="org-section org-level-2">
+<h2>Maintenance</h2>
+<div id="org-regular-cleanup" class="org-section org-level-3">
+<h3>Regular Cleanup</h3>
+<p>Run cleanup monthly:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Scimax: Cleanup Non-existent Projects</code></pre>
+</div>
+
+<p>This prevents clutter from:</p>
+
+<ul>
+<li><p>Deleted temporary projects</p>
+</li>
+<li><p>Moved directories</p>
+</li>
+<li><p>External drive projects (when unmounted)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-curate-your-list" class="org-section org-level-3">
+<h3>Curate Your List</h3>
+<p>Remove projects you no longer use:</p>
+
+<ul>
+<li><p>Old experiments</p>
+</li>
+<li><p>Completed client work</p>
+</li>
+<li><p>Temporary test projects</p>
+</li>
+</ul>
+
+<p>A smaller project list means faster selection in `C-c p p&#39;.</p>
+
+</div>
+<div id="org-backup-project-list" class="org-section org-level-3">
+<h3>Backup Project List</h3>
+<p>The project list is stored in VS Code&#39;s global state. To backup:</p>
+
+<div class="org-src-container">
+<pre class="src src-sh"><code class="language-sh"># Find VS Code&#39;s storage location
+# Linux: ~/.config/Code/User/globalStorage/
+# macOS: ~/Library/Application Support/Code/User/globalStorage/
+# Windows: %APPDATA%\Code\User\globalStorage\
+
+# Project list is in state.vscdb
+# Backup this file to preserve project list</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-multi-root-workspaces" class="org-section org-level-2">
+<h2>Multi-Root Workspaces</h2>
+<div id="org-when-to-use-multi-root" class="org-section org-level-3">
+<h3>When to Use Multi-Root</h3>
+<p>Use multi-root workspaces for:</p>
+
+<ul>
+<li><p>Related projects that share context</p>
+</li>
+<li><p>Monorepo management</p>
+</li>
+<li><p>Cross-project refactoring</p>
+</li>
+</ul>
+
+<p>Example:</p>
+
+<pre class="example">Workspace: &quot;Full Stack App&quot;
+  Folders:
+    - frontend/  (React app)
+    - backend/   (Node API)
+    - shared/    (TypeScript types)
+
+Benefits:
+  - Search across all three
+  - Shared settings
+  - Unified git operations</pre>
+
+</div>
+<div id="org-when-to-use-separate-windows" class="org-section org-level-3">
+<h3>When to Use Separate Windows</h3>
+<p>Use separate windows for:</p>
+
+<ul>
+<li><p>Unrelated projects</p>
+</li>
+<li><p>Context switching between different work modes</p>
+</li>
+<li><p>Performance with large projects</p>
+</li>
+</ul>
+
+<p>Example:</p>
+
+<pre class="example">Window 1: Research project (Jupyter, org files)
+Window 2: Client website (HTML, CSS, JS)
+Window 3: Personal blog (Markdown, static site)
+
+Benefits:
+  - Mental separation
+  - Independent configurations
+  - Clearer taskbar</pre>
+
+</div>
+</div>
+</div>
+<div id="org-advanced-usage" class="org-section org-level-1">
+<h1>Advanced Usage</h1>
+<div id="org-custom-project-markers" class="org-section org-level-2">
+<h2>Custom Project Markers</h2>
+<p>While <kbd>.projectile</kbd> is the standard marker, you can manually add any directory:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Scimax: Add Project → select any folder</code></pre>
+</div>
+
+<p>Use this for:</p>
+
+<ul>
+<li><p>Projects without version control</p>
+</li>
+<li><p>Shared network directories</p>
+</li>
+<li><p>Temporary project workspaces</p>
+</li>
+</ul>
+
+</div>
+<div id="org-scanning-large-directories" class="org-section org-level-2">
+<h2>Scanning Large Directories</h2>
+<p>When scanning directories with many subdirectories:</p>
+
+<pre class="example">Directory: ~/dev/ (contains 100+ repos)
+Max depth: 1
+
+# Only scans immediate children
+# Fast, finds top-level projects</pre>
+
+<pre class="example">Directory: ~/dev/
+Max depth: 3
+
+# Scans deeper
+# Slower, finds nested projects
+# Useful for monorepos or organized hierarchies</pre>
+
+<p>Balance depth vs. speed based on your directory structure.</p>
+
+</div>
+<div id="org-project-type-prioritization" class="org-section org-level-2">
+<h2>Project Type Prioritization</h2>
+<p>If a directory has multiple markers:</p>
+
+<pre class="example">my-project/
+  ├── .git/          # Git marker
+  └── .projectile    # Projectile marker
+
+Type: git (git takes priority)</pre>
+
+<p>Priority order:</p>
+
+<ol>
+<li><p><kbd>.git/</kbd> → type &quot;git&quot;</p>
+</li>
+<li><p>`.projectile&#39; → type &quot;projectile&quot;</p>
+</li>
+<li><p>Manual add → type &quot;manual&quot;</p>
+</li>
+</ol>
+
+<p>This ensures git projects are recognized as such, even if they also have `.projectile&#39; markers.</p>
+
+</div>
+<div id="org-programmatic-access" class="org-section org-level-2">
+<h2>Programmatic Access</h2>
+<p>Other extensions can access the projectile manager:</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Get the projectile manager from extension context
+const scimaxExt = vscode.extensions.getExtension(&#39;scimax.scimax-vscode&#39;);
+if (scimaxExt?.isActive) {
+    const api = scimaxExt.exports;
+    const projects = api.projectileManager.getProjects();
+    // Use project list...
+}</code></pre>
+</div>
+
+<p>This enables:</p>
+
+<ul>
+<li><p>Custom project selection UIs</p>
+</li>
+<li><p>Integration with external tools</p>
+</li>
+<li><p>Automated project management</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>Troubleshooting</h1>
+<div id="org-projects-not-appearing" class="org-section org-level-2">
+<h2>Projects Not Appearing</h2>
+<div id="org-symptom" class="org-section org-level-3">
+<h3>Symptom</h3>
+<p>Project doesn&#39;t appear in `C-c p p&#39; list.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Check if directory exists:</p>
+</li>
+<li><p>Manually add the project:</p>
+</li>
+<li><p>Check for markers:</p>
+</li>
+<li><p>Run cleanup to remove stale entries:</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-project-list-too-long" class="org-section org-level-2">
+<h2>Project List Too Long</h2>
+<div id="org-symptom" class="org-section org-level-3">
+<h3>Symptom</h3>
+<p>`C-c p p&#39; shows dozens of old projects.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Remove unused projects individually:</p>
+</li>
+<li><p>Clean up non-existent projects:</p>
+</li>
+<li><p>Start fresh:</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-tree-view-not-updating" class="org-section org-level-2">
+<h2>Tree View Not Updating</h2>
+<div id="org-symptom" class="org-section org-level-3">
+<h3>Symptom</h3>
+<p>Projects tree shows outdated information.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Manual refresh:</p>
+</li>
+<li><p>Close and reopen sidebar:</p>
+</li>
+<li><p>Reload window:</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-scanning-not-finding-projects" class="org-section org-level-2">
+<h2>Scanning Not Finding Projects</h2>
+<div id="org-symptom" class="org-section org-level-3">
+<h3>Symptom</h3>
+<p><kbd>Scimax: Scan Directory for Projects</kbd> reports &quot;Found 0 projects&quot;.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Increase scan depth:</p>
+</li>
+<li><p>Check directory structure:</p>
+</li>
+<li><p>Manually add projects:</p>
+</li>
+<li><p>Verify permissions:</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-slow-project-operations" class="org-section org-level-2">
+<h2>Slow Project Operations</h2>
+<div id="org-symptom" class="org-section org-level-3">
+<h3>Symptom</h3>
+<p>`C-c p p&#39; or tree view is slow to load.</p>
+
+</div>
+<div id="org-causes-solutions" class="org-section org-level-3">
+<h3>Causes &amp; Solutions</h3>
+<ol>
+<li><p><strong>Too many projects</strong>:</p>
+</li>
+<li><p><strong>Network drives</strong>:</p>
+</li>
+<li><p><strong>Deep scanning</strong>:</p>
+</li>
+<li><p><strong>Large project count</strong>:</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div id="org-comparison-with-emacs-projectile" class="org-section org-level-1">
+<h1>Comparison with Emacs Projectile</h1>
+<p>For users familiar with Emacs Projectile:</p>
+
+<div id="org-similarities" class="org-section org-level-2">
+<h2>Similarities</h2>
+<table class="org-table">
+<thead>
+<tr><th>Emacs Projectile</th><th>Scimax VS Code</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-c p p</code> switch</td><td><code class="verbatim">C-c p p</code> switch</td><td>Same keybinding</td></tr>
+<tr><td><code class="verbatim">C-c p f</code> find file</td><td><code class="verbatim">C-c p f</code> find file</td><td>Delegates to VS Code picker</td></tr>
+<tr><td><code class="verbatim">C-c p s</code> search</td><td><code class="verbatim">C-c p s</code> search</td><td>Opens VS Code search panel</td></tr>
+<tr><td><code class="verbatim">.projectile</code> marker</td><td><code class="verbatim">.projectile</code> marker</td><td>Compatible format</td></tr>
+<tr><td>Git detection</td><td>Git detection</td><td>Automatic</td></tr>
+<tr><td>Recent projects</td><td>Recent projects</td><td>Sorted by last accessed</td></tr>
+<tr><td>Project types</td><td>Project types</td><td>git/projectile/manual</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-differences" class="org-section org-level-2">
+<h2>Differences</h2>
+<div id="org-file-finding" class="org-section org-level-3">
+<h3>File Finding</h3>
+<ul>
+<li><p><strong>Emacs</strong>: Custom projectile completion</p>
+</li>
+<li><p><strong>VS Code</strong>: Uses built-in Quick Open (<kbd>C-p</kbd>)</p>
+</li>
+<li><p><strong>Advantage</strong>: VS Code&#39;s picker is faster and more familiar</p>
+</li>
+</ul>
+
+</div>
+<div id="org-search" class="org-section org-level-3">
+<h3>Search</h3>
+<ul>
+<li><p><strong>Emacs</strong>: helm-projectile or ivy integration</p>
+</li>
+<li><p><strong>VS Code</strong>: Uses built-in Search panel</p>
+</li>
+<li><p><strong>Advantage</strong>: VS Code&#39;s search is more visual with inline results</p>
+</li>
+</ul>
+
+</div>
+<div id="org-project-caching" class="org-section org-level-3">
+<h3>Project Caching</h3>
+<ul>
+<li><p><strong>Emacs</strong>: Caches project file lists</p>
+</li>
+<li><p><strong>VS Code</strong>: Uses VS Code&#39;s file indexing</p>
+</li>
+<li><p><strong>Advantage</strong>: Automatic, no manual cache management</p>
+</li>
+</ul>
+
+</div>
+<div id="org-buffer-management" class="org-section org-level-3">
+<h3>Buffer Management</h3>
+<ul>
+<li><p><strong>Emacs</strong>: <kbd>C-c C-p b</kbd> switch buffer within project</p>
+</li>
+<li><p><strong>VS Code</strong>: Not needed (tabs and Quick Open serve this role)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-project-commands" class="org-section org-level-3">
+<h3>Project Commands</h3>
+<ul>
+<li><p><strong>Emacs</strong>: Many specialized commands (<kbd>C-c C-p c</kbd> compile, <kbd>C-c C-p t</kbd> test)</p>
+</li>
+<li><p><strong>VS Code</strong>: Fewer commands, uses VS Code&#39;s task system instead</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-migration-tips" class="org-section org-level-2">
+<h2>Migration Tips</h2>
+<p>If migrating from Emacs Projectile:</p>
+
+<ol>
+<li><p><strong>Muscle memory</strong>: Core keybindings (<kbd>C-c p p</kbd>, <kbd>C-c p f</kbd>, <kbd>C-c p s</kbd>) are the same</p>
+</li>
+<li><p><strong>Markers</strong>: Your <kbd>.projectile</kbd> files work without changes</p>
+</li>
+<li><p><strong>Workflows</strong>: File finding and search feel similar but use VS Code UI</p>
+</li>
+<li><p><strong>Project list</strong>: Use <kbd>Scimax: Scan Directory for Projects</kbd> to import existing projects</p>
+</li>
+<li><p><strong>Customization</strong>: VS Code settings replace most projectile variables</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-configuration" class="org-section org-level-1">
+<h1>Configuration</h1>
+<p>Projectile settings in VS Code settings (<kbd>settings.json</kbd>):</p>
+
+<div id="org-no-configuration-required" class="org-section org-level-2">
+<h2>No Configuration Required</h2>
+<p>Projectile works out-of-the-box with no configuration. The extension:</p>
+
+<ul>
+<li><p>Automatically detects current workspace folders</p>
+</li>
+<li><p>Persists project list in global state</p>
+</li>
+<li><p>Uses sensible defaults for all operations</p>
+</li>
+</ul>
+
+</div>
+<div id="org-future-configuration-options" class="org-section org-level-2">
+<h2>Future Configuration Options</h2>
+<p>Potential future settings (not currently implemented):</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  // Default depth for scanning directories
+  &quot;scimax.projectile.scanDepth&quot;: 2,
+
+  // Auto-scan directories on startup
+  &quot;scimax.projectile.autoScan&quot;: false,
+
+  // Paths to scan for projects
+  &quot;scimax.projectile.scanPaths&quot;: [
+    &quot;~/projects/&quot;,
+    &quot;~/dev/&quot;
+  ],
+
+  // Max number of recent projects to show
+  &quot;scimax.projectile.maxRecentProjects&quot;: 50
+}</code></pre>
+</div>
+
+<p>Note: These settings are planned but not yet available. Check extension documentation for current configuration options.</p>
+
+</div>
+</div>
+<div id="org-conclusion" class="org-section org-level-1">
+<h1>Conclusion</h1>
+<p>The Scimax projectile system brings Emacs-style project management to VS Code, enabling:</p>
+
+<ul>
+<li><p>Fast switching between projects with familiar keybindings</p>
+</li>
+<li><p>Intelligent automatic detection of git repos and marked directories</p>
+</li>
+<li><p>Project-scoped file finding and text search</p>
+</li>
+<li><p>Integration with the notebook system for research workflows</p>
+</li>
+<li><p>Visual project management through the tree view sidebar</p>
+</li>
+</ul>
+
+<p>Whether you&#39;re managing multiple research projects, client work, or personal repositories, projectile streamlines your workflow by keeping all your projects accessible with a few keystrokes.</p>
+
+<div id="org-next-steps" class="org-section org-level-2">
+<h2>Next Steps</h2>
+<ul>
+<li><p>Create a `.projectile&#39; marker in your important projects</p>
+</li>
+<li><p>Use `C-c p p&#39; to build muscle memory for project switching</p>
+</li>
+<li><p>Scan your development directory to populate the project list</p>
+</li>
+<li><p>Explore integration with notebooks for research projects</p>
+</li>
+<li><p>Set up keybindings for your most-used projectile commands</p>
+</li>
+</ul>
+
+</div>
+<div id="org-related-documentation" class="org-section org-level-2">
+<h2>Related Documentation</h2>
+<ul>
+<li><p><a href="16-notebook.html">Notebook (Project Organization)</a> - Research project structure with notebooks</p>
+</li>
+<li><p><a href="24-keybindings.html">Keybindings</a> - Complete keybinding reference</p>
+</li>
+<li><p><a href="26-configuration.html">Configuration</a> - Extension settings and customization</p>
+</li>
+</ul>
+
+</div>
+<div id="org-feedback" class="org-section org-level-2">
+<h2>Feedback</h2>
+<p>If you encounter issues or have feature requests for projectile:</p>
+
+<ul>
+<li><p>GitHub Issues: <a href="https://github.com/your-repo/scimax-vscode/issues">[[https://github.com/your-repo/scimax-vscode/issues]]</a></p>
+</li>
+<li><p>Discussion: <a href="https://github.com/your-repo/scimax-vscode/discussions">[[https://github.com/your-repo/scimax-vscode/discussions]]</a></p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="16-notebook.html">Notebook</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="18-database-search.html">Database and Search</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="16-notebook.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="22-hydra-menus.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#overview" class="toc-link">✅ Overview</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#what-is-projectile" class="toc-link">✅ What is Projectile?</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#key-features" class="toc-link">✅ Key Features</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#project-detection" class="toc-link">✅ Project Detection</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#detection-methods" class="toc-link">Detection Methods</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#automatic-detection" class="toc-link">Automatic Detection</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#creating-a-projectile-marker" class="toc-link">Creating a Projectile Marker</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#project-types" class="toc-link">Project Types</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#managing-projects" class="toc-link">Managing Projects</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#switching-between-projects" class="toc-link">Switching Between Projects</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#adding-projects" class="toc-link">Adding Projects</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#manually-adding-a-project" class="toc-link">Manually Adding a Project</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scanning-for-projects" class="toc-link">Scanning for Projects</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#removing-projects" class="toc-link">Removing Projects</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#cleaning-up-projects" class="toc-link">Cleaning Up Projects</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#project-operations" class="toc-link">Project Operations</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#finding-files-in-projects" class="toc-link">Finding Files in Projects</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#searching-in-projects" class="toc-link">Searching in Projects</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#opening-project-root" class="toc-link">Opening Project Root</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#project-information" class="toc-link">Project Information</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#projects-tree-view" class="toc-link">Projects Tree View</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#sidebar-panel" class="toc-link">Sidebar Panel</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tree-view-elements" class="toc-link">Tree View Elements</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tree-interactions" class="toc-link">Tree Interactions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#refreshing-the-tree" class="toc-link">Refreshing the Tree</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#recent-projects" class="toc-link">Recent Projects</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#sorting-by-last-access" class="toc-link">Sorting by Last Access</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#automatic-time-tracking" class="toc-link">Automatic Time Tracking</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#time-format" class="toc-link">Time Format</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#commands-reference" class="toc-link">Commands Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#all-projectile-commands" class="toc-link">All Projectile Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#keybindings" class="toc-link">Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#hydra-menu-access" class="toc-link">Hydra Menu Access</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#integration-with-notebook-system" class="toc-link">Integration with Notebook System</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#notebook-projectile-relationship" class="toc-link">Notebook-Projectile Relationship</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#creating-projectile-enabled-notebooks" class="toc-link">Creating Projectile-Enabled Notebooks</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#converting-projects-to-notebooks" class="toc-link">Converting Projects to Notebooks</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#notebook-metadata-in-projects" class="toc-link">Notebook Metadata in Projects</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#workflow-example-research-projects" class="toc-link">Workflow Example: Research Projects</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#best-practices" class="toc-link">Best Practices</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#project-organization" class="toc-link">Project Organization</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#use-consistent-markers" class="toc-link">Use Consistent Markers</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#project-naming" class="toc-link">Project Naming</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#directory-structure" class="toc-link">Directory Structure</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#efficient-workflows" class="toc-link">Efficient Workflows</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#quick-switching-pattern" class="toc-link">Quick Switching Pattern</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#recent-project-access" class="toc-link">Recent Project Access</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#search-before-switching" class="toc-link">Search Before Switching</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#maintenance" class="toc-link">Maintenance</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#regular-cleanup" class="toc-link">Regular Cleanup</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#curate-your-list" class="toc-link">Curate Your List</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#backup-project-list" class="toc-link">Backup Project List</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#multi-root-workspaces" class="toc-link">Multi-Root Workspaces</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#when-to-use-multi-root" class="toc-link">When to Use Multi-Root</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#when-to-use-separate-windows" class="toc-link">When to Use Separate Windows</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#advanced-usage" class="toc-link">Advanced Usage</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#custom-project-markers" class="toc-link">Custom Project Markers</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#scanning-large-directories" class="toc-link">Scanning Large Directories</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#project-type-prioritization" class="toc-link">Project Type Prioritization</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#programmatic-access" class="toc-link">Programmatic Access</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#projects-not-appearing" class="toc-link">Projects Not Appearing</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#symptom" class="toc-link">Symptom</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#solutions" class="toc-link">Solutions</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#project-list-too-long" class="toc-link">Project List Too Long</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#symptom" class="toc-link">Symptom</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#solutions" class="toc-link">Solutions</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#tree-view-not-updating" class="toc-link">Tree View Not Updating</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#symptom" class="toc-link">Symptom</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#solutions" class="toc-link">Solutions</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#scanning-not-finding-projects" class="toc-link">Scanning Not Finding Projects</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#symptom" class="toc-link">Symptom</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#solutions" class="toc-link">Solutions</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#slow-project-operations" class="toc-link">Slow Project Operations</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#symptom" class="toc-link">Symptom</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#causes-solutions" class="toc-link">Causes &amp; Solutions</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#comparison-with-emacs-projectile" class="toc-link">Comparison with Emacs Projectile</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#similarities" class="toc-link">Similarities</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#differences" class="toc-link">Differences</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#file-finding" class="toc-link">File Finding</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#search" class="toc-link">Search</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#project-caching" class="toc-link">Project Caching</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#buffer-management" class="toc-link">Buffer Management</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#project-commands" class="toc-link">Project Commands</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#migration-tips" class="toc-link">Migration Tips</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#configuration" class="toc-link">Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#no-configuration-required" class="toc-link">No Configuration Required</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#future-configuration-options" class="toc-link">Future Configuration Options</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#conclusion" class="toc-link">Conclusion</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#next-steps" class="toc-link">Next Steps</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#related-documentation" class="toc-link">Related Documentation</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#feedback" class="toc-link">Feedback</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

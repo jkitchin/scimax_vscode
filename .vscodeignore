@@ -9,6 +9,7 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 !out/**/*.js
+!out/**/assets/**
 node_modules/**
 # libsql and all its dependencies
 !node_modules/@libsql/**

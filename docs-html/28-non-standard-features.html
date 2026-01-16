@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Non-Standard Org-Mode Features</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-overview" class="org-section org-level-1">
+<h1>Overview</h1>
+<p>Scimax VS Code implements several features that are <strong>not part</strong> of the official
+org-mode syntax specification at https://orgmode.org/worg/org-syntax.html.
+These features are inspired by Emacs packages like org-ref and scimax, and
+provide additional functionality for scientific writing.</p>
+
+<p>This document describes these non-standard features and their behavior during
+export.</p>
+
+</div>
+<div id="org-org-ref-citation-links" class="org-section org-level-1">
+<h1>⚠️ org-ref Citation Links</h1>
+<p>The citation system (<kbd>cite:</kbd>, <kbd>citet:</kbd>, <kbd>citep:</kbd>, etc.) comes from the org-ref
+package for Emacs, not from core org-mode.</p>
+
+<div id="org-citation-styles" class="org-section org-level-2">
+<h2>Citation Styles</h2>
+<table class="org-table">
+<thead>
+<tr><th>Style</th><th>Syntax</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>cite</td><td><a href="cite:key">cite:key</a></td><td>Basic citation</td></tr>
+<tr><td>citet</td><td><a href="citet:key">citet:key</a></td><td>Textual citation (Author, Year)</td></tr>
+<tr><td>citep</td><td><a href="citep:key">citep:key</a></td><td>Parenthetical citation</td></tr>
+<tr><td>citeauthor</td><td><a href="citeauthor:key">citeauthor:key</a></td><td>Author name only</td></tr>
+<tr><td>citeyear</td><td><a href="citeyear:key">citeyear:key</a></td><td>Year only</td></tr>
+<tr><td>Multiple</td><td><a href="cite:key1,key2,key3">cite:key1,key2,key3</a></td><td>Comma-separated keys</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-export-behavior" class="org-section org-level-2">
+<h2>Export Behavior</h2>
+<div id="org-latex-pdf-export" class="org-section org-level-3">
+<h3>LaTeX/PDF Export</h3>
+<p>Citations are converted directly to LaTeX cite commands:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Org Citation</th><th>LaTeX Output</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="cite:key">cite:key</a></td><td>\cite{key}</td></tr>
+<tr><td><a href="citet:key">citet:key</a></td><td>\citet{key}</td></tr>
+<tr><td><a href="citep:key">citep:key</a></td><td>\citep{key}</td></tr>
+<tr><td><a href="citeauthor:key">citeauthor:key</a></td><td>\citeauthor{key}</td></tr>
+<tr><td><a href="citeyear:key">citeyear:key</a></td><td>\citeyear{key}</td></tr>
+<tr><td><a href="cite:k1,k2">cite:k1,k2</a></td><td>\cite{k1,k2}</td></tr>
+</tbody>
+</table>
+
+<p>Requires `natbib&#39; or `biblatex&#39; package in your LaTeX preamble.</p>
+
+</div>
+<div id="org-html-export" class="org-section org-level-3">
+<h3>HTML Export</h3>
+<p>Citations are rendered as clickable links with CSS classes for styling.</p>
+
+</div>
+<div id="org-markdown-export" class="org-section org-level-3">
+<h3>Markdown Export</h3>
+<p>Citations are converted to Pandoc-style citations:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Org Citation</th><th>Pandoc Markdown</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="cite:key">cite:key</a></td><td>[@key]</td></tr>
+<tr><td><a href="citet:key">citet:key</a></td><td>@key</td></tr>
+<tr><td><a href="citep:key">citep:key</a></td><td>[@key]</td></tr>
+<tr><td><a href="cite:k1,k2">cite:k1,k2</a></td><td>[@k1; @k2]</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-compatibility-notes" class="org-section org-level-2">
+<h2>Compatibility Notes</h2>
+<ul>
+<li><p>Emacs org-mode users will find this syntax familiar</p>
+</li>
+<li><p>Standard org-mode uses <kbd>[[cite:@key]]</kbd> syntax (org-cite) which is also supported</p>
+</li>
+<li><p>The org-ref style <kbd>cite:key</kbd> is more concise for scientific writing</p>
+</li>
+</ul>
+
+<p>See <a href="19-references.html">References</a> for full documentation.</p>
+
+</div>
+</div>
+<div id="org-emacs-style-command-markup" class="org-section org-level-1">
+<h1>⚠️ Emacs-style Command Markup</h1>
+<p>The command markup syntax `<kbd>command</kbd>&#39; (backtick + text + single quote) is used
+in Emacs documentation to reference commands, functions, and key sequences.</p>
+
+<div id="org-syntax" class="org-section org-level-2">
+<h2>Syntax</h2>
+<pre class="example">Use `my-command&#39; to perform the action.
+Press `C-c C-c&#39; to execute.
+The `save-buffer&#39; function writes the file.</pre>
+
+<p>This renders with dark red highlighting in the editor.</p>
+
+</div>
+<div id="org-keybinding" class="org-section org-level-2">
+<h2>Keybinding</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c &#39;</td><td>scimax.markup.command</td><td>Insert command markup</td></tr>
+</tbody>
+</table>
+
+<p>When text is selected, it wraps the selection. Otherwise, it inserts the
+markers and positions the cursor between them.</p>
+
+</div>
+<div id="org-export-behavior" class="org-section org-level-2">
+<h2>Export Behavior</h2>
+<div id="org-html-export" class="org-section org-level-3">
+<h3>HTML Export</h3>
+<p>Command markup is exported as <kbd>&lt;kbd&gt;</kbd> elements:</p>
+
+<pre class="example">`my-command&#39; → &lt;kbd&gt;my-command&lt;/kbd&gt;</pre>
+
+<p>The `&lt;kbd&gt;&#39; element is semantically appropriate for keyboard input and command
+names.</p>
+
+</div>
+<div id="org-latex-export" class="org-section org-level-3">
+<h3>LaTeX Export</h3>
+<p>Command markup is exported as <kbd>\texttt{}</kbd>:</p>
+
+<pre class="example">`my-command&#39; → \texttt{my-command}</pre>
+
+</div>
+</div>
+<div id="org-why-non-standard" class="org-section org-level-2">
+<h2>Why Non-Standard?</h2>
+<ul>
+<li><p>This syntax is not part of the org-mode specification</p>
+</li>
+<li><p>Standard org code markup uses `<kbd>code</kbd>&#39; or =<code class="verbatim">`verbatim&#39;</code>=</p>
+</li>
+<li><p>The `<kbd>command</kbd>&#39; style is specific to Emacs/Elisp documentation conventions</p>
+</li>
+<li><p>We implement it for Emacs users who are familiar with this convention</p>
+</li>
+</ul>
+
+</div>
+<div id="org-alternatives" class="org-section org-level-2">
+<h2>Alternatives</h2>
+<p>If you need portable org documents, use standard markup:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Our Syntax</th><th>Standard Alternative</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>`command&#39;</td><td><code>command</code></td><td>Org code markup</td></tr>
+<tr><td>`command&#39;</td><td><code class="verbatim">command</code></td><td>Org verbatim markup</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-future-non-standard-features" class="org-section org-level-1">
+<h1>Future Non-Standard Features</h1>
+<p>This section will be updated as additional non-standard features are added.</p>
+
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>Related Topics</h1>
+<ul>
+<li><p><a href="19-references.html">References</a> - Full citation and bibliography documentation</p>
+</li>
+<li><p><a href="10-export.html">Export</a> - Export to HTML, LaTeX, PDF</p>
+</li>
+<li><p><a href="24-keybindings.html">Keybindings</a> - All keyboard shortcuts</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="27-org-api.html">Org API</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="27-org-api.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+<span class="nav-next"></span>
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#overview" class="toc-link">Overview</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#org-ref-citation-links" class="toc-link">⚠️ org-ref Citation Links</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#citation-styles" class="toc-link">Citation Styles</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#export-behavior" class="toc-link">Export Behavior</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#latexpdf-export" class="toc-link">LaTeX/PDF Export</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#html-export" class="toc-link">HTML Export</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#markdown-export" class="toc-link">Markdown Export</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#compatibility-notes" class="toc-link">Compatibility Notes</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#emacs-style-command-markup" class="toc-link">⚠️ Emacs-style Command Markup</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#syntax" class="toc-link">Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#keybinding" class="toc-link">Keybinding</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#export-behavior" class="toc-link">Export Behavior</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#html-export" class="toc-link">HTML Export</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#latex-export" class="toc-link">LaTeX Export</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#why-non-standard" class="toc-link">Why Non-Standard?</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#alternatives" class="toc-link">Alternatives</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#future-non-standard-features" class="toc-link">Future Non-Standard Features</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">Related Topics</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

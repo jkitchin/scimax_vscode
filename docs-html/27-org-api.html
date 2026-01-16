@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Org API</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0 active ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-introduction" class="org-section org-level-1">
+<h1>Introduction</h1>
+<p>The Org File Modification API provides a TypeScript interface for programmatically
+reading, modifying, and writing org-mode files. This is the VS Code equivalent of
+Emacs org-mode&#39;s ability to traverse and modify parse trees using elisp.</p>
+
+<p>Use this API in TypeScript source blocks to:</p>
+
+<ul>
+<li><p>Bulk update TODO states across files</p>
+</li>
+<li><p>Extract and transform data from tables</p>
+</li>
+<li><p>Rearrange document structure</p>
+</li>
+<li><p>Generate reports from org data</p>
+</li>
+<li><p>Automate repetitive org file operations</p>
+</li>
+</ul>
+
+</div>
+<div id="org-quick-start" class="org-section org-level-1">
+<h1>Quick Start</h1>
+<div id="org-basic-example-change-all-todos-to-done" class="org-section org-level-2">
+<h2>Basic Example: Change All TODOs to DONE</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./tasks.org&#39;);
+
+org.mapHeadlines(doc, h =&gt; {
+  if (h.properties.todoKeyword === &#39;TODO&#39;) {
+    org.setTodo(h, &#39;DONE&#39;);
+  }
+});
+
+org.writeFile(&#39;./tasks.org&#39;, doc);</code></pre>
+</div>
+
+</div>
+<div id="org-query-and-report" class="org-section org-level-2">
+<h2>Query and Report</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./projects.org&#39;);
+const todos = org.query(doc, { hasTodo: true, todoType: &#39;todo&#39; });
+
+console.log(`Found ${todos.length} pending tasks:`);
+todos.forEach(h =&gt; {
+  console.log(`  - ${h.properties.rawValue}`);
+});</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-api-reference" class="org-section org-level-1">
+<h1>API Reference</h1>
+<div id="org-file-i-o" class="org-section org-level-2">
+<h2>File I/O</h2>
+<div id="org-org-parsefile-path-config" class="org-section org-level-3">
+<h3>org.parseFile(path, config?)</h3>
+<p>Parse an org file from disk into an AST.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const doc = org.parseFile(&#39;./notes.org&#39;);
+const doc = org.parseFile(&#39;/absolute/path/to/file.org&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-parse-content-config" class="org-section org-level-3">
+<h3>org.parse(content, config?)</h3>
+<p>Parse org content from a string.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const doc = org.parse(&#39;* TODO My task\nSome content&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-writefile-path-doc-options" class="org-section org-level-3">
+<h3>org.writeFile(path, doc, options?)</h3>
+<p>Write a document AST back to a file.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.writeFile(&#39;./notes.org&#39;, doc);</code></pre>
+</div>
+
+</div>
+<div id="org-org-serialize-doc-options" class="org-section org-level-3">
+<h3>org.serialize(doc, options?)</h3>
+<p>Convert a document AST to an org-mode string.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const orgText = org.serialize(doc);
+console.log(orgText);</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-headline-traversal" class="org-section org-level-2">
+<h2>Headline Traversal</h2>
+<div id="org-org-mapheadlines-doc-callback" class="org-section org-level-3">
+<h3>org.mapHeadlines(doc, callback)</h3>
+<p>Visit every headline in the document (depth-first order).</p>
+
+<p>The callback receives:</p>
+
+<ul>
+<li><p>`headline&#39; - The current headline element</p>
+</li>
+<li><p>`parent&#39; - Parent headline or document root</p>
+</li>
+<li><p>`index&#39; - Position among siblings</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.mapHeadlines(doc, (headline, parent, index) =&gt; {
+  console.log(`${headline.properties.level}: ${headline.properties.rawValue}`);
+});</code></pre>
+</div>
+
+</div>
+<div id="org-org-filterheadlines-doc-predicate" class="org-section org-level-3">
+<h3>org.filterHeadlines(doc, predicate)</h3>
+<p>Return headlines matching a predicate function.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const todos = org.filterHeadlines(doc, h =&gt;
+  h.properties.todoKeyword === &#39;TODO&#39;
+);</code></pre>
+</div>
+
+</div>
+<div id="org-org-findheadline-doc-predicate" class="org-section org-level-3">
+<h3>org.findHeadline(doc, predicate)</h3>
+<p>Find the first headline matching a predicate.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const intro = org.findHeadline(doc, h =&gt;
+  h.properties.rawValue === &#39;Introduction&#39;
+);</code></pre>
+</div>
+
+</div>
+<div id="org-org-getallheadlines-doc" class="org-section org-level-3">
+<h3>org.getAllHeadlines(doc)</h3>
+<p>Get all headlines as a flat array.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const all = org.getAllHeadlines(doc);
+console.log(`Document has ${all.length} headlines`);</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-element-traversal" class="org-section org-level-2">
+<h2>Element Traversal</h2>
+<div id="org-org-mapelements-doc-elementtype-callback" class="org-section org-level-3">
+<h3>org.mapElements(doc, elementType, callback)</h3>
+<p>Visit all elements of a specific type.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.mapElements(doc, &#39;src-block&#39;, (block, parent, index) =&gt; {
+  console.log(`Found ${block.properties.language} block`);
+});</code></pre>
+</div>
+
+</div>
+<div id="org-org-filterelements-doc-elementtype" class="org-section org-level-3">
+<h3>org.filterElements(doc, elementType)</h3>
+<p>Filter elements by type.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const tables = org.filterElements(doc, &#39;table&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-getsrcblocks-doc" class="org-section org-level-3">
+<h3>org.getSrcBlocks(doc)</h3>
+<p>Get all source blocks.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const blocks = org.getSrcBlocks(doc);
+blocks.forEach(b =&gt; console.log(b.properties.language));</code></pre>
+</div>
+
+</div>
+<div id="org-org-gettables-doc" class="org-section org-level-3">
+<h3>org.getTables(doc)</h3>
+<p>Get all tables.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const tables = org.getTables(doc);</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-query-api" class="org-section org-level-2">
+<h2>Query API</h2>
+<div id="org-org-query-doc-criteria" class="org-section org-level-3">
+<h3>org.query(doc, criteria)</h3>
+<p>Find elements matching multiple criteria at once.</p>
+
+<div id="org-query-criteria" class="org-section org-level-4">
+<h4>Query Criteria</h4>
+<table class="org-table">
+<thead>
+<tr><th>Property</th><th>Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>type</td><td>ElementType</td><td>Element type to match</td></tr>
+<tr><td>todoKeyword</td><td>string or string[]</td><td>Specific TODO keyword(s)</td></tr>
+<tr><td>hasTodo</td><td>boolean</td><td>Has any TODO keyword</td></tr>
+<tr><td>todoType</td><td>&#39;todo&#39; or &#39;done&#39;</td><td>TODO type category</td></tr>
+<tr><td>tags</td><td>string[]</td><td>All these tags must be present</td></tr>
+<tr><td>anyTag</td><td>string[]</td><td>At least one of these tags</td></tr>
+<tr><td>level</td><td>number</td><td>Exact headline level</td></tr>
+<tr><td>minLevel</td><td>number</td><td>Minimum headline level</td></tr>
+<tr><td>maxLevel</td><td>number</td><td>Maximum headline level</td></tr>
+<tr><td>titleContains</td><td>string</td><td>Title contains text (case-insensitive)</td></tr>
+<tr><td>hasProperty</td><td>string</td><td>Has property with this key</td></tr>
+<tr><td>property</td><td>{key, value}</td><td>Property equals value</td></tr>
+<tr><td>language</td><td>string</td><td>Source block language</td></tr>
+<tr><td>predicate</td><td>function</td><td>Custom filter function</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-examples" class="org-section org-level-4">
+<h4>Examples</h4>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Find all TODO headlines with :project: tag
+const projects = org.query(doc, {
+  type: &#39;headline&#39;,
+  hasTodo: true,
+  tags: [&#39;project&#39;]
+});
+
+// Find headlines at level 2 or 3
+const sections = org.query(doc, {
+  type: &#39;headline&#39;,
+  minLevel: 2,
+  maxLevel: 3
+});
+
+// Find Python source blocks
+const pythonBlocks = org.query(doc, {
+  type: &#39;src-block&#39;,
+  language: &#39;python&#39;
+});
+
+// Find headlines with CATEGORY property set to &#39;work&#39;
+const work = org.query(doc, {
+  type: &#39;headline&#39;,
+  property: { key: &#39;CATEGORY&#39;, value: &#39;work&#39; }
+});
+
+// Custom predicate
+const long = org.query(doc, {
+  type: &#39;headline&#39;,
+  predicate: h =&gt; h.properties.rawValue.length &gt; 50
+});</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-table-utilities" class="org-section org-level-2">
+<h2>Table Utilities</h2>
+<div id="org-org-tabletojson-table-options" class="org-section org-level-3">
+<h3>org.tableToJSON(table, options?)</h3>
+<p>Convert an org table to JSON.</p>
+
+<div id="org-options" class="org-section org-level-4">
+<h4>Options</h4>
+<table class="org-table">
+<thead>
+<tr><th>Option</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>useHeader</td><td>true</td><td>Use first row as object keys</td></tr>
+<tr><td>trim</td><td>true</td><td>Trim whitespace from cells</td></tr>
+<tr><td>includeRules</td><td>false</td><td>Include horizontal rule rows</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const tables = org.getTables(doc);
+const data = org.tableToJSON(tables[0]);
+// Returns: [{ name: &#39;Alice&#39;, age: &#39;30&#39; }, { name: &#39;Bob&#39;, age: &#39;25&#39; }]</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-org-jsontotable-data-options" class="org-section org-level-3">
+<h3>org.jsonToTable(data, options?)</h3>
+<p>Convert JSON data to org table text.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const table = org.jsonToTable([
+  { name: &#39;Alice&#39;, age: 30 },
+  { name: &#39;Bob&#39;, age: 25 }
+]);
+// Returns:
+// | name  | age |
+// |-------+-----|
+// | Alice | 30  |
+// | Bob   | 25  |</code></pre>
+</div>
+
+</div>
+<div id="org-org-tabletocsv-table-options" class="org-section org-level-3">
+<h3>org.tableToCSV(table, options?)</h3>
+<p>Convert an org table to CSV format.</p>
+
+<div id="org-options" class="org-section org-level-4">
+<h4>Options</h4>
+<table class="org-table">
+<thead>
+<tr><th>Option</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>useHeader</td><td>true</td><td>Include header row in output</td></tr>
+<tr><td>trim</td><td>true</td><td>Trim whitespace from cells</td></tr>
+<tr><td>delimiter</td><td>&#39;,&#39;</td><td>Field separator character</td></tr>
+<tr><td>quote</td><td>&#39;&quot;&#39;</td><td>Quote character for escaping</td></tr>
+<tr><td>lineEnding</td><td>&#39;\n&#39;</td><td>Line ending character(s)</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const tables = org.getTables(doc);
+const csv = org.tableToCSV(tables[0]);
+// Returns:
+// name,age
+// Alice,30
+// Bob,25
+
+// With custom delimiter (TSV)
+const tsv = org.tableToCSV(tables[0], { delimiter: &#39;\t&#39; });
+
+// With Windows line endings
+const csvWin = org.tableToCSV(tables[0], { lineEnding: &#39;\r\n&#39; });</code></pre>
+</div>
+
+<p>Fields containing the delimiter, quotes, or newlines are automatically escaped:</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Input: | name | note |
+//        | Bob  | hello, world |
+const csv = org.tableToCSV(table);
+// Output: name,note
+//         Bob,&quot;hello, world&quot;</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-org-writetabletocsv-filepath-table-options" class="org-section org-level-3">
+<h3>org.writeTableToCSV(filePath, table, options?)</h3>
+<p>Write a table directly to a CSV file.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const tables = org.getTables(doc);
+org.writeTableToCSV(&#39;./data.csv&#39;, tables[0]);
+
+// With semicolon delimiter
+org.writeTableToCSV(&#39;./data.csv&#39;, tables[0], { delimiter: &#39;;&#39; });</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-modification-helpers" class="org-section org-level-2">
+<h2>Modification Helpers</h2>
+<div id="org-org-settodo-headline-keyword-donekeywords" class="org-section org-level-3">
+<h3>org.setTodo(headline, keyword, doneKeywords?)</h3>
+<p>Set or remove TODO keyword.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.setTodo(headline, &#39;TODO&#39;);     // Set to TODO
+org.setTodo(headline, &#39;DONE&#39;);     // Set to DONE
+org.setTodo(headline, undefined);  // Remove TODO</code></pre>
+</div>
+
+</div>
+<div id="org-org-addtag-headline-tag" class="org-section org-level-3">
+<h3>org.addTag(headline, tag)</h3>
+<p>Add a tag to a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.addTag(headline, &#39;important&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-removetag-headline-tag" class="org-section org-level-3">
+<h3>org.removeTag(headline, tag)</h3>
+<p>Remove a tag from a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.removeTag(headline, &#39;obsolete&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-setproperty-headline-key-value" class="org-section org-level-3">
+<h3>org.setProperty(headline, key, value)</h3>
+<p>Set a property on a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.setProperty(headline, &#39;CUSTOM_ID&#39;, &#39;my-section&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-removeproperty-headline-key" class="org-section org-level-3">
+<h3>org.removeProperty(headline, key)</h3>
+<p>Remove a property from a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.removeProperty(headline, &#39;OLD_ID&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-setpriority-headline-priority" class="org-section org-level-3">
+<h3>org.setPriority(headline, priority)</h3>
+<p>Set or remove priority.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.setPriority(headline, &#39;A&#39;);     // Set priority
+org.setPriority(headline, undefined); // Remove priority</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-structure-utilities" class="org-section org-level-2">
+<h2>Structure Utilities</h2>
+<div id="org-org-sortheadlines-headlines-comparefn" class="org-section org-level-3">
+<h3>org.sortHeadlines(headlines, compareFn)</h3>
+<p>Sort headlines in place.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Sort by priority
+org.sortHeadlines(doc.children, (a, b) =&gt; {
+  const priority = { A: 0, B: 1, C: 2 };
+  return (priority[a.properties.priority] || 99) -
+         (priority[b.properties.priority] || 99);
+});
+
+// Sort alphabetically
+org.sortHeadlines(doc.children, (a, b) =&gt;
+  a.properties.rawValue.localeCompare(b.properties.rawValue)
+);</code></pre>
+</div>
+
+</div>
+<div id="org-org-promoteheadline-headline-recursive" class="org-section org-level-3">
+<h3>org.promoteHeadline(headline, recursive?)</h3>
+<p>Decrease headline level (promote).</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.promoteHeadline(headline);        // Promote with children
+org.promoteHeadline(headline, false); // Promote only this headline</code></pre>
+</div>
+
+</div>
+<div id="org-org-demoteheadline-headline-recursive" class="org-section org-level-3">
+<h3>org.demoteHeadline(headline, recursive?)</h3>
+<p>Increase headline level (demote).</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.demoteHeadline(headline);</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-tree-manipulation" class="org-section org-level-2">
+<h2>Tree Manipulation</h2>
+<div id="org-org-createheadline-title-level-options" class="org-section org-level-3">
+<h3>org.createHeadline(title, level?, options?)</h3>
+<p>Create a new headline element.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Basic headline
+const h = org.createHeadline(&#39;New Section&#39;, 2);
+
+// With TODO, priority, and tags
+const task = org.createHeadline(&#39;Important Task&#39;, 1, {
+  todoKeyword: &#39;TODO&#39;,
+  todoType: &#39;todo&#39;,
+  priority: &#39;A&#39;,
+  tags: [&#39;urgent&#39;, &#39;work&#39;],
+  properties: { CUSTOM_ID: &#39;my-task&#39; }
+});</code></pre>
+</div>
+
+</div>
+<div id="org-org-insertheadline-parent-headline-index" class="org-section org-level-3">
+<h3>org.insertHeadline(parent, headline, index?)</h3>
+<p>Insert a headline into a document or parent headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const newHeadline = org.createHeadline(&#39;New Section&#39;, 1);
+
+// Insert at end
+org.insertHeadline(doc, newHeadline);
+
+// Insert at specific position
+org.insertHeadline(doc, newHeadline, 0); // At beginning
+
+// Insert as child (level auto-adjusts)
+org.insertHeadline(parentHeadline, newHeadline);</code></pre>
+</div>
+
+</div>
+<div id="org-org-deleteheadline-parent-headline" class="org-section org-level-3">
+<h3>org.deleteHeadline(parent, headline)</h3>
+<p>Delete a headline from its parent.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Delete by reference
+const deleted = org.deleteHeadline(doc, doc.children[0]);
+
+// Delete by index
+const deleted = org.deleteHeadline(doc, 2);</code></pre>
+</div>
+
+</div>
+<div id="org-org-copyheadline-headline" class="org-section org-level-3">
+<h3>org.copyHeadline(headline)</h3>
+<p>Create a deep copy of a headline and its children.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const original = doc.children[0];
+const copy = org.copyHeadline(original);
+
+// Modify copy without affecting original
+copy.properties.rawValue = &#39;Modified Title&#39;;
+org.insertHeadline(doc, copy);</code></pre>
+</div>
+
+</div>
+<div id="org-org-findparent-doc-headline" class="org-section org-level-3">
+<h3>org.findParent(doc, headline)</h3>
+<p>Find the parent of a headline (document or headline).</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const parent = org.findParent(doc, headline);
+if (parent.type === &#39;org-data&#39;) {
+  console.log(&#39;Top-level headline&#39;);
+} else {
+  console.log(&#39;Child of:&#39;, parent.properties.rawValue);
+}</code></pre>
+</div>
+
+</div>
+<div id="org-org-getheadlinepath-doc-headline" class="org-section org-level-3">
+<h3>org.getHeadlinePath(doc, headline)</h3>
+<p>Get the path from root to a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const path = org.getHeadlinePath(doc, deepHeadline);
+// Returns: [Level1Headline, Level2Headline, targetHeadline]
+console.log(path.map(h =&gt; h.properties.rawValue).join(&#39; &gt; &#39;));</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-timestamp-utilities" class="org-section org-level-2">
+<h2>Timestamp Utilities</h2>
+<div id="org-org-createtimestamp-options" class="org-section org-level-3">
+<h3>org.createTimestamp(options)</h3>
+<p>Create a timestamp object.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Basic date
+const ts = org.createTimestamp({ year: 2024, month: 3, day: 15 });
+// &lt;2024-03-15&gt;
+
+// With time
+const ts = org.createTimestamp({
+  year: 2024, month: 3, day: 15,
+  hour: 14, minute: 30
+});
+// &lt;2024-03-15 14:30&gt;
+
+// Inactive timestamp
+const ts = org.createTimestamp({
+  year: 2024, month: 3, day: 15,
+  active: false
+});
+// [2024-03-15]
+
+// With repeater
+const ts = org.createTimestamp({
+  year: 2024, month: 3, day: 15,
+  repeaterType: &#39;+&#39;,
+  repeaterValue: 1,
+  repeaterUnit: &#39;w&#39;
+});
+// &lt;2024-03-15 +1w&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-org-timestampfromdate-date-options" class="org-section org-level-3">
+<h3>org.timestampFromDate(date, options?)</h3>
+<p>Create a timestamp from a JavaScript Date.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const ts = org.timestampFromDate(new Date());
+const tsWithTime = org.timestampFromDate(new Date(), { includeTime: true });</code></pre>
+</div>
+
+</div>
+<div id="org-org-timestamptodate-timestamp" class="org-section org-level-3">
+<h3>org.timestampToDate(timestamp)</h3>
+<p>Convert a timestamp to a JavaScript Date.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const date = org.timestampToDate(headline.planning.scheduled);
+console.log(date.toLocaleDateString());</code></pre>
+</div>
+
+</div>
+<div id="org-org-setscheduled-headline-timestamp" class="org-section org-level-3">
+<h3>org.setScheduled(headline, timestamp)</h3>
+<p>Set the SCHEDULED timestamp on a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+org.setScheduled(headline, org.timestampFromDate(tomorrow));
+
+// Remove scheduled
+org.setScheduled(headline, undefined);</code></pre>
+</div>
+
+</div>
+<div id="org-org-setdeadline-headline-timestamp" class="org-section org-level-3">
+<h3>org.setDeadline(headline, timestamp)</h3>
+<p>Set the DEADLINE timestamp on a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const nextWeek = new Date();
+nextWeek.setDate(nextWeek.getDate() + 7);
+org.setDeadline(headline, org.timestampFromDate(nextWeek));</code></pre>
+</div>
+
+</div>
+<div id="org-org-setclosed-headline-timestamp" class="org-section org-level-3">
+<h3>org.setClosed(headline, timestamp)</h3>
+<p>Set the CLOSED timestamp on a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.setTodo(headline, &#39;DONE&#39;);
+org.setClosed(headline, org.timestampFromDate(new Date(), { active: false }));</code></pre>
+</div>
+
+</div>
+<div id="org-org-getscheduled-org-getdeadline-org-getclosed" class="org-section org-level-3">
+<h3>org.getScheduled / org.getDeadline / org.getClosed</h3>
+<p>Get planning timestamps from a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const scheduled = org.getScheduled(headline);
+const deadline = org.getDeadline(headline);
+const closed = org.getClosed(headline);
+
+if (deadline) {
+  const daysUntil = Math.ceil(
+    (org.timestampToDate(deadline) - new Date()) / (1000 * 60 * 60 * 24)
+  );
+  console.log(`Due in ${daysUntil} days`);
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-link-utilities" class="org-section org-level-2">
+<h2>Link Utilities</h2>
+<div id="org-org-getlinks-doc" class="org-section org-level-3">
+<h3>org.getLinks(doc)</h3>
+<p>Get all links in a document.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const links = org.getLinks(doc);
+links.forEach(link =&gt; {
+  console.log(`${link.properties.linkType}: ${link.properties.path}`);
+});</code></pre>
+</div>
+
+</div>
+<div id="org-org-getlinksbytype-doc-linktype" class="org-section org-level-3">
+<h3>org.getLinksByType(doc, linkType)</h3>
+<p>Get links filtered by type.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const webLinks = org.getLinksByType(doc, &#39;https&#39;);
+const fileLinks = org.getLinksByType(doc, &#39;file&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-createlink-path-description-linktype" class="org-section org-level-3">
+<h3>org.createLink(path, description?, linkType?)</h3>
+<p>Create a link object.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const link = org.createLink(&#39;https://example.com&#39;, &#39;Example Site&#39;);
+const fileLink = org.createLink(&#39;file:notes.org&#39;, &#39;My Notes&#39;);</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-clock-utilities" class="org-section org-level-2">
+<h2>Clock Utilities</h2>
+<div id="org-org-getclockentries-headline" class="org-section org-level-3">
+<h3>org.getClockEntries(headline)</h3>
+<p>Get all clock entries from a headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const clocks = org.getClockEntries(headline);
+clocks.forEach(clock =&gt; {
+  console.log(`Duration: ${clock.properties.duration}`);
+});</code></pre>
+</div>
+
+</div>
+<div id="org-org-getallclockentries-doc" class="org-section org-level-3">
+<h3>org.getAllClockEntries(doc)</h3>
+<p>Get all clock entries from a document with their parent headlines.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const entries = org.getAllClockEntries(doc);
+entries.forEach(({ clock, headline }) =&gt; {
+  console.log(`${headline.properties.rawValue}: ${clock.properties.duration}`);
+});</code></pre>
+</div>
+
+</div>
+<div id="org-org-gettotalclocktime-headline-recursive" class="org-section org-level-3">
+<h3>org.getTotalClockTime(headline, recursive?)</h3>
+<p>Calculate total clocked time in minutes.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const minutes = org.getTotalClockTime(headline);
+console.log(`Time spent: ${org.formatDuration(minutes)}`);
+
+// Include children
+const totalWithChildren = org.getTotalClockTime(headline, true);</code></pre>
+</div>
+
+</div>
+<div id="org-org-formatduration-minutes" class="org-section org-level-3">
+<h3>org.formatDuration(minutes)</h3>
+<p>Format minutes as HH:MM string.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">org.formatDuration(90);  // &quot;1:30&quot;
+org.formatDuration(125); // &quot;2:05&quot;</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-property-inheritance" class="org-section org-level-2">
+<h2>Property Inheritance</h2>
+<div id="org-org-getinheritedproperty-doc-headline-key" class="org-section org-level-3">
+<h3>org.getInheritedProperty(doc, headline, key)</h3>
+<p>Get a property value, checking ancestors if not set on headline.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Will check headline, then parents, then document
+const category = org.getInheritedProperty(doc, headline, &#39;CATEGORY&#39;);</code></pre>
+</div>
+
+</div>
+<div id="org-org-geteffectiveproperties-doc-headline" class="org-section org-level-3">
+<h3>org.getEffectiveProperties(doc, headline)</h3>
+<p>Get all properties including inherited ones.</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">const props = org.getEffectiveProperties(doc, headline);
+console.log(props[&#39;CATEGORY&#39;]); // From nearest ancestor
+console.log(props[&#39;CUSTOM_ID&#39;]); // From headline itself</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-complete-examples" class="org-section org-level-1">
+<h1>Complete Examples</h1>
+<div id="org-archive-all-done-items" class="org-section org-level-2">
+<h2>Archive All DONE Items</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./tasks.org&#39;);
+
+org.mapHeadlines(doc, h =&gt; {
+  if (h.properties.todoType === &#39;done&#39;) {
+    org.addTag(h, &#39;ARCHIVE&#39;);
+  }
+});
+
+org.writeFile(&#39;./tasks.org&#39;, doc);</code></pre>
+</div>
+
+</div>
+<div id="org-generate-project-summary" class="org-section org-level-2">
+<h2>Generate Project Summary</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./projects.org&#39;);
+const projects = org.query(doc, { tags: [&#39;project&#39;] });
+
+console.log(&#39;# Project Summary\n&#39;);
+
+for (const project of projects) {
+  const status = project.properties.todoKeyword || &#39;No status&#39;;
+  const priority = project.properties.priority || &#39;-&#39;;
+  console.log(`- [${priority}] ${project.properties.rawValue} (${status})`);
+}</code></pre>
+</div>
+
+</div>
+<div id="org-extract-table-data-across-files" class="org-section org-level-2">
+<h2>Extract Table Data Across Files</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+import * as fs from &#39;fs&#39;;
+
+const files = fs.readdirSync(&#39;.&#39;).filter(f =&gt; f.endsWith(&#39;.org&#39;));
+const allData = [];
+
+for (const file of files) {
+  const doc = org.parseFile(file);
+  const tables = org.getTables(doc);
+
+  for (const table of tables) {
+    const data = org.tableToJSON(table);
+    allData.push(...data);
+  }
+}
+
+return allData;</code></pre>
+</div>
+
+</div>
+<div id="org-export-tables-to-csv-files" class="org-section org-level-2">
+<h2>Export Tables to CSV Files</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./data.org&#39;);
+const tables = org.getTables(doc);
+
+// Export first table to CSV
+org.writeTableToCSV(&#39;./output/table1.csv&#39;, tables[0]);
+console.log(&#39;Exported table1.csv&#39;);
+
+// Export all tables with custom options
+tables.forEach((table, i) =&gt; {
+  org.writeTableToCSV(`./output/table${i + 1}.csv`, table, {
+    delimiter: &#39;;&#39;,      // Semicolon for Excel compatibility
+    lineEnding: &#39;\r\n&#39;   // Windows line endings
+  });
+});
+
+console.log(`Exported ${tables.length} tables`);</code></pre>
+</div>
+
+</div>
+<div id="org-export-named-table" class="org-section org-level-2">
+<h2>Export Named Table</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+import * as fs from &#39;fs&#39;;
+
+const doc = org.parseFile(&#39;./report.org&#39;);
+
+// Find a table by the headline containing it
+const dataSection = org.findHeadline(doc, h =&gt;
+  h.properties.rawValue === &#39;Results Data&#39;
+);
+
+if (dataSection?.section) {
+  const table = dataSection.section.children.find(
+    el =&gt; el.type === &#39;table&#39;
+  );
+
+  if (table) {
+    const csv = org.tableToCSV(table);
+    fs.writeFileSync(&#39;./results.csv&#39;, csv);
+    console.log(&#39;Exported results.csv&#39;);
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-bulk-update-properties" class="org-section org-level-2">
+<h2>Bulk Update Properties</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./notes.org&#39;);
+
+org.mapHeadlines(doc, h =&gt; {
+  // Add CREATED property if missing
+  if (!h.propertiesDrawer?.[&#39;CREATED&#39;]) {
+    org.setProperty(h, &#39;CREATED&#39;, new Date().toISOString().split(&#39;T&#39;)[0]);
+  }
+
+  // Set CATEGORY based on tags
+  if (h.properties.tags.includes(&#39;work&#39;)) {
+    org.setProperty(h, &#39;CATEGORY&#39;, &#39;Work&#39;);
+  } else if (h.properties.tags.includes(&#39;personal&#39;)) {
+    org.setProperty(h, &#39;CATEGORY&#39;, &#39;Personal&#39;);
+  }
+});
+
+org.writeFile(&#39;./notes.org&#39;, doc);</code></pre>
+</div>
+
+</div>
+<div id="org-reorganize-by-priority" class="org-section org-level-2">
+<h2>Reorganize by Priority</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./tasks.org&#39;);
+
+// Sort top-level headlines by priority
+org.sortHeadlines(doc.children, (a, b) =&gt; {
+  const priorityOrder = { A: 0, B: 1, C: 2 };
+  const aPriority = priorityOrder[a.properties.priority] ?? 99;
+  const bPriority = priorityOrder[b.properties.priority] ?? 99;
+  return aPriority - bPriority;
+});
+
+org.writeFile(&#39;./tasks.org&#39;, doc);</code></pre>
+</div>
+
+</div>
+<div id="org-schedule-all-unscheduled-todos" class="org-section org-level-2">
+<h2>Schedule All Unscheduled TODOs</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./tasks.org&#39;);
+
+// Find unscheduled TODOs
+const unscheduled = org.query(doc, {
+  hasTodo: true,
+  todoType: &#39;todo&#39;
+}).filter(h =&gt; !org.getScheduled(h) &amp;&amp; !org.getDeadline(h));
+
+// Schedule them for tomorrow
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+const ts = org.timestampFromDate(tomorrow);
+
+unscheduled.forEach(h =&gt; org.setScheduled(h, ts));
+
+org.writeFile(&#39;./tasks.org&#39;, doc);
+console.log(`Scheduled ${unscheduled.length} tasks for tomorrow`);</code></pre>
+</div>
+
+</div>
+<div id="org-generate-time-report" class="org-section org-level-2">
+<h2>Generate Time Report</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./work.org&#39;);
+
+console.log(&#39;# Time Report\n&#39;);
+
+org.mapHeadlines(doc, h =&gt; {
+  const time = org.getTotalClockTime(h, true);
+  if (time &gt; 0) {
+    const indent = &#39;  &#39;.repeat(h.properties.level - 1);
+    console.log(`${indent}- ${h.properties.rawValue}: ${org.formatDuration(time)}`);
+  }
+});</code></pre>
+</div>
+
+</div>
+<div id="org-clone-template-headline" class="org-section org-level-2">
+<h2>Clone Template Headline</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./projects.org&#39;);
+
+// Find template headline
+const template = org.findHeadline(doc, h =&gt;
+  h.properties.tags.includes(&#39;template&#39;)
+);
+
+if (template) {
+  // Create new project from template
+  const newProject = org.copyHeadline(template);
+  newProject.properties.rawValue = &#39;New Project&#39;;
+  org.removeTag(newProject, &#39;template&#39;);
+  org.setTodo(newProject, &#39;TODO&#39;);
+  org.setProperty(newProject, &#39;CREATED&#39;, new Date().toISOString().split(&#39;T&#39;)[0]);
+
+  org.insertHeadline(doc, newProject, 0);
+  org.writeFile(&#39;./projects.org&#39;, doc);
+}</code></pre>
+</div>
+
+</div>
+<div id="org-move-completed-tasks-to-archive" class="org-section org-level-2">
+<h2>Move Completed Tasks to Archive</h2>
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">import { org } from &#39;scimax&#39;;
+
+const doc = org.parseFile(&#39;./tasks.org&#39;);
+
+// Find or create archive headline
+let archive = org.findHeadline(doc, h =&gt;
+  h.properties.rawValue === &#39;Archive&#39;
+);
+
+if (!archive) {
+  archive = org.createHeadline(&#39;Archive&#39;, 1);
+  org.insertHeadline(doc, archive);
+}
+
+// Find and move done items
+const done = org.query(doc, { todoType: &#39;done&#39; })
+  .filter(h =&gt; !h.properties.tags.includes(&#39;ARCHIVE&#39;));
+
+done.forEach(h =&gt; {
+  const parent = org.findParent(doc, h);
+  if (parent &amp;&amp; parent !== archive) {
+    org.deleteHeadline(parent, h);
+    org.addTag(h, &#39;ARCHIVE&#39;);
+    org.insertHeadline(archive, h);
+  }
+});
+
+org.writeFile(&#39;./tasks.org&#39;, doc);
+console.log(`Archived ${done.length} completed tasks`);</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-headline-element-structure" class="org-section org-level-1">
+<h1>Headline Element Structure</h1>
+<p>When working with headlines, you have access to these properties:</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">interface HeadlineElement {
+  type: &#39;headline&#39;;
+  properties: {
+    level: number;           // 1-based heading level
+    rawValue: string;        // Title text
+    todoKeyword?: string;    // &#39;TODO&#39;, &#39;DONE&#39;, etc.
+    todoType?: &#39;todo&#39; | &#39;done&#39;;
+    priority?: string;       // &#39;A&#39;, &#39;B&#39;, &#39;C&#39;
+    tags: string[];          // Tag list
+    archivedp: boolean;      // Has :ARCHIVE: tag
+    commentedp: boolean;     // Has COMMENT prefix
+    customId?: string;       // CUSTOM_ID property
+    id?: string;             // ID property
+    category?: string;       // CATEGORY property
+    lineNumber: number;      // 1-indexed line number
+  };
+  propertiesDrawer?: Record&lt;string, string&gt;;
+  planning?: PlanningElement;  // SCHEDULED, DEADLINE, CLOSED
+  section?: SectionElement;    // Content after headline
+  children: HeadlineElement[]; // Child headlines
+}</code></pre>
+</div>
+
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>Related Topics</h1>
+<ul>
+<li><p><a href="07-source-blocks.html">Source Code Blocks</a> - Executing code in org documents</p>
+</li>
+<li><p><a href="03-todo-items.html">TODO Items</a> - Task management</p>
+</li>
+<li><p><a href="02-document-structure.html">Document Structure</a> - Headlines and navigation</p>
+</li>
+<li><p><a href="06-timestamps.html">Timestamps</a> - Dates, scheduling, and clocking</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="26-configuration.html">Configuration</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="28-non-standard-features.html">Non-Standard Features</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="20-editmarks.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="28-non-standard-features.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#introduction" class="toc-link">Introduction</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#quick-start" class="toc-link">Quick Start</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#basic-example-change-all-todos-to-done" class="toc-link">Basic Example: Change All TODOs to DONE</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#query-and-report" class="toc-link">Query and Report</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#api-reference" class="toc-link">API Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#file-io" class="toc-link">File I/O</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgparsefilepath-config" class="toc-link">org.parseFile(path, config?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgparsecontent-config" class="toc-link">org.parse(content, config?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgwritefilepath-doc-options" class="toc-link">org.writeFile(path, doc, options?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgserializedoc-options" class="toc-link">org.serialize(doc, options?)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#headline-traversal" class="toc-link">Headline Traversal</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgmapheadlinesdoc-callback" class="toc-link">org.mapHeadlines(doc, callback)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgfilterheadlinesdoc-predicate" class="toc-link">org.filterHeadlines(doc, predicate)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgfindheadlinedoc-predicate" class="toc-link">org.findHeadline(doc, predicate)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggetallheadlinesdoc" class="toc-link">org.getAllHeadlines(doc)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#element-traversal" class="toc-link">Element Traversal</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgmapelementsdoc-elementtype-callback" class="toc-link">org.mapElements(doc, elementType, callback)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgfilterelementsdoc-elementtype" class="toc-link">org.filterElements(doc, elementType)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggetsrcblocksdoc" class="toc-link">org.getSrcBlocks(doc)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggettablesdoc" class="toc-link">org.getTables(doc)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#query-api" class="toc-link">Query API</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgquerydoc-criteria" class="toc-link">org.query(doc, criteria)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#table-utilities" class="toc-link">Table Utilities</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgtabletojsontable-options" class="toc-link">org.tableToJSON(table, options?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgjsontotabledata-options" class="toc-link">org.jsonToTable(data, options?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgtabletocsvtable-options" class="toc-link">org.tableToCSV(table, options?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgwritetabletocsvfilepath-table-options" class="toc-link">org.writeTableToCSV(filePath, table, options?)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#modification-helpers" class="toc-link">Modification Helpers</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgsettodoheadline-keyword-donekeywords" class="toc-link">org.setTodo(headline, keyword, doneKeywords?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgaddtagheadline-tag" class="toc-link">org.addTag(headline, tag)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgremovetagheadline-tag" class="toc-link">org.removeTag(headline, tag)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgsetpropertyheadline-key-value" class="toc-link">org.setProperty(headline, key, value)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgremovepropertyheadline-key" class="toc-link">org.removeProperty(headline, key)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgsetpriorityheadline-priority" class="toc-link">org.setPriority(headline, priority)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#structure-utilities" class="toc-link">Structure Utilities</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgsortheadlinesheadlines-comparefn" class="toc-link">org.sortHeadlines(headlines, compareFn)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgpromoteheadlineheadline-recursive" class="toc-link">org.promoteHeadline(headline, recursive?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgdemoteheadlineheadline-recursive" class="toc-link">org.demoteHeadline(headline, recursive?)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#tree-manipulation" class="toc-link">Tree Manipulation</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgcreateheadlinetitle-level-options" class="toc-link">org.createHeadline(title, level?, options?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orginsertheadlineparent-headline-index" class="toc-link">org.insertHeadline(parent, headline, index?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgdeleteheadlineparent-headline" class="toc-link">org.deleteHeadline(parent, headline)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgcopyheadlineheadline" class="toc-link">org.copyHeadline(headline)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgfindparentdoc-headline" class="toc-link">org.findParent(doc, headline)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggetheadlinepathdoc-headline" class="toc-link">org.getHeadlinePath(doc, headline)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#timestamp-utilities" class="toc-link">Timestamp Utilities</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orgcreatetimestampoptions" class="toc-link">org.createTimestamp(options)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgtimestampfromdatedate-options" class="toc-link">org.timestampFromDate(date, options?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgtimestamptodatetimestamp" class="toc-link">org.timestampToDate(timestamp)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgsetscheduledheadline-timestamp" class="toc-link">org.setScheduled(headline, timestamp)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgsetdeadlineheadline-timestamp" class="toc-link">org.setDeadline(headline, timestamp)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgsetclosedheadline-timestamp" class="toc-link">org.setClosed(headline, timestamp)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggetscheduled-orggetdeadline-orggetclosed" class="toc-link">org.getScheduled / org.getDeadline / org.getClosed</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#link-utilities" class="toc-link">Link Utilities</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orggetlinksdoc" class="toc-link">org.getLinks(doc)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggetlinksbytypedoc-linktype" class="toc-link">org.getLinksByType(doc, linkType)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgcreatelinkpath-description-linktype" class="toc-link">org.createLink(path, description?, linkType?)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#clock-utilities" class="toc-link">Clock Utilities</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orggetclockentriesheadline" class="toc-link">org.getClockEntries(headline)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggetallclockentriesdoc" class="toc-link">org.getAllClockEntries(doc)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggettotalclocktimeheadline-recursive" class="toc-link">org.getTotalClockTime(headline, recursive?)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orgformatdurationminutes" class="toc-link">org.formatDuration(minutes)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#property-inheritance" class="toc-link">Property Inheritance</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#orggetinheritedpropertydoc-headline-key" class="toc-link">org.getInheritedProperty(doc, headline, key)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#orggeteffectivepropertiesdoc-headline" class="toc-link">org.getEffectiveProperties(doc, headline)</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#complete-examples" class="toc-link">Complete Examples</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#archive-all-done-items" class="toc-link">Archive All DONE Items</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#generate-project-summary" class="toc-link">Generate Project Summary</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#extract-table-data-across-files" class="toc-link">Extract Table Data Across Files</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#export-tables-to-csv-files" class="toc-link">Export Tables to CSV Files</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#export-named-table" class="toc-link">Export Named Table</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#bulk-update-properties" class="toc-link">Bulk Update Properties</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#reorganize-by-priority" class="toc-link">Reorganize by Priority</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#schedule-all-unscheduled-todos" class="toc-link">Schedule All Unscheduled TODOs</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#generate-time-report" class="toc-link">Generate Time Report</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#clone-template-headline" class="toc-link">Clone Template Headline</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#move-completed-tasks-to-archive" class="toc-link">Move Completed Tasks to Archive</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#headline-element-structure" class="toc-link">Headline Element Structure</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">Related Topics</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

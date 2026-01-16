@@ -1,0 +1,2397 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agenda Views</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-15 Thu 13:34]</p>
+
+<p>The Agenda system in Scimax VS Code provides powerful views of your scheduled
+tasks, deadlines, and TODO items. It helps you stay organized by showing what
+needs to be done and when.</p>
+
+<p>Think of the Agenda as your command center for task management - it collects
+tasks from all your org files and presents them in meaningful ways:</p>
+
+<ul>
+<li><p><strong>Day/Week views</strong> - See what&#39;s scheduled for specific time periods</p>
+</li>
+<li><p><strong>TODO lists</strong> - Review all incomplete tasks</p>
+</li>
+<li><p><strong>Deadline views</strong> - Track upcoming and overdue deadlines</p>
+</li>
+<li><p><strong>Filtering</strong> - Focus on specific tags, priorities, or categories</p>
+</li>
+</ul>
+
+<p>The Agenda system works with both file-based scanning and database indexing,
+giving you flexibility for different workflows.</p>
+
+</div>
+<div id="org-what-is-the-agenda" class="org-section org-level-1">
+<h1>✅ What is the Agenda?</h1>
+<p>CLOSED: [2026-01-15 Thu 13:34]</p>
+
+<p>The Agenda is a dynamic view that displays TODO items, scheduled tasks, and
+deadlines from your org files. Unlike browsing individual files, the Agenda
+aggregates information across all your documents.</p>
+
+<div id="org-key-concepts" class="org-section org-level-2">
+<h2>✅ Key Concepts</h2>
+<p>CLOSED: [2026-01-15 Thu 13:34]</p>
+
+<div id="org-agenda-items" class="org-section org-level-3">
+<h3>✅ Agenda Items</h3>
+<p>CLOSED: [2026-01-15 Thu 13:34]</p>
+
+<p>An agenda item is any headline with:</p>
+
+<ul>
+<li><p>A TODO keyword (TODO, DONE, NEXT, WAITING, etc.)</p>
+</li>
+<li><p>A SCHEDULED timestamp</p>
+</li>
+<li><p>A DEADLINE timestamp</p>
+</li>
+<li><p>An active timestamp</p>
+</li>
+</ul>
+
+</div>
+<div id="org-scheduled-items" class="org-section org-level-3">
+<h3>✅ Scheduled Items</h3>
+<p>CLOSED: [2026-01-15 Thu 13:34]</p>
+
+<p>Tasks with SCHEDULED timestamps appear in the agenda on their scheduled date:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">* TODO Write report
+SCHEDULED: &lt;2026-01-15 Wed&gt;</code></pre>
+</div>
+
+<p>This appears in the agenda starting January 15.</p>
+
+</div>
+</div>
+</div>
+<div id="org-deadlines" class="org-section org-level-3">
+<h3>✅ Deadlines</h3>
+<p>CLOSED: [2026-01-15 Thu 13:35]</p>
+
+<p>Tasks with DEADLINE timestamps appear with warning indicators:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">* TODO Submit proposal
+DEADLINE: &lt;2026-01-20 Mon&gt;</code></pre>
+</div>
+
+<p>Shows in the agenda with countdown (e.g., &quot;in 7 days&quot;) and becomes overdue if
+not completed.</p>
+
+</div>
+<div id="org-overdue-items" class="org-section org-level-3">
+<h3>✅ Overdue Items</h3>
+<p>CLOSED: [2026-01-15 Thu 13:35]</p>
+
+<p>Items past their deadline appear prominently with warning indicators and show
+how many days overdue they are.</p>
+
+</div>
+<div id="org-unscheduled-todos" class="org-section org-level-3">
+<h3>✅ Unscheduled TODOs</h3>
+<p>CLOSED: [2026-01-15 Thu 13:35]</p>
+
+<p>TODO items without dates can be included in agenda views to ensure nothing is
+forgotten.</p>
+
+</div>
+<div id="org-two-agenda-systems" class="org-section org-level-2">
+<h2>✅ Two Agenda Systems</h2>
+<p>CLOSED: [2026-01-15 Thu 13:35]</p>
+
+<p>Scimax VS Code provides two complementary agenda implementations:</p>
+
+<div id="org-native-file-based-agenda" class="org-section org-level-3">
+<h3>✅ Native/File-Based Agenda</h3>
+<p>CLOSED: [2026-01-15 Thu 13:35]</p>
+
+<ul>
+<li><p>Scans org files on-demand</p>
+</li>
+<li><p>Works immediately without indexing</p>
+</li>
+<li><p>Provides tree view in sidebar</p>
+</li>
+<li><p>Commands: scimax.agenda.*</p>
+</li>
+<li><p>Best for: Quick views, smaller document sets</p>
+</li>
+</ul>
+
+</div>
+<div id="org-database-backed-agenda" class="org-section org-level-3">
+<h3>✅ Database-Backed Agenda</h3>
+<p>CLOSED: [2026-01-15 Thu 13:35]</p>
+
+<ul>
+<li><p>Uses indexed data for fast queries</p>
+</li>
+<li><p>Requires indexing files first</p>
+</li>
+<li><p>Integrates with search and filtering</p>
+</li>
+<li><p>Commands: scimax.db.agenda, scimax.db.deadlines</p>
+</li>
+<li><p>Best for: Large document collections, complex queries</p>
+</li>
+</ul>
+
+<p>Both systems can be used together - choose based on your needs.</p>
+
+</div>
+</div>
+<div id="org-agenda-view-modes" class="org-section org-level-1">
+<h1>✅ Agenda View Modes</h1>
+<p>CLOSED: [2026-01-15 Thu 13:35]</p>
+
+<p>The agenda can display information in different time-based views.</p>
+
+<div id="org-day-agenda" class="org-section org-level-2">
+<h2>✅ Day Agenda</h2>
+<p>CLOSED: [2026-01-15 Thu 13:51]</p>
+
+<p>Shows items for a single day.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.day</td><td>C-c aa</td><td>Today&#39;s agenda</td></tr>
+</tbody>
+</table>
+
+<p>The day view displays:</p>
+
+<ul>
+<li><p>Scheduled items for the day</p>
+</li>
+<li><p>Deadlines due today</p>
+</li>
+<li><p>Overdue items</p>
+</li>
+<li><p>Time-of-day for timed entries</p>
+</li>
+</ul>
+
+<pre class="example">Today (Wednesday, Jan 15, 2026)
+──────────────────────────────
+
+  09:00  TODO [#A] Team standup                    :work:
+  14:00  TODO Client presentation                  :important:
+         TODO DEADLINE: Submit timesheet            (TODAY)
+         TODO Review pull requests                 :code:</pre>
+
+</div>
+<div id="org-week-agenda" class="org-section org-level-2">
+<h2>⚠️ Week Agenda</h2>
+<p>Shows a 7-day view starting from today.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th></th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.week</td><td>C-c aw</td><td>Next 7 days</td></tr>
+</tbody>
+</table>
+
+<p>Groups items by date, making it easy to plan your week:</p>
+
+<pre class="example">Week Agenda (Jan 15-21, 2026)
+─────────────────────────────
+
+Wednesday, Jan 15
+  09:00  TODO Team standup
+  14:00  TODO Client meeting
+
+Thursday, Jan 16
+  TODO Code review
+  DEADLINE: Deploy feature    (in 1 day)
+
+Friday, Jan 17
+  TODO Weekly review</pre>
+
+</div>
+<div id="org-fortnight-agenda" class="org-section org-level-2">
+<h2>⚠️ Fortnight Agenda</h2>
+<p>Shows the next 14 days.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.fortnight</td><td>Next 14 days</td></tr>
+</tbody>
+</table>
+
+<p>Useful for medium-term planning and catching upcoming deadlines.</p>
+
+</div>
+<div id="org-month-agenda" class="org-section org-level-2">
+<h2>⚠️ Month Agenda</h2>
+<p>Shows the next 30 days.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.month</td><td>C-c am</td><td>Next 30 days</td></tr>
+</tbody>
+</table>
+
+<p>Good for long-term planning and ensuring nothing falls through the cracks.</p>
+
+</div>
+<div id="org-custom-time-ranges" class="org-section org-level-2">
+<h2>⚠️ Custom Time Ranges</h2>
+<p>The database-backed agenda supports custom time ranges:</p>
+
+<pre class="example">; Next 2 weeks
+Command: scimax.db.agenda → &quot;Next 2 weeks&quot;
+
+; Next month
+Command: scimax.db.agenda → &quot;Next month&quot;
+
+; Next 3 months
+Command: scimax.db.agenda → &quot;Next 3 months&quot;
+
+; All items (no time limit)
+Command: scimax.db.agenda → &quot;All items&quot;</pre>
+
+</div>
+</div>
+<div id="org-todo-list-view" class="org-section org-level-1">
+<h1>⚠️ TODO List View</h1>
+<p>The TODO list shows all incomplete tasks regardless of date.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.todoList</td><td>C-c at</td><td>All TODO items (native)</td></tr>
+<tr><td>scimax.db.showTodos</td><td></td><td>All TODO items (database)</td></tr>
+</tbody>
+</table>
+
+<div id="org-grouping-by-state" class="org-section org-level-2">
+<h2>⚠️ Grouping by State</h2>
+<p>TODOs are grouped by their keyword state:</p>
+
+<pre class="example">TODO List (45 items)
+───────────────────
+
+TODO (32 items)
+  [#A] Fix critical bug                           :urgent:
+  Write documentation                             :docs:
+  Review code changes                             :review:
+
+NEXT (8 items)
+  [#A] Implement login feature                    :feature:
+  Deploy to staging                               :deploy:
+
+WAITING (5 items)
+  Approval from manager                           :blocked:
+  Design feedback                                 :design:</pre>
+
+</div>
+<div id="org-filtering-todo-list" class="org-section org-level-2">
+<h2>⚠️ Filtering TODO List</h2>
+<p>Filter by state when viewing TODOs:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: scimax.db.showTodos
+→ Select filter: &quot;All TODOs&quot;, &quot;TODO&quot;, &quot;NEXT&quot;, &quot;WAITING&quot;, etc.</code></pre>
+</div>
+
+<p>Shows only items in the selected state.</p>
+
+</div>
+</div>
+<div id="org-deadline-views" class="org-section org-level-1">
+<h1>⚠️ Deadline Views</h1>
+<p>Focus specifically on items with deadlines.</p>
+
+<div id="org-upcoming-deadlines" class="org-section org-level-2">
+<h2>⚠️ Upcoming Deadlines</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Bindings</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.deadlines</td><td>C-c ad</td><td>Show upcoming deadlines</td></tr>
+<tr><td>scimax.db.deadlines</td><td></td><td>Database deadline view</td></tr>
+</tbody>
+</table>
+
+<p>Displays deadlines with time-until indicators:</p>
+
+<pre class="example">Upcoming Deadlines (8 items)
+────────────────────────────
+
+  ⚠  TODO Submit proposal                         (2 days overdue)
+  🔔 TODO Complete Q1 report                      (TODAY)
+  🔔 TODO Review contract                         (in 1 day)
+  🔔 TODO File taxes                              (in 14 days)</pre>
+
+</div>
+<div id="org-deadline-display" class="org-section org-level-2">
+<h2>⚠️ Deadline Display</h2>
+<p>Deadlines show:</p>
+
+<ul>
+<li><p>Overdue indicator (⚠) if past due</p>
+</li>
+<li><p>Days until/overdue count</p>
+</li>
+<li><p>Priority and tags</p>
+</li>
+<li><p>File location</p>
+</li>
+</ul>
+
+</div>
+<div id="org-warning-periods" class="org-section org-level-2">
+<h2>⚠️ Warning Periods</h2>
+<p>Deadlines with warning periods appear in the agenda before they&#39;re due:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">* TODO Annual review
+DEADLINE: &lt;2026-01-31 Fri -7d&gt;</code></pre>
+</div>
+
+<p>This appears 7 days early (January 24) with &quot;in 7 days&quot; indicator.</p>
+
+</div>
+</div>
+<div id="org-scheduled-item-view" class="org-section org-level-1">
+<h1>⚠️ Scheduled Item View</h1>
+<p>View all scheduled items.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.scheduled</td><td>All scheduled items</td></tr>
+</tbody>
+</table>
+
+<p>Shows items with SCHEDULED timestamps:</p>
+
+<pre class="example">Scheduled Items (12 items)
+─────────────────────────
+
+📅 TODO Weekly team meeting                      (Today, 09:00)
+📅 TODO Start new project                        (in 2 days)
+📅 TODO Monthly review                           (in 5 days)</pre>
+
+<div id="org-repeating-items" class="org-section org-level-2">
+<h2>⚠️ Repeating Items</h2>
+<p>Recurring tasks with repeater syntax appear in the agenda:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">* TODO Daily standup
+SCHEDULED: &lt;2026-01-15 Wed 09:00 +1d&gt;
+
+* TODO Weekly review
+SCHEDULED: &lt;2026-01-19 Sun +1w&gt;
+
+* TODO Monthly report
+DEADLINE: &lt;2026-01-31 Fri +1m&gt;</code></pre>
+</div>
+
+<p>See <a href="06-timestamps.html">Timestamps</a> for more on repeaters.</p>
+
+</div>
+</div>
+<div id="org-grouping-and-sorting" class="org-section org-level-1">
+<h1>⚠️ Grouping and Sorting</h1>
+<p>Agenda views can be grouped and sorted in different ways.</p>
+
+<div id="org-group-by-options" class="org-section org-level-2">
+<h2>⚠️ Group By Options</h2>
+<div id="org-by-date-default" class="org-section org-level-3">
+<h3>⚠️ By Date (Default)</h3>
+<p>Groups items by their date:</p>
+
+<pre class="example">Today
+  Item 1
+  Item 2
+
+Tomorrow
+  Item 3
+  Item 4</pre>
+
+</div>
+<div id="org-by-category" class="org-section org-level-3">
+<h3>⚠️ By Category</h3>
+<p>Groups items by their CATEGORY property or file:</p>
+
+<pre class="example">Work
+  Project A tasks
+  Project B tasks
+
+Personal
+  Home tasks
+  Errands</pre>
+
+</div>
+<div id="org-by-priority" class="org-section org-level-3">
+<h3>⚠️ By Priority</h3>
+<p>Groups items by priority level:</p>
+
+<pre class="example">Priority A
+  [#A] Critical bug
+  [#A] Important meeting
+
+Priority B
+  [#B] Code review
+  [#B] Documentation
+
+No Priority
+  Regular tasks</pre>
+
+</div>
+<div id="org-by-todo-state" class="org-section org-level-3">
+<h3>⚠️ By TODO State</h3>
+<p>Groups items by their keyword:</p>
+
+<pre class="example">TODO
+  Task 1
+  Task 2
+
+NEXT
+  Task 3
+
+WAITING
+  Task 4</pre>
+
+</div>
+</div>
+<div id="org-changing-grouping" class="org-section org-level-2">
+<h2>⚠️ Changing Grouping</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.groupByDate</td><td>Group by date</td></tr>
+<tr><td>scimax.agenda.groupByCategory</td><td>Group by category</td></tr>
+<tr><td>scimax.agenda.groupByPriority</td><td>Group by priority</td></tr>
+</tbody>
+</table>
+
+<p>Tree view groups update immediately.</p>
+
+</div>
+<div id="org-sort-options" class="org-section org-level-2">
+<h2>⚠️ Sort Options</h2>
+<p>Items within groups are sorted by:</p>
+
+<ol>
+<li><p><strong>Time</strong> - Default, chronological order</p>
+</li>
+<li><p><strong>Priority</strong> - High to low (A → B → C)</p>
+</li>
+<li><p><strong>Category</strong> - Alphabetical by category</p>
+</li>
+<li><p><strong>TODO state</strong> - By keyword</p>
+</li>
+<li><p><strong>Tag</strong> - By first tag alphabetically</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-filtering" class="org-section org-level-1">
+<h1>⚠️ Filtering</h1>
+<p>Focus the agenda on specific criteria.</p>
+
+<div id="org-filter-by-tag" class="org-section org-level-2">
+<h2>⚠️ Filter by Tag</h2>
+<p>Show only items with a specific tag.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.filterByTag</td><td>Filter by tag (native)</td></tr>
+<tr><td>scimax.db.searchByTag</td><td>Filter by tag (database)</td></tr>
+</tbody>
+</table>
+
+<p>Workflow:</p>
+
+<ol>
+<li><p>Run command</p>
+</li>
+<li><p>Select a tag from the list</p>
+</li>
+<li><p>See only items with that tag</p>
+</li>
+</ol>
+
+<pre class="example">Command: scimax.agenda.filterByTag
+→ Select tag: &quot;urgent&quot;
+
+Items with :urgent: (7 items)
+────────────────────────────
+
+  TODO [#A] Fix production bug                    :urgent:work:
+  TODO Submit incident report                     :urgent:admin:</pre>
+
+</div>
+<div id="org-filter-by-priority" class="org-section org-level-2">
+<h2>⚠️ Filter by Priority</h2>
+<p>Database filtering supports priority:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Query: priority:A
+Shows: Only [#A] priority items</code></pre>
+</div>
+
+</div>
+<div id="org-filter-by-todo-state" class="org-section org-level-2">
+<h2>⚠️ Filter by TODO State</h2>
+<p>Show only specific TODO states:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: scimax.db.showTodos
+→ Select: &quot;NEXT&quot;
+Shows: Only NEXT items</code></pre>
+</div>
+
+</div>
+<div id="org-filter-by-date-range" class="org-section org-level-2">
+<h2>⚠️ Filter by Date Range</h2>
+<p>Combine time ranges with other filters:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: scimax.db.agenda
+→ Select: &quot;Next 2 weeks&quot;
+Shows: Items in next 14 days only</code></pre>
+</div>
+
+</div>
+<div id="org-combining-filters" class="org-section org-level-2">
+<h2>⚠️ Combining Filters</h2>
+<p>Database queries support multiple filters:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Show TODOs:
+  - With tag :work:
+  - Priority A or B
+  - Due in next week</code></pre>
+</div>
+
+<p>Use the database search commands for complex filtering.</p>
+
+</div>
+</div>
+<div id="org-navigating-and-acting-on-items" class="org-section org-level-1">
+<h1>⚠️ Navigating and Acting on Items</h1>
+<div id="org-tree-view-interface" class="org-section org-level-2">
+<h2>⚠️ Tree View Interface</h2>
+<p>The Agenda tree view appears in the VS Code sidebar:</p>
+
+<pre class="example">AGENDA
+└─ Today (3 items)
+   ├─ ⚪ TODO Team standup
+   ├─ 🔔 TODO [#A] Submit report
+   └─ 📅 TODO Review code
+└─ Tomorrow (2 items)
+   ├─ ⚪ TODO Planning meeting
+   └─ ⚪ TODO Update documentation</pre>
+
+</div>
+<div id="org-opening-items" class="org-section org-level-2">
+<h2>⚠️ Opening Items</h2>
+<p>Click any item in the tree view or quick pick to:</p>
+
+<ul>
+<li><p>Open the file containing the item</p>
+</li>
+<li><p>Jump to the exact line</p>
+</li>
+<li><p>Highlight the headline</p>
+</li>
+</ul>
+
+<p>The item is centered in the editor for easy viewing.</p>
+
+</div>
+<div id="org-quick-pick-navigation" class="org-section org-level-2">
+<h2>⚠️ Quick Pick Navigation</h2>
+<p>Commands show items in a searchable quick pick:</p>
+
+<pre class="example">Agenda: 12 items                           [Type to search]
+─────────────────────────────────────────────────────────
+
+  📅 TODO Team standup      TODO [#A] 09:00    work.org:42
+  🔔 TODO Submit report     DEADLINE (TODAY)   project.org:156
+  ⚪ TODO Review code       TODO :review:       dev.org:78
+  ⚪ TODO Update docs       TODO               readme.org:12</pre>
+
+<p>Features:</p>
+
+<ul>
+<li><p>Type to filter items</p>
+</li>
+<li><p>Shows description, tags, priority</p>
+</li>
+<li><p>File location in detail</p>
+</li>
+<li><p>Icons indicate item type</p>
+</li>
+</ul>
+
+</div>
+<div id="org-item-icons" class="org-section org-level-2">
+<h2>⚠️ Item Icons</h2>
+<table class="org-table">
+<thead>
+<tr><th>Icon</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>⚠</td><td>Overdue deadline</td></tr>
+<tr><td>🔔</td><td>Deadline (not overdue)</td></tr>
+<tr><td>📅</td><td>Scheduled item</td></tr>
+<tr><td>⚪</td><td>Regular TODO</td></tr>
+<tr><td>✓</td><td>DONE item</td></tr>
+<tr><td>▶</td><td>NEXT item</td></tr>
+<tr><td>⏸</td><td>WAITING item</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-keyboard-navigation" class="org-section org-level-2">
+<h2>⚠️ Keyboard Navigation</h2>
+<p>In tree view:</p>
+
+<ul>
+<li><p>Arrow keys: Navigate items</p>
+</li>
+<li><p>Enter: Open item</p>
+</li>
+<li><p>Space: Expand/collapse group</p>
+</li>
+</ul>
+
+<p>In quick pick:</p>
+
+<ul>
+<li><p>Type: Filter items</p>
+</li>
+<li><p>Arrow keys: Navigate</p>
+</li>
+<li><p>Enter: Open item</p>
+</li>
+<li><p>Escape: Cancel</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-agenda-configuration" class="org-section org-level-1">
+<h1>⚠️ Agenda Configuration</h1>
+<p>Configure agenda behavior through VS Code settings.</p>
+
+<div id="org-agenda-files" class="org-section org-level-2">
+<h2>⚠️ Agenda Files</h2>
+<p>Specify which files to include in the agenda.</p>
+
+<table class="org-table">
+<tbody>
+<tr><td>Setting</td><td>Default</td><td>Description</td></tr>
+<tr><td>--------------------------</td><td>--------------</td><td>--------------------------------</td></tr>
+<tr><td>scimax.agenda.files</td><td>[] (empty)</td><td>Files/directories for agenda</td></tr>
+</tbody>
+</table>
+
+<p>When empty, scans all org files in workspace.</p>
+
+<p>To add files or directories:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">Command: scimax.agenda.configure
+→ Select: &quot;Add directory to agenda&quot;
+→ Select directory to add</code></pre>
+</div>
+
+<p>Or manually in settings:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.files&quot;: [
+    &quot;/home/user/org/work.org&quot;,
+    &quot;/home/user/org/personal.org&quot;,
+    &quot;/home/user/projects&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-exclude-patterns" class="org-section org-level-2">
+<h2>⚠️ Exclude Patterns</h2>
+<p>Exclude certain files from agenda:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.excludePatterns</td><td>*<strong>/node_modules/</strong>*, *<strong>/.git/</strong>*</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.excludePatterns&quot;: [
+    &quot;**/node_modules/**&quot;,
+    &quot;**/.git/**&quot;,
+    &quot;**/archive/**&quot;,
+    &quot;**/drafts/**&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-default-time-span" class="org-section org-level-2">
+<h2>⚠️ Default Time Span</h2>
+<p>Set the default number of days for agenda views:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.defaultSpan</td><td>7</td><td>Days to show in agenda</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.defaultSpan&quot;: 14
+}</code></pre>
+</div>
+
+</div>
+<div id="org-show-done-items" class="org-section org-level-2">
+<h2>⚠️ Show Done Items</h2>
+<p>Include or exclude completed items:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.showDone</td><td>false</td><td>Show DONE items in agenda</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.showDone&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-show-habits" class="org-section org-level-2">
+<h2>⚠️ Show Habits</h2>
+<p>Control display of recurring habit tasks:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.showHabits</td><td>true</td><td>Show habit items in agenda</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-todo-states" class="org-section org-level-2">
+<h2>⚠️ TODO States</h2>
+<p>Define which TODO keywords to include:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Default</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.todoStates</td><td>[TODO, NEXT, WAITING]</td></tr>
+<tr><td>scimax.agenda.doneStates</td><td>[DONE, CANCELLED]</td></tr>
+</tbody>
+</table>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.agenda.todoStates&quot;: [
+    &quot;TODO&quot;,
+    &quot;NEXT&quot;,
+    &quot;IN-PROGRESS&quot;,
+    &quot;WAITING&quot;,
+    &quot;REVIEW&quot;
+  ],
+  &quot;scimax.agenda.doneStates&quot;: [
+    &quot;DONE&quot;,
+    &quot;CANCELLED&quot;,
+    &quot;REJECTED&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-database-integration" class="org-section org-level-1">
+<h1>⚠️ Database Integration</h1>
+<p>The database-backed agenda provides additional capabilities.</p>
+
+<div id="org-database-agenda-features" class="org-section org-level-2">
+<h2>⚠️ Database Agenda Features</h2>
+<p>The database agenda (scimax.db.agenda) offers:</p>
+
+<ol>
+<li><p><strong>Fast queries</strong> - Indexed data for instant results</p>
+</li>
+<li><p><strong>Complex filtering</strong> - Search by property, tag, etc.</p>
+</li>
+<li><p><strong>Semantic search</strong> - Find items by meaning</p>
+</li>
+<li><p><strong>Hybrid views</strong> - Combine agenda with search</p>
+</li>
+</ol>
+
+</div>
+<div id="org-indexing-for-agenda" class="org-section org-level-2">
+<h2>⚠️ Indexing for Agenda</h2>
+<p>Before using database agenda, index your files:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.db.reindex</td><td>Index all org files</td></tr>
+</tbody>
+</table>
+
+<p>The database automatically tracks changes, but manual reindex ensures
+everything is current.</p>
+
+</div>
+<div id="org-database-agenda-commands" class="org-section org-level-2">
+<h2>⚠️ Database Agenda Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.db.agenda</td><td>Time-based agenda view</td></tr>
+<tr><td>scimax.db.deadlines</td><td>Upcoming deadlines</td></tr>
+<tr><td>scimax.db.showTodos</td><td>All TODO items</td></tr>
+<tr><td>scimax.db.searchByTag</td><td>Items with specific tag</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-search-scope" class="org-section org-level-2">
+<h2>⚠️ Search Scope</h2>
+<p>Limit agenda queries to specific directories:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.db.setScope</td><td>Set search scope</td></tr>
+</tbody>
+</table>
+
+<p>Options:</p>
+
+<ul>
+<li><p><strong>All files</strong> - Search entire database</p>
+</li>
+<li><p><strong>Current directory</strong> - Only files in current directory</p>
+</li>
+</ul>
+
+</div>
+<div id="org-agenda-item-data" class="org-section org-level-2">
+<h2>⚠️ Agenda Item Data</h2>
+<p>Database agenda items include:</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">interface AgendaItem {
+  type: &#39;deadline&#39; | &#39;scheduled&#39; | &#39;todo&#39;;
+  heading: HeadingRecord;
+  date?: string;
+  days_until?: number;
+  overdue?: boolean;
+}</code></pre>
+</div>
+
+<p>Properties:</p>
+
+<ul>
+<li><p>type - Item category</p>
+</li>
+<li><p>heading - Full heading info (title, tags, priority, etc.)</p>
+</li>
+<li><p>date - Scheduled/deadline date</p>
+</li>
+<li><p>days_until - Days until/past date (negative = overdue)</p>
+</li>
+<li><p>overdue - Boolean flag for past deadlines</p>
+</li>
+</ul>
+
+</div>
+<div id="org-querying-agenda" class="org-section org-level-2">
+<h2>⚠️ Querying Agenda</h2>
+<p>Programmatic access to agenda data:</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Get agenda items
+const items = await db.getAgenda({
+  before: &#39;+2w&#39;,           // Next 2 weeks
+  includeUnscheduled: true // Include TODOs without dates
+});
+
+// Filter deadlines
+const deadlines = items.filter(item =&gt; item.type === &#39;deadline&#39;);
+
+// Find overdue
+const overdue = items.filter(item =&gt; item.overdue);</code></pre>
+</div>
+
+<p>See <a href="18-database-search.html">Database Search</a> for more on database queries.</p>
+
+</div>
+</div>
+<div id="org-agenda-workflows" class="org-section org-level-1">
+<h1>⚠️ Agenda Workflows</h1>
+<p>Practical approaches to using the agenda effectively.</p>
+
+<div id="org-morning-planning" class="org-section org-level-2">
+<h2>⚠️ Morning Planning</h2>
+<p>Start your day with the day agenda:</p>
+
+<ol>
+<li><p>Run scimax.agenda.day</p>
+</li>
+<li><p>Review today&#39;s items</p>
+</li>
+<li><p>Mark priorities</p>
+</li>
+<li><p>Identify blockers</p>
+</li>
+<li><p>Clock in to first task</p>
+</li>
+</ol>
+
+</div>
+<div id="org-weekly-review" class="org-section org-level-2">
+<h2>⚠️ Weekly Review</h2>
+<p>Every week:</p>
+
+<ol>
+<li><p>Run scimax.agenda.week</p>
+</li>
+<li><p>Check for overdue items</p>
+</li>
+<li><p>Reschedule as needed</p>
+</li>
+<li><p>Add new scheduled items</p>
+</li>
+<li><p>Review WAITING tasks</p>
+</li>
+</ol>
+
+</div>
+<div id="org-deadline-management" class="org-section org-level-2">
+<h2>⚠️ Deadline Management</h2>
+<p>Stay on top of deadlines:</p>
+
+<ol>
+<li><p>Run scimax.agenda.deadlines or scimax.db.deadlines</p>
+</li>
+<li><p>Note items due soon</p>
+</li>
+<li><p>Start working on items with warnings</p>
+</li>
+<li><p>Address overdue items immediately</p>
+</li>
+<li><p>Update estimates for late items</p>
+</li>
+</ol>
+
+</div>
+<div id="org-context-based-work" class="org-section org-level-2">
+<h2>⚠️ Context-Based Work</h2>
+<p>Use tags to filter by context:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">; At office
+Command: scimax.agenda.filterByTag
+→ Select: &quot;office&quot;
+Work on office-only tasks
+
+; Have phone available
+→ Select: &quot;phone&quot;
+Make all phone calls
+
+; At computer
+→ Select: &quot;computer&quot;
+Handle computer-required tasks</code></pre>
+</div>
+
+</div>
+<div id="org-project-review" class="org-section org-level-2">
+<h2>⚠️ Project Review</h2>
+<p>Review project status:</p>
+
+<ol>
+<li><p>Filter agenda by project tag</p>
+</li>
+<li><p>Check all project items</p>
+</li>
+<li><p>Identify NEXT action</p>
+</li>
+<li><p>Update completed items</p>
+</li>
+<li><p>Add new tasks as needed</p>
+</li>
+</ol>
+
+</div>
+<div id="org-priority-triage" class="org-section org-level-2">
+<h2>⚠️ Priority Triage</h2>
+<p>Focus on high-priority items:</p>
+
+<ol>
+<li><p>Filter or group by priority</p>
+</li>
+<li><p>Work through all [#A] items</p>
+</li>
+<li><p>Move to [#B] items</p>
+</li>
+<li><p>Reschedule [#C] if needed</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-agenda-best-practices" class="org-section org-level-1">
+<h1>⚠️ Agenda Best Practices</h1>
+<div id="org-keep-agenda-files-organized" class="org-section org-level-2">
+<h2>⚠️ Keep Agenda Files Organized</h2>
+<p>Structure agenda files logically:</p>
+
+<div class="org-src-container">
+<pre class="src src-text"><code class="language-text">~/org/
+  ├── work.org          ; Work tasks
+  ├── personal.org      ; Personal tasks
+  ├── projects/         ; Project-specific files
+  │   ├── project-a.org
+  │   └── project-b.org
+  └── archive/          ; Archived (excluded)</code></pre>
+</div>
+
+<p>Configure agenda to scan ~<em>org</em> and exclude archive/.</p>
+
+</div>
+<div id="org-use-meaningful-categories" class="org-section org-level-2">
+<h2>⚠️ Use Meaningful Categories</h2>
+<p>Set CATEGORY properties for better grouping:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+CATEGORY: Work
+
+* TODO Project tasks
+:PROPERTIES:
+:CATEGORY: ProjectA
+:END:</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-schedule-realistically" class="org-section org-level-2">
+<h2>⚠️ Schedule Realistically</h2>
+<p>Don&#39;t over-schedule:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; Bad - too many items
+* TODO 20 tasks scheduled for Monday
+
+; Good - realistic daily load
+* TODO 3-5 priority tasks per day</code></pre>
+</div>
+
+</div>
+<div id="org-use-deadlines-sparingly" class="org-section org-level-2">
+<h2>⚠️ Use Deadlines Sparingly</h2>
+<p>Only use deadlines for true hard deadlines:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; Good - actual deadline
+* TODO Submit tax return
+DEADLINE: &lt;2026-04-15 Tue&gt;
+
+; Bad - arbitrary deadline
+* TODO Read interesting article
+DEADLINE: &lt;2026-01-20 Mon&gt;
+; Use SCHEDULED instead</code></pre>
+</div>
+
+</div>
+<div id="org-regular-cleanup" class="org-section org-level-2">
+<h2>⚠️ Regular Cleanup</h2>
+<p>Weekly maintenance:</p>
+
+<ul>
+<li><p>Archive completed items</p>
+</li>
+<li><p>Cancel obsolete tasks</p>
+</li>
+<li><p>Update dates on delayed items</p>
+</li>
+<li><p>Remove duplicate entries</p>
+</li>
+</ul>
+
+</div>
+<div id="org-leverage-repeaters" class="org-section org-level-2">
+<h2>⚠️ Leverage Repeaters</h2>
+<p>Use repeaters for recurring items:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; Meetings
+* TODO Weekly standup
+SCHEDULED: &lt;2026-01-15 Wed 09:00 +1w&gt;
+
+; Habits
+* TODO Morning exercise
+SCHEDULED: &lt;2026-01-15 Wed ++1d&gt;
+
+; Maintenance
+* TODO Backup files
+SCHEDULED: &lt;2026-01-15 Wed .+7d&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-balance-time-spans" class="org-section org-level-2">
+<h2>⚠️ Balance Time Spans</h2>
+<p>Use different views for different purposes:</p>
+
+<table class="org-table">
+<tbody>
+<tr><td>View</td><td>Purpose</td><td>Frequency</td></tr>
+<tr><td>-----------</td><td>----------------------------------</td><td>----------------</td></tr>
+<tr><td>Day</td><td>Immediate planning</td><td>Every morning</td></tr>
+<tr><td>Week</td><td>Short-term planning</td><td>Daily review</td></tr>
+<tr><td>Fortnight</td><td>Medium-term awareness</td><td>Weekly review</td></tr>
+<tr><td>Month</td><td>Long-term planning</td><td>Monthly review</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-practical-examples" class="org-section org-level-1">
+<h1>⚠️ Practical Examples</h1>
+<div id="org-example-software-developer" class="org-section org-level-2">
+<h2>⚠️ Example: Software Developer</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; work.org
+
+* TODO [#A] Fix production bug                              :urgent:bug:
+DEADLINE: &lt;2026-01-15 Wed&gt;
+Critical database connection issue.
+
+* TODO [#A] Code review for PR #234                         :review:
+SCHEDULED: &lt;2026-01-15 Wed 10:00&gt;
+Review authentication changes.
+
+* TODO [#B] Implement user settings page                    :feature:
+SCHEDULED: &lt;2026-01-16 Thu&gt;
+DEADLINE: &lt;2026-01-20 Mon&gt;
+:PROPERTIES:
+:EFFORT: 6:00
+:END:
+
+* TODO Weekly team standup                                  :meeting:
+SCHEDULED: &lt;2026-01-15 Wed 09:00 +1w&gt;
+
+* TODO Sprint planning                                      :meeting:
+SCHEDULED: &lt;2026-01-22 Wed 14:00 +2w&gt;</code></pre>
+</div>
+
+<p>Agenda shows:</p>
+
+<ul>
+<li><p>Today: Bug fix (overdue!), code review at 10am, standup at 9am</p>
+</li>
+<li><p>Tomorrow: Start user settings</p>
+</li>
+<li><p>Next Monday: Settings deadline</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-example-project-manager" class="org-section org-level-2">
+<h2>⚠️ Example: Project Manager</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; projects.org
+
+#+CATEGORY: Projects
+
+* TODO [#A] Submit Q1 budget                                :finance:admin:
+DEADLINE: &lt;2026-01-31 Fri -7d&gt;
+:PROPERTIES:
+:EFFORT: 4:00
+:END:
+
+* WAITING Client approval on timeline                       :client:blocked:
+SCHEDULED: &lt;2026-01-10 Fri&gt;
+Sent proposal on Jan 10, follow up if no response.
+
+* TODO [#B] Update project roadmap                          :planning:
+SCHEDULED: &lt;2026-01-16 Thu&gt;
+Quarterly roadmap review and updates.
+
+* TODO Monthly status meeting                               :meeting:
+SCHEDULED: &lt;2026-01-30 Thu 15:00 +1m&gt;
+With stakeholders.
+
+* TODO Weekly team check-in                                 :meeting:
+SCHEDULED: &lt;2026-01-17 Fri 10:00 +1w&gt;</code></pre>
+</div>
+
+<p>Agenda grouped by priority shows:</p>
+
+<ul>
+<li><p>Priority A: Budget (due in 7 days with warning)</p>
+</li>
+<li><p>WAITING: Client approval (needs follow-up)</p>
+</li>
+<li><p>Priority B: Roadmap update</p>
+</li>
+</ul>
+
+</div>
+<div id="org-example-academic-researcher" class="org-section org-level-2">
+<h2>⚠️ Example: Academic/Researcher</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; research.org
+
+#+CATEGORY: Research
+
+* TODO [#A] Submit conference paper                         :paper:deadline:
+DEADLINE: &lt;2026-02-15 Sun -14d&gt;
+ICML submission deadline.
+:PROPERTIES:
+:EFFORT: 40:00
+:END:
+
+* TODO Literature review                                    :reading:
+SCHEDULED: &lt;2026-01-16 Thu&gt;
+:PROPERTIES:
+:EFFORT: 3:00
+:END:
+Read papers on attention mechanisms.
+
+* TODO Weekly advisor meeting                               :meeting:
+SCHEDULED: &lt;2026-01-17 Fri 14:00 +1w&gt;
+Prepare update slides.
+
+* TODO Run experiments                                      :lab:computer:
+SCHEDULED: &lt;2026-01-18 Sat&gt;
+:PROPERTIES:
+:EFFORT: 8:00
+:END:
+Training runs for new model.
+
+* TODO Grade assignments                                    :teaching:
+DEADLINE: &lt;2026-01-20 Mon&gt;
+CS101 homework submissions.</code></pre>
+</div>
+
+<p>Week view shows balanced schedule:</p>
+
+<ul>
+<li><p>Ongoing: Paper writing (big effort)</p>
+</li>
+<li><p>Daily: Literature review, experiments</p>
+</li>
+<li><p>Weekly: Advisor meeting</p>
+</li>
+<li><p>Deadline: Grading due Monday</p>
+</li>
+</ul>
+
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>⚠️ Troubleshooting</h1>
+<div id="org-agenda-shows-no-items" class="org-section org-level-2">
+<h2>⚠️ Agenda Shows No Items</h2>
+<ol>
+<li><p><strong>Check agenda files configuration</strong>:</p>
+</li>
+<li><p><strong>Verify TODO keywords</strong>:</p>
+</li>
+<li><p><strong>Check time range</strong>:</p>
+</li>
+<li><p><strong>Reindex database</strong> (for database agenda):</p>
+</li>
+<li><p><strong>Check exclude patterns</strong>:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-items-not-updating" class="org-section org-level-2">
+<h2>⚠️ Items Not Updating</h2>
+<ol>
+<li><p><strong>Refresh agenda</strong>:</p>
+</li>
+<li><p><strong>Reindex database</strong>:</p>
+</li>
+<li><p><strong>Check file watcher</strong>:</p>
+</li>
+<li><p><strong>Save file</strong>:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-tree-view-not-showing" class="org-section org-level-2">
+<h2>⚠️ Tree View Not Showing</h2>
+<ol>
+<li><p><strong>Check view visibility</strong>:</p>
+</li>
+<li><p><strong>Refresh view</strong>:</p>
+</li>
+<li><p><strong>Check for errors</strong>:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-slow-performance" class="org-section org-level-2">
+<h2>⚠️ Slow Performance</h2>
+<ol>
+<li><p><strong>Use database agenda</strong>:</p>
+</li>
+<li><p><strong>Limit agenda files</strong>:</p>
+</li>
+<li><p><strong>Exclude large directories</strong>:</p>
+</li>
+<li><p><strong>Optimize file sizes</strong>:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-date-display-issues" class="org-section org-level-2">
+<h2>⚠️ Date Display Issues</h2>
+<ol>
+<li><p><strong>Check timestamp format</strong>:</p>
+</li>
+<li><p><strong>Verify day of week</strong>:</p>
+</li>
+<li><p><strong>Check repeaters</strong>:</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-quick-reference" class="org-section org-level-1">
+<h1>⚠️ Quick Reference</h1>
+<div id="org-main-agenda-commands" class="org-section org-level-2">
+<h2>⚠️ Main Agenda Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.agenda.menu</td><td>Show agenda menu</td></tr>
+<tr><td>scimax.agenda.day</td><td>Today&#39;s agenda</td></tr>
+<tr><td>scimax.agenda.week</td><td>7-day agenda</td></tr>
+<tr><td>scimax.agenda.fortnight</td><td>14-day agenda</td></tr>
+<tr><td>scimax.agenda.month</td><td>30-day agenda</td></tr>
+<tr><td>scimax.agenda.todoList</td><td>All TODO items</td></tr>
+<tr><td>scimax.agenda.deadlines</td><td>Upcoming deadlines</td></tr>
+<tr><td>scimax.agenda.scheduled</td><td>Scheduled items</td></tr>
+<tr><td>scimax.agenda.filterByTag</td><td>Filter by tag</td></tr>
+<tr><td>scimax.agenda.refresh</td><td>Refresh agenda</td></tr>
+<tr><td>scimax.agenda.configure</td><td>Configure agenda files</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-database-agenda-commands" class="org-section org-level-2">
+<h2>⚠️ Database Agenda Commands</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Command</td><td>Description</td></tr>
+<tr><td>-----------------------------</td><td>----------------------------------</td></tr>
+<tr><td>scimax.db.agenda</td><td>Database agenda view</td></tr>
+<tr><td>scimax.db.deadlines</td><td>Database deadline view</td></tr>
+<tr><td>scimax.db.showTodos</td><td>Database TODO list</td></tr>
+<tr><td>scimax.db.searchByTag</td><td>Database tag search</td></tr>
+<tr><td>scimax.db.setScope</td><td>Set search scope</td></tr>
+<tr><td>scimax.db.reindex</td><td>Reindex all files</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-tree-view-commands" class="org-section org-level-2">
+<h2>⚠️ Tree View Commands</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Command</td><td>Description</td></tr>
+<tr><td>-------------------------------------</td><td>--------------------------------</td></tr>
+<tr><td>scimax.agenda.showAgenda</td><td>Show agenda in tree view</td></tr>
+<tr><td>scimax.agenda.showTodos</td><td>Show TODOs in tree view</td></tr>
+<tr><td>scimax.agenda.groupByDate</td><td>Group by date</td></tr>
+<tr><td>scimax.agenda.groupByCategory</td><td>Group by category</td></tr>
+<tr><td>scimax.agenda.groupByPriority</td><td>Group by priority</td></tr>
+<tr><td>scimax.agenda.gotoItem</td><td>Go to item in file</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-configuration-settings" class="org-section org-level-2">
+<h2>⚠️ Configuration Settings</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Setting</td><td>Default</td><td>Description</td></tr>
+<tr><td>------------------------------------</td><td>---------------</td><td>-------------------------------</td></tr>
+<tr><td>scimax.agenda.files</td><td>[] (empty)</td><td>Agenda file list</td></tr>
+<tr><td>scimax.agenda.excludePatterns</td><td>node_modules</td><td>Files to exclude</td></tr>
+<tr><td>scimax.agenda.defaultSpan</td><td>7</td><td>Default days to show</td></tr>
+<tr><td>scimax.agenda.showDone</td><td>false</td><td>Show DONE items</td></tr>
+<tr><td>scimax.agenda.showHabits</td><td>true</td><td>Show habit items</td></tr>
+<tr><td>scimax.agenda.todoStates</td><td>[TODO, ...]</td><td>TODO keyword list</td></tr>
+<tr><td>scimax.agenda.doneStates</td><td>[DONE, ...]</td><td>DONE keyword list</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-agenda-item-properties" class="org-section org-level-2">
+<h2>⚠️ Agenda Item Properties</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Property</td><td>Description</td></tr>
+<tr><td>-------------------</td><td>---------------------------------------</td></tr>
+<tr><td>title</td><td>Headline text</td></tr>
+<tr><td>todoState</td><td>TODO keyword (TODO, NEXT, etc.)</td></tr>
+<tr><td>priority</td><td>Priority (A, B, C)</td></tr>
+<tr><td>tags</td><td>Tag list</td></tr>
+<tr><td>scheduled</td><td>Scheduled date</td></tr>
+<tr><td>deadline</td><td>Deadline date</td></tr>
+<tr><td>time</td><td>Time of day</td></tr>
+<tr><td>daysUntil</td><td>Days until/past date</td></tr>
+<tr><td>overdue</td><td>Boolean: past deadline</td></tr>
+<tr><td>category</td><td>Category (from CATEGORY property)</td></tr>
+<tr><td>file</td><td>Source file path</td></tr>
+<tr><td>line</td><td>Line number in file</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-item-type-icons" class="org-section org-level-2">
+<h2>⚠️ Item Type Icons</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Icon</td><td>Type</td><td>Description</td></tr>
+<tr><td>------</td><td>---------------------</td><td>------------------------------------</td></tr>
+<tr><td>⚠</td><td>Overdue deadline</td><td>Past due date, needs attention</td></tr>
+<tr><td>🔔</td><td>Deadline</td><td>Has deadline, not overdue</td></tr>
+<tr><td>📅</td><td>Scheduled</td><td>Has SCHEDULED timestamp</td></tr>
+<tr><td>⚪</td><td>TODO</td><td>Regular TODO item</td></tr>
+<tr><td>✓</td><td>DONE</td><td>Completed item</td></tr>
+<tr><td>▶</td><td>NEXT</td><td>Next action item</td></tr>
+<tr><td>⏸</td><td>WAITING</td><td>Waiting/blocked item</td></tr>
+<tr><td>⏱</td><td>Clocked</td><td>Has time tracking</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-quick-workflow" class="org-section org-level-2">
+<h2>⚠️ Quick Workflow</h2>
+<ol>
+<li><p><strong>Morning</strong>: scimax.agenda.day - See today&#39;s tasks</p>
+</li>
+<li><p><strong>Planning</strong>: scimax.agenda.week - Plan upcoming work</p>
+</li>
+<li><p><strong>Triage</strong>: scimax.agenda.deadlines - Handle urgent items</p>
+</li>
+<li><p><strong>Context work</strong>: scimax.agenda.filterByTag - Focus by context</p>
+</li>
+<li><p><strong>Review</strong>: scimax.agenda.todoList - Review all TODOs</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>⚠️ Related Topics</h1>
+<ul>
+<li><p><a href="03-todo-items.html">TODO Items</a> - Creating and managing TODO items</p>
+</li>
+<li><p><a href="06-timestamps.html">Timestamps</a> - Date formats, scheduling, deadlines, repeaters</p>
+</li>
+<li><p><a href="02-document-structure.html">Document Structure</a> - Organizing headlines and content</p>
+</li>
+<li><p><a href="18-database-search.html">Database Search</a> - Advanced search and filtering</p>
+</li>
+<li><p><a href="26-configuration.html">Configuration</a> - Extension settings</p>
+</li>
+<li><p><a href="01-getting-started.html">Getting Started</a> - Basic usage guide</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="12-image-overlays.html">Image Overlays</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="14-journal.html">Journal</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="03-todo-items.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="06-timestamps.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#introduction" class="toc-link">✅ Introduction</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#what-is-the-agenda" class="toc-link">✅ What is the Agenda?</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#key-concepts" class="toc-link">✅ Key Concepts</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#agenda-items" class="toc-link">✅ Agenda Items</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#scheduled-items" class="toc-link">✅ Scheduled Items</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#deadlines" class="toc-link">✅ Deadlines</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#overdue-items" class="toc-link">✅ Overdue Items</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#unscheduled-todos" class="toc-link">✅ Unscheduled TODOs</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#two-agenda-systems" class="toc-link">✅ Two Agenda Systems</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#nativefile-based-agenda" class="toc-link">✅ Native/File-Based Agenda</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#database-backed-agenda" class="toc-link">✅ Database-Backed Agenda</a>
+            </li>
+        
+</ul></li>
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#agenda-view-modes" class="toc-link">✅ Agenda View Modes</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#day-agenda" class="toc-link">✅ Day Agenda</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#week-agenda" class="toc-link">⚠️ Week Agenda</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#fortnight-agenda" class="toc-link">⚠️ Fortnight Agenda</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#month-agenda" class="toc-link">⚠️ Month Agenda</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#custom-time-ranges" class="toc-link">⚠️ Custom Time Ranges</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#todo-list-view" class="toc-link">⚠️ TODO List View</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#grouping-by-state" class="toc-link">⚠️ Grouping by State</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#filtering-todo-list" class="toc-link">⚠️ Filtering TODO List</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#deadline-views" class="toc-link">⚠️ Deadline Views</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#upcoming-deadlines" class="toc-link">⚠️ Upcoming Deadlines</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#deadline-display" class="toc-link">⚠️ Deadline Display</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#warning-periods" class="toc-link">⚠️ Warning Periods</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#scheduled-item-view" class="toc-link">⚠️ Scheduled Item View</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#repeating-items" class="toc-link">⚠️ Repeating Items</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#grouping-and-sorting" class="toc-link">⚠️ Grouping and Sorting</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#group-by-options" class="toc-link">⚠️ Group By Options</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#by-date-default" class="toc-link">⚠️ By Date (Default)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#by-category" class="toc-link">⚠️ By Category</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#by-priority" class="toc-link">⚠️ By Priority</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#by-todo-state" class="toc-link">⚠️ By TODO State</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#changing-grouping" class="toc-link">⚠️ Changing Grouping</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#sort-options" class="toc-link">⚠️ Sort Options</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#filtering" class="toc-link">⚠️ Filtering</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#filter-by-tag" class="toc-link">⚠️ Filter by Tag</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#filter-by-priority" class="toc-link">⚠️ Filter by Priority</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#filter-by-todo-state" class="toc-link">⚠️ Filter by TODO State</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#filter-by-date-range" class="toc-link">⚠️ Filter by Date Range</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#combining-filters" class="toc-link">⚠️ Combining Filters</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#navigating-and-acting-on-items" class="toc-link">⚠️ Navigating and Acting on Items</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#tree-view-interface" class="toc-link">⚠️ Tree View Interface</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#opening-items" class="toc-link">⚠️ Opening Items</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#quick-pick-navigation" class="toc-link">⚠️ Quick Pick Navigation</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#item-icons" class="toc-link">⚠️ Item Icons</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#keyboard-navigation" class="toc-link">⚠️ Keyboard Navigation</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#agenda-configuration" class="toc-link">⚠️ Agenda Configuration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#agenda-files" class="toc-link">⚠️ Agenda Files</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#exclude-patterns" class="toc-link">⚠️ Exclude Patterns</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#default-time-span" class="toc-link">⚠️ Default Time Span</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#show-done-items" class="toc-link">⚠️ Show Done Items</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#show-habits" class="toc-link">⚠️ Show Habits</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#todo-states" class="toc-link">⚠️ TODO States</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#database-integration" class="toc-link">⚠️ Database Integration</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#database-agenda-features" class="toc-link">⚠️ Database Agenda Features</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#indexing-for-agenda" class="toc-link">⚠️ Indexing for Agenda</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#database-agenda-commands" class="toc-link">⚠️ Database Agenda Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#search-scope" class="toc-link">⚠️ Search Scope</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#agenda-item-data" class="toc-link">⚠️ Agenda Item Data</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#querying-agenda" class="toc-link">⚠️ Querying Agenda</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#agenda-workflows" class="toc-link">⚠️ Agenda Workflows</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#morning-planning" class="toc-link">⚠️ Morning Planning</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#weekly-review" class="toc-link">⚠️ Weekly Review</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#deadline-management" class="toc-link">⚠️ Deadline Management</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#context-based-work" class="toc-link">⚠️ Context-Based Work</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#project-review" class="toc-link">⚠️ Project Review</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#priority-triage" class="toc-link">⚠️ Priority Triage</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#agenda-best-practices" class="toc-link">⚠️ Agenda Best Practices</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#keep-agenda-files-organized" class="toc-link">⚠️ Keep Agenda Files Organized</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#use-meaningful-categories" class="toc-link">⚠️ Use Meaningful Categories</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#schedule-realistically" class="toc-link">⚠️ Schedule Realistically</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#use-deadlines-sparingly" class="toc-link">⚠️ Use Deadlines Sparingly</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#regular-cleanup" class="toc-link">⚠️ Regular Cleanup</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#leverage-repeaters" class="toc-link">⚠️ Leverage Repeaters</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#balance-time-spans" class="toc-link">⚠️ Balance Time Spans</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#practical-examples" class="toc-link">⚠️ Practical Examples</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#example-software-developer" class="toc-link">⚠️ Example: Software Developer</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#example-project-manager" class="toc-link">⚠️ Example: Project Manager</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#example-academicresearcher" class="toc-link">⚠️ Example: Academic/Researcher</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#troubleshooting" class="toc-link">⚠️ Troubleshooting</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#agenda-shows-no-items" class="toc-link">⚠️ Agenda Shows No Items</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#items-not-updating" class="toc-link">⚠️ Items Not Updating</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tree-view-not-showing" class="toc-link">⚠️ Tree View Not Showing</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#slow-performance" class="toc-link">⚠️ Slow Performance</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#date-display-issues" class="toc-link">⚠️ Date Display Issues</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#quick-reference" class="toc-link">⚠️ Quick Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#main-agenda-commands" class="toc-link">⚠️ Main Agenda Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#database-agenda-commands" class="toc-link">⚠️ Database Agenda Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#tree-view-commands" class="toc-link">⚠️ Tree View Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#configuration-settings" class="toc-link">⚠️ Configuration Settings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#agenda-item-properties" class="toc-link">⚠️ Agenda Item Properties</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#item-type-icons" class="toc-link">⚠️ Item Type Icons</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#quick-workflow" class="toc-link">⚠️ Quick Workflow</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">⚠️ Related Topics</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>

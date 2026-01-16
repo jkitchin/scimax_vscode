@@ -10,6 +10,9 @@ deps:
 
 compile: deps
 	npm run compile
+	@# Copy theme assets to output directory
+	mkdir -p out/publishing/themes/bookTheme/assets
+	cp -r src/publishing/themes/bookTheme/assets/* out/publishing/themes/bookTheme/assets/
 
 package: compile
 	npm run package

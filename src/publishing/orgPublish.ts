@@ -26,11 +26,24 @@ import {
     TOC_FILENAME,
     GITHUB_PAGES_PRESET,
     TocConfig,
+    TocPart,
     FlatTocEntry,
     flattenToc,
     getTocFiles,
     findTocEntry,
 } from './publishProject';
+
+import {
+    getThemeForConfig,
+    type Theme,
+    type ThemeConfig,
+    type PageContext,
+    type ProjectContext,
+    type PageInfo,
+    type PageHeading,
+} from './themes';
+
+import { extractPageHeadings } from './themes/bookTheme/rightSidebar';
 
 // =============================================================================
 // Types
@@ -179,6 +192,12 @@ function parseConfigYaml(content: string): PublishConfig {
     if (yaml.github_pages !== undefined) config.githubPages = yaml.github_pages as boolean;
     if (yaml.custom_domain) config.customDomain = yaml.custom_domain as string;
 
+    // Theme configuration
+    const themeYaml = yaml.theme as Record<string, unknown> | undefined;
+    if (themeYaml) {
+        config.theme = parseThemeConfig(themeYaml);
+    }
+
     // Set defaults if not provided
     if (!project.baseDirectory) project.baseDirectory = './';
     if (!project.publishingDirectory) project.publishingDirectory = './_build/html';
@@ -187,6 +206,83 @@ function parseConfigYaml(content: string): PublishConfig {
     config.defaultProject = projectName;
 
     return config;
+}
+
+/**
+ * Parse theme configuration from YAML
+ */
+function parseThemeConfig(yaml: Record<string, unknown>): ThemeConfig {
+    const theme: ThemeConfig = {
+        name: (yaml.name as 'book' | 'default') || 'default',
+    };
+
+    // Layout options
+    const layout = yaml.layout as Record<string, unknown> | undefined;
+    if (layout) {
+        theme.layout = {
+            show_left_sidebar: layout.show_left_sidebar as boolean | undefined,
+            show_right_sidebar: layout.show_right_sidebar as boolean | undefined,
+            toc_depth: layout.toc_depth as number | undefined,
+        };
+    }
+
+    // Header options
+    const header = yaml.header as Record<string, unknown> | undefined;
+    if (header) {
+        theme.header = {
+            logo: header.logo as string | undefined,
+            title: header.title as string | undefined,
+        };
+
+        const navbarLinks = header.navbar_links as Array<Record<string, unknown>> | undefined;
+        if (navbarLinks) {
+            theme.header.navbar_links = navbarLinks.map(link => ({
+                text: link.text as string,
+                url: link.url as string,
+            }));
+        }
+    }
+
+    // Footer options
+    const footer = yaml.footer as Record<string, unknown> | undefined;
+    if (footer) {
+        theme.footer = {
+            copyright: footer.copyright as string | undefined,
+        };
+
+        const footerLinks = footer.links as Array<Record<string, unknown>> | undefined;
+        if (footerLinks) {
+            theme.footer.links = footerLinks.map(link => ({
+                text: link.text as string,
+                url: link.url as string,
+            }));
+        }
+    }
+
+    // Appearance options
+    const appearance = yaml.appearance as Record<string, unknown> | undefined;
+    if (appearance) {
+        theme.appearance = {
+            primary_color: appearance.primary_color as string | undefined,
+            enable_dark_mode: appearance.enable_dark_mode as boolean | undefined,
+            default_mode: appearance.default_mode as 'light' | 'dark' | 'auto' | undefined,
+        };
+    }
+
+    // Search options
+    const search = yaml.search as Record<string, unknown> | undefined;
+    if (search) {
+        theme.search = {
+            enabled: search.enabled as boolean | undefined,
+        };
+    }
+
+    // Custom CSS
+    if (yaml.custom_css) {
+        theme.custom_css = yaml.custom_css as string;
+    }
+
+    return theme;
 }
 
 /**
@@ -663,6 +759,26 @@ async function fileExists(filePath: string): Promise<boolean> {
     }
 }
 
+/**
+ * Recursively copy a directory
+ */
+async function copyDirectory(src: string, dest: string): Promise<void> {
+    await fs.promises.mkdir(dest, { recursive: true });
+
+    const entries = await fs.promises.readdir(src, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+
+        if (entry.isDirectory()) {
+            await copyDirectory(srcPath, destPath);
+        } else {
+            await fs.promises.copyFile(srcPath, destPath);
+        }
+    }
+}
+
 // =============================================================================
 // File Publishing
 // =============================================================================
@@ -851,6 +967,257 @@ function generateNavigation(tocEntry: FlatTocEntry): string {
     parts.push('</nav>');
 
     return parts.join('\n');
+}
+
+// =============================================================================
+// Theme-based Publishing
+// =============================================================================
+
+/**
+ * Extended publish result with content for search indexing
+ */
+interface PublishFileResultWithContent extends PublishFileResult {
+    /** Plain text content for search indexing */
+    plainContent?: string;
+    /** Page headings for search indexing */
+    headings?: Array<{ id: string; text: string }>;
+}
+
+/**
+ * Publish a file using the theme system
+ */
+export async function publishFileWithTheme(
+    sourcePath: string,
+    project: PublishProject,
+    workspaceRoot: string,
+    options: PublishOptions,
+    theme: Theme,
+    projectContext: ProjectContext,
+    tocEntry?: FlatTocEntry | null
+): Promise<PublishFileResultWithContent> {
+    const outputPath = computeOutputPath(sourcePath, project, workspaceRoot);
+    const baseDir = path.resolve(workspaceRoot, project.baseDirectory);
+    const relativePath = path.relative(baseDir, sourcePath);
+    const relativeHtmlPath = relativePath.replace(/\.(org|md|ipynb)$/i, '.html');
+
+    // Check if up to date (unless force)
+    if (!options.force && await isUpToDate(sourcePath, outputPath)) {
+        return {
+            sourcePath,
+            outputPath,
+            success: true,
+        };
+    }
+
+    try {
+        // Read source file
+        let content = await fs.promises.readFile(sourcePath, 'utf-8');
+
+        // Process includes
+        if (hasIncludes(content)) {
+            content = processIncludes(content, {
+                basePath: path.dirname(sourcePath),
+                recursive: true,
+                maxDepth: 10,
+            });
+        }
+
+        // Parse the document
+        const doc = parseOrgFast(content);
+        const metadata = extractMetadata(doc);
+        const title = metadata.title || path.basename(sourcePath, path.extname(sourcePath));
+
+        // Export to HTML (body only - no document wrapper)
+        const htmlOptions: Partial<HtmlExportOptions> = {
+            ...toHtmlExportOptions(project),
+            bodyOnly: true,
+        };
+        const bodyContent = exportToHtml(doc, htmlOptions);
+
+        // Extract headings for right sidebar TOC
+        const tocDepth = projectContext.config.layout?.toc_depth || 3;
+        const pageHeadings = extractPageHeadings(bodyContent, tocDepth);
+
+        // Create page context
+        const pageContext: PageContext = {
+            title,
+            content: bodyContent,
+            tocEntry: tocEntry || undefined,
+            pageHeadings,
+            relativePath: relativeHtmlPath,
+            sourcePath,
+        };
+
+        // Render with theme
+        const html = theme.renderPage(bodyContent, pageContext, projectContext);
+
+        if (!options.dryRun) {
+            // Ensure output directory exists
+            const outputDir = path.dirname(outputPath);
+            await fs.promises.mkdir(outputDir, { recursive: true });
+
+            // Write output file
+            await fs.promises.writeFile(outputPath, html, 'utf-8');
+        }
+
+        // Extract plain text for search indexing
+        const plainContent = stripHtmlTags(bodyContent);
+
+        return {
+            sourcePath,
+            outputPath,
+            success: true,
+            title,
+            date: metadata.date ? new Date(metadata.date) : undefined,
+            plainContent,
+            headings: pageHeadings.map(h => ({ id: h.id, text: h.text })),
+        };
+    } catch (error) {
+        return {
+            sourcePath,
+            outputPath,
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+        };
+    }
+}
+
+/**
+ * Strip HTML tags from content (for search indexing)
+ */
+function stripHtmlTags(html: string): string {
+    return html
+        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .trim();
+}
+
+/**
+ * Publish a project with theme support
+ */
+export async function publishProjectWithTheme(
+    project: PublishProject,
+    workspaceRoot: string,
+    options: PublishOptions,
+    themeConfig: ThemeConfig
+): Promise<PublishProjectResult> {
+    const startTime = Date.now();
+    const results: PublishFileResultWithContent[] = [];
+    const baseDir = path.resolve(workspaceRoot, project.baseDirectory);
+    const outputDir = path.resolve(workspaceRoot, project.publishingDirectory);
+
+    // Load TOC
+    const toc = await loadToc(project, workspaceRoot);
+    if (!toc) {
+        // Theme requires a TOC for navigation
+        throw new Error('Theme-based publishing requires a _toc.yml file');
+    }
+
+    const flatToc = flattenToc(toc);
+
+    // Get theme
+    const theme = getThemeForConfig(themeConfig);
+
+    // Create project context
+    const projectContext: ProjectContext = {
+        config: themeConfig,
+        flatToc,
+        tocConfig: toc,
+        parts: toc.parts,
+        outputDir,
+        baseDir,
+        workspaceRoot,
+    };
+
+    // Copy theme assets first
+    if (!options.dryRun) {
+        await theme.copyAssets(outputDir);
+
+        // Copy user's _static folder if it exists
+        const sourceStaticDir = path.join(baseDir, '_static');
+        const outputStaticDir = path.join(outputDir, '_static');
+        if (await fileExists(sourceStaticDir)) {
+            await copyDirectory(sourceStaticDir, outputStaticDir);
+        }
+    }
+
+    // Discover files from TOC
+    const files = await resolveFilesFromToc(flatToc, project, workspaceRoot);
+
+    // Publish each file
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        if (options.onProgress) {
+            options.onProgress(i + 1, files.length, path.basename(file));
+        }
+
+        const relativePath = path.relative(baseDir, file);
+        const tocEntry = findTocEntryByPath(flatToc, relativePath);
+
+        // Determine file type
+        const ext = path.extname(file).toLowerCase();
+
+        let result: PublishFileResultWithContent;
+
+        if (ext === '.org') {
+            result = await publishFileWithTheme(
+                file, project, workspaceRoot, options,
+                theme, projectContext, tocEntry
+            );
+        } else {
+            // For non-org files, use standard publishing (no theme)
+            const pubFunc = getPublishFunction(file, project);
+            switch (pubFunc) {
+                case 'md':
+                    result = await publishMarkdownFile(file, project, workspaceRoot, options, tocEntry);
+                    break;
+                case 'ipynb':
+                    result = await publishNotebookFile(file, project, workspaceRoot, options, tocEntry);
+                    break;
+                case 'copy':
+                default:
+                    result = await copyStaticFile(file, project, workspaceRoot, options);
+                    break;
+            }
+        }
+
+        results.push(result);
+    }
+
+    // Generate search index if enabled
+    if (themeConfig.search?.enabled !== false && theme.generateSearchIndex && !options.dryRun) {
+        const pageInfos: PageInfo[] = results
+            .filter(r => r.success && r.plainContent)
+            .map(r => ({
+                title: r.title || path.basename(r.outputPath, '.html'),
+                path: path.relative(outputDir, r.outputPath),
+                content: r.plainContent || '',
+                headings: r.headings || [],
+            }));
+
+        await theme.generateSearchIndex(pageInfos, outputDir);
+    }
+
+    const duration = Date.now() - startTime;
+    const successCount = results.filter(r => r.success).length;
+    const errorCount = results.filter(r => !r.success).length;
+
+    return {
+        projectName: project.name,
+        files: results,
+        totalFiles: results.length,
+        successCount,
+        errorCount,
+        duration,
+    };
 }
 
 /**
@@ -1550,8 +1917,17 @@ export async function publishAll(
 
         if (isPublishProject(projectConfig)) {
             const project = mergeWithDefaults({ ...projectConfig, name: projectName });
-            const result = await publishProject(project, workspaceRoot, options);
-            results.push(result);
+
+            // Use theme-based publishing if theme is configured
+            if (config.theme && config.theme.name !== 'default') {
+                const result = await publishProjectWithTheme(
+                    project, workspaceRoot, options, config.theme
+                );
+                results.push(result);
+            } else {
+                const result = await publishProject(project, workspaceRoot, options);
+                results.push(result);
+            }
         }
     }
 

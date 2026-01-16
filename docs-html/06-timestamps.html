@@ -1,0 +1,2440 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Timestamps and Time Tracking</title>
+    <link rel="stylesheet" href="./_static/book-theme.css">
+    
+    <style>:root { --primary-color: #0d6efd; }</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <header class="site-header">
+<div class="header-content">
+<div class="header-left">
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
+            <span class="hamburger-icon">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </button>
+    
+
+            <a href="./index.html" class="header-logo">
+                <img src="./_static/logo.svg" alt="Logo" />
+            </a>
+        
+
+            <a href="./index.html" class="header-title">
+                Scimax VS Code
+            </a>
+        
+</div>
+<div class="header-right">
+<nav class="header-nav">
+<ul class="nav-links">
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
+                        GitHub<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+
+                <li>
+                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
+                        VS Code Marketplace<span class="external-icon">&#8599;</span>
+                    </a>
+                </li>
+            
+</ul>
+</nav>
+
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+            <span class="theme-icon light-icon">
+                <!-- Sun icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </span>
+            <span class="theme-icon dark-icon">
+                <!-- Moon icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </span>
+        </button>
+    
+</div>
+</div>
+</header>
+
+    <div class="book-container">
+        
+        <aside class="sidebar-left" id="sidebar-left">
+            
+<div class="search-box">
+    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
+    <div id="search-results" class="search-results"></div>
+</div>
+
+<nav class="site-nav">
+
+            <div class="nav-entry nav-root ">
+                <a href="./00-index.html">Home</a>
+            </div>
+        
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Getting Started</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./26-configuration.html" class="nav-link">26-configuration</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./25-commands.html" class="nav-link">25-commands</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Document Editing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./21-navigation.html" class="nav-link">21-navigation</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./05-links.html" class="nav-link">05-links</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./04-tables.html" class="nav-link">04-tables</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Task Management</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./13-agenda.html" class="nav-link">13-agenda</a>
+</li>
+<li class="nav-item level-0 active ">
+<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./15-capture.html" class="nav-link">15-capture</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Code &amp; Execution</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Export &amp; Publishing</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./10-export.html" class="nav-link">10-export</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./publishing.html" class="nav-link">publishing</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Advanced Features</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./18-database-search.html" class="nav-link">18-database-search</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./19-references.html" class="nav-link">19-references</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./14-journal.html" class="nav-link">14-journal</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./16-notebook.html" class="nav-link">16-notebook</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./17-projectile.html" class="nav-link">17-projectile</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
+</li>
+</ul></div>
+
+        <div class="nav-part">
+            <button class="nav-part-toggle" aria-expanded="true">
+                <span class="toggle-icon">&#9660;</span>
+                <span class="part-caption">Reference</span>
+            </button>
+            <ul class="nav-list part-chapters">
+    
+<li class="nav-item level-0  ">
+<a href="./27-org-api.html" class="nav-link">27-org-api</a>
+</li>
+<li class="nav-item level-0  ">
+<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
+</li>
+</ul></div>
+</nav>
+        </aside>
+        
+
+        <main class="content" id="main-content">
+            <article class="page-content">
+                <div id="org-timestamps" class="org-section org-level-1">
+<h1>✅ Timestamps</h1>
+<p>CLOSED: [2026-01-15 Thu 14:57]</p>
+
+<p>Timestamps in Scimax VS Code allow you to associate dates and times with your
+content. They are essential for scheduling tasks, tracking deadlines, recording
+events, and managing time.</p>
+
+</div>
+<div id="org-timestamp-types" class="org-section org-level-1">
+<h1>✅ Timestamp Types</h1>
+<p>CLOSED: [2026-01-15 Thu 14:57]</p>
+
+<p>Org-mode supports two types of timestamps that serve different purposes.</p>
+
+<div id="org-active-timestamps" class="org-section org-level-2">
+<h2>✅ Active Timestamps</h2>
+<p>CLOSED: [2026-01-15 Thu 14:57]</p>
+
+<p>Active timestamps appear in the agenda and are used for scheduling and events:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">&lt;2026-01-15 Wed&gt;
+&lt;2026-01-15 Wed 14:30&gt;</code></pre>
+</div>
+
+<p>Active timestamps use angle brackets &lt;...&gt; and will:</p>
+
+<ul>
+<li><p>Appear in agenda views</p>
+</li>
+<li><p>Show up in deadline warnings</p>
+</li>
+<li><p>Be included in time-based searches</p>
+</li>
+<li><p>Trigger reminders</p>
+</li>
+</ul>
+
+</div>
+<div id="org-inactive-timestamps" class="org-section org-level-2">
+<h2>✅ Inactive Timestamps</h2>
+<p>CLOSED: [2026-01-15 Thu 14:57]</p>
+
+<p>Inactive timestamps are for recording when something happened without agenda
+visibility:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[2026-01-15 Wed]
+[2026-01-15 Wed 14:30]</code></pre>
+</div>
+
+<p>Inactive timestamps use square brackets [...] and will:</p>
+
+<ul>
+<li><p>NOT appear in the agenda</p>
+</li>
+<li><p>Be used for logging (CLOSED, state changes)</p>
+</li>
+<li><p>Record historical information</p>
+</li>
+<li><p>Document when notes were taken</p>
+</li>
+</ul>
+
+</div>
+<div id="org-when-to-use-each-type" class="org-section org-level-2">
+<h2>✅ When to Use Each Type</h2>
+<p>CLOSED: [2026-01-15 Thu 14:57]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Use Case</th><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>Schedule a task</td><td>Active</td><td>SCHEDULED: &lt;2026-01-15 Wed&gt;</td></tr>
+<tr><td>Set a deadline</td><td>Active</td><td>DEADLINE: &lt;2026-01-20 Mon&gt;</td></tr>
+<tr><td>Record appointment</td><td>Active</td><td>&lt;2026-01-18 Thu 14:00&gt;</td></tr>
+<tr><td>Log completion time</td><td>Inactive</td><td>CLOSED: [2026-01-14 Tue 10:30]</td></tr>
+<tr><td>Document when note was added</td><td>Inactive</td><td>[2026-01-14 Tue] Added notes...</td></tr>
+<tr><td>Track state change</td><td>Inactive</td><td>State &quot;DONE&quot; from &quot;TODO&quot; [...]</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-date-and-time-formats" class="org-section org-level-1">
+<h1>✅ Date and Time Formats</h1>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<div id="org-basic-date-format" class="org-section org-level-2">
+<h2>✅ Basic Date Format</h2>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<p>The standard date format is YYYY-MM-DD Day:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">&lt;2026-01-15 Wed&gt;
+[2026-12-31 Thu]</code></pre>
+</div>
+
+<p>The day of week is automatically calculated and included.</p>
+
+</div>
+<div id="org-date-with-time" class="org-section org-level-2">
+<h2>✅ Date with Time</h2>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<p>Add time in 24-hour HH:MM format:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">&lt;2026-01-15 Wed 09:00&gt;
+&lt;2026-01-15 Wed 14:30&gt;
+&lt;2026-01-15 Wed 23:59&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-time-only" class="org-section org-level-2">
+<h2>✅ Time Only</h2>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<p>You can specify just a time (assumes today):</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">&lt;14:30&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-supported-date-components" class="org-section org-level-2">
+<h2>✅ Supported Date Components</h2>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Component</th><th>Format</th><th>Example</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>Year</td><td>YYYY</td><td>2026</td><td>Four-digit year</td></tr>
+<tr><td>Month</td><td>MM</td><td>01</td><td>Two-digit month (01-12)</td></tr>
+<tr><td>Day</td><td>DD</td><td>15</td><td>Two-digit day (01-31)</td></tr>
+<tr><td>Day of week</td><td>Day</td><td>Wed</td><td>Three-letter abbreviation</td></tr>
+<tr><td>Hour</td><td>HH</td><td>14</td><td>Two-digit hour (00-23)</td></tr>
+<tr><td>Minute</td><td>MM</td><td>30</td><td>Two-digit minute (00-59)</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-date-and-time-ranges" class="org-section org-level-1">
+<h1>✅ Date and Time Ranges</h1>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<div id="org-date-ranges" class="org-section org-level-2">
+<h2>✅ Date Ranges</h2>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<p>Specify a range of dates with --:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">&lt;2026-01-15 Wed&gt;--&lt;2026-01-17 Fri&gt;</code></pre>
+</div>
+
+<p>This represents an event spanning multiple days, like a conference.</p>
+
+</div>
+<div id="org-time-ranges" class="org-section org-level-2">
+<h2>✅ Time Ranges</h2>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<p>Specify a time range within a single day:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">&lt;2026-01-15 Wed 09:00-17:00&gt;</code></pre>
+</div>
+
+<p>This is useful for meetings or work sessions with defined start and end times.</p>
+
+</div>
+<div id="org-time-range-examples" class="org-section org-level-2">
+<h2>✅ Time Range Examples</h2>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Meeting with client
+&lt;2026-01-15 Wed 14:00-15:30&gt;
+
+,* Conference attendance
+&lt;2026-03-10 Mon&gt;--&lt;2026-03-12 Wed&gt;
+
+,* Office hours
+&lt;2026-01-15 Wed 10:00-12:00&gt;</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-creating-timestamps" class="org-section org-level-1">
+<h1>✅ Creating Timestamps</h1>
+<p>CLOSED: [2026-01-15 Thu 14:58]</p>
+
+<div id="org-insert-timestamp-command" class="org-section org-level-2">
+<h2>👀 Insert Timestamp Command</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c .</td><td>Insert active timestamp</td></tr>
+<tr><td>C-c !</td><td>Insert inactive timestamp</td></tr>
+<tr><td>Speed key .</td><td>Insert timestamp (at heading)</td></tr>
+</tbody>
+</table>
+
+<p>Press C-c . and a date picker dialog appears. You can:</p>
+
+<ol>
+<li><p>Type a date directly (2026-01-15)</p>
+</li>
+<li><p>Use relative expressions (+2d, next week)</p>
+</li>
+<li><p>Navigate with arrow keys</p>
+</li>
+<li><p>Press Enter to confirm</p>
+</li>
+</ol>
+
+</div>
+<div id="org-date-entry-shortcuts" class="org-section org-level-2">
+<h2>⚠️ Date Entry Shortcuts</h2>
+<p>When entering a date, use these expressions:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Expression</th><th>Result</th></tr>
+</thead>
+<tbody>
+<tr><td>+2d</td><td>Two days from now</td></tr>
+<tr><td>-1w</td><td>One week ago</td></tr>
+<tr><td>+3m</td><td>Three months from now</td></tr>
+<tr><td>today</td><td>Today&#39;s date</td></tr>
+<tr><td>tomorrow</td><td>Tomorrow&#39;s date</td></tr>
+<tr><td>monday</td><td>Next Monday</td></tr>
+<tr><td>jan 15</td><td>January 15 of current/next year</td></tr>
+<tr><td>2026-01-15</td><td>Specific date</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-adding-time-to-timestamps" class="org-section org-level-2">
+<h2>⚠️ Adding Time to Timestamps</h2>
+<p>When prompted for a date, add time after the date:</p>
+
+<pre class="example">2026-01-15 14:30</pre>
+
+<p>Or use 12-hour format with am/pm:</p>
+
+<pre class="example">2026-01-15 2:30pm</pre>
+
+</div>
+<div id="org-quick-timestamp-insertion" class="org-section org-level-2">
+<h2>⚠️ Quick Timestamp Insertion</h2>
+<p>For common cases:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Task
+  &lt;2026-01-15 Wed&gt;         ; Press C-c .
+
+,* Meeting notes
+  [2026-01-14 Tue 10:00]   ; Press C-c !</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-modifying-timestamps" class="org-section org-level-1">
+<h1>✅ Modifying Timestamps</h1>
+<p>CLOSED: [2026-01-15 Thu 15:03]</p>
+
+<div id="org-adjusting-dates-with-keyboard" class="org-section org-level-2">
+<h2>✅ Adjusting Dates with Keyboard</h2>
+<p>CLOSED: [2026-01-15 Thu 15:03]</p>
+
+<p>Place cursor on a timestamp component and use:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>S-&lt;up&gt;</td><td>Increase value (day, month, year)</td></tr>
+<tr><td>S-&lt;down&gt;</td><td>Decrease value</td></tr>
+<tr><td>S-&lt;right&gt;</td><td>Move to next day</td></tr>
+<tr><td>S-&lt;left&gt;</td><td>Move to previous day</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-component-based-editing" class="org-section org-level-2">
+<h2>✅ Component-Based Editing</h2>
+<p>CLOSED: [2026-01-15 Thu 15:03]</p>
+
+<p>The cursor position determines what changes:</p>
+
+<pre class="example">&lt;2026-01-15 Wed 14:30&gt;
+ ↑    ↑  ↑   ↑   ↑  ↑
+ Year │  Day │   Hour │
+      Month  │   Minute
+            Day of week (read-only)</pre>
+
+<ul>
+<li><p>On year: S-&lt;up&gt;/Down changes year</p>
+</li>
+<li><p>On month: S-&lt;up&gt;/Down changes month</p>
+</li>
+<li><p>On day: S-&lt;up&gt;/Down or S-&lt;left&gt;/Right changes day</p>
+</li>
+<li><p>On hour: S-&lt;up&gt;/Down changes hour</p>
+</li>
+<li><p>On minute: S-&lt;up&gt;/Down changes minute</p>
+</li>
+</ul>
+
+</div>
+<div id="org-quick-date-adjustment-examples" class="org-section org-level-2">
+<h2>✅ Quick Date Adjustment Examples</h2>
+<p>CLOSED: [2026-01-15 Thu 15:03]</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; Move meeting to tomorrow
+&lt;2026-01-15 Wed 14:30&gt;
+; Place cursor anywhere in date, press S-&lt;right&gt;
+&lt;2026-01-16 Thu 14:30&gt;
+
+; Postpone by one month
+&lt;2026-01-15 Wed&gt;
+; Place cursor on month (01), press S-&lt;up&gt;
+&lt;2026-02-15 Sat&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-editing-timestamp-dialog" class="org-section org-level-2">
+<h2>✅ Editing Timestamp Dialog</h2>
+<p>CLOSED: [2026-01-15 Thu 15:03]</p>
+
+<p>Press C-c . on an existing timestamp to open the editor and:</p>
+
+<ul>
+<li><p>Modify the date</p>
+</li>
+<li><p>Add or remove time</p>
+</li>
+<li><p>Change between active/inactive</p>
+</li>
+<li><p>Add repeaters or warnings</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-repeating-timestamps" class="org-section org-level-1">
+<h1>✅ Repeating Timestamps</h1>
+<p>CLOSED: [2026-01-15 Thu 15:04]</p>
+
+<p>Repeaters make timestamps recur automatically, perfect for recurring tasks and
+events.</p>
+
+<div id="org-basic-repeater-syntax" class="org-section org-level-2">
+<h2>✅ Basic Repeater Syntax</h2>
+<p>CLOSED: [2026-01-15 Thu 15:04]</p>
+
+<p>Add a repeater after the date: +Nx where:</p>
+
+<ul>
+<li><p>+ is the repeater marker</p>
+</li>
+<li><p>N is a number</p>
+</li>
+<li><p>x is the unit (d, w, m, y)</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">&lt;2026-01-15 Wed +1w&gt;     ; Repeats weekly
+&lt;2026-01-15 Wed +2d&gt;     ; Repeats every 2 days
+&lt;2026-01-01 Thu +1m&gt;     ; Repeats monthly
+&lt;2026-01-15 Wed +1y&gt;     ; Repeats yearly</code></pre>
+</div>
+
+</div>
+<div id="org-repeater-units" class="org-section org-level-2">
+<h2>✅ Repeater Units</h2>
+<p>CLOSED: [2026-01-15 Thu 15:04]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Unit</th><th>Meaning</th><th>Example</th><th>Next Occurrence</th></tr>
+</thead>
+<tbody>
+<tr><td>d</td><td>Day(s)</td><td>+1d</td><td>Tomorrow</td></tr>
+<tr><td>w</td><td>Week(s)</td><td>+1w</td><td>Same day next week</td></tr>
+<tr><td>m</td><td>Month(s)</td><td>+1m</td><td>Same date next month</td></tr>
+<tr><td>y</td><td>Year(s)</td><td>+1y</td><td>Same date next year</td></tr>
+<tr><td>h</td><td>Hour(s)</td><td>+2h</td><td>Two hours later</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-repeater-behavior" class="org-section org-level-2">
+<h2>⚠️ Repeater Behavior</h2>
+<p>When you mark a repeating task as DONE:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Weekly review
+SCHEDULED: &lt;2026-01-15 Wed +1w&gt;
+
+; After marking DONE:
+
+,* TODO Weekly review
+SCHEDULED: &lt;2026-01-22 Wed +1w&gt;</code></pre>
+</div>
+
+<p>The task automatically returns to TODO state with the next occurrence date.</p>
+
+</div>
+<div id="org-repeater-type-modifiers" class="org-section org-level-2">
+<h2>✅ Repeater Type Modifiers</h2>
+<p>CLOSED: [2026-01-15 Thu 15:04]</p>
+
+<p>Three types of repeaters handle different scenarios:</p>
+
+<div id="org-standard-repeater" class="org-section org-level-3">
+<h3>✅ Standard Repeater (+)</h3>
+<p>CLOSED: [2026-01-15 Thu 15:04]</p>
+
+<p>Shifts from the original base date:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Staff meeting
+SCHEDULED: &lt;2026-01-15 Wed +1w&gt;</code></pre>
+</div>
+
+<p>If you complete it late (on Jan 20), it still schedules to Jan 22 (one week
+from original date).</p>
+
+</div>
+<div id="org-catch-up-repeater" class="org-section org-level-3">
+<h3>✅ Catch-up Repeater (++)</h3>
+<p>CLOSED: [2026-01-15 Thu 15:04]</p>
+
+<p>Shifts from the completion date:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Exercise
+SCHEDULED: &lt;2026-01-15 Wed ++1d&gt;</code></pre>
+</div>
+
+<p>If you complete it late (on Jan 17), it schedules to Jan 18 (one day from
+when you completed it).</p>
+
+</div>
+<div id="org-restart-repeater" class="org-section org-level-3">
+<h3>⚠️ Restart Repeater (.+)</h3>
+<p>For tasks that must happen a fixed interval after completion:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Water plants
+SCHEDULED: &lt;2026-01-15 Wed .+3d&gt;</code></pre>
+</div>
+
+<p>If you complete it on Jan 18, it schedules to Jan 21 (exactly 3 days later).</p>
+
+</div>
+</div>
+<div id="org-repeater-comparison" class="org-section org-level-2">
+<h2>⚠️ Repeater Comparison</h2>
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Symbol</th><th>Schedules from</th><th>Use Case</th></tr>
+</thead>
+<tbody>
+<tr><td>Standard</td><td>+</td><td>Original date</td><td>Fixed appointments, meetings</td></tr>
+<tr><td>Catch-up</td><td>++</td><td>Completion date</td><td>Habits, daily tasks</td></tr>
+<tr><td>Restart</td><td>.+</td><td>Completion date</td><td>Maintenance, periodic tasks</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-repeater-examples" class="org-section org-level-2">
+<h2>⚠️ Repeater Examples</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Daily standup meeting
+SCHEDULED: &lt;2026-01-15 Wed 09:00 +1d&gt;
+; Every workday at 9am
+
+,* TODO Monthly report
+DEADLINE: &lt;2026-01-31 Fri +1m&gt;
+; Due last day of each month
+
+,* TODO Backup server
+SCHEDULED: &lt;2026-01-15 Wed ++1w&gt;
+; Weekly, but adjust if done late
+
+,* TODO Change air filter
+SCHEDULED: &lt;2026-01-15 Wed .+90d&gt;
+; Every 90 days after actually changing it
+
+,* TODO Practice guitar
+SCHEDULED: &lt;2026-01-15 Wed ++1d&gt;
+; Daily practice, catch up if missed</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-scheduled-and-deadline" class="org-section org-level-1">
+<h1>✅ SCHEDULED and DEADLINE</h1>
+<p>CLOSED: [2026-01-15 Thu 15:05]</p>
+
+<p>Two special keywords attach timestamps to TODO items for planning.</p>
+
+<div id="org-scheduled-keyword" class="org-section org-level-2">
+<h2>✅ SCHEDULED Keyword</h2>
+<p>CLOSED: [2026-01-15 Thu 15:05]</p>
+
+<p>Indicates when you plan to START working on a task:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Write documentation
+SCHEDULED: &lt;2026-01-15 Wed&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-deadline-keyword" class="org-section org-level-2">
+<h2>✅ DEADLINE Keyword</h2>
+<p>CLOSED: [2026-01-15 Thu 15:05]</p>
+
+<p>Indicates when a task must be COMPLETED by:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Submit proposal
+DEADLINE: &lt;2026-01-20 Mon&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-using-both-together" class="org-section org-level-2">
+<h2>✅ Using Both Together</h2>
+<p>CLOSED: [2026-01-15 Thu 15:05]</p>
+
+<p>Tasks can have both:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Complete quarterly report
+SCHEDULED: &lt;2026-01-15 Wed&gt;
+DEADLINE: &lt;2026-01-25 Sat&gt;</code></pre>
+</div>
+
+<p>Start working on Jan 15, must finish by Jan 25.</p>
+
+</div>
+<div id="org-adding-scheduled-and-deadline" class="org-section org-level-2">
+<h2>✅ Adding SCHEDULED and DEADLINE</h2>
+<p>CLOSED: [2026-01-15 Thu 15:05]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Speed key s</td><td>Add/edit SCHEDULED</td></tr>
+<tr><td>Speed key d</td><td>Add/edit DEADLINE</td></tr>
+<tr><td>scimax.org.schedule</td><td>Schedule task</td></tr>
+<tr><td>scimax.org.deadline</td><td>Set deadline</td></tr>
+</tbody>
+</table>
+
+<p>Position cursor on a TODO headline and press s or d (with speed commands
+enabled).</p>
+
+</div>
+<div id="org-scheduled-vs-deadline" class="org-section org-level-2">
+<h2>✅ SCHEDULED vs DEADLINE</h2>
+<p>CLOSED: [2026-01-15 Thu 15:05]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Aspect</th><th>SCHEDULED</th><th>DEADLINE</th></tr>
+</thead>
+<tbody>
+<tr><td>Meaning</td><td>When to START</td><td>When to FINISH</td></tr>
+<tr><td>Agenda</td><td>Shows starting this day</td><td>Shows with warnings</td></tr>
+<tr><td>Past dates</td><td>Appears every day until done</td><td>Shows days overdue</td></tr>
+<tr><td>Use for</td><td>Planning, time-blocking</td><td>Hard deadlines, due dates</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-examples-with-context" class="org-section org-level-2">
+<h2>⚠️ Examples with Context</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Review contract
+SCHEDULED: &lt;2026-01-15 Wed&gt;
+DEADLINE: &lt;2026-01-17 Fri&gt;
+Need to finish before weekend.
+
+,* TODO Weekly team meeting
+SCHEDULED: &lt;2026-02-13 Fri 10:00 +1w&gt;
+Recurring Thursday meeting.
+
+,* TODO File taxes
+DEADLINE: &lt;2026-04-15 Tue -7d&gt;
+Due April 15, start warning 7 days early.</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-warning-periods" class="org-section org-level-1">
+<h1>⚠️ Warning Periods</h1>
+<p>Warning periods display deadlines in the agenda before they&#39;re due.</p>
+
+<div id="org-warning-period-syntax" class="org-section org-level-2">
+<h2>⚠️ Warning Period Syntax</h2>
+<p>Add -Nd to a deadline where N is days:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">DEADLINE: &lt;2026-01-25 Sat -7d&gt;</code></pre>
+</div>
+
+<p>This appears in the agenda 7 days before January 25.</p>
+
+</div>
+<div id="org-default-warning-period" class="org-section org-level-2">
+<h2>⚠️ Default Warning Period</h2>
+<p>Without a warning period specified, deadlines show 14 days in advance.</p>
+
+</div>
+<div id="org-setting-custom-warnings" class="org-section org-level-2">
+<h2>⚠️ Setting Custom Warnings</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Warning</td><td>Meaning</td></tr>
+<tr><td>-----------</td><td>-------------------------------------</td></tr>
+<tr><td>-3d</td><td>Warn 3 days before</td></tr>
+<tr><td>-1w</td><td>Warn 1 week before</td></tr>
+<tr><td>-2w</td><td>Warn 2 weeks before</td></tr>
+<tr><td>-1m</td><td>Warn 1 month before</td></tr>
+<tr><td>-0d</td><td>Show only on deadline day</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-warning-period-examples" class="org-section org-level-2">
+<h2>⚠️ Warning Period Examples</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Renew driver&#39;s license
+DEADLINE: &lt;2026-06-30 Tue -30d&gt;
+; Start warning 30 days early
+
+,* TODO Submit conference paper
+DEADLINE: &lt;2026-02-15 Sun -14d&gt;
+; Two week warning
+
+,* TODO Pay rent
+DEADLINE: &lt;2026-02-01 Sun -0d&gt;
+; Show only on the day it&#39;s due
+
+,* TODO Annual review meeting
+SCHEDULED: &lt;2026-12-15 Tue -7d&gt;
+; Even SCHEDULED can have warnings for preparation</code></pre>
+</div>
+
+</div>
+<div id="org-combining-repeaters-and-warnings" class="org-section org-level-2">
+<h2>⚠️ Combining Repeaters and Warnings</h2>
+<p>You can use both repeaters and warnings:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Monthly expense report
+DEADLINE: &lt;2026-01-31 Fri +1m -3d&gt;
+; Due monthly, warn 3 days before</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-time-clocking" class="org-section org-level-1">
+<h1>⚠️ Time Clocking</h1>
+<p>Track how much time you spend on tasks with clock entries.</p>
+
+<div id="org-clocking-in-and-out" class="org-section org-level-2">
+<h2>⚠️ Clocking In and Out</h2>
+<p>Start and stop the clock for a task:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>Speed key I</td><td>Clock in (start timer)</td></tr>
+<tr><td>Speed key O</td><td>Clock out (stop timer)</td></tr>
+<tr><td>scimax.org.clockIn</td><td>Clock in via command</td></tr>
+<tr><td>scimax.org.clockOut</td><td>Clock out via command</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-clock-entry-format" class="org-section org-level-2">
+<h2>⚠️ Clock Entry Format</h2>
+<p>Clock entries are stored in the LOGBOOK drawer:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Write documentation
+:LOGBOOK:
+CLOCK: [2026-01-14 Tue 09:00]--[2026-01-14 Tue 10:30] =&gt;  1:30
+CLOCK: [2026-01-13 Mon 14:00]--[2026-01-13 Mon 16:00] =&gt;  2:00
+:END:</code></pre>
+</div>
+
+<p>Format: CLOCK: [start]--[end] =&gt; duration</p>
+
+</div>
+<div id="org-active-clock" class="org-section org-level-2">
+<h2>⚠️ Active Clock</h2>
+<p>When clocked in, the current clock has no end time:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Working on feature implementation
+:LOGBOOK:
+CLOCK: [2026-01-14 Tue 14:00]
+CLOCK: [2026-01-14 Tue 09:00]--[2026-01-14 Tue 12:00] =&gt;  3:00
+:END:</code></pre>
+</div>
+
+<p>The CLOCK: [2026-01-14 Tue 14:00] entry is the currently running clock.</p>
+
+</div>
+<div id="org-clock-workflow-example" class="org-section org-level-2">
+<h2>⚠️ Clock Workflow Example</h2>
+<ol>
+<li><p>Start working:</p>
+</li>
+<li><p>Take a break (clock out):</p>
+</li>
+<li><p>Resume work (clock in again):</p>
+</li>
+<li><p>Finish (clock out):</p>
+</li>
+</ol>
+
+<p>Total time: 4:30 (2:00 + 2:30)</p>
+
+</div>
+<div id="org-clock-reports" class="org-section org-level-2">
+<h2>⚠️ Clock Reports</h2>
+<p>View time summaries:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.org.clockReport</td><td>Generate clock report</td></tr>
+<tr><td>scimax.agenda.clockReport</td><td>Clock report in agenda</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-clock-table" class="org-section org-level-2">
+<h2>⚠️ Clock Table</h2>
+<p>Insert a dynamic table showing time spent:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+BEGIN: clocktable :maxlevel 2 :scope file
+,#+END:</code></pre>
+</div>
+
+<p>This creates a table like:</p>
+
+<pre class="example">| Headline                  | Time   |
+|---------------------------+--------|
+| * TODO Project work       |  10:30 |
+| ** Implement feature A    |   4:30 |
+| ** Bug fixes              |   6:00 |</pre>
+
+</div>
+</div>
+<div id="org-the-logbook-drawer" class="org-section org-level-1">
+<h1>⚠️ The LOGBOOK Drawer</h1>
+<p>The LOGBOOK drawer stores time-tracking and state-change information.</p>
+
+<div id="org-logbook-contents" class="org-section org-level-2">
+<h2>⚠️ LOGBOOK Contents</h2>
+<p>The LOGBOOK can contain:</p>
+
+<ol>
+<li><p>Clock entries (CLOCK: lines)</p>
+</li>
+<li><p>State change notes</p>
+</li>
+<li><p>Other time-related metadata</p>
+</li>
+</ol>
+
+</div>
+<div id="org-logbook-example" class="org-section org-level-2">
+<h2>⚠️ LOGBOOK Example</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* DONE Review pull request
+CLOSED: [2026-01-14 Tue 15:00]
+:LOGBOOK:
+- State &quot;DONE&quot;       from &quot;TODO&quot;       [2026-01-14 Tue 15:00]
+  Approved all changes, ready to merge.
+CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 15:00] =&gt;  1:00
+CLOCK: [2026-01-14 Tue 09:30]--[2026-01-14 Tue 10:00] =&gt;  0:30
+- State &quot;TODO&quot;       from &quot;WAITING&quot;    [2026-01-14 Tue 09:00]
+  Developer finished addressing comments.
+:END:</code></pre>
+</div>
+
+<p>This shows:</p>
+
+<ul>
+<li><p>Task completed at 15:00</p>
+</li>
+<li><p>State changed from TODO to DONE</p>
+</li>
+<li><p>Two work sessions: 1:00 and 0:30</p>
+</li>
+<li><p>Previous state change from WAITING to TODO</p>
+</li>
+</ul>
+
+</div>
+<div id="org-logbook-benefits" class="org-section org-level-2">
+<h2>⚠️ LOGBOOK Benefits</h2>
+<ol>
+<li><p><strong>Complete history</strong> - See all work on a task</p>
+</li>
+<li><p><strong>Time accountability</strong> - Track actual time spent</p>
+</li>
+<li><p><strong>State audit trail</strong> - Understand task progression</p>
+</li>
+<li><p><strong>Billing records</strong> - For client work time tracking</p>
+</li>
+</ol>
+
+</div>
+<div id="org-creating-logbook" class="org-section org-level-2">
+<h2>⚠️ Creating LOGBOOK</h2>
+<p>The LOGBOOK drawer is created automatically when:</p>
+
+<ul>
+<li><p>You clock in for the first time</p>
+</li>
+<li><p>State change logging is enabled</p>
+</li>
+<li><p>You manually add it</p>
+</li>
+</ul>
+
+<p>Manual LOGBOOK:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Task
+:LOGBOOK:
+:END:</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-closed-timestamps" class="org-section org-level-1">
+<h1>⚠️ CLOSED Timestamps</h1>
+<p>When a task is marked DONE, a CLOSED timestamp is automatically added:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* DONE Complete documentation
+CLOSED: [2026-01-14 Tue 16:30]</code></pre>
+</div>
+
+<div id="org-closed-properties" class="org-section org-level-2">
+<h2>⚠️ CLOSED Properties</h2>
+<ul>
+<li><p>Always an inactive timestamp [...]</p>
+</li>
+<li><p>Records the exact completion time</p>
+</li>
+<li><p>Appears before the task content</p>
+</li>
+<li><p>Can be used to calculate completion statistics</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-diary-sexp-timestamps" class="org-section org-level-1">
+<h1>⚠️ Diary Sexp Timestamps</h1>
+<p>Diary sexps (symbolic expressions) are a powerful feature for specifying
+complex date patterns that can&#39;t be expressed with simple repeaters.</p>
+
+<div id="org-diary-sexp-syntax" class="org-section org-level-2">
+<h2>⚠️ Diary Sexp Syntax</h2>
+<p>Diary sexps use the %%( ) syntax, optionally within angle brackets:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">%%(diary-anniversary 1 15 1990)
+&lt;%%((diary-float t 1 2))&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-common-diary-functions" class="org-section org-level-2">
+<h2>⚠️ Common Diary Functions</h2>
+<table class="org-table">
+<thead>
+<tr><th>Function</th><th>Description</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>diary-anniversary</td><td>Annual date (month day year)</td><td>%%(diary-anniversary 3 15 1990)</td></tr>
+<tr><td>diary-float</td><td>Floating day (month week day)</td><td>%%(diary-float 11 4 4)</td></tr>
+<tr><td>diary-cyclic</td><td>Every N days from a date</td><td>%%(diary-cyclic 14 1 1 2026)</td></tr>
+<tr><td>diary-block</td><td>Date range (m1 d1 y1 m2 d2 y2)</td><td>%%(diary-block 6 1 2026 8 31 2026)</td></tr>
+<tr><td>org-class</td><td>Recurring class schedule</td><td>%%(org-class 2026 1 15 2026 5 15 1)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-diary-sexp-examples" class="org-section org-level-2">
+<h2>⚠️ Diary Sexp Examples</h2>
+<div id="org-annual-events-birthdays-anniversaries" class="org-section org-level-3">
+<h3>⚠️ Annual Events (Birthdays, Anniversaries)</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">%%(diary-anniversary 3 15 1990) John&#39;s birthday (age %d)
+
+%%(diary-anniversary 6 22 2010) Wedding anniversary (%d years)</code></pre>
+</div>
+
+<p>The %d is replaced with the calculated age/years.</p>
+
+</div>
+<div id="org-floating-holidays" class="org-section org-level-3">
+<h3>⚠️ Floating Holidays</h3>
+<p>Holidays that occur on &quot;the Nth weekday of month&quot;:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">%%(diary-float 11 4 4) Thanksgiving (4th Thursday of November)
+
+%%(diary-float 5 0 2) Mother&#39;s Day (2nd Sunday of May)
+
+%%(diary-float 1 1 3) MLK Day (3rd Monday of January)</code></pre>
+</div>
+
+<p>Parameters: (month weekday occurrence)</p>
+
+<ul>
+<li><p>weekday: 0<kbd>Sunday, 1</kbd>Monday, ... 6=Saturday</p>
+</li>
+<li><p>occurrence: 1<kbd>first, 2</kbd>second, -1=last, etc.</p>
+</li>
+</ul>
+
+</div>
+<div id="org-class-schedules" class="org-section org-level-3">
+<h3>⚠️ Class Schedules</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">%%(org-class 2026 1 15 2026 5 15 1) Monday lecture (10:00-11:30)
+
+%%(org-class 2026 1 15 2026 5 15 3) Wednesday lab (14:00-16:00)</code></pre>
+</div>
+
+<p>Parameters: (start-year start-month start-day end-year end-month end-day weekday)</p>
+
+</div>
+<div id="org-cyclic-events" class="org-section org-level-3">
+<h3>⚠️ Cyclic Events</h3>
+<p>Events that repeat every N days:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">%%(diary-cyclic 14 1 1 2026) Bi-weekly team meeting</code></pre>
+</div>
+
+<p>Parameters: (interval month day year) - repeats every 14 days from Jan 1, 2026.</p>
+
+</div>
+<div id="org-block-dates-date-ranges" class="org-section org-level-3">
+<h3>⚠️ Block Dates (Date Ranges)</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">%%(diary-block 6 1 2026 8 31 2026) Summer break</code></pre>
+</div>
+
+<p>Shows for all dates within the range (June 1 to August 31, 2026).</p>
+
+</div>
+</div>
+<div id="org-when-to-use-diary-sexps" class="org-section org-level-2">
+<h2>⚠️ When to Use Diary Sexps</h2>
+<p>Use diary sexps when simple repeaters (+1d, +1w, etc.) can&#39;t express your
+needs:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Scenario</th><th>Solution</th></tr>
+</thead>
+<tbody>
+<tr><td>&quot;Every other Tuesday&quot;</td><td>%%(diary-cyclic 14 ...)</td></tr>
+<tr><td>&quot;Second Monday of each month&quot;</td><td>%%(diary-float t 1 2)</td></tr>
+<tr><td>&quot;Last Friday of each month&quot;</td><td>%%(diary-float t 5 -1)</td></tr>
+<tr><td>&quot;January 15 every year&quot;</td><td>%%(diary-anniversary 1 15 2000)</td></tr>
+<tr><td>&quot;Every weekday except holidays&quot;</td><td>Complex sexp with conditionals</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-closed-with-other-timestamps" class="org-section org-level-2">
+<h2>⚠️ CLOSED with Other Timestamps</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* DONE Write monthly report
+CLOSED: [2026-01-14 Tue 16:30]
+SCHEDULED: &lt;2026-01-10 Fri&gt;
+DEADLINE: &lt;2026-01-15 Wed&gt;
+:LOGBOOK:
+CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 16:30] =&gt;  2:30
+:END:
+
+Completed on time with 2.5 hours of work.</code></pre>
+</div>
+
+<p>This shows:</p>
+
+<ul>
+<li><p>Task was scheduled for Jan 10</p>
+</li>
+<li><p>Deadline was Jan 15</p>
+</li>
+<li><p>Actually completed Jan 14 at 16:30</p>
+</li>
+<li><p>Took 2.5 hours of actual work time</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-speed-commands-for-timestamps" class="org-section org-level-1">
+<h1>⚠️ Speed Commands for Timestamps</h1>
+<p>Speed commands provide quick access when cursor is at the beginning of a
+headline.</p>
+
+<div id="org-timestamp-speed-commands" class="org-section org-level-2">
+<h2>⚠️ Timestamp Speed Commands</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Key</td><td>Command</td></tr>
+<tr><td>-----------</td><td>--------------------------------------</td></tr>
+<tr><td>.</td><td>Insert timestamp</td></tr>
+<tr><td>s</td><td>Add/edit SCHEDULED</td></tr>
+<tr><td>d</td><td>Add/edit DEADLINE</td></tr>
+<tr><td>I</td><td>Clock in</td></tr>
+<tr><td>O</td><td>Clock out</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-using-speed-commands" class="org-section org-level-2">
+<h2>⚠️ Using Speed Commands</h2>
+<ol>
+<li><p>Place cursor at the very start of a headline (before the *)</p>
+</li>
+<li><p>Press the key</p>
+</li>
+<li><p>Command executes immediately</p>
+</li>
+</ol>
+
+<pre class="example">* TODO Task                      ; &lt;- cursor here
+^
+cursor position - press &#39;s&#39; to schedule</pre>
+
+</div>
+</div>
+<div id="org-speed-command-example-workflow" class="org-section org-level-2">
+<h2>⚠️ Speed Command Example Workflow</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Write documentation</code></pre>
+</div>
+
+<ol>
+<li><p>Cursor at start of headline</p>
+</li>
+<li><p>Press s - schedule for tomorrow</p>
+</li>
+<li><p>Press I - clock in</p>
+</li>
+<li><p>Work on task...</p>
+</li>
+<li><p>Press O - clock out</p>
+</li>
+</ol>
+
+<p>Result:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Write documentation
+SCHEDULED: &lt;2026-01-15 Wed&gt;
+:LOGBOOK:
+CLOCK: [2026-01-14 Tue 10:00]--[2026-01-14 Tue 11:30] =&gt;  1:30
+:END:</code></pre>
+</div>
+
+</div>
+<div id="org-timestamp-formats-summary" class="org-section org-level-1">
+<h1>⚠️ Timestamp Formats Summary</h1>
+<div id="org-format-reference-table" class="org-section org-level-2">
+<h2>⚠️ Format Reference Table</h2>
+<table class="org-table">
+<thead>
+<tr><th>Format</th><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>&lt;YYYY-MM-DD Day&gt;</td><td>Active</td><td>&lt;2026-01-15 Wed&gt;</td></tr>
+<tr><td>[YYYY-MM-DD Day]</td><td>Inactive</td><td>[2026-01-15 Wed]</td></tr>
+<tr><td>&lt;YYYY-MM-DD Day HH:MM&gt;</td><td>With time</td><td>&lt;2026-01-15 Wed 14:30&gt;</td></tr>
+<tr><td>&lt;YYYY-MM-DD Day HH:MM-HH:MM&gt;</td><td>Time range</td><td>&lt;2026-01-15 Wed 09:00-17:00&gt;</td></tr>
+<tr><td>&lt;DATE&gt;--&lt;DATE&gt;</td><td>Date range</td><td>&lt;2026-01-15 Wed&gt;--&lt;2026-01-17 Fri&gt;</td></tr>
+<tr><td>&lt;DATE +Nx&gt;</td><td>Repeater</td><td>&lt;2026-01-15 Wed +1w&gt;</td></tr>
+<tr><td>&lt;DATE ++Nx&gt;</td><td>Catch-up</td><td>&lt;2026-01-15 Wed ++1d&gt;</td></tr>
+<tr><td>&lt;DATE .+Nx&gt;</td><td>Restart</td><td>&lt;2026-01-15 Wed .+30d&gt;</td></tr>
+<tr><td>&lt;DATE -Nd&gt;</td><td>Warning</td><td>&lt;2026-01-25 Sat -7d&gt;</td></tr>
+<tr><td>&lt;DATE +Nx -Nd&gt;</td><td>Both</td><td>&lt;2026-01-31 Fri +1m -3d&gt;</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-repeater-units" class="org-section org-level-2">
+<h2>⚠️ Repeater Units</h2>
+<table class="org-table">
+<thead>
+<tr><th>Unit</th><th>Full Name</th><th>Example</th><th>Increments by</th></tr>
+</thead>
+<tbody>
+<tr><td>h</td><td>Hour</td><td>+2h</td><td>Hours</td></tr>
+<tr><td>d</td><td>Day</td><td>+1d</td><td>Days</td></tr>
+<tr><td>w</td><td>Week</td><td>+1w</td><td>Weeks (7 days)</td></tr>
+<tr><td>m</td><td>Month</td><td>+1m</td><td>Months (same date)</td></tr>
+<tr><td>y</td><td>Year</td><td>+1y</td><td>Years (same date)</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-practical-examples" class="org-section org-level-1">
+<h1>⚠️ Practical Examples</h1>
+<div id="org-meeting-schedule" class="org-section org-level-2">
+<h2>⚠️ Meeting Schedule</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Weekly team sync
+SCHEDULED: &lt;2026-01-16 Thu 10:00 +1w&gt;
+
+Recurring every Thursday at 10am.</code></pre>
+</div>
+
+</div>
+<div id="org-project-with-multiple-timestamps" class="org-section org-level-2">
+<h2>⚠️ Project with Multiple Timestamps</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Q1 Planning Document
+SCHEDULED: &lt;2026-01-15 Wed&gt;
+DEADLINE: &lt;2026-01-31 Fri -7d&gt;
+:PROPERTIES:
+:EFFORT: 8:00
+:END:
+:LOGBOOK:
+CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 16:30] =&gt;  2:30
+CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 11:00] =&gt;  2:00
+:END:
+
+Start Jan 15, due Jan 31 (warn 7 days early).
+Estimated 8 hours, 4.5 hours logged so far.</code></pre>
+</div>
+
+</div>
+<div id="org-recurring-maintenance-task" class="org-section org-level-2">
+<h2>⚠️ Recurring Maintenance Task</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Update dependencies
+SCHEDULED: &lt;2026-01-15 Wed .+14d&gt;
+
+Update npm packages every 2 weeks after completion.</code></pre>
+</div>
+
+</div>
+<div id="org-event-with-time-range" class="org-section org-level-2">
+<h2>⚠️ Event with Time Range</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Conference keynote speech
+&lt;2026-03-15 Sun 09:00-10:30&gt;
+
+Opening keynote at tech conference.</code></pre>
+</div>
+
+</div>
+<div id="org-multi-day-event" class="org-section org-level-2">
+<h2>⚠️ Multi-day Event</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Annual company retreat
+&lt;2026-06-10 Wed&gt;--&lt;2026-06-12 Fri&gt;
+
+Three-day offsite in Lake Tahoe.</code></pre>
+</div>
+
+</div>
+<div id="org-task-with-complete-history" class="org-section org-level-2">
+<h2>⚠️ Task with Complete History</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* DONE Implement user authentication
+CLOSED: [2026-01-14 Tue 17:00]
+SCHEDULED: &lt;2026-01-10 Fri&gt;
+DEADLINE: &lt;2026-01-15 Wed&gt;
+:PROPERTIES:
+:EFFORT: 6:00
+:END:
+:LOGBOOK:
+- State &quot;DONE&quot;       from &quot;TODO&quot;       [2026-01-14 Tue 17:00]
+  All tests passing, ready for review.
+CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 17:00] =&gt;  3:00
+CLOCK: [2026-01-13 Mon 10:00]--[2026-01-13 Mon 12:30] =&gt;  2:30
+CLOCK: [2026-01-11 Sat 15:00]--[2026-01-11 Sat 16:00] =&gt;  1:00
+- State &quot;TODO&quot;       from &quot;WAITING&quot;    [2026-01-11 Sat 14:30]
+  Design approved, starting implementation.
+:END:
+
+Completed on time. Estimated 6:00, actual 6:30.</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-timestamp-best-practices" class="org-section org-level-1">
+<h1>⚠️ Timestamp Best Practices</h1>
+<div id="org-when-to-use-active-vs-inactive" class="org-section org-level-2">
+<h2>⚠️ When to Use Active vs Inactive</h2>
+<ul>
+<li><p>Scheduling tasks to work on</p>
+</li>
+<li><p>Setting deadlines</p>
+</li>
+<li><p>Planning appointments or events</p>
+</li>
+<li><p>You want it to appear in the agenda</p>
+</li>
+</ul>
+
+<ul>
+<li><p>Recording when something happened</p>
+</li>
+<li><p>Documenting note-taking time</p>
+</li>
+<li><p>Logging state changes</p>
+</li>
+<li><p>You DON&#39;T want it in the agenda</p>
+</li>
+</ul>
+
+</div>
+<div id="org-choosing-repeater-types" class="org-section org-level-2">
+<h2>⚠️ Choosing Repeater Types</h2>
+<table class="org-table">
+<thead>
+<tr><th>Scenario</th><th>Repeater Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>Fixed appointment</td><td>+</td><td>Team meeting every Monday</td></tr>
+<tr><td>Daily habit</td><td>++</td><td>Morning exercise</td></tr>
+<tr><td>Maintenance after completion</td><td>.+</td><td>Change oil 90 days after</td></tr>
+<tr><td>Regular review</td><td>+</td><td>Monthly report last Friday</td></tr>
+<tr><td>Medication</td><td>++</td><td>Take daily after waking</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-time-tracking-tips" class="org-section org-level-2">
+<h2>⚠️ Time Tracking Tips</h2>
+<ol>
+<li><p><strong>Clock in when starting</strong> - Build the habit immediately</p>
+</li>
+<li><p><strong>Clock out when stopping</strong> - Even for short breaks</p>
+</li>
+<li><p><strong>Review clock reports</strong> - Weekly time analysis</p>
+</li>
+<li><p><strong>Compare estimate vs actual</strong> - Improve future estimates</p>
+</li>
+<li><p><strong>Use LOGBOOK for notes</strong> - Document blockers or issues</p>
+</li>
+</ol>
+
+</div>
+<div id="org-scheduling-strategies" class="org-section org-level-2">
+<h2>⚠️ Scheduling Strategies</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">; Don&#39;t over-schedule
+,* TODO Ambiguous big task
+SCHEDULED: &lt;2026-01-15 Wed&gt;
+; Too vague, will cause procrastination
+
+; Instead: Break down with specific times
+,* TODO Project: Website Redesign
+,** TODO Design mockups [1:30]
+SCHEDULED: &lt;2026-01-15 Wed 09:00&gt;
+,** TODO Review with stakeholders [0:45]
+SCHEDULED: &lt;2026-01-15 Wed 14:00&gt;
+,** TODO Implement changes [3:00]
+SCHEDULED: &lt;2026-01-16 Thu 09:00&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-warning-period-guidelines" class="org-section org-level-2">
+<h2>⚠️ Warning Period Guidelines</h2>
+<table class="org-table">
+<thead>
+<tr><th>Task Type</th><th>Suggested Warning</th><th>Reason</th></tr>
+</thead>
+<tbody>
+<tr><td>Daily task</td><td>-0d</td><td>Show only on day</td></tr>
+<tr><td>Weekly deadline</td><td>-2d</td><td>2 day heads up</td></tr>
+<tr><td>Monthly deadline</td><td>-1w</td><td>One week notice</td></tr>
+<tr><td>Quarterly deadline</td><td>-2w</td><td>Two week preparation</td></tr>
+<tr><td>Annual deadline</td><td>-1m</td><td>One month advance notice</td></tr>
+<tr><td>Critical deadline</td><td>-30d</td><td>Very early warning</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-common-patterns" class="org-section org-level-1">
+<h1>⚠️ Common Patterns</h1>
+<div id="org-weekly-review" class="org-section org-level-2">
+<h2>⚠️ Weekly Review</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Weekly review
+SCHEDULED: &lt;2026-01-19 Sun 18:00 +1w&gt;
+
+Review accomplishments, plan next week.</code></pre>
+</div>
+
+</div>
+<div id="org-birthday-reminders" class="org-section org-level-2">
+<h2>⚠️ Birthday Reminders</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* John&#39;s birthday
+&lt;2026-03-15 Sun +1y -7d&gt;
+
+Annual reminder, warn 7 days early.</code></pre>
+</div>
+
+</div>
+<div id="org-bill-payments" class="org-section org-level-2">
+<h2>⚠️ Bill Payments</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Pay electricity bill
+DEADLINE: &lt;2026-01-31 Fri +1m -3d&gt;
+
+Due monthly on last day, 3 day warning.</code></pre>
+</div>
+
+</div>
+<div id="org-exercise-habit" class="org-section org-level-2">
+<h2>⚠️ Exercise Habit</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Morning workout
+SCHEDULED: &lt;2026-01-15 Wed 07:00 ++1d&gt;
+
+Daily exercise, catch up if missed day.</code></pre>
+</div>
+
+</div>
+<div id="org-car-maintenance" class="org-section org-level-2">
+<h2>⚠️ Car Maintenance</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Oil change
+SCHEDULED: &lt;2026-01-20 Mon .+90d&gt;
+
+Every 90 days after previous change.</code></pre>
+</div>
+
+</div>
+<div id="org-project-phases" class="org-section org-level-2">
+<h2>⚠️ Project Phases</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Project: Mobile App Launch
+,** DONE Research phase
+CLOSED: [2026-01-05 Sun 14:00]
+SCHEDULED: &lt;2026-01-01 Wed&gt;
+DEADLINE: &lt;2026-01-05 Sun&gt;
+
+,** TODO Design phase
+SCHEDULED: &lt;2026-01-06 Mon&gt;
+DEADLINE: &lt;2026-01-19 Sun&gt;
+
+,** TODO Development phase
+SCHEDULED: &lt;2026-01-20 Mon&gt;
+DEADLINE: &lt;2026-03-15 Sun&gt;
+
+,** TODO Testing phase
+SCHEDULED: &lt;2026-03-16 Mon&gt;
+DEADLINE: &lt;2026-03-31 Mon&gt;</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-integration-with-todo-items" class="org-section org-level-1">
+<h1>⚠️ Integration with TODO Items</h1>
+<p>Timestamps work seamlessly with TODO items. See <a href="03-todo-items.html">TODO Items</a> for more on task
+management.</p>
+
+<div id="org-scheduled-todos" class="org-section org-level-2">
+<h2>⚠️ Scheduled TODOs</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO [#A] Finish proposal
+SCHEDULED: &lt;2026-01-15 Wed&gt;
+:PROPERTIES:
+:EFFORT: 3:00
+:END:
+
+High priority task scheduled for tomorrow.</code></pre>
+</div>
+
+</div>
+<div id="org-deadline-warnings-in-agenda" class="org-section org-level-2">
+<h2>⚠️ Deadline Warnings in Agenda</h2>
+<p>Tasks with approaching deadlines appear in the agenda with warning indicators.
+See <a href="13-agenda.html">Agenda</a> for details on agenda views.</p>
+
+</div>
+<div id="org-combining-all-features" class="org-section org-level-2">
+<h2>⚠️ Combining All Features</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO [#A] Quarterly report                              :work:report:
+SCHEDULED: &lt;2026-01-20 Mon&gt;
+DEADLINE: &lt;2026-01-31 Fri -7d&gt;
+:PROPERTIES:
+:EFFORT: 12:00
+:CATEGORY: Reports
+:END:
+:LOGBOOK:
+CLOCK: [2026-01-14 Tue 14:00]--[2026-01-14 Tue 16:30] =&gt;  2:30
+:END:
+
+Due end of month with 7-day warning.
+Priority A, work context, 12 hour estimate.
+Already logged 2:30 hours.</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-quick-reference" class="org-section org-level-1">
+<h1>⚠️ Quick Reference</h1>
+<div id="org-keybindings" class="org-section org-level-2">
+<h2>⚠️ Keybindings</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c .</td><td>Insert active timestamp</td></tr>
+<tr><td>C-c !</td><td>Insert inactive timestamp</td></tr>
+<tr><td>S-&lt;up&gt;</td><td>Increase timestamp component</td></tr>
+<tr><td>S-&lt;down&gt;</td><td>Decrease timestamp component</td></tr>
+<tr><td>S-&lt;right&gt;</td><td>Next day</td></tr>
+<tr><td>S-&lt;left&gt;</td><td>Previous day</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-speed-commands-at-heading-start" class="org-section org-level-2">
+<h2>⚠️ Speed Commands (at heading start)</h2>
+<table class="org-table">
+<tbody>
+<tr><td>Key</td><td>Action</td></tr>
+<tr><td>-----------</td><td>----------------------------------</td></tr>
+<tr><td>.</td><td>Insert timestamp</td></tr>
+<tr><td>s</td><td>Schedule task</td></tr>
+<tr><td>d</td><td>Set deadline</td></tr>
+<tr><td>I</td><td>Clock in</td></tr>
+<tr><td>O</td><td>Clock out</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-commands" class="org-section org-level-2">
+<h2>⚠️ Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.org.insertTimestamp</td><td>Insert timestamp</td></tr>
+<tr><td>scimax.org.schedule</td><td>Add SCHEDULED timestamp</td></tr>
+<tr><td>scimax.org.deadline</td><td>Add DEADLINE timestamp</td></tr>
+<tr><td>scimax.org.clockIn</td><td>Start time tracking</td></tr>
+<tr><td>scimax.org.clockOut</td><td>Stop time tracking</td></tr>
+<tr><td>scimax.org.clockReport</td><td>Generate time report</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-timestamp-format-quick-reference" class="org-section org-level-2">
+<h2>⚠️ Timestamp Format Quick Reference</h2>
+<pre class="example">&lt;2026-01-15 Wed&gt;                    Active date
+[2026-01-15 Wed]                    Inactive date
+&lt;2026-01-15 Wed 14:30&gt;              With time
+&lt;2026-01-15 Wed 09:00-17:00&gt;        Time range
+&lt;2026-01-15 Wed&gt;--&lt;2026-01-17 Fri&gt;  Date range
+
+&lt;2026-01-15 Wed +1w&gt;                Weekly repeater
+&lt;2026-01-15 Wed ++1d&gt;               Daily catch-up
+&lt;2026-01-15 Wed .+30d&gt;              30-day restart
+&lt;2026-01-25 Sat -7d&gt;                7-day warning</pre>
+
+</div>
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>⚠️ Related Topics</h1>
+<ul>
+<li><p><a href="03-todo-items.html">TODO Items</a> - Task management with timestamps</p>
+</li>
+<li><p><a href="13-agenda.html">Agenda</a> - Viewing scheduled tasks and deadlines</p>
+</li>
+<li><p><a href="02-document-structure.html">Document Structure</a> - Headlines and organization</p>
+</li>
+<li><p><a href="01-getting-started.html">Getting Started</a> - Basic Scimax VS Code usage</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="05-links.html">Links</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="07-source-blocks.html">Source Blocks</a></p>
+</li>
+</ul>
+
+</div>
+            </article>
+            <nav class="page-nav">
+
+            <a href="13-agenda.html" class="nav-prev">
+                <span class="nav-label">Previous</span>
+                <span class="nav-title">← Previous</span>
+            </a>
+        
+
+            <a href="15-capture.html" class="nav-next">
+                <span class="nav-label">Next</span>
+                <span class="nav-title">Next →</span>
+            </a>
+        
+</nav>
+            <footer class="site-footer">
+<div class="footer-content">
+<nav class="footer-links">
+<ul>
+
+                <li>
+                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+                </li>
+            
+</ul>
+</nav>
+
+            <p class="copyright">
+                &copy; 2024-2026 John Kitchin
+            </p>
+        
+
+        <p class="powered-by">
+            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
+        </p>
+    
+</div>
+</footer>
+        </main>
+
+        
+        <aside class="sidebar-right" id="sidebar-right">
+            <nav class="page-toc">
+<h4 class="toc-title">On this page</h4>
+<ul class="toc-list">
+<ul class="toc-sublist">
+
+            <li class="toc-item level-1">
+                <a href="#timestamps" class="toc-link">✅ Timestamps</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#timestamp-types" class="toc-link">✅ Timestamp Types</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#active-timestamps" class="toc-link">✅ Active Timestamps</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#inactive-timestamps" class="toc-link">✅ Inactive Timestamps</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#when-to-use-each-type" class="toc-link">✅ When to Use Each Type</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#date-and-time-formats" class="toc-link">✅ Date and Time Formats</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#basic-date-format" class="toc-link">✅ Basic Date Format</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#date-with-time" class="toc-link">✅ Date with Time</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#time-only" class="toc-link">✅ Time Only</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#supported-date-components" class="toc-link">✅ Supported Date Components</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#date-and-time-ranges" class="toc-link">✅ Date and Time Ranges</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#date-ranges" class="toc-link">✅ Date Ranges</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#time-ranges" class="toc-link">✅ Time Ranges</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#time-range-examples" class="toc-link">✅ Time Range Examples</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#creating-timestamps" class="toc-link">✅ Creating Timestamps</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#insert-timestamp-command" class="toc-link">👀 Insert Timestamp Command</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#date-entry-shortcuts" class="toc-link">⚠️ Date Entry Shortcuts</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#adding-time-to-timestamps" class="toc-link">⚠️ Adding Time to Timestamps</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#quick-timestamp-insertion" class="toc-link">⚠️ Quick Timestamp Insertion</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#modifying-timestamps" class="toc-link">✅ Modifying Timestamps</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#adjusting-dates-with-keyboard" class="toc-link">✅ Adjusting Dates with Keyboard</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#component-based-editing" class="toc-link">✅ Component-Based Editing</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#quick-date-adjustment-examples" class="toc-link">✅ Quick Date Adjustment Examples</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#editing-timestamp-dialog" class="toc-link">✅ Editing Timestamp Dialog</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#repeating-timestamps" class="toc-link">✅ Repeating Timestamps</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#basic-repeater-syntax" class="toc-link">✅ Basic Repeater Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#repeater-units" class="toc-link">✅ Repeater Units</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#repeater-behavior" class="toc-link">⚠️ Repeater Behavior</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#repeater-type-modifiers" class="toc-link">✅ Repeater Type Modifiers</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#standard-repeater" class="toc-link">✅ Standard Repeater (+)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#catch-up-repeater" class="toc-link">✅ Catch-up Repeater (++)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#restart-repeater" class="toc-link">⚠️ Restart Repeater (.+)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#repeater-comparison" class="toc-link">⚠️ Repeater Comparison</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#repeater-examples" class="toc-link">⚠️ Repeater Examples</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#scheduled-and-deadline" class="toc-link">✅ SCHEDULED and DEADLINE</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#scheduled-keyword" class="toc-link">✅ SCHEDULED Keyword</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#deadline-keyword" class="toc-link">✅ DEADLINE Keyword</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#using-both-together" class="toc-link">✅ Using Both Together</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#adding-scheduled-and-deadline" class="toc-link">✅ Adding SCHEDULED and DEADLINE</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#scheduled-vs-deadline" class="toc-link">✅ SCHEDULED vs DEADLINE</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#examples-with-context" class="toc-link">⚠️ Examples with Context</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#warning-periods" class="toc-link">⚠️ Warning Periods</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#warning-period-syntax" class="toc-link">⚠️ Warning Period Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#default-warning-period" class="toc-link">⚠️ Default Warning Period</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#setting-custom-warnings" class="toc-link">⚠️ Setting Custom Warnings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#warning-period-examples" class="toc-link">⚠️ Warning Period Examples</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#combining-repeaters-and-warnings" class="toc-link">⚠️ Combining Repeaters and Warnings</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#time-clocking" class="toc-link">⚠️ Time Clocking</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#clocking-in-and-out" class="toc-link">⚠️ Clocking In and Out</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#clock-entry-format" class="toc-link">⚠️ Clock Entry Format</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#active-clock" class="toc-link">⚠️ Active Clock</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#clock-workflow-example" class="toc-link">⚠️ Clock Workflow Example</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#clock-reports" class="toc-link">⚠️ Clock Reports</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#clock-table" class="toc-link">⚠️ Clock Table</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#the-logbook-drawer" class="toc-link">⚠️ The LOGBOOK Drawer</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#logbook-contents" class="toc-link">⚠️ LOGBOOK Contents</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#logbook-example" class="toc-link">⚠️ LOGBOOK Example</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#logbook-benefits" class="toc-link">⚠️ LOGBOOK Benefits</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#creating-logbook" class="toc-link">⚠️ Creating LOGBOOK</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#closed-timestamps" class="toc-link">⚠️ CLOSED Timestamps</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#closed-properties" class="toc-link">⚠️ CLOSED Properties</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#diary-sexp-timestamps" class="toc-link">⚠️ Diary Sexp Timestamps</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#diary-sexp-syntax" class="toc-link">⚠️ Diary Sexp Syntax</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#common-diary-functions" class="toc-link">⚠️ Common Diary Functions</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#diary-sexp-examples" class="toc-link">⚠️ Diary Sexp Examples</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-3">
+                <a href="#annual-events-birthdays-anniversaries" class="toc-link">⚠️ Annual Events (Birthdays, Anniversaries)</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#floating-holidays" class="toc-link">⚠️ Floating Holidays</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#class-schedules" class="toc-link">⚠️ Class Schedules</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#cyclic-events" class="toc-link">⚠️ Cyclic Events</a>
+            </li>
+        
+
+            <li class="toc-item level-3">
+                <a href="#block-dates-date-ranges" class="toc-link">⚠️ Block Dates (Date Ranges)</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-2">
+                <a href="#when-to-use-diary-sexps" class="toc-link">⚠️ When to Use Diary Sexps</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#closed-with-other-timestamps" class="toc-link">⚠️ CLOSED with Other Timestamps</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#speed-commands-for-timestamps" class="toc-link">⚠️ Speed Commands for Timestamps</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#timestamp-speed-commands" class="toc-link">⚠️ Timestamp Speed Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#using-speed-commands" class="toc-link">⚠️ Using Speed Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#speed-command-example-workflow" class="toc-link">⚠️ Speed Command Example Workflow</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#timestamp-formats-summary" class="toc-link">⚠️ Timestamp Formats Summary</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#format-reference-table" class="toc-link">⚠️ Format Reference Table</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#repeater-units" class="toc-link">⚠️ Repeater Units</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#practical-examples" class="toc-link">⚠️ Practical Examples</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#meeting-schedule" class="toc-link">⚠️ Meeting Schedule</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#project-with-multiple-timestamps" class="toc-link">⚠️ Project with Multiple Timestamps</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#recurring-maintenance-task" class="toc-link">⚠️ Recurring Maintenance Task</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#event-with-time-range" class="toc-link">⚠️ Event with Time Range</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#multi-day-event" class="toc-link">⚠️ Multi-day Event</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#task-with-complete-history" class="toc-link">⚠️ Task with Complete History</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#timestamp-best-practices" class="toc-link">⚠️ Timestamp Best Practices</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#when-to-use-active-vs-inactive" class="toc-link">⚠️ When to Use Active vs Inactive</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#choosing-repeater-types" class="toc-link">⚠️ Choosing Repeater Types</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#time-tracking-tips" class="toc-link">⚠️ Time Tracking Tips</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#scheduling-strategies" class="toc-link">⚠️ Scheduling Strategies</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#warning-period-guidelines" class="toc-link">⚠️ Warning Period Guidelines</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#common-patterns" class="toc-link">⚠️ Common Patterns</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#weekly-review" class="toc-link">⚠️ Weekly Review</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#birthday-reminders" class="toc-link">⚠️ Birthday Reminders</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#bill-payments" class="toc-link">⚠️ Bill Payments</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#exercise-habit" class="toc-link">⚠️ Exercise Habit</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#car-maintenance" class="toc-link">⚠️ Car Maintenance</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#project-phases" class="toc-link">⚠️ Project Phases</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#integration-with-todo-items" class="toc-link">⚠️ Integration with TODO Items</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#scheduled-todos" class="toc-link">⚠️ Scheduled TODOs</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#deadline-warnings-in-agenda" class="toc-link">⚠️ Deadline Warnings in Agenda</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#combining-all-features" class="toc-link">⚠️ Combining All Features</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#quick-reference" class="toc-link">⚠️ Quick Reference</a>
+            </li>
+        
+<ul class="toc-sublist">
+
+            <li class="toc-item level-2">
+                <a href="#keybindings" class="toc-link">⚠️ Keybindings</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#speed-commands-at-heading-start" class="toc-link">⚠️ Speed Commands (at heading start)</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#commands" class="toc-link">⚠️ Commands</a>
+            </li>
+        
+
+            <li class="toc-item level-2">
+                <a href="#timestamp-format-quick-reference" class="toc-link">⚠️ Timestamp Format Quick Reference</a>
+            </li>
+        
+</ul></li>
+
+            <li class="toc-item level-1">
+                <a href="#related-topics" class="toc-link">⚠️ Related Topics</a>
+            </li>
+        
+
+            <li class="toc-item level-1">
+                <a href="#navigation" class="toc-link">Navigation</a>
+            </li>
+        
+</ul>
+</nav>
+        </aside>
+        
+    </div>
+
+    <script src="./_static/book-theme.js"></script>
+</body>
+</html>
