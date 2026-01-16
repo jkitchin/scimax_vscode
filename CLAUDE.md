@@ -211,6 +211,31 @@ Always include:
 - Speed command keys when applicable
 - Examples showing usage
 
+### Keybinding Changes
+
+When adding or changing keybindings, always check for conflicts with existing bindings:
+
+1. **Search package.json** for existing keybindings using the same key sequence:
+   ```bash
+   grep -n "ctrl+c ctrl+p" package.json  # Example: check for C-c C-p conflicts
+   ```
+
+2. **Check documentation** for references to the keybinding:
+   ```bash
+   grep -r "C-c C-p\|Ctrl+C Ctrl+P" docs/
+   ```
+
+3. **Common conflict areas**:
+   - `C-c C-n` / `C-c C-p` - heading/block navigation (scimaxOrg, scimaxOb)
+   - `C-c C-c` - execute/confirm actions
+   - `C-c C-e` - export commands
+   - Speed commands (single keys at beginning of headlines)
+
+4. **Update all documentation** when keybindings change:
+   - `docs/keybindings.org` - master keybinding reference
+   - Feature-specific docs that mention the keybinding
+   - `package.json` contributes.keybindings section
+
 ## References
 
 - **Org-mode Syntax Specification**: https://orgmode.org/worg/org-syntax.html
