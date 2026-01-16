@@ -13,10 +13,10 @@ Scimax VS Code provides extensive configuration options to customize your scient
 
 There are multiple ways to access and modify Scimax settings:
 
-1. *Settings UI*: Press =C-,= (or =s-,= on macOS) to open the VS Code settings interface. Search for "scimax" to see all Scimax-related settings.
+1. *Settings UI*: Press `C-,' (or `s-,' on macOS) to open the VS Code settings interface. Search for "scimax" to see all Scimax-related settings.
 
 2. *settings.json*: Edit your settings file directly for more control:
-   - Press =C-S-P= (or =s-S-P=) and search for "Preferences: Open Settings (JSON)"
+   - Press `C-S-P' (or `s-S-P') and search for "Preferences: Open Settings (JSON)"
    - Or click the settings icon (⚙) in the top-right of the Settings UI and select "Open Settings (JSON)"
 
 ** Settings File Locations
@@ -34,7 +34,7 @@ Workspace settings override user settings for that specific workspace.
 
 ** Settings Format
 
-All Scimax settings use JSON format in =settings.json=:
+All Scimax settings use JSON format in `settings.json':
 
 #+begin_src json
 {
@@ -64,7 +64,7 @@ Configure the journal system for daily note-taking and logging.
 *** scimax.journal.directory
 
 - *Type*: string
-- *Default*: =""= (uses =~/scimax-journal=)
+- *Default*: `""' (uses `~/scimax-journal')
 - *Description*: Directory where journal files are stored
 
 *Example*:
@@ -77,8 +77,8 @@ Configure the journal system for daily note-taking and logging.
 *** scimax.journal.format
 
 - *Type*: string (enum)
-- *Default*: ="org"=
-- *Options*: ="org"=, ="markdown"=
+- *Default*: `"org"'
+- *Options*: `"org"', `"markdown"'
 - *Description*: File format for journal entries
 
 *Example*:
@@ -91,7 +91,7 @@ Configure the journal system for daily note-taking and logging.
 *** scimax.journal.template
 
 - *Type*: string
-- *Default*: ="default"=
+- *Default*: `"default"'
 - *Description*: Template name for new journal entries. Create custom templates in your journal directory.
 
 *Example*:
@@ -104,13 +104,13 @@ Configure the journal system for daily note-taking and logging.
 *** scimax.journal.dateFormat
 
 - *Type*: string
-- *Default*: ="YYYY-MM-DD"=
+- *Default*: `"YYYY-MM-DD"'
 - *Description*: Date format for journal file names using date-fns tokens
 
 *Common formats*:
-- =YYYY-MM-DD= → 2026-01-14
-- =YYYY/MM/DD= → 2026/01/14
-- =YYYYMMDD= → 20260114
+- `YYYY-MM-DD' → 2026-01-14
+- `YYYY/MM/DD' → 2026/01/14
+- `YYYYMMDD' → 20260114
 
 *Example*:
 #+begin_src json
@@ -122,7 +122,7 @@ Configure the journal system for daily note-taking and logging.
 *** scimax.journal.autoTimestamp
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Automatically insert timestamps when creating log entries
 
 *Example*:
@@ -135,8 +135,8 @@ Configure the journal system for daily note-taking and logging.
 *** scimax.journal.weekStartsOn
 
 - *Type*: string (enum)
-- *Default*: ="monday"=
-- *Options*: ="monday"=, ="sunday"=
+- *Default*: `"monday"'
+- *Options*: `"monday"', `"sunday"'
 - *Description*: First day of the week in calendar view
 
 *Example*:
@@ -169,7 +169,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.directories
 
 - *Type*: array of strings
-- *Default*: =[ ]=
+- *Default*: `[ ]'
 - *Description*: Additional directories to index for search beyond the current workspace
 
 *Example*:
@@ -186,7 +186,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.excludePatterns
 
 - *Type*: array of strings
-- *Default*: =["**/node_modules/**", "**/.git/**", "**/dist/**"]=
+- *Default*: `["**/node_modules/**", "**/.git/**", "**/dist/**"]'
 - *Description*: Glob patterns to exclude from indexing
 
 *Example*:
@@ -206,7 +206,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.ignorePatterns
 
 - *Type*: array of strings
-- *Default*: =["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"]=
+- *Default*: `["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"]'
 - *Description*: Patterns for files to ignore during indexing
 
 *Example*:
@@ -226,7 +226,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.autoIndex
 
 - *Type*: boolean
-- *Default*: =false=
+- *Default*: `false'
 - *Description*: Automatically index workspace files on activation. *Warning*: Disable for large workspaces to prevent memory issues.
 
 *Example*:
@@ -239,13 +239,13 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.embeddingProvider
 
 - *Type*: string (enum)
-- *Default*: ="none"=
-- *Options*: ="none"=, ="local"=, ="ollama"=, ="openai"=
+- *Default*: `"none"'
+- *Options*: `"none"', `"local"', `"ollama"', `"openai"'
 - *Description*: Embedding provider for semantic/AI-powered search
-  - =none=: No semantic search (text-only)
-  - =local=: Use Transformers.js (runs in browser/local)
-  - =ollama=: Use local Ollama server
-  - =openai=: Use OpenAI API
+  - `none': No semantic search (text-only)
+  - `local': Use Transformers.js (runs in browser/local)
+  - `ollama': Use local Ollama server
+  - `openai': Use OpenAI API
 
 *Example*:
 #+begin_src json
@@ -257,11 +257,11 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.localModel
 
 - *Type*: string (enum)
-- *Default*: ="Xenova/all-MiniLM-L6-v2"=
+- *Default*: `"Xenova/all-MiniLM-L6-v2"'
 - *Options*:
-  - ="Xenova/all-MiniLM-L6-v2"= (384 dim, fast, general-purpose)
-  - ="Xenova/bge-small-en-v1.5"= (384 dim, higher quality)
-  - ="Xenova/gte-small"= (384 dim, good balance)
+  - `"Xenova/all-MiniLM-L6-v2"' (384 dim, fast, general-purpose)
+  - `"Xenova/bge-small-en-v1.5"' (384 dim, higher quality)
+  - `"Xenova/gte-small"' (384 dim, good balance)
 - *Description*: Local embedding model for semantic search. Downloads automatically on first use.
 
 *Example*:
@@ -275,7 +275,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.ollamaUrl
 
 - *Type*: string
-- *Default*: ="http://localhost:11434"=
+- *Default*: `"http://localhost:11434"'
 - *Description*: Ollama API URL for embeddings
 
 *Example*:
@@ -289,7 +289,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.ollamaModel
 
 - *Type*: string
-- *Default*: ="nomic-embed-text"=
+- *Default*: `"nomic-embed-text"'
 - *Description*: Ollama model name for embeddings. Must be installed in Ollama.
 
 *Example*:
@@ -303,7 +303,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.openaiApiKey
 
 - *Type*: string
-- *Default*: =""=
+- *Default*: `""'
 - *Description*: OpenAI API key for embeddings. Required when using OpenAI provider.
 
 *Example*:
@@ -330,7 +330,7 @@ Configure Python and Jupyter paths for source block execution.
 *** scimax.literate.pythonPath
 
 - *Type*: string
-- *Default*: =""= (uses system Python)
+- *Default*: `""' (uses system Python)
 - *Description*: Path to Python executable for code block execution
 
 *Example*:
@@ -350,7 +350,7 @@ Or with virtual environment:
 *** scimax.literate.jupyterPath
 
 - *Type*: string
-- *Default*: =""= (uses system Jupyter)
+- *Default*: `""' (uses system Jupyter)
 - *Description*: Path to Jupyter executable
 
 *Example*:
@@ -378,7 +378,7 @@ Configure bibliography management and citation styles.
 *** scimax.ref.bibliographyFiles
 
 - *Type*: array of strings
-- *Default*: =[ ]=
+- *Default*: `[ ]'
 - *Description*: Paths to BibTeX bibliography files
 
 *Example*:
@@ -394,7 +394,7 @@ Configure bibliography management and citation styles.
 *** scimax.ref.pdfDirectory
 
 - *Type*: string
-- *Default*: =""=
+- *Default*: `""'
 - *Description*: Directory containing PDF files for references
 
 *Example*:
@@ -407,7 +407,7 @@ Configure bibliography management and citation styles.
 *** scimax.ref.notesDirectory
 
 - *Type*: string
-- *Default*: =""=
+- *Default*: `""'
 - *Description*: Directory for reference notes and annotations
 
 *Example*:
@@ -420,14 +420,14 @@ Configure bibliography management and citation styles.
 *** scimax.ref.defaultCiteStyle
 
 - *Type*: string (enum)
-- *Default*: ="cite"=
-- *Options*: ="cite"=, ="citet"=, ="citep"=, ="citeauthor"=, ="citeyear"=
+- *Default*: `"cite"'
+- *Options*: `"cite"', `"citet"', `"citep"', `"citeauthor"', `"citeyear"'
 - *Description*: Default citation style for insertions
-  - =cite=: Generic citation
-  - =citet=: Textual citation (Author (Year))
-  - =citep=: Parenthetical citation ((Author, Year))
-  - =citeauthor=: Author only
-  - =citeyear=: Year only
+  - `cite': Generic citation
+  - `citet': Textual citation (Author (Year))
+  - `citep': Parenthetical citation ((Author, Year))
+  - `citeauthor': Author only
+  - `citeyear': Year only
 
 *Example*:
 #+begin_src json
@@ -451,8 +451,8 @@ Configure LaTeX export options.
 *** scimax.export.latex.customHeader
 
 - *Type*: string
-- *Default*: =""=
-- *Description*: Custom LaTeX header (preamble) that replaces the auto-generated one. Should include =\documentclass= through all =\usepackage= commands.
+- *Default*: `""'
+- *Description*: Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\documentclass' through all `\usepackage' commands.
 
 *Example*:
 #+begin_src json
@@ -485,7 +485,7 @@ Configure inline LaTeX equation previews.
 *** scimax.latexPreview.enabled
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Enable LaTeX equation preview on hover
 
 *Example*:
@@ -498,7 +498,7 @@ Configure inline LaTeX equation previews.
 *** scimax.latexPreview.cacheEnabled
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Cache rendered equations for faster hover responses
 
 *Example*:
@@ -511,7 +511,7 @@ Configure inline LaTeX equation previews.
 *** scimax.latexPreview.darkModeAware
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Automatically adjust equation rendering for dark/light themes
 
 *Example*:
@@ -540,7 +540,7 @@ Configure automatic PDF building and live preview.
 *** scimax.latexLivePreview.buildOnSave
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Automatically rebuild PDF when the org file is saved
 
 *Example*:
@@ -553,7 +553,7 @@ Configure automatic PDF building and live preview.
 *** scimax.latexLivePreview.buildOnIdle
 
 - *Type*: boolean
-- *Default*: =false=
+- *Default*: `false'
 - *Description*: Automatically rebuild PDF after idle period (no typing)
 
 *Example*:
@@ -567,7 +567,7 @@ Configure automatic PDF building and live preview.
 *** scimax.latexLivePreview.idleDelay
 
 - *Type*: number
-- *Default*: =2000=
+- *Default*: `2000'
 - *Description*: Delay in milliseconds before idle build triggers
 
 *Example*:
@@ -581,12 +581,12 @@ Configure automatic PDF building and live preview.
 *** scimax.latexLivePreview.compiler
 
 - *Type*: string (enum)
-- *Default*: ="pdflatex"=
-- *Options*: ="pdflatex"=, ="xelatex"=, ="lualatex"=
+- *Default*: `"pdflatex"'
+- *Options*: `"pdflatex"', `"xelatex"', `"lualatex"'
 - *Description*: LaTeX compiler to use
-  - =pdflatex=: Standard, fast
-  - =xelatex=: Better Unicode and font support
-  - =lualatex=: Modern, Lua scripting support
+  - `pdflatex': Standard, fast
+  - `xelatex': Better Unicode and font support
+  - `lualatex': Modern, Lua scripting support
 
 *Example*:
 #+begin_src json
@@ -598,7 +598,7 @@ Configure automatic PDF building and live preview.
 *** scimax.latexLivePreview.useLatexmk
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Use latexmk for smart incremental builds (recommended). Automatically handles multiple passes for references, bibliography, etc.
 
 *Example*:
@@ -625,7 +625,7 @@ Configure the project-based notebook system.
 *** scimax.notebook.directory
 
 - *Type*: string
-- *Default*: =""=
+- *Default*: `""'
 - *Description*: Default parent directory for new notebooks
 
 *Example*:
@@ -638,13 +638,13 @@ Configure the project-based notebook system.
 *** scimax.notebook.defaultTemplate
 
 - *Type*: string (enum)
-- *Default*: ="research"=
-- *Options*: ="empty"=, ="research"=, ="software"=, ="notes"=
+- *Default*: `"research"'
+- *Options*: `"empty"', `"research"', `"software"', `"notes"'
 - *Description*: Default template for new notebooks
-  - =empty=: Minimal structure
-  - =research=: Research project layout
-  - =software=: Software development layout
-  - =notes=: Note-taking layout
+  - `empty': Minimal structure
+  - `research': Research project layout
+  - `software': Software development layout
+  - `notes': Note-taking layout
 
 *Example*:
 #+begin_src json
@@ -656,7 +656,7 @@ Configure the project-based notebook system.
 *** scimax.notebook.autoDetect
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Automatically detect and track projects in workspace
 
 *Example*:
@@ -684,7 +684,7 @@ Configure the Hydra menu system for quick command access.
 *** scimax.hydra.showKeyHints
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Show keyboard shortcuts inline with menu items
 
 *Example*:
@@ -697,7 +697,7 @@ Configure the Hydra menu system for quick command access.
 *** scimax.hydra.singleKeySelection
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Select menu items with a single keypress (no Enter needed)
 
 *Example*:
@@ -710,7 +710,7 @@ Configure the Hydra menu system for quick command access.
 *** scimax.hydra.dimNonMatching
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Dim menu items that don't match the current filter
 
 *Example*:
@@ -723,7 +723,7 @@ Configure the Hydra menu system for quick command access.
 *** scimax.hydra.sortByKey
 
 - *Type*: boolean
-- *Default*: =false=
+- *Default*: `false'
 - *Description*: Sort menu items by their keyboard shortcut instead of logical grouping
 
 *Example*:
@@ -748,10 +748,10 @@ Configure org-mode style speed commands.
 *** scimax.speedCommands.enabled
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Enable org-mode speed commands (single-key shortcuts at beginning of headings)
 
-When enabled, you can use single-key shortcuts (like =n=, =p=, =u=) when the cursor is at the beginning of a heading line.
+When enabled, you can use single-key shortcuts (like `n', `p', `u') when the cursor is at the beginning of a heading line.
 
 *Example*:
 #+begin_src json
@@ -781,7 +781,7 @@ Configure the agenda view and TODO tracking.
 *** scimax.agenda.files
 
 - *Type*: array of strings
-- *Default*: =[ ]= (scans all org files in workspace)
+- *Default*: `[ ]' (scans all org files in workspace)
 - *Description*: Directories or files to include in the agenda
 
 *Example*:
@@ -797,7 +797,7 @@ Configure the agenda view and TODO tracking.
 *** scimax.agenda.excludePatterns
 
 - *Type*: array of strings
-- *Default*: =["**/node_modules/**", "**/.git/**", "**/archive/**"]=
+- *Default*: `["**/node_modules/**", "**/.git/**", "**/archive/**"]'
 - *Description*: Glob patterns to exclude from agenda scanning
 
 *Example*:
@@ -816,7 +816,7 @@ Configure the agenda view and TODO tracking.
 *** scimax.agenda.defaultSpan
 
 - *Type*: number
-- *Default*: =7=
+- *Default*: `7'
 - *Description*: Default number of days to show in agenda view
 
 *Example*:
@@ -829,7 +829,7 @@ Configure the agenda view and TODO tracking.
 *** scimax.agenda.showDone
 
 - *Type*: boolean
-- *Default*: =false=
+- *Default*: `false'
 - *Description*: Show completed (DONE) items in agenda view
 
 *Example*:
@@ -842,8 +842,8 @@ Configure the agenda view and TODO tracking.
 *** scimax.agenda.showHabits
 
 - *Type*: boolean
-- *Default*: =true=
-- *Description*: Show items tagged with =:HABIT:=
+- *Default*: `true'
+- *Description*: Show items tagged with `:HABIT:'
 
 *Example*:
 #+begin_src json
@@ -855,7 +855,7 @@ Configure the agenda view and TODO tracking.
 *** scimax.agenda.todoStates
 
 - *Type*: array of strings
-- *Default*: =["TODO", "NEXT", "WAITING"]=
+- *Default*: `["TODO", "NEXT", "WAITING"]'
 - *Description*: Active TODO states to show in TODO list
 
 *Example*:
@@ -874,7 +874,7 @@ Configure the agenda view and TODO tracking.
 *** scimax.agenda.doneStates
 
 - *Type*: array of strings
-- *Default*: =["DONE", "CANCELLED"]=
+- *Default*: `["DONE", "CANCELLED"]'
 - *Description*: Completed TODO states
 
 *Example*:
@@ -912,7 +912,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.enabled
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Enable inline image thumbnails in org-mode files
 
 *Example*:
@@ -925,7 +925,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.maxWidth
 
 - *Type*: number
-- *Default*: =96=
+- *Default*: `96'
 - *Description*: Maximum width in pixels for thumbnail icons
 
 *Example*:
@@ -938,7 +938,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.maxHeight
 
 - *Type*: number
-- *Default*: =96=
+- *Default*: `96'
 - *Description*: Maximum height in pixels for thumbnail icons
 
 *Example*:
@@ -951,12 +951,12 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.renderMode
 
 - *Type*: string (enum)
-- *Default*: ="gutter"=
-- *Options*: ="gutter"=, ="after"=, ="both"=
+- *Default*: `"gutter"'
+- *Options*: `"gutter"', `"after"', `"both"'
 - *Description*: Where to display image thumbnails
-  - =gutter=: In the line margin (gutter)
-  - =after=: Inline emoji after the link
-  - =both=: Both locations
+  - `gutter': In the line margin (gutter)
+  - `after': Inline emoji after the link
+  - `both': Both locations
 
 *Example*:
 #+begin_src json
@@ -968,7 +968,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.onlyWhenCursorNotInLink
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Hide overlay when cursor is inside the image link (prevents interference with editing)
 
 *Example*:
@@ -981,7 +981,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.excludePatterns
 
 - *Type*: array of strings
-- *Default*: =[ ]=
+- *Default*: `[ ]'
 - *Description*: Regex patterns for image paths to exclude from overlays
 
 *Example*:
@@ -997,7 +997,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.maxOverlaysPerDocument
 
 - *Type*: number
-- *Default*: =200=
+- *Default*: `200'
 - *Description*: Maximum number of image overlays to display per document (prevents performance issues)
 
 *Example*:
@@ -1010,7 +1010,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.showDimensions
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Show image dimensions in the after-content decoration
 
 *Example*:
@@ -1023,7 +1023,7 @@ Configure inline image thumbnails in org-mode files.
 *** scimax.imageOverlays.cacheEnabled
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Cache generated thumbnails for faster loading
 
 *Example*:
@@ -1051,23 +1051,23 @@ Configure the org-capture system for quick note-taking.
 *** scimax.capture.templates
 
 - *Type*: array of objects
-- *Default*: =[ ]=
+- *Default*: `[ ]'
 - *Description*: Capture templates for quick note-taking. Each template has:
-  - =key=: Single character shortcut
-  - =name=: Template name
-  - =type=: entry, item, or table-line
-  - =file=: Target file
-  - =headline=: Optional target headline
-  - =datetree=: Boolean, use datetree structure
-  - =template=: Template text with placeholders
+  - `key': Single character shortcut
+  - `name': Template name
+  - `type': entry, item, or table-line
+  - `file': Target file
+  - `headline': Optional target headline
+  - `datetree': Boolean, use datetree structure
+  - `template': Template text with placeholders
 
 *Template placeholders*:
-- =%^{prompt}=: Prompt for input
-- =%t=: Current timestamp
-- =%T=: Current timestamp with time
-- =%i=: Initial content (selected text)
-- =%a=: Link to current location
-- =%?=: Cursor position after insertion
+- `%^{prompt}': Prompt for input
+- `%t': Current timestamp
+- `%T': Current timestamp with time
+- `%i': Initial content (selected text)
+- `%a': Link to current location
+- `%?': Cursor position after insertion
 
 *Example*:
 #+begin_src json
@@ -1103,7 +1103,7 @@ Configure the org-capture system for quick note-taking.
 *** scimax.capture.defaultFile
 
 - *Type*: string
-- *Default*: ="~/org/notes.org"=
+- *Default*: `"~/org/notes.org"'
 - *Description*: Default file for captures when no target file is specified in template
 
 *Example*:
@@ -1116,12 +1116,12 @@ Configure the org-capture system for quick note-taking.
 *** scimax.capture.datetreeFormat
 
 - *Type*: string (enum)
-- *Default*: ="day"=
-- *Options*: ="day"=, ="week"=, ="month"=
+- *Default*: `"day"'
+- *Options*: `"day"', `"week"', `"month"'
 - *Description*: Granularity of datetree entries
-  - =day=: Year > Month > Day
-  - =week=: Year > Week number
-  - =month=: Year > Month
+  - `day': Year > Month > Day
+  - `week': Year > Week number
+  - `month': Year > Month
 
 *Example*:
 #+begin_src json
@@ -1133,7 +1133,7 @@ Configure the org-capture system for quick note-taking.
 *** scimax.capture.autoSave
 
 - *Type*: boolean
-- *Default*: =true=
+- *Default*: `true'
 - *Description*: Automatically save the file after capture
 
 *Example*:
@@ -1145,7 +1145,7 @@ Configure the org-capture system for quick note-taking.
 
 * Common Configurations
 
-This section provides complete =settings.json= examples for different use cases.
+This section provides complete `settings.json' examples for different use cases.
 
 ** Academic Writing Setup
 
@@ -1407,7 +1407,7 @@ If database indexing is slow or uses too much memory:
 }
 #+end_src
 
-Then manually trigger indexing with =C-S-P= → "Scimax: Reindex Files"
+Then manually trigger indexing with `C-S-P' → "Scimax: Reindex Files"
 
 ** Jupyter Kernels Not Found
 
@@ -1419,7 +1419,7 @@ Ensure Jupyter is in your PATH or specify the full path:
 }
 #+end_src
 
-Check available kernels with =C-S-P= → "Scimax: Show Available Jupyter Kernels"
+Check available kernels with `C-S-P' → "Scimax: Show Available Jupyter Kernels"
 
 ** LaTeX Preview Not Working
 

@@ -353,7 +353,13 @@ export class HydraManager {
         }
 
         // Exit behavior indicator
-        const exitIndicator = item.exit === 'stay' ? ' $(sync)' : '';
+        let exitIndicator = '';
+        if (item.exit === 'stay') {
+            exitIndicator = ' $(sync)';
+        } else if (item.exit === 'exit') {
+            exitIndicator = ' $(sign-out)';
+        }
+        // submenus already have $(chevron-right) via their icon
 
         return {
             label: `${icon}${keyHint}${item.label}${toggleIndicator}${exitIndicator}`,

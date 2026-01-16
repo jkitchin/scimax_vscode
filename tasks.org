@@ -1,7 +1,33 @@
 #+TITLE: Scimax Tasks
 
 * TODO scimax-org-return
-* TODO test code block functionality
+
+I thought I implemented this, but it is not working right.
+
+When the cursor is at the end of a heading line, hitting return should insert a new heading below.
+
+
+* TODO org-publishing? 
+
+maybe this is what we use for GH pages to publish the docs?
+
+see https://orgmode.org/manual/Publishing.html 
+
+* TODO test exports
+** DONE do we need to save the file before exporting?
+CLOSED: [2026-01-15 Thu 20:34]
+
+** TODO pdf (with citations)
+** TODO html - looks pretty bad
+
+it is mostly from TODO states
+
+** TODO latex
+** TODO lots of export features are probably missing like visible, body, etc
+
+
+* DONE test code block functionality
+CLOSED: [2026-01-15 Thu 20:30]
 
 
 - [x] the clear button is a little too aggressive. it clears empty lines after results sometimes. I think it should only clear the results.
@@ -57,14 +83,6 @@ x
 :        6.02931923, 6.09278575, 6.15625227, 6.21971879, 6.28318531])
 
 
-
-
-* TODO test exports
-** TODO do we need to save the file before exporting?
-** TODO pdf (with citations)
-** TODO html - looks pretty bad
-** TODO latex
-** TODO lots of export features are probably missing like visible, body, etc
 
 
 * DONE up/down arrows on lists
@@ -127,7 +145,9 @@ when i use shift-right here to toggle the todo state, this should update the tim
 
 
 * DONE task cookies don't update correctly
-* bibtex settings
+* TODO bibtex settings
+
+why doesn't this work?
 
 a citation about schnet cite:schuett-2018-schnet.
 

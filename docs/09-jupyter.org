@@ -797,7 +797,7 @@ Each kernel is a separate process with its own memory:
 *** ⚠️ Image Output
 
 Large images increase document size:
-- Matplotlib: Use plt.savefig(dpi=..., bbox_inches='tight') to control size
+- Matplotlib: Use plt.savefig(dpi`..., bbox_inches''tight') to control size
 - Consider using SVG for vector graphics (smaller, scalable)
 - Use :results silent for intermediate plots
 

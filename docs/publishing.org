@@ -15,19 +15,19 @@ The publishing system follows a wizard-first approach - most users can get start
 
 ** Step 1: Initialize a Publishing Project
 
-Run the command =Scimax: Initialize Publishing Project= (=C-c C-e p i=) to start the 5-step wizard:
+Run the command `Scimax: Initialize Publishing Project' (`C-c C-e p i') to start the 5-step wizard:
 
 1. *Project name* - A short identifier (e.g., "my-website")
-2. *Source directory* - Where your org files are located (default: =./org=)
-3. *Output directory* - Where HTML files will be published (default: =./docs= for GitHub Pages)
+2. *Source directory* - Where your org files are located (default: `./org')
+3. *Output directory* - Where HTML files will be published (default: `./docs' for GitHub Pages)
 4. *Publishing target* - GitHub Pages (recommended) or Local/Custom
 5. *Sitemap generation* - Whether to auto-generate an index page
 
 ** Step 2: Add Content
 
-Create or edit =.org= files in your source directory. Each file becomes an HTML page.
+Create or edit `.org' files in your source directory. Each file becomes an HTML page.
 
-Example =./org/about.org=:
+Example `./org/about.org':
 #+BEGIN_SRC org
 ,#+TITLE: About This Project
 ,#+AUTHOR: Your Name
@@ -45,15 +45,15 @@ Welcome to my project documentation!
 
 ** Step 3: Publish
 
-Run =Scimax: Publish Project= (=C-c C-e p p=) to generate HTML files.
+Run `Scimax: Publish Project' (`C-c C-e p p') to generate HTML files.
 
 ** Step 4: Deploy to GitHub Pages
 
-1. Commit the =./docs= folder to your repository
+1. Commit the `./docs' folder to your repository
 2. Go to your repository's Settings → Pages
 3. Set Source to "Deploy from a branch"
-4. Select =main= branch and =/docs= folder
-5. Your site will be live at =https://username.github.io/repo-name/=
+4. Select `main' branch and `/docs' folder
+5. Your site will be live at `https://username.github.io/repo-name/'
 
 * Commands
 
@@ -70,14 +70,14 @@ Run =Scimax: Publish Project= (=C-c C-e p p=) to generate HTML files.
 
 The publishing system supports two configuration formats:
 
-1. =_config.yml= - YAML format (Jupyter Book compatible, takes precedence)
-2. =.org-publish.json= - JSON format
+1. `_config.yml' - YAML format (Jupyter Book compatible, takes precedence)
+2. `.org-publish.json' - JSON format
 
-The wizard creates a =.org-publish.json= file by default. You can also create or edit either file manually.
+The wizard creates a `.org-publish.json' file by default. You can also create or edit either file manually.
 
-** ⚠️ YAML Configuration (=_config.yml=)
+** ⚠️ YAML Configuration (`_config.yml')
 
-For Jupyter Book compatibility, create a =_config.yml= in your project root:
+For Jupyter Book compatibility, create a `_config.yml' in your project root:
 
 #+BEGIN_SRC yaml
 # _config.yml - Jupyter Book compatible
@@ -99,7 +99,7 @@ html:
 github_pages: true
 #+END_SRC
 
-** JSON Configuration (=.org-publish.json=)
+** JSON Configuration (`.org-publish.json')
 
 #+BEGIN_SRC json
 {
@@ -179,11 +179,11 @@ github_pages: true
 | =publishingFunction= | string | ="org-html-publish-to-html"=  | How to process files           |
 
 Available functions:
-- =org-html-publish-to-html= - Convert org files to HTML
-- =md-html-publish-to-html= - Convert Markdown files to HTML
-- =ipynb-html-publish-to-html= - Convert Jupyter notebooks to HTML
-- =auto= - Auto-detect by file extension (default behavior)
-- =copy= - Copy files as-is (for static assets)
+- `org-html-publish-to-html' - Convert org files to HTML
+- `md-html-publish-to-html' - Convert Markdown files to HTML
+- `ipynb-html-publish-to-html' - Convert Jupyter notebooks to HTML
+- `auto' - Auto-detect by file extension (default behavior)
+- `copy' - Copy files as-is (for static assets)
 
 ** Supported File Types
 
@@ -195,7 +195,7 @@ The publishing system supports multiple file types:
 | =.md=     | Markdown files           | Basic Markdown to HTML conversion     |
 | =.ipynb=  | Jupyter notebooks        | Notebook cells to HTML with syntax    |
 
-When using =auto= or =org-html-publish-to-html=, files are processed based on their extension.
+When using `auto' or `org-html-publish-to-html', files are processed based on their extension.
 
 ** Sitemap Options
 
@@ -208,10 +208,10 @@ When using =auto= or =org-html-publish-to-html=, files are processed based on th
 | =sitemapSortFiles=  | string           | ="alphabetically"= | Sort order for files                |
 | =sitemapSortFolders= | string          | ="first"=         | Where to place folders in listing    |
 
-Sort options for =sitemapSortFiles=:
-- =alphabetically= - Sort A-Z by title
-- =chronologically= - Oldest first (by #+DATE)
-- =anti-chronologically= - Newest first (for blogs)
+Sort options for `sitemapSortFiles':
+- `alphabetically' - Sort A-Z by title
+- `chronologically' - Oldest first (by #+DATE)
+- `anti-chronologically' - Newest first (for blogs)
 
 ** HTML Template Options
 
@@ -283,22 +283,22 @@ A component project groups multiple projects together:
 
 When you publish "full-site", all component projects are published in order.
 
-* ⚠️ Explicit Table of Contents (=_toc.yml=)
+* ⚠️ Explicit Table of Contents (`_toc.yml')
 
-By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a =_toc.yml= file.
+By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a `_toc.yml' file.
 
 ** Overview
 
-When a =_toc.yml= file exists in your source directory, the publishing system:
+When a `_toc.yml' file exists in your source directory, the publishing system:
 
 1. Publishes files in the order specified (not alphabetically)
 2. Generates prev/next navigation links on each page
 3. Creates an index page reflecting the TOC structure
 4. Only includes files listed in the TOC (plus unlisted if configured)
 
-** Basic =_toc.yml= Format
+** Basic `_toc.yml' Format
 
-Create a =_toc.yml= file in your source directory (e.g., =./docs/_toc.yml=):
+Create a `_toc.yml' file in your source directory (e.g., `./docs/_toc.yml'):
 
 #+BEGIN_SRC yaml
 # Simple flat structure
@@ -379,7 +379,7 @@ parts:
 
 ** Custom Titles
 
-You can override the title from the file's =#+TITLE=:
+You can override the title from the file's `#+TITLE':
 
 #+BEGIN_SRC yaml
 chapters:
@@ -404,7 +404,7 @@ chapters:
 
 ** Navigation Links
 
-When using =_toc.yml=, each published page automatically gets:
+When using `_toc.yml', each published page automatically gets:
 
 #+BEGIN_SRC html
 <nav class="page-navigation">
@@ -430,7 +430,7 @@ You can style these with CSS:
 
 ** Combining with Configuration
 
-Your =.org-publish.json= works the same way - the =_toc.yml= just controls ordering:
+Your `.org-publish.json' works the same way - the `_toc.yml' just controls ordering:
 
 #+BEGIN_SRC json
 {
@@ -446,7 +446,7 @@ Your =.org-publish.json= works the same way - the =_toc.yml= just controls order
 }
 #+END_SRC
 
-With =./docs/_toc.yml=:
+With `./docs/_toc.yml':
 
 #+BEGIN_SRC yaml
 format: scimax
@@ -461,17 +461,17 @@ chapters:
 
 The TOC references files without extensions. The system automatically finds files with these extensions (in order):
 
-1. =.org=
-2. =.md=
-3. =.ipynb=
+1. `.org'
+2. `.md'
+3. `.ipynb'
 
-So =file: getting-started= will match =getting-started.org=, =getting-started.md=, or =getting-started.ipynb=.
+So `file: getting-started' will match `getting-started.org', `getting-started.md', or `getting-started.ipynb'.
 
 * Templates
 
 ** HTML Preamble (Navigation)
 
-Create a file like =./templates/nav.html=:
+Create a file like `./templates/nav.html':
 
 #+BEGIN_SRC html
 <nav class="site-nav">
@@ -491,7 +491,7 @@ Reference it in your config:
 
 ** HTML Postamble (Footer)
 
-Create =./templates/footer.html=:
+Create `./templates/footer.html':
 
 #+BEGIN_SRC html
 <footer>
@@ -501,7 +501,7 @@ Create =./templates/footer.html=:
 
 ** Custom CSS
 
-Create =./css/style.css= and reference it:
+Create `./css/style.css' and reference it:
 
 #+BEGIN_SRC json
 {
@@ -511,12 +511,12 @@ Create =./css/style.css= and reference it:
 
 * GitHub Pages Integration
 
-When =githubPages= is enabled:
+When `githubPages' is enabled:
 
-1. A =.nojekyll= file is created in the output directory (disables Jekyll processing)
-2. If =customDomain= is set, a =CNAME= file is created
-3. The default output directory is =./docs= (GitHub Pages convention)
-4. The default sitemap becomes =index.org= → =index.html=
+1. A `.nojekyll' file is created in the output directory (disables Jekyll processing)
+2. If `customDomain' is set, a `CNAME' file is created
+3. The default output directory is `./docs' (GitHub Pages convention)
+4. The default sitemap becomes `index.org' → `index.html'
 
 ** Custom Domain Setup
 
@@ -619,23 +619,23 @@ See <a href="other-page.html">the other page</a> for details.
 
 ** "No publishing configuration found"
 
-Run =Scimax: Initialize Publishing Project= (=C-c C-e p i=) to create a =.org-publish.json= file.
+Run `Scimax: Initialize Publishing Project' (`C-c C-e p i') to create a `.org-publish.json' file.
 
 ** "Base directory does not exist"
 
-Create the source directory specified in =baseDirectory=, or update the config to point to an existing directory.
+Create the source directory specified in `baseDirectory', or update the config to point to an existing directory.
 
 ** Links not working after publish
 
-Ensure you're using =file:= links to reference other org files:
+Ensure you're using `file:' links to reference other org files:
 #+BEGIN_SRC org
 [[file:other.org][Link text]]
 #+END_SRC
 
 ** GitHub Pages not updating
 
-1. Ensure the =./docs= folder is committed
-2. Check that GitHub Pages is configured to serve from =/docs=
+1. Ensure the `./docs' folder is committed
+2. Check that GitHub Pages is configured to serve from `/docs'
 3. Wait a few minutes for GitHub to rebuild the site
 
 * Related Topics

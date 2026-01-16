@@ -55,10 +55,12 @@ import { registerProjectileCommands } from './projectile/commands';
 import { ProjectTreeProvider } from './projectile/projectTreeProvider';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
+import { registerMarkCommands } from './mark/markRing';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
 import { registerEditmarkCommands } from './editmarks/editmarks';
 import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 import { registerPublishCommands } from './publishing';
+import { registerHelpCommands } from './help';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -326,6 +328,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Speed Commands (single-key shortcuts at heading start)
     registerSpeedCommands(context);
 
+    // Register Help Commands (C-h k describe-key, C-h b list keybindings, C-h f describe command)
+    registerHelpCommands(context);
+
     // Register Image Overlay Commands (inline image thumbnails)
     registerImageOverlayCommands(context);
 
@@ -489,6 +494,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Jump Commands (avy-style jump to visible locations)
     registerJumpCommands(context);
+
+    // Register Mark Ring Commands (Emacs-style mark ring)
+    registerMarkCommands(context);
 
     // Register Editmark Commands (track changes)
     registerEditmarkCommands(context);

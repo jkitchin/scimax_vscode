@@ -7,11 +7,13 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Introduction
+* ✅ Introduction
+CLOSED: [2026-01-16 Fri 07:36]
 
 Hydra menus are a powerful keyboard-driven menu system inspired by Emacs hydra and transient packages. They provide quick access to Scimax commands through persistent, modal menus that remain open until you explicitly close them or execute an exit command.
 
-** ⚠️ What Are Hydra Menus?
+** ✅ What Are Hydra Menus?
+CLOSED: [2026-01-16 Fri 07:36]
 
 A hydra menu is a quick pick interface that displays available commands organized into logical groups. Each command is associated with a single keyboard shortcut, allowing you to rapidly execute actions without navigating through multiple menus or remembering complex key combinations.
 
@@ -23,7 +25,8 @@ Think of hydra menus as command palettes optimized for keyboard efficiency:
 - Hierarchical navigation with submenus
 - Visual indicators for toggles and persistent actions
 
-** ⚠️ Key Features
+** ✅ Key Features
+CLOSED: [2026-01-16 Fri 07:37]
 
 - Fast keyboard-driven navigation with single-key selection
 - Organized command groups with descriptive labels and icons
@@ -35,26 +38,29 @@ Think of hydra menus as command palettes optimized for keyboard efficiency:
 - Customizable through VS Code settings
 - Full integration with all Scimax features
 
-** ⚠️ Philosophy
+** ✅ Philosophy
+CLOSED: [2026-01-16 Fri 07:37]
 
-The hydra system is designed around the principle of discoverability and efficiency. Instead of memorizing dozens of keyboard shortcuts, you can press C-c m to open the main menu and see all available commands with their shortcuts. Once you learn commonly-used shortcuts, you can invoke them directly without opening the menu.
+The hydra system is designed around the principle of discoverability and efficiency. Instead of memorizing dozens of keyboard shortcuts, you can press `C-c m' to open the main menu and see all available commands with their shortcuts. Once you learn commonly-used shortcuts, you can invoke them directly without opening the menu.
 
-* ⚠️ Getting Started
+* ✅ Getting Started
+CLOSED: [2026-01-16 Fri 07:37]
 
-** ⚠️ Opening the Main Menu
+** Opening the Main Menu
 
 The fastest way to access hydra menus is through the main menu:
 
-- Press C-c m (s-c m on Mac) to open the main Scimax menu
-- Press C-c C-m for a context-aware menu based on the current file type
+- Press `C-c m' to open the main Scimax menu
+- Press `C-c C-m' for a context-aware menu based on the current file type
 
 You can also open menus through the command palette:
 
-1. Press C-S-P (s-S-P on Mac)
+1. Press `C/cmd-S-P' 
 2. Type "Scimax: Main Menu" or "Scimax: Show Hydra Menu"
 3. Press Enter
 
-** ⚠️ Basic Navigation
+** ✅ Basic Navigation
+CLOSED: [2026-01-16 Fri 07:39]
 
 When a hydra menu is open:
 
@@ -64,46 +70,50 @@ When a hydra menu is open:
 4. Press Enter to execute the selected command
 5. Press Escape or Backspace (when a parent menu exists) to close or go back
 
-** ⚠️ Understanding Exit Behaviors
+** 👀 Understanding Exit Behaviors
 
-Each menu item has one of three exit behaviors, indicated visually in the interface:
+Each menu item has one of three exit behaviors, indicated by icons in the interface.
 
-*** ⚠️ Exit (Blue Head)
+Note: The terms "Blue Head" and "Red Head" come from Emacs Hydra, which uses colored text. VS Code's QuickPick API doesn't support per-item colors, so we use icons instead.
 
-The menu closes after executing the command. Most commands use this behavior.
+*** 👀 Exit (Blue Head) - $(sign-out)
 
-#+begin_example
-[t] Today               → Opens today's journal and closes menu
-[s] Search              → Starts search and closes menu
-#+end_example
-
-*** ⚠️ Stay (Red Head - Persistent)
-
-The menu remains open after executing the command, allowing you to execute it multiple times or try different commands. These items are marked with a $(sync) icon.
+The menu closes after executing the command. Most commands use this behavior. These items are marked with a $(sign-out) icon (exit door).
 
 #+begin_example
-[r] Refresh $(sync)     → Refreshes data and keeps menu open
-[i] Index File $(sync)  → Indexes file and keeps menu open
+[t] Today $(sign-out)           → Opens today's journal and closes menu
+[s] Search $(sign-out)          → Starts search and closes menu
 #+end_example
 
-*** ⚠️ Submenu
+*** 👀 Stay (Red Head) - $(sync)
 
-Navigates to a child menu. These items are marked with a $(chevron-right) icon.
+The menu remains open after executing the command, allowing you to execute it multiple times or try different commands. These items are marked with a $(sync) icon (circular arrows).
 
 #+begin_example
-[j] Journal $(chevron-right)     → Opens journal submenu
-[r] References $(chevron-right)  → Opens references submenu
+[r] Refresh $(sync)             → Refreshes data and keeps menu open
+[i] Index File $(sync)          → Indexes file and keeps menu open
 #+end_example
 
-* ⚠️ Available Hydras
+*** Submenu - $(chevron-right)
+
+Navigates to a child menu. These items are marked with a $(chevron-right) icon (arrow).
+
+#+begin_example
+[j] Journal $(chevron-right)    → Opens journal submenu
+[r] References $(chevron-right) → Opens references submenu
+#+end_example
+
+* ✅ Available Hydras
+CLOSED: [2026-01-16 Fri 07:42]
 
 Scimax comes with eight pre-built hydra menus covering all major features:
 
-** ⚠️ Main Menu (scimax.main)
+** ✅ Main Menu (scimax.main)
+CLOSED: [2026-01-16 Fri 07:42]
 
 The main entry point for all Scimax features.
 
-*Access*: C-c m or command "Scimax: Main Menu"
+*Access*: `C-c m' or command `Scimax: Main Menu'
 
 #+begin_example
 Scimax
@@ -767,9 +777,19 @@ VS Code doesn't have a dedicated "hydra mode" like Emacs. Hydras appear as quick
 
 Commands execute asynchronously and can return Promises, supporting VS Code's async command pattern.
 
-*** ⚠️ No Color Customization
+*** 👀 Icon-Based Indicators Instead of Colors
 
-Unlike Emacs hydra, you cannot customize the colors of menu items. The theme is determined by VS Code's active color theme.
+Unlike Emacs hydra which uses colored text (blue for exit, red for stay), VS Code's QuickPick API doesn't support per-item color customization. Instead, we use codicons to indicate behavior:
+
+| Behavior | Icon           | Meaning                              |
+|----------|----------------|--------------------------------------|
+| Exit     | $(sign-out)    | Menu closes after command executes   |
+| Stay     | $(sync)        | Menu stays open after command        |
+| Submenu  | $(chevron-right) | Navigates to a child menu          |
+| Toggle On  | $(check)     | Toggle is currently enabled          |
+| Toggle Off | $(circle-outline) | Toggle is currently disabled    |
+
+The overall color theme follows VS Code's active color theme.
 
 *** ⚠️ Menu State Persistence
 
@@ -789,7 +809,7 @@ If you're coming from Emacs hydra:
 
 1. *Keybindings*: Map C-c m (or your preferred binding) to scimax.hydra.main
 2. *Menu Definition*: Use the fluent builder API for a declarative style similar to Emacs
-3. *Exit Behavior*: exit = blue head, stay = red head
+3. *Exit Behavior*: exit ` blue head, stay ' red head
 4. *Submenus*: Use the submenu exit behavior instead of (exit) with another hydra call
 5. *Hooks*: Use onShow and onHide instead of :before-exit and :after-exit
 

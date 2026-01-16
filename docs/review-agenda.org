@@ -79,7 +79,7 @@ Items link directly to the source file and line number for quick navigation.
 
 ** Workflow
 
-1. Run the source block above with =C-c C-c=
+1. Run the source block above with `C-c C-c'
 2. Click on any item link to jump to that heading
 3. Review the content
 4. Change the heading's TODO state from ⚠️ to ✅ when satisfied

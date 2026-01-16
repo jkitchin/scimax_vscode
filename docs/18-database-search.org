@@ -16,7 +16,7 @@ Scimax VS Code includes a powerful database and search system that indexes your 
 - *Agenda views* for scheduled items and deadlines
 - *Code block search* filtered by programming language
 
-The database is built on SQLite (via =@libsql/client=) with support for vector similarity search, making it both fast and capable of sophisticated semantic queries.
+The database is built on SQLite (via `@libsql/client') with support for vector similarity search, making it both fast and capable of sophisticated semantic queries.
 
 * What Gets Indexed
 
@@ -24,9 +24,9 @@ The database is built on SQLite (via =@libsql/client=) with support for vector s
 
 The database automatically indexes three types of files:
 
-- =.org= files - Org-mode documents
-- =.md= files - Markdown documents
-- =.ipynb= files - Jupyter notebooks
+- `.org' files - Org-mode documents
+- `.md' files - Markdown documents
+- `.ipynb' files - Jupyter notebooks
 
 ** Indexed Content
 
@@ -44,7 +44,7 @@ For each file, the database extracts and indexes:
 *** Source Blocks
 - Programming language
 - Complete code content
-- Header arguments (=:results=, =:exports=, etc.)
+- Header arguments (`:results', `:exports', etc.)
 - Line numbers
 - For notebooks: cell indices
 
@@ -82,13 +82,13 @@ The database automatically watches for file changes:
 
 By default, the following patterns are ignored:
 
-- =**/node_modules/**=
-- =**/.git/**=
-- =**/dist/**=
-- =**/build/**=
-- =**/.ipynb_checkpoints/**=
+- `**/node_modules/**'
+- `**/.git/**'
+- `**/dist/**'
+- `**/build/**'
+- `**/.ipynb_checkpoints/**'
 
-Configure additional patterns in settings: =scimax.db.ignorePatterns=
+Configure additional patterns in settings: `scimax.db.ignorePatterns'
 
 * Full-Text Search
 
@@ -104,7 +104,7 @@ Full-text search uses SQLite's FTS5 (Full-Text Search version 5) with:
 ** Usage
 
 *** Command
-Run =Scimax: Search All Files (FTS5)= or use command =scimax.db.search=
+Run `Scimax: Search All Files (FTS5)' or use command `scimax.db.search'
 
 *** Query Syntax
 
@@ -147,7 +147,7 @@ Search results include:
 
 - File path and basename
 - Line number
-- Preview snippet with =<mark>= tags highlighting matches
+- Preview snippet with `<mark>' tags highlighting matches
 - BM25 relevance score
 - Up to 100 results (configurable)
 
@@ -189,11 +189,11 @@ Semantic search requires:
 
 1. *Vector search support in libsql* - The database must support vector operations
 2. *Embedding provider configured* - One of: local (Transformers.js), Ollama, or OpenAI
-3. *Files indexed with embeddings* - Run =scimax.db.reindex= after configuring
+3. *Files indexed with embeddings* - Run `scimax.db.reindex' after configuring
 
 *** Checking Availability
 
-Run =Scimax: Show Database Stats= (=scimax.db.stats=) to see:
+Run `Scimax: Show Database Stats' (`scimax.db.stats') to see:
 - Whether vector search is supported
 - Number of embeddings stored
 - Any error messages
@@ -205,7 +205,7 @@ Semantic search: Unavailable (vector search not supported)
 
 *** Fallback to Full-Text Search
 
-If semantic search is unavailable, use full-text search (=scimax.db.search=) instead. FTS5 is always available and very fast for keyword-based queries.
+If semantic search is unavailable, use full-text search (`scimax.db.search') instead. FTS5 is always available and very fast for keyword-based queries.
 
 ** Embedding Providers
 
@@ -215,32 +215,32 @@ Scimax supports three embedding providers:
 - *Pros*: Free, private, no external services needed
 - *Cons*: Slower initial model download (~30MB)
 - *Models*:
-  - =Xenova/all-MiniLM-L6-v2= (384 dims, fast, recommended)
-  - =Xenova/bge-small-en-v1.5= (384 dims, high quality)
-  - =Xenova/gte-small= (384 dims, alternative)
+  - `Xenova/all-MiniLM-L6-v2' (384 dims, fast, recommended)
+  - `Xenova/bge-small-en-v1.5' (384 dims, high quality)
+  - `Xenova/gte-small' (384 dims, alternative)
 
 *** Ollama
 - *Pros*: Free, private, local control
 - *Cons*: Requires Ollama installed and running
 - *Models*:
-  - =nomic-embed-text= (768 dims, recommended)
-  - =all-minilm= (384 dims, smaller)
-  - =mxbai-embed-large= (1024 dims, larger)
-- *Setup*: Install Ollama, then =ollama pull nomic-embed-text=
+  - `nomic-embed-text' (768 dims, recommended)
+  - `all-minilm' (384 dims, smaller)
+  - `mxbai-embed-large' (1024 dims, larger)
+- *Setup*: Install Ollama, then `ollama pull nomic-embed-text'
 
 *** OpenAI
 - *Pros*: High quality, fast, maintained
 - *Cons*: Requires API key, costs money, sends data to cloud
 - *Models*:
-  - =text-embedding-3-small= (1536 dims, recommended)
-  - =text-embedding-3-large= (3072 dims, highest quality)
-  - =text-embedding-ada-002= (1536 dims, legacy)
+  - `text-embedding-3-small' (1536 dims, recommended)
+  - `text-embedding-3-large' (3072 dims, highest quality)
+  - `text-embedding-ada-002' (1536 dims, legacy)
 
 ** Configuration
 
 *** Interactive Setup
 
-Run =Scimax: Configure Embedding Service= (=scimax.db.configureEmbeddings=)
+Run `Scimax: Configure Embedding Service' (`scimax.db.configureEmbeddings')
 
 This wizard will:
 1. Let you choose a provider
@@ -251,7 +251,7 @@ This wizard will:
 
 *** Manual Configuration
 
-Add to your VS Code settings (=settings.json=):
+Add to your VS Code settings (`settings.json'):
 
 **** Local (Transformers.js)
 #+BEGIN_SRC json
@@ -281,7 +281,7 @@ Add to your VS Code settings (=settings.json=):
 ** Usage
 
 *** Command
-Run =Scimax: Semantic Search= or use command =scimax.db.searchSemantic=
+Run `Scimax: Semantic Search' or use command `scimax.db.searchSemantic'
 
 *** Query Examples
 
@@ -316,7 +316,7 @@ Results include:
 
 After configuring an embedding provider, you *must reindex* your files:
 
-1. Run =Scimax: Reindex Files= (=scimax.db.reindex=)
+1. Run `Scimax: Reindex Files' (`scimax.db.reindex')
 2. Wait for indexing to complete
 3. The database will generate embeddings for all text chunks
 4. Semantic search will now be available
@@ -334,7 +334,7 @@ Hybrid search combines full-text (keyword) and semantic (vector) search using *R
 ** Usage
 
 *** Command
-Run =Scimax: Hybrid Search= or use command =scimax.db.searchHybrid=
+Run `Scimax: Hybrid Search' or use command `scimax.db.searchHybrid'
 
 *** How It Works
 
@@ -383,7 +383,7 @@ Beyond free-text search, the database supports structured queries for specific c
 Search specifically in headings, with optional filtering:
 
 *** Command
-=Scimax: Search Headings= (=scimax.db.searchHeadings=)
+`Scimax: Search Headings' (`scimax.db.searchHeadings')
 
 *** Features
 - Search by heading text
@@ -409,20 +409,20 @@ python
 Search headings by org-mode tags:
 
 *** Command
-=Scimax: Search By Tag= (=scimax.db.searchByTag=)
+`Scimax: Search By Tag' (`scimax.db.searchByTag')
 
 *** Features
 - Lists all tags found in indexed files
 - Shows heading count per tag
 - Supports both direct and inherited tags
-- Tags displayed as =:tagname:=
+- Tags displayed as `:tagname:'
 
 ** Property Search
 
 Search headings by property drawer values:
 
 *** Command
-=Scimax: Search By Property= (=scimax.db.searchByProperty=)
+`Scimax: Search By Property' (`scimax.db.searchByProperty')
 
 *** Common Properties
 #+BEGIN_SRC org
@@ -453,7 +453,7 @@ Value: <empty or specific>
 Browse and filter TODO items:
 
 *** Command
-=Scimax: Show TODOs= (=scimax.db.showTodos=)
+`Scimax: Show TODOs' (`scimax.db.showTodos')
 
 *** Features
 - Lists all TODO items across workspace
@@ -476,7 +476,7 @@ CANCELLED     # Abandoned
 Search code blocks by language:
 
 *** Command
-=Scimax: Search Code Blocks= (=scimax.db.searchBlocks=)
+`Scimax: Search Code Blocks' (`scimax.db.searchBlocks')
 
 *** Features
 - Filter by programming language
@@ -497,10 +497,10 @@ Search code blocks by language:
 Find files by inline hashtags:
 
 *** Command
-=Scimax: Search Hashtags= (=scimax.db.searchHashtags=)
+`Scimax: Search Hashtags' (`scimax.db.searchHashtags')
 
 *** Features
-- Lists all hashtags found (=#tagname=)
+- Lists all hashtags found (`#tagname')
 - Shows file count per hashtag
 - Displays files containing selected hashtag
 - Case-insensitive matching
@@ -520,7 +520,7 @@ machinelearning
 Browse all indexed files:
 
 *** Command
-=Scimax: Browse Indexed Files= (=scimax.db.browseFiles=)
+`Scimax: Browse Indexed Files' (`scimax.db.browseFiles')
 
 *** Features
 - Lists all files in database
@@ -535,7 +535,7 @@ Browse all indexed files:
 The agenda shows scheduled items and deadlines:
 
 *** Command
-=Scimax: Show Agenda= (=scimax.db.agenda=)
+`Scimax: Show Agenda' (`scimax.db.agenda')
 
 *** Time Periods
 - Next 2 weeks (default)
@@ -571,7 +571,7 @@ Items with TODO state but no scheduling
 Show only upcoming deadlines:
 
 *** Command
-=Scimax: Show Deadlines= (=scimax.db.deadlines=)
+`Scimax: Show Deadlines' (`scimax.db.deadlines')
 
 *** Features
 - Next 2 weeks of deadlines
@@ -620,7 +620,7 @@ CLOSED: [2026-01-13 Mon 10:30]
 Limit searches to specific directories:
 
 ** Commands
-=Scimax: Set Search Scope= (=scimax.db.setScope=)
+`Scimax: Set Search Scope' (`scimax.db.setScope')
 
 ** Scope Types
 
@@ -646,7 +646,7 @@ Search scope: directory (my-project)
 ** Reindexing
 
 *** Full Reindex
-Command: =Scimax: Reindex Files= (=scimax.db.reindex=)
+Command: `Scimax: Reindex Files' (`scimax.db.reindex')
 
 - Scans all workspace folders
 - Checks file modification times
@@ -677,7 +677,7 @@ Warning: Disable for very large workspaces (>10,000 files) to prevent memory iss
 ** Optimization
 
 *** Command
-=Scimax: Optimize Database= (=scimax.db.optimize=)
+`Scimax: Optimize Database' (`scimax.db.optimize')
 
 *** Operations
 - Removes entries for deleted files
@@ -688,7 +688,7 @@ Warning: Disable for very large workspaces (>10,000 files) to prevent memory iss
 ** Clearing Database
 
 *** Command
-=Scimax: Clear Database= (=scimax.db.clear=)
+`Scimax: Clear Database' (`scimax.db.clear')
 
 *** Warning
 This is destructive and requires confirmation:
@@ -706,7 +706,7 @@ This is destructive and requires confirmation:
 ** Statistics
 
 *** Command
-=Scimax: Show Database Stats= (=scimax.db.stats=)
+`Scimax: Show Database Stats' (`scimax.db.stats')
 
 *** Information Displayed
 #+BEGIN_SRC org
@@ -822,9 +822,9 @@ Last indexed: 2026-01-13 14:30:00
 
 ** Database Settings
 
-*** =scimax.db.directories=
-Type: =string[]=
-Default: =[]=
+*** `scimax.db.directories'
+Type: `string[]'
+Default: `[]'
 
 Additional directories to index beyond workspace folders.
 
@@ -837,9 +837,9 @@ Additional directories to index beyond workspace folders.
 }
 #+END_SRC
 
-*** =scimax.db.ignorePatterns=
-Type: =string[]=
-Default: =["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**", "**/.ipynb_checkpoints/**"]=
+*** `scimax.db.ignorePatterns'
+Type: `string[]'
+Default: `["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**", "**/.ipynb_checkpoints/**"]'
 
 Glob patterns for files to exclude from indexing.
 
@@ -855,9 +855,9 @@ Glob patterns for files to exclude from indexing.
 }
 #+END_SRC
 
-*** =scimax.db.autoIndex=
-Type: =boolean=
-Default: =false=
+*** `scimax.db.autoIndex'
+Type: `boolean'
+Default: `false'
 
 Automatically index workspace on activation. Disable for large workspaces.
 
@@ -869,10 +869,10 @@ Automatically index workspace on activation. Disable for large workspaces.
 
 ** Embedding Settings
 
-*** =scimax.db.embeddingProvider=
-Type: =enum=
+*** `scimax.db.embeddingProvider'
+Type: `enum'
 Values: ="none" | "local" | "ollama" | "openai"=
-Default: ="none"=
+Default: `"none"'
 
 Embedding provider for semantic search.
 
@@ -882,10 +882,10 @@ Embedding provider for semantic search.
 }
 #+END_SRC
 
-*** =scimax.db.localModel=
-Type: =enum=
+*** `scimax.db.localModel'
+Type: `enum'
 Values: ="Xenova/all-MiniLM-L6-v2" | "Xenova/bge-small-en-v1.5" | "Xenova/gte-small"=
-Default: ="Xenova/all-MiniLM-L6-v2"=
+Default: `"Xenova/all-MiniLM-L6-v2"'
 
 Local embedding model (Transformers.js).
 
@@ -895,9 +895,9 @@ Local embedding model (Transformers.js).
 }
 #+END_SRC
 
-*** =scimax.db.ollamaUrl=
-Type: =string=
-Default: ="http://localhost:11434"=
+*** `scimax.db.ollamaUrl'
+Type: `string'
+Default: `"http://localhost:11434"'
 
 Ollama server URL.
 
@@ -907,9 +907,9 @@ Ollama server URL.
 }
 #+END_SRC
 
-*** =scimax.db.ollamaModel=
-Type: =string=
-Default: ="nomic-embed-text"=
+*** `scimax.db.ollamaModel'
+Type: `string'
+Default: `"nomic-embed-text"'
 
 Ollama embedding model name.
 
@@ -919,9 +919,9 @@ Ollama embedding model name.
 }
 #+END_SRC
 
-*** =scimax.db.openaiApiKey=
-Type: =string=
-Default: =""=
+*** `scimax.db.openaiApiKey'
+Type: `string'
+Default: `""'
 
 OpenAI API key for embeddings.
 
@@ -975,7 +975,7 @@ Semantic search returns no results, shows "unavailable", or displays an error.
 
 *** First: Check Vector Search Support
 
-Run =Scimax: Show Database Stats= (=scimax.db.stats=) to see the semantic search status:
+Run `Scimax: Show Database Stats' (`scimax.db.stats') to see the semantic search status:
 
 | Status Message                              | Meaning                                     |
 |---------------------------------------------+---------------------------------------------|
@@ -990,16 +990,16 @@ If you see "Semantic search: Unavailable", the libsql database doesn't support v
 - The libsql version doesn't include vector support
 - The vector index failed to create
 
-*Workaround*: Use full-text search (=scimax.db.search=) instead. FTS5 is always available and fast.
+*Workaround*: Use full-text search (`scimax.db.search') instead. FTS5 is always available and fast.
 
 *** Embedding Provider Issues
 
 If vector search is supported but not working:
 
-1. Check embedding provider is configured: =scimax.db.embeddingProvider=
-2. Test connection: Run =Scimax: Configure Embedding Service=
+1. Check embedding provider is configured: `scimax.db.embeddingProvider'
+2. Test connection: Run `Scimax: Configure Embedding Service'
 3. Ensure files are reindexed after configuring embeddings
-4. Check console for errors (=Help: Toggle Developer Tools=)
+4. Check console for errors (`Help: Toggle Developer Tools')
 
 *** Local Provider Issues
 - First use downloads model (~30MB), wait for completion
@@ -1007,10 +1007,10 @@ If vector search is supported but not working:
 - Try different model if one fails
 
 *** Ollama Issues
-- Ensure Ollama is running: =ollama serve=
-- Pull model: =ollama pull nomic-embed-text=
+- Ensure Ollama is running: `ollama serve'
+- Pull model: `ollama pull nomic-embed-text'
 - Check URL is correct in settings
-- Test connection: =curl http://localhost:11434/api/embeddings=
+- Test connection: `curl http://localhost:11434/api/embeddings'
 
 *** OpenAI Issues
 - Verify API key is valid
@@ -1023,8 +1023,8 @@ If vector search is supported but not working:
 Searches return empty results despite having files.
 
 *** Solutions
-1. Run =Scimax: Show Database Stats= to check file count
-2. If files = 0, run =Scimax: Reindex Files=
+1. Run `Scimax: Show Database Stats' to check file count
+2. If files ` 0, run 'Scimax: Reindex Files=
 3. Check file extensions (.org, .md, .ipynb)
 4. Verify files aren't in ignored directories
 5. Check search scope is set to "All files"
@@ -1049,7 +1049,7 @@ Errors mentioning "database is locked" or "disk I/O error".
 *** Solutions
 1. Close other VS Code windows accessing same workspace
 2. Restart VS Code
-3. Run =Scimax: Clear Database= and reindex
+3. Run `Scimax: Clear Database' and reindex
 4. Check disk space is available
 5. Verify database file permissions
 
@@ -1194,49 +1194,49 @@ Results will include:
 
 *** Files Table
 Tracks indexed files with modification tracking:
-- =path=, =file_type=, =mtime=, =hash=, =size=, =indexed_at=
+- `path', `file_type', `mtime', `hash', `size', `indexed_at'
 
 *** Headings Table
 Org/markdown headings with full metadata:
-- =level=, =title=, =todo_state=, =priority=
-- =tags=, =inherited_tags=, =properties=
-- =scheduled=, =deadline=, =closed=
-- =line_number=, =begin_pos=
+- `level', `title', `todo_state', `priority'
+- `tags', `inherited_tags', `properties'
+- `scheduled', `deadline', `closed'
+- `line_number', `begin_pos'
 
 *** Source Blocks Table
 Code blocks with language and content:
-- =language=, =content=, =headers=
-- =line_number=, =cell_index=
+- `language', `content', `headers'
+- `line_number', `cell_index'
 
 *** Links Table
 All link types (file, http, id, etc.):
-- =link_type=, =target=, =description=
-- =line_number=
+- `link_type', `target', `description'
+- `line_number'
 
 *** Hashtags Table
 Inline hashtags:
-- =tag=, =file_path=
+- `tag', `file_path'
 
 *** Chunks Table
 Text chunks for semantic search:
-- =content=, =line_start=, =line_end=
-- =embedding= (F32_BLOB vector)
+- `content', `line_start', `line_end'
+- `embedding' (F32_BLOB vector)
 
 *** FTS Content (Virtual Table)
 Full-text search index:
-- =file_path=, =title=, =content=
+- `file_path', `title', `content'
 - Porter stemming, Unicode normalization
 - BM25 ranking support
 
 ** Indexes
 
 Performance indexes on:
-- =headings.file_id=, =headings.todo_state=
-- =headings.deadline=, =headings.scheduled=
-- =source_blocks.language=
-- =hashtags.tag=
-- =chunks.embedding= (vector index with cosine metric)
-- =files.file_type=
+- `headings.file_id', `headings.todo_state'
+- `headings.deadline', `headings.scheduled'
+- `source_blocks.language'
+- `hashtags.tag'
+- `chunks.embedding' (vector index with cosine metric)
+- `files.file_type'
 
 ** Vector Search
 
@@ -1249,7 +1249,7 @@ Using libsql's vector extension:
 ** Parsers
 
 *** Org Mode
-=UnifiedParserAdapter= - Full AST parser compatible with org-element:
+`UnifiedParserAdapter' - Full AST parser compatible with org-element:
 - Recursive heading parsing with inheritance
 - Property drawer extraction
 - Timestamp parsing (scheduled, deadline, closed)
@@ -1258,12 +1258,12 @@ Using libsql's vector extension:
 
 *** Markdown
 Simplified parser:
-- ATX heading syntax (=#=)
+- ATX heading syntax (`#')
 - Fenced code blocks
 - Inline links
 
 *** Jupyter Notebooks
-=ipynbParser= - Notebook-specific parser:
+`ipynbParser' - Notebook-specific parser:
 - Markdown cells → headings and links
 - Code cells → source blocks
 - Cell indices tracked for navigation

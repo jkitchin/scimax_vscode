@@ -802,15 +802,15 @@ Ensure complete entries for best results:
 If citation shows "not found in bibliography":
 1. Check spelling of citation key
 2. Verify .bib file is configured or linked in document
-3. Run =scimax.ref.refresh= to reload bibliography
+3. Run `scimax.ref.refresh' to reload bibliography
 4. Check .bib file for entry with that exact key
 
 ** PDF Not Found
 
 If "PDF not found" when trying to open:
-1. Check =scimax.ref.pdfDirectory= is set correctly
-2. Verify PDF filename matches key or =Author_Year.pdf= pattern
-3. Check file exists with =ls= or file explorer
+1. Check `scimax.ref.pdfDirectory' is set correctly
+2. Verify PDF filename matches key or `Author_Year.pdf' pattern
+3. Check file exists with `ls' or file explorer
 4. Try opening from DOI if available
 
 ** DOI Fetch Fails
@@ -829,7 +829,7 @@ If bibliography link isn't recognized:
 2. Ensure .bib extension is included
 3. Verify file exists at that location
 4. Check for typos in filename
-5. Use =~= for home directory, not =$HOME=
+5. Use `~' for home directory, not `$HOME'
 
 ** Export Issues
 

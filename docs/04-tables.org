@@ -32,7 +32,7 @@ When you press Tab after entering content, the table auto-aligns.
 ** ✅ Table Creation Command
 CLOSED: [2026-01-15 Thu 15:07]
 
-Press =C-c |= or use =scimax.table.create= to insert a table template.
+Press =C-c |= or use `scimax.table.create' to insert a table template.
 
 You'll be prompted for the number of columns and rows.
 
@@ -177,7 +177,7 @@ Formulas are defined in a #+TBLFM: line below the table:
 | Oranges | 5   | 2.00  | 10    |
 |---------+-----+-------+-------|
 | Sum     |     |       | 25    |
-#+TBLFM: $4=$2*$3::@4$4=vsum(@2$4..@3$4)
+#+TBLFM: $4`$2*$3::@4$4'vsum(@2$4..@3$4)
 
 
 ** Cell References
@@ -217,7 +217,7 @@ Formulas are defined in a #+TBLFM: line below the table:
 
 ** Formula Syntax
 
-Formulas use the syntax: =target=expression=
+Formulas use the syntax: `target'expression=
 
 #+BEGIN_SRC org
 ,#+TBLFM: $4=$2*$3
@@ -225,7 +225,7 @@ Formulas use the syntax: =target=expression=
 
 This sets column 4 to the product of columns 2 and 3.
 
-Multiple formulas separated by =::=:
+Multiple formulas separated by `::':
 
 #+BEGIN_SRC org
 ,#+TBLFM: $4=$2*$3::@>$4=vsum(@2$4..@-1$4)
@@ -260,7 +260,7 @@ Example:
 | C-c C-c (on TBLFM) | Recalculate all formulas |
 | scimax.table.recalculate | Recalculate table        |
 
-Place your cursor on the =#+TBLFM:= line and press =C-c C-c= to apply
+Place your cursor on the `#+TBLFM:' line and press `C-c C-c' to apply
 all formulas.
 
 ** Formula Examples
@@ -370,18 +370,18 @@ Give tables names for reference:
 
 Named tables can be:
 - Referenced in other source blocks
-- Jumped to with =scimax.table.gotoNamed=
+- Jumped to with `scimax.table.gotoNamed'
 - Used as input for calculations
 
 * ⚠️ Table Appearance in Export
 
 ** HTML Export
 
-Tables export as HTML =<table>= elements with proper styling.
+Tables export as HTML `<table>' elements with proper styling.
 
 ** LaTeX Export
 
-Tables export as LaTeX =tabular= environments:
+Tables export as LaTeX `tabular' environments:
 
 #+BEGIN_SRC latex
 \begin{tabular}{llr}

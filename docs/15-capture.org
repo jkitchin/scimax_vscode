@@ -38,18 +38,18 @@ The capture system follows the principle of "capture first, organize later." Ins
 
 The quickest way to capture a TODO is:
 
-1. Press =C-c c= (or run =Scimax: Capture=)
-2. Select the "Todo" template (or press =t=)
+1. Press `C-c c' (or run `Scimax: Capture')
+2. Select the "Todo" template (or press `t')
 3. Enter your task description
 4. Press Enter
 
-Your TODO is now filed to =todo.org= without leaving your current context.
+Your TODO is now filed to `todo.org' without leaving your current context.
 
 ** Quick TODO Capture
 
 For even faster TODO capture, use the dedicated quick capture command:
 
-1. Press =C-c t= (or run =Scimax: Quick Capture TODO=)
+1. Press `C-c t' (or run `Scimax: Quick Capture TODO')
 2. Type your task
 3. Press Enter
 
@@ -60,7 +60,7 @@ This bypasses the template picker and goes straight to TODO capture.
 When you invoke capture with text selected:
 
 1. Select some text in your editor
-2. Press =C-c c=
+2. Press `C-c c'
 3. Choose a template (e.g., "Code Snippet")
 4. The selected text is automatically included in your capture
 
@@ -72,17 +72,17 @@ The capture system also includes a link back to where you initiated the capture,
 
 Scimax comes with several built-in templates:
 
-*** Todo Template (=t=)
+*** Todo Template (`t')
 
-Captures a TODO item to =todo.org=:
+Captures a TODO item to `todo.org':
 
 #+begin_src org
 ,* TODO Task description
 #+end_src
 
-*** Note Template (=n=)
+*** Note Template (`n')
 
-Captures a quick note to =notes.org=:
+Captures a quick note to `notes.org':
 
 #+begin_src org
 ,* Note title
@@ -91,9 +91,9 @@ Captures a quick note to =notes.org=:
 Note content here...
 #+end_src
 
-*** Journal Template (=j=)
+*** Journal Template (`j')
 
-Captures a journal entry to =journal.org= in a date tree:
+Captures a journal entry to `journal.org' in a date tree:
 
 #+begin_src org
 ,* 2026
@@ -103,9 +103,9 @@ Captures a journal entry to =journal.org= in a date tree:
 Entry content...
 #+end_src
 
-*** Meeting Template (=m=)
+*** Meeting Template (`m')
 
-Captures structured meeting notes to =meetings.org=:
+Captures structured meeting notes to `meetings.org':
 
 #+begin_src org
 ,* Meeting: Subject
@@ -119,9 +119,9 @@ Names...
 ,** Action Items
 #+end_src
 
-*** Code Snippet Template (=s=)
+*** Code Snippet Template (`s')
 
-Captures code snippets to =snippets.org=:
+Captures code snippets to `snippets.org':
 
 #+begin_src org
 ,* Description
@@ -135,9 +135,9 @@ selected code here
 ,#+END_SRC
 #+end_src
 
-*** Bookmark Template (=b=)
+*** Bookmark Template (`b')
 
-Saves bookmarks to =bookmarks.org=:
+Saves bookmarks to `bookmarks.org':
 
 #+begin_src org
 ,* [[https://example.com][Page Title]]
@@ -150,8 +150,8 @@ Optional notes about the bookmark...
 
 To see all available templates:
 
-- Run =Scimax: List Capture Templates=
-- Or press =C-c c= to see the template picker
+- Run `Scimax: List Capture Templates'
+- Or press `C-c c' to see the template picker
 
 Each template shows:
 - Its key (single letter shortcut)
@@ -164,10 +164,10 @@ Each template shows:
 
 The easiest way to create a template is with the interactive creator:
 
-1. Run =Scimax: Create Capture Template=
-2. Enter a key (e.g., =r= for "Research note")
+1. Run `Scimax: Create Capture Template'
+2. Enter a key (e.g., `r' for "Research note")
 3. Enter a name (e.g., "Research Note")
-4. Specify the target file (e.g., =research.org=)
+4. Specify the target file (e.g., `research.org')
 5. Choose where to insert (end of file, under headline, date tree)
 6. Enter the template content
 
@@ -175,7 +175,7 @@ The template is saved to your VS Code settings and immediately available.
 
 ** Manual Template Configuration
 
-You can also define templates directly in =settings.json=:
+You can also define templates directly in `settings.json':
 
 #+begin_src json
 {
@@ -305,7 +305,7 @@ Prompts for subject and attendees, places cursor under Agenda.
 
 Capture targets determine where your captured content is inserted.
 
-** File Target (=file=)
+** File Target (`file')
 
 Appends to the end of the file.
 
@@ -317,7 +317,7 @@ Appends to the end of the file.
 }
 #+end_src
 
-With =prepend: true=, inserts at the beginning (after file-level keywords):
+With `prepend: true', inserts at the beginning (after file-level keywords):
 
 #+begin_src json
 {
@@ -328,7 +328,7 @@ With =prepend: true=, inserts at the beginning (after file-level keywords):
 }
 #+end_src
 
-** Headline Target (=file+headline=)
+** Headline Target (`file+headline')
 
 Inserts under a specific headline. If the headline doesn't exist, it's created.
 
@@ -341,9 +341,9 @@ Inserts under a specific headline. If the headline doesn't exist, it's created.
 }
 #+end_src
 
-This finds or creates a headline =* Inbox= and appends content as a child.
+This finds or creates a headline `* Inbox' and appends content as a child.
 
-With =prepend: true=, inserts right after the headline:
+With `prepend: true', inserts right after the headline:
 
 #+begin_src json
 {
@@ -355,7 +355,7 @@ With =prepend: true=, inserts right after the headline:
 }
 #+end_src
 
-** Date Tree Target (=file+datetree=)
+** Date Tree Target (`file+datetree')
 
 Creates a hierarchical date tree structure:
 
@@ -393,8 +393,8 @@ If no target is specified, content is appended to the end of the file:
 
 The main capture command opens the template picker:
 
-- *Command*: =Scimax: Capture=
-- *Keybinding*: =C-c c=
+- *Command*: `Scimax: Capture'
+- *Keybinding*: `C-c c'
 
 This shows all available templates. Select one to begin capture.
 
@@ -402,8 +402,8 @@ This shows all available templates. Select one to begin capture.
 
 If you know the template key, you can capture directly:
 
-- *Command*: =Scimax: Capture by Key=
-- Enter the template key (e.g., =t= for TODO)
+- *Command*: `Scimax: Capture by Key'
+- Enter the template key (e.g., `t' for TODO)
 
 ** Quick Capture Commands
 
@@ -411,22 +411,22 @@ For common captures, use dedicated quick capture commands:
 
 *** Quick TODO
 
-- *Command*: =Scimax: Quick Capture TODO=
-- *Keybinding*: =C-c t=
+- *Command*: `Scimax: Quick Capture TODO'
+- *Keybinding*: `C-c t'
 
 Directly captures a TODO without showing the template picker.
 
 *** Quick Note
 
-- *Command*: =Scimax: Quick Capture Note=
+- *Command*: `Scimax: Quick Capture Note'
 
 Directly captures a note.
 
 ** Capture Process
 
-1. *Invoke capture*: Press =C-c c= or run a quick capture command
+1. *Invoke capture*: Press `C-c c' or run a quick capture command
 2. *Select template*: Choose from the picker (or skip if using quick capture)
-3. *Fill prompts*: Enter values for any =%^{prompt}= placeholders
+3. *Fill prompts*: Enter values for any `%^{prompt}' placeholders
 4. *Preview* (optional): Review the captured content
 5. *Confirm*: Press "Capture" to file the content
 
@@ -439,10 +439,10 @@ The captured content is inserted at the target location, and you receive a confi
 When you have text selected:
 
 1. Select text in the editor
-2. Press =C-c c=
+2. Press `C-c c'
 3. Choose a template
 
-The selected text is available as =%i= in your template. Perfect for:
+The selected text is available as `%i' in your template. Perfect for:
 - Capturing code snippets
 - Quoting text
 - Collecting research excerpts
@@ -451,9 +451,9 @@ The selected text is available as =%i= in your template. Perfect for:
 
 Templates can include links back to where you initiated the capture:
 
-- =%a= creates a link to the source location
-- =%A= creates a link with description (filename:line)
-- =%l= creates a literal link string
+- `%a' creates a link to the source location
+- `%A' creates a link with description (filename:line)
+- `%l' creates a literal link string
 
 Example template:
 #+begin_src org
@@ -508,7 +508,7 @@ Capture integrates seamlessly with the journal system.
 
 ** Journal Capture Template
 
-The built-in journal template (=j=) uses date tree targeting:
+The built-in journal template (`j') uses date tree targeting:
 
 #+begin_src json
 {
@@ -580,7 +580,7 @@ A common GTD workflow uses an "inbox" for quick captures that are processed late
 
 ** Inbox Setup
 
-1. Create an inbox file (=inbox.org=)
+1. Create an inbox file (`inbox.org')
 2. Define a capture template targeting it
 
 #+begin_src json
@@ -674,10 +674,10 @@ Template file paths are resolved relative to this directory:
 
 Capture resolves file paths in this order:
 
-1. *Absolute paths*: =/home/user/notes/todo.org= - used as-is
-2. *Home directory*: =~/org/todo.org= - expands =~= to home directory
-3. *Default directory*: =todo.org= - resolves relative to =defaultDirectory=
-4. *Workspace*: =todo.org= - resolves relative to first workspace folder
+1. *Absolute paths*: `/home/user/notes/todo.org' - used as-is
+2. *Home directory*: ``/org/todo.org' - expands `'' to home directory
+3. *Default directory*: `todo.org' - resolves relative to `defaultDirectory'
+4. *Workspace*: `todo.org' - resolves relative to first workspace folder
 
 ** Configuring Preview
 
@@ -772,7 +772,7 @@ When disabled:
 
 *** Inbox Processing
 
-1. *Quick capture everything*: Use =C-c c= → =i= to capture to inbox
+1. *Quick capture everything*: Use `C-c c' → `i' to capture to inbox
 2. *Process inbox regularly*: Review inbox.org daily
 3. *Refile to projects*: Move items to appropriate project files
 4. *Archive processed items*: Keep inbox clean
@@ -807,7 +807,7 @@ When disabled:
 
 Usage:
 1. Select a quote from a paper/article
-2. Press =C-c c= → =r=
+2. Press `C-c c' → `r'
 3. Enter source name and URL
 4. The quote is captured in the "Quotes" section
 
@@ -827,7 +827,7 @@ Usage:
 
 Usage:
 1. Select code in editor
-2. Press =C-c c= → =c=
+2. Press `C-c c' → `c'
 3. Describe the code and specify language
 4. Creates a documented code snippet with link back to source
 
@@ -968,7 +968,7 @@ When you find the answer, update the "Resolution" section.
 
 ** Custom Keybindings
 
-Add custom keybindings in =keybindings.json= (=C-k C-s= to open):
+Add custom keybindings in `keybindings.json' (`C-k C-s' to open):
 
 *** Quick Capture Note
 
@@ -1046,7 +1046,7 @@ Set a schedule to process inbox.org:
 
 ** Leverage Context Links
 
-Always include =%a= or =%A= in templates to link back to source:
+Always include `%a' or `%A' in templates to link back to source:
 
 #+begin_src org
 Source: %a
@@ -1064,7 +1064,7 @@ Add tags to templates for easy filtering:
 }
 #+end_src
 
-Later, search for =:meeting:= to find all meeting-related captures.
+Later, search for `:meeting:' to find all meeting-related captures.
 
 ** Combine with Agenda
 
@@ -1120,9 +1120,9 @@ This makes capture nearly instantaneous.
 ** Use Keyboard-driven Workflow
 
 Memorize keys for your most common captures:
-- =C-c c= → =t= → Task description → Enter (TODO)
-- =C-c c= → =j= → Entry title → Enter (Journal)
-- =C-c t= → Task → Enter (Quick TODO)
+- `C-c c' → `t' → Task description → Enter (TODO)
+- `C-c c' → `j' → Entry title → Enter (Journal)
+- `C-c t' → Task → Enter (Quick TODO)
 
 With practice, capture becomes muscle memory.
 
@@ -1130,32 +1130,32 @@ With practice, capture becomes muscle memory.
 
 ** Template Not Appearing in Picker
 
-- Check =settings.json= for syntax errors
-- Ensure template has required fields: =key=, =name=, =file=, =template=
-- Reload window (=C-S-P= → =Reload Window=)
+- Check `settings.json' for syntax errors
+- Ensure template has required fields: `key', `name', `file', `template'
+- Reload window (`C-S-P' → `Reload Window')
 
 ** Capture File Not Created
 
 - Check file path in template configuration
 - Ensure directory exists or use absolute path
-- Check =scimax.capture.defaultDirectory= setting
+- Check `scimax.capture.defaultDirectory' setting
 - Verify write permissions
 
 ** Template Placeholders Not Expanding
 
-- Verify placeholder syntax: =%^{Prompt}= not =$^{Prompt}=
+- Verify placeholder syntax: `%^{Prompt}' not `$^{Prompt}'
 - Check for typos in placeholder names
-- Some placeholders require context (e.g., =%a= needs source file)
+- Some placeholders require context (e.g., `%a' needs source file)
 
-** Cursor Position (=%?=) Not Working
+** Cursor Position (`%?') Not Working
 
-- Ensure =%?= is in template
-- Open file after capture (=scimax.capture.openAfterCapture: true=)
-- The cursor jumps to =%?= position when file opens
+- Ensure `%?' is in template
+- Open file after capture (`scimax.capture.openAfterCapture: true')
+- The cursor jumps to `%?' position when file opens
 
 ** Date Tree Not Creating Structure
 
-- Verify target type: ="type": "file+datetree"=
+- Verify target type: `"type": "file+datetree"'
 - Ensure template is capturing to correct file
 - Check file for malformed existing date tree structure
 
@@ -1163,7 +1163,7 @@ With practice, capture becomes muscle memory.
 
 ** Journal Integration
 
-Capture complements the journal system. Use capture templates with =file+datetree= targeting for seamless journal integration.
+Capture complements the journal system. Use capture templates with `file+datetree' targeting for seamless journal integration.
 
 See [[file:14-journal.org][Journal Documentation]] for details.
 
@@ -1264,7 +1264,7 @@ Future versions may support template inheritance for sharing common configuratio
 
 ** Example Templates Library
 
-See =examples/capture-templates.json= in the Scimax repository for a collection of ready-to-use templates for various workflows.
+See `examples/capture-templates.json' in the Scimax repository for a collection of ready-to-use templates for various workflows.
 
 * Navigation
 

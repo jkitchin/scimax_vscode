@@ -52,11 +52,11 @@ export const searchMenu: HydraMenuDefinition = {
                 },
                 {
                     key: 'v',
-                    label: 'Vector Search',
-                    description: 'Semantic similarity search',
+                    label: 'Semantic Search',
+                    description: 'AI-powered similarity search',
                     icon: 'sparkle',
                     exit: 'exit',
-                    action: 'scimax.db.vectorSearch',
+                    action: 'scimax.db.searchSemantic',
                 },
             ],
         },
@@ -65,11 +65,11 @@ export const searchMenu: HydraMenuDefinition = {
             items: [
                 {
                     key: 't',
-                    label: 'Search TODOs',
-                    description: 'Find TODO items',
+                    label: 'Show TODOs',
+                    description: 'List all TODO items',
                     icon: 'checklist',
                     exit: 'exit',
-                    action: 'scimax.db.searchTodos',
+                    action: 'scimax.db.showTodos',
                 },
                 {
                     key: 'a',

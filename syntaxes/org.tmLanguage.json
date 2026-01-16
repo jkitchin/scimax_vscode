@@ -1129,52 +1129,66 @@
       "patterns": [
         {
           "name": "markup.bold.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\*[^*\\n]+\\*)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\*)([^*\\n]+)(\\*)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
-            "1": { "name": "markup.bold.content.org" }
+            "1": { "name": "punctuation.definition.bold.begin.org" },
+            "2": { "name": "markup.bold.content.org" },
+            "3": { "name": "punctuation.definition.bold.end.org" }
           }
         },
         {
           "name": "markup.italic.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(\/[^\/\\n]+\/)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\/)([^\\/\\n]+)(\\/)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
-            "1": { "name": "markup.italic.content.org" }
+            "1": { "name": "punctuation.definition.italic.begin.org" },
+            "2": { "name": "markup.italic.content.org" },
+            "3": { "name": "punctuation.definition.italic.end.org" }
           }
         },
         {
           "name": "markup.underline.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(_[^_\\n]+_)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(_)([^_\\n]+)(_)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
-            "1": { "name": "markup.underline.content.org" }
+            "1": { "name": "punctuation.definition.underline.begin.org" },
+            "2": { "name": "markup.underline.content.org" },
+            "3": { "name": "punctuation.definition.underline.end.org" }
           }
         },
         {
           "name": "markup.raw.verbatim.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(=[^=\\n]+=)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(=)([^=\\n]+)(=)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
-            "1": { "name": "markup.raw.verbatim.content.org" }
+            "1": { "name": "punctuation.definition.verbatim.begin.org" },
+            "2": { "name": "markup.raw.verbatim.content.org" },
+            "3": { "name": "punctuation.definition.verbatim.end.org" }
           }
         },
         {
           "name": "markup.inline.raw.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(~[^~\\n]+~)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(~)([^~\\n]+)(~)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
-            "1": { "name": "markup.inline.raw.content.org" }
+            "1": { "name": "punctuation.definition.raw.begin.org" },
+            "2": { "name": "markup.inline.raw.content.org" },
+            "3": { "name": "punctuation.definition.raw.end.org" }
           }
         },
         {
           "name": "markup.strikethrough.org",
-          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\+[^+\\n]+\\+)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
+          "match": "(?:^|(?<=[\\s\\-({'\"]))(\\+)([^+\\n]+)(\\+)(?=[\\s.,;:!?)\\]}'\"\\-]|$)",
           "captures": {
-            "1": { "name": "markup.strikethrough.content.org" }
+            "1": { "name": "punctuation.definition.strikethrough.begin.org" },
+            "2": { "name": "markup.strikethrough.content.org" },
+            "3": { "name": "punctuation.definition.strikethrough.end.org" }
           }
         },
         {
           "comment": "Emacs-style command markup `command'",
           "name": "markup.command.org",
-          "match": "(`[^`'\\n]+')",
+          "match": "(`)([^`'\\n]+)(')",
           "captures": {
-            "1": { "name": "markup.command.content.org" }
+            "1": { "name": "markup.command.delimiter.begin.org" },
+            "2": { "name": "markup.command.content.org" },
+            "3": { "name": "markup.command.delimiter.end.org" }
           }
         }
       ]

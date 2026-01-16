@@ -220,9 +220,9 @@ This documentation is organized into several sections:
 
 1. *Install the extension* from the VS Code marketplace or from a VSIX file
 
-2. *Open or create an org file* with the =.org= extension
+2. *Open or create an org file* with the `.org' extension
 
-3. *Create a heading* by typing =* My First Heading=
+3. *Create a heading* by typing `* My First Heading'
 
 4. *Add a source block* and execute it:
    #+BEGIN_SRC org
@@ -230,9 +230,9 @@ This documentation is organized into several sections:
    print("Hello, Scimax VS Code!")
    ,#+END_SRC
    #+END_SRC
-   Press =C-<return>= or =C-c C-c= to execute.
+   Press `C-<return>' or `C-c C-c' to execute.
 
-5. *Explore the menus* with =C-c m= (main menu) or =C-c C-m= (context menu)
+5. *Explore the menus* with `C-c m' (main menu) or `C-c C-m' (context menu)
 
 See [[file:01-getting-started.org][Getting Started]] for a complete introduction.
 
@@ -240,9 +240,9 @@ See [[file:01-getting-started.org][Getting Started]] for a complete introduction
 
 *** Within VS Code
 
-- Press =C-c m= to open the main Hydra menu
-- Press =C-c C-m= for context-sensitive menus
-- Use =C-S-P= and search for "Scimax" commands
+- Press `C-c m' to open the main Hydra menu
+- Press `C-c C-m' for context-sensitive menus
+- Use `C-S-P' and search for "Scimax" commands
 - Hover over elements for tooltips and information
 
 *** Online Resources
@@ -252,7 +252,7 @@ See [[file:01-getting-started.org][Getting Started]] for a complete introduction
 
 *** Keybinding Help
 
-Press =? = at the beginning of a heading (with speed commands enabled) to
+Press `? ' at the beginning of a heading (with speed commands enabled) to
 see available speed commands.
 
 See [[file:24-keybindings.org][Keybindings]] for the complete reference.

@@ -29,18 +29,18 @@ LaTeX preview is a system that automatically compiles and renders LaTeX mathemat
 
 Inline math appears within text paragraphs and uses the following delimiters:
 
-*** Dollar Sign Delimiter: =$...$=
+*** Dollar Sign Delimiter: `$...$'
 
 The most common inline math syntax. Text between single dollar signs is rendered as mathematics.
 
 *Example:*
 
-The quadratic formula is $x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ for equation $ax^2 + bx + c = 0$.
+The quadratic formula is $x ` \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ for equation $ax^2 + bx + c ' 0$.
 
 
-*Renders as:* The quadratic formula is x = (-b ± √(b² - 4ac)) / 2a for equation ax² + bx + c = 0.
+*Renders as:* The quadratic formula is x ` (-b ± √(b² - 4ac)) / 2a for equation ax² + bx + c ' 0.
 
-*** Backslash-Parenthesis Delimiter: =\(...\)=
+*** Backslash-Parenthesis Delimiter: `\(...\)'
 
 Alternative inline math syntax, preferred in some LaTeX style guides.
 
@@ -52,13 +52,13 @@ Einstein's mass-energy equivalence is \(E = mc^2\), where \(c\) is the speed of 
 
 *** Currency Detection
 
-The preview system intelligently avoids treating dollar amounts as math. Currency patterns like =$100= or =$5.99= are ignored.
+The preview system intelligently avoids treating dollar amounts as math. Currency patterns like `$100' or `$5.99' are ignored.
 
 ** Display Math
 
 Display math appears on its own line, centered and larger than inline math.
 
-*** Double Dollar Signs: =$$...$$=
+*** Double Dollar Signs: `$$...$$'
 
 Creates unnumbered display equations.
 
@@ -69,9 +69,9 @@ $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
 *Renders as a centered display equation:*
 ∫₋∞^∞ e^(-x²) dx = √π
 
-*** Backslash Brackets: =\[...\]=
+*** Backslash Brackets: `\[...\]'
 
-Alternative display math syntax, equivalent to =$$...$$=.
+Alternative display math syntax, equivalent to `$$...$$'.
 
 *Example:*
 #+BEGIN_EXAMPLE
@@ -81,7 +81,7 @@ Alternative display math syntax, equivalent to =$$...$$=.
 #+END_EXAMPLE
 
 *Renders as a centered display equation:*
-∑(n=1 to ∞) 1/n² = π²/6
+∑(n`1 to ∞) 1/n² ' π²/6
 
 ** Math Environments
 
@@ -103,7 +103,7 @@ E = mc^2
 
 *** Equation* Environment (Unnumbered)
 
-Same as =equation= but without numbering.
+Same as `equation' but without numbering.
 
 *Example:*
 #+BEGIN_EXAMPLE
@@ -114,7 +114,7 @@ F = ma
 
 *** Align Environment
 
-Multi-line equations with alignment points (=&=).
+Multi-line equations with alignment points (`&').
 
 *Example:*
 #+BEGIN_EXAMPLE
@@ -146,13 +146,13 @@ Multi-line alignment without equation numbers.
 
 All these environments support automatic equation numbering:
 
-- =gather= - Multiple centered equations
-- =multline= - Single equation split across lines
-- =eqnarray= - Legacy alignment (prefer =align=)
-- =alignat= - Alignment with explicit spacing
-- =flalign= - Full-width alignment
+- `gather' - Multiple centered equations
+- `multline' - Single equation split across lines
+- `eqnarray' - Legacy alignment (prefer `align')
+- `alignat' - Alignment with explicit spacing
+- `flalign' - Full-width alignment
 
-Add an asterisk (=*=) after the environment name for the unnumbered version: =gather*=, =multline*=, etc.
+Add an asterisk (`*') after the environment name for the unnumbered version: `gather*', `multline*', etc.
 
 *** Matrix Environments
 
@@ -170,12 +170,12 @@ $$
 #+END_EXAMPLE
 
 *Available matrix environments:*
-- =matrix= - Plain matrix (no delimiters)
-- =pmatrix= - Matrix with parentheses ( )
-- =bmatrix= - Matrix with brackets [ ]
-- =vmatrix= - Matrix with single bars | |
-- =Vmatrix= - Matrix with double bars || ||
-- =smallmatrix= - Compact inline matrix
+- `matrix' - Plain matrix (no delimiters)
+- `pmatrix' - Matrix with parentheses ( )
+- `bmatrix' - Matrix with brackets [ ]
+- `vmatrix' - Matrix with single bars | |
+- `Vmatrix' - Matrix with double bars || ||
+- `smallmatrix' - Compact inline matrix
 
 * Previewing Math Fragments
 
@@ -204,13 +204,13 @@ Rendered equations are cached in your VS Code global storage directory. The cach
 
 To clear all cached equation renders:
 
-1. Open Command Palette (=C-S-P= / =s-S-P=)
-2. Run: =Scimax: Clear LaTeX Cache=
+1. Open Command Palette (`C-S-P' / `s-S-P')
+2. Run: `Scimax: Clear LaTeX Cache'
 
 To view cache statistics:
 
 1. Open Command Palette
-2. Run: =Scimax: Show LaTeX Cache Statistics=
+2. Run: `Scimax: Show LaTeX Cache Statistics'
 
 This displays:
 - Number of cached equations
@@ -220,7 +220,7 @@ This displays:
 
 ** Document-Level Configuration
 
-Add LaTeX configuration at the top of your org file using =#+LATEX_HEADER:= keywords.
+Add LaTeX configuration at the top of your org file using `#+LATEX_HEADER:' keywords.
 
 *** Custom Packages
 
@@ -234,9 +234,9 @@ Load additional LaTeX packages for special symbols or functionality:
 #+END_EXAMPLE
 
 Now you can use commands from these packages:
-- =physics=: =\grad=, =\div=, =\curl=, =\laplacian=
-- =siunitx=: =\SI{10}{\meter\per\second}=
-- =chemformula=: =\ch{H2O}=, =\ch{CO2}=
+- `physics': `\grad', `\div', `\curl', `\laplacian'
+- `siunitx': `\SI{10}{\meter\per\second}'
+- `chemformula': `\ch{H2O}', `\ch{CO2}'
 
 *** Custom Commands
 
@@ -274,9 +274,9 @@ Configure global LaTeX preview behavior in your settings.
 
 *** Enable/Disable Preview
 
-*Setting:* =scimax.latexPreview.enabled=
+*Setting:* `scimax.latexPreview.enabled'
 *Type:* boolean
-*Default:* =true=
+*Default:* `true'
 
 Completely enable or disable hover previews.
 
@@ -289,9 +289,9 @@ Completely enable or disable hover previews.
 
 *** Cache Control
 
-*Setting:* =scimax.latexPreview.cacheEnabled=
+*Setting:* `scimax.latexPreview.cacheEnabled'
 *Type:* boolean
-*Default:* =true=
+*Default:* `true'
 
 Enable or disable caching of rendered equations. Disabling may slow down previews but saves disk space.
 
@@ -304,9 +304,9 @@ Enable or disable caching of rendered equations. Disabling may slow down preview
 
 *** Dark Mode Awareness
 
-*Setting:* =scimax.latexPreview.darkModeAware=
+*Setting:* `scimax.latexPreview.darkModeAware'
 *Type:* boolean
-*Default:* =true=
+*Default:* `true'
 
 When enabled, equations render with white text on dark backgrounds when using dark themes, and black text for light themes.
 
@@ -538,7 +538,7 @@ $$T(n) = 2T\left(\frac{n}{2}\right) + O(n)$$
 *Solution:*
 Install a LaTeX distribution:
 
-- *Linux*: =sudo apt-get install texlive-full=
+- *Linux*: `sudo apt-get install texlive-full'
 - *macOS*: Install MacTeX from https://tug.org/mactex/
 - *Windows*: Install MiKTeX from https://miktex.org/ or TeX Live
 
@@ -549,9 +549,9 @@ After installation, restart VS Code.
 *Possible causes and solutions:*
 
 1. *LaTeX preview disabled*
-   - Open Settings (=C-,=)
+   - Open Settings (`C-,')
    - Search for "scimax.latexPreview.enabled"
-   - Ensure it is set to =true=
+   - Ensure it is set to `true'
 
 2. *Syntax error in equation*
    - Hover shows error message
@@ -559,8 +559,8 @@ After installation, restart VS Code.
    - Common errors: unmatched braces, unknown commands, missing packages
 
 3. *Missing LaTeX package*
-   - Add required package via =#+LATEX_HEADER:=
-   - Example: =#+LATEX_HEADER: \usepackage{physics}=
+   - Add required package via `#+LATEX_HEADER:'
+   - Example: `#+LATEX_HEADER: \usepackage{physics}'
 
 *** Problem: Slow Hover Response
 
@@ -608,16 +608,16 @@ The counter cache automatically invalidates when you edit the document. If numbe
 
 *Solution:*
 Install dvisvgm (usually included with full LaTeX distributions):
-- =sudo apt-get install texlive-binaries= (Linux)
+- `sudo apt-get install texlive-binaries' (Linux)
 - Included with MacTeX and full TeX Live installations
 
 *** Problem: Currency Detected as Math
 
-*Example:* =$100= is rendering as math instead of currency.
+*Example:* `$100' is rendering as math instead of currency.
 
 *Solution:*
 This should not happen as the preview system detects dollar amounts starting with numbers. If it does occur:
-- Use =\$100= to escape the dollar sign
+- Use `\$100' to escape the dollar sign
 - Or use proper currency notation outside of math mode
 
 * Integration with Export
@@ -626,9 +626,9 @@ This should not happen as the preview system detects dollar amounts starting wit
 
 When exporting to HTML, LaTeX math is rendered using MathJax:
 
-1. Inline math: =$E = mc^2$= → Renders with MathJax in browser
-2. Display math: =$$...$$= → Centered equation in HTML
-3. Environments: =\begin{align}...\end{align}= → Properly formatted
+1. Inline math: `$E ' mc^2$= → Renders with MathJax in browser
+2. Display math: `$$...$$' → Centered equation in HTML
+3. Environments: `\begin{align}...\end{align}' → Properly formatted
 
 The export includes MathJax CDN automatically, so equations render perfectly in web browsers.
 
@@ -637,7 +637,7 @@ The export includes MathJax CDN automatically, so equations render perfectly in 
 When exporting to LaTeX or PDF:
 
 1. Math expressions are passed through unchanged
-2. =#+LATEX_HEADER:= settings are included in preamble
+2. `#+LATEX_HEADER:' settings are included in preamble
 3. Equation numbering preserved
 4. All environments work natively
 
@@ -677,19 +677,19 @@ What you see in hover preview should match the exported output, but note:
 ** Using Commands
 
 1. *Via Command Palette*:
-   - Press =C-S-P= (=s-S-P= on macOS)
+   - Press `C-S-P' (`s-S-P' on macOS)
    - Type "Scimax: Clear LaTeX Cache" (or any command name)
    - Press Enter
 
 2. *Via Keybinding*:
    - For commands with keybindings, simply press the key combination
-   - Example: =C-c C-e l v= opens live preview
+   - Example: `C-c C-e l v' opens live preview
 
 ** Custom Keybindings
 
 To add custom keybindings for commands without defaults:
 
-1. Open Keyboard Shortcuts (=C-k C-s=)
+1. Open Keyboard Shortcuts (`C-k C-s')
 2. Search for the command (e.g., "Clear LaTeX Cache")
 3. Click the + icon to add a keybinding
 4. Press your desired key combination
@@ -709,7 +709,7 @@ To add custom keybindings for commands without defaults:
 
 ** Multi-line Equations
 
-Use =\\= to break equations across multiple lines within display math:
+Use `\\' to break equations across multiple lines within display math:
 
 #+BEGIN_EXAMPLE
 $$
@@ -720,7 +720,7 @@ $$
 
 ** Aligned Equations at Specific Points
 
-Use =&= in =align= environments to specify alignment points:
+Use `&' in `align' environments to specify alignment points:
 
 #+BEGIN_EXAMPLE
 \begin{align*}
@@ -729,11 +729,11 @@ y &= r\sin\theta
 \end{align*}
 #+END_EXAMPLE
 
-The =&= symbols align vertically.
+The `&' symbols align vertically.
 
 ** Cases and Piecewise Functions
 
-Use the =cases= environment:
+Use the `cases' environment:
 
 #+BEGIN_EXAMPLE
 $$
@@ -746,7 +746,7 @@ $$
 
 ** Chemical Formulas
 
-With the =chemformula= package:
+With the `chemformula' package:
 
 #+BEGIN_EXAMPLE
 #+LATEX_HEADER: \usepackage{chemformula}
@@ -756,7 +756,7 @@ The reaction is \ch{2 H2 + O2 -> 2 H2O}.
 
 ** Physics Notation
 
-With the =physics= package:
+With the `physics' package:
 
 #+BEGIN_EXAMPLE
 #+LATEX_HEADER: \usepackage{physics}
@@ -768,7 +768,7 @@ $$\grad V = \left(\pdv{V}{x}, \pdv{V}{y}, \pdv{V}{z}\right)$$
 
 ** SI Units
 
-With the =siunitx= package:
+With the `siunitx' package:
 
 #+BEGIN_EXAMPLE
 #+LATEX_HEADER: \usepackage{siunitx}
@@ -780,7 +780,7 @@ The speed is \SI{3e8}{\meter\per\second}.
 
 ** Document Organization
 
-1. *Place all =#+LATEX_HEADER:= lines at the top* of your org file, before the first heading
+1. *Place all `#+LATEX_HEADER:' lines at the top* of your org file, before the first heading
 2. *Group related packages* together with comments
 3. *Define custom commands* early for use throughout the document
 
@@ -826,7 +826,7 @@ The speed is \SI{3e8}{\meter\per\second}.
 ** Performance Tips
 
 1. *Keep custom packages minimal* - only load what you need
-2. *Use caching* (keep =scimax.latexPreview.cacheEnabled= true)
+2. *Use caching* (keep `scimax.latexPreview.cacheEnabled' true)
 3. *Simplify very complex equations* - LaTeX compilation can be slow for intricate formulas
 4. *Avoid excessive hover* - let the cache build up naturally
 
@@ -903,10 +903,10 @@ When sharing documents:
 
 ** Package Documentation
 
-- =amsmath=: https://ctan.org/pkg/amsmath
-- =physics=: https://ctan.org/pkg/physics
-- =siunitx=: https://ctan.org/pkg/siunitx
-- =chemformula=: https://ctan.org/pkg/chemformula
+- `amsmath': https://ctan.org/pkg/amsmath
+- `physics': https://ctan.org/pkg/physics
+- `siunitx': https://ctan.org/pkg/siunitx
+- `chemformula': https://ctan.org/pkg/chemformula
 
 ** Org-Mode Export
 
@@ -916,9 +916,9 @@ When sharing documents:
 
 ** Scimax VS Code Documentation
 
-- Export System: =docs/export.org=
-- Source Blocks: =docs/source-blocks.org=
-- Configuration: =docs/configuration.org=
+- Export System: `docs/export.org'
+- Source Blocks: `docs/source-blocks.org'
+- Configuration: `docs/configuration.org'
 
 * Navigation
 

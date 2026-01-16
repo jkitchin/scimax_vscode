@@ -1356,6 +1356,34 @@
         "title": "Scimax: Jump Kill Line"
       },
       {
+        "command": "scimax.mark.push",
+        "title": "Scimax: Push Mark"
+      },
+      {
+        "command": "scimax.mark.pop",
+        "title": "Scimax: Pop Mark"
+      },
+      {
+        "command": "scimax.mark.popGlobal",
+        "title": "Scimax: Pop Global Mark"
+      },
+      {
+        "command": "scimax.mark.exchange",
+        "title": "Scimax: Exchange Point and Mark"
+      },
+      {
+        "command": "scimax.mark.show",
+        "title": "Scimax: Show Mark Ring"
+      },
+      {
+        "command": "scimax.mark.clear",
+        "title": "Scimax: Clear Mark Ring"
+      },
+      {
+        "command": "scimax.mark.clearAll",
+        "title": "Scimax: Clear All Mark Rings"
+      },
+      {
         "command": "scimax.editmarks.insertion",
         "title": "Scimax: Mark Insertion"
       },
@@ -1788,6 +1816,18 @@
         "title": "Scimax: Toggle Speed Commands"
       },
       {
+        "command": "scimax.help.describeKey",
+        "title": "Scimax: Describe Key"
+      },
+      {
+        "command": "scimax.help.listKeybindings",
+        "title": "Scimax: List Keybindings"
+      },
+      {
+        "command": "scimax.help.describeCommand",
+        "title": "Scimax: Describe Command"
+      },
+      {
         "command": "scimax.clearLatexCache",
         "title": "Scimax: Clear LaTeX Preview Cache"
       },
@@ -2130,6 +2170,21 @@
         "command": "scimax.journal.today",
         "key": "ctrl+shift+j",
         "mac": "cmd+shift+j"
+      },
+      {
+        "command": "scimax.help.describeKey",
+        "key": "ctrl+h k",
+        "mac": "ctrl+h k"
+      },
+      {
+        "command": "scimax.help.listKeybindings",
+        "key": "ctrl+h b",
+        "mac": "ctrl+h b"
+      },
+      {
+        "command": "scimax.help.describeCommand",
+        "key": "ctrl+h f",
+        "mac": "ctrl+h f"
       },
       {
         "command": "scimax.agenda.menu",
@@ -2572,6 +2627,36 @@
         "command": "scimax.jump.gotoSubword",
         "key": "ctrl+c j s",
         "mac": "ctrl+c j s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.mark.push",
+        "key": "ctrl+c space",
+        "mac": "ctrl+c space",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.mark.pop",
+        "key": "ctrl+c ctrl+space",
+        "mac": "ctrl+c ctrl+space",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.mark.popGlobal",
+        "key": "ctrl+c shift+space",
+        "mac": "ctrl+c shift+space",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.mark.exchange",
+        "key": "ctrl+c m x",
+        "mac": "ctrl+c m x",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.mark.show",
+        "key": "ctrl+c m s",
+        "mac": "ctrl+c m s",
         "when": "editorTextFocus"
       },
       {
@@ -3179,6 +3264,13 @@
           "default": "monday",
           "description": "First day of the week in calendar view"
         },
+        "scimax.mark.ringSize": {
+          "type": "number",
+          "default": 16,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum number of marks to store in the mark ring"
+        },
         "scimax.db.directories": {
           "type": "array",
           "items": {
@@ -3225,8 +3317,8 @@
             "ollama",
             "openai"
           ],
-          "default": "none",
-          "description": "Embedding provider for semantic search (local uses Transformers.js)"
+          "default": "local",
+          "description": "Embedding provider for semantic search (local uses Transformers.js, downloads model on first use)"
         },
         "scimax.db.localModel": {
           "type": "string",

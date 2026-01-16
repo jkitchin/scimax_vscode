@@ -94,9 +94,9 @@ console.log(orgText);
 Visit every headline in the document (depth-first order).
 
 The callback receives:
-- =headline= - The current headline element
-- =parent= - Parent headline or document root
-- =index= - Position among siblings
+- `headline' - The current headline element
+- `parent' - Parent headline or document root
+- `index' - Position among siblings
 
 #+BEGIN_SRC typescript
 org.mapHeadlines(doc, (headline, parent, index) => {

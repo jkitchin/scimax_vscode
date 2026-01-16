@@ -28,6 +28,28 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | M-[         | Previous journal entry (in journal) |
 | M-]         | Next journal entry (in journal)     |
 
+* ⚠️ Help Commands
+
+Emacs-style help commands for discovering keybindings and commands.
+
+| Key   | Action                                           |
+|-------+--------------------------------------------------|
+| C-h k | Describe key - type a key sequence to see its command |
+| C-h b | List keybindings - browse all keybindings        |
+| C-h f | Describe command - select a command to see its keys  |
+
+** C-h k (Describe Key)
+
+Type a key sequence using either Emacs notation (`C-c C-c', `M-x') or VS Code notation (`ctrl+c ctrl+c', `alt+x') to see what command it is bound to. Shows the command ID, title, and any context conditions (`when' clause).
+
+** C-h b (List Keybindings)
+
+Browse all scimax keybindings in a searchable list. Filter by typing to find keybindings. Select an entry to see full details or execute the command.
+
+** C-h f (Describe Command)
+
+Search for a command by name and see its keybindings. Useful when you know what you want to do but not the keybinding.
+
 * Emacs-Style Editor Keybindings
 
 | Key             | Action                       |

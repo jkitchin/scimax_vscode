@@ -752,8 +752,8 @@ Holidays that occur on "the Nth weekday of month":
 #+END_SRC
 
 Parameters: (month weekday occurrence)
-- weekday: 0=Sunday, 1=Monday, ... 6=Saturday
-- occurrence: 1=first, 2=second, -1=last, etc.
+- weekday: 0`Sunday, 1'Monday, ... 6=Saturday
+- occurrence: 1`first, 2'second, -1=last, etc.
 
 *** ⚠️ Class Schedules
 

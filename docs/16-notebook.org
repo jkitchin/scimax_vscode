@@ -7,15 +7,15 @@
 
 * Overview
 
-The Scimax notebook system provides project-based document organization inspired by Emacs Scimax's =scimax-notebook= package. A notebook is a structured project directory that can contain research notes, documentation, code, data, and other project materials.
+The Scimax notebook system provides project-based document organization inspired by Emacs Scimax's `scimax-notebook' package. A notebook is a structured project directory that can contain research notes, documentation, code, data, and other project materials.
 
 ** What is a Notebook?
 
 A notebook is a project directory with:
 
-- A =.scimax= configuration directory
+- A `.scimax' configuration directory
 - Optional master/entry file (README.org, index.org, etc.)
-- Project markers (=.projectile=, =.git=, etc.)
+- Project markers (`.projectile', `.git', etc.)
 - Organized subdirectories for content
 - Metadata including collaborators, keywords, and custom settings
 
@@ -41,7 +41,7 @@ Notebooks can be used for:
 
 ** New Notebook Command
 
-Create a new notebook with =Scimax: New Notebook=:
+Create a new notebook with `Scimax: New Notebook':
 
 #+begin_src
 Command Palette → Scimax: New Notebook
@@ -51,15 +51,15 @@ You'll be prompted for:
 
 1. *Name*: The notebook directory name (e.g., "my-research-project")
 2. *Description*: Optional brief description
-3. *Parent Directory*: Where to create the notebook (defaults to =scimax.notebook.directory= setting)
+3. *Parent Directory*: Where to create the notebook (defaults to `scimax.notebook.directory' setting)
 4. *Template*: Choose from empty, research, software, or notes
-5. *Initialize Git*: Whether to run =git init= in the new directory
+5. *Initialize Git*: Whether to run `git init' in the new directory
 
 ** Project Templates
 
 *** Empty Template
 
-Minimal structure with a =README.org= file:
+Minimal structure with a `README.org' file:
 
 #+begin_example
 my-notebook/
@@ -69,7 +69,7 @@ my-notebook/
 └── README.org
 #+end_example
 
-The =README.org= contains:
+The `README.org' contains:
 
 #+begin_src org
 ,#+TITLE: My Notebook
@@ -96,7 +96,7 @@ research-project/
 └── scripts/
 #+end_example
 
-The =README.org= is structured with research sections:
+The `README.org' is structured with research sections:
 
 #+begin_src org
 ,#+TITLE: Research Project
@@ -132,7 +132,7 @@ software-project/
 └── docs/
 #+end_example
 
-The =README.md= contains standard software documentation sections:
+The `README.md' contains standard software documentation sections:
 
 #+begin_src markdown
 # Software Project
@@ -159,7 +159,7 @@ notes-project/
 └── journal/
 #+end_example
 
-The =index.org= file:
+The `index.org' file:
 
 #+begin_src org
 ,#+TITLE: My Notes
@@ -178,8 +178,8 @@ See [[file:journal/][journal entries]].
 You can also manually create a notebook directory:
 
 1. Create a project directory
-2. Add a =.projectile= file (can be empty)
-3. Optionally create =.scimax/config.json=
+2. Add a `.projectile' file (can be empty)
+3. Optionally create `.scimax/config.json'
 4. Add a master file (README.org, index.org, etc.)
 
 Scimax will automatically detect the project when you open it in VS Code.
@@ -204,7 +204,7 @@ notebook-name/
 
 ** Configuration File
 
-The =.scimax/config.json= file contains notebook metadata:
+The `.scimax/config.json' file contains notebook metadata:
 
 #+begin_src json
 {
@@ -235,14 +235,14 @@ The =.scimax/config.json= file contains notebook metadata:
 
 *** Configuration Fields
 
-- =name= (string): Display name for the notebook
-- =description= (string, optional): Brief description
-- =keywords= (array, optional): Tags for searching and categorization
-- =collaborators= (array, optional): List of project collaborators
-- =masterFile= (string, optional): Path to the main entry file (relative to notebook root)
-- =journalDirectory= (string, optional): Directory for journal entries
-- =bibliographyFiles= (array, optional): Bibliography files for org-ref
-- =customCommands= (object, optional): Custom shell commands
+- `name' (string): Display name for the notebook
+- `description' (string, optional): Brief description
+- `keywords' (array, optional): Tags for searching and categorization
+- `collaborators' (array, optional): List of project collaborators
+- `masterFile' (string, optional): Path to the main entry file (relative to notebook root)
+- `journalDirectory' (string, optional): Directory for journal entries
+- `bibliographyFiles' (array, optional): Bibliography files for org-ref
+- `customCommands' (object, optional): Custom shell commands
 
 ** Master Files
 
@@ -250,13 +250,13 @@ The master file is the main entry point for your notebook. When you open a noteb
 
 Scimax looks for master files in this order:
 
-1. File specified in =config.json= (=masterFile= field)
-2. =README.org=
-3. =README.md=
-4. =index.org=
-5. =index.md=
-6. =main.org=
-7. =main.md=
+1. File specified in `config.json' (`masterFile' field)
+2. `README.org'
+3. `README.md'
+4. `index.org'
+5. `index.md'
+6. `main.org'
+7. `main.md'
 
 Best practices for master files:
 
@@ -306,16 +306,16 @@ bibliography:references.bib
 
 Scimax detects projects by looking for marker files:
 
-- =.projectile= - Projectile project marker
-- =.git= - Git repository
-- =.scimax= - Scimax configuration directory
-- =package.json= - Node.js project
-- =pyproject.toml= - Python project (PEP 518)
-- =Cargo.toml= - Rust project
-- =go.mod= - Go module
-- =pom.xml= - Maven project
-- =build.gradle= - Gradle project
-- =.project= - Eclipse project
+- `.projectile' - Projectile project marker
+- `.git' - Git repository
+- `.scimax' - Scimax configuration directory
+- `package.json' - Node.js project
+- `pyproject.toml' - Python project (PEP 518)
+- `Cargo.toml' - Rust project
+- `go.mod' - Go module
+- `pom.xml' - Maven project
+- `build.gradle' - Gradle project
+- `.project' - Eclipse project
 
 When you open a directory with any of these markers, Scimax automatically registers it as a notebook.
 
@@ -325,7 +325,7 @@ When you open a directory with any of these markers, Scimax automatically regist
 
 *** Open Notebook Command
 
-=Scimax: Open Notebook= shows a quick pick menu of all registered notebooks:
+`Scimax: Open Notebook' shows a quick pick menu of all registered notebooks:
 
 #+begin_src
 Command Palette → Scimax: Open Notebook
@@ -393,12 +393,12 @@ Shows up to 20 files sorted by modification time, with:
 
 ** Listing Notebook Files
 
-Scimax tracks all =.org= and =.md= files in the notebook, automatically excluding:
+Scimax tracks all `.org' and `.md' files in the notebook, automatically excluding:
 
-- Hidden directories (starting with =.=)
-- =node_modules/=
-- =dist/= and =build/=
-- =.git/=
+- Hidden directories (starting with `.')
+- `node_modules/'
+- `dist/' and `build/'
+- `.git/'
 
 * Searching and Navigation
 
@@ -447,7 +447,7 @@ Index all files in a notebook for search:
 Command Palette → Scimax: Index Notebook
 #+end_src
 
-This recursively indexes all =.org= and =.md= files in the notebook directory, updating the Scimax database for fast full-text and semantic search.
+This recursively indexes all `.org' and `.md' files in the notebook directory, updating the Scimax database for fast full-text and semantic search.
 
 Progress is shown in a notification with a progress bar.
 
@@ -467,7 +467,7 @@ You'll be prompted for:
 - Email address
 - Role (optional, e.g., "Principal Investigator", "Developer")
 
-Collaborators are stored in =.scimax/config.json= and can be viewed in:
+Collaborators are stored in `.scimax/config.json' and can be viewed in:
 
 - Notebook tree view
 - Notebook info command
@@ -477,8 +477,8 @@ Collaborators are stored in =.scimax/config.json= and can be viewed in:
 Collaborators appear in:
 
 1. *Notebook Tree View*: Expand a notebook → Collaborators section
-2. *Notebook Info*: Run =Scimax: Notebook Info=
-3. *Config File*: View =.scimax/config.json=
+2. *Notebook Info*: Run `Scimax: Notebook Info'
+3. *Config File*: View `.scimax/config.json'
 
 Example collaborators in config:
 
@@ -554,7 +554,7 @@ Edit notebook configuration:
 Command Palette → Scimax: Notebook Settings
 #+end_src
 
-Opens =.scimax/config.json= in the editor. If the file doesn't exist, Scimax creates a default configuration first.
+Opens `.scimax/config.json' in the editor. If the file doesn't exist, Scimax creates a default configuration first.
 
 After editing, save the file to apply changes.
 
@@ -566,7 +566,7 @@ Create a zip archive of all committed files (requires git):
 Command Palette → Scimax: Archive Notebook
 #+end_src
 
-This runs =git archive= to create a zip file containing the current HEAD state. The archive is saved to the parent directory with the name:
+This runs `git archive' to create a zip file containing the current HEAD state. The archive is saved to the parent directory with the name:
 
 #+begin_example
 notebook-name-2026-01-13.zip
@@ -603,9 +603,9 @@ Configure notebook behavior in VS Code settings:
 }
 #+end_src
 
-*** =scimax.notebook.directory=
+*** `scimax.notebook.directory'
 
-Default parent directory for new notebooks. If not set, defaults to =~/notebooks=.
+Default parent directory for new notebooks. If not set, defaults to `~/notebooks'.
 
 Example:
 #+begin_src json
@@ -614,14 +614,14 @@ Example:
 }
 #+end_src
 
-*** =scimax.notebook.defaultTemplate=
+*** `scimax.notebook.defaultTemplate'
 
 Default template for new notebooks. Options:
 
-- =empty= - Minimal structure with README.org
-- =research= - Scientific research project
-- =software= - Software development project
-- =notes= - Note-taking with journal
+- `empty' - Minimal structure with README.org
+- `research' - Scientific research project
+- `software' - Software development project
+- `notes' - Note-taking with journal
 
 Example:
 #+begin_src json
@@ -630,9 +630,9 @@ Example:
 }
 #+end_src
 
-*** =scimax.notebook.autoDetect=
+*** `scimax.notebook.autoDetect'
 
-Whether to automatically detect projects in workspace folders. Default: =true=.
+Whether to automatically detect projects in workspace folders. Default: `true'.
 
 Example:
 #+begin_src json
@@ -647,7 +647,7 @@ The notebook system integrates with projectile project management:
 
 ** Projectile Markers
 
-When creating a notebook, Scimax automatically creates a =.projectile= file, which:
+When creating a notebook, Scimax automatically creates a `.projectile' file, which:
 
 - Marks the directory as a project root
 - Works with projectile commands
@@ -655,12 +655,12 @@ When creating a notebook, Scimax automatically creates a =.projectile= file, whi
 
 ** Compatible with Projectile
 
-All notebooks are compatible with projectile. The =.projectile= file can contain:
+All notebooks are compatible with projectile. The `.projectile' file can contain:
 
 - Ignore patterns (one per line, starting with -)
 - Include patterns (one per line)
 
-Example =.projectile=:
+Example `.projectile':
 
 #+begin_example
 -node_modules
@@ -675,8 +675,8 @@ Example =.projectile=:
 
 Scimax uses the same markers as projectile to detect project roots:
 
-1. =.projectile=
-2. =.git=
+1. `.projectile'
+2. `.git'
 3. Language-specific markers (package.json, Cargo.toml, etc.)
 
 This ensures consistent behavior between scimax notebooks and projectile commands.
@@ -696,7 +696,7 @@ This ensures consistent behavior between scimax notebooks and projectile command
 2. *Set Up Structure*:
    - Edit README.org with project overview
    - Add bibliography to references.bib
-   - Create subdirectories: =experiments/=, =analysis/=
+   - Create subdirectories: `experiments/', `analysis/'
 
 3. *Add Collaborators*:
    #+begin_src
@@ -707,14 +707,14 @@ This ensures consistent behavior between scimax notebooks and projectile command
    #+end_src
 
 4. *Daily Work*:
-   - Use =Scimax: Open Notebook= to switch projects
-   - Use =Scimax: Recent Files in Notebook= to quickly access files
-   - Use =Scimax: Search in Notebook= to find notes
+   - Use `Scimax: Open Notebook' to switch projects
+   - Use `Scimax: Recent Files in Notebook' to quickly access files
+   - Use `Scimax: Search in Notebook' to find notes
 
 5. *Track Progress*:
-   - Use =Scimax: Notebook Agenda= to see TODOs and deadlines
+   - Use `Scimax: Notebook Agenda' to see TODOs and deadlines
    - Add TODO items in org files
-   - Schedule important dates with =SCHEDULED= and =DEADLINE=
+   - Schedule important dates with `SCHEDULED' and `DEADLINE'
 
 6. *Archive Milestones*:
    #+begin_src
@@ -734,11 +734,11 @@ This ensures consistent behavior between scimax notebooks and projectile command
 
 2. *Document Architecture*:
    - Edit README.md with setup instructions
-   - Create =docs/architecture.org= for design notes
+   - Create `docs/architecture.org' for design notes
    - Link code examples in org files with source blocks
 
 3. *Integrate with Tools*:
-   - Add custom commands to =.scimax/config.json=:
+   - Add custom commands to `.scimax/config.json':
      #+begin_src json
      {
        "customCommands": {
@@ -750,13 +750,13 @@ This ensures consistent behavior between scimax notebooks and projectile command
      #+end_src
 
 4. *Development Cycle*:
-   - Keep =docs/= directory with org files for notes
+   - Keep `docs/' directory with org files for notes
    - Use source blocks to test code snippets
    - Link to specific source files from documentation
 
 5. *Search Code and Docs*:
-   - Use =Scimax: Search in Notebook= to search both code and documentation
-   - Use =Scimax: Index Notebook= after major changes
+   - Use `Scimax: Search in Notebook' to search both code and documentation
+   - Use `Scimax: Index Notebook' after major changes
 
 ** Personal Knowledge Base Workflow
 
@@ -768,8 +768,8 @@ This ensures consistent behavior between scimax notebooks and projectile command
    #+end_src
 
 2. *Organize Topics*:
-   - Create topic directories: =programming/=, =research/=, =books/=
-   - Use =index.org= as a map of knowledge areas
+   - Create topic directories: `programming/', `research/', `books/'
+   - Use `index.org' as a map of knowledge areas
    - Link between related notes
 
 3. *Daily Journal*:
@@ -778,34 +778,34 @@ This ensures consistent behavior between scimax notebooks and projectile command
    - Tag entries with keywords
 
 4. *Search and Discovery*:
-   - Use =Scimax: Search in Notebook= to find notes by keyword
+   - Use `Scimax: Search in Notebook' to find notes by keyword
    - Use semantic search for conceptual queries
-   - Use =Scimax: Recent Files in Notebook= to resume work
+   - Use `Scimax: Recent Files in Notebook' to resume work
 
 5. *Maintain Index*:
-   - Periodically update =index.org= with new topics
+   - Periodically update `index.org' with new topics
    - Add keywords to config.json
    - Keep bibliography updated
 
 ** Multi-Notebook Workflow
 
 1. *Project Switching*:
-   - Use =Scimax: Open Notebook= to switch between projects
+   - Use `Scimax: Open Notebook' to switch between projects
    - Recent notebooks appear first in the list
    - Master file opens automatically
 
 2. *Cross-Notebook Search*:
    - Use database search (not notebook-scoped) to search all projects
-   - Use =Scimax: Search in Notebook= for focused searches
+   - Use `Scimax: Search in Notebook' for focused searches
 
 3. *Notebook Organization*:
-   - Keep notebooks in =~/notebooks/= or custom directory
-   - Use consistent naming: =project-name= format
+   - Keep notebooks in `~/notebooks/' or custom directory
+   - Use consistent naming: `project-name' format
    - Add descriptions and keywords for easy identification
 
 4. *Archiving Old Projects*:
-   - Use =Scimax: Archive Notebook= to create snapshots
-   - Use =Scimax: Remove Notebook from Tracking= to clean up list
+   - Use `Scimax: Archive Notebook' to create snapshots
+   - Use `Scimax: Remove Notebook from Tracking' to clean up list
    - Keep archives in a separate directory
 
 * Troubleshooting
@@ -814,17 +814,17 @@ This ensures consistent behavior between scimax notebooks and projectile command
 
 If Scimax doesn't detect your project:
 
-1. Check for project markers (=.projectile=, =.git=, etc.)
+1. Check for project markers (`.projectile', `.git', etc.)
 2. Verify the directory is in your workspace
-3. Check =scimax.notebook.autoDetect= setting
-4. Manually create a =.projectile= file
+3. Check `scimax.notebook.autoDetect' setting
+4. Manually create a `.projectile' file
 5. Reload VS Code window
 
 ** Master File Not Found
 
 If master file doesn't open:
 
-1. Check =masterFile= in =.scimax/config.json=
+1. Check `masterFile' in `.scimax/config.json'
 2. Verify the file exists at the specified path
 3. Use one of the default names (README.org, index.org, etc.)
 4. Path should be relative to notebook root
@@ -833,8 +833,8 @@ If master file doesn't open:
 
 If notebook search returns no results:
 
-1. Run =Scimax: Index Notebook= to rebuild index
-2. Check that files have =.org= or =.md= extensions
+1. Run `Scimax: Index Notebook' to rebuild index
+2. Check that files have `.org' or `.md' extensions
 3. Verify database is initialized
 4. Check search scope is set to notebook directory
 
@@ -842,7 +842,7 @@ If notebook search returns no results:
 
 If archiving fails:
 
-1. Verify notebook is a git repository (=git status= works)
+1. Verify notebook is a git repository (`git status' works)
 2. Ensure you have committed changes
 3. Check git is in your PATH
 4. Review error message in VS Code notifications
@@ -860,7 +860,7 @@ While Scimax provides built-in templates, you can create custom setups:
 
 ** Automation with Custom Commands
 
-Add custom commands to =.scimax/config.json=:
+Add custom commands to `.scimax/config.json':
 
 #+begin_src json
 {
@@ -912,14 +912,14 @@ For research notebooks, integrate with org-ref:
    bibliography:references.bib
    #+end_src
 
-3. Use =Scimax: Open Bibliography= to manage references
+3. Use `Scimax: Open Bibliography' to manage references
 
 ** Version Control Best Practices
 
 For notebooks with git:
 
-1. Commit =.scimax/config.json= to share configuration
-2. Add =.gitignore= for generated files:
+1. Commit `.scimax/config.json' to share configuration
+2. Add `.gitignore' for generated files:
    #+begin_example
    *.aux
    *.log
@@ -934,7 +934,7 @@ For notebooks with git:
    git tag -a v1.0 -m "Phase 1 complete"
    #+end_src
 
-5. Use =Scimax: Archive Notebook= to create portable snapshots
+5. Use `Scimax: Archive Notebook' to create portable snapshots
 
 * Summary
 
@@ -947,7 +947,7 @@ The Scimax notebook system provides powerful project organization for research, 
 - *Projectile integration* works with existing tools
 - *Flexible configuration* adapts to your workflow
 
-Start by creating your first notebook with =Scimax: New Notebook= and exploring the commands. The notebook system scales from simple note collections to complex multi-person research projects.
+Start by creating your first notebook with `Scimax: New Notebook' and exploring the commands. The notebook system scales from simple note collections to complex multi-person research projects.
 
 * Navigation
 

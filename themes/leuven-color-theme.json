@@ -427,10 +427,38 @@
       }
     },
     {
-      "name": "Markup Command (Emacs style)",
-      "scope": ["markup.command.org", "markup.command.content.org"],
+      "name": "Markup Command Content (Emacs style)",
+      "scope": ["markup.command.content.org"],
       "settings": {
         "foreground": "#8B0000"
+      }
+    },
+    {
+      "name": "Markup Command Delimiters (Emacs style)",
+      "scope": ["markup.command.delimiter.begin.org", "markup.command.delimiter.end.org"],
+      "settings": {
+        "foreground": "#CD5C5C"
+      }
+    },
+    {
+      "name": "Markup Punctuation (markers like *, /, =, ~, +, _)",
+      "scope": [
+        "punctuation.definition.bold.begin.org",
+        "punctuation.definition.bold.end.org",
+        "punctuation.definition.italic.begin.org",
+        "punctuation.definition.italic.end.org",
+        "punctuation.definition.underline.begin.org",
+        "punctuation.definition.underline.end.org",
+        "punctuation.definition.verbatim.begin.org",
+        "punctuation.definition.verbatim.end.org",
+        "punctuation.definition.raw.begin.org",
+        "punctuation.definition.raw.end.org",
+        "punctuation.definition.strikethrough.begin.org",
+        "punctuation.definition.strikethrough.end.org"
+      ],
+      "settings": {
+        "foreground": "#AAAAAA",
+        "fontStyle": ""
       }
     },
     {

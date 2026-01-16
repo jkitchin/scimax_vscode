@@ -8,7 +8,7 @@
 :ARCHIVE_FILE: /Users/jkitchin/Dropbox/emacs/projects/scimax_vscode/docs/speed-commands.org
 :END:
 
-The ~$~ command creates or finds an "Archive" heading at the same level and moves the subtree under it (demoted by one level):
+The `$' command creates or finds an "Archive" heading at the same level and moves the subtree under it (demoted by one level):
 
 #+BEGIN_EXAMPLE
 
@@ -48,5 +48,5 @@ Narrowing focuses your view on a single subtree, hiding all other content. This 
 - Presenting a single topic
 - Temporarily isolating content for editing
 
-After narrowing with ~N~, press ~S~ (at any heading) to restore the full view.
+After narrowing with `N', press `S' (at any heading) to restore the full view.
 

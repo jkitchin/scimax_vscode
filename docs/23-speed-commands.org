@@ -15,7 +15,7 @@ Speed commands are single-letter keyboard shortcuts that work when the cursor is
 ** ✅ What are Speed Commands?
 CLOSED: [2026-01-15 Thu 14:44]
 
-Speed commands transform the beginning of each heading into a powerful command interface. When your cursor is at column 0 of a heading (the first star ~*~ in org-mode or the first hash ~#~ in markdown), you can press a single key to execute common operations:
+Speed commands transform the beginning of each heading into a powerful command interface. When your cursor is at column 0 of a heading (the first star `*' in org-mode or the first hash `#' in markdown), you can press a single key to execute common operations:
 
 - Navigation: jump between headings, siblings, parent
 - Visibility: fold/unfold sections
@@ -33,7 +33,7 @@ CLOSED: [2026-01-15 Thu 14:44]
 
 - *Efficiency*: Single keystrokes instead of multi-key combinations
 - *Contextual*: Only active at heading starts, so no conflicts with normal typing
-- *Discoverable*: Press ~?~ at a heading start to see all available commands
+- *Discoverable*: Press `?' at a heading start to see all available commands
 - *Emacs-compatible*: Familiar workflow for Emacs org-mode users
 
 * ✅ Configuration
@@ -54,7 +54,7 @@ CLOSED: [2026-01-15 Thu 14:44]
 *** ✅ Via settings.json
 CLOSED: [2026-01-15 Thu 14:45]
 
-Add or modify this setting in your ~settings.json~:
+Add or modify this setting in your `settings.json':
 
 #+BEGIN_SRC json
 {
@@ -72,17 +72,17 @@ CLOSED: [2026-01-15 Thu 14:45]
 CLOSED: [2026-01-15 Thu 14:45]
 
 Speed commands work in:
-- Org-mode files (~.org~)
-- Markdown files (~.md~, ~.markdown~)
+- Org-mode files (`.org')
+- Markdown files (`.md', `.markdown')
 
 * ✅ When Speed Commands are Active
 CLOSED: [2026-01-15 Thu 14:45]
 
 Speed commands are only active when *all* of the following conditions are met:
 
-1. *Speed commands are enabled* in settings (~scimax.speedCommands.enabled: true~)
+1. *Speed commands are enabled* in settings (`scimax.speedCommands.enabled: true')
 2. *Cursor is at column 0* (the very beginning of the line)
-3. *Line is a heading* (starts with ~*~ for org-mode or ~#~ for markdown)
+3. *Line is a heading* (starts with `*' for org-mode or `#' for markdown)
 4. *No text is selected* (cursor position only, not a selection)
 
 ** ✅ Visual Indicator
@@ -90,7 +90,7 @@ CLOSED: [2026-01-15 Thu 14:45]
 
 When speed commands are active, you'll notice that single key presses trigger actions immediately. If speed commands aren't working:
 
-1. Check that your cursor is at position 0 (before the first ~*~ or ~#~)
+1. Check that your cursor is at position 0 (before the first `*' or `#')
 2. Ensure no text is selected
 3. Verify the file type is org or markdown
 4. Check settings to confirm speed commands are enabled
@@ -118,7 +118,7 @@ Move efficiently through your document structure.
 *** ✅ Go To Submenu Options
 CLOSED: [2026-01-15 Thu 14:46]
 
-The ~g~ key opens a submenu with additional navigation choices:
+The `g' key opens a submenu with additional navigation choices:
 
 | Key | Command             | Description                       |
 |-----+---------------------+-----------------------------------|
@@ -164,9 +164,9 @@ CLOSED: [2026-01-15 Thu 14:47]
 
 - *Promote* (left) decreases the heading level (fewer stars/hashes)
 - *Demote* (right) increases the heading level (more stars/hashes)
-- Uppercase ~L~/~R~ affect only the heading line
-- Lowercase ~l~/~r~ affect the entire subtree
-- ~y~ (yank) intelligently adjusts heading levels to match context
+- Uppercase `L'/`R' affect only the heading line
+- Lowercase `l'/`r' affect the entire subtree
+- `y' (yank) intelligently adjusts heading levels to match context
 
 ** ✅ TODO and Priority Commands
 CLOSED: [2026-01-15 Thu 14:47]
@@ -190,7 +190,7 @@ Org-mode uses a three-level priority system:
 - *[#B]* - Medium priority (normal importance)
 - *[#C]* - Low priority (nice to have)
 
-Priorities appear after the TODO keyword: ~** TODO [#A] Important task~
+Priorities appear after the TODO keyword: `** TODO [#A] Important task'
 
 ** ✅ Planning/Timestamp Commands
 CLOSED: [2026-01-15 Thu 14:47]
@@ -206,15 +206,15 @@ Add scheduling and deadline information to tasks.
 *** ⚠️ Timestamp Types
 
 - *SCHEDULED*: When you plan to start working on the task
-  - Format: ~SCHEDULED: <2026-01-13 Mon>~
+  - Format: `SCHEDULED: <2026-01-13 Mon>'
   - Appears in agenda on the scheduled date
 
 - *DEADLINE*: When the task must be completed
-  - Format: ~DEADLINE: <2026-01-20 Mon>~
+  - Format: `DEADLINE: <2026-01-20 Mon>'
   - Appears in agenda with warnings before due date
 
 - *Plain timestamp*: Reference dates, events, notes
-  - Format: ~[2026-01-13 Mon 14:30]~
+  - Format: `[2026-01-13 Mon 14:30]'
   - For documentation purposes
 
 ** ⚠️ Metadata Commands
@@ -237,8 +237,8 @@ Tags are keywords attached to headings for categorization and filtering:
 #+END_EXAMPLE
 
 Tags are:
-- Separated by colons (~:~)
-- Can contain letters, numbers, and special chars (~_@#%~)
+- Separated by colons (`:')
+- Can contain letters, numbers, and special chars (`_@#%')
 - Inherited by child headings
 - Used for agenda filtering and searches
 - Automatically aligned to column 77 (Emacs-style)
@@ -246,7 +246,7 @@ Tags are:
 *** ✅ Effort Estimates
 CLOSED: [2026-01-15 Thu 14:48]
 
-Effort is stored as a property in ~H:MM~ format:
+Effort is stored as a property in `H:MM' format:
 
 #+BEGIN_EXAMPLE
 ** TODO Write documentation
@@ -256,12 +256,12 @@ Effort is stored as a property in ~H:MM~ format:
 #+END_EXAMPLE
 
 Common effort values:
-- ~0:15~ - 15 minutes
-- ~0:30~ - 30 minutes
-- ~1:00~ - 1 hour
-- ~2:00~ - 2 hours
-- ~4:00~ - Half day
-- ~8:00~ - Full day
+- `0:15' - 15 minutes
+- `0:30' - 30 minutes
+- `1:00' - 1 hour
+- `2:00' - 2 hours
+- `4:00' - Half day
+- `8:00' - Full day
 
 *** ✅ Properties
 CLOSED: [2026-01-15 Thu 14:48]
@@ -279,12 +279,12 @@ Properties are key-value pairs stored in a properties drawer:
 #+END_EXAMPLE
 
 Common property names:
-- ~ID~ - Unique identifier
-- ~CUSTOM_ID~ - User-defined ID for linking
-- ~CATEGORY~ - Category for agenda display
-- ~Effort~ - Estimated effort
-- ~LOGGING~ - Log state changes
-- ~COLUMNS~ - Column view format
+- `ID' - Unique identifier
+- `CUSTOM_ID' - User-defined ID for linking
+- `CATEGORY' - Category for agenda display
+- `Effort' - Estimated effort
+- `LOGGING' - Log state changes
+- `COLUMNS' - Column view format
 
 ** ✅ Clocking Commands
 CLOSED: [2026-01-15 Thu 14:48]
@@ -300,11 +300,11 @@ Track time spent on tasks.
 CLOSED: [2026-01-15 Thu 14:48]
 
 1. Position cursor at column 0 of a task heading
-2. Press ~I~ to clock in - starts timer
+2. Press `I' to clock in - starts timer
 3. Work on the task
-4. Press ~O~ to clock out - stops timer and records duration
+4. Press `O' to clock out - stops timer and records duration
 
-Clock entries are stored in a ~:LOGBOOK:~ drawer:
+Clock entries are stored in a `:LOGBOOK:' drawer:
 
 #+BEGIN_EXAMPLE
 ** TODO Write documentation
@@ -335,11 +335,11 @@ Move completed tasks to archive storage.
 *** ✅ Archive File
 CLOSED: [2026-01-15 Thu 14:50]
 
-By default, ~a~ moves the subtree to a file named ~{basename}_archive.org~:
-- ~notes.org~ → ~notes_archive.org~
-- ~projects.org~ → ~projects_archive.org~
+By default, `a' moves the subtree to a file named `{basename}_archive.org':
+- `notes.org' → `notes_archive.org'
+- `projects.org' → `projects_archive.org'
 
-The archived subtree is tagged with ~:ARCHIVE:~ and includes metadata:
+The archived subtree is tagged with `:ARCHIVE:' and includes metadata:
 
 #+BEGIN_EXAMPLE
 * DONE Completed project :ARCHIVE:
@@ -355,14 +355,14 @@ CLOSED: [2026-01-15 Thu 14:50]
 ** ✅ Learning the Commands
 CLOSED: [2026-01-15 Thu 14:50]
 
-1. *Start with navigation*: ~n~, ~p~, ~f~, ~b~, ~u~ are the most frequently used
-2. *Use the help*: Press ~?~ at any heading start to see all commands
+1. *Start with navigation*: `n', `p', `f', `b', `u' are the most frequently used
+2. *Use the help*: Press `?' at any heading start to see all commands
 3. *Muscle memory*: The keys are mnemonic:
-   - ~n~ = next, ~p~ = previous, ~f~ = forward, ~b~ = backward
-   - ~u~ = up (parent)
-   - ~t~ = TODO, ~s~ = schedule, ~d~ = deadline
-   - ~I~/~O~ = In/Out (clocking)
-   - ~l~/~r~ = left/right (promote/demote)
+   - `n' ` next, `p' ' previous, `f' ` forward, `b' ' backward
+   - `u' = up (parent)
+   - `t' ` TODO, `s' ' schedule, `d' = deadline
+   - `I'/`O' = In/Out (clocking)
+   - `l'/`r' = left/right (promote/demote)
 
 ** ✅ Common Workflows
 CLOSED: [2026-01-15 Thu 14:50]
@@ -370,29 +370,29 @@ CLOSED: [2026-01-15 Thu 14:50]
 *** ✅ Quick Task Management
 CLOSED: [2026-01-15 Thu 14:50]
 
-1. Create heading with ~C-<return>~
-2. Move to beginning of line (~Home~ or ~C-a~)
-3. Press ~t~ to add TODO state
-4. Press ~1~ to set high priority
-5. Press ~s~ to schedule it
-6. Press ~:~ to add tags
+1. Create heading with `C-<return>'
+2. Move to beginning of line (`Home' or `C-a')
+3. Press `t' to add TODO state
+4. Press `1' to set high priority
+5. Press `s' to schedule it
+6. Press `:' to add tags
 
 *** ✅ Organizing Content
 CLOSED: [2026-01-15 Thu 14:50]
 
 1. Navigate to a heading
-2. Use ~U~/~D~ to reorder siblings
-3. Use ~l~/~r~ to adjust hierarchy
-4. Use ~w~ to cut and ~y~ to paste sections
-5. Use ~a~ to archive completed work
+2. Use `U'/`D' to reorder siblings
+3. Use `l'/`r' to adjust hierarchy
+4. Use `w' to cut and `y' to paste sections
+5. Use `a' to archive completed work
 
 *** ✅ Reviewing Documents
 CLOSED: [2026-01-15 Thu 14:50]
 
-1. Press ~o~ to see overview (all headings folded)
-2. Use ~n~/~p~ to navigate between sections
-3. Press ~Tab~ to expand interesting sections
-4. Press ~c~ to cycle through visibility levels
+1. Press `o' to see overview (all headings folded)
+2. Use `n'/`p' to navigate between sections
+3. Press `Tab' to expand interesting sections
+4. Press `c' to cycle through visibility levels
 
 ** ✅ Combining with Regular Keybindings
 CLOSED: [2026-01-15 Thu 14:50]
@@ -400,16 +400,16 @@ CLOSED: [2026-01-15 Thu 14:50]
 Speed commands complement (don't replace) regular keybindings:
 
 - Use speed commands for quick operations when cursor is at heading start
-- Use regular keybindings (~C-c C-t~, etc.) when cursor is elsewhere
-- Use ~C-a~ or ~Home~ to quickly jump to column 0 to activate speed commands
+- Use regular keybindings (`C-c C-t', etc.) when cursor is elsewhere
+- Use `C-a' or `Home' to quickly jump to column 0 to activate speed commands
 
 ** ✅ Cursor Position Matters
 CLOSED: [2026-01-15 Thu 14:50]
 
 Remember: speed commands *only* work at column 0. If a speed command doesn't trigger:
 
-1. Press ~Home~ or ~C-a~ to move to beginning of line
-2. Verify you're on a heading line (starts with ~*~ or ~#~)
+1. Press `Home' or `C-a' to move to beginning of line
+2. Verify you're on a heading line (starts with `*' or `#')
 3. Check that no text is selected
 
 ** ✅ Customization
@@ -417,7 +417,7 @@ CLOSED: [2026-01-15 Thu 14:50]
 
 Currently, speed command keys are pre-defined and cannot be customized. The key mappings follow standard Emacs org-mode conventions for consistency and muscle memory compatibility.
 
-If you need custom keybindings, use VS Code's keybinding system to bind the underlying commands (e.g., ~scimax.org.nextHeading~, ~scimax.org.cycleTodo~) to your preferred key combinations.
+If you need custom keybindings, use VS Code's keybinding system to bind the underlying commands (e.g., `scimax.org.nextHeading', `scimax.org.cycleTodo') to your preferred key combinations.
 
 * ✅ Reference: All Speed Commands
 CLOSED: [2026-01-15 Thu 14:52]
@@ -476,10 +476,10 @@ CLOSED: [2026-01-15 Thu 14:52]
 *Problem*: Pressing keys doesn't trigger speed commands
 
 *Solutions*:
-1. Verify cursor is at column 0 (before the ~*~ or ~#~)
-2. Check file type is ~.org~ or ~.md~
+1. Verify cursor is at column 0 (before the `*' or `#')
+2. Check file type is `.org' or `.md'
 3. Ensure no text is selected
-4. Verify speed commands are enabled: ~scimax.speedCommands.enabled: true~
+4. Verify speed commands are enabled: `scimax.speedCommands.enabled: true'
 5. Restart VS Code after changing settings
 
 ** ✅ Wrong Command Executes
@@ -488,7 +488,7 @@ CLOSED: [2026-01-15 Thu 14:52]
 *Problem*: Different command executes than expected
 
 *Solutions*:
-1. Press ~?~ to see command list and verify key mapping
+1. Press `?' to see command list and verify key mapping
 2. Check for conflicting VS Code keybindings
 3. Ensure you're in an org or markdown file
 4. Update extension to latest version
@@ -496,7 +496,7 @@ CLOSED: [2026-01-15 Thu 14:52]
 ** ✅ Help Menu Shows Wrong Commands
 CLOSED: [2026-01-15 Thu 14:52]
 
-*Problem*: Help menu (~?~) shows outdated information
+*Problem*: Help menu (`?') shows outdated information
 
 *Solution*: The help is generated from code, so this shouldn't occur. If it does, report as a bug.
 
@@ -522,16 +522,16 @@ CLOSED: [2026-01-15 Thu 14:52]
 CLOSED: [2026-01-15 Thu 14:52]
 
 Speed commands are implemented in:
-- ~/src/org/speedCommands/~ - Core implementation
-  - ~config.ts~ - Command definitions and mappings
-  - ~context.ts~ - Context detection and command registration
-  - ~navigation.ts~ - Navigation commands
-  - ~visibility.ts~ - Folding/visibility commands
-  - ~planning.ts~ - Schedule and deadline commands
-  - ~metadata.ts~ - Tags, properties, and effort
-  - ~clocking.ts~ - Time tracking
-  - ~archive.ts~ - Archive operations
-  - ~structure.ts~ - Structure editing commands
+- `/src/org/speedCommands/' - Core implementation
+  - `config.ts' - Command definitions and mappings
+  - `context.ts' - Context detection and command registration
+  - `navigation.ts' - Navigation commands
+  - `visibility.ts' - Folding/visibility commands
+  - `planning.ts' - Schedule and deadline commands
+  - `metadata.ts' - Tags, properties, and effort
+  - `clocking.ts' - Time tracking
+  - `archive.ts' - Archive operations
+  - `structure.ts' - Structure editing commands
 
 * Navigation
 

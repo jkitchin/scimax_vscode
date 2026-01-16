@@ -549,6 +549,47 @@ Export org documents to multiple formats.
 
 ---
 
+### Capture Templates (org-capture)
+
+Quick note capture with customizable templates, inspired by Emacs org-capture.
+
+**Commands:**
+| Command                           | Keybinding | Description                        |
+| --------------------------------- | ---------- | ---------------------------------- |
+| `Scimax: Capture`                 | `Ctrl+c c` | Show capture template picker       |
+| `Scimax: Quick Capture TODO`      | `Ctrl+c t` | Quick capture a TODO item          |
+| `Scimax: Quick Capture Note`      | -          | Quick capture a note               |
+| `Scimax: Create Capture Template` | -          | Create a new capture template      |
+| `Scimax: List Capture Templates`  | -          | Show all available templates       |
+
+**Built-in Templates:**
+- **Todo** (`t`): Capture a TODO item to `todo.org`
+- **Note** (`n`): Capture a note with timestamp
+- **Journal** (`j`): Capture to today's journal entry in a datetree
+- **Code Snippet** (`s`): Capture selected code with language and source link
+- **Meeting Notes** (`m`): Capture meeting notes with attendees and agenda
+- **Link** (`l`): Capture a link with description
+- **Idea** (`i`): Capture an idea for the ideas file
+
+**Features:**
+- Template variables: `%t` (timestamp), `%T` (active timestamp), `%U` (inactive timestamp)
+- Context variables: `%a` (annotation link), `%i` (selected text), `%c` (clipboard)
+- Prompt variables: `%^{prompt}` for user input
+- Datetree filing: Automatically file under date hierarchy
+- File targeting: Capture to specific files or headlines
+
+**Configuration:**
+```json
+{
+  "scimax.capture.templates": [...],
+  "scimax.capture.defaultFile": "~/capture.org",
+  "scimax.capture.datetreeFormat": "year-month-day",
+  "scimax.capture.autoSave": true
+}
+```
+
+---
+
 ### Enhanced Tables (scimax-tables)
 
 Spreadsheet-like table editing with export capabilities.
@@ -624,6 +665,19 @@ The extension adds a **Scimax** activity bar icon with these views:
 | `Alt+X`                        | Command Palette (Emacs M-x)                     |
 | `Ctrl+Shift+J` / `Cmd+Shift+J` | Open Today's Journal                            |
 | `Ctrl+Alt+V` / `Ctrl+Cmd+V`    | Database Menu (quick access to search commands) |
+
+### Help (Emacs-style)
+| Shortcut   | Command                                              |
+| ---------- | ---------------------------------------------------- |
+| `Ctrl+h k` | Describe Key (type a key sequence to see its command) |
+| `Ctrl+h b` | List all keybindings                                 |
+| `Ctrl+h f` | Describe Command (find command by name)              |
+
+### Capture
+| Shortcut   | Command                  |
+| ---------- | ------------------------ |
+| `Ctrl+c c` | Capture (template picker) |
+| `Ctrl+c t` | Quick Capture TODO       |
 
 ### Journal Navigation
 | Shortcut   | Command                | When            |
@@ -739,7 +793,7 @@ The extension supports:
 ## Comparison with Emacs Scimax
 
 | Feature              | Emacs Scimax       | VS Code Scimax                        |
-| -------------------- | ------------------ | ------------------------------------- |
+|----------------------|--------------------|---------------------------------------|
 | Journal              | scimax-journal     | Full support                          |
 | Bibliography         | org-ref            | Full support + OpenAlex               |
 | Database             | org-db-v3          | Full support with semantic search     |
@@ -757,21 +811,21 @@ The extension supports:
 | Speed Commands       | org-speed-commands | Full support (37 commands)            |
 | Clocking             | org-clock          | Partial (basic clocking)              |
 | Contacts             | org-contacts       | Not yet                               |
-| Capture Templates    | org-capture        | Not yet                               |
+| Capture Templates    | org-capture        | Full support (templates, datetree)    |
 
 ---
 
 ## Codebase Statistics
 
-| Metric | Count |
-|--------|-------|
-| TypeScript files | 133 |
-| Lines of TypeScript | ~78,000 |
-| Test files | 21 |
-| Unit tests | 815 |
-| Documentation files | 35 |
-| Commands | 531 |
-| Keybindings | 197 |
+| Metric              | Count   |
+|---------------------|---------|
+| TypeScript files    | 136     |
+| Lines of TypeScript | ~78,600 |
+| Test files          | 21      |
+| Unit tests          | 815     |
+| Documentation files | 35      |
+| Commands            | 537     |
+| Keybindings         | 200     |
 
 ### Supported Languages (Babel Execution)
 
@@ -781,11 +835,11 @@ Python, JavaScript, TypeScript, Shell (bash/sh), SQL, R, Julia, plus any Jupyter
 
 Benchmarks on typical documents (may vary by system):
 
-| Document Size | Parse Time (avg) |
-|---------------|------------------|
-| Small (~3.5K chars, 177 lines) | <5ms |
-| Medium (~9K chars, 428 lines) | <10ms |
-| Large (~34K chars, 1571 lines) | <25ms |
+| Document Size                  | Parse Time (avg) |
+|--------------------------------|------------------|
+| Small (~3.5K chars, 177 lines) | <5ms             |
+| Medium (~9K chars, 428 lines)  | <10ms            |
+| Large (~34K chars, 1571 lines) | <25ms            |
 
 The parser scales linearly with document size and handles documents with hundreds of headings, source blocks, and deeply nested structures efficiently.
 

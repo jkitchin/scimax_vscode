@@ -17,7 +17,7 @@ export.
 
 * ⚠️ org-ref Citation Links
 
-The citation system (=cite:=, =citet:=, =citep:=, etc.) comes from the org-ref
+The citation system (`cite:', `citet:', `citep:', etc.) comes from the org-ref
 package for Emacs, not from core org-mode.
 
 ** Citation Styles
@@ -46,7 +46,7 @@ Citations are converted directly to LaTeX cite commands:
 | citeyear:key     | \citeyear{key}      |
 | cite:k1,k2       | \cite{k1,k2}        |
 
-Requires =natbib= or =biblatex= package in your LaTeX preamble.
+Requires `natbib' or `biblatex' package in your LaTeX preamble.
 
 *** HTML Export
 
@@ -66,14 +66,14 @@ Citations are converted to Pandoc-style citations:
 ** Compatibility Notes
 
 - Emacs org-mode users will find this syntax familiar
-- Standard org-mode uses =[[cite:@key]]= syntax (org-cite) which is also supported
-- The org-ref style =cite:key= is more concise for scientific writing
+- Standard org-mode uses `[[cite:@key]]' syntax (org-cite) which is also supported
+- The org-ref style `cite:key' is more concise for scientific writing
 
 See [[file:19-references.org][References]] for full documentation.
 
 * ⚠️ Emacs-style Command Markup
 
-The command markup syntax =`command'= (backtick + text + single quote) is used
+The command markup syntax ``command'' (backtick + text + single quote) is used
 in Emacs documentation to reference commands, functions, and key sequences.
 
 ** Syntax
@@ -99,18 +99,18 @@ markers and positions the cursor between them.
 
 *** HTML Export
 
-Command markup is exported as =<kbd>= elements:
+Command markup is exported as `<kbd>' elements:
 
 #+BEGIN_EXAMPLE
 `my-command' → <kbd>my-command</kbd>
 #+END_EXAMPLE
 
-The =<kbd>= element is semantically appropriate for keyboard input and command
+The `<kbd>' element is semantically appropriate for keyboard input and command
 names.
 
 *** LaTeX Export
 
-Command markup is exported as =\texttt{}=:
+Command markup is exported as `\texttt{}':
 
 #+BEGIN_EXAMPLE
 `my-command' → \texttt{my-command}
@@ -119,8 +119,8 @@ Command markup is exported as =\texttt{}=:
 ** Why Non-Standard?
 
 - This syntax is not part of the org-mode specification
-- Standard org code markup uses =~code~= or ===verbatim===
-- The =`command'= style is specific to Emacs/Elisp documentation conventions
+- Standard org code markup uses ``code'' or ==`verbatim'==
+- The ``command'' style is specific to Emacs/Elisp documentation conventions
 - We implement it for Emacs users who are familiar with this convention
 
 ** Alternatives

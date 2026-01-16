@@ -34,7 +34,7 @@ software:
 
 *** For Jupyter Integration
 
-- Jupyter installed (=pip install jupyter=)
+- Jupyter installed (`pip install jupyter')
 - Jupyter kernels for desired languages
 
 *** For LaTeX/PDF Export
@@ -51,24 +51,47 @@ software:
 ** From VS Code Marketplace
 
 1. Open VS Code
-2. Press =C-S-X= to open the Extensions view
+2. Press `C-S-X' to open the Extensions view
 3. Search for "Scimax"
 4. Click *Install*
 
 ** From VSIX File
 
-1. Download the =.vsix= file
+1. Download the `.vsix' file from the [[https://github.com/jkitchin/scimax_vscode/releases][GitHub Releases page]]
 2. Open VS Code
-3. Press =C-S-X= to open the Extensions view
-4. Click the =...= menu (top right)
+3. Press `C-S-X' to open the Extensions view
+4. Click the `...' menu (top right)
 5. Select "Install from VSIX..."
 6. Choose the downloaded file
+
+** From Source (GitHub)
+
+The source code is available at [[https://github.com/jkitchin/scimax_vscode]].
+
+To build and install from source:
+
+1. Clone the repository:
+   #+BEGIN_SRC shell
+   git clone https://github.com/jkitchin/scimax_vscode.git
+   cd scimax_vscode
+   #+END_SRC
+
+2. Install dependencies and build:
+   #+BEGIN_SRC shell
+   npm install
+   make
+   #+END_SRC
+
+3. Install the generated VSIX:
+   #+BEGIN_SRC shell
+   code --install-extension scimax-vscode-*.vsix
+   #+END_SRC
 
 ** Verify Installation
 
 After installation:
 
-1. Open the Command Palette (=C-S-P=)
+1. Open the Command Palette (`C-S-P')
 2. Type "Scimax"
 3. You should see Scimax commands listed
 
@@ -76,10 +99,10 @@ After installation:
 
 ** Opening an Org File
 
-Org files use the =.org= extension. To create your first file:
+Org files use the `.org' extension. To create your first file:
 
-1. Press =C-n= to create a new file (note s-n on Mac)
-2. Save it with =C-s= and give it a =.org= extension (e.g., =notes.org=)
+1. Press `C-n' to create a new file (note s-n on Mac)
+2. Save it with `C-s' and give it a `.org' extension (e.g., `notes.org')
 3. The file will automatically use org-mode syntax highlighting
 
 ** Creating Your First Document
@@ -118,8 +141,8 @@ print("Hello from Scimax VS Code!")
 
 *** Folding
 
-- Press =Tab= on a heading to cycle its visibility (folded/children/subtree)
-- Press =S-<tab>= anywhere to cycle global visibility
+- Press `Tab' on a heading to cycle its visibility (folded/children/subtree)
+- Press `S-<tab>' anywhere to cycle global visibility
 
 *** Moving Between Headings
 
@@ -134,7 +157,7 @@ print("Hello from Scimax VS Code!")
 *** Executing Code
 
 1. Place your cursor inside a source block
-2. Press =C-<return>= or =C-c C-c=
+2. Press `C-<return>' or `C-c C-c'
 3. Results appear below the block
 
 * Understanding the Interface
@@ -143,7 +166,7 @@ print("Hello from Scimax VS Code!")
 
 The Outline view in VS Code's sidebar shows your document structure:
 
-1. Click the Outline icon in the sidebar (or press =C-S-O=)
+1. Click the Outline icon in the sidebar (or press `C-S-O')
 2. See all headings hierarchically
 3. Click a heading to jump to it
 
@@ -154,7 +177,7 @@ Scimax VS Code adds several tree views to the Explorer sidebar:
 *** Journal Tree
 
 Shows your journal entries organized by date. Access today's entry with
-=C-S-J= (or =s-S-J= on Mac).
+`C-S-J' (or `s-S-J' on Mac).
 
 *** Projects Tree
 
@@ -175,12 +198,12 @@ The status bar shows:
 
 Hydra menus provide discoverable access to commands:
 
-- =C-c m= - Open main menu
-- =C-c C-m= - Open context-sensitive menu
-- =C-M-V= - Open database/search menu
+- `C-c m' - Open main menu
+- `C-c C-m' - Open context-sensitive menu
+- `C-M-V' - Open database/search menu
 
 Menus show available commands with their keybindings. Press a key to execute
-a command or =Escape= to close the menu.
+a command or `Escape' to close the menu.
 
 * Essential Commands
 
@@ -222,9 +245,17 @@ a command or =Escape= to close the menu.
 | =C-c j w= | Jump to word                  |
 | =C-c j l= | Jump to line                  |
 
+** ⚠️ Help Commands
+
+| Key     | Command                                    |
+|---------+--------------------------------------------|
+| =C-h k= | Describe key (type a key to see its command) |
+| =C-h b= | List all keybindings                       |
+| =C-h f= | Describe command (find command by name)    |
+
 * Recommended Settings
 
-Open VS Code settings (=C-,=) and search for "scimax" to see all options.
+Open VS Code settings (`C-,') and search for "scimax" to see all options.
 
 ** Essential Settings
 
@@ -317,24 +348,24 @@ Now that you're set up, explore these topics:
 
 1. Check that the language is installed (e.g., Python, Node.js)
 2. Verify the language is in your PATH
-3. Check the Output panel (=C-S-U=) for errors
-4. Run =scimax.org.checkExecutors= to verify available executors
+3. Check the Output panel (`C-S-U') for errors
+4. Run `scimax.org.checkExecutors' to verify available executors
 
 ** LaTeX Preview Not Working
 
-1. Ensure LaTeX is installed (=latex --version= in terminal)
+1. Ensure LaTeX is installed (`latex --version' in terminal)
 2. Check that dvipng or dvisvgm is available
-3. Run =scimax.checkLatexTools= to verify installation
+3. Run `scimax.checkLatexTools' to verify installation
 
 ** Search Not Finding Results
 
-1. Run =scimax.db.reindex= to rebuild the search index
+1. Run `scimax.db.reindex' to rebuild the search index
 2. Check that files aren't in excluded patterns
-3. Verify the search scope (=scimax.db.setScope=)
+3. Verify the search scope (`scimax.db.setScope')
 
 ** Journal Not Opening
 
-1. Check that =scimax.journal.directory= is set correctly
+1. Check that `scimax.journal.directory' is set correctly
 2. Ensure the directory exists and is writable
 3. Try creating the directory manually if needed
 
