@@ -115,4 +115,60 @@ cite:unknown-key
         // Fallback should still have link structure
         expect(html).toContain('href="#ref-unknown-key"');
     });
+
+    it('adds unique IDs to each citation for back-linking', () => {
+        const orgContent = `* Test
+First cite:smith-2020 and second cite:smith-2020 citation.
+`;
+        const doc = parseOrgFast(orgContent);
+        const citationProcessor = createCitationProcessor(sampleBibEntries, { style: 'apa' });
+
+        const html = exportToHtml(doc, {
+            bodyOnly: true,
+            bibliography: true,
+            citationProcessor,
+        });
+
+        // Each citation should have a unique ID
+        expect(html).toContain('id="cite-1"');
+        expect(html).toContain('id="cite-2"');
+    });
+
+    it('adds back-links from bibliography to citations', () => {
+        const orgContent = `* Test
+First cite:smith-2020 and second cite:smith-2020 citation.
+`;
+        const doc = parseOrgFast(orgContent);
+        const citationProcessor = createCitationProcessor(sampleBibEntries, { style: 'apa' });
+
+        const html = exportToHtml(doc, {
+            bodyOnly: true,
+            bibliography: true,
+            citationProcessor,
+        });
+
+        // Bibliography should have back-links
+        expect(html).toContain('class="citation-backlinks"');
+        expect(html).toContain('class="citation-backlink"');
+        expect(html).toContain('href="#cite-1"');
+        expect(html).toContain('href="#cite-2"');
+    });
+
+    it('includes CSS for citation highlighting on navigation', () => {
+        const orgContent = `* Test
+cite:smith-2020
+`;
+        const doc = parseOrgFast(orgContent);
+        const citationProcessor = createCitationProcessor(sampleBibEntries, { style: 'apa' });
+
+        const html = exportToHtml(doc, {
+            bodyOnly: false,
+            bibliography: true,
+            citationProcessor,
+        });
+
+        // Check for citation :target CSS rule
+        expect(html).toContain('.citation:target');
+        expect(html).toContain('.citation-backlink');
+    });
 });

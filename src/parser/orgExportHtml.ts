@@ -155,6 +155,10 @@ const DEFAULT_HTML_OPTIONS: HtmlExportOptions = {
 interface HtmlExportState extends ExportState {
     citationProcessor?: CitationProcessor;
     htmlOptions: HtmlExportOptions;
+    /** Track citation locations for back-links: key -> array of citation IDs */
+    citationLocations: Map<string, string[]>;
+    /** Counter for generating unique citation IDs */
+    citationCounter: number;
 }
 
 // =============================================================================
@@ -181,6 +185,8 @@ export class HtmlExportBackend implements ExportBackend {
         const state: HtmlExportState = {
             ...baseState,
             htmlOptions: opts,
+            citationLocations: new Map(),
+            citationCounter: 0,
         };
 
         // Initialize citation processor if bib entries are provided
@@ -275,7 +281,7 @@ export class HtmlExportBackend implements ExportBackend {
 
         // Export bibliography if enabled and there are citations
         if (state.htmlOptions.bibliography !== false && state.citationProcessor) {
-            const bibliography = state.citationProcessor.generateBibliography();
+            const bibliography = state.citationProcessor.generateBibliography(state.citationLocations);
             if (bibliography) {
                 parts.push(bibliography);
             }
@@ -849,10 +855,15 @@ export class HtmlExportBackend implements ExportBackend {
     /**
      * Export a citation link (cite:key, citep:key, etc.)
      * Citations link to their corresponding bibliography entries via #ref-{key}
+     * Each citation gets a unique ID for back-linking from bibliography
      */
     private exportCitationLink(link: LinkObject, state: HtmlExportState): string {
         const { linkType, path, rawLink } = link.properties;
         const command = linkType?.toLowerCase() || 'cite';
+
+        // Generate unique citation ID
+        state.citationCounter++;
+        const citationId = `cite-${state.citationCounter}`;
 
         // Parse citation keys from the path
         // For org-ref links, path contains the keys (e.g., "key1,key2" or "&key1;&key2")
@@ -862,15 +873,32 @@ export class HtmlExportBackend implements ExportBackend {
         if (parsedCitations.length === 0) {
             // Fallback: just show the keys as a simple citation with links
             const keys = path.replace(/^&/, '').split(/[,;]/).map(k => k.replace(/^&/, '').trim());
+
+            // Track citation locations for back-links
+            for (const key of keys) {
+                if (!state.citationLocations.has(key)) {
+                    state.citationLocations.set(key, []);
+                }
+                state.citationLocations.get(key)!.push(citationId);
+            }
+
             const linkedKeys = keys.map(k => `<a href="#ref-${k}" class="citation-link">${k}</a>`);
-            return `<span class="citation">(${linkedKeys.join(', ')})</span>`;
+            return `<span class="citation" id="${citationId}">(${linkedKeys.join(', ')})</span>`;
         }
 
         const citation = parsedCitations[0];
+        const keys = citation.references.map(r => r.key);
+
+        // Track citation locations for back-links
+        for (const key of keys) {
+            if (!state.citationLocations.has(key)) {
+                state.citationLocations.set(key, []);
+            }
+            state.citationLocations.get(key)!.push(citationId);
+        }
 
         // If we have a citation processor, use it for proper formatting
         if (state.citationProcessor) {
-            const keys = citation.references.map(r => r.key);
             const style = getNormalizedStyle(citation);
 
             // Format the citation
@@ -883,12 +911,10 @@ export class HtmlExportBackend implements ExportBackend {
             // For single citations, link the whole thing; for multiple, link to first
             const primaryKey = keys[0];
             const linkedHtml = `<a href="#ref-${primaryKey}" class="citation-link">${formatted.html}</a>`;
-            return `<span class="citation" data-keys="${keys.join(',')}">${linkedHtml}</span>`;
+            return `<span class="citation" id="${citationId}" data-keys="${keys.join(',')}">${linkedHtml}</span>`;
         }
 
         // Fallback without citation processor: basic formatting with links
-        const keys = citation.references.map(r => r.key);
-
         // Determine style based on command
         let prefix = '(';
         let suffix = ')';
@@ -899,7 +925,7 @@ export class HtmlExportBackend implements ExportBackend {
 
         // Make each key a link to its bibliography entry
         const linkedKeys = keys.map(k => `<a href="#ref-${k}" class="citation-link">${k}</a>`);
-        return `<span class="citation citation-${command}">${prefix}${linkedKeys.join(', ')}${suffix}</span>`;
+        return `<span class="citation citation-${command}" id="${citationId}">${prefix}${linkedKeys.join(', ')}${suffix}</span>`;
     }
 
     private exportTimestamp(ts: TimestampObject, state: ExportState): string {
@@ -1267,6 +1293,13 @@ blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem;
 .bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
 .bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
 .bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
 </style>`;
     }
 }

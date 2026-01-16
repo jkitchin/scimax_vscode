@@ -398,8 +398,9 @@ export class CitationProcessor {
     /**
      * Generate bibliography HTML for all cited entries
      * Each entry gets an anchor id="ref-{key}" for linking from citations
+     * @param backLinks Optional map of citation key -> array of citation IDs for back-linking
      */
-    generateBibliography(): string {
+    generateBibliography(backLinks?: Map<string, string[]>): string {
         if (this.citedKeys.size === 0) {
             return '';
         }
@@ -412,6 +413,18 @@ export class CitationProcessor {
             return '';
         }
 
+        // Helper to generate back-link HTML for a key
+        const generateBackLinks = (key: string): string => {
+            if (!backLinks || !backLinks.has(key)) {
+                return '';
+            }
+            const citeIds = backLinks.get(key)!;
+            const links = citeIds.map((id, idx) =>
+                `<a href="#${id}" class="citation-backlink" title="Jump to citation">${idx + 1}</a>`
+            );
+            return ` <span class="citation-backlinks">[${links.join(', ')}]</span>`;
+        };
+
         try {
             const cite = new Cite(cslEntries);
             let html = cite.format('bibliography', {
@@ -420,16 +433,17 @@ export class CitationProcessor {
                 lang: this.locale,
             });
 
-            // Add anchor IDs to each csl-entry for citation linking
+            // Add anchor IDs and back-links to each csl-entry
             // citation-js may output either:
             //   <div class="csl-entry">...</div>
             //   <div data-csl-entry-id="key" class="csl-entry">...</div>
-            // We need to add id="ref-{key}" to each one
+            // We need to add id="ref-{key}" and back-links to each one
             let entryIndex = 0;
-            html = html.replace(/<div(?:\s+data-csl-entry-id="([^"]*)")?\s+class="csl-entry">/g, (match, dataId) => {
+            html = html.replace(/<div(?:\s+data-csl-entry-id="([^"]*)")?\s+class="csl-entry">([^]*?)<\/div>/g, (match, dataId, content) => {
                 const key = dataId || cslEntries[entryIndex]?.id || `entry-${entryIndex}`;
                 entryIndex++;
-                return `<div class="csl-entry" id="ref-${key}">`;
+                const backLinkHtml = generateBackLinks(key);
+                return `<div class="csl-entry" id="ref-${key}">${content}${backLinkHtml}</div>`;
             });
 
             return `<section class="bibliography">\n<h2>References</h2>\n${html}\n</section>`;
@@ -440,7 +454,8 @@ export class CitationProcessor {
                 const authors = this.formatAuthorList(entry);
                 const year = this.getYear(entry);
                 const title = entry.title || 'Untitled';
-                html += `<li id="ref-${entry.id}">${authors} (${year}). ${title}.</li>\n`;
+                const backLinkHtml = generateBackLinks(entry.id);
+                html += `<li id="ref-${entry.id}">${authors} (${year}). ${title}.${backLinkHtml}</li>\n`;
             }
             html += '</ul>\n</section>';
             return html;
