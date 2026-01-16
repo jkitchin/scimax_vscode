@@ -11,6 +11,7 @@ import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { processIncludes, hasIncludes } from '../parser/orgInclude';
 import type { OrgDocumentNode } from '../parser/orgElementTypes';
+import { parseNotebook } from '../parser/ipynbParser';
 
 import {
     PublishProject,
@@ -228,8 +229,8 @@ export function computeOutputPath(
     // Get relative path from base directory
     const relativePath = path.relative(baseDir, sourcePath);
 
-    // Change extension to .html
-    const htmlPath = relativePath.replace(/\.org$/i, '.html');
+    // Change extension to .html (supports .org, .md, .ipynb)
+    const htmlPath = relativePath.replace(/\.(org|md|ipynb)$/i, '.html');
 
     return path.join(outputDir, htmlPath);
 }
@@ -399,6 +400,272 @@ export async function copyStaticFile(
     }
 }
 
+/**
+ * Publish a Markdown file to HTML
+ */
+export async function publishMarkdownFile(
+    sourcePath: string,
+    project: PublishProject,
+    workspaceRoot: string,
+    options: PublishOptions = {}
+): Promise<PublishFileResult> {
+    const outputPath = computeOutputPath(sourcePath, project, workspaceRoot);
+
+    // Check if up to date (unless force)
+    if (!options.force && await isUpToDate(sourcePath, outputPath)) {
+        return { sourcePath, outputPath, success: true };
+    }
+
+    try {
+        const content = await fs.promises.readFile(sourcePath, 'utf-8');
+
+        // Extract title from first # heading or filename
+        const titleMatch = content.match(/^#\s+(.+)$/m);
+        const title = titleMatch ? titleMatch[1] : path.basename(sourcePath, '.md');
+
+        // Simple Markdown to HTML conversion
+        const html = convertMarkdownToHtml(content, title, project);
+
+        if (!options.dryRun) {
+            const outputDir = path.dirname(outputPath);
+            await fs.promises.mkdir(outputDir, { recursive: true });
+            await fs.promises.writeFile(outputPath, html, 'utf-8');
+        }
+
+        return {
+            sourcePath,
+            outputPath,
+            success: true,
+            title,
+        };
+    } catch (error) {
+        return {
+            sourcePath,
+            outputPath,
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+        };
+    }
+}
+
+/**
+ * Simple Markdown to HTML converter
+ */
+function convertMarkdownToHtml(content: string, title: string, project: PublishProject): string {
+    let html = content;
+
+    // Convert headers
+    html = html.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+    html = html.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+    html = html.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+    html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+    // Convert code blocks
+    html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+        const langClass = lang ? ` class="language-${lang}"` : '';
+        return `<pre><code${langClass}>${escapeHtml(code.trim())}</code></pre>`;
+    });
+
+    // Convert inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // Convert bold and italic
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+
+    // Convert links
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+        // Convert .md links to .html
+        const href = url.replace(/\.md$/i, '.html');
+        return `<a href="${href}">${text}</a>`;
+    });
+
+    // Convert images
+    html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
+
+    // Convert unordered lists
+    html = html.replace(/^(\s*)-\s+(.+)$/gm, '$1<li>$2</li>');
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>\n$&</ul>\n');
+
+    // Convert paragraphs (lines not already in tags)
+    html = html.split('\n\n').map(block => {
+        if (block.trim() && !block.match(/^<[a-z]/i)) {
+            return `<p>${block.trim()}</p>`;
+        }
+        return block;
+    }).join('\n\n');
+
+    // Wrap in HTML document
+    return wrapInHtmlDoc(html, title, project);
+}
+
+/**
+ * Publish a Jupyter notebook to HTML
+ */
+export async function publishNotebookFile(
+    sourcePath: string,
+    project: PublishProject,
+    workspaceRoot: string,
+    options: PublishOptions = {}
+): Promise<PublishFileResult> {
+    const outputPath = computeOutputPath(sourcePath, project, workspaceRoot);
+
+    // Check if up to date (unless force)
+    if (!options.force && await isUpToDate(sourcePath, outputPath)) {
+        return { sourcePath, outputPath, success: true };
+    }
+
+    try {
+        const content = await fs.promises.readFile(sourcePath, 'utf-8');
+        const notebook = parseNotebook(content);
+
+        // Get title from metadata or first markdown heading
+        let title = notebook.metadata.title || path.basename(sourcePath, '.ipynb');
+        if (notebook.headings.length > 0) {
+            title = notebook.headings[0].title;
+        }
+
+        // Convert notebook to HTML
+        const html = convertNotebookToHtml(notebook, title, project);
+
+        if (!options.dryRun) {
+            const outputDir = path.dirname(outputPath);
+            await fs.promises.mkdir(outputDir, { recursive: true });
+            await fs.promises.writeFile(outputPath, html, 'utf-8');
+        }
+
+        return {
+            sourcePath,
+            outputPath,
+            success: true,
+            title,
+        };
+    } catch (error) {
+        return {
+            sourcePath,
+            outputPath,
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+        };
+    }
+}
+
+/**
+ * Convert Jupyter notebook to HTML
+ */
+function convertNotebookToHtml(
+    notebook: ReturnType<typeof parseNotebook>,
+    title: string,
+    project: PublishProject
+): string {
+    const parts: string[] = [];
+
+    for (const cell of notebook.cells) {
+        if (cell.cellType === 'markdown') {
+            // Convert markdown cell
+            let html = cell.source;
+            // Simple markdown conversions
+            html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+            parts.push(`<div class="cell markdown-cell">${html}</div>`);
+        } else if (cell.cellType === 'code') {
+            const lang = cell.language || notebook.metadata.language || 'python';
+            parts.push(`<div class="cell code-cell">
+<pre class="src src-${lang}"><code class="language-${lang}">${escapeHtml(cell.source)}</code></pre>
+</div>`);
+        }
+    }
+
+    const body = parts.join('\n');
+    return wrapInHtmlDoc(body, title, project);
+}
+
+/**
+ * Wrap content in HTML document structure
+ */
+function wrapInHtmlDoc(content: string, title: string, project: PublishProject): string {
+    const cssFiles = project.cssFiles?.map(f => `<link rel="stylesheet" href="${f}" />`).join('\n') || '';
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${escapeHtml(title)}</title>
+${cssFiles}
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.cell { margin: 1rem 0; }
+.code-cell pre { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+.markdown-cell { margin: 1rem 0; }
+pre code { font-family: monospace; }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">${escapeHtml(title)}</h1>
+</header>
+${content}
+</main>
+</body>
+</html>`;
+}
+
+/**
+ * Escape HTML special characters
+ */
+function escapeHtml(text: string): string {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+/**
+ * Determine which publish function to use based on file extension
+ */
+function getPublishFunction(
+    sourcePath: string,
+    project: PublishProject
+): 'org' | 'md' | 'ipynb' | 'copy' {
+    const ext = path.extname(sourcePath).toLowerCase();
+    const pubFunc = project.publishingFunction || 'auto';
+
+    if (pubFunc === 'copy') {
+        return 'copy';
+    }
+
+    if (pubFunc === 'auto' || pubFunc === 'org-html-publish-to-html') {
+        if (ext === '.org') return 'org';
+        if (ext === '.md') return 'md';
+        if (ext === '.ipynb') return 'ipynb';
+    }
+
+    if (pubFunc === 'md-html-publish-to-html') return 'md';
+    if (pubFunc === 'ipynb-html-publish-to-html') return 'ipynb';
+
+    // Default based on extension
+    if (ext === '.org') return 'org';
+    if (ext === '.md') return 'md';
+    if (ext === '.ipynb') return 'ipynb';
+
+    return 'copy';
+}
+
 // =============================================================================
 // Sitemap Generation
 // =============================================================================
@@ -458,7 +725,7 @@ export function generateSitemapOrg(
                 lines.push(`* ${dir}`);
             }
             for (const entry of dirEntries) {
-                const htmlPath = entry.relativePath.replace(/\.org$/i, '.html');
+                const htmlPath = entry.relativePath.replace(/\.(org|md|ipynb)$/i, '.html');
                 const dateStr = entry.date ? ` (${entry.date.toISOString().split('T')[0]})` : '';
                 lines.push(`- [[file:${htmlPath}][${entry.title}]]${dateStr}`);
             }
@@ -467,7 +734,7 @@ export function generateSitemapOrg(
     } else {
         // List-style sitemap
         for (const entry of sorted) {
-            const htmlPath = entry.relativePath.replace(/\.org$/i, '.html');
+            const htmlPath = entry.relativePath.replace(/\.(org|md|ipynb)$/i, '.html');
             const dateStr = entry.date ? ` (${entry.date.toISOString().split('T')[0]})` : '';
             lines.push(`- [[file:${htmlPath}][${entry.title}]]${dateStr}`);
         }
@@ -503,11 +770,22 @@ export async function publishProject(
         }
 
         let result: PublishFileResult;
+        const pubFunc = getPublishFunction(file, project);
 
-        if (project.publishingFunction === 'copy') {
-            result = await copyStaticFile(file, project, workspaceRoot, options);
-        } else {
-            result = await publishFile(file, project, workspaceRoot, options);
+        switch (pubFunc) {
+            case 'copy':
+                result = await copyStaticFile(file, project, workspaceRoot, options);
+                break;
+            case 'md':
+                result = await publishMarkdownFile(file, project, workspaceRoot, options);
+                break;
+            case 'ipynb':
+                result = await publishNotebookFile(file, project, workspaceRoot, options);
+                break;
+            case 'org':
+            default:
+                result = await publishFile(file, project, workspaceRoot, options);
+                break;
         }
 
         results.push(result);
@@ -519,10 +797,11 @@ export async function publishProject(
             .filter(r => r.success)
             .map(r => {
                 const baseDir = path.resolve(workspaceRoot, project.baseDirectory);
+                const ext = path.extname(r.sourcePath);
                 return {
                     file: r.sourcePath,
                     relativePath: path.relative(baseDir, r.sourcePath),
-                    title: r.title || path.basename(r.sourcePath, '.org'),
+                    title: r.title || path.basename(r.sourcePath, ext),
                     date: r.date,
                 };
             });

@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Navigation</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo { font-weight: bold; padding: 0.2em 0.5em; border-radius: 3px; }
+.org-todo.org-todo { background: #ff6b6b; color: white; }
+.org-todo.org-done { background: #51cf66; color: white; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Navigation</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>✅ Navigation</h1>
+<p>CLOSED: [2026-01-15 Thu 07:32]</p>
+
+<p>Scimax VS Code provides powerful navigation features inspired by Emacs, including
+fuzzy search, avy-style jumping, and structured outline navigation. These features
+work seamlessly across org-mode and markdown documents, making it easy to move
+around your files quickly and efficiently.</p>
+
+</div>
+<div id="org-overview" class="org-section org-level-1">
+<h1>✅ Overview</h1>
+<p>CLOSED: [2026-01-15 Thu 07:32]</p>
+
+<p>Navigation in Scimax VS Code follows three main paradigms:</p>
+
+<ol>
+<li><p><strong>Outline Navigation</strong> - Move between structural elements (headings, source blocks)</p>
+</li>
+<li><p><strong>Fuzzy Search</strong> - Swiper-style incremental search with live preview</p>
+</li>
+<li><p><strong>Jump Navigation</strong> - Avy-style quick jumps to visible text using character hints</p>
+</li>
+<li><p><strong>Speed Commands</strong> - Single-key navigation when at heading start</p>
+</li>
+</ol>
+
+<p>See also:</p>
+
+<ul>
+<li><p><a href="document-structure.html">Document Structure</a> for information about headlines and folding</p>
+</li>
+<li><p><a href="keybindings.html">Keybindings</a> for a complete reference of keyboard shortcuts</p>
+</li>
+</ul>
+
+</div>
+<div id="org-outline-navigation" class="org-section org-level-1">
+<h1>✅ Outline Navigation</h1>
+<p>CLOSED: [2026-01-15 Thu 07:32]</p>
+
+<p>Outline navigation lets you move between structural elements in your document -
+headings, source blocks, and other landmarks.</p>
+
+<div id="org-heading-navigation" class="org-section org-level-2">
+<h2>✅ Heading Navigation</h2>
+<p>CLOSED: [2026-01-15 Thu 07:36]</p>
+
+<p>Navigate between headings in org-mode and markdown documents:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.org.nextHeading</td><td>C-c n</td><td>Jump to next heading</td></tr>
+<tr><td>scimax.org.previousHeading</td><td>C-c p</td><td>Jump to previous heading</td></tr>
+<tr><td>scimax.org.parentHeading</td><td>-</td><td>Jump to parent heading</td></tr>
+<tr><td>scimax.org.jumpToHeading</td><td>C-c C-j</td><td>Fuzzy search headings</td></tr>
+</tbody>
+</table>
+
+<div id="org-next-previous-heading" class="org-section org-level-3">
+<h3>✅ Next/Previous Heading</h3>
+<p>CLOSED: [2026-01-15 Thu 07:36]</p>
+
+<p>Move through all headings in document order:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* First Heading
+Content here...
+
+,** Subheading A        &lt;- Current position
+Content...
+
+,** Subheading B        &lt;- Next heading
+More content...
+
+,* Second Heading       &lt;- Another next heading</code></pre>
+</div>
+
+<p>The nextHeading command moves forward through headings regardless of level.
+Similarly, previousHeading moves backward.</p>
+
+</div>
+<div id="org-parent-heading" class="org-section org-level-3">
+<h3>✅ Parent Heading</h3>
+<p>CLOSED: [2026-01-15 Thu 08:01]</p>
+
+<p>Jump to the parent (containing) heading:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Parent Heading       &lt;- Jump here
+,** Child Heading
+,*** Current Position   &lt;- From here</code></pre>
+</div>
+
+<p>This is useful for quickly navigating up the document hierarchy.</p>
+
+</div>
+<div id="org-jump-to-heading" class="org-section org-level-3">
+<h3>✅ Jump to Heading</h3>
+<p>CLOSED: [2026-01-15 Thu 07:38]</p>
+
+<p>The jumpToHeading command (C-c C-j) opens a fuzzy search picker showing all
+headings in the current document. Type to filter, and select a heading to jump to it.</p>
+
+<p>Features:</p>
+
+<ul>
+<li><p>Live preview - cursor moves as you browse</p>
+</li>
+<li><p>Fuzzy matching - type any part of the heading title</p>
+</li>
+<li><p>Shows heading hierarchy with indentation</p>
+</li>
+<li><p>Displays TODO states and tags</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-source-block-navigation" class="org-section org-level-2">
+<h2>✅ Source Block Navigation</h2>
+<p>CLOSED: [2026-01-15 Thu 08:03]</p>
+
+<p>Navigate between source blocks in org documents:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.ob.nextBlock</td><td>C-c n</td><td>Jump to next source block</td></tr>
+<tr><td>scimax.ob.previousBlock</td><td>C-c p</td><td>Jump to previous block</td></tr>
+<tr><td>scimax.ob.jumpToBlock</td><td>-</td><td>Fuzzy search blocks</td></tr>
+<tr><td>scimax.ob.jumpToResults</td><td>-</td><td>Jump to results section</td></tr>
+</tbody>
+</table>
+
+<p>There are also speed-commands if you are the beginning of a block to navigate with n (next) and p (previous.)</p>
+
+<div id="org-next-previous-source-block" class="org-section org-level-3">
+<h3>✅ Next/Previous Source Block</h3>
+<p>CLOSED: [2026-01-15 Thu 07:40]</p>
+
+<p>Move between source blocks in document order:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">Some text...
+
+,#+BEGIN_SRC python      &lt;- Current position
+print(&quot;Hello&quot;)
+,#+END_SRC
+
+More text...
+
+,#+BEGIN_SRC python      &lt;- Next block
+print(&quot;World&quot;)
+,#+END_SRC</code></pre>
+</div>
+
+<p>These commands skip over regular text and headings, jumping directly to the next
+or previous #+BEGIN_SRC block.</p>
+
+</div>
+<div id="org-jump-to-source-block" class="org-section org-level-3">
+<h3>⚠️ Jump to Source Block</h3>
+<p>The jumpToBlock command shows a fuzzy picker of all source blocks in the
+document. Each block is labeled with:</p>
+
+<ul>
+<li><p>Language (e.g., python, javascript)</p>
+</li>
+<li><p>Block name (if it has a #+NAME: line)</p>
+</li>
+<li><p>Preview of first line of code</p>
+</li>
+</ul>
+
+</div>
+<div id="org-jump-to-results" class="org-section org-level-3">
+<h3>⚠️ Jump to Results</h3>
+<p>When cursor is in a source block, jumpToResults jumps to the #+RESULTS:
+section below the block (if it exists). This is useful after executing a block
+to quickly review the output.</p>
+
+</div>
+</div>
+<div id="org-sibling-navigation-speed-commands" class="org-section org-level-2">
+<h2>✅ Sibling Navigation (Speed Commands)</h2>
+<p>CLOSED: [2026-01-15 Thu 07:41]</p>
+
+<p>Speed commands provide efficient navigation between sibling headings (headings
+at the same level):</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>f</td><td>scimax.speed.nextSibling</td><td>Next heading at same level</td></tr>
+<tr><td>b</td><td>scimax.speed.previousSibling</td><td>Previous heading at same level</td></tr>
+</tbody>
+</table>
+
+<p>These commands only work when:</p>
+
+<ol>
+<li><p>Speed commands are enabled</p>
+</li>
+<li><p>Cursor is at the beginning of a heading line</p>
+</li>
+</ol>
+
+<p>Example:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Parent
+,** Sibling 1
+,** Sibling 2          &lt;- Press &#39;f&#39; to jump to Sibling 3
+,** Sibling 3          &lt;- Press &#39;b&#39; to jump back to Sibling 2
+,** Sibling 4</code></pre>
+</div>
+
+<p>Sibling navigation skips over child headings:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,** Sibling 1           &lt;- Current position
+,*** Child of Sibling 1
+,*** Another child
+,** Sibling 2           &lt;- Press &#39;f&#39; jumps here (skips children)</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-fuzzy-search-swiper-style" class="org-section org-level-1">
+<h1>✅ Fuzzy Search (Swiper-Style)</h1>
+<p>CLOSED: [2026-01-15 Thu 07:42]</p>
+
+<p>Fuzzy search provides incremental search with live preview, inspired by Emacs
+Swiper. As you type, matching lines are filtered and the cursor moves to show
+a live preview.</p>
+
+<div id="org-search-current-file" class="org-section org-level-2">
+<h2>✅ Search Current File</h2>
+<p>CLOSED: [2026-01-15 Thu 07:42]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.fuzzySearch</td><td>C-c s</td><td>Search lines in current file</td></tr>
+</tbody>
+</table>
+
+<p>Opens a quick pick showing all non-empty lines in the current file. Features:</p>
+
+<ul>
+<li><p><strong>Live preview</strong> - cursor moves to selected line as you browse</p>
+</li>
+<li><p><strong>Fuzzy matching</strong> - type space-separated terms, all must match</p>
+</li>
+<li><p><strong>Match highlighting</strong> - matching terms are highlighted in results</p>
+</li>
+<li><p><strong>Cancel restores position</strong> - press Escape to return to original location</p>
+</li>
+</ul>
+
+<p>Example workflow:</p>
+
+<ol>
+<li><p>Press C-c s to open fuzzy search</p>
+</li>
+<li><p>Type &quot;function calculate&quot; to find lines with both words</p>
+</li>
+<li><p>Use arrow keys or continue typing to narrow results</p>
+</li>
+<li><p>Press Enter to jump to selected line</p>
+</li>
+<li><p>Press Escape to cancel and return to original position</p>
+</li>
+</ol>
+
+</div>
+<div id="org-search-open-files" class="org-section org-level-2">
+<h2>⚠️ Search Open Files</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.fuzzySearchOpenFiles</td><td>C-c Shift-s</td><td>Search lines in all open files</td></tr>
+</tbody>
+</table>
+
+<p>Like fuzzy search but searches across all open buffers/files. Results are
+grouped by file with file separators.</p>
+
+<p>Use this to:</p>
+
+<ul>
+<li><p>Find text across multiple open files</p>
+</li>
+<li><p>Navigate between related files quickly</p>
+</li>
+<li><p>Review related code across different modules</p>
+</li>
+</ul>
+
+</div>
+<div id="org-search-outline-headings-symbols" class="org-section org-level-2">
+<h2>✅ Search Outline (Headings/Symbols)</h2>
+<p>CLOSED: [2026-01-15 Thu 07:45]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.fuzzySearchOutline</td><td>C-c M-s</td><td>Search headings and symbols</td></tr>
+</tbody>
+</table>
+
+<p>Searches only structural elements:</p>
+
+<ul>
+<li><p><strong>Org files</strong> - Headlines (lines starting with *)</p>
+</li>
+<li><p><strong>Markdown files</strong> - Headings (lines starting with #)</p>
+</li>
+<li><p><strong>Code files</strong> - Function/class definitions</p>
+</li>
+</ul>
+
+<p>This provides a fast way to navigate document structure without seeing every line.</p>
+
+<p>Icons indicate heading level:</p>
+
+<ul>
+<li><p>$(symbol-class) - Top-level or class</p>
+</li>
+<li><p>$(symbol-class) $(symbol-class) - Second level</p>
+</li>
+<li><p>$(symbol-method) - Functions/methods</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-jump-navigation-avy-style" class="org-section org-level-1">
+<h1>✅ Jump Navigation (Avy-Style)</h1>
+<p>CLOSED: [2026-01-15 Thu 07:46]</p>
+
+<p>Jump navigation provides character-based quick jumps to visible text, inspired
+by Emacs Avy. You specify what to jump to (character, word, line), and each
+match is labeled with a hint character. Type the hint to jump instantly.</p>
+
+<div id="org-jump-to-character" class="org-section org-level-2">
+<h2>✅ Jump to Character</h2>
+<p>CLOSED: [2026-01-15 Thu 07:49]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.jump.gotoChar</td><td>C-c jc</td><td>Jump to any character</td></tr>
+<tr><td>scimax.jump.gotoChar2</td><td>C-c jj</td><td>Jump to 2-character sequence</td></tr>
+</tbody>
+</table>
+
+<div id="org-single-character" class="org-section org-level-3">
+<h3>✅ Single Character</h3>
+<p>CLOSED: [2026-01-15 Thu 07:49]</p>
+
+<ol>
+<li><p>Invoke scimax.jump.gotoChar</p>
+</li>
+<li><p>Type a character (e.g., &quot;e&quot;)</p>
+</li>
+<li><p>All visible occurrences of &quot;e&quot; are labeled: a, s, d, f, etc.</p>
+</li>
+<li><p>Type the label to jump (e.g., type &quot;s&quot; to jump to the second occurrence)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-two-characters" class="org-section org-level-3">
+<h3>✅ Two Characters</h3>
+<p>CLOSED: [2026-01-15 Thu 07:49]</p>
+
+<p>For more precision, use scimax.jump.gotoChar2:</p>
+
+<ol>
+<li><p>Invoke the command</p>
+</li>
+<li><p>Type two characters (e.g., &quot;th&quot;)</p>
+</li>
+<li><p>All visible &quot;th&quot; sequences are labeled</p>
+</li>
+<li><p>Type the label to jump</p>
+</li>
+</ol>
+
+<p>This reduces the number of matches, making jumps faster.</p>
+
+</div>
+</div>
+<div id="org-jump-to-word" class="org-section org-level-2">
+<h2>✅ Jump to Word</h2>
+<p>CLOSED: [2026-01-15 Thu 07:51]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.jump.gotoWord</td><td>C-c jw</td><td>Jump to word starts</td></tr>
+</tbody>
+</table>
+
+<p>Jumps to word boundaries. You can optionally filter by starting character:</p>
+
+<ol>
+<li><p>Invoke scimax.jump.gotoWord</p>
+</li>
+<li><p>Enter a starting character or leave empty for all words</p>
+</li>
+<li><p>All matching word starts are labeled</p>
+</li>
+<li><p>Type the label to jump</p>
+</li>
+</ol>
+
+<p>Example: Type &quot;f&quot; to see only words starting with &quot;f&quot; (function, for, first, etc.)</p>
+
+</div>
+<div id="org-jump-to-line" class="org-section org-level-2">
+<h2>✅ Jump to Line</h2>
+<p>CLOSED: [2026-01-15 Thu 07:51]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.jump.gotoLine</td><td>C-c jl</td><td>Jump to any visible line</td></tr>
+</tbody>
+</table>
+
+<p>Labels every visible line for quick vertical navigation:</p>
+
+<ol>
+<li><p>Invoke scimax.jump.gotoLine</p>
+</li>
+<li><p>Every visible line gets a label (a, s, d, etc.)</p>
+</li>
+<li><p>Type the label to jump to that line</p>
+</li>
+</ol>
+
+<p>The cursor is placed at the first non-whitespace character of the selected line.</p>
+
+</div>
+<div id="org-jump-to-symbol" class="org-section org-level-2">
+<h2>⚠️ Jump to Symbol</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.jump.gotoSymbol</td><td>C-c jo</td><td>Jump to symbols and headings</td></tr>
+</tbody>
+</table>
+
+<p>Jumps to structural elements in the visible area:</p>
+
+<ul>
+<li><p>Function/class definitions</p>
+</li>
+<li><p>Org headings (* Heading)</p>
+</li>
+<li><p>Markdown headings (# Heading)</p>
+</li>
+<li><p>Comment markers (TODO, FIXME, NOTE, etc.)</p>
+</li>
+</ul>
+
+<p>Only visible symbols are labeled, making it very fast for navigating code structure.</p>
+
+</div>
+<div id="org-jump-to-subword" class="org-section org-level-2">
+<h2>✅ Jump to Subword</h2>
+<p>CLOSED: [2026-01-15 Thu 07:53]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.jump.gotoSubword</td><td>C-c jw</td><td>Jump to subword boundaries</td></tr>
+</tbody>
+</table>
+
+<p>Jumps to camelCase and snake_case boundaries:</p>
+
+<ul>
+<li><p>myVariableName - Labels &#39;m&#39;, &#39;V&#39;, &#39;N&#39;</p>
+</li>
+<li><p>my_variable_name - Labels &#39;m&#39;, &#39;v&#39;, &#39;n&#39;</p>
+</li>
+<li><p>MY_CONSTANT - Labels &#39;M&#39;, &#39;C&#39;</p>
+</li>
+</ul>
+
+<p>Useful for navigating within identifiers in code.</p>
+
+</div>
+<div id="org-jump-actions" class="org-section org-level-2">
+<h2>✅ Jump Actions</h2>
+<p>CLOSED: [2026-01-15 Thu 07:53]</p>
+
+<p>Beyond navigation, jump commands can perform actions:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.jump.copyLine</td><td>-</td><td>Select a line and copy it</td></tr>
+<tr><td>scimax.jump.killLine</td><td>-</td><td>Select a line and delete it</td></tr>
+</tbody>
+</table>
+
+<p>These commands use the same labeling system but perform actions instead of
+just moving the cursor.</p>
+
+</div>
+<div id="org-label-characters" class="org-section org-level-2">
+<h2>✅ Label Characters</h2>
+<p>CLOSED: [2026-01-15 Thu 07:53]</p>
+
+<p>Jump labels use home row keys for efficiency, ordered by ease of typing:</p>
+
+<pre class="fixed-width">a s d f j k l g h q w e r u i o p z x c v b n m t y</pre>
+
+<ul>
+<li><p>Small numbers of matches use single characters</p>
+</li>
+<li><p>Larger numbers of matches use two-character combinations (aa, as, ad, etc.)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-document-symbol-provider" class="org-section org-level-1">
+<h1>✅ Document Symbol Provider</h1>
+<p>CLOSED: [2026-01-15 Thu 07:53]</p>
+
+<p>VS Code&#39;s built-in outline view and breadcrumb navigation are enhanced with
+org-mode support.</p>
+
+<div id="org-outline-view" class="org-section org-level-2">
+<h2>✅ Outline View</h2>
+<p>CLOSED: [2026-01-15 Thu 07:54]</p>
+
+<p>The Outline panel (View -&gt; Outline) shows document structure:</p>
+
+<p>For org files:</p>
+
+<ul>
+<li><p>Document title (from #+TITLE:)</p>
+</li>
+<li><p>All headings in hierarchical structure</p>
+</li>
+<li><p>TODO state indicators (box for TODO, check for DONE)</p>
+</li>
+<li><p>Tags and priorities shown as details</p>
+</li>
+<li><p>Source blocks (labeled with language)</p>
+</li>
+<li><p>Tables</p>
+</li>
+<li><p>Drawers</p>
+</li>
+</ul>
+
+<p>Symbols use semantic icons:</p>
+
+<ul>
+<li><p>$(symbol-class) - Level 1 headings</p>
+</li>
+<li><p>$(symbol-method) - Level 2 headings</p>
+</li>
+<li><p>$(symbol-function) - Level 3 headings</p>
+</li>
+<li><p>$(symbol-key) - TODO items</p>
+</li>
+<li><p>$(symbol-event) - DONE items</p>
+</li>
+</ul>
+
+</div>
+<div id="org-breadcrumb-navigation" class="org-section org-level-2">
+<h2>✅ Breadcrumb Navigation</h2>
+<p>CLOSED: [2026-01-15 Thu 07:54]</p>
+
+<p>The breadcrumb bar at the top of the editor shows your location in the
+document hierarchy:</p>
+
+<pre class="fixed-width">Document Title &gt; Level 1 Heading &gt; Level 2 Heading &gt; Current Position</pre>
+
+<p>Click any breadcrumb to see siblings and navigate quickly.</p>
+
+</div>
+<div id="org-quick-outline" class="org-section org-level-2">
+<h2>✅ Quick Outline</h2>
+<p>CLOSED: [2026-01-15 Thu 07:54]</p>
+
+<p>Press Ctrl+Shift+O (or Cmd+Shift+O on Mac) to open VS Code&#39;s quick outline:</p>
+
+<ul>
+<li><p>Shows all document symbols</p>
+</li>
+<li><p>Type to filter</p>
+</li>
+<li><p>Press Enter to jump to symbol</p>
+</li>
+</ul>
+
+<p>This works similar to fuzzySearchOutline but uses VS Code&#39;s native UI.</p>
+
+</div>
+</div>
+<div id="org-go-to-definition" class="org-section org-level-1">
+<h1>✅ Go to Definition</h1>
+<p>CLOSED: [2026-01-15 Thu 07:54]</p>
+
+<p>While not Scimax-specific, VS Code&#39;s go to definition works in org files for:</p>
+
+<ul>
+<li><p>Links (<a href="other.html">Other File</a>)</p>
+</li>
+<li><p>Internal links (<a href="#org-heading-name">[[*Heading Name]]</a>)</p>
+</li>
+<li><p>Reference citations (requires org-ref extension)</p>
+</li>
+</ul>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>editor.action.revealDefinition</td><td>F12</td><td>Go to definition</td></tr>
+<tr><td>editor.action.peekDefinition</td><td>Alt+F12</td><td>Peek definition</td></tr>
+<tr><td>editor.action.goToReferences</td><td>Shift+F12</td><td>Find all references</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-navigation-history" class="org-section org-level-1">
+<h1>✅ Navigation History</h1>
+<p>CLOSED: [2026-01-15 Thu 08:00]</p>
+
+<p>VS Code tracks your navigation history across files:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>workbench.action.navigateBack</td><td>C-x C-Left</td><td>Go to previous location</td></tr>
+<tr><td>workbench.action.navigateForward</td><td>C-x C-Right</td><td>Go to next location</td></tr>
+</tbody>
+</table>
+
+<p>Every jump creates a history entry:</p>
+
+<ul>
+<li><p>Jump to heading</p>
+</li>
+<li><p>Follow a link</p>
+</li>
+<li><p>Go to definition</p>
+</li>
+<li><p>Search result navigation</p>
+</li>
+</ul>
+
+<p>Use these commands to backtrack through your navigation path.</p>
+
+</div>
+<div id="org-speed-commands" class="org-section org-level-1">
+<h1>✅ Speed Commands</h1>
+<p>CLOSED: [2026-01-15 Thu 07:56]</p>
+
+<p>Speed commands provide single-key navigation when the cursor is at the start
+of a heading. See the table in <a href="#org-sibling-navigation-speed-commands">[[*Sibling Navigation (Speed Commands)]]</a> above, or
+press ? at a heading start to see all speed commands.</p>
+
+<p>Navigation speed commands (available at heading start):</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>n</td><td>Next visible heading</td><td>Move to next heading</td></tr>
+<tr><td>p</td><td>Previous visible heading</td><td>Move to previous heading</td></tr>
+<tr><td>f</td><td>Next sibling heading</td><td>Next heading at same level</td></tr>
+<tr><td>b</td><td>Previous sibling heading</td><td>Previous heading at same level</td></tr>
+<tr><td>u</td><td>Parent heading</td><td>Jump to parent heading</td></tr>
+<tr><td>j</td><td>Jump to heading</td><td>Fuzzy search headings</td></tr>
+<tr><td>g</td><td>Go to... submenu</td><td>More navigation options</td></tr>
+</tbody>
+</table>
+
+<p>To enable speed commands:</p>
+
+<ol>
+<li><p>Open settings (Ctrl+,)</p>
+</li>
+<li><p>Search for &quot;scimax speed commands&quot;</p>
+</li>
+<li><p>Enable &quot;Scimax: Speed Commands Enabled&quot;</p>
+</li>
+</ol>
+
+<p>Or add to settings.json:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.speedCommandsEnabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-keybinding-reference" class="org-section org-level-1">
+<h1>✅ Keybinding Reference</h1>
+<p>CLOSED: [2026-01-15 Thu 07:56]</p>
+
+<p>All navigation keybindings:</p>
+
+<div id="org-global-all-modes" class="org-section org-level-2">
+<h2>⚠️ Global (All Modes)</h2>
+<p>@@&gt;I am not sure about the workench keybindings&lt;@@</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key Binding</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c s</td><td>scimax.fuzzySearch</td><td>Fuzzy search current file</td></tr>
+<tr><td>C-c S-s</td><td>scimax.fuzzySearchOpenFiles</td><td>Fuzzy search open files</td></tr>
+<tr><td>C-c M-s</td><td>scimax.fuzzySearchOutline</td><td>Fuzzy search outline</td></tr>
+<tr><td>Alt+Left / C-c [</td><td>workbench.action.navigateBack</td><td>Navigate back in history</td></tr>
+<tr><td>Alt+Right / C-c ]</td><td>workbench.action.navigateForward</td><td>Navigate forward in history</td></tr>
+<tr><td>Ctrl+Shift+O</td><td>VS Code Quick Outline</td><td>Jump to symbol</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-org-markdown-mode" class="org-section org-level-2">
+<h2>✅ Org/Markdown Mode</h2>
+<p>CLOSED: [2026-01-15 Thu 07:58]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key Binding</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-j</td><td>scimax.org.jumpToHeading</td><td>Jump to heading</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-speed-commands-at-heading-start" class="org-section org-level-2">
+<h2>✅ Speed Commands (at heading start)</h2>
+<p>CLOSED: [2026-01-15 Thu 07:58]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>n</td><td>Next heading</td><td>Move to next heading</td></tr>
+<tr><td>p</td><td>Previous heading</td><td>Move to previous heading</td></tr>
+<tr><td>f</td><td>Next sibling</td><td>Next heading at same level</td></tr>
+<tr><td>b</td><td>Previous sibling</td><td>Previous heading at same level</td></tr>
+<tr><td>u</td><td>Parent heading</td><td>Jump to parent heading</td></tr>
+<tr><td>j</td><td>Jump to heading</td><td>Fuzzy search headings</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-tips-and-workflows" class="org-section org-level-1">
+<h1>✅ Tips and Workflows</h1>
+<p>CLOSED: [2026-01-15 Thu 07:58]</p>
+
+<div id="org-quick-heading-navigation" class="org-section org-level-2">
+<h2>✅ Quick Heading Navigation</h2>
+<p>CLOSED: [2026-01-15 Thu 07:58]</p>
+
+<p>Combine speed commands and fuzzy search:</p>
+
+<ol>
+<li><p>Use j speed command for fuzzy heading search (when at heading start)</p>
+</li>
+<li><p>Use C-c C-j for heading search (from anywhere)</p>
+</li>
+<li><p>Use f/b speed commands to move between siblings</p>
+</li>
+<li><p>Use n/p speed commands to scan all headings</p>
+</li>
+</ol>
+
+</div>
+<div id="org-finding-code-in-large-files" class="org-section org-level-2">
+<h2>✅ Finding Code in Large Files</h2>
+<p>CLOSED: [2026-01-15 Thu 07:58]</p>
+
+<p>For code files:</p>
+
+<ol>
+<li><p>C-c M-s - Search outline to find function/class</p>
+</li>
+<li><p>scimax.jump.gotoSymbol - Jump to visible function</p>
+</li>
+<li><p>Ctrl+Shift+O - VS Code quick outline for all symbols</p>
+</li>
+</ol>
+
+</div>
+<div id="org-cross-file-navigation" class="org-section org-level-2">
+<h2>✅ Cross-File Navigation</h2>
+<p>CLOSED: [2026-01-15 Thu 07:59]</p>
+
+<p>When working across multiple files:</p>
+
+<ol>
+<li><p>C-c S-s - Search all open files</p>
+</li>
+<li><p>Open related files</p>
+</li>
+<li><p>Use navigation history (Alt+Left/Alt+Right) to move between locations</p>
+</li>
+<li><p>Use breadcrumbs to see context</p>
+</li>
+</ol>
+
+</div>
+<div id="org-precision-jumping" class="org-section org-level-2">
+<h2>✅ Precision Jumping</h2>
+<p>CLOSED: [2026-01-15 Thu 07:59]</p>
+
+<p>For maximum precision:</p>
+
+<ol>
+<li><p>scimax.jump.gotoChar2 - Two characters gives fewer matches</p>
+</li>
+<li><p>scimax.jump.gotoSubword - Jump within camelCase names</p>
+</li>
+<li><p>scimax.jump.gotoWord with starting character - Filter words</p>
+</li>
+</ol>
+
+</div>
+<div id="org-source-block-workflows" class="org-section org-level-2">
+<h2>✅ Source Block Workflows</h2>
+<p>CLOSED: [2026-01-15 Thu 07:59]</p>
+
+<p>When working with literate programming:</p>
+
+<ol>
+<li><p>scimax.ob.jumpToBlock - Find block by name/language</p>
+</li>
+<li><p>scimax.ob.nextBlock/previousBlock - Navigate between blocks</p>
+</li>
+<li><p>scimax.ob.jumpToResults - Check execution results</p>
+</li>
+<li><p>Execute block (C-c C-c)</p>
+</li>
+<li><p>Jump to results to verify output</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-configuration" class="org-section org-level-1">
+<h1>✅ Configuration</h1>
+<p>CLOSED: [2026-01-15 Thu 07:35]</p>
+
+<div id="org-enable-disable-features" class="org-section org-level-2">
+<h2>✅ Enable/Disable Features</h2>
+<p>CLOSED: [2026-01-15 Thu 07:35]</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  // Enable speed commands (single-key navigation at heading start)
+  &quot;scimax.speedCommandsEnabled&quot;: true,
+
+  // Maximum number of items in fuzzy search (performance)
+  &quot;scimax.fuzzySearch.maxResults&quot;: 1000
+}</code></pre>
+</div>
+
+</div>
+<div id="org-custom-keybindings" class="org-section org-level-2">
+<h2>✅ Custom Keybindings</h2>
+<p>CLOSED: [2026-01-15 Thu 07:35]</p>
+
+<p>Add custom keybindings in keybindings.json:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">[
+  // Custom jump to character binding
+  {
+    &quot;key&quot;: &quot;ctrl+;&quot;,
+    &quot;command&quot;: &quot;scimax.jump.gotoChar&quot;,
+    &quot;when&quot;: &quot;editorTextFocus&quot;
+  },
+
+  // Custom next source block binding
+  {
+    &quot;key&quot;: &quot;ctrl+shift+n&quot;,
+    &quot;command&quot;: &quot;scimax.ob.nextBlock&quot;,
+    &quot;when&quot;: &quot;editorTextFocus &amp;&amp; editorLangId == &#39;org&#39;&quot;
+  }
+]</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>✅ Troubleshooting</h1>
+<p>CLOSED: [2026-01-15 Thu 07:35]</p>
+
+<div id="org-fuzzy-search-not-working" class="org-section org-level-2">
+<h2>✅ Fuzzy Search Not Working</h2>
+<p>CLOSED: [2026-01-15 Thu 07:34]</p>
+
+<p>If fuzzy search doesn&#39;t show results:</p>
+
+<ol>
+<li><p>Check that the file has non-empty lines</p>
+</li>
+<li><p>Try searching with simpler terms</p>
+</li>
+<li><p>Check if file is too large (increase maxResults setting)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-speed-commands-not-triggering" class="org-section org-level-2">
+<h2>✅ Speed Commands Not Triggering</h2>
+<p>CLOSED: [2026-01-15 Thu 07:34]</p>
+
+<p>Speed commands require:</p>
+
+<ol>
+<li><p>scimax.speedCommandsEnabled set to true</p>
+</li>
+<li><p>Cursor at column 0 (start of line)</p>
+</li>
+<li><p>Cursor on a heading line (starts with * in org, # in markdown)</p>
+</li>
+</ol>
+
+<p>Move cursor to beginning of heading with Home key, then try speed command.</p>
+
+</div>
+<div id="org-jump-labels-not-appearing" class="org-section org-level-2">
+<h2>✅ Jump Labels Not Appearing</h2>
+<p>CLOSED: [2026-01-15 Thu 07:34]</p>
+
+<p>If jump commands don&#39;t show labels:</p>
+
+<ol>
+<li><p>Make sure there are visible matches in the viewport</p>
+</li>
+<li><p>Check that the editor has focus</p>
+</li>
+<li><p>Try scrolling to ensure matches are visible</p>
+</li>
+</ol>
+
+</div>
+<div id="org-navigation-history-not-working" class="org-section org-level-2">
+<h2>✅ Navigation History Not Working</h2>
+<p>CLOSED: [2026-01-15 Thu 07:34]</p>
+
+<p>VS Code&#39;s navigation history works best when:</p>
+
+<ol>
+<li><p>You make explicit jumps (jump commands, follow links)</p>
+</li>
+<li><p>You move between files</p>
+</li>
+<li><p>You use go to definition</p>
+</li>
+</ol>
+
+<p>Cursor movement with arrow keys doesn&#39;t create history entries.</p>
+
+</div>
+</div>
+<div id="org-see-also" class="org-section org-level-1">
+<h1>✅ See Also</h1>
+<p>CLOSED: [2026-01-15 Thu 07:34]</p>
+
+<ul>
+<li><p><a href="document-structure.html">Document Structure</a> - Headlines, folding, and outline manipulation</p>
+</li>
+<li><p><a href="keybindings.html">Keybindings</a> - Complete keybinding reference</p>
+</li>
+<li><p><a href="source-blocks.html">Source Blocks</a> - Working with code blocks</p>
+</li>
+<li><p><a href="links.html">Links</a> - Following and managing links</p>
+</li>
+</ul>
+
+</div>
+<div id="org-comparison-with-emacs" class="org-section org-level-1">
+<h1>✅ Comparison with Emacs</h1>
+<p>CLOSED: [2026-01-15 Thu 07:34]</p>
+
+<p>Scimax VS Code navigation is inspired by Emacs packages:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Emacs Package</th><th>VS Code Equivalent</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td>Avy</td><td>scimax.jump.* commands</td><td>Character-based jumping</td></tr>
+<tr><td>Swiper</td><td>scimax.fuzzySearch</td><td>Incremental search with preview</td></tr>
+<tr><td>Helm/Ivy</td><td>Quick Pick UI</td><td>VS Code native fuzzy picker</td></tr>
+<tr><td>Org speed keys</td><td>Speed commands</td><td>Single-key commands at heading</td></tr>
+<tr><td>Imenu</td><td>Document symbol provider</td><td>Outline view and breadcrumbs</td></tr>
+</tbody>
+</table>
+
+<p>Key differences:</p>
+
+<ul>
+<li><p>VS Code uses Quick Pick UI instead of minibuffer</p>
+</li>
+<li><p>Some Emacs packages have richer configuration</p>
+</li>
+<li><p>VS Code navigation history is cross-file by default</p>
+</li>
+<li><p>Speed commands in VS Code require explicit enable</p>
+</li>
+</ul>
+
+</div>
+<div id="org-index" class="org-section org-level-1">
+<h1>✅ Index</h1>
+<p>CLOSED: [2026-01-15 Thu 07:33]</p>
+
+<ul>
+<li><p>Avy-style navigation: <a href="#org-jump-navigation-avy-style">[[*Jump Navigation (Avy-Style)]]</a></p>
+</li>
+<li><p>Breadcrumbs: <a href="#org-breadcrumb-navigation">[[*Breadcrumb Navigation]]</a></p>
+</li>
+<li><p>Fuzzy search: <a href="#org-fuzzy-search-swiper-style">[[*Fuzzy Search (Swiper-Style)]]</a></p>
+</li>
+<li><p>Go to definition: <a href="#org-go-to-definition">[[*Go to Definition]]</a></p>
+</li>
+<li><p>Heading navigation: <a href="#org-heading-navigation">[[*Heading Navigation]]</a></p>
+</li>
+<li><p>Jump to character: <a href="#org-jump-to-character">[[*Jump to Character]]</a></p>
+</li>
+<li><p>Jump to line: <a href="#org-jump-to-line">[[*Jump to Line]]</a></p>
+</li>
+<li><p>Jump to symbol: <a href="#org-jump-to-symbol">[[*Jump to Symbol]]</a></p>
+</li>
+<li><p>Jump to word: <a href="#org-jump-to-word">[[*Jump to Word]]</a></p>
+</li>
+<li><p>Navigation history: <a href="#org-navigation-history">[[*Navigation History]]</a></p>
+</li>
+<li><p>Outline view: <a href="#org-outline-view">[[*Outline View]]</a></p>
+</li>
+<li><p>Sibling navigation: <a href="#org-sibling-navigation-speed-commands">[[*Sibling Navigation (Speed Commands)]]</a></p>
+</li>
+<li><p>Source blocks: <a href="#org-source-block-navigation">[[*Source Block Navigation]]</a></p>
+</li>
+<li><p>Speed commands: <a href="#org-speed-commands">[[*Speed Commands]]</a></p>
+</li>
+<li><p>Swiper-style search: <a href="#org-fuzzy-search-swiper-style">[[*Fuzzy Search (Swiper-Style)]]</a></p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>✅ Navigation</h1>
+<p>CLOSED: [2026-01-15 Thu 07:33]</p>
+
+<ul>
+<li><p>Previous: <a href="editmarks.html">Editmarks</a></p>
+</li>
+<li><p>Next: <a href="hydra-menus.html">Hydra Menus</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

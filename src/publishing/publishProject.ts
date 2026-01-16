@@ -14,6 +14,9 @@ import type { HtmlExportOptions } from '../parser/orgExportHtml';
  */
 export type PublishingFunction =
     | 'org-html-publish-to-html'  // Export org to HTML
+    | 'md-html-publish-to-html'   // Export markdown to HTML
+    | 'ipynb-html-publish-to-html' // Export Jupyter notebook to HTML
+    | 'auto'                       // Auto-detect by extension
     | 'copy';                      // Copy files as-is
 
 /**
