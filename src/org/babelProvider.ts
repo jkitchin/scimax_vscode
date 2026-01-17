@@ -1053,7 +1053,7 @@ if plt.get_fignums():
  * Command: Execute source block at cursor
  * Also handles #+CALL: lines
  */
-async function executeSourceBlockAtCursor(): Promise<void> {
+async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showWarningMessage('No active editor');
@@ -1065,8 +1065,11 @@ async function executeSourceBlockAtCursor(): Promise<void> {
         return;
     }
 
-    // Check if cursor is on a #+CALL: line
-    const currentLine = editor.document.lineAt(editor.selection.active.line).text;
+    // Use provided line number or cursor position
+    const targetLine = lineNumber ?? editor.selection.active.line;
+    const currentLine = editor.document.lineAt(targetLine).text;
+
+    // Check if on a #+CALL: line
     const callSpec = parseCallLine(currentLine);
 
     if (callSpec) {
@@ -1086,7 +1089,15 @@ async function executeSourceBlockAtCursor(): Promise<void> {
         return;
     }
 
-    const block = findSourceBlockAtCursor(editor.document, editor.selection.active);
+    // Find source block - use lineNumber if provided, otherwise cursor position
+    let block: SourceBlockInfo | null;
+    if (lineNumber !== undefined) {
+        const blocks = findAllSourceBlocks(editor.document);
+        block = blocks.find(b => b.startLine === lineNumber) || null;
+    } else {
+        block = findSourceBlockAtCursor(editor.document, editor.selection.active);
+    }
+
     if (!block) {
         vscode.window.showWarningMessage('No source block at cursor position');
         return;
@@ -1816,12 +1827,18 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
                 vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
                 vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
                 vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', false);
+                vscode.commands.executeCommand('setContext', 'scimax.onCallLine', false);
                 return;
             }
 
             const position = editor.selection.active;
             const inBlock = findSourceBlockAtCursor(document, position) !== null;
             vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inBlock);
+
+            // Check if on a #+CALL: line
+            const currentLineText = document.lineAt(position.line).text;
+            const onCallLine = /^\s*#\+CALL:\s*\S+/i.test(currentLineText);
+            vscode.commands.executeCommand('setContext', 'scimax.onCallLine', onCallLine);
 
             // Check for inline src block or inline babel call
             const text = document.getText();
@@ -2002,6 +2019,7 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                     new vscode.CodeLens(range, {
                         title: '▶ Run',
                         command: 'scimax.org.executeBlock',
+                        arguments: [i],
                         tooltip: 'Execute this call',
                     })
                 );

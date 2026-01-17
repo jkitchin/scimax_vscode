@@ -2265,11 +2265,13 @@
       {
         "command": "scimax.journal.prev",
         "key": "alt+[",
+        "mac": "ctrl+cmd+[",
         "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
       },
       {
         "command": "scimax.journal.next",
         "key": "alt+]",
+        "mac": "ctrl+cmd+]",
         "when": "resourceFilename =~ /^\\d{4}-\\d{2}-\\d{2}\\.(org|md)$/"
       },
       {
@@ -2319,7 +2321,7 @@
         "command": "scimax.org.executeBlock",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId == 'org' && scimax.inSourceBlock"
+        "when": "editorTextFocus && editorLangId == 'org' && (scimax.inSourceBlock || scimax.onCallLine)"
       },
       {
         "command": "scimax.babel.executeInline",

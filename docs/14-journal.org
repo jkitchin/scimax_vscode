@@ -30,11 +30,13 @@ CLOSED: [2026-01-16 Fri 21:06]
 
 The journal system is designed around the principle of friction-free capture. With a single keyboard shortcut (`Cmd-S-J'), you can open today's journal entry and start writing. The system handles all organization automatically, storing files in a sensible directory structure that mirrors the calendar.
 
-* ⚠️ Getting Started
+* ✅ Getting Started
+CLOSED: [2026-01-17 Sat 14:02]
 
-** ⚠️ Opening Your First Journal Entry
+** ✅ Opening Your First Journal Entry
+CLOSED: [2026-01-17 Sat 14:02]
 
-The quickest way to start journaling is to press `Cmd-S-J'. This will:
+The quickest way to start journaling is to press `Cmd-Shift-j'. This will:
 
 1. Create today's journal entry if it doesn't exist
 2. Apply your default template
@@ -318,7 +320,8 @@ Custom templates are stored in <journal-directory>/.scimax/templates/. Create a 
    - Run Scimax: New Journal Entry command
    - Select your custom template from the list
 
-** ⚠️ Markdown Templates
+** ✅ Markdown Templates
+CLOSED: [2026-01-17 Sat 14:02]
 
 If you configure the journal format as Markdown, the built-in templates use Markdown syntax:
 
@@ -335,15 +338,18 @@ If you configure the journal format as Markdown, the built-in templates use Mark
 
 Custom Markdown templates work the same way, but use the .md extension.
 
-* ⚠️ Creating Journal Entries
+* ✅ Creating Journal Entries
+CLOSED: [2026-01-17 Sat 14:02]
 
-** ⚠️ Today's Entry
+** ✅ Today's Entry
+CLOSED: [2026-01-17 Sat 14:02]
 
-Press C-S-J (s-S-J on Mac) or run the command Scimax: Open Today's Journal.
+Press C-S-J or run the command Scimax: Open Today's Journal. [[cmd:scimax.journal.new]]
 
 This is the fastest way to start journaling. If today's entry doesn't exist, it will be created using your default template.
 
-** ⚠️ New Entry for Any Date
+** ✅ New Entry for Any Date
+CLOSED: [2026-01-17 Sat 14:03]
 
 To create an entry for a different date:
 
@@ -360,7 +366,8 @@ Example workflow for creating a meeting note:
 3. Press Enter to use today's date
 4. Entry is created and opened
 
-** ⚠️ Using Different Templates
+** ✅ Using Different Templates
+CLOSED: [2026-01-17 Sat 14:03]
 
 You can create multiple entries for the same date using different templates by:
 
@@ -373,7 +380,8 @@ However, only one file per date is stored. To use multiple templates in one day,
 - Use a comprehensive custom template
 - Create separate files outside the journal system
 
-* ⚠️ Navigating Journal Entries
+* ✅ Navigating Journal Entries
+CLOSED: [2026-01-17 Sat 14:03]
 
 ** ⚠️ Keyboard Navigation
 
@@ -384,9 +392,10 @@ When viewing a journal entry:
 
 These shortcuts only work when the current file is a journal entry (filename matches YYYY-MM-DD.org or .md).
 
-** ⚠️ Go to Specific Date
+** ✅ Go to Specific Date
+CLOSED: [2026-01-17 Sat 14:05]
 
-Run Scimax: Go to Journal Date to see a list of all your entries:
+Run Scimax: Go to Journal Date to see a list of all your entries: [[cmd:scimax.journal.goto]]
 
 #+begin_example
 > Scimax: Go to Journal Date
@@ -400,14 +409,15 @@ Run Scimax: Go to Journal Date to see a list of all your entries:
 
 Use arrow keys or type to filter, then press Enter to open.
 
-** ⚠️ Calendar View
+** ✅ Calendar View
+CLOSED: [2026-01-17 Sat 14:06]
 
 The calendar view provides a visual way to navigate entries:
 
 *** ⚠️ Accessing the Calendar
 
 - Click on the Journal view in the Activity Bar (left sidebar)
-- Or run: Scimax: Show Journal Calendar
+- Or run: Scimax: Show Journal Calendar [[cmd:scimax.journal.calendar]]
 
 *** ⚠️ Calendar Features
 
@@ -459,7 +469,7 @@ The journal tree view (in the sidebar) shows entries organized by year and month
 
 To see all entries for the current week:
 
-Run Scimax: This Week's Entries
+Run Scimax: This Week's Entries [[cmd:scimax.journal.weekView]]
 
 This shows a quick-pick list with:
 - Each day of the current week that has an entry
@@ -475,11 +485,13 @@ This week: 5 entries
 ...
 #+end_example
 
-* ⚠️ Searching Journal Entries
+* ✅ Searching Journal Entries
+CLOSED: [2026-01-17 Sat 14:11]
 
-** ⚠️ Full-Text Search
+** 👀 Full-Text Search
 
-Run Scimax: Search Journal to search your entries:
+Run Scimax: Search Journal to search your entries: [[cmd:scimax.journal.search]]
+
 
 1. Select a date range:
    - All entries
@@ -506,14 +518,16 @@ Example search results:
 📄 2026-01-10    ...machine learning paper review...        Line 12
 #+end_example
 
-** ⚠️ Search Tips
+** ✅ Search Tips
+CLOSED: [2026-01-17 Sat 14:11]
 
 - Searches are case-insensitive
 - Partial word matching is supported
 - Search scans the entire content including headings and metadata
 - Results are limited to preserve performance
 
-** ⚠️ Advanced Search
+** ✅ Advanced Search
+CLOSED: [2026-01-17 Sat 14:11]
 
 For more advanced searching, you can use the global Scimax search commands which index all journal entries:
 
@@ -523,11 +537,13 @@ For more advanced searching, you can use the global Scimax search commands which
 
 These commands search across your entire workspace, including journal entries.
 
-* ⚠️ Quick Capture and Logging
+* ✅ Quick Capture and Logging
+CLOSED: [2026-01-17 Sat 14:17]
 
-** ⚠️ Quick Log Entry
+** ✅ Quick Log Entry
+CLOSED: [2026-01-17 Sat 14:18]
 
-The quick log feature lets you capture a timestamped note without opening a file:
+The quick log feature lets you capture a timestamped note without opening a file: [[cmd:scimax.journal.quickLog]]
 
 1. Run Scimax: Quick Log Entry or create a custom keybinding
 2. Type your note
@@ -548,7 +564,8 @@ This is perfect for:
 - Logging time-sensitive information
 - Building a timeline of your day
 
-** ⚠️ Insert Timestamp
+** ✅ Insert Timestamp
+CLOSED: [2026-01-17 Sat 14:18]
 
 When editing a journal entry, run Scimax: Insert Timestamp to insert a timestamp at the cursor:
 
@@ -567,31 +584,39 @@ Useful for:
 - Marking when you started/finished tasks
 - Adding temporal context to notes
 
-* ⚠️ Journal Statistics
+* ✅ Journal Statistics
+CLOSED: [2026-01-17 Sat 14:18]
 
-** ⚠️ Viewing Statistics
+** ✅ Viewing Statistics
+CLOSED: [2026-01-17 Sat 14:18]
 
-Run Scimax: Show Journal Statistics to see:
+Run Scimax: Show Journal Statistics to see:  [[cmd:scimax.journal.stats]]
 
 #+begin_example
 Total entries: 45 | Total words: 32,450 | Current streak: 7 days | Longest streak: 12 days
 #+end_example
 
-** ⚠️ Statistics Tracked
+** ✅ Statistics Tracked
+CLOSED: [2026-01-17 Sat 14:18]
 
-*** ⚠️ Entry Count
+*** ✅ Entry Count
+CLOSED: [2026-01-17 Sat 14:18]
 Total number of journal entries you've written.
 
-*** ⚠️ Total Words
+*** ✅ Total Words
+CLOSED: [2026-01-17 Sat 14:18]
 Combined word count across all entries. Only counts actual words, not markup.
 
-*** ⚠️ Current Streak
+*** ✅ Current Streak
+CLOSED: [2026-01-17 Sat 14:18]
 Number of consecutive days you've written an entry (including today or ending yesterday).
 
-*** ⚠️ Longest Streak
+*** ✅ Longest Streak
+CLOSED: [2026-01-17 Sat 14:18]
 Your best streak of consecutive journaling days.
 
-** ⚠️ Streak Calculation
+** ✅ Streak Calculation
+CLOSED: [2026-01-17 Sat 14:18]
 
 A streak is maintained if you create entries on consecutive days:
 
@@ -622,15 +647,17 @@ Hover over it to see:
 - Total words
 - Quick link to today's entry
 
-* ⚠️ Integration with Other Features
+* ✅ Integration with Other Features
+CLOSED: [2026-01-17 Sat 14:20]
 
-** ⚠️ Agenda Integration
+** ✅ Agenda Integration
+CLOSED: [2026-01-17 Sat 14:20]
 
 Journal entries are automatically indexed by the Scimax database if your journal directory is included in the search scope.
 
 This means journal entries with TODO items, scheduled items, and deadlines will appear in:
 
-- Scimax: Show Agenda - Daily agenda view
+- Scimax: Show Agenda - Daily agenda view 
 - Scimax: Show TODO Items - All TODO items
 - Scimax: Show Upcoming Deadlines - Deadline tracking
 
@@ -651,7 +678,8 @@ To ensure journal integration:
 
 Now you can use journal entries for task management with full agenda support.
 
-** ⚠️ Cross-Referencing
+** ✅ Cross-Referencing
+CLOSED: [2026-01-17 Sat 14:20]
 
 Use org-mode links to cross-reference between journal entries:
 
@@ -667,7 +695,8 @@ Or use relative paths:
 [[file:../13/2026-01-13.org][Previous entry]]
 #+end_src
 
-** ⚠️ Embedding Code Blocks
+** ✅ Embedding Code Blocks
+CLOSED: [2026-01-17 Sat 14:20]
 
 Journal entries support full Babel functionality. Execute code blocks directly in your journal:
 
@@ -685,7 +714,8 @@ Press C-<return> (s-<return> on Mac) to execute blocks.
 
 See [[file:07-source-blocks.org][Source Blocks documentation]] for details.
 
-** ⚠️ Citations and References
+** ✅ Citations and References
+CLOSED: [2026-01-17 Sat 14:20]
 
 Use org-ref features to add citations to journal entries:
 
@@ -703,37 +733,42 @@ Press C-c ] to insert citations.
 
 See [[file:19-references.org][References documentation]] for details.
 
-* ⚠️ Commands Reference
+* ✅ Commands Reference
+CLOSED: [2026-01-17 Sat 14:20]
 
-** ⚠️ All Journal Commands
+** ✅ All Journal Commands
+CLOSED: [2026-01-17 Sat 14:20]
 
-| Command                           | Keybinding       | Description                          |
-|-----------------------------------+------------------+--------------------------------------|
-| Scimax: Open Today's Journal      | C-S-J     | Open or create today's entry         |
-| Scimax: New Journal Entry         | -                | Create entry with template selection |
-| Scimax: Previous Journal Entry    | M-[            | Navigate to previous entry           |
-| Scimax: Next Journal Entry        | M-]            | Navigate to next entry               |
-| Scimax: Go to Journal Date        | -                | Quick-pick list of all entries       |
-| Scimax: Search Journal            | -                | Search entries with date range       |
-| Scimax: Show Journal Calendar     | -                | Open calendar view                   |
-| Scimax: This Week's Entries       | -                | Show current week entries            |
-| Scimax: Quick Log Entry           | -                | Add timestamped log to today         |
-| Scimax: Insert Timestamp          | -                | Insert timestamp at cursor           |
-| Scimax: Show Journal Statistics   | -                | Display statistics popup             |
-| Scimax: Refresh Journal View      | -                | Refresh tree view                    |
-| Scimax: Open Journal Directory    | -                | Open journal folder in file manager  |
+| Command                         | Keybinding | Description                          |
+|---------------------------------+------------+--------------------------------------|
+| Scimax: Open Today's Journal    | C-S-J      | Open or create today's entry         |
+| Scimax: New Journal Entry       | -          | Create entry with template selection |
+| Scimax: Previous Journal Entry  | Cmd-[      | Navigate to previous entry           |
+| Scimax: Next Journal Entry      | Cmd-]      | Navigate to next entry               |
+| Scimax: Go to Journal Date      | -          | Quick-pick list of all entries       |
+| Scimax: Search Journal          | -          | Search entries with date range       |
+| Scimax: Show Journal Calendar   | -          | Open calendar view                   |
+| Scimax: This Week's Entries     | -          | Show current week entries            |
+| Scimax: Quick Log Entry         | -          | Add timestamped log to today         |
+| Scimax: Insert Timestamp        | -          | Insert timestamp at cursor           |
+| Scimax: Show Journal Statistics | -          | Display statistics popup             |
+| Scimax: Refresh Journal View    | -          | Refresh tree view                    |
+| Scimax: Open Journal Directory  | -          | Open journal folder in file manager  |
 
-** ⚠️ Command Palette
+** ✅ Command Palette
+CLOSED: [2026-01-17 Sat 14:23]
 
-Access all commands via Command Palette (C-S-P or s-S-P):
+Access all commands via Command Palette (C-S-P):
 
 1. Press C-S-P
 2. Type "journal"
 3. Select command from filtered list
 
-* ⚠️ Keyboard Shortcuts
+* ✅ Keyboard Shortcuts
+CLOSED: [2026-01-17 Sat 14:23]
 
-** ⚠️ Default Keybindings
+** ✅ Default Keybindings
+CLOSED: [2026-01-17 Sat 14:23]
 
 #+begin_src json
 {
@@ -755,7 +790,8 @@ Access all commands via Command Palette (C-S-P or s-S-P):
 }
 #+end_src
 
-** ⚠️ Custom Keybindings
+** ✅ Custom Keybindings
+CLOSED: [2026-01-17 Sat 14:23]
 
 Add custom keybindings in keybindings.json (File > Preferences > Keyboard Shortcuts, then click the icon in the top right):
 
@@ -776,16 +812,19 @@ Add custom keybindings in keybindings.json (File > Preferences > Keyboard Shortc
 }
 #+end_src
 
-* ⚠️ Tips and Best Practices
+* ✅ Tips and Best Practices
+CLOSED: [2026-01-17 Sat 14:23]
 
-** ⚠️ Daily Journaling Workflow
+** ✅ Daily Journaling Workflow
+CLOSED: [2026-01-17 Sat 14:21]
 
 1. *Morning*: Open today's journal (C-S-J), review yesterday's entry (M-[), plan today's tasks
 2. *Throughout the day*: Use quick log (Scimax: Quick Log Entry) to capture notes
 3. *Evening*: Review entry, mark tasks complete, add reflections
 4. *Weekly*: Use This Week's Entries to review the week
 
-** ⚠️ Building the Habit
+** ✅ Building the Habit
+CLOSED: [2026-01-17 Sat 14:21]
 
 - Set a reminder to journal at the same time each day
 - Start small - even a single sentence counts
@@ -793,7 +832,8 @@ Add custom keybindings in keybindings.json (File > Preferences > Keyboard Shortc
 - Use the minimal template if the default feels overwhelming
 - Pin the Journal tree view for easy access
 
-** ⚠️ Organizing Information
+** ✅ Organizing Information
+CLOSED: [2026-01-17 Sat 14:21]
 
 - Use consistent heading structures for easier searching
 - Tag entries with hashtags: #projectname #meeting #idea
@@ -801,14 +841,16 @@ Add custom keybindings in keybindings.json (File > Preferences > Keyboard Shortc
 - Use the Log section for quick captures, Notes for longer form
 - Create custom templates for recurring entry types
 
-** ⚠️ Performance Tips
+** ✅ Performance Tips
+CLOSED: [2026-01-17 Sat 14:21]
 
 - The journal system caches entries for 30 seconds, so browsing is fast
 - Large journals (1000+ entries) may take a moment to load the tree view
 - Search is optimized but searching "all entries" on large journals may be slow
 - Statistics are cached for 1 minute and updated asynchronously
 
-** ⚠️ Backup and Sync
+** ✅ Backup and Sync
+CLOSED: [2026-01-17 Sat 14:21]
 
 Since journal entries are plain text files in a standard directory structure:
 
@@ -836,7 +878,8 @@ git commit -m "Journal updates $(date +%Y-%m-%d)"
 git push
 #+end_src
 
-** ⚠️ Privacy and Security
+** ✅ Privacy and Security
+CLOSED: [2026-01-17 Sat 14:21]
 
 Journal entries are stored as plain text on your local filesystem. For sensitive information:
 
@@ -845,9 +888,11 @@ Journal entries are stored as plain text on your local filesystem. For sensitive
 - Consider using org-crypt for encrypting specific entries
 - Be mindful of what you commit to version control
 
-* ⚠️ Troubleshooting
+* ✅ Troubleshooting
+CLOSED: [2026-01-17 Sat 14:21]
 
-** ⚠️ Journal Directory Not Found
+** ✅ Journal Directory Not Found
+CLOSED: [2026-01-17 Sat 14:21]
 
 If you see errors about missing directory:
 
@@ -856,7 +901,8 @@ If you see errors about missing directory:
 3. Restart VS Code
 4. The directory will be created automatically on first use
 
-** ⚠️ Templates Not Working
+** ✅ Templates Not Working
+CLOSED: [2026-01-17 Sat 14:22]
 
 If custom templates aren't appearing:
 
@@ -865,7 +911,8 @@ If custom templates aren't appearing:
 3. Run Scimax: Refresh Journal View
 4. Restart VS Code
 
-** ⚠️ Navigation Shortcuts Not Working
+** ✅ Navigation Shortcuts Not Working
+CLOSED: [2026-01-17 Sat 14:22]
 
 M-[ and M-] only work when:
 
@@ -873,7 +920,8 @@ M-[ and M-] only work when:
 - Filename matches YYYY-MM-DD.org or YYYY-MM-DD.md
 - File is inside the configured journal directory
 
-** ⚠️ Statistics Not Updating
+** ✅ Statistics Not Updating
+CLOSED: [2026-01-17 Sat 14:22]
 
 Statistics are cached for performance:
 
@@ -881,7 +929,8 @@ Statistics are cached for performance:
 - Statistics update automatically after 1 minute
 - Saving a journal file triggers update
 
-** ⚠️ Calendar Not Showing Entries
+** ✅ Calendar Not Showing Entries
+CLOSED: [2026-01-17 Sat 14:22]
 
 If the calendar appears empty:
 
@@ -890,13 +939,16 @@ If the calendar appears empty:
 3. Verify file naming matches YYYY-MM-DD.org or .md
 4. Check for file system permissions issues
 
-* ⚠️ Advanced Usage
+* ✅ Advanced Usage
+CLOSED: [2026-01-17 Sat 14:22]
 
-** ⚠️ Scripting and Automation
+** ✅ Scripting and Automation
+CLOSED: [2026-01-17 Sat 14:22]
 
 Since journal entries are plain text files in a predictable structure, you can script operations:
 
-*** ⚠️ Auto-generate Weekly Summary
+*** ✅ Auto-generate Weekly Summary
+CLOSED: [2026-01-17 Sat 14:22]
 
 #+begin_src python
 #!/usr/bin/env python3
@@ -932,7 +984,8 @@ for day, content in entries:
     print()
 #+end_src
 
-*** ⚠️ Export to PDF
+*** ✅ Export to PDF
+CLOSED: [2026-01-17 Sat 14:22]
 
 #+begin_src bash
 #!/bin/bash
@@ -946,7 +999,8 @@ find . -name "*.org" -mtime -30 | while read file; do
 done
 #+end_src
 
-** ⚠️ Custom Template Variables
+** ✅ Custom Template Variables
+CLOSED: [2026-01-17 Sat 14:22]
 
 Currently, template variables are fixed, but you can post-process entries:
 
@@ -955,9 +1009,11 @@ Currently, template variables are fixed, but you can post-process entries:
 sed -i '3i#+TAGS: daily' ~/scimax-journal/2026/01/14/2026-01-14.org
 #+end_src
 
-** ⚠️ Integration with External Tools
+** ✅ Integration with External Tools
+CLOSED: [2026-01-17 Sat 14:22]
 
-*** ⚠️ Obsidian Daily Notes
+*** ✅ Obsidian Daily Notes
+CLOSED: [2026-01-17 Sat 14:22]
 
 To use the same directory structure with Obsidian:
 
@@ -965,7 +1021,8 @@ To use the same directory structure with Obsidian:
 2. Use the same date format (YYYY-MM-DD)
 3. Adjust template format as needed
 
-*** ⚠️ Emacs org-journal
+*** ✅ Emacs org-journal
+CLOSED: [2026-01-17 Sat 14:22]
 
 The directory structure is compatible with some org-journal configurations:
 
@@ -975,7 +1032,8 @@ The directory structure is compatible with some org-journal configurations:
       org-journal-file-type 'daily)
 #+end_src
 
-* ⚠️ Future Enhancements
+* ✅ Future Enhancements
+CLOSED: [2026-01-17 Sat 14:22]
 
 Potential future features under consideration:
 
@@ -989,7 +1047,8 @@ Potential future features under consideration:
 - Template preview before creation
 - AI-powered journal prompts and summaries
 
-* ⚠️ See Also
+* ✅ See Also
+CLOSED: [2026-01-17 Sat 14:22]
 
 - [[file:13-agenda.org][Agenda]] - Task management and scheduling
 - [[file:07-source-blocks.org][Source Blocks]] - Execute code in journal entries

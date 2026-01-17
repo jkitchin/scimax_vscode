@@ -1346,23 +1346,24 @@ print(f"Total: {total}")
 : Total: 450
 
 
-** ⚠️ Call with Headers
+** ✅ Call with Headers 
+CLOSED: [2026-01-17 Sat 14:16]
 
 Override headers when calling:
 
-#+CALL: square(x=10)
+#+CALL: square(x=11)
 
 #+RESULTS: square
-: 100
+: 121
+
 # No output. You might do this for side effects.
-#+CALL: square(x=5) :results silent
+#+CALL: square(x=5)[:results silent]
 
-#+CALL: square(x=5) :results table
+#+CALL: square(x=1)[:results table]
 
 #+RESULTS: square
-: 25
-
-
+| 1 |
+|   |
 ** ⚠️ Library of Functions
 
 Build a library of reusable code blocks:
