@@ -195,6 +195,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
         hover = this.getTagHover(line, position);
         if (hover) return hover;
 
+        // Footnote reference hover
+        hover = this.getFootnoteHover(line, position, document);
+        if (hover) return hover;
+
         return null;
     }
 
@@ -778,6 +782,120 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                     position.line, tagEnd
                 );
                 return new vscode.Hover(markdown, range);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get hover for footnote references - shows definition content
+     */
+    private getFootnoteHover(
+        line: string,
+        position: vscode.Position,
+        document: vscode.TextDocument
+    ): vscode.Hover | null {
+        // Match footnote references: [fn:label] or [fn:label:inline definition] or [fn::anonymous]
+        const footnotePattern = /\[fn:([^:\]]*)?(?::([^\]]*))?\]/g;
+        let match;
+
+        while ((match = footnotePattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = match.index + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                const label = match[1] || '';
+                const inlineDefinition = match[2];
+
+                const markdown = new vscode.MarkdownString();
+                markdown.isTrusted = true;
+
+                // If it's an inline footnote with definition
+                if (inlineDefinition !== undefined) {
+                    markdown.appendMarkdown(`## 📝 Footnote${label ? ` [${label}]` : ' (anonymous)'}\n\n`);
+                    markdown.appendMarkdown(`**Inline definition:**\n\n`);
+                    markdown.appendMarkdown(`> ${inlineDefinition}\n`);
+                } else if (label) {
+                    // Standard footnote reference - search for definition
+                    const definition = this.findFootnoteDefinition(document, label);
+
+                    markdown.appendMarkdown(`## 📝 Footnote [${label}]\n\n`);
+
+                    if (definition) {
+                        markdown.appendMarkdown(`${definition}\n`);
+                    } else {
+                        markdown.appendMarkdown(`*Definition not found*\n`);
+                    }
+                } else {
+                    // Anonymous footnote without inline definition (shouldn't normally happen)
+                    markdown.appendMarkdown(`## 📝 Footnote (anonymous)\n\n`);
+                    markdown.appendMarkdown(`*No definition available*\n`);
+                }
+
+                const range = new vscode.Range(
+                    position.line, startCol,
+                    position.line, endCol
+                );
+                return new vscode.Hover(markdown, range);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find footnote definition in document
+     * Footnote definitions start at column 0: [fn:label] definition text...
+     */
+    private findFootnoteDefinition(document: vscode.TextDocument, label: string): string | null {
+        const text = document.getText();
+        const lines = text.split('\n');
+        const labelLower = label.toLowerCase();
+
+        // Search for footnote definition: [fn:label] at start of line
+        // Definition can span multiple lines until next footnote or blank line
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            // Match footnote definition at start of line
+            const defMatch = line.match(/^\[fn:([^\]]+)\]\s*(.*)/);
+            if (defMatch && defMatch[1].toLowerCase() === labelLower) {
+                // Found the definition - collect all lines until next footnote or double blank
+                const definitionLines: string[] = [];
+                const firstLineContent = defMatch[2].trim();
+                if (firstLineContent) {
+                    definitionLines.push(firstLineContent);
+                }
+
+                // Continue collecting subsequent lines
+                for (let j = i + 1; j < lines.length; j++) {
+                    const nextLine = lines[j];
+
+                    // Stop at next footnote definition
+                    if (nextLine.match(/^\[fn:[^\]]+\]/)) {
+                        break;
+                    }
+
+                    // Stop at org heading
+                    if (nextLine.match(/^\*+\s/)) {
+                        break;
+                    }
+
+                    // Stop at double blank line (paragraph break)
+                    if (nextLine.trim() === '' && j + 1 < lines.length && lines[j + 1].trim() === '') {
+                        break;
+                    }
+
+                    // Skip single blank lines but include non-blank content
+                    if (nextLine.trim() !== '') {
+                        definitionLines.push(nextLine.trim());
+                    } else if (definitionLines.length > 0) {
+                        // Single blank line within definition - add paragraph break
+                        definitionLines.push('');
+                    }
+                }
+
+                return definitionLines.join('\n').trim() || null;
             }
         }
 

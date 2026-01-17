@@ -116,6 +116,48 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             links.push(link);
         }
 
+        // Find footnote references: [fn:label] or [fn:label:definition] or [fn::definition]
+        // Make them clickable to jump to their definitions
+        const footnoteRegex = /\[fn:([^:\]]*)?(?::([^\]]*))?\]/g;
+        while ((match = footnoteRegex.exec(text)) !== null) {
+            const label = match[1] || '';
+            const inlineDefinition = match[2];
+
+            const startPos = document.positionAt(match.index);
+            const endPos = document.positionAt(match.index + match[0].length);
+            const range = new vscode.Range(startPos, endPos);
+
+            // Check if this is a definition at the start of a line (not a reference)
+            const isDefinition = startPos.character === 0;
+
+            const link = new vscode.DocumentLink(range);
+
+            if (isDefinition) {
+                // This is a footnote definition - don't make it clickable to itself
+                // But we could make it find all references (future enhancement)
+                continue;
+            }
+
+            if (inlineDefinition !== undefined) {
+                // Inline footnote - no navigation needed, just show tooltip
+                link.tooltip = `Inline footnote: ${inlineDefinition}`;
+            } else if (label) {
+                // Standard footnote reference - navigate to definition
+                link.target = vscode.Uri.parse(
+                    `command:scimax.org.gotoFootnote?${encodeURIComponent(JSON.stringify({
+                        file: document.uri.fsPath,
+                        label: label
+                    }))}`
+                );
+                link.tooltip = `Go to footnote definition: [fn:${label}]`;
+            } else {
+                // Anonymous footnote without definition
+                link.tooltip = 'Anonymous footnote';
+            }
+
+            links.push(link);
+        }
+
         return links;
     }
 
@@ -659,6 +701,40 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 }
 
                 vscode.window.showWarningMessage(`Radio target not found: <<<${target}>>>`);
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            }
+        })
+    );
+
+    // Go to footnote definition
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.gotoFootnote', async (args: { file: string; label: string }) => {
+            const { file, label } = args;
+            const labelLower = label.toLowerCase();
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(file);
+                const editor = await vscode.window.showTextDocument(doc);
+                const text = doc.getText();
+                const lines = text.split('\n');
+
+                // Search for footnote definition: [fn:label] at start of line
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    const defMatch = line.match(/^\[fn:([^\]]+)\]/);
+                    if (defMatch && defMatch[1].toLowerCase() === labelLower) {
+                        const position = new vscode.Position(i, 0);
+                        editor.selection = new vscode.Selection(position, position);
+                        editor.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
+                        return;
+                    }
+                }
+
+                vscode.window.showWarningMessage(`Footnote definition not found: [fn:${label}]`);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }
