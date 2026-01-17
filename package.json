@@ -2411,13 +2411,25 @@
         "command": "scimax.markdown.insertDueDate",
         "key": "ctrl+c ctrl+d",
         "mac": "ctrl+c ctrl+d",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/"
+        "when": "editorTextFocus && editorLangId == markdown"
+      },
+      {
+        "command": "scimax.speed.deadline",
+        "key": "ctrl+c ctrl+d",
+        "mac": "ctrl+c ctrl+d",
+        "when": "editorTextFocus && editorLangId == org"
       },
       {
         "command": "scimax.markdown.insertScheduledDate",
         "key": "ctrl+c ctrl+s",
         "mac": "ctrl+c ctrl+s",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/"
+        "when": "editorTextFocus && editorLangId == markdown"
+      },
+      {
+        "command": "scimax.speed.schedule",
+        "key": "ctrl+c ctrl+s",
+        "mac": "ctrl+c ctrl+s",
+        "when": "editorTextFocus && editorLangId == org"
       },
       {
         "command": "scimax.showDbMenu",

@@ -29,15 +29,14 @@ function formatOrgTimestamp(date: Date, includeTime = false): string {
 
 
 /**
- * Find existing SCHEDULED or DEADLINE line for a heading
+ * Find the planning line for a heading (contains SCHEDULED, DEADLINE, or CLOSED)
+ * Returns the line number and whether the specific keyword exists on it
  */
 function findPlanningLine(
     document: vscode.TextDocument,
     headingLine: number,
     keyword: 'SCHEDULED' | 'DEADLINE'
-): { lineNumber: number; text: string } | null {
-    const headingLevel = getHeadingLevel(document, headingLine);
-
+): { lineNumber: number; text: string; hasKeyword: boolean } | null {
     // Search in lines below heading until next heading or content
     for (let i = headingLine + 1; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
@@ -46,15 +45,20 @@ function findPlanningLine(
         const nextLevel = getHeadingLevel(document, i);
         if (nextLevel > 0) break;
 
-        // Check if line contains the keyword
-        const pattern = new RegExp(`^\\s*${keyword}:\\s*`);
-        if (pattern.test(line)) {
-            return { lineNumber: i, text: line };
+        // Check if this is a planning line (has any planning keyword)
+        if (/^\s*(SCHEDULED|DEADLINE|CLOSED):/.test(line)) {
+            // Check if this specific keyword exists
+            const keywordPattern = new RegExp(`${keyword}:\\s*<[^>]+>`);
+            return {
+                lineNumber: i,
+                text: line,
+                hasKeyword: keywordPattern.test(line)
+            };
         }
 
         // If we've hit content (non-empty, non-planning line), stop searching
         // Planning lines should be immediately after heading
-        if (line.trim() && !/^\s*(SCHEDULED|DEADLINE|CLOSED):/.test(line)) {
+        if (line.trim()) {
             // Unless it's a drawer or property
             if (!/^\s*:/.test(line)) break;
         }
@@ -174,35 +178,31 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
     const existing = findPlanningLine(document, headingLine, keyword);
 
     if (existing) {
-        // Replace existing timestamp
         const line = document.lineAt(existing.lineNumber);
-        const newLine = line.text.replace(/<[^>]+>/, timestamp);
 
-        await editor.edit(editBuilder => {
-            editBuilder.replace(line.range, newLine);
-        });
-    } else {
-        // Insert new planning line
-        // Find the best position to insert (after heading, before content)
-        let insertLine = headingLine + 1;
+        if (existing.hasKeyword) {
+            // Replace existing timestamp for this keyword
+            const keywordPattern = new RegExp(`${keyword}:\\s*<[^>]+>`);
+            const newLine = line.text.replace(keywordPattern, `${keyword}: ${timestamp}`);
 
-        // Check for existing planning lines and insert after them
-        for (let i = headingLine + 1; i < document.lineCount; i++) {
-            const line = document.lineAt(i).text;
-            const nextLevel = getHeadingLevel(document, i);
-            if (nextLevel > 0) break;
+            await editor.edit(editBuilder => {
+                editBuilder.replace(line.range, newLine);
+            });
+        } else {
+            // Append this keyword to the existing planning line
+            // Add it at the end of the line
+            const newLine = `${line.text} ${keyword}: ${timestamp}`;
 
-            if (/^\s*(SCHEDULED|DEADLINE|CLOSED):/.test(line)) {
-                insertLine = i + 1;
-            } else if (line.trim() && !/^\s*:/.test(line)) {
-                break;
-            }
+            await editor.edit(editBuilder => {
+                editBuilder.replace(line.range, newLine);
+            });
         }
-
+    } else {
+        // Insert new planning line right after the heading
         const newLine = `${indent}${keyword}: ${timestamp}\n`;
 
         await editor.edit(editBuilder => {
-            editBuilder.insert(new vscode.Position(insertLine, 0), newLine);
+            editBuilder.insert(new vscode.Position(headingLine + 1, 0), newLine);
         });
     }
 
