@@ -2405,7 +2405,7 @@
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc"
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine"
       },
       {
         "command": "scimax.markdown.insertDueDate",
