@@ -3385,6 +3385,16 @@
           "default": true,
           "description": "Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation"
         },
+        "scimax.export.pdf.shellEscape": {
+          "type": "string",
+          "enum": [
+            "restricted",
+            "full",
+            "disabled"
+          ],
+          "default": "restricted",
+          "markdownDescription": "Shell escape mode for LaTeX compilation:\n- `restricted` (recommended): Allows minted/pygments syntax highlighting while blocking arbitrary shell commands\n- `full`: Allows all shell commands via `\\write18{}` (**security risk** - only use with trusted documents)\n- `disabled`: No shell escape (minted will not work)"
+        },
         "scimax.latexPreview.enabled": {
           "type": "boolean",
           "default": true,
