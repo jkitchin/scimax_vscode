@@ -1028,6 +1028,10 @@
         "title": "Scimax: Search OpenAlex"
       },
       {
+        "command": "scimax.ref.configureOpenAlex",
+        "title": "Scimax: Configure OpenAlex API"
+      },
+      {
         "command": "scimax.ref.transposeCitationLeft",
         "title": "Scimax: Transpose Citation Left"
       },
@@ -3276,7 +3280,13 @@
         "scimax.db.openaiApiKey": {
           "type": "string",
           "default": "",
-          "description": "OpenAI API key for embeddings"
+          "markdownDescription": "**Deprecated**: OpenAI API key is now stored securely. Use 'Scimax: Configure Embeddings' command instead.",
+          "deprecationMessage": "This setting is deprecated. API keys are now stored securely in your OS credential manager. Use the 'Scimax: Configure Embeddings' command to set your API key."
+        },
+        "scimax.references.openalexMailto": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Your email address for OpenAlex API requests. Setting this gives you access to the [polite pool](https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool) with faster rate limits. Example: `user@example.com`"
         },
         "scimax.literate.pythonPath": {
           "type": "string",

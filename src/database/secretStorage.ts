@@ -13,6 +13,7 @@ import * as vscode from 'vscode';
 
 // Secret storage keys
 const OPENAI_API_KEY = 'scimax.openaiApiKey';
+const OPENALEX_API_KEY = 'scimax.openalexApiKey';
 
 let extensionContext: vscode.ExtensionContext | null = null;
 
@@ -63,6 +64,44 @@ export async function hasOpenAIApiKey(): Promise<boolean> {
     const key = await getOpenAIApiKey();
     return key !== undefined && key.length > 0;
 }
+
+// =============================================================================
+// OpenAlex API Key Functions
+// =============================================================================
+
+/**
+ * Store the OpenAlex API key securely
+ */
+export async function storeOpenAlexApiKey(apiKey: string): Promise<void> {
+    await getSecrets().store(OPENALEX_API_KEY, apiKey);
+}
+
+/**
+ * Retrieve the OpenAlex API key
+ * Returns undefined if not stored
+ */
+export async function getOpenAlexApiKey(): Promise<string | undefined> {
+    return await getSecrets().get(OPENALEX_API_KEY);
+}
+
+/**
+ * Delete the OpenAlex API key from secure storage
+ */
+export async function deleteOpenAlexApiKey(): Promise<void> {
+    await getSecrets().delete(OPENALEX_API_KEY);
+}
+
+/**
+ * Check if an OpenAlex API key is stored
+ */
+export async function hasOpenAlexApiKey(): Promise<boolean> {
+    const key = await getOpenAlexApiKey();
+    return key !== undefined && key.length > 0;
+}
+
+// =============================================================================
+// Migration Functions
+// =============================================================================
 
 /**
  * Migrate API key from settings to SecretStorage (one-time migration)

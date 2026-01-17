@@ -1,4 +1,51 @@
 import * as https from 'https';
+import * as vscode from 'vscode';
+import { getOpenAlexApiKey } from '../database/secretStorage';
+
+// Track if we've warned about mailto
+let mailtoWarningShown = false;
+
+/**
+ * Get OpenAlex request configuration
+ * Builds the User-Agent with mailto and adds api_key if available
+ */
+async function getOpenAlexConfig(): Promise<{ userAgent: string; apiKey?: string }> {
+    const config = vscode.workspace.getConfiguration('scimax.references');
+    const mailto = config.get<string>('openalexMailto');
+    const apiKey = await getOpenAlexApiKey();
+
+    // Warn if mailto is not configured (only once per session)
+    if (!mailto && !mailtoWarningShown) {
+        mailtoWarningShown = true;
+        vscode.window.showWarningMessage(
+            'OpenAlex mailto not configured. Set scimax.references.openalexMailto to your email for faster API access (polite pool).',
+            'Configure'
+        ).then(selection => {
+            if (selection === 'Configure') {
+                vscode.commands.executeCommand('workbench.action.openSettings', 'scimax.references.openalexMailto');
+            }
+        });
+    }
+
+    // Build User-Agent string
+    let userAgent = 'scimax-vscode/1.0';
+    if (mailto) {
+        userAgent += ` (mailto:${mailto})`;
+    }
+
+    return { userAgent, apiKey };
+}
+
+/**
+ * Build URL path with optional api_key parameter
+ */
+function buildPath(basePath: string, apiKey?: string): string {
+    if (!apiKey) {
+        return basePath;
+    }
+    const separator = basePath.includes('?') ? '&' : '?';
+    return `${basePath}${separator}api_key=${encodeURIComponent(apiKey)}`;
+}
 
 /**
  * OpenAlex Work metadata
@@ -209,14 +256,17 @@ export async function fetchOpenAlexWork(doi: string): Promise<OpenAlexWork | nul
         return cached.data;
     }
 
+    const { userAgent, apiKey } = await getOpenAlexConfig();
+    const basePath = `/works/doi:${encodeURIComponent(doi)}`;
+
     return new Promise((resolve) => {
         const options = {
             hostname: 'api.openalex.org',
-            path: `/works/doi:${encodeURIComponent(doi)}`,
+            path: buildPath(basePath, apiKey),
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'User-Agent': 'scimax-vscode/1.0 (mailto:jkitchin@andrew.cmu.edu)'
+                'User-Agent': userAgent
             },
             timeout: 8000
         };
@@ -262,14 +312,17 @@ export async function fetchOpenAlexWork(doi: string): Promise<OpenAlexWork | nul
  * Fetch author metadata from OpenAlex
  */
 export async function fetchOpenAlexAuthor(authorId: string): Promise<OpenAlexAuthor | null> {
+    const { userAgent, apiKey } = await getOpenAlexConfig();
+    const basePath = `/authors/${encodeURIComponent(authorId)}`;
+
     return new Promise((resolve) => {
         const options = {
             hostname: 'api.openalex.org',
-            path: `/authors/${encodeURIComponent(authorId)}`,
+            path: buildPath(basePath, apiKey),
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'User-Agent': 'scimax-vscode/1.0 (mailto:jkitchin@andrew.cmu.edu)'
+                'User-Agent': userAgent
             },
             timeout: 8000
         };
@@ -308,14 +361,17 @@ export async function fetchOpenAlexAuthor(authorId: string): Promise<OpenAlexAut
  * Search works in OpenAlex
  */
 export async function searchOpenAlexWorks(query: string, limit: number = 10): Promise<OpenAlexWork[]> {
+    const { userAgent, apiKey } = await getOpenAlexConfig();
+    const basePath = `/works?search=${encodeURIComponent(query)}&per_page=${limit}`;
+
     return new Promise((resolve) => {
         const options = {
             hostname: 'api.openalex.org',
-            path: `/works?search=${encodeURIComponent(query)}&per_page=${limit}`,
+            path: buildPath(basePath, apiKey),
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'User-Agent': 'scimax-vscode/1.0 (mailto:jkitchin@andrew.cmu.edu)'
+                'User-Agent': userAgent
             },
             timeout: 10000
         };
@@ -355,17 +411,19 @@ export async function searchOpenAlexWorks(query: string, limit: number = 10): Pr
  * Fetch citing works for a given OpenAlex work ID
  */
 export async function fetchCitingWorks(workId: string, limit: number = 10): Promise<OpenAlexWork[]> {
-    return new Promise((resolve) => {
-        // Extract just the ID part if full URL provided
-        const id = workId.replace('https://openalex.org/', '');
+    const { userAgent, apiKey } = await getOpenAlexConfig();
+    // Extract just the ID part if full URL provided
+    const id = workId.replace('https://openalex.org/', '');
+    const basePath = `/works?filter=cites:${id}&per_page=${limit}&sort=cited_by_count:desc`;
 
+    return new Promise((resolve) => {
         const options = {
             hostname: 'api.openalex.org',
-            path: `/works?filter=cites:${id}&per_page=${limit}&sort=cited_by_count:desc`,
+            path: buildPath(basePath, apiKey),
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'User-Agent': 'scimax-vscode/1.0 (mailto:jkitchin@andrew.cmu.edu)'
+                'User-Agent': userAgent
             },
             timeout: 10000
         };
@@ -407,17 +465,19 @@ export async function fetchCitingWorks(workId: string, limit: number = 10): Prom
 export async function fetchRelatedWorks(relatedIds: string[], limit: number = 5): Promise<OpenAlexWork[]> {
     if (!relatedIds || relatedIds.length === 0) return [];
 
+    const { userAgent, apiKey } = await getOpenAlexConfig();
     // Take first N related work IDs
     const ids = relatedIds.slice(0, limit).map(id => id.replace('https://openalex.org/', ''));
+    const basePath = `/works?filter=openalex:${ids.join('|')}`;
 
     return new Promise((resolve) => {
         const options = {
             hostname: 'api.openalex.org',
-            path: `/works?filter=openalex:${ids.join('|')}`,
+            path: buildPath(basePath, apiKey),
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'User-Agent': 'scimax-vscode/1.0 (mailto:jkitchin@andrew.cmu.edu)'
+                'User-Agent': userAgent
             },
             timeout: 10000
         };
