@@ -16,8 +16,9 @@ import {
     AgendaGroup,
     AgendaViewConfig,
     TodoListView,
+    DiarySexpEntry,
 } from '../parser/orgAgenda';
-import type { HeadlineElement, OrgDocumentNode } from '../parser/orgElementTypes';
+import type { HeadlineElement, OrgDocumentNode, DiarySexpElement, OrgElement } from '../parser/orgElementTypes';
 import {
     collectAllClockEntries,
     generateTimeReport,
@@ -33,6 +34,7 @@ export interface AgendaFile {
     path: string;
     document: OrgDocumentNode;
     headlines: HeadlineElement[];
+    diarySexps: DiarySexpEntry[];
     mtime: number;
 }
 
@@ -307,13 +309,15 @@ export class AgendaManager {
                 addPositions: false,
             });
 
-            // Extract headlines
+            // Extract headlines and diary sexps
             const headlines = this.extractHeadlines(document);
+            const diarySexps = this.extractDiarySexps(document, filePath);
 
             const agendaFile: AgendaFile = {
                 path: filePath,
                 document,
                 headlines,
+                diarySexps,
                 mtime: stat.mtimeMs,
             };
 
@@ -338,6 +342,106 @@ export class AgendaManager {
     }
 
     /**
+     * Extract diary sexp entries from a document
+     */
+    private extractDiarySexps(doc: OrgDocumentNode, filePath: string): DiarySexpEntry[] {
+        const entries: DiarySexpEntry[] = [];
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+
+        // Helper to extract diary sexps from an element's children
+        const extractFromElements = (elements: OrgElement[], category?: string) => {
+            for (const element of elements) {
+                if (element.type === 'diary-sexp') {
+                    const diarySexp = element as DiarySexpElement;
+                    // Find line number from the element's range
+                    let lineNumber = 1;
+                    let charCount = 0;
+                    for (let i = 0; i < lines.length; i++) {
+                        if (charCount >= element.range.start) {
+                            lineNumber = i + 1;
+                            break;
+                        }
+                        charCount += lines[i].length + 1; // +1 for newline
+                    }
+
+                    // Get the title from the next line or use sexp as title
+                    const title = this.getDiarySexpTitle(lines, lineNumber - 1);
+
+                    entries.push({
+                        sexp: diarySexp.properties.value,
+                        title: title,
+                        file: filePath,
+                        line: lineNumber,
+                        category: category || path.basename(filePath, '.org'),
+                    });
+                }
+            }
+        };
+
+        // Check the document's top-level section
+        if (doc.section) {
+            extractFromElements(doc.section.children);
+        }
+
+        // Check headlines recursively
+        const processHeadline = (headline: HeadlineElement) => {
+            const category = headline.propertiesDrawer?.CATEGORY ||
+                           path.basename(filePath, '.org');
+
+            // Check headline's section
+            if (headline.section) {
+                extractFromElements(headline.section.children, category);
+            }
+
+            // Process children headlines
+            for (const child of headline.children) {
+                processHeadline(child);
+            }
+        };
+
+        for (const child of doc.children) {
+            if (child.type === 'headline') {
+                processHeadline(child as HeadlineElement);
+            }
+        }
+
+        return entries;
+    }
+
+    /**
+     * Get a title for a diary sexp entry from surrounding context
+     */
+    private getDiarySexpTitle(lines: string[], lineIndex: number): string {
+        // Try to find a meaningful title from surrounding lines
+        // Check current line for any text after the sexp
+        const currentLine = lines[lineIndex] || '';
+        const afterSexp = currentLine.replace(/^%%\([^)]+\)\s*/, '').trim();
+        if (afterSexp) {
+            return afterSexp;
+        }
+
+        // Check previous line for a headline or descriptive text
+        if (lineIndex > 0) {
+            const prevLine = lines[lineIndex - 1].trim();
+            if (prevLine.startsWith('*')) {
+                // It's a headline, extract the text
+                return prevLine.replace(/^\*+\s*(?:TODO|DONE|NEXT|WAITING)?\s*(?:\[#[ABC]\])?\s*/, '')
+                    .replace(/\s*:[^:]+:\s*$/, '') // Remove tags
+                    .trim();
+            }
+        }
+
+        // Default to a generic title based on the sexp type
+        const match = currentLine.match(/%%\((\w+-\w+)/);
+        if (match) {
+            return `Diary: ${match[1]}`;
+        }
+
+        return 'Diary entry';
+    }
+
+    /**
      * Generate agenda view with lazy loading and rate limiting
      */
     async getAgendaView(config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
@@ -350,6 +454,7 @@ export class AgendaManager {
         this.scanInProgress = true;
 
         const allHeadlines: HeadlineElement[] = [];
+        const allDiarySexps: DiarySexpEntry[] = [];
         const fileMap = new Map<string, string>();
         let filesProcessed = 0;
 
@@ -370,6 +475,8 @@ export class AgendaManager {
                         for (const headline of agendaFile.headlines) {
                             this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
                         }
+                        // Collect diary sexps
+                        allDiarySexps.push(...agendaFile.diarySexps);
                     }
                     filesProcessed++;
                 }
@@ -380,7 +487,7 @@ export class AgendaManager {
                 }
             }
 
-            this.outputChannel.appendLine(`Agenda: Scan complete. Processed ${filesProcessed} files, found ${allHeadlines.length} headlines.`);
+            this.outputChannel.appendLine(`Agenda: Scan complete. Processed ${filesProcessed} files, found ${allHeadlines.length} headlines, ${allDiarySexps.length} diary sexps.`);
         } finally {
             this.scanInProgress = false;
         }
@@ -390,7 +497,7 @@ export class AgendaManager {
             showHabits: this.config.showHabits,
             days: this.config.defaultSpan,
             ...config,
-        });
+        }, allDiarySexps);
     }
 
     private collectHeadlinesWithFile(
@@ -522,7 +629,12 @@ class AgendaItemNode extends vscode.TreeItem {
         if (item.time) {
             descParts.push(item.time);
         }
-        if (item.daysUntil !== undefined) {
+        if (item.agendaType === 'diary' && item.daysUntil !== undefined) {
+            // For diary entries, daysUntil represents years for anniversaries
+            if (item.daysUntil > 0) {
+                descParts.push(`(${item.daysUntil} years)`);
+            }
+        } else if (item.daysUntil !== undefined) {
             if (item.daysUntil < 0) {
                 descParts.push(`${Math.abs(item.daysUntil)}d overdue`);
             } else if (item.daysUntil === 0) {
@@ -547,6 +659,8 @@ class AgendaItemNode extends vscode.TreeItem {
             this.iconPath = new vscode.ThemeIcon('clock');
         } else if (item.agendaType === 'scheduled') {
             this.iconPath = new vscode.ThemeIcon('calendar');
+        } else if (item.agendaType === 'diary') {
+            this.iconPath = new vscode.ThemeIcon('star');
         } else if (item.todoState === 'DONE') {
             this.iconPath = new vscode.ThemeIcon('check');
         } else if (item.todoState === 'TODO') {
@@ -1096,6 +1210,7 @@ function getItemIcon(item: AgendaItem): string {
     if (item.overdue) return '$(warning)';
     if (item.agendaType === 'deadline') return '$(clock)';
     if (item.agendaType === 'scheduled') return '$(calendar)';
+    if (item.agendaType === 'diary') return '$(star)';
     if (item.todoState === 'DONE') return '$(check)';
     if (item.todoState === 'TODO') return '$(circle-outline)';
     if (item.todoState === 'NEXT') return '$(arrow-right)';
@@ -1110,7 +1225,12 @@ function formatItemDescription(item: AgendaItem): string {
     if (item.priority) parts.push(`[#${item.priority}]`);
     if (item.time) parts.push(item.time);
 
-    if (item.daysUntil !== undefined) {
+    if (item.agendaType === 'diary' && item.daysUntil !== undefined) {
+        // For diary entries, daysUntil represents years for anniversaries
+        if (item.daysUntil > 0) {
+            parts.push(`(${item.daysUntil} years)`);
+        }
+    } else if (item.daysUntil !== undefined) {
         if (item.daysUntil < 0) {
             parts.push(`${Math.abs(item.daysUntil)}d overdue`);
         } else if (item.daysUntil === 0) {

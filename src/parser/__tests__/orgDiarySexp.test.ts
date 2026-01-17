@@ -7,6 +7,10 @@ import {
     parseDiarySexp,
     diaryAnniversary,
     diaryFloat,
+    diaryCyclic,
+    diaryBlock,
+    diaryDate,
+    orgClass,
     evaluateDiarySexp,
     getDiarySexpDates
 } from '../orgDiarySexp';
@@ -171,6 +175,180 @@ describe('diaryFloat', () => {
     });
 });
 
+describe('diaryCyclic', () => {
+    it('matches on the start date', () => {
+        const checkDate = new Date(2025, 0, 1);
+        const result = diaryCyclic(7, 1, 1, 2025, checkDate);
+        expect(result.matches).toBe(true);
+        expect(result.description).toBe('Start date');
+    });
+
+    it('matches on subsequent occurrences', () => {
+        const checkDate = new Date(2025, 0, 8); // 7 days later
+        const result = diaryCyclic(7, 1, 1, 2025, checkDate);
+        expect(result.matches).toBe(true);
+    });
+
+    it('does not match dates before start', () => {
+        const checkDate = new Date(2024, 11, 31);
+        const result = diaryCyclic(7, 1, 1, 2025, checkDate);
+        expect(result.matches).toBe(false);
+    });
+
+    it('does not match non-cycle dates', () => {
+        const checkDate = new Date(2025, 0, 5); // 4 days (not multiple of 7)
+        const result = diaryCyclic(7, 1, 1, 2025, checkDate);
+        expect(result.matches).toBe(false);
+    });
+
+    it('handles daily cycles', () => {
+        const day1 = new Date(2025, 0, 1);
+        const day2 = new Date(2025, 0, 2);
+        const day3 = new Date(2025, 0, 3);
+        expect(diaryCyclic(1, 1, 1, 2025, day1).matches).toBe(true);
+        expect(diaryCyclic(1, 1, 1, 2025, day2).matches).toBe(true);
+        expect(diaryCyclic(1, 1, 1, 2025, day3).matches).toBe(true);
+    });
+});
+
+describe('diaryBlock', () => {
+    it('matches dates within the block', () => {
+        const result = diaryBlock(1, 10, 2025, 1, 20, 2025, new Date(2025, 0, 15));
+        expect(result.matches).toBe(true);
+    });
+
+    it('matches the start date of the block', () => {
+        const result = diaryBlock(1, 10, 2025, 1, 20, 2025, new Date(2025, 0, 10));
+        expect(result.matches).toBe(true);
+    });
+
+    it('matches the end date of the block', () => {
+        const result = diaryBlock(1, 10, 2025, 1, 20, 2025, new Date(2025, 0, 20));
+        expect(result.matches).toBe(true);
+    });
+
+    it('does not match dates before the block', () => {
+        const result = diaryBlock(1, 10, 2025, 1, 20, 2025, new Date(2025, 0, 9));
+        expect(result.matches).toBe(false);
+    });
+
+    it('does not match dates after the block', () => {
+        const result = diaryBlock(1, 10, 2025, 1, 20, 2025, new Date(2025, 0, 21));
+        expect(result.matches).toBe(false);
+    });
+
+    it('handles multi-month blocks', () => {
+        const result = diaryBlock(12, 15, 2024, 1, 15, 2025, new Date(2025, 0, 1));
+        expect(result.matches).toBe(true);
+    });
+});
+
+describe('diaryDate', () => {
+    it('matches exact date', () => {
+        const result = diaryDate(1, 15, 2025, new Date(2025, 0, 15));
+        expect(result.matches).toBe(true);
+    });
+
+    it('does not match different date', () => {
+        const result = diaryDate(1, 15, 2025, new Date(2025, 0, 16));
+        expect(result.matches).toBe(false);
+    });
+
+    it('matches any month when month is null', () => {
+        const jan = diaryDate(null, 15, 2025, new Date(2025, 0, 15));
+        const feb = diaryDate(null, 15, 2025, new Date(2025, 1, 15));
+        expect(jan.matches).toBe(true);
+        expect(feb.matches).toBe(true);
+    });
+
+    it('matches any day when day is null', () => {
+        const day1 = diaryDate(1, null, 2025, new Date(2025, 0, 1));
+        const day31 = diaryDate(1, null, 2025, new Date(2025, 0, 31));
+        expect(day1.matches).toBe(true);
+        expect(day31.matches).toBe(true);
+    });
+
+    it('matches any year when year is null', () => {
+        const y2024 = diaryDate(1, 15, null, new Date(2024, 0, 15));
+        const y2025 = diaryDate(1, 15, null, new Date(2025, 0, 15));
+        expect(y2024.matches).toBe(true);
+        expect(y2025.matches).toBe(true);
+    });
+
+    it('matches any date when all are null', () => {
+        const random = diaryDate(null, null, null, new Date(2030, 5, 23));
+        expect(random.matches).toBe(true);
+    });
+});
+
+describe('orgClass', () => {
+    // Class: Mondays from Jan 15, 2026 to May 15, 2026
+    const y1 = 2026, m1 = 1, d1 = 15;
+    const y2 = 2026, m2 = 5, d2 = 15;
+    const monday = 1;
+
+    it('matches on the correct day of week within range', () => {
+        // Jan 19, 2026 is a Monday
+        const result = orgClass(y1, m1, d1, y2, m2, d2, monday, new Date(2026, 0, 19));
+        expect(result.matches).toBe(true);
+    });
+
+    it('does not match on wrong day of week', () => {
+        // Jan 20, 2026 is a Tuesday
+        const result = orgClass(y1, m1, d1, y2, m2, d2, monday, new Date(2026, 0, 20));
+        expect(result.matches).toBe(false);
+    });
+
+    it('does not match before start date', () => {
+        // Jan 13, 2026 is a Monday but before start
+        const result = orgClass(y1, m1, d1, y2, m2, d2, monday, new Date(2026, 0, 13));
+        expect(result.matches).toBe(false);
+    });
+
+    it('does not match after end date', () => {
+        // May 18, 2026 is a Monday but after end
+        const result = orgClass(y1, m1, d1, y2, m2, d2, monday, new Date(2026, 4, 18));
+        expect(result.matches).toBe(false);
+    });
+
+    it('matches on the start date if it is the right day', () => {
+        // Start on a Wednesday (Jan 15, 2026 is Thursday, so use a Wed start)
+        const result = orgClass(2026, 1, 14, 2026, 5, 15, 3, new Date(2026, 0, 14)); // Wed=3
+        expect(result.matches).toBe(true);
+    });
+
+    it('matches on the end date if it is the right day', () => {
+        // May 15, 2026 is a Friday
+        const result = orgClass(y1, m1, d1, y2, m2, d2, 5, new Date(2026, 4, 15)); // Fri=5
+        expect(result.matches).toBe(true);
+    });
+
+    it('skips specified weeks', () => {
+        // First Monday after start is Jan 19, 2026 (week 1)
+        // Second Monday is Jan 26, 2026 (week 2)
+        const week1Monday = new Date(2026, 0, 19);
+        const week2Monday = new Date(2026, 0, 26);
+
+        // Skip week 2
+        const result1 = orgClass(y1, m1, d1, y2, m2, d2, monday, week1Monday, [2]);
+        const result2 = orgClass(y1, m1, d1, y2, m2, d2, monday, week2Monday, [2]);
+
+        expect(result1.matches).toBe(true);
+        expect(result2.matches).toBe(false);
+    });
+
+    it('handles multiple skip weeks', () => {
+        const week1Monday = new Date(2026, 0, 19);
+        const week2Monday = new Date(2026, 0, 26);
+        const week3Monday = new Date(2026, 1, 2);
+
+        // Skip weeks 1 and 3
+        expect(orgClass(y1, m1, d1, y2, m2, d2, monday, week1Monday, [1, 3]).matches).toBe(false);
+        expect(orgClass(y1, m1, d1, y2, m2, d2, monday, week2Monday, [1, 3]).matches).toBe(true);
+        expect(orgClass(y1, m1, d1, y2, m2, d2, monday, week3Monday, [1, 3]).matches).toBe(false);
+    });
+});
+
 describe('evaluateDiarySexp', () => {
     it('evaluates diary-anniversary string', () => {
         const checkDate = new Date(2024, 0, 15);
@@ -193,9 +371,58 @@ describe('evaluateDiarySexp', () => {
 
     it('returns not matching for unsupported function', () => {
         const checkDate = new Date(2024, 0, 15);
-        const result = evaluateDiarySexp('diary-cyclic 7', checkDate);
+        const result = evaluateDiarySexp('diary-unknown 7', checkDate);
         expect(result.matches).toBe(false);
         expect(result.description).toContain('Unsupported');
+    });
+
+    it('evaluates diary-cyclic string', () => {
+        // Every 7 days starting January 1, 2025
+        const startDate = new Date(2025, 0, 1); // Start date
+        const checkDate1 = new Date(2025, 0, 8); // 7 days later
+        const checkDate2 = new Date(2025, 0, 15); // 14 days later
+        const checkDate3 = new Date(2025, 0, 9); // 8 days later (shouldn't match)
+
+        expect(evaluateDiarySexp('diary-cyclic 7 1 1 2025', startDate).matches).toBe(true);
+        expect(evaluateDiarySexp('diary-cyclic 7 1 1 2025', checkDate1).matches).toBe(true);
+        expect(evaluateDiarySexp('diary-cyclic 7 1 1 2025', checkDate2).matches).toBe(true);
+        expect(evaluateDiarySexp('diary-cyclic 7 1 1 2025', checkDate3).matches).toBe(false);
+    });
+
+    it('evaluates diary-block string', () => {
+        // Block from Jan 10 to Jan 20, 2025
+        const inRange = new Date(2025, 0, 15);
+        const beforeRange = new Date(2025, 0, 9);
+        const afterRange = new Date(2025, 0, 21);
+
+        expect(evaluateDiarySexp('diary-block 1 10 2025 1 20 2025', inRange).matches).toBe(true);
+        expect(evaluateDiarySexp('diary-block 1 10 2025 1 20 2025', beforeRange).matches).toBe(false);
+        expect(evaluateDiarySexp('diary-block 1 10 2025 1 20 2025', afterRange).matches).toBe(false);
+    });
+
+    it('evaluates diary-date string', () => {
+        const checkDate = new Date(2025, 0, 15);
+
+        // Exact date match
+        expect(evaluateDiarySexp('diary-date 1 15 2025', checkDate).matches).toBe(true);
+        expect(evaluateDiarySexp('diary-date 1 16 2025', checkDate).matches).toBe(false);
+
+        // With wildcards (t)
+        expect(evaluateDiarySexp('diary-date t 15 2025', checkDate).matches).toBe(true); // any month, day 15
+        expect(evaluateDiarySexp('diary-date 1 t 2025', checkDate).matches).toBe(true); // any day in Jan
+        expect(evaluateDiarySexp('diary-date t t 2025', checkDate).matches).toBe(true); // any date in 2025
+    });
+
+    it('evaluates org-class string', () => {
+        // Class on Mondays from Jan 15, 2026 to May 15, 2026
+        // Jan 19, 2026 is a Monday
+        const monday = new Date(2026, 0, 19);
+        const tuesday = new Date(2026, 0, 20);
+        const beforeStart = new Date(2026, 0, 12); // Monday before start
+
+        expect(evaluateDiarySexp('org-class 2026 1 15 2026 5 15 1', monday).matches).toBe(true);
+        expect(evaluateDiarySexp('org-class 2026 1 15 2026 5 15 1', tuesday).matches).toBe(false);
+        expect(evaluateDiarySexp('org-class 2026 1 15 2026 5 15 1', beforeStart).matches).toBe(false);
     });
 });
 
@@ -281,5 +508,130 @@ describe('real-world examples', () => {
         // Different date should not match
         const march16Birthday = evaluateDiarySexp('diary-anniversary 3 16 1990', today);
         expect(march16Birthday.matches).toBe(false);
+    });
+});
+
+// Tests for agenda integration
+import { generateAgendaView, DiarySexpEntry } from '../orgAgenda';
+
+describe('agenda integration with diary sexps', () => {
+    it('includes diary sexp items in agenda view', () => {
+        const diarySexps: DiarySexpEntry[] = [
+            {
+                sexp: 'diary-anniversary 1 15 1990',
+                title: "John's Birthday",
+                file: 'test.org',
+                line: 10,
+                category: 'Birthdays',
+            },
+            {
+                sexp: 'diary-float 11 4 4',
+                title: 'Thanksgiving',
+                file: 'test.org',
+                line: 20,
+                category: 'Holidays',
+            },
+        ];
+
+        // Check for birthday in January 2024
+        const view = generateAgendaView(
+            [], // no headlines
+            new Map(),
+            {
+                startDate: new Date(2024, 0, 14), // Jan 14
+                days: 3, // Jan 14-16
+            },
+            diarySexps
+        );
+
+        expect(view.totalItems).toBe(1);
+        expect(view.groups.some(g => g.items.some(i => i.title === "John's Birthday"))).toBe(true);
+    });
+
+    it('shows years for anniversary entries', () => {
+        const diarySexps: DiarySexpEntry[] = [
+            {
+                sexp: 'diary-anniversary 1 15 1990',
+                title: "30th Birthday",
+                file: 'test.org',
+                line: 10,
+            },
+        ];
+
+        const view = generateAgendaView(
+            [],
+            new Map(),
+            {
+                startDate: new Date(2024, 0, 14),
+                days: 3,
+            },
+            diarySexps
+        );
+
+        const birthdayItem = view.groups
+            .flatMap(g => g.items)
+            .find(i => i.title === '30th Birthday');
+
+        expect(birthdayItem).toBeDefined();
+        expect(birthdayItem?.agendaType).toBe('diary');
+        expect(birthdayItem?.daysUntil).toBe(34); // 2024 - 1990
+    });
+
+    it('finds floating holidays', () => {
+        const diarySexps: DiarySexpEntry[] = [
+            {
+                sexp: 'diary-float 11 4 4', // 4th Thursday of November
+                title: 'Thanksgiving',
+                file: 'test.org',
+                line: 20,
+            },
+        ];
+
+        // November 2025 - Thanksgiving is Nov 27
+        const view = generateAgendaView(
+            [],
+            new Map(),
+            {
+                startDate: new Date(2025, 10, 1), // Nov 1
+                days: 30, // Full November
+            },
+            diarySexps
+        );
+
+        const thanksgiving = view.groups
+            .flatMap(g => g.items)
+            .find(i => i.title === 'Thanksgiving');
+
+        expect(thanksgiving).toBeDefined();
+        expect(thanksgiving?.timestamp?.getDate()).toBe(27);
+    });
+
+    it('handles first Monday of every month', () => {
+        const diarySexps: DiarySexpEntry[] = [
+            {
+                sexp: 'diary-float t 1 1', // First Monday of every month
+                title: 'Monthly Meeting',
+                file: 'test.org',
+                line: 30,
+            },
+        ];
+
+        // Check first half of 2025
+        const view = generateAgendaView(
+            [],
+            new Map(),
+            {
+                startDate: new Date(2025, 0, 1),
+                days: 180,
+            },
+            diarySexps
+        );
+
+        // Should have 6 monthly meetings
+        const meetings = view.groups
+            .flatMap(g => g.items)
+            .filter(i => i.title === 'Monthly Meeting');
+
+        expect(meetings.length).toBe(6);
     });
 });

@@ -6,6 +6,10 @@
  * Supported functions:
  * - diary-anniversary: Annual events (birthdays, anniversaries)
  * - diary-float: Floating dates (e.g., "third Thursday of November")
+ * - diary-cyclic: Repeating events every N days from a start date
+ * - diary-block: Events between two dates (inclusive)
+ * - diary-date: Specific date match
+ * - org-class: Recurring class schedule (specific weekday between two dates)
  */
 
 export interface DiarySexpResult {
@@ -167,6 +171,205 @@ export function diaryFloat(
 }
 
 /**
+ * Evaluate diary-cyclic
+ *
+ * Format: (diary-cyclic N MONTH DAY YEAR)
+ * Matches every N days starting from the given date.
+ *
+ * @param n - Repeat interval in days
+ * @param month - Start month (1-12)
+ * @param day - Start day
+ * @param year - Start year
+ * @param checkDate - Date to check against
+ */
+export function diaryCyclic(
+    n: number,
+    month: number,
+    day: number,
+    year: number,
+    checkDate: Date
+): DiarySexpResult {
+    const startDate = new Date(year, month - 1, day);
+    startDate.setHours(0, 0, 0, 0);
+
+    const checkDateNorm = new Date(checkDate);
+    checkDateNorm.setHours(0, 0, 0, 0);
+
+    // Check if the date is on or after the start date
+    if (checkDateNorm < startDate) {
+        return { matches: false };
+    }
+
+    // Calculate difference in days
+    const diffMs = checkDateNorm.getTime() - startDate.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+
+    // Check if it's a multiple of n days from start
+    if (diffDays % n === 0) {
+        const occurrences = diffDays / n;
+        return {
+            matches: true,
+            description: occurrences === 0
+                ? 'Start date'
+                : `Every ${n} day${n === 1 ? '' : 's'} (occurrence ${occurrences + 1})`
+        };
+    }
+
+    return { matches: false };
+}
+
+/**
+ * Evaluate diary-block
+ *
+ * Format: (diary-block M1 D1 Y1 M2 D2 Y2)
+ * Matches all dates between the two dates (inclusive).
+ *
+ * @param m1 - Start month (1-12)
+ * @param d1 - Start day
+ * @param y1 - Start year
+ * @param m2 - End month (1-12)
+ * @param d2 - End day
+ * @param y2 - End year
+ * @param checkDate - Date to check against
+ */
+export function diaryBlock(
+    m1: number,
+    d1: number,
+    y1: number,
+    m2: number,
+    d2: number,
+    y2: number,
+    checkDate: Date
+): DiarySexpResult {
+    const startDate = new Date(y1, m1 - 1, d1);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(y2, m2 - 1, d2);
+    endDate.setHours(23, 59, 59, 999);
+
+    const checkDateNorm = new Date(checkDate);
+    checkDateNorm.setHours(12, 0, 0, 0); // Normalize to noon to avoid edge cases
+
+    if (checkDateNorm >= startDate && checkDateNorm <= endDate) {
+        return {
+            matches: true,
+            description: `Block: ${m1}/${d1}/${y1} - ${m2}/${d2}/${y2}`
+        };
+    }
+
+    return { matches: false };
+}
+
+/**
+ * Evaluate diary-date
+ *
+ * Format: (diary-date MONTH DAY YEAR)
+ * Matches a specific date. Any argument can be 't' for any.
+ *
+ * @param month - Month (1-12) or null for any
+ * @param day - Day or null for any
+ * @param year - Year or null for any
+ * @param checkDate - Date to check against
+ */
+export function diaryDate(
+    month: number | null,
+    day: number | null,
+    year: number | null,
+    checkDate: Date
+): DiarySexpResult {
+    const checkMonth = checkDate.getMonth() + 1;
+    const checkDay = checkDate.getDate();
+    const checkYear = checkDate.getFullYear();
+
+    // Check each component (null means any/t)
+    if (month !== null && checkMonth !== month) {
+        return { matches: false };
+    }
+    if (day !== null && checkDay !== day) {
+        return { matches: false };
+    }
+    if (year !== null && checkYear !== year) {
+        return { matches: false };
+    }
+
+    const parts: string[] = [];
+    if (month !== null) parts.push(`month=${month}`);
+    if (day !== null) parts.push(`day=${day}`);
+    if (year !== null) parts.push(`year=${year}`);
+
+    return {
+        matches: true,
+        description: parts.length > 0 ? `Date: ${parts.join(', ')}` : 'Any date'
+    };
+}
+
+/**
+ * Evaluate org-class
+ *
+ * Format: (org-class Y1 M1 D1 Y2 M2 D2 DAYNUM &optional SKIP-WEEKS)
+ * Matches a specific day of the week between two dates.
+ * Used for recurring class schedules (e.g., "every Monday from Jan 15 to May 15").
+ *
+ * @param y1 - Start year
+ * @param m1 - Start month (1-12)
+ * @param d1 - Start day
+ * @param y2 - End year
+ * @param m2 - End month (1-12)
+ * @param d2 - End day
+ * @param daynum - Day of week (0=Sunday, 1=Monday, ..., 6=Saturday)
+ * @param checkDate - Date to check against
+ * @param skipWeeks - Optional array of week numbers to skip (1-indexed from start)
+ */
+export function orgClass(
+    y1: number,
+    m1: number,
+    d1: number,
+    y2: number,
+    m2: number,
+    d2: number,
+    daynum: number,
+    checkDate: Date,
+    skipWeeks?: number[]
+): DiarySexpResult {
+    const startDate = new Date(y1, m1 - 1, d1);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(y2, m2 - 1, d2);
+    endDate.setHours(23, 59, 59, 999);
+
+    const checkDateNorm = new Date(checkDate);
+    checkDateNorm.setHours(12, 0, 0, 0);
+
+    // Check if date is within the class period
+    if (checkDateNorm < startDate || checkDateNorm > endDate) {
+        return { matches: false };
+    }
+
+    // Check if it's the right day of the week
+    if (checkDateNorm.getDay() !== daynum) {
+        return { matches: false };
+    }
+
+    // Calculate week number from start
+    if (skipWeeks && skipWeeks.length > 0) {
+        const msPerDay = 1000 * 60 * 60 * 24;
+        const daysSinceStart = Math.floor((checkDateNorm.getTime() - startDate.getTime()) / msPerDay);
+        const weekNumber = Math.floor(daysSinceStart / 7) + 1;
+
+        if (skipWeeks.includes(weekNumber)) {
+            return { matches: false };
+        }
+    }
+
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+    return {
+        matches: true,
+        description: `Class: ${dayNames[daynum]}s (${m1}/${d1}/${y1} - ${m2}/${d2}/${y2})`
+    };
+}
+
+/**
  * Evaluate a diary sexp against a date
  *
  * @param sexp - The sexp string (without the %% prefix)
@@ -196,6 +399,50 @@ export function evaluateDiarySexp(sexp: string, checkDate: Date): DiarySexpResul
             const monthVal = month === null ? null : (typeof month === 'number' ? month : null);
             const dayVal = typeof day === 'number' ? day : undefined;
             return diaryFloat(monthVal, dayname, n, checkDate, dayVal);
+        }
+
+        case 'diary-cyclic': {
+            const [n, month, day, year] = parsed.args;
+            if (typeof n !== 'number' || typeof month !== 'number' ||
+                typeof day !== 'number' || typeof year !== 'number') {
+                return { matches: false, description: 'Invalid diary-cyclic arguments' };
+            }
+            return diaryCyclic(n, month, day, year, checkDate);
+        }
+
+        case 'diary-block': {
+            const [m1, d1, y1, m2, d2, y2] = parsed.args;
+            if (typeof m1 !== 'number' || typeof d1 !== 'number' || typeof y1 !== 'number' ||
+                typeof m2 !== 'number' || typeof d2 !== 'number' || typeof y2 !== 'number') {
+                return { matches: false, description: 'Invalid diary-block arguments' };
+            }
+            return diaryBlock(m1, d1, y1, m2, d2, y2, checkDate);
+        }
+
+        case 'diary-date': {
+            const [month, day, year] = parsed.args;
+            // Each argument can be null (for 't') or a number
+            const monthVal = month === null ? null : (typeof month === 'number' ? month : null);
+            const dayVal = day === null ? null : (typeof day === 'number' ? day : null);
+            const yearVal = year === null ? null : (typeof year === 'number' ? year : null);
+            return diaryDate(monthVal, dayVal, yearVal, checkDate);
+        }
+
+        case 'org-class': {
+            const [y1, m1, d1, y2, m2, d2, daynum, ...rest] = parsed.args;
+            if (typeof y1 !== 'number' || typeof m1 !== 'number' || typeof d1 !== 'number' ||
+                typeof y2 !== 'number' || typeof m2 !== 'number' || typeof d2 !== 'number' ||
+                typeof daynum !== 'number') {
+                return { matches: false, description: 'Invalid org-class arguments' };
+            }
+            // Parse optional skip-weeks (could be individual numbers or remain unparsed)
+            const skipWeeks: number[] = [];
+            for (const arg of rest) {
+                if (typeof arg === 'number') {
+                    skipWeeks.push(arg);
+                }
+            }
+            return orgClass(y1, m1, d1, y2, m2, d2, daynum, checkDate, skipWeeks.length > 0 ? skipWeeks : undefined);
         }
 
         default:

@@ -20,11 +20,29 @@ import type {
     HeadlineElement,
     TimestampObject,
     PlanningElement,
+    DiarySexpElement,
 } from './orgElementTypes';
+import { evaluateDiarySexp, getDiarySexpDates } from './orgDiarySexp';
 
 // =============================================================================
 // Types and Interfaces
 // =============================================================================
+
+/**
+ * Diary sexp entry for agenda integration
+ */
+export interface DiarySexpEntry {
+    /** The diary sexp expression (without %%) */
+    sexp: string;
+    /** Title/description for the entry */
+    title: string;
+    /** File path where the sexp is defined */
+    file: string;
+    /** Line number in the file */
+    line: number;
+    /** Category (from CATEGORY property or file) */
+    category?: string;
+}
 
 /**
  * Agenda item representing a scheduled/deadline entry
@@ -150,7 +168,8 @@ export interface TodoListView {
 export function generateAgendaView(
     headlines: HeadlineElement[],
     files: Map<string, string>, // headline -> file path
-    config: Partial<AgendaViewConfig> = {}
+    config: Partial<AgendaViewConfig> = {},
+    diarySexps: DiarySexpEntry[] = []
 ): AgendaView {
     const fullConfig: AgendaViewConfig = {
         type: 'week',
@@ -174,6 +193,12 @@ export function generateAgendaView(
         const file = files.get(getHeadlineKey(headline)) || 'unknown';
         const agendaItems = extractAgendaItems(headline, file, startDate, endDate, fullConfig);
         items.push(...agendaItems);
+    }
+
+    // Extract diary sexp items
+    if (diarySexps.length > 0) {
+        const diarySexpItems = extractDiarySexpItems(diarySexps, startDate, endDate);
+        items.push(...diarySexpItems);
     }
 
     // Apply filters
@@ -271,6 +296,59 @@ function extractAgendaItems(
     // Process child headlines recursively
     for (const child of headline.children) {
         items.push(...extractAgendaItems(child, file, startDate, endDate, config));
+    }
+
+    return items;
+}
+
+/**
+ * Extract agenda items from diary sexps
+ */
+function extractDiarySexpItems(
+    diarySexps: DiarySexpEntry[],
+    startDate: Date,
+    endDate: Date
+): AgendaItem[] {
+    const items: AgendaItem[] = [];
+
+    for (const entry of diarySexps) {
+        // Get all matching dates in the range
+        const matches = getDiarySexpDates(entry.sexp, startDate, endDate);
+
+        for (const match of matches) {
+            // Create a minimal headline element for diary entries
+            const dummyHeadline: HeadlineElement = {
+                type: 'headline',
+                range: { start: 0, end: 0 },
+                postBlank: 0,
+                properties: {
+                    level: 1,
+                    todoKeyword: undefined,
+                    priority: undefined,
+                    title: [], // Parsed title objects (empty for diary entries)
+                    rawValue: entry.title,
+                    tags: [],
+                    lineNumber: entry.line,
+                    archivedp: false,
+                    commentedp: false,
+                    footnoteSection: false,
+                },
+                children: [],
+            };
+
+            items.push({
+                title: entry.title,
+                tags: [],
+                file: entry.file,
+                line: entry.line,
+                timestamp: match.date,
+                category: entry.category,
+                headline: dummyHeadline,
+                agendaType: 'diary',
+                // Add years info if anniversary
+                daysUntil: match.result.years !== undefined ? match.result.years : undefined,
+            });
+        }
     }
 
     return items;
@@ -705,6 +783,17 @@ export function formatAgendaItem(item: AgendaItem): string {
             }
             break;
         case 'timestamp':
+            parts.push('');
+            break;
+        case 'diary':
+            // For anniversaries, show years
+            if (item.daysUntil !== undefined) {
+                parts.push(`(${item.daysUntil} years)`);
+            } else {
+                parts.push('Sexp:');
+            }
+            break;
+        case 'todo':
             parts.push('');
             break;
     }
