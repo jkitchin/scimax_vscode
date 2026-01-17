@@ -16,13 +16,31 @@ import { storeOpenAlexApiKey, getOpenAlexApiKey, deleteOpenAlexApiKey, hasOpenAl
 
 /**
  * Find citation at cursor position to check if we should append
+ * Supports both v2 (cite:key1,key2) and v3 (cite:&key1;&key2) syntax
  */
-function findCitationAtPosition(line: string, position: number): { start: number; end: number; keys: string[]; prefix: string; separator: string } | null {
-    // Pattern for org-ref style: cite:key1,key2,key3
-    const orgRefPattern = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g;
+function findCitationAtPosition(line: string, position: number): { start: number; end: number; keys: string[]; prefix: string; separator: string; isV3: boolean } | null {
+    // Try v3 pattern first: cite:&key1;&key2 or cite:prefix;&key1;&key2
+    const orgRefV3Pattern = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([^[\s]*&[a-zA-Z0-9_:;&\s-]+)/g;
 
     let match;
-    while ((match = orgRefPattern.exec(line)) !== null) {
+    while ((match = orgRefV3Pattern.exec(line)) !== null) {
+        const start = match.index;
+        const end = start + match[0].length;
+
+        if (position >= start && position <= end + 1) {
+            const prefix = match[1] + ':';
+            const content = match[2];
+            // Extract keys from v3 format (keys start with &)
+            const keyMatches = content.match(/&([a-zA-Z0-9_:-]+)/g) || [];
+            const keys = keyMatches.map(k => k.slice(1)); // Remove & prefix
+            return { start, end, keys, prefix, separator: ';&', isV3: true };
+        }
+    }
+
+    // Fall back to v2 pattern: cite:key1,key2,key3
+    const orgRefV2Pattern = /(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g;
+
+    while ((match = orgRefV2Pattern.exec(line)) !== null) {
         const start = match.index;
         const end = start + match[0].length;
 
@@ -30,8 +48,10 @@ function findCitationAtPosition(line: string, position: number): { start: number
         if (position >= start && position <= end + 1) {
             const prefix = match[1] + ':';
             const keysStr = match[2];
+            // Skip if this looks like v3 (has &)
+            if (keysStr.includes('&')) continue;
             const keys = keysStr.split(',').map(k => k.trim());
-            return { start, end, keys, prefix, separator: ',' };
+            return { start, end, keys, prefix, separator: ',', isV3: false };
         }
     }
 
@@ -96,7 +116,14 @@ export function registerReferenceCommands(
 
                 // Append to existing citation
                 const newKeys = [...existingCitation.keys, selected.entry.key];
-                const newCitation = existingCitation.prefix + newKeys.join(existingCitation.separator);
+                let newCitation: string;
+                if (existingCitation.isV3) {
+                    // v3 format: cite:&key1;&key2 - each key needs & prefix
+                    newCitation = existingCitation.prefix + newKeys.map(k => `&${k}`).join(';');
+                } else {
+                    // v2 format: cite:key1,key2
+                    newCitation = existingCitation.prefix + newKeys.join(existingCitation.separator);
+                }
 
                 const range = new vscode.Range(
                     position.line, existingCitation.start,
@@ -307,6 +334,59 @@ export function registerReferenceCommands(
                 return;
             }
             await showEntryActions(manager, entry);
+        })
+    );
+
+    // Go to citation definition in bib file (for link clicks)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.gotoCitation', async (args: { key: string; keys?: string[] }) => {
+            // First ensure document bibliographies are loaded
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                await manager.loadDocumentBibliographies(editor.document);
+            }
+
+            const entry = manager.getEntry(args.key);
+            if (!entry) {
+                vscode.window.showWarningMessage(`Reference not found: ${args.key}`);
+                return;
+            }
+
+            // Open the bib file at the entry location
+            const sourceFile = (entry as any)._sourceFile;
+            if (!sourceFile) {
+                // No source file - show entry details instead
+                await showEntryActions(manager, entry);
+                return;
+            }
+
+            try {
+                const fs = await import('fs');
+                const content = fs.readFileSync(sourceFile, 'utf8');
+                const lines = content.split('\n');
+
+                // Find the entry
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].includes(`{${entry.key},`) || lines[i].includes(`{${entry.key}`)) {
+                        const doc = await vscode.workspace.openTextDocument(sourceFile);
+                        const ed = await vscode.window.showTextDocument(doc);
+                        const position = new vscode.Position(i, 0);
+                        ed.selection = new vscode.Selection(position, position);
+                        ed.revealRange(
+                            new vscode.Range(position, position),
+                            vscode.TextEditorRevealType.InCenter
+                        );
+                        return;
+                    }
+                }
+
+                // Fallback: just open the file
+                const doc = await vscode.workspace.openTextDocument(sourceFile);
+                await vscode.window.showTextDocument(doc);
+            } catch (error) {
+                // If file reading fails, show entry details
+                await showEntryActions(manager, entry);
+            }
         })
     );
 

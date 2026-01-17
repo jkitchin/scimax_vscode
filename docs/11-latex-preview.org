@@ -55,7 +55,7 @@ Alternative inline math syntax, preferred in some LaTeX style guides.
 
 Einstein's mass-energy equivalence is \(E = mc^2\), where \(c\) is the speed of light.
 
-*Renders as:* Einstein's mass-energy equivalence is E = mc², where c is the speed of light.
+*Renders as:* Einstein's mass-energy equivalence is E  mc², where c is the speed of light.
 
 *** ✅ Currency Detection
 CLOSED: [2026-01-16 Fri 20:59]
@@ -333,142 +333,142 @@ When enabled, equations render with white text on dark backgrounds when using da
 
 *** Lowercase
 
-| Command    | Symbol | Command     | Symbol |
-|------------+--------+-------------+--------|
-| =\alpha=   | α      | =\nu=       | ν      |
-| =\beta=    | β      | =\xi=       | ξ      |
-| =\gamma=   | γ      | =\pi=       | π      |
-| =\delta=   | δ      | =\rho=      | ρ      |
-| =\epsilon= | ε      | =\sigma=    | σ      |
-| =\zeta=    | ζ      | =\tau=      | τ      |
-| =\eta=     | η      | =\upsilon=  | υ      |
-| =\theta=   | θ      | =\phi=      | φ      |
-| =\iota=    | ι      | =\chi=      | χ      |
-| =\kappa=   | κ      | =\psi=      | ψ      |
-| =\lambda=  | λ      | =\omega=    | ω      |
-| =\mu=      | μ      |             |        |
+| Command  | Symbol | Command  | Symbol |
+|----------+--------+----------+--------|
+| \alpha   | α      | \nu      | ν      |
+| \beta    | β      | \xi      | ξ      |
+| \gamma   | γ      | \pi      | π      |
+| \delta   | δ      | \rho     | ρ      |
+| \epsilon | ε      | \sigma   | σ      |
+| \zeta    | ζ      | \tau     | τ      |
+| \eta     | η      | \upsilon | υ      |
+| \theta   | θ      | \phi     | φ      |
+| \iota    | ι      | \chi     | χ      |
+| \kappa   | κ      | \psi     | ψ      |
+| \lambda  | λ      | \omega   | ω      |
+| \mu      | μ      |          |        |
 
 *** Uppercase
 
-| Command    | Symbol | Command   | Symbol |
-|------------+--------+-----------+--------|
-| =\Gamma=   | Γ      | =\Xi=     | Ξ      |
-| =\Delta=   | Δ      | =\Pi=     | Π      |
-| =\Theta=   | Θ      | =\Sigma=  | Σ      |
-| =\Lambda=  | Λ      | =\Phi=    | Φ      |
-| =\Upsilon= | Υ      | =\Psi=    | Ψ      |
-| =\Omega=   | Ω      |           |        |
+| Command  | Symbol | Command | Symbol |
+|----------+--------+---------+--------|
+| \Gamma   | Γ      | \Xi     | Ξ      |
+| \Delta   | Δ      | \Pi     | Π      |
+| \Theta   | Θ      | \Sigma  | Σ      |
+| \Lambda  | Λ      | \Phi    | Φ      |
+| \Upsilon | Υ      | \Psi    | Ψ      |
+| \Omega   | Ω      |         |        |
 
 ** Math Operators
 
 | Command      | Output                    | Description              |
 |--------------+---------------------------+--------------------------|
-| =\frac{a}{b}=  | a/b                       | Fraction                 |
-| =\sqrt{x}=     | √x                        | Square root              |
-| =\sqrt[n]{x}=  | ⁿ√x                       | nth root                 |
-| =x^{2}=        | x²                        | Superscript (power)      |
-| =x_{i}=        | xᵢ                        | Subscript                |
-| =\int=         | ∫                         | Integral                 |
-| =\sum=         | ∑                         | Summation                |
-| =\prod=        | ∏                         | Product                  |
-| =\lim=         | lim                       | Limit                    |
-| =\partial=     | ∂                         | Partial derivative       |
-| =\nabla=       | ∇                         | Nabla (gradient)         |
-| =\infty=       | ∞                         | Infinity                 |
+| \frac{a}{b}  | a/b                       | Fraction                 |
+| \sqrt{x}     | √x                        | Square root              |
+| \sqrt[n]{x}  | ⁿ√x                       | nth root                 |
+| x^{2}        | x²                        | Superscript (power)      |
+| x_{i}        | xᵢ                        | Subscript                |
+| \int         | ∫                         | Integral                 |
+| \sum         | ∑                         | Summation                |
+| \prod        | ∏                         | Product                  |
+| \lim         | lim                       | Limit                    |
+| \partial     | ∂                         | Partial derivative       |
+| \nabla       | ∇                         | Nabla (gradient)         |
+| \infty       | ∞                         | Infinity                 |
 
 ** Relations and Operators
 
-| Command   | Symbol | Command   | Symbol |
-|-----------+--------+-----------+--------|
-| =\leq=    | ≤      | =\geq=    | ≥      |
-| =\neq=    | ≠      | =\approx= | ≈      |
-| =\equiv=  | ≡      | =\sim=    | ∼      |
-| =\propto= | ∝      | =\in=     | ∈      |
-| =\notin=  | ∉      | =\subset= | ⊂      |
-| =\supset= | ⊃      | =\cup=    | ∪      |
-| =\cap=    | ∩      | =\wedge=  | ∧      |
-| =\vee=    | ∨      | =\neg=    | ¬      |
-| =\times=  | ×      | =\div=    | ÷      |
-| =\pm=     | ±      | =\mp=     | ∓      |
-| =\cdot=   | ·      | =\circ=   | ∘      |
+| Command | Symbol | Command | Symbol |
+|---------+--------+---------+--------|
+| \leq    | ≤      | \geq    | ≥      |
+| \neq    | ≠      | \approx | ≈      |
+| \equiv  | ≡      | \sim    | ∼      |
+| \propto | ∝      | \in     | ∈      |
+| \notin  | ∉      | \subset | ⊂      |
+| \supset | ⊃      | \cup    | ∪      |
+| \cap    | ∩      | \wedge  | ∧      |
+| \vee    | ∨      | \neg    | ¬      |
+| \times  | ×      | \div    | ÷      |
+| \pm     | ±      | \mp     | ∓      |
+| \cdot   | ·      | \circ   | ∘      |
 
 ** Arrows
 
-| Command          | Symbol | Description        |
-|------------------+--------+--------------------|
-| =\rightarrow=    | →      | Right arrow        |
-| =\leftarrow=     | ←      | Left arrow         |
-| =\Rightarrow=    | ⇒      | Implies            |
-| =\Leftarrow=     | ⇐      | Implied by         |
-| =\Leftrightarrow= | ⇔      | If and only if     |
-| =\uparrow=       | ↑      | Up arrow           |
-| =\downarrow=     | ↓      | Down arrow         |
-| =\to=            | →      | Alternative for → |
-| =\mapsto=        | ↦      | Maps to            |
+| Command         | Symbol | Description       |
+|-----------------+--------+-------------------|
+| \rightarrow     | →      | Right arrow       |
+| \leftarrow      | ←      | Left arrow        |
+| \Rightarrow     | ⇒      | Implies           |
+| \Leftarrow      | ⇐      | Implied by        |
+| \Leftrightarrow | ⇔      | If and only if    |
+| \uparrow        | ↑      | Up arrow          |
+| \downarrow      | ↓      | Down arrow        |
+| \to             | →      | Alternative for → |
+| \mapsto         | ↦      | Maps to           |
 
 ** Special Symbols
 
-| Command       | Symbol | Description              |
-|---------------+--------+--------------------------|
-| =\mathbb{R}=  | ℝ      | Real numbers             |
-| =\mathbb{N}=  | ℕ      | Natural numbers          |
-| =\mathbb{Z}=  | ℤ      | Integers                 |
-| =\mathbb{Q}=  | ℚ      | Rational numbers         |
-| =\mathbb{C}=  | ℂ      | Complex numbers          |
-| =\emptyset=   | ∅      | Empty set                |
-| =\forall=     | ∀      | For all                  |
-| =\exists=     | ∃      | There exists             |
-| =\ell=        | ℓ      | Script lowercase L       |
-| =\hbar=       | ℏ      | Reduced Planck constant  |
+| Command    | Symbol | Description             |
+|------------+--------+-------------------------|
+| \mathbb{R} | ℝ      | Real numbers            |
+| \mathbb{N} | ℕ      | Natural numbers         |
+| \mathbb{Z} | ℤ      | Integers                |
+| \mathbb{Q} | ℚ      | Rational numbers        |
+| \mathbb{C} | ℂ      | Complex numbers         |
+| \emptyset  | ∅      | Empty set               |
+| \forall    | ∀      | For all                 |
+| \exists    | ∃      | There exists            |
+| \ell       | ℓ      | Script lowercase L      |
+| \hbar      | ℏ      | Reduced Planck constant |
 
 ** Delimiters
 
 | Command            | Output        | Description                 |
 |--------------------+---------------+-----------------------------|
-| =\left( \right)=   | ( )           | Auto-sized parentheses      |
-| =\left[ \right]=   | [ ]           | Auto-sized brackets         |
-| =\left\{ \right\}= | { }           | Auto-sized braces           |
-| =\left| \right|=   | \vert \vert   | Auto-sized vertical bars    |
-| =\langle \rangle=  | ⟨ ⟩           | Angle brackets              |
-| =\lfloor \rfloor=  | ⌊ ⌋           | Floor function              |
-| =\lceil \rceil=    | ⌈ ⌉           | Ceiling function            |
+| \left( \right)   | ( )           | Auto-sized parentheses      |
+| \left[ \right]   | [ ]           | Auto-sized brackets         |
+| \left\{ \right\} | { }           | Auto-sized braces           |
+| \left| \right|   | \vert \vert   | Auto-sized vertical bars    |
+| \langle \rangle  | ⟨ ⟩           | Angle brackets              |
+| \lfloor \rfloor  | ⌊ ⌋           | Floor function              |
+| \lceil \rceil    | ⌈ ⌉           | Ceiling function            |
 
 ** Accents and Decorations
 
-| Command        | Example    | Description          |
-|----------------+------------+----------------------|
-| =\hat{x}=      | x̂          | Hat accent           |
-| =\bar{x}=      | x̄          | Bar (mean)           |
-| =\tilde{x}=    | x̃          | Tilde                |
-| =\dot{x}=      | ẋ          | Dot (derivative)     |
-| =\ddot{x}=     | ẍ          | Double dot           |
-| =\vec{x}=      | x⃗          | Vector arrow         |
-| =\overline{AB}= | AB̄         | Overline             |
-| =\underline{x}= | x̲          | Underline            |
+| Command       | Example | Description      |
+|---------------+---------+------------------|
+| \hat{x}       | x̂      | Hat accent       |
+| \bar{x}       | x̄      | Bar (mean)       |
+| \tilde{x}     | x̃      | Tilde            |
+| \dot{x}       | ẋ       | Dot (derivative) |
+| \ddot{x}      | ẍ       | Double dot       |
+| \vec{x}       | x⃗      | Vector arrow     |
+| \overline{AB} | AB̄     | Overline         |
+| \underline{x} | x̲      | Underline        |
 
 * Example Equations
 
 ** Calculus
 
 *Derivative definition:*
-#+BEGIN_EXAMPLE
+
 $$f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$
-#+END_EXAMPLE
+
 
 *Fundamental theorem of calculus:*
-#+BEGIN_EXAMPLE
+
 $$\int_a^b f'(x) \,dx = f(b) - f(a)$$
-#+END_EXAMPLE
+
 
 *Integration by parts:*
-#+BEGIN_EXAMPLE
+
 $$\int u \,dv = uv - \int v \,du$$
-#+END_EXAMPLE
+
 
 ** Linear Algebra
 
 *Matrix multiplication:*
-#+BEGIN_EXAMPLE
+
 $$
 \begin{pmatrix}
 a & b \\
@@ -484,58 +484,58 @@ ax + by \\
 cx + dy
 \end{pmatrix}
 $$
-#+END_EXAMPLE
+
 
 *Determinant:*
-#+BEGIN_EXAMPLE
+
 $$\det(A) = \begin{vmatrix} a & b \\ c & d \end{vmatrix} = ad - bc$$
-#+END_EXAMPLE
+
 
 *Eigenvalue equation:*
-#+BEGIN_EXAMPLE
+
 $$A\mathbf{v} = \lambda\mathbf{v}$$
-#+END_EXAMPLE
+
 
 ** Physics
 
 *Schrödinger equation:*
-#+BEGIN_EXAMPLE
+
 $$i\hbar \frac{\partial}{\partial t}\Psi(\mathbf{r},t) = \hat{H}\Psi(\mathbf{r},t)$$
-#+END_EXAMPLE
+
 
 *Maxwell's equations:*
-#+BEGIN_EXAMPLE
+
 \begin{align*}
 \nabla \cdot \mathbf{E} &= \frac{\rho}{\epsilon_0} \\
 \nabla \cdot \mathbf{B} &= 0 \\
 \nabla \times \mathbf{E} &= -\frac{\partial \mathbf{B}}{\partial t} \\
 \nabla \times \mathbf{B} &= \mu_0\mathbf{J} + \mu_0\epsilon_0\frac{\partial \mathbf{E}}{\partial t}
 \end{align*}
-#+END_EXAMPLE
+
 
 ** Statistics
 
 *Normal distribution:*
-#+BEGIN_EXAMPLE
+
 $$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
-#+END_EXAMPLE
+
 
 *Bayes' theorem:*
-#+BEGIN_EXAMPLE
+
 $$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$
-#+END_EXAMPLE
+
 
 ** Computer Science
 
 *Big-O notation:*
-#+BEGIN_EXAMPLE
+
 $$T(n) = O(n\log n)$$
-#+END_EXAMPLE
+
 
 *Recurrence relation:*
-#+BEGIN_EXAMPLE
+
 $$T(n) = 2T\left(\frac{n}{2}\right) + O(n)$$
-#+END_EXAMPLE
+
 
 * Troubleshooting Rendering Issues
 
@@ -670,12 +670,12 @@ What you see in hover preview should match the exported output, but note:
 
 ** Live PDF Preview Commands
 
-| Command                             | Description                       | Keybinding        |
-|-------------------------------------+-----------------------------------+-------------------|
+| Command                             | Description                       | Keybinding  |
+|-------------------------------------+-----------------------------------+-------------|
 | Scimax: Open LaTeX Live Preview     | Open live PDF preview of document | C-c C-e l v |
 | Scimax: Sync PDF to Cursor Position | Jump to cursor location in PDF    | C-c C-e l s |
-| Scimax: Rebuild PDF                 | Manually trigger PDF rebuild      | None              |
-| Scimax: Show LaTeX Build Output     | Show compiler output and errors   | None              |
+| Scimax: Rebuild PDF                 | Manually trigger PDF rebuild      | None        |
+| Scimax: Show LaTeX Build Output     | Show compiler output and errors   | None        |
 
 ** Markup Commands
 
@@ -687,7 +687,7 @@ What you see in hover preview should match the exported output, but note:
 ** Using Commands
 
 1. *Via Command Palette*:
-   - Press `C-S-P' (`s-S-P' on macOS)
+   - Press `Cmd/C-S-P' 
    - Type "Scimax: Clear LaTeX Cache" (or any command name)
    - Press Enter
 
@@ -721,23 +721,21 @@ To add custom keybindings for commands without defaults:
 
 Use `\\' to break equations across multiple lines within display math:
 
-#+BEGIN_EXAMPLE
 $$
 f(x) = a_0 + a_1 x + a_2 x^2 + \cdots \\
      = \sum_{n=0}^{\infty} a_n x^n
 $$
-#+END_EXAMPLE
 
 ** Aligned Equations at Specific Points
 
 Use `&' in `align' environments to specify alignment points:
 
-#+BEGIN_EXAMPLE
+
 \begin{align*}
 x &= r\cos\theta \\
 y &= r\sin\theta
 \end{align*}
-#+END_EXAMPLE
+
 
 The `&' symbols align vertically.
 
@@ -745,24 +743,29 @@ The `&' symbols align vertically.
 
 Use the `cases' environment:
 
-#+BEGIN_EXAMPLE
+
 $$
 f(x) = \begin{cases}
 x^2 & \text{if } x \geq 0 \\
 -x^2 & \text{if } x < 0
 \end{cases}
 $$
-#+END_EXAMPLE
+
 
 ** Chemical Formulas
 
 With the `chemformula' package:
 
-#+BEGIN_EXAMPLE
+
 #+LATEX_HEADER: \usepackage{chemformula}
 
 The reaction is \ch{2 H2 + O2 -> 2 H2O}.
-#+END_EXAMPLE
+
+or with `mhchem'
+
+#+LATEX_HEADER: \usepackage[version=4]{mhchem}
+
+The reaction is \ce{2 H2 + O2 -> 2 H2O}.
 
 ** Physics Notation
 

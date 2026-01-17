@@ -252,7 +252,8 @@ export class HydraManager {
             }
         });
 
-        // Handle hide
+        // Handle hide (Escape key or clicking outside)
+        // If there's a parent menu, go back instead of closing
         this.quickPick.onDidHide(async () => {
             if (menu.onHide) {
                 await menu.onHide();
@@ -261,6 +262,14 @@ export class HydraManager {
             if (this.quickPick) {
                 this.quickPick.dispose();
                 this.quickPick = null;
+            }
+
+            // Check if we should go back to parent instead of closing
+            const hasParent = menu.parent || this.state.menuStack.length > 0;
+            if (hasParent) {
+                // Go back to parent menu
+                await this.back();
+                return;
             }
 
             const previousState = { ...this.state };
@@ -285,9 +294,9 @@ export class HydraManager {
             items.push({
                 label: '$(arrow-left) Back',
                 description: '',
-                keyDisplay: '←',
+                keyDisplay: '.',
                 menuItem: {
-                    key: 'Backspace',
+                    key: '.',
                     label: 'Back',
                     exit: 'exit',
                     action: async () => {

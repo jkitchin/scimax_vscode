@@ -51,7 +51,7 @@ CLOSED: [2026-01-15 Thu 14:07]
 The simplest way to include an image is with a basic link:
 
 #+BEGIN_SRC org
-[[./plot.png]]
+[[./_static/logo.svg]]
 #+END_SRC
 
 This displays the image inline and can be clicked to open.
@@ -62,63 +62,65 @@ CLOSED: [2026-01-15 Thu 14:08]
 You can explicitly use the file: protocol:
 
 #+BEGIN_SRC org
-[[file:./plot.png]]
+[[file:./_static/logo.svg]]
 #+END_SRC
 
 Both formats work identically - the file: prefix is optional for local files.
 
-** ⚠️ Links with Descriptions
+** ✅ Links with Descriptions
+CLOSED: [2026-01-17 Sat 09:33]
 
 Add descriptive text that appears as a clickable link:
 
 #+BEGIN_SRC org
-[[./path/to/image.png][My beautiful diagram]]
-[[file:./screenshots/demo.png][Demo Screenshot]]
+[[./_static/logo.svg][My beautiful diagram]]
+[[file:./_static/logo.svg][Demo Screenshot]]
 #+END_SRC
 
 The description text is shown in the editor, while the image overlay appears in the gutter or inline.
 
-** ⚠️ Absolute vs Relative Paths
+** ✅ Absolute vs Relative Paths
+CLOSED: [2026-01-17 Sat 09:49]
 
 Both absolute and relative paths are supported:
 
 #+BEGIN_SRC org
 # Relative to current file
-[[./images/figure1.png]]
-[[../shared/logo.png]]
+[[./_static/logo.svg]]
+
 
 # Absolute paths
-[[file:/home/user/documents/image.png]]
-[[file:~/Pictures/photo.jpg]]
+[[file:/Users/jkitchin/Dropbox/projects/scimax_vscode/docs/_static/logo.svg]]
+[[file:~/Dropbox/projects/scimax_vscode/docs/_static/logo.svg]]
 #+END_SRC
 
 The ~ (tilde) is expanded to the home directory on Unix-like systems.
 
-** ⚠️ Remote Images
+** ✅ Remote Images
+CLOSED: [2026-01-17 Sat 09:52]
 
 Remote image URLs are *not* displayed as overlays but are still valid links:
 
-#+BEGIN_SRC org
-[[https://example.com/image.png]]
-[[http://server.com/photo.jpg]]
-#+END_SRC
+[[https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png]]
 
 These links work for navigation but won't show thumbnails in the editor.
 
-* ⚠️ Image Sizing and Attributes
+* ✅ Image Sizing and Attributes
+CLOSED: [2026-01-17 Sat 09:39]
 
-** ⚠️ ATTR_ORG Keyword
+** ✅ ATTR_ORG Keyword
 
 Control how images are displayed using the #+ATTR_ORG: keyword above the image link:
 
 #+BEGIN_SRC org
 #+ATTR_ORG: :width 400
-[[./diagram.png]]
+[[_static/logo.svg]]
 #+END_SRC
 
 *Note:* Currently, the #+ATTR_ORG: keyword is parsed but the :width and :height attributes primarily affect *export* output rather than the overlay display size. The overlay thumbnail size is controlled by the [[*Configuration Settings][configuration settings]].
 
-** ⚠️ Supported Attributes
+** ✅ Supported Attributes
+CLOSED: [2026-01-17 Sat 09:40]
 
 | Attribute | Purpose                      | Example              |
 |-----------+------------------------------+----------------------|
@@ -128,15 +130,16 @@ Control how images are displayed using the #+ATTR_ORG: keyword above the image l
 | :align    | Alignment (export)           | :align center        |
 | :alt      | Alt text (export)            | :alt "Description"   |
 
-** ⚠️ Export-Specific Attributes
+** ✅ Export-Specific Attributes
+CLOSED: [2026-01-17 Sat 09:40]
 
 For LaTeX and HTML export, use backend-specific attributes:
 
-#+BEGIN_SRC org
+
 #+ATTR_LATEX: :width 0.8\textwidth :placement [htbp]
 #+ATTR_HTML: :width 600px :class figure
-[[file:./architecture.png]]
-#+END_SRC
+[[file:./_static/logo.svg]]
+
 
 See [[file:10-export.org][Export Documentation]] for more details on export attributes.
 
@@ -144,24 +147,25 @@ See [[file:10-export.org][Export Documentation]] for more details on export attr
 
 Add captions that appear in exports:
 
-#+BEGIN_SRC org
+#+NAME: fig:logo
 #+CAPTION: System Architecture Diagram
-#+NAME: fig:architecture
-[[file:./architecture.png]]
-#+END_SRC
+[[file:./_static/logo.svg]]
 
-* ⚠️ Enabling and Disabling Image Display
 
-** ⚠️ Global Toggle
+* ✅ Enabling and Disabling Image Display
+CLOSED: [2026-01-17 Sat 09:54]
+
+** ✅ Global Toggle
+CLOSED: [2026-01-17 Sat 09:54]
 
 Toggle image overlays for all org files:
 
 - *Command:* Scimax: Toggle Image Overlays
-- *Command ID:* scimax.imageOverlays.toggle
+- *Command ID:* [[cmd:scimax.imageOverlays.toggle]]
 
-Use the command palette (C-S-P / s-S-P) and search for "Toggle Image Overlays".
 
-** ⚠️ Per-File Toggle
+** ✅ Per-File Toggle
+CLOSED: [2026-01-17 Sat 09:54]
 
 Toggle image overlays for the current file only:
 
@@ -170,7 +174,8 @@ Toggle image overlays for the current file only:
 
 This is useful when you want overlays disabled for one specific large document but enabled globally.
 
-** ⚠️ Via Configuration
+** ✅ Via Configuration
+CLOSED: [2026-01-17 Sat 09:54]
 
 Permanently enable or disable in your settings.json:
 
@@ -182,9 +187,11 @@ Permanently enable or disable in your settings.json:
 
 Set to false to disable by default.
 
-* ⚠️ Configuration Settings
+* ✅ Configuration Settings
+CLOSED: [2026-01-17 Sat 09:54]
 
-** ⚠️ scimax.imageOverlays.enabled
+** ✅ scimax.imageOverlays.enabled
+CLOSED: [2026-01-17 Sat 09:31]
 
 *Type:* boolean
 *Default:* true
@@ -197,7 +204,8 @@ Enable or disable inline image thumbnails globally.
 }
 #+END_SRC
 
-** ⚠️ scimax.imageOverlays.maxWidth
+** ✅ scimax.imageOverlays.maxWidth
+CLOSED: [2026-01-17 Sat 09:31]
 
 *Type:* number
 *Default:* 96
@@ -210,7 +218,8 @@ Maximum width in pixels for thumbnail icons. Thumbnails are scaled down to fit w
 }
 #+END_SRC
 
-** ⚠️ scimax.imageOverlays.maxHeight
+** ✅ scimax.imageOverlays.maxHeight
+CLOSED: [2026-01-17 Sat 09:31]
 
 *Type:* number
 *Default:* 96
@@ -223,7 +232,8 @@ Maximum height in pixels for thumbnail icons.
 }
 #+END_SRC
 
-** ⚠️ scimax.imageOverlays.renderMode
+** ✅ scimax.imageOverlays.renderMode
+CLOSED: [2026-01-17 Sat 09:31]
 
 *Type:* string (enum)
 *Default:* "gutter"
@@ -246,7 +256,8 @@ Controls where image thumbnails are displayed:
 - Use after if you prefer inline indicators
 - Use both for maximum visibility
 
-** ⚠️ scimax.imageOverlays.onlyWhenCursorNotInLink
+** ✅ scimax.imageOverlays.onlyWhenCursorNotInLink
+CLOSED: [2026-01-17 Sat 10:01]
 
 *Type:* boolean
 *Default:* true
@@ -261,7 +272,8 @@ Hide the overlay when your cursor is inside the image link. This prevents the th
 
 Set to false to always show overlays, even when editing.
 
-** ⚠️ scimax.imageOverlays.excludePatterns
+** ✅ scimax.imageOverlays.excludePatterns
+CLOSED: [2026-01-17 Sat 10:01]
 
 *Type:* array of strings
 *Default:* [ ]
@@ -283,7 +295,8 @@ Examples:
 - "^http" - Exclude remote URLs (already excluded by default)
 - "screenshot-.*" - Exclude files starting with "screenshot-"
 
-** ⚠️ scimax.imageOverlays.maxOverlaysPerDocument
+** ✅ scimax.imageOverlays.maxOverlaysPerDocument
+CLOSED: [2026-01-17 Sat 10:02]
 
 *Type:* number
 *Default:* 200
@@ -298,7 +311,8 @@ Maximum number of image overlays to display per document. This prevents performa
 
 If your document exceeds this limit, you'll see a warning message.
 
-** ⚠️ scimax.imageOverlays.showDimensions
+** ✅ scimax.imageOverlays.showDimensions
+CLOSED: [2026-01-17 Sat 10:02]
 
 *Type:* boolean
 *Default:* true
@@ -311,7 +325,8 @@ When using after or both render modes, show image dimensions (e.g., "800x600") i
 }
 #+END_SRC
 
-** ⚠️ scimax.imageOverlays.cacheEnabled
+** ✅ scimax.imageOverlays.cacheEnabled
+CLOSED: [2026-01-17 Sat 10:02]
 
 *Type:* boolean
 *Default:* true
@@ -326,91 +341,62 @@ Enable thumbnail caching for faster loading. Thumbnails are stored in the extens
 
 Set to false to disable caching (may impact performance).
 
-* ⚠️ Images from Source Block Results
+* ✅ Images from Source Block Results
+CLOSED: [2026-01-17 Sat 10:02]
 
-** ⚠️ Automatic Image Display
-
-When source blocks produce image output, the results are automatically displayed as overlays:
-
-#+BEGIN_SRC org
-,#+BEGIN_SRC python :results file
-import matplotlib.pyplot as plt
-import numpy as np
-
-x = np.linspace(0, 10, 100)
-y = np.sin(x)
-
-plt.plot(x, y)
-plt.savefig('plot.png')
-'plot.png'
-,#+END_SRC
-
-,#+RESULTS:
-[[file:plot.png]]
-#+END_SRC
-
-The resulting [[file:plot.png]] link automatically shows as an overlay.
-
-** ⚠️ Jupyter Kernel Output
+** ✅ Jupyter Kernel Output
+CLOSED: [2026-01-17 Sat 10:05]
 
 Jupyter kernels automatically save image output to the .ob-jupyter/ directory:
 
-#+BEGIN_SRC org
-,#+BEGIN_SRC jupyter-python :session py
+
+#+BEGIN_SRC jupyter-python :session py
 import matplotlib.pyplot as plt
 import numpy as np
 
 plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
 plt.show()
-,#+END_SRC
-
-,#+RESULTS:
-[[file:.ob-jupyter/output-1705171200000-0.png]]
 #+END_SRC
+
+#+RESULTS:
+[[file:.ob-jupyter/output-1768662289804-0.png]]
+
 
 These images are automatically displayed as overlays when image overlays are enabled.
 
 See [[file:09-jupyter.org][Jupyter Documentation]] for more details on Jupyter integration.
 
-** ⚠️ R and Other Languages
+* ✅ Available Commands
+CLOSED: [2026-01-17 Sat 12:42]
 
-R, Julia, and other languages that produce image files work similarly:
+** ✅ Scimax: Toggle Image Overlays
+CLOSED: [2026-01-17 Sat 12:42]
 
-#+BEGIN_SRC org
-,#+BEGIN_SRC R :results file graphics :file myplot.png
-plot(1:10, (1:10)^2)
-,#+END_SRC
-
-,#+RESULTS:
-[[file:myplot.png]]
-#+END_SRC
-
-* ⚠️ Available Commands
-
-** ⚠️ Scimax: Toggle Image Overlays
-
-*Command ID:* scimax.imageOverlays.toggle
+*Command ID:* [[cmd:scimax.imageOverlays.toggle]]
 
 Toggle image overlays globally for all org files. When disabled, no thumbnails are shown but links remain functional.
 
-** ⚠️ Scimax: Toggle Image Overlays for Current File
+** ✅ Scimax: Toggle Image Overlays for Current File
+CLOSED: [2026-01-17 Sat 12:42]
 
-*Command ID:* scimax.imageOverlays.toggleCurrentFile
+*Command ID:* [[cmd:scimax.imageOverlays.toggleCurrentFile]]
 
 Toggle image overlays for the currently active org file only. Useful for temporarily hiding overlays in specific documents.
 
-** ⚠️ Scimax: Refresh Image Overlays
+** ✅ Scimax: Refresh Image Overlays
+CLOSED: [2026-01-17 Sat 09:51]
 
-*Command ID:* scimax.imageOverlays.refresh
+*Command ID:* [[cmd:scimax.imageOverlays.refresh]]
 
 Manually refresh all image overlays in visible editors. This can be useful if:
 - You've modified image files externally
 - Overlays aren't updating correctly
 - You've changed configuration settings
 
-** ⚠️ Scimax: Clear Image Overlay Cache
+** ✅ Scimax: Clear Image Overlay Cache
+CLOSED: [2026-01-17 Sat 09:51]
 
-*Command ID:* scimax.imageOverlays.clearCache
+*Command ID:* [[cmd:scimax.imageOverlays.clearCache]]
 
 Clear the thumbnail cache. This will:
 - Delete all cached thumbnails
@@ -419,9 +405,10 @@ Clear the thumbnail cache. This will:
 
 Useful if thumbnails are corrupted or you want to reclaim space.
 
-** ⚠️ Scimax: Show Image Overlay Cache Statistics
+** ✅ Scimax: Show Image Overlay Cache Statistics
+CLOSED: [2026-01-17 Sat 09:50]
 
-*Command ID:* scimax.imageOverlays.showStats
+*Command ID:* [[cmd:scimax.imageOverlays.showStats]]
 
 Display information about the thumbnail cache:
 - Number of cached thumbnails
@@ -429,9 +416,11 @@ Display information about the thumbnail cache:
 
 Useful for monitoring cache usage.
 
-* ⚠️ Troubleshooting Image Display
+* ✅ Troubleshooting Image Display
+CLOSED: [2026-01-17 Sat 09:51]
 
-** ⚠️ Images Not Showing
+** ✅ Images Not Showing
+CLOSED: [2026-01-17 Sat 09:51]
 
 If image overlays aren't displaying:
 
@@ -455,7 +444,8 @@ If image overlays aren't displaying:
    - Review scimax.imageOverlays.excludePatterns setting
    - Ensure your image path doesn't match an exclude pattern
 
-** ⚠️ Overlays Disappear When Editing
+** ✅ Overlays Disappear When Editing
+CLOSED: [2026-01-17 Sat 09:51]
 
 This is *normal behavior* when scimax.imageOverlays.onlyWhenCursorNotInLink is true (default). The overlay hides when your cursor is inside the link to prevent obscuring the text you're editing.
 
@@ -467,7 +457,8 @@ To always show overlays:
 }
 #+END_SRC
 
-** ⚠️ Performance Issues
+** ✅ Performance Issues
+CLOSED: [2026-01-17 Sat 09:51]
 
 If you experience slow performance:
 
@@ -496,7 +487,8 @@ If you experience slow performance:
 4. *Disable overlays for specific files:*
    - Use command: Scimax: Toggle Image Overlays for Current File
 
-** ⚠️ Thumbnails Are Blurry or Corrupted
+** ✅ Thumbnails Are Blurry or Corrupted
+CLOSED: [2026-01-17 Sat 09:51]
 
 1. *Clear the cache:*
    - Run command: Scimax: Clear Image Overlay Cache
@@ -508,33 +500,28 @@ If you experience slow performance:
 3. *Verify the original image isn't corrupted:*
    - Open the image in an external viewer
 
-** ⚠️ Remote Images Don't Show
-
-Remote HTTP/HTTPS images are *not displayed* as overlays by design. Only local files are supported for security and performance reasons.
-
-To display remote images:
-1. Download them locally
-2. Reference the local copy in your org file
-
-** ⚠️ Relative Paths Not Resolving
+** ✅ Relative Paths Not Resolving
+CLOSED: [2026-01-17 Sat 12:43]
 
 If relative paths aren't working:
 
 1. *Use ./ prefix for clarity:*
-   #+BEGIN_SRC org
-   [[./images/photo.png]]  # Better
-   [[images/photo.png]]    # Also works, but less clear
-   #+END_SRC
+   
+   [[./_static/plot.png]]  # Better
+
+   [[_static/plot.png]]    # Also works, but less clear
+
 
 2. *Check your working directory:*
    - Paths are resolved relative to the org file's directory
 
 3. *Use absolute paths as a workaround:*
-   #+BEGIN_SRC org
-   [[file:/full/path/to/image.png]]
-   #+END_SRC
+  
+   [[file:/Users/jkitchin/Dropbox/projects/scimax_vscode/docs/_static/plot.png]]
+ 
 
-** ⚠️ Hover Preview Not Working
+** ✅ Hover Preview Not Working
+CLOSED: [2026-01-17 Sat 12:43]
 
 If hover previews aren't showing:
 
@@ -550,9 +537,11 @@ If hover previews aren't showing:
    - Some formats may not preview well
    - SVG and PNG typically work best
 
-* ⚠️ Example Configuration
+* ✅ Example Configuration
+CLOSED: [2026-01-17 Sat 12:43]
 
-** ⚠️ Minimal Configuration
+** ✅ Minimal Configuration
+CLOSED: [2026-01-17 Sat 12:44]
 
 For basic image overlay functionality:
 
@@ -563,7 +552,8 @@ For basic image overlay functionality:
 }
 #+END_SRC
 
-** ⚠️ Power User Configuration
+** ✅ Power User Configuration
+CLOSED: [2026-01-17 Sat 12:44]
 
 For maximum visual feedback:
 
@@ -580,7 +570,8 @@ For maximum visual feedback:
 }
 #+END_SRC
 
-** ⚠️ Performance-Focused Configuration
+** ✅ Performance-Focused Configuration
+CLOSED: [2026-01-17 Sat 12:44]
 
 For large documents with many images:
 
@@ -598,7 +589,8 @@ For large documents with many images:
 }
 #+END_SRC
 
-* ⚠️ Complete Example
+* ✅ Complete Example
+CLOSED: [2026-01-17 Sat 12:44]
 
 Here's a complete example showing various image link formats:
 
@@ -652,7 +644,7 @@ Note: Remote images don't show overlays but are clickable:
 [[https://example.com/logo.png][Company Logo]]
 #+END_SRC
 
-* ⚠️ See Also
+* ✅ See Also
 
 - [[file:05-links.org][Links]] - General link syntax and functionality
 - [[file:07-source-blocks.org][Source Blocks]] - Executing code that generates images
@@ -660,9 +652,9 @@ Note: Remote images don't show overlays but are clickable:
 - [[file:10-export.org][Export]] - Exporting documents with images
 - [[file:26-configuration.org][Configuration]] - Full configuration reference
 
-* ⚠️ Technical Details
+* ✅ Technical Details
 
-** ⚠️ Thumbnail Generation
+** ✅ Thumbnail Generation
 
 Thumbnails are generated using:
 
@@ -675,7 +667,7 @@ Thumbnails are cached in the extension's global storage directory with filenames
 - Configured thumbnail dimensions
 - Original file extension
 
-** ⚠️ Cache Location
+** ✅ Cache Location
 
 Thumbnails are stored in:
 
@@ -683,7 +675,7 @@ Thumbnails are stored in:
 - *macOS:* ~/Library/Application Support/Code/User/globalStorage/scimax-vscode/image-overlay-cache/
 - *Windows:* %APPDATA%\Code\User\globalStorage\scimax-vscode\image-overlay-cache\
 
-** ⚠️ Performance Considerations
+** ✅ Performance Considerations
 
 - Thumbnail generation is asynchronous and doesn't block the editor
 - The cache prevents regenerating thumbnails on each file open
@@ -691,7 +683,7 @@ Thumbnails are stored in:
 - Overlays are debounced during typing to avoid excessive updates
 - Gutter mode is more performant than after/both modes
 
-** ⚠️ VS Code Limitations
+** ✅ VS Code Limitations
 
 Unlike Emacs, VS Code cannot:
 - Display arbitrary-sized inline images in the editor

@@ -13,6 +13,14 @@ import {
     getPreviousTodoState,
 } from './todoStates';
 import { parseRelativeDate, getDateExpressionExamples } from '../utils/dateParser';
+import {
+    generateClockTable,
+    generateTimeReport,
+    formatTimeReport,
+    collectAllClockEntries,
+    formatDuration,
+} from '../parser/orgClocking';
+import { parseOrg } from '../parser/orgParserUnified';
 
 /**
  * Check if line is an org heading and return match info
@@ -953,6 +961,205 @@ async function shiftTimestampRight(): Promise<void> {
 }
 
 /**
+ * Generate a clock report for the current file
+ * Shows time spent on each heading with clock entries
+ */
+async function generateClockReport(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showInformationMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    if (document.languageId !== 'org') {
+        vscode.window.showInformationMessage('Clock reports are only available for org files');
+        return;
+    }
+
+    // Ask for report type
+    const reportType = await vscode.window.showQuickPick([
+        { label: 'All time', value: 'all' },
+        { label: 'Today', value: 'today' },
+        { label: 'This week', value: 'thisweek' },
+        { label: 'This month', value: 'thismonth' },
+    ], {
+        placeHolder: 'Select time range for clock report'
+    });
+
+    if (!reportType) return;
+
+    try {
+        // Parse the document
+        const text = document.getText();
+        const ast = parseOrg(text);
+
+        // Collect all clock entries
+        const entries = collectAllClockEntries(ast);
+
+        if (entries.length === 0) {
+            vscode.window.showInformationMessage('No clock entries found in this file');
+            return;
+        }
+
+        // Generate the report
+        const config = {
+            type: reportType.value as 'daily' | 'weekly' | 'monthly' | 'custom',
+            hierarchical: true,
+            showPercentages: true,
+            includeEmpty: false,
+        };
+
+        // Map report type to config
+        if (reportType.value === 'today') {
+            config.type = 'daily';
+        } else if (reportType.value === 'thisweek') {
+            config.type = 'weekly';
+        } else if (reportType.value === 'thismonth') {
+            config.type = 'monthly';
+        } else {
+            config.type = 'custom';
+        }
+
+        const report = generateTimeReport(ast.children, config);
+
+        if (report.length === 0) {
+            vscode.window.showInformationMessage('No clock entries found for the selected time range');
+            return;
+        }
+
+        // Format and display the report
+        const totalMinutes = report.reduce((sum, e) => sum + e.totalMinutes, 0);
+        const formattedReport = formatTimeReport(report);
+
+        // Create a new document with the report
+        const reportContent = `#+TITLE: Clock Report - ${reportType.label}
+#+DATE: ${new Date().toISOString().split('T')[0]}
+
+* Clock Report
+
+Total time: ${formatDuration(totalMinutes)}
+
+${formattedReport}
+`;
+
+        const reportDoc = await vscode.workspace.openTextDocument({
+            content: reportContent,
+            language: 'org'
+        });
+
+        await vscode.window.showTextDocument(reportDoc, { preview: true });
+
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to generate clock report: ${error}`);
+    }
+}
+
+/**
+ * Generate a clock table and insert it at cursor or in a new document
+ */
+async function generateClockTableCommand(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showInformationMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    if (document.languageId !== 'org') {
+        vscode.window.showInformationMessage('Clock tables are only available for org files');
+        return;
+    }
+
+    // Ask for scope
+    const scope = await vscode.window.showQuickPick([
+        { label: 'Current file', value: 'file' },
+        { label: 'Current subtree', value: 'subtree' },
+    ], {
+        placeHolder: 'Select scope for clock table'
+    });
+
+    if (!scope) return;
+
+    // Ask for time span
+    const span = await vscode.window.showQuickPick([
+        { label: 'All time', value: 'all' },
+        { label: 'Today', value: 'today' },
+        { label: 'This week', value: 'thisweek' },
+        { label: 'This month', value: 'thismonth' },
+    ], {
+        placeHolder: 'Select time span'
+    });
+
+    if (!span) return;
+
+    try {
+        const text = document.getText();
+        const ast = parseOrg(text);
+
+        let headlines = ast.children;
+
+        // If subtree scope, find the current heading
+        if (scope.value === 'subtree') {
+            const position = editor.selection.active;
+            const lineText = document.lineAt(position.line).text;
+
+            // Find the heading at or before cursor
+            let headingLine = position.line;
+            while (headingLine >= 0 && !document.lineAt(headingLine).text.match(/^\*+\s/)) {
+                headingLine--;
+            }
+
+            if (headingLine < 0) {
+                vscode.window.showInformationMessage('No heading found for subtree scope');
+                return;
+            }
+
+            // Find the headline in AST by matching line number
+            const findHeadline = (nodes: typeof ast.children, targetLine: number): typeof ast.children => {
+                for (const node of nodes) {
+                    // HeadlineElement has lineNumber in properties
+                    if (node.properties.lineNumber === targetLine) {
+                        return [node];
+                    }
+                    const found = findHeadline(node.children, targetLine);
+                    if (found.length > 0) return found;
+                }
+                return [];
+            };
+
+            headlines = findHeadline(ast.children, headingLine);
+            if (headlines.length === 0) {
+                vscode.window.showInformationMessage('Could not find heading in AST');
+                return;
+            }
+        }
+
+        const config = {
+            scope: scope.value as 'file' | 'subtree',
+            span: span.value as 'today' | 'thisweek' | 'thismonth' | 'all',
+            maxLevel: 5,
+            showFile: false,
+        };
+
+        const table = generateClockTable(headlines, config);
+
+        if (!table || table.split('\n').length <= 3) {
+            vscode.window.showInformationMessage('No clock entries found for the selected scope and time span');
+            return;
+        }
+
+        // Insert at cursor position
+        await editor.edit(editBuilder => {
+            editBuilder.insert(editor.selection.active, '\n' + table + '\n');
+        });
+
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to generate clock table: ${error}`);
+    }
+}
+
+/**
  * Register timestamp commands
  */
 export function registerTimestampCommands(context: vscode.ExtensionContext): void {
@@ -964,6 +1171,8 @@ export function registerTimestampCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.org.insertTimestamp', insertTimestamp),
         vscode.commands.registerCommand('scimax.org.insertInactiveTimestamp', insertInactiveTimestamp),
         vscode.commands.registerCommand('scimax.org.insertActiveTimestamp', insertActiveTimestamp),
-        vscode.commands.registerCommand('scimax.org.addRepeater', addRepeater)
+        vscode.commands.registerCommand('scimax.org.addRepeater', addRepeater),
+        vscode.commands.registerCommand('scimax.org.clockReport', generateClockReport),
+        vscode.commands.registerCommand('scimax.org.clockTable', generateClockTableCommand)
     );
 }

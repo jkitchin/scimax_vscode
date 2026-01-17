@@ -65,6 +65,8 @@ export interface ResultFormat {
     format?: 'raw' | 'code' | 'org' | 'drawer';
     /** Handling: replace, append, prepend, silent */
     handling?: 'replace' | 'append' | 'prepend' | 'silent';
+    /** Wrap results in a block (:wrap QUOTE wraps in #+BEGIN_QUOTE...#+END_QUOTE) */
+    wrap?: string;
 }
 
 /**
@@ -158,9 +160,19 @@ export function parseHeaderArguments(headerStr: string): HeaderArguments {
     const pattern = /:(\S+)\s+([^:]+?)(?=\s+:|$)/g;
     let match;
 
+    // Helper to strip surrounding quotes from a value
+    const stripQuotes = (val: string): string => {
+        const trimmed = val.trim();
+        if ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+            (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+            return trimmed.slice(1, -1);
+        }
+        return trimmed;
+    };
+
     while ((match = pattern.exec(headerStr)) !== null) {
         const key = match[1].toLowerCase();
-        const value = match[2].trim();
+        const value = stripQuotes(match[2].trim());
 
         switch (key) {
             case 'var':
@@ -178,7 +190,8 @@ export function parseHeaderArguments(headerStr: string): HeaderArguments {
                 break;
 
             case 'results':
-                args.results = value;
+                // Concatenate multiple :results values (e.g., :results table :results value)
+                args.results = args.results ? `${args.results} ${value}` : value;
                 break;
 
             case 'session':
@@ -433,12 +446,31 @@ export const shellExecutor: LanguageExecutor = {
     languages: ['sh', 'bash', 'shell'],
 
     async execute(code: string, context: ExecutionContext): Promise<ExecutionResult> {
-        const { spawn } = await import('child_process');
+        const { spawn, execSync } = await import('child_process');
+        const fs = await import('fs');
 
         return new Promise((resolve) => {
             const startTime = Date.now();
-            const shell = process.platform === 'win32' ? 'cmd.exe' : '/bin/bash';
-            const args = process.platform === 'win32' ? ['/c', code] : ['-c', code];
+
+            let shell: string;
+            let args: string[];
+
+            if (process.platform === 'win32') {
+                shell = 'cmd.exe';
+                args = ['/c', code];
+            } else {
+                // Find available shell - prefer bash, fall back to sh
+                const bashPaths = ['/bin/bash', '/usr/bin/bash', '/usr/local/bin/bash'];
+                const foundBash = bashPaths.find(p => fs.existsSync(p));
+
+                if (foundBash) {
+                    shell = foundBash;
+                } else {
+                    // Fall back to /bin/sh (POSIX shell, always available)
+                    shell = '/bin/sh';
+                }
+                args = ['-c', code];
+            }
 
             const proc = spawn(shell, args, {
                 cwd: context.cwd,
@@ -457,9 +489,9 @@ export const shellExecutor: LanguageExecutor = {
                 stderr += data.toString();
             });
 
-            proc.on('close', (code) => {
+            proc.on('close', (exitCode) => {
                 resolve({
-                    success: code === 0,
+                    success: exitCode === 0,
                     stdout: stdout.trim(),
                     stderr: stderr.trim(),
                     executionTime: Date.now() - startTime,
@@ -467,10 +499,31 @@ export const shellExecutor: LanguageExecutor = {
                 });
             });
 
-            proc.on('error', (error) => {
+            proc.on('error', (error: NodeJS.ErrnoException) => {
+                // Provide more helpful error message for common issues
+                let enhancedError = error;
+                if (error.code === 'ENOENT') {
+                    // Check if it's the shell or the cwd that doesn't exist
+                    if (!fs.existsSync(shell)) {
+                        enhancedError = new Error(
+                            `Shell not found: ${shell}. ` +
+                            `Searched: ${['/bin/bash', '/usr/bin/bash', '/usr/local/bin/bash', '/bin/sh'].join(', ')}`
+                        ) as NodeJS.ErrnoException;
+                    } else if (context.cwd && !fs.existsSync(context.cwd)) {
+                        enhancedError = new Error(
+                            `Working directory not found: ${context.cwd}`
+                        ) as NodeJS.ErrnoException;
+                    } else {
+                        enhancedError = new Error(
+                            `ENOENT error spawning ${shell} in ${context.cwd || 'default cwd'}. ` +
+                            `Shell exists: ${fs.existsSync(shell)}, CWD exists: ${context.cwd ? fs.existsSync(context.cwd) : 'no cwd'}`
+                        ) as NodeJS.ErrnoException;
+                    }
+                    enhancedError.code = 'ENOENT';
+                }
                 resolve({
                     success: false,
-                    error,
+                    error: enhancedError,
                     executionTime: Date.now() - startTime,
                 });
             });
@@ -698,14 +751,38 @@ export const pythonExecutor: LanguageExecutor = {
                     .join('\n') + '\n' + code
                 : code;
 
-            // Handle :results value - evaluate and print the last expression
-            if (context.results?.collection === 'value') {
+            // Check if code contains a 'return' statement (org-babel convention)
+            const hasReturnStatement = /^\s*return\s/m.test(code);
+
+            // Handle :results value OR code with return statements
+            if (context.results?.collection === 'value' || hasReturnStatement) {
+                // Determine output format based on :results type
+                const isTableFormat = context.results?.type === 'table';
+                // Convert JS boolean to Python boolean
+                const pyTableFormat = isTableFormat ? 'True' : 'False';
+
                 // Wrap code to capture the value of the last expression
                 // We use exec() for statements and eval() for the final expression
+                // Also handle org-babel 'return' convention
                 wrappedCode = `
 import sys
 __org_babel_code__ = ${JSON.stringify(wrappedCode)}
 __org_babel_lines__ = __org_babel_code__.strip().split('\\n')
+__org_babel_table_format__ = ${pyTableFormat}
+
+def __org_babel_format_value__(val):
+    """Format value for output, handling table format specially."""
+    if __org_babel_table_format__:
+        # For table format, output as tab-separated values
+        if hasattr(val, '__iter__') and not isinstance(val, (str, bytes, dict)):
+            lines = []
+            for row in val:
+                if hasattr(row, '__iter__') and not isinstance(row, (str, bytes, dict)):
+                    lines.append('\\t'.join(str(cell) for cell in row))
+                else:
+                    lines.append(str(row))
+            return '\\n'.join(lines)
+    return repr(val)
 
 # Find the last non-empty, non-comment line
 __org_babel_last_idx__ = len(__org_babel_lines__) - 1
@@ -720,12 +797,18 @@ if __org_babel_last_idx__ >= 0:
     __org_babel_setup__ = '\\n'.join(__org_babel_lines__[:__org_babel_last_idx__])
     if __org_babel_setup__.strip():
         exec(__org_babel_setup__)
-    # Try to eval the last line (expression), fall back to exec (statement)
-    __org_babel_last__ = __org_babel_lines__[__org_babel_last_idx__]
+    # Handle the last line
+    __org_babel_last__ = __org_babel_lines__[__org_babel_last_idx__].strip()
+    # Handle 'return' statements (org-babel convention - not Python syntax)
+    if __org_babel_last__.startswith('return '):
+        __org_babel_last__ = __org_babel_last__[7:]  # Strip 'return '
+    elif __org_babel_last__ == 'return':
+        __org_babel_last__ = 'None'
+    # Try to eval the expression, fall back to exec (statement)
     try:
         __org_babel_result__ = eval(__org_babel_last__)
         if __org_babel_result__ is not None:
-            print(__org_babel_result__)
+            print(__org_babel_format_value__(__org_babel_result__))
     except SyntaxError:
         exec(__org_babel_last__)
 `;
@@ -758,10 +841,26 @@ if __org_babel_last_idx__ >= 0:
                 });
             });
 
-            proc.on('error', (error) => {
+            proc.on('error', (error: NodeJS.ErrnoException) => {
+                // Provide more helpful error message for common issues
+                const fs = require('fs');
+                let enhancedError = error;
+                if (error.code === 'ENOENT') {
+                    if (context.cwd && !fs.existsSync(context.cwd)) {
+                        enhancedError = new Error(
+                            `Working directory not found: ${context.cwd}`
+                        ) as NodeJS.ErrnoException;
+                    } else {
+                        enhancedError = new Error(
+                            `python3 not found or ENOENT error. CWD: ${context.cwd || 'default'}, ` +
+                            `CWD exists: ${context.cwd ? fs.existsSync(context.cwd) : 'no cwd'}`
+                        ) as NodeJS.ErrnoException;
+                    }
+                    enhancedError.code = 'ENOENT';
+                }
                 resolve({
                     success: false,
-                    error,
+                    error: enhancedError,
                     executionTime: Date.now() - startTime,
                 });
             });
@@ -848,6 +947,204 @@ export const nodeExecutor: LanguageExecutor = {
         const { spawn } = await import('child_process');
         return new Promise((resolve) => {
             const proc = spawn('node', ['--version']);
+            proc.on('close', (code) => resolve(code === 0));
+            proc.on('error', () => resolve(false));
+        });
+    },
+};
+
+/**
+ * Julia executor
+ */
+export const juliaExecutor: LanguageExecutor = {
+    languages: ['julia', 'jl'],
+
+    async execute(code: string, context: ExecutionContext): Promise<ExecutionResult> {
+        const { spawn } = await import('child_process');
+
+        return new Promise((resolve) => {
+            const startTime = Date.now();
+
+            // Inject variables
+            let wrappedCode = context.variables
+                ? Object.entries(context.variables)
+                    .map(([k, v]) => `${k} = ${JSON.stringify(v)}`)
+                    .join('\n') + '\n' + code
+                : code;
+
+            // Handle :results value - capture the value of the last expression
+            if (context.results?.collection === 'value') {
+                wrappedCode = `
+__org_babel_code__ = ${JSON.stringify(wrappedCode)}
+__org_babel_lines__ = split(__org_babel_code__, '\\n')
+
+# Find the last non-empty, non-comment line
+__org_babel_last_idx__ = length(__org_babel_lines__)
+while __org_babel_last_idx__ >= 1
+    __org_babel_line__ = strip(__org_babel_lines__[__org_babel_last_idx__])
+    if !isempty(__org_babel_line__) && !startswith(__org_babel_line__, "#")
+        break
+    end
+    global __org_babel_last_idx__ -= 1
+end
+
+if __org_babel_last_idx__ >= 1
+    # Execute all lines except the last
+    __org_babel_setup__ = join(__org_babel_lines__[1:__org_babel_last_idx__-1], '\\n')
+    if !isempty(strip(__org_babel_setup__))
+        include_string(Main, __org_babel_setup__)
+    end
+    # Evaluate and print the last line
+    __org_babel_result__ = include_string(Main, __org_babel_lines__[__org_babel_last_idx__])
+    if __org_babel_result__ !== nothing
+        println(__org_babel_result__)
+    end
+end
+`;
+            }
+
+            const proc = spawn('julia', ['-e', wrappedCode], {
+                cwd: context.cwd,
+                env: { ...process.env, ...context.env },
+                timeout: context.timeout,
+            });
+
+            let stdout = '';
+            let stderr = '';
+
+            proc.stdout?.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            proc.stderr?.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            proc.on('close', (exitCode) => {
+                resolve({
+                    success: exitCode === 0,
+                    stdout: stdout.trim(),
+                    stderr: stderr.trim(),
+                    executionTime: Date.now() - startTime,
+                    resultType: 'output',
+                });
+            });
+
+            proc.on('error', (error) => {
+                resolve({
+                    success: false,
+                    error,
+                    executionTime: Date.now() - startTime,
+                });
+            });
+        });
+    },
+
+    async isAvailable(): Promise<boolean> {
+        const { spawn } = await import('child_process');
+        return new Promise((resolve) => {
+            const proc = spawn('julia', ['--version']);
+            proc.on('close', (code) => resolve(code === 0));
+            proc.on('error', () => resolve(false));
+        });
+    },
+};
+
+/**
+ * R executor
+ */
+export const rExecutor: LanguageExecutor = {
+    languages: ['r', 'R'],
+
+    async execute(code: string, context: ExecutionContext): Promise<ExecutionResult> {
+        const { spawn } = await import('child_process');
+
+        return new Promise((resolve) => {
+            const startTime = Date.now();
+
+            // Inject variables
+            let wrappedCode = context.variables
+                ? Object.entries(context.variables)
+                    .map(([k, v]) => `${k} <- ${JSON.stringify(v)}`)
+                    .join('\n') + '\n' + code
+                : code;
+
+            // Handle :results value - capture the value of the last expression
+            if (context.results?.collection === 'value') {
+                // Wrap code to evaluate and print the last expression
+                wrappedCode = `
+.org_babel_code <- ${JSON.stringify(wrappedCode)}
+.org_babel_lines <- strsplit(.org_babel_code, "\\n")[[1]]
+
+# Find the last non-empty, non-comment line
+.org_babel_last_idx <- length(.org_babel_lines)
+while (.org_babel_last_idx >= 1) {
+    .org_babel_line <- trimws(.org_babel_lines[.org_babel_last_idx])
+    if (nchar(.org_babel_line) > 0 && !startsWith(.org_babel_line, "#")) {
+        break
+    }
+    .org_babel_last_idx <- .org_babel_last_idx - 1
+}
+
+if (.org_babel_last_idx >= 1) {
+    # Execute all lines except the last
+    if (.org_babel_last_idx > 1) {
+        .org_babel_setup <- paste(.org_babel_lines[1:(.org_babel_last_idx-1)], collapse = "\\n")
+        if (nchar(trimws(.org_babel_setup)) > 0) {
+            eval(parse(text = .org_babel_setup))
+        }
+    }
+    # Evaluate and print the last line
+    .org_babel_result <- eval(parse(text = .org_babel_lines[.org_babel_last_idx]))
+    if (!is.null(.org_babel_result)) {
+        print(.org_babel_result)
+    }
+}
+`;
+            }
+
+            // Use Rscript for non-interactive execution
+            const proc = spawn('Rscript', ['-e', wrappedCode], {
+                cwd: context.cwd,
+                env: { ...process.env, ...context.env },
+                timeout: context.timeout,
+            });
+
+            let stdout = '';
+            let stderr = '';
+
+            proc.stdout?.on('data', (data) => {
+                stdout += data.toString();
+            });
+
+            proc.stderr?.on('data', (data) => {
+                stderr += data.toString();
+            });
+
+            proc.on('close', (exitCode) => {
+                resolve({
+                    success: exitCode === 0,
+                    stdout: stdout.trim(),
+                    stderr: stderr.trim(),
+                    executionTime: Date.now() - startTime,
+                    resultType: 'output',
+                });
+            });
+
+            proc.on('error', (error) => {
+                resolve({
+                    success: false,
+                    error,
+                    executionTime: Date.now() - startTime,
+                });
+            });
+        });
+    },
+
+    async isAvailable(): Promise<boolean> {
+        const { spawn } = await import('child_process');
+        return new Promise((resolve) => {
+            const proc = spawn('Rscript', ['--version']);
             proc.on('close', (code) => resolve(code === 0));
             proc.on('error', () => resolve(false));
         });
@@ -993,6 +1290,8 @@ executorRegistry.register(shellExecutor);
 executorRegistry.register(pythonExecutor);
 executorRegistry.register(nodeExecutor);
 executorRegistry.register(typescriptExecutor);
+executorRegistry.register(juliaExecutor);
+executorRegistry.register(rExecutor);
 
 // =============================================================================
 // Babel Execution Functions
@@ -1013,12 +1312,15 @@ export async function executeSourceBlock(
 
     // Merge context with header arguments
     // Include the language so executors (like Jupyter) can access it
+    // Note: :dir is handled by the caller (babelProvider) which resolves it to an absolute path
+    // and passes it as context.cwd, so we don't override cwd with headers.dir here
     const fullContext: ExecutionContext & { language?: string } = {
         ...context,
         language,
         session: headers.session || context.session,
-        cwd: headers.dir || context.cwd,
-        variables: headers.var ? { ...context.variables, ...parseVariables(headers.var) } : context.variables,
+        // cwd comes from context (already resolved by caller)
+        // variables are already resolved by the caller (babelProvider.resolveVariables)
+        variables: context.variables,
         results: headers.results ? parseResultsFormat(headers.results) : context.results,
         exports: headers.exports || context.exports,
     };
@@ -1072,22 +1374,11 @@ export async function executeSourceBlock(
 }
 
 /**
- * Parse variable assignments
+ * Compute SHA1 hash of code for caching
  */
-function parseVariables(vars: Record<string, string>): Record<string, unknown> {
-    const result: Record<string, unknown> = {};
-
-    for (const [key, value] of Object.entries(vars)) {
-        // Try to parse as JSON
-        try {
-            result[key] = JSON.parse(value);
-        } catch {
-            // Keep as string
-            result[key] = value;
-        }
-    }
-
-    return result;
+export function computeCodeHash(code: string): string {
+    const crypto = require('crypto');
+    return crypto.createHash('sha1').update(code).digest('hex');
 }
 
 /**
@@ -1095,17 +1386,30 @@ function parseVariables(vars: Record<string, string>): Record<string, unknown> {
  * @param result - The execution result
  * @param format - Result format options
  * @param name - Optional name for the results (from #+NAME: on the source block)
+ * @param codeHash - Optional hash for :cache yes results
  */
 export function formatResult(
     result: ExecutionResult,
     format: ResultFormat = {},
-    name?: string
+    name?: string,
+    codeHash?: string
 ): string {
-    // Build the name prefix if provided
-    const namePrefix = name ? `#+NAME: ${name}\n` : '';
+    // Build the results header
+    // With cache: #+RESULTS[hash]:
+    // With name: #+RESULTS: name or #+RESULTS[hash]: name
+    let resultsHeader: string;
+    if (codeHash && name) {
+        resultsHeader = `#+RESULTS[${codeHash}]: ${name}`;
+    } else if (codeHash) {
+        resultsHeader = `#+RESULTS[${codeHash}]:`;
+    } else if (name) {
+        resultsHeader = `#+RESULTS: ${name}`;
+    } else {
+        resultsHeader = '#+RESULTS:';
+    }
 
     if (!result.success && result.error) {
-        return `${namePrefix}#+RESULTS:\n: Error: ${result.error.message}`;
+        return `${resultsHeader}\n: Error: ${result.error.message}`;
     }
 
     const output = result.stdout || '';
@@ -1113,7 +1417,7 @@ export function formatResult(
 
     // If no output and no files, return empty results
     if (!output && files.length === 0) {
-        return `${namePrefix}#+RESULTS:`;
+        return resultsHeader;
     }
 
     // Determine format type
@@ -1129,36 +1433,42 @@ export function formatResult(
 
     // Format text output
     if (output) {
-        switch (type) {
-            case 'table':
-                resultText = formatAsTable(output);
-                break;
-            case 'list':
-                resultText = formatAsList(output);
-                break;
-            case 'html':
-                resultText = `#+RESULTS:\n#+BEGIN_EXPORT html\n${output}\n#+END_EXPORT`;
-                break;
-            case 'latex':
-                resultText = `#+RESULTS:\n#+BEGIN_EXPORT latex\n${output}\n#+END_EXPORT`;
-                break;
-            case 'org':
-                resultText = `#+RESULTS:\n${output}`;
-                break;
-            case 'drawer':
-                resultText = `#+RESULTS:\n:RESULTS:\n${output}\n:END:`;
-                break;
-            case 'file':
-                // Only use file format when stdout IS the file path (no separate files array)
-                resultText = `#+RESULTS:\n[[file:${output}]]`;
-                break;
-            case 'verbatim':
-            default:
-                resultText = formatAsVerbatim(output);
-                break;
+        // :wrap takes precedence - wrap output in #+BEGIN_<WRAPPER>...#+END_<WRAPPER>
+        if (format.wrap) {
+            const wrapperName = format.wrap.toUpperCase();
+            resultText = `${resultsHeader}\n#+BEGIN_${wrapperName}\n${output}\n#+END_${wrapperName}`;
+        } else {
+            switch (type) {
+                case 'table':
+                    resultText = formatAsTable(output, resultsHeader);
+                    break;
+                case 'list':
+                    resultText = formatAsList(output, resultsHeader);
+                    break;
+                case 'html':
+                    resultText = `${resultsHeader}\n#+BEGIN_EXPORT html\n${output}\n#+END_EXPORT`;
+                    break;
+                case 'latex':
+                    resultText = `${resultsHeader}\n#+BEGIN_EXPORT latex\n${output}\n#+END_EXPORT`;
+                    break;
+                case 'org':
+                    resultText = `${resultsHeader}\n${output}`;
+                    break;
+                case 'drawer':
+                    resultText = `${resultsHeader}\n:RESULTS:\n${output}\n:END:`;
+                    break;
+                case 'file':
+                    // Only use file format when stdout IS the file path (no separate files array)
+                    resultText = `${resultsHeader}\n[[file:${output}]]`;
+                    break;
+                case 'verbatim':
+                default:
+                    resultText = formatAsVerbatim(output, resultsHeader);
+                    break;
+            }
         }
     } else {
-        resultText = '#+RESULTS:';
+        resultText = resultsHeader;
     }
 
     // Append file links (for Jupyter image output, etc.)
@@ -1167,32 +1477,32 @@ export function formatResult(
         if (output) {
             resultText += '\n' + fileLinks;
         } else {
-            resultText = '#+RESULTS:\n' + fileLinks;
+            resultText = `${resultsHeader}\n` + fileLinks;
         }
     }
 
-    return namePrefix + resultText;
+    return resultText;
 }
 
-function formatAsVerbatim(output: string): string {
+function formatAsVerbatim(output: string, resultsHeader: string): string {
     const lines = output.split('\n').map(line => `: ${line}`);
-    return '#+RESULTS:\n' + lines.join('\n');
+    return resultsHeader + '\n' + lines.join('\n');
 }
 
-function formatAsTable(output: string): string {
+function formatAsTable(output: string, resultsHeader: string): string {
     // Try to parse as CSV-like data
     const lines = output.trim().split('\n');
     const rows = lines.map(line =>
         '| ' + line.split(/[,\t]/).map(cell => cell.trim()).join(' | ') + ' |'
     );
 
-    return '#+RESULTS:\n' + rows.join('\n');
+    return resultsHeader + '\n' + rows.join('\n');
 }
 
-function formatAsList(output: string): string {
+function formatAsList(output: string, resultsHeader: string): string {
     const lines = output.trim().split('\n');
     const items = lines.map(line => `- ${line}`);
-    return '#+RESULTS:\n' + items.join('\n');
+    return resultsHeader + '\n' + items.join('\n');
 }
 
 /**

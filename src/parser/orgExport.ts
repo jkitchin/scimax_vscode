@@ -152,6 +152,8 @@ export interface ExportState {
     sectionNumbers: number[];
     /** Options for the export */
     options: ExportOptions;
+    /** Skip next results block (based on :exports header of previous src block) */
+    skipNextResults?: boolean;
 }
 
 /**

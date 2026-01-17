@@ -4,18 +4,21 @@
  */
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 import {
     executeSourceBlock,
     formatResult,
     parseHeaderArguments,
     parseResultsFormat,
     executorRegistry,
+    computeCodeHash,
     type ExecutionResult,
     type ExecutionContext,
     type HeaderArguments,
 } from '../parser/orgBabel';
 import type { SrcBlockElement } from '../parser/orgElementTypes';
-import { findInlineSrcAtPosition, findInlineBabelCallAtPosition } from '../parser/orgBabelAdvanced';
+import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall } from '../parser/orgBabelAdvanced';
+import { getKernelManager } from '../jupyter/kernelManager';
 
 // Output channel for Babel execution
 let outputChannel: vscode.OutputChannel | undefined;
@@ -126,11 +129,36 @@ function findNamedTable(document: vscode.TextDocument, name: string): unknown[][
  * Supports both:
  * 1. #+NAME: directly above #+RESULTS: (standalone named results)
  * 2. #+NAME: above a source block that has #+RESULTS: after it
+ * 3. #+RESULTS: name format (name on the RESULTS line itself)
  */
 function findNamedResults(document: vscode.TextDocument, name: string): string | null {
     const text = document.getText();
     const lines = text.split('\n');
 
+    // First, try to find #+RESULTS: name format (name on RESULTS line)
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const resultsMatch = line.match(/^#\+RESULTS:\s*(.+?)\s*$/i);
+        if (resultsMatch && resultsMatch[1] === name) {
+            // Found #+RESULTS: name - collect the result lines
+            const resultLines: string[] = [];
+            for (let k = i + 1; k < lines.length; k++) {
+                const resultLine = lines[k];
+                // Results end at empty line or new element (but not verbatim lines starting with : )
+                if (resultLine.trim() === '' ||
+                    (resultLine.trim().startsWith('#+') && !resultLine.trim().startsWith(': '))) {
+                    break;
+                }
+                // Remove verbatim prefix if present
+                resultLines.push(resultLine.replace(/^: /, ''));
+            }
+            if (resultLines.length > 0) {
+                return resultLines.join('\n');
+            }
+        }
+    }
+
+    // Then try #+NAME: above source block or #+RESULTS:
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
 
@@ -154,7 +182,9 @@ function findNamedResults(document: vscode.TextDocument, name: string): string |
                         // Remove verbatim prefix if present
                         resultLines.push(resultLine.replace(/^: /, ''));
                     }
-                    return resultLines.join('\n');
+                    if (resultLines.length > 0) {
+                        return resultLines.join('\n');
+                    }
                 }
 
                 // Skip source blocks - they might be between #+NAME: and #+RESULTS:
@@ -169,8 +199,18 @@ function findNamedResults(document: vscode.TextDocument, name: string): string |
                     continue;
                 }
 
-                // Stop if we hit another #+NAME: (different named element)
-                if (checkLine.match(/^#\+NAME:/i)) break;
+                // If we hit another #+NAME: with the SAME name, continue (it might be results)
+                // If it's a DIFFERENT name, stop searching
+                const innerNameMatch = checkLine.match(/^#\+NAME:\s*(.+?)\s*$/i);
+                if (innerNameMatch) {
+                    if (innerNameMatch[1] === name) {
+                        // Same name - continue looking for #+RESULTS: on the next line
+                        continue;
+                    } else {
+                        // Different name - stop
+                        break;
+                    }
+                }
             }
         }
     }
@@ -243,12 +283,16 @@ interface SourceBlockInfo {
     parameters: string;
     code: string;
     name?: string;
+    /** Line number of #+NAME: if present */
+    nameLine?: number;
     startLine: number;
     endLine: number;
     codeStartLine: number;
     codeEndLine: number;
     resultsLine?: number;
     resultsEndLine?: number;
+    /** Cached hash from #+RESULTS[hash]: */
+    cachedHash?: string;
 }
 
 /**
@@ -265,6 +309,7 @@ function findSourceBlockAtCursor(
     const blocks: SourceBlockInfo[] = [];
     let currentBlock: Partial<SourceBlockInfo> | null = null;
     let blockName: string | undefined;
+    let blockNameLine: number | undefined;
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -273,7 +318,20 @@ function findSourceBlockAtCursor(
         const nameMatch = line.match(/^\s*#\+NAME:\s*(.+?)\s*$/i);
         if (nameMatch) {
             blockName = nameMatch[1];
+            blockNameLine = i;
             continue;
+        }
+
+        // If we hit a table (starts with |), the #+NAME: belongs to it, not a following src block
+        if (blockName && line.match(/^\s*\|/)) {
+            blockName = undefined;
+            blockNameLine = undefined;
+        }
+
+        // If we hit another #+BEGIN_ block (not SRC), the #+NAME: belongs to it
+        if (blockName && line.match(/^\s*#\+BEGIN_(?!SRC)/i)) {
+            blockName = undefined;
+            blockNameLine = undefined;
         }
 
         // Check for #+BEGIN_SRC
@@ -285,8 +343,10 @@ function findSourceBlockAtCursor(
                 startLine: i,
                 codeStartLine: i + 1,
                 name: blockName,
+                nameLine: blockNameLine,
             };
             blockName = undefined;
+            blockNameLine = undefined;
             continue;
         }
 
@@ -307,8 +367,28 @@ function findSourceBlockAtCursor(
                 const nextLine = lines[j].trim();
                 if (!nextLine) continue; // Skip empty lines
 
-                if (nextLine.match(/^#\+RESULTS:?/i)) {
+                // Check for #+NAME: - if it doesn't match our block's name,
+                // any following #+RESULTS: belongs to a different block
+                const nameMatch = nextLine.match(/^#\+NAME:\s*(.+?)\s*$/i);
+                if (nameMatch) {
+                    const resultName = nameMatch[1];
+                    if (currentBlock.name && resultName === currentBlock.name) {
+                        // This NAME matches our block, continue looking for RESULTS
+                        continue;
+                    } else {
+                        // This NAME belongs to a different block's results, stop looking
+                        break;
+                    }
+                }
+
+                // Match #+RESULTS: or #+RESULTS[hash]:
+                const resultsMatch = nextLine.match(/^#\+RESULTS(?:\[([a-f0-9]+)\])?:?/i);
+                if (resultsMatch) {
                     currentBlock.resultsLine = j;
+                    // Extract cached hash if present
+                    if (resultsMatch[1]) {
+                        currentBlock.cachedHash = resultsMatch[1];
+                    }
                     // Find end of results
                     let inDrawer = false;
                     let inExportBlock = false;
@@ -435,6 +515,7 @@ function findAllSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
     const blocks: SourceBlockInfo[] = [];
     let currentBlock: Partial<SourceBlockInfo> | null = null;
     let blockName: string | undefined;
+    let blockNameLine: number | undefined;
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -442,7 +523,21 @@ function findAllSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
         const nameMatch = line.match(/^\s*#\+NAME:\s*(.+?)\s*$/i);
         if (nameMatch) {
             blockName = nameMatch[1];
+            blockNameLine = i;
             continue;
+        }
+
+        // If we hit a table (starts with |), the #+NAME: belongs to it, not a following src block
+        if (blockName && line.match(/^\s*\|/)) {
+            blockName = undefined;
+            blockNameLine = undefined;
+            // Don't continue - let the loop proceed to check other patterns
+        }
+
+        // If we hit another #+BEGIN_ block (not SRC), the #+NAME: belongs to it
+        if (blockName && line.match(/^\s*#\+BEGIN_(?!SRC)/i)) {
+            blockName = undefined;
+            blockNameLine = undefined;
         }
 
         const beginMatch = line.match(/^\s*#\+BEGIN_SRC\s+(\S+)(.*)?$/i);
@@ -453,8 +548,10 @@ function findAllSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
                 startLine: i,
                 codeStartLine: i + 1,
                 name: blockName,
+                nameLine: blockNameLine,
             };
             blockName = undefined;
+            blockNameLine = undefined;
             continue;
         }
 
@@ -473,8 +570,28 @@ function findAllSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
                 const nextLine = lines[j].trim();
                 if (!nextLine) continue; // Skip empty lines
 
-                if (nextLine.match(/^#\+RESULTS:?/i)) {
+                // Check for #+NAME: - if it doesn't match our block's name,
+                // any following #+RESULTS: belongs to a different block
+                const nameMatch = nextLine.match(/^#\+NAME:\s*(.+?)\s*$/i);
+                if (nameMatch) {
+                    const resultName = nameMatch[1];
+                    if (currentBlock.name && resultName === currentBlock.name) {
+                        // This NAME matches our block, continue looking for RESULTS
+                        continue;
+                    } else {
+                        // This NAME belongs to a different block's results, stop looking
+                        break;
+                    }
+                }
+
+                // Match #+RESULTS: or #+RESULTS[hash]:
+                const resultsMatch = nextLine.match(/^#\+RESULTS(?:\[([a-f0-9]+)\])?:?/i);
+                if (resultsMatch) {
                     currentBlock.resultsLine = j;
+                    // Extract cached hash if present
+                    if (resultsMatch[1]) {
+                        currentBlock.cachedHash = resultsMatch[1];
+                    }
                     // Find end of results
                     let inDrawer = false;
                     let inExportBlock = false;
@@ -579,6 +696,47 @@ function findAllSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
 }
 
 /**
+ * Build a map of named source blocks for #+CALL: execution
+ */
+function buildNamedBlockMap(document: vscode.TextDocument): Map<string, TangleBlock> {
+    const blocks = findAllSourceBlocks(document);
+    const blockMap = new Map<string, TangleBlock>();
+
+    for (const block of blocks) {
+        if (block.name) {
+            // Extract the code content from the document
+            const codeLines: string[] = [];
+            for (let i = block.codeStartLine; i < block.endLine; i++) {
+                codeLines.push(document.lineAt(i).text);
+            }
+            const code = codeLines.join('\n');
+
+            // Parse headers from parameters
+            const headers = parseHeaderArguments(block.parameters);
+
+            // Extract noweb references from code
+            const nowebPattern = /<<([^>]+)>>/g;
+            const nowebRefs: string[] = [];
+            let nowebMatch;
+            while ((nowebMatch = nowebPattern.exec(code)) !== null) {
+                nowebRefs.push(nowebMatch[1]);
+            }
+
+            blockMap.set(block.name, {
+                name: block.name,
+                language: block.language,
+                code: code,
+                lineNumber: block.startLine,
+                headers: headers,
+                nowebRefs: nowebRefs,
+            });
+        }
+    }
+
+    return blockMap;
+}
+
+/**
  * Insert or replace results in the document
  */
 async function insertResults(
@@ -640,18 +798,124 @@ async function executeBlock(
         };
     }
 
+    // Check if we need to query user before executing
+    if (headers.eval === 'query' || headers.eval === 'query-export') {
+        const blockName = block.name ? ` "${block.name}"` : '';
+        const answer = await vscode.window.showWarningMessage(
+            `Execute ${language} code block${blockName}?`,
+            { modal: true },
+            'Yes',
+            'No'
+        );
+        if (answer !== 'Yes') {
+            channel.appendLine('[INFO] Execution cancelled by user (eval: query)');
+            return {
+                success: true,
+                stdout: '',
+            };
+        }
+    }
+
     // Build execution context
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-    const documentDir = editor.document.uri.fsPath.replace(/[/\\][^/\\]+$/, '');
+    const documentDir = path.dirname(editor.document.uri.fsPath);
+
+    // Resolve :dir header - can be absolute or relative to document directory
+    let workingDir = documentDir || workspaceFolder;
+    if (headers.dir) {
+        // Check if this is a Jupyter block - :dir is not supported for Jupyter kernels
+        // because the kernel maintains its own working directory state
+        if (language.startsWith('jupyter-')) {
+            const msg = `:dir is not supported for Jupyter blocks (${language}). ` +
+                `Jupyter kernels maintain their own working directory. ` +
+                `Use os.chdir() or equivalent in your code instead.`;
+            channel.appendLine(`[ERROR] ${msg}`);
+            vscode.window.showErrorMessage(msg);
+            return {
+                success: false,
+                error: new Error(msg),
+            };
+        }
+
+        // Debug: log values before resolution
+        channel.appendLine(`[DEBUG] :dir header value: "${headers.dir}"`);
+        channel.appendLine(`[DEBUG] documentDir: "${documentDir}"`);
+        channel.appendLine(`[DEBUG] workspaceFolder: "${workspaceFolder}"`);
+        channel.appendLine(`[DEBUG] path.isAbsolute(headers.dir): ${path.isAbsolute(headers.dir)}`);
+
+        if (path.isAbsolute(headers.dir)) {
+            workingDir = headers.dir;
+        } else {
+            // Resolve relative path against document directory
+            const basePath = documentDir || workspaceFolder || '';
+            workingDir = path.resolve(basePath, headers.dir);
+            channel.appendLine(`[DEBUG] Resolved "${headers.dir}" relative to "${basePath}" = "${workingDir}"`);
+        }
+
+        // Verify the directory exists
+        const fs = await import('fs');
+        channel.appendLine(`[DEBUG] Checking if workingDir exists: "${workingDir}"`);
+        channel.appendLine(`[DEBUG] fs.existsSync(workingDir): ${fs.existsSync(workingDir)}`);
+        if (!fs.existsSync(workingDir)) {
+            const msg = `:dir directory does not exist: ${workingDir}`;
+            channel.appendLine(`[ERROR] ${msg}`);
+            vscode.window.showErrorMessage(msg);
+            return {
+                success: false,
+                error: new Error(msg),
+            };
+        }
+        channel.appendLine(`[DEBUG] Directory exists, proceeding with execution`);
+    }
 
     // Resolve variable references (e.g., :var data=my-table)
     const resolvedVars = resolveVariables(editor.document, headers);
 
+    // Log execution context for debugging
+    channel.appendLine(`[DEBUG] Executing ${language} block`);
+    channel.appendLine(`[DEBUG] Document dir: ${documentDir}`);
+    channel.appendLine(`[DEBUG] Working dir: ${workingDir}`);
+    if (headers.dir) {
+        channel.appendLine(`[DEBUG] :dir header: ${headers.dir}`);
+    }
+
     const context: ExecutionContext = {
-        cwd: headers.dir || documentDir || workspaceFolder,
+        cwd: workingDir,
         timeout: 60000, // 60 second default timeout
         variables: resolvedVars,
     };
+
+    // Handle :file header for Python matplotlib
+    let codeToExecute = block.code;
+    let outputFilePath: string | undefined;
+
+    if (headers.file && ['python', 'python3', 'py'].includes(language.toLowerCase())) {
+        // Resolve file path relative to working directory (or document directory as fallback)
+        const baseDir = workingDir || documentDir;
+        if (path.isAbsolute(headers.file)) {
+            outputFilePath = headers.file;
+        } else {
+            outputFilePath = path.resolve(baseDir, headers.file);
+        }
+
+        // Ensure directory exists
+        const outputDir = path.dirname(outputFilePath);
+        const fs = await import('fs');
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
+
+        // Add matplotlib savefig code at the end
+        // This handles the common case of plotting with matplotlib
+        codeToExecute = `${block.code}
+# Auto-added by scimax for :file header
+import matplotlib.pyplot as plt
+if plt.get_fignums():
+    plt.savefig(${JSON.stringify(outputFilePath)}, bbox_inches='tight')
+    plt.close()
+`;
+        channel.appendLine(`[DEBUG] :file header: "${headers.file}" -> "${outputFilePath}"`);
+    }
 
     // Create the SrcBlockElement for the executor
     const srcBlock: SrcBlockElement = {
@@ -660,7 +924,7 @@ async function executeBlock(
         postBlank: 0,
         properties: {
             language: block.language,
-            value: block.code,
+            value: codeToExecute,
             parameters: block.parameters,
             preserveIndent: false,
             headers: headers as Record<string, string>,
@@ -669,9 +933,31 @@ async function executeBlock(
         },
     };
 
+    // Check for cache hit
+    const cacheEnabled = headers.cache === 'yes';
+    let codeHash: string | undefined;
+    if (cacheEnabled) {
+        codeHash = computeCodeHash(block.code);
+        if (block.cachedHash && block.cachedHash === codeHash) {
+            // Cache hit - code hasn't changed
+            channel.appendLine(`\n${'='.repeat(60)}`);
+            channel.appendLine(`Cache HIT for ${language} block${block.name ? ` (${block.name})` : ''}`);
+            channel.appendLine(`Hash: ${codeHash}`);
+            channel.appendLine(`${'='.repeat(60)}`);
+            vscode.window.showInformationMessage('Using cached results (code unchanged)');
+            return {
+                success: true,
+                stdout: '',
+            };
+        }
+    }
+
     // Log execution start
     channel.appendLine(`\n${'='.repeat(60)}`);
     channel.appendLine(`Executing ${language} block${block.name ? ` (${block.name})` : ''}`);
+    if (cacheEnabled) {
+        channel.appendLine(`Cache: ${block.cachedHash ? 'MISS (code changed)' : 'new'}, Hash: ${codeHash}`);
+    }
     channel.appendLine(`${'='.repeat(60)}`);
     channel.appendLine(`Code:\n${block.code}`);
     channel.appendLine('-'.repeat(60));
@@ -706,10 +992,45 @@ async function executeBlock(
             ? parseResultsFormat(headers.results)
             : {};
 
+        // Pass :wrap header to resultsFormat
+        if (headers.wrap) {
+            resultsFormat.wrap = headers.wrap;
+        }
+
         if (resultsFormat.handling !== 'silent') {
-            // Format and insert results
-            // Pass block.name so named blocks get named results
-            const resultText = formatResult(result, resultsFormat, block.name);
+            let resultText: string;
+
+            // If :file header was used and file was created, return file link
+            if (outputFilePath && result.success) {
+                const fs = await import('fs');
+                if (fs.existsSync(outputFilePath)) {
+                    // Use relative path from document directory for the link
+                    const relativePath = path.relative(documentDir, outputFilePath);
+                    // Create a modified result with file path as output
+                    const fileResult = {
+                        ...result,
+                        stdout: relativePath,
+                        resultType: 'file' as const,
+                    };
+                    resultText = formatResult(fileResult, { ...resultsFormat, type: 'file' }, block.name, cacheEnabled ? codeHash : undefined);
+                    channel.appendLine(`[DEBUG] File created: ${outputFilePath}`);
+                } else {
+                    // File wasn't created - show error
+                    const errorResult = {
+                        ...result,
+                        success: false,
+                        stdout: `File not created: ${outputFilePath}`,
+                    };
+                    resultText = formatResult(errorResult, resultsFormat, block.name, cacheEnabled ? codeHash : undefined);
+                    channel.appendLine(`[WARN] :file specified but file not created: ${outputFilePath}`);
+                }
+            } else {
+                // Normal result formatting
+                // Pass block.name so named blocks get named results
+                // Pass codeHash for :cache yes to include in #+RESULTS[hash]:
+                resultText = formatResult(result, resultsFormat, block.name, cacheEnabled ? codeHash : undefined);
+            }
+
             await insertResults(editor, block, resultText);
         }
 
@@ -730,6 +1051,7 @@ async function executeBlock(
 
 /**
  * Command: Execute source block at cursor
+ * Also handles #+CALL: lines
  */
 async function executeSourceBlockAtCursor(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -743,6 +1065,27 @@ async function executeSourceBlockAtCursor(): Promise<void> {
         return;
     }
 
+    // Check if cursor is on a #+CALL: line
+    const currentLine = editor.document.lineAt(editor.selection.active.line).text;
+    const callSpec = parseCallLine(currentLine);
+
+    if (callSpec) {
+        // Execute #+CALL:
+        await executeCallAtCursor(editor, callSpec);
+        return;
+    }
+
+    // Check if cursor is on an inline babel call (call_name(args))
+    const text = editor.document.getText();
+    const offset = editor.document.offsetAt(editor.selection.active);
+    const inlineCall = findInlineBabelCallAtPosition(text, offset);
+
+    if (inlineCall) {
+        // Execute the inline call directly
+        await executeInlineCallAtCursor(editor, inlineCall);
+        return;
+    }
+
     const block = findSourceBlockAtCursor(editor.document, editor.selection.active);
     if (!block) {
         vscode.window.showWarningMessage('No source block at cursor position');
@@ -750,6 +1093,271 @@ async function executeSourceBlockAtCursor(): Promise<void> {
     }
 
     await executeBlock(editor, block);
+}
+
+/**
+ * Execute a #+CALL: line
+ */
+async function executeCallAtCursor(
+    editor: vscode.TextEditor,
+    callSpec: { name: string; insideHeaders: string; endHeaders: string; arguments: Record<string, string> }
+): Promise<void> {
+    const channel = getOutputChannel();
+    const document = editor.document;
+
+    channel.appendLine(`\n${'='.repeat(60)}`);
+    channel.appendLine(`Executing #+CALL: ${callSpec.name}(${Object.entries(callSpec.arguments).map(([k, v]) => `${k}=${v}`).join(', ')})`);
+    channel.appendLine(`${'='.repeat(60)}\n`);
+
+    // Build block map from document
+    const blockMap = buildNamedBlockMap(document);
+
+    if (!blockMap.has(callSpec.name)) {
+        vscode.window.showErrorMessage(`Named block not found: ${callSpec.name}`);
+        channel.appendLine(`[ERROR] Named block not found: ${callSpec.name}`);
+        return;
+    }
+
+    const targetBlock = blockMap.get(callSpec.name)!;
+    channel.appendLine(`[INFO] Found block "${callSpec.name}" (${targetBlock.language}) at line ${targetBlock.lineNumber + 1}`);
+
+    showStatus(`Executing ${callSpec.name}...`);
+
+    try {
+        // Get working directory
+        const documentDir = path.dirname(document.uri.fsPath);
+
+        // Execute the call
+        const result = await executeCall(
+            callSpec,
+            blockMap,
+            {
+                cwd: documentDir,
+            }
+        );
+
+        if (result.success) {
+            channel.appendLine(`[OK] Execution successful`);
+            if (result.stdout) {
+                channel.appendLine(`[OUTPUT]\n${result.stdout}`);
+            }
+
+            // Format and insert results after the #+CALL: line
+            const resultsFormat = parseResultsFormat(callSpec.endHeaders || 'output');
+
+            // Check if results should be silent
+            if (resultsFormat.handling === 'silent') {
+                channel.appendLine(`[INFO] Results suppressed (silent)`);
+            } else {
+                const resultText = formatResult(result, resultsFormat, callSpec.name);
+
+                // Find existing results after the #+CALL: line
+                const callLine = editor.selection.active.line;
+                await insertCallResults(editor, callLine, resultText);
+            }
+        } else {
+            const errorMsg = result.error?.message || result.stderr || 'Unknown error';
+            channel.appendLine(`[ERROR] ${errorMsg}`);
+            if (result.stderr) {
+                channel.appendLine(`[STDERR]\n${result.stderr}`);
+            }
+            channel.appendLine(`[DEBUG] Full result: ${JSON.stringify(result, null, 2)}`);
+            channel.show();
+            vscode.window.showErrorMessage(`Call failed: ${errorMsg}`);
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        channel.appendLine(`[ERROR] ${errorMessage}`);
+        vscode.window.showErrorMessage(`Call failed: ${errorMessage}`);
+    } finally {
+        hideStatus();
+    }
+}
+
+/**
+ * Insert or replace results after a #+CALL: line
+ */
+async function insertCallResults(
+    editor: vscode.TextEditor,
+    callLine: number,
+    resultText: string
+): Promise<void> {
+    const document = editor.document;
+    const lines = document.getText().split('\n');
+
+    // Look for existing #+RESULTS: after the call line
+    let existingResultsStart: number | undefined;
+    let existingResultsEnd: number | undefined;
+
+    for (let i = callLine + 1; i < lines.length && i < callLine + 20; i++) {
+        const line = lines[i].trim();
+
+        // Skip empty lines
+        if (!line) continue;
+
+        // Check for #+RESULTS:
+        if (line.match(/^#\+RESULTS:/i)) {
+            existingResultsStart = i;
+            existingResultsEnd = i;
+
+            // Find end of results
+            for (let j = i + 1; j < lines.length; j++) {
+                const resultLine = lines[j].trim();
+                if (resultLine.match(/^[:|]/) || resultLine.match(/^\[\[/) || resultLine === '') {
+                    existingResultsEnd = j;
+                } else {
+                    break;
+                }
+            }
+            break;
+        }
+
+        // If we hit another element, stop looking
+        if (line.match(/^#\+/) || line.match(/^\*+ /)) {
+            break;
+        }
+    }
+
+    await editor.edit((editBuilder) => {
+        if (existingResultsStart !== undefined && existingResultsEnd !== undefined) {
+            // Replace existing results
+            const startPos = new vscode.Position(existingResultsStart, 0);
+            const endPos = new vscode.Position(
+                existingResultsEnd,
+                document.lineAt(existingResultsEnd).text.length
+            );
+            const range = new vscode.Range(startPos, endPos);
+            editBuilder.replace(range, resultText);
+        } else {
+            // Insert new results after the call line
+            const insertPos = new vscode.Position(callLine + 1, 0);
+            editBuilder.insert(insertPos, '\n' + resultText + '\n');
+        }
+    });
+}
+
+/**
+ * Parse inline call arguments string into a record
+ * e.g., "x=5, y=10" -> { x: "5", y: "10" }
+ */
+function parseInlineCallArguments(argsStr: string): Record<string, string> {
+    const args: Record<string, string> = {};
+    if (!argsStr) return args;
+
+    // Split by comma, handling potential spaces
+    const pairs = argsStr.split(/\s*,\s*/);
+    for (const pair of pairs) {
+        const eqIndex = pair.indexOf('=');
+        if (eqIndex > 0) {
+            const key = pair.substring(0, eqIndex).trim();
+            const value = pair.substring(eqIndex + 1).trim();
+            args[key] = value;
+        }
+    }
+    return args;
+}
+
+/**
+ * Execute an inline babel call (call_name(args))
+ */
+async function executeInlineCallAtCursor(
+    editor: vscode.TextEditor,
+    inlineCall: InlineBabelCall
+): Promise<void> {
+    const channel = getOutputChannel();
+    const document = editor.document;
+
+    // Parse the arguments string
+    const parsedArgs = parseInlineCallArguments(inlineCall.arguments);
+    const callName = inlineCall.name;
+
+    channel.appendLine(`\n${'='.repeat(60)}`);
+    channel.appendLine(`Executing call_${callName}(${inlineCall.arguments})`);
+    channel.appendLine(`${'='.repeat(60)}\n`);
+
+    // Build block map from document
+    const blockMap = buildNamedBlockMap(document);
+
+    if (!blockMap.has(callName)) {
+        vscode.window.showErrorMessage(`Named block not found: ${callName}`);
+        channel.appendLine(`[ERROR] Named block not found: ${callName}`);
+        return;
+    }
+
+    const targetBlock = blockMap.get(callName)!;
+    channel.appendLine(`[INFO] Found block "${callName}" (${targetBlock.language}) at line ${targetBlock.lineNumber + 1}`);
+
+    showStatus(`Executing ${callName}...`);
+
+    try {
+        // Get working directory
+        const documentDir = path.dirname(document.uri.fsPath);
+
+        // Execute the call with parsed arguments
+        const result = await executeCall(
+            {
+                name: callName,
+                insideHeaders: inlineCall.insideHeaders || '',
+                endHeaders: inlineCall.endHeaders || '',
+                arguments: parsedArgs,
+            },
+            blockMap,
+            {
+                cwd: documentDir,
+            }
+        );
+
+        if (result.success) {
+            channel.appendLine(`[OK] Execution successful`);
+            if (result.stdout) {
+                channel.appendLine(`[OUTPUT]\n${result.stdout}`);
+            }
+
+            // For inline calls, we replace the call with {{{results(output)}}}
+            // or just show the result in a message
+            const output = result.stdout?.trim() || '';
+
+            // Find the inline call position and replace or show result
+            const startOffset = inlineCall.start;
+            const endOffset = inlineCall.end;
+            const startPos = document.positionAt(startOffset);
+            const endPos = document.positionAt(endOffset);
+
+            // Check if there's already a result macro after this call
+            const lineText = document.lineAt(inlineCall.line).text;
+            const afterCall = lineText.substring(endPos.character);
+            const resultMatch = afterCall.match(/^\s*\{{{results\(([^)]*)\)}}}/);
+
+            await editor.edit((editBuilder) => {
+                if (resultMatch) {
+                    // Replace existing result
+                    const resultStart = new vscode.Position(inlineCall.line, endPos.character + afterCall.indexOf(resultMatch[0]));
+                    const resultEnd = new vscode.Position(inlineCall.line, resultStart.character + resultMatch[0].length);
+                    editBuilder.replace(new vscode.Range(resultStart, resultEnd), ` {{{results(${output})}}}`);
+                } else {
+                    // Insert result after the call
+                    editBuilder.insert(endPos, ` {{{results(${output})}}}`);
+                }
+            });
+
+            vscode.window.showInformationMessage(`Result: ${output}`);
+        } else {
+            const errorMsg = result.error?.message || result.stderr || 'Unknown error';
+            channel.appendLine(`[ERROR] ${errorMsg}`);
+            if (result.stderr) {
+                channel.appendLine(`[STDERR]\n${result.stderr}`);
+            }
+            channel.appendLine(`[DEBUG] Full result: ${JSON.stringify(result, null, 2)}`);
+            channel.show();
+            vscode.window.showErrorMessage(`Call failed: ${errorMsg}`);
+        }
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        channel.appendLine(`[ERROR] ${errorMessage}`);
+        vscode.window.showErrorMessage(`Call failed: ${errorMessage}`);
+    } finally {
+        hideStatus();
+    }
 }
 
 /**
@@ -813,8 +1421,8 @@ async function executeAllSourceBlocks(): Promise<void> {
 }
 
 /**
- * Command: Clear results from source block
- * @param blockLine Optional line number of the source block (from CodeLens)
+ * Command: Clear results from source block or #+CALL: line
+ * @param blockLine Optional line number of the source block or call line (from CodeLens)
  */
 async function clearResultsAtCursor(blockLine?: number): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -823,14 +1431,25 @@ async function clearResultsAtCursor(blockLine?: number): Promise<void> {
         return;
     }
 
-    // If blockLine is provided, use it to find the block; otherwise use cursor position
+    const document = editor.document;
+    const targetLine = blockLine ?? editor.selection.active.line;
+
+    // Check if this is a #+CALL: line
+    const lineText = document.lineAt(targetLine).text;
+    if (lineText.match(/^\s*#\+CALL:\s*\S+/i)) {
+        // Clear results after the #+CALL: line
+        await clearCallResults(editor, targetLine);
+        return;
+    }
+
+    // Otherwise, find the source block
     let block: SourceBlockInfo | null;
     if (blockLine !== undefined) {
         // Find the block at the specified line
-        const blocks = findAllSourceBlocks(editor.document);
+        const blocks = findAllSourceBlocks(document);
         block = blocks.find(b => b.startLine === blockLine) || null;
     } else {
-        block = findSourceBlockAtCursor(editor.document, editor.selection.active);
+        block = findSourceBlockAtCursor(document, editor.selection.active);
     }
 
     if (!block) {
@@ -850,6 +1469,59 @@ async function clearResultsAtCursor(blockLine?: number): Promise<void> {
             block!.resultsEndLine! + 1,
             0
         );
+        const range = new vscode.Range(startPos, endPos);
+        editBuilder.delete(range);
+    });
+}
+
+/**
+ * Clear results after a #+CALL: line
+ */
+async function clearCallResults(editor: vscode.TextEditor, callLine: number): Promise<void> {
+    const document = editor.document;
+    const lines = document.getText().split('\n');
+
+    // Look for existing #+RESULTS: after the call line
+    let existingResultsStart: number | undefined;
+    let existingResultsEnd: number | undefined;
+
+    for (let i = callLine + 1; i < lines.length && i < callLine + 20; i++) {
+        const line = lines[i].trim();
+
+        // Skip empty lines
+        if (!line) continue;
+
+        // Check for #+RESULTS:
+        if (line.match(/^#\+RESULTS:/i)) {
+            existingResultsStart = i;
+            existingResultsEnd = i;
+
+            // Find end of results
+            for (let j = i + 1; j < lines.length; j++) {
+                const resultLine = lines[j].trim();
+                if (resultLine.match(/^[:|]/) || resultLine.match(/^\[\[/) || resultLine === '') {
+                    existingResultsEnd = j;
+                } else {
+                    break;
+                }
+            }
+            break;
+        }
+
+        // If we hit another element, stop looking
+        if (line.match(/^#\+/) || line.match(/^\*+ /)) {
+            break;
+        }
+    }
+
+    if (existingResultsStart === undefined) {
+        vscode.window.showInformationMessage('No results to clear');
+        return;
+    }
+
+    await editor.edit((editBuilder) => {
+        const startPos = new vscode.Position(existingResultsStart!, 0);
+        const endPos = new vscode.Position(existingResultsEnd! + 1, 0);
         const range = new vscode.Range(startPos, endPos);
         editBuilder.delete(range);
     });
@@ -933,6 +1605,130 @@ export function getSourceBlocksForCodeLens(
 }
 
 /**
+ * Get the session name for a source block
+ * Returns the session from headers, or 'default' if :session is present without value,
+ * or null if no session is specified
+ */
+function getBlockSessionName(block: SourceBlockInfo): string | null {
+    const headers = parseHeaderArguments(block.parameters);
+    return headers.session || null;
+}
+
+/**
+ * Check if a source block uses a Jupyter kernel
+ */
+function isJupyterBlock(block: SourceBlockInfo): boolean {
+    return block.language.startsWith('jupyter-');
+}
+
+/**
+ * Get the kernel ID for a Jupyter block's session
+ */
+function getKernelIdForBlock(block: SourceBlockInfo): string | null {
+    if (!isJupyterBlock(block)) {
+        return null;
+    }
+
+    const sessionName = getBlockSessionName(block) || 'default';
+    const manager = getKernelManager();
+    return manager.getKernelIdBySession(sessionName);
+}
+
+/**
+ * Command: Interrupt kernel for block at cursor
+ */
+async function interruptBlockKernel(blockLine?: number): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showWarningMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    const position = blockLine !== undefined
+        ? new vscode.Position(blockLine, 0)
+        : editor.selection.active;
+
+    const block = findSourceBlockAtCursor(document, position);
+    if (!block) {
+        vscode.window.showWarningMessage('No source block found at cursor');
+        return;
+    }
+
+    if (!isJupyterBlock(block)) {
+        vscode.window.showWarningMessage('Interrupt only works with Jupyter blocks');
+        return;
+    }
+
+    const kernelId = getKernelIdForBlock(block);
+    if (!kernelId) {
+        vscode.window.showWarningMessage('No active kernel for this block\'s session');
+        return;
+    }
+
+    const manager = getKernelManager();
+    const channel = getOutputChannel();
+
+    try {
+        channel.appendLine(`Interrupting kernel for session...`);
+        await manager.interruptKernel(kernelId);
+        channel.appendLine('Kernel interrupted');
+        vscode.window.showInformationMessage('Jupyter kernel interrupted');
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        channel.appendLine(`Failed to interrupt kernel: ${message}`);
+        vscode.window.showErrorMessage(`Failed to interrupt kernel: ${message}`);
+    }
+}
+
+/**
+ * Command: Restart kernel for block at cursor
+ */
+async function restartBlockKernel(blockLine?: number): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showWarningMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    const position = blockLine !== undefined
+        ? new vscode.Position(blockLine, 0)
+        : editor.selection.active;
+
+    const block = findSourceBlockAtCursor(document, position);
+    if (!block) {
+        vscode.window.showWarningMessage('No source block found at cursor');
+        return;
+    }
+
+    if (!isJupyterBlock(block)) {
+        vscode.window.showWarningMessage('Restart only works with Jupyter blocks');
+        return;
+    }
+
+    const kernelId = getKernelIdForBlock(block);
+    if (!kernelId) {
+        vscode.window.showWarningMessage('No active kernel for this block\'s session');
+        return;
+    }
+
+    const manager = getKernelManager();
+    const channel = getOutputChannel();
+
+    try {
+        channel.appendLine(`Restarting kernel for session...`);
+        await manager.restartKernel(kernelId);
+        channel.appendLine('Kernel restarted');
+        vscode.window.showInformationMessage('Jupyter kernel restarted');
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        channel.appendLine(`Failed to restart kernel: ${message}`);
+        vscode.window.showErrorMessage(`Failed to restart kernel: ${message}`);
+    }
+}
+
+/**
  * Register Babel commands
  */
 export function registerBabelCommands(context: vscode.ExtensionContext): void {
@@ -985,6 +1781,22 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
         )
     );
 
+    // Interrupt kernel for block
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.interruptBlockKernel',
+            interruptBlockKernel
+        )
+    );
+
+    // Restart kernel for block
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.restartBlockKernel',
+            restartBlockKernel
+        )
+    );
+
     // Register status bar item disposal
     context.subscriptions.push({
         dispose: () => {
@@ -1003,6 +1815,7 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
             if (document.languageId !== 'org') {
                 vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
                 vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
+                vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', false);
                 return;
             }
 
@@ -1089,16 +1902,9 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                 return [];
             }
 
-            const range = new vscode.Range(block.startLine, 0, block.startLine, 0);
-
-            // Run button
-            codeLenses.push(
-                new vscode.CodeLens(range, {
-                    title: '▶ Run',
-                    command: 'scimax.org.executeBlock',
-                    tooltip: `Execute ${block.language} block`,
-                })
-            );
+            // Use nameLine if present, otherwise startLine (#+BEGIN_SRC line)
+            const codeLensLine = block.nameLine !== undefined ? block.nameLine : block.startLine;
+            const range = new vscode.Range(codeLensLine, 0, codeLensLine, 0);
 
             // Check supported language with caching
             let isSupported = this.supportedLanguageCache.get(block.language);
@@ -1107,13 +1913,41 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                 this.supportedLanguageCache.set(block.language, isSupported);
             }
 
+            // Data/markup languages that are not meant to be executed
+            // Don't show "(unsupported)" for these - they're for data, not code
+            const dataLanguages = new Set([
+                'json', 'yaml', 'yml', 'xml', 'html', 'css', 'scss', 'less',
+                'text', 'txt', 'markdown', 'md', 'org', 'csv', 'tsv',
+                'toml', 'ini', 'conf', 'config', 'cfg',
+                'data', 'example', 'output', 'result', 'raw',
+                'diff', 'patch', 'log', 'svg', 'graphviz', 'dot',
+                'plantuml', 'mermaid', 'ditaa', 'ascii', 'artist',
+                'latex', 'tex', 'bibtex', 'bib',
+            ]);
+            const isDataLanguage = dataLanguages.has(block.language.toLowerCase());
+
+            // Run button - only for supported languages
+            if (isSupported) {
+                codeLenses.push(
+                    new vscode.CodeLens(range, {
+                        title: '▶ Run',
+                        command: 'scimax.org.executeBlock',
+                        tooltip: `Execute ${block.language} block`,
+                    })
+                );
+            }
+
+            // Language label - don't show "(unsupported)" for data languages
+            const showUnsupported = !isSupported && !isDataLanguage;
             codeLenses.push(
                 new vscode.CodeLens(range, {
-                    title: `${block.language}${isSupported ? '' : ' (unsupported)'}`,
+                    title: `${block.language}${showUnsupported ? ' (unsupported)' : ''}`,
                     command: '',
                     tooltip: isSupported
                         ? `Language: ${block.language}`
-                        : `No executor for ${block.language}`,
+                        : isDataLanguage
+                            ? `Data format: ${block.language}`
+                            : `No executor for ${block.language}`,
                 })
             );
 
@@ -1124,6 +1958,60 @@ export class BabelCodeLensProvider implements vscode.CodeLensProvider {
                         title: '✕ Clear',
                         command: 'scimax.org.clearResults',
                         arguments: [block.startLine],
+                        tooltip: 'Clear results',
+                    })
+                );
+            }
+
+            // Interrupt and Restart buttons for Jupyter blocks
+            if (isJupyterBlock(block)) {
+                codeLenses.push(
+                    new vscode.CodeLens(range, {
+                        title: '⏹ Interrupt',
+                        command: 'scimax.org.interruptBlockKernel',
+                        arguments: [block.startLine],
+                        tooltip: 'Interrupt kernel execution',
+                    })
+                );
+                codeLenses.push(
+                    new vscode.CodeLens(range, {
+                        title: '↻ Restart',
+                        command: 'scimax.org.restartBlockKernel',
+                        arguments: [block.startLine],
+                        tooltip: 'Restart the Jupyter kernel',
+                    })
+                );
+            }
+        }
+
+        // Add code lenses for #+CALL: lines
+        const text = document.getText();
+        const lines = text.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+            if (token.isCancellationRequested) {
+                return codeLenses;
+            }
+
+            const line = lines[i];
+            // Match #+CALL: lines
+            if (line.match(/^\s*#\+CALL:\s*\S+/i)) {
+                const range = new vscode.Range(i, 0, i, 0);
+
+                // Run button
+                codeLenses.push(
+                    new vscode.CodeLens(range, {
+                        title: '▶ Run',
+                        command: 'scimax.org.executeBlock',
+                        tooltip: 'Execute this call',
+                    })
+                );
+
+                // Clear results button
+                codeLenses.push(
+                    new vscode.CodeLens(range, {
+                        title: '✕ Clear',
+                        command: 'scimax.org.clearResults',
+                        arguments: [i],
                         tooltip: 'Clear results',
                     })
                 );

@@ -83,6 +83,39 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             }
         }
 
+        // Find bare citation links: cite:key, citet:&key1;&key2, etc.
+        // Supports both v2 (cite:key1,key2) and v3 (cite:&key1;&key2) syntax
+        const citationRegex = /(?<![[\w])(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):([\w:,&;-]+)/g;
+        while ((match = citationRegex.exec(text)) !== null) {
+            const startPos = document.positionAt(match.index);
+            const endPos = document.positionAt(match.index + match[0].length);
+            const range = new vscode.Range(startPos, endPos);
+
+            const citeCommand = match[1];
+            const citePath = match[2];
+
+            // Extract keys for tooltip
+            let keys: string[];
+            if (citePath.includes('&')) {
+                // v3 format: extract keys that follow &
+                const keyMatches = citePath.match(/&([\w:-]+)/g) || [];
+                keys = keyMatches.map(k => k.slice(1));
+            } else {
+                // v2 format: comma-separated
+                keys = citePath.split(',').map(k => k.trim());
+            }
+
+            const link = new vscode.DocumentLink(range);
+            link.target = vscode.Uri.parse(
+                `command:scimax.ref.gotoCitation?${encodeURIComponent(JSON.stringify({
+                    key: keys[0],
+                    keys: keys
+                }))}`
+            );
+            link.tooltip = `Citation: ${keys.join(', ')}`;
+            links.push(link);
+        }
+
         return links;
     }
 
@@ -100,6 +133,35 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
         // DOI links
         if (target.startsWith('doi:')) {
             return vscode.Uri.parse(`https://doi.org/${target.slice(4)}`);
+        }
+
+        // Command links: cmd:command.name or cmd:command.name?args - execute VS Code commands
+        // Supports: cmd:command (no args), cmd:command?stringArg, cmd:command?{"json":"args"}
+        if (target.startsWith('cmd:')) {
+            const cmdPart = target.slice(4);
+            const questionIdx = cmdPart.indexOf('?');
+
+            if (questionIdx === -1) {
+                // No arguments
+                return vscode.Uri.parse(`command:${cmdPart}`);
+            }
+
+            const command = cmdPart.slice(0, questionIdx);
+            const argsStr = cmdPart.slice(questionIdx + 1);
+
+            // Parse arguments - try JSON first, otherwise treat as string
+            let args: unknown;
+            try {
+                args = JSON.parse(argsStr);
+            } catch {
+                // Not JSON - use as plain string argument
+                args = argsStr;
+            }
+
+            // VS Code command URIs expect args as JSON-encoded array or single value
+            return vscode.Uri.parse(
+                `command:${command}?${encodeURIComponent(JSON.stringify(args))}`
+            );
         }
 
         // File links: file:path or file:path::search
@@ -250,6 +312,16 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
         }
         if (target.startsWith('doi:')) {
             return `Open DOI: ${target.slice(4)}`;
+        }
+        if (target.startsWith('cmd:')) {
+            const cmdPart = target.slice(4);
+            const questionIdx = cmdPart.indexOf('?');
+            if (questionIdx === -1) {
+                return `Run command: ${cmdPart}`;
+            }
+            const command = cmdPart.slice(0, questionIdx);
+            const args = cmdPart.slice(questionIdx + 1);
+            return `Run command: ${command} with args: ${args}`;
         }
         if (target.startsWith('file:')) {
             return `Open file: ${target.slice(5)}`;

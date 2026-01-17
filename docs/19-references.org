@@ -5,7 +5,8 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* ✅ Overview
+CLOSED: [2026-01-17 Sat 10:07]
 
 Scimax VS Code provides comprehensive bibliography and citation management inspired by Emacs org-ref. This system allows you to:
 - Manage BibTeX bibliography files
@@ -17,11 +18,12 @@ Scimax VS Code provides comprehensive bibliography and citation management inspi
 
 The reference system seamlessly integrates with org-mode documents while also supporting Markdown and LaTeX formats.
 
-* Setting Up Bibliography Files
+* ✅ Setting Up Bibliography Files
+CLOSED: [2026-01-17 Sat 10:07]
 
 ** Configuration
 
-Configure your bibliography files in VS Code settings (Preferences: Open Settings (UI) → search for "scimax ref"):
+Configure your default bibliography files in VS Code settings (Preferences: Open Settings (UI) → search for "scimax ref"):
 
 | Setting                      | Description                                 |
 |------------------------------+---------------------------------------------|
@@ -31,7 +33,10 @@ Configure your bibliography files in VS Code settings (Preferences: Open Setting
 | scimax.ref.defaultCiteStyle  | Default citation style (cite, citet, citep) |
 | scimax.ref.autoDownloadPdf   | Auto-download PDFs from DOI (experimental)  |
 
-*** Example Configuration
+These files are used when you do not specify document-local bibliography files.
+
+*** ✅ Example Configuration
+CLOSED: [2026-01-17 Sat 10:07]
 :PROPERTIES:
 :ID: c95c70d9-14b9-484a-9657-1bf847387e30
 :END:
@@ -48,11 +53,13 @@ Configure your bibliography files in VS Code settings (Preferences: Open Setting
 }
 #+END_SRC
 
-** Document-Local Bibliography Files
+** ✅ Document-Local Bibliography Files
+CLOSED: [2026-01-17 Sat 10:07]
 
 You can specify bibliography files per document using:
 
-*** Bibliography Links
+*** ✅ Bibliography Links
+CLOSED: [2026-01-17 Sat 10:08]
 
 #+BEGIN_SRC org
 bibliography:~/Documents/refs.bib
@@ -64,7 +71,8 @@ Multiple files are comma-separated. Paths can be:
 - Home-relative: ~/Documents/refs.bib
 - Document-relative: ./refs.bib or ../shared/refs.bib
 
-*** Bibliography Keywords
+*** ✅ Bibliography Keywords
+CLOSED: [2026-01-17 Sat 10:08]
 
 Alternative org-mode syntax:
 
@@ -72,14 +80,16 @@ Alternative org-mode syntax:
 #+BIBLIOGRAPHY: ~/Documents/references.bib
 #+END_SRC
 
-** Workspace Bibliography Files
+** ✅ Workspace Bibliography Files
+CLOSED: [2026-01-17 Sat 10:08]
 
 The extension automatically discovers all .bib files in your workspace and makes them available for citation completion.
 
-** Creating a Bibliography File
+** ✅ Creating a Bibliography File
+CLOSED: [2026-01-17 Sat 10:08]
 
 Create a new .bib file manually or use the command:
-- scimax.ref.openBibliography - Opens bibliography file or creates new one
+- [[cmd:scimax.ref.openBibliography]] - Opens bibliography file or creates new one
 
 Basic BibTeX entry structure:
 
@@ -96,11 +106,13 @@ Basic BibTeX entry structure:
 }
 #+END_SRC
 
-* Citation Link Types
+* ✅ Citation Link Types
+CLOSED: [2026-01-17 Sat 10:08]
 
 Scimax VS Code supports multiple citation styles for different contexts:
 
-** Citation Styles
+** ✅ Citation Styles
+CLOSED: [2026-01-17 Sat 10:09]
 
 | Style      | Syntax         | Rendered As (typical) | Use Case               |
 |------------+----------------+-----------------------+------------------------|
@@ -110,16 +122,18 @@ Scimax VS Code supports multiple citation styles for different contexts:
 | citeauthor | citeauthor:key | Smith                 | Author name only       |
 | citeyear   | citeyear:key   | 2024                  | Year only              |
 
-** Multiple Citations
+** ⚠️ Multiple Citations
 
 Cite multiple sources by separating keys with commas:
 
+cite:kitchin-2015-examp-effec,kitchin-2025-beyon-fourt
+
 #+BEGIN_SRC org
-cite:smith2024,jones2023,doe2022
-citet:nguyen2023,chen2024
+cite:kitchin-2015-examp-effec,kitchin-2025-beyon-fourt          # Version 2
+cite:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt        # Version 3
 #+END_SRC
 
-Renders as: (Smith, 2024; Jones, 2023; Doe, 2022) or [1-3]
+cite:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt  
 
 ** Citation Formats by File Type
 
@@ -127,20 +141,20 @@ Citations adapt to your document format:
 
 *** Org-Mode Format
 
-#+BEGIN_SRC org
-cite:smith2024
-citet:jones2023
-citep:doe2022,nguyen2023
-#+END_SRC
+in scimax the preferred org-mode citation syntax is org-ref v3L
+
+cite:&kitchin-2015-examp-effec  
+citet:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt  
+citep:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt  
 
 *** Markdown/Pandoc Format
 
 The insert citation command generates Pandoc-style citations in Markdown files:
 
 #+BEGIN_SRC markdown
-[@smith2024]
-[@jones2023, p. 42]
-[see @smith2024; also @jones2023]
+[@kitchin-2015-examp-effec]
+[@kitchin-2015-examp-effec, p. 42]
+[see @kitchin-2015-examp-effec; also @kitchin-2025-beyon-fourt]
 #+END_SRC
 
 *** LaTeX Format
@@ -148,9 +162,9 @@ The insert citation command generates Pandoc-style citations in Markdown files:
 For LaTeX documents, citations use standard LaTeX commands:
 
 #+BEGIN_SRC latex
-\cite{smith2024}
-\citet{jones2023}
-\citep{doe2022,nguyen2023}
+\cite{kitchin-2015-examp-effec}
+\citet{kitchin-2025-beyon-fourt}
+\citep{kitchin-2015-examp-effec,kitchin-2025-beyon-fourt}
 #+END_SRC
 
 ** Org-Mode 9.5+ Citation Syntax
@@ -158,27 +172,31 @@ For LaTeX documents, citations use standard LaTeX commands:
 Modern org-mode citation syntax is also supported:
 
 #+BEGIN_SRC org
-[cite:@smith2024]
-[cite/t:@jones2023]
-[cite/p:@doe2022;@nguyen2023]
+[cite:@kitchin-2015-examp-effec]
+[cite/t:@kitchin-2025-beyon-fourt]
+[cite/p:@kitchin-2015-examp-effec;@kitchin-2025-beyon-fourt]
 #+END_SRC
 
-* Inserting Citations
+* ✅ Inserting Citations
+CLOSED: [2026-01-17 Sat 10:14]
 
-** Insert Citation Command
+** ✅ Insert Citation Command
+CLOSED: [2026-01-17 Sat 10:14]
 
 | Key   | Command                                     |
 |-------+---------------------------------------------|
 | C-c ] | Insert citation (scimax.ref.insertCitation) |
 
-*** Interactive Citation Insertion
+*** ✅ Interactive Citation Insertion
+CLOSED: [2026-01-17 Sat 10:16]
 
-1. Press C-c ] or run command scimax.ref.insertCitation
+1. Press C-c ] or run command [[cmd:scimax.ref.insertCitation]]
 2. Search and select a reference (searches key, author, title, year)
 3. Choose citation style (cite, citet, citep, citeauthor, citeyear)
 4. Citation is inserted at cursor
 
-*** Appending to Existing Citations
+*** ✅ Appending to Existing Citations
+CLOSED: [2026-01-17 Sat 10:16]
 
 When cursor is on an existing citation:
 1. Press C-c ]
@@ -187,7 +205,8 @@ When cursor is on an existing citation:
 
 The command detects when you're on a citation and adds the new key to the list.
 
-** Citation Completion
+** ✅ Citation Completion
+CLOSED: [2026-01-17 Sat 10:16]
 
 Auto-completion triggers after typing:
 - cite: (org-mode)
@@ -199,21 +218,27 @@ Completion shows:
 - Author and year
 - Full formatted citation on hover
 
-** Quick Citation Commands
+** ✅ Quick Citation Commands
+CLOSED: [2026-01-17 Sat 10:16]
 
-| Command                       | Description                           |
-|-------------------------------+---------------------------------------|
-| scimax.ref.insertCitation     | Insert/append citation                |
-| scimax.ref.insertRef          | Insert cross-reference (ref:, eqref:) |
-| scimax.ref.insertBibliography | Insert bibliography link              |
+#+NAME: quick-cite-commands 
+| Command                       |           | Description                           |
+|-------------------------------+-----------+---------------------------------------|
+| scimax.ref.insertCitation     | C-c - ]   | Insert/append citation                |
+| scimax.ref.insertRef          | C-u C-c ] | Insert cross-reference (ref:, eqref:) |
+| scimax.ref.insertBibliography |           | Insert bibliography link              |
 
-* Following Citation Links
 
-** Citation Link Actions
+* ✅ Following Citation Links
+CLOSED: [2026-01-17 Sat 10:18]
+
+** ✅ Citation Link Actions
+CLOSED: [2026-01-17 Sat 10:19]
 
 Click on a citation or press C-c C-o on a citation to open an action menu:
 
-*** For Known Citations
+*** ✅ For Known Citations
+CLOSED: [2026-01-17 Sat 10:19]
 
 | Action                  | Description                                    |
 |-------------------------+------------------------------------------------|
@@ -228,7 +253,8 @@ Click on a citation or press C-c C-o on a citation to open an action menu:
 | Copy Citation Key       | Copy key to clipboard                          |
 | Copy BibTeX             | Copy full BibTeX entry to clipboard            |
 
-*** For Unknown Citations
+*** ✅ For Unknown Citations
+CLOSED: [2026-01-17 Sat 10:19]
 
 If citation key is not found in bibliography:
 
@@ -239,7 +265,12 @@ If citation key is not found in bibliography:
 | Add from DOI            | Fetch BibTeX from DOI                          |
 | Copy Key                | Copy citation key to clipboard                 |
 
-** Citation Hover Information
+cite:unknown-key
+
+@@>I am not totally sure these make sense to have and I may remove them later.<@@
+
+** ✅ Citation Hover Information
+CLOSED: [2026-01-17 Sat 10:20]
 
 Hover over a citation to see:
 - Full title and authors
@@ -250,7 +281,8 @@ Hover over a citation to see:
 - Open Access status
 - Quick action links
 
-** Opening PDFs
+** ✅ Opening PDFs
+CLOSED: [2026-01-17 Sat 10:20]
 
 The system looks for PDF files in scimax.ref.pdfDirectory using these patterns:
 1. key.pdf (exact key match)

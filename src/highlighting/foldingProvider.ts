@@ -470,6 +470,26 @@ async function toggleFoldAtCursor(): Promise<void> {
         return;
     }
 
+    // Check if we're on a drawer line (:NAME: but not :END:)
+    const isDrawer = /^\s*:([A-Za-z][A-Za-z0-9_-]*):\s*$/.test(line) && !/^\s*:END:\s*$/i.test(line);
+    if (isDrawer) {
+        // Toggle fold at this line
+        await vscode.commands.executeCommand('editor.toggleFold', {
+            selectionLines: [position.line]
+        });
+        return;
+    }
+
+    // Check if we're on a #+BEGIN_ block line
+    const isBlock = /^\s*#\+BEGIN_/i.test(line);
+    if (isBlock) {
+        // Toggle fold at this line
+        await vscode.commands.executeCommand('editor.toggleFold', {
+            selectionLines: [position.line]
+        });
+        return;
+    }
+
     // Determine the heading check function based on language
     let checkFn: (line: string) => boolean;
     if (langId === 'latex') {

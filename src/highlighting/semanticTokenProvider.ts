@@ -138,7 +138,8 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
         }
 
         // org-ref style citations: cite:key, citep:key, citet:key, etc.
-        const orgRefCiteRegex = /(?<![\\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\w:-]+)/g;
+        // Supports both v2 (cite:key1,key2) and v3 (cite:&key1;&key2) syntax
+        const orgRefCiteRegex = /(?<![\w])(?:cite|citep|citet|citeauthor|citeyear|Citep|Citet|citealp|citealt):([\w:,&;-]+)/g;
         while ((match = orgRefCiteRegex.exec(line)) !== null) {
             tokens.push({
                 line: lineNum,

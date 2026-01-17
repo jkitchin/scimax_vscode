@@ -21,6 +21,18 @@ import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes
 const execAsync = promisify(exec);
 
 /**
+ * Delete output file if it exists before export
+ * This ensures we don't have stale output files if export fails
+ */
+async function deleteExistingOutput(outputPath: string): Promise<void> {
+    try {
+        await fs.promises.unlink(outputPath);
+    } catch {
+        // File doesn't exist or can't be deleted - ignore
+    }
+}
+
+/**
  * Preprocess content before export - handles #+INCLUDE: directives
  */
 function preprocessContent(content: string, basePath: string): string {
@@ -697,24 +709,47 @@ async function exportMarkdown(
 
             case 'table':
                 if (elem.children) {
-                    let isFirst = true;
+                    // Collect all rows and their cell contents
+                    const tableRows: string[][] = [];
                     for (const row of elem.children) {
                         if (row.type === 'table-row' && row.properties?.rowType === 'standard') {
                             const cells = (row.children || [])
-                                .map((cell: any) => convertObjects(cell.children || []))
-                                .join(' | ');
-                            lines.push(`| ${cells} |`);
-
-                            if (isFirst) {
-                                const separator = (row.children || [])
-                                    .map(() => '---')
-                                    .join(' | ');
-                                lines.push(`| ${separator} |`);
-                                isFirst = false;
-                            }
+                                .map((cell: any) => convertObjects(cell.children || []).trim());
+                            tableRows.push(cells);
                         }
                     }
-                    lines.push('');
+
+                    if (tableRows.length > 0) {
+                        // Calculate max width for each column
+                        const colCount = Math.max(...tableRows.map(r => r.length));
+                        const colWidths: number[] = [];
+                        for (let col = 0; col < colCount; col++) {
+                            const maxWidth = Math.max(
+                                3, // minimum width for separator
+                                ...tableRows.map(row => (row[col] || '').length)
+                            );
+                            colWidths.push(maxWidth);
+                        }
+
+                        // Output header row (first row)
+                        const headerCells = tableRows[0].map((cell, i) =>
+                            cell.padEnd(colWidths[i])
+                        );
+                        lines.push(`| ${headerCells.join(' | ')} |`);
+
+                        // Output separator row
+                        const separator = colWidths.map(w => '-'.repeat(w));
+                        lines.push(`| ${separator.join(' | ')} |`);
+
+                        // Output data rows
+                        for (let i = 1; i < tableRows.length; i++) {
+                            const cells = tableRows[i].map((cell, j) =>
+                                (cell || '').padEnd(colWidths[j] || 3)
+                            );
+                            lines.push(`| ${cells.join(' | ')} |`);
+                        }
+                        lines.push('');
+                    }
                 }
                 break;
 
@@ -855,6 +890,9 @@ async function showExportDispatcher(): Promise<void> {
             try {
                 let result: string;
 
+                // Delete existing output file first
+                await deleteExistingOutput(outputPath);
+
                 switch (selectedFormat.format.id) {
                     case 'html':
                         result = await exportHtml(content, options, false, inputDir);
@@ -932,6 +970,7 @@ async function quickExportHtml(): Promise<void> {
     const outputPath = inputPath.replace(/\.org$/, '.html');
 
     try {
+        await deleteExistingOutput(outputPath);
         const result = await exportHtml(content, {}, false, inputDir);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
@@ -957,6 +996,7 @@ async function quickExportLatex(): Promise<void> {
     const outputPath = inputPath.replace(/\.org$/, '.tex');
 
     try {
+        await deleteExistingOutput(outputPath);
         const result = await exportLatex(content, {}, false);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
@@ -990,6 +1030,7 @@ async function quickExportPdf(): Promise<void> {
         },
         async () => {
             try {
+                await deleteExistingOutput(outputPath);
                 const logPath = await exportPdf(content, {}, outputPath);
                 if (logPath) {
                     await handlePdfExportError(logPath);
@@ -1026,6 +1067,7 @@ async function quickExportMarkdown(): Promise<void> {
     const outputPath = inputPath.replace(/\.org$/, '.md');
 
     try {
+        await deleteExistingOutput(outputPath);
         const result = await exportMarkdown(content, {});
         await fs.promises.writeFile(outputPath, result, 'utf-8');
         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
@@ -1053,6 +1095,11 @@ async function previewHtml(): Promise<void> {
     try {
         const htmlContent = await exportHtml(content, {}, false, inputDir);
 
+        // Inject CSP meta tag to allow loading external scripts (MathJax, highlight.js)
+        // VS Code webviews have restrictive default CSP that blocks CDN scripts
+        const cspMeta = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data: https:; font-src https://cdn.jsdelivr.net https://cdnjs.cloudflare.com;">`;
+        const htmlWithCsp = htmlContent.replace(/<head>/, `<head>\n${cspMeta}`);
+
         // Create webview panel
         const panel = vscode.window.createWebviewPanel(
             'orgHtmlPreview',
@@ -1064,7 +1111,7 @@ async function previewHtml(): Promise<void> {
             }
         );
 
-        panel.webview.html = htmlContent;
+        panel.webview.html = htmlWithCsp;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         vscode.window.showErrorMessage(`Preview failed: ${message}`);
@@ -1152,6 +1199,7 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                     },
                     async () => {
                         try {
+                            await deleteExistingOutput(outputPath);
                             const logPath = await exportPdf(content, {}, outputPath);
                             if (logPath) {
                                 await handlePdfExportError(logPath);
@@ -1182,6 +1230,7 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 const content = preprocessContent(editor.document.getText(), inputDir);
                 const outputPath = inputPath.replace(/\.org$/, '.html');
                 try {
+                    await deleteExistingOutput(outputPath);
                     const html = await exportHtml(content, {}, false, inputDir);
                     await fs.promises.writeFile(outputPath, html, 'utf-8');
                     await vscode.env.openExternal(vscode.Uri.file(outputPath));
@@ -1208,6 +1257,7 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 const content = preprocessContent(editor.document.getText(), inputDir);
                 const outputPath = inputPath.replace(/\.org$/, '.md');
                 try {
+                    await deleteExistingOutput(outputPath);
                     const result = await exportMarkdown(content, {});
                     await fs.promises.writeFile(outputPath, result, 'utf-8');
                     const doc = await vscode.workspace.openTextDocument(outputPath);
@@ -1277,6 +1327,7 @@ async function exportDispatcher(): Promise<void> {
         switch (selected.value) {
             case 'html-file': {
                 const outputPath = inputPath.replace(/\.org$/, '.html');
+                await deleteExistingOutput(outputPath);
                 const html = await exportHtml(content, {}, false, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
@@ -1284,6 +1335,7 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'html-open': {
                 const outputPath = inputPath.replace(/\.org$/, '.html');
+                await deleteExistingOutput(outputPath);
                 const html = await exportHtml(content, {}, false, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 await vscode.env.openExternal(vscode.Uri.file(outputPath));
@@ -1291,6 +1343,7 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'html-body': {
                 const outputPath = inputPath.replace(/\.org$/, '.html');
+                await deleteExistingOutput(outputPath);
                 const html = await exportHtml(content, {}, true, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)} (body only)`);
@@ -1306,6 +1359,7 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'latex-body': {
                 const outputPath = inputPath.replace(/\.org$/, '.tex');
+                await deleteExistingOutput(outputPath);
                 const latex = await exportLatex(content, {}, true);
                 await fs.promises.writeFile(outputPath, latex, 'utf-8');
                 vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)} (body only)`);
@@ -1318,6 +1372,7 @@ async function exportDispatcher(): Promise<void> {
                     { location: vscode.ProgressLocation.Notification, title: `Generating PDF via ${compilerDesc}...`, cancellable: false },
                     async (progress) => {
                         progress.report({ message: 'Generating LaTeX and compiling...' });
+                        await deleteExistingOutput(outputPath);
                         const logPath = await exportPdf(content, {}, outputPath);
                         if (logPath) {
                             await handlePdfExportError(logPath);
@@ -1335,6 +1390,7 @@ async function exportDispatcher(): Promise<void> {
                     { location: vscode.ProgressLocation.Notification, title: `Generating PDF via ${compilerDesc}...`, cancellable: false },
                     async (progress) => {
                         progress.report({ message: 'Generating LaTeX and compiling...' });
+                        await deleteExistingOutput(outputPath);
                         const logPath = await exportPdf(content, {}, outputPath);
                         if (logPath) {
                             await handlePdfExportError(logPath);

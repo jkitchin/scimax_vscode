@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode';
+import * as path from 'path';
 import {
     getTodoWorkflowForDocument,
     getNextTodoState,
@@ -1974,6 +1975,81 @@ export function isOnLink(document: vscode.TextDocument, position: vscode.Positio
 }
 
 /**
+ * Delete file link at point and optionally delete the actual file
+ */
+export async function deleteFileLinkAtPoint(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+
+    const linkInfo = getLinkAtPoint(document, position);
+    if (!linkInfo) {
+        vscode.window.showInformationMessage('No link at cursor');
+        return;
+    }
+
+    const url = linkInfo.url;
+
+    // Check if it's a file link
+    let filePath: string | undefined;
+    if (url.startsWith('file:')) {
+        filePath = url.replace(/^file:/, '').split('::')[0]; // Remove search component
+    } else if (!url.startsWith('http') && !url.startsWith('*') && !url.startsWith('#') &&
+               !url.startsWith('id:') && !url.includes(':')) {
+        // Looks like a relative file path
+        filePath = url;
+    }
+
+    if (!filePath) {
+        vscode.window.showInformationMessage('Not a file link');
+        return;
+    }
+
+    // Resolve to absolute path
+    const currentDir = path.dirname(document.uri.fsPath);
+    const absolutePath = path.isAbsolute(filePath) ? filePath : path.resolve(currentDir, filePath);
+
+    // Check if file exists
+    const fs = await import('fs');
+    const fileExists = fs.existsSync(absolutePath);
+
+    // Ask user what to do
+    const options: string[] = ['Delete link only'];
+    if (fileExists) {
+        options.unshift('Delete link and file');
+    }
+
+    const choice = await vscode.window.showQuickPick(options, {
+        placeHolder: fileExists
+            ? `Delete [[file:${filePath}]] - file exists at ${absolutePath}`
+            : `Delete [[file:${filePath}]] - file does not exist`,
+    });
+
+    if (!choice) return;
+
+    // Delete the link text
+    const line = position.line;
+    const linkRange = new vscode.Range(line, linkInfo.start, line, linkInfo.end);
+
+    await editor.edit(editBuilder => {
+        editBuilder.delete(linkRange);
+    });
+
+    // Delete the file if requested
+    if (choice === 'Delete link and file' && fileExists) {
+        try {
+            fs.unlinkSync(absolutePath);
+            vscode.window.showInformationMessage(`Deleted: ${absolutePath}`);
+        } catch (error) {
+            const msg = error instanceof Error ? error.message : String(error);
+            vscode.window.showErrorMessage(`Failed to delete file: ${msg}`);
+        }
+    }
+}
+
+/**
  * Open link at point
  */
 export async function openLinkAtPoint(): Promise<void> {
@@ -2496,7 +2572,8 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.storeLink', storeLink),
         vscode.commands.registerCommand('scimax.org.insertLink', insertLink),
-        vscode.commands.registerCommand('scimax.org.openLink', openLinkAtPoint)
+        vscode.commands.registerCommand('scimax.org.openLink', openLinkAtPoint),
+        vscode.commands.registerCommand('scimax.org.deleteFileLink', deleteFileLinkAtPoint)
     );
 
     // List commands
@@ -2529,6 +2606,13 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
                 // Execute the default Enter action (type newline)
                 await vscode.commands.executeCommand('type', { text: '\n' });
             }
+        })
+    );
+
+    // Simple newline insertion (C-j in Emacs)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.insertNewline', async () => {
+            await vscode.commands.executeCommand('type', { text: '\n' });
         })
     );
 }

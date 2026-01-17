@@ -287,7 +287,7 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 
         // Build symbol name - truncate long titles for cleaner outline
         const maxTitleLength = 40;
-        let name = headline.title;
+        let name = headline.title || '(untitled)';  // Fallback for empty titles
         if (name.length > maxTitleLength) {
             name = name.slice(0, maxTitleLength - 1) + '…';
         }

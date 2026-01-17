@@ -100,15 +100,17 @@ print(2 + 2)
 : 4
 
 
-* ⚠️ Executing Code
+* ✅ Executing Code
+CLOSED: [2026-01-17 Sat 12:52]
 
-** ⚠️ Execution Keybindings
+** ✅ Execution Keybindings
+CLOSED: [2026-01-17 Sat 12:52]
 
 | Keybinding                                                         | Action                              | Platform |
 | ----------------------------+------------------------------------- | ----------                          |          |
-| C-<return> / s-<return>                                             | Execute current block               | All      |
-| C-c C-c                                                      | Execute current block (Emacs style) | All      |
-| S-<return>                                                        | Execute and move to next block      | All      |
+| C-<return> / s-<return>                                            | Execute current block               | All      |
+| C-c C-c                                                            | Execute current block (Emacs style) | All      |
+| S-<return>                                                         | Execute and move to next block      | All      |
 
 ** ✅ Execution Commands
 CLOSED: [2026-01-15 Thu 08:11]
@@ -307,21 +309,20 @@ print("Bob,25,Boston")
 | Alice | 30 | NYC |
 | Bob | 25 | Boston |
 
-#+BEGIN_SRC python :results output file :file plot.png
+#+BEGIN_SRC python :results output file :file _static/plot-file.png
 import matplotlib.pyplot as plt
 plt.plot([1, 2, 3], [1, 4, 9])
-plt.savefig('plot.png')
-print('plot.png')
 #+END_SRC
 
 #+RESULTS:
-[[file:plot.png]]
+[[file:_static/plot-file.png]]
 
 
 ** ✅ Export Arguments
 CLOSED: [2026-01-15 Thu 08:35]
 
-*** ⚠️ :exports - Control What Gets Exported
+*** ✅ :exports - Control What Gets Exported
+CLOSED: [2026-01-17 Sat 12:52]
 
 | Value   | Description                            |
 |---------+----------------------------------------|
@@ -342,9 +343,11 @@ print("Public data")
 #+END_SRC
 
 
-** ⚠️ Variable Arguments
+** ✅ Variable Arguments
+CLOSED: [2026-01-17 Sat 12:54]
 
-*** ⚠️ :var - Pass Variables to Code
+*** ✅ :var - Pass Variables to Code
+CLOSED: [2026-01-17 Sat 12:54]
 
 Define input variables for the code block:
 
@@ -385,9 +388,11 @@ for row in data:
 #+RESULTS:
 
 
-** ⚠️ Session Arguments
+** ✅ Session Arguments
+CLOSED: [2026-01-17 Sat 12:54]
 
-*** ⚠️ :session - Enable Stateful Execution
+*** ✅ :session - Enable Stateful Execution
+CLOSED: [2026-01-17 Sat 12:54]
 
 Use sessions to maintain state between block executions:
 
@@ -405,6 +410,7 @@ print(f"x = {x}")
 #+END_SRC
 
 #+RESULTS:
+: x = 42
 
 
 Session names:
@@ -413,44 +419,53 @@ Session names:
 - :session *name* - Use named session
 - :session none - Disable session (each block is isolated)
 
-** ⚠️ Directory Arguments
+** ✅ Directory Arguments
+CLOSED: [2026-01-17 Sat 12:54]
 
-*** ⚠️ :dir - Set Working Directory
+*** ✅ :dir - Set Working Directory
+CLOSED: [2026-01-17 Sat 12:54]
 
 Execute code in a specific directory:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC shell :dir /tmp
 pwd
-ls -la
 #+END_SRC
 
-#+BEGIN_SRC python :dir ~/projects/myproject
+#+RESULTS:
+: /private/tmp
+
+#+BEGIN_SRC python :dir ../.github :results ouput
 import os
 print(os.getcwd())
 #+END_SRC
-#+END_SRC
 
-** ⚠️ Tangling Arguments
+#+RESULTS:
+: /Users/jkitchin/Dropbox/projects/scimax_vscode/.github
 
-*** ⚠️ :tangle - Extract Code to Files
+
+** ✅ Tangling Arguments
+CLOSED: [2026-01-17 Sat 12:55]
+
+*** ✅ :tangle - Extract Code to Files
+CLOSED: [2026-01-17 Sat 12:55]
 
 Control whether code is extracted during tangling:
 
-| Value           | Description                               |
-|-----------------+-------------------------------------------|
-| no             | Don't tangle this block (default)         |
-| yes            | Tangle to default file                    |
-| filename.ext   | Tangle to specific file                   |
+| Value        | Description                       |
+|--------------+-----------------------------------|
+| no           | Don't tangle this block (default) |
+| yes          | Tangle to default file            |
+| filename.ext | Tangle to specific file           |
 
-#+BEGIN_SRC org
-#+BEGIN_SRC python :tangle utils.py
+
+#+BEGIN_SRC python :tangle tangled/utils.py
 def helper_function():
     """This function will be extracted to utils.py"""
     return "helper"
 #+END_SRC
 
-#+BEGIN_SRC python :tangle main.py
+#+BEGIN_SRC python :tangle tangled/main.py
 from utils import helper_function
 
 def main():
@@ -459,107 +474,133 @@ def main():
 if __name__ == "__main__":
     main()
 #+END_SRC
-#+END_SRC
 
-** ⚠️ Cache Arguments
+Use `C-c C-v t' to tangle all blocks in the document.
 
-*** ⚠️ :cache - Cache Execution Results
+** ✅ Cache Arguments
+CLOSED: [2026-01-17 Sat 12:57]
+
+*** ✅ :cache - Cache Execution Results
+CLOSED: [2026-01-17 Sat 12:57]
 
 Cache results to avoid re-execution:
 
-| Value | Description                                  |
-|-------+----------------------------------------------|
-| no   | Don't cache (re-execute each time)           |
-| yes  | Cache results (only re-execute if code changes) |
+| Value | Description                                     |
+|-------+-------------------------------------------------|
+| no    | Don't cache (re-execute each time)              |
+| yes   | Cache results (only re-execute if code changes) |
 
-#+BEGIN_SRC org
-#+BEGIN_SRC python :cache yes
+
+#+BEGIN_SRC python :cache yes :results output
 import time
 time.sleep(5)  # Expensive operation
 result = 42
 print(result)
 #+END_SRC
-#+END_SRC
+
+#+RESULTS[32df583c8e5bb748096d6e32871246035470139b]:
+: 42
+
 
 On first execution, this waits 5 seconds. On subsequent executions, the cached
 result is used instantly (unless the code changes).
 
-** ⚠️ Other Useful Arguments
+** ✅ Other Useful Arguments
+CLOSED: [2026-01-17 Sat 12:57]
 
 *** ⚠️ :eval - Control Evaluation
 
-| Value           | Description                             |
-|-----------------+-----------------------------------------|
-| yes            | Evaluate normally (default)             |
-| no             | Never evaluate                          |
-| query          | Ask before evaluating                   |
-| never-export   | Don't evaluate on export                |
-| no-export      | Don't evaluate on export                |
-| query-export   | Ask before evaluating on export         |
+| Value        | Description                     |
+|--------------+---------------------------------|
+| yes          | Evaluate normally (default)     |
+| no           | Never evaluate                  |
+| query        | Ask before evaluating           |
+
+
+#+BEGIN_SRC sh :eval query
+ls | head -n2
+#+END_SRC
+
+#+RESULTS:
+: 00-index.org
+: 01-getting-started.org
+
 
 *** ⚠️ :wrap - Wrap Results in Block
 
 Wrap results in a custom block:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :wrap QUOTE
 print("This will be wrapped in a quote block")
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_QUOTE
-This will be wrapped in a quote block
-#+END_QUOTE
-#+END_SRC
+: This will be wrapped in a quote block
 
-*** ⚠️ :prologue and :epilogue - Code Injection
+
+
+*** ✅ :prologue and :epilogue - Code Injection
+CLOSED: [2026-01-17 Sat 12:59]
 
 Add code before/after the main block code:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :prologue "import sys" :epilogue "print('Done')"
 print(sys.version)
 #+END_SRC
-#+END_SRC
 
-*** ⚠️ :cmdline - Command Line Arguments
+#+RESULTS:
+: 3.12.11 (main, Jun 12 2025, 12:22:42) [Clang 20.1.4 ]
+: Done
+
+
+*** ✅ :cmdline - Command Line Arguments
+CLOSED: [2026-01-17 Sat 13:00]
 
 Pass arguments to the interpreter:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC shell :cmdline -x
 # Shell script runs with -x flag (print commands)
 echo "Hello"
 #+END_SRC
-#+END_SRC
+
+#+RESULTS:
+: Hello
+
 
 ** ⚠️ Combining Arguments
 
 Arguments can be combined:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :results output :session *analysis* :exports both :dir ~/data
 import pandas as pd
 df = pd.read_csv('data.csv')
 print(df.head())
 #+END_SRC
-#+END_SRC
 
-* ⚠️ Results Handling and Output Types
 
-** ⚠️ Automatic Result Insertion
+* ✅ Results Handling and Output Types
+CLOSED: [2026-01-17 Sat 13:00]
+
+** ✅ Automatic Result Insertion
+CLOSED: [2026-01-17 Sat 13:00]
 
 When you execute a block, results automatically appear below it in a
 #+RESULTS: section. Previous results are replaced unless you specify
 :results append or :results prepend.
 
-** ⚠️ Result Types by Language
+** ✅ Result Types by Language
+CLOSED: [2026-01-17 Sat 13:00]
 
-*** ⚠️ Text Output (Verbatim)
+*** ✅ Text Output (Verbatim)
+CLOSED: [2026-01-17 Sat 13:00]
 
 Most languages produce text output by default, formatted with : prefix:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python
 print("Hello")
 print("World")
@@ -568,23 +609,20 @@ print("World")
 #+RESULTS:
 : Hello
 : World
-#+END_SRC
+
 
 *** ⚠️ Tables
 
 Python/R code that produces tabular data can be formatted as org tables:
 
-#+BEGIN_SRC org
-#+BEGIN_SRC python :results table
+
+#+BEGIN_SRC python :results table :results value
 data = [['Alice', 30], ['Bob', 25], ['Carol', 35]]
 return data
 #+END_SRC
 
 #+RESULTS:
-| Alice | 30 |
-| Bob   | 25 |
-| Carol | 35 |
-#+END_SRC
+
 
 *** ⚠️ File Links
 
@@ -603,7 +641,8 @@ plt.plot([1, 2, 3], [1, 4, 9]);
 Images are automatically saved to .ob-jupyter/ directory when using Jupyter
 kernels.
 
-*** ⚠️ HTML and LaTeX
+*** ✅ HTML and LaTeX
+CLOSED: [2026-01-17 Sat 13:02]
 
 Blocks can produce rich formatted output:
 
@@ -616,6 +655,8 @@ print(html)
 #+BEGIN_EXPORT html
 <h1>Title</h1><p>Paragraph</p>
 #+END_EXPORT
+
+
 
 
 *** ✅ Drawers
@@ -657,14 +698,17 @@ Line 19
 
 When execution fails, error messages appear in results:
 
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
 undefined_variable
 #+END_SRC
 
+#+RESULTS:
 
 
 
-** ⚠️ Clearing Results
+
+** ✅ Clearing Results
+CLOSED: [2026-01-17 Sat 13:03]
 
 | Command                   | Description                    |
 |---------------------------+--------------------------------|
@@ -672,15 +716,18 @@ undefined_variable
 | scimax.ob.clearAllResults | Clear all results in document  |
 | scimax.babel.clearResults | Clear all results in document  |
 
-* ⚠️ Sessions for Stateful Execution
+* ✅ Sessions for Stateful Execution
+CLOSED: [2026-01-17 Sat 13:03]
 
-** ⚠️ What Are Sessions?
+** ✅ What Are Sessions?
+CLOSED: [2026-01-17 Sat 13:03]
 
 Sessions maintain a persistent interpreter process that preserves state between
 executions. This is similar to how Jupyter notebooks work - variables,
 functions, and imports persist.
 
-** ⚠️ Enabling Sessions
+** ✅ Enabling Sessions
+CLOSED: [2026-01-17 Sat 13:03]
 
 Add :session header argument:
 
@@ -698,9 +745,11 @@ print(result)
 #+END_SRC
 
 #+RESULTS:
+: 52
 
 
-** ⚠️ Named Sessions
+** ✅ Named Sessions
+CLOSED: [2026-01-17 Sat 13:03]
 
 Use different session names to maintain separate contexts:
 
@@ -721,14 +770,16 @@ print(df.head())
 #+END_SRC
 
 
-** ⚠️ Session Scope
+** ✅ Session Scope
+CLOSED: [2026-01-17 Sat 13:03]
 
 - Sessions are per-language and per-name
 - Default session name (when you just use :session) is language-specific
 - Use :session none to explicitly disable session for a block
 - Sessions persist for the duration of the VS Code window
 
-** ⚠️ Jupyter Sessions
+** ✅ Jupyter Sessions
+CLOSED: [2026-01-17 Sat 13:03]
 
 When using Jupyter kernels (e.g., jupyter-python), sessions automatically use
 Jupyter kernel instances:
@@ -750,14 +801,16 @@ plt.hist(data, bins=20);
 [[file:.ob-jupyter/output-1768484909875-0.png]]
 
 
-** ⚠️ Benefits of Sessions
+** ✅ Benefits of Sessions
+CLOSED: [2026-01-17 Sat 13:03]
 
 - *Avoid re-computation* - Load data once, use in multiple blocks
 - *Interactive development* - Build up code incrementally
 - *Shared context* - Split long workflows into logical chunks
 - *Testing* - Set up fixtures in one block, test in others
 
-** ⚠️ Session Limitations
+** ✅ Session Limitations
+CLOSED: [2026-01-17 Sat 13:33]
 
 - Sessions consume memory until VS Code closes
 - Long-running sessions can accumulate stale state
@@ -770,22 +823,24 @@ CLOSED: [2026-01-15 Thu 08:50]
 Moving between source blocks efficiently is essential for productive literate
 programming.
 
-** ⚠️ Block Navigation Keybindings
+** ✅ Block Navigation Keybindings
+CLOSED: [2026-01-17 Sat 13:32]
 
-| Keybinding                               | Action                 | Platform |
-| ---------------------------------------- | ----------             |          |
-| C-<down>                                | Next source block      | All      |
-| C-<up>                                  | Previous source block  | All      |
-| S-<return>                              | Execute and next block | All      |
+| Keybinding | Action                 | Platform |
+|------------+------------------------+----------|
+| C-<down>   | Next source block      | All      |
+| C-<up>     | Previous source block  | All      |
+| S-<return> | Execute and next block | All      |
 
-** ⚠️ Navigation Commands
+** ✅ Navigation Commands
+CLOSED: [2026-01-17 Sat 13:32]
 
-| Command                 |       | Description                      |
-|-------------------------+-------+----------------------------------|
+| Command                 |         | Description                      |
+|-------------------------+---------+----------------------------------|
 | scimax.ob.nextBlock     | C-c C-n | Jump to next source block        |
 | scimax.ob.previousBlock | C-c C-p | Jump to previous source block    |
-| scimax.ob.jumpToBlock   |       | Quick pick menu of all blocks    |
-| scimax.ob.jumpToResults |       | Jump to results of current block |
+| scimax.ob.jumpToBlock   |         | Quick pick menu of all blocks    |
+| scimax.ob.jumpToResults |         | Jump to results of current block |
 
 ** ✅ Quick Block Selection
 CLOSED: [2026-01-15 Thu 08:51]
@@ -871,9 +926,11 @@ print(z)
 
 Both blocks inherit the original header arguments.
 
-** ⚠️ Merging Blocks
+** ✅ Merging Blocks
+CLOSED: [2026-01-17 Sat 13:04]
 
-*** ⚠️ Merge with Previous/Next
+*** ✅ Merge with Previous/Next
+CLOSED: [2026-01-17 Sat 13:04]
 
 | Command                     | Description               |
 |-----------------------------+---------------------------|
@@ -883,9 +940,12 @@ Both blocks inherit the original header arguments.
 Combines code from two adjacent blocks into one. If languages differ, prompts
 for confirmation.
 
-** ⚠️ Copying and Killing
 
-*** ⚠️ Clone Block
+** ✅ Copying and Killing
+CLOSED: [2026-01-17 Sat 13:04]
+
+*** ✅ Clone Block
+CLOSED: [2026-01-17 Sat 13:04]
 
 | Command              | Description                   |
 |----------------------+-------------------------------|
@@ -893,7 +953,8 @@ for confirmation.
 
 Creates an exact copy of the current block including its header arguments.
 
-*** ⚠️ Copy Block and Results
+*** ✅ Copy Block and Results
+CLOSED: [2026-01-17 Sat 13:04]
 
 | Command             | Description                         |
 |---------------------+-------------------------------------|
@@ -902,7 +963,8 @@ Creates an exact copy of the current block including its header arguments.
 Copies the entire block including #+NAME: line (if present) and results
 section.
 
-*** ⚠️ Kill Block
+*** ✅ Kill Block
+CLOSED: [2026-01-17 Sat 13:04]
 
 | Command             | Description                        |
 |---------------------+------------------------------------|
@@ -911,9 +973,11 @@ section.
 Removes the block and its results, copying everything to clipboard for pasting
 elsewhere.
 
-** ⚠️ Moving Blocks
+** ✅ Moving Blocks
+CLOSED: [2026-01-17 Sat 13:04]
 
-*** ⚠️ Move Up/Down
+*** ✅ Move Up/Down
+CLOSED: [2026-01-17 Sat 13:04]
 
 | Command                 | Description              |
 |-------------------------+--------------------------|
@@ -923,42 +987,48 @@ elsewhere.
 Swaps the current block (including results) with the adjacent block,
 maintaining all content.
 
-** ⚠️ Typical Workflows
+** ✅ Typical Workflows
+CLOSED: [2026-01-17 Sat 13:04]
 
-*** ⚠️ Notebook-Style Development
+*** ✅ Notebook-Style Development
+CLOSED: [2026-01-17 Sat 13:05]
 
 1. Insert block with scimax.ob.insertBlockBelow
 2. Write code
 3. Execute with S-<return> (executes and moves to next)
 4. Repeat
 
-*** ⚠️ Refactoring Code
+*** ✅ Refactoring Code
+CLOSED: [2026-01-17 Sat 13:05]
 
 1. Split large block into logical pieces with scimax.ob.splitBlock
 2. Add session to maintain state: :session
 3. Execute sequentially to verify
 4. Reorganize with move commands if needed
 
-*** ⚠️ Experimenting with Variants
+*** ✅ Experimenting with Variants
+CLOSED: [2026-01-17 Sat 13:05]
 
 1. Clone block with scimax.ob.cloneBlock
 2. Modify clone to test alternative approach
 3. Compare results
 4. Kill the version you don't want
 
-* ⚠️ Inline Source Blocks
+* ✅ Inline Source Blocks
+CLOSED: [2026-01-17 Sat 13:05]
 
 Sometimes you need to execute code inline within a paragraph rather than in a
 standalone block.
 
-** ⚠️ Syntax
+** ✅ Syntax
+CLOSED: [2026-01-17 Sat 13:05]
 
 #+BEGIN_SRC org
 src_LANGUAGE{CODE}
 src_LANGUAGE[HEADERS]{CODE}
 #+END_SRC
 
-** ⚠️ Examples
+** ✅ Examples
 
 *** ⚠️ Simple Inline Computation
 
@@ -981,36 +1051,40 @@ Today is src_python[:results value]{import datetime; return datetime.date.today(
 
 Inline blocks can access session variables:
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python :session *calc*
 total = 100
 tax_rate = 0.08
 #+END_SRC
 
 The total with tax is src_python[:session *calc*]{return total * (1 + tax_rate)}.
-#+END_SRC
 
-** ⚠️ Use Cases
+
+** ✅ Use Cases
+CLOSED: [2026-01-17 Sat 13:06]
 
 - Embedding calculations in text
 - Showing dates/times
 - Inserting computed values into sentences
 - Quick one-liners that don't need a full block
 
-** ⚠️ Limitations
+** ✅ Limitations
+CLOSED: [2026-01-17 Sat 13:06]
 
 - No syntax highlighting
 - Results replace the inline block (can't keep both)
 - Less suitable for multi-line code
 - Harder to debug than regular blocks
 
-* ⚠️ Code Tangling
+* ✅ Code Tangling
+CLOSED: [2026-01-17 Sat 13:06]
 
 Tangling is the process of extracting source code from your org document into
 separate source files. This enables the literate programming workflow where
 documentation is primary but you can still generate working software.
 
-** ⚠️ What Is Tangling?
+** ✅ What Is Tangling?
+CLOSED: [2026-01-17 Sat 13:06]
 
 Tangling extracts code from source blocks marked with :tangle into external
 files:
@@ -1051,9 +1125,11 @@ This command:
 2. Groups them by target filename
 3. Writes each file with concatenated code
 
-** ⚠️ Tangling Modes
+** ✅ Tangling Modes
+CLOSED: [2026-01-17 Sat 13:06]
 
-*** ⚠️ Don't Tangle (Default)
+*** ✅ Don't Tangle (Default)
+CLOSED: [2026-01-17 Sat 13:06]
 
 
 #+BEGIN_SRC python
@@ -1061,15 +1137,16 @@ This command:
 #+END_SRC
 
 
-*** ⚠️ Tangle to Specific File
+*** ✅ Tangle to Specific File
+CLOSED: [2026-01-17 Sat 13:06]
 
 
-#+BEGIN_SRC python :tangle src/utils.py
+#+BEGIN_SRC python :tangle tangled/utils.py
 def utility_function():
     return "useful"
 #+END_SRC
 
-#+BEGIN_SRC python :tangle src/utils.py
+#+BEGIN_SRC python :tangle tangled/utils.py
 def another_utility():
     return "also useful"
 #+END_SRC
@@ -1077,7 +1154,8 @@ def another_utility():
 
 Both blocks tangle to src/utils.py in order.
 
-*** ⚠️ Tangle with Yes
+*** ✅ Tangle with Yes
+CLOSED: [2026-01-17 Sat 13:06]
 
 #+BEGIN_SRC python :tangle yes
 # Tangles to default file (based on org filename)
@@ -1086,13 +1164,15 @@ Both blocks tangle to src/utils.py in order.
 
 If your org file is project.org, this tangles to project.py.
 
-** ⚠️ Advanced Tangling
+** ✅ Advanced Tangling
+CLOSED: [2026-01-17 Sat 13:07]
 
-*** ⚠️ No-Web Style References
+*** ✅ No-Web Style References
+CLOSED: [2026-01-17 Sat 13:07]
 
 Use :noweb to reference other named blocks:
 
-#+BEGIN_SRC org
+
 #+NAME: imports
 #+BEGIN_SRC python
 import sys
@@ -1105,29 +1185,31 @@ def helper():
     return "help"
 #+END_SRC
 
-#+BEGIN_SRC python :tangle app.py :noweb yes
+#+BEGIN_SRC python :tangle tangled/app.py :noweb yes
 <<imports>>
 <<helpers>>
 
 def main():
     print(helper())
 #+END_SRC
-#+END_SRC
+
 
 When tangled, <<imports>> and <<helpers>> are replaced with the code from
 those named blocks.
 
-*** ⚠️ Shebang Lines
+*** ✅ Shebang Lines
+CLOSED: [2026-01-17 Sat 13:07]
 
 Add :shebang for executable scripts:
 
-#+BEGIN_SRC org
-#+BEGIN_SRC shell :tangle script.sh :shebang "#!/bin/bash"
+
+#+BEGIN_SRC shell :tangle tangled/script.sh :shebang "#!/bin/bash"
 echo "This will be executable"
 #+END_SRC
-#+END_SRC
 
-*** ⚠️ Comments in Tangled Code
+
+*** ✅ Comments in Tangled Code
+CLOSED: [2026-01-17 Sat 13:08]
 
 By default, tangled code includes no comments about its origin. Some
 implementations add comments like:
@@ -1138,9 +1220,11 @@ implementations add comments like:
 # Section Name:1 ends here
 #+END_SRC
 
-** ⚠️ Use Cases
+** ✅ Use Cases
+CLOSED: [2026-01-17 Sat 13:08]
 
-*** ⚠️ Library Development
+*** ✅ Library Development
+CLOSED: [2026-01-17 Sat 13:08]
 
 Write a tutorial document that tangles to a working library:
 
@@ -1148,7 +1232,8 @@ Write a tutorial document that tangles to a working library:
 - Tangle to src/lib.py, tests/test_lib.py
 - Readers learn from docs, users import the library
 
-*** ⚠️ Configuration Management
+*** ✅ Configuration Management
+CLOSED: [2026-01-17 Sat 13:08]
 
 Document your configuration in config.org:
 
@@ -1156,7 +1241,7 @@ Document your configuration in config.org:
 * Database Configuration
 We use PostgreSQL with connection pooling.
 
-#+BEGIN_SRC toml :tangle config.toml
+#+BEGIN_SRC toml :tangle tangled/config.toml
 [database]
 host = "localhost"
 port = 5432
@@ -1164,12 +1249,13 @@ pool_size = 10
 #+END_SRC
 #+END_SRC
 
-*** ⚠️ Build Scripts
+*** ✅ Build Scripts
+CLOSED: [2026-01-17 Sat 13:08]
 
 #+BEGIN_SRC org
 * Build Process
 
-#+BEGIN_SRC makefile :tangle Makefile
+#+BEGIN_SRC makefile :tangle tangled/Makefile
 all: build test
 
 build:
@@ -1180,63 +1266,70 @@ test:
 #+END_SRC
 #+END_SRC
 
-** ⚠️ Tangling vs Export
+** ✅ Tangling vs Export
+CLOSED: [2026-01-17 Sat 13:09]
 
-| Feature    | Tangling                   | Export                      |
-|------------|----------------------------|-----------------------------|
-| Purpose    | Extract code to files      | Create documentation        |
-| Output     | Source code files          | HTML, PDF, LaTeX, etc.      |
-| Controls   | :tangle                   | :exports                   |
-| Respects   | Code blocks only           | All org content             |
-| Use case   | Build/run software         | Share/publish documentation |
+| Feature  | Tangling              | Export                      |
+|----------+-----------------------+-----------------------------|
+| Purpose  | Extract code to files | Create documentation        |
+| Output   | Source code files     | HTML, PDF, LaTeX, etc.      |
+| Controls | :tangle               | :exports                    |
+| Respects | Code blocks only      | All org content             |
+| Use case | Build/run software    | Share/publish documentation |
 
-* ⚠️ Named Blocks and Calls
+* ✅ Named Blocks and Calls
+CLOSED: [2026-01-17 Sat 13:09]
 
-** ⚠️ Named Blocks
+** ✅ Named Blocks
+CLOSED: [2026-01-17 Sat 13:09]
 
 Give blocks names using #+NAME: so they can be referenced:
 
-#+BEGIN_SRC org
 #+NAME: square
-#+BEGIN_SRC python :var x=0
-return x * x
-#+END_SRC
+#+BEGIN_SRC python :var x=0 
+print(x * x)
 #+END_SRC
 
-** ⚠️ Calling Named Blocks
+
+** ✅ Calling Named Blocks
+CLOSED: [2026-01-17 Sat 13:28]
 
 Use #+CALL: to invoke a named block with arguments:
 
-#+BEGIN_SRC org
+
 #+CALL: square(x=5)
 
-#+RESULTS:
+#+RESULTS: square
 : 25
 
 #+CALL: square(x=10)
 
 #+RESULTS:
 : 100
+
+
+#+NAME: square-return
+#+BEGIN_SRC python :var x=0 :results value
+return x * x
 #+END_SRC
+
+#+CALL: square-return(x=11)
+
 
 ** ⚠️ Inline Call Syntax
 
 You can also call blocks inline:
 
-#+BEGIN_SRC org
-The square of 7 is call_square(x=7).
-#+END_SRC
 
-After execution:
-#+BEGIN_SRC org
-The square of 7 is 49.
-#+END_SRC
+The square of 7 is call_square(x=71) {{{results(5041)}}}.
+
+
 
 ## Using Named Blocks as Data
 
 Reference named blocks as variables:
 
-#+BEGIN_SRC org
+
 #+NAME: raw-data
 | Name  | Value |
 |-------+-------|
@@ -1244,29 +1337,36 @@ Reference named blocks as variables:
 | Beta  | 200   |
 | Gamma | 150   |
 
-#+BEGIN_SRC python :var data=raw-data
-total = sum(row[1] for row in data)
+#+BEGIN_SRC python :var data=raw-data :results output
+total = sum(row[1] for row in data[1:])  # Skip header
 print(f"Total: {total}")
 #+END_SRC
 
 #+RESULTS:
 : Total: 450
-#+END_SRC
+
 
 ** ⚠️ Call with Headers
 
 Override headers when calling:
 
-#+BEGIN_SRC org
+#+CALL: square(x=10)
+
+#+RESULTS: square
+: 100
+# No output. You might do this for side effects.
 #+CALL: square(x=5) :results silent
+
 #+CALL: square(x=5) :results table
-#+END_SRC
+
+#+RESULTS: square
+: 25
+
 
 ** ⚠️ Library of Functions
 
 Build a library of reusable code blocks:
 
-#+BEGIN_SRC org
 #+NAME: mean
 #+BEGIN_SRC python :var numbers=[]
 return sum(numbers) / len(numbers)
@@ -1292,16 +1392,15 @@ else:
 
 #+CALL: mean(numbers=dataset)
 
-#+RESULTS:
-: 30.0
+
 
 #+CALL: median(numbers=dataset)
 
-#+RESULTS:
-: 30.0
-#+END_SRC
 
-** ⚠️ Best Practices
+
+
+** ✅ Best Practices
+CLOSED: [2026-01-17 Sat 13:11]
 
 - Use descriptive names: load-data, calculate-statistics, generate-plot
 - Document block parameters in preceding text
@@ -1309,57 +1408,65 @@ else:
 - Use #+CALL: for parameterized re-execution
 - Consider blocks as functions in your literate program
 
-* ⚠️ Quick Reference
+* ✅ Quick Reference
+CLOSED: [2026-01-17 Sat 13:11]
 
-** ⚠️ Essential Keybindings
+** ✅ Essential Keybindings
+CLOSED: [2026-01-17 Sat 13:11]
 
-| Keybinding         | Action                              |
-|--------------------|-------------------------------------|
-| C-<return>        | Execute current block               |
-| S-<return>       | Execute and move to next            |
-| C-<up>           | Previous block                      |
-| C-<down>         | Next block                          |
-| C-c C-v t   | Tangle all blocks                   |
+| Keybinding | Action                   |
+|------------+--------------------------|
+| C-<return> | Execute current block    |
+| S-<return> | Execute and move to next |
+| C-<up>     | Previous block           |
+| C-<down>   | Next block               |
+| C-c C-v t  | Tangle all blocks        |
 
-** ⚠️ Common Header Arguments
+** ✅ Common Header Arguments
+CLOSED: [2026-01-17 Sat 13:11]
 
-| Argument          | Values                       | Purpose                   |
-|-------------------+------------------------------+---------------------------|
-| :results         | output, value, table, silent | Output format             |
-| :exports         | code, results, both, none    | What to export            |
-| :session         | name or none                 | Persistent state          |
-| :var             | name=value                   | Input variables           |
-| :tangle          | filename or no               | Extract to file           |
-| :dir             | path                         | Working directory         |
-| :cache           | yes or no                    | Cache results             |
+| Argument | Values                       | Purpose           |
+|----------+------------------------------+-------------------|
+| :results | output, value, table, silent | Output format     |
+| :exports | code, results, both, none    | What to export    |
+| :session | name or none                 | Persistent state  |
+| :var     | name=value                   | Input variables   |
+| :tangle  | filename or no               | Extract to file   |
+| :dir     | path                         | Working directory |
+| :cache   | yes or no                    | Cache results     |
 
-** ⚠️ Supported Languages
+** ✅ Supported Languages
+CLOSED: [2026-01-17 Sat 13:11]
 
 Direct: python, javascript, typescript, shell, bash, sql
 
 Jupyter: jupyter-python, jupyter-r, jupyter-julia, jupyter-ruby, and many more
 
-** ⚠️ Example Templates
+** ✅ Example Templates
+CLOSED: [2026-01-17 Sat 13:11]
 
-*** ⚠️ Basic Block
+*** ✅ Basic Block
+CLOSED: [2026-01-17 Sat 13:11]
 
-#+BEGIN_SRC org
+
 #+BEGIN_SRC python
 # Your code here
 #+END_SRC
-#+END_SRC
 
-*** ⚠️ Session Block
 
-#+BEGIN_SRC org
+*** ✅ Session Block
+CLOSED: [2026-01-17 Sat 13:11]
+
+
 #+BEGIN_SRC python :session
 # Code with persistent state
 #+END_SRC
-#+END_SRC
 
-*** ⚠️ Data Processing
 
-#+BEGIN_SRC org
+*** ✅ Data Processing
+CLOSED: [2026-01-17 Sat 13:11]
+
+
 #+NAME: input-data
 | A | B |
 |---+---|
@@ -1369,67 +1476,78 @@ Jupyter: jupyter-python, jupyter-r, jupyter-julia, jupyter-ruby, and many more
 # Process data
 return processed
 #+END_SRC
-#+END_SRC
+
 
 *** ⚠️ Plot Generation
 
-#+BEGIN_SRC org
 #+BEGIN_SRC jupyter-python :results file
 import matplotlib.pyplot as plt
 plt.plot([1, 2, 3])
 plt.savefig('.ob-jupyter/plot.png')
 '.ob-jupyter/plot.png'
 #+END_SRC
-#+END_SRC
 
-*** ⚠️ Tangled Library
+#+RESULTS:
+: '.ob-jupyter/plot.png'
+[[file:.ob-jupyter/output-1768673527894-0.png]]
 
-#+BEGIN_SRC org
-#+BEGIN_SRC python :tangle mylib.py
+
+*** ✅ Tangled Library
+CLOSED: [2026-01-17 Sat 13:12]
+
+
+#+BEGIN_SRC python :tangle tangled/mylib.py
 def my_function():
     """Documented function"""
     pass
 #+END_SRC
-#+END_SRC
 
-* ⚠️ Tips and Best Practices
 
-** ⚠️ Organization
+* ✅ Tips and Best Practices
+CLOSED: [2026-01-17 Sat 13:12]
+
+** ✅ Organization
+CLOSED: [2026-01-17 Sat 13:12]
 
 - Use headings to group related blocks
 - Name important blocks with #+NAME:
 - Add #+CAPTION: to blocks that produce key results
 - Use sessions to connect related blocks
 
-** ⚠️ Performance
+** ✅ Performance
+CLOSED: [2026-01-17 Sat 13:12]
 
 - Use :cache yes for expensive computations
 - Close unnecessary sessions to free memory
 - Use :results silent when you don't need output
 - Limit output size for large datasets
 
-** ⚠️ Reproducibility
+** ✅ Reproducibility
+CLOSED: [2026-01-17 Sat 13:12]
 
 - Specify exact versions in documentation
 - Use :dir to set working directory explicitly
 - Document all dependencies in requirements/environment
 - Include data loading steps in the document
 
-** ⚠️ Debugging
+** ✅ Debugging
+CLOSED: [2026-01-17 Sat 13:12]
 
 - Execute blocks one at a time with C-<return>
 - Check session state in separate test blocks
 - Use :results output to see print statements
 - Clear results and re-execute from top to verify
 
-** ⚠️ Collaboration
+** ✅ Collaboration
+CLOSED: [2026-01-17 Sat 13:12]
 
 - Export to HTML/PDF for non-technical readers (:exports results)
 - Tangle to source files for developers (:tangle yes)
 - Use meaningful block names for #+CALL: references
 - Document assumptions and requirements in text
 
-** ⚠️ Common Pitfalls
+** ✅ Common Pitfalls
+CLOSED: [2026-01-17 Sat 13:12]
 
 - Forgetting to enable sessions when blocks depend on each other
 - Using :results value when you want printed output
@@ -1437,9 +1555,11 @@ def my_function():
 - Referencing blocks that haven't executed yet
 - Mixing session names unintentionally
 
-* ⚠️ Additional Resources
+* ✅ Additional Resources
+CLOSED: [2026-01-17 Sat 13:12]
 
-** ⚠️ Emacs Org-Mode Documentation
+** ✅ Emacs Org-Mode Documentation
+CLOSED: [2026-01-17 Sat 13:12]
 
 While Scimax VS Code implements its own version, the Emacs org-mode
 documentation is valuable for understanding concepts:
@@ -1448,20 +1568,23 @@ documentation is valuable for understanding concepts:
 - [[https://orgmode.org/worg/org-contrib/babel/][Babel Introduction]]
 - [[https://orgmode.org/worg/org-contrib/babel/languages/index.html][Babel Language Reference]]
 
-** ⚠️ Scimax VS Code Docs
+** ✅ Scimax VS Code Docs
+CLOSED: [2026-01-17 Sat 13:12]
 
 - [[file:01-getting-started.org][Getting Started Guide]]
 - [[file:02-document-structure.org][Document Structure]]
 - [[file:04-tables.org][Tables]]
 
-** ⚠️ Related Topics
+** ✅ Related Topics
+CLOSED: [2026-01-17 Sat 13:12]
 
 - Jupyter integration for rich interactive notebooks
 - Export system for generating documents
 - Database integration for storing and searching code blocks
 - Project notebooks for organizing research
 
-* ⚠️ Conclusion
+* ✅ Conclusion
+CLOSED: [2026-01-17 Sat 13:12]
 
 Source code blocks transform org documents into powerful literate programming
 environments. You can:
@@ -1477,7 +1600,7 @@ with header arguments, and leverage sessions for interactive development.
 
 Happy literate programming!
 
-* Navigation
+* 👀 Navigation
 
 - Previous: [[file:06-timestamps.org][Timestamps]]
 - Index: [[file:00-index.org][Documentation Index]]

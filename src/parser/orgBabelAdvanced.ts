@@ -442,6 +442,11 @@ export function tangleBlocks(
             const fileContent = content.join('\n');
             fs.writeFileSync(filePath, fileContent);
 
+            // Make file executable if it has a shebang
+            if (shebang) {
+                fs.chmodSync(filePath, 0o755);
+            }
+
             result.files.push({
                 path: filePath,
                 blocks: fileBlocks.length,
@@ -846,7 +851,8 @@ export async function executeInlineBabelCall(
  *   #+CALL: name[:inside-header](arg=value)[:end-header]
  */
 export function parseCallLine(line: string): CallSpec | null {
-    const match = line.match(/^#\+CALL:\s*(\S+?)(?:\[(.*?)\])?\((.*?)\)(?:\[(.*?)\])?$/i);
+    // Allow optional leading whitespace
+    const match = line.match(/^\s*#\+CALL:\s*(\S+?)(?:\[(.*?)\])?\((.*?)\)(?:\[(.*?)\])?/i);
     if (!match) return null;
 
     const name = match[1];
@@ -888,28 +894,84 @@ export async function executeCall(
         };
     }
 
-    // Merge headers
+    // Merge headers: block headers + inside headers + end headers
     const insideHeaders = parseHeaderArguments(callSpec.insideHeaders);
     const endHeaders = parseHeaderArguments(callSpec.endHeaders);
 
-    // Create execution context with call arguments as variables
+    // Merge all headers: block's original headers < inside headers < end headers
+    const mergedHeaders: HeaderArguments = {
+        ...block.headers,
+        ...insideHeaders,
+        ...endHeaders,
+    };
+
+    // Parse a string value, converting to number/boolean if appropriate
+    const parseValue = (val: string): string | number | boolean => {
+        // Try number first
+        if (/^-?\d+(\.\d+)?$/.test(val)) {
+            return parseFloat(val);
+        }
+        // Try boolean
+        if (val === 'true') return true;
+        if (val === 'false') return false;
+        if (val === 'nil' || val === 'null') return false;
+        // Return as string (strip quotes if present)
+        if ((val.startsWith('"') && val.endsWith('"')) ||
+            (val.startsWith("'") && val.endsWith("'"))) {
+            return val.slice(1, -1);
+        }
+        return val;
+    };
+
+    // Get default variable values from the block's :var header
+    const blockVars: Record<string, unknown> = {};
+    if (block.headers.var) {
+        // Parse :var x=0 style headers
+        const varStr = String(block.headers.var);
+        const varPairs = varStr.split(/\s+/);
+        for (const pair of varPairs) {
+            const eqIndex = pair.indexOf('=');
+            if (eqIndex > 0) {
+                const varName = pair.substring(0, eqIndex);
+                const varValue = pair.substring(eqIndex + 1);
+                blockVars[varName] = parseValue(varValue);
+            }
+        }
+    }
+
+    // Parse call arguments with type conversion
+    const callVars: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(callSpec.arguments)) {
+        callVars[key] = parseValue(value);
+    }
+
+    // Create execution context with call arguments overriding block defaults
     const context: ExecutionContext = {
         ...baseContext,
         variables: {
             ...baseContext.variables,
-            ...callSpec.arguments,
+            ...blockVars,  // Block's default :var values
+            ...callVars,   // Call arguments override defaults
         },
         cwd: insideHeaders.dir || baseContext.cwd,
     };
 
-    // Create block for execution
+    // Convert merged headers to string record for SrcBlockElement
+    const stringHeaders: Record<string, string> = {};
+    for (const [key, value] of Object.entries(mergedHeaders)) {
+        if (value !== undefined && value !== null) {
+            stringHeaders[key] = String(value);
+        }
+    }
+
+    // Create block for execution with merged headers
     const execBlock: SrcBlockElement = {
         type: 'src-block',
         properties: {
             language: block.language,
             value: block.code,
             parameters: '',
-            headers: {},
+            headers: stringHeaders,
             lineNumber: block.lineNumber,
             endLineNumber: block.lineNumber,
         },

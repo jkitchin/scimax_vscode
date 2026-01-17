@@ -196,7 +196,8 @@ Example - promoting a subtree:
 ,*** Child 2                  ** Child 2
 #+END_SRC
 
-** ⚠️ Move Subtrees Up/Down
+** ✅ Move Subtrees Up/Down
+CLOSED: [2026-01-17 Sat 13:39]
 
 Reorder sections without changing their level:
 
@@ -265,14 +266,14 @@ The #+OPTIONS: keyword controls export and display behavior:
 ,#+OPTIONS: toc:2 num:t H:4 ^:nil
 #+END_SRC
 
-| Option  | Values          | Description                      |
-|---------+-----------------+----------------------------------|
-| toc    | t, nil, number | Table of contents depth          |
-| num    | t, nil         | Section numbering                |
-| H      | number          | Headline levels for export       |
-| ^      | t, nil, {}    | Subscript/superscript handling   |
-| author | t, nil         | Include author in export         |
-| date   | t, nil         | Include date in export           |
+| Option | Values         | Description                    |
+|--------+----------------+--------------------------------|
+| toc    | t, nil, number | Table of contents depth        |
+| num    | t, nil         | Section numbering              |
+| H      | number         | Headline levels for export     |
+| ^      | t, nil, {}     | Subscript/superscript handling |
+| author | t, nil         | Include author in export       |
+| date   | t, nil         | Include date in export         |
 
 ** ⚠️ Startup Keyword
 
@@ -338,17 +339,21 @@ You can also add properties manually by typing inside the drawer.
 Some properties are inherited by child headlines. The CATEGORY property, for
 example, applies to all children unless overridden.
 
-* ⚠️ Drawers
+* ✅ Drawers
+CLOSED: [2026-01-17 Sat 13:40]
 
 Drawers are collapsible sections that hide auxiliary information.
 
-** ⚠️ Standard Drawers
+** ✅ Standard Drawers
+CLOSED: [2026-01-17 Sat 13:40]
 
-*** ⚠️ PROPERTIES Drawer
+*** ✅ PROPERTIES Drawer
+CLOSED: [2026-01-17 Sat 13:40]
 
 Stores headline metadata (see above).
 
-*** ⚠️ LOGBOOK Drawer
+*** ✅ LOGBOOK Drawer
+CLOSED: [2026-01-17 Sat 13:40]
 
 Stores clock entries and state change history:
 
@@ -364,19 +369,18 @@ CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 10:30] =>  1:30
 
 Create custom drawers for any purpose:
 
-#+BEGIN_SRC org
-,* Research Notes
+
 :NOTES:
 These are private notes that won't be exported.
 - Reference: Smith et al. 2024
 - Follow up with collaborator
 :END:
 
-:REFERENCES:
-- [[cite:smith-2024]]
-- [[cite:jones-2023]]
+:REFERENCES:    
+cite:&kitchin-2018-machin-learn-catal
+cite:&kitchin-2015-examp-effec
 :END:
-#+END_SRC
+
 
 Drawer names must be uppercase letters and can contain numbers and underscores.
 

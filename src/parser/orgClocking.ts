@@ -6,8 +6,8 @@
 import type {
     HeadlineElement,
     OrgDocumentNode,
-    TimestampObject,
     ClockElement,
+    OrgElement,
 } from './orgElementTypes';
 
 // =============================================================================
@@ -325,19 +325,32 @@ export function clockCancel(entry: ClockEntry): void {
 
 /**
  * Collect all clock entries from a headline
+ * Searches both directly in section and inside LOGBOOK drawers
  */
 export function collectClockEntries(headline: HeadlineElement): ClockEntry[] {
     const entries: ClockEntry[] = [];
 
     if (headline.section) {
-        for (const element of headline.section.children) {
+        const processElement = (element: OrgElement) => {
             if (element.type === 'clock') {
                 const entry = parseClockElement(element as ClockElement);
                 if (entry) {
                     entry.headline = headline;
                     entries.push(entry);
                 }
+            } else if (element.type === 'drawer') {
+                // Search inside drawers (especially LOGBOOK)
+                const drawer = element as { children?: OrgElement[] };
+                if (drawer.children) {
+                    for (const child of drawer.children) {
+                        processElement(child);
+                    }
+                }
             }
+        };
+
+        for (const element of headline.section.children) {
+            processElement(element);
         }
     }
 

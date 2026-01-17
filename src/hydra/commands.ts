@@ -87,6 +87,18 @@ export function registerHydraCommands(
         })
     );
 
+    // Show the database menu
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.hydra.database', async () => {
+            const dbMenu = manager.getMenu('scimax.database');
+            if (dbMenu) {
+                await manager.show('scimax.database');
+            } else {
+                vscode.window.showWarningMessage('Database menu not registered');
+            }
+        })
+    );
+
     // Show context-aware menu based on current file type
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.hydra.contextMenu', async () => {

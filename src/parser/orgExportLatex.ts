@@ -475,6 +475,31 @@ export class LatexExportBackend implements ExportBackend {
         const lang = block.properties.language || 'text';
         const code = block.properties.value;
 
+        // Parse :exports header argument
+        const params = block.properties.parameters || '';
+        const exportsMatch = params.match(/:exports\s+(\w+)/i);
+        const exports = exportsMatch ? exportsMatch[1].toLowerCase() : 'both';
+
+        // Handle :exports none - skip both code and results
+        if (exports === 'none') {
+            state.skipNextResults = true;
+            return '';
+        }
+
+        // Handle :exports results - skip code, include results
+        if (exports === 'results') {
+            state.skipNextResults = false; // Don't skip results
+            return '';
+        }
+
+        // Handle :exports code - include code, skip results
+        if (exports === 'code') {
+            state.skipNextResults = true;
+        } else {
+            // :exports both (default) - include both
+            state.skipNextResults = false;
+        }
+
         // Check for affiliated keywords
         let wrapper = '';
         let endWrapper = '';
@@ -724,6 +749,12 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportFixedWidth(element: FixedWidthElement, state: ExportState): string {
+        // Check if we should skip this results block (based on :exports header)
+        if (state.skipNextResults) {
+            state.skipNextResults = false; // Reset the flag
+            return '';
+        }
+
         return `\\begin{verbatim}\n${element.properties.value}\n\\end{verbatim}\n`;
     }
 
@@ -1101,7 +1132,7 @@ export class LatexExportBackend implements ExportBackend {
             // Code highlighting - skip if user provides their own
             if (meta.minted && !userPackages.has('minted')) {
                 parts.push('% Code highlighting with minted');
-                parts.push('\\usepackage[outputdir=.]{minted}');
+                parts.push('\\usepackage{minted}');
                 parts.push('');
             } else if (meta.listings && !userPackages.has('listings')) {
                 parts.push('% Code highlighting with listings');

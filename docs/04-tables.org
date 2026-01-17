@@ -162,7 +162,8 @@ Specify alignment using <l>, <c>, or <r>:
 
 Combine with width: <l10> for left-aligned, 10 characters wide.
 
-* ⚠️ Table Formulas
+* ✅ Table Formulas
+CLOSED: [2026-01-17 Sat 13:44]
 
 Tables can include formulas for calculations, similar to spreadsheets.
 
@@ -170,14 +171,13 @@ Tables can include formulas for calculations, similar to spreadsheets.
 
 Formulas are defined in a #+TBLFM: line below the table:
 
-
 | Item    | Qty | Price | Total |
 |---------+-----+-------+-------|
 | Apples  | 10  | 1.50  | 15    |
 | Oranges | 5   | 2.00  | 10    |
 |---------+-----+-------+-------|
 | Sum     |     |       | 25    |
-#+TBLFM: $4`$2*$3::@4$4'vsum(@2$4..@3$4)
+#+TBLFM: $4=$2*$3::@4$4=vsum(@2$4..@3$4)
 
 
 ** Cell References
@@ -327,7 +327,8 @@ Export formats:
 - TSV (tab-separated values)
 - Other delimited formats
 
-* ⚠️ Column Operations
+* ✅ Column Operations
+CLOSED: [2026-01-17 Sat 13:43]
 
 Perform quick calculations on columns:
 
@@ -373,13 +374,14 @@ Named tables can be:
 - Jumped to with `scimax.table.gotoNamed'
 - Used as input for calculations
 
-* ⚠️ Table Appearance in Export
+* ✅ Table Appearance in Export
+CLOSED: [2026-01-17 Sat 13:43]
 
-** HTML Export
+** 👀 HTML Export
 
 Tables export as HTML `<table>' elements with proper styling.
 
-** LaTeX Export
+** 👀 LaTeX Export
 
 Tables export as LaTeX `tabular' environments:
 
@@ -392,7 +394,7 @@ Bob & 25 & Boston \\
 \end{tabular}
 #+END_SRC
 
-** Markdown Export
+** 👀 Markdown Export
 
 Tables export in GitHub-flavored Markdown format:
 

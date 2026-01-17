@@ -812,6 +812,14 @@
         "title": "Scimax: Check Available Executors"
       },
       {
+        "command": "scimax.org.interruptBlockKernel",
+        "title": "Scimax: Interrupt Jupyter Kernel for Block"
+      },
+      {
+        "command": "scimax.org.restartBlockKernel",
+        "title": "Scimax: Restart Jupyter Kernel for Block"
+      },
+      {
         "command": "scimax.org.export",
         "title": "Scimax: Export Org Document",
         "icon": "$(export)"
@@ -1184,6 +1192,14 @@
         "title": "Scimax: Add/Change Repeater on Timestamp"
       },
       {
+        "command": "scimax.org.clockReport",
+        "title": "Scimax: Generate Clock Report"
+      },
+      {
+        "command": "scimax.org.clockTable",
+        "title": "Scimax: Insert Clock Table"
+      },
+      {
         "command": "scimax.table.moveRowUp",
         "title": "Scimax: Move Table Row Up"
       },
@@ -1367,6 +1383,18 @@
         "title": "Scimax: Push Mark"
       },
       {
+        "command": "scimax.mark.set",
+        "title": "Scimax: Set Mark (for selection)"
+      },
+      {
+        "command": "scimax.mark.cancel",
+        "title": "Scimax: Cancel Selection"
+      },
+      {
+        "command": "scimax.mark.selectToMark",
+        "title": "Scimax: Select to Mark"
+      },
+      {
         "command": "scimax.mark.pop",
         "title": "Scimax: Pop Mark"
       },
@@ -1449,6 +1477,10 @@
       {
         "command": "scimax.hydra.main",
         "title": "Scimax: Main Menu"
+      },
+      {
+        "command": "scimax.hydra.database",
+        "title": "Scimax: Database Menu"
       },
       {
         "command": "scimax.hydra.contextMenu",
@@ -1599,8 +1631,16 @@
         "title": "Scimax: Open Link at Point"
       },
       {
+        "command": "scimax.org.deleteFileLink",
+        "title": "Scimax: Delete File Link (and optionally file)"
+      },
+      {
         "command": "scimax.org.dwimReturn",
         "title": "Scimax: DWIM Return"
+      },
+      {
+        "command": "scimax.insertNewline",
+        "title": "Scimax: Insert Newline"
       },
       {
         "command": "scimax.ob.insertBlockAbove",
@@ -1947,6 +1987,10 @@
       {
         "command": "scimax.agenda.filterByTag",
         "title": "Scimax: Agenda Filter by Tag"
+      },
+      {
+        "command": "scimax.agenda.clockReport",
+        "title": "Scimax: Agenda Clock Report"
       },
       {
         "command": "scimax.agenda.refresh",
@@ -2359,7 +2403,7 @@
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock"
+        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc"
       },
       {
         "command": "scimax.markdown.insertDueDate",
@@ -2601,6 +2645,18 @@
         "when": "editorTextFocus"
       },
       {
+        "command": "scimax.mark.set",
+        "key": "ctrl+space",
+        "mac": "ctrl+space",
+        "when": "editorTextFocus && !suggestWidgetVisible && !editorHasSelection"
+      },
+      {
+        "command": "scimax.mark.cancel",
+        "key": "ctrl+g",
+        "mac": "ctrl+g",
+        "when": "editorTextFocus && editorHasSelection"
+      },
+      {
         "command": "scimax.mark.push",
         "key": "ctrl+c space",
         "mac": "ctrl+c space",
@@ -2720,6 +2776,11 @@
         "mac": "ctrl+c m"
       },
       {
+        "command": "scimax.hydra.database",
+        "key": "ctrl+c d",
+        "mac": "ctrl+c d"
+      },
+      {
         "command": "scimax.hydra.contextMenu",
         "key": "ctrl+c ctrl+m",
         "mac": "ctrl+c ctrl+m"
@@ -2831,6 +2892,12 @@
         "key": "enter",
         "mac": "enter",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !suggestWidgetVisible && !editorHasSelection && !inSnippetMode"
+      },
+      {
+        "command": "scimax.insertNewline",
+        "key": "ctrl+j",
+        "mac": "ctrl+j",
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.org.storeLink",

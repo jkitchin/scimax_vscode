@@ -200,7 +200,7 @@
       "patterns": [
         {
           "name": "meta.embedded.block.python.org",
-          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(python)(.*)$",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(python|jupyter-python|ipython|python3|py)(.*)$",
           "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
           "beginCaptures": {
             "2": { "name": "keyword.control.block.begin.org" },
@@ -320,7 +320,7 @@
         },
         {
           "name": "meta.embedded.block.r.org",
-          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(r|R)(.*)$",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(r|R|jupyter-r)(.*)$",
           "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
           "beginCaptures": {
             "2": { "name": "keyword.control.block.begin.org" },
@@ -335,7 +335,7 @@
         },
         {
           "name": "meta.embedded.block.julia.org",
-          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(julia)(.*)$",
+          "begin": "(?i)^(\\s*)(#\\+BEGIN_SRC)\\s+(julia|jupyter-julia|jl)(.*)$",
           "end": "(?i)^(\\1)(#\\+END_SRC)\\s*$",
           "beginCaptures": {
             "2": { "name": "keyword.control.block.begin.org" },

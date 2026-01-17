@@ -76,7 +76,8 @@ Each menu item has one of three exit behaviors, indicated by icons in the interf
 
 Note: The terms "Blue Head" and "Red Head" come from Emacs Hydra, which uses colored text. VS Code's QuickPick API doesn't support per-item colors, so we use icons instead.
 
-*** 👀 Exit (Blue Head) - $(sign-out)
+*** ✅ Exit (Blue Head) - $(sign-out)
+CLOSED: [2026-01-17 Sat 12:13]
 
 The menu closes after executing the command. Most commands use this behavior. These items are marked with a $(sign-out) icon (exit door).
 
@@ -85,7 +86,8 @@ The menu closes after executing the command. Most commands use this behavior. Th
 [s] Search $(sign-out)          → Starts search and closes menu
 #+end_example
 
-*** 👀 Stay (Red Head) - $(sync)
+*** ✅ Stay (Red Head) - $(sync)
+CLOSED: [2026-01-17 Sat 12:15]
 
 The menu remains open after executing the command, allowing you to execute it multiple times or try different commands. These items are marked with a $(sync) icon (circular arrows).
 
@@ -94,7 +96,8 @@ The menu remains open after executing the command, allowing you to execute it mu
 [i] Index File $(sync)          → Indexes file and keeps menu open
 #+end_example
 
-*** Submenu - $(chevron-right)
+*** ✅ Submenu - $(chevron-right)
+CLOSED: [2026-01-17 Sat 12:14]
 
 Navigates to a child menu. These items are marked with a $(chevron-right) icon (arrow).
 
@@ -132,7 +135,8 @@ Database:
   [d] Database      - Org database operations
 #+end_example
 
-** ⚠️ Journal Menu (scimax.journal)
+** ✅ Journal Menu (scimax.journal)
+CLOSED: [2026-01-17 Sat 12:15]
 
 Date-based journaling commands for creating and navigating entries.
 
@@ -166,7 +170,8 @@ Insert:
 2. Press j to open journal menu
 3. Press t to open today's entry
 
-** ⚠️ References Menu (scimax.references)
+** ✅ References Menu (scimax.references)
+CLOSED: [2026-01-17 Sat 12:15]
 
 Bibliography and citation management powered by org-ref.
 
@@ -203,7 +208,8 @@ Management:
 2. Press c to insert a citation
 3. Search for your reference and select it
 
-** ⚠️ Notebook Menu (scimax.notebook)
+** ✅ Notebook Menu (scimax.notebook)
+CLOSED: [2026-01-17 Sat 12:15]
 
 Project-based organization for scientific computing.
 
@@ -234,7 +240,8 @@ Files:
 2. Press n to create a new notebook
 3. Enter notebook name and location
 
-** ⚠️ Projectile Menu (scimax.projectile)
+** ✅ Projectile Menu (scimax.projectile)
+CLOSED: [2026-01-17 Sat 12:15]
 
 Project management and switching inspired by Emacs projectile.
 
@@ -262,7 +269,8 @@ Files:
 2. Press p again to switch to another project
 3. Select project from the list
 
-** ⚠️ Search Menu (scimax.search)
+** ✅ Search Menu (scimax.search)
+CLOSED: [2026-01-17 Sat 12:15]
 
 Comprehensive search across files and content.
 
@@ -291,7 +299,8 @@ Tasks & Agenda:
 2. Press f to search current file
 3. Type your search query
 
-** ⚠️ Jump Menu (scimax.jump)
+** ✅ Jump Menu (scimax.jump)
+CLOSED: [2026-01-17 Sat 12:15]
 
 Avy-style quick navigation for jumping to visible text.
 
@@ -320,7 +329,8 @@ Jump to Line:
 3. Type the first letter of target word
 4. Type the hint character shown at that location
 
-** ⚠️ Database Menu (scimax.database)
+** ✅ Database Menu (scimax.database)
+CLOSED: [2026-01-17 Sat 12:15]
 
 Org database operations including search and indexing.
 
@@ -356,20 +366,26 @@ Statistics:
 2. Press s to perform full-text search
 3. Enter your search query
 
-* ⚠️ Commands and Keybindings
+* ✅ Commands and Keybindings
+CLOSED: [2026-01-17 Sat 12:15]
 
-** ⚠️ Global Keybindings
+** ✅ Global Keybindings
+CLOSED: [2026-01-17 Sat 12:15]
 
-| Keybinding              | Command                       | Description                      |
-|-------------------------+-------------------------------+----------------------------------|
-| C-c m                | scimax.hydra.main             | Open main menu                   |
-| C-c C-m           | scimax.hydra.contextMenu      | Open context-aware menu          |
+| Keybinding | Command                  | Description             |
+|------------+--------------------------+-------------------------|
+| C-c m      | scimax.hydra.main        | Open main menu          |
+| C-c C-m    | scimax.hydra.contextMenu | Open context-aware menu |
 
-** ⚠️ Available Commands
+[[cmd:scimax.hydra.main][C-c m]] opens the main hydra menu, while [[cmd:scimax.hydra.contextMenu][C-c C-m]] opens a menu tailored to the current file type.
 
-All hydra commands can be invoked through the command palette (C-S-P):
+** ✅ Available Commands
+CLOSED: [2026-01-17 Sat 12:16]
 
-*** ⚠️ scimax.hydra.show
+All hydra commands can be invoked through the command palette (Cmd/C-S-P):
+
+*** ✅ scimax.hydra.show
+CLOSED: [2026-01-17 Sat 12:16]
 
 Show a specific hydra menu by ID. If no ID is provided, shows a picker to select from available menus.
 
@@ -381,23 +397,28 @@ await vscode.commands.executeCommand('scimax.hydra.show', 'scimax.main');
 await vscode.commands.executeCommand('scimax.hydra.show');
 #+end_src
 
-*** ⚠️ scimax.hydra.hide
+*** ✅ scimax.hydra.hide
+CLOSED: [2026-01-17 Sat 12:16]
 
 Hide the currently visible hydra menu.
 
-*** ⚠️ scimax.hydra.back
+*** ✅ scimax.hydra.back
+CLOSED: [2026-01-17 Sat 12:16]
 
 Navigate back to the parent menu. If there's no parent, closes the menu.
 
-*** ⚠️ scimax.hydra.main
+*** ✅ scimax.hydra.main
+CLOSED: [2026-01-17 Sat 12:17]
 
 Open the main Scimax menu (scimax.main).
 
-*** ⚠️ scimax.hydra.contextMenu
+*** ✅ scimax.hydra.contextMenu
+CLOSED: [2026-01-17 Sat 12:17]
 
 Open a context-aware menu based on the current file type. Falls back to the main menu if no language-specific menu exists.
 
-*** ⚠️ scimax.hydra.toggle
+*** ✅ scimax.hydra.toggle
+CLOSED: [2026-01-17 Sat 12:17]
 
 Toggle visibility of a specific menu.
 
@@ -405,13 +426,16 @@ Toggle visibility of a specific menu.
 await vscode.commands.executeCommand('scimax.hydra.toggle', 'scimax.journal');
 #+end_src
 
-* ⚠️ Configuration
+* ✅ Configuration
+CLOSED: [2026-01-17 Sat 12:17]
 
-** ⚠️ Settings
+** ✅ Settings
+CLOSED: [2026-01-17 Sat 12:17]
 
-Configure hydra behavior through VS Code settings (File > Preferences > Settings or C-,):
+Configure hydra behavior through VS Code settings (File > Preferences > Settings or Cmd/C-,):
 
-*** ⚠️ scimax.hydra.showKeyHints
+*** ✅ scimax.hydra.showKeyHints
+CLOSED: [2026-01-17 Sat 12:17]
 
 Show keyboard shortcuts inline with menu items.
 
@@ -431,7 +455,8 @@ Today               - Without key hints
 }
 #+end_src
 
-*** ⚠️ scimax.hydra.singleKeySelection
+*** ✅ scimax.hydra.singleKeySelection
+CLOSED: [2026-01-17 Sat 12:17]
 
 Select menu items with a single keypress (no Enter needed).
 
@@ -446,7 +471,8 @@ When enabled, pressing a key immediately executes the command. When disabled, yo
 }
 #+end_src
 
-*** ⚠️ scimax.hydra.dimNonMatching
+*** ✅ scimax.hydra.dimNonMatching
+CLOSED: [2026-01-17 Sat 12:17]
 
 Dim menu items that don't match the current filter.
 
@@ -461,7 +487,8 @@ When typing to filter, non-matching items are dimmed rather than hidden.
 }
 #+end_src
 
-*** ⚠️ scimax.hydra.sortByKey
+*** ✅ scimax.hydra.sortByKey
+CLOSED: [2026-01-17 Sat 12:17]
 
 Sort menu items by their keyboard shortcut instead of definition order.
 
@@ -476,7 +503,8 @@ When enabled, items are alphabetically sorted by key (a, b, c...) rather than th
 }
 #+end_src
 
-** ⚠️ Example Configuration
+** ✅ Example Configuration
+CLOSED: [2026-01-17 Sat 12:17]
 
 A complete hydra configuration might look like:
 
@@ -489,11 +517,13 @@ A complete hydra configuration might look like:
 }
 #+end_src
 
-* ⚠️ Creating Custom Hydras
+* ✅ Creating Custom Hydras
+CLOSED: [2026-01-17 Sat 12:17]
 
 You can create custom hydra menus programmatically in extension code or through configuration.
 
-** ⚠️ Menu Structure
+** ✅ Menu Structure
+CLOSED: [2026-01-17 Sat 12:17]
 
 A hydra menu definition consists of:
 
@@ -503,7 +533,8 @@ A hydra menu definition consists of:
 - Optional parent menu for hierarchical navigation
 - Optional lifecycle hooks
 
-** ⚠️ Using the Fluent Builder API
+** ✅ Using the Fluent Builder API
+CLOSED: [2026-01-17 Sat 12:17]
 
 The easiest way to create a custom menu is with the fluent builder:
 
@@ -527,9 +558,11 @@ const menu = hydraManager.createMenuBuilder('my.custom.menu')
 hydraManager.registerMenu(menu);
 #+end_src
 
-** ⚠️ Menu Item Types
+** ✅ Menu Item Types
+CLOSED: [2026-01-17 Sat 12:17]
 
-*** ⚠️ Exit Commands (Blue Heads)
+*** ✅ Exit Commands (Blue Heads)
+CLOSED: [2026-01-17 Sat 12:17]
 
 Close the menu after executing:
 
@@ -537,7 +570,8 @@ Close the menu after executing:
 .command('t', 'Today', 'scimax.journal.today')
 #+end_src
 
-*** ⚠️ Persistent Commands (Red Heads)
+*** ✅ Persistent Commands (Red Heads)
+CLOSED: [2026-01-17 Sat 12:17]
 
 Keep the menu open after executing:
 
@@ -545,7 +579,8 @@ Keep the menu open after executing:
 .persistentCommand('r', 'Refresh', 'my.refresh.command')
 #+end_src
 
-*** ⚠️ Submenu Links
+*** ✅ Submenu Links
+CLOSED: [2026-01-17 Sat 12:17]
 
 Navigate to a child menu:
 
@@ -553,7 +588,8 @@ Navigate to a child menu:
 .submenu('j', 'Journal', 'scimax.journal')
 #+end_src
 
-** ⚠️ Manual Menu Definition
+** ✅ Manual Menu Definition
+CLOSED: [2026-01-17 Sat 12:17]
 
 For more control, you can define menus manually:
 
@@ -605,9 +641,11 @@ const customMenu: HydraMenuDefinition = {
 hydraManager.registerMenu(customMenu);
 #+end_src
 
-** ⚠️ Advanced Features
+** ✅ Advanced Features
+CLOSED: [2026-01-17 Sat 12:17]
 
-*** ⚠️ Conditional Visibility
+*** ✅ Conditional Visibility
+CLOSED: [2026-01-17 Sat 12:17]
 
 Show items only when certain conditions are met:
 
@@ -624,7 +662,8 @@ Show items only when certain conditions are met:
 }
 #+end_src
 
-*** ⚠️ Toggle Items
+*** ✅ Toggle Items
+CLOSED: [2026-01-17 Sat 12:17]
 
 Display on/off state for toggle commands:
 
@@ -644,7 +683,8 @@ Display on/off state for toggle commands:
 
 Toggle items display $(check) when on and $(circle-outline) when off.
 
-*** ⚠️ Lifecycle Hooks
+*** ✅ Lifecycle Hooks
+CLOSED: [2026-01-17 Sat 12:17]
 
 Execute code when menus are shown or hidden:
 
@@ -664,7 +704,8 @@ const menu: HydraMenuDefinition = {
 };
 #+end_src
 
-** ⚠️ Registering Multiple Menus
+** ✅ Registering Multiple Menus
+CLOSED: [2026-01-17 Sat 12:18]
 
 Register several menus at once:
 
@@ -673,7 +714,8 @@ const menus = [menu1, menu2, menu3];
 hydraManager.registerMenus(menus);
 #+end_src
 
-** ⚠️ Unregistering Menus
+** ✅ Unregistering Menus
+CLOSED: [2026-01-17 Sat 12:18]
 
 Remove a menu from the registry:
 
@@ -681,9 +723,11 @@ Remove a menu from the registry:
 hydraManager.unregisterMenu('my.custom.menu');
 #+end_src
 
-* ⚠️ Practical Examples
+* ✅ Practical Examples
+CLOSED: [2026-01-17 Sat 12:18]
 
-** ⚠️ Example 1: Opening Today's Journal
+** ✅ Example 1: Opening Today's Journal
+CLOSED: [2026-01-17 Sat 12:18]
 
 The quickest way to open today's journal entry:
 
@@ -693,7 +737,8 @@ The quickest way to open today's journal entry:
 
 Or, if you remember the keybinding, press C-S-J directly.
 
-** ⚠️ Example 2: Inserting a Citation
+** ✅ Example 2: Inserting a Citation
+CLOSED: [2026-01-17 Sat 12:18]
 
 To insert a citation in your document:
 
@@ -704,7 +749,8 @@ To insert a citation in your document:
 5. Type to search for your reference
 6. Select the reference to insert it
 
-** ⚠️ Example 3: Quick Navigation with Jump
+** ✅ Example 3: Quick Navigation with Jump
+CLOSED: [2026-01-17 Sat 12:18]
 
 To jump to a visible word on screen:
 
@@ -715,7 +761,8 @@ To jump to a visible word on screen:
 5. Type the hint character shown at target location
 6. Cursor jumps to that word
 
-** ⚠️ Example 4: Searching TODO Items
+** ✅ Example 4: Searching TODO Items
+CLOSED: [2026-01-17 Sat 12:18]
 
 To find all TODO items in your org files:
 
@@ -745,11 +792,13 @@ When in a deep submenu:
 3. Press Backspace or select "Back" → returns to main menu
 4. Press Escape → closes all menus
 
-* ⚠️ Differences from Emacs Hydra
+* ✅ Differences from Emacs Hydra
+CLOSED: [2026-01-17 Sat 12:19]
 
 While inspired by Emacs hydra, the VS Code implementation has some differences due to platform constraints and design choices:
 
-** ⚠️ Similarities
+** ✅ Similarities
+CLOSED: [2026-01-17 Sat 12:19]
 
 - Keyboard-driven navigation with single-key selection
 - Persistent menus that stay open for repeated actions
@@ -757,9 +806,11 @@ While inspired by Emacs hydra, the VS Code implementation has some differences d
 - Hierarchical menu organization
 - Visual indicators and hints
 
-** ⚠️ Differences
+** ✅ Differences
+CLOSED: [2026-01-17 Sat 12:19]
 
-*** ⚠️ Quick Pick vs. Minibuffer
+*** ✅ Quick Pick vs. Minibuffer
+CLOSED: [2026-01-17 Sat 12:19]
 
 VS Code uses the native quick pick interface instead of Emacs's minibuffer. This provides:
 
@@ -769,41 +820,47 @@ VS Code uses the native quick pick interface instead of Emacs's minibuffer. This
 - Icon support
 - Better accessibility
 
-*** ⚠️ No Dedicated Hydra Mode
+*** ✅ No Dedicated Hydra Mode
+CLOSED: [2026-01-17 Sat 12:20]
 
 VS Code doesn't have a dedicated "hydra mode" like Emacs. Hydras appear as quick picks that temporarily take focus but don't create a new modal mode.
 
-*** ⚠️ Async Command Execution
+*** ✅ Async Command Execution
+CLOSED: [2026-01-17 Sat 12:20]
 
 Commands execute asynchronously and can return Promises, supporting VS Code's async command pattern.
 
-*** 👀 Icon-Based Indicators Instead of Colors
+*** Icon-Based Indicators Instead of Colors
 
 Unlike Emacs hydra which uses colored text (blue for exit, red for stay), VS Code's QuickPick API doesn't support per-item color customization. Instead, we use codicons to indicate behavior:
 
-| Behavior | Icon           | Meaning                              |
-|----------|----------------|--------------------------------------|
-| Exit     | $(sign-out)    | Menu closes after command executes   |
-| Stay     | $(sync)        | Menu stays open after command        |
-| Submenu  | $(chevron-right) | Navigates to a child menu          |
-| Toggle On  | $(check)     | Toggle is currently enabled          |
-| Toggle Off | $(circle-outline) | Toggle is currently disabled    |
+| Behavior   | Icon              | Meaning                            |
+|------------+-------------------+------------------------------------|
+| Exit       | $(sign-out)       | Menu closes after command executes |
+| Stay       | $(sync)           | Menu stays open after command      |
+| Submenu    | $(chevron-right)  | Navigates to a child menu          |
+| Toggle On  | $(check)          | Toggle is currently enabled        |
+| Toggle Off | $(circle-outline) | Toggle is currently disabled       |
 
 The overall color theme follows VS Code's active color theme.
 
-*** ⚠️ Menu State Persistence
+*** ✅ Menu State Persistence
+CLOSED: [2026-01-17 Sat 12:20]
 
 The hydra state is not persisted across VS Code restarts. Each session starts fresh.
 
-*** ⚠️ Configuration Through Settings
+*** ✅ Configuration Through Settings
+CLOSED: [2026-01-17 Sat 12:20]
 
 Configuration uses VS Code's settings system (JSON) rather than Emacs Lisp variables.
 
-*** ⚠️ No Posframe Support
+*** ✅ No Posframe Support
+CLOSED: [2026-01-17 Sat 12:20]
 
 Menus don't appear at specific screen positions like Emacs posframe. They always appear in the standard quick pick location (top center).
 
-** ⚠️ Migration Tips
+** ✅ Migration Tips
+CLOSED: [2026-01-17 Sat 12:20]
 
 If you're coming from Emacs hydra:
 
@@ -813,30 +870,35 @@ If you're coming from Emacs hydra:
 4. *Submenus*: Use the submenu exit behavior instead of (exit) with another hydra call
 5. *Hooks*: Use onShow and onHide instead of :before-exit and :after-exit
 
-* ⚠️ Tips and Best Practices
+* ✅ Tips and Best Practices
+CLOSED: [2026-01-17 Sat 12:20]
 
-** ⚠️ Discoverability
+** ✅ Discoverability
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Keep menus organized in logical groups
 - Use descriptive labels and helpful descriptions
 - Add icons to make items visually distinct
 - Use consistent key assignments (e.g., s for search, n for new)
 
-** ⚠️ Performance
+** ✅ Performance
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Use conditional visibility (when) to hide irrelevant items
 - Don't create too many nested submenus (2-3 levels max)
 - Keep async actions fast to avoid blocking the UI
 - Use persistent commands (stay) for repeated actions
 
-** ⚠️ Keyboard Shortcuts
+** ✅ Keyboard Shortcuts
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Assign memorable single-letter keys
 - Use uppercase for destructive or advanced operations
 - Group related commands under similar keys across menus
 - Reserve common keys (q for quit, ? for help, b for back)
 
-** ⚠️ User Experience
+** ✅ User Experience
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Provide clear hints in menu titles
 - Show toggle state for boolean options
@@ -844,7 +906,8 @@ If you're coming from Emacs hydra:
 - Test both keyboard and mouse interaction
 - Ensure menus work in all relevant contexts
 
-** ⚠️ Debugging
+** ✅ Debugging
+CLOSED: [2026-01-17 Sat 12:20]
 
 To debug custom menus:
 
@@ -854,50 +917,59 @@ To debug custom menus:
 4. Check for errors in command execution
 5. Verify menu registration with hydraManager.getMenuIds()
 
-* ⚠️ Troubleshooting
+* ✅ Troubleshooting
+CLOSED: [2026-01-17 Sat 12:20]
 
-** ⚠️ Menu Not Appearing
+** ✅ Menu Not Appearing
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Verify the menu is registered: Check hydraManager.getMenuIds()
 - Ensure the menu ID is correct
 - Check for errors in the Developer Console
 - Verify keybindings are not conflicting
 
-** ⚠️ Commands Not Executing
+** ✅ Commands Not Executing
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Verify the command is registered in VS Code
 - Check command arguments are correct
 - Look for errors in the Developer Console
 - Test the command directly from command palette
 
-** ⚠️ Items Not Showing
+** ✅ Items Not Showing
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Check the when condition if present
 - Verify group visibility conditions
 - Ensure items are not filtered by current search
 - Check that sortByKey setting isn't hiding items
 
-** ⚠️ Single-Key Selection Not Working
+** ✅ Single-Key Selection Not Working
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Verify scimax.hydra.singleKeySelection is true
 - Check for key conflicts with other extensions
 - Ensure the hydra menu has focus
 - Try pressing keys slowly (avoid double-press)
 
-** ⚠️ Submenus Not Navigating
+** ✅ Submenus Not Navigating
+CLOSED: [2026-01-17 Sat 12:20]
 
 - Verify submenu ID exists and is registered
 - Check exit is set to 'submenu'
 - Ensure action contains the submenu ID string
 - Verify parent menu is properly configured
 
-* ⚠️ Frequently Asked Questions
+* ✅ Frequently Asked Questions
+CLOSED: [2026-01-17 Sat 12:20]
 
-** ⚠️ Can I create hydras for non-Scimax commands?
+** ✅ Can I create hydras for non-Scimax commands?
+CLOSED: [2026-01-17 Sat 12:20]
 
 Yes! You can create hydras that execute any VS Code command, including those from other extensions.
 
-** ⚠️ How do I add a hydra to the command palette?
+** ✅ How do I add a hydra to the command palette?
+CLOSED: [2026-01-17 Sat 12:20]
 
 Hydra commands like scimax.hydra.show are automatically available in the command palette. To show a specific menu, register it first, then call:
 
@@ -905,7 +977,8 @@ Hydra commands like scimax.hydra.show are automatically available in the command
 await vscode.commands.executeCommand('scimax.hydra.show', 'your.menu.id');
 #+end_src
 
-** ⚠️ Can I bind a hydra to a custom keybinding?
+** ✅ Can I bind a hydra to a custom keybinding?
+CLOSED: [2026-01-17 Sat 12:20]
 
 Yes! Add a keybinding in keybindings.json:
 
@@ -917,15 +990,18 @@ Yes! Add a keybinding in keybindings.json:
 }
 #+end_src
 
-** ⚠️ How do I share custom hydras with my team?
+** ✅ How do I share custom hydras with my team?
+CLOSED: [2026-01-17 Sat 12:20]
 
 Custom hydras defined in extension code are automatically shared. For configuration-based hydras, share your workspace .vscode/settings.json file.
 
-** ⚠️ Can hydras work with multiple workspaces?
+** ✅ Can hydras work with multiple workspaces?
+CLOSED: [2026-01-17 Sat 12:20]
 
 Yes! Hydras are global to the VS Code window and work across all workspace folders.
 
-** ⚠️ How do I disable hydras?
+** ✅ How do I disable hydras?
+CLOSED: [2026-01-17 Sat 12:20]
 
 Unmap the keybindings in your keybindings.json:
 
@@ -938,9 +1014,11 @@ Unmap the keybindings in your keybindings.json:
 
 The hydras remain available through the command palette.
 
-* ⚠️ Additional Resources
+* ✅ Additional Resources
+CLOSED: [2026-01-17 Sat 12:20]
 
-** ⚠️ Source Code
+** ✅ Source Code
+CLOSED: [2026-01-17 Sat 12:20]
 
 The hydra framework source is located in src/hydra/:
 
@@ -949,7 +1027,8 @@ The hydra framework source is located in src/hydra/:
 - src/hydra/commands.ts - Command registrations
 - src/hydra/menus/ - Pre-built menu definitions
 
-** ⚠️ Related Documentation
+** ✅ Related Documentation
+CLOSED: [2026-01-17 Sat 12:20]
 
 - [[file:24-keybindings.org][Keybindings]] - All Scimax keyboard shortcuts
 - [[file:26-configuration.org][Configuration]] - Complete settings reference
@@ -957,13 +1036,15 @@ The hydra framework source is located in src/hydra/:
 - [[file:19-references.org][References]] - Bibliography management
 - [[file:18-database-search.org][Database Search]] - Search and query system
 
-** ⚠️ External References
+** ✅ External References
+CLOSED: [2026-01-17 Sat 12:20]
 
 - [[https://github.com/abo-abo/hydra][Emacs Hydra Package]] - Original inspiration
 - [[https://github.com/magit/transient][Emacs Transient Package]] - Alternative approach
 - [[https://code.visualstudio.com/api/references/vscode-api#QuickPick][VS Code QuickPick API]] - Underlying implementation
 
-* ⚠️ Conclusion
+* ✅ Conclusion
+CLOSED: [2026-01-17 Sat 12:20]
 
 Hydra menus provide a powerful and discoverable way to access Scimax features. Whether you're a new user exploring available commands or an experienced user building custom workflows, hydras help you work efficiently without memorizing dozens of keyboard shortcuts.
 
@@ -971,7 +1052,7 @@ Start with C-c m to open the main menu and explore. Over time, you'll develop mu
 
 Happy hydra-ing!
 
-* Navigation
+* 👀 Navigation
 
 - Previous: [[file:21-navigation.org][Navigation]]
 - Index: [[file:00-index.org][Documentation Index]]

@@ -32,6 +32,7 @@ import type {
     VerbatimObject,
     LinkObject,
     PlainTextObject,
+    LatexFragmentObject,
     OrgRange,
 } from './orgElementTypes';
 
@@ -60,6 +61,12 @@ const VERBATIM_PATTERN = /~([^\s~](?:[^~]{0,500}[^\s~])?)~/g;
 // Emacs-style command markup: `command'
 const COMMAND_PATTERN = /`([^`'\n]+)'/g;
 
+// LaTeX math patterns
+// Display math: $$...$$ or \[...\]
+const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
+// Inline math: $...$ (not $$) or \(...\)
+const INLINE_MATH_PATTERN = /(?<!\$)\$([^$\n]+)\$(?!\$)|\\\(([^)]+)\\\)/g;
+
 /**
  * Parse inline objects using regex patterns - much faster than character-by-character
  */
@@ -69,7 +76,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
         return [];
     }
 
-    if (text.length < 3 || !/[*/_+=~\[\]:]/.test(text)) {
+    if (text.length < 3 || !/[*/_+=~\[\]:$\\]/.test(text)) {
         return [createPlainText(text, 0, text.length)];
     }
 
@@ -259,6 +266,40 @@ export function parseObjectsFast(text: string): OrgObject[] {
             postBlank: 0,
             properties: { value: m[1] },
         }));
+    }
+
+    // LaTeX math (higher priority, check first)
+    if (text.includes('$') || text.includes('\\')) {
+        // Display math first ($$...$$ or \[...\]) - has higher priority
+        collectMatches(DISPLAY_MATH_PATTERN, (m) => {
+            // m[1] is from $$...$$ pattern, m[2] is from \[...\] pattern
+            const content = m[1] || m[2];
+            const isDoubleDollar = m[0].startsWith('$$');
+            return {
+                type: 'latex-fragment' as const,
+                range: { start: m.index!, end: m.index! + m[0].length },
+                postBlank: 0,
+                properties: {
+                    value: m[0],
+                    fragmentType: 'display-math' as const,
+                },
+            };
+        });
+
+        // Inline math ($...$ or \(...\))
+        collectMatches(INLINE_MATH_PATTERN, (m) => {
+            // m[1] is from $...$ pattern, m[2] is from \(...\) pattern
+            const content = m[1] || m[2];
+            return {
+                type: 'latex-fragment' as const,
+                range: { start: m.index!, end: m.index! + m[0].length },
+                postBlank: 0,
+                properties: {
+                    value: m[0],
+                    fragmentType: 'inline-math' as const,
+                },
+            };
+        });
     }
 
     // If no matches found, return text as single plain text object

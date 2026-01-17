@@ -510,6 +510,31 @@ export class HtmlExportBackend implements ExportBackend {
         const code = escapeString(block.properties.value, 'html');
         const langClass = `language-${lang}`;
 
+        // Parse :exports header argument
+        const params = block.properties.parameters || '';
+        const exportsMatch = params.match(/:exports\s+(\w+)/i);
+        const exports = exportsMatch ? exportsMatch[1].toLowerCase() : 'both';
+
+        // Handle :exports none - skip both code and results
+        if (exports === 'none') {
+            state.skipNextResults = true;
+            return '';
+        }
+
+        // Handle :exports results - skip code, include results
+        if (exports === 'results') {
+            state.skipNextResults = false; // Don't skip results
+            return '';
+        }
+
+        // Handle :exports code - include code, skip results
+        if (exports === 'code') {
+            state.skipNextResults = true;
+        } else {
+            // :exports both (default) - include both
+            state.skipNextResults = false;
+        }
+
         let wrapper = '<div class="org-src-container">\n';
 
         // Add caption if present
@@ -721,6 +746,12 @@ export class HtmlExportBackend implements ExportBackend {
     }
 
     private exportFixedWidth(element: FixedWidthElement, state: ExportState): string {
+        // Check if we should skip this results block (based on :exports header)
+        if (state.skipNextResults) {
+            state.skipNextResults = false; // Reset the flag
+            return '';
+        }
+
         const content = escapeString(element.properties.value, 'html');
         return `<pre class="fixed-width">${content}</pre>\n`;
     }

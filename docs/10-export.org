@@ -65,20 +65,30 @@ CLOSED: [2026-01-16 Fri 20:55]
 *** ⚠️ MathJax Integration
 
 HTML exports automatically include MathJax for rendering mathematical content:
-- Inline math: `$x^2 + y^2 ' r^2$` → \(x^2 + y^2 ' r^2\)
-- Display math: `$$\int_0^\infty e^{-x^2} dx ' \frac{\sqrt{\pi}}{2}$$` → \[\int_0^\infty e^{-x^2} dx ' \frac{\sqrt{\pi}}{2}\]
-- LaTeX environments work directly
 
-*** Example
+| Syntax                     | Renders as                 |
+|----------------------------+----------------------------|
+| ~$x^2 + y^2 = r^2$~        | $x^2 + y^2 = r^2$          |
+| ~$$E = mc^2$$~             | $$E = mc^2$$               |
+| ~\(inline\)~               | \(inline\)                 |
+| ~\[display\]~              | \[display\]                |
 
-#+BEGIN_SRC org
-#+TITLE: My Research Notes
-#+AUTHOR: Jane Doe
-#+OPTIONS: toc:t num:t
+LaTeX environments also work directly.
 
-,* Introduction
+\begin{equation}
+x^2 + y^2 = r^2
+\end{equation}
+
+Inline math: \(\int_0^1 x dx\)
+
+Display math:
+
+\[\int0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}\]
+
+*** ✅ Example
+CLOSED: [2026-01-17 Sat 09:12]
+
 This document demonstrates HTML export with math: $E = mc^2$
-#+END_SRC
 
 Export with `C-c C-e h h' to produce a standalone HTML file.
 
@@ -196,11 +206,13 @@ Use `#+NAME:' for labeled elements and link to them:
 See Figure [[fig:diagram]] for the system architecture.
 #+END_SRC
 
-** PDF Export
+** ✅ PDF Export
+CLOSED: [2026-01-17 Sat 09:14]
 
 PDF export works by first generating LaTeX and then compiling with a LaTeX engine.
 
-*** Compilation Process
+*** ✅ Compilation Process
+CLOSED: [2026-01-17 Sat 09:15]
 
 The system uses `latexmk' for smart incremental builds:
 1. Org → LaTeX conversion
@@ -208,14 +220,16 @@ The system uses `latexmk' for smart incremental builds:
 3. Bibliography processing if needed
 4. PDF generation
 
-*** Supported Compilers
+*** ✅ Supported Compilers
+CLOSED: [2026-01-17 Sat 09:15]
 
 Configure the LaTeX compiler in VS Code settings (`scimax.latexLivePreview.compiler'):
 - `pdflatex' (default) - Standard LaTeX compiler
 - `xelatex' - For Unicode and system fonts
 - `lualatex' - For advanced features and LuaTeX
 
-*** Requirements
+*** ✅ Requirements
+CLOSED: [2026-01-17 Sat 09:15]
 
 PDF export requires:
 - LaTeX distribution (TeX Live, MiKTeX, or MacTeX)
@@ -241,11 +255,13 @@ Enable automatic PDF building in settings:
 }
 #+END_SRC
 
-** Markdown Export
+** ✅ Markdown Export
+CLOSED: [2026-01-17 Sat 09:18]
 
 Markdown export produces GitHub-flavored Markdown (GFM) suitable for GitHub, GitLab, and other platforms.
 
-*** Features
+*** ✅ Features
+CLOSED: [2026-01-17 Sat 09:18]
 - Headings (`# ## ###')
 - Emphasis (`*bold*', `_italic_', `~`strikethrough'~')
 - Lists (ordered and unordered)
@@ -254,7 +270,8 @@ Markdown export produces GitHub-flavored Markdown (GFM) suitable for GitHub, Git
 - Links and images
 - Blockquotes
 
-*** Example Conversion
+*** ✅ Example Conversion
+CLOSED: [2026-01-17 Sat 09:18]
 
 *Org input:*
 #+BEGIN_SRC org
@@ -290,29 +307,29 @@ print("Hello, world!")
 
 ** Primary Keybindings
 
-| Keybinding            | Command                        | Description                    |
-|-----------------------+--------------------------------+--------------------------------|
-| =C-c C-e=             | Export dispatcher              | Open export menu               |
-| =C-c C-e h h=         | HTML export                    | Export to HTML file            |
-| =C-c C-e h o=         | HTML export and open           | Export HTML and open in browser|
-| =C-c C-e l l=         | LaTeX export                   | Export to .tex file            |
-| =C-c C-e l p=         | PDF export                     | Export to PDF via LaTeX        |
-| =C-c C-e l o=         | PDF export and open            | Export PDF and open viewer     |
-| =C-c C-e m m=         | Markdown export                | Export to .md file             |
+| Keybinding  | Command              | Description                     |
+|-------------+----------------------+---------------------------------|
+| C-c C-e     | Export dispatcher    | Open export menu                |
+| C-c C-e h h | HTML export          | Export to HTML file             |
+| C-c C-e h o | HTML export and open | Export HTML and open in browser |
+| C-c C-e l l | LaTeX export         | Export to .tex file             |
+| C-c C-e l p | PDF export           | Export to PDF via LaTeX         |
+| C-c C-e l o | PDF export and open  | Export PDF and open viewer      |
+| C-c C-e m m | Markdown export      | Export to .md file              |
 
 ** Additional LaTeX Keybindings
 
-| Keybinding   | Command                   | Description                          |
-|--------------+---------------------------+--------------------------------------|
-| =C-c C-e l v= | Open LaTeX preview        | Open PDF preview (if built)          |
-| =C-c C-e l s= | Forward sync              | Sync cursor position to PDF (SyncTeX)|
+| Keybinding  | Command            | Description                           |
+|-------------+--------------------+---------------------------------------|
+| C-c C-e l v | Open LaTeX preview | Open PDF preview (if built)           |
+| C-c C-e l s | Forward sync       | Sync cursor position to PDF (SyncTeX) |
 
 ** Quick Access
 
 For frequently used exports, use the quick commands:
-- `C-S-P' → "Scimax: Export to HTML"
-- `C-S-P' → "Scimax: Export to PDF"
-- `C-S-P' → "Scimax: Export to Markdown"
+- [[cmd:scimax.org.exportHtmlOpen]]
+- [[cmd:scimax.org.exportLatexOpen]]
+- [[cmd:scimax.org.exportMarkdown]]
 
 * Export Scope
 
@@ -1529,43 +1546,28 @@ Add custom LaTeX preamble for ACM format
 Fix image paths in HTML export
 #+END_SRC
 
-** Performance Optimization
+** ✅ Performance Optimization
+CLOSED: [2026-01-17 Sat 09:25]
 
-*** For Large Documents
+*** ✅ For Large Documents
+CLOSED: [2026-01-17 Sat 09:25]
 1. Disable auto-build during editing
 2. Use `#+INCLUDE:' for modular structure
 3. Cache expensive computations
 4. Optimize image sizes
 
-*** For Fast Iteration
+*** ✅ For Fast Iteration
+CLOSED: [2026-01-17 Sat 09:25]
 1. Use HTML preview for quick checks
 2. Enable `buildOnIdle' with appropriate delay
 3. Use body-only export for faster generation
 4. Minimize custom packages
 
-** Quality Assurance
+* ✅ Example Workflows
+CLOSED: [2026-01-17 Sat 09:26]
 
-*** Pre-Export Checklist
-- [ ] Spell check content
-- [ ] Verify all links work
-- [ ] Check image references
-- [ ] Review math equations
-- [ ] Validate table formatting
-- [ ] Test code examples
-- [ ] Proofread metadata
-
-*** Post-Export Verification
-- [ ] Open exported file
-- [ ] Check table of contents
-- [ ] Verify images display
-- [ ] Test internal links
-- [ ] Review formatting
-- [ ] Validate math rendering
-- [ ] Check code highlighting
-
-* Example Workflows
-
-** Academic Paper Workflow
+** ✅ Academic Paper Workflow
+CLOSED: [2026-01-17 Sat 09:26]
 
 *** 1. Initial Setup
 #+BEGIN_SRC org
@@ -1622,9 +1624,11 @@ Review generated PDF, make final edits, submit.
 *** 4. Deploy
 Copy HTML and CSS to docs server or GitHub Pages.
 
-** Blog Post Workflow
+** ✅ Blog Post Workflow
+CLOSED: [2026-01-17 Sat 09:27]
 
-*** 1. Write in Org
+*** ✅ 1. Write in Org
+CLOSED: [2026-01-17 Sat 09:27]
 #+BEGIN_SRC org
 #+TITLE: 10 Tips for Better Python Code
 #+AUTHOR: Tech Blogger
@@ -1632,104 +1636,90 @@ Copy HTML and CSS to docs server or GitHub Pages.
 #+OPTIONS: toc:nil num:nil
 #+END_SRC
 
-*** 2. Export to Markdown
+*** ✅ 2. Export to Markdown
+CLOSED: [2026-01-17 Sat 09:27]
 `C-c C-e m m' → Markdown
 
-*** 3. Publish
+*** ✅ 3. Publish
+CLOSED: [2026-01-17 Sat 09:27]
 Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)
 
-** Presentation Workflow
 
-*** 1. Use Beamer
-#+BEGIN_SRC org
-#+TITLE: Quarterly Results
-#+AUTHOR: Finance Team
-#+LATEX_CLASS: beamer
-#+LATEX_CLASS_OPTIONS: [presentation,t]
-#+BEAMER_THEME: Madrid
-#+END_SRC
+* ✅ Resources
+CLOSED: [2026-01-17 Sat 09:29]
 
-*** 2. Create Slides
-#+BEGIN_SRC org
-,* Introduction
-,** Key Achievements
-- Revenue up 15%
-- 3 new products launched
+** ✅ External Links
+CLOSED: [2026-01-17 Sat 09:29]
 
-,** Challenges
-- Supply chain delays
-- Market competition
-#+END_SRC
-
-*** 3. Export to PDF
-`C-c C-e l p' → Beamer PDF presentation
-
-* Resources
-
-** External Links
-
-*** Org-Mode Documentation
+*** ✅ Org-Mode Documentation
+CLOSED: [2026-01-17 Sat 09:29]
 - [[https://orgmode.org/manual/Exporting.html][Official Export Documentation]]
 - [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][LaTeX Export Tutorial]]
 - [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][HTML Export Tutorial]]
 
-*** LaTeX Resources
+*** ✅ LaTeX Resources
+CLOSED: [2026-01-17 Sat 09:29]
 - [[https://www.latex-project.org/][LaTeX Project]]
 - [[https://ctan.org/][CTAN - Package Archive]]
 - [[https://www.overleaf.com/learn][Overleaf Learn LaTeX]]
 
-*** Tools
+*** ✅ Tools
+CLOSED: [2026-01-17 Sat 09:29]
 - [[https://www.mathjax.org/][MathJax Documentation]]
 - [[https://highlightjs.org/][highlight.js]]
 - [[https://pandoc.org/][Pandoc - Universal Document Converter]]
 
-** Related Scimax Documentation
+** ✅ Related Scimax Documentation
+CLOSED: [2026-01-17 Sat 09:29]
 
 - [[file:01-getting-started.org][Getting Started with Scimax]]
 - [[file:04-tables.org][Working with Tables]]
 - [[file:05-links.org][Links and Cross-References]]
 - [[file:03-todo-items.org][TODO Items and Planning]]
 
-** Community
+** ✅ Community
+CLOSED: [2026-01-17 Sat 09:29]
 
 - [[https://github.com/jkitchin/scimax_vscode][Scimax VS Code Repository]]
 - [[https://github.com/jkitchin/scimax_vscode/issues][Issue Tracker]]
 - [[https://github.com/jkitchin/scimax_vscode/discussions][Discussions]]
 
-* Appendix
+* ✅ Appendix
+CLOSED: [2026-01-17 Sat 09:29]
 
-** Complete Keybinding Reference
+** ✅ Complete Keybinding Reference
+CLOSED: [2026-01-17 Sat 09:29]
 
 | Keybinding       | Command                    | Description                      |
 |------------------+----------------------------+----------------------------------|
-| =C-c C-e=        | Export dispatcher          | Open export menu                 |
-| =C-c C-e h h=    | HTML export                | Export to .html                  |
-| =C-c C-e h o=    | HTML export and open       | Export and open in browser       |
-| =C-c C-e h p=    | HTML preview               | Preview in VS Code webview       |
-| =C-c C-e l l=    | LaTeX export               | Export to .tex                   |
-| =C-c C-e l p=    | PDF export                 | Export to PDF                    |
-| =C-c C-e l o=    | PDF export and open        | Export and open PDF              |
-| =C-c C-e l v=    | LaTeX preview              | Open PDF preview                 |
-| =C-c C-e l s=    | Forward sync               | Sync cursor to PDF (SyncTeX)     |
-| =C-c C-e m m=    | Markdown export            | Export to .md                    |
-| =C-c C-e m o=    | Markdown export and open   | Export and open in editor        |
+| C-c C-e        | Export dispatcher          | Open export menu                 |
+| C-c C-e h h    | HTML export                | Export to .html                  |
+| C-c C-e h o    | HTML export and open       | Export and open in browser       |
+| C-c C-e h p    | HTML preview               | Preview in VS Code webview       |
+| C-c C-e l l    | LaTeX export               | Export to .tex                   |
+| C-c C-e l p    | PDF export                 | Export to PDF                    |
+| C-c C-e l o    | PDF export and open        | Export and open PDF              |
+| C-c C-e l v    | LaTeX preview              | Open PDF preview                 |
+| C-c C-e l s    | Forward sync               | Sync cursor to PDF (SyncTeX)     |
+| C-c C-e m m    | Markdown export            | Export to .md                    |
+| C-c C-e m o    | Markdown export and open   | Export and open in editor        |
 
 ** Export Options Quick Reference
 
 | Option   | Values         | Effect                                |
 |----------+----------------+---------------------------------------|
-| =toc=    | t/nil/N        | Table of contents (N = depth)         |
-| =num=    | t/nil/N        | Section numbering (N = depth)         |
-| =H=      | N              | Export headlines up to level N        |
-| =author= | t/nil          | Include author name                   |
-| =date=   | t/nil          | Include date                          |
-| =title=  | t/nil          | Include title                         |
-| =^=      | t/nil/{}       | Interpret sub/superscripts            |
-| =*=      | t/nil          | Include emphasized text               |
-| =<>=     | t/nil          | Include timestamps                    |
-| =tags=   | t/nil/not-in-toc | Include tags                       |
-| =todo=   | t/nil          | Include TODO keywords                 |
-| =\n=     | t/nil          | Preserve line breaks                  |
+| toc    | t/nil/N        | Table of contents (N  depth)         |
+| num    | t/nil/N        | Section numbering (N  depth)         |
+| H      | N              | Export headlines up to level N        |
+| author | t/nil          | Include author name                   |
+| date   | t/nil          | Include date                          |
+| title  | t/nil          | Include title                         |
+| ^      | t/nil/{}       | Interpret sub/superscripts            |
+| *      | t/nil          | Include emphasized text               |
+| <>     | t/nil          | Include timestamps                    |
+| tags   | t/nil/not-in-toc | Include tags                       |
+| todo   | t/nil          | Include TODO keywords                 |
+| \n     | t/nil          | Preserve line breaks                  |
 
 ** LaTeX Package Reference
 
@@ -1737,27 +1727,27 @@ Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)
 
 | Package       | Purpose                              |
 |---------------+--------------------------------------|
-| =inputenc=    | Character encoding (UTF-8)           |
-| =fontenc=     | Font encoding (T1)                   |
-| =hyperref=    | Hyperlinks and PDF metadata          |
-| =graphicx=    | Image inclusion                      |
-| =amsmath=     | Mathematical typesetting             |
-| =amssymb=     | Math symbols                         |
-| =booktabs=    | Professional tables                  |
-| =listings=    | Code listing (if enabled)            |
-| =ulem=        | Strike-through support               |
+| inputenc    | Character encoding (UTF-8)           |
+| fontenc     | Font encoding (T1)                   |
+| hyperref    | Hyperlinks and PDF metadata          |
+| graphicx    | Image inclusion                      |
+| amsmath     | Mathematical typesetting             |
+| amssymb     | Math symbols                         |
+| booktabs    | Professional tables                  |
+| listings    | Code listing (if enabled)            |
+| ulem        | Strike-through support               |
 
 *** Optional Packages
 
 | Package       | Purpose                              | Add With                        |
 |---------------+--------------------------------------+---------------------------------|
-| =geometry=    | Page layout                          | =#+LATEX_HEADER:=               |
-| =natbib=      | Bibliography                         | =#+LATEX_HEADER:=               |
-| =minted=      | Advanced syntax highlighting         | =#+LATEX_HEADER:=               |
-| =tikz=        | Graphics and diagrams                | =#+LATEX_HEADER:=               |
-| =tcolorbox=   | Colored boxes                        | =#+LATEX_HEADER:=               |
-| =cleveref=    | Smart cross-references               | =#+LATEX_HEADER:=               |
-| =fontspec=    | System fonts (XeLaTeX/LuaLaTeX)      | =#+LATEX_HEADER:=               |
+| geometry    | Page layout                          | #+LATEX_HEADER:               |
+| natbib      | Bibliography                         | #+LATEX_HEADER:               |
+| minted      | Advanced syntax highlighting         | #+LATEX_HEADER:               |
+| tikz        | Graphics and diagrams                | #+LATEX_HEADER:               |
+| tcolorbox   | Colored boxes                        | #+LATEX_HEADER:               |
+| cleveref    | Smart cross-references               | #+LATEX_HEADER:               |
+| fontspec    | System fonts (XeLaTeX/LuaLaTeX)      | #+LATEX_HEADER:               |
 
 ** HTML Classes and IDs
 

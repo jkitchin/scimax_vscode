@@ -7,699 +7,775 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Introduction
+* ✅ Introduction
+CLOSED: [2026-01-17 Sat 12:23]
 
 This document provides a comprehensive reference of all commands available in the Scimax VS Code extension. Commands are organized by feature area for easy lookup.
 
 *Note on Keybindings:* All keybindings shown use the format key for standard keys and C-x for C-x (or s-x on macOS). When (org) or (md) appears, the binding is context-sensitive.
 
-* ⚠️ Document Structure
+* ✅ Document Structure
+CLOSED: [2026-01-17 Sat 12:23]
 
-** ⚠️ Folding and Visibility
+** ✅ Folding and Visibility
+CLOSED: [2026-01-17 Sat 12:23]
 
-| Command ID                  | Description              | Default Keybinding |
-|-----------------------------+--------------------------+--------------------|
-| scimax.org.toggleFold       | Toggle Fold at Cursor    | TAB (on heading)   |
-| scimax.org.cycleGlobalFold  | Cycle Global Folding     | S-TAB              |
+| Command ID                        | Description              | Default Keybinding |
+|-----------------------------------+--------------------------+--------------------|
+| [[cmd:scimax.org.toggleFold]]     | Toggle Fold at Cursor    | TAB (on heading)   |
+| [[cmd:scimax.org.cycleGlobalFold]]| Cycle Global Folding     | S-TAB              |
 
-** ⚠️ Headings
+** ✅ Headings
+CLOSED: [2026-01-17 Sat 12:24]
 
-| Command ID                    | Description            | Default Keybinding              |
-|-------------------------------+------------------------+---------------------------------|
-| scimax.heading.insert         | Insert Heading         | C-RET / M-RET                   |
-| scimax.heading.insertSub      | Insert Subheading      | -                               |
-| scimax.heading.promote        | Promote Heading        | M-LEFT (on heading)             |
-| scimax.heading.demote         | Demote Heading         | M-RIGHT (on heading)            |
-| scimax.heading.promoteSubtree | Promote Subtree        | M-S-LEFT (not in table)         |
-| scimax.heading.demoteSubtree  | Demote Subtree         | M-S-RIGHT (not in table)        |
-| scimax.heading.moveUp         | Move Heading Up        | M-UP                            |
-| scimax.heading.moveDown       | Move Heading Down      | M-DOWN                          |
+| Command ID                              | Description            | Default Keybinding              |
+|-----------------------------------------+------------------------+---------------------------------|
+| [[cmd:scimax.heading.insert]]           | Insert Heading         | C-RET / M-RET                   |
+| [[cmd:scimax.heading.insertSub]]        | Insert Subheading      | -                               |
+| [[cmd:scimax.heading.promote]]          | Promote Heading        | M-LEFT (on heading)             |
+| [[cmd:scimax.heading.demote]]           | Demote Heading         | M-RIGHT (on heading)            |
+| [[cmd:scimax.heading.promoteSubtree]]   | Promote Subtree        | M-S-LEFT (not in table)         |
+| [[cmd:scimax.heading.demoteSubtree]]    | Demote Subtree         | M-S-RIGHT (not in table)        |
+| [[cmd:scimax.heading.moveUp]]           | Move Heading Up        | M-UP                            |
+| [[cmd:scimax.heading.moveDown]]         | Move Heading Down      | M-DOWN                          |
 
-** ⚠️ Org-Mode Heading Navigation
+** ✅ Org-Mode Heading Navigation
+CLOSED: [2026-01-17 Sat 12:24]
 
-| Command ID                  | Description           | Default Keybinding |
-|-----------------------------+-----------------------+--------------------|
-| scimax.org.jumpToHeading    | Jump to Heading       | C-c C-j            |
-| scimax.org.nextHeading      | Next Heading          | C-c C-n              |
-| scimax.org.previousHeading  | Previous Heading      | C-c C-p              |
-| scimax.org.parentHeading    | Parent Heading        | -                  |
-| scimax.org.promoteHeading   | Promote Heading       | M-LEFT (heading)   |
-| scimax.org.demoteHeading    | Demote Heading        | M-RIGHT (heading)  |
-| scimax.org.promoteSubtree   | Promote Subtree       | M-S-LEFT           |
-| scimax.org.demoteSubtree    | Demote Subtree        | M-S-RIGHT          |
-| scimax.org.moveSubtreeUp    | Move Subtree Up       | M-UP (heading)     |
-| scimax.org.moveSubtreeDown  | Move Subtree Down     | M-DOWN (heading)   |
-| scimax.org.insertHeading    | Insert Heading        | C-RET (heading)    |
-| scimax.org.insertSubheading | Insert Subheading     | -                  |
-| scimax.org.killSubtree      | Kill Subtree          | -                  |
-| scimax.org.cloneSubtree     | Clone Subtree         | -                  |
+| Command ID                        | Description       | Default Keybinding |
+|-----------------------------------+-------------------+--------------------|
+| [[cmd:scimax.org.jumpToHeading]]  | Jump to Heading   | C-c C-j            |
+| [[cmd:scimax.org.nextHeading]]    | Next Heading      | C-c C-n            |
+| [[cmd:scimax.org.previousHeading]]| Previous Heading  | C-c C-p            |
+| [[cmd:scimax.org.parentHeading]]  | Parent Heading    | -                  |
+| [[cmd:scimax.org.promoteHeading]] | Promote Heading   | M-LEFT (heading)   |
+| [[cmd:scimax.org.demoteHeading]]  | Demote Heading    | M-RIGHT (heading)  |
+| [[cmd:scimax.org.promoteSubtree]] | Promote Subtree   | M-S-LEFT           |
+| [[cmd:scimax.org.demoteSubtree]]  | Demote Subtree    | M-S-RIGHT          |
+| [[cmd:scimax.org.moveSubtreeUp]]  | Move Subtree Up   | M-UP (heading)     |
+| [[cmd:scimax.org.moveSubtreeDown]]| Move Subtree Down | M-DOWN (heading)   |
+| [[cmd:scimax.org.insertHeading]]  | Insert Heading    | C-RET (heading)    |
+| [[cmd:scimax.org.insertSubheading]]| Insert Subheading | -                  |
+| [[cmd:scimax.org.killSubtree]]    | Kill Subtree      | -                  |
+| [[cmd:scimax.org.cloneSubtree]]   | Clone Subtree     | -                  |
 
-** ⚠️ DWIM Commands
+** 👀 DWIM Commands
 
-| Command ID           | Description  | Default Keybinding |
-|----------------------+--------------+--------------------|
-| scimax.org.dwimReturn| DWIM Return  | -                  |
+| Command ID                   | Description  | Default Keybinding |
+|------------------------------+--------------+--------------------|
+| [[cmd:scimax.org.dwimReturn]]| DWIM Return  | -                  |
 
-* ⚠️ TODO and Tasks
+* ✅ TODO and Tasks
+CLOSED: [2026-01-17 Sat 12:24]
 
-** ⚠️ TODO Keywords
+** ✅ TODO Keywords
+CLOSED: [2026-01-17 Sat 12:24]
 
-| Command ID            | Description       | Default Keybinding |
-|-----------------------+-------------------+--------------------|
-| scimax.org.cycleTodo  | Cycle TODO State  | C-c C-t            |
+| Command ID                    | Description       | Default Keybinding |
+|-------------------------------+-------------------+--------------------|
+| [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State  | C-c C-t            |
 
-** ⚠️ Checkboxes
+** ✅ Checkboxes
+CLOSED: [2026-01-17 Sat 12:24]
 
-| Command ID                | Description       | Default Keybinding |
-|---------------------------+-------------------+--------------------|
-| scimax.org.toggleCheckbox | Toggle Checkbox   | -                  |
-| scimax.org.insertCheckbox | Insert Checkbox   | -                  |
+| Command ID                        | Description       | Default Keybinding |
+|-----------------------------------+-------------------+--------------------|
+| [[cmd:scimax.org.toggleCheckbox]] | Toggle Checkbox   | -                  |
+| [[cmd:scimax.org.insertCheckbox]] | Insert Checkbox   | -                  |
 
-** ⚠️ Markdown Tasks
+** ✅ Markdown Tasks
+CLOSED: [2026-01-17 Sat 12:24]
+
+| Command ID                                | Description           | Default Keybinding |
+|-------------------------------------------+-----------------------+--------------------|
+| [[cmd:scimax.markdown.toggleCheckbox]]    | Toggle Checkbox       | C-c C-c            |
+| [[cmd:scimax.markdown.insertTask]]        | Insert Task           | -                  |
+| [[cmd:scimax.markdown.insertDueDate]]     | Insert Due Date       | C-c C-d            |
+| [[cmd:scimax.markdown.insertScheduledDate]]| Insert Scheduled Date | C-c C-s            |
+| [[cmd:scimax.markdown.insertPriority]]    | Insert Priority       | -                  |
+| [[cmd:scimax.markdown.showAgenda]]        | Show Agenda           | -                  |
+| [[cmd:scimax.markdown.showTodaysTasks]]   | Show Today's Tasks    | -                  |
+| [[cmd:scimax.markdown.showTasksByProject]]| Show Tasks by Project | -                  |
+| [[cmd:scimax.markdown.showTasksByTag]]    | Show Tasks by Tag     | -                  |
+
+* ✅ Tables
+CLOSED: [2026-01-17 Sat 12:25]
+
+** ✅ Basic Table Operations
+CLOSED: [2026-01-17 Sat 12:25]
+
+| Command ID                          | Description              | Default Keybinding     |
+|-------------------------------------+--------------------------+------------------------|
+| [[cmd:scimax.table.create]]         | Create Table             | C-c \vert              |
+| [[cmd:scimax.table.align]]          | Align Table              | -                      |
+| [[cmd:scimax.table.nextCell]]       | Next Table Cell          | -                      |
+| [[cmd:scimax.table.prevCell]]       | Previous Table Cell      | -                      |
+| [[cmd:scimax.table.insertSeparator]]| Insert Table Separator   | C-c -                  |
+
+** ✅ Row and Column Operations
+CLOSED: [2026-01-17 Sat 12:25]
+
+| Command ID                           | Description               | Default Keybinding   |
+|--------------------------------------+---------------------------+----------------------|
+| [[cmd:scimax.table.insertRowBelow]]  | Insert Table Row Below    | M-RET                |
+| [[cmd:scimax.table.insertRowAbove]]  | Insert Table Row Above    | M-S-RET              |
+| [[cmd:scimax.table.deleteRow]]       | Delete Table Row          | M-S-BACKSPACE        |
+| [[cmd:scimax.table.insertColumnRight]]| Insert Table Column Right | M-S-RIGHT (in table) |
+| [[cmd:scimax.table.deleteColumn]]    | Delete Table Column       | M-S-LEFT (in table)  |
+| [[cmd:scimax.table.moveRowUp]]       | Move Table Row Up         | -                    |
+| [[cmd:scimax.table.moveRowDown]]     | Move Table Row Down       | -                    |
+| [[cmd:scimax.table.moveColumnLeft]]  | Move Table Column Left    | -                    |
+| [[cmd:scimax.table.moveColumnRight]] | Move Table Column Right   | -                    |
+
+** ✅ Advanced Table Operations
+CLOSED: [2026-01-17 Sat 12:25]
+
+| Command ID                       | Description                 | Default Keybinding |
+|----------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.table.gotoNamed]]   | Go to Named Table           | -                  |
+| [[cmd:scimax.table.export]]      | Export Table                | -                  |
+| [[cmd:scimax.table.import]]      | Import Table from Clipboard | -                  |
+| [[cmd:scimax.table.sumColumn]]   | Sum Column                  | -                  |
+| [[cmd:scimax.table.averageColumn]]| Average Column              | -                  |
+| [[cmd:scimax.table.sortByColumn]]| Sort by Column              | C-c ^              |
+
+** ✅ Table Formulas
+CLOSED: [2026-01-17 Sat 12:26]
+
+| Command ID                             | Description                | Default Keybinding |
+|----------------------------------------+----------------------------+--------------------|
+| [[cmd:scimax.table.recalculate]]       | Recalculate Table Formulas | C-c C-c (tblfm)    |
+|                                        |                            | C-c * (org)        |
+| [[cmd:scimax.table.insertColumnFormula]]| Insert Column Formula      | -                  |
+| [[cmd:scimax.table.insertFieldFormula]]| Insert Field Formula       | -                  |
+| [[cmd:scimax.table.formulaHelp]]       | Table Formula Help         | -                  |
+
+* ✅ Source Blocks
+CLOSED: [2026-01-17 Sat 12:26]
+
+** ✅ Basic Babel Operations
+CLOSED: [2026-01-17 Sat 12:26]
+
+| Command ID                          | Description                 | Default Keybinding |
+|-------------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.org.executeBlock]]     | Execute Code Block          | C-RET              |
+|                                     |                             | C-c C-c (in src)   |
+| [[cmd:scimax.org.executeAllBlocks]] | Execute All Code Blocks     | -                  |
+| [[cmd:scimax.org.insertBlock]]      | Insert Code Block           | -                  |
+| [[cmd:scimax.org.nextBlock]]        | Go to Next Code Block       | -                  |
+| [[cmd:scimax.org.prevBlock]]        | Go to Previous Code Block   | -                  |
+| [[cmd:scimax.org.clearResults]]     | Clear Block Results         | -                  |
+| [[cmd:scimax.org.clearAllResults]]  | Clear All Results           | -                  |
+| [[cmd:scimax.org.showBabelOutput]]  | Show Babel Output           | -                  |
+| [[cmd:scimax.org.checkExecutors]]   | Check Available Executors   | -                  |
+
+** ✅ Advanced Babel Operations (scimax-ob)
+CLOSED: [2026-01-17 Sat 12:26]
+
+| Command ID                            | Description                     | Default Keybinding |
+|---------------------------------------+---------------------------------+--------------------|
+| [[cmd:scimax.ob.insertBlockAbove]]    | Insert Block Above              | -                  |
+| [[cmd:scimax.ob.insertBlockBelow]]    | Insert Block Below              | C-c C-,            |
+| [[cmd:scimax.ob.insertBlockBelowSame]]| Insert Block Below (Same Lang)  | -                  |
+| [[cmd:scimax.ob.splitBlock]]          | Split Block                     | C-c - (src)        |
+| [[cmd:scimax.ob.cloneBlock]]          | Clone Block                     | -                  |
+| [[cmd:scimax.ob.killBlock]]           | Kill Block and Results          | -                  |
+| [[cmd:scimax.ob.copyBlock]]           | Copy Block and Results          | -                  |
+| [[cmd:scimax.ob.moveBlockUp]]         | Move Block Up                   | -                  |
+| [[cmd:scimax.ob.moveBlockDown]]       | Move Block Down                 | -                  |
+| [[cmd:scimax.ob.mergeWithPrevious]]   | Merge with Previous Block       | -                  |
+| [[cmd:scimax.ob.mergeWithNext]]       | Merge with Next Block           | -                  |
+| [[cmd:scimax.ob.nextBlock]]           | Next Source Block               | C-DOWN             |
+| [[cmd:scimax.ob.previousBlock]]       | Previous Source Block           | C-UP               |
+| [[cmd:scimax.ob.jumpToBlock]]         | Jump to Source Block            | C-c C-b            |
+| [[cmd:scimax.ob.jumpToResults]]       | Jump to Results                 | -                  |
+| [[cmd:scimax.ob.executeAndNext]]      | Execute and Next                | S-RET              |
+| [[cmd:scimax.ob.executeToPoint]]      | Execute to Point                | -                  |
+| [[cmd:scimax.ob.executeAll]]          | Execute All Blocks              | -                  |
+| [[cmd:scimax.ob.clearResults]]        | Clear Results                   | -                  |
+| [[cmd:scimax.ob.clearAllResults]]     | Clear All Results               | -                  |
+| [[cmd:scimax.ob.toggleResults]]       | Toggle Results Visibility       | -                  |
+| [[cmd:scimax.ob.editHeader]]          | Edit Block Header               | -                  |
+
+** ✅ Extended Babel Features
+CLOSED: [2026-01-17 Sat 12:27]
+
+| Command ID                       | Description                      | Default Keybinding |
+|----------------------------------+----------------------------------+--------------------|
+| [[cmd:scimax.babel.tangle]]      | Tangle Source Blocks             | C-c C-v t          |
+| [[cmd:scimax.babel.executeToPoint]]| Execute Blocks to Point          | C-c C-v p          |
+| [[cmd:scimax.babel.executeInline]]| Execute Inline Source at Cursor  | C-c C-v i          |
+| [[cmd:scimax.babel.clearCache]]  | Clear Babel Result Cache         | -                  |
+| [[cmd:scimax.babel.cacheStats]]  | Show Babel Cache Statistics      | -                  |
+| [[cmd:scimax.babel.showQueue]]   | Show Execution Queue             | -                  |
+| [[cmd:scimax.babel.clearQueue]]  | Clear Execution Queue            | -                  |
+| [[cmd:scimax.babel.queueBlock]]  | Queue Block for Async Execution  | C-c C-v q          |
+| [[cmd:scimax.babel.pauseQueue]]  | Pause Execution Queue            | -                  |
+| [[cmd:scimax.babel.resumeQueue]] | Resume Execution Queue           | -                  |
+| [[cmd:scimax.babel.showOutput]]  | Show Babel Output                | -                  |
+
+* ✅ Export
+CLOSED: [2026-01-17 Sat 12:27]
+
+** ✅ Export Dispatcher
+CLOSED: [2026-01-17 Sat 12:27]
+
+| Command ID                         | Description           | Default Keybinding |
+|------------------------------------+-----------------------+--------------------|
+| [[cmd:scimax.org.export]]          | Export Org Document   | -                  |
+| [[cmd:scimax.org.exportDispatcher]]| Export Dispatcher     | C-c C-e            |
+| [[cmd:scimax.org.previewHtml]]     | Preview HTML          | -                  |
+
+** ✅ HTML Export
+CLOSED: [2026-01-17 Sat 12:27]
+
+| Command ID                       | Description            | Default Keybinding |
+|----------------------------------+------------------------+--------------------|
+| [[cmd:scimax.org.exportHtml]]    | Export to HTML         | C-c C-e h h        |
+| [[cmd:scimax.org.exportHtmlOpen]]| Export to HTML and Open| C-c C-e h o        |
+
+** ✅ LaTeX/PDF Export
+CLOSED: [2026-01-17 Sat 12:27]
 
 | Command ID                        | Description             | Default Keybinding |
 |-----------------------------------+-------------------------+--------------------|
-| scimax.markdown.toggleCheckbox    | Toggle Checkbox         | C-c C-c            |
-| scimax.markdown.insertTask        | Insert Task             | -                  |
-| scimax.markdown.insertDueDate     | Insert Due Date         | C-c C-d            |
-| scimax.markdown.insertScheduledDate| Insert Scheduled Date  | C-c C-s            |
-| scimax.markdown.insertPriority    | Insert Priority         | -                  |
-| scimax.markdown.showAgenda        | Show Agenda             | -                  |
-| scimax.markdown.showTodaysTasks   | Show Today's Tasks      | -                  |
-| scimax.markdown.showTasksByProject| Show Tasks by Project   | -                  |
-| scimax.markdown.showTasksByTag    | Show Tasks by Tag       | -                  |
-
-* ⚠️ Tables
-
-** ⚠️ Basic Table Operations
-
-| Command ID                  | Description              | Default Keybinding     |
-|-----------------------------+--------------------------+------------------------|
-| scimax.table.create         | Create Table             | C-c \vert              |
-| scimax.table.align          | Align Table              | -                      |
-| scimax.table.nextCell       | Next Table Cell          | -                      |
-| scimax.table.prevCell       | Previous Table Cell      | -                      |
-| scimax.table.insertSeparator| Insert Table Separator   | C-c -                  |
-
-** ⚠️ Row and Column Operations
-
-| Command ID                   | Description               | Default Keybinding        |
-|------------------------------+---------------------------+---------------------------|
-| scimax.table.insertRowBelow  | Insert Table Row Below    | M-RET                     |
-| scimax.table.insertRowAbove  | Insert Table Row Above    | M-S-RET                   |
-| scimax.table.deleteRow       | Delete Table Row          | M-S-BACKSPACE             |
-| scimax.table.insertColumnRight| Insert Table Column Right| M-S-RIGHT (in table)      |
-| scimax.table.deleteColumn    | Delete Table Column       | M-S-LEFT (in table)       |
-| scimax.table.moveRowUp       | Move Table Row Up         | -                         |
-| scimax.table.moveRowDown     | Move Table Row Down       | -                         |
-| scimax.table.moveColumnLeft  | Move Table Column Left    | -                         |
-| scimax.table.moveColumnRight | Move Table Column Right   | -                         |
-
-** ⚠️ Advanced Table Operations
-
-| Command ID                    | Description              | Default Keybinding |
-|-------------------------------+--------------------------+--------------------|
-| scimax.table.gotoNamed        | Go to Named Table        | -                  |
-| scimax.table.export           | Export Table             | C-c C-e t          |
-| scimax.table.import           | Import Table from Clipboard| -                |
-| scimax.table.sumColumn        | Sum Column               | -                  |
-| scimax.table.averageColumn    | Average Column           | -                  |
-| scimax.table.sortByColumn     | Sort by Column           | C-c ^              |
-
-** ⚠️ Table Formulas
-
-| Command ID                      | Description               | Default Keybinding |
-|---------------------------------+---------------------------+--------------------|
-| scimax.table.recalculate        | Recalculate Table Formulas| C-c C-c (tblfm)    |
-|                                 |                           | C-c * (org)        |
-| scimax.table.insertColumnFormula| Insert Column Formula     | -                  |
-| scimax.table.insertFieldFormula | Insert Field Formula      | -                  |
-| scimax.table.formulaHelp        | Table Formula Help        | -                  |
-
-* ⚠️ Source Blocks
-
-** ⚠️ Basic Babel Operations
-
-| Command ID                    | Description                 | Default Keybinding |
-|-------------------------------+-----------------------------+--------------------|
-| scimax.org.executeBlock       | Execute Code Block          | C-RET              |
-|                               |                             | C-c C-c (in src)   |
-| scimax.org.executeAllBlocks   | Execute All Code Blocks     | -                  |
-| scimax.org.insertBlock        | Insert Code Block           | -                  |
-| scimax.org.nextBlock          | Go to Next Code Block       | -                  |
-| scimax.org.prevBlock          | Go to Previous Code Block   | -                  |
-| scimax.org.clearResults       | Clear Block Results         | -                  |
-| scimax.org.clearAllResults    | Clear All Results           | -                  |
-| scimax.org.showBabelOutput    | Show Babel Output           | -                  |
-| scimax.org.checkExecutors     | Check Available Executors   | -                  |
-
-** ⚠️ Advanced Babel Operations (scimax-ob)
-
-| Command ID                      | Description                     | Default Keybinding |
-|---------------------------------+---------------------------------+--------------------|
-| scimax.ob.insertBlockAbove      | Insert Block Above              | -                  |
-| scimax.ob.insertBlockBelow      | Insert Block Below              | C-c C-,            |
-| scimax.ob.insertBlockBelowSame  | Insert Block Below (Same Lang)  | -                  |
-| scimax.ob.splitBlock            | Split Block                     | C-c - (src)        |
-| scimax.ob.cloneBlock            | Clone Block                     | -                  |
-| scimax.ob.killBlock             | Kill Block and Results          | -                  |
-| scimax.ob.copyBlock             | Copy Block and Results          | -                  |
-| scimax.ob.moveBlockUp           | Move Block Up                   | -                  |
-| scimax.ob.moveBlockDown         | Move Block Down                 | -                  |
-| scimax.ob.mergeWithPrevious     | Merge with Previous Block       | -                  |
-| scimax.ob.mergeWithNext         | Merge with Next Block           | -                  |
-| scimax.ob.nextBlock             | Next Source Block               | C-DOWN             |
-| scimax.ob.previousBlock         | Previous Source Block           | C-UP               |
-| scimax.ob.jumpToBlock           | Jump to Source Block            | C-c C-b            |
-| scimax.ob.jumpToResults         | Jump to Results                 | -                  |
-| scimax.ob.executeAndNext        | Execute and Next                | S-RET              |
-| scimax.ob.executeToPoint        | Execute to Point                | -                  |
-| scimax.ob.executeAll            | Execute All Blocks              | -                  |
-| scimax.ob.clearResults          | Clear Results                   | -                  |
-| scimax.ob.clearAllResults       | Clear All Results               | -                  |
-| scimax.ob.toggleResults         | Toggle Results Visibility       | -                  |
-| scimax.ob.editHeader            | Edit Block Header               | -                  |
-
-** ⚠️ Extended Babel Features
-
-| Command ID                 | Description                      | Default Keybinding |
-|----------------------------+----------------------------------+--------------------|
-| scimax.babel.tangle        | Tangle Source Blocks             | C-c C-v t          |
-| scimax.babel.executeToPoint| Execute Blocks to Point          | C-c C-v p          |
-| scimax.babel.executeInline | Execute Inline Source at Cursor  | C-c C-v i          |
-| scimax.babel.clearCache    | Clear Babel Result Cache         | -                  |
-| scimax.babel.cacheStats    | Show Babel Cache Statistics      | -                  |
-| scimax.babel.showQueue     | Show Execution Queue             | -                  |
-| scimax.babel.clearQueue    | Clear Execution Queue            | -                  |
-| scimax.babel.queueBlock    | Queue Block for Async Execution  | C-c C-v q          |
-| scimax.babel.pauseQueue    | Pause Execution Queue            | -                  |
-| scimax.babel.resumeQueue   | Resume Execution Queue           | -                  |
-| scimax.babel.showOutput    | Show Babel Output                | -                  |
-
-* ⚠️ Export
-
-** ⚠️ Export Dispatcher
-
-| Command ID                   | Description           | Default Keybinding |
-|------------------------------+-----------------------+--------------------|
-| scimax.org.export            | Export Org Document   | -                  |
-| scimax.org.exportDispatcher  | Export Dispatcher     | C-c C-e            |
-| scimax.org.previewHtml       | Preview HTML          | -                  |
-
-** ⚠️ HTML Export
-
-| Command ID                 | Description            | Default Keybinding |
-|----------------------------+------------------------+--------------------|
-| scimax.org.exportHtml      | Export to HTML         | C-c C-e h h        |
-| scimax.org.exportHtmlOpen  | Export to HTML and Open| C-c C-e h o        |
-
-** ⚠️ LaTeX/PDF Export
-
-| Command ID                  | Description             | Default Keybinding |
-|-----------------------------+-------------------------+--------------------|
-| scimax.org.exportLatex      | Export to LaTeX         | C-c C-e l l        |
-| scimax.org.exportPdf        | Export to PDF           | C-c C-e l p        |
-| scimax.org.exportLatexOpen  | Export to PDF and Open  | C-c C-e l o        |
-
-** ⚠️ Other Export Formats
-
-| Command ID                  | Description         | Default Keybinding |
-|-----------------------------+---------------------+--------------------|
-| scimax.org.exportMarkdown   | Export to Markdown  | C-c C-e m m        |
-
-* ⚠️ Links
-
-| Command ID            | Description         | Default Keybinding            |
-|-----------------------+---------------------+-------------------------------|
-| scimax.org.insertLink | Insert Link         | C-c C-l                       |
-| scimax.org.openLink   | Open Link at Point  | C-c C-o / RET (on link)       |
-
-* ⚠️ Timestamps
-
-| Command ID                     | Description                   | Default Keybinding |
-|--------------------------------+-------------------------------+--------------------|
-| scimax.org.insertTimestamp     | Insert Timestamp              | C-c .              |
-| scimax.org.shiftTimestampUp    | Shift Timestamp Up            | S-UP               |
-| scimax.org.shiftTimestampDown  | Shift Timestamp Down          | S-DOWN             |
-| scimax.org.shiftTimestampLeft  | Shift Timestamp Left (Prev Day)| S-LEFT            |
-| scimax.org.shiftTimestampRight | Shift Timestamp Right (Next Day)| S-RIGHT          |
-| scimax.org.addRepeater         | Add/Change Repeater on Timestamp| C-c C-r          |
-
-* ⚠️ Agenda
-
-** ⚠️ Agenda Views
-
-| Command ID                    | Description            | Default Keybinding |
-|-------------------------------+------------------------+--------------------|
-| scimax.db.agenda              | Show Agenda            | -                  |
-| scimax.db.showTodos           | Show TODO Items        | -                  |
-| scimax.db.deadlines           | Show Upcoming Deadlines| -                  |
-
-** ⚠️ Advanced Agenda
-
-| Command ID                    | Description                | Default Keybinding |
-|-------------------------------+----------------------------+--------------------|
-| scimax.agenda.menu            | Open Agenda Menu           | -                  |
-| scimax.agenda.day             | Day Agenda                 | -                  |
-| scimax.agenda.week            | Week Agenda                | -                  |
-| scimax.agenda.fortnight       | Fortnight Agenda           | -                  |
-| scimax.agenda.month           | Month Agenda               | -                  |
-| scimax.agenda.todoList        | TODO List                  | -                  |
-| scimax.agenda.deadlines       | Upcoming Deadlines         | -                  |
-| scimax.agenda.scheduled       | Scheduled Items            | -                  |
-| scimax.agenda.filterByTag     | Agenda Filter by Tag       | -                  |
-| scimax.agenda.refresh         | Refresh Agenda             | -                  |
-| scimax.agenda.showAgenda      | Show Agenda View           | -                  |
-| scimax.agenda.showTodos       | Show TODO List View        | -                  |
-| scimax.agenda.groupByDate     | Group Agenda by Date       | -                  |
-| scimax.agenda.groupByCategory | Group Agenda by Category   | -                  |
-| scimax.agenda.groupByPriority | Group Agenda by Priority   | -                  |
-| scimax.agenda.configure       | Configure Agenda Files     | -                  |
-| scimax.agenda.gotoItem        | Go to Agenda Item          | -                  |
-
-* ⚠️ Journal
-
-** ⚠️ Basic Journal Operations
-
-| Command ID                 | Description                | Default Keybinding |
-|----------------------------+----------------------------+--------------------|
-| scimax.journal.today       | Open Today's Journal       | C-S-j              |
-| scimax.journal.new         | New Journal Entry          | -                  |
-| scimax.journal.prev        | Previous Journal Entry     | M-[ (in journal)   |
-| scimax.journal.next        | Next Journal Entry         | M-] (in journal)   |
-| scimax.journal.goto        | Go to Journal Date         | -                  |
-| scimax.journal.search      | Search Journal             | -                  |
-| scimax.journal.calendar    | Show Journal Calendar      | -                  |
-
-** ⚠️ Journal Utilities
-
-| Command ID                    | Description              | Default Keybinding |
-|-------------------------------+--------------------------+--------------------|
-| scimax.journal.refresh        | Refresh Journal View     | -                  |
-| scimax.journal.openDirectory  | Open Journal Directory   | -                  |
-| scimax.journal.insertTimestamp| Insert Timestamp         | -                  |
-| scimax.journal.quickLog       | Quick Log Entry          | -                  |
-| scimax.journal.stats          | Show Journal Statistics  | -                  |
-| scimax.journal.weekView       | This Week's Entries      | -                  |
-
-* ⚠️ Database and Search
-
-** ⚠️ Basic Database Operations
-
-| Command ID              | Description             | Default Keybinding |
-|-------------------------+-------------------------+--------------------|
-| scimax.db.reindex       | Reindex Files           | -                  |
-| scimax.db.search        | Search All Files        | -                  |
-| scimax.db.searchHeadings| Search Headings         | -                  |
-| scimax.db.browseFiles   | Browse Indexed Files    | -                  |
-| scimax.db.setScope      | Set Search Scope        | -                  |
-| scimax.showDbMenu       | Database Menu           | C-M-v              |
-
-** ⚠️ Advanced Search
-
-| Command ID                 | Description                 | Default Keybinding |
-|----------------------------+-----------------------------+--------------------|
-| scimax.db.searchBlocks     | Search Code Blocks          | -                  |
-| scimax.db.searchHashtags   | Search by Hashtag           | -                  |
-| scimax.db.searchByTag      | Search by Tag               | -                  |
-| scimax.db.searchByProperty | Search by Property          | -                  |
-
-** ⚠️ Semantic Search (AI)
-
-| Command ID                  | Description                   | Default Keybinding |
-|-----------------------------+-------------------------------+--------------------|
-| scimax.db.searchSemantic    | Semantic Search (AI)          | -                  |
-| scimax.db.searchHybrid      | Hybrid Search (Keywords + AI) | -                  |
-| scimax.db.configureEmbeddings| Configure Embedding Service  | -                  |
-
-** ⚠️ Database Maintenance
-
-| Command ID         | Description             | Default Keybinding |
-|--------------------+-------------------------+--------------------|
-| scimax.db.optimize | Optimize Database       | -                  |
-| scimax.db.clear    | Clear Database          | -                  |
-| scimax.db.stats    | Show Database Stats     | -                  |
-
-* ⚠️ References (org-ref)
-
-** ⚠️ Citation Management
-
-| Command ID                   | Description               | Default Keybinding       |
-|------------------------------+---------------------------+--------------------------|
-| scimax.ref.insertCitation    | Insert Citation           | C-c ] (org/md/latex)     |
-| scimax.ref.insertRef         | Insert Reference Link     | C-u C-c ]                |
-| scimax.ref.insertBibliography| Insert Bibliography Link  | -                        |
-| scimax.ref.copyBibTeX        | Copy BibTeX Entry         | -                        |
-
-** ⚠️ Citation Editing
-
-| Command ID                         | Description                      | Default Keybinding      |
-|------------------------------------+----------------------------------+-------------------------|
-| scimax.ref.transposeCitationLeft   | Transpose Citation Left          | S-LEFT (on citation)    |
-| scimax.ref.transposeCitationRight  | Transpose Citation Right         | S-RIGHT (on citation)   |
-| scimax.ref.sortCitations           | Sort Citations (Oldest First)    | S-UP (on citation)      |
-| scimax.ref.sortCitationsByYear     | Sort Citations (Newest First)    | S-DOWN (on citation)    |
-| scimax.ref.sortCitationsAlphabetically| Sort Citations Alphabetically | -                       |
-| scimax.ref.deleteCitation          | Delete Citation at Cursor        | C-S-k (on citation)     |
-
-** ⚠️ Bibliography Management
-
-| Command ID                    | Description                 | Default Keybinding |
-|-------------------------------+-----------------------------+--------------------|
-| scimax.ref.openBibliography   | Open Bibliography           | -                  |
-| scimax.ref.fetchFromDOI       | Fetch BibTeX from DOI       | -                  |
-| scimax.ref.searchReferences   | Search References           | -                  |
-| scimax.ref.findCitations      | Find Citations of Reference | -                  |
-| scimax.ref.refresh            | Refresh References          | -                  |
-| scimax.ref.extractBibliography| Extract Bibliography from File| -                |
-
-** ⚠️ OpenAlex Integration
-
-| Command ID                  | Description               | Default Keybinding |
-|-----------------------------+---------------------------+--------------------|
-| scimax.ref.showCitingWorks  | Show Citing Works (OpenAlex)| -                |
-| scimax.ref.showRelatedWorks | Show Related Works (OpenAlex)| -               |
-| scimax.ref.searchOpenAlex   | Search OpenAlex           | -                  |
-
-* ⚠️ Notebook
-
-| Command ID                       | Description                  | Default Keybinding |
-|----------------------------------+------------------------------+--------------------|
-| scimax.notebook.new              | New Notebook                 | -                  |
-| scimax.notebook.open             | Open Notebook                | -                  |
-| scimax.notebook.openMasterFile   | Open Notebook Master File    | -                  |
-| scimax.notebook.recentFiles      | Recent Files in Notebook     | -                  |
-| scimax.notebook.search           | Search in Notebook           | -                  |
-| scimax.notebook.agenda           | Notebook Agenda              | -                  |
-| scimax.notebook.addCollaborator  | Add Collaborator             | -                  |
-| scimax.notebook.archive          | Archive Notebook             | -                  |
-| scimax.notebook.settings         | Notebook Settings            | -                  |
-| scimax.notebook.index            | Index Notebook               | -                  |
-| scimax.notebook.info             | Notebook Info                | -                  |
-| scimax.notebook.remove           | Remove Notebook from Tracking| -                  |
-
-* ⚠️ Navigation
-
-** ⚠️ Fuzzy Search (Swiper)
-
-| Command ID                   | Description               | Default Keybinding |
-|------------------------------+---------------------------+--------------------|
-| scimax.fuzzySearch           | Fuzzy Search (Current File)| C-c s             |
-| scimax.fuzzySearchOpenFiles  | Fuzzy Search (Open Files) | C-c S-s            |
-| scimax.fuzzySearchOutline    | Fuzzy Search (Outline)    | C-c M-s            |
-
-** ⚠️ Jump (Avy)
-
-| Command ID               | Description                  | Default Keybinding |
-|--------------------------+------------------------------+--------------------|
-| scimax.jump.gotoChar     | Jump to Character            | C-c j c            |
-| scimax.jump.gotoChar2    | Jump to 2-Character Sequence | C-c j j            |
-| scimax.jump.gotoWord     | Jump to Word                 | C-c j w            |
-| scimax.jump.gotoLine     | Jump to Line                 | C-c j l            |
-| scimax.jump.gotoSymbol   | Jump to Symbol               | C-c j o            |
-| scimax.jump.gotoSubword  | Jump to Subword              | C-c j s            |
-| scimax.jump.copyLine     | Jump Copy Line               | -                  |
-| scimax.jump.killLine     | Jump Kill Line               | -                  |
-
-* ⚠️ Projectile
-
-| Command ID                  | Description                     | Default Keybinding |
-|-----------------------------+---------------------------------+--------------------|
-| scimax.projectile.switch    | Switch Project                  | C-c p p            |
-| scimax.projectile.findFile  | Find File in Project            | C-c p f            |
-| scimax.projectile.search    | Search in Project               | C-c p s            |
-| scimax.projectile.root      | Open Project Root               | C-c p d            |
-| scimax.projectile.add       | Add Project                     | C-c p a            |
-| scimax.projectile.remove    | Remove Project                  | -                  |
-| scimax.projectile.scan      | Scan Directory for Projects     | -                  |
-| scimax.projectile.info      | Project Info                    | -                  |
-| scimax.projectile.cleanup   | Cleanup Non-existent Projects   | -                  |
-| scimax.projectile.refreshTree| Refresh Projects               | -                  |
-
-* ⚠️ Editmarks
-
-** ⚠️ Mark Edits
+| [[cmd:scimax.org.exportLatex]]    | Export to LaTeX         | C-c C-e l l        |
+| [[cmd:scimax.org.exportPdf]]      | Export to PDF           | C-c C-e l p        |
+| [[cmd:scimax.org.exportLatexOpen]]| Export to PDF and Open  | C-c C-e l o        |
+
+** ✅ Other Export Formats
+CLOSED: [2026-01-17 Sat 12:27]
+
+| Command ID                        | Description         | Default Keybinding |
+|-----------------------------------+---------------------+--------------------|
+| [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |
+
+* ✅ Links
+CLOSED: [2026-01-17 Sat 12:27]
+
+| Command ID                    | Description         | Default Keybinding            |
+|-------------------------------+---------------------+-------------------------------|
+| [[cmd:scimax.org.insertLink]] | Insert Link         | C-c C-l                       |
+| [[cmd:scimax.org.openLink]]   | Open Link at Point  | C-c C-o / RET (on link)       |
+
+* ✅ Timestamps
+CLOSED: [2026-01-17 Sat 12:27]
+
+| Command ID                           | Description                      | Default Keybinding |
+|--------------------------------------+----------------------------------+--------------------|
+| [[cmd:scimax.org.insertTimestamp]]   | Insert Timestamp                 | C-c .              |
+| [[cmd:scimax.org.shiftTimestampUp]]  | Shift Timestamp Up               | S-UP               |
+| [[cmd:scimax.org.shiftTimestampDown]]| Shift Timestamp Down             | S-DOWN             |
+| [[cmd:scimax.org.shiftTimestampLeft]]| Shift Timestamp Left (Prev Day)  | S-LEFT             |
+| [[cmd:scimax.org.shiftTimestampRight]]| Shift Timestamp Right (Next Day) | S-RIGHT            |
+| [[cmd:scimax.org.addRepeater]]       | Add/Change Repeater on Timestamp | C-c C-r            |
+
+* ✅ Agenda
+CLOSED: [2026-01-17 Sat 12:28]
+
+** ✅ Agenda Views
+CLOSED: [2026-01-17 Sat 12:28]
+
+| Command ID                   | Description             | Default Keybinding |
+|------------------------------+-------------------------+--------------------|
+| [[cmd:scimax.db.agenda]]     | Show Agenda             | -                  |
+| [[cmd:scimax.db.showTodos]]  | Show TODO Items         | -                  |
+| [[cmd:scimax.db.deadlines]]  | Show Upcoming Deadlines | -                  |
+
+** ✅ Advanced Agenda
+CLOSED: [2026-01-17 Sat 12:51]
+
+| Command ID                            | Description              | Default Keybinding |
+|---------------------------------------+--------------------------+--------------------|
+| [[cmd:scimax.agenda.menu]]            | Open Agenda Menu         | -                  |
+| [[cmd:scimax.agenda.day]]             | Day Agenda               | -                  |
+| [[cmd:scimax.agenda.week]]            | Week Agenda              | -                  |
+| [[cmd:scimax.agenda.fortnight]]       | Fortnight Agenda         | -                  |
+| [[cmd:scimax.agenda.month]]           | Month Agenda             | -                  |
+| [[cmd:scimax.agenda.todoList]]        | TODO List                | -                  |
+| [[cmd:scimax.agenda.deadlines]]       | Upcoming Deadlines       | -                  |
+| [[cmd:scimax.agenda.scheduled]]       | Scheduled Items          | -                  |
+| [[cmd:scimax.agenda.filterByTag]]     | Agenda Filter by Tag     | -                  |
+| [[cmd:scimax.agenda.refresh]]         | Refresh Agenda           | -                  |
+| [[cmd:scimax.agenda.showAgenda]]      | Show Agenda View         | -                  |
+| [[cmd:scimax.agenda.showTodos]]       | Show TODO List View      | -                  |
+| [[cmd:scimax.agenda.groupByDate]]     | Group Agenda by Date     | -                  |
+| [[cmd:scimax.agenda.groupByCategory]] | Group Agenda by Category | -                  |
+| [[cmd:scimax.agenda.groupByPriority]] | Group Agenda by Priority | -                  |
+| [[cmd:scimax.agenda.configure]]       | Configure Agenda Files   | -                  |
+| [[cmd:scimax.agenda.gotoItem]]        | Go to Agenda Item        | -                  |
+
+* ✅ Journal
+CLOSED: [2026-01-17 Sat 12:51]
+
+** ✅ Basic Journal Operations
+CLOSED: [2026-01-17 Sat 12:51]
+
+| Command ID                      | Description            | Default Keybinding |
+|---------------------------------+------------------------+--------------------|
+| [[cmd:scimax.journal.today]]    | Open Today's Journal   | C-S-j              |
+| [[cmd:scimax.journal.new]]      | New Journal Entry      | -                  |
+| [[cmd:scimax.journal.prev]]     | Previous Journal Entry | M-[ (in journal)   |
+| [[cmd:scimax.journal.next]]     | Next Journal Entry     | M-] (in journal)   |
+| [[cmd:scimax.journal.goto]]     | Go to Journal Date     | -                  |
+| [[cmd:scimax.journal.search]]   | Search Journal         | -                  |
+| [[cmd:scimax.journal.calendar]] | Show Journal Calendar  | -                  |
+
+** ✅ Journal Utilities
+
+| Command ID                             | Description             | Default Keybinding |
+|----------------------------------------+-------------------------+--------------------|
+| [[cmd:scimax.journal.refresh]]         | Refresh Journal View    | -                  |
+| [[cmd:scimax.journal.openDirectory]]   | Open Journal Directory  | -                  |
+| [[cmd:scimax.journal.insertTimestamp]] | Insert Timestamp        | -                  |
+| [[cmd:scimax.journal.quickLog]]        | Quick Log Entry         | -                  |
+| [[cmd:scimax.journal.stats]]           | Show Journal Statistics | -                  |
+| [[cmd:scimax.journal.weekView]]        | This Week's Entries     | -                  |
+
+* ✅ Database and Search
+CLOSED: [2026-01-17 Sat 12:45]
+
+** ✅ Basic Database Operations
+CLOSED: [2026-01-17 Sat 12:45]
+
+| Command ID                       | Description          | Default Keybinding |
+|----------------------------------+----------------------+--------------------|
+| [[cmd:scimax.db.reindex]]        | Reindex Files        | -                  |
+| [[cmd:scimax.db.search]]         | Search All Files     | -                  |
+| [[cmd:scimax.db.searchHeadings]] | Search Headings      | -                  |
+| [[cmd:scimax.db.browseFiles]]    | Browse Indexed Files | -                  |
+| [[cmd:scimax.db.setScope]]       | Set Search Scope     | -                  |
+| [[cmd:scimax.showDbMenu]]        | Database Menu        | C-M-v              |
+
+** ✅ Advanced Search
+CLOSED: [2026-01-17 Sat 12:45]
+
+| Command ID                       | Description                 | Default Keybinding |
+|----------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.db.searchBlocks]]   | Search Code Blocks          | -                  |
+| [[cmd:scimax.db.searchHashtags]] | Search by Hashtag           | -                  |
+| [[cmd:scimax.db.searchByTag]]    | Search by Tag               | -                  |
+| [[cmd:scimax.db.searchByProperty]]| Search by Property         | -                  |
+
+** ✅ Semantic Search (AI)
+CLOSED: [2026-01-17 Sat 12:45]
+
+| Command ID                            | Description                   | Default Keybinding |
+|---------------------------------------+-------------------------------+--------------------|
+| [[cmd:scimax.db.searchSemantic]]      | Semantic Search (AI)          | -                  |
+| [[cmd:scimax.db.searchHybrid]]        | Hybrid Search (Keywords + AI) | -                  |
+| [[cmd:scimax.db.configureEmbeddings]] | Configure Embedding Service   | -                  |
+
+** ✅ Database Maintenance
+CLOSED: [2026-01-17 Sat 12:46]
 
 | Command ID                 | Description         | Default Keybinding |
 |----------------------------+---------------------+--------------------|
-| scimax.editmarks.insertion | Mark Insertion      | C-c e i            |
-| scimax.editmarks.deletion  | Mark Deletion       | C-c e d            |
-| scimax.editmarks.comment   | Insert Edit Comment | C-c e c            |
-| scimax.editmarks.typo      | Mark Typo Correction| C-c e t            |
+| [[cmd:scimax.db.optimize]] | Optimize Database   | -                  |
+| [[cmd:scimax.db.clear]]    | Clear Database      | -                  |
+| [[cmd:scimax.db.stats]]    | Show Database Stats | -                  |
 
-** ⚠️ Review Edits
+* ✅ References (org-ref)
+CLOSED: [2026-01-17 Sat 12:46]
 
-| Command ID                  | Description              | Default Keybinding |
-|-----------------------------+--------------------------+--------------------|
-| scimax.editmarks.accept     | Accept Edit Mark         | C-c e a            |
-| scimax.editmarks.reject     | Reject Edit Mark         | C-c e r            |
-| scimax.editmarks.acceptAll  | Accept All Edit Marks    | -                  |
-| scimax.editmarks.rejectAll  | Reject All Edit Marks    | -                  |
-| scimax.editmarks.next       | Next Edit Mark           | C-c e ]            |
-| scimax.editmarks.prev       | Previous Edit Mark       | C-c e [            |
-| scimax.editmarks.summary    | Show Edit Marks Summary  | C-c e s            |
+** ✅ Citation Management
+CLOSED: [2026-01-17 Sat 12:46]
 
-* ⚠️ Hydra
+| Command ID                            | Description              | Default Keybinding   |
+|---------------------------------------+--------------------------+----------------------|
+| [[cmd:scimax.ref.insertCitation]]     | Insert Citation          | C-c ] (org/md/latex) |
+| [[cmd:scimax.ref.insertRef]]          | Insert Reference Link    | C-u C-c ]            |
+| [[cmd:scimax.ref.insertBibliography]] | Insert Bibliography Link | -                    |
+| [[cmd:scimax.ref.copyBibTeX]]         | Copy BibTeX Entry        | -                    |
 
-| Command ID                | Description      | Default Keybinding |
-|---------------------------+------------------+--------------------|
-| scimax.hydra.show         | Show Hydra Menu  | -                  |
-| scimax.hydra.hide         | Hide Hydra Menu  | -                  |
-| scimax.hydra.back         | Hydra Menu Back  | -                  |
-| scimax.hydra.main         | Main Menu        | C-c m              |
-| scimax.hydra.contextMenu  | Context Menu     | C-c C-m            |
 
-* ⚠️ Markup
+** ✅ Citation Editing
+CLOSED: [2026-01-17 Sat 12:46]
 
-| Command ID                    | Description              | Default Keybinding |
-|-------------------------------+--------------------------+--------------------|
-| scimax.markup.bold            | Bold (Markup)            | C-c b              |
-| scimax.markup.italic          | Italic (Markup)          | C-c i              |
-| scimax.markup.underline       | Underline (Markup)       | C-c u              |
-| scimax.markup.code            | Code (Markup)            | C-c `              |
-| scimax.markup.verbatim        | Verbatim (Markup)        | C-c =              |
-| scimax.markup.strikethrough   | Strikethrough (Markup)   | C-c +              |
-| scimax.markup.subscript       | Subscript (Markup)       | -                  |
-| scimax.markup.superscript     | Superscript (Markup)     | -                  |
-| scimax.markup.latexMath       | LaTeX Math (Markup)      | -                  |
-| scimax.markup.latexDisplayMath| LaTeX Display Math (Markup)| -                |
-| scimax.markup.command         | Command (Emacs-style)    | C-c '              |
+| Command ID                                     | Description                   | Default Keybinding    |
+|------------------------------------------------+-------------------------------+-----------------------|
+| [[cmd:scimax.ref.transposeCitationLeft]]       | Transpose Citation Left       | S-LEFT (on citation)  |
+| [[cmd:scimax.ref.transposeCitationRight]]      | Transpose Citation Right      | S-RIGHT (on citation) |
+| [[cmd:scimax.ref.sortCitations]]               | Sort Citations (Oldest First) | S-UP (on citation)    |
+| [[cmd:scimax.ref.sortCitationsByYear]]         | Sort Citations (Newest First) | S-DOWN (on citation)  |
+| [[cmd:scimax.ref.sortCitationsAlphabetically]] | Sort Citations Alphabetically | -                     |
+| [[cmd:scimax.ref.deleteCitation]]              | Delete Citation at Cursor     | C-S-k (on citation)   |
 
-* ⚠️ Speed Commands
+** ✅ Bibliography Management
+CLOSED: [2026-01-17 Sat 12:46]
+
+| Command ID                             | Description                    | Default Keybinding |
+|----------------------------------------+--------------------------------+--------------------|
+| [[cmd:scimax.ref.openBibliography]]    | Open Bibliography              | -                  |
+| [[cmd:scimax.ref.fetchFromDOI]]        | Fetch BibTeX from DOI          | -                  |
+| [[cmd:scimax.ref.searchReferences]]    | Search References              | -                  |
+| [[cmd:scimax.ref.findCitations]]       | Find Citations of Reference    | -                  |
+| [[cmd:scimax.ref.refresh]]             | Refresh References             | -                  |
+| [[cmd:scimax.ref.extractBibliography]] | Extract Bibliography from File | -                  |
+
+** ✅ OpenAlex Integration
+CLOSED: [2026-01-17 Sat 12:46]
+
+| Command ID                          | Description                   | Default Keybinding |
+|-------------------------------------+-------------------------------+--------------------|
+| [[cmd:scimax.ref.showCitingWorks]]  | Show Citing Works (OpenAlex)  | -                  |
+| [[cmd:scimax.ref.showRelatedWorks]] | Show Related Works (OpenAlex) | -                  |
+| [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  |
+
+* ✅ Notebook
+CLOSED: [2026-01-17 Sat 12:46]
+
+| Command ID                              | Description                   | Default Keybinding |
+|-----------------------------------------+-------------------------------+--------------------|
+| [[cmd:scimax.notebook.new]]             | New Notebook                  | -                  |
+| [[cmd:scimax.notebook.open]]            | Open Notebook                 | -                  |
+| [[cmd:scimax.notebook.openMasterFile]]  | Open Notebook Master File     | -                  |
+| [[cmd:scimax.notebook.recentFiles]]     | Recent Files in Notebook      | -                  |
+| [[cmd:scimax.notebook.search]]          | Search in Notebook            | -                  |
+| [[cmd:scimax.notebook.agenda]]          | Notebook Agenda               | -                  |
+| [[cmd:scimax.notebook.addCollaborator]] | Add Collaborator              | -                  |
+| [[cmd:scimax.notebook.archive]]         | Archive Notebook              | -                  |
+| [[cmd:scimax.notebook.settings]]        | Notebook Settings             | -                  |
+| [[cmd:scimax.notebook.index]]           | Index Notebook                | -                  |
+| [[cmd:scimax.notebook.info]]            | Notebook Info                 | -                  |
+| [[cmd:scimax.notebook.remove]]          | Remove Notebook from Tracking | -                  |
+
+* ✅ Navigation
+CLOSED: [2026-01-17 Sat 12:47]
+
+** ✅ Fuzzy Search (Swiper)
+CLOSED: [2026-01-17 Sat 12:47]
+
+| Command ID                          | Description                 | Default Keybinding |
+|-------------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.fuzzySearch]]          | Fuzzy Search (Current File) | C-c s              |
+| [[cmd:scimax.fuzzySearchOpenFiles]] | Fuzzy Search (Open Files)   | C-c S-s            |
+| [[cmd:scimax.fuzzySearchOutline]]   | Fuzzy Search (Outline)      | C-c M-s            |
+
+** ✅ Jump (Avy)
+CLOSED: [2026-01-17 Sat 12:47]
+
+| Command ID                      | Description                  | Default Keybinding |
+|---------------------------------+------------------------------+--------------------|
+| [[cmd:scimax.jump.gotoChar]]    | Jump to Character            | C-c j c            |
+| [[cmd:scimax.jump.gotoChar2]]   | Jump to 2-Character Sequence | C-c j j            |
+| [[cmd:scimax.jump.gotoWord]]    | Jump to Word                 | C-c j w            |
+| [[cmd:scimax.jump.gotoLine]]    | Jump to Line                 | C-c j l            |
+| [[cmd:scimax.jump.gotoSymbol]]  | Jump to Symbol               | C-c j o            |
+| [[cmd:scimax.jump.gotoSubword]] | Jump to Subword              | C-c j s            |
+| [[cmd:scimax.jump.copyLine]]    | Jump Copy Line               | -                  |
+| [[cmd:scimax.jump.killLine]]    | Jump Kill Line               | -                  |
+
+* ✅ Projectile
+CLOSED: [2026-01-17 Sat 12:47]
+
+| Command ID                            | Description                   | Default Keybinding |
+|---------------------------------------+-------------------------------+--------------------|
+| [[cmd:scimax.projectile.switch]]      | Switch Project                | C-c p p            |
+| [[cmd:scimax.projectile.findFile]]    | Find File in Project          | C-c p f            |
+| [[cmd:scimax.projectile.search]]      | Search in Project             | C-c p s            |
+| [[cmd:scimax.projectile.root]]        | Open Project Root             | C-c p d            |
+| [[cmd:scimax.projectile.add]]         | Add Project                   | C-c p a            |
+| [[cmd:scimax.projectile.remove]]      | Remove Project                | -                  |
+| [[cmd:scimax.projectile.scan]]        | Scan Directory for Projects   | -                  |
+| [[cmd:scimax.projectile.info]]        | Project Info                  | -                  |
+| [[cmd:scimax.projectile.cleanup]]     | Cleanup Non-existent Projects | -                  |
+| [[cmd:scimax.projectile.refreshTree]] | Refresh Projects              | -                  |
+
+* ✅ Editmarks
+CLOSED: [2026-01-17 Sat 12:47]
+
+** ✅ Mark Edits
+CLOSED: [2026-01-17 Sat 12:47]
+
+| Command ID                         | Description          | Default Keybinding |
+|------------------------------------+----------------------+--------------------|
+| [[cmd:scimax.editmarks.insertion]] | Mark Insertion       | C-c e i            |
+| [[cmd:scimax.editmarks.deletion]]  | Mark Deletion        | C-c e d            |
+| [[cmd:scimax.editmarks.comment]]   | Insert Edit Comment  | C-c e c            |
+| [[cmd:scimax.editmarks.typo]]      | Mark Typo Correction | C-c e t            |
+
+** ✅ Review Edits
+CLOSED: [2026-01-17 Sat 12:47]
+
+| Command ID                         | Description             | Default Keybinding |
+|------------------------------------+-------------------------+--------------------|
+| [[cmd:scimax.editmarks.accept]]    | Accept Edit Mark        | C-c e a            |
+| [[cmd:scimax.editmarks.reject]]    | Reject Edit Mark        | C-c e r            |
+| [[cmd:scimax.editmarks.acceptAll]] | Accept All Edit Marks   | -                  |
+| [[cmd:scimax.editmarks.rejectAll]] | Reject All Edit Marks   | -                  |
+| [[cmd:scimax.editmarks.next]]      | Next Edit Mark          | C-c e ]            |
+| [[cmd:scimax.editmarks.prev]]      | Previous Edit Mark      | C-c e [            |
+| [[cmd:scimax.editmarks.summary]]   | Show Edit Marks Summary | C-c e s            |
+
+* ✅ Hydra
+CLOSED: [2026-01-17 Sat 12:47]
+
+| Command ID                      | Description      | Default Keybinding |
+|---------------------------------+------------------+--------------------|
+| [[cmd:scimax.hydra.show]]       | Show Hydra Menu  | -                  |
+| [[cmd:scimax.hydra.hide]]       | Hide Hydra Menu  | -                  |
+| [[cmd:scimax.hydra.back]]       | Hydra Menu Back  | -                  |
+| [[cmd:scimax.hydra.main]]       | Main Menu        | C-c m              |
+| [[cmd:scimax.hydra.contextMenu]]| Context Menu     | C-c C-m            |
+
+* ✅ Markup
+CLOSED: [2026-01-17 Sat 12:48]
+
+| Command ID                             | Description                 | Default Keybinding |
+|----------------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.markup.bold]]             | Bold (Markup)               | C-c b              |
+| [[cmd:scimax.markup.italic]]           | Italic (Markup)             | C-c i              |
+| [[cmd:scimax.markup.underline]]        | Underline (Markup)          | C-c u              |
+| [[cmd:scimax.markup.code]]             | Code (Markup)               | C-c `              |
+| [[cmd:scimax.markup.verbatim]]         | Verbatim (Markup)           | C-c =              |
+| [[cmd:scimax.markup.strikethrough]]    | Strikethrough (Markup)      | C-c +              |
+| [[cmd:scimax.markup.subscript]]        | Subscript (Markup)          | -                  |
+| [[cmd:scimax.markup.superscript]]      | Superscript (Markup)        | -                  |
+| [[cmd:scimax.markup.latexMath]]        | LaTeX Math (Markup)         | -                  |
+| [[cmd:scimax.markup.latexDisplayMath]] | LaTeX Display Math (Markup) | -                  |
+| [[cmd:scimax.markup.command]]          | Command (Emacs-style)       | C-c '              |
+
+* ✅ Speed Commands
+CLOSED: [2026-01-17 Sat 12:48]
 
 Speed commands are single-key commands available when cursor is at the beginning of a heading line (with scimax.speedCommandsEnabled).
 
-** ⚠️ Navigation
+** ✅ Navigation
+CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID                 | Description          | Speed Key |
-|----------------------------+----------------------+-----------|
-| scimax.speed.nextSibling   | Next Sibling Heading | f         |
-| scimax.speed.previousSibling| Previous Sibling    | b         |
-| scimax.org.nextHeading     | Next Heading         | n         |
-| scimax.org.previousHeading | Previous Heading     | p         |
-| scimax.org.parentHeading   | Parent Heading       | u         |
-| scimax.org.jumpToHeading   | Jump to Heading      | j         |
-| scimax.speed.gotoMenu      | Go To Menu           | g         |
-| scimax.speed.firstHeading  | First Heading        | -         |
-| scimax.speed.lastHeading   | Last Heading         | -         |
+| Command ID                           | Description          | Speed Key |
+|--------------------------------------+----------------------+-----------|
+| [[cmd:scimax.speed.nextSibling]]     | Next Sibling Heading | f         |
+| [[cmd:scimax.speed.previousSibling]] | Previous Sibling     | b         |
+| [[cmd:scimax.org.nextHeading]]       | Next Heading         | n         |
+| [[cmd:scimax.org.previousHeading]]   | Previous Heading     | p         |
+| [[cmd:scimax.org.parentHeading]]     | Parent Heading       | u         |
+| [[cmd:scimax.org.jumpToHeading]]     | Jump to Heading      | j         |
+| [[cmd:scimax.speed.gotoMenu]]        | Go To Menu           | g         |
+| [[cmd:scimax.speed.firstHeading]]    | First Heading        | -         |
+| [[cmd:scimax.speed.lastHeading]]     | Last Heading         | -         |
 
-** ⚠️ Visibility
+** ✅ Visibility
+CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID                  | Description        | Speed Key |
-|-----------------------------+--------------------+-----------|
-| scimax.org.cycleGlobalFold  | Cycle Global Fold  | c         |
-| scimax.speed.showChildren   | Show All Children  | C (S-c)   |
-| scimax.speed.overview       | Overview (Fold All)| o         |
+| Command ID                         | Description         | Speed Key |
+|------------------------------------+---------------------+-----------|
+| [[cmd:scimax.org.cycleGlobalFold]] | Cycle Global Fold   | c         |
+| [[cmd:scimax.speed.showChildren]]  | Show All Children   | C (S-c)   |
+| [[cmd:scimax.speed.overview]]      | Overview (Fold All) | o         |
 
-** ⚠️ Structure Editing
+** ✅ Structure Editing
+CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID                   | Description         | Speed Key   |
-|------------------------------+---------------------+-------------|
-| scimax.heading.moveUp        | Move Heading Up     | U (S-u)     |
-| scimax.heading.moveDown      | Move Heading Down   | D (S-d)     |
-| scimax.heading.demoteSubtree | Demote Subtree      | r           |
-| scimax.heading.promoteSubtree| Promote Subtree     | l           |
-| scimax.heading.demote        | Demote Heading      | R (S-r)     |
-| scimax.heading.promote       | Promote Heading     | L (S-l)     |
-| scimax.org.killSubtree       | Kill Subtree        | w           |
-| scimax.speed.yankSubtree     | Yank (Paste) Subtree| y           |
-| scimax.org.cloneSubtree      | Clone Subtree       | W (S-w)     |
+| Command ID                            | Description          | Speed Key |
+|---------------------------------------+----------------------+-----------|
+| [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   |
+| [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   |
+| [[cmd:scimax.heading.demoteSubtree]]  | Demote Subtree       | r         |
+| [[cmd:scimax.heading.promoteSubtree]] | Promote Subtree      | l         |
+| [[cmd:scimax.heading.demote]]         | Demote Heading       | R (S-r)   |
+| [[cmd:scimax.heading.promote]]        | Promote Heading      | L (S-l)   |
+| [[cmd:scimax.org.killSubtree]]        | Kill Subtree         | w         |
+| [[cmd:scimax.speed.yankSubtree]]      | Yank (Paste) Subtree | y         |
+| [[cmd:scimax.org.cloneSubtree]]       | Clone Subtree        | W (S-w)   |
 
-** ⚠️ TODO and Tags
+** ✅ TODO and Tags
+CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID                | Description        | Speed Key |
-|---------------------------+--------------------+-----------|
-| scimax.org.cycleTodo      | Cycle TODO State   | t         |
-| scimax.speed.setTags      | Set Tags           | : (S-;)   |
-| scimax.speed.priorityA    | Set Priority A     | 1         |
-| scimax.speed.priorityB    | Set Priority B     | 2         |
-| scimax.speed.priorityC    | Set Priority C     | 3         |
-| scimax.speed.priorityNone | Remove Priority    | 0         |
+| Command ID                        | Description      | Speed Key |
+|-----------------------------------+------------------+-----------|
+| [[cmd:scimax.org.cycleTodo]]      | Cycle TODO State | t         |
+| [[cmd:scimax.speed.setTags]]      | Set Tags         | : (S-;)   |
+| [[cmd:scimax.speed.priorityA]]    | Set Priority A   | 1         |
+| [[cmd:scimax.speed.priorityB]]    | Set Priority B   | 2         |
+| [[cmd:scimax.speed.priorityC]]    | Set Priority C   | 3         |
+| [[cmd:scimax.speed.priorityNone]] | Remove Priority  | 0         |
 
-** ⚠️ Scheduling and Timestamps
+** ✅ Scheduling and Timestamps
+CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID                 | Description           | Speed Key |
-|----------------------------+-----------------------+-----------|
-| scimax.speed.schedule      | Add/Edit SCHEDULED    | s         |
-| scimax.speed.deadline      | Add/Edit DEADLINE     | d         |
-| scimax.org.insertTimestamp | Insert Timestamp      | .         |
-| scimax.org.shiftTimestampUp| Shift Timestamp Up    | ,         |
+| Command ID                          | Description        | Speed Key |
+|-------------------------------------+--------------------+-----------|
+| [[cmd:scimax.speed.schedule]]       | Add/Edit SCHEDULED | s         |
+| [[cmd:scimax.speed.deadline]]       | Add/Edit DEADLINE  | d         |
+| [[cmd:scimax.org.insertTimestamp]]  | Insert Timestamp   | .         |
+| [[cmd:scimax.org.shiftTimestampUp]] | Shift Timestamp Up | ,         |
 
-** ⚠️ Properties and Clocking
+** ✅ Properties and Clocking
+CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID               | Description     | Speed Key   |
-|--------------------------+-----------------|-------------|
-| scimax.speed.setProperty | Set Property    | P (S-p)     |
-| scimax.speed.setEffort   | Set Effort      | e           |
-| scimax.speed.clockIn     | Clock In        | I (S-i)     |
-| scimax.speed.clockOut    | Clock Out       | O (S-o)     |
+| Command ID                       | Description  | Speed Key |
+|----------------------------------+--------------+-----------|
+| [[cmd:scimax.speed.setProperty]] | Set Property | P (S-p)   |
+| [[cmd:scimax.speed.setEffort]]   | Set Effort   | e         |
+| [[cmd:scimax.speed.clockIn]]     | Clock In     | I (S-i)   |
+| [[cmd:scimax.speed.clockOut]]    | Clock Out    | O (S-o)   |
 
-** ⚠️ Archiving
+** ✅ Archiving
+CLOSED: [2026-01-17 Sat 12:48]
 
-| Command ID                     | Description           | Speed Key   |
-|--------------------------------+-----------------------+-------------|
-| scimax.speed.archiveSubtree    | Archive Subtree       | a           |
-| scimax.speed.toggleArchiveTag  | Toggle Archive Tag    | A (S-a)     |
-| scimax.speed.archiveToSibling  | Archive to Sibling    | $ (S-4)     |
+| Command ID                            | Description        | Speed Key |
+|---------------------------------------+--------------------+-----------|
+| [[cmd:scimax.speed.archiveSubtree]]   | Archive Subtree    | a         |
+| [[cmd:scimax.speed.toggleArchiveTag]] | Toggle Archive Tag | A (S-a)   |
+| [[cmd:scimax.speed.archiveToSibling]] | Archive to Sibling | $ (S-4)   |
 
-** ⚠️ Narrowing
+** ✅ Narrowing
+CLOSED: [2026-01-17 Sat 12:50]
 
-| Command ID                   | Description         | Speed Key   |
-|------------------------------+---------------------+-------------|
-| scimax.speed.narrowToSubtree | Narrow to Subtree   | N (S-n)     |
-| scimax.speed.widen           | Widen               | S (S-s)     |
+Note this is not the same as narrowing in Emacs which restricts the visible portion of the window.
 
-** ⚠️ Help
+| Command ID                           | Description       | Speed Key |
+|--------------------------------------+-------------------+-----------|
+| [[cmd:scimax.speed.narrowToSubtree]] | Narrow to Subtree | N (S-n)   |
+| [[cmd:scimax.speed.widen]]           | Widen             | S (S-s)   |
 
-| Command ID          | Description         | Speed Key    |
-|---------------------+---------------------+--------------|
-| scimax.speed.help   | Speed Commands Help | ? (S-/)      |
-| scimax.speed.toggle | Toggle Speed Commands| C-c C-x s   |
+** ✅ Help
+CLOSED: [2026-01-17 Sat 12:49]
 
-* ⚠️ LaTeX
+| Command ID                  | Description           | Speed Key |
+|-----------------------------+-----------------------+-----------|
+| [[cmd:scimax.speed.help]]   | Speed Commands Help   | ? (S-/)   |
+| [[cmd:scimax.speed.toggle]] | Toggle Speed Commands | C-c C-x s |
 
-** ⚠️ LaTeX Preview and Compilation
+* ✅ LaTeX
+CLOSED: [2026-01-17 Sat 12:50]
 
-| Command ID                 | Description                  | Default Keybinding |
-|----------------------------+------------------------------+--------------------|
-| scimax.latex.openPreview   | Open LaTeX Live Preview      | C-c C-e l v        |
-| scimax.latex.forwardSync   | Sync PDF to Cursor Position  | C-c C-e l s        |
-| scimax.latex.rebuild       | Rebuild PDF                  | -                  |
-| scimax.latex.showOutput    | Show LaTeX Build Output      | -                  |
+** ✅ LaTeX Preview and Compilation
+CLOSED: [2026-01-17 Sat 12:50]
 
-** ⚠️ LaTeX Cache Management
+| Command ID                       | Description                 | Default Keybinding |
+|----------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.latex.openPreview]] | Open LaTeX Live Preview     | C-c C-e l v        |
+| [[cmd:scimax.latex.forwardSync]] | Sync PDF to Cursor Position | C-c C-e l s        |
+| [[cmd:scimax.latex.rebuild]]     | Rebuild PDF                 | -                  |
+| [[cmd:scimax.latex.showOutput]]  | Show LaTeX Build Output     | -                  |
 
-| Command ID               | Description                     | Default Keybinding |
-|--------------------------+---------------------------------+--------------------|
-| scimax.clearLatexCache   | Clear LaTeX Preview Cache       | -                  |
-| scimax.checkLatexTools   | Check LaTeX Tools Availability  | -                  |
-| scimax.latexCacheStats   | Show LaTeX Cache Statistics     | -                  |
+** ✅ LaTeX Cache Management
+CLOSED: [2026-01-17 Sat 12:50]
 
-* ⚠️ Capture
+| Command ID                     | Description                     | Default Keybinding |
+|--------------------------------+---------------------------------+--------------------|
+| [[cmd:scimax.clearLatexCache]] | Clear LaTeX Preview Cache       | -                  |
+| [[cmd:scimax.checkLatexTools]] | Check LaTeX Tools Availability  | -                  |
+| [[cmd:scimax.latexCacheStats]] | Show LaTeX Cache Statistics     | -                  |
 
-| Command ID                    | Description               | Default Keybinding |
-|-------------------------------+---------------------------+--------------------|
-| scimax.capture                | Capture                   | C-c c              |
-| scimax.captureByKey           | Capture by Key            | -                  |
-| scimax.capture.todo           | Quick Capture TODO        | C-c t              |
-| scimax.capture.note           | Quick Capture Note        | -                  |
-| scimax.capture.createTemplate | Create Capture Template   | -                  |
-| scimax.capture.listTemplates  | List Capture Templates    | -                  |
-| scimax.capture.configure      | Configure Capture Templates| -                 |
+* ✅ Capture
+CLOSED: [2026-01-17 Sat 12:50]
 
-* ⚠️ Image Overlays
+| Command ID                            | Description                 | Default Keybinding |
+|---------------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.capture]]                | Capture                     | C-c c              |
+| [[cmd:scimax.captureByKey]]           | Capture by Key              | -                  |
+| [[cmd:scimax.capture.todo]]           | Quick Capture TODO          | C-c t              |
+| [[cmd:scimax.capture.note]]           | Quick Capture Note          | -                  |
+| [[cmd:scimax.capture.createTemplate]] | Create Capture Template     | -                  |
+| [[cmd:scimax.capture.listTemplates]]  | List Capture Templates      | -                  |
+| [[cmd:scimax.capture.configure]]      | Configure Capture Templates | -                  |
 
-| Command ID                         | Description                       | Default Keybinding |
-|------------------------------------+-----------------------------------+--------------------|
-| scimax.imageOverlays.toggle        | Toggle Image Overlays             | -                  |
-| scimax.imageOverlays.toggleCurrentFile| Toggle Image Overlays for Current File| -           |
-| scimax.imageOverlays.refresh       | Refresh Image Overlays            | -                  |
-| scimax.imageOverlays.clearCache    | Clear Image Overlay Cache         | -                  |
-| scimax.imageOverlays.showStats     | Show Image Overlay Cache Statistics| -                |
+* ✅ Image Overlays
+CLOSED: [2026-01-17 Sat 12:50]
 
-* ⚠️ Jupyter
+| Command ID                                     | Description                            | Default Keybinding |
+|------------------------------------------------+----------------------------------------+--------------------|
+| [[cmd:scimax.imageOverlays.toggle]]            | Toggle Image Overlays                  | -                  |
+| [[cmd:scimax.imageOverlays.toggleCurrentFile]] | Toggle Image Overlays for Current File | -                  |
+| [[cmd:scimax.imageOverlays.refresh]]           | Refresh Image Overlays                 | -                  |
+| [[cmd:scimax.imageOverlays.clearCache]]        | Clear Image Overlay Cache              | -                  |
+| [[cmd:scimax.imageOverlays.showStats]]         | Show Image Overlay Cache Statistics    | -                  |
 
-** ⚠️ Kernel Management
+* ✅ Jupyter
+CLOSED: [2026-01-17 Sat 12:50]
 
-| Command ID                    | Description                   | Default Keybinding |
-|-------------------------------+-------------------------------+--------------------|
-| scimax.jupyter.showKernels    | Show Available Jupyter Kernels| -                  |
-| scimax.jupyter.showRunning    | Show Running Kernels          | -                  |
-| scimax.jupyter.startKernel    | Start Jupyter Kernel          | -                  |
-| scimax.jupyter.changeKernel   | Change Jupyter Kernel         | -                  |
-| scimax.jupyter.restartKernel  | Restart Jupyter Kernel        | -                  |
-| scimax.jupyter.interruptKernel| Interrupt Jupyter Kernel      | -                  |
-| scimax.jupyter.shutdownKernel | Shutdown Jupyter Kernel       | -                  |
-| scimax.jupyter.shutdownAll    | Shutdown All Jupyter Kernels  | -                  |
+** ✅ Kernel Management
+CLOSED: [2026-01-17 Sat 12:50]
 
-* ⚠️ Appendix: Keybinding Quick Reference
+| Command ID                             | Description                    | Default Keybinding |
+|----------------------------------------+--------------------------------+--------------------|
+| [[cmd:scimax.jupyter.showKernels]]     | Show Available Jupyter Kernels | -                  |
+| [[cmd:scimax.jupyter.showRunning]]     | Show Running Kernels           | -                  |
+| [[cmd:scimax.jupyter.startKernel]]     | Start Jupyter Kernel           | -                  |
+| [[cmd:scimax.jupyter.changeKernel]]    | Change Jupyter Kernel          | -                  |
+| [[cmd:scimax.jupyter.restartKernel]]   | Restart Jupyter Kernel         | -                  |
+| [[cmd:scimax.jupyter.interruptKernel]] | Interrupt Jupyter Kernel       | -                  |
+| [[cmd:scimax.jupyter.shutdownKernel]]  | Shutdown Jupyter Kernel        | -                  |
+| [[cmd:scimax.jupyter.shutdownAll]]     | Shutdown All Jupyter Kernels   | -                  |
 
-** ⚠️ Most Common Keybindings
+* ✅ Appendix: Keybinding Quick Reference
+CLOSED: [2026-01-17 Sat 12:50]
 
-| Keybinding    | Command                        |
-|---------------+--------------------------------|
-| C-RET         | Execute code block / Insert heading |
-| C-c C-e       | Export dispatcher              |
-| C-c C-j       | Jump to heading                |
-| C-c C-t       | Cycle TODO state               |
-| C-c C-l       | Insert link                    |
-| C-c C-o       | Open link                      |
-| C-c ]         | Insert citation                |
-| C-c .         | Insert timestamp               |
-| C-c m         | Main hydra menu                |
-| C-c s         | Fuzzy search                   |
-| C-c p p       | Switch project                 |
-| C-S-j         | Open today's journal           |
-| TAB           | Cycle folding (on heading)     |
-| S-TAB         | Global cycle folding           |
-| M-LEFT/RIGHT  | Promote/demote heading         |
-| M-UP/DOWN     | Move heading/subtree           |
+** ✅ Most Common Keybindings
+CLOSED: [2026-01-17 Sat 12:50]
 
-** ⚠️ Export Keybindings
+| Keybinding   | Command                             |
+|--------------+-------------------------------------|
+| C-RET        | Execute code block / Insert heading |
+| C-c C-e      | Export dispatcher                   |
+| C-c C-j      | Jump to heading                     |
+| C-c C-t      | Cycle TODO state                    |
+| C-c C-l      | Insert link                         |
+| C-c C-o      | Open link                           |
+| C-c ]        | Insert citation                     |
+| C-c .        | Insert timestamp                    |
+| C-c m        | Main hydra menu                     |
+| C-c s        | Fuzzy search                        |
+| C-c p p      | Switch project                      |
+| C-S-j        | Open today's journal                |
+| TAB          | Cycle folding (on heading)          |
+| S-TAB        | Global cycle folding                |
+| M-LEFT/RIGHT | Promote/demote heading              |
+| M-UP/DOWN    | Move heading/subtree                |
 
-| Keybinding      | Export Target       |
-|-----------------+---------------------|
-| C-c C-e h h     | HTML                |
-| C-c C-e h o     | HTML and open       |
-| C-c C-e l l     | LaTeX               |
-| C-c C-e l p     | PDF                 |
-| C-c C-e l o     | PDF and open        |
-| C-c C-e l v     | LaTeX live preview  |
-| C-c C-e m m     | Markdown            |
+** ✅ Export Keybindings
+CLOSED: [2026-01-17 Sat 12:50]
 
-** ⚠️ Babel/Source Block Keybindings
+| Keybinding  | Export Target      |
+|-------------+--------------------|
+| C-c C-e h h | HTML               |
+| C-c C-e h o | HTML and open      |
+| C-c C-e l l | LaTeX              |
+| C-c C-e l p | PDF                |
+| C-c C-e l o | PDF and open       |
+| C-c C-e l v | LaTeX live preview |
+| C-c C-e m m | Markdown           |
 
-| Keybinding     | Action                     |
-|----------------+----------------------------|
-| C-RET          | Execute block              |
-| C-c C-c        | Execute block (in src)     |
-| S-RET          | Execute and next           |
-| C-c C-v t      | Tangle                     |
-| C-c C-v p      | Execute to point           |
-| C-c C-v i      | Execute inline             |
-| C-c C-v q      | Queue block                |
-| C-DOWN         | Next source block          |
-| C-UP           | Previous source block      |
-| C-c C-n        | Insert block below         |
-| C-c C-b        | Jump to block              |
+** ✅ Babel/Source Block Keybindings
+CLOSED: [2026-01-17 Sat 12:51]
 
-** ⚠️ Project and Navigation Keybindings
+| Keybinding | Action                 |
+|------------+------------------------|
+| C-RET      | Execute block          |
+| C-c C-c    | Execute block (in src) |
+| S-RET      | Execute and next       |
+| C-c C-v t  | Tangle                 |
+| C-c C-v p  | Execute to point       |
+| C-c C-v i  | Execute inline         |
+| C-c C-v q  | Queue block            |
+| C-DOWN     | Next source block      |
+| C-UP       | Previous source block  |
+| C-c C-n    | Insert block below     |
+| C-c C-b    | Jump to block          |
 
-| Keybinding     | Action                     |
-|----------------+----------------------------|
-| C-c p p        | Switch project             |
-| C-c p f        | Find file in project       |
-| C-c p s        | Search in project          |
-| C-c p d        | Open project root          |
-| C-c p a        | Add project                |
-| C-c s          | Fuzzy search (current)     |
-| C-c S-s        | Fuzzy search (open files)  |
-| C-c M-s        | Fuzzy search (outline)     |
-| C-c j c        | Jump to character          |
-| C-c j j        | Jump to 2-char sequence    |
-| C-c j w        | Jump to word               |
+** ✅ Project and Navigation Keybindings
+CLOSED: [2026-01-17 Sat 12:51]
 
-* ⚠️ Index
+| Keybinding | Action                    |
+|------------+---------------------------|
+| C-c p p    | Switch project            |
+| C-c p f    | Find file in project      |
+| C-c p s    | Search in project         |
+| C-c p d    | Open project root         |
+| C-c p a    | Add project               |
+| C-c s      | Fuzzy search (current)    |
+| C-c S-s    | Fuzzy search (open files) |
+| C-c M-s    | Fuzzy search (outline)    |
+| C-c j c    | Jump to character         |
+| C-c j j    | Jump to 2-char sequence   |
+| C-c j w    | Jump to word              |
+
+* ✅ Index
+CLOSED: [2026-01-17 Sat 12:51]
 
 This document contains [[*Introduction][269 commands]] organized into [[*Document Structure][22 categories]] with their keybindings and descriptions.
 

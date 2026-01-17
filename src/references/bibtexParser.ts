@@ -225,11 +225,16 @@ export function formatCitationLink(
     postnote?: string
 ): string {
     if (format === 'org') {
-        let link = `${style}:${key}`;
-        if (prenote || postnote) {
-            link = `[[${style}:${key}][${prenote || ''}::${postnote || ''}]]`;
+        // Use org-ref v3 syntax: style:&key (with & prefix and ; separator)
+        if (prenote && postnote) {
+            // With notes: style:prenote;&key postnote
+            return `${style}:${prenote};&${key} ${postnote}`;
+        } else if (prenote) {
+            return `${style}:${prenote};&${key}`;
+        } else if (postnote) {
+            return `${style}:&${key} ${postnote}`;
         }
-        return link;
+        return `${style}:&${key}`;
     } else if (format === 'latex') {
         // LaTeX style: \cite{key}, \citet{key}, \citep{key}, etc.
         // Map styles to LaTeX commands

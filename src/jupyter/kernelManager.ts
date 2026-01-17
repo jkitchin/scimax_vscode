@@ -447,6 +447,13 @@ export class KernelManager extends EventEmitter {
     }
 
     /**
+     * Get kernel ID by session name
+     */
+    public getKernelIdBySession(sessionName: string): string | null {
+        return this.sessionKernels.get(sessionName) || null;
+    }
+
+    /**
      * Get all sessions
      */
     public getSessions(): Array<{ name: string; kernelId: string; language: string; state: KernelState }> {

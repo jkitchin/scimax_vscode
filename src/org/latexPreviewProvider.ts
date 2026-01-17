@@ -63,6 +63,23 @@ const MATH_ENVIRONMENTS = new Set([
 ]);
 
 /**
+ * Inner math environments that must be wrapped in an outer math environment
+ * (they cannot stand alone like equation or align)
+ */
+const INNER_MATH_ENVIRONMENTS = new Set([
+    'split',
+    'aligned',
+    'gathered',
+    'cases',
+    'matrix',
+    'pmatrix',
+    'bmatrix',
+    'vmatrix',
+    'Vmatrix',
+    'smallmatrix',
+]);
+
+/**
  * Initialize the cache directory
  */
 export function initLatexPreviewCache(context: vscode.ExtensionContext): void {
@@ -477,8 +494,16 @@ function buildLatexDocument(
 
     // Add the math content
     if (fragment.type === 'environment') {
-        // Use the raw content (includes \begin{env}...\end{env})
-        lines.push(fragment.raw);
+        // Check if this is an inner environment that needs wrapping
+        if (fragment.environment && INNER_MATH_ENVIRONMENTS.has(fragment.environment)) {
+            // Inner environments like cases, matrix, aligned need to be inside math mode
+            lines.push('\\begin{equation*}');
+            lines.push(fragment.raw);
+            lines.push('\\end{equation*}');
+        } else {
+            // Outer environments like equation, align can stand alone
+            lines.push(fragment.raw);
+        }
     } else if (fragment.type === 'display') {
         // Wrap in equation* for display math (unnumbered)
         lines.push('\\begin{equation*}');
@@ -795,24 +820,8 @@ export async function createLatexHover(
                 markdown.appendMarkdown(`**${typeLabel} Math**\n\n`);
             }
 
-            // Add rendered image
-            if (result.svgPath) {
-                // For SVG, embed directly for better quality
-                try {
-                    const svgContent = fs.readFileSync(imagePath, 'utf-8');
-                    // Scale SVG for better visibility
-                    const scaledSvg = svgContent.replace(
-                        /<svg([^>]*)>/,
-                        '<svg$1 style="max-width: 500px; height: auto;">'
-                    );
-                    markdown.appendMarkdown(`${scaledSvg}\n\n`);
-                } catch {
-                    // Fall back to img tag
-                    markdown.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 500px;" />\n\n`);
-                }
-            } else {
-                markdown.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 500px;" />\n\n`);
-            }
+            // Add rendered image using img tag (inline SVG is stripped by VS Code's sanitizer)
+            markdown.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 500px;" />\n\n`);
 
             // Show source LaTeX
             markdown.appendMarkdown('---\n\n');

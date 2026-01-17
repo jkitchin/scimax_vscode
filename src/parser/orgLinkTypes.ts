@@ -323,15 +323,32 @@ export const doiHandler: LinkTypeHandler = {
 };
 
 /**
+ * Parse citation keys from path supporting both v2 and v3 syntax
+ * v2: key1,key2 (comma-separated)
+ * v3: &key1;&key2 or prefix;&key1;&key2 (& prefix, semicolon-separated)
+ */
+function parseCitationKeys(path: string): string[] {
+    // Check if this is v3 format (contains & before a key)
+    if (path.includes('&')) {
+        // v3 format: extract keys that follow &
+        const keyMatches = path.match(/&([a-zA-Z0-9_:-]+)/g) || [];
+        return keyMatches.map(k => k.slice(1)); // Remove & prefix
+    } else {
+        // v2 format: comma-separated keys
+        return path.split(',').map(k => k.trim()).filter(k => k.length > 0);
+    }
+}
+
+/**
  * Citation link handler (for org-ref style citations)
+ * Supports both v2 (cite:key1,key2) and v3 (cite:&key1;&key2) syntax
  */
 export const citeHandler: LinkTypeHandler = {
     type: 'cite',
     description: 'BibTeX citations',
 
     resolve(path: string, context: LinkContext): LinkResolution {
-        // Parse citation keys (can be comma-separated)
-        const keys = path.split(',').map(k => k.trim());
+        const keys = parseCitationKeys(path);
 
         return {
             displayText: keys.map(k => `[${k}]`).join(', '),
@@ -341,7 +358,7 @@ export const citeHandler: LinkTypeHandler = {
     },
 
     export(path: string, description: string | undefined, backend: 'html' | 'latex' | 'text'): string {
-        const keys = path.split(',').map(k => k.trim());
+        const keys = parseCitationKeys(path);
 
         switch (backend) {
             case 'html':
@@ -527,6 +544,47 @@ export const roamHandler: LinkTypeHandler = {
     },
 };
 
+/**
+ * Command link handler (VS Code commands)
+ * Allows running VS Code commands via cmd:command.name links
+ */
+export const cmdHandler: LinkTypeHandler = {
+    type: 'cmd',
+    description: 'VS Code commands',
+
+    resolve(path: string, context: LinkContext): LinkResolution {
+        return {
+            displayText: path,
+            url: `command:${path}`,
+            tooltip: `Run command: ${path}`,
+            metadata: { command: path },
+        };
+    },
+
+    export(path: string, description: string | undefined, backend: 'html' | 'latex' | 'text'): string {
+        const text = description || path;
+        switch (backend) {
+            case 'html':
+                return `<code class="command">${escapeHtml(text)}</code>`;
+            case 'latex':
+                return `\\texttt{${escapeLatex(text)}}`;
+            case 'text':
+            default:
+                return text;
+        }
+    },
+
+    async follow(path: string, context: LinkContext): Promise<void> {
+        // Dynamic import to avoid circular dependencies
+        const vscode = await import('vscode');
+        try {
+            await vscode.commands.executeCommand(path);
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to execute command: ${path}`);
+        }
+    },
+};
+
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -567,6 +625,7 @@ export function registerBuiltinHandlers(): void {
     linkTypeRegistry.register(helpHandler);
     linkTypeRegistry.register(infoHandler);
     linkTypeRegistry.register(roamHandler);
+    linkTypeRegistry.register(cmdHandler);
 }
 
 // Auto-register built-in handlers

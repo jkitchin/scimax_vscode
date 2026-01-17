@@ -30,6 +30,10 @@ const globalMarkRing: Mark[] = [];
 // Last mark for exchange-point-and-mark
 let lastMark: Mark | undefined;
 
+// Selection mode state (Emacs transient mark mode)
+let selectionModeActive = false;
+let selectionAnchor: vscode.Position | undefined;
+
 /**
  * Get the mark ring size from configuration
  */
@@ -57,6 +61,83 @@ function pushToRing(ring: Mark[], mark: Mark, maxSize: number): void {
     while (ring.length > maxSize) {
         ring.shift();
     }
+}
+
+/**
+ * Set mark for selection (Emacs C-SPC behavior)
+ * After calling this, cursor movement will extend the selection
+ */
+export async function setMarkForSelection(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showWarningMessage('No active editor');
+        return;
+    }
+
+    const currentPos = editor.selection.active;
+
+    // If selection mode is already active and we're at the same position,
+    // deactivate it (toggle behavior like Emacs C-g)
+    if (selectionModeActive && selectionAnchor &&
+        currentPos.isEqual(editor.selection.anchor) &&
+        !editor.selection.isEmpty) {
+        // Deactivate: collapse selection to cursor
+        selectionModeActive = false;
+        selectionAnchor = undefined;
+        editor.selection = new vscode.Selection(currentPos, currentPos);
+        vscode.window.setStatusBarMessage('Mark deactivated', 2000);
+        return;
+    }
+
+    // Set the anchor for selection
+    selectionAnchor = currentPos;
+    selectionModeActive = true;
+
+    // Also push to mark ring for later use
+    const mark: Mark = {
+        uri: editor.document.uri,
+        position: currentPos,
+        timestamp: Date.now()
+    };
+    const ringSize = getRingSize();
+    const docRing = getDocumentRing(editor.document.uri);
+    pushToRing(docRing, mark, ringSize);
+    pushToRing(globalMarkRing, mark, ringSize);
+    lastMark = mark;
+
+    // Use VS Code's selection anchor feature
+    await vscode.commands.executeCommand('editor.action.setSelectionAnchor');
+
+    // Visual feedback
+    const line = currentPos.line + 1;
+    const col = currentPos.character + 1;
+    vscode.window.setStatusBarMessage(`Mark set at line ${line}, col ${col} - move cursor to select`, 3000);
+
+    // Brief highlight at mark position
+    await flashMark(editor, currentPos);
+}
+
+/**
+ * Cancel selection mode (like Emacs C-g)
+ */
+export function cancelSelection(): void {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    if (selectionModeActive || !editor.selection.isEmpty) {
+        selectionModeActive = false;
+        selectionAnchor = undefined;
+        const pos = editor.selection.active;
+        editor.selection = new vscode.Selection(pos, pos);
+        vscode.window.setStatusBarMessage('Selection cancelled', 1000);
+    }
+}
+
+/**
+ * Select to the anchor/mark (like VS Code's Ctrl+K Ctrl+K)
+ */
+export async function selectToMark(): Promise<void> {
+    await vscode.commands.executeCommand('editor.action.selectFromAnchorToCursor');
 }
 
 /**
@@ -394,6 +475,9 @@ function formatTimestamp(timestamp: number): string {
 export function registerMarkCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.mark.push', pushMark),
+        vscode.commands.registerCommand('scimax.mark.set', setMarkForSelection),
+        vscode.commands.registerCommand('scimax.mark.cancel', cancelSelection),
+        vscode.commands.registerCommand('scimax.mark.selectToMark', selectToMark),
         vscode.commands.registerCommand('scimax.mark.pop', popMark),
         vscode.commands.registerCommand('scimax.mark.popGlobal', popGlobalMark),
         vscode.commands.registerCommand('scimax.mark.exchange', exchangePointAndMark),

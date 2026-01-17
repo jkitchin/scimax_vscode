@@ -28,15 +28,16 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | M-[         | Previous journal entry (in journal) |
 | M-]         | Next journal entry (in journal)     |
 
-* ⚠️ Help Commands
+* ✅ Help Commands
+CLOSED: [2026-01-17 Sat 13:38]
 
 Emacs-style help commands for discovering keybindings and commands.
 
-| Key   | Action                                           |
-|-------+--------------------------------------------------|
+| Key   | Action                                                |
+|-------+-------------------------------------------------------|
 | C-h k | Describe key - type a key sequence to see its command |
-| C-h b | List keybindings - browse all keybindings        |
-| C-h f | Describe command - select a command to see its keys  |
+| C-h b | List keybindings - browse all keybindings             |
+| C-h f | Describe command - select a command to see its keys   |
 
 ** C-h k (Describe Key)
 

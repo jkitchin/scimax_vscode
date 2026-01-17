@@ -5,7 +5,8 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* ✅ Overview
+CLOSED: [2026-01-17 Sat 11:45]
 
 Scimax VS Code includes a powerful database and search system that indexes your org, markdown, and Jupyter notebook files. The database provides:
 
@@ -18,9 +19,11 @@ Scimax VS Code includes a powerful database and search system that indexes your 
 
 The database is built on SQLite (via `@libsql/client') with support for vector similarity search, making it both fast and capable of sophisticated semantic queries.
 
-* What Gets Indexed
+* ✅ What Gets Indexed
+CLOSED: [2026-01-17 Sat 11:45]
 
-** File Types
+** ✅ File Types
+CLOSED: [2026-01-17 Sat 11:45]
 
 The database automatically indexes three types of files:
 
@@ -28,11 +31,13 @@ The database automatically indexes three types of files:
 - `.md' files - Markdown documents
 - `.ipynb' files - Jupyter notebooks
 
-** Indexed Content
+** ✅ Indexed Content
+CLOSED: [2026-01-17 Sat 11:45]
 
 For each file, the database extracts and indexes:
 
-*** Headings
+*** ✅ Headings
+CLOSED: [2026-01-17 Sat 11:45]
 - Heading text and level (*, **, ***, etc.)
 - TODO states (TODO, DONE, IN-PROGRESS, etc.)
 - Priority markers ([#A], [#B], [#C])
@@ -41,35 +46,43 @@ For each file, the database extracts and indexes:
 - Scheduling information (SCHEDULED, DEADLINE, CLOSED)
 - Line numbers for navigation
 
-*** Source Blocks
+*** ✅ Source Blocks
+CLOSED: [2026-01-17 Sat 11:45]
 - Programming language
 - Complete code content
 - Header arguments (`:results', `:exports', etc.)
 - Line numbers
 - For notebooks: cell indices
 
-*** Links
+*** ✅ Links
+CLOSED: [2026-01-17 Sat 11:45]
 - Link type (file, http, https, id, etc.)
 - Target path or URL
 - Optional description text
 - Line number
 
-*** Hashtags
+*** ✅ Hashtags
+CLOSED: [2026-01-17 Sat 11:45]
 - Inline hashtags (e.g., #research, #todo)
 - Associated file paths
 
-*** Full Text
+*** ✅ Full Text
+CLOSED: [2026-01-17 Sat 11:45]
 - Complete document content for full-text search
 - Indexed with FTS5 virtual tables
 - Porter stemming and Unicode normalization
 
-*** Text Chunks (for Semantic Search)
+Here is a hashtag #FullTextSearch
+
+
+*** ✅ Text Chunks (for Semantic Search)
+CLOSED: [2026-01-17 Sat 11:46]
 - Document divided into ~2000 character chunks
 - 3-line overlap between chunks for context
 - Vector embeddings (if embedding service configured)
 - Line ranges for each chunk
 
-** File Watching
+** ⚠️ File Watching
 
 The database automatically watches for file changes:
 
@@ -78,7 +91,8 @@ The database automatically watches for file changes:
 - Deleted files are removed from the index
 - Changes are queued and processed sequentially
 
-** Ignore Patterns
+** ✅ Ignore Patterns
+CLOSED: [2026-01-17 Sat 11:46]
 
 By default, the following patterns are ignored:
 
@@ -90,9 +104,15 @@ By default, the following patterns are ignored:
 
 Configure additional patterns in settings: `scimax.db.ignorePatterns'
 
-* Full-Text Search
+[[cmd:workbench.action.openSettings2]]
 
-** Overview
+[[cmd:workbench.action.openSettings2?@scimax][Open Scimax Settings]]        
+
+* ✅ Full-Text Search
+CLOSED: [2026-01-17 Sat 11:46]
+
+** ✅ Overview
+CLOSED: [2026-01-17 Sat 11:46]
 
 Full-text search uses SQLite's FTS5 (Full-Text Search version 5) with:
 
@@ -101,16 +121,23 @@ Full-text search uses SQLite's FTS5 (Full-Text Search version 5) with:
 - *Unicode normalization* - Handles accented characters correctly
 - *Snippet generation* - Shows matching context with highlighting
 
-** Usage
+** ✅ Usage
+CLOSED: [2026-01-17 Sat 11:49]
 
-*** Command
+*** ✅ Command
+CLOSED: [2026-01-17 Sat 11:49]
 Run `Scimax: Search All Files (FTS5)' or use command `scimax.db.search'
 
-*** Query Syntax
+[[cmd:scimax.db.search]]
+
+*** ✅ Query Syntax
+CLOSED: [2026-01-17 Sat 11:49]
 
 FTS5 supports rich query syntax:
 
-**** Basic Queries
+**** ✅ Basic Queries
+CLOSED: [2026-01-17 Sat 11:49]
+
 #+BEGIN_SRC org
 machine learning          # Match both words (in any order)
 "machine learning"        # Match exact phrase
@@ -118,6 +145,7 @@ neural OR artificial      # Match either word
 #+END_SRC
 
 **** Boolean Operators
+
 #+BEGIN_SRC org
 python AND jupyter        # Must contain both
 python NOT tensorflow     # Contains python but not tensorflow
@@ -125,18 +153,21 @@ deep OR machine learning  # Contains "deep" or the phrase "machine learning"
 #+END_SRC
 
 **** Prefix Matching
+
 #+BEGIN_SRC org
 comput*                   # Matches: computer, computing, computation
 data*                     # Matches: data, database, dataset
 #+END_SRC
 
 **** Column Queries
+
 #+BEGIN_SRC org
 title: introduction       # Search only in titles
 content: python           # Search only in content
 #+END_SRC
 
 **** Proximity Queries
+
 #+BEGIN_SRC org
 NEAR(neural network, 5)   # Words within 5 tokens of each other
 #+END_SRC
@@ -170,11 +201,13 @@ tensorflow NOT keras
 title: introduction
 #+END_SRC
 
-* Semantic Search
+* ✅ Semantic Search
+CLOSED: [2026-01-17 Sat 11:55]
 
-** Overview
+** ✅ Overview
+CLOSED: [2026-01-17 Sat 11:55]
 
-Semantic search finds content by *meaning* rather than exact keywords. It uses vector embeddings to represent text in a high-dimensional space where semantically similar content is close together.
+Semantic search finds content by *meaning* rather than exact words. It uses vector embeddings to represent text in a high-dimensional space where semantically similar content is close together.
 
 Benefits:
 - Find content even when using different words
@@ -183,7 +216,8 @@ Benefits:
 
 Example: Searching for "machine learning algorithms" will also find documents about "neural networks", "deep learning models", and "classification methods" even if they don't contain those exact words.
 
-** Requirements
+** ✅ Requirements
+CLOSED: [2026-01-17 Sat 11:58]
 
 Semantic search requires:
 
@@ -228,7 +262,9 @@ Scimax supports three embedding providers:
   - `mxbai-embed-large' (1024 dims, larger)
 - *Setup*: Install Ollama, then `ollama pull nomic-embed-text'
 
-*** OpenAI
+*** ✅ OpenAI
+CLOSED: [2026-01-17 Sat 11:59]
+
 - *Pros*: High quality, fast, maintained
 - *Cons*: Requires API key, costs money, sends data to cloud
 - *Security*: API key stored securely in OS credential manager (Keychain/Credential Manager/libsecret)
@@ -237,9 +273,11 @@ Scimax supports three embedding providers:
   - `text-embedding-3-large' (3072 dims, highest quality)
   - `text-embedding-ada-002' (1536 dims, legacy)
 
-** Configuration
+** ✅ Configuration
+CLOSED: [2026-01-17 Sat 11:59]
 
-*** Interactive Setup
+*** ✅ Interactive Setup
+CLOSED: [2026-01-17 Sat 11:59]
 
 Run `Scimax: Configure Embedding Service' (`scimax.db.configureEmbeddings')
 
@@ -250,11 +288,14 @@ This wizard will:
 4. Update your settings
 5. Prompt you to reindex files
 
-*** Manual Configuration
+*** ✅ Manual Configuration
+CLOSED: [2026-01-17 Sat 11:59]
 
 Add to your VS Code settings (`settings.json'):
 
-**** Local (Transformers.js)
+**** ✅ Local (Transformers.js)
+CLOSED: [2026-01-17 Sat 11:59]
+
 #+BEGIN_SRC json
 {
   "scimax.db.embeddingProvider": "local",
@@ -262,7 +303,9 @@ Add to your VS Code settings (`settings.json'):
 }
 #+END_SRC
 
-**** Ollama
+**** ✅ Ollama
+CLOSED: [2026-01-17 Sat 12:00]
+
 #+BEGIN_SRC json
 {
   "scimax.db.embeddingProvider": "ollama",
@@ -271,7 +314,7 @@ Add to your VS Code settings (`settings.json'):
 }
 #+END_SRC
 
-**** OpenAI
+**** ⚠️ OpenAI
 #+BEGIN_SRC json
 {
   "scimax.db.embeddingProvider": "openai"
@@ -281,12 +324,15 @@ Add to your VS Code settings (`settings.json'):
 Note: The API key is stored securely in your OS credential manager, not in settings.json.
 Use the interactive setup (`Scimax: Configure Embedding Service') to enter your API key.
 
-** Usage
+** ✅ Usage
+CLOSED: [2026-01-17 Sat 12:01]
 
-*** Command
+*** ✅ Command
+CLOSED: [2026-01-17 Sat 12:01]
 Run `Scimax: Semantic Search' or use command `scimax.db.searchSemantic'
 
-*** Query Examples
+*** ✅ Query Examples
+CLOSED: [2026-01-17 Sat 12:01]
 
 Semantic search uses natural language:
 
@@ -474,20 +520,26 @@ DONE          # Completed
 CANCELLED     # Abandoned
 #+END_SRC
 
-** Source Block Search
+** ✅ Source Block Search
+CLOSED: [2026-01-17 Sat 12:03]
 
 Search code blocks by language:
 
-*** Command
-`Scimax: Search Code Blocks' (`scimax.db.searchBlocks')
+*** ✅ Command
+CLOSED: [2026-01-17 Sat 12:03]
 
-*** Features
+  `Scimax: Search Code Blocks' (`scimax.db.searchBlocks'). [[cmd:scimax.db.searchBlocks]]
+
+*** ✅ Features
+CLOSED: [2026-01-17 Sat 12:03]
+
 - Filter by programming language
 - Optional text search within code
 - Shows first line of code as preview
 - Includes both org files and notebook cells
 
-*** Example Workflow
+*** ✅ Example Workflow
+CLOSED: [2026-01-17 Sat 12:03]
 #+BEGIN_SRC org
 1. Select language (or "All languages")
 2. Optionally enter search text
@@ -495,20 +547,26 @@ Search code blocks by language:
 4. Jump to file location
 #+END_SRC
 
-** Hashtag Search
+** ✅ Hashtag Search
+CLOSED: [2026-01-17 Sat 12:03]
 
 Find files by inline hashtags:
 
-*** Command
-`Scimax: Search Hashtags' (`scimax.db.searchHashtags')
+*** ✅ Command
+CLOSED: [2026-01-17 Sat 12:04]
 
-*** Features
+  `Scimax: Search Hashtags' (`scimax.db.searchHashtags'). [[cmd:scimax.db.searchHashtags]]
+
+*** ✅ Features
+CLOSED: [2026-01-17 Sat 12:04]
 - Lists all hashtags found (`#tagname')
 - Shows file count per hashtag
 - Displays files containing selected hashtag
 - Case-insensitive matching
 
-*** Hashtag Format
+*** ✅ Hashtag Format
+CLOSED: [2026-01-17 Sat 12:04]
+
 #+BEGIN_SRC org
 # In your documents
 This is a #research note about #machinelearning
@@ -518,71 +576,94 @@ research
 machinelearning
 #+END_SRC
 
-** File Browser
+** ✅ File Browser
+CLOSED: [2026-01-17 Sat 12:04]
 
 Browse all indexed files:
 
-*** Command
-`Scimax: Browse Indexed Files' (`scimax.db.browseFiles')
+*** ✅ Command
+CLOSED: [2026-01-17 Sat 12:04]
 
-*** Features
+`Scimax: Browse Indexed Files' (`scimax.db.browseFiles'). [[cmd:scimax.db.browseFiles]]
+
+*** ✅ Features
+CLOSED: [2026-01-17 Sat 12:04]
+
 - Lists all files in database
 - Shows last indexed date
 - Sorted by most recently indexed
 - Displays file type (org, md, ipynb)
 
-* Agenda and Time Management
+* ✅ Agenda and Time Management
+CLOSED: [2026-01-17 Sat 12:04]
 
-** Agenda View
+** ✅ Agenda View
+CLOSED: [2026-01-17 Sat 12:04]
 
 The agenda shows scheduled items and deadlines:
 
-*** Command
-`Scimax: Show Agenda' (`scimax.db.agenda')
+*** ✅ Command
+CLOSED: [2026-01-17 Sat 12:05]
 
-*** Time Periods
+`Scimax: Show Agenda' (`scimax.db.agenda'). [[cmd:scimax.db.agenda]]
+
+*** ✅ Time Periods
+CLOSED: [2026-01-17 Sat 12:05]
+
 - Next 2 weeks (default)
 - Next month
 - Next 3 months
 - All items (no time limit)
 
-*** Options
+*** ✅ Options
+CLOSED: [2026-01-17 Sat 12:05]
+
 - Include unscheduled TODOs
 - Filter by time range
 - Sorted by urgency (overdue first)
 
-*** Item Types
-**** Deadline
+*** ✅ Item Types
+CLOSED: [2026-01-17 Sat 12:05]
+
+**** ✅ Deadline
+CLOSED: [2026-01-17 Sat 12:05]
 Items with DEADLINE timestamps:
 #+BEGIN_SRC org
 ,* TODO Submit report
 DEADLINE: <2026-01-20 Mon>
 #+END_SRC
 
-**** Scheduled
+**** ✅ Scheduled
+CLOSED: [2026-01-17 Sat 12:05]
+
 Items with SCHEDULED timestamps:
 #+BEGIN_SRC org
 ,* TODO Team meeting
 SCHEDULED: <2026-01-15 Wed 14:00>
 #+END_SRC
 
-**** Unscheduled TODOs
-Items with TODO state but no scheduling
+**** ✅ Unscheduled TODOs
+CLOSED: [2026-01-17 Sat 12:06]
 
-** Deadline View
+  Items with TODO state but no scheduling
+
+** ✅ Deadline View
+CLOSED: [2026-01-17 Sat 12:06]
 
 Show only upcoming deadlines:
 
 *** Command
-`Scimax: Show Deadlines' (`scimax.db.deadlines')
+`Scimax: Show Deadlines' (`scimax.db.deadlines'). [[cmd:scimax.db.deadlines]]
 
-*** Features
+*** ✅ Features
+CLOSED: [2026-01-17 Sat 12:06]
+
 - Next 2 weeks of deadlines
 - Overdue items highlighted
 - Shows days until deadline
 - Excludes DONE and CANCELLED
 
-*** Display Format
+*** Display Format  
 #+BEGIN_SRC org
 ⚠️  Overdue: Submit TPS Report (3 days ago)
 🔔 Today: Code Review
@@ -649,7 +730,7 @@ Search scope: directory (my-project)
 ** Reindexing
 
 *** Full Reindex
-Command: `Scimax: Reindex Files' (`scimax.db.reindex')
+Command: `Scimax: Reindex Files' (`scimax.db.reindex'). [[cmd:scimax.db.reindex]]
 
 - Scans all workspace folders
 - Checks file modification times
@@ -657,7 +738,9 @@ Command: `Scimax: Reindex Files' (`scimax.db.reindex')
 - Shows progress notification
 - Reports statistics on completion
 
-*** Auto-Indexing
+*** ✅ Auto-Indexing
+CLOSED: [2026-01-17 Sat 12:08]
+
 #+BEGIN_SRC json
 {
   "scimax.db.autoIndex": true
@@ -666,7 +749,9 @@ Command: `Scimax: Reindex Files' (`scimax.db.reindex')
 
 Warning: Disable for very large workspaces (>10,000 files) to prevent memory issues.
 
-*** Additional Directories
+*** ✅ Additional Directories
+CLOSED: [2026-01-17 Sat 12:08]
+
 #+BEGIN_SRC json
 {
   "scimax.db.directories": [
@@ -679,8 +764,10 @@ Warning: Disable for very large workspaces (>10,000 files) to prevent memory iss
 
 ** Optimization
 
-*** Command
-`Scimax: Optimize Database' (`scimax.db.optimize')
+*** ✅ Command
+CLOSED: [2026-01-17 Sat 12:08]
+
+`Scimax: Optimize Database' (`scimax.db.optimize'). [[cmd:scimax.db.optimize]]
 
 *** Operations
 - Removes entries for deleted files
@@ -874,7 +961,7 @@ Automatically index workspace on activation. Disable for large workspaces.
 
 *** `scimax.db.embeddingProvider'
 Type: `enum'
-Values: ="none" | "local" | "ollama" | "openai"=
+Values: "none" | "local" | "ollama" | "openai"
 Default: `"none"'
 
 Embedding provider for semantic search.
@@ -887,7 +974,7 @@ Embedding provider for semantic search.
 
 *** `scimax.db.localModel'
 Type: `enum'
-Values: ="Xenova/all-MiniLM-L6-v2" | "Xenova/bge-small-en-v1.5" | "Xenova/gte-small"=
+Values: "Xenova/all-MiniLM-L6-v2" | "Xenova/bge-small-en-v1.5" | "Xenova/gte-small"
 Default: `"Xenova/all-MiniLM-L6-v2"'
 
 Local embedding model (Transformers.js).
@@ -931,44 +1018,42 @@ The OpenAI API key is stored securely using VS Code's SecretStorage API, which u
 - *Linux*: libsecret (GNOME Keyring, KWallet)
 
 To set or update your API key, use the interactive setup:
-=Scimax: Configure Embedding Service= (`scimax.db.configureEmbeddings')
-
-Note: If you previously had =scimax.db.openaiApiKey= in your settings.json, it will be automatically migrated to secure storage and removed from settings on first run.
+Scimax: Configure Embedding Service (`scimax.db.configureEmbeddings')
 
 * Command Reference
 
 ** Search Commands
 
-| Command                           | Description                               |
-|-----------------------------------+-------------------------------------------|
-| =scimax.db.search=                | Full-text search (FTS5)                   |
-| =scimax.db.searchSemantic=        | Semantic search (vector)                  |
-| =scimax.db.searchHybrid=          | Hybrid search (FTS + vector)              |
-| =scimax.db.searchHeadings=        | Search headings                           |
-| =scimax.db.searchByTag=           | Search by org tag                         |
-| =scimax.db.searchByProperty=      | Search by property value                  |
-| =scimax.db.searchBlocks=          | Search code blocks                        |
-| =scimax.db.searchHashtags=        | Search by hashtag                         |
+| Command                    | Description                  |
+|----------------------------+------------------------------|
+| scimax.db.search           | Full-text search (FTS5)      |
+| scimax.db.searchSemantic   | Semantic search (vector)     |
+| scimax.db.searchHybrid     | Hybrid search (FTS + vector) |
+| scimax.db.searchHeadings   | Search headings              |
+| scimax.db.searchByTag      | Search by org tag            |
+| scimax.db.searchByProperty | Search by property value     |
+| scimax.db.searchBlocks     | Search code blocks           |
+| scimax.db.searchHashtags   | Search by hashtag            |
 
 ** View Commands
 
-| Command                    | Description                   |
-|----------------------------+-------------------------------|
-| =scimax.db.showTodos=      | Show TODO items               |
-| =scimax.db.agenda=         | Show agenda                   |
-| =scimax.db.deadlines=      | Show upcoming deadlines       |
-| =scimax.db.browseFiles=    | Browse indexed files          |
+| Command               | Description             |
+|-----------------------+-------------------------|
+| scimax.db.showTodos   | Show TODO items         |
+| scimax.db.agenda      | Show agenda             |
+| scimax.db.deadlines   | Show upcoming deadlines |
+| scimax.db.browseFiles | Browse indexed files    |
 
 ** Management Commands
 
-| Command                        | Description                           |
-|--------------------------------+---------------------------------------|
-| =scimax.db.reindex=            | Reindex all files                     |
-| =scimax.db.optimize=           | Optimize database                     |
-| =scimax.db.clear=              | Clear database                        |
-| =scimax.db.stats=              | Show database statistics              |
-| =scimax.db.setScope=           | Set search scope                      |
-| =scimax.db.configureEmbeddings= | Configure embedding service           |
+| Command                       | Description                 |
+|-------------------------------+-----------------------------|
+| scimax.db.reindex             | Reindex all files           |
+| scimax.db.optimize            | Optimize database           |
+| scimax.db.clear               | Clear database              |
+| scimax.db.stats               | Show database statistics    |
+| scimax.db.setScope            | Set search scope            |
+| scimax.db.configureEmbeddings | Configure embedding service |
 
 * Troubleshooting
 
@@ -981,11 +1066,11 @@ Semantic search returns no results, shows "unavailable", or displays an error.
 
 Run `Scimax: Show Database Stats' (`scimax.db.stats') to see the semantic search status:
 
-| Status Message                              | Meaning                                     |
-|---------------------------------------------+---------------------------------------------|
-| =Semantic search: Enabled (N chunks)=       | Working, N chunks with embeddings           |
-| =Semantic search: Ready (no embeddings)=    | Supported, but no provider configured       |
-| =Semantic search: Unavailable (error)=      | Vector search not supported by database     |
+| Status Message                         | Meaning                                 |
+|----------------------------------------+-----------------------------------------|
+| Semantic search: Enabled (N chunks)    | Working, N chunks with embeddings       |
+| Semantic search: Ready (no embeddings) | Supported, but no provider configured   |
+| Semantic search: Unavailable (error)   | Vector search not supported by database |
 
 *** Vector Search Unavailable
 
@@ -1028,7 +1113,7 @@ Searches return empty results despite having files.
 
 *** Solutions
 1. Run `Scimax: Show Database Stats' to check file count
-2. If files ` 0, run 'Scimax: Reindex Files=
+2. If files ` 0, run 'Scimax: Reindex Files
 3. Check file extensions (.org, .md, .ipynb)
 4. Verify files aren't in ignored directories
 5. Check search scope is set to "All files"

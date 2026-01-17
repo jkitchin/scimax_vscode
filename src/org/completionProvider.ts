@@ -136,6 +136,11 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
             items.push(...this.getSnippetCompletions());
         }
 
+        // Line-start keyword shortcuts (ti, n, ca, etc.)
+        if (linePrefix.match(/^\s*(ti|n|ca|au|da|op)$/i)) {
+            items.push(...this.getLineStartKeywordCompletions(linePrefix, position));
+        }
+
         return items;
     }
 
@@ -332,6 +337,39 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
             item.documentation = `Renders as: ${entity.utf8}`;
             return item;
         });
+    }
+
+    /**
+     * Get line-start keyword completions (shortcuts like ti -> #+TITLE:)
+     * These only activate when typed at the beginning of a line
+     */
+    private getLineStartKeywordCompletions(linePrefix: string, position: vscode.Position): vscode.CompletionItem[] {
+        const shortcuts: Array<{ prefix: string; keyword: string; detail: string }> = [
+            { prefix: 'ti', keyword: 'TITLE', detail: 'Document title' },
+            { prefix: 'n', keyword: 'NAME', detail: 'Named element (for references)' },
+            { prefix: 'ca', keyword: 'CAPTION', detail: 'Caption for tables/figures' },
+            { prefix: 'au', keyword: 'AUTHOR', detail: 'Document author' },
+            { prefix: 'da', keyword: 'DATE', detail: 'Document date' },
+            { prefix: 'op', keyword: 'OPTIONS', detail: 'Export options' },
+        ];
+
+        const typed = linePrefix.trim().toLowerCase();
+        const startCol = linePrefix.length - linePrefix.trimStart().length;
+
+        return shortcuts
+            .filter(s => s.prefix === typed)
+            .map(s => {
+                const item = new vscode.CompletionItem(s.prefix, vscode.CompletionItemKind.Snippet);
+                item.insertText = new vscode.SnippetString(`#+${s.keyword}: $0`);
+                item.detail = s.detail;
+                item.documentation = `Expands to #+${s.keyword}: `;
+                // Replace the typed prefix (from start of text to cursor)
+                item.range = new vscode.Range(
+                    new vscode.Position(position.line, startCol),
+                    position
+                );
+                return item;
+            });
     }
 
     /**

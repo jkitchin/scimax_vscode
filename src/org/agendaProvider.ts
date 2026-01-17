@@ -18,6 +18,12 @@ import {
     TodoListView,
 } from '../parser/orgAgenda';
 import type { HeadlineElement, OrgDocumentNode } from '../parser/orgElementTypes';
+import {
+    collectAllClockEntries,
+    generateTimeReport,
+    formatTimeReport,
+    formatDuration,
+} from '../parser/orgClocking';
 
 // =============================================================================
 // Types
@@ -462,6 +468,13 @@ export class AgendaManager {
         this.refreshEmitter.fire();
     }
 
+    /**
+     * Get the file cache for external access (e.g., clock reports)
+     */
+    getFileCache(): Map<string, AgendaFile> {
+        return this.fileCache;
+    }
+
     dispose(): void {
         // Cancel any ongoing scan
         this.cancelScan();
@@ -867,6 +880,92 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             }
         }),
 
+        // Agenda clock report - generates time report across all agenda files
+        vscode.commands.registerCommand('scimax.agenda.clockReport', async () => {
+            // Ask for report type
+            const reportType = await vscode.window.showQuickPick([
+                { label: 'All time', value: 'all' },
+                { label: 'Today', value: 'today' },
+                { label: 'This week', value: 'thisweek' },
+                { label: 'This month', value: 'thismonth' },
+            ], {
+                placeHolder: 'Select time range for clock report'
+            });
+
+            if (!reportType) return;
+
+            try {
+                // Get all headlines from agenda files
+                const allHeadlines: HeadlineElement[] = [];
+                const allEntries: ReturnType<typeof collectAllClockEntries> = [];
+
+                for (const [, agendaFile] of manager.getFileCache()) {
+                    const entries = collectAllClockEntries(agendaFile.document);
+                    allEntries.push(...entries);
+                    allHeadlines.push(...agendaFile.headlines);
+                }
+
+                if (allEntries.length === 0) {
+                    vscode.window.showInformationMessage('No clock entries found in agenda files');
+                    return;
+                }
+
+                // Generate the report config
+                const config = {
+                    type: reportType.value === 'today' ? 'daily' as const :
+                          reportType.value === 'thisweek' ? 'weekly' as const :
+                          reportType.value === 'thismonth' ? 'monthly' as const : 'custom' as const,
+                    hierarchical: true,
+                    showPercentages: true,
+                    includeEmpty: false,
+                };
+
+                // Generate reports per file
+                const reportLines: string[] = [];
+                let totalMinutes = 0;
+
+                for (const [filePath, agendaFile] of manager.getFileCache()) {
+                    const report = generateTimeReport(agendaFile.document.children, config);
+                    if (report.length > 0) {
+                        const fileTotal = report.reduce((sum, e) => sum + e.totalMinutes, 0);
+                        totalMinutes += fileTotal;
+
+                        reportLines.push(`** ${path.basename(filePath)}`);
+                        reportLines.push(`   Total: ${formatDuration(fileTotal)}`);
+                        reportLines.push('');
+                        reportLines.push(formatTimeReport(report, 1));
+                        reportLines.push('');
+                    }
+                }
+
+                if (reportLines.length === 0) {
+                    vscode.window.showInformationMessage('No clock entries found for the selected time range');
+                    return;
+                }
+
+                // Create report document
+                const reportContent = `#+TITLE: Agenda Clock Report - ${reportType.label}
+#+DATE: ${new Date().toISOString().split('T')[0]}
+
+* Clock Report (Agenda Files)
+
+Total time across all files: ${formatDuration(totalMinutes)}
+
+${reportLines.join('\n')}
+`;
+
+                const reportDoc = await vscode.workspace.openTextDocument({
+                    content: reportContent,
+                    language: 'org'
+                });
+
+                await vscode.window.showTextDocument(reportDoc, { preview: true });
+
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to generate clock report: ${error}`);
+            }
+        }),
+
         // Agenda menu
         vscode.commands.registerCommand('scimax.agenda.menu', async () => {
             const options = [
@@ -877,6 +976,7 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 { label: '$(tasklist) TODO List', description: 'All TODO items', command: 'scimax.agenda.todoList' },
                 { label: '$(clock) Deadlines', description: 'Upcoming deadlines', command: 'scimax.agenda.deadlines' },
                 { label: '$(milestone) Scheduled', description: 'Scheduled items', command: 'scimax.agenda.scheduled' },
+                { label: '$(history) Clock Report', description: 'Time tracking report', command: 'scimax.agenda.clockReport' },
                 { label: '$(tag) Filter by Tag', description: 'Show items with tag', command: 'scimax.agenda.filterByTag' },
                 { label: '$(refresh) Refresh', description: 'Re-scan agenda files', command: 'scimax.agenda.refresh' },
             ];

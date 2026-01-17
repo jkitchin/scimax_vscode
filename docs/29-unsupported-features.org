@@ -80,13 +80,7 @@ The following org-mode export backends are not implemented:
 | Texinfo     | GNU documentation format       | Not available                  |
 | man         | Unix manual pages              | Not available                  |
 
-** CSL Citation Processing
-
-Emacs org-mode with =citeproc-el= can process citations using Citation Style Language (CSL) for various citation formats (APA, Chicago, etc.).
-
-*VS Code limitation*: CSL processing is not implemented. Citations are exported in their raw form or using natbib/biblatex.
-
-*Workaround*: Use LaTeX export with biblatex for full citation formatting control.
+It is possible to develop new export backends.
 
 * Babel/Code Execution Limitations
 

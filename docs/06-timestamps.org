@@ -167,7 +167,8 @@ Press C-c . and a date picker dialog appears. You can:
 3. Navigate with arrow keys
 4. Press Enter to confirm
 
-** ⚠️ Date Entry Shortcuts
+** ✅ Date Entry Shortcuts
+CLOSED: [2026-01-17 Sat 08:39]
 
 When entering a date, use these expressions:
 
@@ -197,7 +198,7 @@ Or use 12-hour format with am/pm:
 2026-01-15 2:30pm
 #+END_EXAMPLE
 
-** ⚠️ Quick Timestamp Insertion
+** ✅ Quick Timestamp Insertion
 
 For common cases:
 
@@ -299,7 +300,8 @@ CLOSED: [2026-01-15 Thu 15:04]
 | y    | Year(s)  | +1y     | Same date next year  |
 | h    | Hour(s)  | +2h     | Two hours later      |
 
-** ⚠️ Repeater Behavior
+** ✅ Repeater Behavior
+CLOSED: [2026-01-17 Sat 08:40]
 
 When you mark a repeating task as DONE:
 
@@ -346,7 +348,8 @@ SCHEDULED: <2026-01-15 Wed ++1d>
 If you complete it late (on Jan 17), it schedules to Jan 18 (one day from
 when you completed it).
 
-*** ⚠️ Restart Repeater (.+)
+*** ✅ Restart Repeater (.+)
+CLOSED: [2026-01-17 Sat 08:40]
 
 For tasks that must happen a fixed interval after completion:
 
@@ -357,7 +360,8 @@ SCHEDULED: <2026-01-15 Wed .+3d>
 
 If you complete it on Jan 18, it schedules to Jan 21 (exactly 3 days later).
 
-** ⚠️ Repeater Comparison
+** ✅ Repeater Comparison
+CLOSED: [2026-01-17 Sat 08:40]
 
 | Type     | Symbol | Schedules from  | Use Case                     |
 |----------+--------+-----------------+------------------------------|
@@ -365,7 +369,8 @@ If you complete it on Jan 18, it schedules to Jan 21 (exactly 3 days later).
 | Catch-up | ++     | Completion date | Habits, daily tasks          |
 | Restart  | .+     | Completion date | Maintenance, periodic tasks  |
 
-** ⚠️ Repeater Examples
+** ✅ Repeater Examples
+CLOSED: [2026-01-17 Sat 08:40]
 
 #+BEGIN_SRC org
 ,* TODO Daily standup meeting
@@ -468,11 +473,13 @@ DEADLINE: <2026-04-15 Tue -7d>
 Due April 15, start warning 7 days early.
 #+END_SRC
 
-* ⚠️ Warning Periods
+* ✅ Warning Periods
+CLOSED: [2026-01-17 Sat 08:40]
 
 Warning periods display deadlines in the agenda before they're due.
 
-** ⚠️ Warning Period Syntax
+** ✅ Warning Period Syntax
+CLOSED: [2026-01-17 Sat 08:40]
 
 Add -Nd to a deadline where N is days:
 
@@ -482,21 +489,24 @@ DEADLINE: <2026-01-25 Sat -7d>
 
 This appears in the agenda 7 days before January 25.
 
-** ⚠️ Default Warning Period
+** ✅ Default Warning Period
+CLOSED: [2026-01-17 Sat 08:41]
 
 Without a warning period specified, deadlines show 14 days in advance.
 
-** ⚠️ Setting Custom Warnings
+** ✅ Setting Custom Warnings
+CLOSED: [2026-01-17 Sat 08:41]
 
-| Warning   | Meaning                             |
-|-----------|-------------------------------------|
-| -3d      | Warn 3 days before                  |
-| -1w      | Warn 1 week before                  |
-| -2w      | Warn 2 weeks before                 |
-| -1m      | Warn 1 month before                 |
-| -0d      | Show only on deadline day           |
+| Warning | Meaning                   |
+|---------+---------------------------|
+| -3d     | Warn 3 days before        |
+| -1w     | Warn 1 week before        |
+| -2w     | Warn 2 weeks before       |
+| -1m     | Warn 1 month before       |
+| -0d     | Show only on deadline day |
 
-** ⚠️ Warning Period Examples
+** ✅ Warning Period Examples
+CLOSED: [2026-01-17 Sat 08:41]
 
 #+BEGIN_SRC org
 ,* TODO Renew driver's license
@@ -516,7 +526,8 @@ SCHEDULED: <2026-12-15 Tue -7d>
 ; Even SCHEDULED can have warnings for preparation
 #+END_SRC
 
-** ⚠️ Combining Repeaters and Warnings
+** ✅ Combining Repeaters and Warnings
+CLOSED: [2026-01-17 Sat 08:41]
 
 You can use both repeaters and warnings:
 
@@ -527,12 +538,15 @@ DEADLINE: <2026-01-31 Fri +1m -3d>
 #+END_SRC
 
 * ✅ Time Clocking
-CLOSED: [2026-01-16 Fri 19:47]
+CLOSED: [2026-01-17 Sat 08:41]
 
 Track how much time you spend on tasks with clock entries.
 
 ** ✅ Clocking In and Out
 CLOSED: [2026-01-16 Fri 19:47]
+:LOGBOOK:
+CLOCK: [2026-01-17 Sat 08:55]--[2026-01-17 Sat 08:55] => 0:00
+:END:
 
 Start and stop the clock for a task:
 
@@ -540,6 +554,11 @@ Start and stop the clock for a task:
 |---------------------+-------------+----------------------------|
 | scimax.org.clockIn  | I           | Clock in via speed command |
 | scimax.org.clockOut | O           | Clock out via command      |
+
+
+Click to clock in: [[cmd:scimax.speed.clockIn][Clock In]]
+Click to clock in: [[cmd:scimax.speed.clockOut][Clock Out]]
+
 
 ** ✅ Clock Entry Format
 CLOSED: [2026-01-16 Fri 19:49]
@@ -556,7 +575,11 @@ CLOCK: [2026-01-13 Mon 14:00]--[2026-01-13 Mon 16:00] =>  2:00
 
 Format: CLOCK: [start]--[end] => duration
 
-** ⚠️ Active Clock
+** ✅ Active Clock
+CLOSED: [2026-01-17 Sat 08:41]
+:LOGBOOK:
+CLOCK: [2026-01-17 Sat 08:41]--[2026-01-17 Sat 08:41] => 0:00
+:END:
 
 When clocked in, the current clock has no end time:
 
@@ -570,7 +593,8 @@ CLOCK: [2026-01-14 Tue 09:00]--[2026-01-14 Tue 12:00] =>  3:00
 
 The CLOCK: [2026-01-14 Tue 14:00] entry is the currently running clock.
 
-** ⚠️ Clock Workflow Example
+** ✅ Clock Workflow Example
+CLOSED: [2026-01-17 Sat 08:41]
 
 1. Start working:
    #+BEGIN_SRC org
@@ -612,19 +636,22 @@ Total time: 4:30 (2:00 + 2:30)
 
 View time summaries:
 
-| Command                      | Description                     |
-|------------------------------+---------------------------------|
-| scimax.org.clockReport      | Generate clock report           |
-| scimax.agenda.clockReport   | Clock report in agenda          |
+| Command                   | Description            |
+|---------------------------+------------------------|
+| cmd:scimax.org.clockReport    | Generate clock report  |
+| cmd:scimax.agenda.clockReport | Clock report in agenda |
+
+
+ [[cmd:scimax.org.clockReport]]
+
+ [[cmd:scimax.agenda.clockReport]]
 
 ** ⚠️ Clock Table
 
 Insert a dynamic table showing time spent:
 
-#+BEGIN_SRC org
-,#+BEGIN: clocktable :maxlevel 2 :scope file
-,#+END:
-#+END_SRC
+#+BEGIN: clocktable :maxlevel 2 :scope file
+#+END:
 
 This creates a table like:
 
@@ -636,18 +663,21 @@ This creates a table like:
 | ** Bug fixes              |   6:00 |
 #+END_EXAMPLE
 
-* ⚠️ The LOGBOOK Drawer
+* ✅ The LOGBOOK Drawer
+CLOSED: [2026-01-17 Sat 08:44]
 
 The LOGBOOK drawer stores time-tracking and state-change information.
 
-** ⚠️ LOGBOOK Contents
+** ✅ LOGBOOK Contents
+CLOSED: [2026-01-17 Sat 08:44]
 
 The LOGBOOK can contain:
 1. Clock entries (CLOCK: lines)
 2. State change notes
 3. Other time-related metadata
 
-** ⚠️ LOGBOOK Example
+** ✅ LOGBOOK Example
+CLOSED: [2026-01-17 Sat 08:44]
 
 #+BEGIN_SRC org
 ,* DONE Review pull request
@@ -668,14 +698,16 @@ This shows:
 - Two work sessions: 1:00 and 0:30
 - Previous state change from WAITING to TODO
 
-** ⚠️ LOGBOOK Benefits
+** ✅ LOGBOOK Benefits
+CLOSED: [2026-01-17 Sat 08:44]
 
 1. *Complete history* - See all work on a task
 2. *Time accountability* - Track actual time spent
 3. *State audit trail* - Understand task progression
 4. *Billing records* - For client work time tracking
 
-** ⚠️ Creating LOGBOOK
+** ✅ Creating LOGBOOK
+CLOSED: [2026-01-17 Sat 08:44]
 
 The LOGBOOK drawer is created automatically when:
 - You clock in for the first time
@@ -690,7 +722,8 @@ Manual LOGBOOK:
 :END:
 #+END_SRC
 
-* ⚠️ CLOSED Timestamps
+* ✅ CLOSED Timestamps
+CLOSED: [2026-01-17 Sat 08:44]
 
 When a task is marked DONE, a CLOSED timestamp is automatically added:
 
@@ -699,8 +732,7 @@ When a task is marked DONE, a CLOSED timestamp is automatically added:
 CLOSED: [2026-01-14 Tue 16:30]
 #+END_SRC
 
-** ✅ CLOSED Properties
-CLOSED: [2026-01-16 Fri 19:49]
+** ⚠️ CLOSED Properties
 
 - Always an inactive timestamp [...]
 - Records the exact completion time
