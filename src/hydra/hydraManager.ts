@@ -298,7 +298,7 @@ export class HydraManager {
                 menuItem: {
                     key: '.',
                     label: 'Back',
-                    exit: 'exit',
+                    exit: 'stay',  // Don't use 'exit' - back() handles navigation itself
                     action: async () => {
                         await this.back();
                     },
