@@ -9,13 +9,14 @@ import {
     SearchScope
 } from './scimaxDb';
 import {
-    createEmbeddingService,
+    createEmbeddingServiceAsync,
     testEmbeddingService,
     TransformersJsEmbeddingService,
     OllamaEmbeddingService,
     OpenAIEmbeddingService
 } from './embeddingService';
 import { getDatabase } from './lazyDb';
+import { storeOpenAIApiKey, deleteOpenAIApiKey } from './secretStorage';
 
 /**
  * Helper to get database with user notification on failure
@@ -337,7 +338,8 @@ export function registerDbCommands(
                 const apiKey = await vscode.window.showInputBox({
                     prompt: 'Enter your OpenAI API key',
                     password: true,
-                    placeHolder: 'sk-...'
+                    placeHolder: 'sk-...',
+                    ignoreFocusOut: true
                 });
 
                 if (!apiKey) return;
@@ -350,18 +352,21 @@ export function registerDbCommands(
                     return;
                 }
 
+                // Store API key securely in OS credential manager
+                await storeOpenAIApiKey(apiKey);
                 await config.update('embeddingProvider', 'openai', vscode.ConfigurationTarget.Global);
-                await config.update('openaiApiKey', apiKey, vscode.ConfigurationTarget.Global);
 
                 const db = await getDatabase();
                 if (db) {
                     db.setEmbeddingService(testService);
                 }
                 vscode.window.showInformationMessage(
-                    'Configured OpenAI embeddings. Run "Reindex Files" to enable semantic search.'
+                    'Configured OpenAI embeddings (API key stored securely). Run "Reindex Files" to enable semantic search.'
                 );
 
             } else {
+                // Disable - also clean up any stored API key
+                await deleteOpenAIApiKey();
                 await config.update('embeddingProvider', 'none', vscode.ConfigurationTarget.Global);
                 vscode.window.showInformationMessage('Semantic search disabled');
             }

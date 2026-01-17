@@ -865,6 +865,7 @@ export const typescriptExecutor: LanguageExecutor = {
         const fs = await import('fs');
         const path = await import('path');
         const os = await import('os');
+        const crypto = await import('crypto');
 
         const startTime = Date.now();
 
@@ -879,7 +880,7 @@ export const typescriptExecutor: LanguageExecutor = {
 
         // Write code to a temp file (tsx/ts-node need a file)
         const tmpDir = os.tmpdir();
-        const tmpFile = path.join(tmpDir, `babel-${Date.now()}.ts`);
+        const tmpFile = path.join(tmpDir, `babel-${crypto.randomBytes(16).toString('hex')}.ts`);
 
         try {
             fs.writeFileSync(tmpFile, fullCode, 'utf-8');

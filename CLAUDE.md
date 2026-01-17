@@ -258,3 +258,62 @@ Update the statistics table if counts have changed significantly (new modules, m
 - **Org-mode Syntax Specification**: https://orgmode.org/worg/org-syntax.html
   - Canonical reference for all org-mode syntax elements
   - Used for building the syntax highlighter and parser
+
+## Security Considerations
+
+This extension executes user code (Babel source blocks), so security requires careful attention. See `SECURITY_AUDIT_REPORT.md` for the full audit.
+
+### Critical Rules
+
+1. **Never use `shell: true` in spawn() calls**
+   ```typescript
+   // WRONG - enables command injection
+   spawn('convert', args, { shell: true });
+
+   // CORRECT - pass arguments as array
+   spawn('convert', args);
+   ```
+
+2. **Use cryptographically random temp file names**
+   ```typescript
+   // WRONG - predictable, enables race conditions
+   const tmpFile = path.join(tmpDir, `babel-${Date.now()}.ts`);
+
+   // CORRECT - unpredictable
+   const crypto = await import('crypto');
+   const tmpFile = path.join(tmpDir, `babel-${crypto.randomBytes(16).toString('hex')}.ts`);
+   ```
+
+3. **Use SecretStorage for API keys** (not settings.json)
+   ```typescript
+   // WRONG - stored in plain text
+   config.update('apiKey', key, ConfigurationTarget.Global);
+
+   // CORRECT - uses OS credential manager
+   import { storeOpenAIApiKey } from './database/secretStorage';
+   await storeOpenAIApiKey(key);
+   ```
+
+4. **LaTeX compilation uses `-shell-restricted` by default**
+   - Full `-shell-escape` allows arbitrary command execution
+   - The setting `scimax.export.pdf.shellEscape` controls this
+   - Default is `restricted` which allows minted but blocks dangerous commands
+
+### SQL and HTML
+
+- **SQL**: Always use parameterized queries (already implemented correctly)
+  ```typescript
+  db.execute({ sql: 'SELECT * FROM files WHERE path = ?', args: [filePath] });
+  ```
+
+- **HTML Export**: Always escape user content (already implemented correctly)
+  ```typescript
+  escapeString(str, 'html')  // escapes &, <, >, ", '
+  ```
+
+### Babel Execution Security
+
+- Source blocks are **only executed when users explicitly trigger them** (C-c C-c)
+- Source blocks are **NOT executed during export** (unlike Emacs with `:exports results`)
+- Blocks with `:eval no` header are skipped
+- "Execute All" commands have no default keybinding (command palette only)

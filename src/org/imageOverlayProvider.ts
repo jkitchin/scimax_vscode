@@ -679,7 +679,7 @@ export class ImageOverlayManager {
                 destPath,
             ];
 
-            const proc = spawn('convert', args, { shell: true });
+            const proc = spawn('convert', args);
 
             proc.on('close', (code: number | null) => {
                 if (code === 0) {
@@ -706,7 +706,7 @@ export class ImageOverlayManager {
                 destPath,
             ];
 
-            const proc = spawn('sips', args, { shell: true });
+            const proc = spawn('sips', args);
 
             proc.on('close', (code: number | null) => {
                 if (code === 0) {
@@ -725,7 +725,7 @@ export class ImageOverlayManager {
      */
     private checkCommand(cmd: string): Promise<boolean> {
         return new Promise((resolve) => {
-            const proc = spawn(cmd, ['--version'], { shell: true });
+            const proc = spawn(cmd, ['--version']);
             proc.on('close', (code: number | null) => resolve(code === 0));
             proc.on('error', () => resolve(false));
         });
@@ -761,7 +761,7 @@ export class ImageOverlayManager {
      */
     private getDimensionsWithIdentify(imagePath: string): Promise<{ width: number; height: number } | undefined> {
         return new Promise((resolve) => {
-            const proc = spawn('identify', ['-format', '%wx%h', imagePath], { shell: true });
+            const proc = spawn('identify', ['-format', '%wx%h', imagePath]);
             let output = '';
 
             proc.stdout?.on('data', (data: Buffer) => {
@@ -788,7 +788,7 @@ export class ImageOverlayManager {
      */
     private getDimensionsWithSips(imagePath: string): Promise<{ width: number; height: number } | undefined> {
         return new Promise((resolve) => {
-            const proc = spawn('sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', imagePath], { shell: true });
+            const proc = spawn('sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', imagePath]);
             let output = '';
 
             proc.stdout?.on('data', (data: Buffer) => {

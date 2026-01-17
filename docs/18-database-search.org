@@ -231,6 +231,7 @@ Scimax supports three embedding providers:
 *** OpenAI
 - *Pros*: High quality, fast, maintained
 - *Cons*: Requires API key, costs money, sends data to cloud
+- *Security*: API key stored securely in OS credential manager (Keychain/Credential Manager/libsecret)
 - *Models*:
   - `text-embedding-3-small' (1536 dims, recommended)
   - `text-embedding-3-large' (3072 dims, highest quality)
@@ -273,10 +274,12 @@ Add to your VS Code settings (`settings.json'):
 **** OpenAI
 #+BEGIN_SRC json
 {
-  "scimax.db.embeddingProvider": "openai",
-  "scimax.db.openaiApiKey": "sk-..."
+  "scimax.db.embeddingProvider": "openai"
 }
 #+END_SRC
+
+Note: The API key is stored securely in your OS credential manager, not in settings.json.
+Use the interactive setup (`Scimax: Configure Embedding Service') to enter your API key.
 
 ** Usage
 
@@ -919,17 +922,18 @@ Ollama embedding model name.
 }
 #+END_SRC
 
-*** `scimax.db.openaiApiKey'
-Type: `string'
-Default: `""'
+*** OpenAI API Key (Secure Storage)
 
-OpenAI API key for embeddings.
+The OpenAI API key is stored securely using VS Code's SecretStorage API, which uses your operating system's credential manager:
 
-#+BEGIN_SRC json
-{
-  "scimax.db.openaiApiKey": "sk-..."
-}
-#+END_SRC
+- *macOS*: Keychain
+- *Windows*: Credential Manager
+- *Linux*: libsecret (GNOME Keyring, KWallet)
+
+To set or update your API key, use the interactive setup:
+=Scimax: Configure Embedding Service= (`scimax.db.configureEmbeddings')
+
+Note: If you previously had =scimax.db.openaiApiKey= in your settings.json, it will be automatically migrated to secure storage and removed from settings on first run.
 
 * Command Reference
 

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as https from 'https';
 import * as http from 'http';
 import * as path from 'path';
+import { getOpenAIApiKey } from './secretStorage';
 
 /**
  * Embedding service interface
@@ -258,6 +259,9 @@ export class OpenAIEmbeddingService implements EmbeddingService {
 
 /**
  * Create embedding service from VS Code configuration
+ * Note: This is a synchronous version that cannot access SecretStorage.
+ * Use createEmbeddingServiceAsync() for OpenAI support.
+ * @deprecated Use createEmbeddingServiceAsync() instead
  */
 export function createEmbeddingService(): EmbeddingService | null {
     const config = vscode.workspace.getConfiguration('scimax.db');
@@ -276,9 +280,45 @@ export function createEmbeddingService(): EmbeddingService | null {
         }
 
         case 'openai': {
-            const apiKey = config.get<string>('openaiApiKey');
+            // OpenAI requires async access to SecretStorage
+            // This sync version cannot support it - use createEmbeddingServiceAsync()
+            console.warn('createEmbeddingService(): OpenAI requires async initialization. Use createEmbeddingServiceAsync() instead.');
+            return null;
+        }
+
+        case 'none':
+        default:
+            return null;
+    }
+}
+
+/**
+ * Create embedding service from VS Code configuration (async version)
+ * This version supports SecretStorage for secure API key retrieval
+ */
+export async function createEmbeddingServiceAsync(): Promise<EmbeddingService | null> {
+    const config = vscode.workspace.getConfiguration('scimax.db');
+    const provider = config.get<string>('embeddingProvider') || 'none';
+
+    switch (provider) {
+        case 'local': {
+            const model = config.get<string>('localModel') || 'Xenova/all-MiniLM-L6-v2';
+            return new TransformersJsEmbeddingService(model);
+        }
+
+        case 'ollama': {
+            const url = config.get<string>('ollamaUrl') || 'http://localhost:11434';
+            const model = config.get<string>('ollamaModel') || 'nomic-embed-text';
+            return new OllamaEmbeddingService(url, model);
+        }
+
+        case 'openai': {
+            // Get API key from SecretStorage (secure)
+            const apiKey = await getOpenAIApiKey();
             if (!apiKey) {
-                vscode.window.showWarningMessage('OpenAI API key not configured for semantic search');
+                vscode.window.showWarningMessage(
+                    'OpenAI API key not configured. Run "Scimax: Configure Embeddings" to set up.'
+                );
                 return null;
             }
             return new OpenAIEmbeddingService(apiKey);

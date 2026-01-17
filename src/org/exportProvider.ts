@@ -404,6 +404,7 @@ async function exportLatex(
 interface PdfCompilerConfig {
     compiler: 'latexmk-lualatex' | 'latexmk-pdflatex' | 'latexmk-xelatex' | 'lualatex' | 'pdflatex' | 'xelatex';
     bibtexCommand: 'biber' | 'bibtex';
+    shellEscape: 'restricted' | 'full' | 'disabled';
     extraArgs: string;
     openLogOnError: boolean;
     cleanAuxFiles: boolean;
@@ -417,6 +418,7 @@ function loadPdfConfig(): PdfCompilerConfig {
     return {
         compiler: config.get<PdfCompilerConfig['compiler']>('compiler', 'latexmk-lualatex'),
         bibtexCommand: config.get<'biber' | 'bibtex'>('bibtexCommand', 'bibtex'),
+        shellEscape: config.get<PdfCompilerConfig['shellEscape']>('shellEscape', 'restricted'),
         extraArgs: config.get<string>('extraArgs', ''),
         openLogOnError: config.get<boolean>('openLogOnError', true),
         cleanAuxFiles: config.get<boolean>('cleanAuxFiles', true),
@@ -433,27 +435,39 @@ function buildCompileCommand(
 ): string {
     const extraArgs = config.extraArgs ? ` ${config.extraArgs}` : '';
 
+    // Determine shell escape flag based on configuration
+    // 'restricted' allows minted/pygments but blocks arbitrary commands
+    // 'full' allows all shell commands (security risk)
+    // 'disabled' disables shell escape entirely
+    let shellFlag = '';
+    if (config.shellEscape === 'restricted') {
+        shellFlag = '-shell-restricted';
+    } else if (config.shellEscape === 'full') {
+        shellFlag = '-shell-escape';
+    }
+    const shellArg = shellFlag ? ` ${shellFlag}` : '';
+
     switch (config.compiler) {
         case 'latexmk-lualatex':
-            return `latexmk -lualatex -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -lualatex -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'latexmk-pdflatex':
-            return `latexmk -pdf -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -pdf -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'latexmk-xelatex':
-            return `latexmk -xelatex -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -xelatex -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'lualatex':
-            return `lualatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `lualatex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'pdflatex':
-            return `pdflatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `pdflatex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         case 'xelatex':
-            return `xelatex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `xelatex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
 
         default:
-            return `latexmk -lualatex -bibtex -shell-escape -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            return `latexmk -lualatex -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
     }
 }
 

@@ -8,7 +8,8 @@
 
 import * as vscode from 'vscode';
 import { ScimaxDb } from './scimaxDb';
-import { createEmbeddingService } from './embeddingService';
+import { createEmbeddingServiceAsync } from './embeddingService';
+import { initSecretStorage, migrateApiKeyFromSettings } from './secretStorage';
 
 let scimaxDb: ScimaxDb | null = null;
 let dbInitPromise: Promise<ScimaxDb> | null = null;
@@ -20,6 +21,8 @@ let extensionContext: vscode.ExtensionContext | null = null;
  */
 export function setExtensionContext(context: vscode.ExtensionContext): void {
     extensionContext = context;
+    // Initialize SecretStorage for secure credential management
+    initSecretStorage(context);
 }
 
 /**
@@ -69,11 +72,14 @@ export function isDatabaseInitialized(): boolean {
 async function initializeDatabase(context: vscode.ExtensionContext): Promise<ScimaxDb> {
     console.log('ScimaxDb: Initializing lazily...');
 
+    // Migrate API keys from settings to SecretStorage (one-time migration)
+    await migrateApiKeyFromSettings();
+
     const db = new ScimaxDb(context);
     await db.initialize();
 
-    // Set up embedding service if configured
-    const embeddingService = createEmbeddingService();
+    // Set up embedding service if configured (using async version for SecretStorage support)
+    const embeddingService = await createEmbeddingServiceAsync();
     if (embeddingService) {
         db.setEmbeddingService(embeddingService);
         console.log('ScimaxDb: Semantic search enabled');

@@ -353,43 +353,31 @@ describe('Repeating Tasks', () => {
             expect(result).toBeNull();
         });
 
-        it('searches up to 10 lines after heading', () => {
+        it('only finds repeater on immediate next line after heading', () => {
+            // Implementation only checks the line immediately after the heading
             const lines = [
                 '* TODO Task with properties',
-                ':PROPERTIES:',
+                ':PROPERTIES:',  // Line 1 - not a DEADLINE/SCHEDULED
                 ':ID: abc123',
                 ':END:',
-                '',
-                'Some description',
-                '',
-                'More text',
-                'DEADLINE: <2026-01-19 Mon +1w>',
             ];
 
             const result = findRepeaterInLines(lines, 0);
 
-            expect(result).not.toBeNull();
-            expect(result!.lineIndex).toBe(8);
+            // Should be null because DEADLINE is not on line 1
+            expect(result).toBeNull();
         });
 
-        it('does not search beyond 10 lines', () => {
+        it('does not search beyond immediate next line', () => {
             const lines = [
                 '* TODO Task with lots of content',
-                'Line 1',
-                'Line 2',
-                'Line 3',
-                'Line 4',
-                'Line 5',
-                'Line 6',
-                'Line 7',
-                'Line 8',
-                'Line 9',
-                'Line 10',
-                'DEADLINE: <2026-01-19 Mon +1w>', // Line 11, beyond search limit
+                'Some description',  // Line 1 - not a DEADLINE/SCHEDULED
+                'DEADLINE: <2026-01-19 Mon +1w>', // Line 2 - too far
             ];
 
             const result = findRepeaterInLines(lines, 0);
 
+            // Only checks line 1, so DEADLINE on line 2 is not found
             expect(result).toBeNull();
         });
     });

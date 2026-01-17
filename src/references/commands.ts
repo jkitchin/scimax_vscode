@@ -12,6 +12,7 @@ import {
     reconstructAbstract,
     OpenAlexWork
 } from './openalexService';
+import { storeOpenAlexApiKey, getOpenAlexApiKey, deleteOpenAlexApiKey, hasOpenAlexApiKey } from '../database/secretStorage';
 
 /**
  * Find citation at cursor position to check if we should append
@@ -721,6 +722,73 @@ export function registerReferenceCommands(
             vscode.window.showInformationMessage(
                 `Inserted bibliography link with ${bibFiles.size} file(s) for ${citedKeys.size} citation(s)`
             );
+        })
+    );
+
+    // Configure OpenAlex API key
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.configureOpenAlex', async () => {
+            const hasKey = await hasOpenAlexApiKey();
+            const config = vscode.workspace.getConfiguration('scimax.references');
+            const mailto = config.get<string>('openalexMailto') || '';
+
+            const items = [
+                {
+                    label: hasKey ? '$(key) Update API Key' : '$(key) Set API Key',
+                    description: hasKey ? 'Change your OpenAlex API key' : 'Enter your OpenAlex API key (optional)',
+                    action: 'setKey'
+                },
+                {
+                    label: mailto ? '$(mail) Update Email' : '$(mail) Set Email',
+                    description: mailto ? `Currently: ${mailto}` : 'Set email for polite pool access (recommended)',
+                    action: 'setEmail'
+                }
+            ];
+
+            if (hasKey) {
+                items.push({
+                    label: '$(trash) Remove API Key',
+                    description: 'Delete your stored OpenAlex API key',
+                    action: 'removeKey'
+                });
+            }
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Configure OpenAlex API settings'
+            });
+
+            if (!selected) return;
+
+            if (selected.action === 'setKey') {
+                const apiKey = await vscode.window.showInputBox({
+                    prompt: 'Enter your OpenAlex API key (get one at https://openalex.org/users)',
+                    password: true,
+                    placeHolder: 'openalex_...',
+                    ignoreFocusOut: true
+                });
+
+                if (apiKey) {
+                    await storeOpenAlexApiKey(apiKey);
+                    vscode.window.showInformationMessage('OpenAlex API key stored securely');
+                }
+            } else if (selected.action === 'setEmail') {
+                const email = await vscode.window.showInputBox({
+                    prompt: 'Enter your email for OpenAlex polite pool access (faster rate limits)',
+                    value: mailto,
+                    placeHolder: 'user@example.com',
+                    ignoreFocusOut: true
+                });
+
+                if (email !== undefined) {
+                    await config.update('openalexMailto', email, vscode.ConfigurationTarget.Global);
+                    vscode.window.showInformationMessage(
+                        email ? `OpenAlex email set to ${email}` : 'OpenAlex email cleared'
+                    );
+                }
+            } else if (selected.action === 'removeKey') {
+                await deleteOpenAlexApiKey();
+                vscode.window.showInformationMessage('OpenAlex API key removed');
+            }
         })
     );
 }
