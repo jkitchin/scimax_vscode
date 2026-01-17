@@ -13,13 +13,13 @@ This security audit identified **11 vulnerabilities** across the scimax-vscode e
 
 ### Risk Overview (Post-Remediation)
 
-| Severity | Original | Fixed | Remaining | Status |
-|----------|----------|-------|-----------|--------|
-| CRITICAL | 3 | 3 | 0 | Command injection fixed; temp files fixed; Babel by-design |
-| HIGH | 3 | 1 | 2 | Shell-escape configurable; path traversal by-design |
-| MEDIUM | 4 | 0 | 4 | Low priority, standard practices |
-| LOW | 1 | 1 | 0 | API keys now use SecretStorage |
-| NONE | 2 | - | 2 | SQL injection, XSS properly handled |
+| Severity | Original | Fixed | By Design | Remaining | Status |
+|----------|----------|-------|-----------|-----------|--------|
+| CRITICAL | 3 | 2 | 1 | 0 | Command injection + temp files fixed; Babel by-design |
+| HIGH | 3 | 1 | 2 | 0 | Shell-escape configurable; path traversal by-design |
+| MEDIUM | 4 | 0 | 0 | 4 | Low priority, standard practices |
+| LOW | 1 | 1 | 0 | 0 | API keys now use SecretStorage |
+| SECURE | 2 | - | - | - | SQL injection, XSS properly handled |
 
 ---
 
@@ -94,9 +94,29 @@ This balances security with functionality (minted package requires some shell ac
 
 ---
 
+### 4. ✅ FIXED: Predictable Temporary File Names [WAS CRITICAL]
+
+**Status**: RESOLVED (Commit a8a70bd)
+
+**File**: `src/parser/orgBabel.ts`
+
+**Resolution**: TypeScript executor now uses `crypto.randomBytes(16).toString('hex')` for temp file names instead of predictable `Date.now()` timestamps, preventing potential race condition attacks.
+
+**Before**:
+```typescript
+const tmpFile = path.join(tmpDir, `babel-${Date.now()}.ts`);
+```
+
+**After**:
+```typescript
+const tmpFile = path.join(tmpDir, `babel-${crypto.randomBytes(16).toString('hex')}.ts`);
+```
+
+---
+
 ## Remaining Issues (By Design or Accepted Risk)
 
-### 4. Arbitrary Code Execution via Babel [CRITICAL - BY DESIGN]
+### 5. Arbitrary Code Execution via Babel [CRITICAL - BY DESIGN]
 
 **Status**: Intentional feature (matches Emacs org-mode behavior)
 
@@ -122,14 +142,6 @@ This balances security with functionality (minted package requires some shell ac
 - Source blocks are NOT executed during export (unlike Emacs with `:exports results`)
 
 **User Responsibility**: Only execute source blocks from trusted files. Be cautious with "Execute All" commands.
-
----
-
-### 5. ✅ FIXED: Predictable Temporary File Names [WAS CRITICAL]
-
-**Status**: RESOLVED (Commit a8a70bd)
-
-**Resolution**: TypeScript executor now uses `crypto.randomBytes(16).toString('hex')` for temp file names instead of predictable `Date.now()` timestamps.
 
 ---
 
@@ -273,7 +285,7 @@ This extension is designed for **scientific computing** where code execution is 
 | Commit | Description |
 |--------|-------------|
 | 954f934 | Fix command injection in imageOverlayProvider.ts |
-| d10dbaf | Add configurable shell escape mode for LaTeX |
+| d10fbaf | Add configurable shell escape mode for LaTeX |
 | 037f894 | Implement SecretStorage for OpenAI API key |
 | 969fe9e | Add OpenAlex API key and mailto configuration |
 | 008ceba | Fix command injection in LaTeX preview providers |
