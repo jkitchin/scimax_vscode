@@ -122,39 +122,55 @@ function findNamedTable(document: vscode.TextDocument, name: string): unknown[][
 }
 
 /**
- * Find named results (#+RESULTS: name or from a named source block)
+ * Find named results (#+NAME: followed by #+RESULTS:)
+ * Supports both:
+ * 1. #+NAME: directly above #+RESULTS: (standalone named results)
+ * 2. #+NAME: above a source block that has #+RESULTS: after it
  */
 function findNamedResults(document: vscode.TextDocument, name: string): string | null {
     const text = document.getText();
     const lines = text.split('\n');
 
-    // First, look for #+NAME: followed by #+RESULTS:
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].trim();
 
-        // Check for named source block
+        // Check for #+NAME: with matching name
         const nameMatch = line.match(/^#\+NAME:\s*(.+?)\s*$/i);
         if (nameMatch && nameMatch[1] === name) {
-            // Look for #+RESULTS: after this block
+            // Look for #+RESULTS: after this #+NAME:
             for (let j = i + 1; j < lines.length; j++) {
                 const checkLine = lines[j].trim();
+
+                // Found #+RESULTS: - collect the result lines
                 if (checkLine.match(/^#\+RESULTS/i)) {
-                    // Collect result lines
                     const resultLines: string[] = [];
                     for (let k = j + 1; k < lines.length; k++) {
                         const resultLine = lines[k];
-                        // Results end at empty line or new element
+                        // Results end at empty line or new element (but not verbatim lines starting with : )
                         if (resultLine.trim() === '' ||
                             (resultLine.trim().startsWith('#+') && !resultLine.trim().startsWith(': '))) {
                             break;
                         }
-                        // Remove verbatim prefix
+                        // Remove verbatim prefix if present
                         resultLines.push(resultLine.replace(/^: /, ''));
                     }
                     return resultLines.join('\n');
                 }
-                // Stop if we hit another block
-                if (checkLine.match(/^#\+(BEGIN_|NAME:)/i)) break;
+
+                // Skip source blocks - they might be between #+NAME: and #+RESULTS:
+                if (checkLine.match(/^#\+BEGIN_SRC/i)) {
+                    // Find the end of the source block
+                    for (let k = j + 1; k < lines.length; k++) {
+                        if (lines[k].trim().match(/^#\+END_SRC/i)) {
+                            j = k; // Continue searching after the source block
+                            break;
+                        }
+                    }
+                    continue;
+                }
+
+                // Stop if we hit another #+NAME: (different named element)
+                if (checkLine.match(/^#\+NAME:/i)) break;
             }
         }
     }
@@ -692,7 +708,8 @@ async function executeBlock(
 
         if (resultsFormat.handling !== 'silent') {
             // Format and insert results
-            const resultText = formatResult(result, resultsFormat);
+            // Pass block.name so named blocks get named results
+            const resultText = formatResult(result, resultsFormat, block.name);
             await insertResults(editor, block, resultText);
         }
 

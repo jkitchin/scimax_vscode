@@ -1173,7 +1173,10 @@ export class HtmlExportBackend implements ExportBackend {
 
         // MathJax
         if (meta.mathJax) {
-            parts.push(`<script src="${meta.mathJaxUrl}" async></script>`);
+            // Configure MathJax to recognize \(...\) and \[...\] delimiters
+            // In the output HTML, we need: ['\\(', '\\)'] which means in JS template literal: ['\\\\(', '\\\\)']
+            parts.push('<script>MathJax={tex:{inlineMath:[["\\\\(","\\\\)"]],displayMath:[["\\\\[","\\\\]"]]}};</script>');
+            parts.push(`<script id="MathJax-script" async src="${meta.mathJaxUrl}"></script>`);
         }
 
         // highlight.js

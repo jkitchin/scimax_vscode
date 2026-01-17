@@ -132,21 +132,18 @@ export function findRepeaterInLines(
     lines: string[],
     headingLineIndex: number
 ): RepeaterMatch | null {
-    // Search up to 10 lines after heading for DEADLINE/SCHEDULED
-    for (let i = headingLineIndex + 1; i < Math.min(headingLineIndex + 10, lines.length); i++) {
-        const lineText = lines[i];
+    // DEADLINE/SCHEDULED must be on the line immediately after the heading
+    const nextLineIndex = headingLineIndex + 1;
+    if (nextLineIndex >= lines.length) return null;
 
-        // Stop if we hit another heading
-        if (/^(\*+)\s/.test(lineText)) break;
-
-        const match = lineText.match(REPEATER_TIMESTAMP_PATTERN);
-        if (match) {
-            return {
-                lineIndex: i,
-                match,
-                type: match[2] as 'DEADLINE' | 'SCHEDULED'
-            };
-        }
+    const lineText = lines[nextLineIndex];
+    const match = lineText.match(REPEATER_TIMESTAMP_PATTERN);
+    if (match) {
+        return {
+            lineIndex: nextLineIndex,
+            match,
+            type: match[2] as 'DEADLINE' | 'SCHEDULED'
+        };
     }
 
     return null;

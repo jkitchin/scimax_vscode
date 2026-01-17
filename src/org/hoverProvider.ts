@@ -456,7 +456,8 @@ export class OrgHoverProvider implements vscode.HoverProvider {
      */
     private getTimestampHover(line: string, position: vscode.Position): vscode.Hover | null {
         // Match active timestamps <YYYY-MM-DD ...> or inactive [YYYY-MM-DD ...]
-        const tsPattern = /([<\[])(\d{4})-(\d{2})-(\d{2})(?:\s+([A-Za-z]+))?(?:\s+(\d{2}:\d{2})(?:-(\d{2}:\d{2}))?)?(?:\s+([+.]+)(\d+)([hdwmy]))?([>\]])/g;
+        // Supports: day name, time range, repeater (+1w, .+1d, ++1m), warning period (-3d)
+        const tsPattern = /([<\[])(\d{4})-(\d{2})-(\d{2})(?:\s+([A-Za-z]+))?(?:\s+(\d{2}:\d{2})(?:-(\d{2}:\d{2}))?)?(?:\s+([+.]+\d+[hdwmy]))?(?:\s+(-\d+[hdwmy]))?([>\]])/g;
         let match;
 
         while ((match = tsPattern.exec(line)) !== null) {
@@ -471,9 +472,8 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                 const dayName = match[5];
                 const startTime = match[6];
                 const endTime = match[7];
-                const repeaterType = match[8];
-                const repeaterValue = match[9];
-                const repeaterUnit = match[10];
+                const repeater = match[8]; // e.g., +1w, .+1d, ++1m
+                const warningPeriod = match[9]; // e.g., -3d, -7d
 
                 const date = new Date(year, month - 1, day);
                 const computedDayName = DAY_NAMES[date.getDay()];
@@ -492,20 +492,37 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                     markdown.appendMarkdown('\n\n');
                 }
 
-                if (repeaterType && repeaterValue && repeaterUnit) {
-                    const units: Record<string, string> = {
-                        'h': 'hour(s)',
-                        'd': 'day(s)',
-                        'w': 'week(s)',
-                        'm': 'month(s)',
-                        'y': 'year(s)',
-                    };
-                    const repeaterTypes: Record<string, string> = {
-                        '+': 'Cumulative repeater',
-                        '++': 'Catch-up repeater',
-                        '.+': 'Restart repeater',
-                    };
-                    markdown.appendMarkdown(`**Repeater:** ${repeaterTypes[repeaterType] || 'Repeater'} every ${repeaterValue} ${units[repeaterUnit] || repeaterUnit}\n\n`);
+                if (repeater) {
+                    const repMatch = repeater.match(/^([+.]+)(\d+)([hdwmy])$/);
+                    if (repMatch) {
+                        const units: Record<string, string> = {
+                            'h': 'hour(s)',
+                            'd': 'day(s)',
+                            'w': 'week(s)',
+                            'm': 'month(s)',
+                            'y': 'year(s)',
+                        };
+                        const repeaterTypes: Record<string, string> = {
+                            '+': 'Cumulative repeater',
+                            '++': 'Catch-up repeater',
+                            '.+': 'Restart repeater',
+                        };
+                        markdown.appendMarkdown(`**Repeater:** ${repeaterTypes[repMatch[1]] || 'Repeater'} every ${repMatch[2]} ${units[repMatch[3]] || repMatch[3]}\n\n`);
+                    }
+                }
+
+                if (warningPeriod) {
+                    const warnMatch = warningPeriod.match(/^-(\d+)([hdwmy])$/);
+                    if (warnMatch) {
+                        const units: Record<string, string> = {
+                            'h': 'hour(s)',
+                            'd': 'day(s)',
+                            'w': 'week(s)',
+                            'm': 'month(s)',
+                            'y': 'year(s)',
+                        };
+                        markdown.appendMarkdown(`**Warning:** ${warnMatch[1]} ${units[warnMatch[2]] || warnMatch[2]} before\n\n`);
+                    }
                 }
 
                 // Calculate relative date

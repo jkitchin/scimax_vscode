@@ -158,10 +158,14 @@ export class KernelManager extends EventEmitter {
 
     /**
      * Start a kernel
+     * @param specNameOrLanguage - Kernel spec name or language
+     * @param sessionName - Session name for grouping kernels
+     * @param cwd - Working directory for the kernel process
      */
     public async startKernel(
         specNameOrLanguage: string,
-        sessionName: string = 'default'
+        sessionName: string = 'default',
+        cwd?: string
     ): Promise<string> {
         // Find kernel spec
         let spec = await findKernelSpec(specNameOrLanguage);
@@ -196,6 +200,7 @@ export class KernelManager extends EventEmitter {
             env: { ...process.env, ...spec.env },
             stdio: ['pipe', 'pipe', 'pipe'],
             detached: false,
+            cwd: cwd || process.cwd(),
         });
 
         // Create managed kernel
@@ -389,17 +394,23 @@ export class KernelManager extends EventEmitter {
 
     /**
      * Execute code on a session (start kernel if needed)
+     * @param sessionName - Session name
+     * @param language - Kernel language
+     * @param code - Code to execute
+     * @param options - Execution options
+     * @param cwd - Working directory for the kernel (used if starting a new kernel)
      */
     public async executeOnSession(
         sessionName: string,
         language: string,
         code: string,
-        options: { silent?: boolean; storeHistory?: boolean } = {}
+        options: { silent?: boolean; storeHistory?: boolean } = {},
+        cwd?: string
     ): Promise<ExecutionOutput> {
         // Get or start kernel for session
         let kernelId = this.sessionKernels.get(sessionName);
         if (!kernelId || !this.kernels.has(kernelId)) {
-            kernelId = await this.startKernel(language, sessionName);
+            kernelId = await this.startKernel(language, sessionName, cwd);
         }
 
         return this.execute(kernelId, code, options);

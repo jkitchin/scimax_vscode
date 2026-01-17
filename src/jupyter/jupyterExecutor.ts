@@ -270,16 +270,26 @@ export const jupyterExecutor: LanguageExecutor = {
                 };
             }
 
+            // Inject variables into the code (similar to non-Jupyter Python executor)
+            let fullCode = code;
+            if (context.variables && Object.keys(context.variables).length > 0) {
+                const varDefs = Object.entries(context.variables)
+                    .map(([k, v]) => `${k} = ${JSON.stringify(v)}`)
+                    .join('\n');
+                fullCode = varDefs + '\n' + code;
+            }
+
             // Execute code
             const startTime = Date.now();
             const output = await manager.executeOnSession(
                 sessionName,
                 language,
-                code,
+                fullCode,
                 {
                     silent: false,
                     storeHistory: true,
-                }
+                },
+                context.cwd
             );
 
             const result = convertOutput(output, context);
@@ -298,7 +308,7 @@ export const jupyterExecutor: LanguageExecutor = {
         const manager = getKernelManager();
         const rawLanguage = (context as any).language || 'python';
         const language = getKernelLanguage(rawLanguage);
-        await manager.startKernel(language, sessionName);
+        await manager.startKernel(language, sessionName, context.cwd);
     },
 
     async closeSession(sessionName: string): Promise<void> {

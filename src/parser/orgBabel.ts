@@ -1091,13 +1091,20 @@ function parseVariables(vars: Record<string, string>): Record<string, unknown> {
 
 /**
  * Format execution result for insertion
+ * @param result - The execution result
+ * @param format - Result format options
+ * @param name - Optional name for the results (from #+NAME: on the source block)
  */
 export function formatResult(
     result: ExecutionResult,
-    format: ResultFormat = {}
+    format: ResultFormat = {},
+    name?: string
 ): string {
+    // Build the name prefix if provided
+    const namePrefix = name ? `#+NAME: ${name}\n` : '';
+
     if (!result.success && result.error) {
-        return `#+RESULTS:\n: Error: ${result.error.message}`;
+        return `${namePrefix}#+RESULTS:\n: Error: ${result.error.message}`;
     }
 
     const output = result.stdout || '';
@@ -1105,7 +1112,7 @@ export function formatResult(
 
     // If no output and no files, return empty results
     if (!output && files.length === 0) {
-        return '#+RESULTS:';
+        return `${namePrefix}#+RESULTS:`;
     }
 
     // Determine format type
@@ -1163,7 +1170,7 @@ export function formatResult(
         }
     }
 
-    return resultText;
+    return namePrefix + resultText;
 }
 
 function formatAsVerbatim(output: string): string {

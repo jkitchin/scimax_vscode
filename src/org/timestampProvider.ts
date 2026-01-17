@@ -12,6 +12,7 @@ import {
     getNextTodoState,
     getPreviousTodoState,
 } from './todoStates';
+import { parseRelativeDate, getDateExpressionExamples } from '../utils/dateParser';
 
 /**
  * Check if line is an org heading and return match info
@@ -702,60 +703,35 @@ async function shiftTimestampDown(): Promise<void> {
 }
 
 /**
- * Insert a new timestamp at cursor
+ * Insert a new active timestamp at cursor
+ * Accepts flexible date expressions: today, tomorrow, +2d, monday, jan 15, 2026-01-15
  */
 async function insertTimestamp(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const dow = getDayOfWeek(now);
-
-    const options = [
-        { label: 'Active timestamp', description: `<${year}-${month}-${day} ${dow}>`, value: 'active' },
-        { label: 'Inactive timestamp', description: `[${year}-${month}-${day} ${dow}]`, value: 'inactive' },
-        { label: 'Active with time', description: `<${year}-${month}-${day} ${dow} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}>`, value: 'activeTime' },
-        { label: 'Date only', description: `${year}-${month}-${day}`, value: 'iso' },
-        { label: 'Repeating (daily)', description: `<${year}-${month}-${day} ${dow} +1d>`, value: 'daily' },
-        { label: 'Repeating (weekly)', description: `<${year}-${month}-${day} ${dow} +1w>`, value: 'weekly' },
-        { label: 'Repeating (monthly)', description: `<${year}-${month}-${day} ${dow} +1m>`, value: 'monthly' },
-    ];
-
-    const selected = await vscode.window.showQuickPick(options, {
-        placeHolder: 'Select timestamp format'
+    const input = await vscode.window.showInputBox({
+        prompt: `Enter date expression (empty for today). ${getDateExpressionExamples()}`,
+        placeHolder: 'today, +2d, +3w, monday, jan 15, 2026-01-15',
+        validateInput: (value) => {
+            if (!value) return null; // Empty = today
+            const parsed = parseRelativeDate(value);
+            if (!parsed) return `Invalid date. ${getDateExpressionExamples()}`;
+            return null;
+        }
     });
 
-    if (!selected) return;
+    if (input === undefined) return; // User cancelled
 
-    let timestamp = '';
-    switch (selected.value) {
-        case 'active':
-            timestamp = `<${year}-${month}-${day} ${dow}>`;
-            break;
-        case 'inactive':
-            timestamp = `[${year}-${month}-${day} ${dow}]`;
-            break;
-        case 'activeTime':
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            timestamp = `<${year}-${month}-${day} ${dow} ${hours}:${minutes}>`;
-            break;
-        case 'iso':
-            timestamp = `${year}-${month}-${day}`;
-            break;
-        case 'daily':
-            timestamp = `<${year}-${month}-${day} ${dow} +1d>`;
-            break;
-        case 'weekly':
-            timestamp = `<${year}-${month}-${day} ${dow} +1w>`;
-            break;
-        case 'monthly':
-            timestamp = `<${year}-${month}-${day} ${dow} +1m>`;
-            break;
-    }
+    const date = input ? parseRelativeDate(input) : new Date();
+    if (!date) return;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dow = getDayOfWeek(date);
+
+    const timestamp = `<${year}-${month}-${day} ${dow}>`;
 
     await editor.edit(editBuilder => {
         editBuilder.insert(editor.selection.active, timestamp);
@@ -763,17 +739,33 @@ async function insertTimestamp(): Promise<void> {
 }
 
 /**
- * Insert an inactive timestamp at cursor (C-c !)
+ * Insert an inactive timestamp at cursor (C-c ,)
+ * Accepts flexible date expressions: today, tomorrow, +2d, monday, jan 15, 2026-01-15
  */
 async function insertInactiveTimestamp(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const dow = getDayOfWeek(now);
+    const input = await vscode.window.showInputBox({
+        prompt: `Enter date expression (empty for today). ${getDateExpressionExamples()}`,
+        placeHolder: 'today, +2d, +3w, monday, jan 15, 2026-01-15',
+        validateInput: (value) => {
+            if (!value) return null; // Empty = today
+            const parsed = parseRelativeDate(value);
+            if (!parsed) return `Invalid date. ${getDateExpressionExamples()}`;
+            return null;
+        }
+    });
+
+    if (input === undefined) return; // User cancelled
+
+    const date = input ? parseRelativeDate(input) : new Date();
+    if (!date) return;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dow = getDayOfWeek(date);
 
     const timestamp = `[${year}-${month}-${day} ${dow}]`;
 
@@ -784,16 +776,32 @@ async function insertInactiveTimestamp(): Promise<void> {
 
 /**
  * Insert an active timestamp at cursor (C-c .)
+ * Accepts flexible date expressions: today, tomorrow, +2d, monday, jan 15, 2026-01-15
  */
 async function insertActiveTimestamp(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
     if (!editor) return;
 
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const dow = getDayOfWeek(now);
+    const input = await vscode.window.showInputBox({
+        prompt: `Enter date expression (empty for today). ${getDateExpressionExamples()}`,
+        placeHolder: 'today, +2d, +3w, monday, jan 15, 2026-01-15',
+        validateInput: (value) => {
+            if (!value) return null; // Empty = today
+            const parsed = parseRelativeDate(value);
+            if (!parsed) return `Invalid date. ${getDateExpressionExamples()}`;
+            return null;
+        }
+    });
+
+    if (input === undefined) return; // User cancelled
+
+    const date = input ? parseRelativeDate(input) : new Date();
+    if (!date) return;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dow = getDayOfWeek(date);
 
     const timestamp = `<${year}-${month}-${day} ${dow}>`;
 
