@@ -2411,8 +2411,8 @@
       },
       {
         "command": "scimax.org.insertInactiveTimestamp",
-        "key": "ctrl+c shift+1",
-        "mac": "ctrl+c shift+1",
+        "key": "ctrl+c oem_comma",
+        "mac": "ctrl+c oem_comma",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
@@ -2420,6 +2420,18 @@
         "key": "ctrl+c ctrl+r",
         "mac": "ctrl+c ctrl+r",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "cursorTop",
+        "key": "ctrl+c shift+oem_comma",
+        "mac": "ctrl+c shift+oem_comma",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "cursorBottom",
+        "key": "ctrl+c shift+.",
+        "mac": "ctrl+c shift+.",
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.table.insertRowAbove",

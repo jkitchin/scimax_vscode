@@ -157,8 +157,8 @@ CLOSED: [2026-01-15 Thu 14:58]
 
 | Key/Command | Action                        |
 |-------------+-------------------------------|
-| C-c .    | Insert active timestamp       |
-| C-c !    | Insert inactive timestamp     |
+| C-c .       | Insert active timestamp       |
+| C-c ,       | Insert inactive timestamp     |
 | Speed key . | Insert timestamp (at heading) |
 
 Press C-c . and a date picker dialog appears. You can:
@@ -182,7 +182,8 @@ When entering a date, use these expressions:
 | jan 15     | January 15 of current/next year |
 | 2026-01-15 | Specific date                   |
 
-** ⚠️ Adding Time to Timestamps
+** ✅ Adding Time to Timestamps
+CLOSED: [2026-01-16 Fri 19:43]
 
 When prompted for a date, add time after the date:
 
@@ -205,7 +206,7 @@ For common cases:
   <2026-01-15 Wed>         ; Press C-c .
 
 ,* Meeting notes
-  [2026-01-14 Tue 10:00]   ; Press C-c !
+  [2026-01-14 Tue 10:00]   ; Press C-c ,
 #+END_SRC
 
 * ✅ Modifying Timestamps
@@ -1148,14 +1149,14 @@ Already logged 2:30 hours.
 
 ** ⚠️ Keybindings
 
-| Key                | Action                           |
-|--------------------+----------------------------------|
-| C-c .          | Insert active timestamp          |
-| C-c !          | Insert inactive timestamp        |
-| S-<up>          | Increase timestamp component     |
-| S-<down>        | Decrease timestamp component     |
-| S-<right>       | Next day                         |
-| S-<left>        | Previous day                     |
+| Key            | Action                       |
+|----------------+------------------------------|
+| C-c .          | Insert active timestamp      |
+| C-c ,          | Insert inactive timestamp    |
+| S-<up>         | Increase timestamp component |
+| S-<down>       | Decrease timestamp component |
+| S-<right>      | Next day                     |
+| S-<left>       | Previous day                 |
 
 ** ⚠️ Speed Commands (at heading start)
 
