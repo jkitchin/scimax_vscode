@@ -136,7 +136,8 @@ Today (Wednesday, Jan 15, 2026)
          TODO Review pull requests                 :code:
 #+END_EXAMPLE
 
-** ⚠️ Week Agenda
+** ✅ Week Agenda
+CLOSED: [2026-01-16 Fri 21:04]
 
 Shows a 7-day view starting from today.
 
@@ -162,17 +163,19 @@ Friday, Jan 17
   TODO Weekly review
 #+END_EXAMPLE
 
-** ⚠️ Fortnight Agenda
+** ✅ Fortnight Agenda
+CLOSED: [2026-01-16 Fri 21:04]
 
 Shows the next 14 days.
 
-| Command                     | Description              |
-|-----------------------------+--------------------------|
-| scimax.agenda.fortnight    | Next 14 days             |
+| Command                 | Description  |
+|-------------------------+--------------|
+| scimax.agenda.fortnight | Next 14 days |
 
 Useful for medium-term planning and catching upcoming deadlines.
 
-** ⚠️ Month Agenda
+** ✅ Month Agenda
+CLOSED: [2026-01-16 Fri 21:04]
 
 Shows the next 30 days.
 
@@ -182,7 +185,8 @@ Shows the next 30 days.
 
 Good for long-term planning and ensuring nothing falls through the cracks.
 
-** ⚠️ Custom Time Ranges
+** ✅ Custom Time Ranges
+CLOSED: [2026-01-16 Fri 21:04]
 
 The database-backed agenda supports custom time ranges:
 
@@ -200,7 +204,8 @@ Command: scimax.db.agenda → "Next 3 months"
 Command: scimax.db.agenda → "All items"
 #+END_EXAMPLE
 
-* ⚠️ TODO List View
+* ✅ TODO List View
+CLOSED: [2026-01-16 Fri 21:04]
 
 The TODO list shows all incomplete tasks regardless of date.
 
@@ -209,7 +214,8 @@ The TODO list shows all incomplete tasks regardless of date.
 | scimax.agenda.todoList | C-c at      | All TODO items (native)   |
 | scimax.db.showTodos    |             | All TODO items (database) |
 
-** ⚠️ Grouping by State
+** ✅ Grouping by State
+CLOSED: [2026-01-16 Fri 21:05]
 
 TODOs are grouped by their keyword state:
 
@@ -231,7 +237,8 @@ WAITING (5 items)
   Design feedback                                 :design:
 #+END_EXAMPLE
 
-** ⚠️ Filtering TODO List
+** ✅ Filtering TODO List
+CLOSED: [2026-01-16 Fri 21:05]
 
 Filter by state when viewing TODOs:
 
@@ -242,7 +249,8 @@ Command: scimax.db.showTodos
 
 Shows only items in the selected state.
 
-* ⚠️ Deadline Views
+* ✅ Deadline Views
+CLOSED: [2026-01-16 Fri 21:05]
 
 Focus specifically on items with deadlines.
 
@@ -803,7 +811,8 @@ Make all phone calls
 Handle computer-required tasks
 #+END_SRC
 
-** ⚠️ Project Review
+** ✅ Project Review
+CLOSED: [2026-01-16 Fri 21:06]
 
 Review project status:
 
@@ -813,7 +822,8 @@ Review project status:
 4. Update completed items
 5. Add new tasks as needed
 
-** ⚠️ Priority Triage
+** ✅ Priority Triage
+CLOSED: [2026-01-16 Fri 21:06]
 
 Focus on high-priority items:
 
@@ -822,9 +832,11 @@ Focus on high-priority items:
 3. Move to [#B] items
 4. Reschedule [#C] if needed
 
-* ⚠️ Agenda Best Practices
+* ✅ Agenda Best Practices
+CLOSED: [2026-01-16 Fri 21:06]
 
-** ⚠️ Keep Agenda Files Organized
+** ✅ Keep Agenda Files Organized
+CLOSED: [2026-01-16 Fri 21:06]
 
 Structure agenda files logically:
 
@@ -840,7 +852,8 @@ Structure agenda files logically:
 
 Configure agenda to scan ~/org/ and exclude archive/.
 
-** ⚠️ Use Meaningful Categories
+** ✅ Use Meaningful Categories
+CLOSED: [2026-01-16 Fri 21:06]
 
 Set CATEGORY properties for better grouping:
 
@@ -853,7 +866,8 @@ Set CATEGORY properties for better grouping:
 :END:
 #+END_SRC
 
-** ⚠️ Schedule Realistically
+** ✅ Schedule Realistically
+CLOSED: [2026-01-16 Fri 21:05]
 
 Don't over-schedule:
 
@@ -865,7 +879,8 @@ Don't over-schedule:
 * TODO 3-5 priority tasks per day
 #+END_SRC
 
-** ⚠️ Use Deadlines Sparingly
+** ✅ Use Deadlines Sparingly
+CLOSED: [2026-01-16 Fri 21:05]
 
 Only use deadlines for true hard deadlines:
 
@@ -880,7 +895,8 @@ DEADLINE: <2026-01-20 Mon>
 ; Use SCHEDULED instead
 #+END_SRC
 
-** ⚠️ Regular Cleanup
+** ✅ Regular Cleanup
+CLOSED: [2026-01-16 Fri 21:05]
 
 Weekly maintenance:
 - Archive completed items
@@ -888,7 +904,8 @@ Weekly maintenance:
 - Update dates on delayed items
 - Remove duplicate entries
 
-** ⚠️ Leverage Repeaters
+** ✅ Leverage Repeaters
+CLOSED: [2026-01-16 Fri 21:05]
 
 Use repeaters for recurring items:
 
@@ -906,7 +923,8 @@ SCHEDULED: <2026-01-15 Wed ++1d>
 SCHEDULED: <2026-01-15 Wed .+7d>
 #+END_SRC
 
-** ⚠️ Balance Time Spans
+** ✅ Balance Time Spans
+CLOSED: [2026-01-16 Fri 21:05]
 
 Use different views for different purposes:
 
@@ -917,9 +935,11 @@ Use different views for different purposes:
 | Fortnight | Medium-term awareness            | Weekly review  |
 | Month     | Long-term planning               | Monthly review |
 
-* ⚠️ Practical Examples
+* ✅ Practical Examples
+CLOSED: [2026-01-16 Fri 21:05]
 
-** ⚠️ Example: Software Developer
+** ✅ Example: Software Developer
+CLOSED: [2026-01-16 Fri 21:05]
 
 #+BEGIN_SRC org
 ; work.org
@@ -951,7 +971,8 @@ Agenda shows:
 - Tomorrow: Start user settings
 - Next Monday: Settings deadline
 
-** ⚠️ Example: Project Manager
+** ✅ Example: Project Manager
+CLOSED: [2026-01-16 Fri 21:05]
 
 #+BEGIN_SRC org
 ; projects.org
@@ -985,7 +1006,8 @@ Agenda grouped by priority shows:
 - WAITING: Client approval (needs follow-up)
 - Priority B: Roadmap update
 
-** ⚠️ Example: Academic/Researcher
+** ✅ Example: Academic/Researcher
+CLOSED: [2026-01-16 Fri 21:05]
 
 #+BEGIN_SRC org
 ; research.org

@@ -5,11 +5,13 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+* ✅ Introduction
+CLOSED: [2026-01-16 Fri 21:09]
 
 The Scimax Capture system provides a quick and efficient way to capture notes, tasks, ideas, and snippets without interrupting your workflow. Inspired by Emacs org-capture, it allows you to define templates that automatically format and file your captured content to the right location.
 
-** What is Capture?
+** ✅ What is Capture?
+CLOSED: [2026-01-16 Fri 21:09]
 
 Capture is a fast note-taking system that:
 
@@ -19,7 +21,8 @@ Capture is a fast note-taking system that:
 - Supports various capture types (TODOs, notes, journal entries, code snippets, etc.)
 - Includes context from where you initiated the capture (links, selection, clipboard)
 
-** Key Features
+** ✅ Key Features
+CLOSED: [2026-01-16 Fri 21:09]
 
 - *Template-based capture*: Define reusable templates for different types of content
 - *Flexible targeting*: Capture to end of file, under specific headlines, or in date trees
@@ -28,13 +31,15 @@ Capture is a fast note-taking system that:
 - *Preview before saving*: Optional preview of captured content before filing
 - *Custom variables*: Rich template language with placeholders, timestamps, and prompts
 
-** Philosophy
+** ✅ Philosophy
+CLOSED: [2026-01-16 Fri 21:09]
 
 The capture system follows the principle of "capture first, organize later." Instead of interrupting your flow to decide where something belongs or how to format it, you simply invoke a capture template and let the system handle the details. This reduces friction and helps you maintain focus on your primary task.
 
-* Getting Started
+* ✅ Getting Started
+CLOSED: [2026-01-16 Fri 21:09]
 
-** Your First Capture
+** ⚠️ Your First Capture
 
 The quickest way to capture a TODO is:
 

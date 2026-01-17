@@ -434,13 +434,15 @@ Quick reference to find specific features across documentation.
 - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery
 - Reference [[file:24-keybindings.org][Keybindings]]
 
-*** ⚠️ Programmatically modify org files
+*** ✅ Programmatically modify org files
+CLOSED: [2026-01-16 Fri 20:04]
 - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks
 - Bulk update TODO states, properties, and tags
 - Extract and transform table data
 - Automate repetitive org file operations
 
-*** ⚠️ Configure the extension
+*** ✅ Configure the extension
+CLOSED: [2026-01-16 Fri 20:04]
 - See all options in [[file:26-configuration.org][Configuration]]
 - Set up keybindings with [[file:24-keybindings.org][Keybindings]]
 - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]

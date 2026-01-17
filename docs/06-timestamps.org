@@ -389,6 +389,7 @@ SCHEDULED: <2026-01-15 Wed ++1d>
 ; Daily practice, catch up if missed
 #+END_SRC
 
+
 * ✅ SCHEDULED and DEADLINE
 CLOSED: [2026-01-15 Thu 15:05]
 
@@ -525,22 +526,23 @@ DEADLINE: <2026-01-31 Fri +1m -3d>
 ; Due monthly, warn 3 days before
 #+END_SRC
 
-* ⚠️ Time Clocking
+* ✅ Time Clocking
+CLOSED: [2026-01-16 Fri 19:47]
 
 Track how much time you spend on tasks with clock entries.
 
-** ⚠️ Clocking In and Out
+** ✅ Clocking In and Out
+CLOSED: [2026-01-16 Fri 19:47]
 
 Start and stop the clock for a task:
 
-| Key/Command             | Action                            |
-|-------------------------+-----------------------------------|
-| Speed key I      | Clock in (start timer)            |
-| Speed key O      | Clock out (stop timer)            |
-| scimax.org.clockIn     | Clock in via command              |
-| scimax.org.clockOut    | Clock out via command             |
+| Command             | Key Binding | Action                     |
+|---------------------+-------------+----------------------------|
+| scimax.org.clockIn  | I           | Clock in via speed command |
+| scimax.org.clockOut | O           | Clock out via command      |
 
-** ⚠️ Clock Entry Format
+** ✅ Clock Entry Format
+CLOSED: [2026-01-16 Fri 19:49]
 
 Clock entries are stored in the LOGBOOK drawer:
 
@@ -697,14 +699,16 @@ When a task is marked DONE, a CLOSED timestamp is automatically added:
 CLOSED: [2026-01-14 Tue 16:30]
 #+END_SRC
 
-** ⚠️ CLOSED Properties
+** ✅ CLOSED Properties
+CLOSED: [2026-01-16 Fri 19:49]
 
 - Always an inactive timestamp [...]
 - Records the exact completion time
 - Appears before the task content
 - Can be used to calculate completion statistics
 
-* ⚠️ Diary Sexp Timestamps
+* ✅ Diary Sexp Timestamps
+CLOSED: [2026-01-16 Fri 19:49]
 
 Diary sexps (symbolic expressions) are a powerful feature for specifying
 complex date patterns that can't be expressed with simple repeaters.
@@ -720,13 +724,13 @@ Diary sexps use the %%( ) syntax, optionally within angle brackets:
 
 ** ⚠️ Common Diary Functions
 
-| Function                    | Description                              | Example                          |
-|-----------------------------+------------------------------------------+----------------------------------|
-| diary-anniversary          | Annual date (month day year)             | %%(diary-anniversary 3 15 1990) |
-| diary-float                | Floating day (month week day)            | %%(diary-float 11 4 4)          |
-| diary-cyclic               | Every N days from a date                 | %%(diary-cyclic 14 1 1 2026)    |
-| diary-block                | Date range (m1 d1 y1 m2 d2 y2)           | %%(diary-block 6 1 2026 8 31 2026) |
-| org-class                  | Recurring class schedule                 | %%(org-class 2026 1 15 2026 5 15 1) |
+| Function          | Description                    | Example                             |
+|-------------------+--------------------------------+-------------------------------------|
+| diary-anniversary | Annual date (month day year)   | %%(diary-anniversary 3 15 1990)     |
+| diary-float       | Floating day (month week day)  | %%(diary-float 11 4 4)              |
+| diary-cyclic      | Every N days from a date       | %%(diary-cyclic 14 1 1 2026)        |
+| diary-block       | Date range (m1 d1 y1 m2 d2 y2) | %%(diary-block 6 1 2026 8 31 2026)  |
+| org-class         | Recurring class schedule       | %%(org-class 2026 1 15 2026 5 15 1) |
 
 ** ⚠️ Diary Sexp Examples
 
@@ -789,13 +793,13 @@ Shows for all dates within the range (June 1 to August 31, 2026).
 Use diary sexps when simple repeaters (+1d, +1w, etc.) can't express your
 needs:
 
-| Scenario                           | Solution                            |
-|------------------------------------+-------------------------------------|
-| "Every other Tuesday"              | %%(diary-cyclic 14 ...)            |
-| "Second Monday of each month"      | %%(diary-float t 1 2)              |
-| "Last Friday of each month"        | %%(diary-float t 5 -1)             |
-| "January 15 every year"            | %%(diary-anniversary 1 15 2000)    |
-| "Every weekday except holidays"    | Complex sexp with conditionals      |
+| Scenario                        | Solution                        |
+|---------------------------------+---------------------------------|
+| "Every other Tuesday"           | %%(diary-cyclic 14 ...)         |
+| "Second Monday of each month"   | %%(diary-float t 1 2)           |
+| "Last Friday of each month"     | %%(diary-float t 5 -1)          |
+| "January 15 every year"         | %%(diary-anniversary 1 15 2000) |
+| "Every weekday except holidays" | Complex sexp with conditionals  |
 
 ** ⚠️ CLOSED with Other Timestamps
 
@@ -817,22 +821,25 @@ This shows:
 - Actually completed Jan 14 at 16:30
 - Took 2.5 hours of actual work time
 
-* ⚠️ Speed Commands for Timestamps
+* ✅ Speed Commands for Timestamps
+CLOSED: [2026-01-16 Fri 19:49]
 
 Speed commands provide quick access when cursor is at the beginning of a
 headline.
 
-** ⚠️ Timestamp Speed Commands
+** ✅ Timestamp Speed Commands
+CLOSED: [2026-01-16 Fri 19:50]
 
-| Key       | Command                              |
-|-----------|--------------------------------------|
-| .        | Insert timestamp                     |
-| s        | Add/edit SCHEDULED                   |
-| d        | Add/edit DEADLINE                    |
-| I  | Clock in                             |
-| O  | Clock out                            |
+| Key | Command            |
+|-----+--------------------|
+| .   | Insert timestamp   |
+| s   | Add/edit SCHEDULED |
+| d   | Add/edit DEADLINE  |
+| I   | Clock in           |
+| O   | Clock out          |
 
-** ⚠️ Using Speed Commands
+** ✅ Using Speed Commands
+CLOSED: [2026-01-16 Fri 19:51]
 
 1. Place cursor at the very start of a headline (before the *)
 2. Press the key
@@ -844,7 +851,8 @@ headline.
 cursor position - press 's' to schedule
 #+END_EXAMPLE
 
-** ⚠️ Speed Command Example Workflow
+** ✅ Speed Command Example Workflow
+CLOSED: [2026-01-16 Fri 20:42]
 
 #+BEGIN_SRC org
 ,* TODO Write documentation
@@ -866,40 +874,46 @@ CLOCK: [2026-01-14 Tue 10:00]--[2026-01-14 Tue 11:30] =>  1:30
 :END:
 #+END_SRC
 
-* ⚠️ Timestamp Formats Summary
+* ✅ Timestamp Formats Summary
+CLOSED: [2026-01-16 Fri 19:51]
 
-** ⚠️ Format Reference Table
+** ✅ Format Reference Table
+CLOSED: [2026-01-16 Fri 19:51]
 
-| Format                          | Type      | Example                               |
-|---------------------------------+-----------+---------------------------------------|
-| <YYYY-MM-DD Day>               | Active    | <2026-01-15 Wed>                     |
-| [YYYY-MM-DD Day]               | Inactive  | [2026-01-15 Wed]                     |
-| <YYYY-MM-DD Day HH:MM>         | With time | <2026-01-15 Wed 14:30>               |
-| <YYYY-MM-DD Day HH:MM-HH:MM>   | Time range| <2026-01-15 Wed 09:00-17:00>         |
-| <DATE>--<DATE>                 | Date range| <2026-01-15 Wed>--<2026-01-17 Fri>   |
-| <DATE +Nx>                     | Repeater  | <2026-01-15 Wed +1w>                 |
-| <DATE ++Nx>                    | Catch-up  | <2026-01-15 Wed ++1d>                |
-| <DATE .+Nx>                    | Restart   | <2026-01-15 Wed .+30d>               |
-| <DATE -Nd>                     | Warning   | <2026-01-25 Sat -7d>                 |
-| <DATE +Nx -Nd>                 | Both      | <2026-01-31 Fri +1m -3d>             |
+| Format                       | Type       | Example                            |
+|------------------------------+------------+------------------------------------|
+| <YYYY-MM-DD Day>             | Active     | <2026-01-15 Wed>                   |
+| [YYYY-MM-DD Day]             | Inactive   | [2026-01-15 Wed]                   |
+| <YYYY-MM-DD Day HH:MM>       | With time  | <2026-01-15 Wed 14:30>             |
+| <YYYY-MM-DD Day HH:MM-HH:MM> | Time range | <2026-01-15 Wed 09:00-17:00>       |
+| <DATE>--<DATE>               | Date range | <2026-01-15 Wed>--<2026-01-17 Fri> |
+| <DATE +Nx>                   | Repeater   | <2026-01-15 Wed +1w>               |
+| <DATE ++Nx>                  | Catch-up   | <2026-01-15 Wed ++1d>              |
+| <DATE .+Nx>                  | Restart    | <2026-01-15 Wed .+30d>             |
+| <DATE -Nd>                   | Warning    | <2026-01-25 Sat -7d>               |
+| <DATE +Nx -Nd>               | Both       | <2026-01-31 Fri +1m -3d>           |
 
-** ⚠️ Repeater Units
+** ✅ Repeater Units
+CLOSED: [2026-01-16 Fri 20:42]
 
-| Unit | Full Name | Example | Increments by            |
-|------+-----------+---------+--------------------------|
-| h   | Hour      | +2h    | Hours                    |
-| d   | Day       | +1d    | Days                     |
-| w   | Week      | +1w    | Weeks (7 days)           |
-| m   | Month     | +1m    | Months (same date)       |
-| y   | Year      | +1y    | Years (same date)        |
+| Unit | Full Name | Example | Increments by      |
+|------+-----------+---------+--------------------|
+| h    | Hour      | +2h     | Hours              |
+| d    | Day       | +1d     | Days               |
+| w    | Week      | +1w     | Weeks (7 days)     |
+| m    | Month     | +1m     | Months (same date) |
+| y    | Year      | +1y     | Years (same date)  |
 
-* ⚠️ Practical Examples
+
+
+* ✅ Practical Examples
+CLOSED: [2026-01-16 Fri 20:42]
 
 ** ⚠️ Meeting Schedule
 
 #+BEGIN_SRC org
 ,* TODO Weekly team sync
-SCHEDULED: <2026-01-16 Thu 10:00 +1w>
+SCHEDULED: <2026-01-23 Fri 10:00 +1w>
 
 Recurring every Thursday at 10am.
 #+END_SRC
@@ -972,9 +986,11 @@ CLOCK: [2026-01-11 Sat 15:00]--[2026-01-11 Sat 16:00] =>  1:00
 Completed on time. Estimated 6:00, actual 6:30.
 #+END_SRC
 
-* ⚠️ Timestamp Best Practices
+* ✅ Timestamp Best Practices
+CLOSED: [2026-01-16 Fri 20:44]
 
-** ⚠️ When to Use Active vs Inactive
+** ✅ When to Use Active vs Inactive
+CLOSED: [2026-01-16 Fri 20:44]
 
 *Use active timestamps when:*
 - Scheduling tasks to work on
@@ -988,7 +1004,8 @@ Completed on time. Estimated 6:00, actual 6:30.
 - Logging state changes
 - You DON'T want it in the agenda
 
-** ⚠️ Choosing Repeater Types
+** ✅ Choosing Repeater Types
+CLOSED: [2026-01-16 Fri 20:44]
 
 | Scenario                        | Repeater Type | Example                    |
 |---------------------------------+---------------+----------------------------|
@@ -998,7 +1015,8 @@ Completed on time. Estimated 6:00, actual 6:30.
 | Regular review                  | +            | Monthly report last Friday |
 | Medication                      | ++           | Take daily after waking    |
 
-** ⚠️ Time Tracking Tips
+** ✅ Time Tracking Tips
+CLOSED: [2026-01-16 Fri 20:44]
 
 1. *Clock in when starting* - Build the habit immediately
 2. *Clock out when stopping* - Even for short breaks
@@ -1006,7 +1024,8 @@ Completed on time. Estimated 6:00, actual 6:30.
 4. *Compare estimate vs actual* - Improve future estimates
 5. *Use LOGBOOK for notes* - Document blockers or issues
 
-** ⚠️ Scheduling Strategies
+** ✅ Scheduling Strategies
+CLOSED: [2026-01-16 Fri 20:44]
 
 #+BEGIN_SRC org
 ; Don't over-schedule
@@ -1024,7 +1043,8 @@ SCHEDULED: <2026-01-15 Wed 14:00>
 SCHEDULED: <2026-01-16 Thu 09:00>
 #+END_SRC
 
-** ⚠️ Warning Period Guidelines
+** ✅ Warning Period Guidelines
+CLOSED: [2026-01-16 Fri 20:44]
 
 | Task Type          | Suggested Warning | Reason                    |
 |--------------------+-------------------+---------------------------|
@@ -1035,18 +1055,20 @@ SCHEDULED: <2026-01-16 Thu 09:00>
 | Annual deadline    | -1m              | One month advance notice  |
 | Critical deadline  | -30d             | Very early warning        |
 
-* ⚠️ Common Patterns
+* ✅ Common Patterns
+CLOSED: [2026-01-16 Fri 20:44]
 
 ** ⚠️ Weekly Review
 
 #+BEGIN_SRC org
 ,* TODO Weekly review
-SCHEDULED: <2026-01-19 Sun 18:00 +1w>
+SCHEDULED: <2026-01-26 Mon 18:00 +1w>
 
 Review accomplishments, plan next week.
 #+END_SRC
 
-** ⚠️ Birthday Reminders
+** ✅ Birthday Reminders
+CLOSED: [2026-01-16 Fri 20:44]
 
 #+BEGIN_SRC org
 ,* John's birthday
@@ -1055,7 +1077,8 @@ Review accomplishments, plan next week.
 Annual reminder, warn 7 days early.
 #+END_SRC
 
-** ⚠️ Bill Payments
+** ✅ Bill Payments
+CLOSED: [2026-01-16 Fri 20:44]
 
 #+BEGIN_SRC org
 ,* TODO Pay electricity bill
@@ -1064,11 +1087,11 @@ DEADLINE: <2026-01-31 Fri +1m -3d>
 Due monthly on last day, 3 day warning.
 #+END_SRC
 
-** ⚠️ Exercise Habit
+** Exercise Habit
 
 #+BEGIN_SRC org
 ,* TODO Morning workout
-SCHEDULED: <2026-01-15 Wed 07:00 ++1d>
+SCHEDULED: <2026-01-18 Sun 07:00 ++1d>
 
 Daily exercise, catch up if missed day.
 #+END_SRC

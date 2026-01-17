@@ -64,7 +64,7 @@ $ code /home/user/my-project/
 # Type: git (if it has .git) or manual (otherwise)
 #+end_example
 
-** Creating a Projectile Marker
+** 👀 Creating a Projectile Marker
 
 To mark a directory as a projectile project, create an empty `.projectile' file in the root:
 
@@ -89,9 +89,11 @@ Projects are classified into three types:
 
 The type is automatically detected when adding a project.
 
-* Managing Projects
+* ✅ Managing Projects
+CLOSED: [2026-01-16 Fri 21:11]
 
-** Switching Between Projects
+** ✅ Switching Between Projects
+CLOSED: [2026-01-16 Fri 21:11]
 
 The primary projectile command is *Switch Project* (`C-c p p'):
 
@@ -127,9 +129,11 @@ Example workflow:
 → Last opened time is updated
 #+end_example
 
-** Adding Projects
+** ✅ Adding Projects
+CLOSED: [2026-01-16 Fri 21:11]
 
-*** Manually Adding a Project
+*** ✅ Manually Adding a Project
+CLOSED: [2026-01-16 Fri 21:11]
 
 Use `Scimax: Add Project' (`C-c p a'):
 
@@ -149,7 +153,8 @@ This opens a folder picker. Select any directory to add it to your project list.
 → Project appears in the list
 #+end_example
 
-*** Scanning for Projects
+*** ✅ Scanning for Projects
+CLOSED: [2026-01-16 Fri 21:11]
 
 To discover multiple projects at once, use `Scimax: Scan Directory for Projects':
 
@@ -187,7 +192,8 @@ The scanner:
 - Handles permission errors gracefully
 - Shows progress notification
 
-** Removing Projects
+** ✅ Removing Projects
+CLOSED: [2026-01-16 Fri 21:12]
 
 Remove projects from the list with `Scimax: Remove Project':
 
@@ -202,7 +208,8 @@ Notes:
 - It does *not* delete any files from disk
 - The project can be re-added at any time
 
-** Cleaning Up Projects
+** ✅ Cleaning Up Projects
+CLOSED: [2026-01-16 Fri 21:12]
 
 Over time, projects may be moved or deleted. Use `Scimax: Cleanup Non-existent Projects':
 
@@ -223,9 +230,11 @@ Result: "Cleaned up 2 non-existent projects"
 
 Run this periodically to keep your project list clean.
 
-* Project Operations
+* ✅ Project Operations
+CLOSED: [2026-01-16 Fri 21:12]
 
-** Finding Files in Projects
+** ✅ Finding Files in Projects
+CLOSED: [2026-01-16 Fri 21:12]
 
 Find files within the current project using `Scimax: Find File in Project' (`C-c p f'):
 
@@ -252,7 +261,8 @@ Type: "babelProv"
 → Press Enter to open
 #+end_example
 
-** Searching in Projects
+** ✅ Searching in Projects
+CLOSED: [2026-01-16 Fri 21:12]
 
 Search for text within project files using `Scimax: Search in Project' (`C-c p s'):
 
@@ -281,7 +291,8 @@ Example workflow:
 5. Click to navigate to each match
 #+end_example
 
-** Opening Project Root
+** ✅ Opening Project Root
+CLOSED: [2026-01-16 Fri 21:12]
 
 Navigate to the project root in the file explorer with `Scimax: Open Project Root' (`C-c p d'):
 
@@ -293,7 +304,8 @@ Hydra: (none)
 
 For multi-root workspaces, you'll be asked to select which project root to reveal.
 
-** Project Information
+** ✅ Project Information
+CLOSED: [2026-01-16 Fri 21:12]
 
 View details about the current project with `Scimax: Project Info':
 
@@ -318,9 +330,11 @@ Type: git
 Last opened: 2026-01-13 14:32:15
 #+end_example
 
-* Projects Tree View
+* ✅ Projects Tree View
+CLOSED: [2026-01-16 Fri 21:12]
 
-** Sidebar Panel
+** ✅ Sidebar Panel
+CLOSED: [2026-01-16 Fri 21:13]
 
 The Projects tree view appears in the Scimax sidebar, showing all known projects.
 
@@ -330,7 +344,8 @@ To open the sidebar:
 View → Open View... → Scimax Projects
 #+end_src
 
-** Tree View Elements
+** ✅ Tree View Elements
+CLOSED: [2026-01-16 Fri 21:13]
 
 Each project in the tree shows:
 
@@ -347,7 +362,8 @@ Each project in the tree shows:
   - Relative time (e.g., "2h ago", "3d ago") for recent projects
   - Empty for never-opened projects
 
-** Tree Interactions
+** ✅ Tree Interactions
+CLOSED: [2026-01-16 Fri 21:13]
 
 Click a project to open it:
 - Same behavior as `C-c p p' (Switch Project)
@@ -358,7 +374,8 @@ Right-click (context menu) actions:
 - Remove project
 - Show project info
 
-** Refreshing the Tree
+** ✅ Refreshing the Tree
+CLOSED: [2026-01-16 Fri 21:13]
 
 The tree auto-refreshes when:
 - Projects are added or removed
@@ -372,9 +389,11 @@ Command: Scimax: Refresh Projects
 Icon: Refresh button in tree view toolbar
 #+end_src
 
-* Recent Projects
+* ✅ Recent Projects
+CLOSED: [2026-01-16 Fri 21:13]
 
-** Sorting by Last Access
+** ✅ Sorting by Last Access
+CLOSED: [2026-01-16 Fri 21:13]
 
 Projects are sorted by last opened time, with the most recently accessed appearing first:
 
@@ -388,7 +407,8 @@ Project List:
 
 This ordering makes it quick to switch back to recently used projects.
 
-** Automatic Time Tracking
+** ✅ Automatic Time Tracking
+CLOSED: [2026-01-16 Fri 21:13]
 
 Last opened time is updated automatically when:
 
@@ -398,7 +418,8 @@ Last opened time is updated automatically when:
 
 The timestamp is stored in VS Code's global state, persisting across sessions.
 
-** Time Format
+** ✅ Time Format
+CLOSED: [2026-01-16 Fri 21:13]
 
 Relative times are shown for recent access:
 
@@ -410,9 +431,11 @@ Relative times are shown for recent access:
 | < 30 days       | days ago       | 12d ago    |
 | ≥ 30 days       | date           | 11/23/2024 |
 
-* Commands Reference
+* ✅ Commands Reference
+CLOSED: [2026-01-16 Fri 21:13]
 
-** All Projectile Commands
+** ✅ All Projectile Commands
+CLOSED: [2026-01-16 Fri 21:13]
 
 | Command                                    | Keybinding | Hydra Key | Description                      |
 |--------------------------------------------+------------+-----------+----------------------------------|
@@ -427,7 +450,8 @@ Relative times are shown for recent access:
 | =Scimax: Cleanup Non-existent Projects=    |            |           | Remove invalid project entries   |
 | =Scimax: Refresh Projects=                 |            |           | Refresh tree view                |
 
-** Keybindings
+** ✅ Keybindings
+CLOSED: [2026-01-16 Fri 21:13]
 
 All projectile keybindings use the `C-c C-p' prefix, matching Emacs Projectile conventions:
 
@@ -441,12 +465,13 @@ C-c p a    Add project
 
 These bindings work in all editors, regardless of file type.
 
-** Hydra Menu Access
+** ✅ Hydra Menu Access
+CLOSED: [2026-01-16 Fri 21:13]
 
 Open the Projects hydra menu:
 
 #+begin_src
-1. Open main hydra: C-c h (or Command Palette → Scimax: Hydra Menu)
+1. Open main hydra: C-c m (or Command Palette → Scimax: Hydra Menu)
 2. Press 'p' for Projects
 #+end_src
 
@@ -470,9 +495,11 @@ The hydra shows all projectile commands with single-key access:
 └─────────────────────────────────────┘
 #+end_example
 
-* Integration with Notebook System
+* ✅ Integration with Notebook System
+CLOSED: [2026-01-16 Fri 21:14]
 
-** Notebook-Projectile Relationship
+** ✅ Notebook-Projectile Relationship
+CLOSED: [2026-01-16 Fri 21:14]
 
 The notebook and projectile systems work together:
 
@@ -481,7 +508,8 @@ The notebook and projectile systems work together:
 - *Shared markers*: Both systems recognize `.projectile' files
 - *Unified workflow*: Switch projects with projectile, manage research structure with notebooks
 
-** Creating Projectile-Enabled Notebooks
+** ✅ Creating Projectile-Enabled Notebooks
+CLOSED: [2026-01-16 Fri 21:14]
 
 When you create a notebook with `Scimax: New Notebook':
 
@@ -499,7 +527,8 @@ The notebook is automatically:
 2. Detected as type "projectile" (or "git" if git was initialized)
 3. Available via `C-c p p' for quick switching
 
-** Converting Projects to Notebooks
+** ✅ Converting Projects to Notebooks
+CLOSED: [2026-01-16 Fri 21:14]
 
 Convert any existing project into a notebook:
 
@@ -517,7 +546,8 @@ The project remains in your projectile list and gains notebook features:
 - Notebook-scoped agenda
 - Archive capabilities
 
-** Notebook Metadata in Projects
+** ✅ Notebook Metadata in Projects
+CLOSED: [2026-01-16 Fri 21:14]
 
 Notebooks store additional metadata in `.scimax/config.json':
 
@@ -544,7 +574,8 @@ This metadata is available to both systems:
 - Projectile shows the project in its list
 - Notebook commands provide research-specific features
 
-** Workflow Example: Research Projects
+** ✅ Workflow Example: Research Projects
+CLOSED: [2026-01-16 Fri 21:14]
 
 Typical workflow for managing multiple research projects:
 
@@ -575,11 +606,14 @@ The integration provides:
 - Project-scoped search and navigation
 - Consistent marker files
 
-* Best Practices
+* ✅ Best Practices
+CLOSED: [2026-01-16 Fri 21:14]
 
-** Project Organization
+** ✅ Project Organization
+CLOSED: [2026-01-16 Fri 21:14]
 
-*** Use Consistent Markers
+*** ✅ Use Consistent Markers
+CLOSED: [2026-01-16 Fri 21:14]
 
 Choose one marker style per project:
 
@@ -587,7 +621,8 @@ Choose one marker style per project:
 - Non-git projects: Add `.projectile' explicitly
 - Notebooks: Use notebook creation (adds both `.projectile' and `.scimax/')
 
-*** Project Naming
+*** ✅ Project Naming
+CLOSED: [2026-01-16 Fri 21:14]
 
 Use descriptive, scannable directory names:
 
@@ -605,7 +640,8 @@ Less good:
 
 Project names appear in the quick pick list, so clarity helps with quick selection.
 
-*** Directory Structure
+*** ✅ Directory Structure
+CLOSED: [2026-01-16 Fri 21:14]
 
 Organize related projects together:
 
@@ -625,9 +661,11 @@ Organize related projects together:
 
 Use `Scimax: Scan Directory for Projects' on parent directories to bulk-add.
 
-** Efficient Workflows
+** ✅ Efficient Workflows
+CLOSED: [2026-01-16 Fri 21:14]
 
-*** Quick Switching Pattern
+*** ✅ Quick Switching Pattern
+CLOSED: [2026-01-16 Fri 21:14]
 
 Develop muscle memory for `C-c p p':
 

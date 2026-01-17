@@ -113,7 +113,7 @@ There are also speed-commands if you are the beginning of a block to navigate wi
 CLOSED: [2026-01-15 Thu 07:40]
 
 Move between source blocks in document order:
-
+#name: test-org
 #+BEGIN_SRC org
 Some text...
 
@@ -207,7 +207,8 @@ Example workflow:
 4. Press Enter to jump to selected line
 5. Press Escape to cancel and return to original position
 
-** ⚠️ Search Open Files
+** ✅ Search Open Files
+CLOSED: [2026-01-16 Fri 20:02]
 
 | Command                     | Key Binding | Description                    |
 |-----------------------------+-------------+--------------------------------|
@@ -307,7 +308,8 @@ Labels every visible line for quick vertical navigation:
 
 The cursor is placed at the first non-whitespace character of the selected line.
 
-** ⚠️ Jump to Symbol
+** ✅ Jump to Symbol
+CLOSED: [2026-01-16 Fri 20:02]
 
 | Command                | Key Binding | Description                  |
 |------------------------+-------------+------------------------------|
@@ -478,18 +480,15 @@ CLOSED: [2026-01-15 Thu 07:56]
 
 All navigation keybindings:
 
-** ⚠️ Global (All Modes)
+** ✅ Global (All Modes)
+CLOSED: [2026-01-16 Fri 20:04]
 
-@@>I am not sure about the workench keybindings<@@
-
-| Key Binding       | Command                          | Description                 |
-|-------------------+----------------------------------+-----------------------------|
-| C-c s             | scimax.fuzzySearch               | Fuzzy search current file   |
-| C-c S-s           | scimax.fuzzySearchOpenFiles      | Fuzzy search open files     |
-| C-c M-s           | scimax.fuzzySearchOutline        | Fuzzy search outline        |
-| M-<left> / C-c [  | workbench.action.navigateBack    | Navigate back in history    |
-| M-<right> / C-c ] | workbench.action.navigateForward | Navigate forward in history |
-| C-S-O      | VS Code Quick Outline            | Jump to symbol              |
+| Key Binding | Command                          | Description                 |
+|-------------+----------------------------------+-----------------------------|
+| C-c s       | scimax.fuzzySearch               | Fuzzy search current file   |
+| C-c S-s     | scimax.fuzzySearchOpenFiles      | Fuzzy search open files     |
+| C-c M-s     | scimax.fuzzySearchOutline        | Fuzzy search outline        |
+| C-S-O       | VS Code Quick Outline            | Jump to symbol              |
 
 ** ✅ Org/Markdown Mode
 CLOSED: [2026-01-15 Thu 07:58]

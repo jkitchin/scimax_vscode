@@ -5,15 +5,18 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+* ✅ Introduction
+CLOSED: [2026-01-16 Fri 20:58]
 
 The Scimax VS Code extension provides comprehensive LaTeX preview functionality for org-mode documents, enabling inline rendering of mathematical equations and formulas. This feature brings publication-quality mathematics directly into your editing workflow without requiring manual compilation or external viewers.
 
-** What is LaTeX Preview?
+** ✅ What is LaTeX Preview?
+CLOSED: [2026-01-16 Fri 20:58]
 
 LaTeX preview is a system that automatically compiles and renders LaTeX mathematical expressions as images when you hover over them in your org-mode documents. This provides instant visual feedback for complex equations, matrices, and mathematical notation.
 
-** Key Features
+** ✅ Key Features
+CLOSED: [2026-01-16 Fri 20:58]
 
 - *Hover Preview*: Rendered equations appear in tooltips when hovering over LaTeX code
 - *Multiple Syntax Styles*: Support for both dollar-sign and backslash delimiters
@@ -23,13 +26,16 @@ LaTeX preview is a system that automatically compiles and renders LaTeX mathemat
 - *Equation Numbering*: Automatic numbering for equation environments
 - *Live PDF Preview*: Full document preview with bidirectional sync
 
-* Math Syntax
+* ✅ Math Syntax
+CLOSED: [2026-01-16 Fri 20:58]
 
-** Inline Math
+** ✅ Inline Math
+CLOSED: [2026-01-16 Fri 20:58]
 
 Inline math appears within text paragraphs and uses the following delimiters:
 
-*** Dollar Sign Delimiter: `$...$'
+*** ✅ Dollar Sign Delimiter: `$...$'
+CLOSED: [2026-01-16 Fri 20:58]
 
 The most common inline math syntax. Text between single dollar signs is rendered as mathematics.
 
@@ -40,7 +46,8 @@ The quadratic formula is $x ` \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ for equation $
 
 *Renders as:* The quadratic formula is x ` (-b ± √(b² - 4ac)) / 2a for equation ax² + bx + c ' 0.
 
-*** Backslash-Parenthesis Delimiter: `\(...\)'
+*** ✅ Backslash-Parenthesis Delimiter: `\(...\)'
+CLOSED: [2026-01-16 Fri 20:59]
 
 Alternative inline math syntax, preferred in some LaTeX style guides.
 
@@ -50,15 +57,18 @@ Einstein's mass-energy equivalence is \(E = mc^2\), where \(c\) is the speed of 
 
 *Renders as:* Einstein's mass-energy equivalence is E = mc², where c is the speed of light.
 
-*** Currency Detection
+*** ✅ Currency Detection
+CLOSED: [2026-01-16 Fri 20:59]
 
 The preview system intelligently avoids treating dollar amounts as math. Currency patterns like `$100' or `$5.99' are ignored.
 
-** Display Math
+** ✅ Display Math
+CLOSED: [2026-01-16 Fri 20:59]
 
 Display math appears on its own line, centered and larger than inline math.
 
-*** Double Dollar Signs: `$$...$$'
+*** ✅ Double Dollar Signs: `$$...$$'
+CLOSED: [2026-01-16 Fri 20:59]
 
 Creates unnumbered display equations.
 

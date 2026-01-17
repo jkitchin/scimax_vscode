@@ -5,13 +5,16 @@
 #+OPTIONS: toc:t num:t
 #+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* ✅ Overview
+CLOSED: [2026-01-16 Fri 20:55]
 
 The Scimax VS Code extension provides a comprehensive export system for converting org-mode documents to various formats including HTML, LaTeX, PDF, and Markdown. The export system follows the familiar org-mode export dispatcher interface (`C-c C-e') from Emacs.
 
-* Export Dispatcher
+* ✅ Export Dispatcher
+CLOSED: [2026-01-16 Fri 20:55]
 
-** Opening the Export Dispatcher
+** ✅ Opening the Export Dispatcher
+CLOSED: [2026-01-16 Fri 20:55]
 
 Press `C-c C-e' (or `C-c C-e' in Emacs notation) to open the export dispatcher menu. This provides a quick-pick interface showing all available export formats and options.
 
@@ -19,31 +22,38 @@ The export dispatcher presents options with keyboard hints, similar to Emacs org
 - Type the letter keys shown in square brackets to select an option
 - For example, type `h h' for HTML export or `l p' for PDF export
 
-** Export Dispatcher Menu Structure
+** ✅ Export Dispatcher Menu Structure
+CLOSED: [2026-01-16 Fri 20:55]
 
 The dispatcher menu is organized into logical groups:
 
-*** HTML Exports
+*** ✅ HTML Exports
+CLOSED: [2026-01-16 Fri 20:55]
 - `[h h]' HTML file - Export to .html file
 - `[h o]' HTML and open - Export to .html and open in browser
 - `[h p]' HTML preview - Preview HTML in VS Code webview
 
-*** LaTeX/PDF Exports
+*** ✅ LaTeX/PDF Exports
+CLOSED: [2026-01-16 Fri 20:55]
 - `[l l]' LaTeX file - Export to .tex file
 - `[l p]' PDF file - Export to PDF via LaTeX compilation
 - `[l o]' PDF and open - Export to PDF and open with system viewer
 
-*** Markdown Exports
+*** ✅ Markdown Exports
+CLOSED: [2026-01-16 Fri 20:55]
 - `[m m]' Markdown file - Export to .md file
 - `[m o]' Markdown and open - Export to .md and open in VS Code
 
-* Export Formats
+* ✅ Export Formats
+CLOSED: [2026-01-16 Fri 20:55]
 
-** HTML Export
+** ✅ HTML Export
+CLOSED: [2026-01-16 Fri 20:55]
 
 HTML export generates semantic HTML5 documents with modern styling.
 
-*** Features
+*** ✅ Features
+CLOSED: [2026-01-16 Fri 20:55]
 - Semantic HTML5 structure (`<section>', `<header>', `<nav>')
 - Syntax highlighting via highlight.js
 - MathJax support for mathematical equations
@@ -52,7 +62,7 @@ HTML export generates semantic HTML5 documents with modern styling.
 - Footnote support
 - Custom CSS and JavaScript support
 
-*** MathJax Integration
+*** ⚠️ MathJax Integration
 
 HTML exports automatically include MathJax for rendering mathematical content:
 - Inline math: `$x^2 + y^2 ' r^2$` → \(x^2 + y^2 ' r^2\)
@@ -72,11 +82,13 @@ This document demonstrates HTML export with math: $E = mc^2$
 
 Export with `C-c C-e h h' to produce a standalone HTML file.
 
-** LaTeX Export
+** ✅ LaTeX Export
+CLOSED: [2026-01-16 Fri 20:57]
 
 LaTeX export converts org documents to LaTeX source suitable for academic papers, reports, and books.
 
-*** Document Classes
+*** ✅ Document Classes
+CLOSED: [2026-01-16 Fri 20:57]
 
 The default document class is `article'. You can specify alternatives:
 
@@ -87,7 +99,8 @@ The default document class is `article'. You can specify alternatives:
 
 Supported classes: `article', `report', `book', `beamer' (for presentations)
 
-*** Custom Preambles
+*** ✅ Custom Preambles
+CLOSED: [2026-01-16 Fri 20:58]
 
 Add custom LaTeX packages and settings in the preamble:
 
@@ -97,7 +110,8 @@ Add custom LaTeX packages and settings in the preamble:
 #+LATEX_HEADER: \usepackage{tcolorbox}
 #+END_SRC
 
-*** Global Custom Header
+*** ✅ Global Custom Header
+CLOSED: [2026-01-16 Fri 20:57]
 
 Configure a complete custom LaTeX preamble in VS Code settings:
 

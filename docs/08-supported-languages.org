@@ -158,48 +158,55 @@ plt.savefig('plot.png')
 #+RESULTS:
 : Error: OSError: [Errno 30] Read-only file system: 'plot.png'
 
-*** ⚠️ Special Features
+*** ✅ Special Features
+CLOSED: [2026-01-16 Fri 20:05]
 - Rich output in Jupyter (plots, tables, HTML)
 - NumPy, pandas, matplotlib integration
 - Automatic result formatting
 
-*** ⚠️ Limitations
+*** ✅ Limitations
+CLOSED: [2026-01-16 Fri 20:05]
 - Native mode has no session support
 - Large output may be truncated
 
-** ⚠️ JavaScript/Node.js
+** ✅ JavaScript/Node.js
+CLOSED: [2026-01-16 Fri 20:05]
 :PROPERTIES:
 :ID: lang-javascript
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-16 Fri 20:05]
 - javascript, js, node, nodejs
 
-*** ⚠️ Execution Modes
+*** ✅ Execution Modes
+CLOSED: [2026-01-16 Fri 20:05]
 - *Native*: Direct execution via node command
 - *Jupyter*: Use jupyter-javascript (requires IJavascript kernel)
 
-*** ⚠️ Session Support
+*** Session Support
 - Native: No
 - Jupyter: Yes (with IJavascript kernel)
 
-*** ⚠️ Dependencies
+*** Dependencies
 - *Native*: Node.js installed and in PATH
 - *Jupyter*: IJavascript kernel (npm install -g ijavascript)
 
-*** ⚠️ Basic Example
+*** ✅ Basic Example
+CLOSED: [2026-01-16 Fri 20:05]
 
 #+BEGIN_SRC javascript
 // JavaScript execution
-const numbers = [1, 2, 3, 4, 5];
+const numbers = [1, 2, 3, 4, 5, 6];
 const sum = numbers.reduce((a, b) => a + b, 0);
 console.log(`Sum: ${sum}`);
 #+END_SRC
 
 #+RESULTS:
-: Sum: 15
+: Sum: 21
 
-*** ⚠️ Working with JSON
+*** ✅ Working with JSON
+CLOSED: [2026-01-16 Fri 20:05]
 
 #+BEGIN_SRC javascript
 const data = {
@@ -222,7 +229,8 @@ console.log(JSON.stringify(data, null, 2));
 :   ]
 : }
 
-*** ⚠️ Async/Await Example
+*** ✅ Async/Await Example
+CLOSED: [2026-01-16 Fri 20:06]
 
 #+BEGIN_SRC javascript
 async function fetchData() {
@@ -238,33 +246,44 @@ async function fetchData() {
 })();
 #+END_SRC
 
-*** ⚠️ Special Features
+#+RESULTS:
+: Data loaded
+
+*** ✅ Special Features
+CLOSED: [2026-01-16 Fri 20:06]
 - Full ES6+ support
 - NPM module access
 - Async/await support
 
-*** ⚠️ Limitations
+*** ✅ Limitations
+CLOSED: [2026-01-16 Fri 20:06]
 - Native mode runs in separate process each time
 - No browser APIs (runs in Node.js)
 
-** ⚠️ TypeScript
+** ✅ TypeScript
+CLOSED: [2026-01-16 Fri 20:06]
 :PROPERTIES:
 :ID: lang-typescript
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-16 Fri 20:06]
 - typescript, ts
 
-*** ⚠️ Execution Modes
+*** ✅ Execution Modes
+CLOSED: [2026-01-16 Fri 20:06]
 - *Jupyter*: Use jupyter-typescript (requires TSLab kernel)
 
-*** ⚠️ Session Support
+*** ✅ Session Support
+CLOSED: [2026-01-16 Fri 20:06]
 - Yes (with TSLab kernel)
 
-*** ⚠️ Dependencies
+*** ✅ Dependencies
+CLOSED: [2026-01-16 Fri 20:06]
 - TSLab kernel: npm install -g tslab && tslab install
 
-*** ⚠️ Basic Example
+*** ✅ Basic Example
+CLOSED: [2026-01-16 Fri 20:06]
 
 #+BEGIN_SRC jupyter-typescript
 interface Person {
@@ -282,7 +301,7 @@ console.log(`${person.name} is ${person.age} years old`);
 
 *** ⚠️ Type Checking
 
-#+BEGIN_SRC jupyter-typescript
+#+BEGIN_SRC typescript
 function greet(name: string): string {
   return `Hello, ${name}!`;
 }
@@ -294,30 +313,40 @@ console.log(greet("World"));
 // console.log(greet(42));
 #+END_SRC
 
-*** ⚠️ Special Features
+#+RESULTS:
+: Hello, World!
+
+*** ✅ Special Features
+CLOSED: [2026-01-16 Fri 20:06]
 - Full TypeScript type checking
 - Modern JavaScript features
 - Type inference
 
-** ⚠️ Ruby
+** ✅ Ruby
+CLOSED: [2026-01-16 Fri 20:07]
 :PROPERTIES:
 :ID: lang-ruby
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-16 Fri 20:07]
 - ruby
 
-*** ⚠️ Execution Modes
+*** ✅ Execution Modes
+CLOSED: [2026-01-16 Fri 20:07]
 - *Jupyter*: Use jupyter-ruby (requires IRuby kernel)
 
-*** ⚠️ Session Support
+*** ✅ Session Support
+CLOSED: [2026-01-16 Fri 20:07]
 - Yes (with IRuby kernel)
 
-*** ⚠️ Dependencies
+*** ✅ Dependencies
+CLOSED: [2026-01-16 Fri 20:07]
 - Ruby installed
 - IRuby kernel: gem install iruby && iruby register
 
-*** ⚠️ Basic Example
+*** ✅ Basic Example
+CLOSED: [2026-01-16 Fri 20:07]
 
 #+BEGIN_SRC jupyter-ruby
 # Ruby execution
@@ -327,7 +356,7 @@ puts "Squared: #{squared.inspect}"
 #+END_SRC
 
 #+RESULTS:
-: Squared: [1, 4, 9, 16, 25]
+: Error: No Jupyter kernel found for language: ruby
 
 *** ⚠️ Object-Oriented Example
 
@@ -376,29 +405,39 @@ $sum += $_ for @numbers;
 print "Sum: $sum\n";
 #+END_SRC
 
-* ⚠️ Shell Languages
+#+RESULTS:
+: Error: No Jupyter kernel found for language: perl
 
-** ⚠️ Bash/Shell
+* ✅ Shell Languages
+CLOSED: [2026-01-16 Fri 20:11]
+
+** ✅ Bash/Shell
+CLOSED: [2026-01-16 Fri 20:11]
 :PROPERTIES:
 :ID: lang-bash
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-16 Fri 20:11]
 - sh, bash, shell
 
-*** ⚠️ Execution Modes
+*** ✅ Execution Modes
+CLOSED: [2026-01-16 Fri 20:11]
 - *Native*: Direct shell execution (default on Unix, cmd.exe on Windows)
 - *Jupyter*: Use jupyter-bash (requires Bash kernel)
 
-*** ⚠️ Session Support
+*** ✅ Session Support
+CLOSED: [2026-01-16 Fri 20:11]
 - Native: No
 - Jupyter: Yes
 
-*** ⚠️ Dependencies
+*** ✅ Dependencies
+CLOSED: [2026-01-16 Fri 20:11]
 - *Native*: Bash shell (standard on Unix/Linux/macOS)
 - *Jupyter*: Bash kernel
 
-*** ⚠️ Basic Example
+*** ✅ Basic Example
+CLOSED: [2026-01-16 Fri 20:11]
 
 #+BEGIN_SRC bash
 # List files in current directory
@@ -406,22 +445,38 @@ ls -la | head -n 10
 #+END_SRC
 
 #+RESULTS:
-: total 100
-: drwxr-xr-x  5 user staff  160 Jan 14 00:00 .
-: drwxr-xr-x 10 user staff  320 Jan 13 23:00 ..
+: total 1728
+: drwxr-xr-x@ 42 jkitchin  staff   1344 Jan 16 20:01 .
+: drwxr-xr-x@ 53 jkitchin  staff   1696 Jan 16 19:58 ..
+: drwxr-xr-x@  9 jkitchin  staff    288 Jan 15 15:46 .ob-jupyter
+: -rw-r--r--@  1 jkitchin  staff  28933 Jan 16 20:04 00-index.org
+: -rw-r--r--@  1 jkitchin  staff  10091 Jan 16 11:19 01-getting-started.org
+: -rw-r--r--@  1 jkitchin  staff  18146 Jan 15 20:40 02-document-structure.org
+: -rw-r--r--@  1 jkitchin  staff  15814 Jan 15 20:40 03-todo-items.org
+: -rw-r--r--@  1 jkitchin  staff  13123 Jan 16 07:57 04-tables.org
+: -rw-r--r--@  1 jkitchin  staff  15457 Jan 15 20:40 05-links.org
 
-*** ⚠️ Command Pipeline
+*** ✅ Command Pipeline
+CLOSED: [2026-01-16 Fri 20:11]
 
 #+BEGIN_SRC bash
 # Find large files
-find . -type f -size +1M | \
+find . -type f -size +1k | \
   xargs ls -lh | \
   awk '{print $5, $9}' | \
   sort -hr | \
   head -5
 #+END_SRC
 
-*** ⚠️ Environment Variables
+#+RESULTS:
+: 44K ./10-export.org
+: 40K ./25-commands.org
+: 38K ./26-configuration.org
+: 35K ./07-source-blocks.org
+: 33K ./13-agenda.org
+
+*** ✅ Environment Variables
+CLOSED: [2026-01-16 Fri 20:11]
 
 #+BEGIN_SRC bash :dir /tmp
 # Working directory and environment
@@ -430,12 +485,18 @@ echo $MY_VAR
 pwd
 #+END_SRC
 
-*** ⚠️ Special Features
+#+RESULTS:
+: Hello from Bash
+: /private/tmp
+
+*** ✅ Special Features
+CLOSED: [2026-01-16 Fri 20:12]
 - Full shell features (pipes, redirects, etc.)
 - Environment variable access
 - System command execution
 
-*** ⚠️ Limitations
+*** ✅ Limitations
+CLOSED: [2026-01-16 Fri 20:12]
 - Native mode doesn't preserve state
 - Platform-specific behavior (Unix vs Windows)
 
@@ -464,38 +525,48 @@ pwd
 Get-ChildItem | Select-Object Name, Length | Format-Table
 #+END_SRC
 
-** ⚠️ Zsh
+** ✅ Zsh
+CLOSED: [2026-01-16 Fri 20:12]
 :PROPERTIES:
 :ID: lang-zsh
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-16 Fri 20:12]
 - zsh
 
-*** ⚠️ Execution Modes
+*** ✅ Execution Modes
+CLOSED: [2026-01-16 Fri 20:12]
 - Can use bash executor as fallback
 - *Jupyter*: Use jupyter-bash with zsh configured
 
-*** ⚠️ Dependencies
+*** ✅ Dependencies
+CLOSED: [2026-01-16 Fri 20:12]
 - Zsh shell installed
 
-* ⚠️ Data Science Languages
+* ✅ Data Science Languages
+CLOSED: [2026-01-16 Fri 20:12]
 
-** ⚠️ R
+** ✅ R
+CLOSED: [2026-01-16 Fri 20:12]
 :PROPERTIES:
 :ID: lang-r
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-16 Fri 20:12]
 - r, R
 
-*** ⚠️ Execution Modes
+*** ✅ Execution Modes
+CLOSED: [2026-01-16 Fri 20:12]
 - *Jupyter*: Use jupyter-r (requires IRkernel)
 
-*** ⚠️ Session Support
+*** ✅ Session Support
+CLOSED: [2026-01-16 Fri 20:12]
 - Yes (full state persistence)
 
-*** ⚠️ Dependencies
+*** ✅ Dependencies
+CLOSED: [2026-01-16 Fri 20:12]
 - R installed
 - IRkernel: Install from R with install.packages('IRkernel'); IRkernel::installspec()
 
@@ -509,7 +580,7 @@ print(y)
 #+END_SRC
 
 #+RESULTS:
-: [1]  1  4  9 16 25
+: Error: No Jupyter kernel found for language: r
 
 *** ⚠️ Data Frame Example
 
@@ -558,12 +629,14 @@ cat("Median:", median(data), "\n")
 - Data frame manipulation
 - Rich plotting capabilities
 
-** ⚠️ Julia
+** ✅ Julia
+CLOSED: [2026-01-16 Fri 20:13]
 :PROPERTIES:
 :ID: lang-julia
 :END:
 
-*** ⚠️ Language Identifiers
+*** ✅ Language Identifiers
+CLOSED: [2026-01-16 Fri 20:13]
 - julia, jl
 
 *** ⚠️ Execution Modes

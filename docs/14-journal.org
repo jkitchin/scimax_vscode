@@ -7,11 +7,13 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
 
-* ⚠️ Introduction
+* ✅ Introduction
+CLOSED: [2026-01-16 Fri 21:06]
 
 The Scimax Journal is a powerful date-based note-taking system that helps you maintain a daily journal, track your work, and build a personal knowledge base over time. Inspired by org-journal and bullet journaling, it provides a structured yet flexible way to capture thoughts, tasks, and logs throughout your day.
 
-** ⚠️ Key Features
+** ✅ Key Features
+CLOSED: [2026-01-16 Fri 21:06]
 
 - Automatic date-based organization with hierarchical directory structure
 - Multiple customizable templates for different journaling styles
@@ -23,15 +25,16 @@ The Scimax Journal is a powerful date-based note-taking system that helps you ma
 - Status bar integration showing current entry details
 - Tree view for browsing entries by year, month, and day
 
-** ⚠️ Philosophy
+** ✅ Philosophy
+CLOSED: [2026-01-16 Fri 21:06]
 
-The journal system is designed around the principle of friction-free capture. With a single keyboard shortcut (C-S-J), you can open today's journal entry and start writing. The system handles all organization automatically, storing files in a sensible directory structure that mirrors the calendar.
+The journal system is designed around the principle of friction-free capture. With a single keyboard shortcut (`Cmd-S-J'), you can open today's journal entry and start writing. The system handles all organization automatically, storing files in a sensible directory structure that mirrors the calendar.
 
 * ⚠️ Getting Started
 
 ** ⚠️ Opening Your First Journal Entry
 
-The quickest way to start journaling is to press C-S-J (s-S-J on Mac). This will:
+The quickest way to start journaling is to press `Cmd-S-J'. This will:
 
 1. Create today's journal entry if it doesn't exist
 2. Apply your default template
@@ -51,7 +54,8 @@ Your first entry might look like this:
 ,* Log
 #+end_src
 
-** ⚠️ Directory Structure
+** ✅ Directory Structure
+CLOSED: [2026-01-16 Fri 21:07]
 
 By default, journal entries are stored in ~/scimax-journal with the following structure:
 
@@ -76,11 +80,13 @@ By default, journal entries are stored in ~/scimax-journal with the following st
 
 Each entry is stored in a path like YYYY/MM/DD/YYYY-MM-DD.org, making it easy to browse chronologically while keeping the directory structure manageable.
 
-** ⚠️ Configuration
+** ✅ Configuration
+CLOSED: [2026-01-16 Fri 21:08]
 
-Configure the journal system through VS Code settings (File > Preferences > Settings or C-,):
+Configure the journal system through VS Code settings (File > Preferences > Settings or Cmd/C-,):
 
-*** ⚠️ scimax.journal.directory
+*** ✅ scimax.journal.directory
+CLOSED: [2026-01-16 Fri 21:08]
 
 Directory where journal files are stored. If empty, defaults to ~/scimax-journal.
 
@@ -92,7 +98,8 @@ Directory where journal files are stored. If empty, defaults to ~/scimax-journal
 
 You can also use absolute paths or paths starting with ~ for your home directory.
 
-*** ⚠️ scimax.journal.format
+*** ✅ scimax.journal.format
+CLOSED: [2026-01-16 Fri 21:08]
 
 Choose between org-mode or Markdown format for journal entries.
 
@@ -104,7 +111,8 @@ Choose between org-mode or Markdown format for journal entries.
 
 Default: org
 
-*** ⚠️ scimax.journal.template
+*** ✅ scimax.journal.template
+CLOSED: [2026-01-16 Fri 21:08]
 
 The default template to use when creating new entries.
 
@@ -116,7 +124,8 @@ The default template to use when creating new entries.
 
 Available built-in templates: default, minimal, research, meeting, standup
 
-*** ⚠️ scimax.journal.dateFormat
+*** ✅ scimax.journal.dateFormat
+CLOSED: [2026-01-16 Fri 21:08]
 
 Date format for file names (currently only YYYY-MM-DD is supported).
 
@@ -128,7 +137,8 @@ Date format for file names (currently only YYYY-MM-DD is supported).
 
 Default: YYYY-MM-DD
 
-*** ⚠️ scimax.journal.autoTimestamp
+*** ✅ scimax.journal.autoTimestamp
+CLOSED: [2026-01-16 Fri 21:08]
 
 Automatically add timestamps when using the quick log feature.
 
@@ -140,7 +150,8 @@ Automatically add timestamps when using the quick log feature.
 
 Default: true
 
-*** ⚠️ scimax.journal.weekStartsOn
+*** ✅ scimax.journal.weekStartsOn
+CLOSED: [2026-01-16 Fri 21:08]
 
 First day of the week for calendar and week views.
 
@@ -152,13 +163,16 @@ First day of the week for calendar and week views.
 
 Default: monday
 
-* ⚠️ Journal Templates
+* ✅ Journal Templates
+CLOSED: [2026-01-16 Fri 21:08]
 
 Templates define the structure of new journal entries. Scimax provides several built-in templates and supports custom templates.
 
-** ⚠️ Built-in Templates
+** ✅ Built-in Templates
+CLOSED: [2026-01-16 Fri 21:08]
 
-*** ⚠️ default
+*** ✅ default
+CLOSED: [2026-01-16 Fri 21:08]
 
 A balanced template suitable for general daily journaling with tasks, notes, and a timestamped log.
 
@@ -174,7 +188,8 @@ A balanced template suitable for general daily journaling with tasks, notes, and
 ,* Log
 #+end_src
 
-*** ⚠️ minimal
+*** ✅ minimal
+CLOSED: [2026-01-16 Fri 21:08]
 
 A minimal template with just a notes section, ideal for free-form journaling.
 
@@ -185,7 +200,8 @@ A minimal template with just a notes section, ideal for free-form journaling.
 ,* Notes
 #+end_src
 
-*** ⚠️ research
+*** ✅ research
+CLOSED: [2026-01-16 Fri 21:08]
 
 Designed for research work, with sections for goals, experiments, results, and references.
 
@@ -206,7 +222,8 @@ Designed for research work, with sections for goals, experiments, results, and r
 ,* References
 #+end_src
 
-*** ⚠️ meeting
+*** ✅ meeting
+CLOSED: [2026-01-16 Fri 21:08]
 
 Structured template for meeting notes with attendees, agenda, and action items.
 
@@ -228,7 +245,8 @@ Structured template for meeting notes with attendees, agenda, and action items.
 ,* Next Meeting
 #+end_src
 
-*** ⚠️ standup
+*** ✅ standup
+CLOSED: [2026-01-16 Fri 21:08]
 
 Daily standup format with yesterday, today, and blockers.
 
@@ -246,7 +264,8 @@ Daily standup format with yesterday, today, and blockers.
 -
 #+end_src
 
-** ⚠️ Template Variables
+** ✅ Template Variables
+CLOSED: [2026-01-16 Fri 21:08]
 
 Templates support the following variables that are automatically substituted:
 
@@ -261,7 +280,8 @@ Templates support the following variables that are automatically substituted:
 | {{timestamp}} | ISO timestamp                    | 2026-01-14T10:30Z |
 | {{author}}    | Currently returns empty, reserved for future use | |
 
-** ⚠️ Creating Custom Templates
+** ✅ Creating Custom Templates
+CLOSED: [2026-01-16 Fri 21:09]
 
 Custom templates are stored in <journal-directory>/.scimax/templates/. Create a new template by:
 

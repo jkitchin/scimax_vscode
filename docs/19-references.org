@@ -23,13 +23,13 @@ The reference system seamlessly integrates with org-mode documents while also su
 
 Configure your bibliography files in VS Code settings (Preferences: Open Settings (UI) → search for "scimax ref"):
 
-| Setting                            | Description                                   |
-|------------------------------------+-----------------------------------------------|
-| scimax.ref.bibliographyFiles     | Array of .bib file paths (global)             |
-| scimax.ref.pdfDirectory          | Directory containing PDF files                |
-| scimax.ref.notesDirectory        | Directory for reference notes (.org files)    |
-| scimax.ref.defaultCiteStyle      | Default citation style (cite, citet, citep)   |
-| scimax.ref.autoDownloadPdf       | Auto-download PDFs from DOI (experimental)    |
+| Setting                      | Description                                 |
+|------------------------------+---------------------------------------------|
+| scimax.ref.bibliographyFiles | Array of .bib file paths (global)           |
+| scimax.ref.pdfDirectory      | Directory containing PDF files              |
+| scimax.ref.notesDirectory    | Directory for reference notes (.org files)  |
+| scimax.ref.defaultCiteStyle  | Default citation style (cite, citet, citep) |
+| scimax.ref.autoDownloadPdf   | Auto-download PDFs from DOI (experimental)  |
 
 *** Example Configuration
 :PROPERTIES:
@@ -102,13 +102,13 @@ Scimax VS Code supports multiple citation styles for different contexts:
 
 ** Citation Styles
 
-| Style         | Syntax                | Rendered As (typical)        | Use Case                 |
-|---------------+-----------------------+------------------------------+--------------------------|
-| cite        | cite:key            | [1] or (Smith, 2024)         | Basic citation           |
-| citet       | citet:key           | Smith (2024)                 | Textual citation         |
-| citep       | citep:key           | (Smith, 2024)                | Parenthetical citation   |
-| citeauthor  | citeauthor:key      | Smith                        | Author name only         |
-| citeyear    | citeyear:key        | 2024                         | Year only                |
+| Style      | Syntax         | Rendered As (typical) | Use Case               |
+|------------+----------------+-----------------------+------------------------|
+| cite       | cite:key       | [1] or (Smith, 2024)  | Basic citation         |
+| citet      | citet:key      | Smith (2024)          | Textual citation       |
+| citep      | citep:key      | (Smith, 2024)         | Parenthetical citation |
+| citeauthor | citeauthor:key | Smith                 | Author name only       |
+| citeyear   | citeyear:key   | 2024                  | Year only              |
 
 ** Multiple Citations
 
@@ -167,9 +167,9 @@ Modern org-mode citation syntax is also supported:
 
 ** Insert Citation Command
 
-| Key         | Command                              |
-|-------------+--------------------------------------|
-| C-c ]  | Insert citation (scimax.ref.insertCitation) |
+| Key   | Command                                     |
+|-------+---------------------------------------------|
+| C-c ] | Insert citation (scimax.ref.insertCitation) |
 
 *** Interactive Citation Insertion
 
@@ -201,11 +201,11 @@ Completion shows:
 
 ** Quick Citation Commands
 
-| Command                            | Description                        |
-|------------------------------------+------------------------------------|
-| scimax.ref.insertCitation        | Insert/append citation             |
-| scimax.ref.insertRef             | Insert cross-reference (ref:, eqref:) |
-| scimax.ref.insertBibliography    | Insert bibliography link           |
+| Command                       | Description                           |
+|-------------------------------+---------------------------------------|
+| scimax.ref.insertCitation     | Insert/append citation                |
+| scimax.ref.insertRef          | Insert cross-reference (ref:, eqref:) |
+| scimax.ref.insertBibliography | Insert bibliography link              |
 
 * Following Citation Links
 
@@ -294,10 +294,10 @@ When cursor is on a citation with multiple keys:
 
 ** Transpose Citations
 
-| Key                | Command                                      | Action                    |
-|--------------------+----------------------------------------------+---------------------------|
-| S-<left> Arrow | scimax.ref.transposeCitationLeft           | Swap with previous key    |
-| S-<right> Arrow| scimax.ref.transposeCitationRight          | Swap with next key        |
+| Key             | Command                           | Action                 |
+|-----------------+-----------------------------------+------------------------|
+| S-<left> Arrow  | scimax.ref.transposeCitationLeft  | Swap with previous key |
+| S-<right> Arrow | scimax.ref.transposeCitationRight | Swap with next key     |
 
 Example:
 #+BEGIN_EXAMPLE
@@ -311,11 +311,11 @@ cite:jones2023,doe2022,smith2024
 
 ** Sort Citations
 
-| Key              | Command                                  | Action                           |
-|------------------+------------------------------------------+----------------------------------|
-| S-<up> Arrow | scimax.ref.sortCitations               | Sort by year (oldest first)      |
-| S-<down>     | scimax.ref.sortCitationsByYear         | Sort by year (newest first)      |
-|                  | scimax.ref.sortCitationsAlphabetically | Sort alphabetically by key       |
+| Key          | Command                                | Action                      |
+|--------------+----------------------------------------+-----------------------------|
+| S-<up> Arrow | scimax.ref.sortCitations               | Sort by year (oldest first) |
+| S-<down>     | scimax.ref.sortCitationsByYear         | Sort by year (newest first) |
+|              | scimax.ref.sortCitationsAlphabetically | Sort alphabetically by key  |
 
 Citations are sorted by extracting year from:
 1. Bibliography entry year field
@@ -323,9 +323,9 @@ Citations are sorted by extracting year from:
 
 ** Delete Citation Key
 
-| Command                     | Action                                       |
-|-----------------------------+----------------------------------------------|
-| scimax.ref.deleteCitation | Delete current key or entire citation        |
+| Command                   | Action                                |
+|---------------------------+---------------------------------------|
+| scimax.ref.deleteCitation | Delete current key or entire citation |
 
 - If multiple keys: Removes current key only
 - If single key: Deletes entire citation
@@ -353,9 +353,9 @@ Click an entry to open the action menu.
 
 ** Search References
 
-| Command                        | Description                              |
-|--------------------------------+------------------------------------------|
-| scimax.ref.searchReferences  | Search bibliography by author/title/year |
+| Command                     | Description                              |
+|-----------------------------+------------------------------------------|
+| scimax.ref.searchReferences | Search bibliography by author/title/year |
 
 Searches across:
 - Citation keys
@@ -369,9 +369,9 @@ Results are ranked by relevance (key matches first, then author, then title).
 
 ** Find Citations
 
-| Command                      | Description                               |
-|------------------------------+-------------------------------------------|
-| scimax.ref.findCitations   | Find all citations of a reference         |
+| Command                  | Description                       |
+|--------------------------+-----------------------------------|
+| scimax.ref.findCitations | Find all citations of a reference |
 
 Searches workspace for citations of a selected key in all org, markdown, and LaTeX files. Results shown in peek view for quick navigation.
 
@@ -379,9 +379,9 @@ Searches workspace for citations of a selected key in all org, markdown, and LaT
 
 ** Add Reference from DOI
 
-| Command                    | Description                                |
-|----------------------------+--------------------------------------------|
-| scimax.ref.fetchFromDOI  | Fetch BibTeX entry from DOI via CrossRef   |
+| Command                 | Description                              |
+|-------------------------+------------------------------------------|
+| scimax.ref.fetchFromDOI | Fetch BibTeX entry from DOI via CrossRef |
 
 *** Usage
 
@@ -406,9 +406,9 @@ OpenAlex provides enhanced metadata for academic works:
 
 *** Show Citing Works
 
-| Command                        | Description                            |
-|--------------------------------+----------------------------------------|
-| scimax.ref.showCitingWorks   | Show papers citing this work           |
+| Command                    | Description                  |
+|----------------------------+------------------------------|
+| scimax.ref.showCitingWorks | Show papers citing this work |
 
 Displays papers that cite the selected reference with:
 - Title, authors, year
@@ -418,17 +418,17 @@ Displays papers that cite the selected reference with:
 
 *** Show Related Works
 
-| Command                         | Description                           |
-|---------------------------------+---------------------------------------|
-| scimax.ref.showRelatedWorks   | Show related papers                   |
+| Command                     | Description         |
+|-----------------------------+---------------------|
+| scimax.ref.showRelatedWorks | Show related papers |
 
 Shows papers related to the selected reference based on OpenAlex's relatedness algorithm.
 
 *** Search OpenAlex
 
-| Command                       | Description                             |
-|-------------------------------+-----------------------------------------|
-| scimax.ref.searchOpenAlex   | Search OpenAlex database                |
+| Command                   | Description              |
+|---------------------------+--------------------------|
+| scimax.ref.searchOpenAlex | Search OpenAlex database |
 
 Search the global OpenAlex database for works by title, author, or keywords. Results include:
 - Citation counts
@@ -451,18 +451,18 @@ Beyond citations, Scimax supports cross-references to figures, tables, equations
 
 ** Reference Link Types
 
-| Type      | Example           | References                              |
-|-----------+-------------------+-----------------------------------------|
-| ref     | ref:fig-results | Figures, tables, sections               |
-| eqref   | eqref:eq-1      | Equations (with parentheses)            |
-| pageref | pageref:intro   | Page number reference                   |
-| nameref | nameref:methods | Name/title of section                   |
-| autoref | autoref:tbl-1   | Auto-formatted (Figure 1, Table 2, etc.)|
+| Type    | Example         | References                               |
+|---------+-----------------+------------------------------------------|
+| ref     | ref:fig-results | Figures, tables, sections                |
+| eqref   | eqref:eq-1      | Equations (with parentheses)             |
+| pageref | pageref:intro   | Page number reference                    |
+| nameref | nameref:methods | Name/title of section                    |
+| autoref | autoref:tbl-1   | Auto-formatted (Figure 1, Table 2, etc.) |
 
 ** Insert Cross-Reference
 
-| Key             | Command                        |
-|-----------------+--------------------------------|
+| Key   | Command                           |
+|-------+-----------------------------------|
 | C-S-] | Insert ref (scimax.ref.insertRef) |
 
 1. Run scimax.ref.insertRef
@@ -561,13 +561,13 @@ See [[file:10-export.org::*HTML Citation Export][Export System: HTML Citation Ex
 
 Citations convert to LaTeX commands:
 
-| Org Citation        | LaTeX Output            |
-|---------------------+-------------------------|
-| cite:key          | \cite{key}            |
-| citet:key         | \citet{key}           |
-| citep:key         | \citep{key}           |
-| citeauthor:key    | \citeauthor{key}      |
-| citeyear:key      | \citeyear{key}        |
+| Org Citation   | LaTeX Output     |
+|----------------+------------------|
+| cite:key       | \cite{key}       |
+| citet:key      | \citet{key}      |
+| citep:key      | \citep{key}      |
+| citeauthor:key | \citeauthor{key} |
+| citeyear:key   | \citeyear{key}   |
 
 Bibliography links export to \bibliography{file} commands.
 
@@ -575,17 +575,17 @@ Bibliography links export to \bibliography{file} commands.
 
 Citations export to Pandoc citation syntax:
 
-| Org Citation    | Pandoc Markdown Output  |
-|-----------------+-------------------------|
-| cite:key      | [@key]                |
-| citet:key     | @key                  |
-| citep:key     | [@key]                |
+| Org Citation | Pandoc Markdown Output |
+|--------------+------------------------|
+| cite:key     | [@key]                 |
+| citet:key    | @key                   |
+| citep:key    | [@key]                 |
 
 ** Extract Bibliography for Document
 
-| Command                           | Description                                  |
-|-----------------------------------+----------------------------------------------|
-| scimax.ref.extractBibliography  | Extract cited references to new .bib file    |
+| Command                        | Description                               |
+|--------------------------------+-------------------------------------------|
+| scimax.ref.extractBibliography | Extract cited references to new .bib file |
 
 Useful for creating document-specific bibliography files:
 1. Scans current document for all citations
@@ -598,25 +598,25 @@ Generates a portable .bib file containing only the references cited in your docu
 
 ** Opening Bibliography Files
 
-| Command                         | Description                              |
-|---------------------------------+------------------------------------------|
-| scimax.ref.openBibliography   | Open configured bibliography file        |
+| Command                     | Description                       |
+|-----------------------------+-----------------------------------|
+| scimax.ref.openBibliography | Open configured bibliography file |
 
 If multiple files configured, shows a picker.
 
 ** Copy BibTeX Entry
 
-| Command                    | Description                                |
-|----------------------------+--------------------------------------------|
-| scimax.ref.copyBibTeX    | Copy BibTeX entry for selected reference   |
+| Command               | Description                              |
+|-----------------------+------------------------------------------|
+| scimax.ref.copyBibTeX | Copy BibTeX entry for selected reference |
 
 Select a reference and copy its BibTeX source to clipboard.
 
 ** Refresh Bibliography
 
-| Command                  | Description                                  |
-|--------------------------+----------------------------------------------|
-| scimax.ref.refresh     | Reload all bibliography files                |
+| Command            | Description                   |
+|--------------------+-------------------------------|
+| scimax.ref.refresh | Reload all bibliography files |
 
 Reloads all configured and workspace .bib files. Useful after external changes.
 
@@ -637,37 +637,37 @@ When viewing a .bib file, code lenses appear for each entry:
 
 ** Citation Commands
 
-| Command                                  | Default Key     | Description                     |
-|------------------------------------------+-----------------+---------------------------------|
-| scimax.ref.insertCitation              | C-c ]      | Insert/append citation          |
-| scimax.ref.insertRef                   | C-S-]  | Insert cross-reference          |
-| scimax.ref.insertBibliography          |                 | Insert bibliography link        |
-| scimax.ref.transposeCitationLeft       | S-<left>    | Swap citation left              |
-| scimax.ref.transposeCitationRight      | S-<right>   | Swap citation right             |
-| scimax.ref.sortCitations               | S-<up>      | Sort by year ascending          |
-| scimax.ref.sortCitationsByYear         | S-<down>    | Sort by year descending         |
-| scimax.ref.sortCitationsAlphabetically |                 | Sort alphabetically             |
-| scimax.ref.deleteCitation              |                 | Delete citation key             |
+| Command                                | Default Key | Description              |
+|----------------------------------------+-------------+--------------------------|
+| scimax.ref.insertCitation              | C-c ]       | Insert/append citation   |
+| scimax.ref.insertRef                   | C-S-]       | Insert cross-reference   |
+| scimax.ref.insertBibliography          |             | Insert bibliography link |
+| scimax.ref.transposeCitationLeft       | S-<left>    | Swap citation left       |
+| scimax.ref.transposeCitationRight      | S-<right>   | Swap citation right      |
+| scimax.ref.sortCitations               | S-<up>      | Sort by year ascending   |
+| scimax.ref.sortCitationsByYear         | S-<down>    | Sort by year descending  |
+| scimax.ref.sortCitationsAlphabetically |             | Sort alphabetically      |
+| scimax.ref.deleteCitation              |             | Delete citation key      |
 
 ** Bibliography Commands
 
-| Command                          | Description                              |
-|----------------------------------+------------------------------------------|
-| scimax.ref.openBibliography    | Open bibliography file                   |
-| scimax.ref.searchReferences    | Search bibliography                      |
-| scimax.ref.findCitations       | Find citations of reference              |
-| scimax.ref.copyBibTeX          | Copy BibTeX entry                        |
-| scimax.ref.refresh             | Reload bibliography files                |
-| scimax.ref.extractBibliography | Extract cited references                 |
+| Command                        | Description                 |
+|--------------------------------+-----------------------------|
+| scimax.ref.openBibliography    | Open bibliography file      |
+| scimax.ref.searchReferences    | Search bibliography         |
+| scimax.ref.findCitations       | Find citations of reference |
+| scimax.ref.copyBibTeX          | Copy BibTeX entry           |
+| scimax.ref.refresh             | Reload bibliography files   |
+| scimax.ref.extractBibliography | Extract cited references    |
 
 ** DOI and External Commands
 
-| Command                         | Description                               |
-|---------------------------------+-------------------------------------------|
-| scimax.ref.fetchFromDOI       | Add reference from DOI                    |
-| scimax.ref.showCitingWorks    | Show citing works (OpenAlex)              |
-| scimax.ref.showRelatedWorks   | Show related works (OpenAlex)             |
-| scimax.ref.searchOpenAlex     | Search OpenAlex database                  |
+| Command                     | Description                   |
+|-----------------------------+-------------------------------|
+| scimax.ref.fetchFromDOI     | Add reference from DOI        |
+| scimax.ref.showCitingWorks  | Show citing works (OpenAlex)  |
+| scimax.ref.showRelatedWorks | Show related works (OpenAlex) |
+| scimax.ref.searchOpenAlex   | Search OpenAlex database      |
 
 * Best Practices
 
@@ -870,26 +870,26 @@ If citations don't export correctly:
 
 ** Essential Keybindings
 
-| Key            | Action                           |
-|----------------+----------------------------------|
-| C-c ]     | Insert citation                  |
-| C-S-] | Insert cross-reference           |
-| C-c C-o| Open link/citation at point      |
-| S-<left>   | Transpose citation left          |
-| S-<right>  | Transpose citation right         |
-| S-<up>     | Sort citations (oldest first)    |
-| S-<down>   | Sort citations (newest first)    |
+| Key       | Action                        |
+|-----------+-------------------------------|
+| C-c ]     | Insert citation               |
+| C-S-]     | Insert cross-reference        |
+| C-c C-o   | Open link/citation at point   |
+| S-<left>  | Transpose citation left       |
+| S-<right> | Transpose citation right      |
+| S-<up>    | Sort citations (oldest first) |
+| S-<down>  | Sort citations (newest first) |
 
 ** Citation Syntax Quick Reference
 
-| Format        | Org-Mode          | Markdown        | LaTeX              |
-|---------------+-------------------+-----------------+--------------------|
-| Basic         | cite:key        | [@key]        | \cite{key}       |
-| Textual       | citet:key       | @key          | \citet{key}      |
-| Parenthetical | citep:key       | [@key]        | \citep{key}      |
-| Author only   | citeauthor:key  | N/A             | \citeauthor{key} |
-| Year only     | citeyear:key    | N/A             | \citeyear{key}   |
-| Multiple      | cite:k1,k2,k3   | [@k1; @k2]    | \cite{k1,k2,k3}  |
+| Format        | Org-Mode       | Markdown   | LaTeX            |
+|---------------+----------------+------------+------------------|
+| Basic         | cite:key       | [@key]     | \cite{key}       |
+| Textual       | citet:key      | @key       | \citet{key}      |
+| Parenthetical | citep:key      | [@key]     | \citep{key}      |
+| Author only   | citeauthor:key | N/A        | \citeauthor{key} |
+| Year only     | citeyear:key   | N/A        | \citeyear{key}   |
+| Multiple      | cite:k1,k2,k3  | [@k1; @k2] | \cite{k1,k2,k3}  |
 
 ** Common Workflows
 
