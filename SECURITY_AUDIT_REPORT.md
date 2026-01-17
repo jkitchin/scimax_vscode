@@ -9,13 +9,13 @@
 
 ## Executive Summary
 
-This security audit identified **11 vulnerabilities** across the scimax-vscode extension. Following remediation, **3 critical/high issues have been fixed**, and the remaining issues are either by-design (matching Emacs org-mode behavior) or low priority.
+This security audit identified **11 vulnerabilities** across the scimax-vscode extension. Following remediation, **4 critical/high issues have been fixed**, and the remaining issues are either by-design (matching Emacs org-mode behavior) or low priority.
 
 ### Risk Overview (Post-Remediation)
 
 | Severity | Original | Fixed | Remaining | Status |
 |----------|----------|-------|-----------|--------|
-| CRITICAL | 3 | 2 | 1 | Command injection fixed; Babel by-design |
+| CRITICAL | 3 | 3 | 0 | Command injection fixed; temp files fixed; Babel by-design |
 | HIGH | 3 | 1 | 2 | Shell-escape configurable; path traversal by-design |
 | MEDIUM | 4 | 0 | 4 | Low priority, standard practices |
 | LOW | 1 | 1 | 0 | API keys now use SecretStorage |
@@ -102,20 +102,34 @@ This balances security with functionality (minted package requires some shell ac
 
 **Description**: The Babel execution system executes code from org-mode source blocks. This is core functionality for scientific computing.
 
-**Mitigations in Place**:
-- Users must explicitly execute blocks (C-c C-c)
-- Results headers control what happens with output
-- Session isolation via `:session` headers
+**Execution Triggers**:
+| Command | Trigger | Risk Level |
+|---------|---------|------------|
+| `scimax.org.executeBlock` | `C-c C-c` or `Ctrl+Enter` in source block | Single block only |
+| `scimax.org.executeAllBlocks` | Command palette only (no keybinding) | **All blocks in file** |
+| `scimax.ob.executeAll` | Command palette only (no keybinding) | **All blocks in file** |
+| Export | N/A | **Blocks are NOT executed on export** |
 
-**User Responsibility**: Only execute source blocks from trusted files.
+**Risk Analysis**:
+- **Single block execution** (C-c C-c): Low risk - user explicitly triggers on one block
+- **Execute all blocks**: Medium risk - user could accidentally run this on a malicious file, executing all embedded code
+- **Export**: Safe - source blocks are converted to verbatim/code listings without execution
+
+**Mitigations in Place**:
+- Blocks with `:eval no` or `:eval never-export` headers are skipped
+- "Execute All" commands have no default keybinding (command palette only)
+- Session isolation via `:session` headers
+- Source blocks are NOT executed during export (unlike Emacs with `:exports results`)
+
+**User Responsibility**: Only execute source blocks from trusted files. Be cautious with "Execute All" commands.
 
 ---
 
-### 5. Predictable Temporary File Names [CRITICAL → ACCEPTED RISK]
+### 5. ✅ FIXED: Predictable Temporary File Names [WAS CRITICAL]
 
-**Status**: Not fixed (minimal practical benefit)
+**Status**: RESOLVED (Commit a8a70bd)
 
-**Rationale**: Since users are already executing arbitrary code via Babel, an attacker who can race temp file creation could already execute code through a malicious source block. The threat model assumes trusted files.
+**Resolution**: TypeScript executor now uses `crypto.randomBytes(16).toString('hex')` for temp file names instead of predictable `Date.now()` timestamps.
 
 ---
 
@@ -223,6 +237,7 @@ export function escapeString(str: string, format: 'html' | 'latex'): string {
 | Issue | Severity | Resolution |
 |-------|----------|------------|
 | `shell: true` in spawn() | CRITICAL | Removed from all 11 instances |
+| Predictable temp file names | CRITICAL | Now uses crypto.randomBytes() |
 | LaTeX `-shell-escape` | HIGH | Configurable, default `-shell-restricted` |
 | API key plain text storage | LOW | Migrated to SecretStorage API |
 
@@ -230,8 +245,7 @@ export function escapeString(str: string, format: 'html' | 'latex'): string {
 
 | Issue | Severity | Rationale |
 |-------|----------|-----------|
-| Babel code execution | CRITICAL | Core feature, matches Emacs |
-| Predictable temp files | CRITICAL | Minimal benefit given threat model |
+| Babel code execution | CRITICAL | Core feature, matches Emacs; blocks not executed on export |
 | Path traversal in INCLUDE | HIGH | Matches Emacs behavior |
 | Unvalidated file reads | HIGH | Standard file-tool behavior |
 
@@ -259,10 +273,11 @@ This extension is designed for **scientific computing** where code execution is 
 | Commit | Description |
 |--------|-------------|
 | 954f934 | Fix command injection in imageOverlayProvider.ts |
-| d10fbaf | Add configurable shell escape mode for LaTeX |
+| d10dbaf | Add configurable shell escape mode for LaTeX |
 | 037f894 | Implement SecretStorage for OpenAI API key |
 | 969fe9e | Add OpenAlex API key and mailto configuration |
 | 008ceba | Fix command injection in LaTeX preview providers |
+| a8a70bd | Use cryptographically random temp file names |
 
 ---
 
@@ -270,9 +285,12 @@ This extension is designed for **scientific computing** where code execution is 
 
 The scimax-vscode extension has been hardened against the most critical security vulnerabilities:
 
-1. **Command injection** via `shell: true` has been completely eliminated
-2. **LaTeX shell-escape** is now configurable with a safe default
-3. **API keys** are stored securely using OS credential managers
+1. **Command injection** via `shell: true` has been completely eliminated (11 instances)
+2. **Temp file race conditions** prevented with cryptographically random names
+3. **LaTeX shell-escape** is now configurable with a safe default
+4. **API keys** are stored securely using OS credential managers
+
+**Babel Execution Security**: Source blocks are only executed when users explicitly trigger them (C-c C-c or "Execute All" command). Importantly, **blocks are NOT executed during export** - they are rendered as static code listings. This is safer than Emacs org-mode which can execute blocks on export with `:exports results`.
 
 Remaining issues are either intentional features (Babel execution) or match the established Emacs org-mode security model where users are responsible for the files they open.
 
