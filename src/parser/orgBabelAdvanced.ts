@@ -844,6 +844,169 @@ export async function executeInlineBabelCall(
 // =============================================================================
 
 /**
+ * Find a named table in document text and return its data as a 2D array
+ */
+function findNamedTableInText(text: string, name: string): unknown[][] | null {
+    const lines = text.split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const nameMatch = line.match(/^#\+(NAME|TBLNAME):\s*(.+?)\s*$/i);
+
+        if (nameMatch && nameMatch[2] === name) {
+            // Found the name, look for table on next lines
+            if (i + 1 < lines.length && lines[i + 1].trim().startsWith('|')) {
+                const tableData: unknown[][] = [];
+
+                for (let j = i + 1; j < lines.length; j++) {
+                    const tableLine = lines[j].trim();
+                    if (!tableLine.startsWith('|')) break;
+
+                    // Skip separator lines (|---+---|)
+                    if (tableLine.match(/^\|[-+]+\|?$/)) continue;
+
+                    // Parse table row
+                    const cells = tableLine
+                        .split('|')
+                        .slice(1, -1)  // Remove first and last empty strings
+                        .map(cell => {
+                            const trimmed = cell.trim();
+                            // Try to convert to number
+                            const num = Number(trimmed);
+                            return isNaN(num) ? trimmed : num;
+                        });
+
+                    if (cells.length > 0) {
+                        tableData.push(cells);
+                    }
+                }
+
+                return tableData.length > 0 ? tableData : null;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Find named results in document text
+ */
+function findNamedResultsInText(text: string, name: string): string | null {
+    const lines = text.split('\n');
+
+    // First, try to find #+RESULTS: name format (name on RESULTS line)
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const resultsMatch = line.match(/^#\+RESULTS:\s*(.+?)\s*$/i);
+        if (resultsMatch && resultsMatch[1] === name) {
+            // Found #+RESULTS: name - collect the result lines
+            const resultLines: string[] = [];
+            for (let k = i + 1; k < lines.length; k++) {
+                const resultLine = lines[k];
+                // Results end at empty line or new element
+                if (resultLine.trim() === '' ||
+                    (resultLine.trim().startsWith('#+') && !resultLine.trim().startsWith(': '))) {
+                    break;
+                }
+                // Remove verbatim prefix if present
+                resultLines.push(resultLine.replace(/^: /, ''));
+            }
+            if (resultLines.length > 0) {
+                return resultLines.join('\n');
+            }
+        }
+    }
+
+    // Then try #+NAME: above #+RESULTS:
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const nameMatch = line.match(/^#\+NAME:\s*(.+?)\s*$/i);
+        if (nameMatch && nameMatch[1] === name) {
+            // Look for #+RESULTS: after this #+NAME:
+            for (let j = i + 1; j < lines.length; j++) {
+                const checkLine = lines[j].trim();
+                if (checkLine.match(/^#\+RESULTS/i)) {
+                    const resultLines: string[] = [];
+                    for (let k = j + 1; k < lines.length; k++) {
+                        const resultLine = lines[k];
+                        if (resultLine.trim() === '' ||
+                            (resultLine.trim().startsWith('#+') && !resultLine.trim().startsWith(': '))) {
+                            break;
+                        }
+                        resultLines.push(resultLine.replace(/^: /, ''));
+                    }
+                    if (resultLines.length > 0) {
+                        return resultLines.join('\n');
+                    }
+                }
+                // Skip source blocks when looking for results
+                if (checkLine.match(/^#\+BEGIN_SRC/i)) {
+                    for (let k = j + 1; k < lines.length; k++) {
+                        if (lines[k].trim().match(/^#\+END_SRC/i)) {
+                            j = k;
+                            break;
+                        }
+                    }
+                    continue;
+                }
+                // Stop if we hit another element
+                if (checkLine.match(/^#\+(NAME|BEGIN)/i)) {
+                    break;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Resolve a variable value - if it references a named element, fetch its data
+ */
+function resolveVariableValue(documentText: string | undefined, value: string): unknown {
+    // If no document text provided, can't resolve references
+    if (!documentText) {
+        // Try to parse as number or return as-is
+        const num = Number(value);
+        if (!isNaN(num)) return num;
+        return value;
+    }
+
+    // Check if value looks like a reference (not a literal)
+    // References are typically simple identifiers without quotes or special chars
+    if (/^[a-zA-Z_][a-zA-Z0-9_-]*$/.test(value)) {
+        // Try to find as a named table
+        const tableData = findNamedTableInText(documentText, value);
+        if (tableData) {
+            return tableData;
+        }
+
+        // Try to find as named results
+        const results = findNamedResultsInText(documentText, value);
+        if (results) {
+            // Try to parse as JSON, otherwise return as string
+            try {
+                return JSON.parse(results);
+            } catch {
+                return results;
+            }
+        }
+    }
+
+    // Return as-is (literal value)
+    // Try to parse as number or JSON
+    const num = Number(value);
+    if (!isNaN(num)) return num;
+
+    try {
+        return JSON.parse(value);
+    } catch {
+        return value;
+    }
+}
+
+/**
  * Parse a #+CALL: line
  * Formats:
  *   #+CALL: name()
@@ -880,11 +1043,16 @@ export function parseCallLine(line: string): CallSpec | null {
 
 /**
  * Execute a #+CALL: block
+ * @param callSpec The parsed CALL specification
+ * @param blocks Map of named blocks
+ * @param baseContext Base execution context
+ * @param documentText Optional document text for resolving named references (tables, results)
  */
 export async function executeCall(
     callSpec: CallSpec,
     blocks: Map<string, TangleBlock>,
-    baseContext: ExecutionContext = {}
+    baseContext: ExecutionContext = {},
+    documentText?: string
 ): Promise<ExecutionResult> {
     const block = blocks.get(callSpec.name);
     if (!block) {
@@ -939,10 +1107,11 @@ export async function executeCall(
         }
     }
 
-    // Parse call arguments with type conversion
+    // Parse call arguments with type conversion and reference resolution
+    // Call arguments can reference named tables/results in the document
     const callVars: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(callSpec.arguments)) {
-        callVars[key] = parseValue(value);
+        callVars[key] = resolveVariableValue(documentText, value);
     }
 
     // Create execution context with call arguments overriding block defaults

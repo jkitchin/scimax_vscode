@@ -1138,13 +1138,14 @@ async function executeCallAtCursor(
         // Get working directory
         const documentDir = path.dirname(document.uri.fsPath);
 
-        // Execute the call
+        // Execute the call, passing document text for resolving named references
         const result = await executeCall(
             callSpec,
             blockMap,
             {
                 cwd: documentDir,
-            }
+            },
+            document.getText()
         );
 
         if (result.success) {
@@ -1304,7 +1305,7 @@ async function executeInlineCallAtCursor(
         // Get working directory
         const documentDir = path.dirname(document.uri.fsPath);
 
-        // Execute the call with parsed arguments
+        // Execute the call with parsed arguments, passing document text for resolving named references
         const result = await executeCall(
             {
                 name: callName,
@@ -1315,7 +1316,8 @@ async function executeInlineCallAtCursor(
             blockMap,
             {
                 cwd: documentDir,
-            }
+            },
+            document.getText()
         );
 
         if (result.success) {

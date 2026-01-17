@@ -703,6 +703,15 @@ async function executeInPythonSession(
                 .join('\n') + '\n' + code
             : code;
 
+        // Check if code contains a 'return' statement (org-babel convention)
+        // If so, wrap in a function and call it
+        const hasReturnStatement = /^\s*return\s/m.test(fullCode);
+        if (hasReturnStatement) {
+            // Indent the code and wrap in a function
+            const indentedCode = fullCode.split('\n').map(line => '    ' + line).join('\n');
+            fullCode = `def __org_babel_fn__():\n${indentedCode}\n__org_babel_result__ = __org_babel_fn__()\nif __org_babel_result__ is not None:\n    print(__org_babel_result__)`;
+        }
+
         // Queue the request
         session.pending.push({ resolve, startTime });
 
@@ -767,7 +776,14 @@ export const pythonExecutor: LanguageExecutor = {
                 wrappedCode = `
 import sys
 __org_babel_code__ = ${JSON.stringify(wrappedCode)}
-__org_babel_lines__ = __org_babel_code__.strip().split('\\n')
+# Split by newlines first, then expand semicolon-separated statements
+__org_babel_lines__ = []
+for __line__ in __org_babel_code__.strip().split('\\n'):
+    # Split by semicolons but preserve strings (simple approach)
+    if ';' in __line__ and not ('"""' in __line__ or "'''" in __line__):
+        __org_babel_lines__.extend([s.strip() for s in __line__.split(';') if s.strip()])
+    else:
+        __org_babel_lines__.append(__line__)
 __org_babel_table_format__ = ${pyTableFormat}
 
 def __org_babel_format_value__(val):
