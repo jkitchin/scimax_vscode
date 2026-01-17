@@ -492,7 +492,6 @@ export class LatexLivePreviewManager {
 
             const proc = spawn(cmd, args, {
                 cwd,
-                shell: true,
                 timeout: 60000,
                 env,
             });
@@ -702,7 +701,6 @@ export class LatexLivePreviewManager {
             }
 
             const proc = spawn('synctex', args, {
-                shell: true,
                 timeout: 5000,
             });
 
@@ -806,7 +804,6 @@ export class LatexLivePreviewManager {
     private checkLatexTools(): Promise<{ available: boolean; message: string }> {
         return new Promise((resolve) => {
             const proc = spawn('pdflatex', ['--version'], {
-                shell: true,
                 timeout: 5000,
             });
 

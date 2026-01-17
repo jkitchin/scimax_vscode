@@ -506,7 +506,6 @@ export async function checkLatexAvailable(): Promise<{ available: boolean; messa
 
     return new Promise((resolve) => {
         const proc = spawn('pdflatex', ['--version'], {
-            shell: true,
             timeout: 5000,
             env,
         });
@@ -527,7 +526,6 @@ export async function checkLatexAvailable(): Promise<{ available: boolean; messa
             if (code === 0) {
                 // Check for dvisvgm
                 const dviProc = spawn('dvisvgm', ['--version'], {
-                    shell: true,
                     timeout: 5000,
                     env,
                 });
@@ -713,7 +711,6 @@ function runCommand(
 
         const proc = spawn(cmd, args, {
             cwd,
-            shell: true,
             timeout,
             env,
         });
