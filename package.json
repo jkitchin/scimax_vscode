@@ -1487,6 +1487,10 @@
         "title": "Scimax: Context Menu"
       },
       {
+        "command": "scimax.queryReplace",
+        "title": "Scimax: Query Replace"
+      },
+      {
         "command": "scimax.markup.bold",
         "title": "Scimax: Bold (Markup)"
       },
@@ -2405,7 +2409,13 @@
         "command": "scimax.markdown.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId =~ /markdown|org/ && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine"
+        "when": "editorTextFocus && editorLangId == 'markdown' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine"
+      },
+      {
+        "command": "scimax.org.toggleCheckbox",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'org' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine"
       },
       {
         "command": "scimax.markdown.insertDueDate",
@@ -2798,6 +2808,12 @@
         "command": "scimax.hydra.contextMenu",
         "key": "ctrl+c ctrl+m",
         "mac": "ctrl+c ctrl+m"
+      },
+      {
+        "command": "scimax.queryReplace",
+        "key": "alt+shift+5",
+        "mac": "alt+shift+5",
+        "when": "editorTextFocus"
       },
       {
         "command": "scimax.markup.bold",

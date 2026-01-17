@@ -100,12 +100,15 @@ export class CheckboxLinkProvider implements vscode.DocumentLinkProvider {
                 const state = checkboxMatch[2] === ' ' ? 'unchecked' : 'checked';
                 link.tooltip = `Click to ${state === 'unchecked' ? 'check' : 'uncheck'}`;
 
-                // Use command URI to toggle
+                // Use command URI to toggle - use org version for org files
                 const args = encodeURIComponent(JSON.stringify({
                     uri: document.uri.toString(),
                     line: i
                 }));
-                link.target = vscode.Uri.parse(`command:scimax.markdown.toggleCheckboxAt?${args}`);
+                const command = document.languageId === 'org'
+                    ? 'scimax.org.toggleCheckboxAt'
+                    : 'scimax.markdown.toggleCheckboxAt';
+                link.target = vscode.Uri.parse(`command:${command}?${args}`);
 
                 links.push(link);
             }

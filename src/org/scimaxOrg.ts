@@ -1388,7 +1388,137 @@ export async function updateStatisticsCookies(
 }
 
 /**
+ * Check if a list has the radio attribute (#+attr_org: :radio t)
+ * The attribute must be directly above the first list item (no blank lines)
+ * Returns true if the list containing the given line is a radio list
+ */
+function isRadioList(document: vscode.TextDocument, lineNumber: number): boolean {
+    const lineText = document.lineAt(lineNumber).text;
+
+    // Get the indentation level of the current checkbox
+    const indentMatch = lineText.match(/^(\s*)/);
+    const baseIndent = indentMatch ? indentMatch[1].length : 0;
+
+    // First, find the first item of this list (search backwards for list items at same indent)
+    let firstListItemLine = lineNumber;
+    for (let i = lineNumber - 1; i >= 0; i--) {
+        const prevLine = document.lineAt(i).text;
+
+        // Stop at blank lines or headings
+        if (prevLine.trim() === '' || /^(\*+)\s+/.test(prevLine)) {
+            break;
+        }
+
+        // Skip attribute lines
+        if (/^\s*#\+/.test(prevLine)) {
+            continue;
+        }
+
+        // Check if it's a list item at the same indentation level
+        const listMatch = prevLine.match(/^(\s*)([-+*]|\d+[.)])\s+/);
+        if (listMatch) {
+            const prevIndent = listMatch[1].length;
+            if (prevIndent === baseIndent) {
+                firstListItemLine = i;
+            } else if (prevIndent < baseIndent) {
+                // Hit a parent list item, stop
+                break;
+            }
+        }
+    }
+
+    // Now check if there's #+attr_org: :radio t directly above the first list item
+    // (allowing for multiple attribute lines but no blank lines)
+    for (let i = firstListItemLine - 1; i >= 0; i--) {
+        const prevLine = document.lineAt(i).text;
+
+        // Check for attr_org with radio attribute
+        if (/^\s*#\+attr_org:.*:radio\s+t/i.test(prevLine)) {
+            return true;
+        }
+
+        // If it's another attribute line, keep looking
+        if (/^\s*#\+/.test(prevLine)) {
+            continue;
+        }
+
+        // Any other content (blank line, heading, text, list item) means no radio attribute
+        break;
+    }
+
+    return false;
+}
+
+/**
+ * Find all checkbox lines in the same list as the given line
+ * Returns line numbers of all checkboxes at the same or deeper indentation level
+ */
+function findCheckboxesInList(document: vscode.TextDocument, lineNumber: number): number[] {
+    const checkboxLines: number[] = [];
+    const lineText = document.lineAt(lineNumber).text;
+
+    // Get the indentation level of the current checkbox
+    const indentMatch = lineText.match(/^(\s*)/);
+    const baseIndent = indentMatch ? indentMatch[1].length : 0;
+
+    // Find the start of the list (search backwards)
+    let listStart = lineNumber;
+    for (let i = lineNumber - 1; i >= 0; i--) {
+        const prevLine = document.lineAt(i).text;
+
+        // Stop at blank lines, headings, or attr lines
+        if (prevLine.trim() === '' || /^(\*+)\s+/.test(prevLine) || /^\s*#\+/.test(prevLine)) {
+            listStart = i + 1;
+            break;
+        }
+
+        // Check if it's a list item
+        const listMatch = prevLine.match(/^(\s*)([-+*]|\d+[.)])\s+/);
+        if (listMatch) {
+            const prevIndent = listMatch[1].length;
+            if (prevIndent < baseIndent) {
+                // Parent list item - stop here
+                listStart = i + 1;
+                break;
+            }
+        }
+
+        if (i === 0) {
+            listStart = 0;
+        }
+    }
+
+    // Find the end of the list and collect checkboxes (search forwards)
+    for (let i = listStart; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+
+        // Stop at blank lines or headings
+        if (line.trim() === '' || /^(\*+)\s+/.test(line)) {
+            break;
+        }
+
+        // Skip attr lines
+        if (/^\s*#\+/.test(line)) {
+            continue;
+        }
+
+        // Check for checkbox
+        const checkboxMatch = line.match(/^(\s*)([-+*]|\d+[.)])\s+\[([ Xx-])\]/);
+        if (checkboxMatch) {
+            const itemIndent = checkboxMatch[1].length;
+            // Include checkboxes at the same indentation level
+            if (itemIndent === baseIndent) {
+                checkboxLines.push(i);
+            }
+        }
+    }
+
+    return checkboxLines;
+}
+
+/**
  * Toggle checkbox at point
+ * Supports radio lists where only one item can be checked (#+attr_org: :radio t)
  */
 export async function toggleCheckbox(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -1410,62 +1540,157 @@ export async function toggleCheckbox(): Promise<void> {
     const newState = state === ' ' ? 'X' : ' ';
     const newLine = `${bullet} [${newState}] ${content}`;
 
-    await editor.edit(editBuilder => {
-        editBuilder.replace(line.range, newLine);
-    });
+    // Check if this is a radio list
+    const isRadio = isRadioList(document, position.line);
+
+    if (isRadio && newState === 'X') {
+        // Radio list: uncheck all other checkboxes first, then check this one
+        const checkboxLines = findCheckboxesInList(document, position.line);
+
+        await editor.edit(editBuilder => {
+            for (const checkboxLine of checkboxLines) {
+                if (checkboxLine === position.line) {
+                    // Check the current checkbox
+                    editBuilder.replace(line.range, newLine);
+                } else {
+                    // Uncheck other checkboxes
+                    const otherLine = document.lineAt(checkboxLine);
+                    const otherText = otherLine.text;
+                    const otherMatch = otherText.match(/^(\s*[-+*]|\s*\d+[.)])\s+\[([ Xx-])\]\s+(.*)$/);
+                    if (otherMatch && otherMatch[2].toLowerCase() === 'x') {
+                        const [, otherBullet, , otherContent] = otherMatch;
+                        const uncheckedLine = `${otherBullet} [ ] ${otherContent}`;
+                        editBuilder.replace(otherLine.range, uncheckedLine);
+                    }
+                }
+            }
+        });
+    } else {
+        // Regular checkbox or unchecking in radio list
+        await editor.edit(editBuilder => {
+            editBuilder.replace(line.range, newLine);
+        });
+    }
 
     // Update checkbox statistics cookies in parent heading
     await updateCheckboxStatistics(editor, position.line);
 }
 
 /**
- * Update checkbox statistics cookies [n/m] or [n%] in parent heading
+ * Toggle checkbox at a specific line (for click handling)
+ * This is called when user clicks on a checkbox
+ */
+export async function toggleCheckboxAt(uri: vscode.Uri, lineNumber: number): Promise<void> {
+    const document = await vscode.workspace.openTextDocument(uri);
+    const editor = await vscode.window.showTextDocument(document);
+
+    // Move cursor to the line
+    const position = new vscode.Position(lineNumber, 0);
+    editor.selection = new vscode.Selection(position, position);
+
+    // Now call the regular toggle function
+    await toggleCheckbox();
+}
+
+/**
+ * Update checkbox statistics cookies [n/m] or [n%] in parent heading or list item
  */
 async function updateCheckboxStatistics(
     editor: vscode.TextEditor,
     changedLine: number
 ): Promise<void> {
     const document = editor.document;
+    const changedLineText = document.lineAt(changedLine).text;
 
-    // Find parent heading
+    // Get the indentation of the changed checkbox
+    const indentMatch = changedLineText.match(/^(\s*)/);
+    const checkboxIndent = indentMatch ? indentMatch[1].length : 0;
+
+    // First, look for a parent list item with a statistics cookie (less indented)
     let parentLine = -1;
+    let parentType: 'list' | 'heading' = 'heading';
+
     for (let i = changedLine - 1; i >= 0; i--) {
         const line = document.lineAt(i).text;
+
+        // Check for heading
         if (line.match(/^(\*+)\s+/)) {
-            parentLine = i;
-            break;
+            // Check if it has a statistics cookie
+            if (/\[\d+\/\d+\]|\[\d+%\]/.test(line)) {
+                parentLine = i;
+                parentType = 'heading';
+            }
+            break; // Stop at heading regardless
+        }
+
+        // Check for parent list item (less indented, with statistics cookie)
+        const listMatch = line.match(/^(\s*)([-+*]|\d+[.)])\s+/);
+        if (listMatch) {
+            const listIndent = listMatch[1].length;
+            if (listIndent < checkboxIndent && /\[\d+\/\d+\]|\[\d+%\]/.test(line)) {
+                parentLine = i;
+                parentType = 'list';
+                break;
+            }
         }
     }
 
     if (parentLine < 0) return;
 
     const parentText = document.lineAt(parentLine).text;
+    const parentIndentMatch = parentText.match(/^(\s*)/);
+    const parentIndent = parentIndentMatch ? parentIndentMatch[1].length : 0;
 
-    // Check if parent has a statistics cookie
-    const cookieMatch = parentText.match(/\[(\d+)\/(\d+)\]|\[(\d+)%\]/);
-    if (!cookieMatch) return;
-
-    // Find the end of this heading's content (next heading or end of file)
+    // Find the end of the parent's content
     let endLine = document.lineCount;
     for (let i = parentLine + 1; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
+
+        // Stop at headings
         if (line.match(/^(\*+)\s+/)) {
             endLine = i;
             break;
         }
+
+        // For list items, stop at blank lines or items at same/lower indent level
+        if (parentType === 'list') {
+            if (line.trim() === '') {
+                endLine = i;
+                break;
+            }
+            const listMatch = line.match(/^(\s*)([-+*]|\d+[.)])\s+/);
+            if (listMatch) {
+                const lineIndent = listMatch[1].length;
+                if (lineIndent <= parentIndent) {
+                    endLine = i;
+                    break;
+                }
+            }
+        }
     }
 
-    // Count checkboxes
+    // Count direct child checkboxes (one level deeper than parent)
     let checkedCount = 0;
     let totalCount = 0;
+    const targetIndent = parentType === 'list' ? parentIndent + 2 : -1; // For lists, check indent
 
     for (let i = parentLine + 1; i < endLine; i++) {
         const line = document.lineAt(i).text;
-        const checkboxMatch = line.match(/^\s*[-+*]\s+\[([ Xx-])\]/);
+        const checkboxMatch = line.match(/^(\s*)([-+*]|\d+[.)])\s+\[([ Xx-])\]/);
         if (checkboxMatch) {
-            totalCount++;
-            if (checkboxMatch[1].toLowerCase() === 'x') {
-                checkedCount++;
+            const itemIndent = checkboxMatch[1].length;
+            // For list parent, only count direct children (specific indent level)
+            // For heading parent, count all checkboxes
+            if (parentType === 'heading' || itemIndent === targetIndent ||
+                (parentType === 'list' && itemIndent > parentIndent)) {
+                // Only count direct children for list parents
+                if (parentType === 'list' && itemIndent !== parentIndent + 2) {
+                    continue;
+                }
+                totalCount++;
+                if (checkboxMatch[3].toLowerCase() === 'x') {
+                    checkedCount++;
+                }
             }
         }
     }
@@ -1473,6 +1698,9 @@ async function updateCheckboxStatistics(
     if (totalCount === 0) return;
 
     // Build new cookie
+    const cookieMatch = parentText.match(/\[(\d+)\/(\d+)\]|\[(\d+)%\]/);
+    if (!cookieMatch) return;
+
     let newCookie: string;
     if (cookieMatch[3] !== undefined) {
         // Percentage format [n%]
@@ -2514,6 +2742,181 @@ export function setupHeadingContext(context: vscode.ExtensionContext): void {
 }
 
 // =============================================================================
+// Query Replace
+// =============================================================================
+
+/**
+ * Decoration type for highlighting the current match during query-replace
+ */
+const queryReplaceDecorationType = vscode.window.createTextEditorDecorationType({
+    backgroundColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
+    border: '2px solid',
+    borderColor: new vscode.ThemeColor('editor.findMatchBorder')
+});
+
+/**
+ * Interactive query-replace: prompts for search and replacement terms,
+ * then steps through each match allowing the user to replace, skip, or replace all.
+ */
+async function queryReplace(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showWarningMessage('No active editor');
+        return;
+    }
+
+    // Get search term
+    const searchTerm = await vscode.window.showInputBox({
+        prompt: 'Query replace',
+        placeHolder: 'Search for...'
+    });
+
+    if (!searchTerm) {
+        return; // User cancelled
+    }
+
+    // Get replacement term
+    const replacementTerm = await vscode.window.showInputBox({
+        prompt: `Query replace "${searchTerm}" with`,
+        placeHolder: 'Replace with...'
+    });
+
+    if (replacementTerm === undefined) {
+        return; // User cancelled (empty string is valid)
+    }
+
+    const document = editor.document;
+    const text = document.getText();
+
+    // Find all matches
+    const matches: vscode.Range[] = [];
+    let searchIndex = 0;
+
+    while (true) {
+        const foundIndex = text.indexOf(searchTerm, searchIndex);
+        if (foundIndex === -1) break;
+
+        const startPos = document.positionAt(foundIndex);
+        const endPos = document.positionAt(foundIndex + searchTerm.length);
+        matches.push(new vscode.Range(startPos, endPos));
+        searchIndex = foundIndex + 1;
+    }
+
+    if (matches.length === 0) {
+        vscode.window.showInformationMessage(`No matches found for "${searchTerm}"`);
+        return;
+    }
+
+    let replacedCount = 0;
+    let currentIndex = 0;
+
+    // Process matches one at a time
+    while (currentIndex < matches.length) {
+        // Recalculate the current match position (text may have changed from previous replacements)
+        const currentText = editor.document.getText();
+        let searchPos = 0;
+        let matchRange: vscode.Range | undefined;
+
+        // Skip to the nth remaining match
+        let skipCount = currentIndex - replacedCount;
+        for (let i = 0; i <= skipCount; i++) {
+            const foundIndex = currentText.indexOf(searchTerm, searchPos);
+            if (foundIndex === -1) {
+                matchRange = undefined;
+                break;
+            }
+            const startPos = editor.document.positionAt(foundIndex);
+            const endPos = editor.document.positionAt(foundIndex + searchTerm.length);
+            matchRange = new vscode.Range(startPos, endPos);
+            searchPos = foundIndex + 1;
+        }
+
+        if (!matchRange) {
+            break; // No more matches
+        }
+
+        // Highlight current match
+        editor.setDecorations(queryReplaceDecorationType, [matchRange]);
+
+        // Move cursor to the match and reveal it
+        editor.selection = new vscode.Selection(matchRange.start, matchRange.end);
+        editor.revealRange(matchRange, vscode.TextEditorRevealType.InCenter);
+
+        // Show options
+        const remainingMatches = matches.length - currentIndex;
+        const choice = await vscode.window.showQuickPick(
+            [
+                { label: 'y', description: 'Replace this match' },
+                { label: 'n', description: 'Skip this match' },
+                { label: '!', description: `Replace all remaining (${remainingMatches})` },
+                { label: 'q', description: 'Quit' }
+            ],
+            {
+                placeHolder: `Replace "${searchTerm}" with "${replacementTerm}"? (${currentIndex + 1}/${matches.length})`,
+                ignoreFocusOut: true
+            }
+        );
+
+        if (!choice || choice.label === 'q') {
+            // Quit
+            editor.setDecorations(queryReplaceDecorationType, []);
+            vscode.window.showInformationMessage(
+                `Query replace finished: ${replacedCount} replacement${replacedCount !== 1 ? 's' : ''} made`
+            );
+            return;
+        }
+
+        if (choice.label === 'y') {
+            // Replace this match
+            await editor.edit(editBuilder => {
+                editBuilder.replace(matchRange!, replacementTerm);
+            });
+            replacedCount++;
+            currentIndex++;
+        } else if (choice.label === 'n') {
+            // Skip this match
+            currentIndex++;
+        } else if (choice.label === '!') {
+            // Replace all remaining
+            editor.setDecorations(queryReplaceDecorationType, []);
+
+            // Find and replace all remaining matches
+            let currentText = editor.document.getText();
+            let offset = 0;
+
+            for (let i = currentIndex; i < matches.length; i++) {
+                const foundIndex = currentText.indexOf(searchTerm, offset);
+                if (foundIndex === -1) break;
+
+                const startPos = editor.document.positionAt(foundIndex);
+                const endPos = editor.document.positionAt(foundIndex + searchTerm.length);
+                const range = new vscode.Range(startPos, endPos);
+
+                await editor.edit(editBuilder => {
+                    editBuilder.replace(range, replacementTerm);
+                });
+
+                replacedCount++;
+                currentText = editor.document.getText();
+                offset = foundIndex + replacementTerm.length;
+            }
+
+            vscode.window.showInformationMessage(
+                `Query replace finished: ${replacedCount} replacement${replacedCount !== 1 ? 's' : ''} made`
+            );
+            return;
+        }
+    }
+
+    // Clear decorations
+    editor.setDecorations(queryReplaceDecorationType, []);
+
+    vscode.window.showInformationMessage(
+        `Query replace finished: ${replacedCount} replacement${replacedCount !== 1 ? 's' : ''} made`
+    );
+}
+
+// =============================================================================
 // Command Registration
 // =============================================================================
 
@@ -2565,6 +2968,10 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.cycleTodo', cycleTodoState),
         vscode.commands.registerCommand('scimax.org.toggleCheckbox', toggleCheckbox),
+        vscode.commands.registerCommand('scimax.org.toggleCheckboxAt', async (args: { uri: string; line: number }) => {
+            const uri = vscode.Uri.parse(args.uri);
+            await toggleCheckboxAt(uri, args.line);
+        }),
         vscode.commands.registerCommand('scimax.org.insertCheckbox', insertCheckbox)
     );
 
@@ -2614,5 +3021,10 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.insertNewline', async () => {
             await vscode.commands.executeCommand('type', { text: '\n' });
         })
+    );
+
+    // Query replace
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.queryReplace', queryReplace)
     );
 }
