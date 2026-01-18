@@ -819,13 +819,13 @@ The extension supports:
 
 | Metric              | Count    |
 |---------------------|----------|
-| TypeScript files    | 175      |
-| Lines of TypeScript | ~100,800 |
-| Test files          | 33       |
-| Unit tests          | 1608     |
-| Documentation files | 37       |
-| Commands            | 561      |
-| Keybindings         | 203      |
+| TypeScript files    | 179      |
+| Lines of TypeScript | ~106,600 |
+| Test files          | 36       |
+| Unit tests          | 1724     |
+| Documentation files | 38       |
+| Commands            | 574      |
+| Keybindings         | 206      |
 
 ### Supported Languages (Babel Execution)
 
