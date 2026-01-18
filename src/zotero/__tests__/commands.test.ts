@@ -22,7 +22,14 @@ vi.mock('vscode', () => ({
         showInformationMessage: vi.fn(),
         showQuickPick: vi.fn(),
         showSaveDialog: vi.fn(),
-        withProgress: vi.fn().mockImplementation(async (_options, task) => task()),
+        withProgress: vi.fn().mockImplementation(async (_options, task) => {
+            const progress = { report: vi.fn() };
+            const token = {
+                isCancellationRequested: false,
+                onCancellationRequested: vi.fn()
+            };
+            return task(progress, token);
+        }),
         activeTextEditor: null
     },
     commands: {
@@ -415,7 +422,9 @@ describe('insertCitation command behavior', () => {
         });
         (exportBibTeX as ReturnType<typeof vi.fn>).mockResolvedValue(bibtex);
         (fsPromises.access as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('not found'));
-        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('not found'));
+        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockRejectedValue(
+            Object.assign(new Error('ENOENT'), { code: 'ENOENT' })
+        );
         (fsPromises.writeFile as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
 
         // Mock configuration for v3 syntax
