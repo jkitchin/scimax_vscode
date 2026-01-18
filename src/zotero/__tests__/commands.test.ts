@@ -78,28 +78,32 @@ import * as fsPromises from 'fs/promises';
 import { isZoteroRunning, openCitationPicker, exportBibTeX } from '../zoteroService';
 
 describe('findDocumentBibliography', () => {
-    const docPath = '/home/user/documents/paper.org';
+    // Use a temp directory that exists on all platforms for cross-platform tests
+    const docDir = path.resolve(process.cwd(), 'test-docs');
+    const docPath = path.join(docDir, 'paper.org');
 
     describe('bibliography: link syntax', () => {
         it('should find simple relative path', () => {
             const text = 'Some text\nbibliography:./refs.bib\nMore text';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/user/documents/refs.bib');
+            expect(result).toBe(path.join(docDir, 'refs.bib'));
         });
 
         it('should find absolute path', () => {
-            const text = 'bibliography:/absolute/path/refs.bib';
+            const absPath = path.resolve('/absolute/path/refs.bib');
+            const text = `bibliography:${absPath}`;
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/absolute/path/refs.bib');
+            expect(result).toBe(absPath);
         });
 
         it('should expand tilde path', () => {
             const originalHome = process.env.HOME;
-            process.env.HOME = '/home/testuser';
+            const testHome = path.resolve('/home/testuser');
+            process.env.HOME = testHome;
 
             const text = 'bibliography:~/Documents/refs.bib';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/testuser/Documents/refs.bib');
+            expect(result).toBe(path.join(testHome, 'Documents', 'refs.bib'));
 
             process.env.HOME = originalHome;
         });
@@ -107,25 +111,25 @@ describe('findDocumentBibliography', () => {
         it('should add .bib extension if missing', () => {
             const text = 'bibliography:./references';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/user/documents/references.bib');
+            expect(result).toBe(path.join(docDir, 'references.bib'));
         });
 
         it('should handle comma-separated paths (take first)', () => {
             const text = 'bibliography:./local.bib,~/global.bib';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/user/documents/local.bib');
+            expect(result).toBe(path.join(docDir, 'local.bib'));
         });
 
         it('should be case-insensitive', () => {
             const text = 'BIBLIOGRAPHY:./refs.bib';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/user/documents/refs.bib');
+            expect(result).toBe(path.join(docDir, 'refs.bib'));
         });
 
         it('should handle path without leading ./', () => {
             const text = 'bibliography:refs.bib';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/user/documents/refs.bib');
+            expect(result).toBe(path.join(docDir, 'refs.bib'));
         });
     });
 
@@ -133,19 +137,20 @@ describe('findDocumentBibliography', () => {
         it('should find #+BIBLIOGRAPHY: keyword', () => {
             const text = '#+TITLE: Paper\n#+BIBLIOGRAPHY: ./references.bib\n* Introduction';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/user/documents/references.bib');
+            expect(result).toBe(path.join(docDir, 'references.bib'));
         });
 
         it('should handle absolute path in keyword', () => {
-            const text = '#+BIBLIOGRAPHY: /absolute/refs.bib';
+            const absPath = path.resolve('/absolute/refs.bib');
+            const text = `#+BIBLIOGRAPHY: ${absPath}`;
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/absolute/refs.bib');
+            expect(result).toBe(absPath);
         });
 
         it('should prefer bibliography: link over #+BIBLIOGRAPHY:', () => {
             const text = 'bibliography:./first.bib\n#+BIBLIOGRAPHY: ./second.bib';
             const result = findDocumentBibliography(text, docPath);
-            expect(result).toBe('/home/user/documents/first.bib');
+            expect(result).toBe(path.join(docDir, 'first.bib'));
         });
     });
 
@@ -308,6 +313,10 @@ describe('registerZoteroCommands', () => {
 
 describe('insertCitation command behavior', () => {
     let commandHandler: () => Promise<void>;
+    // Use cross-platform paths for test fixtures
+    const mockDocDir = path.resolve(process.cwd(), 'test-user-docs');
+    const mockDocPath = path.join(mockDocDir, 'test.org');
+
     let mockEditor: {
         document: {
             languageId: string;
@@ -327,7 +336,7 @@ describe('insertCitation command behavior', () => {
         mockEditor = {
             document: {
                 languageId: 'org',
-                uri: { fsPath: '/home/user/test.org' },
+                uri: { fsPath: mockDocPath },
                 getText: vi.fn().mockReturnValue('* Test document'),
                 lineAt: vi.fn().mockReturnValue({ text: '' }),
                 lineCount: 1
@@ -472,9 +481,9 @@ describe('insertCitation command behavior', () => {
 
         await commandHandler();
 
-        // Should write to the existing bib path
+        // Should write to the existing bib path (use cross-platform path)
         expect(fsPromises.writeFile).toHaveBeenCalledWith(
-            '/home/user/existing.bib',
+            path.join(mockDocDir, 'existing.bib'),
             expect.any(String),
             'utf8'
         );
