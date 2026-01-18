@@ -1,0 +1,193 @@
+#+TITLE: Excalidraw Integration
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-18
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
+
+* ⚠️ Overview
+
+Scimax VS Code integrates with the [[https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor][Excalidraw VS Code extension]] to provide
+seamless support for creating and editing diagrams directly from org-mode
+documents.
+
+** Prerequisites
+
+Install the Excalidraw extension from the VS Code marketplace:
+
+| Extension ID              | Name               |
+|---------------------------+--------------------|
+| pomdtr.excalidraw-editor  | Excalidraw Editor  |
+
+You can install it via:
+- Command Palette: =Extensions: Install Extensions= → search "Excalidraw"
+- Or run: =code --install-extension pomdtr.excalidraw-editor=
+
+* ⚠️ Supported File Formats
+
+Excalidraw supports multiple file formats, all of which work with this integration:
+
+| Extension           | Description                              | Hover Preview |
+|---------------------+------------------------------------------+---------------|
+| .excalidraw         | Native Excalidraw format (JSON)          | Via exports   |
+| .excalidraw.json    | Explicit JSON format                     | Via exports   |
+| .excalidraw.svg     | SVG with embedded Excalidraw scene data  | Yes           |
+| .excalidraw.png     | PNG with embedded Excalidraw scene data  | Yes           |
+
+*Recommendation:* Use =.excalidraw.svg= or =.excalidraw.png= for best experience:
+- These formats show hover previews directly
+- They embed the full Excalidraw scene data, so they remain fully editable
+- They can be displayed in exports (HTML, LaTeX, Markdown)
+
+* ⚠️ Creating Excalidraw Links
+
+Use standard org-mode link syntax to reference Excalidraw drawings:
+
+** Basic Links
+
+#+BEGIN_SRC org
+[[diagram.excalidraw]]
+[[./drawings/architecture.excalidraw.svg]]
+[[file:designs/wireframe.excalidraw.png]]
+#+END_SRC
+
+** Links with Descriptions
+
+#+BEGIN_SRC org
+[[diagram.excalidraw][System Architecture]]
+[[file:./ui/mockup.excalidraw.svg][UI Mockup v2]]
+[[designs/flow.excalidraw.png][User Flow Diagram]]
+#+END_SRC
+
+** Relative vs Absolute Paths
+
+#+BEGIN_SRC org
+# Relative to current file (recommended)
+[[./diagrams/overview.excalidraw]]
+
+# Relative to project root
+[[diagrams/overview.excalidraw]]
+
+# Absolute path
+[[/home/user/projects/diagrams/arch.excalidraw.svg]]
+#+END_SRC
+
+* ⚠️ Hover Preview
+
+When you hover over an Excalidraw link, a tooltip appears showing:
+
+1. *Drawing name* - The filename or link description
+2. *Visual preview* - For =.excalidraw.svg= and =.excalidraw.png= files
+3. *Element count* - For =.excalidraw= and =.excalidraw.json= files
+4. *File information* - Size and last modified date
+
+For =.excalidraw= or =.excalidraw.json= files without a visual preview, the
+extension looks for companion export files (same name with =.svg= or =.png=
+extension) to display.
+
+* ⚠️ Click to Edit
+
+Clicking an Excalidraw link opens the drawing in the Excalidraw visual editor.
+
+** Existing Files
+
+When you click a link to an existing Excalidraw file:
+1. The file opens in the Excalidraw editor
+2. You can edit the drawing visually
+3. Changes are saved automatically
+
+** New Files (Auto-creation)
+
+When you click a link to a non-existent Excalidraw file:
+1. The file is automatically created with an empty drawing
+2. Parent directories are created if needed
+3. The new drawing opens in the Excalidraw editor
+
+This makes it easy to create new diagrams - just write the link and click it:
+
+#+BEGIN_SRC org
+# This file doesn't exist yet - clicking creates it
+[[new-diagram.excalidraw][My New Diagram]]
+#+END_SRC
+
+** Fallback Behavior
+
+If the Excalidraw extension is not installed:
+1. The file opens as a text document (showing JSON)
+2. A message suggests installing the Excalidraw extension
+
+* ⚠️ Commands
+
+| Command                      | Description             | Invocation         |
+|------------------------------+-------------------------+--------------------|
+| scimax.org.openExcalidraw    | Open Excalidraw Drawing | Click on link      |
+
+The command is automatically invoked when clicking Excalidraw links. It can also
+be called programmatically:
+
+#+BEGIN_SRC typescript
+vscode.commands.executeCommand('scimax.org.openExcalidraw', {
+    file: '/path/to/drawing.excalidraw'
+});
+#+END_SRC
+
+* ⚠️ Workflow Tips
+
+** Organizing Drawings
+
+Keep drawings organized alongside your org files:
+
+#+BEGIN_EXAMPLE
+project/
+├── notes.org
+├── diagrams/
+│   ├── architecture.excalidraw.svg
+│   ├── dataflow.excalidraw.svg
+│   └── ui-mockup.excalidraw.png
+└── docs/
+    └── design.org
+#+END_EXAMPLE
+
+** Export for Sharing
+
+Excalidraw's =.excalidraw.svg= and =.excalidraw.png= formats are ideal because:
+- They display correctly in web browsers and image viewers
+- They can be embedded in HTML/PDF exports
+- They retain full editability (scene data is embedded)
+
+** Version Control
+
+All Excalidraw formats are text-based (JSON or JSON-embedded), making them
+suitable for version control with git. The =.excalidraw.svg= format shows
+meaningful diffs for the SVG portions.
+
+* ⚠️ Troubleshooting
+
+** Drawing won't open in visual editor
+
+- Ensure the Excalidraw extension is installed: =pomdtr.excalidraw-editor=
+- Check that the file extension is correct (=.excalidraw=, =.excalidraw.json=,
+  =.excalidraw.svg=, or =.excalidraw.png=)
+- Try reloading VS Code window
+
+** No hover preview appears
+
+- Hover previews only show for =.excalidraw.svg= and =.excalidraw.png= files
+- For other formats, ensure a companion =.svg= or =.png= export exists
+- The file must exist on disk for preview to work
+
+** Link not recognized as Excalidraw
+
+Ensure the file extension is one of:
+- =.excalidraw=
+- =.excalidraw.json=
+- =.excalidraw.svg=
+- =.excalidraw.png=
+
+* Related Topics
+
+- [[file:05-links.org][Hyperlinks]] - General link syntax and handling
+- [[file:12-image-overlays.org][Image Overlays]] - Inline image display
+- [[file:10-export.org][Export]] - Including drawings in exports
