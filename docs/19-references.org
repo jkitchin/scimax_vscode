@@ -225,6 +225,76 @@ CLOSED: [2026-01-17 Sat 10:16]
 | scimax.ref.insertRef          | C-u C-c ] | Insert cross-reference (ref:, eqref:) |
 | scimax.ref.insertBibliography |           | Insert bibliography link              |
 
+** ⚠️ Insert from Zotero
+
+Scimax can insert citations directly from your Zotero library using the Better BibTeX plugin. This provides seamless integration between your Zotero reference manager and org-mode documents.
+
+*** Requirements
+
+To use Zotero integration, you need:
+
+1. *Zotero desktop application* - Must be running when inserting citations
+2. *Better BibTeX plugin* - Install from https://retorque.re/zotero-better-bibtex/
+
+Better BibTeX provides the local API that Scimax uses to communicate with Zotero.
+
+*** Usage
+
+| Keybinding | Command                      | Description                 |
+|------------+------------------------------+-----------------------------|
+| C-c z      | scimax.zotero.insertCitation | Insert citation from Zotero |
+
+*** Workflow
+
+1. Press =C-c z= in an org, markdown, or LaTeX file
+2. Zotero's native citation picker opens (you may need to switch to the Zotero window)
+3. Search and select one or more references
+4. Click "OK" or press Enter to confirm your selection
+5. The citation is inserted at the cursor position
+6. The BibTeX entry is automatically added to your bibliography file
+
+*** Bibliography File Handling
+
+When inserting from Zotero, the extension intelligently manages your bibliography file:
+
+| Scenario                                    | Behavior                                           |
+|---------------------------------------------+----------------------------------------------------|
+| Document has =bibliography:= link           | Uses that file                                     |
+| No link, but =references.bib= exists in dir | Asks if you want to use it                         |
+| No link, no =references.bib=                | Creates =references.bib= and adds bibliography link |
+
+The extension automatically:
+- Avoids adding duplicate entries (checks by citation key)
+- Preserves the original BibTeX formatting from Zotero/Better BibTeX
+- Adds a =bibliography:= link at the end of the document if needed
+
+*** Example
+
+Before (no bibliography):
+#+BEGIN_SRC org
+,* My Research Paper
+
+Some text discussing machine learning.
+#+END_SRC
+
+After pressing =C-c z= and selecting a reference:
+#+BEGIN_SRC org
+,* My Research Paper
+
+Some text discussing machine learning cite:&smith2024machine.
+
+bibliography:./references.bib
+#+END_SRC
+
+*** Troubleshooting
+
+| Problem                        | Solution                                              |
+|--------------------------------+-------------------------------------------------------|
+| "Zotero is not running"        | Start Zotero desktop application                      |
+| Picker doesn't appear          | Switch to Zotero window; it may be behind VS Code     |
+| "Failed to fetch BibTeX"       | Ensure Better BibTeX is installed and enabled         |
+| Wrong citation format          | Check =scimax.ref.citationSyntax= setting (v2 vs v3)  |
+
 
 * ✅ Following Citation Links
 CLOSED: [2026-01-17 Sat 10:18]
@@ -666,10 +736,11 @@ When viewing a .bib file, code lenses appear for each entry:
 
 ** Citation Commands
 
-| Command                                | Default Key | Description              |
-|----------------------------------------+-------------+--------------------------|
-| scimax.ref.insertCitation              | C-c ]       | Insert/append citation   |
-| scimax.ref.insertRef                   | C-S-]       | Insert cross-reference   |
+| Command                                | Default Key | Description                 |
+|----------------------------------------+-------------+-----------------------------|
+| scimax.ref.insertCitation              | C-c ]       | Insert/append citation      |
+| scimax.zotero.insertCitation           | C-c z       | Insert citation from Zotero |
+| scimax.ref.insertRef                   | C-S-]       | Insert cross-reference      |
 | scimax.ref.insertBibliography          |             | Insert bibliography link |
 | scimax.ref.transposeCitationLeft       | S-<left>    | Swap citation left       |
 | scimax.ref.transposeCitationRight      | S-<right>   | Swap citation right      |
@@ -902,6 +973,7 @@ If citations don't export correctly:
 | Key       | Action                        |
 |-----------+-------------------------------|
 | C-c ]     | Insert citation               |
+| C-c z     | Insert citation from Zotero   |
 | C-S-]     | Insert cross-reference        |
 | C-c C-o   | Open link/citation at point   |
 | S-<left>  | Transpose citation left       |

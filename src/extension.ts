@@ -9,6 +9,7 @@ import { setExtensionContext, closeDatabase } from './database/lazyDb';
 import { registerDbCommands } from './database/commands';
 import { ReferenceManager } from './references/referenceManager';
 import { registerReferenceCommands } from './references/commands';
+import { registerZoteroCommands } from './zotero/commands';
 import {
     CitationHoverProvider,
     CitationCompletionProvider,
@@ -143,6 +144,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
         // Register Reference Commands (commands work even before bib files are loaded)
         registerReferenceCommands(context, referenceManager);
+
+        // Register Zotero Commands (for inserting citations from Zotero)
+        registerZoteroCommands(context, referenceManager);
 
         // Register cite action command (for clickable cite links)
         registerCiteActionCommand(context, referenceManager);

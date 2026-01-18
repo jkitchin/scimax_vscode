@@ -422,10 +422,11 @@ CLOSED: [2026-01-17 Sat 12:46]
 ** ✅ Citation Management
 CLOSED: [2026-01-17 Sat 12:46]
 
-| Command ID                            | Description              | Default Keybinding   |
-|---------------------------------------+--------------------------+----------------------|
-| [[cmd:scimax.ref.insertCitation]]     | Insert Citation          | C-c ] (org/md/latex) |
-| [[cmd:scimax.ref.insertRef]]          | Insert Reference Link    | C-u C-c ]            |
+| Command ID                             | Description                 | Default Keybinding   |
+|----------------------------------------+-----------------------------+----------------------|
+| [[cmd:scimax.ref.insertCitation]]      | Insert Citation             | C-c ] (org/md/latex) |
+| [[cmd:scimax.zotero.insertCitation]]   | Insert Citation from Zotero | C-c z (org/md/latex) |
+| [[cmd:scimax.ref.insertRef]]           | Insert Reference Link       | C-u C-c ]            |
 | [[cmd:scimax.ref.insertBibliography]] | Insert Bibliography Link | -                    |
 | [[cmd:scimax.ref.copyBibTeX]]         | Copy BibTeX Entry        | -                    |
 
