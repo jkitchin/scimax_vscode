@@ -1424,8 +1424,17 @@ export function formatResult(
         resultsHeader = '#+RESULTS:';
     }
 
-    if (!result.success && result.error) {
-        return `${resultsHeader}\n: Error: ${result.error.message}`;
+    // Handle execution errors
+    if (!result.success) {
+        // If there's a spawn/process error, show it
+        if (result.error) {
+            return `${resultsHeader}\n: Error: ${result.error.message}`;
+        }
+        // If there's stderr output (e.g., Python traceback), show it
+        if (result.stderr) {
+            const errorLines = result.stderr.split('\n').map(line => `: ${line}`).join('\n');
+            return `${resultsHeader}\n${errorLines}`;
+        }
     }
 
     const output = result.stdout || '';
