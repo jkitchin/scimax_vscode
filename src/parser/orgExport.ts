@@ -509,6 +509,245 @@ export const BUILTIN_MACROS: Record<string, string | ((...args: string[]) => str
 };
 
 // =============================================================================
+// Editmark Processing
+// =============================================================================
+
+/**
+ * Editmark export mode configuration
+ */
+export type EditmarkExportMode = 'show' | 'accept' | 'reject' | 'hide';
+
+/**
+ * Editmark patterns for matching in text
+ */
+const EDITMARK_PATTERNS = {
+    // Universal format: @@+text+@@ @@-text-@@ @@>text<@@ @@~old|new~@@
+    insertion: /@@\+([^+]*)\+@@/g,
+    deletion: /@@-([^-]*)-@@/g,
+    comment: /@@>([^<]*)<@@/g,
+    typo: /@@~([^|]*)\|([^~]*)~@@/g,
+
+    // CriticMarkup format: {++text++} {--text--} {>>text<<} {~~old~>new~~}
+    insertionCritic: /\{\+\+([^+]*)\+\+\}/g,
+    deletionCritic: /\{--([^-]*)--\}/g,
+    commentCritic: /\{>>([^<]*)<<\}/g,
+    typoCritic: /\{~~([^~]*)~>([^~]*)~~\}/g,
+};
+
+/**
+ * Check if text contains any editmarks
+ */
+export function hasEditmarks(text: string): boolean {
+    return (
+        EDITMARK_PATTERNS.insertion.test(text) ||
+        EDITMARK_PATTERNS.deletion.test(text) ||
+        EDITMARK_PATTERNS.comment.test(text) ||
+        EDITMARK_PATTERNS.typo.test(text) ||
+        EDITMARK_PATTERNS.insertionCritic.test(text) ||
+        EDITMARK_PATTERNS.deletionCritic.test(text) ||
+        EDITMARK_PATTERNS.commentCritic.test(text) ||
+        EDITMARK_PATTERNS.typoCritic.test(text)
+    );
+}
+
+/**
+ * Process editmarks in text for HTML export
+ */
+export function processEditmarksHtml(text: string, mode: EditmarkExportMode = 'show'): string {
+    if (mode === 'hide') {
+        // Remove all editmarks without replacement
+        let result = text;
+        result = result.replace(EDITMARK_PATTERNS.insertion, '');
+        result = result.replace(EDITMARK_PATTERNS.deletion, '');
+        result = result.replace(EDITMARK_PATTERNS.comment, '');
+        result = result.replace(EDITMARK_PATTERNS.typo, '');
+        result = result.replace(EDITMARK_PATTERNS.insertionCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.deletionCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.typoCritic, '');
+        return result;
+    }
+
+    if (mode === 'accept') {
+        // Accept all changes
+        let result = text;
+        // Insertions: keep the inserted text
+        result = result.replace(EDITMARK_PATTERNS.insertion, '$1');
+        result = result.replace(EDITMARK_PATTERNS.insertionCritic, '$1');
+        // Deletions: remove entirely
+        result = result.replace(EDITMARK_PATTERNS.deletion, '');
+        result = result.replace(EDITMARK_PATTERNS.deletionCritic, '');
+        // Comments: remove
+        result = result.replace(EDITMARK_PATTERNS.comment, '');
+        result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
+        // Typos: keep the new text
+        result = result.replace(EDITMARK_PATTERNS.typo, '$2');
+        result = result.replace(EDITMARK_PATTERNS.typoCritic, '$2');
+        return result;
+    }
+
+    if (mode === 'reject') {
+        // Reject all changes
+        let result = text;
+        // Insertions: remove
+        result = result.replace(EDITMARK_PATTERNS.insertion, '');
+        result = result.replace(EDITMARK_PATTERNS.insertionCritic, '');
+        // Deletions: keep the deleted text
+        result = result.replace(EDITMARK_PATTERNS.deletion, '$1');
+        result = result.replace(EDITMARK_PATTERNS.deletionCritic, '$1');
+        // Comments: remove
+        result = result.replace(EDITMARK_PATTERNS.comment, '');
+        result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
+        // Typos: keep the old text
+        result = result.replace(EDITMARK_PATTERNS.typo, '$1');
+        result = result.replace(EDITMARK_PATTERNS.typoCritic, '$1');
+        return result;
+    }
+
+    // mode === 'show': Render with visual markup
+    let result = text;
+
+    // Insertions: <ins class="editmark-ins">text</ins>
+    result = result.replace(EDITMARK_PATTERNS.insertion, '<ins class="editmark-ins">$1</ins>');
+    result = result.replace(EDITMARK_PATTERNS.insertionCritic, '<ins class="editmark-ins">$1</ins>');
+
+    // Deletions: <del class="editmark-del">text</del>
+    result = result.replace(EDITMARK_PATTERNS.deletion, '<del class="editmark-del">$1</del>');
+    result = result.replace(EDITMARK_PATTERNS.deletionCritic, '<del class="editmark-del">$1</del>');
+
+    // Comments: <mark class="editmark-comment" title="comment">text</mark>
+    result = result.replace(EDITMARK_PATTERNS.comment, '<mark class="editmark-comment">$1</mark>');
+    result = result.replace(EDITMARK_PATTERNS.commentCritic, '<mark class="editmark-comment">$1</mark>');
+
+    // Typos: <span class="editmark-typo"><del>old</del><ins>new</ins></span>
+    result = result.replace(EDITMARK_PATTERNS.typo, '<span class="editmark-typo"><del>$1</del><ins>$2</ins></span>');
+    result = result.replace(EDITMARK_PATTERNS.typoCritic, '<span class="editmark-typo"><del>$1</del><ins>$2</ins></span>');
+
+    return result;
+}
+
+/**
+ * Process editmarks in text for LaTeX export
+ */
+export function processEditmarksLatex(text: string, mode: EditmarkExportMode = 'show'): string {
+    if (mode === 'hide') {
+        let result = text;
+        result = result.replace(EDITMARK_PATTERNS.insertion, '');
+        result = result.replace(EDITMARK_PATTERNS.deletion, '');
+        result = result.replace(EDITMARK_PATTERNS.comment, '');
+        result = result.replace(EDITMARK_PATTERNS.typo, '');
+        result = result.replace(EDITMARK_PATTERNS.insertionCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.deletionCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.typoCritic, '');
+        return result;
+    }
+
+    if (mode === 'accept') {
+        let result = text;
+        result = result.replace(EDITMARK_PATTERNS.insertion, '$1');
+        result = result.replace(EDITMARK_PATTERNS.insertionCritic, '$1');
+        result = result.replace(EDITMARK_PATTERNS.deletion, '');
+        result = result.replace(EDITMARK_PATTERNS.deletionCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.comment, '');
+        result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.typo, '$2');
+        result = result.replace(EDITMARK_PATTERNS.typoCritic, '$2');
+        return result;
+    }
+
+    if (mode === 'reject') {
+        let result = text;
+        result = result.replace(EDITMARK_PATTERNS.insertion, '');
+        result = result.replace(EDITMARK_PATTERNS.insertionCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.deletion, '$1');
+        result = result.replace(EDITMARK_PATTERNS.deletionCritic, '$1');
+        result = result.replace(EDITMARK_PATTERNS.comment, '');
+        result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
+        result = result.replace(EDITMARK_PATTERNS.typo, '$1');
+        result = result.replace(EDITMARK_PATTERNS.typoCritic, '$1');
+        return result;
+    }
+
+    // mode === 'show': Render with LaTeX markup
+    let result = text;
+
+    // Insertions: \editins{text}
+    result = result.replace(EDITMARK_PATTERNS.insertion, '\\editins{$1}');
+    result = result.replace(EDITMARK_PATTERNS.insertionCritic, '\\editins{$1}');
+
+    // Deletions: \editdel{text}
+    result = result.replace(EDITMARK_PATTERNS.deletion, '\\editdel{$1}');
+    result = result.replace(EDITMARK_PATTERNS.deletionCritic, '\\editdel{$1}');
+
+    // Comments: \editcomment{text}
+    result = result.replace(EDITMARK_PATTERNS.comment, '\\editcomment{$1}');
+    result = result.replace(EDITMARK_PATTERNS.commentCritic, '\\editcomment{$1}');
+
+    // Typos: \edittypo{old}{new}
+    result = result.replace(EDITMARK_PATTERNS.typo, '\\edittypo{$1}{$2}');
+    result = result.replace(EDITMARK_PATTERNS.typoCritic, '\\edittypo{$1}{$2}');
+
+    return result;
+}
+
+/**
+ * CSS styles for editmarks in HTML export
+ */
+export const EDITMARK_CSS = `
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+`;
+
+/**
+ * LaTeX preamble for editmarks
+ */
+export const EDITMARK_LATEX_PREAMBLE = `
+% Editmark commands
+\\usepackage{xcolor}
+\\usepackage{ulem}
+\\normalem  % Prevent ulem from changing \\emph
+\\newcommand{\\editins}[1]{\\textcolor{green!40!black}{\\uline{#1}}}
+\\newcommand{\\editdel}[1]{\\textcolor{red!70!black}{\\sout{#1}}}
+\\newcommand{\\editcomment}[1]{\\textcolor{orange!80!black}{[\\textit{#1}]}}
+\\newcommand{\\edittypo}[2]{\\textcolor{gray}{\\sout{#1}}\\editins{#2}}
+`;
+
+// =============================================================================
 // Export API
 // =============================================================================
 
@@ -541,11 +780,14 @@ export function exportSubtree(
  */
 export function exportToLatex(
     orgText: string,
-    options?: { toc?: boolean; standalone?: boolean; syntexEnabled?: boolean }
+    options?: { toc?: boolean; standalone?: boolean; syntexEnabled?: boolean; editmarkMode?: EditmarkExportMode }
 ): string {
     const lines = orgText.split('\n');
     const latexLines: string[] = [];
-    const opts = { toc: false, standalone: true, syntexEnabled: false, ...options };
+    const opts = { toc: false, standalone: true, syntexEnabled: false, editmarkMode: 'show' as EditmarkExportMode, ...options };
+
+    // Check if document contains editmarks (for preamble)
+    const documentHasEditmarks = hasEditmarks(orgText);
 
     // Extract document settings
     let title = '';
@@ -581,6 +823,11 @@ export function exportToLatex(
 
         if (opts.syntexEnabled) {
             latexLines.push('% SyncTeX enabled');
+        }
+
+        // Add editmark preamble if needed and mode is 'show'
+        if (documentHasEditmarks && opts.editmarkMode === 'show') {
+            latexLines.push(EDITMARK_LATEX_PREAMBLE);
         }
 
         latexLines.push('');
@@ -675,6 +922,9 @@ export function exportToLatex(
         // Links: [[url][desc]] -> \href{url}{desc}
         processedLine = processedLine.replace(/\[\[([^\]]+)\]\[([^\]]+)\]\]/g, '\\href{$1}{$2}');
         processedLine = processedLine.replace(/\[\[([^\]]+)\]\]/g, '\\url{$1}');
+
+        // Process editmarks
+        processedLine = processEditmarksLatex(processedLine, opts.editmarkMode);
 
         latexLines.push(processedLine);
     }

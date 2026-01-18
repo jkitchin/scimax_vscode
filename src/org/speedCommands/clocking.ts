@@ -7,7 +7,20 @@
 
 import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
-import { generateClockIn, generateClockOut, parseClockLine } from '../../parser/orgClocking';
+import {
+    generateClockIn,
+    generateClockOut,
+    parseClockLine,
+    checkClockConsistency,
+    ClockEntry,
+    ClockIssue,
+    formatClockTimestamp,
+    formatDuration,
+    collectAllClockEntries,
+    collectClockEntries,
+    calculateTotalTime,
+} from '../../parser/orgClocking';
+import { parseOrg } from '../../parser/orgParserUnified';
 
 // Extension context for persistence
 let extensionContext: vscode.ExtensionContext | undefined;
@@ -33,6 +46,12 @@ let clockHistory: Array<{
 // Status bar item
 let clockStatusBar: vscode.StatusBarItem | undefined;
 let statusBarUpdateInterval: NodeJS.Timeout | undefined;
+
+// Clock time decoration type
+let clockTimeDecorationType: vscode.TextEditorDecorationType | undefined;
+let clockDecorationsEnabled = true;
+let decorationUpdateTimeout: NodeJS.Timeout | undefined;
+const DECORATION_DEBOUNCE_MS = 500;
 
 /**
  * Initialize clocking with extension context for persistence
@@ -81,6 +100,9 @@ export function initializeClocking(context: vscode.ExtensionContext): void {
             }
         }
     });
+
+    // Initialize clock time decorations
+    initializeClockDecorations(context);
 }
 
 /**
@@ -689,4 +711,502 @@ export async function clearClockHistory(): Promise<void> {
     clockHistory = [];
     await saveClockState();
     vscode.window.showInformationMessage('Clock history cleared');
+}
+
+/**
+ * Check clock consistency in the current document
+ * Reports issues like running clocks, overlaps, future dates, etc.
+ */
+export async function checkClockConsistencyCommand(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showInformationMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    if (document.languageId !== 'org') {
+        vscode.window.showInformationMessage('Not an org-mode file');
+        return;
+    }
+
+    // Parse the document and collect all clock entries
+    const text = document.getText();
+    const ast = parseOrg(text);
+    const entries = collectAllClockEntries(ast);
+
+    if (entries.length === 0) {
+        vscode.window.showInformationMessage('No clock entries found in this file');
+        return;
+    }
+
+    // Add file path and find line numbers for each entry
+    const entriesWithLocation: ClockEntry[] = [];
+    const lines = text.split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes('CLOCK:')) {
+            const parsed = parseClockLine(line.trim());
+            if (parsed) {
+                parsed.filePath = document.uri.fsPath;
+                parsed.lineNumber = i;
+                entriesWithLocation.push(parsed);
+            }
+        }
+    }
+
+    // Check for issues
+    const issues = checkClockConsistency(entriesWithLocation);
+
+    if (issues.length === 0) {
+        vscode.window.showInformationMessage(`All ${entries.length} clock entries are consistent`);
+        return;
+    }
+
+    // Show issues in a quick pick
+    const issueItems: (vscode.QuickPickItem & { issue: ClockIssue })[] = issues.map(issue => {
+        const icons: Record<string, string> = {
+            'running': '$(clock)',
+            'future': '$(calendar)',
+            'negative': '$(warning)',
+            'long': '$(watch)',
+            'overlap': '$(layers)',
+            'gap': '$(debug-disconnect)',
+        };
+
+        const lineNum = issue.entry.lineNumber !== undefined ? issue.entry.lineNumber + 1 : '?';
+
+        return {
+            label: `${icons[issue.type] || '$(error)'} ${issue.type.toUpperCase()}`,
+            description: `Line ${lineNum}`,
+            detail: issue.message,
+            issue,
+        };
+    });
+
+    const selected = await vscode.window.showQuickPick(issueItems, {
+        placeHolder: `Found ${issues.length} clock issue(s) in ${entries.length} entries`,
+        matchOnDescription: true,
+        matchOnDetail: true,
+    });
+
+    if (selected && selected.issue.entry.lineNumber !== undefined) {
+        // Jump to the issue
+        const pos = new vscode.Position(selected.issue.entry.lineNumber, 0);
+        editor.selection = new vscode.Selection(pos, pos);
+        editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+    }
+}
+
+/**
+ * Modify an existing clock entry
+ * Allows editing start time, end time, or deleting the entry
+ */
+export async function modifyClockEntry(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showInformationMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    const position = editor.selection.active;
+
+    // Find clock entry at or near current line
+    let clockLine = -1;
+    let clockEntry: ReturnType<typeof parseClockLine> = null;
+
+    // Check current line first
+    const currentLineText = document.lineAt(position.line).text;
+    if (currentLineText.includes('CLOCK:')) {
+        clockEntry = parseClockLine(currentLineText.trim());
+        if (clockEntry) {
+            clockLine = position.line;
+        }
+    }
+
+    // If not on a clock line, search nearby in logbook
+    if (clockLine < 0) {
+        // Search up to 10 lines up and down for a clock entry
+        for (let offset = 1; offset <= 10; offset++) {
+            // Search up
+            if (position.line - offset >= 0) {
+                const lineText = document.lineAt(position.line - offset).text;
+                if (lineText.includes('CLOCK:')) {
+                    const parsed = parseClockLine(lineText.trim());
+                    if (parsed) {
+                        clockEntry = parsed;
+                        clockLine = position.line - offset;
+                        break;
+                    }
+                }
+            }
+            // Search down
+            if (position.line + offset < document.lineCount) {
+                const lineText = document.lineAt(position.line + offset).text;
+                if (lineText.includes('CLOCK:')) {
+                    const parsed = parseClockLine(lineText.trim());
+                    if (parsed) {
+                        clockEntry = parsed;
+                        clockLine = position.line + offset;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (clockLine < 0 || !clockEntry) {
+        vscode.window.showInformationMessage('No clock entry found near cursor');
+        return;
+    }
+
+    // Show modification options
+    const options: (vscode.QuickPickItem & { action: string })[] = [
+        {
+            label: '$(edit) Edit Start Time',
+            description: formatClockTimestamp(clockEntry.start),
+            action: 'edit-start',
+        },
+    ];
+
+    if (clockEntry.end) {
+        options.push({
+            label: '$(edit) Edit End Time',
+            description: formatClockTimestamp(clockEntry.end),
+            action: 'edit-end',
+        });
+    } else {
+        options.push({
+            label: '$(add) Set End Time (Clock Out)',
+            description: 'Close this running clock',
+            action: 'set-end',
+        });
+    }
+
+    options.push({
+        label: '$(trash) Delete Entry',
+        description: 'Remove this clock entry',
+        action: 'delete',
+    });
+
+    const selected = await vscode.window.showQuickPick(options, {
+        placeHolder: 'Modify clock entry',
+    });
+
+    if (!selected) return;
+
+    switch (selected.action) {
+        case 'edit-start': {
+            const newTime = await promptForTime('Enter new start time', clockEntry.start);
+            if (newTime) {
+                clockEntry.start = newTime;
+                await updateClockLine(editor, clockLine, clockEntry);
+            }
+            break;
+        }
+        case 'edit-end': {
+            if (clockEntry.end) {
+                const newTime = await promptForTime('Enter new end time', clockEntry.end);
+                if (newTime) {
+                    clockEntry.end = newTime;
+                    await updateClockLine(editor, clockLine, clockEntry);
+                }
+            }
+            break;
+        }
+        case 'set-end': {
+            const newTime = await promptForTime('Enter end time', new Date());
+            if (newTime) {
+                clockEntry.end = newTime;
+                await updateClockLine(editor, clockLine, clockEntry);
+            }
+            break;
+        }
+        case 'delete': {
+            const confirm = await vscode.window.showWarningMessage(
+                'Delete this clock entry?',
+                { modal: true },
+                'Delete',
+                'Cancel'
+            );
+            if (confirm === 'Delete') {
+                await editor.edit(editBuilder => {
+                    const range = new vscode.Range(clockLine, 0, clockLine + 1, 0);
+                    editBuilder.delete(range);
+                });
+                vscode.window.showInformationMessage('Clock entry deleted');
+            }
+            break;
+        }
+    }
+}
+
+/**
+ * Prompt user for a time value
+ */
+async function promptForTime(prompt: string, defaultTime: Date): Promise<Date | null> {
+    const defaultStr = `${defaultTime.getFullYear()}-${String(defaultTime.getMonth() + 1).padStart(2, '0')}-${String(defaultTime.getDate()).padStart(2, '0')} ${String(defaultTime.getHours()).padStart(2, '0')}:${String(defaultTime.getMinutes()).padStart(2, '0')}`;
+
+    const input = await vscode.window.showInputBox({
+        prompt,
+        value: defaultStr,
+        placeHolder: 'YYYY-MM-DD HH:MM',
+        validateInput: (value) => {
+            const match = value.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/);
+            if (!match) {
+                return 'Format: YYYY-MM-DD HH:MM';
+            }
+            return null;
+        },
+    });
+
+    if (!input) return null;
+
+    const match = input.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2})$/);
+    if (!match) return null;
+
+    return new Date(
+        parseInt(match[1]),
+        parseInt(match[2]) - 1,
+        parseInt(match[3]),
+        parseInt(match[4]),
+        parseInt(match[5])
+    );
+}
+
+/**
+ * Update a clock line with new entry data
+ */
+async function updateClockLine(
+    editor: vscode.TextEditor,
+    lineNumber: number,
+    entry: ClockEntry
+): Promise<void> {
+    let newLine: string;
+
+    if (entry.end) {
+        const duration = Math.round((entry.end.getTime() - entry.start.getTime()) / 60000);
+        newLine = `CLOCK: ${formatClockTimestamp(entry.start)}--${formatClockTimestamp(entry.end)} => ${formatDuration(duration)}`;
+    } else {
+        newLine = `CLOCK: ${formatClockTimestamp(entry.start)}`;
+    }
+
+    const line = editor.document.lineAt(lineNumber);
+    const indent = line.text.match(/^(\s*)/)?.[1] || '';
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(line.range, indent + newLine);
+    });
+
+    vscode.window.showInformationMessage('Clock entry updated');
+}
+
+// =============================================================================
+// Clock Time Decorations
+// =============================================================================
+
+/**
+ * Initialize clock time decorations
+ * Shows total clocked time as inline decorations on headlines
+ */
+function initializeClockDecorations(context: vscode.ExtensionContext): void {
+    // Create decoration type for clock times
+    clockTimeDecorationType = vscode.window.createTextEditorDecorationType({
+        after: {
+            color: new vscode.ThemeColor('editorCodeLens.foreground'),
+            fontStyle: 'italic',
+            margin: '0 0 0 1em',
+        },
+    });
+
+    // Load config
+    const config = vscode.workspace.getConfiguration('scimax.clock');
+    clockDecorationsEnabled = config.get<boolean>('showInlineTime', true);
+
+    // Update decorations on active editor change
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            if (editor && clockDecorationsEnabled) {
+                debouncedUpdateClockDecorations(editor);
+            }
+        })
+    );
+
+    // Update decorations on document change (debounced to prevent OOM)
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeTextDocument(event => {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && editor.document === event.document && clockDecorationsEnabled) {
+                debouncedUpdateClockDecorations(editor);
+            }
+        })
+    );
+
+    // Watch for config changes
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('scimax.clock.showInlineTime')) {
+                const newConfig = vscode.workspace.getConfiguration('scimax.clock');
+                clockDecorationsEnabled = newConfig.get<boolean>('showInlineTime', true);
+
+                const editor = vscode.window.activeTextEditor;
+                if (editor) {
+                    if (clockDecorationsEnabled) {
+                        debouncedUpdateClockDecorations(editor);
+                    } else {
+                        // Clear decorations
+                        editor.setDecorations(clockTimeDecorationType!, []);
+                    }
+                }
+            }
+        })
+    );
+
+    // Cleanup timeout on dispose
+    context.subscriptions.push({
+        dispose: () => {
+            if (decorationUpdateTimeout) {
+                clearTimeout(decorationUpdateTimeout);
+            }
+        }
+    });
+
+    // Initial update (delayed)
+    const editor = vscode.window.activeTextEditor;
+    if (editor && clockDecorationsEnabled) {
+        debouncedUpdateClockDecorations(editor);
+    }
+}
+
+/**
+ * Debounced update for clock decorations
+ * Prevents excessive parsing on rapid document changes
+ */
+function debouncedUpdateClockDecorations(editor: vscode.TextEditor): void {
+    if (decorationUpdateTimeout) {
+        clearTimeout(decorationUpdateTimeout);
+    }
+    decorationUpdateTimeout = setTimeout(() => {
+        updateClockDecorationsLightweight(editor);
+    }, DECORATION_DEBOUNCE_MS);
+}
+
+/**
+ * Lightweight update for clock decorations - no full AST parsing
+ * Scans document line-by-line for headings and CLOCK entries
+ */
+function updateClockDecorationsLightweight(editor: vscode.TextEditor): void {
+    if (!clockTimeDecorationType) return;
+    if (editor.document.languageId !== 'org') {
+        editor.setDecorations(clockTimeDecorationType, []);
+        return;
+    }
+
+    const decorations: vscode.DecorationOptions[] = [];
+    const document = editor.document;
+
+    // Track headings and their clock totals
+    interface HeadingInfo {
+        line: number;
+        level: number;
+        totalMinutes: number;
+    }
+
+    const headingStack: HeadingInfo[] = [];
+    let currentHeading: HeadingInfo | null = null;
+
+    // Scan document line by line
+    for (let i = 0; i < document.lineCount; i++) {
+        const lineText = document.lineAt(i).text;
+
+        // Check for heading
+        const headingMatch = lineText.match(/^(\*+)\s/);
+        if (headingMatch) {
+            // Save previous heading if it had time
+            if (currentHeading && currentHeading.totalMinutes > 0) {
+                const lineContent = document.lineAt(currentHeading.line).text;
+                const endOfLine = new vscode.Position(currentHeading.line, lineContent.length);
+                const timeStr = formatDuration(currentHeading.totalMinutes);
+
+                decorations.push({
+                    range: new vscode.Range(endOfLine, endOfLine),
+                    renderOptions: {
+                        after: {
+                            contentText: `[${timeStr}]`,
+                        },
+                    },
+                });
+            }
+
+            // Start new heading
+            currentHeading = {
+                line: i,
+                level: headingMatch[1].length,
+                totalMinutes: 0,
+            };
+            continue;
+        }
+
+        // Check for CLOCK line
+        if (currentHeading && lineText.includes('CLOCK:')) {
+            const entry = parseClockLine(lineText.trim());
+            if (entry && entry.duration) {
+                currentHeading.totalMinutes += entry.duration;
+            }
+        }
+    }
+
+    // Don't forget the last heading
+    if (currentHeading && currentHeading.totalMinutes > 0) {
+        const lineContent = document.lineAt(currentHeading.line).text;
+        const endOfLine = new vscode.Position(currentHeading.line, lineContent.length);
+        const timeStr = formatDuration(currentHeading.totalMinutes);
+
+        decorations.push({
+            range: new vscode.Range(endOfLine, endOfLine),
+            renderOptions: {
+                after: {
+                    contentText: `[${timeStr}]`,
+                },
+            },
+        });
+    }
+
+    editor.setDecorations(clockTimeDecorationType, decorations);
+}
+
+/**
+ * Toggle clock time decorations
+ */
+export async function toggleClockDecorations(): Promise<void> {
+    clockDecorationsEnabled = !clockDecorationsEnabled;
+
+    const editor = vscode.window.activeTextEditor;
+    if (editor) {
+        if (clockDecorationsEnabled) {
+            updateClockDecorationsLightweight(editor);
+            vscode.window.showInformationMessage('Clock time decorations enabled');
+        } else {
+            if (clockTimeDecorationType) {
+                editor.setDecorations(clockTimeDecorationType, []);
+            }
+            vscode.window.showInformationMessage('Clock time decorations disabled');
+        }
+    }
+
+    // Save to config
+    const config = vscode.workspace.getConfiguration('scimax.clock');
+    await config.update('showInlineTime', clockDecorationsEnabled, vscode.ConfigurationTarget.Global);
+}
+
+/**
+ * Force refresh clock decorations
+ */
+export function refreshClockDecorations(): void {
+    const editor = vscode.window.activeTextEditor;
+    if (editor && clockDecorationsEnabled) {
+        updateClockDecorationsLightweight(editor);
+    }
 }

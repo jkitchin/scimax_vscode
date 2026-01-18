@@ -73,6 +73,9 @@ import {
     BUILTIN_MACROS,
     collectTargets,
     collectFootnotes,
+    processEditmarksHtml,
+    EDITMARK_CSS,
+    type EditmarkExportMode,
 } from './orgExport';
 
 import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
@@ -132,6 +135,10 @@ export interface HtmlExportOptions extends ExportOptions {
     bibEntries?: BibEntry[];
     /** Citation processor instance (if pre-configured) */
     citationProcessor?: CitationProcessor;
+
+    // Editmark options
+    /** Editmark export mode: show, accept, reject, or hide */
+    editmarkMode?: EditmarkExportMode;
 }
 
 const DEFAULT_HTML_OPTIONS: HtmlExportOptions = {
@@ -147,6 +154,7 @@ const DEFAULT_HTML_OPTIONS: HtmlExportOptions = {
     citationStyle: 'apa',
     bibliography: true,
     bibliographyTitle: 'References',
+    editmarkMode: 'show',
 };
 
 /**
@@ -393,8 +401,14 @@ export class HtmlExportBackend implements ExportBackend {
                 return this.exportRadioTarget(object as RadioTargetObject, state);
             case 'line-break':
                 return '<br />\n';
-            case 'plain-text':
-                return escapeString((object as PlainTextObject).properties.value, 'html');
+            case 'plain-text': {
+                const text = (object as PlainTextObject).properties.value;
+                const escaped = escapeString(text, 'html');
+                // Process editmarks after escaping (editmark delimiters don't need escaping)
+                const htmlState = state as HtmlExportState;
+                const editmarkMode = htmlState.htmlOptions?.editmarkMode || 'show';
+                return processEditmarksHtml(escaped, editmarkMode);
+            }
             case 'inline-src-block':
                 return this.exportInlineSrcBlock(object as InlineSrcBlockObject, state);
             case 'inline-babel-call':
@@ -1334,6 +1348,7 @@ blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem;
 /* Highlight citation when navigated to */
 .citation { scroll-margin-top: 2rem; }
 .citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+${EDITMARK_CSS}
 </style>`;
     }
 }

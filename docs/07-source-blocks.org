@@ -1065,9 +1065,9 @@ Result after execution:
 The answer is 4 which equals 4.
 #+END_SRC
 
-*** ⚠️ With Headers
+*** ✅ With Headers
 
-Today is src_python[:results value]{import datetime; datetime.date.today()} {{{results(==)}}}.
+Today is src_python[:results value]{import datetime; datetime.date.today()} {{{results(=datetime.date(2026, 1, 18)=)}}}.
 
 *** ✅ Accessing Variables
 CLOSED: [2026-01-17 Sat 14:34]

@@ -404,6 +404,19 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
 }
 
 /**
+ * Unfold at the given line to ensure content is visible after navigation.
+ * This is needed when navigating to a location in a file with folded headings.
+ */
+async function unfoldAtLine(editor: vscode.TextEditor, line: number): Promise<void> {
+    // Unfold at the cursor position with many levels to ensure visibility
+    await vscode.commands.executeCommand('editor.unfold', {
+        selectionLines: [line],
+        direction: 'down',
+        levels: 100
+    });
+}
+
+/**
  * Register org-link commands for navigation
  */
 export function registerOrgLinkCommands(context: vscode.ExtensionContext): void {
@@ -444,6 +457,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                                 new vscode.Range(position, position),
                                 vscode.TextEditorRevealType.InCenter
                             );
+                            await unfoldAtLine(editor, i);
                             return;
                         }
                     }
@@ -465,12 +479,14 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 
-                const position = new vscode.Position(line - 1, 0);
+                const lineNum = line - 1;
+                const position = new vscode.Position(lineNum, 0);
                 editor.selection = new vscode.Selection(position, position);
                 editor.revealRange(
                     new vscode.Range(position, position),
                     vscode.TextEditorRevealType.InCenter
                 );
+                await unfoldAtLine(editor, lineNum);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }
@@ -497,6 +513,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                         new vscode.Range(position, position),
                         vscode.TextEditorRevealType.InCenter
                     );
+                    await unfoldAtLine(editor, position.line);
                 } else {
                     vscode.window.showWarningMessage(`Search text not found: ${search}`);
                 }
@@ -529,6 +546,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
+                        await unfoldAtLine(editor, i);
                         return;
                     }
                 }
@@ -555,6 +573,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                     new vscode.Range(position, position),
                     vscode.TextEditorRevealType.InCenter
                 );
+                await unfoldAtLine(editor, position.line);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }
@@ -592,6 +611,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
+                        await unfoldAtLine(editor, headingLine);
                         return true;
                     }
                 }
@@ -659,6 +679,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
+                        await unfoldAtLine(editor, i);
                         return;
                     }
                 }
@@ -675,6 +696,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
+                        await unfoldAtLine(editor, i);
                         return;
                     }
                 }
@@ -688,6 +710,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                         new vscode.Range(position, position),
                         vscode.TextEditorRevealType.InCenter
                     );
+                    await unfoldAtLine(editor, position.line);
                     return;
                 }
 
@@ -720,6 +743,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
+                        await unfoldAtLine(editor, position.line);
                         return;
                     }
                 }
@@ -754,6 +778,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
+                        await unfoldAtLine(editor, i);
                         return;
                     }
                 }

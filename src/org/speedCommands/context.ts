@@ -263,7 +263,10 @@ export function registerSpeedCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.clock.cancel', clocking.clockCancel),
         vscode.commands.registerCommand('scimax.clock.select', clocking.clockSelect),
         vscode.commands.registerCommand('scimax.clock.menu', clocking.showClockMenu),
-        vscode.commands.registerCommand('scimax.clock.clearHistory', clocking.clearClockHistory)
+        vscode.commands.registerCommand('scimax.clock.clearHistory', clocking.clearClockHistory),
+        vscode.commands.registerCommand('scimax.clock.checkConsistency', clocking.checkClockConsistencyCommand),
+        vscode.commands.registerCommand('scimax.clock.modify', clocking.modifyClockEntry),
+        vscode.commands.registerCommand('scimax.clock.toggleDecorations', clocking.toggleClockDecorations)
     );
 
     // Archive commands

@@ -265,13 +265,11 @@ Scimax supports three embedding providers:
 *** ✅ OpenAI
 CLOSED: [2026-01-17 Sat 11:59]
 
-- *Pros*: High quality, fast, maintained
+- *Pros*: High quality, fast, maintained, supports batch embedding
 - *Cons*: Requires API key, costs money, sends data to cloud
 - *Security*: API key stored securely in OS credential manager (Keychain/Credential Manager/libsecret)
-- *Models*:
-  - `text-embedding-3-small' (1536 dims, recommended)
-  - `text-embedding-3-large' (3072 dims, highest quality)
-  - `text-embedding-ada-002' (1536 dims, legacy)
+- *Model*: `text-embedding-3-small' (1536 dims) - currently the only model used
+- *Note*: Model selection is not yet configurable; text-embedding-3-small is used automatically
 
 ** ✅ Configuration
 CLOSED: [2026-01-17 Sat 11:59]
@@ -314,7 +312,9 @@ CLOSED: [2026-01-17 Sat 12:00]
 }
 #+END_SRC
 
-**** ⚠️ OpenAI
+**** ✅ OpenAI
+CLOSED: [2026-01-18 Sat 12:00]
+
 #+BEGIN_SRC json
 {
   "scimax.db.embeddingProvider": "openai"
@@ -323,6 +323,7 @@ CLOSED: [2026-01-17 Sat 12:00]
 
 Note: The API key is stored securely in your OS credential manager, not in settings.json.
 Use the interactive setup (`Scimax: Configure Embedding Service') to enter your API key.
+Uses `text-embedding-3-small' model (1536 dimensions).
 
 ** ✅ Usage
 CLOSED: [2026-01-17 Sat 12:01]

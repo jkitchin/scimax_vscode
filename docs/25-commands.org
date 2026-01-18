@@ -70,13 +70,14 @@ CLOSED: [2026-01-17 Sat 15:21]
 | [[cmd:scimax.org.dwimReturn]] | DWIM Return     | -                  |
 | [[cmd:scimax.insertNewline]]  | Insert Newline  | -                  |
 
-** ⚠️ Org Utility Commands
+** ✅ Org Utility Commands
+CLOSED: [2026-01-18 Sun 09:57]
 
-| Command ID                          | Description               | Default Keybinding |
-|-------------------------------------+---------------------------+--------------------|
-| [[cmd:scimax.org.updateStatistics]] | Update Statistics Cookie  | -                  |
-| [[cmd:scimax.org.renumberList]]     | Renumber Ordered List     | -                  |
-| [[cmd:scimax.org.updateDynamicBlock]]| Update Dynamic Block     | C-c C-x C-u (org)  |
+| Command ID                            | Description              | Default Keybinding |
+|---------------------------------------+--------------------------+--------------------|
+| [[cmd:scimax.org.updateStatistics]]   | Update Statistics Cookie | -                  |
+| [[cmd:scimax.org.renumberList]]       | Renumber Ordered List    | -                  |
+| [[cmd:scimax.org.updateDynamicBlock]] | Update Dynamic Block     | C-c C-x C-u (org)  |
 
 * ✅ TODO and Tasks
 CLOSED: [2026-01-17 Sat 12:24]
@@ -294,7 +295,8 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.org.shiftTimestampRight]] | Shift Timestamp Right (Next Day) | S-RIGHT            |
 | [[cmd:scimax.org.addRepeater]]         | Add/Change Repeater on Timestamp | C-c C-r            |
 
-** ⚠️ Clocking
+** ✅ Clocking
+CLOSED: [2026-01-18 Sun 09:58]
 
 Time tracking commands for measuring effort on tasks.
 
@@ -815,18 +817,21 @@ CLOSED: [2026-01-17 Sat 12:51]
 | C-c j j    | Jump to 2-char sequence   |
 | C-c j w    | Jump to word              |
 
-* ⚠️ Help System
+* ✅ Help System
+CLOSED: [2026-01-18 Sun 09:59]
 :PROPERTIES:
 :CUSTOM_ID: help-system
 :END:
 
 Commands for discovering keybindings and command functionality.
 
-| Command ID                         | Description              | Default Keybinding |
-|------------------------------------+--------------------------+--------------------|
-| [[cmd:scimax.help.describeCommand]]| Describe Command         | -                  |
-| [[cmd:scimax.help.describeKey]]    | Describe Key             | -                  |
-| [[cmd:scimax.help.listKeybindings]]| List All Keybindings     | -                  |
+| Command ID                           | Description            | Default Keybinding |
+|--------------------------------------+------------------------+--------------------|
+| [[cmd:scimax.help.describeCommand]]  | Describe Command       | C-h f              |
+| [[cmd:scimax.help.describeKey]]      | Describe Key           | C-h k              |
+| [[cmd:scimax.help.listKeybindings]]  | List All Keybindings   | C-h b              |
+| [[cmd:scimax.help.describeVariable]] | Describe Setting       | C-h v              |
+| [[cmd:scimax.help.apropos]]          | Search Documentation   | C-h a              |
 
 ** scimax.help.describeCommand
 
@@ -840,7 +845,16 @@ Describes what a specific key combination does. Enter the key sequence to see it
 
 Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.
 
-* ⚠️ Linting
+** scimax.help.describeVariable
+
+Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Select a setting to open VS Code Settings.
+
+** scimax.help.apropos
+
+Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.
+
+* ✅ Linting
+CLOSED: [2026-01-18 Sun 09:59]
 :PROPERTIES:
 :CUSTOM_ID: linting
 :END:
@@ -869,12 +883,12 @@ Results appear in the Problems panel.
 
 Shows available lint checkers and allows enabling/disabling specific checks.
 
-* ⚠️ Mark Ring
+* ✅ Mark Ring
 :PROPERTIES:
 :CUSTOM_ID: mark-ring
 :END:
 
-Emacs-style mark and point stack for navigation and selection. These commands allow you to save positions (marks) and return to them later, similar to Emacs' mark ring functionality.
+Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there's a global mark ring that tracks positions across all documents.
 
 | Command ID                       | Description               | Default Keybinding |
 |----------------------------------+---------------------------+--------------------|
@@ -889,30 +903,41 @@ Emacs-style mark and point stack for navigation and selection. These commands al
 | [[cmd:scimax.mark.clear]]        | Clear Mark Ring           | -                  |
 | [[cmd:scimax.mark.clearAll]]     | Clear All Mark Rings      | -                  |
 
-** Mark Ring Concepts
+** ✅ Mark Ring Concepts
 
 - **Mark**: A saved cursor position that you can return to
 - **Point**: The current cursor position
-- **Mark Ring**: A stack of marks (per-buffer), most recent first
-- **Global Mark Ring**: A cross-file stack of marks
+- **Mark Ring**: A stack of marks (per-document), most recent first (default size: 16)
+- **Global Mark Ring**: A cross-file stack of marks for navigating between documents
+- **Selection Mode**: When mark is set, cursor movement extends the selection from the mark
 
-** Common Workflows
+** ✅ Common Workflows
 
 *** Setting a Mark for Selection
-1. Press =C-SPC= to set mark at current position
-2. Move cursor to end of desired selection
-3. Region between mark and point is now selected
+1. Press =C-SPC= to set mark at current position (line flashes briefly as feedback)
+2. Move cursor to end of desired selection - the region automatically expands
+3. Press =C-SPC= again to deactivate selection mode (toggle behavior)
+4. Press =C-g= to cancel selection and collapse to cursor position
 
 *** Returning to Previous Positions
-1. Press =C-SPC C-SPC= to push mark without activating selection
+1. Press =C-SPC C-SPC= to push mark without activating selection mode
 2. Navigate elsewhere in the file
-3. Press =C-u C-SPC= to return to the saved mark
+3. Press =C-u C-SPC= to pop the most recent mark and jump to it
+4. Current position is saved before jumping, so you can return with another pop
 
 *** Cross-file Navigation
-1. Navigate to different files; each jump pushes to global ring
-2. Press =C-x C-SPC= to jump back through global mark history
+1. Marks are automatically pushed to the global ring when set
+2. Press =C-x C-SPC= to pop from global mark ring and jump (can cross files)
+3. Use =C-x C-x= to exchange point and mark (swap current position with last mark)
 
-* ⚠️ Publishing
+*** Viewing the Mark Ring
+1. Run =scimax.mark.show= from command palette
+2. Quick pick shows local marks and global marks with line previews
+3. Select an entry to jump to that position
+4. Timestamps show how long ago each mark was set
+
+* ✅ Publishing
+CLOSED: [2026-01-18 Sun 10:02]
 :PROPERTIES:
 :CUSTOM_ID: publishing
 :END:
@@ -943,16 +968,18 @@ The =.org-publish.json= file configures:
 - HTML template settings
 - Asset handling (CSS, images)
 
-* ⚠️ Query Replace
+* ✅ Query Replace
+CLOSED: [2026-01-18 Sun 10:02]
 :PROPERTIES:
 :CUSTOM_ID: query-replace
 :END:
 
 Interactive search and replace.
 
-| Command ID              | Description   | Default Keybinding |
-|-------------------------+---------------+--------------------|
+| Command ID                  | Description   | Default Keybinding |
+|-----------------------------+---------------+--------------------|
 | [[cmd:scimax.queryReplace]] | Query Replace | M-%                |
+
 
 Provides Emacs-style interactive query-replace with confirmation for each replacement.
 

@@ -40,6 +40,24 @@ export function registerHelpCommands(context: vscode.ExtensionContext): void {
             }
         })
     );
+
+    // C-h v: Describe Variable/Setting
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.help.describeVariable', async () => {
+            if (helpSystem) {
+                await helpSystem.describeVariable();
+            }
+        })
+    );
+
+    // C-h a: Apropos (Search Documentation)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.help.apropos', async () => {
+            if (helpSystem) {
+                await helpSystem.apropos();
+            }
+        })
+    );
 }
 
 /**

@@ -42,4 +42,11 @@ vitest.config.js
 vitest.config.js.map
 vitest.config.mjs
 vitest.config.mjs.map
+
+# Compiled build scripts
+scripts/*.js
+scripts/*.js.map
+scripts/*.d.ts
+scripts/*.d.ts.map
+
 .claude/

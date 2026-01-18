@@ -297,9 +297,10 @@ This appears 7 days early (January 24) with "in 7 days" indicator.
 
 View all scheduled items.
 
-| Command                      | Description                    |
-|------------------------------+--------------------------------|
-| scimax.agenda.scheduled     | All scheduled items            |
+| Command                         | Description         |
+|---------------------------------+---------------------|
+| [[cmd:scimax.agenda.scheduled]] | All scheduled items |
+
 
 Shows items with SCHEDULED timestamps:
 
@@ -312,7 +313,8 @@ Scheduled Items (12 items)
 📅 TODO Monthly review                           (in 5 days)
 #+END_EXAMPLE
 
-** ⚠️ Repeating Items
+** ✅ Repeating Items
+CLOSED: [2026-01-18 Sun 10:12]
 
 Recurring tasks with repeater syntax appear in the agenda:
 
@@ -329,11 +331,13 @@ DEADLINE: <2026-01-31 Fri +1m>
 
 See [[file:06-timestamps.org][Timestamps]] for more on repeaters.
 
-* ⚠️ Grouping and Sorting
+* ✅ Grouping and Sorting
+CLOSED: [2026-01-18 Sun 10:13]
 
 Agenda views can be grouped and sorted in different ways.
 
-** ⚠️ Group By Options
+** ✅ Group By Options
+CLOSED: [2026-01-18 Sun 10:13]
 
 *** ⚠️ By Date (Default)
 

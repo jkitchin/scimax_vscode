@@ -1200,6 +1200,18 @@
         "title": "Scimax: Insert Clock Table"
       },
       {
+        "command": "scimax.clock.checkConsistency",
+        "title": "Scimax: Check Clock Consistency"
+      },
+      {
+        "command": "scimax.clock.modify",
+        "title": "Scimax: Modify Clock Entry"
+      },
+      {
+        "command": "scimax.clock.toggleDecorations",
+        "title": "Scimax: Toggle Clock Time Decorations"
+      },
+      {
         "command": "scimax.table.moveRowUp",
         "title": "Scimax: Move Table Row Up"
       },
@@ -1891,6 +1903,14 @@
         "title": "Scimax: Describe Command"
       },
       {
+        "command": "scimax.help.describeVariable",
+        "title": "Scimax: Describe Setting/Variable"
+      },
+      {
+        "command": "scimax.help.apropos",
+        "title": "Scimax: Apropos (Search Documentation)"
+      },
+      {
         "command": "scimax.clearLatexCache",
         "title": "Scimax: Clear LaTeX Preview Cache"
       },
@@ -2252,6 +2272,16 @@
         "command": "scimax.help.describeCommand",
         "key": "ctrl+h f",
         "mac": "ctrl+h f"
+      },
+      {
+        "command": "scimax.help.describeVariable",
+        "key": "ctrl+h v",
+        "mac": "ctrl+h v"
+      },
+      {
+        "command": "scimax.help.apropos",
+        "key": "ctrl+h a",
+        "mac": "ctrl+h a"
       },
       {
         "command": "scimax.agenda.menu",
@@ -2695,7 +2725,7 @@
         "command": "scimax.mark.set",
         "key": "ctrl+space",
         "mac": "ctrl+space",
-        "when": "editorTextFocus && !suggestWidgetVisible && !editorHasSelection"
+        "when": "editorTextFocus && !suggestWidgetVisible"
       },
       {
         "command": "scimax.mark.cancel",
@@ -2711,20 +2741,20 @@
       },
       {
         "command": "scimax.mark.pop",
-        "key": "ctrl+c ctrl+space",
-        "mac": "ctrl+c ctrl+space",
+        "key": "ctrl+u ctrl+space",
+        "mac": "ctrl+u ctrl+space",
         "when": "editorTextFocus"
       },
       {
         "command": "scimax.mark.popGlobal",
-        "key": "ctrl+c shift+space",
-        "mac": "ctrl+c shift+space",
+        "key": "ctrl+x ctrl+space",
+        "mac": "ctrl+x ctrl+space",
         "when": "editorTextFocus"
       },
       {
         "command": "scimax.mark.exchange",
-        "key": "ctrl+c m x",
-        "mac": "ctrl+c m x",
+        "key": "ctrl+x ctrl+x",
+        "mac": "ctrl+x ctrl+x",
         "when": "editorTextFocus"
       },
       {
@@ -3321,6 +3351,11 @@
           "default": "monday",
           "description": "First day of the week in calendar view"
         },
+        "scimax.clock.showInlineTime": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show total clocked time as inline decorations on headlines"
+        },
         "scimax.mark.ringSize": {
           "type": "number",
           "default": 16,
@@ -3524,6 +3559,17 @@
           ],
           "default": "restricted",
           "markdownDescription": "Shell escape mode for LaTeX compilation:\n- `restricted` (recommended): Allows minted/pygments syntax highlighting while blocking arbitrary shell commands\n- `full`: Allows all shell commands via `\\write18{}` (**security risk** - only use with trusted documents)\n- `disabled`: No shell escape (minted will not work)"
+        },
+        "scimax.export.editmarkMode": {
+          "type": "string",
+          "enum": [
+            "show",
+            "accept",
+            "reject",
+            "hide"
+          ],
+          "default": "show",
+          "markdownDescription": "How to handle editmarks during export:\n- `show`: Render with visual markup (insertions, deletions, comments)\n- `accept`: Apply all changes (keep insertions, remove deletions)\n- `reject`: Revert all changes (remove insertions, keep deletions)\n- `hide`: Remove all editmarks without any replacement"
         },
         "scimax.latexPreview.enabled": {
           "type": "boolean",
@@ -3854,7 +3900,9 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "compile": "npm run build-doc-index && tsc -p ./ && npm run copy-assets",
+    "build-doc-index": "npx ts-node scripts/build-doc-index.ts",
+    "copy-assets": "cp src/help/docIndex.json out/help/",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
     "test": "vitest",

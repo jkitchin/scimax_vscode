@@ -38,6 +38,8 @@ Emacs-style help commands for discovering keybindings and commands.
 | C-h k | Describe key - type a key sequence to see its command |
 | C-h b | List keybindings - browse all keybindings             |
 | C-h f | Describe command - select a command to see its keys   |
+| C-h v | Describe variable - view setting details              |
+| C-h a | Apropos - search documentation for keywords           |
 
 ** C-h k (Describe Key)
 
@@ -50,6 +52,19 @@ Browse all scimax keybindings in a searchable list. Filter by typing to find key
 ** C-h f (Describe Command)
 
 Search for a command by name and see its keybindings. Useful when you know what you want to do but not the keybinding.
+
+** C-h v (Describe Variable/Setting)
+
+Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Actions include opening VS Code Settings to modify the value.
+
+** C-h a (Apropos)
+
+Search the documentation for keywords. Enter one or more search terms to find relevant documentation sections. Results are ranked by relevance:
+- Heading matches score highest
+- Command and keybinding mentions score high
+- Keyword and content matches score lower
+
+Select a result to see details or open the documentation file at that location.
 
 * Emacs-Style Editor Keybindings
 

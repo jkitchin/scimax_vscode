@@ -13,6 +13,12 @@ import {
     invalidateEquationCounterCache,
 } from './latexPreviewProvider';
 import { parseDiarySexp, getDiarySexpDates } from '../parser/orgDiarySexp';
+import {
+    parseClockLine,
+    formatDuration,
+    formatDurationLong,
+    parseEffort,
+} from '../parser/orgClocking';
 
 // Entity lookup map for fast access
 const ENTITY_MAP = new Map<string, { utf8: string; latex: string; html: string }>();
@@ -353,6 +359,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
 
         // Footnote reference hover
         hover = this.getFootnoteHover(line, position, document);
+        if (hover) return hover;
+
+        // Heading hover (shows clock time info)
+        hover = this.getHeadingClockHover(line, position, document);
         if (hover) return hover;
 
         return null;
@@ -1325,6 +1335,201 @@ export class OrgHoverProvider implements vscode.HoverProvider {
         }
 
         return null;
+    }
+
+    /**
+     * Get hover for headlines - shows clock time information
+     */
+    private getHeadingClockHover(
+        line: string,
+        position: vscode.Position,
+        document: vscode.TextDocument
+    ): vscode.Hover | null {
+        // Check if this is a heading line
+        const headingMatch = line.match(/^(\*+)\s+/);
+        if (!headingMatch) return null;
+
+        // Only show hover when hovering over the stars or beginning of heading
+        const starsEnd = headingMatch[0].length;
+        if (position.character > starsEnd + 30) return null; // Only first 30 chars after stars
+
+        // Find clock entries for this heading
+        const clockEntries = this.collectClockEntriesForHeading(document, position.line);
+        const effortValue = this.getEffortForHeading(document, position.line);
+
+        // Only show hover if there are clock entries or effort estimate
+        if (clockEntries.length === 0 && !effortValue) return null;
+
+        const markdown = new vscode.MarkdownString();
+        markdown.isTrusted = true;
+
+        // Calculate total time
+        const totalMinutes = clockEntries.reduce((sum, e) => sum + (e.duration || 0), 0);
+
+        if (totalMinutes > 0 || effortValue) {
+            markdown.appendMarkdown(`## $(clock) Clocked Time\n\n`);
+
+            if (totalMinutes > 0) {
+                markdown.appendMarkdown(`**Total:** ${formatDuration(totalMinutes)} (${formatDurationLong(totalMinutes)})\n\n`);
+                markdown.appendMarkdown(`**Entries:** ${clockEntries.length}\n\n`);
+
+                // Show effort comparison if available
+                if (effortValue) {
+                    const effortMinutes = parseEffort(effortValue);
+                    if (effortMinutes > 0) {
+                        const percentage = Math.round((totalMinutes / effortMinutes) * 100);
+                        const remaining = effortMinutes - totalMinutes;
+
+                        markdown.appendMarkdown(`**Effort estimate:** ${formatDuration(effortMinutes)}\n\n`);
+                        markdown.appendMarkdown(`**Progress:** ${percentage}%`);
+
+                        if (remaining > 0) {
+                            markdown.appendMarkdown(` (${formatDuration(remaining)} remaining)`);
+                        } else if (remaining < 0) {
+                            markdown.appendMarkdown(` (${formatDuration(Math.abs(remaining))} over)`);
+                        }
+                        markdown.appendMarkdown('\n\n');
+                    }
+                }
+
+                // Show recent entries
+                if (clockEntries.length > 0) {
+                    const recent = clockEntries.slice(0, 3);
+                    markdown.appendMarkdown(`---\n\n**Recent entries:**\n`);
+                    for (const entry of recent) {
+                        const startStr = entry.start.toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                        });
+                        const duration = entry.duration ? formatDuration(entry.duration) : 'running';
+                        markdown.appendMarkdown(`- ${startStr}: ${duration}\n`);
+                    }
+                }
+            } else if (effortValue) {
+                // Only effort, no clocked time
+                const effortMinutes = parseEffort(effortValue);
+                markdown.appendMarkdown(`**Effort estimate:** ${formatDuration(effortMinutes)}\n\n`);
+                markdown.appendMarkdown(`*No time clocked yet*\n`);
+            }
+
+            const range = new vscode.Range(
+                position.line, 0,
+                position.line, starsEnd
+            );
+            return new vscode.Hover(markdown, range);
+        }
+
+        return null;
+    }
+
+    /**
+     * Collect clock entries for a heading
+     */
+    private collectClockEntriesForHeading(
+        document: vscode.TextDocument,
+        headingLine: number
+    ): Array<{ start: Date; end?: Date; duration?: number }> {
+        const entries: Array<{ start: Date; end?: Date; duration?: number }> = [];
+        const headingLevel = this.getHeadingLevel(document.lineAt(headingLine).text);
+
+        // Search for LOGBOOK drawer or direct clock entries
+        let inLogbook = false;
+
+        for (let i = headingLine + 1; i < document.lineCount; i++) {
+            const lineText = document.lineAt(i).text;
+
+            // Stop at next heading at same or higher level
+            const lineLevel = this.getHeadingLevel(lineText);
+            if (lineLevel > 0 && lineLevel <= headingLevel) break;
+
+            // Check for LOGBOOK drawer
+            if (lineText.trim() === ':LOGBOOK:') {
+                inLogbook = true;
+                continue;
+            }
+
+            if (lineText.trim() === ':END:') {
+                if (inLogbook) break; // Done with logbook
+                continue;
+            }
+
+            // Skip other drawers
+            if (lineText.trim().startsWith(':') && lineText.trim().endsWith(':')) {
+                continue;
+            }
+
+            // Parse clock entries
+            if (lineText.includes('CLOCK:')) {
+                const entry = parseClockLine(lineText.trim());
+                if (entry) {
+                    entries.push(entry);
+                }
+            }
+
+            // Stop at content (non-planning, non-property lines)
+            if (!inLogbook && !lineText.trim().startsWith(':') &&
+                !lineText.match(/^(SCHEDULED|DEADLINE|CLOSED):/) &&
+                lineText.trim() !== '') {
+                break;
+            }
+        }
+
+        // Sort by start time (most recent first)
+        entries.sort((a, b) => b.start.getTime() - a.start.getTime());
+
+        return entries;
+    }
+
+    /**
+     * Get effort value for a heading
+     */
+    private getEffortForHeading(document: vscode.TextDocument, headingLine: number): string | null {
+        const headingLevel = this.getHeadingLevel(document.lineAt(headingLine).text);
+
+        // Search for PROPERTIES drawer
+        let inProperties = false;
+
+        for (let i = headingLine + 1; i < document.lineCount; i++) {
+            const lineText = document.lineAt(i).text;
+
+            // Stop at next heading
+            const lineLevel = this.getHeadingLevel(lineText);
+            if (lineLevel > 0 && lineLevel <= headingLevel) break;
+
+            if (lineText.trim() === ':PROPERTIES:') {
+                inProperties = true;
+                continue;
+            }
+
+            if (lineText.trim() === ':END:') {
+                if (inProperties) break;
+                continue;
+            }
+
+            if (inProperties) {
+                const effortMatch = lineText.match(/:Effort:\s*(.+)/i);
+                if (effortMatch) {
+                    return effortMatch[1].trim();
+                }
+            }
+
+            // Stop at content
+            if (!inProperties && !lineText.trim().startsWith(':') &&
+                !lineText.match(/^(SCHEDULED|DEADLINE|CLOSED):/) &&
+                lineText.trim() !== '' && !lineText.includes('CLOCK:')) {
+                break;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get heading level from line
+     */
+    private getHeadingLevel(line: string): number {
+        const match = line.match(/^(\*+)\s/);
+        return match ? match[1].length : 0;
     }
 
     /**

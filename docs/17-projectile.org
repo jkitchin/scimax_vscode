@@ -64,7 +64,7 @@ $ code /home/user/my-project/
 # Type: git (if it has .git) or manual (otherwise)
 #+end_example
 
-** 👀 Creating a Projectile Marker
+** ✅ Creating a Projectile Marker
 
 To mark a directory as a projectile project, create an empty `.projectile' file in the root:
 
@@ -77,7 +77,8 @@ touch .projectile
 
 The `.projectile' file can be empty or contain patterns for ignoring files (reserved for future use).
 
-** Project Types
+** ✅ Project Types
+CLOSED: [2026-01-18 Sun 10:25]
 
 Projects are classified into three types:
 

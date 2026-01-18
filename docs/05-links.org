@@ -309,15 +309,11 @@ Link to images (see also [[file:12-image-overlays.org][Image Overlays]]):
 
 Images are displayed in tooltips or overlays when hovering over the link.
 
-** ⚠️ Excalidraw Drawing Links
+** ✅ Excalidraw Drawing Links
 
 Link to Excalidraw drawings for visual diagrams:
 
-#+BEGIN_SRC org
-[[diagram.excalidraw][Architecture Diagram]]
-[[file:./drawings/flowchart.excalidraw.svg]]
-[[design.excalidraw.png][UI Mockup]]
-#+END_SRC
+[[_static/drawing.excalidraw]]
 
 *Supported Extensions:*
 | Extension           | Description                    |

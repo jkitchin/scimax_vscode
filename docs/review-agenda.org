@@ -41,32 +41,22 @@ else
 fi
 #+end_src
 
-#+RESULTS:
+
 : * Review Agenda
 : 
-: ** [[file:01-getting-started.org][01-getting-started.org]] (1 items)
-:    - [[file:01-getting-s1tarted.org::249][** 👀 Help Commands]]
-: 
-: ** [[file:02-document-structure.org][02-document-structure.org]] (3 items)
-:    - [[file:02-document-structure.org::278][** ⚠️ Startup Keyword]]
-:    - [[file:02-document-structure.org::288][** ⚠️ Property Keyword]]
-:    - [[file:02-document-structure.org::337][** ⚠️ Inherited Properties]]
+: ** [[file:02-document-structure.org][02-document-structure.org]] (2 items)
+:    - [[file:02-document-structure.org::289][** ⚠️ Property Keyword]]
+:    - [[file:02-document-structure.org::338][** ⚠️ Inherited Properties]]
 : 
 : ** [[file:03-todo-items.org][03-todo-items.org]] (2 items)
 :    - [[file:03-todo-items.org::116][***** ⚠️ Task 1]]
 :    - [[file:03-todo-items.org::117][***** 👀 Task 2]]
 : 
-: ** [[file:04-tables.org][04-tables.org]] (4 items)
-:    - [[file:04-tables.org::297][*** ⚠️ Percentage Calculation]]
-:    - [[file:04-tables.org::385][** 👀 HTML Export]]
-:    - [[file:04-tables.org::389][** 👀 LaTeX Export]]
-:    - [[file:04-tables.org::402][** 👀 Markdown Export]]
+: ** [[file:04-tables.org][04-tables.org]] (1 items)
+:    - [[file:04-tables.org::405][** 👀 Markdown Export]]
 : 
-: ** [[file:05-links.org][05-links.org]] (4 items)
-:    - [[file:05-links.org::242][** 👀 Basic File Links]]
-:    - [[file:05-links.org::300][** ⚠️ Image Links]]
-:    - [[file:05-links.org::389][** ⚠️ Finding Broken Links]]
-:    - [[file:05-links.org::395][** ⚠️ Updating Links]]
+: ** [[file:05-links.org][05-links.org]] (1 items)
+:    - [[file:05-links.org::312][** ⚠️ Excalidraw Drawing Links]]
 : 
 : ** [[file:06-timestamps.org][06-timestamps.org]] (13 items)
 :    - [[file:06-timestamps.org::765][** ⚠️ Diary Sexp Syntax]]
@@ -83,21 +73,8 @@ fi
 :    - [[file:06-timestamps.org::1008][** ⚠️ Multi-day Event]]
 :    - [[file:06-timestamps.org::1017][** ⚠️ Task with Complete History]]
 : 
-: ** [[file:07-source-blocks.org][07-source-blocks.org]] (5 items)
-:    - [[file:07-source-blocks.org::513][*** 👀 :eval - Control Evaluation]]
-:    - [[file:07-source-blocks.org::641][*** ⚠️ File Links]]
-:    - [[file:07-source-blocks.org::1063][*** ⚠️ With Headers]]
-:    - [[file:07-source-blocks.org::1501][*** ⚠️ Plot Generation]]
-:    - [[file:07-source-blocks.org::1623][* 👀 Navigation]]
-: 
-: ** [[file:09-jupyter.org][09-jupyter.org]] (1 items)
-:    - [[file:09-jupyter.org::1425][* 👀 Navigation]]
-: 
 : ** [[file:10-export.org][10-export.org]] (1 items)
 :    - [[file:10-export.org::414][*** ⚠️ Body-Only]]
-: 
-: ** [[file:12-image-overlays.org][12-image-overlays.org]] (1 items)
-:    - [[file:12-image-overlays.org::146][** ⚠️ Adding Captions]]
 : 
 : ** [[file:13-agenda.org][13-agenda.org]] (31 items)
 :    - [[file:13-agenda.org::257][** ⚠️ Upcoming Deadlines]]
@@ -141,9 +118,6 @@ fi
 :    - [[file:14-journal.org::492][** 👀 Full-Text Search]]
 :    - [[file:14-journal.org::630][** ⚠️ Status Bar Integration]]
 : 
-: ** [[file:15-capture.org][15-capture.org]] (1 items)
-:    - [[file:15-capture.org::42][** ⚠️ Your First Capture]]
-: 
 : ** [[file:17-projectile.org][17-projectile.org]] (1 items)
 :    - [[file:17-projectile.org::67][** 👀 Creating a Projectile Marker]]
 : 
@@ -157,10 +131,23 @@ fi
 : ** [[file:20-editmarks.org][20-editmarks.org]] (1 items)
 :    - [[file:20-editmarks.org::604][** 👀 Export Compatibility]]
 : 
-: ** [[file:22-hydra-menus.org][22-hydra-menus.org]] (1 items)
-:    - [[file:22-hydra-menus.org::73][** 👀 Understanding Exit Behaviors]]
+: ** [[file:25-commands.org][25-commands.org]] (7 items)
+:    - [[file:25-commands.org::73][** ⚠️ Org Utility Commands]]
+:    - [[file:25-commands.org::297][** ⚠️ Clocking]]
+:    - [[file:25-commands.org::818][* ⚠️ Help System]]
+:    - [[file:25-commands.org::843][* ⚠️ Linting]]
+:    - [[file:25-commands.org::872][* ⚠️ Mark Ring]]
+:    - [[file:25-commands.org::915][* ⚠️ Publishing]]
+:    - [[file:25-commands.org::946][* ⚠️ Query Replace]]
 : 
-: Total: 80 items need review
+: ** [[file:32-excalidraw.org][32-excalidraw.org]] (4 items)
+:    - [[file:32-excalidraw.org::132][** 👀 Organizing Drawings]]
+:    - [[file:32-excalidraw.org::147][** 👀 Export for Sharing]]
+:    - [[file:32-excalidraw.org::154][** 👀 Version Control]]
+:    - [[file:32-excalidraw.org::163][** 👀 Drawing won't open in visual editor]]
+: 
+: Total: 74 items need review
+
 
 * Current Review Status
 :PROPERTIES:

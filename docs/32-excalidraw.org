@@ -129,7 +129,8 @@ vscode.commands.executeCommand('scimax.org.openExcalidraw', {
 * ✅ Workflow Tips
 CLOSED: [2026-01-18 Sun 08:39]
 
-** 👀 Organizing Drawings
+** ✅ Organizing Drawings
+CLOSED: [2026-01-18 Sun 09:56]
 
 Keep drawings organized alongside your org files:
 
@@ -144,14 +145,16 @@ project/
     └── design.org
 #+END_EXAMPLE
 
-** 👀 Export for Sharing
+** ✅ Export for Sharing
+CLOSED: [2026-01-18 Sun 09:56]
 
 Excalidraw's =.excalidraw.svg= and =.excalidraw.png= formats are ideal because:
 - They display correctly in web browsers and image viewers
 - They can be embedded in HTML/PDF exports
 - They retain full editability (scene data is embedded)
 
-** 👀 Version Control
+** ✅ Version Control
+CLOSED: [2026-01-18 Sun 09:56]
 
 All Excalidraw formats are text-based (JSON or JSON-embedded), making them
 suitable for version control with git. The =.excalidraw.svg= format shows
@@ -160,7 +163,8 @@ meaningful diffs for the SVG portions.
 * ✅ Troubleshooting
 CLOSED: [2026-01-18 Sun 08:40]
 
-** 👀 Drawing won't open in visual editor
+** ✅ Drawing won't open in visual editor
+CLOSED: [2026-01-18 Sun 09:56]
 
 - Ensure the Excalidraw extension is installed: =pomdtr.excalidraw-editor=
 - Check that the file extension is correct (=.excalidraw=, =.excalidraw.json=,

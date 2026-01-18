@@ -33,6 +33,8 @@ let lastMark: Mark | undefined;
 // Selection mode state (Emacs transient mark mode)
 let selectionModeActive = false;
 let selectionAnchor: vscode.Position | undefined;
+let selectionAnchorUri: string | undefined;
+let selectionChangeListener: vscode.Disposable | undefined;
 
 /**
  * Get the mark ring size from configuration
@@ -76,21 +78,16 @@ export async function setMarkForSelection(): Promise<void> {
 
     const currentPos = editor.selection.active;
 
-    // If selection mode is already active and we're at the same position,
-    // deactivate it (toggle behavior like Emacs C-g)
-    if (selectionModeActive && selectionAnchor &&
-        currentPos.isEqual(editor.selection.anchor) &&
-        !editor.selection.isEmpty) {
-        // Deactivate: collapse selection to cursor
-        selectionModeActive = false;
-        selectionAnchor = undefined;
-        editor.selection = new vscode.Selection(currentPos, currentPos);
+    // If selection mode is already active, deactivate it (toggle behavior)
+    if (selectionModeActive && selectionAnchor) {
+        deactivateSelectionMode();
         vscode.window.setStatusBarMessage('Mark deactivated', 2000);
         return;
     }
 
     // Set the anchor for selection
     selectionAnchor = currentPos;
+    selectionAnchorUri = editor.document.uri.toString();
     selectionModeActive = true;
 
     // Also push to mark ring for later use
@@ -105,8 +102,8 @@ export async function setMarkForSelection(): Promise<void> {
     pushToRing(globalMarkRing, mark, ringSize);
     lastMark = mark;
 
-    // Use VS Code's selection anchor feature
-    await vscode.commands.executeCommand('editor.action.setSelectionAnchor');
+    // Start listening for cursor movements to extend selection
+    startSelectionTracking();
 
     // Visual feedback
     const line = currentPos.line + 1;
@@ -118,6 +115,72 @@ export async function setMarkForSelection(): Promise<void> {
 }
 
 /**
+ * Start tracking cursor movements to extend selection from anchor
+ */
+function startSelectionTracking(): void {
+    // Clean up any existing listener
+    if (selectionChangeListener) {
+        selectionChangeListener.dispose();
+    }
+
+    selectionChangeListener = vscode.window.onDidChangeTextEditorSelection(e => {
+        if (!selectionModeActive || !selectionAnchor) {
+            return;
+        }
+
+        const editor = e.textEditor;
+
+        // Only track in the same document where mark was set
+        if (editor.document.uri.toString() !== selectionAnchorUri) {
+            return;
+        }
+
+        // Get the new cursor position
+        const newPos = e.selections[0].active;
+
+        // If the selection was already extended (e.g., by shift+arrow),
+        // check if user is continuing to extend or if this is a new movement
+        const currentAnchor = e.selections[0].anchor;
+
+        // If the current anchor matches our saved anchor, the selection is being
+        // maintained properly (e.g., via shift+arrow). Let it be.
+        if (currentAnchor.isEqual(selectionAnchor)) {
+            return;
+        }
+
+        // If selection became empty (user clicked or moved without shift),
+        // extend selection from our anchor to new position
+        if (e.selections[0].isEmpty) {
+            // Create selection from anchor to new cursor position
+            const newSelection = new vscode.Selection(selectionAnchor, newPos);
+            editor.selection = newSelection;
+        }
+    });
+}
+
+/**
+ * Deactivate selection mode and clean up
+ */
+function deactivateSelectionMode(): void {
+    const editor = vscode.window.activeTextEditor;
+
+    selectionModeActive = false;
+    selectionAnchor = undefined;
+    selectionAnchorUri = undefined;
+
+    if (selectionChangeListener) {
+        selectionChangeListener.dispose();
+        selectionChangeListener = undefined;
+    }
+
+    // Collapse selection to cursor position
+    if (editor) {
+        const pos = editor.selection.active;
+        editor.selection = new vscode.Selection(pos, pos);
+    }
+}
+
+/**
  * Cancel selection mode (like Emacs C-g)
  */
 export function cancelSelection(): void {
@@ -125,10 +188,7 @@ export function cancelSelection(): void {
     if (!editor) return;
 
     if (selectionModeActive || !editor.selection.isEmpty) {
-        selectionModeActive = false;
-        selectionAnchor = undefined;
-        const pos = editor.selection.active;
-        editor.selection = new vscode.Selection(pos, pos);
+        deactivateSelectionMode();
         vscode.window.setStatusBarMessage('Selection cancelled', 1000);
     }
 }
@@ -493,6 +553,26 @@ export function registerMarkCommands(context: vscode.ExtensionContext): void {
             documentMarkRings.delete(key);
         })
     );
+
+    // Clean up selection listener when switching editors
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(() => {
+            // Deactivate selection mode when switching editors
+            if (selectionModeActive) {
+                deactivateSelectionMode();
+            }
+        })
+    );
+
+    // Dispose selection listener on extension deactivation
+    context.subscriptions.push({
+        dispose: () => {
+            if (selectionChangeListener) {
+                selectionChangeListener.dispose();
+                selectionChangeListener = undefined;
+            }
+        }
+    });
 
     console.log('Scimax: Mark ring commands registered');
 }
