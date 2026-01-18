@@ -46,6 +46,14 @@ interface DynamicBlockResult {
     error?: string;
 }
 
+/**
+ * Parsed agenda document for multi-file searches
+ */
+export interface AgendaDocument {
+    filePath: string;
+    doc: OrgDocumentNode;
+}
+
 // =============================================================================
 // Parameter Parsing
 // =============================================================================
@@ -227,11 +235,16 @@ function getColumnValue(headline: HeadlineElement, columnName: string): string {
 
 /**
  * Execute a columnview dynamic block
+ * @param doc - The current document
+ * @param params - Column view parameters
+ * @param documentPath - Path to current document
+ * @param agendaDocuments - Optional parsed agenda documents for multi-file search
  */
 export function executeColumnView(
     doc: OrgDocumentNode,
     params: ColumnViewParams,
-    documentPath?: string
+    documentPath?: string,
+    agendaDocuments?: AgendaDocument[]
 ): DynamicBlockResult {
     try {
         // Parse column specification
@@ -246,8 +259,14 @@ export function executeColumnView(
         let headlines: HeadlineElement[] = [];
 
         if (params.id === 'global' || params.id === 'agenda') {
-            // TODO: Search agenda files - for now just use current file
-            headlines = org.getAllHeadlines(doc);
+            // Search across agenda files if provided, otherwise fall back to current file
+            if (agendaDocuments && agendaDocuments.length > 0) {
+                for (const agendaDoc of agendaDocuments) {
+                    headlines.push(...org.getAllHeadlines(agendaDoc.doc));
+                }
+            } else {
+                headlines = org.getAllHeadlines(doc);
+            }
         } else if (params.id === 'local' || params.id === 'file' || !params.id) {
             // Search current file
             headlines = org.getAllHeadlines(doc);
@@ -381,19 +400,30 @@ function generateOrgTable(rows: string[][], hlines?: number): string {
 
 /**
  * Execute a clocktable dynamic block
+ * @param doc - The current document
+ * @param params - Clock table configuration
+ * @param documentPath - Path to current document
+ * @param agendaDocuments - Optional parsed agenda documents for multi-file search
  */
 export function executeClockTable(
     doc: OrgDocumentNode,
     params: ClockTableConfig,
-    documentPath?: string
+    documentPath?: string,
+    agendaDocuments?: AgendaDocument[]
 ): DynamicBlockResult {
     try {
         // Get headlines based on scope
         let headlines: HeadlineElement[] = [];
 
         if (params.scope === 'agenda') {
-            // TODO: Search agenda files - for now just use current file
-            headlines = org.getAllHeadlines(doc);
+            // Search across agenda files if provided, otherwise fall back to current file
+            if (agendaDocuments && agendaDocuments.length > 0) {
+                for (const agendaDoc of agendaDocuments) {
+                    headlines.push(...org.getAllHeadlines(agendaDoc.doc));
+                }
+            } else {
+                headlines = org.getAllHeadlines(doc);
+            }
         } else if (params.scope === 'subtree') {
             // For subtree scope, we would need cursor position context
             // For now, use all headlines in the file
@@ -428,21 +458,27 @@ export function executeClockTable(
 
 /**
  * Execute a dynamic block and return the new content
+ * @param blockName - The block type (e.g., 'columnview', 'clocktable')
+ * @param argsString - The block arguments string
+ * @param doc - The current document
+ * @param documentPath - Path to current document
+ * @param agendaDocuments - Optional parsed agenda documents for multi-file search
  */
 export function executeDynamicBlock(
     blockName: string,
     argsString: string | undefined,
     doc: OrgDocumentNode,
-    documentPath?: string
+    documentPath?: string,
+    agendaDocuments?: AgendaDocument[]
 ): DynamicBlockResult {
     switch (blockName.toLowerCase()) {
         case 'columnview':
             const params = parseColumnViewParams(argsString);
-            return executeColumnView(doc, params, documentPath);
+            return executeColumnView(doc, params, documentPath, agendaDocuments);
 
         case 'clocktable':
             const clockParams = parseClockTableParams(argsString);
-            return executeClockTable(doc, clockParams, documentPath);
+            return executeClockTable(doc, clockParams, documentPath, agendaDocuments);
 
         default:
             return {
@@ -509,6 +545,46 @@ export function findDynamicBlockAtCursor(
 }
 
 /**
+ * Load and parse agenda files from configuration
+ */
+async function loadAgendaDocuments(): Promise<AgendaDocument[]> {
+    const config = vscode.workspace.getConfiguration('scimax.agenda');
+    const agendaPatterns = config.get<string[]>('files', []);
+    const agendaDocs: AgendaDocument[] = [];
+
+    for (const pattern of agendaPatterns) {
+        // Handle glob patterns
+        const files = await vscode.workspace.findFiles(pattern, '**/node_modules/**', 100);
+        for (const file of files) {
+            try {
+                const content = await fs.promises.readFile(file.fsPath, 'utf-8');
+                const doc = parseOrg(content, { filePath: file.fsPath });
+                agendaDocs.push({ filePath: file.fsPath, doc });
+            } catch {
+                // Skip files that can't be read or parsed
+            }
+        }
+    }
+
+    return agendaDocs;
+}
+
+/**
+ * Check if block arguments indicate agenda scope
+ */
+function hasAgendaScope(blockName: string, argsString: string | undefined): boolean {
+    if (!argsString) return false;
+    const args = parseBlockArgs(argsString);
+
+    if (blockName.toLowerCase() === 'columnview') {
+        return args.id === 'global' || args.id === 'agenda';
+    } else if (blockName.toLowerCase() === 'clocktable') {
+        return args.scope === 'agenda';
+    }
+    return false;
+}
+
+/**
  * Update dynamic block at cursor
  */
 export async function updateDynamicBlockAtCursor(): Promise<void> {
@@ -528,8 +604,19 @@ export async function updateDynamicBlockAtCursor(): Promise<void> {
     const content = document.getText();
     const doc = parseOrg(content, { filePath: document.uri.fsPath });
 
+    // Load agenda documents if scope is 'agenda'
+    let agendaDocuments: AgendaDocument[] | undefined;
+    if (hasAgendaScope(block.name, block.args)) {
+        agendaDocuments = await loadAgendaDocuments();
+        if (agendaDocuments.length === 0) {
+            vscode.window.showWarningMessage(
+                'No agenda files configured. Set scimax.agenda.files in settings.'
+            );
+        }
+    }
+
     // Execute the block
-    const result = executeDynamicBlock(block.name, block.args, doc, document.uri.fsPath);
+    const result = executeDynamicBlock(block.name, block.args, doc, document.uri.fsPath, agendaDocuments);
 
     if (!result.success) {
         vscode.window.showErrorMessage(`Dynamic block error: ${result.error}`);
