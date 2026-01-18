@@ -30,7 +30,8 @@ export function findDocumentBibliography(documentText: string, documentPath: str
         if (firstPath) {
             let resolved = firstPath;
             if (resolved.startsWith('~')) {
-                resolved = resolved.replace('~', homeDir);
+                // Use path.join to normalize separators on Windows
+                resolved = path.join(homeDir, resolved.slice(1));
             } else if (!path.isAbsolute(resolved)) {
                 resolved = path.resolve(docDir, resolved);
             }
@@ -45,7 +46,8 @@ export function findDocumentBibliography(documentText: string, documentPath: str
     if (match) {
         let resolved = match[1].trim();
         if (resolved.startsWith('~')) {
-            resolved = resolved.replace('~', homeDir);
+            // Use path.join to normalize separators on Windows
+            resolved = path.join(homeDir, resolved.slice(1));
         } else if (!path.isAbsolute(resolved)) {
             resolved = path.resolve(docDir, resolved);
         }
