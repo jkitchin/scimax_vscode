@@ -102,11 +102,14 @@ export class CitationHoverProvider implements vscode.HoverProvider {
     /**
      * Find citation key at cursor position
      * Handles comma-separated keys like cite:key1,key2,key3
+     * Also handles org-ref v3 syntax: cite:&key1 &key2
      */
     private findCitationKeyAtPosition(line: string, position: number): string | null {
         // Patterns to match citations with potentially comma-separated keys
         const patterns = [
-            // org-ref style: cite:key1,key2,key3 etc.
+            // org-ref v3 style: cite:&key1 &key2 (keys prefixed with &)
+            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):(&[a-zA-Z0-9_:-]+(?:\s+&[a-zA-Z0-9_:-]+)*)/g, keysGroup: 1, prefix: '&' },
+            // org-ref v2 style: cite:key1,key2,key3 etc.
             { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g, keysGroup: 1 },
             // org-mode 9.5+ citation: [cite:@key1;@key2] or [cite/style:@key]
             { regex: /\[cite(?:\/[^\]]*)?:([^\]]+)\]/g, keysGroup: 1, prefix: '@' },
@@ -138,6 +141,24 @@ export class CitationHoverProvider implements vscode.HoverProvider {
                             if (position >= keyStart && position < keyEnd) {
                                 const key = keyPart.trim().replace(/^@/, '');
                                 if (key && !key.match(/^[;,]$/)) {
+                                    return key;
+                                }
+                            }
+                            keyStart = keyEnd;
+                        }
+                        return keys[0]; // fallback to first key
+                    }
+
+                    // For org-ref v3 style with &key1 &key2 format
+                    if (prefix === '&') {
+                        const keys = keysStr.split(/\s+/).map(k => k.trim().replace(/^&/, ''));
+                        // Find which key the cursor is on
+                        let keyStart = match.index + match[0].indexOf(keysStr);
+                        for (const keyPart of keysStr.split(/(\s+)/)) {
+                            const keyEnd = keyStart + keyPart.length;
+                            if (position >= keyStart && position < keyEnd) {
+                                const key = keyPart.trim().replace(/^&/, '');
+                                if (key && !key.match(/^\s*$/)) {
                                     return key;
                                 }
                             }
@@ -1102,26 +1123,29 @@ export class CitationDefinitionProvider implements vscode.DefinitionProvider {
 
     private findCitationKeyAtPosition(line: string, position: number): string | null {
         // Patterns to match citations (order matters - more specific first)
-        const patterns = [
-            // org-ref style: cite:key, citep:key, citet:key, etc.
-            /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g,
+        // Each pattern has: regex, capture group, and optional prefix to strip
+        const patterns: { regex: RegExp; group: number; prefix?: string }[] = [
+            // org-ref v3 style: cite:&key (keys prefixed with &)
+            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):&([a-zA-Z0-9_:-]+)/g, group: 1 },
+            // org-ref v2 style: cite:key, citep:key, citet:key, etc.
+            { regex: /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:-]+)/g, group: 1 },
             // org-mode 9.5+ citation: [cite:@key] or [cite/style:@key]
-            /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g,
+            { regex: /\[cite(?:\/[^\]]*)?:@([a-zA-Z0-9_:-]+)[^\]]*\]/g, group: 1 },
             // Pandoc/markdown: [@key]
-            /\[@([a-zA-Z0-9_:-]+)\]/g,
+            { regex: /\[@([a-zA-Z0-9_:-]+)\]/g, group: 1 },
             // Pandoc/markdown: @key (standalone)
-            /(?:^|[^\\w@])@([a-zA-Z][a-zA-Z0-9_:-]*)/g,
+            { regex: /(?:^|[^\w@])@([a-zA-Z][a-zA-Z0-9_:-]*)/g, group: 1 },
             // LaTeX: \cite{key}
-            /\\cite[pt]?\{([a-zA-Z0-9_:-]+)\}/g
+            { regex: /\\cite[pt]?\{([a-zA-Z0-9_:-]+)\}/g, group: 1 }
         ];
 
-        for (const pattern of patterns) {
+        for (const { regex, group } of patterns) {
             let match;
-            while ((match = pattern.exec(line)) !== null) {
+            while ((match = regex.exec(line)) !== null) {
                 const start = match.index;
                 const end = start + match[0].length;
                 if (position >= start && position <= end) {
-                    return match[1];
+                    return match[group];
                 }
             }
         }
@@ -1202,16 +1226,60 @@ export class CitationLinkProvider implements vscode.DocumentLinkProvider {
         const links: vscode.DocumentLink[] = [];
         const text = document.getText();
 
-        // Patterns to match various citation formats
-        // For org-ref style with comma-separated keys, we need special handling
-        const orgRefPattern = /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z0-9_:,-]+)/g;
+        // org-ref v3 style: cite:&key1 &key2 (keys prefixed with &, space-separated)
+        const orgRefV3Pattern = /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):(&[a-zA-Z0-9_:-]+(?:\s+&[a-zA-Z0-9_:-]+)*)/g;
 
         let match;
-        while ((match = orgRefPattern.exec(text)) !== null) {
+        while ((match = orgRefV3Pattern.exec(text)) !== null) {
             const fullMatch = match[0];
             const keysStr = match[1];
+            const keyParts = keysStr.split(/\s+/);
+            const prefixLen = fullMatch.indexOf(':') + 1;
+
+            let keyOffset = match.index + prefixLen;
+
+            for (const keyPart of keyParts) {
+                if (!keyPart) continue;
+                const key = keyPart.replace(/^&/, ''); // Strip & prefix
+
+                const entry = this.manager.getEntry(key);
+                const startPos = document.positionAt(keyOffset);
+                const endPos = document.positionAt(keyOffset + keyPart.length);
+                const range = new vscode.Range(startPos, endPos);
+
+                const link = new vscode.DocumentLink(range);
+
+                if (entry) {
+                    link.tooltip = `${formatAuthors(entry.author)} (${entry.year}): ${entry.title?.slice(0, 50) || 'Untitled'}...`;
+                } else {
+                    link.tooltip = `Citation: ${key} (not in bibliography - click to search)`;
+                }
+
+                link.target = vscode.Uri.parse(
+                    `command:scimax.ref.citeAction?${encodeURIComponent(JSON.stringify(key))}`
+                );
+
+                links.push(link);
+                // Find next key position (skip whitespace)
+                keyOffset += keyPart.length;
+                while (keyOffset < text.length && /\s/.test(text[keyOffset])) {
+                    keyOffset++;
+                }
+            }
+        }
+
+        // org-ref v2 style: cite:key1,key2,key3 (comma-separated, no prefix)
+        const orgRefV2Pattern = /(?:cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt):([a-zA-Z][a-zA-Z0-9_:,-]*)/g;
+
+        while ((match = orgRefV2Pattern.exec(text)) !== null) {
+            const fullMatch = match[0];
+            const keysStr = match[1];
+
+            // Skip if this looks like v3 syntax (starts with &)
+            if (keysStr.startsWith('&')) continue;
+
             const keys = keysStr.split(',');
-            const prefixLen = fullMatch.indexOf(':') + 1; // Length of "cite:" etc.
+            const prefixLen = fullMatch.indexOf(':') + 1;
 
             let keyOffset = match.index + prefixLen;
 

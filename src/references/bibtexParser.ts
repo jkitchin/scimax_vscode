@@ -103,21 +103,69 @@ export function parseBibTeX(content: string): ParseResult {
 function parseFields(fieldsStr: string): Record<string, string> {
     const fields: Record<string, string> = {};
 
-    // Match field = value patterns
-    // Value can be: {braced}, "quoted", or number
-    const fieldRegex = /(\w+)\s*=\s*(?:\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}|"([^"]*)"|(\d+))/g;
+    // Find field assignments: fieldname = value
+    // We need to handle arbitrary brace nesting, so we use a state machine approach
+    const fieldStartRegex = /(\w+)\s*=\s*/g;
     let match;
 
-    while ((match = fieldRegex.exec(fieldsStr)) !== null) {
+    while ((match = fieldStartRegex.exec(fieldsStr)) !== null) {
         const fieldName = match[1].toLowerCase();
-        const value = match[2] ?? match[3] ?? match[4] ?? '';
+        const valueStart = match.index + match[0].length;
 
-        // Clean up the value
-        const cleanValue = cleanBibValue(value);
-        fields[fieldName] = cleanValue;
+        // Parse the value starting from valueStart
+        const value = extractFieldValue(fieldsStr, valueStart);
+        if (value !== null) {
+            const cleanValue = cleanBibValue(value);
+            fields[fieldName] = cleanValue;
+        }
     }
 
     return fields;
+}
+
+/**
+ * Extract a field value handling arbitrary brace nesting
+ */
+function extractFieldValue(str: string, start: number): string | null {
+    if (start >= str.length) return null;
+
+    const firstChar = str[start];
+
+    // Braced value: {content with {nested} braces}
+    if (firstChar === '{') {
+        let depth = 1;
+        let i = start + 1;
+        while (i < str.length && depth > 0) {
+            if (str[i] === '{') depth++;
+            else if (str[i] === '}') depth--;
+            i++;
+        }
+        if (depth === 0) {
+            return str.slice(start + 1, i - 1);
+        }
+        return null;
+    }
+
+    // Quoted value: "content"
+    if (firstChar === '"') {
+        let i = start + 1;
+        while (i < str.length && str[i] !== '"') {
+            if (str[i] === '\\' && i + 1 < str.length) i++; // skip escaped chars
+            i++;
+        }
+        if (i < str.length) {
+            return str.slice(start + 1, i);
+        }
+        return null;
+    }
+
+    // Numeric or bare value (until comma, newline, or closing brace)
+    const endMatch = str.slice(start).match(/^([^,}\n]+)/);
+    if (endMatch) {
+        return endMatch[1].trim();
+    }
+
+    return null;
 }
 
 /**
