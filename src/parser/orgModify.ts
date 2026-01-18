@@ -33,7 +33,6 @@ import type {
     TableCellObject,
     SrcBlockElement,
     PlainListElement,
-    ItemElement,
     TimestampObject,
     LinkObject,
     PlanningElement,

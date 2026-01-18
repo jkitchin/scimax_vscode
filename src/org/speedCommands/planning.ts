@@ -7,24 +7,19 @@
 import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
 import { parseRelativeDate, getDateExpressionExamples } from '../../utils/dateParser';
+import { formatOrgTimestamp as formatTimestamp } from '../../parser/orgRepeater';
 
 /**
- * Format a date as an org-mode timestamp
+ * Format a date as an org-mode timestamp (wrapper for consistency)
  */
 function formatOrgTimestamp(date: Date, includeTime = false): string {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dayName = days[date.getDay()];
-
     if (includeTime) {
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `<${year}-${month}-${day} ${dayName} ${hours}:${minutes}>`;
+        return formatTimestamp(date, {
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+        });
     }
-
-    return `<${year}-${month}-${day} ${dayName}>`;
+    return formatTimestamp(date, {});
 }
 
 
