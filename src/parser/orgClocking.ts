@@ -90,6 +90,8 @@ export interface TimeReportConfig {
     showPercentages?: boolean;
     /** Whether to include empty headlines */
     includeEmpty?: boolean;
+    /** File path for category extraction */
+    filePath?: string;
 }
 
 /**
@@ -110,6 +112,8 @@ export interface ClockTableConfig {
     showFile?: boolean;
     /** Time span filter */
     span?: 'today' | 'thisweek' | 'thismonth' | 'untilnow' | 'all';
+    /** File path for category extraction */
+    filePath?: string;
 }
 
 // =============================================================================
@@ -455,7 +459,7 @@ export function generateTimeReport(
         // Filter by category
         if (config.categories && config.categories.length > 0) {
             const category =
-                headline.properties.category || getFileCategory(headline) || 'default';
+                headline.properties.category || getFileCategory(config.filePath) || 'default';
             if (!config.categories.includes(category)) {
                 return null;
             }
@@ -492,7 +496,7 @@ export function generateTimeReport(
             title: headline.properties.rawValue,
             level: headline.properties.level,
             tags: headline.properties.tags,
-            category: headline.properties.category || getFileCategory(headline),
+            category: headline.properties.category || getFileCategory(config.filePath),
             totalMinutes: finalTotal,
             formattedTime: formatDuration(finalTotal),
             children,
@@ -560,10 +564,22 @@ function getDateRange(config: TimeReportConfig): { startDate?: Date; endDate?: D
 }
 
 /**
- * Get category from file name (placeholder - would need file path)
+ * Get category from file name
+ * Extracts the base name without extension as the category
  */
-function getFileCategory(_headline: HeadlineElement): string | undefined {
-    return undefined;
+function getFileCategory(filePath: string | undefined): string | undefined {
+    if (!filePath) return undefined;
+
+    // Extract base name without extension
+    const basename = filePath.split(/[/\\]/).pop();
+    if (!basename) return undefined;
+
+    // Remove extension
+    const dotIndex = basename.lastIndexOf('.');
+    if (dotIndex > 0) {
+        return basename.substring(0, dotIndex);
+    }
+    return basename;
 }
 
 /**

@@ -463,7 +463,15 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportParagraph(paragraph: ParagraphElement, state: ExportState): string {
+        // Pass affiliated keywords to child objects (for image captions)
+        const previousAffiliated = state.currentAffiliated;
+        state.currentAffiliated = paragraph.affiliated;
+
         const content = exportObjects(paragraph.children, this, state);
+
+        // Restore previous state
+        state.currentAffiliated = previousAffiliated;
+
         return content + '\n';
     }
 
@@ -917,18 +925,39 @@ export class LatexExportBackend implements ExportBackend {
         let caption = '';
         let label = '';
 
-        // TODO: Extract from affiliated keywords if this were an element
-        // For now, use defaults
+        // Extract from affiliated keywords if available
+        const affiliated = state.currentAffiliated;
+        if (affiliated) {
+            // Get caption - can be string or [short, long] array
+            if (affiliated.caption) {
+                caption = Array.isArray(affiliated.caption)
+                    ? affiliated.caption[1]  // Use long caption
+                    : affiliated.caption;
+            }
+            // Get label from #+NAME:
+            if (affiliated.name) {
+                label = affiliated.name;
+            }
+            // Check for #+ATTR_LATEX options
+            if (affiliated.attr.latex) {
+                if (affiliated.attr.latex.width) {
+                    width = affiliated.attr.latex.width;
+                }
+                if (affiliated.attr.latex.placement) {
+                    placement = affiliated.attr.latex.placement;
+                }
+            }
+        }
 
         let latex = `\\begin{figure}[${placement}]\n`;
         latex += '\\centering\n';
         latex += `\\includegraphics[width=${width}]{${escapeString(path, 'latex')}}\n`;
 
         if (caption) {
-            latex += `\\caption{${caption}}\n`;
+            latex += `\\caption{${escapeString(caption, 'latex')}}\n`;
         }
         if (label) {
-            latex += `\\label{${label}}\n`;
+            latex += `\\label{${escapeString(label, 'latex')}}\n`;
         }
 
         latex += '\\end{figure}';

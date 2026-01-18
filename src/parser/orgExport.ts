@@ -154,6 +154,8 @@ export interface ExportState {
     options: ExportOptions;
     /** Skip next results block (based on :exports header of previous src block) */
     skipNextResults?: boolean;
+    /** Current element's affiliated keywords (for image captions, etc.) */
+    currentAffiliated?: AffiliatedKeywords;
 }
 
 /**

@@ -5,7 +5,37 @@
  * It's read-mostly, with limited write support for rebuilding.
  */
 
+import * as fs from 'fs';
+import * as crypto from 'crypto';
 import { createClient, Client } from '@libsql/client';
+
+// Document structure expected by indexFile (matches LegacyDocument from orgParserAdapter)
+export interface CliDocument {
+    headings: Array<{
+        level: number;
+        title: string;
+        lineNumber: number;
+        todoState?: string;
+        priority?: string;
+        tags: string[];
+        properties: Record<string, string>;
+        scheduled?: string;
+        deadline?: string;
+        closed?: string;
+    }>;
+    sourceBlocks: Array<{
+        language: string;
+        content: string;
+        lineNumber: number;
+        headers: Record<string, string>;
+    }>;
+    links: Array<{
+        type: string;
+        target: string;
+        description?: string;
+        lineNumber: number;
+    }>;
+}
 
 // CLI-specific types (simpler than VS Code extension types)
 export interface CliSearchResult {
@@ -64,7 +94,8 @@ export interface CliDatabase {
     hasEmbeddings(): Promise<boolean>;
 
     // Write operations (for rebuild)
-    indexFile(filePath: string, doc: unknown): Promise<void>;
+    indexFile(filePath: string, doc: CliDocument): Promise<void>;
+    clearFile(filePath: string): Promise<void>;
 }
 
 class CliDatabaseImpl implements CliDatabase {
@@ -231,11 +262,119 @@ class CliDatabaseImpl implements CliDatabase {
         }
     }
 
-    async indexFile(_filePath: string, _doc: unknown): Promise<void> {
-        // TODO: Implement file indexing for CLI rebuild
-        // This would extract headings, links, etc. from the parsed doc
-        // and insert them into the database
-        console.warn('indexFile not yet implemented for CLI');
+    async clearFile(filePath: string): Promise<void> {
+        // Get file ID
+        const fileResult = await this.client.execute({
+            sql: 'SELECT id FROM files WHERE path = ?',
+            args: [filePath],
+        });
+
+        if (fileResult.rows.length === 0) {
+            return; // File not in database
+        }
+
+        const fileId = fileResult.rows[0].id as number;
+
+        // Delete associated data
+        await this.client.execute({ sql: 'DELETE FROM headings WHERE file_id = ?', args: [fileId] });
+        await this.client.execute({ sql: 'DELETE FROM source_blocks WHERE file_id = ?', args: [fileId] });
+        await this.client.execute({ sql: 'DELETE FROM links WHERE file_id = ?', args: [fileId] });
+        await this.client.execute({ sql: 'DELETE FROM files WHERE id = ?', args: [fileId] });
+    }
+
+    async indexFile(filePath: string, doc: CliDocument): Promise<void> {
+        // Get file stats
+        const stats = fs.statSync(filePath);
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const hash = crypto.createHash('md5').update(content).digest('hex');
+
+        // Clear existing data for this file
+        await this.clearFile(filePath);
+
+        // Insert file record
+        await this.client.execute({
+            sql: `INSERT INTO files (path, file_type, mtime, hash, size, indexed_at, keywords)
+                  VALUES (?, 'org', ?, ?, ?, ?, '{}')`,
+            args: [filePath, stats.mtimeMs, hash, stats.size, Date.now()],
+        });
+
+        // Get the new file ID
+        const fileResult = await this.client.execute({
+            sql: 'SELECT id FROM files WHERE path = ?',
+            args: [filePath],
+        });
+        const fileId = fileResult.rows[0].id as number;
+
+        // Build line position map for begin_pos
+        const lines = content.split('\n');
+        const linePositions: number[] = [0];
+        let pos = 0;
+        for (const line of lines) {
+            pos += line.length + 1; // +1 for newline
+            linePositions.push(pos);
+        }
+
+        // Index headings
+        for (const heading of doc.headings) {
+            const beginPos = linePositions[heading.lineNumber - 1] || 0;
+
+            await this.client.execute({
+                sql: `INSERT INTO headings
+                      (file_id, file_path, level, title, line_number, begin_pos,
+                       todo_state, priority, tags, inherited_tags, properties,
+                       scheduled, deadline, closed, cell_index)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, '[]', ?, ?, ?, ?, NULL)`,
+                args: [
+                    fileId,
+                    filePath,
+                    heading.level,
+                    heading.title,
+                    heading.lineNumber,
+                    beginPos,
+                    heading.todoState || null,
+                    heading.priority || null,
+                    JSON.stringify(heading.tags),
+                    JSON.stringify(heading.properties),
+                    heading.scheduled || null,
+                    heading.deadline || null,
+                    heading.closed || null,
+                ],
+            });
+        }
+
+        // Index source blocks
+        for (const block of doc.sourceBlocks) {
+            await this.client.execute({
+                sql: `INSERT INTO source_blocks
+                      (file_id, file_path, language, content, line_number, headers, cell_index)
+                      VALUES (?, ?, ?, ?, ?, ?, NULL)`,
+                args: [
+                    fileId,
+                    filePath,
+                    block.language,
+                    block.content,
+                    block.lineNumber,
+                    JSON.stringify(block.headers),
+                ],
+            });
+        }
+
+        // Index links
+        for (const link of doc.links) {
+            await this.client.execute({
+                sql: `INSERT INTO links
+                      (file_id, file_path, link_type, target, description, line_number)
+                      VALUES (?, ?, ?, ?, ?, ?)`,
+                args: [
+                    fileId,
+                    filePath,
+                    link.type,
+                    link.target,
+                    link.description || null,
+                    link.lineNumber,
+                ],
+            });
+        }
     }
 }
 
