@@ -123,12 +123,25 @@
     "planning": {
       "patterns": [
         {
+          "comment": "Planning line with CLOSED, SCHEDULED, DEADLINE in any order",
           "name": "meta.planning.org",
-          "match": "^\\s*(SCHEDULED|DEADLINE|CLOSED):\\s*(.*)$",
-          "captures": {
-            "1": { "name": "keyword.other.planning.org" },
-            "2": { "patterns": [{ "include": "#timestamps" }] }
-          }
+          "begin": "^\\s*(?=(?:CLOSED|SCHEDULED|DEADLINE):)",
+          "end": "$",
+          "patterns": [
+            {
+              "name": "keyword.other.planning.closed.org",
+              "match": "CLOSED:"
+            },
+            {
+              "name": "keyword.other.planning.scheduled.org",
+              "match": "SCHEDULED:"
+            },
+            {
+              "name": "keyword.other.planning.deadline.org",
+              "match": "DEADLINE:"
+            },
+            { "include": "#timestamps" }
+          ]
         }
       ]
     },
@@ -826,7 +839,7 @@
       ]
     },
     "list-tag": {
-      "match": "^([^:]+)\\s*::\\s*",
+      "match": "([^:]+?)\\s*::\\s*",
       "captures": {
         "1": { "name": "entity.name.tag.list.org" }
       }
