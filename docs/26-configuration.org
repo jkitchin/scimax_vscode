@@ -5,15 +5,17 @@
 #+OPTIONS: toc:2 num:t H:4
 #+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+* ✅ Introduction
+CLOSED: [2026-01-17 Sat 17:35]
 
 Scimax VS Code provides extensive configuration options to customize your scientific computing environment. This guide covers all available settings and provides examples for common use cases.
 
-** Accessing Settings
+** ✅ Accessing Settings
+CLOSED: [2026-01-17 Sat 17:35]
 
 There are multiple ways to access and modify Scimax settings:
 
-1. *Settings UI*: Press `C-,' (or `s-,' on macOS) to open the VS Code settings interface. Search for "scimax" to see all Scimax-related settings.
+1. *Settings UI*: Press `C/Cmd-,' to open the VS Code settings interface. Search for "scimax" to see all Scimax-related settings.
 
 2. *settings.json*: Edit your settings file directly for more control:
    - Press `C-S-P' (or `s-S-P') and search for "Preferences: Open Settings (JSON)"
@@ -23,12 +25,12 @@ There are multiple ways to access and modify Scimax settings:
 
 VS Code uses two types of settings files:
 
-| Type      | Scope                      | Location                                                  |
-|-----------+----------------------------+-----------------------------------------------------------|
-| User      | All workspaces             | Linux: =~/.config/Code/User/settings.json=                |
-|           |                            | macOS: =~/Library/Application Support/Code/User/settings.json= |
-|           |                            | Windows: =%APPDATA%\Code\User\settings.json=              |
-| Workspace | Current workspace only     | =.vscode/settings.json= in workspace root                 |
+| Type      | Scope                  | Location                                                       |
+|-----------+------------------------+----------------------------------------------------------------|
+| User      | All workspaces         | Linux: ~/.config/Code/User/settings.json                     |
+|           |                        | macOS: ~/Library/Application Support/Code/User/settings.json |
+|           |                        | Windows: %APPDATA%\Code\User\settings.json                   |
+| Workspace | Current workspace only | .vscode/settings.json in workspace root                      |
 
 Workspace settings override user settings for that specific workspace.
 
@@ -44,24 +46,28 @@ All Scimax settings use JSON format in `settings.json':
 }
 #+end_src
 
-* Journal Settings
+* ✅ Journal Settings
+CLOSED: [2026-01-17 Sat 17:36]
 
 Configure the journal system for daily note-taking and logging.
 
-** Settings Overview
+** ✅ Settings Overview
+CLOSED: [2026-01-17 Sat 17:36]
 
-| Setting                         | Type    | Default        | Description                              |
-|---------------------------------+---------+----------------+------------------------------------------|
-| =scimax.journal.directory=      | string  | =""=           | Directory for journal files              |
-| =scimax.journal.format=         | string  | ="org"=        | File format (org or markdown)            |
-| =scimax.journal.template=       | string  | ="default"=    | Template name for new entries            |
-| =scimax.journal.dateFormat=     | string  | ="YYYY-MM-DD"= | Date format for filenames                |
-| =scimax.journal.autoTimestamp=  | boolean | =true=         | Auto-add timestamps to log entries       |
-| =scimax.journal.weekStartsOn=   | string  | ="monday"=     | First day of week (monday or sunday)     |
+| Setting                      | Type    | Default      | Description                          |
+|------------------------------+---------+--------------+--------------------------------------|
+| scimax.journal.directory     | string  | ""           | Directory for journal files          |
+| scimax.journal.format        | string  | "org"        | File format (org or markdown)        |
+| scimax.journal.template      | string  | "default"    | Template name for new entries        |
+| scimax.journal.dateFormat    | string  | "YYYY-MM-DD" | Date format for filenames            |
+| scimax.journal.autoTimestamp | boolean | true         | Auto-add timestamps to log entries   |
+| scimax.journal.weekStartsOn  | string  | "monday"     | First day of week (monday or sunday) |
 
-** Detailed Configuration
+** ✅ Detailed Configuration
+CLOSED: [2026-01-17 Sat 17:36]
 
-*** scimax.journal.directory
+*** ✅ scimax.journal.directory
+CLOSED: [2026-01-17 Sat 17:36]
 
 - *Type*: string
 - *Default*: `""' (uses `~/scimax-journal')
@@ -74,7 +80,8 @@ Configure the journal system for daily note-taking and logging.
 }
 #+end_src
 
-*** scimax.journal.format
+*** ✅ scimax.journal.format
+CLOSED: [2026-01-17 Sat 17:37]
 
 - *Type*: string (enum)
 - *Default*: `"org"'
@@ -88,7 +95,8 @@ Configure the journal system for daily note-taking and logging.
 }
 #+end_src
 
-*** scimax.journal.template
+*** ✅ scimax.journal.template
+CLOSED: [2026-01-17 Sat 17:37]
 
 - *Type*: string
 - *Default*: `"default"'
@@ -101,7 +109,8 @@ Configure the journal system for daily note-taking and logging.
 }
 #+end_src
 
-*** scimax.journal.dateFormat
+*** ✅ scimax.journal.dateFormat
+CLOSED: [2026-01-17 Sat 17:37]
 
 - *Type*: string
 - *Default*: `"YYYY-MM-DD"'
@@ -119,7 +128,8 @@ Configure the journal system for daily note-taking and logging.
 }
 #+end_src
 
-*** scimax.journal.autoTimestamp
+*** ✅ scimax.journal.autoTimestamp
+CLOSED: [2026-01-17 Sat 17:37]
 
 - *Type*: boolean
 - *Default*: `true'
@@ -132,7 +142,8 @@ Configure the journal system for daily note-taking and logging.
 }
 #+end_src
 
-*** scimax.journal.weekStartsOn
+*** ✅ scimax.journal.weekStartsOn
+CLOSED: [2026-01-17 Sat 17:37]
 
 - *Type*: string (enum)
 - *Default*: `"monday"'
@@ -146,23 +157,24 @@ Configure the journal system for daily note-taking and logging.
 }
 #+end_src
 
-* Database & Search Settings
+* ✅ Database & Search Settings
+CLOSED: [2026-01-17 Sat 17:37]
 
 Configure the full-text search database and semantic search capabilities.
 
 ** Settings Overview
 
-| Setting                        | Type    | Default                                  | Description                                |
-|--------------------------------+---------+------------------------------------------+--------------------------------------------|
-| =scimax.db.directories=        | array   | =[ ]=                                    | Additional directories to index            |
-| =scimax.db.excludePatterns=    | array   | See below                                | Glob patterns to exclude                   |
-| =scimax.db.ignorePatterns=     | array   | See below                                | Files to ignore during indexing            |
-| =scimax.db.autoIndex=          | boolean | =false=                                  | Auto-index workspace on activation         |
-| =scimax.db.embeddingProvider=  | string  | ="none"=                                 | Embedding provider for semantic search     |
-| =scimax.db.localModel=         | string  | ="Xenova/all-MiniLM-L6-v2"=              | Local embedding model                      |
-| =scimax.db.ollamaUrl=          | string  | ="http://localhost:11434"=               | Ollama API URL                             |
-| =scimax.db.ollamaModel=        | string  | ="nomic-embed-text"=                     | Ollama embedding model                     |
-| =scimax.db.openaiApiKey=       | string  | =""=                                     | OpenAI API key                             |
+| Setting                     | Type    | Default                   | Description                            |
+|-----------------------------+---------+---------------------------+----------------------------------------|
+| scimax.db.directories       | array   | [ ]                       | Additional directories to index        |
+| scimax.db.excludePatterns   | array   | See below                 | Glob patterns to exclude               |
+| scimax.db.ignorePatterns    | array   | See below                 | Files to ignore during indexing        |
+| scimax.db.autoIndex         | boolean | false                     | Auto-index workspace on activation     |
+| scimax.db.embeddingProvider | string  | "none"                    | Embedding provider for semantic search |
+| scimax.db.localModel        | string  | "Xenova/all-MiniLM-L6-v2" | Local embedding model                  |
+| scimax.db.ollamaUrl         | string  | "http://localhost:11434"  | Ollama API URL                         |
+| scimax.db.ollamaModel       | string  | "nomic-embed-text"        | Ollama embedding model                 |
+| scimax.db.openaiApiKey      | string  | ""                        | OpenAI API key                         |
 
 ** Detailed Configuration
 
@@ -322,8 +334,8 @@ Configure Python and Jupyter paths for source block execution.
 
 | Setting                      | Type   | Default | Description                        |
 |------------------------------+--------+---------+------------------------------------|
-| =scimax.literate.pythonPath= | string | =""=    | Path to Python executable          |
-| =scimax.literate.jupyterPath= | string | =""=    | Path to Jupyter executable         |
+| scimax.literate.pythonPath | string | ""    | Path to Python executable          |
+| scimax.literate.jupyterPath | string | ""    | Path to Jupyter executable         |
 
 ** Detailed Configuration
 
@@ -366,12 +378,12 @@ Configure bibliography management and citation styles.
 
 ** Settings Overview
 
-| Setting                          | Type   | Default  | Description                            |
-|----------------------------------+--------+----------+----------------------------------------|
-| =scimax.ref.bibliographyFiles=   | array  | =[ ]=    | Paths to BibTeX files                  |
-| =scimax.ref.pdfDirectory=        | string | =""=     | Directory with PDF files               |
-| =scimax.ref.notesDirectory=      | string | =""=     | Directory for reference notes          |
-| =scimax.ref.defaultCiteStyle=    | string | ="cite"= | Default citation style                 |
+| Setting                      | Type   | Default | Description                   |
+|------------------------------+--------+---------+-------------------------------|
+| scimax.ref.bibliographyFiles | array  | [ ]     | Paths to BibTeX files         |
+| scimax.ref.pdfDirectory      | string | ""      | Directory with PDF files      |
+| scimax.ref.notesDirectory    | string | ""      | Directory for reference notes |
+| scimax.ref.defaultCiteStyle  | string | "cite"  | Default citation style        |
 
 ** Detailed Configuration
 
@@ -442,9 +454,10 @@ Configure LaTeX export options.
 
 ** Settings Overview
 
-| Setting                           | Type   | Default | Description                        |
-|-----------------------------------+--------+---------+------------------------------------|
-| =scimax.export.latex.customHeader= | string | =""=    | Custom LaTeX preamble              |
+| Setting                          | Type   | Default | Description           |
+|----------------------------------+--------+---------+-----------------------|
+| scimax.export.latex.customHeader | string | ""      | Custom LaTeX preamble |
+
 
 ** Detailed Configuration
 
@@ -457,7 +470,7 @@ Configure LaTeX export options.
 *Example*:
 #+begin_src json
 {
-  "scimax.export.latex.customHeader": "\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n\\usepackage[margin=1in]{geometry}"
+  "scimax.export.latex.customHeader": "\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n\\usepackage[margin1in]{geometry}"
 }
 #+end_src
 
@@ -474,11 +487,11 @@ Configure inline LaTeX equation previews.
 
 ** Settings Overview
 
-| Setting                              | Type    | Default | Description                           |
-|--------------------------------------+---------+---------+---------------------------------------|
-| =scimax.latexPreview.enabled=        | boolean | =true=  | Enable LaTeX preview on hover         |
-| =scimax.latexPreview.cacheEnabled=   | boolean | =true=  | Cache rendered equations              |
-| =scimax.latexPreview.darkModeAware=  | boolean | =true=  | Adjust rendering for dark themes      |
+| Setting                           | Type    | Default | Description                      |
+|-----------------------------------+---------+---------+----------------------------------|
+| scimax.latexPreview.enabled       | boolean | true    | Enable LaTeX preview on hover    |
+| scimax.latexPreview.cacheEnabled  | boolean | true    | Cache rendered equations         |
+| scimax.latexPreview.darkModeAware | boolean | true    | Adjust rendering for dark themes |
 
 ** Detailed Configuration
 
@@ -527,13 +540,13 @@ Configure automatic PDF building and live preview.
 
 ** Settings Overview
 
-| Setting                                 | Type    | Default      | Description                         |
-|-----------------------------------------+---------+--------------+-------------------------------------|
-| =scimax.latexLivePreview.buildOnSave=   | boolean | =true=       | Auto-rebuild PDF on save            |
-| =scimax.latexLivePreview.buildOnIdle=   | boolean | =false=      | Auto-rebuild after idle period      |
-| =scimax.latexLivePreview.idleDelay=     | number  | =2000=       | Idle delay in milliseconds          |
-| =scimax.latexLivePreview.compiler=      | string  | ="pdflatex"= | LaTeX compiler to use               |
-| =scimax.latexLivePreview.useLatexmk=    | boolean | =true=       | Use latexmk for smart builds        |
+| Setting                             | Type    | Default    | Description                    |
+|-------------------------------------+---------+------------+--------------------------------|
+| scimax.latexLivePreview.buildOnSave | boolean | true       | Auto-rebuild PDF on save       |
+| scimax.latexLivePreview.buildOnIdle | boolean | false      | Auto-rebuild after idle period |
+| scimax.latexLivePreview.idleDelay   | number  | 2000       | Idle delay in milliseconds     |
+| scimax.latexLivePreview.compiler    | string  | "pdflatex" | LaTeX compiler to use          |
+| scimax.latexLivePreview.useLatexmk  | boolean | true       | Use latexmk for smart builds   |
 
 ** Detailed Configuration
 
@@ -614,11 +627,11 @@ Configure the project-based notebook system.
 
 ** Settings Overview
 
-| Setting                            | Type    | Default      | Description                         |
-|------------------------------------+---------+--------------+-------------------------------------|
-| =scimax.notebook.directory=        | string  | =""=         | Default parent directory            |
-| =scimax.notebook.defaultTemplate=  | string  | ="research"= | Default template                    |
-| =scimax.notebook.autoDetect=       | boolean | =true=       | Auto-detect projects                |
+| Setting                         | Type    | Default    | Description              |
+|---------------------------------+---------+------------+--------------------------|
+| scimax.notebook.directory       | string  | ""         | Default parent directory |
+| scimax.notebook.defaultTemplate | string  | "research" | Default template         |
+| scimax.notebook.autoDetect      | boolean | true       | Auto-detect projects     |
 
 ** Detailed Configuration
 
@@ -672,12 +685,12 @@ Configure the Hydra menu system for quick command access.
 
 ** Settings Overview
 
-| Setting                             | Type    | Default | Description                          |
-|-------------------------------------+---------+---------+--------------------------------------|
-| =scimax.hydra.showKeyHints=         | boolean | =true=  | Show keyboard shortcuts inline       |
-| =scimax.hydra.singleKeySelection=   | boolean | =true=  | Single keypress selection            |
-| =scimax.hydra.dimNonMatching=       | boolean | =true=  | Dim non-matching items               |
-| =scimax.hydra.sortByKey=            | boolean | =false= | Sort items by keyboard shortcut      |
+| Setting                         | Type    | Default | Description                     |
+|---------------------------------+---------+---------+---------------------------------|
+| scimax.hydra.showKeyHints       | boolean | true    | Show keyboard shortcuts inline  |
+| scimax.hydra.singleKeySelection | boolean | true    | Single keypress selection       |
+| scimax.hydra.dimNonMatching     | boolean | true    | Dim non-matching items          |
+| scimax.hydra.sortByKey          | boolean | false   | Sort items by keyboard shortcut |
 
 ** Detailed Configuration
 
@@ -739,9 +752,9 @@ Configure org-mode style speed commands.
 
 ** Settings Overview
 
-| Setting                         | Type    | Default | Description                              |
-|---------------------------------+---------+---------+------------------------------------------|
-| =scimax.speedCommands.enabled=  | boolean | =true=  | Enable speed commands at heading start   |
+| Setting                      | Type    | Default | Description                            |
+|------------------------------+---------+---------+----------------------------------------|
+| scimax.speedCommands.enabled | boolean | true    | Enable speed commands at heading start |
 
 ** Detailed Configuration
 
@@ -766,15 +779,15 @@ Configure the agenda view and TODO tracking.
 
 ** Settings Overview
 
-| Setting                          | Type    | Default                                   | Description                           |
-|----------------------------------+---------+-------------------------------------------+---------------------------------------|
-| =scimax.agenda.files=            | array   | =[ ]=                                     | Directories/files for agenda          |
-| =scimax.agenda.excludePatterns=  | array   | See below                                 | Patterns to exclude                   |
-| =scimax.agenda.defaultSpan=      | number  | =7=                                       | Days to show in agenda                |
-| =scimax.agenda.showDone=         | boolean | =false=                                   | Show completed items                  |
-| =scimax.agenda.showHabits=       | boolean | =true=                                    | Show habit-tagged items               |
-| =scimax.agenda.todoStates=       | array   | =["TODO", "NEXT", "WAITING"]=             | Active TODO states                    |
-| =scimax.agenda.doneStates=       | array   | =["DONE", "CANCELLED"]=                   | Completed states                      |
+| Setting                       | Type    | Default                     | Description                  |
+|-------------------------------+---------+-----------------------------+------------------------------|
+| scimax.agenda.files           | array   | [ ]                         | Directories/files for agenda |
+| scimax.agenda.excludePatterns | array   | See below                   | Patterns to exclude          |
+| scimax.agenda.defaultSpan     | number  | 7                           | Days to show in agenda       |
+| scimax.agenda.showDone        | boolean | false                       | Show completed items         |
+| scimax.agenda.showHabits      | boolean | true                        | Show habit-tagged items      |
+| scimax.agenda.todoStates      | array   | ["TODO", "NEXT", "WAITING"] | Active TODO states           |
+| scimax.agenda.doneStates      | array   | ["DONE", "CANCELLED"]       | Completed states             |
 
 ** Detailed Configuration
 
@@ -895,17 +908,17 @@ Configure inline image thumbnails in org-mode files.
 
 ** Settings Overview
 
-| Setting                                      | Type    | Default | Description                             |
-|----------------------------------------------+---------+---------+-----------------------------------------|
-| =scimax.imageOverlays.enabled=               | boolean | =true=  | Enable inline image thumbnails          |
-| =scimax.imageOverlays.maxWidth=              | number  | =96=    | Maximum thumbnail width in pixels       |
-| =scimax.imageOverlays.maxHeight=             | number  | =96=    | Maximum thumbnail height in pixels      |
-| =scimax.imageOverlays.renderMode=            | string  | ="gutter"= | Where to display thumbnails          |
-| =scimax.imageOverlays.onlyWhenCursorNotInLink= | boolean | =true=  | Hide when cursor in link                |
-| =scimax.imageOverlays.excludePatterns=       | array   | =[ ]=   | Regex patterns to exclude               |
-| =scimax.imageOverlays.maxOverlaysPerDocument= | number  | =200=   | Max overlays per document               |
-| =scimax.imageOverlays.showDimensions=        | boolean | =true=  | Show image dimensions                   |
-| =scimax.imageOverlays.cacheEnabled=          | boolean | =true=  | Cache generated thumbnails              |
+| Setting                                      | Type    | Default  | Description                        |
+|----------------------------------------------+---------+----------+------------------------------------|
+| scimax.imageOverlays.enabled                 | boolean | true     | Enable inline image thumbnails     |
+| scimax.imageOverlays.maxWidth                | number  | 96       | Maximum thumbnail width in pixels  |
+| scimax.imageOverlays.maxHeight               | number  | 96       | Maximum thumbnail height in pixels |
+| scimax.imageOverlays.renderMode              | string  | "gutter" | Where to display thumbnails        |
+| scimax.imageOverlays.onlyWhenCursorNotInLink | boolean | true     | Hide when cursor in link           |
+| scimax.imageOverlays.excludePatterns         | array   | [ ]      | Regex patterns to exclude          |
+| scimax.imageOverlays.maxOverlaysPerDocument  | number  | 200      | Max overlays per document          |
+| scimax.imageOverlays.showDimensions          | boolean | true     | Show image dimensions              |
+| scimax.imageOverlays.cacheEnabled            | boolean | true     | Cache generated thumbnails         |
 
 ** Detailed Configuration
 
@@ -1039,12 +1052,12 @@ Configure the org-capture system for quick note-taking.
 
 ** Settings Overview
 
-| Setting                          | Type   | Default             | Description                        |
-|----------------------------------+--------+---------------------+------------------------------------|
-| =scimax.capture.templates=       | array  | =[ ]=               | Capture templates                  |
-| =scimax.capture.defaultFile=     | string | ="~/org/notes.org"= | Default capture file               |
-| =scimax.capture.datetreeFormat=  | string | ="day"=             | Datetree granularity               |
-| =scimax.capture.autoSave=        | boolean | =true=              | Auto-save after capture            |
+| Setting                       | Type    | Default           | Description             |
+|-------------------------------+---------+-------------------+-------------------------|
+| scimax.capture.templates      | array   | [ ]               | Capture templates       |
+| scimax.capture.defaultFile    | string  | "~/org/notes.org" | Default capture file    |
+| scimax.capture.datetreeFormat | string  | "day"             | Datetree granularity    |
+| scimax.capture.autoSave       | boolean | true              | Auto-save after capture |
 
 ** Detailed Configuration
 

@@ -68,7 +68,7 @@ When a hydra menu is open:
 2. Type multiple characters to filter the list
 3. Use arrow keys to navigate
 4. Press Enter to execute the selected command
-5. Press Escape or Backspace (when a parent menu exists) to close or go back
+5. Press Escape to close, or select "Back" to return to parent menu
 
 ** 👀 Understanding Exit Behaviors
 
@@ -772,24 +772,13 @@ To find all TODO items in your org files:
 4. View results in quick pick
 5. Select an item to navigate to it
 
-** ⚠️ Example 5: Persistent Actions
+** 👀 Example 5: Navigating Back
 
-To index multiple files in sequence:
-
-1. Press C-c m → opens main menu
-2. Press d → opens database submenu
-3. Press i → indexes current file, menu stays open
-4. Switch to another file (menu remains visible)
-5. Press i again → indexes that file
-6. Press Escape when done
-
-** ⚠️ Example 6: Navigating Back
-
-When in a deep submenu:
+When in a submenu:
 
 1. Press C-c m → main menu
 2. Press d → database menu
-3. Press Backspace or select "Back" → returns to main menu
+3. Select "Back" at the top of the menu → returns to main menu
 4. Press Escape → closes all menus
 
 * ✅ Differences from Emacs Hydra

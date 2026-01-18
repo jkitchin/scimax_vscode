@@ -143,7 +143,8 @@ Control how much content is visible in your document.
 | o   | Overview                | Fold all headings (show only top-level)       |
 | <tab> | Cycle fold at point     | Toggle folding of current heading             |
 
-** 👀 Structure Editing Commands
+** ✅ Structure Editing Commands
+CLOSED: [2026-01-17 Sat 15:38]
 
 Reorganize and modify your document structure.
 
@@ -203,7 +204,8 @@ Add scheduling and deadline information to tasks.
 | d   | Add/edit DEADLINE  | Set when this task must be completed   |
 | .   | Insert timestamp   | Insert an inactive timestamp at point  |
 
-*** ⚠️ Timestamp Types
+*** ✅ Timestamp Types
+CLOSED: [2026-01-17 Sat 15:38]
 
 - *SCHEDULED*: When you plan to start working on the task
   - Format: `SCHEDULED: <2026-01-13 Mon>'
@@ -217,7 +219,11 @@ Add scheduling and deadline information to tasks.
   - Format: `[2026-01-13 Mon 14:30]'
   - For documentation purposes
 
-** ⚠️ Metadata Commands
+** ✅ Metadata Commands
+CLOSED: [2026-01-17 Sat 15:38]
+:PROPERTIES:
+:Effort: 0:15
+:END:
 
 Add tags, properties, and effort estimates to headings.
 
@@ -314,7 +320,8 @@ CLOCK: [2026-01-12 Fri 14:00]--[2026-01-12 Fri 15:45] =>  1:45
 :END:
 #+END_EXAMPLE
 
-*** 👀 Clocking Notes
+*** ✅ Clocking Notes
+CLOSED: [2026-01-17 Sat 15:37]
 
 - Only one task can be clocked in at a time
 - Clocking in a new task automatically clocks out the previous one

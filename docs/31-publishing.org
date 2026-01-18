@@ -75,7 +75,8 @@ The publishing system supports two configuration formats:
 
 The wizard creates a `.org-publish.json' file by default. You can also create or edit either file manually.
 
-** ⚠️ YAML Configuration (`_config.yml')
+** ✅ YAML Configuration (`_config.yml')
+CLOSED: [2026-01-17 Sat 15:17]
 
 For Jupyter Book compatibility, create a `_config.yml' in your project root:
 
@@ -283,7 +284,8 @@ A component project groups multiple projects together:
 
 When you publish "full-site", all component projects are published in order.
 
-* ⚠️ Explicit Table of Contents (`_toc.yml')
+* ✅ Explicit Table of Contents (`_toc.yml')
+CLOSED: [2026-01-17 Sat 15:17]
 
 By default, the publishing system discovers files automatically and generates an alphabetical sitemap. For curated documentation or books where order matters, you can create an explicit table of contents using a `_toc.yml' file.
 

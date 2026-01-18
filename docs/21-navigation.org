@@ -131,7 +131,10 @@ print("World")
 These commands skip over regular text and headings, jumping directly to the next
 or previous #+BEGIN_SRC block.
 
-*** ⚠️ Jump to Source Block
+*** ✅ Jump to Source Block
+CLOSED: [2026-01-17 Sat 15:36]
+
+[[cmd:scimax.ob.jumpToBlock]]
 
 The jumpToBlock command shows a fuzzy picker of all source blocks in the
 document. Each block is labeled with:
@@ -139,7 +142,10 @@ document. Each block is labeled with:
 - Block name (if it has a #+NAME: line)
 - Preview of first line of code
 
-*** ⚠️ Jump to Results
+*** ✅ Jump to Results
+CLOSED: [2026-01-17 Sat 15:37]
+
+[[cmd:scimax.ob.jumpToResults]]
 
 When cursor is in a source block, jumpToResults jumps to the #+RESULTS:
 section below the block (if it exists). This is useful after executing a block

@@ -210,49 +210,49 @@ a command or `Escape' to close the menu.
 
 ** Document Commands
 
-| Key             | Command                         |
-|-----------------+---------------------------------|
-| =Tab=           | Cycle fold at heading           |
-| =S-<tab>=     | Cycle global fold               |
-| =C-c C-j= | Jump to heading                 |
-| =C-<return>=    | Insert new heading (at heading) |
-| =C-c C-t= | Cycle TODO state                |
-| =C-c C-c= | Context action (execute/toggle) |
+| Key        | Command                         |
+|------------+---------------------------------|
+| Tab        | Cycle fold at heading           |
+| S-<tab>    | Cycle global fold               |
+| C-c C-j    | Jump to heading                 |
+| C-<return> | Insert new heading (at heading) |
+| C-c C-t    | Cycle TODO state                |
+| C-c C-c    | Context action (execute/toggle) |
 
 ** Source Block Commands
 
-| Key           | Command                        |
-|---------------+--------------------------------|
-| =C-<return>=  | Execute current block          |
-| =S-<return>= | Execute block and move to next |
-| =C-<up>=     | Go to previous block           |
-| =C-<down>=   | Go to next block               |
+| Key        | Command                        |
+|------------+--------------------------------|
+| C-<return> | Execute current block          |
+| S-<return> | Execute block and move to next |
+| C-<up>     | Go to previous block           |
+| C-<down>   | Go to next block               |
 
 ** Export Commands
 
-| Key                 | Command                |
-|---------------------+------------------------|
-| =C-c C-e=     | Open export dispatcher |
-| =C-c C-e h h= | Export to HTML         |
-| =C-c C-e l l= | Export to LaTeX        |
-| =C-c C-e l p= | Export to PDF          |
+| Key         | Command                |
+|-------------+------------------------|
+| C-c C-e     | Open export dispatcher |
+| C-c C-e h h | Export to HTML         |
+| C-c C-e l l | Export to LaTeX        |
+| C-c C-e l p | Export to PDF          |
 
 ** Navigation Commands
 
-| Key          | Command                       |
-|--------------+-------------------------------|
-| =C-c s=   | Fuzzy search current file     |
-| =C-c j c= | Jump to character (Avy-style) |
-| =C-c j w= | Jump to word                  |
-| =C-c j l= | Jump to line                  |
+| Key     | Command                       |
+|---------+-------------------------------|
+| C-c s   | Fuzzy search current file     |
+| C-c j c | Jump to character (Avy-style) |
+| C-c j w | Jump to word                  |
+| C-c j l | Jump to line                  |
 
-** ⚠️ Help Commands
+** 👀 Help Commands
 
-| Key     | Command                                    |
-|---------+--------------------------------------------|
-| =C-h k= | Describe key (type a key to see its command) |
-| =C-h b= | List all keybindings                       |
-| =C-h f= | Describe command (find command by name)    |
+| Key   | Command                                      |
+|-------+----------------------------------------------|
+| C-h k | Describe key (type a key to see its command) |
+| C-h b | List all keybindings                         |
+| C-h f | Describe command (find command by name)      |
 
 * Recommended Settings
 
@@ -306,17 +306,17 @@ If you're coming from Emacs Org-mode or Scimax, here are key differences:
 
 ** Similar Features
 
-| Emacs            | VS Code                   |
-|------------------+---------------------------|
-| =C-c C-c=        | =C-c C-c=           |
-| =C-c C-t=        | =C-c C-t=           |
-| =C-c C-e=        | =C-c C-e=           |
-| =TAB= on heading | =Tab= on heading          |
-| =S-TAB=          | =S-<tab>=               |
-| =M-RET=          | =C-<return>= (at heading) |
-| =M-left/right=   | =M-<left>/Right=          |
-| =M-up/down=      | =M-<up>/Down=             |
-| Speed commands   | Same keys (when enabled)  |
+| Emacs          | VS Code                  |
+|----------------+--------------------------|
+| C-c C-c        | C-c C-c                  |
+| C-c C-t        | C-c C-t                  |
+| C-c C-e        | C-c C-e                  |
+| TAB on heading | Tab on heading           |
+| S-TAB          | S-<tab>                  |
+| M-RET          | C-<return> (at heading)  |
+| M-left/right   | M-<left>/Right           |
+| M-up/down      | M-<up>/Down              |
+| Speed commands | Same keys (when enabled) |
 
 ** Different Behaviors
 
@@ -374,4 +374,4 @@ Now that you're set up, explore these topics:
 
 - Previous: [[file:00-index.org][Documentation Index]]
 - Index: [[file:00-index.org][Documentation Index]]
-- Next: [[file:02-document-structure.org][Document Structure]]
+- Next: [[file:01.5-basic-syntax.org][Basic Syntax]]

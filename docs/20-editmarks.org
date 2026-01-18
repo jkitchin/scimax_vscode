@@ -195,7 +195,8 @@ CLOSED: [2026-01-15 Thu 14:12]
 3. Type: "Check this citation"
 4. Result: `@@>Check this citation<@@'
 
-** ⚠️ Mark Typo Correction
+** ✅ Mark Typo Correction
+CLOSED: [2026-01-17 Sat 15:39]
 
 *Command*: `Scimax: Mark Typo Correction'
 *Keybinding*: `C-c e t'
@@ -600,12 +601,13 @@ Use editmarks in table cells:
 | Budget | @@-$100K-@@ | @@+$120K+@@    | @@>approved by CFO<@@    |
 | Time   | 6 months    | @@+8 months+@@ | @@>realistic estimate<@@ |
 
-** ⚠️ Export Compatibility
+** 👀 Export Compatibility
 
-When exporting documents (HTML, LaTeX, PDF):
-- *Unprocessed marks* appear in the exported output
-- *Process marks first* before final export
-- Or use regex to strip marks during export if needed
+When exporting documents (HTML, LaTeX, PDF), editmarks are *not* processed - they appear as raw text in the output (e.g., =@@+inserted text+@@=).
+
+*Recommendation*: Accept or reject all editmarks before final export using:
+- =C-c e a= - Accept all marks
+- =C-c e r= - Reject all marks
 
 ** ✅ Version Control
 CLOSED: [2026-01-15 Thu 14:19]

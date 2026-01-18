@@ -80,7 +80,8 @@ The language comes immediately after #+BEGIN_SRC:
 #+END_SRC
 
 
-** ⚠️ Header Arguments
+** ✅ Header Arguments
+CLOSED: [2026-01-17 Sat 15:55]
 
 Header arguments control block behavior and appear after the language:
 
@@ -88,7 +89,8 @@ Header arguments control block behavior and appear after the language:
 # This block prints results and uses a persistent session
 #+END_SRC
 
-** ⚠️ Results Section
+** ✅ Results Section
+CLOSED: [2026-01-17 Sat 15:55]
 
 When you execute a block, results appear immediately below in a #+RESULTS: section:
 
@@ -508,7 +510,7 @@ result is used instantly (unless the code changes).
 ** ✅ Other Useful Arguments
 CLOSED: [2026-01-17 Sat 12:57]
 
-*** ⚠️ :eval - Control Evaluation
+*** 👀 :eval - Control Evaluation
 
 | Value        | Description                     |
 |--------------+---------------------------------|
@@ -526,7 +528,8 @@ ls | head -n2
 : 01-getting-started.org
 
 
-*** ⚠️ :wrap - Wrap Results in Block
+*** ✅ :wrap - Wrap Results in Block
+CLOSED: [2026-01-17 Sat 15:56]
 
 Wrap results in a custom block:
 
@@ -536,7 +539,9 @@ print("This will be wrapped in a quote block")
 #+END_SRC
 
 #+RESULTS:
-: This will be wrapped in a quote block
+#+BEGIN_QUOTE
+This will be wrapped in a quote block
+#+END_QUOTE
 
 
 
@@ -570,16 +575,21 @@ echo "Hello"
 : Hello
 
 
-** ⚠️ Combining Arguments
+** ✅ Combining Arguments
+CLOSED: [2026-01-17 Sat 15:53]
 
 Arguments can be combined:
 
 
-#+BEGIN_SRC python :results output :session *analysis* :exports both :dir ~/data
+#+BEGIN_SRC python :results output :session *analysis* :exports both :dir data
 import pandas as pd
 df = pd.read_csv('data.csv')
 print(df.head())
 #+END_SRC
+
+#+RESULTS:
+: 1  2  3
+: 0  4  5  6
 
 
 * ✅ Results Handling and Output Types
@@ -611,7 +621,8 @@ print("World")
 : World
 
 
-*** ⚠️ Tables
+*** ✅ Tables
+CLOSED: [2026-01-17 Sat 15:54]
 
 Python/R code that produces tabular data can be formatted as org tables:
 
@@ -622,6 +633,9 @@ return data
 #+END_SRC
 
 #+RESULTS:
+| Alice | 30 |
+| Bob | 25 |
+| Carol | 35 |
 
 
 *** ⚠️ File Links
@@ -694,15 +708,19 @@ Line 19
 :END:
 
 
-** ⚠️ Error Handling
+** ✅ Error Handling
 
 When execution fails, error messages appear in results:
 
-#+BEGIN_SRC python 
+#+BEGIN_SRC python :results value
 undefined_variable
 #+END_SRC
 
 #+RESULTS:
+: Traceback (most recent call last):
+:   File "<string>", line 50, in <module>
+:   File "<string>", line 1, in <module>
+: NameError: name 'undefined_variable' is not defined
 
 
 
@@ -1030,10 +1048,11 @@ src_LANGUAGE[HEADERS]{CODE}
 
 ** ✅ Examples
 
-*** ⚠️ Simple Inline Computation
+*** ✅ Simple Inline Computation
+CLOSED: [2026-01-17 Sat 14:35]
 
 
-The answer is src_python{return 2 + 2} which equals 4.
+The answer is src_python{return 2 + 2} {{{results(=4=)}}} which equals 4.
 
 
 Result after execution:
@@ -1043,21 +1062,23 @@ The answer is 4 which equals 4.
 
 *** ⚠️ With Headers
 
+Today is src_python[:results value]{import datetime; datetime.date.today()} {{{results(==)}}}.
 
-Today is src_python[:results value]{import datetime; return datetime.date.today()}.
-
-
-*** ⚠️ Accessing Variables
+*** ✅ Accessing Variables
+CLOSED: [2026-01-17 Sat 14:34]
 
 Inline blocks can access session variables:
 
+You have to run this first to create a session:
 
 #+BEGIN_SRC python :session *calc*
 total = 100
 tax_rate = 0.08
 #+END_SRC
 
-The total with tax is src_python[:session *calc*]{return total * (1 + tax_rate)}.
+#+RESULTS:
+
+The total with tax is src_python[:session *calc*]{return total * (1 + tax_rate)} {{{results(=108.0=)}}}.
 
 
 ** ✅ Use Cases
@@ -1315,13 +1336,13 @@ return x * x
 
 #+CALL: square-return(x=11)
 
-
-** ⚠️ Inline Call Syntax
+** ✅ Inline Call Syntax
+CLOSED: [2026-01-17 Sat 14:24]
 
 You can also call blocks inline:
 
 
-The square of 7 is call_square(x=71) {{{results(5041)}}}.
+The square of 7 is call_square(x=7) {{{results(=49=)}}}.
 
 
 
@@ -1363,25 +1384,22 @@ Override headers when calling:
 
 #+RESULTS: square
 | 1 |
-|   |
-** ⚠️ Library of Functions
+
+** ✅ Library of Functions
+CLOSED: [2026-01-17 Sat 14:39]
 
 Build a library of reusable code blocks:
 
 #+NAME: mean
 #+BEGIN_SRC python :var numbers=[]
-return sum(numbers) / len(numbers)
+import numpy as np
+return np.mean(numbers)
 #+END_SRC
 
 #+NAME: median
 #+BEGIN_SRC python :var numbers=[]
-sorted_nums = sorted(numbers)
-n = len(sorted_nums)
-mid = n // 2
-if n % 2 == 0:
-    return (sorted_nums[mid-1] + sorted_nums[mid]) / 2
-else:
-    return sorted_nums[mid]
+import numpy as np
+return np.median(numbers)
 #+END_SRC
 
 #+NAME: dataset
@@ -1391,14 +1409,15 @@ else:
 | 40 |
 | 50 |
 
+
 #+CALL: mean(numbers=dataset)
 
-
-
+#+RESULTS: mean
+: np.float64(30.0)
 #+CALL: median(numbers=dataset)
 
-
-
+#+RESULTS: median
+: np.float64(30.0)
 
 ** ✅ Best Practices
 CLOSED: [2026-01-17 Sat 13:11]

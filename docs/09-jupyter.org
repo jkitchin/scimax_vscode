@@ -1255,15 +1255,15 @@ The analysis reveals clear seasonal patterns in sales data with peak performance
 during summer months.
 #+END_SRC
 
-** ⚠️ Julia Scientific Computing Example
+** ✅ Julia Scientific Computing Example
+CLOSED: [2026-01-17 Sat 15:52]
 
-#+BEGIN_SRC org
-,* Numerical Methods: Newton's Method
+Numerical Methods: Newton's Method
 
-,#+BEGIN_SRC jupyter-julia :session numerics :exports both
+#+BEGIN_SRC jupyter-julia :session numerics :exports both
 # Define function and derivative
 f(x) = x^2 - 2
-f'(x) = 2x
+fp(x) = 2x
 
 # Newton's method implementation
 function newton(f, df, x0; tol=1e-6, maxiter=100)
@@ -1279,13 +1279,18 @@ function newton(f, df, x0; tol=1e-6, maxiter=100)
 end
 
 # Find sqrt(2)
-root, iters = newton(f, f', 1.0)
+root, iters = newton(f, fp, 1.0)
 println("Root: $root")
 println("Iterations: $iters")
 println("Error: $(abs(root - sqrt(2)))")
-,#+END_SRC
+#+END_SRC
 
-,#+BEGIN_SRC jupyter-julia :session numerics :results file :exports results
+#+RESULTS:
+: Root: 1.4142135623746899
+: Iterations: 5
+: Error: 1.5947243525715749e-12
+
+#+BEGIN_SRC jupyter-julia :session numerics :results file :exports results
 using Plots
 
 x = 0:0.01:3
@@ -1295,15 +1300,18 @@ vline!([sqrt(2)], label="√2", linestyle=:dash, color=:red)
 xlabel!("x")
 ylabel!("f(x)")
 title!("Finding √2 using Newton's Method")
-,#+END_SRC
 #+END_SRC
 
-** ⚠️ R Statistical Analysis Example
+#+RESULTS:
+[[file:.ob-jupyter/output-1768683112464-0.png]]
 
-#+BEGIN_SRC org
-,* Statistical Analysis: t-test
 
-,#+BEGIN_SRC jupyter-r :session stats :exports both
+** ✅ R Statistical Analysis Example
+CLOSED: [2026-01-17 Sat 15:52]
+
+Statistical Analysis: t-test
+
+#+BEGIN_SRC jupyter-r :session stats :exports both
 # Generate two samples
 set.seed(123)
 group_a <- rnorm(50, mean=100, sd=15)
@@ -1312,9 +1320,21 @@ group_b <- rnorm(50, mean=105, sd=15)
 # Perform t-test
 result <- t.test(group_a, group_b)
 print(result)
-,#+END_SRC
+#+END_SRC
 
-,#+BEGIN_SRC jupyter-r :session stats :results file :exports results
+#+RESULTS:
+: Welch Two Sample t-test
+: 
+: data:  group_a and group_b
+: t = -2.4316, df = 97.951, p-value = 0.01685
+: alternative hypothesis: true difference in means is not equal to 0
+: 95 percent confidence interval:
+:  -12.131728  -1.228414
+: sample estimates:
+: mean of x mean of y 
+:  100.5161  107.1961
+
+#+BEGIN_SRC jupyter-r :session stats :results file :exports results
 # Visualize distributions
 boxplot(group_a, group_b,
         names=c("Group A", "Group B"),
@@ -1326,8 +1346,11 @@ boxplot(group_a, group_b,
 points(c(1, 2), c(mean(group_a), mean(group_b)),
        pch=19, col="red", cex=1.5)
 legend("topright", "Mean", pch=19, col="red")
-,#+END_SRC
 #+END_SRC
+
+#+RESULTS:
+[[file:.ob-jupyter/output-1768683123789-1.png]]
+
 
 * ✅ Further Reading
 CLOSED: [2026-01-17 Sat 11:12]

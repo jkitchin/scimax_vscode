@@ -62,7 +62,8 @@ CLOSED: [2026-01-16 Fri 20:55]
 - Footnote support
 - Custom CSS and JavaScript support
 
-*** ⚠️ MathJax Integration
+*** ✅ MathJax Integration
+CLOSED: [2026-01-17 Sat 15:08]
 
 HTML exports automatically include MathJax for rendering mathematical content:
 
@@ -411,6 +412,7 @@ Generates complete HTML document:
 #+END_SRC
 
 *** ⚠️ Body-Only
+
 Generates only the content (for embedding):
 #+BEGIN_SRC html
 <div class="org-content">

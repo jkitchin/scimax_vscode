@@ -158,6 +158,7 @@ This documentation is organized into several sections:
 | Document                                               | Description                   |
 |--------------------------------------------------------+-------------------------------|
 | [[file:01-getting-started.org][Getting Started]]       | Installation and first steps  |
+| [[file:01.5-basic-syntax.org][Basic Syntax]]          | Markup, lists, math, blocks   |
 | [[file:02-document-structure.org][Document Structure]] | Headings, folding, navigation |
 | [[file:03-todo-items.org][TODO Items]]                 | Task management               |
 | [[file:04-tables.org][Tables]]                         | Table editing and formulas    |
@@ -280,6 +281,7 @@ This section provides a comprehensive index of all documentation topics with lin
 | Document                                         | Topics Covered                                   |
 |--------------------------------------------------+--------------------------------------------------|
 | [[file:01-getting-started.org][Getting Started]] | Installation, first steps, basic usage           |
+| [[file:01.5-basic-syntax.org][Basic Syntax]]    | Text markup, lists, equations, blocks            |
 | [[file:21-navigation.org][Navigation]]           | Fuzzy search, avy-style jump, outline navigation |
 | [[file:22-hydra-menus.org][Hydra Menus]]         | Keyboard-driven menus, customization             |
 | [[file:24-keybindings.org][Keybindings]]         | Complete keybinding reference                    |
@@ -346,7 +348,10 @@ Quick reference to find specific features across documentation.
 | Agenda views          | [[file:13-agenda.org][Agenda]]                               | [[file:03-todo-items.org][TODO Items]], [[file:06-timestamps.org][Timestamps]]                                             |
 | Avy-style navigation  | [[file:21-navigation.org][Navigation]]                       | [[file:24-keybindings.org][Keybindings]]                                                                                   |
 | Babel execution       | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:09-jupyter.org][Jupyter]]                                 |
+| Basic syntax          | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]], [[file:10-export.org][Export]]                                   |
 | Bibliography          | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]]                                                               |
+| Block elements        | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:07-source-blocks.org][Source Code Blocks]], [[file:10-export.org][Export]]                                       |
+| Bold text             | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]]                                                                              |
 | Capture templates     | [[file:15-capture.org][Capture]]                             | [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]                                             |
 | Checkboxes            | [[file:03-todo-items.org][TODO Items]]                       | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Citations             | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]], [[file:28-non-standard-features.org][Non-Standard Features]] |
@@ -355,10 +360,12 @@ Quick reference to find specific features across documentation.
 | Command markup        | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:24-keybindings.org][Keybindings]], [[file:10-export.org][Export]]                                                   |
 | Configuration         | [[file:26-configuration.org][Configuration]]                 | Feature-specific docs                                                                                                      |
 | Deadlines             | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
+| Definition lists      | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Diary sexp            | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]]                                                                                             |
 | DOI lookup            | [[file:19-references.org][References]]                       | [[file:26-configuration.org][Configuration]]                                                                               |
 | Dynamic blocks        | [[file:02-document-structure.org][Document Structure]]       | [[file:06-timestamps.org][Timestamps]], [[file:04-tables.org][Tables]]                                                     |
 | Embeddings            | [[file:18-database-search.org][Database and Search]]         | [[file:26-configuration.org][Configuration]]                                                                               |
+| Equations             | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:11-latex-preview.org][LaTeX Preview]], [[file:10-export.org][Export]]                                               |
 | Export to HTML        | [[file:10-export.org][Export]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
 | Export to PDF         | [[file:10-export.org][Export]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
 | Folding               | [[file:02-document-structure.org][Document Structure]]       | [[file:21-navigation.org][Navigation]]                                                                                     |
@@ -371,6 +378,7 @@ Quick reference to find specific features across documentation.
 | Hydra menus           | [[file:22-hydra-menus.org][Hydra Menus]]                     | [[file:24-keybindings.org][Keybindings]], [[file:26-configuration.org][Configuration]]                                     |
 | Image display         | [[file:12-image-overlays.org][Image Overlays]]               | [[file:07-source-blocks.org][Source Code Blocks]]                                                                          |
 | Include files         | [[file:10-export.org][Export]]                               | Modular documents with #+INCLUDE:                                                                                          |
+| Italic text           | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]]                                                                              |
 | Inline tasks          | [[file:02-document-structure.org][Document Structure]]       | [[file:03-todo-items.org][TODO Items]]                                                                                     |
 | Journal entries       | [[file:14-journal.org][Journal]]                             | [[file:15-capture.org][Capture]], [[file:13-agenda.org][Agenda]]                                                           |
 | Jupyter kernels       | [[file:09-jupyter.org][Jupyter Integration]]                 | [[file:07-source-blocks.org][Source Code Blocks]], [[file:08-supported-languages.org][Supported Languages]]                |
@@ -378,11 +386,14 @@ Quick reference to find specific features across documentation.
 | LaTeX math            | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
 | Links                 | [[file:05-links.org][Links]]                                 | [[file:19-references.org][References]], [[file:21-navigation.org][Navigation]]                                             |
 | Limitations           | [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not available in VS Code                                                                                    |
+| Lists (ordered)       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
+| Lists (unordered)     | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
+| Markup (text)         | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]], bold, italic, underline, code                                            |
 | Math preview          | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
 | Non-standard features | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:10-export.org][Export]]                                                     |
 | Notebooks             | [[file:16-notebook.org][Notebook]]                           | [[file:17-projectile.org][Projectile]], [[file:14-journal.org][Journal]]                                                   |
 | Org file modification | [[file:27-org-api.org][Org API]]                             | [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]                                          |
-| Org-mode syntax       | [[file:02-document-structure.org][Document Structure]]       | [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]                                          |
+| Org-mode syntax       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]], [[file:07-source-blocks.org][Source Code Blocks]], [[file:04-tables.org][Tables]]         |
 | org-ref citations     | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:05-links.org][Links]]                                                       |
 | PDF export            | [[file:10-export.org][Export]]                               | [[file:11-latex-preview.org][LaTeX Preview]]                                                                               |
 | Priorities            | [[file:03-todo-items.org][TODO Items]]                       | [[file:13-agenda.org][Agenda]]                                                                                             |
@@ -407,6 +418,7 @@ Quick reference to find specific features across documentation.
 
 *** Take notes and organize information
 - Start with [[file:01-getting-started.org][Getting Started]]
+- Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text
 - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization
 - Use [[file:15-capture.org][Capture]] for quick note-taking
 - Search with [[file:18-database-search.org][Database and Search]]

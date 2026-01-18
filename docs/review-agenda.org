@@ -45,7 +45,14 @@ fi
 : * Review Agenda
 : 
 : ** [[file:01-getting-started.org][01-getting-started.org]] (1 items)
-:    - [[file:01-getting-started.org::249][** ⚠️ Help Commands]]
+:    - [[file:01-getting-started.org::249][** 👀 Help Commands]]
+: 
+: ** [[file:01.5-basic-syntax.org][01.5-basic-syntax.org]] (5 items)
+:    - [[file:01.5-basic-syntax.org::143][** ⚠️ Checkboxes]]
+:    - [[file:01.5-basic-syntax.org::169][* ⚠️ Paragraphs and Line Breaks]]
+:    - [[file:01.5-basic-syntax.org::177][** ⚠️ Preserving Line Breaks]]
+:    - [[file:01.5-basic-syntax.org::272][** ⚠️ Inline Footnotes]]
+:    - [[file:01.5-basic-syntax.org::278][** ⚠️ Named Footnotes]]
 : 
 : ** [[file:02-document-structure.org][02-document-structure.org]] (8 items)
 :    - [[file:02-document-structure.org::278][** ⚠️ Startup Keyword]]
@@ -78,173 +85,78 @@ fi
 :    - [[file:05-links.org::389][** ⚠️ Finding Broken Links]]
 :    - [[file:05-links.org::395][** ⚠️ Updating Links]]
 : 
-: ** [[file:06-timestamps.org][06-timestamps.org]] (34 items)
-:    - [[file:06-timestamps.org::156][** 👀 Insert Timestamp Command]]
-:    - [[file:06-timestamps.org::459][** ⚠️ Examples with Context]]
-:    - [[file:06-timestamps.org::635][** ⚠️ Clock Reports]]
-:    - [[file:06-timestamps.org::649][** ⚠️ Clock Table]]
-:    - [[file:06-timestamps.org::735][** ⚠️ CLOSED Properties]]
-:    - [[file:06-timestamps.org::748][** ⚠️ Diary Sexp Syntax]]
-:    - [[file:06-timestamps.org::757][** ⚠️ Common Diary Functions]]
-:    - [[file:06-timestamps.org::767][** ⚠️ Diary Sexp Examples]]
-:    - [[file:06-timestamps.org::769][*** ⚠️ Annual Events (Birthdays, Anniversaries)]]
-:    - [[file:06-timestamps.org::779][*** ⚠️ Floating Holidays]]
-:    - [[file:06-timestamps.org::795][*** ⚠️ Class Schedules]]
-:    - [[file:06-timestamps.org::805][*** ⚠️ Cyclic Events]]
-:    - [[file:06-timestamps.org::815][*** ⚠️ Block Dates (Date Ranges)]]
-:    - [[file:06-timestamps.org::823][** ⚠️ When to Use Diary Sexps]]
-:    - [[file:06-timestamps.org::836][** ⚠️ CLOSED with Other Timestamps]]
-:    - [[file:06-timestamps.org::944][** ⚠️ Meeting Schedule]]
-:    - [[file:06-timestamps.org::953][** ⚠️ Project with Multiple Timestamps]]
-:    - [[file:06-timestamps.org::971][** ⚠️ Recurring Maintenance Task]]
-:    - [[file:06-timestamps.org::980][** ⚠️ Event with Time Range]]
-:    - [[file:06-timestamps.org::989][** ⚠️ Multi-day Event]]
-:    - [[file:06-timestamps.org::998][** ⚠️ Task with Complete History]]
-:    - [[file:06-timestamps.org::1093][** ⚠️ Weekly Review]]
-:    - [[file:06-timestamps.org::1131][** ⚠️ Car Maintenance]]
-:    - [[file:06-timestamps.org::1140][** ⚠️ Project Phases]]
-:    - [[file:06-timestamps.org::1162][* ⚠️ Integration with TODO Items]]
-:    - [[file:06-timestamps.org::1167][** ⚠️ Scheduled TODOs]]
-:    - [[file:06-timestamps.org::1179][** ⚠️ Deadline Warnings in Agenda]]
-:    - [[file:06-timestamps.org::1184][** ⚠️ Combining All Features]]
-:    - [[file:06-timestamps.org::1203][* ⚠️ Quick Reference]]
-:    - [[file:06-timestamps.org::1205][** ⚠️ Keybindings]]
-:    - [[file:06-timestamps.org::1216][** ⚠️ Speed Commands (at heading start)]]
-:    - [[file:06-timestamps.org::1226][** ⚠️ Commands]]
-:    - [[file:06-timestamps.org::1237][** ⚠️ Timestamp Format Quick Reference]]
-:    - [[file:06-timestamps.org::1252][* ⚠️ Related Topics]]
+: ** [[file:06-timestamps.org][06-timestamps.org]] (13 items)
+:    - [[file:06-timestamps.org::765][** ⚠️ Diary Sexp Syntax]]
+:    - [[file:06-timestamps.org::788][*** ⚠️ Annual Events (Birthdays, Anniversaries)]]
+:    - [[file:06-timestamps.org::798][*** ⚠️ Floating Holidays]]
+:    - [[file:06-timestamps.org::814][*** ⚠️ Class Schedules]]
+:    - [[file:06-timestamps.org::824][*** ⚠️ Cyclic Events]]
+:    - [[file:06-timestamps.org::834][*** ⚠️ Block Dates (Date Ranges)]]
+:    - [[file:06-timestamps.org::842][** ⚠️ When to Use Diary Sexps]]
+:    - [[file:06-timestamps.org::855][** ⚠️ CLOSED with Other Timestamps]]
+:    - [[file:06-timestamps.org::973][** ⚠️ Project with Multiple Timestamps]]
+:    - [[file:06-timestamps.org::990][** ⚠️ Recurring Maintenance Task]]
+:    - [[file:06-timestamps.org::999][** ⚠️ Event with Time Range]]
+:    - [[file:06-timestamps.org::1008][** ⚠️ Multi-day Event]]
+:    - [[file:06-timestamps.org::1017][** ⚠️ Task with Complete History]]
 : 
-: ** [[file:07-source-blocks.org][07-source-blocks.org]] (16 items)
-:    - [[file:07-source-blocks.org::83][** ⚠️ Header Arguments]]
-:    - [[file:07-source-blocks.org::91][** ⚠️ Results Section]]
-:    - [[file:07-source-blocks.org::511][*** ⚠️ :eval - Control Evaluation]]
-:    - [[file:07-source-blocks.org::529][*** ⚠️ :wrap - Wrap Results in Block]]
-:    - [[file:07-source-blocks.org::573][** ⚠️ Combining Arguments]]
-:    - [[file:07-source-blocks.org::614][*** ⚠️ Tables]]
-:    - [[file:07-source-blocks.org::627][*** ⚠️ File Links]]
-:    - [[file:07-source-blocks.org::697][** ⚠️ Error Handling]]
-:    - [[file:07-source-blocks.org::1033][*** ⚠️ Simple Inline Computation]]
-:    - [[file:07-source-blocks.org::1044][*** ⚠️ With Headers]]
-:    - [[file:07-source-blocks.org::1050][*** ⚠️ Accessing Variables]]
-:    - [[file:07-source-blocks.org::1319][** ⚠️ Inline Call Syntax]]
-:    - [[file:07-source-blocks.org::1348][** ⚠️ Call with Headers]]
-:    - [[file:07-source-blocks.org::1363][** ⚠️ Library of Functions]]
-:    - [[file:07-source-blocks.org::1478][*** ⚠️ Plot Generation]]
-:    - [[file:07-source-blocks.org::1600][* 👀 Navigation]]
+: ** [[file:07-source-blocks.org][07-source-blocks.org]] (5 items)
+:    - [[file:07-source-blocks.org::513][*** 👀 :eval - Control Evaluation]]
+:    - [[file:07-source-blocks.org::641][*** ⚠️ File Links]]
+:    - [[file:07-source-blocks.org::1063][*** ⚠️ With Headers]]
+:    - [[file:07-source-blocks.org::1501][*** ⚠️ Plot Generation]]
+:    - [[file:07-source-blocks.org::1623][* 👀 Navigation]]
 : 
-: ** [[file:09-jupyter.org][09-jupyter.org]] (3 items)
-:    - [[file:09-jupyter.org::1258][** ⚠️ Julia Scientific Computing Example]]
-:    - [[file:09-jupyter.org::1301][** ⚠️ R Statistical Analysis Example]]
-:    - [[file:09-jupyter.org::1402][* 👀 Navigation]]
+: ** [[file:09-jupyter.org][09-jupyter.org]] (1 items)
+:    - [[file:09-jupyter.org::1425][* 👀 Navigation]]
 : 
-: ** [[file:10-export.org][10-export.org]] (2 items)
-:    - [[file:10-export.org::65][*** ⚠️ MathJax Integration]]
-:    - [[file:10-export.org::413][*** ⚠️ Body-Only]]
+: ** [[file:10-export.org][10-export.org]] (1 items)
+:    - [[file:10-export.org::414][*** ⚠️ Body-Only]]
 : 
 : ** [[file:12-image-overlays.org][12-image-overlays.org]] (1 items)
 :    - [[file:12-image-overlays.org::146][** ⚠️ Adding Captions]]
 : 
-: ** [[file:13-agenda.org][13-agenda.org]] (32 items)
+: ** [[file:13-agenda.org][13-agenda.org]] (31 items)
 :    - [[file:13-agenda.org::257][** ⚠️ Upcoming Deadlines]]
-:    - [[file:13-agenda.org::276][** ⚠️ Deadline Display]]
-:    - [[file:13-agenda.org::284][** ⚠️ Warning Periods]]
-:    - [[file:13-agenda.org::295][* ⚠️ Scheduled Item View]]
-:    - [[file:13-agenda.org::314][** ⚠️ Repeating Items]]
-:    - [[file:13-agenda.org::331][* ⚠️ Grouping and Sorting]]
-:    - [[file:13-agenda.org::335][** ⚠️ Group By Options]]
-:    - [[file:13-agenda.org::337][*** ⚠️ By Date (Default)]]
-:    - [[file:13-agenda.org::351][*** ⚠️ By Category]]
-:    - [[file:13-agenda.org::365][*** ⚠️ By Priority]]
-:    - [[file:13-agenda.org::399][** ⚠️ Changing Grouping]]
-:    - [[file:13-agenda.org::409][** ⚠️ Sort Options]]
-:    - [[file:13-agenda.org::424][** ⚠️ Filter by Tag]]
-:    - [[file:13-agenda.org::497][** ⚠️ Tree View Interface]]
-:    - [[file:13-agenda.org::513][** ⚠️ Opening Items]]
-:    - [[file:13-agenda.org::522][** ⚠️ Quick Pick Navigation]]
-:    - [[file:13-agenda.org::542][** ⚠️ Item Icons]]
-:    - [[file:13-agenda.org::1081][* ⚠️ Troubleshooting]]
-:    - [[file:13-agenda.org::1083][** ⚠️ Agenda Shows No Items]]
-:    - [[file:13-agenda.org::1112][** ⚠️ Items Not Updating]]
-:    - [[file:13-agenda.org::1136][** ⚠️ Tree View Not Showing]]
-:    - [[file:13-agenda.org::1154][** ⚠️ Slow Performance]]
-:    - [[file:13-agenda.org::1183][** ⚠️ Date Display Issues]]
-:    - [[file:13-agenda.org::1208][* ⚠️ Quick Reference]]
-:    - [[file:13-agenda.org::1210][** ⚠️ Main Agenda Commands]]
-:    - [[file:13-agenda.org::1226][** ⚠️ Database Agenda Commands]]
-:    - [[file:13-agenda.org::1237][** ⚠️ Tree View Commands]]
-:    - [[file:13-agenda.org::1248][** ⚠️ Configuration Settings]]
-:    - [[file:13-agenda.org::1260][** ⚠️ Agenda Item Properties]]
-:    - [[file:13-agenda.org::1277][** ⚠️ Item Type Icons]]
-:    - [[file:13-agenda.org::1290][** ⚠️ Quick Workflow]]
-:    - [[file:13-agenda.org::1298][* ⚠️ Related Topics]]
+:    - [[file:13-agenda.org::285][** ⚠️ Warning Periods]]
+:    - [[file:13-agenda.org::296][* ⚠️ Scheduled Item View]]
+:    - [[file:13-agenda.org::315][** ⚠️ Repeating Items]]
+:    - [[file:13-agenda.org::332][* ⚠️ Grouping and Sorting]]
+:    - [[file:13-agenda.org::336][** ⚠️ Group By Options]]
+:    - [[file:13-agenda.org::338][*** ⚠️ By Date (Default)]]
+:    - [[file:13-agenda.org::352][*** ⚠️ By Category]]
+:    - [[file:13-agenda.org::366][*** ⚠️ By Priority]]
+:    - [[file:13-agenda.org::400][** ⚠️ Changing Grouping]]
+:    - [[file:13-agenda.org::410][** ⚠️ Sort Options]]
+:    - [[file:13-agenda.org::425][** ⚠️ Filter by Tag]]
+:    - [[file:13-agenda.org::498][** ⚠️ Tree View Interface]]
+:    - [[file:13-agenda.org::514][** ⚠️ Opening Items]]
+:    - [[file:13-agenda.org::523][** ⚠️ Quick Pick Navigation]]
+:    - [[file:13-agenda.org::543][** ⚠️ Item Icons]]
+:    - [[file:13-agenda.org::1082][* ⚠️ Troubleshooting]]
+:    - [[file:13-agenda.org::1084][** ⚠️ Agenda Shows No Items]]
+:    - [[file:13-agenda.org::1113][** ⚠️ Items Not Updating]]
+:    - [[file:13-agenda.org::1137][** ⚠️ Tree View Not Showing]]
+:    - [[file:13-agenda.org::1155][** ⚠️ Slow Performance]]
+:    - [[file:13-agenda.org::1184][** ⚠️ Date Display Issues]]
+:    - [[file:13-agenda.org::1209][* ⚠️ Quick Reference]]
+:    - [[file:13-agenda.org::1211][** ⚠️ Main Agenda Commands]]
+:    - [[file:13-agenda.org::1227][** ⚠️ Database Agenda Commands]]
+:    - [[file:13-agenda.org::1238][** ⚠️ Tree View Commands]]
+:    - [[file:13-agenda.org::1249][** ⚠️ Configuration Settings]]
+:    - [[file:13-agenda.org::1261][** ⚠️ Agenda Item Properties]]
+:    - [[file:13-agenda.org::1278][** ⚠️ Item Type Icons]]
+:    - [[file:13-agenda.org::1291][** ⚠️ Quick Workflow]]
+:    - [[file:13-agenda.org::1299][* ⚠️ Related Topics]]
 : 
-: ** [[file:14-journal.org][14-journal.org]] (66 items)
-:    - [[file:14-journal.org::33][* ⚠️ Getting Started]]
-:    - [[file:14-journal.org::35][** ⚠️ Opening Your First Journal Entry]]
-:    - [[file:14-journal.org::321][** ⚠️ Markdown Templates]]
-:    - [[file:14-journal.org::338][* ⚠️ Creating Journal Entries]]
-:    - [[file:14-journal.org::340][** ⚠️ Today's Entry]]
-:    - [[file:14-journal.org::346][** ⚠️ New Entry for Any Date]]
-:    - [[file:14-journal.org::363][** ⚠️ Using Different Templates]]
-:    - [[file:14-journal.org::376][* ⚠️ Navigating Journal Entries]]
-:    - [[file:14-journal.org::378][** ⚠️ Keyboard Navigation]]
-:    - [[file:14-journal.org::387][** ⚠️ Go to Specific Date]]
-:    - [[file:14-journal.org::403][** ⚠️ Calendar View]]
-:    - [[file:14-journal.org::407][*** ⚠️ Accessing the Calendar]]
-:    - [[file:14-journal.org::412][*** ⚠️ Calendar Features]]
-:    - [[file:14-journal.org::429][*** ⚠️ Quick Actions in Calendar]]
-:    - [[file:14-journal.org::437][** ⚠️ Tree View]]
-:    - [[file:14-journal.org::458][** ⚠️ Week View]]
-:    - [[file:14-journal.org::478][* ⚠️ Searching Journal Entries]]
-:    - [[file:14-journal.org::480][** ⚠️ Full-Text Search]]
-:    - [[file:14-journal.org::509][** ⚠️ Search Tips]]
-:    - [[file:14-journal.org::516][** ⚠️ Advanced Search]]
-:    - [[file:14-journal.org::526][* ⚠️ Quick Capture and Logging]]
-:    - [[file:14-journal.org::528][** ⚠️ Quick Log Entry]]
-:    - [[file:14-journal.org::551][** ⚠️ Insert Timestamp]]
-:    - [[file:14-journal.org::570][* ⚠️ Journal Statistics]]
-:    - [[file:14-journal.org::572][** ⚠️ Viewing Statistics]]
-:    - [[file:14-journal.org::580][** ⚠️ Statistics Tracked]]
-:    - [[file:14-journal.org::582][*** ⚠️ Entry Count]]
-:    - [[file:14-journal.org::585][*** ⚠️ Total Words]]
-:    - [[file:14-journal.org::588][*** ⚠️ Current Streak]]
-:    - [[file:14-journal.org::591][*** ⚠️ Longest Streak]]
-:    - [[file:14-journal.org::594][** ⚠️ Streak Calculation]]
-:    - [[file:14-journal.org::604][** ⚠️ Status Bar Integration]]
-:    - [[file:14-journal.org::625][* ⚠️ Integration with Other Features]]
-:    - [[file:14-journal.org::627][** ⚠️ Agenda Integration]]
-:    - [[file:14-journal.org::654][** ⚠️ Cross-Referencing]]
-:    - [[file:14-journal.org::670][** ⚠️ Embedding Code Blocks]]
-:    - [[file:14-journal.org::688][** ⚠️ Citations and References]]
-:    - [[file:14-journal.org::706][* ⚠️ Commands Reference]]
-:    - [[file:14-journal.org::708][** ⚠️ All Journal Commands]]
-:    - [[file:14-journal.org::726][** ⚠️ Command Palette]]
-:    - [[file:14-journal.org::734][* ⚠️ Keyboard Shortcuts]]
-:    - [[file:14-journal.org::736][** ⚠️ Default Keybindings]]
-:    - [[file:14-journal.org::758][** ⚠️ Custom Keybindings]]
-:    - [[file:14-journal.org::779][* ⚠️ Tips and Best Practices]]
-:    - [[file:14-journal.org::781][** ⚠️ Daily Journaling Workflow]]
-:    - [[file:14-journal.org::788][** ⚠️ Building the Habit]]
-:    - [[file:14-journal.org::796][** ⚠️ Organizing Information]]
-:    - [[file:14-journal.org::804][** ⚠️ Performance Tips]]
-:    - [[file:14-journal.org::811][** ⚠️ Backup and Sync]]
-:    - [[file:14-journal.org::839][** ⚠️ Privacy and Security]]
-:    - [[file:14-journal.org::848][* ⚠️ Troubleshooting]]
-:    - [[file:14-journal.org::850][** ⚠️ Journal Directory Not Found]]
-:    - [[file:14-journal.org::859][** ⚠️ Templates Not Working]]
-:    - [[file:14-journal.org::868][** ⚠️ Navigation Shortcuts Not Working]]
-:    - [[file:14-journal.org::876][** ⚠️ Statistics Not Updating]]
-:    - [[file:14-journal.org::884][** ⚠️ Calendar Not Showing Entries]]
-:    - [[file:14-journal.org::893][* ⚠️ Advanced Usage]]
-:    - [[file:14-journal.org::895][** ⚠️ Scripting and Automation]]
-:    - [[file:14-journal.org::899][*** ⚠️ Auto-generate Weekly Summary]]
-:    - [[file:14-journal.org::935][*** ⚠️ Export to PDF]]
-:    - [[file:14-journal.org::949][** ⚠️ Custom Template Variables]]
-:    - [[file:14-journal.org::958][** ⚠️ Integration with External Tools]]
-:    - [[file:14-journal.org::960][*** ⚠️ Obsidian Daily Notes]]
-:    - [[file:14-journal.org::968][*** ⚠️ Emacs org-journal]]
-:    - [[file:14-journal.org::978][* ⚠️ Future Enhancements]]
-:    - [[file:14-journal.org::992][* ⚠️ See Also]]
+: ** [[file:14-journal.org][14-journal.org]] (7 items)
+:    - [[file:14-journal.org::418][*** ⚠️ Accessing the Calendar]]
+:    - [[file:14-journal.org::423][*** ⚠️ Calendar Features]]
+:    - [[file:14-journal.org::440][*** ⚠️ Quick Actions in Calendar]]
+:    - [[file:14-journal.org::448][** ⚠️ Tree View]]
+:    - [[file:14-journal.org::469][** ⚠️ Week View]]
+:    - [[file:14-journal.org::492][** 👀 Full-Text Search]]
+:    - [[file:14-journal.org::630][** ⚠️ Status Bar Integration]]
 : 
 : ** [[file:15-capture.org][15-capture.org]] (1 items)
 :    - [[file:15-capture.org::42][** ⚠️ Your First Capture]]
@@ -259,34 +171,15 @@ fi
 : ** [[file:19-references.org][19-references.org]] (1 items)
 :    - [[file:19-references.org::125][** ⚠️ Multiple Citations]]
 : 
-: ** [[file:20-editmarks.org][20-editmarks.org]] (2 items)
-:    - [[file:20-editmarks.org::198][** ⚠️ Mark Typo Correction]]
-:    - [[file:20-editmarks.org::603][** ⚠️ Export Compatibility]]
+: ** [[file:20-editmarks.org][20-editmarks.org]] (1 items)
+:    - [[file:20-editmarks.org::604][** 👀 Export Compatibility]]
 : 
-: ** [[file:21-navigation.org][21-navigation.org]] (2 items)
-:    - [[file:21-navigation.org::134][*** ⚠️ Jump to Source Block]]
-:    - [[file:21-navigation.org::142][*** ⚠️ Jump to Results]]
-: 
-: ** [[file:22-hydra-menus.org][22-hydra-menus.org]] (4 items)
+: ** [[file:22-hydra-menus.org][22-hydra-menus.org]] (3 items)
 :    - [[file:22-hydra-menus.org::73][** 👀 Understanding Exit Behaviors]]
-:    - [[file:22-hydra-menus.org::775][** ⚠️ Example 5: Persistent Actions]]
-:    - [[file:22-hydra-menus.org::786][** ⚠️ Example 6: Navigating Back]]
-:    - [[file:22-hydra-menus.org::1055][* 👀 Navigation]]
+:    - [[file:22-hydra-menus.org::775][** 👀 Example 5: Navigating Back]]
+:    - [[file:22-hydra-menus.org::1044][* 👀 Navigation]]
 : 
-: ** [[file:23-speed-commands.org][23-speed-commands.org]] (4 items)
-:    - [[file:23-speed-commands.org::146][** 👀 Structure Editing Commands]]
-:    - [[file:23-speed-commands.org::206][*** ⚠️ Timestamp Types]]
-:    - [[file:23-speed-commands.org::220][** ⚠️ Metadata Commands]]
-:    - [[file:23-speed-commands.org::317][*** 👀 Clocking Notes]]
-: 
-: ** [[file:25-commands.org][25-commands.org]] (1 items)
-:    - [[file:25-commands.org::62][** 👀 DWIM Commands]]
-: 
-: ** [[file:31-publishing.org][31-publishing.org]] (2 items)
-:    - [[file:31-publishing.org::78][** ⚠️ YAML Configuration (`_config.yml')]]
-:    - [[file:31-publishing.org::286][* ⚠️ Explicit Table of Contents (`_toc.yml')]]
-: 
-: Total: 198 items need review
+: Total: 97 items need review
 
 * Current Review Status
 :PROPERTIES:
@@ -311,3 +204,44 @@ Items link directly to the source file and line number for quick navigation.
 | ⚠️    | New heading, needs review |
 | 👀    | Changed heading, needs review |
 | ✅    | Reviewed and approved |
+
+                                                                                                                                                                  
+     
+* Add Review Markers to Unmarked Headings
+
+Run this block to add ⚠️ to all headings that do not have a TODO state.
+
+#+begin_src python :results output
+import os, re
+
+TODO_STATES = ["⚠️", "👀", "✅", "TODO", "DONE", "NEXT", "WAITING", "CANCELLED"]
+
+def has_todo(line):
+    m = re.match(r"^\*+\s+(.*)$", line)
+    if not m: return True
+    first = m.group(1).split()[0] if m.group(1).split() else ""
+    return first in TODO_STATES
+
+total = 0
+for fname in sorted(os.listdir(".")):
+    if not fname.endswith(".org") or fname == "review-agenda.org": continue
+    with open(fname, "r") as f: lines = f.readlines()
+    new_lines, changes = [], []
+    for i, line in enumerate(lines):
+        if re.match(r"^\*+\s", line) and not has_todo(line):
+            new_lines.append(re.sub(r"^(\*+\s+)", r"\1⚠️ ", line))
+            changes.append(f"  Line {i+1}: {line.strip()}")
+        else:
+            new_lines.append(line)
+    if changes:
+        with open(fname, "w") as f: f.writelines(new_lines)
+        print(f"\n{fname}:")
+        for c in changes: print(c)
+        total += len(changes)
+
+print(f"\nTotal: {total} headings updated" if total else "All headings have TODO states.")
+#+end_src
+
+ #+attr_org: :radio t                                                                                                                
+ - [X] Option 1                                                                                                                      
+ - [ ] Option 2  

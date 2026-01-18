@@ -3,8 +3,10 @@
 #+DATE: 2026-01-15
 #+STARTUP: overview
 #+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
 
-* Introduction
+* ✅ Introduction
+CLOSED: [2026-01-17 Sat 17:41]
 
 The Org File Modification API provides a TypeScript interface for programmatically
 reading, modifying, and writing org-mode files. This is the VS Code equivalent of

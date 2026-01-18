@@ -383,12 +383,13 @@ However, only one file per date is stored. To use multiple templates in one day,
 * ✅ Navigating Journal Entries
 CLOSED: [2026-01-17 Sat 14:03]
 
-** ⚠️ Keyboard Navigation
+** ✅ Keyboard Navigation
+CLOSED: [2026-01-17 Sat 15:11]
 
 When viewing a journal entry:
 
-- M-[ - Go to previous entry
-- M-] - Go to next entry
+- C-Cmd-[ - Go to previous entry
+- C-Cmd-] - Go to next entry
 
 These shortcuts only work when the current file is a journal entry (filename matches YYYY-MM-DD.org or .md).
 

@@ -124,16 +124,12 @@ CLOSED: [2026-01-17 Sat 10:09]
 
 ** ⚠️ Multiple Citations
 
-Cite multiple sources by separating keys with commas:
+Cite multiple sources by separating keys with commas or semicolons:
 
-cite:kitchin-2015-examp-effec,kitchin-2025-beyon-fourt
-
-#+BEGIN_SRC org
 cite:kitchin-2015-examp-effec,kitchin-2025-beyon-fourt          # Version 2
-cite:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt        # Version 3
-#+END_SRC
 
-cite:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt  
+cite:&kitchin-2015-examp-effec;&kitchin-2025-beyon-fourt        # Version 3
+
 
 ** Citation Formats by File Type
 

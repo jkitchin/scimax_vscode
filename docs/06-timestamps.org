@@ -153,7 +153,8 @@ CLOSED: [2026-01-15 Thu 14:58]
 * ✅ Creating Timestamps
 CLOSED: [2026-01-15 Thu 14:58]
 
-** 👀 Insert Timestamp Command
+** ✅ Insert Timestamp Command
+CLOSED: [2026-01-17 Sat 14:56]
 
 | Key/Command | Action                        |
 |-------------+-------------------------------|
@@ -456,12 +457,12 @@ CLOSED: [2026-01-15 Thu 15:05]
 | Past dates  | Appears every day until done   | Shows days overdue          |
 | Use for     | Planning, time-blocking        | Hard deadlines, due dates   |
 
-** ⚠️ Examples with Context
+** ✅ Examples with Context
+CLOSED: [2026-01-17 Sat 15:25]
 
 #+BEGIN_SRC org
 ,* TODO Review contract
-SCHEDULED: <2026-01-15 Wed>
-DEADLINE: <2026-01-17 Fri>
+SCHEDULED: <2026-01-15 Wed> DEADLINE: <2026-01-17 Fri>
 Need to finish before weekend.
 
 ,* TODO Weekly team meeting
@@ -632,25 +633,40 @@ CLOSED: [2026-01-17 Sat 08:41]
 
 Total time: 4:30 (2:00 + 2:30)
 
-** ⚠️ Clock Reports
+** ✅ Clock Reports
+CLOSED: [2026-01-17 Sat 14:57]
+:LOGBOOK:
+CLOCK: [2026-01-17 Sat 15:30]--[2026-01-17 Sat 15:35] => 0:05
+:END:
 
 View time summaries:
 
 | Command                   | Description            |
 |---------------------------+------------------------|
-| cmd:scimax.org.clockReport    | Generate clock report  |
-| cmd:scimax.agenda.clockReport | Clock report in agenda |
+| scimax.org.clockReport    | Generate clock report  |
+| scimax.agenda.clockReport | Clock report in agenda |
 
 
  [[cmd:scimax.org.clockReport]]
 
  [[cmd:scimax.agenda.clockReport]]
 
-** ⚠️ Clock Table
+** ✅ Clock Table
+CLOSED: [2026-01-17 Sat 15:32]
+SCHEDULED: <2026-01-17 Sat> DEADLINE: <2026-01-18 Sun>
+:LOGBOOK:
+CLOCK: [2026-01-17 Sat 15:30]--[2026-01-17 Sat 15:31] => 0:02
+:END:
 
 Insert a dynamic table showing time spent:
 
 #+BEGIN: clocktable :maxlevel 2 :scope file
+| Headline | Time |
+|---+---|
+| ** ✅ Clock Reports | 0:05 |
+| ** ✅ Clock Table | 0:02 |
+|---+---|
+| *Total* | 0:07 |
 #+END:
 
 This creates a table like:
@@ -732,7 +748,8 @@ When a task is marked DONE, a CLOSED timestamp is automatically added:
 CLOSED: [2026-01-14 Tue 16:30]
 #+END_SRC
 
-** ⚠️ CLOSED Properties
+** ✅ CLOSED Properties
+CLOSED: [2026-01-17 Sat 14:58]
 
 - Always an inactive timestamp [...]
 - Records the exact completion time
@@ -754,7 +771,8 @@ Diary sexps use the %%( ) syntax, optionally within angle brackets:
 <%%((diary-float t 1 2))>
 #+END_SRC
 
-** ⚠️ Common Diary Functions
+** ✅ Common Diary Functions
+CLOSED: [2026-01-17 Sat 15:27]
 
 | Function          | Description                    | Example                             |
 |-------------------+--------------------------------+-------------------------------------|
@@ -764,7 +782,8 @@ Diary sexps use the %%( ) syntax, optionally within angle brackets:
 | diary-block       | Date range (m1 d1 y1 m2 d2 y2) | %%(diary-block 6 1 2026 8 31 2026)  |
 | org-class         | Recurring class schedule       | %%(org-class 2026 1 15 2026 5 15 1) |
 
-** ⚠️ Diary Sexp Examples
+** ✅ Diary Sexp Examples
+CLOSED: [2026-01-17 Sat 15:29]
 
 *** ⚠️ Annual Events (Birthdays, Anniversaries)
 
@@ -941,7 +960,8 @@ CLOSED: [2026-01-16 Fri 20:42]
 * ✅ Practical Examples
 CLOSED: [2026-01-16 Fri 20:42]
 
-** ⚠️ Meeting Schedule
+** ✅ Meeting Schedule
+CLOSED: [2026-01-17 Sat 14:59]
 
 #+BEGIN_SRC org
 ,* TODO Weekly team sync
@@ -954,8 +974,7 @@ Recurring every Thursday at 10am.
 
 #+BEGIN_SRC org
 ,* TODO Q1 Planning Document
-SCHEDULED: <2026-01-15 Wed>
-DEADLINE: <2026-01-31 Fri -7d>
+SCHEDULED: <2026-01-15 Wed> DEADLINE: <2026-01-31 Fri -7d>
 :PROPERTIES:
 :EFFORT: 8:00
 :END:
@@ -1090,7 +1109,8 @@ CLOSED: [2026-01-16 Fri 20:44]
 * ✅ Common Patterns
 CLOSED: [2026-01-16 Fri 20:44]
 
-** ⚠️ Weekly Review
+** ✅ Weekly Review
+CLOSED: [2026-01-17 Sat 15:07]
 
 #+BEGIN_SRC org
 ,* TODO Weekly review
@@ -1119,7 +1139,8 @@ DEADLINE: <2026-01-31 Fri +1m -3d>
 Due monthly on last day, 3 day warning.
 #+END_SRC
 
-** Exercise Habit
+** ✅ Exercise Habit
+CLOSED: [2026-01-17 Sat 15:07]
 
 #+BEGIN_SRC org
 ,* TODO Morning workout
@@ -1128,7 +1149,8 @@ SCHEDULED: <2026-01-18 Sun 07:00 ++1d>
 Daily exercise, catch up if missed day.
 #+END_SRC
 
-** ⚠️ Car Maintenance
+** ✅ Car Maintenance
+CLOSED: [2026-01-17 Sat 15:06]
 
 #+BEGIN_SRC org
 ,* TODO Oil change
@@ -1137,34 +1159,32 @@ SCHEDULED: <2026-01-20 Mon .+90d>
 Every 90 days after previous change.
 #+END_SRC
 
-** ⚠️ Project Phases
+** ✅ Project Phases
+CLOSED: [2026-01-17 Sat 15:04] SCHEDULED: <2026-01-24 Sat> DEADLINE: <2026-02-17 Tue>
 
 #+BEGIN_SRC org
 ,* TODO Project: Mobile App Launch
 ,** DONE Research phase
-CLOSED: [2026-01-05 Sun 14:00]
-SCHEDULED: <2026-01-01 Wed>
-DEADLINE: <2026-01-05 Sun>
+CLOSED: [2026-01-05 Sun 14:00] SCHEDULED: <2026-01-01 Wed> DEADLINE: <2026-01-05 Sun>
 
 ,** TODO Design phase
-SCHEDULED: <2026-01-06 Mon>
-DEADLINE: <2026-01-19 Sun>
+SCHEDULED: <2026-01-06 Mon> DEADLINE: <2026-01-19 Sun>
 
 ,** TODO Development phase
-SCHEDULED: <2026-01-20 Mon>
-DEADLINE: <2026-03-15 Sun>
+SCHEDULED: <2026-01-20 Mon> DEADLINE: <2026-03-15 Sun>
 
 ,** TODO Testing phase
-SCHEDULED: <2026-03-16 Mon>
-DEADLINE: <2026-03-31 Mon>
+SCHEDULED: <2026-03-16 Mon> DEADLINE: <2026-03-31 Mon>
 #+END_SRC
 
-* ⚠️ Integration with TODO Items
+* ✅ Integration with TODO Items
+CLOSED: [2026-01-17 Sat 15:04]
 
 Timestamps work seamlessly with TODO items. See [[file:03-todo-items.org][TODO Items]] for more on task
 management.
 
-** ⚠️ Scheduled TODOs
+** ✅ Scheduled TODOs
+CLOSED: [2026-01-17 Sat 15:03]
 
 #+BEGIN_SRC org
 ,* TODO [#A] Finish proposal
@@ -1176,17 +1196,18 @@ SCHEDULED: <2026-01-15 Wed>
 High priority task scheduled for tomorrow.
 #+END_SRC
 
-** ⚠️ Deadline Warnings in Agenda
+** ✅ Deadline Warnings in Agenda
+CLOSED: [2026-01-17 Sat 15:03]
 
 Tasks with approaching deadlines appear in the agenda with warning indicators.
 See [[file:13-agenda.org][Agenda]] for details on agenda views.
 
-** ⚠️ Combining All Features
+** ✅ Combining All Features
+CLOSED: [2026-01-17 Sat 15:03]
 
 #+BEGIN_SRC org
 ,* TODO [#A] Quarterly report                              :work:report:
-SCHEDULED: <2026-01-20 Mon>
-DEADLINE: <2026-01-31 Fri -7d>
+SCHEDULED: <2026-01-20 Mon> DEADLINE: <2026-01-31 Fri -7d>
 :PROPERTIES:
 :EFFORT: 12:00
 :CATEGORY: Reports
@@ -1200,9 +1221,11 @@ Priority A, work context, 12 hour estimate.
 Already logged 2:30 hours.
 #+END_SRC
 
-* ⚠️ Quick Reference
+* ✅ Quick Reference
+CLOSED: [2026-01-17 Sat 15:03]
 
-** ⚠️ Keybindings
+** ✅ Keybindings
+CLOSED: [2026-01-17 Sat 15:03]
 
 | Key            | Action                       |
 |----------------+------------------------------|
@@ -1213,17 +1236,19 @@ Already logged 2:30 hours.
 | S-<right>      | Next day                     |
 | S-<left>       | Previous day                 |
 
-** ⚠️ Speed Commands (at heading start)
+** ✅ Speed Commands (at heading start)
+CLOSED: [2026-01-17 Sat 15:03]
 
-| Key       | Action                           |
-|-----------|----------------------------------|
-| .        | Insert timestamp                 |
-| s        | Schedule task                    |
-| d        | Set deadline                     |
-| I  | Clock in                         |
-| O  | Clock out                        |
+| Key | Action           |
+|-----+------------------|
+| .   | Insert timestamp |
+| s   | Schedule task    |
+| d   | Set deadline     |
+| I   | Clock in         |
+| O   | Clock out        |
 
-** ⚠️ Commands
+** ✅ Commands
+CLOSED: [2026-01-17 Sat 15:03]
 
 | Command                    | Description                     |
 |----------------------------+---------------------------------|
@@ -1234,7 +1259,8 @@ Already logged 2:30 hours.
 | scimax.org.clockOut        | Stop time tracking            |
 | scimax.org.clockReport     | Generate time report          |
 
-** ⚠️ Timestamp Format Quick Reference
+** ✅ Timestamp Format Quick Reference
+CLOSED: [2026-01-17 Sat 15:03]
 
 #+BEGIN_EXAMPLE
 <2026-01-15 Wed>                    Active date
@@ -1249,7 +1275,8 @@ Already logged 2:30 hours.
 <2026-01-25 Sat -7d>                7-day warning
 #+END_EXAMPLE
 
-* ⚠️ Related Topics
+* ✅ Related Topics
+CLOSED: [2026-01-17 Sat 15:03]
 
 - [[file:03-todo-items.org][TODO Items]] - Task management with timestamps
 - [[file:13-agenda.org][Agenda]] - Viewing scheduled tasks and deadlines
