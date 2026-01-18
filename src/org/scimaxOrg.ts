@@ -1323,7 +1323,9 @@ export async function updateStatisticsCookies(
 
     // Build dynamic regex for matching TODO states
     const allStates = getAllTodoStatesForDocument(document);
-    const statesPattern = Array.from(allStates).join('|');
+    const statesPattern = Array.from(allStates)
+        .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|');
     const headingWithStateRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*`);
 
     // Count direct children with TODO states
@@ -1385,6 +1387,96 @@ export async function updateStatisticsCookies(
         // Recursively update parent's parent
         await updateStatisticsCookies(editor, parentLine, parentLevel);
     }
+}
+
+/**
+ * Update statistics cookie at the current heading
+ * Called when C-c C-c is pressed on a heading with [n/m] or [n%]
+ */
+export async function updateStatisticsAtCursor(): Promise<boolean> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return false;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const lineText = document.lineAt(position.line).text;
+
+    // Check if we're on a heading with a statistics cookie
+    const headingMatch = lineText.match(/^(\*+)\s+/);
+    if (!headingMatch) return false;
+
+    const cookieMatch = lineText.match(/\[(\d+)\/(\d+)\]|\[(\d+)%\]/);
+    if (!cookieMatch) return false;
+
+    const level = headingMatch[1].length;
+    const workflow = getTodoWorkflowForDocument(document);
+    const doneStates = new Set(workflow.doneStates);
+
+    // Find the end of this heading's subtree
+    let endLine = document.lineCount;
+    for (let i = position.line + 1; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/^(\*+)\s+/);
+        if (match && match[1].length <= level) {
+            endLine = i;
+            break;
+        }
+    }
+
+    // Build dynamic regex for matching TODO states
+    const allStates = getAllTodoStatesForDocument(document);
+    const statesPattern = Array.from(allStates)
+        .map(s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('|');
+    const headingWithStateRegex = new RegExp(`^(\\*+)\\s+(${statesPattern})?\\s*`);
+
+    // Count direct children at the level directly below
+    const childLevel = level + 1;
+    let doneCount = 0;
+    let totalCount = 0;
+
+    for (let i = position.line + 1; i < endLine; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(headingWithStateRegex);
+        if (match && match[1].length === childLevel) {
+            totalCount++;
+            const state = match[2];
+            if (state && doneStates.has(state)) {
+                doneCount++;
+            }
+        }
+    }
+
+    if (totalCount === 0) {
+        vscode.window.showInformationMessage('No child headings found to count');
+        return true;
+    }
+
+    // Build new cookie
+    let newCookie: string;
+    if (cookieMatch[3] !== undefined) {
+        // Percentage format [n%]
+        const percent = Math.round((doneCount / totalCount) * 100);
+        newCookie = `[${percent}%]`;
+    } else {
+        // Fraction format [n/m]
+        newCookie = `[${doneCount}/${totalCount}]`;
+    }
+
+    // Replace the cookie in the heading
+    const newLineText = lineText.replace(/\[\d+\/\d+\]|\[\d+%\]/, newCookie);
+
+    if (newLineText !== lineText) {
+        await editor.edit(editBuilder => {
+            const lineRange = document.lineAt(position.line).range;
+            editBuilder.replace(lineRange, newLineText);
+        });
+        vscode.window.showInformationMessage(`Updated: ${newCookie}`);
+    } else {
+        vscode.window.showInformationMessage(`Statistics already current: ${newCookie}`);
+    }
+
+    return true;
 }
 
 /**
@@ -2725,6 +2817,8 @@ export function setupHeadingContext(context: vscode.ExtensionContext): void {
             if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
                 vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
                 vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
+                vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
+                vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
                 return;
             }
 
@@ -2737,6 +2831,14 @@ export function setupHeadingContext(context: vscode.ExtensionContext): void {
             // Check if on results line (#+RESULTS: or :RESULTS: drawer)
             const onResults = /^\s*#\+RESULTS(\[.*\])?:/i.test(line) || /^\s*:RESULTS:\s*$/i.test(line);
             vscode.commands.executeCommand('setContext', 'scimax.onResults', onResults);
+
+            // Check if on drawer line (:NAME: but not :END:)
+            const onDrawer = /^\s*:([A-Za-z][A-Za-z0-9_-]*):\s*$/.test(line) && !/^\s*:END:\s*$/i.test(line);
+            vscode.commands.executeCommand('setContext', 'scimax.onDrawer', onDrawer);
+
+            // Check if on heading with statistics cookie [n/m] or [n%]
+            const onStatisticsCookie = /^(\*+)\s+/.test(line) && /\[(\d+)\/(\d+)\]|\[(\d+)%\]/.test(line);
+            vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', onStatisticsCookie);
         })
     );
 }
@@ -2972,7 +3074,8 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
             const uri = vscode.Uri.parse(args.uri);
             await toggleCheckboxAt(uri, args.line);
         }),
-        vscode.commands.registerCommand('scimax.org.insertCheckbox', insertCheckbox)
+        vscode.commands.registerCommand('scimax.org.insertCheckbox', insertCheckbox),
+        vscode.commands.registerCommand('scimax.org.updateStatistics', updateStatisticsAtCursor)
     );
 
     // Links

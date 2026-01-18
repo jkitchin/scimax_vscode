@@ -1615,6 +1615,10 @@
         "title": "Scimax: Insert Checkbox"
       },
       {
+        "command": "scimax.org.updateStatistics",
+        "title": "Scimax: Update Statistics Cookie"
+      },
+      {
         "command": "scimax.org.renumberList",
         "title": "Scimax: Renumber Ordered List"
       },
@@ -2317,6 +2321,11 @@
         "when": "editorTextFocus && editorLangId == 'org' && scimax.onResults && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
       },
       {
+        "command": "scimax.org.toggleFold",
+        "key": "tab",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onDrawer && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
         "command": "scimax.org.cycleGlobalFold",
         "key": "shift+tab",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && !scimax.inTable"
@@ -2412,10 +2421,16 @@
         "when": "editorTextFocus && editorLangId == 'markdown' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine"
       },
       {
+        "command": "scimax.org.updateStatistics",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onStatisticsCookie"
+      },
+      {
         "command": "scimax.org.toggleCheckbox",
         "key": "ctrl+c ctrl+c",
         "mac": "ctrl+c ctrl+c",
-        "when": "editorTextFocus && editorLangId == 'org' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine"
+        "when": "editorTextFocus && editorLangId == 'org' && !scimax.inSourceBlock && !scimax.onTblfmLine && !scimax.inOrderedList && !scimax.inDynamicBlock && !scimax.inInlineBabelCall && !scimax.inInlineSrc && !scimax.onCallLine && !scimax.onStatisticsCookie"
       },
       {
         "command": "scimax.markdown.insertDueDate",

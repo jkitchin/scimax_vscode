@@ -49,9 +49,9 @@ export interface TableFormula {
 export interface FormulaTarget {
     type: 'column' | 'field' | 'range';
     column?: number;
-    row?: number;
+    row?: number | string;  // Can be number or special like '>', '<', '-1'
     endColumn?: number;
-    endRow?: number;
+    endRow?: number | string;  // Can be number or special like '>', '<', '-1'
 }
 
 export interface CellRef {
@@ -250,6 +250,23 @@ function parseFormula(formulaStr: string): TableFormula | null {
 }
 
 /**
+ * Parse a row reference that may be numeric, @> (last), @< (first), or @-N (relative)
+ * Returns the row specifier string for later resolution
+ */
+function parseRowRef(rowStr: string): string | number | null {
+    if (rowStr === '>') return '>';
+    if (rowStr === '<') return '<';
+    if (rowStr === 'I') return 'I'; // First hline
+    if (rowStr === 'II') return 'II'; // Second hline
+    if (rowStr === 'III') return 'III'; // Third hline
+    const relMatch = rowStr.match(/^-(\d+)$/);
+    if (relMatch) return `-${relMatch[1]}`;
+    const numMatch = rowStr.match(/^(\d+)$/);
+    if (numMatch) return parseInt(numMatch[1], 10);
+    return null;
+}
+
+/**
  * Parse formula target (left side of =)
  */
 function parseFormulaTarget(targetStr: string): FormulaTarget | null {
@@ -262,26 +279,33 @@ function parseFormulaTarget(targetStr: string): FormulaTarget | null {
         };
     }
 
-    // Field reference: @2$3
-    const fieldMatch = targetStr.match(/^@(\d+)\$(\d+)$/);
+    // Field reference with special rows: @>$3, @<$3, @-1$3, @2$3
+    const fieldMatch = targetStr.match(/^@([><I]{1,3}|-?\d+)\$(\d+)$/);
     if (fieldMatch) {
-        return {
-            type: 'field',
-            row: parseInt(fieldMatch[1], 10),
-            column: parseInt(fieldMatch[2], 10),
-        };
+        const rowRef = parseRowRef(fieldMatch[1]);
+        if (rowRef !== null) {
+            return {
+                type: 'field',
+                row: rowRef,
+                column: parseInt(fieldMatch[2], 10),
+            };
+        }
     }
 
-    // Range reference: @2$1..@5$3
-    const rangeMatch = targetStr.match(/^@(\d+)\$(\d+)\.\.@(\d+)\$(\d+)$/);
+    // Range reference with special rows: @2$1..@>$3, @2$1..@-1$3
+    const rangeMatch = targetStr.match(/^@([><I]{1,3}|-?\d+)\$(\d+)\.\.@([><I]{1,3}|-?\d+)\$(\d+)$/);
     if (rangeMatch) {
-        return {
-            type: 'range',
-            row: parseInt(rangeMatch[1], 10),
-            column: parseInt(rangeMatch[2], 10),
-            endRow: parseInt(rangeMatch[3], 10),
-            endColumn: parseInt(rangeMatch[4], 10),
-        };
+        const startRow = parseRowRef(rangeMatch[1]);
+        const endRow = parseRowRef(rangeMatch[3]);
+        if (startRow !== null && endRow !== null) {
+            return {
+                type: 'range',
+                row: startRow,
+                column: parseInt(rangeMatch[2], 10),
+                endRow: endRow,
+                endColumn: parseInt(rangeMatch[4], 10),
+            };
+        }
     }
 
     return null;
@@ -328,13 +352,14 @@ export function evaluateExpression(
             }
         );
 
-        // Replace field references @R$C
+        // Replace field references @R$C (R can be >, <, -N, or number)
         evalExpr = evalExpr.replace(
-            /@(\d+)\$(\d+)/g,
-            (_, row, col) => {
+            /@([><]|-?\d+)\$(\d+)/g,
+            (_, rowRef, col) => {
+                const row = resolveRowRefInExpr(rowRef, context.table);
                 return String(getCellValue(
                     context.table,
-                    parseInt(row, 10),
+                    row,
                     parseInt(col, 10)
                 ));
             }
@@ -371,17 +396,53 @@ export function evaluateExpression(
 }
 
 /**
+ * Count total data rows (excluding hlines) in the table
+ */
+function countDataRows(table: ParsedTable): number {
+    let count = 0;
+    for (const row of table.cells) {
+        if (row.length > 0 && !row[0].isHline) {
+            count++;
+        }
+    }
+    return count;
+}
+
+/**
+ * Resolve a row reference string to data row index (1-indexed, skipping hlines)
+ * This matches org-mode's row numbering where @1 is first data row, @2 is second, etc.
+ */
+function resolveRowRefInExpr(rowStr: string, table: ParsedTable): number {
+    if (rowStr === '>') {
+        // @> means last data row
+        return countDataRows(table);
+    }
+    if (rowStr === '<') {
+        // @< means first data row
+        return 1;
+    }
+    // Handle @-N (relative to last data row)
+    const relMatch = rowStr.match(/^-(\d+)$/);
+    if (relMatch) {
+        const offset = parseInt(relMatch[1], 10);
+        const lastDataRow = countDataRows(table);
+        return lastDataRow - offset;
+    }
+    return parseInt(rowStr, 10);
+}
+
+/**
  * Resolve a range reference to array of values
  */
 function resolveRange(rangeExpr: string, context: EvalContext): string[] {
     const values: string[] = [];
 
-    // Parse range @R1$C1..@R2$C2
-    const rangeMatch = rangeExpr.match(/@(\d+)\$(\d+)\.\.@(\d+)\$(\d+)/);
+    // Parse range with special row refs @R1$C1..@R2$C2 where R can be >, <, -N, or number
+    const rangeMatch = rangeExpr.match(/@([><]|-?\d+)\$(\d+)\.\.@([><]|-?\d+)\$(\d+)/);
     if (rangeMatch) {
-        const startRow = parseInt(rangeMatch[1], 10);
+        const startRow = resolveRowRefInExpr(rangeMatch[1], context.table);
         const startCol = parseInt(rangeMatch[2], 10);
-        const endRow = parseInt(rangeMatch[3], 10);
+        const endRow = resolveRowRefInExpr(rangeMatch[3], context.table);
         const endCol = parseInt(rangeMatch[4], 10);
 
         for (let r = startRow; r <= endRow; r++) {
@@ -421,10 +482,10 @@ function resolveRange(rangeExpr: string, context: EvalContext): string[] {
         return values;
     }
 
-    // Parse row range @R$C1..@R$C2 (same row, different columns)
-    const rowRangeMatch = rangeExpr.match(/@(\d+)\$(\d+)\.\.@\1\$(\d+)/);
+    // Parse row range @R$C1..@R$C2 (same row, different columns) - supports special row refs
+    const rowRangeMatch = rangeExpr.match(/@([><]|-?\d+)\$(\d+)\.\.@\1\$(\d+)/);
     if (rowRangeMatch) {
-        const row = parseInt(rowRangeMatch[1], 10);
+        const row = resolveRowRefInExpr(rowRangeMatch[1], context.table);
         const startCol = parseInt(rowRangeMatch[2], 10);
         const endCol = parseInt(rowRangeMatch[3], 10);
 
@@ -442,11 +503,13 @@ function resolveRange(rangeExpr: string, context: EvalContext): string[] {
  * Resolve a single cell reference
  */
 function resolveCellRef(cellRef: string, context: EvalContext): number | string {
-    const match = cellRef.match(/@(\d+)\$(\d+)/);
+    // Handle special row refs like @>$2, @<$2, @-1$2
+    const match = cellRef.match(/@([><]|-?\d+)\$(\d+)/);
     if (match) {
+        const row = resolveRowRefInExpr(match[1], context.table);
         return getCellValue(
             context.table,
-            parseInt(match[1], 10),
+            row,
             parseInt(match[2], 10)
         );
     }
@@ -684,6 +747,59 @@ function parseFactor(tokens: Token[], pos: number): ParseResult {
 // =============================================================================
 
 /**
+ * Resolve a row reference (number or special) to data row index
+ * @param rowRef - Row reference: number, '>' (last), '<' (first data), '-N' (relative to last)
+ * @param table - The parsed table
+ * @param currentRow - Current row for relative references (optional)
+ * @returns Data row index (1-indexed, skipping hlines)
+ */
+function resolveRowRef(rowRef: number | string, table: ParsedTable, currentRow?: number): number {
+    if (typeof rowRef === 'number') {
+        return rowRef;
+    }
+
+    // @> means last data row
+    if (rowRef === '>') {
+        return countDataRows(table);
+    }
+
+    // @< means first data row
+    if (rowRef === '<') {
+        return 1;
+    }
+
+    // @I, @II, @III - find data row after nth hline
+    if (rowRef.match(/^I{1,3}$/)) {
+        const targetHline = rowRef.length;
+        let hlineCount = 0;
+        let dataRowCount = 0;
+        for (let i = 0; i < table.cells.length; i++) {
+            if (table.cells[i].length > 0 && table.cells[i][0].isHline) {
+                hlineCount++;
+                if (hlineCount === targetHline) {
+                    // Return the data row index of the row after this hline
+                    return dataRowCount + 1;
+                }
+            } else {
+                dataRowCount++;
+            }
+        }
+        // Fallback to last data row if hline not found
+        return countDataRows(table);
+    }
+
+    // @-N means N rows before the last data row
+    const relMatch = rowRef.match(/^-(\d+)$/);
+    if (relMatch) {
+        const offset = parseInt(relMatch[1], 10);
+        const lastDataRow = countDataRows(table);
+        return lastDataRow - offset;
+    }
+
+    return 1; // Fallback
+}
+
+/**
  * Apply all formulas to a table and return updated cell values
  */
 export function applyFormulas(
@@ -719,8 +835,8 @@ export function applyFormulas(
             }
 
             case 'field': {
-                // Apply formula to single cell
-                const row = formula.target.row!;
+                // Apply formula to single cell - resolve special row refs
+                const row = resolveRowRef(formula.target.row!, table);
                 const col = formula.target.column!;
                 context.currentRow = row;
                 context.currentCol = col;
@@ -731,10 +847,10 @@ export function applyFormulas(
             }
 
             case 'range': {
-                // Apply formula to range of cells
-                const startRow = formula.target.row!;
+                // Apply formula to range of cells - resolve special row refs
+                const startRow = resolveRowRef(formula.target.row!, table);
                 const startCol = formula.target.column!;
-                const endRow = formula.target.endRow!;
+                const endRow = resolveRowRef(formula.target.endRow!, table);
                 const endCol = formula.target.endColumn!;
 
                 for (let row = startRow; row <= endRow; row++) {
@@ -756,6 +872,7 @@ export function applyFormulas(
 
 /**
  * Format result according to format string
+ * Supports: %.2f, %d, %.0f%% (with %% -> literal %)
  */
 function formatResult(result: number | string, format?: string): string {
     if (typeof result === 'string') {
@@ -770,13 +887,14 @@ function formatResult(result: number | string, format?: string): string {
         return result.toFixed(2).replace(/\.?0+$/, '');
     }
 
-    // Parse format string (e.g., "%.2f", "%d", "%s")
-    const match = format.match(/%(\d+)?\.?(\d+)?([dfseg])/i);
+    // Parse format string (e.g., "%.2f", "%d", "%.0f%%")
+    // Capture the format specifier and any suffix (like %%)
+    const match = format.match(/^%(\d+)?\.?(\d+)?([dfseg])(.*)$/i);
     if (!match) {
         return String(result);
     }
 
-    const [, width, precision, type] = match;
+    const [, width, precision, type, suffix] = match;
     let formatted: string;
 
     switch (type.toLowerCase()) {
@@ -799,6 +917,12 @@ function formatResult(result: number | string, format?: string): string {
     if (width) {
         const w = parseInt(width, 10);
         formatted = formatted.padStart(w, ' ');
+    }
+
+    // Handle suffix: %% becomes %, other chars passed through
+    if (suffix) {
+        const processedSuffix = suffix.replace(/%%/g, '%');
+        formatted += processedSuffix;
     }
 
     return formatted;
