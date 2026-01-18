@@ -249,10 +249,21 @@ export function registerSpeedCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.speed.overview', visibility.showOverview)
     );
 
+    // Initialize clocking with persistence
+    clocking.initializeClocking(context);
+
     // Clocking commands
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.speed.clockIn', clocking.clockIn),
-        vscode.commands.registerCommand('scimax.speed.clockOut', clocking.clockOut)
+        vscode.commands.registerCommand('scimax.speed.clockOut', clocking.clockOut),
+        vscode.commands.registerCommand('scimax.clock.in', clocking.clockIn),
+        vscode.commands.registerCommand('scimax.clock.out', clocking.clockOut),
+        vscode.commands.registerCommand('scimax.clock.goto', clocking.clockGoto),
+        vscode.commands.registerCommand('scimax.clock.inLast', clocking.clockInLast),
+        vscode.commands.registerCommand('scimax.clock.cancel', clocking.clockCancel),
+        vscode.commands.registerCommand('scimax.clock.select', clocking.clockSelect),
+        vscode.commands.registerCommand('scimax.clock.menu', clocking.showClockMenu),
+        vscode.commands.registerCommand('scimax.clock.clearHistory', clocking.clearClockHistory)
     );
 
     // Archive commands

@@ -815,17 +815,17 @@ The extension supports:
 
 ---
 
-## Codebase Statistics
+## Scimax VS Code Codebase Statistics
 
-| Metric              | Count   |
-|---------------------|---------|
-| TypeScript files    | 175     |
+| Metric              | Count    |
+|---------------------|----------|
+| TypeScript files    | 175      |
 | Lines of TypeScript | ~100,800 |
-| Test files          | 33      |
-| Unit tests          | 1608    |
-| Documentation files | 37      |
-| Commands            | 561     |
-| Keybindings         | 203     |
+| Test files          | 33       |
+| Unit tests          | 1608     |
+| Documentation files | 37       |
+| Commands            | 561      |
+| Keybindings         | 203      |
 
 ### Supported Languages (Babel Execution)
 

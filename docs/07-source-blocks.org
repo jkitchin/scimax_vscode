@@ -510,7 +510,8 @@ result is used instantly (unless the code changes).
 ** ✅ Other Useful Arguments
 CLOSED: [2026-01-17 Sat 12:57]
 
-*** 👀 :eval - Control Evaluation
+*** ✅ :eval - Control Evaluation
+CLOSED: [2026-01-18 Sun 09:35]
 
 | Value        | Description                     |
 |--------------+---------------------------------|
@@ -524,9 +525,12 @@ ls | head -n2
 #+END_SRC
 
 #+RESULTS:
-: 00-index.org
-: 01-getting-started.org
+: _minted
+: _static
 
+#+BEGIN_SRC sh :eval no
+ls | head -n2
+#+END_SRC
 
 *** ✅ :wrap - Wrap Results in Block
 CLOSED: [2026-01-17 Sat 15:56]
@@ -638,7 +642,8 @@ return data
 | Carol | 35 |
 
 
-*** ⚠️ File Links
+*** ✅ File Links
+CLOSED: [2026-01-18 Sun 08:55]
 
 When using :results file or Jupyter with plotting libraries, results are file
 links:
@@ -1498,20 +1503,6 @@ return processed
 #+END_SRC
 
 
-*** ⚠️ Plot Generation
-
-#+BEGIN_SRC jupyter-python :results file
-import matplotlib.pyplot as plt
-plt.plot([1, 2, 3])
-plt.savefig('.ob-jupyter/plot.png')
-'.ob-jupyter/plot.png'
-#+END_SRC
-
-#+RESULTS:
-: '.ob-jupyter/plot.png'
-[[file:.ob-jupyter/output-1768673527894-0.png]]
-
-
 *** ✅ Tangled Library
 CLOSED: [2026-01-17 Sat 13:12]
 
@@ -1620,7 +1611,8 @@ with header arguments, and leverage sessions for interactive development.
 
 Happy literate programming!
 
-* 👀 Navigation
+* ✅ Navigation
+CLOSED: [2026-01-18 Sun 08:56]
 
 - Previous: [[file:06-timestamps.org][Timestamps]]
 - Index: [[file:00-index.org][Documentation Index]]

@@ -168,9 +168,9 @@
       }
     },
     "diary-sexp": {
-      "comment": "Diary sexp at start of line",
+      "comment": "Diary sexp at start of line, optionally followed by description",
       "name": "constant.other.diary-sexp.org",
-      "match": "^%%\\(.+\\)\\s*$"
+      "match": "^%%\\([^)]+\\)"
     },
     "property-drawers": {
       "name": "meta.drawer.properties.org",
@@ -905,9 +905,9 @@
           "match": "<%%\\([^>]+\\)>"
         },
         {
-          "comment": "Bare diary sexp (not in angle brackets)",
+          "comment": "Bare diary sexp (not in angle brackets), optionally followed by description",
           "name": "constant.other.diary-sexp.org",
-          "match": "^%%\\(.+\\)$"
+          "match": "^%%\\([^)]+\\)"
         }
       ]
     },

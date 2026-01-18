@@ -3,7 +3,7 @@
 **Date**: 2026-01-17
 **Auditor**: Red Team Security Review
 **Scope**: Full codebase security assessment
-**Last Updated**: 2026-01-17 (Post-remediation)
+**Last Updated**: 2026-01-18 (Added pending upstream fix for tar vulnerability)
 
 ---
 
@@ -266,6 +266,44 @@ export function escapeString(str: string, format: 'html' | 'latex'): string {
 - Jupyter message size limits
 - Regex pattern audit (no issues found)
 - Enhanced kernel.json validation
+
+---
+
+## Pending Upstream Fixes
+
+### TODO: tar Package Vulnerability in @electron/rebuild [HIGH - DEV ONLY]
+
+**Status**: Waiting for upstream fix
+**Date Identified**: 2026-01-18
+**Affected Package**: `tar` ≤7.5.2
+**Advisory**: [GHSA-8qq5-rm4j-mr97](https://github.com/advisories/GHSA-8qq5-rm4j-mr97)
+
+**Description**: The `tar` package has a high severity vulnerability for arbitrary file overwrite and symlink poisoning via insufficient path sanitization. Fixed in `tar@7.5.3`.
+
+**Dependency Chain**:
+```
+scimax-vscode
+└── @electron/rebuild@4.0.2 (devDependency)
+    └── tar@6.2.1 (vulnerable)
+```
+
+**Risk Assessment**:
+- **Impact**: DEV DEPENDENCY ONLY - not shipped with the extension
+- **Exposure**: Only affects `npm run rebuild-zmq` which extracts tarballs during zeromq native module rebuild
+- **Attack Vector**: Would require a malicious tarball during the rebuild process
+
+**Why Not Fixed Now**:
+- Already on latest `@electron/rebuild@4.0.2`
+- `npm audit fix --force` suggests downgrading to `@electron/rebuild@0.0.0` (broken)
+- Major version jump from tar 6.x to 7.x may cause compatibility issues with npm overrides
+- Waiting for @electron/rebuild maintainers to update their tar dependency
+
+**Workaround Available**: Could add npm overrides to force `tar@7.5.3`, but this risks breaking the rebuild process due to major version incompatibility.
+
+**Follow-up Actions**:
+- [ ] Check periodically for new `@electron/rebuild` releases
+- [ ] Remove this section once upstream fix is available
+- [ ] Run `npm audit` after updating to verify resolution
 
 ---
 
