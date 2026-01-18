@@ -309,6 +309,50 @@ Link to images (see also [[file:12-image-overlays.org][Image Overlays]]):
 
 Images are displayed in tooltips or overlays when hovering over the link.
 
+** ⚠️ Excalidraw Drawing Links
+
+Link to Excalidraw drawings for visual diagrams:
+
+#+BEGIN_SRC org
+[[diagram.excalidraw][Architecture Diagram]]
+[[file:./drawings/flowchart.excalidraw.svg]]
+[[design.excalidraw.png][UI Mockup]]
+#+END_SRC
+
+*Supported Extensions:*
+| Extension           | Description                    |
+|---------------------+--------------------------------|
+| .excalidraw         | Native Excalidraw format       |
+| .excalidraw.json    | Explicit JSON format           |
+| .excalidraw.svg     | Exported SVG with scene data   |
+| .excalidraw.png     | Exported PNG with scene data   |
+
+*Features:*
+
+1. *Hover Preview*: Hovering over an Excalidraw link shows:
+   - A visual preview of the drawing (for SVG/PNG exports)
+   - File information (size, modification date)
+   - Element count (for JSON files)
+
+2. *Click to Edit*: Clicking the link opens the drawing in the Excalidraw editor
+   - Requires the Excalidraw VS Code extension (=excalidraw-editor=)
+   - If the file doesn't exist, a new empty drawing is created
+
+3. *Auto-creation*: If you link to a non-existent Excalidraw file and click it,
+   the file is automatically created with an empty drawing.
+
+*Prerequisites:*
+
+Install the Excalidraw extension from the VS Code marketplace:
+- Extension ID: =pomdtr.excalidraw-editor=
+- Search: "Excalidraw" in VS Code extensions
+
+*Usage Tips:*
+
+- Save drawings as =.excalidraw.svg= or =.excalidraw.png= to get hover previews
+- These formats embed the full Excalidraw scene data, so they remain editable
+- Store drawings alongside your org files for easy linking with relative paths
+
 ** ✅ ID Links
 CLOSED: [2026-01-15 Thu 19:44]
 :PROPERTIES:

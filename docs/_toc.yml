@@ -39,6 +39,7 @@ parts:
       - file: publishing
       - file: 11-latex-preview
       - file: 12-image-overlays
+      - file: 32-excalidraw
 
   - caption: Advanced Features
     chapters:

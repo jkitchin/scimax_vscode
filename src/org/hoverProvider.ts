@@ -28,6 +28,17 @@ const IMAGE_EXTENSIONS = new Set([
     '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.bmp', '.ico', '.tiff', '.tif'
 ]);
 
+// Excalidraw file extensions
+const EXCALIDRAW_EXTENSIONS = ['.excalidraw', '.excalidraw.json', '.excalidraw.svg', '.excalidraw.png'];
+
+/**
+ * Check if a file path is an Excalidraw file
+ */
+function isExcalidrawFile(filePath: string): boolean {
+    const lowerPath = filePath.toLowerCase();
+    return EXCALIDRAW_EXTENSIONS.some(ext => lowerPath.endsWith(ext));
+}
+
 // Keyword descriptions
 const KEYWORD_DESCRIPTIONS: Record<string, string> = {
     'TITLE': 'Document title shown in exports',
@@ -150,6 +161,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
 
         // Check for various hover contexts
         let hover: vscode.Hover | null = null;
+
+        // Excalidraw link hover (show drawing preview) - check before image hover
+        hover = this.getExcalidrawHover(line, position, document);
+        if (hover) return hover;
 
         // Image link hover (show image preview) - check first for better UX
         hover = this.getImageLinkHover(line, position, document);
@@ -344,6 +359,123 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                 markdown.appendMarkdown(`**${path.basename(imagePath)}**\n\n`);
                 markdown.appendMarkdown(`<img src="${imageUri.toString()}" width="400" />\n\n`);
                 markdown.appendMarkdown(`*${sizeKB} KB*`);
+
+                const range = new vscode.Range(
+                    position.line, startCol,
+                    position.line, endCol
+                );
+                return new vscode.Hover(markdown, range);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get hover for Excalidraw links - shows drawing preview
+     */
+    private getExcalidrawHover(
+        line: string,
+        position: vscode.Position,
+        document: vscode.TextDocument
+    ): vscode.Hover | null {
+        // Match org links: [[path]] or [[path][description]] or [[file:path]]
+        const linkPattern = /\[\[(?:file:)?([^\]]+?)(?:\]\[([^\]]*))?\]\]/g;
+        let match;
+
+        while ((match = linkPattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = match.index + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                const filePath = match[1];
+                const description = match[2];
+
+                // Check if this is an Excalidraw file
+                if (!isExcalidrawFile(filePath)) {
+                    return null;
+                }
+
+                // Resolve the file path
+                const documentDir = path.dirname(document.uri.fsPath);
+                let absolutePath: string;
+
+                if (path.isAbsolute(filePath)) {
+                    absolutePath = filePath;
+                } else {
+                    absolutePath = path.resolve(documentDir, filePath);
+                }
+
+                const markdown = new vscode.MarkdownString();
+                markdown.isTrusted = true;
+                markdown.supportHtml = true;
+
+                const fileName = path.basename(filePath);
+                markdown.appendMarkdown(`**Excalidraw Drawing:** ${description || fileName}\n\n`);
+
+                // Check if file exists
+                if (!fs.existsSync(absolutePath)) {
+                    markdown.appendMarkdown(`*File not found:* \`${absolutePath}\`\n\n`);
+                    markdown.appendMarkdown(`Click to create a new drawing.`);
+
+                    const range = new vscode.Range(
+                        position.line, startCol,
+                        position.line, endCol
+                    );
+                    return new vscode.Hover(markdown, range);
+                }
+
+                // Get file stats
+                const stats = fs.statSync(absolutePath);
+                const sizeKB = (stats.size / 1024).toFixed(1);
+                const modifiedDate = stats.mtime.toLocaleDateString();
+
+                // For .excalidraw.svg and .excalidraw.png, show the image directly
+                const lowerPath = absolutePath.toLowerCase();
+                if (lowerPath.endsWith('.excalidraw.svg') || lowerPath.endsWith('.excalidraw.png')) {
+                    const imageUri = vscode.Uri.file(absolutePath);
+                    markdown.appendMarkdown(`<img src="${imageUri.toString()}" width="400" />\n\n`);
+                    markdown.appendMarkdown(`*${sizeKB} KB • Modified: ${modifiedDate}*\n\n`);
+                    markdown.appendMarkdown(`Click to edit in Excalidraw`);
+                } else {
+                    // For .excalidraw or .excalidraw.json, try to find a companion export
+                    const possibleExports = [
+                        absolutePath + '.svg',
+                        absolutePath + '.png',
+                        absolutePath.replace(/\.excalidraw(\.json)?$/, '.excalidraw.svg'),
+                        absolutePath.replace(/\.excalidraw(\.json)?$/, '.excalidraw.png'),
+                    ];
+
+                    let foundExport = false;
+                    for (const exportPath of possibleExports) {
+                        if (fs.existsSync(exportPath)) {
+                            const imageUri = vscode.Uri.file(exportPath);
+                            markdown.appendMarkdown(`<img src="${imageUri.toString()}" width="400" />\n\n`);
+                            foundExport = true;
+                            break;
+                        }
+                    }
+
+                    // Try to read and parse the JSON to show element count
+                    try {
+                        const content = fs.readFileSync(absolutePath, 'utf-8');
+                        const data = JSON.parse(content);
+                        const elementCount = Array.isArray(data.elements) ? data.elements.length : 0;
+
+                        if (!foundExport) {
+                            markdown.appendMarkdown(`*No preview available*\n\n`);
+                        }
+
+                        markdown.appendMarkdown(`**Elements:** ${elementCount}\n\n`);
+                    } catch {
+                        if (!foundExport) {
+                            markdown.appendMarkdown(`*Preview not available*\n\n`);
+                        }
+                    }
+
+                    markdown.appendMarkdown(`*${sizeKB} KB • Modified: ${modifiedDate}*\n\n`);
+                    markdown.appendMarkdown(`Click to edit in Excalidraw`);
+                }
 
                 const range = new vscode.Range(
                     position.line, startCol,

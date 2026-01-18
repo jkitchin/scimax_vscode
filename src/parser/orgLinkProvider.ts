@@ -2,6 +2,17 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
+// Excalidraw file extensions
+const EXCALIDRAW_EXTENSIONS = ['.excalidraw', '.excalidraw.json', '.excalidraw.svg', '.excalidraw.png'];
+
+/**
+ * Check if a file path is an Excalidraw file
+ */
+function isExcalidrawFile(filePath: string): boolean {
+    const lowerPath = filePath.toLowerCase();
+    return EXCALIDRAW_EXTENSIONS.some(ext => lowerPath.endsWith(ext));
+}
+
 /**
  * Document link provider for org-mode links
  * Makes [[link][description]] clickable
@@ -341,6 +352,15 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             );
         }
 
+        // Excalidraw files - open with Excalidraw editor
+        if (isExcalidrawFile(filePath)) {
+            return vscode.Uri.parse(
+                `command:scimax.org.openExcalidraw?${encodeURIComponent(JSON.stringify({
+                    file: filePath
+                }))}`
+            );
+        }
+
         // Plain file - open directly
         return vscode.Uri.file(filePath);
     }
@@ -354,6 +374,10 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
         }
         if (target.startsWith('doi:')) {
             return `Open DOI: ${target.slice(4)}`;
+        }
+        // Excalidraw files
+        if (isExcalidrawFile(target)) {
+            return `Open Excalidraw drawing: ${target}`;
         }
         if (target.startsWith('cmd:')) {
             const cmdPart = target.slice(4);
@@ -737,6 +761,58 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 vscode.window.showWarningMessage(`Footnote definition not found: [fn:${label}]`);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            }
+        })
+    );
+
+    // Open Excalidraw file with the Excalidraw editor
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.openExcalidraw', async (args: { file: string }) => {
+            const { file } = args;
+
+            try {
+                const uri = vscode.Uri.file(file);
+
+                // Check if file exists; if not, create an empty Excalidraw file
+                if (!fs.existsSync(file)) {
+                    // Create directory if needed
+                    const dir = path.dirname(file);
+                    if (!fs.existsSync(dir)) {
+                        fs.mkdirSync(dir, { recursive: true });
+                    }
+
+                    // Create empty Excalidraw JSON structure
+                    const emptyExcalidraw = {
+                        type: 'excalidraw',
+                        version: 2,
+                        source: 'scimax-vscode',
+                        elements: [],
+                        appState: {
+                            viewBackgroundColor: '#ffffff'
+                        },
+                        files: {}
+                    };
+
+                    fs.writeFileSync(file, JSON.stringify(emptyExcalidraw, null, 2));
+                }
+
+                // Try to open with Excalidraw editor
+                try {
+                    await vscode.commands.executeCommand('vscode.openWith', uri, 'excalidraw-editor.excalidraw');
+                } catch {
+                    // Fallback: try alternate editor ID used by some versions
+                    try {
+                        await vscode.commands.executeCommand('vscode.openWith', uri, 'editor.excalidraw');
+                    } catch {
+                        // Final fallback: open with default editor
+                        await vscode.window.showTextDocument(uri);
+                        vscode.window.showInformationMessage(
+                            'Excalidraw extension not found. Install it from the marketplace for visual editing.'
+                        );
+                    }
+                }
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open Excalidraw file: ${file}`);
             }
         })
     );
