@@ -151,8 +151,9 @@ export class KernelManager extends EventEmitter {
             if (fs.existsSync(filepath)) {
                 fs.unlinkSync(filepath);
             }
-        } catch {
-            // Ignore errors
+        } catch (error) {
+            // Log but don't fail - cleanup is best-effort
+            console.warn(`KernelManager: Failed to delete connection file ${filepath}:`, error);
         }
     }
 
@@ -256,7 +257,20 @@ export class KernelManager extends EventEmitter {
             },
         });
 
-        await zmqConnection.connect();
+        try {
+            await zmqConnection.connect();
+        } catch (error) {
+            // Connection failed - clean up kernel resources
+            kernel.state = 'dead';
+            if (kernel.process) {
+                kernel.process.kill();
+            }
+            this.deleteConnectionFile(kernel.connectionFile);
+            this.kernels.delete(kernelId);
+            this.emit('kernelError', kernelId, error instanceof Error ? error : new Error(String(error)));
+            throw new Error(`Failed to connect to kernel: ${error instanceof Error ? error.message : String(error)}`);
+        }
+
         kernel.zmqConnection = zmqConnection;
         kernel.state = 'idle';
 

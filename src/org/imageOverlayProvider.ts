@@ -821,11 +821,11 @@ export class ImageOverlayManager {
         imagePath: string,
         ext: string
     ): Promise<{ width: number; height: number } | undefined> {
+        let fd: number | null = null;
         try {
             const buffer = Buffer.alloc(24);
-            const fd = fs.openSync(imagePath, 'r');
+            fd = fs.openSync(imagePath, 'r');
             fs.readSync(fd, buffer, 0, 24, 0);
-            fs.closeSync(fd);
 
             if (ext === '.png') {
                 // PNG: width at bytes 16-19, height at 20-23
@@ -853,8 +853,20 @@ export class ImageOverlayManager {
                 }
             }
             // JPEG requires more complex parsing, skip for now
-        } catch {
-            // Ignore errors
+        } catch (error) {
+            // Log unexpected errors for debugging (file not found is expected)
+            if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+                console.warn(`ImageOverlay: Failed to read image header for ${imagePath}:`, error);
+            }
+        } finally {
+            // Always close file descriptor to prevent resource leak
+            if (fd !== null) {
+                try {
+                    fs.closeSync(fd);
+                } catch {
+                    // Ignore close errors
+                }
+            }
         }
 
         return undefined;
@@ -870,8 +882,9 @@ export class ImageOverlayManager {
                 const data = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
                 this.thumbnailCache = new Map(Object.entries(data));
             }
-        } catch {
-            // Ignore errors
+        } catch (error) {
+            // Log error for debugging - cache loading failure is not critical
+            console.warn('ImageOverlay: Failed to load thumbnail cache metadata:', error);
         }
     }
 

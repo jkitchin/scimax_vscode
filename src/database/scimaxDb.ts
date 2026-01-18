@@ -131,6 +131,7 @@ export class ScimaxDb {
     private fileWatcher: vscode.FileSystemWatcher | undefined;
     private indexQueue: Set<string> = new Set();
     private isIndexing: boolean = false;
+    private indexingScheduled: boolean = false;  // Prevents multiple setTimeout calls
     private ignorePatterns: string[] = [];
 
     // Vector search support tracking
@@ -366,38 +367,48 @@ export class ScimaxDb {
 
     /**
      * Queue file for indexing (debounced)
+     * Uses indexingScheduled flag to prevent race conditions from multiple setTimeout calls
      */
     private queueIndex(filePath: string): void {
         if (this.shouldIgnore(filePath)) return;
         this.indexQueue.add(filePath);
 
-        if (!this.isIndexing) {
-            setTimeout(() => this.processIndexQueue(), 500);
+        // Only schedule processing if not already indexing AND not already scheduled
+        if (!this.isIndexing && !this.indexingScheduled) {
+            this.indexingScheduled = true;
+            setTimeout(() => {
+                this.indexingScheduled = false;
+                this.processIndexQueue();
+            }, 500);
         }
     }
 
     /**
      * Process index queue
+     * Ensures only one processing loop runs at a time via isIndexing flag
      */
     private async processIndexQueue(): Promise<void> {
-        if (this.indexQueue.size === 0 || !this.db) return;
+        // Double-check to prevent concurrent processing
+        if (this.isIndexing || this.indexQueue.size === 0 || !this.db) return;
 
         this.isIndexing = true;
-        const files = Array.from(this.indexQueue);
-        this.indexQueue.clear();
 
-        for (const filePath of files) {
-            try {
-                await this.indexFile(filePath);
-            } catch (error) {
-                console.error(`ScimaxDb: Failed to index ${filePath}`, error);
+        try {
+            // Process all queued files
+            while (this.indexQueue.size > 0) {
+                const files = Array.from(this.indexQueue);
+                this.indexQueue.clear();
+
+                for (const filePath of files) {
+                    try {
+                        await this.indexFile(filePath);
+                    } catch (error) {
+                        console.error(`ScimaxDb: Failed to index ${filePath}`, error);
+                    }
+                }
             }
-        }
-
-        this.isIndexing = false;
-
-        if (this.indexQueue.size > 0) {
-            setTimeout(() => this.processIndexQueue(), 100);
+        } finally {
+            this.isIndexing = false;
         }
     }
 
