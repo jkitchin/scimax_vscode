@@ -1050,6 +1050,16 @@ async function executeBlock(
     const blockHeaders = parseHeaderArguments(block.parameters);
     const headers: HeaderArguments = { ...fileLevelHeaders, ...blockHeaders };
 
+    // Show header args popup for debugging
+    const headerSummary = Object.entries(headers)
+        .filter(([_, v]) => v !== undefined)
+        .map(([k, v]) => `:${k} ${v}`)
+        .join(' ');
+    vscode.window.showInformationMessage(`Header args: ${headerSummary || '(none)'}`);
+    channel.appendLine(`[DEBUG] File-level headers: ${JSON.stringify(fileLevelHeaders)}`);
+    channel.appendLine(`[DEBUG] Block headers: ${JSON.stringify(blockHeaders)}`);
+    channel.appendLine(`[DEBUG] Merged headers: ${JSON.stringify(headers)}`);
+
     // Check if evaluation is disabled
     if (headers.eval === 'no' || headers.eval === 'never-export') {
         channel.appendLine(`[INFO] Skipping block (eval: ${headers.eval})`);
@@ -1144,6 +1154,7 @@ async function executeBlock(
         cwd: workingDir,
         timeout: 60000, // 60 second default timeout
         variables: resolvedVars,
+        results: headers.results ? parseResultsFormat(headers.results) : undefined,
     };
 
     // Handle :file header for Python matplotlib
@@ -1331,6 +1342,7 @@ if plt.get_fignums():
  * Also handles #+CALL: lines
  */
 async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
+    console.log(`[executeSourceBlockAtCursor] Called, lineNumber=${lineNumber}`);
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showWarningMessage('No active editor');
@@ -2095,39 +2107,63 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
         },
     });
 
+    // Helper function to update babel context for keybinding conditions
+    function updateBabelContext(editor: vscode.TextEditor | undefined): void {
+        if (!editor) {
+            vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', false);
+            vscode.commands.executeCommand('setContext', 'scimax.onCallLine', false);
+            return;
+        }
+
+        const document = editor.document;
+
+        // Only check for org files
+        if (document.languageId !== 'org') {
+            vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', false);
+            vscode.commands.executeCommand('setContext', 'scimax.onCallLine', false);
+            return;
+        }
+
+        const position = editor.selection.active;
+        const blockInfo = findSourceBlockAtCursor(document, position);
+        const inBlock = blockInfo !== null;
+        vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inBlock);
+
+        // Check if on a #+CALL: line
+        const currentLineText = document.lineAt(position.line).text;
+        const onCallLine = /^\s*#\+CALL:\s*\S+/i.test(currentLineText);
+        vscode.commands.executeCommand('setContext', 'scimax.onCallLine', onCallLine);
+
+        // Check for inline src block or inline babel call
+        const text = document.getText();
+        const offset = document.offsetAt(position);
+        const inInlineSrc = findInlineSrcAtPosition(text, offset) !== null;
+        const inInlineBabelCall = findInlineBabelCallAtPosition(text, offset) !== null;
+        vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', inInlineSrc);
+        vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', inInlineBabelCall);
+    }
+
     // Setup source block context tracking for C-c C-c keybinding
+    // Update on selection change
     context.subscriptions.push(
         vscode.window.onDidChangeTextEditorSelection(e => {
-            const editor = e.textEditor;
-            const document = editor.document;
-
-            // Only check for org files
-            if (document.languageId !== 'org') {
-                vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
-                vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
-                vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', false);
-                vscode.commands.executeCommand('setContext', 'scimax.onCallLine', false);
-                return;
-            }
-
-            const position = editor.selection.active;
-            const inBlock = findSourceBlockAtCursor(document, position) !== null;
-            vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inBlock);
-
-            // Check if on a #+CALL: line
-            const currentLineText = document.lineAt(position.line).text;
-            const onCallLine = /^\s*#\+CALL:\s*\S+/i.test(currentLineText);
-            vscode.commands.executeCommand('setContext', 'scimax.onCallLine', onCallLine);
-
-            // Check for inline src block or inline babel call
-            const text = document.getText();
-            const offset = document.offsetAt(position);
-            const inInlineSrc = findInlineSrcAtPosition(text, offset) !== null;
-            const inInlineBabelCall = findInlineBabelCallAtPosition(text, offset) !== null;
-            vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', inInlineSrc);
-            vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', inInlineBabelCall);
+            updateBabelContext(e.textEditor);
         })
     );
+
+    // Update when switching to a different editor
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            updateBabelContext(editor);
+        })
+    );
+
+    // Initialize context for the current editor when extension activates
+    updateBabelContext(vscode.window.activeTextEditor);
 }
 
 // Cache for source blocks to avoid re-parsing

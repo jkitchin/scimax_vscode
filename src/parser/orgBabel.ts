@@ -811,30 +811,32 @@ while __org_babel_last_idx__ >= 0:
     __org_babel_last_idx__ -= 1
 
 if __org_babel_last_idx__ >= 0:
-    # Suppress stdout during setup (for :results value)
+    # Suppress stdout during ALL execution (for :results value)
     __org_babel_old_stdout__ = sys.stdout
     sys.stdout = io.StringIO()
+    __org_babel_result__ = None
     try:
         # Execute all lines except the last
         __org_babel_setup__ = '\\n'.join(__org_babel_lines__[:__org_babel_last_idx__])
         if __org_babel_setup__.strip():
             exec(__org_babel_setup__)
+        # Handle the last line
+        __org_babel_last__ = __org_babel_lines__[__org_babel_last_idx__].strip()
+        # Handle 'return' statements (org-babel convention - not Python syntax)
+        if __org_babel_last__.startswith('return '):
+            __org_babel_last__ = __org_babel_last__[7:]  # Strip 'return '
+        elif __org_babel_last__ == 'return':
+            __org_babel_last__ = 'None'
+        # Try to eval the expression, fall back to exec (statement)
+        try:
+            __org_babel_result__ = eval(__org_babel_last__)
+        except SyntaxError:
+            exec(__org_babel_last__)
     finally:
         sys.stdout = __org_babel_old_stdout__
-    # Handle the last line
-    __org_babel_last__ = __org_babel_lines__[__org_babel_last_idx__].strip()
-    # Handle 'return' statements (org-babel convention - not Python syntax)
-    if __org_babel_last__.startswith('return '):
-        __org_babel_last__ = __org_babel_last__[7:]  # Strip 'return '
-    elif __org_babel_last__ == 'return':
-        __org_babel_last__ = 'None'
-    # Try to eval the expression, fall back to exec (statement)
-    try:
-        __org_babel_result__ = eval(__org_babel_last__)
-        if __org_babel_result__ is not None:
-            print(__org_babel_format_value__(__org_babel_result__))
-    except SyntaxError:
-        exec(__org_babel_last__)
+    # Output only the result value (not any print() calls)
+    if __org_babel_result__ is not None:
+        print(__org_babel_format_value__(__org_babel_result__))
 `;
             }
 

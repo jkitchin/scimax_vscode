@@ -661,7 +661,9 @@ describe('Tag Inheritance Logic', () => {
 
 describe('Days Until Calculation', () => {
     const calculateDaysUntil = (dateStr: string, today: Date = new Date()): number => {
-        const targetDate = new Date(dateStr.split(' ')[0]);
+        // Parse date string as local date (add T00:00:00 to ensure local parsing)
+        const dateOnly = dateStr.split(' ')[0];
+        const targetDate = new Date(dateOnly + 'T00:00:00');
         const todayStart = new Date(today);
         todayStart.setHours(0, 0, 0, 0);
 
@@ -669,23 +671,23 @@ describe('Days Until Calculation', () => {
     };
 
     it('should return 0 for today', () => {
-        const today = new Date();
-        const dateStr = today.toISOString().split('T')[0];
-        expect(calculateDaysUntil(dateStr, today)).toBe(0);
+        // Use a fixed date with explicit time to ensure consistent parsing
+        const today = new Date('2024-01-15T12:00:00');
+        expect(calculateDaysUntil('2024-01-15', today)).toBe(0);
     });
 
     it('should return positive for future dates', () => {
-        const today = new Date('2024-01-15');
+        const today = new Date('2024-01-15T12:00:00');
         expect(calculateDaysUntil('2024-01-20', today)).toBe(5);
     });
 
     it('should return negative for past dates', () => {
-        const today = new Date('2024-01-15');
+        const today = new Date('2024-01-15T12:00:00');
         expect(calculateDaysUntil('2024-01-10', today)).toBe(-5);
     });
 
     it('should handle dates with day names', () => {
-        const today = new Date('2024-01-15');
+        const today = new Date('2024-01-15T12:00:00');
         expect(calculateDaysUntil('2024-01-20 Sat', today)).toBe(5);
     });
 });

@@ -136,7 +136,19 @@ export class OrgParser {
             // Parse file-level keywords (#+KEY: value)
             const keywordMatch = line.match(/^#\+(\w+):\s*(.*)$/);
             if (keywordMatch && !line.match(/^#\+BEGIN_/i)) {
-                document.keywords[keywordMatch[1].toUpperCase()] = keywordMatch[2];
+                const keyword = keywordMatch[1].toUpperCase();
+                const value = keywordMatch[2];
+
+                // Handle #+PROPERTY: specially - it defines document-level properties
+                // Format: #+PROPERTY: key value
+                if (keyword === 'PROPERTY') {
+                    const propMatch = value.match(/^(\S+)\s+(.*)$/);
+                    if (propMatch) {
+                        document.properties[propMatch[1]] = propMatch[2];
+                    }
+                } else {
+                    document.keywords[keyword] = value;
+                }
                 i++;
                 continue;
             }

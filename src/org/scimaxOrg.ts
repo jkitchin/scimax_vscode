@@ -1622,9 +1622,12 @@ export async function toggleCheckbox(): Promise<void> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
 
+    console.log(`[toggleCheckbox] Called at line ${position.line}: "${lineText.substring(0, 50)}..."`);
+
     // Match checkbox: - [ ], - [X], - [-]
     const checkboxMatch = lineText.match(/^(\s*[-+*]|\s*\d+[.)])\s+\[([ Xx-])\]\s+(.*)$/);
     if (!checkboxMatch) {
+        console.log(`[toggleCheckbox] Not a checkbox, showing message`);
         vscode.window.showInformationMessage('Not on a checkbox');
         return;
     }
