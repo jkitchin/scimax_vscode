@@ -776,10 +776,64 @@ CLOSED: [2026-01-17 Sat 12:51]
 | C-c j j    | Jump to 2-char sequence   |
 | C-c j w    | Jump to word              |
 
+* ⚠️ Help System
+:PROPERTIES:
+:CUSTOM_ID: help-system
+:END:
+
+Commands for discovering keybindings and command functionality.
+
+| Command ID                         | Description              | Default Keybinding |
+|------------------------------------+--------------------------+--------------------|
+| [[cmd:scimax.help.describeCommand]]| Describe Command         | -                  |
+| [[cmd:scimax.help.describeKey]]    | Describe Key             | -                  |
+| [[cmd:scimax.help.listKeybindings]]| List All Keybindings     | -                  |
+
+** scimax.help.describeCommand
+
+Shows the keybindings for a specific command. Useful for learning keyboard shortcuts.
+
+** scimax.help.describeKey
+
+Describes what a specific key combination does. Enter the key sequence to see its bound command.
+
+** scimax.help.listKeybindings
+
+Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.
+
+* ⚠️ Linting
+:PROPERTIES:
+:CUSTOM_ID: linting
+:END:
+
+Commands for checking org-mode document quality.
+
+| Command ID                     | Description        | Default Keybinding |
+|--------------------------------+--------------------+--------------------|
+| [[cmd:scimax.org.lint]]        | Run Linter         | -                  |
+| [[cmd:scimax.org.lintCheckers]]| Show Lint Checkers | -                  |
+
+** scimax.org.lint
+
+Runs the org-mode linter on the current document. The linter checks for:
+- Duplicate IDs
+- Broken internal links
+- Missing TODO keywords in sequences
+- Unbalanced brackets and quotes
+- Invalid timestamps
+- Missing required properties
+- And more
+
+Results appear in the Problems panel.
+
+** scimax.org.lintCheckers
+
+Shows available lint checkers and allows enabling/disabling specific checks.
+
 * ✅ Index
 CLOSED: [2026-01-17 Sat 12:51]
 
-This document contains [[*Introduction][269 commands]] organized into [[*Document Structure][22 categories]] with their keybindings and descriptions.
+This document contains [[*Introduction][274 commands]] organized into [[*Document Structure][24 categories]] with their keybindings and descriptions.
 
 For configuration options, see the VS Code settings under scimax.*.
 
