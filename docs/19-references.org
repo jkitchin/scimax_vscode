@@ -225,11 +225,13 @@ CLOSED: [2026-01-17 Sat 10:16]
 | scimax.ref.insertRef          | C-u C-c ] | Insert cross-reference (ref:, eqref:) |
 | scimax.ref.insertBibliography |           | Insert bibliography link              |
 
-** ⚠️ Insert from Zotero
+** ✅ Insert from Zotero
+CLOSED: [2026-01-18 Sun 11:44]
 
 Scimax can insert citations directly from your Zotero library using the Better BibTeX plugin. This provides seamless integration between your Zotero reference manager and org-mode documents.
 
-*** Requirements
+*** ✅ Requirements
+CLOSED: [2026-01-18 Sun 11:44]
 
 To use Zotero integration, you need:
 
@@ -238,13 +240,15 @@ To use Zotero integration, you need:
 
 Better BibTeX provides the local API that Scimax uses to communicate with Zotero.
 
-*** Usage
+*** ✅ Usage
+CLOSED: [2026-01-18 Sun 11:44]
 
 | Keybinding | Command                      | Description                 |
 |------------+------------------------------+-----------------------------|
 | C-c z      | scimax.zotero.insertCitation | Insert citation from Zotero |
 
-*** Workflow
+*** ✅ Workflow
+CLOSED: [2026-01-18 Sun 11:44]
 
 1. Press =C-c z= in an org, markdown, or LaTeX file
 2. Zotero's native citation picker opens (you may need to switch to the Zotero window)
@@ -253,7 +257,8 @@ Better BibTeX provides the local API that Scimax uses to communicate with Zotero
 5. The citation is inserted at the cursor position
 6. The BibTeX entry is automatically added to your bibliography file
 
-*** Bibliography File Handling
+*** ✅ Bibliography File Handling
+CLOSED: [2026-01-18 Sun 11:44]
 
 When inserting from Zotero, the extension intelligently manages your bibliography file:
 
@@ -268,7 +273,8 @@ The extension automatically:
 - Preserves the original BibTeX formatting from Zotero/Better BibTeX
 - Adds a =bibliography:= link at the end of the document if needed
 
-*** Example
+*** ✅ Example
+CLOSED: [2026-01-18 Sun 11:44]
 
 Before (no bibliography):
 #+BEGIN_SRC org
@@ -286,7 +292,8 @@ Some text discussing machine learning cite:&smith2024machine.
 bibliography:./references.bib
 #+END_SRC
 
-*** Troubleshooting
+*** ✅ Troubleshooting
+CLOSED: [2026-01-18 Sun 11:44]
 
 | Problem                        | Solution                                              |
 |--------------------------------+-------------------------------------------------------|

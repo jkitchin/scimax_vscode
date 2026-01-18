@@ -415,17 +415,18 @@ CLOSED: [2026-01-17 Sat 14:06]
 
 The calendar view provides a visual way to navigate entries:
 
-*** ⚠️ Accessing the Calendar
+*** ✅ Accessing the Calendar
 
-- Click on the Journal view in the Activity Bar (left sidebar)
+- Look for "Journal Calendar" in the Scimax sidebar (Activity Bar)
 - Or run: Scimax: Show Journal Calendar [[cmd:scimax.journal.calendar]]
 
-*** ⚠️ Calendar Features
+*** ✅ Calendar Features
+CLOSED: [2026-01-18 Sun 12:06]
 
 The calendar shows:
 
 - Current month with clickable days
-- Days with entries are highlighted
+- Days with entries are highlighted with a blue dot
 - Today is marked with a border
 - Past days without entries are dimmed
 
@@ -437,7 +438,8 @@ Calendar controls:
 - Month picker - Click month name to show month selector
 - Year navigation - Click year buttons to jump years
 
-*** ⚠️ Quick Actions in Calendar
+*** ✅ Quick Actions in Calendar
+CLOSED: [2026-01-18 Sun 12:52]
 
 At the bottom of the calendar view:
 
@@ -445,28 +447,9 @@ At the bottom of the calendar view:
 - Search - Search journal entries
 - Stats - Show journal statistics
 
-** ⚠️ Tree View
 
-The journal tree view (in the sidebar) shows entries organized by year and month:
-
-#+begin_example
-📁 2026 (45 entries)
-  📁 January (15 entries)
-    ⭐ 14 (Tue)    ← Today
-    📄 13 (Mon)
-    📄 12 (Sun)
-  📁 December (30 entries)
-    📄 31 (Wed)
-    ...
-📁 2025 (312 entries)
-  ...
-#+end_example
-
-- Click any entry to open it
-- Today's entry is marked with a star icon
-- Entries are sorted with most recent first
-
-** ⚠️ Week View
+** ✅ Week View
+CLOSED: [2026-01-18 Sun 12:08]
 
 To see all entries for the current week:
 
@@ -489,7 +472,8 @@ This week: 5 entries
 * ✅ Searching Journal Entries
 CLOSED: [2026-01-17 Sat 14:11]
 
-** 👀 Full-Text Search
+** ✅ Full-Text Search
+CLOSED: [2026-01-18 Sun 12:52]
 
 Run Scimax: Search Journal to search your entries: [[cmd:scimax.journal.search]]
 
@@ -627,7 +611,8 @@ A streak is maintained if you create entries on consecutive days:
 
 The streak counter helps build a journaling habit through positive reinforcement.
 
-** ⚠️ Status Bar Integration
+** ✅ Status Bar Integration
+CLOSED: [2026-01-18 Sun 12:52]
 
 The status bar (bottom of window) shows journal information:
 

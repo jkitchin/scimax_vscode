@@ -762,10 +762,12 @@ CLOSED: [2026-01-16 Fri 19:49]
 Diary sexps (symbolic expressions) are a powerful feature for specifying
 complex date patterns that can't be expressed with simple repeaters.
 
-** ⚠️ Diary Sexp Syntax
+** ✅ Diary Sexp Syntax
+CLOSED: [2026-01-18 Sun 12:53]
 
 Diary sexps use the %%( ) syntax, optionally within angle brackets:
 
+  %%(diary-anniversary 1 20 1990) John's Birthday   
 #+BEGIN_SRC org
 %%(diary-anniversary 1 15 1990)
 <%%((diary-float t 1 2))>
@@ -785,7 +787,8 @@ CLOSED: [2026-01-17 Sat 15:27]
 ** ✅ Diary Sexp Examples
 CLOSED: [2026-01-17 Sat 15:29]
 
-*** ⚠️ Annual Events (Birthdays, Anniversaries)
+*** ✅ Annual Events (Birthdays, Anniversaries)
+CLOSED: [2026-01-18 Sun 12:53]
 
 #+BEGIN_SRC org
 %%(diary-anniversary 3 15 1990) John's birthday (age %d)
@@ -795,7 +798,8 @@ CLOSED: [2026-01-17 Sat 15:29]
 
 The %d is replaced with the calculated age/years.
 
-*** ⚠️ Floating Holidays
+*** ✅ Floating Holidays
+CLOSED: [2026-01-18 Sun 12:53]
 
 Holidays that occur on "the Nth weekday of month":
 
@@ -811,7 +815,8 @@ Parameters: (month weekday occurrence)
 - weekday: 0`Sunday, 1'Monday, ... 6=Saturday
 - occurrence: 1`first, 2'second, -1=last, etc.
 
-*** ⚠️ Class Schedules
+*** ✅ Class Schedules
+CLOSED: [2026-01-18 Sun 12:53]
 
 #+BEGIN_SRC org
 %%(org-class 2026 1 15 2026 5 15 1) Monday lecture (10:00-11:30)
@@ -821,7 +826,8 @@ Parameters: (month weekday occurrence)
 
 Parameters: (start-year start-month start-day end-year end-month end-day weekday)
 
-*** ⚠️ Cyclic Events
+*** ✅ Cyclic Events
+CLOSED: [2026-01-18 Sun 13:09]
 
 Events that repeat every N days:
 
@@ -831,7 +837,8 @@ Events that repeat every N days:
 
 Parameters: (interval month day year) - repeats every 14 days from Jan 1, 2026.
 
-*** ⚠️ Block Dates (Date Ranges)
+*** ✅ Block Dates (Date Ranges)
+CLOSED: [2026-01-18 Sun 13:09]
 
 #+BEGIN_SRC org
 %%(diary-block 6 1 2026 8 31 2026) Summer break
@@ -839,7 +846,8 @@ Parameters: (interval month day year) - repeats every 14 days from Jan 1, 2026.
 
 Shows for all dates within the range (June 1 to August 31, 2026).
 
-** ⚠️ When to Use Diary Sexps
+** ✅ When to Use Diary Sexps
+CLOSED: [2026-01-18 Sun 13:09]
 
 Use diary sexps when simple repeaters (+1d, +1w, etc.) can't express your
 needs:
@@ -852,7 +860,8 @@ needs:
 | "January 15 every year"         | %%(diary-anniversary 1 15 2000) |
 | "Every weekday except holidays" | Complex sexp with conditionals  |
 
-** ⚠️ CLOSED with Other Timestamps
+** ✅ CLOSED with Other Timestamps
+CLOSED: [2026-01-18 Sun 13:09]
 
 #+BEGIN_SRC org
 ,* DONE Write monthly report
@@ -970,7 +979,8 @@ SCHEDULED: <2026-01-23 Fri 10:00 +1w>
 Recurring every Thursday at 10am.
 #+END_SRC
 
-** ⚠️ Project with Multiple Timestamps
+** ✅ Project with Multiple Timestamps
+CLOSED: [2026-01-18 Sun 13:09]
 
 #+BEGIN_SRC org
 ,* TODO Q1 Planning Document
@@ -987,7 +997,8 @@ Start Jan 15, due Jan 31 (warn 7 days early).
 Estimated 8 hours, 4.5 hours logged so far.
 #+END_SRC
 
-** ⚠️ Recurring Maintenance Task
+** ✅ Recurring Maintenance Task
+CLOSED: [2026-01-18 Sun 13:10]
 
 #+BEGIN_SRC org
 ,* TODO Update dependencies
@@ -996,7 +1007,8 @@ SCHEDULED: <2026-01-15 Wed .+14d>
 Update npm packages every 2 weeks after completion.
 #+END_SRC
 
-** ⚠️ Event with Time Range
+** ✅ Event with Time Range
+CLOSED: [2026-01-18 Sun 13:10]
 
 #+BEGIN_SRC org
 ,* Conference keynote speech
@@ -1005,7 +1017,8 @@ Update npm packages every 2 weeks after completion.
 Opening keynote at tech conference.
 #+END_SRC
 
-** ⚠️ Multi-day Event
+** ✅ Multi-day Event
+CLOSED: [2026-01-18 Sun 13:10]
 
 #+BEGIN_SRC org
 ,* Annual company retreat
@@ -1014,7 +1027,8 @@ Opening keynote at tech conference.
 Three-day offsite in Lake Tahoe.
 #+END_SRC
 
-** ⚠️ Task with Complete History
+** ✅ Task with Complete History
+CLOSED: [2026-01-18 Sun 13:10]
 
 #+BEGIN_SRC org
 ,* DONE Implement user authentication

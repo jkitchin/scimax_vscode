@@ -411,23 +411,6 @@ Generates complete HTML document:
 </html>
 #+END_SRC
 
-*** ⚠️ Body-Only
-
-Generates only the content (for embedding):
-#+BEGIN_SRC html
-<div class="org-content">
-  <section>
-    <h1>My Heading</h1>
-    <p>Content...</p>
-  </section>
-</div>
-#+END_SRC
-
-Use body-only for:
-- Including in existing web pages
-- CMS integration
-- Email newsletters
-
 ** Custom CSS
 
 Add custom styles via export options:
