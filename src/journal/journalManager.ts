@@ -865,6 +865,91 @@ export class JournalManager {
     }
 
     /**
+     * Get basic stats (entry count and streaks) without reading file contents.
+     * This is much faster than getTotalStats() as it only uses entry dates.
+     */
+    public getBasicStats(entries?: JournalEntry[]): { entryCount: number; streak: number; longestStreak: number } {
+        const allEntries = entries ?? this.getAllEntries();
+        return this.computeStreaks(allEntries);
+    }
+
+    /**
+     * Get basic stats asynchronously
+     */
+    public async getBasicStatsAsync(): Promise<{ entryCount: number; streak: number; longestStreak: number }> {
+        const entries = await this.getAllEntriesAsync();
+        return this.computeStreaks(entries);
+    }
+
+    /**
+     * Compute streaks from entries without reading file contents
+     */
+    private computeStreaks(entries: JournalEntry[]): { entryCount: number; streak: number; longestStreak: number } {
+        if (entries.length === 0) {
+            return { entryCount: 0, streak: 0, longestStreak: 0 };
+        }
+
+        let currentStreak = 0;
+        let longestStreak = 0;
+        let tempStreak = 0;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Check if there's an entry today or yesterday to start current streak
+        const sortedEntries = [...entries].sort((a, b) => b.date.getTime() - a.date.getTime());
+
+        const latestEntry = new Date(sortedEntries[0].date);
+        latestEntry.setHours(0, 0, 0, 0);
+        const diffDays = Math.floor((today.getTime() - latestEntry.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 1) {
+            // Count consecutive days backwards
+            let expectedDate = diffDays === 0 ? today : new Date(today.getTime() - 24 * 60 * 60 * 1000);
+
+            for (const entry of sortedEntries) {
+                const entryDate = new Date(entry.date);
+                entryDate.setHours(0, 0, 0, 0);
+
+                if (entryDate.getTime() === expectedDate.getTime()) {
+                    currentStreak++;
+                    expectedDate = new Date(expectedDate.getTime() - 24 * 60 * 60 * 1000);
+                } else if (entryDate.getTime() < expectedDate.getTime()) {
+                    break;
+                }
+            }
+        }
+
+        // Calculate longest streak
+        const ascEntries = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+        for (let i = 0; i < ascEntries.length; i++) {
+            if (i === 0) {
+                tempStreak = 1;
+            } else {
+                const prevDate = new Date(ascEntries[i - 1].date);
+                const currDate = new Date(ascEntries[i].date);
+                prevDate.setHours(0, 0, 0, 0);
+                currDate.setHours(0, 0, 0, 0);
+
+                const diff = (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24);
+                if (diff === 1) {
+                    tempStreak++;
+                } else {
+                    longestStreak = Math.max(longestStreak, tempStreak);
+                    tempStreak = 1;
+                }
+            }
+        }
+        longestStreak = Math.max(longestStreak, tempStreak);
+
+        return {
+            entryCount: entries.length,
+            streak: currentStreak,
+            longestStreak
+        };
+    }
+
+    /**
      * Compute statistics from entries
      */
     private computeStats(entries: JournalEntry[]): { entryCount: number; totalWords: number; streak: number; longestStreak: number } {

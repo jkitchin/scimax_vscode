@@ -1,12 +1,10 @@
 import * as vscode from 'vscode';
 import { JournalManager } from './journalManager';
-import { JournalTreeProvider } from './journalTreeProvider';
 import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 export function registerJournalCommands(
     context: vscode.ExtensionContext,
-    manager: JournalManager,
-    treeProvider: JournalTreeProvider
+    manager: JournalManager
 ): void {
     // Open today's journal
     context.subscriptions.push(
@@ -66,7 +64,6 @@ export function registerJournalCommands(
 
             await manager.createEntryWithTemplate(date, templateSelection.value);
             await manager.openEntry(date);
-            treeProvider.refresh();
         })
     );
 
@@ -198,18 +195,11 @@ export function registerJournalCommands(
         })
     );
 
-    // Show calendar view (opens the tree view panel)
+    // Show calendar view (opens the calendar webview in the sidebar)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.journal.calendar', async () => {
-            // Focus the journal tree view
-            await vscode.commands.executeCommand('scimax.journal.focus');
-        })
-    );
-
-    // Refresh tree view
-    context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.journal.refresh', () => {
-            treeProvider.refresh();
+            // Focus the journal calendar webview
+            await vscode.commands.executeCommand('scimax.journal.calendar.focus');
         })
     );
 
