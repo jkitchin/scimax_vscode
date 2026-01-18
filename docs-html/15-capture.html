@@ -1,265 +1,323 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Capture</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Capture</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Capture</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-what-is-capture">✅ What is Capture?</a></li>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+<li><a href="#org-philosophy">✅ Philosophy</a></li>
+</ul>
+<li><a href="#org-getting-started">✅ Getting Started</a></li>
+<ul>
+<li><a href="#org-your-first-capture">✅ Your First Capture</a></li>
+<li><a href="#org-quick-todo-capture">Quick TODO Capture</a></li>
+<li><a href="#org-capturing-with-context">Capturing with Context</a></li>
+</ul>
+<li><a href="#org-capture-templates">Capture Templates</a></li>
+<ul>
+<li><a href="#org-built-in-templates">Built-in Templates</a></li>
+<ul>
+<li><a href="#org-todo-template-t">Todo Template (`t&#39;)</a></li>
+<li><a href="#org-note-template-n">Note Template (`n&#39;)</a></li>
+<li><a href="#org-journal-template-j">Journal Template (`j&#39;)</a></li>
+<li><a href="#org-meeting-template-m">Meeting Template (`m&#39;)</a></li>
+<li><a href="#org-code-snippet-template-s">Code Snippet Template (`s&#39;)</a></li>
+<li><a href="#org-bookmark-template-b">Bookmark Template (`b&#39;)</a></li>
+</ul>
+<li><a href="#org-viewing-all-templates">Viewing All Templates</a></li>
+</ul>
+<li><a href="#org-creating-custom-templates">Creating Custom Templates</a></li>
+<ul>
+<li><a href="#org-using-the-template-creator">Using the Template Creator</a></li>
+<li><a href="#org-manual-template-configuration">Manual Template Configuration</a></li>
+<li><a href="#org-template-structure">Template Structure</a></li>
+</ul>
+<li><a href="#org-template-syntax">Template Syntax</a></li>
+<ul>
+<li><a href="#org-basic-placeholders">Basic Placeholders</a></li>
+<li><a href="#org-interactive-prompts">Interactive Prompts</a></li>
+<li><a href="#org-link-placeholders">Link Placeholders</a></li>
+<li><a href="#org-expression-placeholders">Expression Placeholders</a></li>
+<li><a href="#org-examples">Examples</a></li>
+<ul>
+<li><a href="#org-simple-todo-with-prompt">Simple TODO with prompt</a></li>
+<li><a href="#org-note-with-timestamp-and-link-back-to-source">Note with timestamp and link back to source</a></li>
+<li><a href="#org-meeting-template-with-multiple-prompts">Meeting template with multiple prompts</a></li>
+</ul>
+</ul>
+<li><a href="#org-capture-targets">Capture Targets</a></li>
+<ul>
+<li><a href="#org-file-target-file">File Target (`file&#39;)</a></li>
+<li><a href="#org-headline-target-file-headline">Headline Target (`file+headline&#39;)</a></li>
+<li><a href="#org-date-tree-target-file-datetree">Date Tree Target (`file+datetree&#39;)</a></li>
+<li><a href="#org-default-target">Default Target</a></li>
+</ul>
+<li><a href="#org-running-capture">Running Capture</a></li>
+<ul>
+<li><a href="#org-capture-command">Capture Command</a></li>
+<li><a href="#org-capture-by-key">Capture by Key</a></li>
+<li><a href="#org-quick-capture-commands">Quick Capture Commands</a></li>
+<ul>
+<li><a href="#org-quick-todo">Quick TODO</a></li>
+<li><a href="#org-quick-note">Quick Note</a></li>
+</ul>
+<li><a href="#org-capture-process">Capture Process</a></li>
+</ul>
+<li><a href="#org-advanced-capture-features">Advanced Capture Features</a></li>
+<ul>
+<li><a href="#org-capturing-with-selection">Capturing with Selection</a></li>
+<li><a href="#org-capturing-with-context-links">Capturing with Context Links</a></li>
+<li><a href="#org-capture-preview">Capture Preview</a></li>
+<li><a href="#org-auto-open-after-capture">Auto-open After Capture</a></li>
+</ul>
+<li><a href="#org-capture-to-journal">Capture to Journal</a></li>
+<ul>
+<li><a href="#org-journal-capture-template">Journal Capture Template</a></li>
+<li><a href="#org-custom-journal-captures">Custom Journal Captures</a></li>
+<ul>
+<li><a href="#org-daily-reflection">Daily Reflection</a></li>
+<li><a href="#org-quick-log-entry">Quick Log Entry</a></li>
+</ul>
+<li><a href="#org-integrating-with-journal-directory">Integrating with Journal Directory</a></li>
+</ul>
+<li><a href="#org-capture-to-inbox">Capture to Inbox</a></li>
+<ul>
+<li><a href="#org-inbox-setup">Inbox Setup</a></li>
+<li><a href="#org-inbox-with-categories">Inbox with Categories</a></li>
+</ul>
+<li><a href="#org-configuration">Configuration</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-default-directory">Default Directory</a></li>
+<li><a href="#org-file-path-resolution">File Path Resolution</a></li>
+<li><a href="#org-configuring-preview">Configuring Preview</a></li>
+<li><a href="#org-auto-open-behavior">Auto-open Behavior</a></li>
+<li><a href="#org-complete-example-configuration">Complete Example Configuration</a></li>
+</ul>
+<li><a href="#org-common-capture-workflows">Common Capture Workflows</a></li>
+<ul>
+<li><a href="#org-gtd-workflow">GTD Workflow</a></li>
+<ul>
+<li><a href="#org-inbox-processing">Inbox Processing</a></li>
+<li><a href="#org-inbox-template">Inbox Template</a></li>
+</ul>
+<li><a href="#org-research-workflow">Research Workflow</a></li>
+<ul>
+<li><a href="#org-collect-sources">Collect Sources</a></li>
+</ul>
+<li><a href="#org-code-documentation-workflow">Code Documentation Workflow</a></li>
+<ul>
+<li><a href="#org-capture-code-examples">Capture Code Examples</a></li>
+</ul>
+<li><a href="#org-meeting-notes-workflow">Meeting Notes Workflow</a></li>
+<ul>
+<li><a href="#org-before-meeting">Before Meeting</a></li>
+<li><a href="#org-during-meeting">During Meeting</a></li>
+<li><a href="#org-after-meeting">After Meeting</a></li>
+</ul>
+<li><a href="#org-daily-planning-workflow">Daily Planning Workflow</a></li>
+<ul>
+<li><a href="#org-morning-review">Morning Review</a></li>
+<li><a href="#org-evening-review">Evening Review</a></li>
+</ul>
+<li><a href="#org-knowledge-base-building">Knowledge Base Building</a></li>
+<ul>
+<li><a href="#org-capture-learnings">Capture Learnings</a></li>
+<li><a href="#org-capture-questions">Capture Questions</a></li>
+</ul>
+</ul>
+<li><a href="#org-commands-reference">Commands Reference</a></li>
+<ul>
+<li><a href="#org-main-commands">Main Commands</a></li>
+<li><a href="#org-template-management-commands">Template Management Commands</a></li>
+</ul>
+<li><a href="#org-keybindings">Keybindings</a></li>
+<ul>
+<li><a href="#org-default-keybindings">Default Keybindings</a></li>
+<li><a href="#org-custom-keybindings">Custom Keybindings</a></li>
+<ul>
+<li><a href="#org-quick-capture-note">Quick Capture Note</a></li>
+<li><a href="#org-capture-to-inbox">Capture to Inbox</a></li>
+<li><a href="#org-journal-capture">Journal Capture</a></li>
+</ul>
+<li><a href="#org-context-aware-keybindings">Context-aware Keybindings</a></li>
+</ul>
+<li><a href="#org-tips-and-best-practices">Tips and Best Practices</a></li>
+<ul>
+<li><a href="#org-start-simple">Start Simple</a></li>
+<li><a href="#org-use-consistent-file-organization">Use Consistent File Organization</a></li>
+<li><a href="#org-process-inbox-regularly">Process Inbox Regularly</a></li>
+<li><a href="#org-leverage-context-links">Leverage Context Links</a></li>
+<li><a href="#org-use-tags-for-filtering">Use Tags for Filtering</a></li>
+<li><a href="#org-combine-with-agenda">Combine with Agenda</a></li>
+<li><a href="#org-create-domain-specific-templates">Create Domain-Specific Templates</a></li>
+<ul>
+<li><a href="#org-bug-report-template">Bug Report Template</a></li>
+<li><a href="#org-feature-request-template">Feature Request Template</a></li>
+</ul>
+<li><a href="#org-disable-preview-for-speed">Disable Preview for Speed</a></li>
+<li><a href="#org-use-keyboard-driven-workflow">Use Keyboard-driven Workflow</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-template-not-appearing-in-picker">Template Not Appearing in Picker</a></li>
+<li><a href="#org-capture-file-not-created">Capture File Not Created</a></li>
+<li><a href="#org-template-placeholders-not-expanding">Template Placeholders Not Expanding</a></li>
+<li><a href="#org-cursor-position-not-working">Cursor Position (`%?&#39;) Not Working</a></li>
+<li><a href="#org-date-tree-not-creating-structure">Date Tree Not Creating Structure</a></li>
+</ul>
+<li><a href="#org-related-features">Related Features</a></li>
+<ul>
+<li><a href="#org-journal-integration">Journal Integration</a></li>
+<li><a href="#org-agenda-integration">Agenda Integration</a></li>
+<li><a href="#org-database-search">Database Search</a></li>
+<li><a href="#org-quick-links">Quick Links</a></li>
+</ul>
+<li><a href="#org-advanced-topics">Advanced Topics</a></li>
+<ul>
+<li><a href="#org-template-hooks-future">Template Hooks (Future)</a></li>
+<li><a href="#org-dynamic-template-selection-future">Dynamic Template Selection (Future)</a></li>
+<li><a href="#org-template-inheritance-future">Template Inheritance (Future)</a></li>
+</ul>
+<li><a href="#org-appendix">Appendix</a></li>
+<ul>
+<li><a href="#org-complete-template-reference">Complete Template Reference</a></li>
+<li><a href="#org-placeholder-reference">Placeholder Reference</a></li>
+<li><a href="#org-target-type-reference">Target Type Reference</a></li>
+<li><a href="#org-example-templates-library">Example Templates Library</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-introduction" class="org-section org-level-1">
-<h1>Introduction</h1>
 <p>The Scimax Capture system provides a quick and efficient way to capture notes, tasks, ideas, and snippets without interrupting your workflow. Inspired by Emacs org-capture, it allows you to define templates that automatically format and file your captured content to the right location.</p>
 
 <div id="org-what-is-capture" class="org-section org-level-2">
-<h2>What is Capture?</h2>
+<h2>✅ What is Capture?</h2>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
 <p>Capture is a fast note-taking system that:</p>
 
 <ul>
@@ -277,7 +335,9 @@
 
 </div>
 <div id="org-key-features" class="org-section org-level-2">
-<h2>Key Features</h2>
+<h2>✅ Key Features</h2>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
 <ul>
 <li><p><strong>Template-based capture</strong>: Define reusable templates for different types of content</p>
 </li>
@@ -295,15 +355,21 @@
 
 </div>
 <div id="org-philosophy" class="org-section org-level-2">
-<h2>Philosophy</h2>
+<h2>✅ Philosophy</h2>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
 <p>The capture system follows the principle of &quot;capture first, organize later.&quot; Instead of interrupting your flow to decide where something belongs or how to format it, you simply invoke a capture template and let the system handle the details. This reduces friction and helps you maintain focus on your primary task.</p>
 
 </div>
 </div>
 <div id="org-getting-started" class="org-section org-level-1">
-<h1>Getting Started</h1>
+<h1>✅ Getting Started</h1>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
 <div id="org-your-first-capture" class="org-section org-level-2">
-<h2>Your First Capture</h2>
+<h2>✅ Your First Capture</h2>
+<p>CLOSED: [2026-01-18 Sun 09:54]</p>
+
 <p>The quickest way to capture a TODO is:</p>
 
 <ol>
@@ -1912,740 +1978,6 @@ SCHEDULED: %^t
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="06-timestamps.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="07-source-blocks.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#introduction" class="toc-link">Introduction</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#what-is-capture" class="toc-link">What is Capture?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">Key Features</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#philosophy" class="toc-link">Philosophy</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#getting-started" class="toc-link">Getting Started</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#your-first-capture" class="toc-link">Your First Capture</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#quick-todo-capture" class="toc-link">Quick TODO Capture</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#capturing-with-context" class="toc-link">Capturing with Context</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#capture-templates" class="toc-link">Capture Templates</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#built-in-templates" class="toc-link">Built-in Templates</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#todo-template-t" class="toc-link">Todo Template (`t')</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#note-template-n" class="toc-link">Note Template (`n')</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#journal-template-j" class="toc-link">Journal Template (`j')</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#meeting-template-m" class="toc-link">Meeting Template (`m')</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#code-snippet-template-s" class="toc-link">Code Snippet Template (`s')</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#bookmark-template-b" class="toc-link">Bookmark Template (`b')</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#viewing-all-templates" class="toc-link">Viewing All Templates</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#creating-custom-templates" class="toc-link">Creating Custom Templates</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#using-the-template-creator" class="toc-link">Using the Template Creator</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#manual-template-configuration" class="toc-link">Manual Template Configuration</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#template-structure" class="toc-link">Template Structure</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#template-syntax" class="toc-link">Template Syntax</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#basic-placeholders" class="toc-link">Basic Placeholders</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#interactive-prompts" class="toc-link">Interactive Prompts</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#link-placeholders" class="toc-link">Link Placeholders</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#expression-placeholders" class="toc-link">Expression Placeholders</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#examples" class="toc-link">Examples</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#simple-todo-with-prompt" class="toc-link">Simple TODO with prompt</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#note-with-timestamp-and-link-back-to-source" class="toc-link">Note with timestamp and link back to source</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#meeting-template-with-multiple-prompts" class="toc-link">Meeting template with multiple prompts</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#capture-targets" class="toc-link">Capture Targets</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#file-target-file" class="toc-link">File Target (`file')</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#headline-target-fileheadline" class="toc-link">Headline Target (file+headline)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#date-tree-target-filedatetree" class="toc-link">Date Tree Target (file+datetree)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#default-target" class="toc-link">Default Target</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#running-capture" class="toc-link">Running Capture</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#capture-command" class="toc-link">Capture Command</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#capture-by-key" class="toc-link">Capture by Key</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#quick-capture-commands" class="toc-link">Quick Capture Commands</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#quick-todo" class="toc-link">Quick TODO</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#quick-note" class="toc-link">Quick Note</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#capture-process" class="toc-link">Capture Process</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-capture-features" class="toc-link">Advanced Capture Features</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#capturing-with-selection" class="toc-link">Capturing with Selection</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#capturing-with-context-links" class="toc-link">Capturing with Context Links</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#capture-preview" class="toc-link">Capture Preview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#auto-open-after-capture" class="toc-link">Auto-open After Capture</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#capture-to-journal" class="toc-link">Capture to Journal</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#journal-capture-template" class="toc-link">Journal Capture Template</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#custom-journal-captures" class="toc-link">Custom Journal Captures</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#daily-reflection" class="toc-link">Daily Reflection</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#quick-log-entry" class="toc-link">Quick Log Entry</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#integrating-with-journal-directory" class="toc-link">Integrating with Journal Directory</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#capture-to-inbox" class="toc-link">Capture to Inbox</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#inbox-setup" class="toc-link">Inbox Setup</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#inbox-with-categories" class="toc-link">Inbox with Categories</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#configuration" class="toc-link">Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#default-directory" class="toc-link">Default Directory</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#file-path-resolution" class="toc-link">File Path Resolution</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#configuring-preview" class="toc-link">Configuring Preview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#auto-open-behavior" class="toc-link">Auto-open Behavior</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#complete-example-configuration" class="toc-link">Complete Example Configuration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#common-capture-workflows" class="toc-link">Common Capture Workflows</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#gtd-workflow" class="toc-link">GTD Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#inbox-processing" class="toc-link">Inbox Processing</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#inbox-template" class="toc-link">Inbox Template</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#research-workflow" class="toc-link">Research Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#collect-sources" class="toc-link">Collect Sources</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#code-documentation-workflow" class="toc-link">Code Documentation Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#capture-code-examples" class="toc-link">Capture Code Examples</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#meeting-notes-workflow" class="toc-link">Meeting Notes Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#before-meeting" class="toc-link">Before Meeting</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#during-meeting" class="toc-link">During Meeting</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#after-meeting" class="toc-link">After Meeting</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#daily-planning-workflow" class="toc-link">Daily Planning Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#morning-review" class="toc-link">Morning Review</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#evening-review" class="toc-link">Evening Review</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#knowledge-base-building" class="toc-link">Knowledge Base Building</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#capture-learnings" class="toc-link">Capture Learnings</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#capture-questions" class="toc-link">Capture Questions</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#commands-reference" class="toc-link">Commands Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#main-commands" class="toc-link">Main Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#template-management-commands" class="toc-link">Template Management Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#keybindings" class="toc-link">Keybindings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#default-keybindings" class="toc-link">Default Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#custom-keybindings" class="toc-link">Custom Keybindings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#quick-capture-note" class="toc-link">Quick Capture Note</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#capture-to-inbox" class="toc-link">Capture to Inbox</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#journal-capture" class="toc-link">Journal Capture</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#context-aware-keybindings" class="toc-link">Context-aware Keybindings</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#tips-and-best-practices" class="toc-link">Tips and Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#start-simple" class="toc-link">Start Simple</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#use-consistent-file-organization" class="toc-link">Use Consistent File Organization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#process-inbox-regularly" class="toc-link">Process Inbox Regularly</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#leverage-context-links" class="toc-link">Leverage Context Links</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#use-tags-for-filtering" class="toc-link">Use Tags for Filtering</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#combine-with-agenda" class="toc-link">Combine with Agenda</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#create-domain-specific-templates" class="toc-link">Create Domain-Specific Templates</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#bug-report-template" class="toc-link">Bug Report Template</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#feature-request-template" class="toc-link">Feature Request Template</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#disable-preview-for-speed" class="toc-link">Disable Preview for Speed</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#use-keyboard-driven-workflow" class="toc-link">Use Keyboard-driven Workflow</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#template-not-appearing-in-picker" class="toc-link">Template Not Appearing in Picker</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#capture-file-not-created" class="toc-link">Capture File Not Created</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#template-placeholders-not-expanding" class="toc-link">Template Placeholders Not Expanding</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#cursor-position-not-working" class="toc-link">Cursor Position (`%?') Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#date-tree-not-creating-structure" class="toc-link">Date Tree Not Creating Structure</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-features" class="toc-link">Related Features</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#journal-integration" class="toc-link">Journal Integration</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#agenda-integration" class="toc-link">Agenda Integration</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#database-search" class="toc-link">Database Search</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#quick-links" class="toc-link">Quick Links</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-topics" class="toc-link">Advanced Topics</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#template-hooks-future" class="toc-link">Template Hooks (Future)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#dynamic-template-selection-future" class="toc-link">Dynamic Template Selection (Future)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#template-inheritance-future" class="toc-link">Template Inheritance (Future)</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#appendix" class="toc-link">Appendix</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#complete-template-reference" class="toc-link">Complete Template Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#placeholder-reference" class="toc-link">Placeholder Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#target-type-reference" class="toc-link">Target Type Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#example-templates-library" class="toc-link">Example Templates Library</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

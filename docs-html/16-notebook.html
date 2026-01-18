@@ -1,265 +1,236 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Notebook (Project Organization)</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Notebook (Project Organization)</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Notebook (Project Organization)</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<ul>
+<li><a href="#org-what-is-a-notebook">✅ What is a Notebook?</a></li>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+</ul>
+<li><a href="#org-creating-notebooks">✅ Creating Notebooks</a></li>
+<ul>
+<li><a href="#org-new-notebook-command">✅ New Notebook Command</a></li>
+<li><a href="#org-project-templates">✅ Project Templates</a></li>
+<ul>
+<li><a href="#org-empty-template">✅ Empty Template</a></li>
+<li><a href="#org-research-template">✅ Research Template</a></li>
+<li><a href="#org-software-template">✅ Software Template</a></li>
+<li><a href="#org-notes-template">✅ Notes Template</a></li>
+</ul>
+<li><a href="#org-manual-notebook-setup">✅ Manual Notebook Setup</a></li>
+</ul>
+<li><a href="#org-notebook-structure">✅ Notebook Structure</a></li>
+<ul>
+<li><a href="#org-directory-layout">✅ Directory Layout</a></li>
+<li><a href="#org-configuration-file">✅ Configuration File</a></li>
+<ul>
+<li><a href="#org-configuration-fields">✅ Configuration Fields</a></li>
+</ul>
+<li><a href="#org-master-files">✅ Master Files</a></li>
+<li><a href="#org-project-markers">✅ Project Markers</a></li>
+</ul>
+<li><a href="#org-managing-notebooks">✅ Managing Notebooks</a></li>
+<ul>
+<li><a href="#org-opening-notebooks">✅ Opening Notebooks</a></li>
+<ul>
+<li><a href="#org-open-notebook-command">✅ Open Notebook Command</a></li>
+<li><a href="#org-open-master-file">✅ Open Master File</a></li>
+</ul>
+<li><a href="#org-notebook-detection">✅ Notebook Detection</a></li>
+<li><a href="#org-switching-notebooks">✅ Switching Notebooks</a></li>
+<li><a href="#org-recent-files">✅ Recent Files</a></li>
+<li><a href="#org-listing-notebook-files">✅ Listing Notebook Files</a></li>
+</ul>
+<li><a href="#org-searching-and-navigation">Searching and Navigation</a></li>
+<ul>
+<li><a href="#org-search-in-notebook">Search in Notebook</a></li>
+<li><a href="#org-notebook-agenda">Notebook Agenda</a></li>
+<li><a href="#org-notebook-index">Notebook Index</a></li>
+</ul>
+<li><a href="#org-collaboration">Collaboration</a></li>
+<ul>
+<li><a href="#org-adding-collaborators">Adding Collaborators</a></li>
+<li><a href="#org-viewing-collaborators">Viewing Collaborators</a></li>
+</ul>
+<li><a href="#org-notebook-commands">Notebook Commands</a></li>
+<ul>
+<li><a href="#org-core-commands">Core Commands</a></li>
+<li><a href="#org-search-and-organization">Search and Organization</a></li>
+<li><a href="#org-management">Management</a></li>
+<li><a href="#org-notebook-info">Notebook Info</a></li>
+<li><a href="#org-notebook-settings">Notebook Settings</a></li>
+<li><a href="#org-archive-notebook">Archive Notebook</a></li>
+<li><a href="#org-remove-from-tracking">Remove from Tracking</a></li>
+</ul>
+<li><a href="#org-configuration">Configuration</a></li>
+<ul>
+<li><a href="#org-settings">Settings</a></li>
+<ul>
+<li><a href="#org-scimax-notebook-directory">`scimax.notebook.directory&#39;</a></li>
+<li><a href="#org-scimax-notebook-defaulttemplate">`scimax.notebook.defaultTemplate&#39;</a></li>
+<li><a href="#org-scimax-notebook-autodetect">`scimax.notebook.autoDetect&#39;</a></li>
+</ul>
+</ul>
+<li><a href="#org-integration-with-projectile">Integration with Projectile</a></li>
+<ul>
+<li><a href="#org-projectile-markers">Projectile Markers</a></li>
+<li><a href="#org-compatible-with-projectile">Compatible with Projectile</a></li>
+<li><a href="#org-project-root-detection">Project Root Detection</a></li>
+</ul>
+<li><a href="#org-practical-workflows">Practical Workflows</a></li>
+<ul>
+<li><a href="#org-research-project-workflow">Research Project Workflow</a></li>
+<li><a href="#org-software-development-workflow">Software Development Workflow</a></li>
+<li><a href="#org-personal-knowledge-base-workflow">Personal Knowledge Base Workflow</a></li>
+<li><a href="#org-multi-notebook-workflow">Multi-Notebook Workflow</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-notebook-not-detected">Notebook Not Detected</a></li>
+<li><a href="#org-master-file-not-found">Master File Not Found</a></li>
+<li><a href="#org-search-not-working">Search Not Working</a></li>
+<li><a href="#org-archive-command-fails">Archive Command Fails</a></li>
+</ul>
+<li><a href="#org-advanced-usage">Advanced Usage</a></li>
+<ul>
+<li><a href="#org-custom-templates">Custom Templates</a></li>
+<li><a href="#org-automation-with-custom-commands">Automation with Custom Commands</a></li>
+<li><a href="#org-nested-notebooks">Nested Notebooks</a></li>
+<li><a href="#org-integration-with-bibliography">Integration with Bibliography</a></li>
+<li><a href="#org-version-control-best-practices">Version Control Best Practices</a></li>
+</ul>
+<li><a href="#org-summary">Summary</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-overview" class="org-section org-level-1">
+<h1>✅ Overview</h1>
+<p>CLOSED: [2026-01-16 Fri 20:15]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-overview" class="org-section org-level-1">
-<h1>Overview</h1>
 <p>The Scimax notebook system provides project-based document organization inspired by Emacs Scimax&#39;s `scimax-notebook&#39; package. A notebook is a structured project directory that can contain research notes, documentation, code, data, and other project materials.</p>
 
 <div id="org-what-is-a-notebook" class="org-section org-level-2">
-<h2>What is a Notebook?</h2>
+<h2>✅ What is a Notebook?</h2>
+<p>CLOSED: [2026-01-16 Fri 20:15]</p>
+
 <p>A notebook is a project directory with:</p>
 
 <ul>
@@ -292,7 +263,9 @@
 
 </div>
 <div id="org-key-features" class="org-section org-level-2">
-<h2>Key Features</h2>
+<h2>✅ Key Features</h2>
+<p>CLOSED: [2026-01-16 Fri 20:16]</p>
+
 <ul>
 <li><p><strong>Project Templates</strong>: Start with pre-configured structures for research, software, or notes</p>
 </li>
@@ -313,9 +286,13 @@
 </div>
 </div>
 <div id="org-creating-notebooks" class="org-section org-level-1">
-<h1>Creating Notebooks</h1>
+<h1>✅ Creating Notebooks</h1>
+<p>CLOSED: [2026-01-16 Fri 20:16]</p>
+
 <div id="org-new-notebook-command" class="org-section org-level-2">
-<h2>New Notebook Command</h2>
+<h2>✅ New Notebook Command</h2>
+<p>CLOSED: [2026-01-16 Fri 20:16]</p>
+
 <p>Create a new notebook with <kbd>Scimax: New Notebook</kbd>:</p>
 
 <div class="org-src-container">
@@ -339,9 +316,13 @@
 
 </div>
 <div id="org-project-templates" class="org-section org-level-2">
-<h2>Project Templates</h2>
+<h2>✅ Project Templates</h2>
+<p>CLOSED: [2026-01-16 Fri 20:17]</p>
+
 <div id="org-empty-template" class="org-section org-level-3">
-<h3>Empty Template</h3>
+<h3>✅ Empty Template</h3>
+<p>CLOSED: [2026-01-16 Fri 20:17]</p>
+
 <p>Minimal structure with a <kbd>README.org</kbd> file:</p>
 
 <pre class="example">my-notebook/
@@ -363,7 +344,9 @@
 
 </div>
 <div id="org-research-template" class="org-section org-level-3">
-<h3>Research Template</h3>
+<h3>✅ Research Template</h3>
+<p>CLOSED: [2026-01-16 Fri 20:17]</p>
+
 <p>For scientific research projects:</p>
 
 <pre class="example">research-project/
@@ -399,7 +382,9 @@
 
 </div>
 <div id="org-software-template" class="org-section org-level-3">
-<h3>Software Template</h3>
+<h3>✅ Software Template</h3>
+<p>CLOSED: [2026-01-16 Fri 20:17]</p>
+
 <p>For software development projects:</p>
 
 <pre class="example">software-project/
@@ -427,7 +412,9 @@
 
 </div>
 <div id="org-notes-template" class="org-section org-level-3">
-<h3>Notes Template</h3>
+<h3>✅ Notes Template</h3>
+<p>CLOSED: [2026-01-16 Fri 20:17]</p>
+
 <p>For note-taking and personal knowledge management:</p>
 
 <pre class="example">notes-project/
@@ -454,7 +441,9 @@ See [[file:journal/][journal entries]].
 </div>
 </div>
 <div id="org-manual-notebook-setup" class="org-section org-level-2">
-<h2>Manual Notebook Setup</h2>
+<h2>✅ Manual Notebook Setup</h2>
+<p>CLOSED: [2026-01-16 Fri 20:17]</p>
+
 <p>You can also manually create a notebook directory:</p>
 
 <ol>
@@ -473,9 +462,13 @@ See [[file:journal/][journal entries]].
 </div>
 </div>
 <div id="org-notebook-structure" class="org-section org-level-1">
-<h1>Notebook Structure</h1>
+<h1>✅ Notebook Structure</h1>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <div id="org-directory-layout" class="org-section org-level-2">
-<h2>Directory Layout</h2>
+<h2>✅ Directory Layout</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>A typical notebook has this structure:</p>
 
 <pre class="example">notebook-name/
@@ -490,7 +483,9 @@ See [[file:journal/][journal entries]].
 
 </div>
 <div id="org-configuration-file" class="org-section org-level-2">
-<h2>Configuration File</h2>
+<h2>✅ Configuration File</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>The <kbd>.scimax/config.json</kbd> file contains notebook metadata:</p>
 
 <div class="org-src-container">
@@ -521,7 +516,9 @@ See [[file:journal/][journal entries]].
 </div>
 
 <div id="org-configuration-fields" class="org-section org-level-3">
-<h3>Configuration Fields</h3>
+<h3>✅ Configuration Fields</h3>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <ul>
 <li><p><kbd>name</kbd> (string): Display name for the notebook</p>
 </li>
@@ -544,7 +541,9 @@ See [[file:journal/][journal entries]].
 </div>
 </div>
 <div id="org-master-files" class="org-section org-level-2">
-<h2>Master Files</h2>
+<h2>✅ Master Files</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>The master file is the main entry point for your notebook. When you open a notebook, Scimax automatically opens this file.</p>
 
 <p>Scimax looks for master files in this order:</p>
@@ -619,7 +618,9 @@ bibliography:references.bib</code></pre>
 
 </div>
 <div id="org-project-markers" class="org-section org-level-2">
-<h2>Project Markers</h2>
+<h2>✅ Project Markers</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>Scimax detects projects by looking for marker files:</p>
 
 <ul>
@@ -650,11 +651,17 @@ bibliography:references.bib</code></pre>
 </div>
 </div>
 <div id="org-managing-notebooks" class="org-section org-level-1">
-<h1>Managing Notebooks</h1>
+<h1>✅ Managing Notebooks</h1>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <div id="org-opening-notebooks" class="org-section org-level-2">
-<h2>Opening Notebooks</h2>
+<h2>✅ Opening Notebooks</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <div id="org-open-notebook-command" class="org-section org-level-3">
-<h3>Open Notebook Command</h3>
+<h3>✅ Open Notebook Command</h3>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p><kbd>Scimax: Open Notebook</kbd> shows a quick pick menu of all registered notebooks:</p>
 
 <div class="org-src-container">
@@ -678,7 +685,9 @@ bibliography:references.bib</code></pre>
 
 </div>
 <div id="org-open-master-file" class="org-section org-level-3">
-<h3>Open Master File</h3>
+<h3>✅ Open Master File</h3>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>Directly open the master file of the current or selected notebook:</p>
 
 <div class="org-src-container">
@@ -690,7 +699,9 @@ bibliography:references.bib</code></pre>
 </div>
 </div>
 <div id="org-notebook-detection" class="org-section org-level-2">
-<h2>Notebook Detection</h2>
+<h2>✅ Notebook Detection</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>Scimax automatically detects projects when:</p>
 
 <ol>
@@ -712,7 +723,9 @@ bibliography:references.bib</code></pre>
 
 </div>
 <div id="org-switching-notebooks" class="org-section org-level-2">
-<h2>Switching Notebooks</h2>
+<h2>✅ Switching Notebooks</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>Opening a notebook sets it as the &quot;current notebook&quot; which affects:</p>
 
 <ul>
@@ -730,7 +743,9 @@ bibliography:references.bib</code></pre>
 
 </div>
 <div id="org-recent-files" class="org-section org-level-2">
-<h2>Recent Files</h2>
+<h2>✅ Recent Files</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>View recently modified files in the current notebook:</p>
 
 <div class="org-src-container">
@@ -750,7 +765,9 @@ bibliography:references.bib</code></pre>
 
 </div>
 <div id="org-listing-notebook-files" class="org-section org-level-2">
-<h2>Listing Notebook Files</h2>
+<h2>✅ Listing Notebook Files</h2>
+<p>CLOSED: [2026-01-16 Fri 20:18]</p>
+
 <p>Scimax tracks all <kbd>.org</kbd> and <kbd>.md</kbd> files in the notebook, automatically excluding:</p>
 
 <ul>
@@ -1399,425 +1416,6 @@ bibliography:references.bib</code></pre>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="14-journal.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="17-projectile.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#overview" class="toc-link">Overview</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#what-is-a-notebook" class="toc-link">What is a Notebook?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">Key Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#creating-notebooks" class="toc-link">Creating Notebooks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#new-notebook-command" class="toc-link">New Notebook Command</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#project-templates" class="toc-link">Project Templates</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#empty-template" class="toc-link">Empty Template</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#research-template" class="toc-link">Research Template</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#software-template" class="toc-link">Software Template</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#notes-template" class="toc-link">Notes Template</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#manual-notebook-setup" class="toc-link">Manual Notebook Setup</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#notebook-structure" class="toc-link">Notebook Structure</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#directory-layout" class="toc-link">Directory Layout</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#configuration-file" class="toc-link">Configuration File</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#configuration-fields" class="toc-link">Configuration Fields</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#master-files" class="toc-link">Master Files</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#project-markers" class="toc-link">Project Markers</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#managing-notebooks" class="toc-link">Managing Notebooks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#opening-notebooks" class="toc-link">Opening Notebooks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#open-notebook-command" class="toc-link">Open Notebook Command</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#open-master-file" class="toc-link">Open Master File</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#notebook-detection" class="toc-link">Notebook Detection</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#switching-notebooks" class="toc-link">Switching Notebooks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#recent-files" class="toc-link">Recent Files</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#listing-notebook-files" class="toc-link">Listing Notebook Files</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#searching-and-navigation" class="toc-link">Searching and Navigation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#search-in-notebook" class="toc-link">Search in Notebook</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#notebook-agenda" class="toc-link">Notebook Agenda</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#notebook-index" class="toc-link">Notebook Index</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#collaboration" class="toc-link">Collaboration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#adding-collaborators" class="toc-link">Adding Collaborators</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#viewing-collaborators" class="toc-link">Viewing Collaborators</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#notebook-commands" class="toc-link">Notebook Commands</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#core-commands" class="toc-link">Core Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#search-and-organization" class="toc-link">Search and Organization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#management" class="toc-link">Management</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#notebook-info" class="toc-link">Notebook Info</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#notebook-settings" class="toc-link">Notebook Settings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#archive-notebook" class="toc-link">Archive Notebook</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#remove-from-tracking" class="toc-link">Remove from Tracking</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#configuration" class="toc-link">Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings" class="toc-link">Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxnotebookdirectory" class="toc-link">`scimax.notebook.directory'</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxnotebookdefaulttemplate" class="toc-link">`scimax.notebook.defaultTemplate'</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxnotebookautodetect" class="toc-link">`scimax.notebook.autoDetect'</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#integration-with-projectile" class="toc-link">Integration with Projectile</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#projectile-markers" class="toc-link">Projectile Markers</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#compatible-with-projectile" class="toc-link">Compatible with Projectile</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#project-root-detection" class="toc-link">Project Root Detection</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#practical-workflows" class="toc-link">Practical Workflows</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#research-project-workflow" class="toc-link">Research Project Workflow</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#software-development-workflow" class="toc-link">Software Development Workflow</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#personal-knowledge-base-workflow" class="toc-link">Personal Knowledge Base Workflow</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#multi-notebook-workflow" class="toc-link">Multi-Notebook Workflow</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#notebook-not-detected" class="toc-link">Notebook Not Detected</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#master-file-not-found" class="toc-link">Master File Not Found</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#search-not-working" class="toc-link">Search Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#archive-command-fails" class="toc-link">Archive Command Fails</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-usage" class="toc-link">Advanced Usage</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#custom-templates" class="toc-link">Custom Templates</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#automation-with-custom-commands" class="toc-link">Automation with Custom Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#nested-notebooks" class="toc-link">Nested Notebooks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#integration-with-bibliography" class="toc-link">Integration with Bibliography</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#version-control-best-practices" class="toc-link">Version Control Best Practices</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#summary" class="toc-link">Summary</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

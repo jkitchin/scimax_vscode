@@ -1,260 +1,190 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Scimax VS Code Documentation</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scimax VS Code Documentation</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Scimax VS Code Documentation</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-scimax-vs-code">Scimax VS Code</a></li>
+<ul>
+<li><a href="#org-what-is-scimax-vs-code">What is Scimax VS Code?</a></li>
+<li><a href="#org-key-features">Key Features</a></li>
+<ul>
+<li><a href="#org-document-structure">Document Structure</a></li>
+<li><a href="#org-task-management">Task Management</a></li>
+<li><a href="#org-tables">Tables</a></li>
+<li><a href="#org-source-code-execution">Source Code Execution</a></li>
+<li><a href="#org-export">Export</a></li>
+<li><a href="#org-timestamps-and-planning">Timestamps and Planning</a></li>
+<li><a href="#org-links-and-references">Links and References</a></li>
+<li><a href="#org-agenda-views">Agenda Views</a></li>
+<li><a href="#org-journal-system">Journal System</a></li>
+<li><a href="#org-database-and-search">Database and Search</a></li>
+<li><a href="#org-citations-and-bibliography">Citations and Bibliography</a></li>
+</ul>
+<li><a href="#org-how-this-documentation-is-organized">How This Documentation is Organized</a></li>
+<ul>
+<li><a href="#org-core-documentation-01-07">Core Documentation (01-07)</a></li>
+<li><a href="#org-code-execution-08-09">Code Execution (08-09)</a></li>
+<li><a href="#org-export-preview-10-12">Export &amp; Preview (10-12)</a></li>
+<li><a href="#org-organization-planning-13-17">Organization &amp; Planning (13-17)</a></li>
+<li><a href="#org-search-knowledge-18-19">Search &amp; Knowledge (18-19)</a></li>
+<li><a href="#org-editing-navigation-20-23">Editing &amp; Navigation (20-23)</a></li>
+<li><a href="#org-reference-documentation-24-30">Reference Documentation (24-30)</a></li>
+</ul>
+<li><a href="#org-quick-start">Quick Start</a></li>
+<li><a href="#org-getting-help">Getting Help</a></li>
+<ul>
+<li><a href="#org-within-vs-code">Within VS Code</a></li>
+<li><a href="#org-online-resources">Online Resources</a></li>
+<li><a href="#org-keybinding-help">Keybinding Help</a></li>
+</ul>
+<li><a href="#org-acknowledgments">Acknowledgments</a></li>
+<li><a href="#org-license">License</a></li>
+</ul>
+<li><a href="#org-complete-documentation-index">Complete Documentation Index</a></li>
+<ul>
+<li><a href="#org-navigation-guides">Navigation Guides</a></li>
+<li><a href="#org-document-editing">Document Editing</a></li>
+<li><a href="#org-code-execution">Code Execution</a></li>
+<li><a href="#org-export-and-preview">Export and Preview</a></li>
+<li><a href="#org-organization-and-planning">Organization and Planning</a></li>
+<li><a href="#org-search-and-database">Search and Database</a></li>
+<li><a href="#org-configuration">Configuration</a></li>
+</ul>
+<li><a href="#org-topic-index">Topic Index</a></li>
+<li><a href="#org-quick-start-by-use-case">Quick Start by Use Case</a></li>
+<ul>
+<li><a href="#org-i-want-to">I want to...</a></li>
+<ul>
+<li><a href="#org-take-notes-and-organize-information">Take notes and organize information</a></li>
+<li><a href="#org-manage-tasks-and-projects">Manage tasks and projects</a></li>
+<li><a href="#org-write-scientific-documents">Write scientific documents</a></li>
+<li><a href="#org-keep-a-journal">Keep a journal</a></li>
+<li><a href="#org-navigate-efficiently">Navigate efficiently</a></li>
+<li><a href="#org-programmatically-modify-org-files">✅ Programmatically modify org files</a></li>
+<li><a href="#org-configure-the-extension">✅ Configure the extension</a></li>
+</ul>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root active">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-scimax-vs-code" class="org-section org-level-1">
+<div id="org-scimax-vs-code" class="org-section org-level-1">
 <h1>Scimax VS Code</h1>
 <p>Scimax VS Code is a comprehensive scientific computing extension for Visual
 Studio Code, inspired by the powerful <a href="https://github.com/jkitchin/scimax">Scimax</a> package for Emacs. It brings
@@ -496,6 +426,7 @@ Navigate efficiently with outline views, heading jumps, and fuzzy search.</p>
 </thead>
 <tbody>
 <tr><td><a href="01-getting-started.html">Getting Started</a></td><td>Installation and first steps</td></tr>
+<tr><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td>Markup, lists, math, blocks</td></tr>
 <tr><td><a href="02-document-structure.html">Document Structure</a></td><td>Headings, folding, navigation</td></tr>
 <tr><td><a href="03-todo-items.html">TODO Items</a></td><td>Task management</td></tr>
 <tr><td><a href="04-tables.html">Tables</a></td><td>Table editing and formulas</td></tr>
@@ -577,8 +508,8 @@ Navigate efficiently with outline views, heading jumps, and fuzzy search.</p>
 </table>
 
 </div>
-<div id="org-reference-documentation-24-28" class="org-section org-level-3">
-<h3>Reference Documentation (24-28)</h3>
+<div id="org-reference-documentation-24-30" class="org-section org-level-3">
+<h3>Reference Documentation (24-30)</h3>
 <table class="org-table">
 <thead>
 <tr><th>Document</th><th>Description</th></tr>
@@ -589,6 +520,8 @@ Navigate efficiently with outline views, heading jumps, and fuzzy search.</p>
 <tr><td><a href="26-configuration.html">Configuration</a></td><td>All settings and options</td></tr>
 <tr><td><a href="27-org-api.html">Org API</a></td><td>Programmatic file modification</td></tr>
 <tr><td><a href="28-non-standard-features.html">Non-Standard Features</a></td><td>org-ref, Emacs command markup</td></tr>
+<tr><td><a href="29-unsupported-features.html">Unsupported Features</a></td><td>Emacs features not in VS Code</td></tr>
+<tr><td><a href="30-cli.html">Command Line Interface</a></td><td>CLI for batch ops and scripts</td></tr>
 </tbody>
 </table>
 
@@ -679,6 +612,7 @@ see available speed commands.</p>
 </thead>
 <tbody>
 <tr><td><a href="01-getting-started.html">Getting Started</a></td><td>Installation, first steps, basic usage</td></tr>
+<tr><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td>Text markup, lists, equations, blocks</td></tr>
 <tr><td><a href="21-navigation.html">Navigation</a></td><td>Fuzzy search, avy-style jump, outline navigation</td></tr>
 <tr><td><a href="22-hydra-menus.html">Hydra Menus</a></td><td>Keyboard-driven menus, customization</td></tr>
 <tr><td><a href="24-keybindings.html">Keybindings</a></td><td>Complete keybinding reference</td></tr>
@@ -730,6 +664,7 @@ see available speed commands.</p>
 <tr><td><a href="10-export.html">Export</a></td><td>HTML, LaTeX, PDF, Markdown export</td></tr>
 <tr><td><a href="11-latex-preview.html">LaTeX Preview</a></td><td>Math rendering, equation preview</td></tr>
 <tr><td><a href="12-image-overlays.html">Image Overlays</a></td><td>Inline image display</td></tr>
+<tr><td><a href="32-excalidraw.html">Excalidraw</a></td><td>Diagram creation and editing</td></tr>
 </tbody>
 </table>
 
@@ -788,18 +723,25 @@ see available speed commands.</p>
 <tr><td>Agenda views</td><td><a href="13-agenda.html">Agenda</a></td><td><a href="03-todo-items.html">TODO Items</a>, <a href="06-timestamps.html">Timestamps</a></td></tr>
 <tr><td>Avy-style navigation</td><td><a href="21-navigation.html">Navigation</a></td><td><a href="24-keybindings.html">Keybindings</a></td></tr>
 <tr><td>Babel execution</td><td><a href="07-source-blocks.html">Source Code Blocks</a></td><td><a href="08-supported-languages.html">Supported Languages</a>, <a href="09-jupyter.html">Jupyter</a></td></tr>
+<tr><td>Basic syntax</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="02-document-structure.html">Document Structure</a>, <a href="10-export.html">Export</a></td></tr>
 <tr><td>Bibliography</td><td><a href="19-references.html">References</a></td><td><a href="05-links.html">Links</a>, <a href="10-export.html">Export</a></td></tr>
+<tr><td>Block elements</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="07-source-blocks.html">Source Code Blocks</a>, <a href="10-export.html">Export</a></td></tr>
+<tr><td>Bold text</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="10-export.html">Export</a></td></tr>
 <tr><td>Capture templates</td><td><a href="15-capture.html">Capture</a></td><td><a href="14-journal.html">Journal</a>, <a href="26-configuration.html">Configuration</a></td></tr>
 <tr><td>Checkboxes</td><td><a href="03-todo-items.html">TODO Items</a></td><td><a href="02-document-structure.html">Document Structure</a></td></tr>
 <tr><td>Citations</td><td><a href="19-references.html">References</a></td><td><a href="05-links.html">Links</a>, <a href="10-export.html">Export</a>, <a href="28-non-standard-features.html">Non-Standard Features</a></td></tr>
+<tr><td>CSL citation styles</td><td><a href="10-export.html">Export</a></td><td><a href="19-references.html">References</a> - APA, MLA, Chicago, Harvard, IEEE, Vancouver</td></tr>
 <tr><td>Code blocks</td><td><a href="07-source-blocks.html">Source Code Blocks</a></td><td><a href="08-supported-languages.html">Supported Languages</a>, <a href="04-tables.html">Tables</a></td></tr>
 <tr><td>Command markup</td><td><a href="28-non-standard-features.html">Non-Standard Features</a></td><td><a href="24-keybindings.html">Keybindings</a>, <a href="10-export.html">Export</a></td></tr>
 <tr><td>Configuration</td><td><a href="26-configuration.html">Configuration</a></td><td>Feature-specific docs</td></tr>
 <tr><td>Deadlines</td><td><a href="06-timestamps.html">Timestamps</a></td><td><a href="13-agenda.html">Agenda</a>, <a href="03-todo-items.html">TODO Items</a></td></tr>
+<tr><td>Definition lists</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="02-document-structure.html">Document Structure</a></td></tr>
 <tr><td>Diary sexp</td><td><a href="06-timestamps.html">Timestamps</a></td><td><a href="13-agenda.html">Agenda</a></td></tr>
 <tr><td>DOI lookup</td><td><a href="19-references.html">References</a></td><td><a href="26-configuration.html">Configuration</a></td></tr>
 <tr><td>Dynamic blocks</td><td><a href="02-document-structure.html">Document Structure</a></td><td><a href="06-timestamps.html">Timestamps</a>, <a href="04-tables.html">Tables</a></td></tr>
 <tr><td>Embeddings</td><td><a href="18-database-search.html">Database and Search</a></td><td><a href="26-configuration.html">Configuration</a></td></tr>
+<tr><td>Equations</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="11-latex-preview.html">LaTeX Preview</a>, <a href="10-export.html">Export</a></td></tr>
+<tr><td>Excalidraw</td><td><a href="32-excalidraw.html">Excalidraw</a></td><td><a href="05-links.html">Links</a>, <a href="12-image-overlays.html">Image Overlays</a></td></tr>
 <tr><td>Export to HTML</td><td><a href="10-export.html">Export</a></td><td><a href="11-latex-preview.html">LaTeX Preview</a></td></tr>
 <tr><td>Export to PDF</td><td><a href="10-export.html">Export</a></td><td><a href="11-latex-preview.html">LaTeX Preview</a></td></tr>
 <tr><td>Folding</td><td><a href="02-document-structure.html">Document Structure</a></td><td><a href="21-navigation.html">Navigation</a></td></tr>
@@ -812,17 +754,22 @@ see available speed commands.</p>
 <tr><td>Hydra menus</td><td><a href="22-hydra-menus.html">Hydra Menus</a></td><td><a href="24-keybindings.html">Keybindings</a>, <a href="26-configuration.html">Configuration</a></td></tr>
 <tr><td>Image display</td><td><a href="12-image-overlays.html">Image Overlays</a></td><td><a href="07-source-blocks.html">Source Code Blocks</a></td></tr>
 <tr><td>Include files</td><td><a href="10-export.html">Export</a></td><td>Modular documents with #+INCLUDE:</td></tr>
+<tr><td>Italic text</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="10-export.html">Export</a></td></tr>
 <tr><td>Inline tasks</td><td><a href="02-document-structure.html">Document Structure</a></td><td><a href="03-todo-items.html">TODO Items</a></td></tr>
 <tr><td>Journal entries</td><td><a href="14-journal.html">Journal</a></td><td><a href="15-capture.html">Capture</a>, <a href="13-agenda.html">Agenda</a></td></tr>
 <tr><td>Jupyter kernels</td><td><a href="09-jupyter.html">Jupyter Integration</a></td><td><a href="07-source-blocks.html">Source Code Blocks</a>, <a href="08-supported-languages.html">Supported Languages</a></td></tr>
 <tr><td>Keybindings</td><td><a href="24-keybindings.html">Keybindings</a></td><td><a href="23-speed-commands.html">Speed Commands</a>, <a href="22-hydra-menus.html">Hydra Menus</a></td></tr>
 <tr><td>LaTeX math</td><td><a href="11-latex-preview.html">LaTeX Preview</a></td><td><a href="10-export.html">Export</a></td></tr>
 <tr><td>Links</td><td><a href="05-links.html">Links</a></td><td><a href="19-references.html">References</a>, <a href="21-navigation.html">Navigation</a></td></tr>
+<tr><td>Limitations</td><td><a href="29-unsupported-features.html">Unsupported Features</a></td><td>Emacs features not available in VS Code</td></tr>
+<tr><td>Lists (ordered)</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="02-document-structure.html">Document Structure</a></td></tr>
+<tr><td>Lists (unordered)</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="02-document-structure.html">Document Structure</a></td></tr>
+<tr><td>Markup (text)</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="10-export.html">Export</a>, bold, italic, underline, code</td></tr>
 <tr><td>Math preview</td><td><a href="11-latex-preview.html">LaTeX Preview</a></td><td><a href="10-export.html">Export</a></td></tr>
 <tr><td>Non-standard features</td><td><a href="28-non-standard-features.html">Non-Standard Features</a></td><td><a href="19-references.html">References</a>, <a href="10-export.html">Export</a></td></tr>
 <tr><td>Notebooks</td><td><a href="16-notebook.html">Notebook</a></td><td><a href="17-projectile.html">Projectile</a>, <a href="14-journal.html">Journal</a></td></tr>
 <tr><td>Org file modification</td><td><a href="27-org-api.html">Org API</a></td><td><a href="07-source-blocks.html">Source Code Blocks</a>, <a href="04-tables.html">Tables</a></td></tr>
-<tr><td>Org-mode syntax</td><td><a href="02-document-structure.html">Document Structure</a></td><td><a href="07-source-blocks.html">Source Code Blocks</a>, <a href="04-tables.html">Tables</a></td></tr>
+<tr><td>Org-mode syntax</td><td><a href="01.5-basic-syntax.html">Basic Syntax</a></td><td><a href="02-document-structure.html">Document Structure</a>, <a href="07-source-blocks.html">Source Code Blocks</a>, <a href="04-tables.html">Tables</a></td></tr>
 <tr><td>org-ref citations</td><td><a href="28-non-standard-features.html">Non-Standard Features</a></td><td><a href="19-references.html">References</a>, <a href="05-links.html">Links</a></td></tr>
 <tr><td>PDF export</td><td><a href="10-export.html">Export</a></td><td><a href="11-latex-preview.html">LaTeX Preview</a></td></tr>
 <tr><td>Priorities</td><td><a href="03-todo-items.html">TODO Items</a></td><td><a href="13-agenda.html">Agenda</a></td></tr>
@@ -838,6 +785,7 @@ see available speed commands.</p>
 <tr><td>TODO states</td><td><a href="03-todo-items.html">TODO Items</a></td><td><a href="13-agenda.html">Agenda</a>, <a href="26-configuration.html">Configuration</a></td></tr>
 <tr><td>TODO custom keywords</td><td><a href="03-todo-items.html">TODO Items</a></td><td>Per-file #+TODO: definitions</td></tr>
 <tr><td>Track changes</td><td><a href="20-editmarks.html">Editmarks</a></td><td><a href="02-document-structure.html">Document Structure</a></td></tr>
+<tr><td>Unsupported features</td><td><a href="29-unsupported-features.html">Unsupported Features</a></td><td>Emacs features not in VS Code</td></tr>
 <tr><td>Vector search</td><td><a href="18-database-search.html">Database and Search</a></td><td><a href="26-configuration.html">Configuration</a></td></tr>
 </tbody>
 </table>
@@ -851,6 +799,8 @@ see available speed commands.</p>
 <h3>Take notes and organize information</h3>
 <ul>
 <li><p>Start with <a href="01-getting-started.html">Getting Started</a></p>
+</li>
+<li><p>Learn <a href="01.5-basic-syntax.html">Basic Syntax</a> for formatting text</p>
 </li>
 <li><p>Learn <a href="02-document-structure.html">Document Structure</a> for headings and organization</p>
 </li>
@@ -916,7 +866,9 @@ see available speed commands.</p>
 
 </div>
 <div id="org-programmatically-modify-org-files" class="org-section org-level-3">
-<h3>⚠️ Programmatically modify org files</h3>
+<h3>✅ Programmatically modify org files</h3>
+<p>CLOSED: [2026-01-16 Fri 20:04]</p>
+
 <ul>
 <li><p>Use the <a href="27-org-api.html">Org API</a> in TypeScript source blocks</p>
 </li>
@@ -930,7 +882,9 @@ see available speed commands.</p>
 
 </div>
 <div id="org-configure-the-extension" class="org-section org-level-3">
-<h3>⚠️ Configure the extension</h3>
+<h3>✅ Configure the extension</h3>
+<p>CLOSED: [2026-01-16 Fri 20:04]</p>
+
 <ul>
 <li><p>See all options in <a href="26-configuration.html">Configuration</a></p>
 </li>
@@ -953,307 +907,6 @@ see available speed commands.</p>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-<span class="nav-prev"></span>
-
-            <a href="01-getting-started.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#scimax-vs-code" class="toc-link">Scimax VS Code</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#what-is-scimax-vs-code" class="toc-link">What is Scimax VS Code?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">Key Features</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#document-structure" class="toc-link">Document Structure</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#task-management" class="toc-link">Task Management</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#tables" class="toc-link">Tables</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#source-code-execution" class="toc-link">Source Code Execution</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#export" class="toc-link">Export</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#timestamps-and-planning" class="toc-link">Timestamps and Planning</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#links-and-references" class="toc-link">Links and References</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#agenda-views" class="toc-link">Agenda Views</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#journal-system" class="toc-link">Journal System</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#database-and-search" class="toc-link">Database and Search</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#citations-and-bibliography" class="toc-link">Citations and Bibliography</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#how-this-documentation-is-organized" class="toc-link">How This Documentation is Organized</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#core-documentation-01-07" class="toc-link">Core Documentation (01-07)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#code-execution-08-09" class="toc-link">Code Execution (08-09)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#export-preview-10-12" class="toc-link">Export &amp; Preview (10-12)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#organization-planning-13-17" class="toc-link">Organization &amp; Planning (13-17)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#search-knowledge-18-19" class="toc-link">Search &amp; Knowledge (18-19)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#editing-navigation-20-23" class="toc-link">Editing &amp; Navigation (20-23)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#reference-documentation-24-28" class="toc-link">Reference Documentation (24-28)</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#quick-start" class="toc-link">Quick Start</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#getting-help" class="toc-link">Getting Help</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#within-vs-code" class="toc-link">Within VS Code</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#online-resources" class="toc-link">Online Resources</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#keybinding-help" class="toc-link">Keybinding Help</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#acknowledgments" class="toc-link">Acknowledgments</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#license" class="toc-link">License</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#complete-documentation-index" class="toc-link">Complete Documentation Index</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#navigation-guides" class="toc-link">Navigation Guides</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#document-editing" class="toc-link">Document Editing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#code-execution" class="toc-link">Code Execution</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-and-preview" class="toc-link">Export and Preview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#organization-and-planning" class="toc-link">Organization and Planning</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#search-and-database" class="toc-link">Search and Database</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#configuration" class="toc-link">Configuration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#topic-index" class="toc-link">Topic Index</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#quick-start-by-use-case" class="toc-link">Quick Start by Use Case</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#i-want-to" class="toc-link">I want to...</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#take-notes-and-organize-information" class="toc-link">Take notes and organize information</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#manage-tasks-and-projects" class="toc-link">Manage tasks and projects</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#write-scientific-documents" class="toc-link">Write scientific documents</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#keep-a-journal" class="toc-link">Keep a journal</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#navigate-efficiently" class="toc-link">Navigate efficiently</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#programmatically-modify-org-files" class="toc-link">⚠️ Programmatically modify org files</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#configure-the-extension" class="toc-link">⚠️ Configure the extension</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

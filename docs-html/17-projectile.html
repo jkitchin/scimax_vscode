@@ -1,260 +1,271 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Projectile (Project Management)</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Projectile (Project Management)</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Projectile (Project Management)</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<ul>
+<li><a href="#org-what-is-projectile">✅ What is Projectile?</a></li>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+</ul>
+<li><a href="#org-project-detection">✅ Project Detection</a></li>
+<ul>
+<li><a href="#org-detection-methods">Detection Methods</a></li>
+<li><a href="#org-automatic-detection">Automatic Detection</a></li>
+<li><a href="#org-creating-a-projectile-marker">✅ Creating a Projectile Marker</a></li>
+<li><a href="#org-project-types">✅ Project Types</a></li>
+</ul>
+<li><a href="#org-managing-projects">✅ Managing Projects</a></li>
+<ul>
+<li><a href="#org-switching-between-projects">✅ Switching Between Projects</a></li>
+<li><a href="#org-adding-projects">✅ Adding Projects</a></li>
+<ul>
+<li><a href="#org-manually-adding-a-project">✅ Manually Adding a Project</a></li>
+<li><a href="#org-scanning-for-projects">✅ Scanning for Projects</a></li>
+</ul>
+<li><a href="#org-removing-projects">✅ Removing Projects</a></li>
+<li><a href="#org-cleaning-up-projects">✅ Cleaning Up Projects</a></li>
+</ul>
+<li><a href="#org-project-operations">✅ Project Operations</a></li>
+<ul>
+<li><a href="#org-finding-files-in-projects">✅ Finding Files in Projects</a></li>
+<li><a href="#org-searching-in-projects">✅ Searching in Projects</a></li>
+<li><a href="#org-opening-project-root">✅ Opening Project Root</a></li>
+<li><a href="#org-project-information">✅ Project Information</a></li>
+</ul>
+<li><a href="#org-projects-tree-view">✅ Projects Tree View</a></li>
+<ul>
+<li><a href="#org-sidebar-panel">✅ Sidebar Panel</a></li>
+<li><a href="#org-tree-view-elements">✅ Tree View Elements</a></li>
+<li><a href="#org-tree-interactions">✅ Tree Interactions</a></li>
+<li><a href="#org-refreshing-the-tree">✅ Refreshing the Tree</a></li>
+</ul>
+<li><a href="#org-recent-projects">✅ Recent Projects</a></li>
+<ul>
+<li><a href="#org-sorting-by-last-access">✅ Sorting by Last Access</a></li>
+<li><a href="#org-automatic-time-tracking">✅ Automatic Time Tracking</a></li>
+<li><a href="#org-time-format">✅ Time Format</a></li>
+</ul>
+<li><a href="#org-commands-reference">✅ Commands Reference</a></li>
+<ul>
+<li><a href="#org-all-projectile-commands">✅ All Projectile Commands</a></li>
+<li><a href="#org-keybindings">✅ Keybindings</a></li>
+<li><a href="#org-hydra-menu-access">✅ Hydra Menu Access</a></li>
+</ul>
+<li><a href="#org-integration-with-notebook-system">✅ Integration with Notebook System</a></li>
+<ul>
+<li><a href="#org-notebook-projectile-relationship">✅ Notebook-Projectile Relationship</a></li>
+<li><a href="#org-creating-projectile-enabled-notebooks">✅ Creating Projectile-Enabled Notebooks</a></li>
+<li><a href="#org-converting-projects-to-notebooks">✅ Converting Projects to Notebooks</a></li>
+<li><a href="#org-notebook-metadata-in-projects">✅ Notebook Metadata in Projects</a></li>
+<li><a href="#org-workflow-example-research-projects">✅ Workflow Example: Research Projects</a></li>
+</ul>
+<li><a href="#org-best-practices">✅ Best Practices</a></li>
+<ul>
+<li><a href="#org-project-organization">✅ Project Organization</a></li>
+<ul>
+<li><a href="#org-use-consistent-markers">✅ Use Consistent Markers</a></li>
+<li><a href="#org-project-naming">✅ Project Naming</a></li>
+<li><a href="#org-directory-structure">✅ Directory Structure</a></li>
+</ul>
+<li><a href="#org-efficient-workflows">✅ Efficient Workflows</a></li>
+<ul>
+<li><a href="#org-quick-switching-pattern">✅ Quick Switching Pattern</a></li>
+<li><a href="#org-recent-project-access">Recent Project Access</a></li>
+<li><a href="#org-search-before-switching">Search Before Switching</a></li>
+</ul>
+<li><a href="#org-maintenance">Maintenance</a></li>
+<ul>
+<li><a href="#org-regular-cleanup">Regular Cleanup</a></li>
+<li><a href="#org-curate-your-list">Curate Your List</a></li>
+<li><a href="#org-backup-project-list">Backup Project List</a></li>
+</ul>
+<li><a href="#org-multi-root-workspaces">Multi-Root Workspaces</a></li>
+<ul>
+<li><a href="#org-when-to-use-multi-root">When to Use Multi-Root</a></li>
+<li><a href="#org-when-to-use-separate-windows">When to Use Separate Windows</a></li>
+</ul>
+</ul>
+<li><a href="#org-advanced-usage">Advanced Usage</a></li>
+<ul>
+<li><a href="#org-custom-project-markers">Custom Project Markers</a></li>
+<li><a href="#org-scanning-large-directories">Scanning Large Directories</a></li>
+<li><a href="#org-project-type-prioritization">Project Type Prioritization</a></li>
+<li><a href="#org-programmatic-access">Programmatic Access</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-projects-not-appearing">Projects Not Appearing</a></li>
+<ul>
+<li><a href="#org-symptom">Symptom</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+<li><a href="#org-project-list-too-long">Project List Too Long</a></li>
+<ul>
+<li><a href="#org-symptom">Symptom</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+<li><a href="#org-tree-view-not-updating">Tree View Not Updating</a></li>
+<ul>
+<li><a href="#org-symptom">Symptom</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+<li><a href="#org-scanning-not-finding-projects">Scanning Not Finding Projects</a></li>
+<ul>
+<li><a href="#org-symptom">Symptom</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+<li><a href="#org-slow-project-operations">Slow Project Operations</a></li>
+<ul>
+<li><a href="#org-symptom">Symptom</a></li>
+<li><a href="#org-causes-solutions">Causes &amp; Solutions</a></li>
+</ul>
+</ul>
+<li><a href="#org-comparison-with-emacs-projectile">Comparison with Emacs Projectile</a></li>
+<ul>
+<li><a href="#org-similarities">Similarities</a></li>
+<li><a href="#org-differences">Differences</a></li>
+<ul>
+<li><a href="#org-file-finding">File Finding</a></li>
+<li><a href="#org-search">Search</a></li>
+<li><a href="#org-project-caching">Project Caching</a></li>
+<li><a href="#org-buffer-management">Buffer Management</a></li>
+<li><a href="#org-project-commands">Project Commands</a></li>
+</ul>
+<li><a href="#org-migration-tips">Migration Tips</a></li>
+</ul>
+<li><a href="#org-configuration">Configuration</a></li>
+<ul>
+<li><a href="#org-no-configuration-required">No Configuration Required</a></li>
+<li><a href="#org-future-configuration-options">Future Configuration Options</a></li>
+</ul>
+<li><a href="#org-conclusion">Conclusion</a></li>
+<ul>
+<li><a href="#org-next-steps">Next Steps</a></li>
+<li><a href="#org-related-documentation">Related Documentation</a></li>
+<li><a href="#org-feedback">Feedback</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-overview" class="org-section org-level-1">
+<div id="org-overview" class="org-section org-level-1">
 <h1>✅ Overview</h1>
 <p>CLOSED: [2026-01-15 Thu 19:55]</p>
 
@@ -350,7 +361,7 @@ $ code /home/user/my-project/
 
 </div>
 <div id="org-creating-a-projectile-marker" class="org-section org-level-2">
-<h2>Creating a Projectile Marker</h2>
+<h2>✅ Creating a Projectile Marker</h2>
 <p>To mark a directory as a projectile project, create an empty <kbd>.projectile</kbd> file in the root:</p>
 
 <div class="org-src-container">
@@ -364,7 +375,9 @@ touch .projectile
 
 </div>
 <div id="org-project-types" class="org-section org-level-2">
-<h2>Project Types</h2>
+<h2>✅ Project Types</h2>
+<p>CLOSED: [2026-01-18 Sun 10:25]</p>
+
 <p>Projects are classified into three types:</p>
 
 <table class="org-table">
@@ -383,9 +396,13 @@ touch .projectile
 </div>
 </div>
 <div id="org-managing-projects" class="org-section org-level-1">
-<h1>Managing Projects</h1>
+<h1>✅ Managing Projects</h1>
+<p>CLOSED: [2026-01-16 Fri 21:11]</p>
+
 <div id="org-switching-between-projects" class="org-section org-level-2">
-<h2>Switching Between Projects</h2>
+<h2>✅ Switching Between Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:11]</p>
+
 <p>The primary projectile command is <strong>Switch Project</strong> (<kbd>C-c p p</kbd>):</p>
 
 <div class="org-src-container">
@@ -431,9 +448,13 @@ Hydra: Projects → p (Switch Project)</code></pre>
 
 </div>
 <div id="org-adding-projects" class="org-section org-level-2">
-<h2>Adding Projects</h2>
+<h2>✅ Adding Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:11]</p>
+
 <div id="org-manually-adding-a-project" class="org-section org-level-3">
-<h3>Manually Adding a Project</h3>
+<h3>✅ Manually Adding a Project</h3>
+<p>CLOSED: [2026-01-16 Fri 21:11]</p>
+
 <p>Use <kbd>Scimax: Add Project</kbd> (<kbd>C-c p a</kbd>):</p>
 
 <div class="org-src-container">
@@ -452,7 +473,9 @@ Hydra: Projects → a (Add Project)</code></pre>
 
 </div>
 <div id="org-scanning-for-projects" class="org-section org-level-3">
-<h3>Scanning for Projects</h3>
+<h3>✅ Scanning for Projects</h3>
+<p>CLOSED: [2026-01-16 Fri 21:11]</p>
+
 <p>To discover multiple projects at once, use <kbd>Scimax: Scan Directory for Projects</kbd>:</p>
 
 <div class="org-src-container">
@@ -503,7 +526,9 @@ Result: &quot;Found 4 projects&quot;</pre>
 </div>
 </div>
 <div id="org-removing-projects" class="org-section org-level-2">
-<h2>Removing Projects</h2>
+<h2>✅ Removing Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <p>Remove projects from the list with <kbd>Scimax: Remove Project</kbd>:</p>
 
 <div class="org-src-container">
@@ -525,7 +550,9 @@ Hydra: Projects → r (Remove Project)</code></pre>
 
 </div>
 <div id="org-cleaning-up-projects" class="org-section org-level-2">
-<h2>Cleaning Up Projects</h2>
+<h2>✅ Cleaning Up Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <p>Over time, projects may be moved or deleted. Use <kbd>Scimax: Cleanup Non-existent Projects</kbd>:</p>
 
 <div class="org-src-container">
@@ -546,9 +573,13 @@ Result: &quot;Cleaned up 2 non-existent projects&quot;</pre>
 </div>
 </div>
 <div id="org-project-operations" class="org-section org-level-1">
-<h1>Project Operations</h1>
+<h1>✅ Project Operations</h1>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <div id="org-finding-files-in-projects" class="org-section org-level-2">
-<h2>Finding Files in Projects</h2>
+<h2>✅ Finding Files in Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <p>Find files within the current project using <kbd>Scimax: Find File in Project</kbd> (<kbd>C-c p f</kbd>):</p>
 
 <div class="org-src-container">
@@ -581,7 +612,9 @@ Type: &quot;babelProv&quot;
 
 </div>
 <div id="org-searching-in-projects" class="org-section org-level-2">
-<h2>Searching in Projects</h2>
+<h2>✅ Searching in Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <p>Search for text within project files using <kbd>Scimax: Search in Project</kbd> (<kbd>C-c p s</kbd>):</p>
 
 <div class="org-src-container">
@@ -617,7 +650,9 @@ Hydra: Projects → g (Search in Project)</code></pre>
 
 </div>
 <div id="org-opening-project-root" class="org-section org-level-2">
-<h2>Opening Project Root</h2>
+<h2>✅ Opening Project Root</h2>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <p>Navigate to the project root in the file explorer with <kbd>Scimax: Open Project Root</kbd> (<kbd>C-c p d</kbd>):</p>
 
 <div class="org-src-container">
@@ -630,7 +665,9 @@ Hydra: (none)</code></pre>
 
 </div>
 <div id="org-project-information" class="org-section org-level-2">
-<h2>Project Information</h2>
+<h2>✅ Project Information</h2>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <p>View details about the current project with <kbd>Scimax: Project Info</kbd>:</p>
 
 <div class="org-src-container">
@@ -663,9 +700,13 @@ Last opened: 2026-01-13 14:32:15</pre>
 </div>
 </div>
 <div id="org-projects-tree-view" class="org-section org-level-1">
-<h1>Projects Tree View</h1>
+<h1>✅ Projects Tree View</h1>
+<p>CLOSED: [2026-01-16 Fri 21:12]</p>
+
 <div id="org-sidebar-panel" class="org-section org-level-2">
-<h2>Sidebar Panel</h2>
+<h2>✅ Sidebar Panel</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>The Projects tree view appears in the Scimax sidebar, showing all known projects.</p>
 
 <p>To open the sidebar:</p>
@@ -676,7 +717,9 @@ Last opened: 2026-01-13 14:32:15</pre>
 
 </div>
 <div id="org-tree-view-elements" class="org-section org-level-2">
-<h2>Tree View Elements</h2>
+<h2>✅ Tree View Elements</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>Each project in the tree shows:</p>
 
 <ul>
@@ -690,7 +733,9 @@ Last opened: 2026-01-13 14:32:15</pre>
 
 </div>
 <div id="org-tree-interactions" class="org-section org-level-2">
-<h2>Tree Interactions</h2>
+<h2>✅ Tree Interactions</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>Click a project to open it:</p>
 
 <ul>
@@ -713,7 +758,9 @@ Last opened: 2026-01-13 14:32:15</pre>
 
 </div>
 <div id="org-refreshing-the-tree" class="org-section org-level-2">
-<h2>Refreshing the Tree</h2>
+<h2>✅ Refreshing the Tree</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>The tree auto-refreshes when:</p>
 
 <ul>
@@ -735,9 +782,13 @@ Icon: Refresh button in tree view toolbar</code></pre>
 </div>
 </div>
 <div id="org-recent-projects" class="org-section org-level-1">
-<h1>Recent Projects</h1>
+<h1>✅ Recent Projects</h1>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <div id="org-sorting-by-last-access" class="org-section org-level-2">
-<h2>Sorting by Last Access</h2>
+<h2>✅ Sorting by Last Access</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>Projects are sorted by last opened time, with the most recently accessed appearing first:</p>
 
 <pre class="example">Project List:
@@ -750,7 +801,9 @@ Icon: Refresh button in tree view toolbar</code></pre>
 
 </div>
 <div id="org-automatic-time-tracking" class="org-section org-level-2">
-<h2>Automatic Time Tracking</h2>
+<h2>✅ Automatic Time Tracking</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>Last opened time is updated automatically when:</p>
 
 <ul>
@@ -766,7 +819,9 @@ Icon: Refresh button in tree view toolbar</code></pre>
 
 </div>
 <div id="org-time-format" class="org-section org-level-2">
-<h2>Time Format</h2>
+<h2>✅ Time Format</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>Relative times are shown for recent access:</p>
 
 <table class="org-table">
@@ -785,9 +840,13 @@ Icon: Refresh button in tree view toolbar</code></pre>
 </div>
 </div>
 <div id="org-commands-reference" class="org-section org-level-1">
-<h1>Commands Reference</h1>
+<h1>✅ Commands Reference</h1>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <div id="org-all-projectile-commands" class="org-section org-level-2">
-<h2>All Projectile Commands</h2>
+<h2>✅ All Projectile Commands</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Command</th><th>Keybinding</th><th>Hydra Key</th><th>Description</th></tr>
@@ -808,7 +867,9 @@ Icon: Refresh button in tree view toolbar</code></pre>
 
 </div>
 <div id="org-keybindings" class="org-section org-level-2">
-<h2>Keybindings</h2>
+<h2>✅ Keybindings</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>All projectile keybindings use the <kbd>C-c C-p</kbd> prefix, matching Emacs Projectile conventions:</p>
 
 <div class="org-src-container">
@@ -823,11 +884,13 @@ C-c p a    Add project</code></pre>
 
 </div>
 <div id="org-hydra-menu-access" class="org-section org-level-2">
-<h2>Hydra Menu Access</h2>
+<h2>✅ Hydra Menu Access</h2>
+<p>CLOSED: [2026-01-16 Fri 21:13]</p>
+
 <p>Open the Projects hydra menu:</p>
 
 <div class="org-src-container">
-<pre class="src src-text"><code class="language-text">1. Open main hydra: C-c h (or Command Palette → Scimax: Hydra Menu)
+<pre class="src src-text"><code class="language-text">1. Open main hydra: C-c m (or Command Palette → Scimax: Hydra Menu)
 2. Press &#39;p&#39; for Projects</code></pre>
 </div>
 
@@ -852,9 +915,13 @@ C-c p a    Add project</code></pre>
 </div>
 </div>
 <div id="org-integration-with-notebook-system" class="org-section org-level-1">
-<h1>Integration with Notebook System</h1>
+<h1>✅ Integration with Notebook System</h1>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <div id="org-notebook-projectile-relationship" class="org-section org-level-2">
-<h2>Notebook-Projectile Relationship</h2>
+<h2>✅ Notebook-Projectile Relationship</h2>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>The notebook and projectile systems work together:</p>
 
 <ul>
@@ -870,7 +937,9 @@ C-c p a    Add project</code></pre>
 
 </div>
 <div id="org-creating-projectile-enabled-notebooks" class="org-section org-level-2">
-<h2>Creating Projectile-Enabled Notebooks</h2>
+<h2>✅ Creating Projectile-Enabled Notebooks</h2>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>When you create a notebook with <kbd>Scimax: New Notebook</kbd>:</p>
 
 <div class="org-src-container">
@@ -895,7 +964,9 @@ C-c p a    Add project</code></pre>
 
 </div>
 <div id="org-converting-projects-to-notebooks" class="org-section org-level-2">
-<h2>Converting Projects to Notebooks</h2>
+<h2>✅ Converting Projects to Notebooks</h2>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>Convert any existing project into a notebook:</p>
 
 <div class="org-src-container">
@@ -921,7 +992,9 @@ C-c p a    Add project</code></pre>
 
 </div>
 <div id="org-notebook-metadata-in-projects" class="org-section org-level-2">
-<h2>Notebook Metadata in Projects</h2>
+<h2>✅ Notebook Metadata in Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>Notebooks store additional metadata in <kbd>.scimax/config.json</kbd>:</p>
 
 <div class="org-src-container">
@@ -954,7 +1027,9 @@ C-c p a    Add project</code></pre>
 
 </div>
 <div id="org-workflow-example-research-projects" class="org-section org-level-2">
-<h2>Workflow Example: Research Projects</h2>
+<h2>✅ Workflow Example: Research Projects</h2>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>Typical workflow for managing multiple research projects:</p>
 
 <pre class="example"># Create notebooks for each research topic
@@ -992,11 +1067,17 @@ C-c p s → &quot;neural network&quot; → find all mentions</pre>
 </div>
 </div>
 <div id="org-best-practices" class="org-section org-level-1">
-<h1>Best Practices</h1>
+<h1>✅ Best Practices</h1>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <div id="org-project-organization" class="org-section org-level-2">
-<h2>Project Organization</h2>
+<h2>✅ Project Organization</h2>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <div id="org-use-consistent-markers" class="org-section org-level-3">
-<h3>Use Consistent Markers</h3>
+<h3>✅ Use Consistent Markers</h3>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>Choose one marker style per project:</p>
 
 <ul>
@@ -1010,7 +1091,9 @@ C-c p s → &quot;neural network&quot; → find all mentions</pre>
 
 </div>
 <div id="org-project-naming" class="org-section org-level-3">
-<h3>Project Naming</h3>
+<h3>✅ Project Naming</h3>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>Use descriptive, scannable directory names:</p>
 
 <pre class="example">Good:
@@ -1027,7 +1110,9 @@ Less good:
 
 </div>
 <div id="org-directory-structure" class="org-section org-level-3">
-<h3>Directory Structure</h3>
+<h3>✅ Directory Structure</h3>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>Organize related projects together:</p>
 
 <pre class="example">~/projects/
@@ -1047,9 +1132,13 @@ Less good:
 </div>
 </div>
 <div id="org-efficient-workflows" class="org-section org-level-2">
-<h2>Efficient Workflows</h2>
+<h2>✅ Efficient Workflows</h2>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <div id="org-quick-switching-pattern" class="org-section org-level-3">
-<h3>Quick Switching Pattern</h3>
+<h3>✅ Quick Switching Pattern</h3>
+<p>CLOSED: [2026-01-16 Fri 21:14]</p>
+
 <p>Develop muscle memory for <kbd>C-c p p</kbd>:</p>
 
 <pre class="example">C-c p p → type few chars → Enter → choose window option
@@ -1615,573 +1704,6 @@ if (scimaxExt?.isActive) {
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="16-notebook.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="22-hydra-menus.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#overview" class="toc-link">✅ Overview</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#what-is-projectile" class="toc-link">✅ What is Projectile?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">✅ Key Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#project-detection" class="toc-link">✅ Project Detection</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#detection-methods" class="toc-link">Detection Methods</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#automatic-detection" class="toc-link">Automatic Detection</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#creating-a-projectile-marker" class="toc-link">Creating a Projectile Marker</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#project-types" class="toc-link">Project Types</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#managing-projects" class="toc-link">Managing Projects</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#switching-between-projects" class="toc-link">Switching Between Projects</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#adding-projects" class="toc-link">Adding Projects</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#manually-adding-a-project" class="toc-link">Manually Adding a Project</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scanning-for-projects" class="toc-link">Scanning for Projects</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#removing-projects" class="toc-link">Removing Projects</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#cleaning-up-projects" class="toc-link">Cleaning Up Projects</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#project-operations" class="toc-link">Project Operations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#finding-files-in-projects" class="toc-link">Finding Files in Projects</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#searching-in-projects" class="toc-link">Searching in Projects</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#opening-project-root" class="toc-link">Opening Project Root</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#project-information" class="toc-link">Project Information</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#projects-tree-view" class="toc-link">Projects Tree View</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#sidebar-panel" class="toc-link">Sidebar Panel</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#tree-view-elements" class="toc-link">Tree View Elements</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#tree-interactions" class="toc-link">Tree Interactions</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#refreshing-the-tree" class="toc-link">Refreshing the Tree</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#recent-projects" class="toc-link">Recent Projects</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#sorting-by-last-access" class="toc-link">Sorting by Last Access</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#automatic-time-tracking" class="toc-link">Automatic Time Tracking</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#time-format" class="toc-link">Time Format</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#commands-reference" class="toc-link">Commands Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#all-projectile-commands" class="toc-link">All Projectile Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#keybindings" class="toc-link">Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#hydra-menu-access" class="toc-link">Hydra Menu Access</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#integration-with-notebook-system" class="toc-link">Integration with Notebook System</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#notebook-projectile-relationship" class="toc-link">Notebook-Projectile Relationship</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#creating-projectile-enabled-notebooks" class="toc-link">Creating Projectile-Enabled Notebooks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#converting-projects-to-notebooks" class="toc-link">Converting Projects to Notebooks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#notebook-metadata-in-projects" class="toc-link">Notebook Metadata in Projects</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#workflow-example-research-projects" class="toc-link">Workflow Example: Research Projects</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#project-organization" class="toc-link">Project Organization</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#use-consistent-markers" class="toc-link">Use Consistent Markers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#project-naming" class="toc-link">Project Naming</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#directory-structure" class="toc-link">Directory Structure</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#efficient-workflows" class="toc-link">Efficient Workflows</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#quick-switching-pattern" class="toc-link">Quick Switching Pattern</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#recent-project-access" class="toc-link">Recent Project Access</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#search-before-switching" class="toc-link">Search Before Switching</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#maintenance" class="toc-link">Maintenance</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#regular-cleanup" class="toc-link">Regular Cleanup</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#curate-your-list" class="toc-link">Curate Your List</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#backup-project-list" class="toc-link">Backup Project List</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#multi-root-workspaces" class="toc-link">Multi-Root Workspaces</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#when-to-use-multi-root" class="toc-link">When to Use Multi-Root</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#when-to-use-separate-windows" class="toc-link">When to Use Separate Windows</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-usage" class="toc-link">Advanced Usage</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#custom-project-markers" class="toc-link">Custom Project Markers</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#scanning-large-directories" class="toc-link">Scanning Large Directories</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#project-type-prioritization" class="toc-link">Project Type Prioritization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#programmatic-access" class="toc-link">Programmatic Access</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#projects-not-appearing" class="toc-link">Projects Not Appearing</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#symptom" class="toc-link">Symptom</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#solutions" class="toc-link">Solutions</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#project-list-too-long" class="toc-link">Project List Too Long</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#symptom" class="toc-link">Symptom</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#solutions" class="toc-link">Solutions</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#tree-view-not-updating" class="toc-link">Tree View Not Updating</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#symptom" class="toc-link">Symptom</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#solutions" class="toc-link">Solutions</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#scanning-not-finding-projects" class="toc-link">Scanning Not Finding Projects</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#symptom" class="toc-link">Symptom</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#solutions" class="toc-link">Solutions</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#slow-project-operations" class="toc-link">Slow Project Operations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#symptom" class="toc-link">Symptom</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#causes-solutions" class="toc-link">Causes &amp; Solutions</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#comparison-with-emacs-projectile" class="toc-link">Comparison with Emacs Projectile</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#similarities" class="toc-link">Similarities</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#differences" class="toc-link">Differences</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#file-finding" class="toc-link">File Finding</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#search" class="toc-link">Search</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#project-caching" class="toc-link">Project Caching</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#buffer-management" class="toc-link">Buffer Management</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#project-commands" class="toc-link">Project Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#migration-tips" class="toc-link">Migration Tips</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#configuration" class="toc-link">Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#no-configuration-required" class="toc-link">No Configuration Required</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#future-configuration-options" class="toc-link">Future Configuration Options</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#conclusion" class="toc-link">Conclusion</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#next-steps" class="toc-link">Next Steps</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#related-documentation" class="toc-link">Related Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#feedback" class="toc-link">Feedback</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

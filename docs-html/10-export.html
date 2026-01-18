@@ -1,268 +1,439 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Org Export System</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Org Export System</title>
+<meta name="author" content="Scimax VS Code" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Org Export System</h1>
+<p class="author">Scimax VS Code</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<li><a href="#org-export-dispatcher">✅ Export Dispatcher</a></li>
+<ul>
+<li><a href="#org-opening-the-export-dispatcher">✅ Opening the Export Dispatcher</a></li>
+<li><a href="#org-export-dispatcher-menu-structure">✅ Export Dispatcher Menu Structure</a></li>
+<ul>
+<li><a href="#org-html-exports">✅ HTML Exports</a></li>
+<li><a href="#org-latex-pdf-exports">✅ LaTeX/PDF Exports</a></li>
+<li><a href="#org-markdown-exports">✅ Markdown Exports</a></li>
+</ul>
+</ul>
+<li><a href="#org-export-formats">✅ Export Formats</a></li>
+<ul>
+<li><a href="#org-html-export">✅ HTML Export</a></li>
+<ul>
+<li><a href="#org-features">✅ Features</a></li>
+<li><a href="#org-mathjax-integration">✅ MathJax Integration</a></li>
+<li><a href="#org-example">✅ Example</a></li>
+</ul>
+<li><a href="#org-latex-export">✅ LaTeX Export</a></li>
+<ul>
+<li><a href="#org-document-classes">✅ Document Classes</a></li>
+<li><a href="#org-custom-preambles">✅ Custom Preambles</a></li>
+<li><a href="#org-global-custom-header">✅ Global Custom Header</a></li>
+<li><a href="#org-code-listings">Code Listings</a></li>
+<li><a href="#org-tables-with-booktabs">Tables with booktabs</a></li>
+<li><a href="#org-cross-references">Cross-References</a></li>
+</ul>
+<li><a href="#org-pdf-export">✅ PDF Export</a></li>
+<ul>
+<li><a href="#org-compilation-process">✅ Compilation Process</a></li>
+<li><a href="#org-supported-compilers">✅ Supported Compilers</a></li>
+<li><a href="#org-requirements">✅ Requirements</a></li>
+<li><a href="#org-error-handling">Error Handling</a></li>
+<li><a href="#org-build-on-save">Build on Save</a></li>
+</ul>
+<li><a href="#org-markdown-export">✅ Markdown Export</a></li>
+<ul>
+<li><a href="#org-features">✅ Features</a></li>
+<li><a href="#org-example-conversion">✅ Example Conversion</a></li>
+</ul>
+</ul>
+<li><a href="#org-export-keybindings">Export Keybindings</a></li>
+<ul>
+<li><a href="#org-primary-keybindings">Primary Keybindings</a></li>
+<li><a href="#org-additional-latex-keybindings">Additional LaTeX Keybindings</a></li>
+<li><a href="#org-quick-access">Quick Access</a></li>
+</ul>
+<li><a href="#org-export-scope">Export Scope</a></li>
+<ul>
+<li><a href="#org-full-document-export-default">Full Document Export (default)</a></li>
+<li><a href="#org-subtree-export">Subtree Export</a></li>
+<ul>
+<li><a href="#org-use-cases-for-subtree-export">Use Cases for Subtree Export</a></li>
+</ul>
+<li><a href="#org-visible-content-export">Visible Content Export</a></li>
+</ul>
+<li><a href="#org-html-export-options">HTML Export Options</a></li>
+<ul>
+<li><a href="#org-standalone-vs-body-only">Standalone vs. Body-Only</a></li>
+<ul>
+<li><a href="#org-standalone-default">Standalone (default)</a></li>
+</ul>
+<li><a href="#org-custom-css">Custom CSS</a></li>
+<li><a href="#org-javascript-support">JavaScript Support</a></li>
+<li><a href="#org-mathjax-configuration">MathJax Configuration</a></li>
+<li><a href="#org-syntax-highlighting">Syntax Highlighting</a></li>
+</ul>
+<li><a href="#org-latex-export-options">LaTeX Export Options</a></li>
+<ul>
+<li><a href="#org-document-structure">Document Structure</a></li>
+<ul>
+<li><a href="#org-headline-levels">Headline Levels</a></li>
+<li><a href="#org-section-numbering">Section Numbering</a></li>
+<li><a href="#org-table-of-contents">Table of Contents</a></li>
+</ul>
+<li><a href="#org-images-and-figures">Images and Figures</a></li>
+<ul>
+<li><a href="#org-image-attributes">Image Attributes</a></li>
+</ul>
+<li><a href="#org-bibliography-support">Bibliography Support</a></li>
+<ul>
+<li><a href="#org-bibtex-integration">BibTeX Integration</a></li>
+<li><a href="#org-citation-links">Citation Links</a></li>
+<li><a href="#org-html-citation-export">HTML Citation Export</a></li>
+</ul>
+<li><a href="#org-advanced-latex-features">Advanced LaTeX Features</a></li>
+<ul>
+<li><a href="#org-custom-environments">Custom Environments</a></li>
+<li><a href="#org-special-blocks">Special Blocks</a></li>
+<li><a href="#org-math-environments">Math Environments</a></li>
+</ul>
+</ul>
+<li><a href="#org-pdf-export-configuration">PDF Export Configuration</a></li>
+<ul>
+<li><a href="#org-compiler-selection">Compiler Selection</a></li>
+<ul>
+<li><a href="#org-pdflatex-default">pdflatex (default)</a></li>
+<li><a href="#org-xelatex">xelatex</a></li>
+<li><a href="#org-lualatex">lualatex</a></li>
+</ul>
+<li><a href="#org-latexmk-configuration">latexmk Configuration</a></li>
+<ul>
+<li><a href="#org-benefits">Benefits</a></li>
+<li><a href="#org-configuration-file">Configuration File</a></li>
+<li><a href="#org-disabling-latexmk">Disabling latexmk</a></li>
+</ul>
+<li><a href="#org-build-automation">Build Automation</a></li>
+<ul>
+<li><a href="#org-build-on-save">Build on Save</a></li>
+<li><a href="#org-build-on-idle">Build on Idle</a></li>
+</ul>
+<li><a href="#org-synctex-integration">SyncTeX Integration</a></li>
+<ul>
+<li><a href="#org-forward-sync-source-pdf">Forward Sync (Source → PDF)</a></li>
+<li><a href="#org-reverse-sync-pdf-source">Reverse Sync (PDF → Source)</a></li>
+</ul>
+</ul>
+<li><a href="#org-markdown-export-details">Markdown Export Details</a></li>
+<ul>
+<li><a href="#org-github-flavored-markdown-gfm">GitHub-Flavored Markdown (GFM)</a></li>
+<li><a href="#org-supported-elements">Supported Elements</a></li>
+<ul>
+<li><a href="#org-headings">Headings</a></li>
+<li><a href="#org-text-formatting">Text Formatting</a></li>
+<li><a href="#org-lists">Lists</a></li>
+<li><a href="#org-code-blocks">Code Blocks</a></li>
+<li><a href="#org-tables">Tables</a></li>
+<li><a href="#org-links">Links</a></li>
+<li><a href="#org-images">Images</a></li>
+</ul>
+<li><a href="#org-metadata-handling">Metadata Handling</a></li>
+</ul>
+<li><a href="#org-export-options-reference">Export Options Reference</a></li>
+<ul>
+<li><a href="#org-options-keyword">#+OPTIONS Keyword</a></li>
+<ul>
+<li><a href="#org-syntax">Syntax</a></li>
+<li><a href="#org-common-options">Common Options</a></li>
+<li><a href="#org-examples">Examples</a></li>
+</ul>
+<li><a href="#org-document-keywords">Document Keywords</a></li>
+<ul>
+<li><a href="#org-required-keywords">Required Keywords</a></li>
+<li><a href="#org-html-specific-keywords">HTML-Specific Keywords</a></li>
+<li><a href="#org-latex-specific-keywords">LaTeX-Specific Keywords</a></li>
+<li><a href="#org-export-settings">Export Settings</a></li>
+</ul>
+</ul>
+<li><a href="#org-configuration-settings">Configuration Settings</a></li>
+<ul>
+<li><a href="#org-export-settings-location">Export Settings Location</a></li>
+<li><a href="#org-latex-export-configuration">LaTeX Export Configuration</a></li>
+<ul>
+<li><a href="#org-custom-header">Custom Header</a></li>
+</ul>
+<li><a href="#org-latex-preview-settings">LaTeX Preview Settings</a></li>
+<ul>
+<li><a href="#org-compiler">Compiler</a></li>
+<li><a href="#org-use-latexmk">Use latexmk</a></li>
+<li><a href="#org-build-on-save">Build on Save</a></li>
+<li><a href="#org-build-on-idle">Build on Idle</a></li>
+<li><a href="#org-idle-delay">Idle Delay</a></li>
+</ul>
+<li><a href="#org-complete-configuration-example">Complete Configuration Example</a></li>
+</ul>
+<li><a href="#org-advanced-export-techniques">Advanced Export Techniques</a></li>
+<ul>
+<li><a href="#org-conditional-export">Conditional Export</a></li>
+<ul>
+<li><a href="#org-exclude-content-by-tag">Exclude Content by Tag</a></li>
+<li><a href="#org-select-content-by-tag">Select Content by Tag</a></li>
+</ul>
+<li><a href="#org-backend-specific-content">Backend-Specific Content</a></li>
+<ul>
+<li><a href="#org-html-only-content">HTML-Only Content</a></li>
+<li><a href="#org-latex-only-content">LaTeX-Only Content</a></li>
+<li><a href="#org-export-snippets">Export Snippets</a></li>
+</ul>
+<li><a href="#org-macros-for-reusable-content">Macros for Reusable Content</a></li>
+<li><a href="#org-include-files">Include Files</a></li>
+<ul>
+<li><a href="#org-basic-syntax">Basic Syntax</a></li>
+<li><a href="#org-block-wrappers">Block Wrappers</a></li>
+<li><a href="#org-line-selection-with-lines">Line Selection with :lines</a></li>
+<li><a href="#org-headline-level-adjustment-with-minlevel">Headline Level Adjustment with :minlevel</a></li>
+<li><a href="#org-content-only-with-only-contents">Content Only with :only-contents</a></li>
+<li><a href="#org-combining-options">Combining Options</a></li>
+<li><a href="#org-recursive-includes">Recursive Includes</a></li>
+<li><a href="#org-example-modular-book-structure">Example: Modular Book Structure</a></li>
+</ul>
+<li><a href="#org-custom-link-types">Custom Link Types</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-html-export-issues">HTML Export Issues</a></li>
+<ul>
+<li><a href="#org-mathjax-not-rendering">MathJax Not Rendering</a></li>
+<li><a href="#org-broken-images">Broken Images</a></li>
+<li><a href="#org-css-not-applied">CSS Not Applied</a></li>
+</ul>
+<li><a href="#org-latex-pdf-export-issues">LaTeX/PDF Export Issues</a></li>
+<ul>
+<li><a href="#org-missing-packages">Missing Packages</a></li>
+<li><a href="#org-unicode-errors">Unicode Errors</a></li>
+<li><a href="#org-bibliography-not-generated">Bibliography Not Generated</a></li>
+<li><a href="#org-images-not-found">Images Not Found</a></li>
+<li><a href="#org-compilation-timeout">Compilation Timeout</a></li>
+</ul>
+<li><a href="#org-markdown-export-issues">Markdown Export Issues</a></li>
+<ul>
+<li><a href="#org-table-alignment">Table Alignment</a></li>
+<li><a href="#org-math-not-rendering">Math Not Rendering</a></li>
+</ul>
+<li><a href="#org-general-export-issues">General Export Issues</a></li>
+<ul>
+<li><a href="#org-empty-export">Empty Export</a></li>
+<li><a href="#org-slow-export">Slow Export</a></li>
+<li><a href="#org-wrong-output-location">Wrong Output Location</a></li>
+</ul>
+</ul>
+<li><a href="#org-best-practices">Best Practices</a></li>
+<ul>
+<li><a href="#org-document-organization">Document Organization</a></li>
+<ul>
+<li><a href="#org-use-meaningful-headings">Use Meaningful Headings</a></li>
+<li><a href="#org-metadata-at-top">Metadata at Top</a></li>
+<li><a href="#org-separate-concerns">Separate Concerns</a></li>
+</ul>
+<li><a href="#org-version-control">Version Control</a></li>
+<ul>
+<li><a href="#org-track-generated-files-separately">Track Generated Files Separately</a></li>
+<li><a href="#org-use-meaningful-commit-messages">Use Meaningful Commit Messages</a></li>
+</ul>
+<li><a href="#org-performance-optimization">✅ Performance Optimization</a></li>
+<ul>
+<li><a href="#org-for-large-documents">✅ For Large Documents</a></li>
+<li><a href="#org-for-fast-iteration">✅ For Fast Iteration</a></li>
+</ul>
+</ul>
+<li><a href="#org-example-workflows">✅ Example Workflows</a></li>
+<ul>
+<li><a href="#org-academic-paper-workflow">✅ Academic Paper Workflow</a></li>
+<ul>
+<li><a href="#org-1-initial-setup">1. Initial Setup</a></li>
+<li><a href="#org-2-write-content">2. Write Content</a></li>
+<li><a href="#org-3-add-citations">3. Add Citations</a></li>
+<li><a href="#org-4-export-to-pdf">4. Export to PDF</a></li>
+<li><a href="#org-5-submit">5. Submit</a></li>
+</ul>
+<li><a href="#org-technical-documentation-workflow">Technical Documentation Workflow</a></li>
+<ul>
+<li><a href="#org-1-setup">1. Setup</a></li>
+<li><a href="#org-2-write-sections">2. Write Sections</a></li>
+<li><a href="#org-3-export-to-html">3. Export to HTML</a></li>
+<li><a href="#org-4-deploy">4. Deploy</a></li>
+</ul>
+<li><a href="#org-blog-post-workflow">✅ Blog Post Workflow</a></li>
+<ul>
+<li><a href="#org-1-write-in-org">✅ 1. Write in Org</a></li>
+<li><a href="#org-2-export-to-markdown">✅ 2. Export to Markdown</a></li>
+<li><a href="#org-3-publish">✅ 3. Publish</a></li>
+</ul>
+</ul>
+<li><a href="#org-resources">✅ Resources</a></li>
+<ul>
+<li><a href="#org-external-links">✅ External Links</a></li>
+<ul>
+<li><a href="#org-org-mode-documentation">✅ Org-Mode Documentation</a></li>
+<li><a href="#org-latex-resources">✅ LaTeX Resources</a></li>
+<li><a href="#org-tools">✅ Tools</a></li>
+</ul>
+<li><a href="#org-related-scimax-documentation">✅ Related Scimax Documentation</a></li>
+<li><a href="#org-community">✅ Community</a></li>
+</ul>
+<li><a href="#org-appendix">✅ Appendix</a></li>
+<ul>
+<li><a href="#org-complete-keybinding-reference">✅ Complete Keybinding Reference</a></li>
+<li><a href="#org-export-options-quick-reference">Export Options Quick Reference</a></li>
+<li><a href="#org-latex-package-reference">LaTeX Package Reference</a></li>
+<ul>
+<li><a href="#org-essential-packages-auto-included">Essential Packages (Auto-Included)</a></li>
+<li><a href="#org-optional-packages">Optional Packages</a></li>
+</ul>
+<li><a href="#org-html-classes-and-ids">HTML Classes and IDs</a></li>
+<ul>
+<li><a href="#org-document-structure">Document Structure</a></li>
+<li><a href="#org-headings-and-toc">Headings and TOC</a></li>
+<li><a href="#org-text-elements">Text Elements</a></li>
+<li><a href="#org-blocks">Blocks</a></li>
+<li><a href="#org-tables-and-lists">Tables and Lists</a></li>
+<li><a href="#org-admonitions">Admonitions</a></li>
+</ul>
+<li><a href="#org-troubleshooting-decision-tree">Troubleshooting Decision Tree</a></li>
+</ul>
+<li><a href="#org-related-topics">Related Topics</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-overview" class="org-section org-level-1">
+<h1>✅ Overview</h1>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0 active ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-overview" class="org-section org-level-1">
-<h1>Overview</h1>
 <p>The Scimax VS Code extension provides a comprehensive export system for converting org-mode documents to various formats including HTML, LaTeX, PDF, and Markdown. The export system follows the familiar org-mode export dispatcher interface (`C-c C-e&#39;) from Emacs.</p>
 
 </div>
 <div id="org-export-dispatcher" class="org-section org-level-1">
-<h1>Export Dispatcher</h1>
+<h1>✅ Export Dispatcher</h1>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <div id="org-opening-the-export-dispatcher" class="org-section org-level-2">
-<h2>Opening the Export Dispatcher</h2>
+<h2>✅ Opening the Export Dispatcher</h2>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <p>Press `C-c C-e&#39; (or `C-c C-e&#39; in Emacs notation) to open the export dispatcher menu. This provides a quick-pick interface showing all available export formats and options.</p>
 
 <p>The export dispatcher presents options with keyboard hints, similar to Emacs org-mode:</p>
@@ -276,11 +447,15 @@
 
 </div>
 <div id="org-export-dispatcher-menu-structure" class="org-section org-level-2">
-<h2>Export Dispatcher Menu Structure</h2>
+<h2>✅ Export Dispatcher Menu Structure</h2>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <p>The dispatcher menu is organized into logical groups:</p>
 
 <div id="org-html-exports" class="org-section org-level-3">
-<h3>HTML Exports</h3>
+<h3>✅ HTML Exports</h3>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <ul>
 <li><p><kbd>[h h]</kbd> HTML file - Export to .html file</p>
 </li>
@@ -292,7 +467,9 @@
 
 </div>
 <div id="org-latex-pdf-exports" class="org-section org-level-3">
-<h3>LaTeX/PDF Exports</h3>
+<h3>✅ LaTeX/PDF Exports</h3>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <ul>
 <li><p><kbd>[l l]</kbd> LaTeX file - Export to .tex file</p>
 </li>
@@ -304,7 +481,9 @@
 
 </div>
 <div id="org-markdown-exports" class="org-section org-level-3">
-<h3>Markdown Exports</h3>
+<h3>✅ Markdown Exports</h3>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <ul>
 <li><p><kbd>[m m]</kbd> Markdown file - Export to .md file</p>
 </li>
@@ -316,15 +495,21 @@
 </div>
 </div>
 <div id="org-export-formats" class="org-section org-level-1">
-<h1>Export Formats</h1>
+<h1>✅ Export Formats</h1>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <div id="org-html-export" class="org-section org-level-2">
-<h2>HTML Export</h2>
+<h2>✅ HTML Export</h2>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <p>HTML export generates semantic HTML5 documents with modern styling.</p>
 
 <div id="org-features" class="org-section org-level-3">
-<h3>Features</h3>
+<h3>✅ Features</h3>
+<p>CLOSED: [2026-01-16 Fri 20:55]</p>
+
 <ul>
-<li><p>Semantic HTML5 structure (`&lt;section&gt;&#39;, `&lt;header&gt;&#39;, `&lt;nav&gt;&#39;)</p>
+<li><p>Semantic HTML5 structure (`<section>&#39;, `<header>&#39;, `<nav>&#39;)</p>
 </li>
 <li><p>Syntax highlighting via highlight.js</p>
 </li>
@@ -342,40 +527,56 @@
 
 </div>
 <div id="org-mathjax-integration" class="org-section org-level-3">
-<h3>MathJax Integration</h3>
+<h3>✅ MathJax Integration</h3>
+<p>CLOSED: [2026-01-17 Sat 15:08]</p>
+
 <p>HTML exports automatically include MathJax for rendering mathematical content:</p>
 
-<ul>
-<li><p>Inline math: <kbd>$x^2 + y^2 </kbd> r^2$<kbd> → \(x^2 + y^2 </kbd> r^2\)</p>
-</li>
-<li><p>Display math: <kbd>$$\int_0^\infty e^{-x^2} dx </kbd> \frac{\sqrt{\pi}}{2}$$<kbd> → \[\int_0^\infty e^{-x^2} dx </kbd> \frac{\sqrt{\pi}}{2}\]</p>
-</li>
-<li><p>LaTeX environments work directly</p>
-</li>
-</ul>
+<table class="org-table">
+<thead>
+<tr><th>Syntax</th><th>Renders as</th></tr>
+</thead>
+<tbody>
+<tr><td><code>$x^2 + y^2 = r^2$</code></td><td>\(x^2 + y^2 = r^2\)</td></tr>
+<tr><td><code>$$E = mc^2$$</code></td><td>\[E = mc^2\]</td></tr>
+<tr><td><code>\(inline\)</code></td><td>\(inline\)</td></tr>
+<tr><td><code>\[display\]</code></td><td>\[display\]</td></tr>
+</tbody>
+</table>
+
+<p>LaTeX environments also work directly.</p>
+
+<p>\begin{equation}
+x^2 + y^2 = r^2
+\end{equation}</p>
+
+<p>Inline math: \(\int_0^1 x dx\)</p>
+
+<p>Display math:</p>
+
+<p>\[\int0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}\]</p>
 
 </div>
 <div id="org-example" class="org-section org-level-3">
-<h3>Example</h3>
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+TITLE: My Research Notes
-#+AUTHOR: Jane Doe
-#+OPTIONS: toc:t num:t
+<h3>✅ Example</h3>
+<p>CLOSED: [2026-01-17 Sat 09:12]</p>
 
-,* Introduction
-This document demonstrates HTML export with math: $E = mc^2$</code></pre>
-</div>
+<p>This document demonstrates HTML export with math: \(E = mc^2\)</p>
 
 <p>Export with `C-c C-e h h&#39; to produce a standalone HTML file.</p>
 
 </div>
 </div>
 <div id="org-latex-export" class="org-section org-level-2">
-<h2>LaTeX Export</h2>
+<h2>✅ LaTeX Export</h2>
+<p>CLOSED: [2026-01-16 Fri 20:57]</p>
+
 <p>LaTeX export converts org documents to LaTeX source suitable for academic papers, reports, and books.</p>
 
 <div id="org-document-classes" class="org-section org-level-3">
-<h3>Document Classes</h3>
+<h3>✅ Document Classes</h3>
+<p>CLOSED: [2026-01-16 Fri 20:57]</p>
+
 <p>The default document class is <kbd>article</kbd>. You can specify alternatives:</p>
 
 <div class="org-src-container">
@@ -387,7 +588,9 @@ This document demonstrates HTML export with math: $E = mc^2$</code></pre>
 
 </div>
 <div id="org-custom-preambles" class="org-section org-level-3">
-<h3>Custom Preambles</h3>
+<h3>✅ Custom Preambles</h3>
+<p>CLOSED: [2026-01-16 Fri 20:58]</p>
+
 <p>Add custom LaTeX packages and settings in the preamble:</p>
 
 <div class="org-src-container">
@@ -398,7 +601,9 @@ This document demonstrates HTML export with math: $E = mc^2$</code></pre>
 
 </div>
 <div id="org-global-custom-header" class="org-section org-level-3">
-<h3>Global Custom Header</h3>
+<h3>✅ Global Custom Header</h3>
+<p>CLOSED: [2026-01-16 Fri 20:57]</p>
+
 <p>Configure a complete custom LaTeX preamble in VS Code settings:</p>
 
 <ol>
@@ -406,7 +611,7 @@ This document demonstrates HTML export with math: $E = mc^2$</code></pre>
 </li>
 <li><p>Search for `scimax.export.latex.customHeader&#39;</p>
 </li>
-<li><p>Enter your complete preamble (from `\documentclass&#39; through packages)</p>
+<li><p>Enter your complete preamble (from <kbd>\documentclass</kbd> through packages)</p>
 </li>
 </ol>
 
@@ -500,11 +705,15 @@ See Figure [[fig:diagram]] for the system architecture.</code></pre>
 </div>
 </div>
 <div id="org-pdf-export" class="org-section org-level-2">
-<h2>PDF Export</h2>
+<h2>✅ PDF Export</h2>
+<p>CLOSED: [2026-01-17 Sat 09:14]</p>
+
 <p>PDF export works by first generating LaTeX and then compiling with a LaTeX engine.</p>
 
 <div id="org-compilation-process" class="org-section org-level-3">
-<h3>Compilation Process</h3>
+<h3>✅ Compilation Process</h3>
+<p>CLOSED: [2026-01-17 Sat 09:15]</p>
+
 <p>The system uses <kbd>latexmk</kbd> for smart incremental builds:</p>
 
 <ol>
@@ -520,7 +729,9 @@ See Figure [[fig:diagram]] for the system architecture.</code></pre>
 
 </div>
 <div id="org-supported-compilers" class="org-section org-level-3">
-<h3>Supported Compilers</h3>
+<h3>✅ Supported Compilers</h3>
+<p>CLOSED: [2026-01-17 Sat 09:15]</p>
+
 <p>Configure the LaTeX compiler in VS Code settings (<kbd>scimax.latexLivePreview.compiler</kbd>):</p>
 
 <ul>
@@ -534,7 +745,9 @@ See Figure [[fig:diagram]] for the system architecture.</code></pre>
 
 </div>
 <div id="org-requirements" class="org-section org-level-3">
-<h3>Requirements</h3>
+<h3>✅ Requirements</h3>
+<p>CLOSED: [2026-01-17 Sat 09:15]</p>
+
 <p>PDF export requires:</p>
 
 <ul>
@@ -573,11 +786,15 @@ See Figure [[fig:diagram]] for the system architecture.</code></pre>
 </div>
 </div>
 <div id="org-markdown-export" class="org-section org-level-2">
-<h2>Markdown Export</h2>
+<h2>✅ Markdown Export</h2>
+<p>CLOSED: [2026-01-17 Sat 09:18]</p>
+
 <p>Markdown export produces GitHub-flavored Markdown (GFM) suitable for GitHub, GitLab, and other platforms.</p>
 
 <div id="org-features" class="org-section org-level-3">
-<h3>Features</h3>
+<h3>✅ Features</h3>
+<p>CLOSED: [2026-01-17 Sat 09:18]</p>
+
 <ul>
 <li><p>Headings (`# ## ###&#39;)</p>
 </li>
@@ -597,7 +814,9 @@ See Figure [[fig:diagram]] for the system architecture.</code></pre>
 
 </div>
 <div id="org-example-conversion" class="org-section org-level-3">
-<h3>Example Conversion</h3>
+<h3>✅ Example Conversion</h3>
+<p>CLOSED: [2026-01-17 Sat 09:18]</p>
+
 <div class="org-src-container">
 <pre class="src src-org"><code class="language-org">,* Project Overview
 This is a *bold* statement and an /italic/ one.
@@ -638,13 +857,13 @@ print(&quot;Hello, world!&quot;)
 <tr><th>Keybinding</th><th>Command</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c C-e</code></td><td>Export dispatcher</td><td>Open export menu</td></tr>
-<tr><td><code class="verbatim">C-c C-e h h</code></td><td>HTML export</td><td>Export to HTML file</td></tr>
-<tr><td><code class="verbatim">C-c C-e h o</code></td><td>HTML export and open</td><td>Export HTML and open in browser</td></tr>
-<tr><td><code class="verbatim">C-c C-e l l</code></td><td>LaTeX export</td><td>Export to .tex file</td></tr>
-<tr><td><code class="verbatim">C-c C-e l p</code></td><td>PDF export</td><td>Export to PDF via LaTeX</td></tr>
-<tr><td><code class="verbatim">C-c C-e l o</code></td><td>PDF export and open</td><td>Export PDF and open viewer</td></tr>
-<tr><td><code class="verbatim">C-c C-e m m</code></td><td>Markdown export</td><td>Export to .md file</td></tr>
+<tr><td>C-c C-e</td><td>Export dispatcher</td><td>Open export menu</td></tr>
+<tr><td>C-c C-e h h</td><td>HTML export</td><td>Export to HTML file</td></tr>
+<tr><td>C-c C-e h o</td><td>HTML export and open</td><td>Export HTML and open in browser</td></tr>
+<tr><td>C-c C-e l l</td><td>LaTeX export</td><td>Export to .tex file</td></tr>
+<tr><td>C-c C-e l p</td><td>PDF export</td><td>Export to PDF via LaTeX</td></tr>
+<tr><td>C-c C-e l o</td><td>PDF export and open</td><td>Export PDF and open viewer</td></tr>
+<tr><td>C-c C-e m m</td><td>Markdown export</td><td>Export to .md file</td></tr>
 </tbody>
 </table>
 
@@ -656,8 +875,8 @@ print(&quot;Hello, world!&quot;)
 <tr><th>Keybinding</th><th>Command</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c C-e l v</code></td><td>Open LaTeX preview</td><td>Open PDF preview (if built)</td></tr>
-<tr><td><code class="verbatim">C-c C-e l s</code></td><td>Forward sync</td><td>Sync cursor position to PDF (SyncTeX)</td></tr>
+<tr><td>C-c C-e l v</td><td>Open LaTeX preview</td><td>Open PDF preview (if built)</td></tr>
+<tr><td>C-c C-e l s</td><td>Forward sync</td><td>Sync cursor position to PDF (SyncTeX)</td></tr>
 </tbody>
 </table>
 
@@ -667,11 +886,11 @@ print(&quot;Hello, world!&quot;)
 <p>For frequently used exports, use the quick commands:</p>
 
 <ul>
-<li><p><kbd>C-S-P</kbd> → &quot;Scimax: Export to HTML&quot;</p>
+<li><p><a href="#org-cmd-scimax-org-exporthtmlopen">[[cmd:scimax.org.exportHtmlOpen]]</a></p>
 </li>
-<li><p><kbd>C-S-P</kbd> → &quot;Scimax: Export to PDF&quot;</p>
+<li><p><a href="#org-cmd-scimax-org-exportlatexopen">[[cmd:scimax.org.exportLatexOpen]]</a></p>
 </li>
-<li><p><kbd>C-S-P</kbd> → &quot;Scimax: Export to Markdown&quot;</p>
+<li><p><a href="#org-cmd-scimax-org-exportmarkdown">[[cmd:scimax.org.exportMarkdown]]</a></p>
 </li>
 </ul>
 
@@ -795,31 +1014,6 @@ Some intro text.
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 </div>
-
-</div>
-<div id="org-body-only" class="org-section org-level-3">
-<h3>Body-Only</h3>
-<p>Generates only the content (for embedding):</p>
-
-<div class="org-src-container">
-<pre class="src src-html"><code class="language-html">&lt;div class=&quot;org-content&quot;&gt;
-  &lt;section&gt;
-    &lt;h1&gt;My Heading&lt;/h1&gt;
-    &lt;p&gt;Content...&lt;/p&gt;
-  &lt;/section&gt;
-&lt;/div&gt;</code></pre>
-</div>
-
-<p>Use body-only for:</p>
-
-<ul>
-<li><p>Including in existing web pages</p>
-</li>
-<li><p>CMS integration</p>
-</li>
-<li><p>Email newsletters</p>
-</li>
-</ul>
 
 </div>
 </div>
@@ -1013,6 +1207,141 @@ bibliographystyle:plainnat</code></pre>
 </li>
 </ul>
 
+</div>
+<div id="org-html-citation-export" class="org-section org-level-3">
+<h3>HTML Citation Export</h3>
+<p>HTML export includes full citation processing using citation-js, which formats citations according to standard citation styles (CSL).</p>
+
+<div id="org-supported-citation-formats" class="org-section org-level-4">
+<h4>Supported Citation Formats</h4>
+<p>The following citation link types are supported in HTML export:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Link Type</th><th>Example</th><th>Output Style</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">cite:</code></td><td><code class="verbatim">cite:knuth1984</code></td><td>Parenthetical (Smith, 2020)</td></tr>
+<tr><td><code class="verbatim">citep:</code></td><td><code class="verbatim">citep:knuth1984</code></td><td>Parenthetical (Smith, 2020)</td></tr>
+<tr><td><code class="verbatim">citet:</code></td><td><code class="verbatim">citet:knuth1984</code></td><td>Textual: Smith (2020)</td></tr>
+<tr><td><code class="verbatim">citeauthor:</code></td><td><code class="verbatim">citeauthor:knuth1984</code></td><td>Author only: Smith</td></tr>
+<tr><td><code class="verbatim">citeyear:</code></td><td><code class="verbatim">citeyear:knuth1984</code></td><td>Year only: 2020</td></tr>
+<tr><td><code class="verbatim">[cite:@key]</code></td><td><code class="verbatim">[cite:@knuth1984]</code></td><td>Org 9.5+ style</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-specifying-bibliography-files" class="org-section org-level-4">
+<h4>Specifying Bibliography Files</h4>
+<p>To include citations in HTML export, specify your bibliography file(s):</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+BIBLIOGRAPHY: references.bib
+
+Or use a bibliography link:
+[[bibliography:~/path/to/references.bib]]</code></pre>
+</div>
+
+<p>The export system automatically:</p>
+
+<ol>
+<li><p>Finds all <code class="verbatim">#+BIBLIOGRAPHY:</code> keywords and <code class="verbatim">[[bibliography:...]]</code> links</p>
+</li>
+<li><p>Loads the BibTeX entries from those files</p>
+</li>
+<li><p>Formats citations according to the selected style</p>
+</li>
+<li><p>Generates a bibliography section at the end of the document</p>
+</li>
+</ol>
+
+</div>
+<div id="org-citation-styles" class="org-section org-level-4">
+<h4>Citation Styles</h4>
+<p>The default citation style is APA. You can change it with the <code class="verbatim">#+CSL_STYLE:</code> keyword:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+CSL_STYLE: apa</code></pre>
+</div>
+
+<p>Available built-in styles:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Style</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">apa</code></td><td>American Psychological Association (default)</td></tr>
+<tr><td><code class="verbatim">mla</code></td><td>Modern Language Association</td></tr>
+<tr><td><code class="verbatim">chicago</code></td><td>Chicago Manual of Style</td></tr>
+<tr><td><code class="verbatim">harvard</code></td><td>Harvard referencing</td></tr>
+<tr><td><code class="verbatim">ieee</code></td><td>IEEE citation format</td></tr>
+<tr><td><code class="verbatim">vancouver</code></td><td>Vancouver (numeric) style</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-example-document-with-citations" class="org-section org-level-4">
+<h4>Example Document with Citations</h4>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+TITLE: My Research Paper
+#+AUTHOR: Jane Doe
+#+BIBLIOGRAPHY: references.bib
+#+CSL_STYLE: apa
+
+,* Introduction
+
+Recent advances in machine learning cite:lecun2015 have enabled
+remarkable progress in computer vision. According to citet:krizhevsky2012,
+deep convolutional networks outperform traditional methods.
+
+,* Methods
+
+We follow the approach of citep:he2016,simonyan2014 for our experiments.</code></pre>
+</div>
+
+</div>
+<div id="org-bibliography-output" class="org-section org-level-4">
+<h4>Bibliography Output</h4>
+<p>The bibliography section is automatically generated at the end of the HTML document with:</p>
+
+<ul>
+<li><p>A &quot;References&quot; heading (customizable)</p>
+</li>
+<li><p>Properly formatted entries according to the CSL style</p>
+</li>
+<li><p>Hanging indent formatting for readability</p>
+</li>
+</ul>
+
+</div>
+<div id="org-missing-citations" class="org-section org-level-4">
+<h4>Missing Citations</h4>
+<p>If a citation key is not found in the bibliography:</p>
+
+<ul>
+<li><p>The citation appears with a &quot;missing&quot; CSS class</p>
+</li>
+<li><p>It renders as <code class="verbatim">[missing: key]</code> in red italic text</p>
+</li>
+<li><p>Check your <code class="verbatim">.bib</code> file for the correct key spelling</p>
+</li>
+</ul>
+
+</div>
+<div id="org-configuring-citation-defaults" class="org-section org-level-4">
+<h4>Configuring Citation Defaults</h4>
+<p>You can configure default citation behavior in VS Code settings:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.references.defaultCiteStyle&quot;: &quot;citep&quot;
+}</code></pre>
+</div>
+
+<p>Options: <code class="verbatim">cite</code>, <code class="verbatim">citep</code>, <code class="verbatim">citet</code>, <code class="verbatim">citeauthor</code>, <code class="verbatim">citeyear</code></p>
+
+</div>
 </div>
 </div>
 <div id="org-advanced-latex-features" class="org-section org-level-2">
@@ -1882,7 +2211,7 @@ sudo tlmgr install xyz</code></pre>
 </li>
 <li><p>Use supported formats: PNG, JPG, PDF, EPS</p>
 </li>
-<li><p>Check `\graphicspath&#39; if using custom image directories</p>
+<li><p>Check <kbd>\graphicspath</kbd> if using custom image directories</p>
 </li>
 </ol>
 
@@ -1909,7 +2238,7 @@ sudo tlmgr install xyz</code></pre>
 <ul>
 <li><p>GitHub-flavored Markdown tables are left-aligned by default</p>
 </li>
-<li><p>Org-mode alignment hints (`&lt;l&gt;&#39;, `&lt;c&gt;&#39;, `&lt;r&gt;&#39;) are not supported</p>
+<li><p>Org-mode alignment hints (`<l>&#39;, `<c>&#39;, `<r>&#39;) are not supported</p>
 </li>
 <li><p>Consider using HTML tables for complex layouts</p>
 </li>
@@ -1919,7 +2248,7 @@ sudo tlmgr install xyz</code></pre>
 <div id="org-math-not-rendering" class="org-section org-level-3">
 <h3>Math Not Rendering</h3>
 <ul>
-<li><p>GitHub supports some math via `$$...$$&#39; (display) and `$...$&#39; (inline)</p>
+<li><p>GitHub supports some math via <kbd>$$...$$</kbd> (display) and <kbd>$...$</kbd> (inline)</p>
 </li>
 <li><p>Other platforms may require MathJax integration</p>
 </li>
@@ -2043,9 +2372,13 @@ Fix image paths in HTML export</code></pre>
 </div>
 </div>
 <div id="org-performance-optimization" class="org-section org-level-2">
-<h2>Performance Optimization</h2>
+<h2>✅ Performance Optimization</h2>
+<p>CLOSED: [2026-01-17 Sat 09:25]</p>
+
 <div id="org-for-large-documents" class="org-section org-level-3">
-<h3>For Large Documents</h3>
+<h3>✅ For Large Documents</h3>
+<p>CLOSED: [2026-01-17 Sat 09:25]</p>
+
 <ol>
 <li><p>Disable auto-build during editing</p>
 </li>
@@ -2059,7 +2392,9 @@ Fix image paths in HTML export</code></pre>
 
 </div>
 <div id="org-for-fast-iteration" class="org-section org-level-3">
-<h3>For Fast Iteration</h3>
+<h3>✅ For Fast Iteration</h3>
+<p>CLOSED: [2026-01-17 Sat 09:25]</p>
+
 <ol>
 <li><p>Use HTML preview for quick checks</p>
 </li>
@@ -2073,54 +2408,15 @@ Fix image paths in HTML export</code></pre>
 
 </div>
 </div>
-<div id="org-quality-assurance" class="org-section org-level-2">
-<h2>Quality Assurance</h2>
-<div id="org-pre-export-checklist" class="org-section org-level-3">
-<h3>Pre-Export Checklist</h3>
-<ul>
-<li><input type="checkbox"   disabled /> <p>Spell check content</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Verify all links work</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Check image references</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Review math equations</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Validate table formatting</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Test code examples</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Proofread metadata</p>
-</li>
-</ul>
-
-</div>
-<div id="org-post-export-verification" class="org-section org-level-3">
-<h3>Post-Export Verification</h3>
-<ul>
-<li><input type="checkbox"   disabled /> <p>Open exported file</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Check table of contents</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Verify images display</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Test internal links</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Review formatting</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Validate math rendering</p>
-</li>
-<li><input type="checkbox"   disabled /> <p>Check code highlighting</p>
-</li>
-</ul>
-
-</div>
-</div>
 </div>
 <div id="org-example-workflows" class="org-section org-level-1">
-<h1>Example Workflows</h1>
+<h1>✅ Example Workflows</h1>
+<p>CLOSED: [2026-01-17 Sat 09:26]</p>
+
 <div id="org-academic-paper-workflow" class="org-section org-level-2">
-<h2>Academic Paper Workflow</h2>
+<h2>✅ Academic Paper Workflow</h2>
+<p>CLOSED: [2026-01-17 Sat 09:26]</p>
+
 <div id="org-1-initial-setup" class="org-section org-level-3">
 <h3>1. Initial Setup</h3>
 <div class="org-src-container">
@@ -2213,9 +2509,13 @@ Fix image paths in HTML export</code></pre>
 </div>
 </div>
 <div id="org-blog-post-workflow" class="org-section org-level-2">
-<h2>Blog Post Workflow</h2>
+<h2>✅ Blog Post Workflow</h2>
+<p>CLOSED: [2026-01-17 Sat 09:27]</p>
+
 <div id="org-1-write-in-org" class="org-section org-level-3">
-<h3>1. Write in Org</h3>
+<h3>✅ 1. Write in Org</h3>
+<p>CLOSED: [2026-01-17 Sat 09:27]</p>
+
 <div class="org-src-container">
 <pre class="src src-org"><code class="language-org">#+TITLE: 10 Tips for Better Python Code
 #+AUTHOR: Tech Blogger
@@ -2225,56 +2525,31 @@ Fix image paths in HTML export</code></pre>
 
 </div>
 <div id="org-2-export-to-markdown" class="org-section org-level-3">
-<h3>2. Export to Markdown</h3>
-<p>`C-c C-e m m&#39; → Markdown</p>
+<h3>✅ 2. Export to Markdown</h3>
+<p>CLOSED: [2026-01-17 Sat 09:27]
+<kbd>C-c C-e m m</kbd> → Markdown</p>
 
 </div>
 <div id="org-3-publish" class="org-section org-level-3">
-<h3>3. Publish</h3>
-<p>Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)</p>
-
-</div>
-</div>
-<div id="org-presentation-workflow" class="org-section org-level-2">
-<h2>Presentation Workflow</h2>
-<div id="org-1-use-beamer" class="org-section org-level-3">
-<h3>1. Use Beamer</h3>
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+TITLE: Quarterly Results
-#+AUTHOR: Finance Team
-#+LATEX_CLASS: beamer
-#+LATEX_CLASS_OPTIONS: [presentation,t]
-#+BEAMER_THEME: Madrid</code></pre>
-</div>
-
-</div>
-<div id="org-2-create-slides" class="org-section org-level-3">
-<h3>2. Create Slides</h3>
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">,* Introduction
-,** Key Achievements
-- Revenue up 15%
-- 3 new products launched
-
-,** Challenges
-- Supply chain delays
-- Market competition</code></pre>
-</div>
-
-</div>
-<div id="org-3-export-to-pdf" class="org-section org-level-3">
-<h3>3. Export to PDF</h3>
-<p>`C-c C-e l p&#39; → Beamer PDF presentation</p>
+<h3>✅ 3. Publish</h3>
+<p>CLOSED: [2026-01-17 Sat 09:27]
+Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)</p>
 
 </div>
 </div>
 </div>
 <div id="org-resources" class="org-section org-level-1">
-<h1>Resources</h1>
+<h1>✅ Resources</h1>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <div id="org-external-links" class="org-section org-level-2">
-<h2>External Links</h2>
+<h2>✅ External Links</h2>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <div id="org-org-mode-documentation" class="org-section org-level-3">
-<h3>Org-Mode Documentation</h3>
+<h3>✅ Org-Mode Documentation</h3>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <ul>
 <li><p><a href="https://orgmode.org/manual/Exporting.html">Official Export Documentation</a></p>
 </li>
@@ -2286,7 +2561,9 @@ Fix image paths in HTML export</code></pre>
 
 </div>
 <div id="org-latex-resources" class="org-section org-level-3">
-<h3>LaTeX Resources</h3>
+<h3>✅ LaTeX Resources</h3>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <ul>
 <li><p><a href="https://www.latex-project.org/">LaTeX Project</a></p>
 </li>
@@ -2298,7 +2575,9 @@ Fix image paths in HTML export</code></pre>
 
 </div>
 <div id="org-tools" class="org-section org-level-3">
-<h3>Tools</h3>
+<h3>✅ Tools</h3>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <ul>
 <li><p><a href="https://www.mathjax.org/">MathJax Documentation</a></p>
 </li>
@@ -2311,7 +2590,9 @@ Fix image paths in HTML export</code></pre>
 </div>
 </div>
 <div id="org-related-scimax-documentation" class="org-section org-level-2">
-<h2>Related Scimax Documentation</h2>
+<h2>✅ Related Scimax Documentation</h2>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <ul>
 <li><p><a href="01-getting-started.html">Getting Started with Scimax</a></p>
 </li>
@@ -2325,7 +2606,9 @@ Fix image paths in HTML export</code></pre>
 
 </div>
 <div id="org-community" class="org-section org-level-2">
-<h2>Community</h2>
+<h2>✅ Community</h2>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <ul>
 <li><p><a href="https://github.com/jkitchin/scimax_vscode">Scimax VS Code Repository</a></p>
 </li>
@@ -2338,25 +2621,29 @@ Fix image paths in HTML export</code></pre>
 </div>
 </div>
 <div id="org-appendix" class="org-section org-level-1">
-<h1>Appendix</h1>
+<h1>✅ Appendix</h1>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <div id="org-complete-keybinding-reference" class="org-section org-level-2">
-<h2>Complete Keybinding Reference</h2>
+<h2>✅ Complete Keybinding Reference</h2>
+<p>CLOSED: [2026-01-17 Sat 09:29]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Keybinding</th><th>Command</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c C-e</code></td><td>Export dispatcher</td><td>Open export menu</td></tr>
-<tr><td><code class="verbatim">C-c C-e h h</code></td><td>HTML export</td><td>Export to .html</td></tr>
-<tr><td><code class="verbatim">C-c C-e h o</code></td><td>HTML export and open</td><td>Export and open in browser</td></tr>
-<tr><td><code class="verbatim">C-c C-e h p</code></td><td>HTML preview</td><td>Preview in VS Code webview</td></tr>
-<tr><td><code class="verbatim">C-c C-e l l</code></td><td>LaTeX export</td><td>Export to .tex</td></tr>
-<tr><td><code class="verbatim">C-c C-e l p</code></td><td>PDF export</td><td>Export to PDF</td></tr>
-<tr><td><code class="verbatim">C-c C-e l o</code></td><td>PDF export and open</td><td>Export and open PDF</td></tr>
-<tr><td><code class="verbatim">C-c C-e l v</code></td><td>LaTeX preview</td><td>Open PDF preview</td></tr>
-<tr><td><code class="verbatim">C-c C-e l s</code></td><td>Forward sync</td><td>Sync cursor to PDF (SyncTeX)</td></tr>
-<tr><td><code class="verbatim">C-c C-e m m</code></td><td>Markdown export</td><td>Export to .md</td></tr>
-<tr><td><code class="verbatim">C-c C-e m o</code></td><td>Markdown export and open</td><td>Export and open in editor</td></tr>
+<tr><td>C-c C-e</td><td>Export dispatcher</td><td>Open export menu</td></tr>
+<tr><td>C-c C-e h h</td><td>HTML export</td><td>Export to .html</td></tr>
+<tr><td>C-c C-e h o</td><td>HTML export and open</td><td>Export and open in browser</td></tr>
+<tr><td>C-c C-e h p</td><td>HTML preview</td><td>Preview in VS Code webview</td></tr>
+<tr><td>C-c C-e l l</td><td>LaTeX export</td><td>Export to .tex</td></tr>
+<tr><td>C-c C-e l p</td><td>PDF export</td><td>Export to PDF</td></tr>
+<tr><td>C-c C-e l o</td><td>PDF export and open</td><td>Export and open PDF</td></tr>
+<tr><td>C-c C-e l v</td><td>LaTeX preview</td><td>Open PDF preview</td></tr>
+<tr><td>C-c C-e l s</td><td>Forward sync</td><td>Sync cursor to PDF (SyncTeX)</td></tr>
+<tr><td>C-c C-e m m</td><td>Markdown export</td><td>Export to .md</td></tr>
+<tr><td>C-c C-e m o</td><td>Markdown export and open</td><td>Export and open in editor</td></tr>
 </tbody>
 </table>
 
@@ -2368,18 +2655,18 @@ Fix image paths in HTML export</code></pre>
 <tr><th>Option</th><th>Values</th><th>Effect</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">toc</code></td><td>t/nil/N</td><td>Table of contents (N = depth)</td></tr>
-<tr><td><code class="verbatim">num</code></td><td>t/nil/N</td><td>Section numbering (N = depth)</td></tr>
-<tr><td><code class="verbatim">H</code></td><td>N</td><td>Export headlines up to level N</td></tr>
-<tr><td><code class="verbatim">author</code></td><td>t/nil</td><td>Include author name</td></tr>
-<tr><td><code class="verbatim">date</code></td><td>t/nil</td><td>Include date</td></tr>
-<tr><td><code class="verbatim">title</code></td><td>t/nil</td><td>Include title</td></tr>
-<tr><td><code class="verbatim">^</code></td><td>t<em>nil</em>{}</td><td>Interpret sub/superscripts</td></tr>
-<tr><td><code class="verbatim">*</code></td><td>t/nil</td><td>Include emphasized text</td></tr>
-<tr><td><code class="verbatim">&lt;&gt;</code></td><td>t/nil</td><td>Include timestamps</td></tr>
-<tr><td><code class="verbatim">tags</code></td><td>t/nil/not-in-toc</td><td>Include tags</td></tr>
-<tr><td><code class="verbatim">todo</code></td><td>t/nil</td><td>Include TODO keywords</td></tr>
-<tr><td><code class="verbatim">\n</code></td><td>t/nil</td><td>Preserve line breaks</td></tr>
+<tr><td>toc</td><td>t/nil/N</td><td>Table of contents (N  depth)</td></tr>
+<tr><td>num</td><td>t/nil/N</td><td>Section numbering (N  depth)</td></tr>
+<tr><td>H</td><td>N</td><td>Export headlines up to level N</td></tr>
+<tr><td>author</td><td>t/nil</td><td>Include author name</td></tr>
+<tr><td>date</td><td>t/nil</td><td>Include date</td></tr>
+<tr><td>title</td><td>t/nil</td><td>Include title</td></tr>
+<tr><td>^</td><td>t<em>nil</em>{}</td><td>Interpret sub/superscripts</td></tr>
+<tr><td>*</td><td>t/nil</td><td>Include emphasized text</td></tr>
+<tr><td>&lt;&gt;</td><td>t/nil</td><td>Include timestamps</td></tr>
+<tr><td>tags</td><td>t/nil/not-in-toc</td><td>Include tags</td></tr>
+<tr><td>todo</td><td>t/nil</td><td>Include TODO keywords</td></tr>
+<tr><td>\n</td><td>t/nil</td><td>Preserve line breaks</td></tr>
 </tbody>
 </table>
 
@@ -2393,15 +2680,15 @@ Fix image paths in HTML export</code></pre>
 <tr><th>Package</th><th>Purpose</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">inputenc</code></td><td>Character encoding (UTF-8)</td></tr>
-<tr><td><code class="verbatim">fontenc</code></td><td>Font encoding (T1)</td></tr>
-<tr><td><code class="verbatim">hyperref</code></td><td>Hyperlinks and PDF metadata</td></tr>
-<tr><td><code class="verbatim">graphicx</code></td><td>Image inclusion</td></tr>
-<tr><td><code class="verbatim">amsmath</code></td><td>Mathematical typesetting</td></tr>
-<tr><td><code class="verbatim">amssymb</code></td><td>Math symbols</td></tr>
-<tr><td><code class="verbatim">booktabs</code></td><td>Professional tables</td></tr>
-<tr><td><code class="verbatim">listings</code></td><td>Code listing (if enabled)</td></tr>
-<tr><td><code class="verbatim">ulem</code></td><td>Strike-through support</td></tr>
+<tr><td>inputenc</td><td>Character encoding (UTF-8)</td></tr>
+<tr><td>fontenc</td><td>Font encoding (T1)</td></tr>
+<tr><td>hyperref</td><td>Hyperlinks and PDF metadata</td></tr>
+<tr><td>graphicx</td><td>Image inclusion</td></tr>
+<tr><td>amsmath</td><td>Mathematical typesetting</td></tr>
+<tr><td>amssymb</td><td>Math symbols</td></tr>
+<tr><td>booktabs</td><td>Professional tables</td></tr>
+<tr><td>listings</td><td>Code listing (if enabled)</td></tr>
+<tr><td>ulem</td><td>Strike-through support</td></tr>
 </tbody>
 </table>
 
@@ -2413,13 +2700,13 @@ Fix image paths in HTML export</code></pre>
 <tr><th>Package</th><th>Purpose</th><th>Add With</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">geometry</code></td><td>Page layout</td><td><code class="verbatim">#+LATEX_HEADER:</code></td></tr>
-<tr><td><code class="verbatim">natbib</code></td><td>Bibliography</td><td><code class="verbatim">#+LATEX_HEADER:</code></td></tr>
-<tr><td><code class="verbatim">minted</code></td><td>Advanced syntax highlighting</td><td><code class="verbatim">#+LATEX_HEADER:</code></td></tr>
-<tr><td><code class="verbatim">tikz</code></td><td>Graphics and diagrams</td><td><code class="verbatim">#+LATEX_HEADER:</code></td></tr>
-<tr><td><code class="verbatim">tcolorbox</code></td><td>Colored boxes</td><td><code class="verbatim">#+LATEX_HEADER:</code></td></tr>
-<tr><td><code class="verbatim">cleveref</code></td><td>Smart cross-references</td><td><code class="verbatim">#+LATEX_HEADER:</code></td></tr>
-<tr><td><code class="verbatim">fontspec</code></td><td>System fonts (XeLaTeX/LuaLaTeX)</td><td><code class="verbatim">#+LATEX_HEADER:</code></td></tr>
+<tr><td>geometry</td><td>Page layout</td><td>#+LATEX_HEADER:</td></tr>
+<tr><td>natbib</td><td>Bibliography</td><td>#+LATEX_HEADER:</td></tr>
+<tr><td>minted</td><td>Advanced syntax highlighting</td><td>#+LATEX_HEADER:</td></tr>
+<tr><td>tikz</td><td>Graphics and diagrams</td><td>#+LATEX_HEADER:</td></tr>
+<tr><td>tcolorbox</td><td>Colored boxes</td><td>#+LATEX_HEADER:</td></tr>
+<tr><td>cleveref</td><td>Smart cross-references</td><td>#+LATEX_HEADER:</td></tr>
+<tr><td>fontspec</td><td>System fonts (XeLaTeX/LuaLaTeX)</td><td>#+LATEX_HEADER:</td></tr>
 </tbody>
 </table>
 
@@ -2576,1166 +2863,6 @@ Fix image paths in HTML export</code></pre>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="09-jupyter.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="publishing.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#overview" class="toc-link">Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#export-dispatcher" class="toc-link">Export Dispatcher</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#opening-the-export-dispatcher" class="toc-link">Opening the Export Dispatcher</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-dispatcher-menu-structure" class="toc-link">Export Dispatcher Menu Structure</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#html-exports" class="toc-link">HTML Exports</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#latexpdf-exports" class="toc-link">LaTeX/PDF Exports</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#markdown-exports" class="toc-link">Markdown Exports</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#export-formats" class="toc-link">Export Formats</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#html-export" class="toc-link">HTML Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#features" class="toc-link">Features</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#mathjax-integration" class="toc-link">MathJax Integration</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#example" class="toc-link">Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#latex-export" class="toc-link">LaTeX Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#document-classes" class="toc-link">Document Classes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#custom-preambles" class="toc-link">Custom Preambles</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#global-custom-header" class="toc-link">Global Custom Header</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#code-listings" class="toc-link">Code Listings</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#tables-with-booktabs" class="toc-link">Tables with booktabs</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#cross-references" class="toc-link">Cross-References</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#pdf-export" class="toc-link">PDF Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#compilation-process" class="toc-link">Compilation Process</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#supported-compilers" class="toc-link">Supported Compilers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#requirements" class="toc-link">Requirements</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#error-handling" class="toc-link">Error Handling</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#build-on-save" class="toc-link">Build on Save</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#markdown-export" class="toc-link">Markdown Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#features" class="toc-link">Features</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#example-conversion" class="toc-link">Example Conversion</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#export-keybindings" class="toc-link">Export Keybindings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#primary-keybindings" class="toc-link">Primary Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#additional-latex-keybindings" class="toc-link">Additional LaTeX Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#quick-access" class="toc-link">Quick Access</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#export-scope" class="toc-link">Export Scope</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#full-document-export-default" class="toc-link">Full Document Export (default)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#subtree-export" class="toc-link">Subtree Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#use-cases-for-subtree-export" class="toc-link">Use Cases for Subtree Export</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#visible-content-export" class="toc-link">Visible Content Export</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#html-export-options" class="toc-link">HTML Export Options</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#standalone-vs-body-only" class="toc-link">Standalone vs. Body-Only</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#standalone-default" class="toc-link">Standalone (default)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#body-only" class="toc-link">Body-Only</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#custom-css" class="toc-link">Custom CSS</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#javascript-support" class="toc-link">JavaScript Support</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#mathjax-configuration" class="toc-link">MathJax Configuration</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#syntax-highlighting" class="toc-link">Syntax Highlighting</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#latex-export-options" class="toc-link">LaTeX Export Options</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#document-structure" class="toc-link">Document Structure</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#headline-levels" class="toc-link">Headline Levels</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#section-numbering" class="toc-link">Section Numbering</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#table-of-contents" class="toc-link">Table of Contents</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#images-and-figures" class="toc-link">Images and Figures</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#image-attributes" class="toc-link">Image Attributes</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#bibliography-support" class="toc-link">Bibliography Support</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#bibtex-integration" class="toc-link">BibTeX Integration</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#citation-links" class="toc-link">Citation Links</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#advanced-latex-features" class="toc-link">Advanced LaTeX Features</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#custom-environments" class="toc-link">Custom Environments</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-blocks" class="toc-link">Special Blocks</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#math-environments" class="toc-link">Math Environments</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#pdf-export-configuration" class="toc-link">PDF Export Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#compiler-selection" class="toc-link">Compiler Selection</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#pdflatex-default" class="toc-link">pdflatex (default)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#xelatex" class="toc-link">xelatex</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#lualatex" class="toc-link">lualatex</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#latexmk-configuration" class="toc-link">latexmk Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#benefits" class="toc-link">Benefits</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#configuration-file" class="toc-link">Configuration File</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#disabling-latexmk" class="toc-link">Disabling latexmk</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#build-automation" class="toc-link">Build Automation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#build-on-save" class="toc-link">Build on Save</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#build-on-idle" class="toc-link">Build on Idle</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#synctex-integration" class="toc-link">SyncTeX Integration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#forward-sync-source-pdf" class="toc-link">Forward Sync (Source → PDF)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#reverse-sync-pdf-source" class="toc-link">Reverse Sync (PDF → Source)</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#markdown-export-details" class="toc-link">Markdown Export Details</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#github-flavored-markdown-gfm" class="toc-link">GitHub-Flavored Markdown (GFM)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#supported-elements" class="toc-link">Supported Elements</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#headings" class="toc-link">Headings</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#text-formatting" class="toc-link">Text Formatting</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#lists" class="toc-link">Lists</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#code-blocks" class="toc-link">Code Blocks</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#tables" class="toc-link">Tables</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#links" class="toc-link">Links</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#images" class="toc-link">Images</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#metadata-handling" class="toc-link">Metadata Handling</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#export-options-reference" class="toc-link">Export Options Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#options-keyword" class="toc-link">#+OPTIONS Keyword</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#syntax" class="toc-link">Syntax</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#common-options" class="toc-link">Common Options</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#examples" class="toc-link">Examples</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#document-keywords" class="toc-link">Document Keywords</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#required-keywords" class="toc-link">Required Keywords</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#html-specific-keywords" class="toc-link">HTML-Specific Keywords</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#latex-specific-keywords" class="toc-link">LaTeX-Specific Keywords</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#export-settings" class="toc-link">Export Settings</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#configuration-settings" class="toc-link">Configuration Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#export-settings-location" class="toc-link">Export Settings Location</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latex-export-configuration" class="toc-link">LaTeX Export Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#custom-header" class="toc-link">Custom Header</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#latex-preview-settings" class="toc-link">LaTeX Preview Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#compiler" class="toc-link">Compiler</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#use-latexmk" class="toc-link">Use latexmk</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#build-on-save" class="toc-link">Build on Save</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#build-on-idle" class="toc-link">Build on Idle</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#idle-delay" class="toc-link">Idle Delay</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#complete-configuration-example" class="toc-link">Complete Configuration Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-export-techniques" class="toc-link">Advanced Export Techniques</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#conditional-export" class="toc-link">Conditional Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#exclude-content-by-tag" class="toc-link">Exclude Content by Tag</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#select-content-by-tag" class="toc-link">Select Content by Tag</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#backend-specific-content" class="toc-link">Backend-Specific Content</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#html-only-content" class="toc-link">HTML-Only Content</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#latex-only-content" class="toc-link">LaTeX-Only Content</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#export-snippets" class="toc-link">Export Snippets</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#macros-for-reusable-content" class="toc-link">Macros for Reusable Content</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#include-files" class="toc-link">Include Files</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#basic-syntax" class="toc-link">Basic Syntax</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#block-wrappers" class="toc-link">Block Wrappers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#line-selection-with-lines" class="toc-link">Line Selection with :lines</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#headline-level-adjustment-with-minlevel" class="toc-link">Headline Level Adjustment with :minlevel</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#content-only-with-only-contents" class="toc-link">Content Only with :only-contents</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#combining-options" class="toc-link">Combining Options</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#recursive-includes" class="toc-link">Recursive Includes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#example-modular-book-structure" class="toc-link">Example: Modular Book Structure</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#custom-link-types" class="toc-link">Custom Link Types</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#html-export-issues" class="toc-link">HTML Export Issues</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#mathjax-not-rendering" class="toc-link">MathJax Not Rendering</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#broken-images" class="toc-link">Broken Images</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#css-not-applied" class="toc-link">CSS Not Applied</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#latexpdf-export-issues" class="toc-link">LaTeX/PDF Export Issues</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#missing-packages" class="toc-link">Missing Packages</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#unicode-errors" class="toc-link">Unicode Errors</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#bibliography-not-generated" class="toc-link">Bibliography Not Generated</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#images-not-found" class="toc-link">Images Not Found</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#compilation-timeout" class="toc-link">Compilation Timeout</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#markdown-export-issues" class="toc-link">Markdown Export Issues</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#table-alignment" class="toc-link">Table Alignment</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#math-not-rendering" class="toc-link">Math Not Rendering</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#general-export-issues" class="toc-link">General Export Issues</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#empty-export" class="toc-link">Empty Export</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#slow-export" class="toc-link">Slow Export</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#wrong-output-location" class="toc-link">Wrong Output Location</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#document-organization" class="toc-link">Document Organization</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#use-meaningful-headings" class="toc-link">Use Meaningful Headings</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#metadata-at-top" class="toc-link">Metadata at Top</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#separate-concerns" class="toc-link">Separate Concerns</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#version-control" class="toc-link">Version Control</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#track-generated-files-separately" class="toc-link">Track Generated Files Separately</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#use-meaningful-commit-messages" class="toc-link">Use Meaningful Commit Messages</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#performance-optimization" class="toc-link">Performance Optimization</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#for-large-documents" class="toc-link">For Large Documents</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#for-fast-iteration" class="toc-link">For Fast Iteration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#quality-assurance" class="toc-link">Quality Assurance</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#pre-export-checklist" class="toc-link">Pre-Export Checklist</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#post-export-verification" class="toc-link">Post-Export Verification</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#example-workflows" class="toc-link">Example Workflows</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#academic-paper-workflow" class="toc-link">Academic Paper Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#1-initial-setup" class="toc-link">1. Initial Setup</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#2-write-content" class="toc-link">2. Write Content</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#3-add-citations" class="toc-link">3. Add Citations</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#4-export-to-pdf" class="toc-link">4. Export to PDF</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#5-submit" class="toc-link">5. Submit</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#technical-documentation-workflow" class="toc-link">Technical Documentation Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#1-setup" class="toc-link">1. Setup</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#2-write-sections" class="toc-link">2. Write Sections</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#3-export-to-html" class="toc-link">3. Export to HTML</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#4-deploy" class="toc-link">4. Deploy</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#blog-post-workflow" class="toc-link">Blog Post Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#1-write-in-org" class="toc-link">1. Write in Org</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#2-export-to-markdown" class="toc-link">2. Export to Markdown</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#3-publish" class="toc-link">3. Publish</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#presentation-workflow" class="toc-link">Presentation Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#1-use-beamer" class="toc-link">1. Use Beamer</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#2-create-slides" class="toc-link">2. Create Slides</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#3-export-to-pdf" class="toc-link">3. Export to PDF</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#resources" class="toc-link">Resources</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#external-links" class="toc-link">External Links</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#org-mode-documentation" class="toc-link">Org-Mode Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#latex-resources" class="toc-link">LaTeX Resources</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#tools" class="toc-link">Tools</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#related-scimax-documentation" class="toc-link">Related Scimax Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#community" class="toc-link">Community</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#appendix" class="toc-link">Appendix</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#complete-keybinding-reference" class="toc-link">Complete Keybinding Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-options-quick-reference" class="toc-link">Export Options Quick Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latex-package-reference" class="toc-link">LaTeX Package Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#essential-packages-auto-included" class="toc-link">Essential Packages (Auto-Included)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#optional-packages" class="toc-link">Optional Packages</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#html-classes-and-ids" class="toc-link">HTML Classes and IDs</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#document-structure" class="toc-link">Document Structure</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#headings-and-toc" class="toc-link">Headings and TOC</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#text-elements" class="toc-link">Text Elements</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#blocks" class="toc-link">Blocks</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#tables-and-lists" class="toc-link">Tables and Lists</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#admonitions" class="toc-link">Admonitions</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#troubleshooting-decision-tree" class="toc-link">Troubleshooting Decision Tree</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-topics" class="toc-link">Related Topics</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

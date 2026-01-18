@@ -1,260 +1,202 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tables</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tables</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Tables</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-tables">✅ Tables</a></li>
+<li><a href="#org-creating-tables">✅ Creating Tables</a></li>
+<ul>
+<li><a href="#org-manual-creation">✅ Manual Creation</a></li>
+<li><a href="#org-table-creation-command">✅ Table Creation Command</a></li>
+<li><a href="#org-converting-text-to-table">✅ Converting Text to Table</a></li>
+</ul>
+<li><a href="#org-table-navigation">✅ Table Navigation</a></li>
+<ul>
+<li><a href="#org-moving-between-cells">✅ Moving Between Cells</a></li>
+<li><a href="#org-quick-navigation">✅ Quick Navigation</a></li>
+</ul>
+<li><a href="#org-editing-tables">✅ Editing Tables</a></li>
+<ul>
+<li><a href="#org-adding-removing-rows">✅ Adding/Removing Rows</a></li>
+<li><a href="#org-adding-removing-columns">✅ Adding/Removing Columns</a></li>
+<li><a href="#org-moving-rows-columns">✅ Moving Rows/Columns</a></li>
+<li><a href="#org-separator-lines">✅ Separator Lines</a></li>
+</ul>
+<li><a href="#org-table-alignment">✅ Table Alignment</a></li>
+<ul>
+<li><a href="#org-automatic-alignment">✅ Automatic Alignment</a></li>
+<li><a href="#org-column-width-specification">✅ Column Width Specification</a></li>
+<li><a href="#org-horizontal-alignment">✅ Horizontal Alignment</a></li>
+</ul>
+<li><a href="#org-table-formulas">✅ Table Formulas</a></li>
+<ul>
+<li><a href="#org-formula-line">Formula Line</a></li>
+<li><a href="#org-cell-references">Cell References</a></li>
+<ul>
+<li><a href="#org-column-references">Column References</a></li>
+<li><a href="#org-row-references">Row References</a></li>
+<li><a href="#org-combined-references">Combined References</a></li>
+<li><a href="#org-ranges">Ranges</a></li>
+</ul>
+<li><a href="#org-formula-syntax">Formula Syntax</a></li>
+<li><a href="#org-built-in-functions">Built-in Functions</a></li>
+<li><a href="#org-recalculating-formulas">Recalculating Formulas</a></li>
+<li><a href="#org-formula-examples">Formula Examples</a></li>
+<ul>
+<li><a href="#org-row-formula">Row Formula</a></li>
+<li><a href="#org-column-formula">Column Formula</a></li>
+<li><a href="#org-percentage-calculation">✅ Percentage Calculation</a></li>
+</ul>
+</ul>
+<li><a href="#org-table-import-export">✅ Table Import/Export</a></li>
+<ul>
+<li><a href="#org-importing-tables">✅ Importing Tables</a></li>
+<li><a href="#org-exporting-tables">Exporting Tables</a></li>
+</ul>
+<li><a href="#org-column-operations">✅ Column Operations</a></li>
+<ul>
+<li><a href="#org-sorting">✅ Sorting</a></li>
+</ul>
+<li><a href="#org-named-tables">✅ Named Tables</a></li>
+<li><a href="#org-table-appearance-in-export">✅ Table Appearance in Export</a></li>
+<ul>
+<li><a href="#org-html-export">✅ HTML Export</a></li>
+<li><a href="#org-latex-export">✅ LaTeX Export</a></li>
+<li><a href="#org-markdown-export">✅ Markdown Export</a></li>
+</ul>
+<li><a href="#org-best-practices">✅ Best Practices</a></li>
+<ul>
+<li><a href="#org-table-design">✅ Table Design</a></li>
+<li><a href="#org-formula-organization">✅ Formula Organization</a></li>
+<li><a href="#org-large-tables">✅ Large Tables</a></li>
+</ul>
+<li><a href="#org-quick-reference">✅ Quick Reference</a></li>
+<ul>
+<li><a href="#org-keybindings">Keybindings</a></li>
+<li><a href="#org-commands">Commands</a></li>
+</ul>
+<li><a href="#org-related-topics">✅ Related Topics</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-tables" class="org-section org-level-1">
+<div id="org-tables" class="org-section org-level-1">
 <h1>✅ Tables</h1>
 <p>CLOSED: [2026-01-15 Thu 15:07]</p>
 
@@ -321,21 +263,25 @@ it to a table.</p>
 <p>CLOSED: [2026-01-15 Thu 15:26]</p>
 
 <div id="org-moving-between-cells" class="org-section org-level-2">
-<h2>👀 Moving Between Cells</h2>
+<h2>✅ Moving Between Cells</h2>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Key</th><th>Action</th></tr>
 </thead>
 <tbody>
-<tr><td>&lt;tab&gt;</td><td>Move to next cell (creates row at end)</td></tr>
-<tr><td>S-&lt;tab&gt;</td><td>Move to previous cell</td></tr>
+<tr><td><tab></td><td>Move to next cell (creates row at end)</td></tr>
+<tr><td>S-<tab></td><td>Move to previous cell</td></tr>
 <tr><td>Arrow keys</td><td>Move in that direction</td></tr>
 </tbody>
 </table>
 
 </div>
 <div id="org-quick-navigation" class="org-section org-level-2">
-<h2>Quick Navigation</h2>
+<h2>✅ Quick Navigation</h2>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Command</th><th>Description</th></tr>
@@ -350,7 +296,9 @@ it to a table.</p>
 </div>
 </div>
 <div id="org-editing-tables" class="org-section org-level-1">
-<h1>⚠️ Editing Tables</h1>
+<h1>✅ Editing Tables</h1>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
 <div id="org-adding-removing-rows" class="org-section org-level-2">
 <h2>✅ Adding/Removing Rows</h2>
 <p>CLOSED: [2026-01-15 Thu 15:41]</p>
@@ -440,12 +388,14 @@ it to a table.</p>
 
 </div>
 <div id="org-column-width-specification" class="org-section org-level-2">
-<h2>⚠️ Column Width Specification</h2>
-<p>Specify fixed column widths using &lt;N&gt; in a cell:</p>
+<h2>✅ Column Width Specification</h2>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
+<p>Specify fixed column widths using <N> in a cell:</p>
 
 <table class="org-table">
 <tbody>
-<tr><td>&lt;l&gt;</td><td>&lt;l&gt;</td></tr>
+<tr><td><l></td><td><l></td></tr>
 <tr><td>Long text you don&#39;t want showing all of</td><td>Short</td></tr>
 <tr><td>More long</td><td>More</td></tr>
 </tbody>
@@ -453,7 +403,7 @@ it to a table.</p>
 
 <table class="org-table">
 <tbody>
-<tr><td>&lt;5&gt;</td><td>&lt;l&gt;</td></tr>
+<tr><td><5></td><td><l></td></tr>
 <tr><td>Long text you don&#39;t want showing all of</td><td>Short</td></tr>
 <tr><td>More long</td><td>More</td></tr>
 </tbody>
@@ -466,11 +416,11 @@ it to a table.</p>
 <h2>✅ Horizontal Alignment</h2>
 <p>CLOSED: [2026-01-15 Thu 15:32]</p>
 
-<p>Specify alignment using &lt;l&gt;, &lt;c&gt;, or &lt;r&gt;:</p>
+<p>Specify alignment using <l>, <c>, or <r>:</p>
 
 <table class="org-table">
 <thead>
-<tr><th>&lt;l&gt;</th><th>&lt;c&gt;</th><th>&lt;r&gt;</th></tr>
+<tr><th><l></th><th><c></th><th><r></th></tr>
 </thead>
 <tbody>
 <tr><td>Left aligned</td><td>Center text</td><td>Right aligned</td></tr>
@@ -483,18 +433,20 @@ it to a table.</p>
 <tr><th>Marker</th><th>Alignment</th></tr>
 </thead>
 <tbody>
-<tr><td>&lt;l&gt;</td><td>Left</td></tr>
-<tr><td>&lt;c&gt;</td><td>Center</td></tr>
-<tr><td>&lt;r&gt;</td><td>Right</td></tr>
+<tr><td><l></td><td>Left</td></tr>
+<tr><td><c></td><td>Center</td></tr>
+<tr><td><r></td><td>Right</td></tr>
 </tbody>
 </table>
 
-<p>Combine with width: &lt;l10&gt; for left-aligned, 10 characters wide.</p>
+<p>Combine with width: <l10> for left-aligned, 10 characters wide.</p>
 
 </div>
 </div>
 <div id="org-table-formulas" class="org-section org-level-1">
-<h1>⚠️ Table Formulas</h1>
+<h1>✅ Table Formulas</h1>
+<p>CLOSED: [2026-01-17 Sat 13:44]</p>
+
 <p>Tables can include formulas for calculations, similar to spreadsheets.</p>
 
 <div id="org-formula-line" class="org-section org-level-2">
@@ -566,9 +518,9 @@ it to a table.</p>
 <tr><th>Reference</th><th>Meaning</th></tr>
 </thead>
 <tbody>
-<tr><td>@2$1..@5$1</td><td>Column 1, rows 2 through 5</td></tr>
-<tr><td>@2$1..@2$4</td><td>Row 2, columns 1 through 4</td></tr>
-<tr><td>@2$1..@5$4</td><td>Rectangle from @2$1 to @5$4</td></tr>
+<tr><td>@2\(1..@5\)1</td><td>Column 1, rows 2 through 5</td></tr>
+<tr><td>@2\(1..@2\)4</td><td>Row 2, columns 1 through 4</td></tr>
+<tr><td>@2\(1..@5\)4</td><td>Rectangle from @2\(1 to @5\)4</td></tr>
 </tbody>
 </table>
 
@@ -661,38 +613,48 @@ all formulas.</p>
 <h3>Column Formula</h3>
 <p>Sum a column:</p>
 
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">| Month | Revenue |
-|-------+---------|
-| Jan   |   10000 |
-| Feb   |   12000 |
-| Mar   |   15000 |
-|-------+---------|
-| Total |   37000 |
-,#+TBLFM: @&gt;$2=vsum(@2$2..@-1$2)</code></pre>
-</div>
+<table class="org-table">
+<thead>
+<tr><th>Month</th><th>Revenue</th></tr>
+</thead>
+<tbody>
+<tr><td>Jan</td><td>10000</td></tr>
+<tr><td>Feb</td><td>12000</td></tr>
+<tr><td>Mar</td><td>15000</td></tr>
+<tr><td>Total</td><td>37000</td></tr>
+</tbody>
+</table>
+
 
 </div>
 <div id="org-percentage-calculation" class="org-section org-level-3">
-<h3>Percentage Calculation</h3>
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">| Category | Amount | Percent |
-|----------+--------+---------|
-| A        |    500 |     50% |
-| B        |    300 |     30% |
-| C        |    200 |     20% |
-|----------+--------+---------|
-| Total    |   1000 |    100% |
-,#+TBLFM: $3=100*$2/@&gt;$2;%.0f%%::@&gt;$2=vsum(@2$2..@-1$2)</code></pre>
-</div>
+<h3>✅ Percentage Calculation</h3>
+<p>CLOSED: [2026-01-17 Sat 20:01]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Category</th><th>Amount</th><th>Percent</th></tr>
+</thead>
+<tbody>
+<tr><td>A</td><td>500</td><td>50%</td></tr>
+<tr><td>B</td><td>300</td><td>30%</td></tr>
+<tr><td>C</td><td>200</td><td>20%</td></tr>
+<tr><td>Total</td><td>1000</td><td>100</td></tr>
+</tbody>
+</table>
+
 
 </div>
 </div>
 </div>
 <div id="org-table-import-export" class="org-section org-level-1">
-<h1>⚠️ Table Import/Export</h1>
+<h1>✅ Table Import/Export</h1>
+<p>CLOSED: [2026-01-17 Sat 19:44]</p>
+
 <div id="org-importing-tables" class="org-section org-level-2">
-<h2>Importing Tables</h2>
+<h2>✅ Importing Tables</h2>
+<p>CLOSED: [2026-01-17 Sat 19:48]</p>
+
 <p>Import data from CSV files:</p>
 
 <table class="org-table">
@@ -700,7 +662,7 @@ all formulas.</p>
 <tr><th>Command</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.table.import</code></td><td>Import table from file</td></tr>
+<tr><td>scimax.table.import</td><td>Import table from file</td></tr>
 </tbody>
 </table>
 
@@ -714,8 +676,8 @@ all formulas.</p>
 <tr><th>Key/Command</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c C-e t</code></td><td>Export table</td></tr>
-<tr><td><code class="verbatim">scimax.table.export</code></td><td>Export table to file</td></tr>
+<tr><td>C-c C-e t</td><td>Export table</td></tr>
+<tr><td>scimax.table.export</td><td>Export table to file</td></tr>
 </tbody>
 </table>
 
@@ -733,7 +695,9 @@ all formulas.</p>
 </div>
 </div>
 <div id="org-column-operations" class="org-section org-level-1">
-<h1>⚠️ Column Operations</h1>
+<h1>✅ Column Operations</h1>
+<p>CLOSED: [2026-01-17 Sat 13:43]</p>
+
 <p>Perform quick calculations on columns:</p>
 
 <table class="org-table">
@@ -813,14 +777,20 @@ all formulas.</p>
 
 </div>
 <div id="org-table-appearance-in-export" class="org-section org-level-1">
-<h1>⚠️ Table Appearance in Export</h1>
+<h1>✅ Table Appearance in Export</h1>
+<p>CLOSED: [2026-01-17 Sat 13:43]</p>
+
 <div id="org-html-export" class="org-section org-level-2">
-<h2>HTML Export</h2>
-<p>Tables export as HTML `&lt;table&gt;&#39; elements with proper styling.</p>
+<h2>✅ HTML Export</h2>
+<p>CLOSED: [2026-01-17 Sat 19:55]</p>
+
+<p>Tables export as HTML `<table>&#39; elements with proper styling.</p>
 
 </div>
 <div id="org-latex-export" class="org-section org-level-2">
-<h2>LaTeX Export</h2>
+<h2>✅ LaTeX Export</h2>
+<p>CLOSED: [2026-01-17 Sat 19:55]</p>
+
 <p>Tables export as LaTeX <kbd>tabular</kbd> environments:</p>
 
 <div class="org-src-container">
@@ -834,7 +804,9 @@ Bob &amp; 25 &amp; Boston \\
 
 </div>
 <div id="org-markdown-export" class="org-section org-level-2">
-<h2>Markdown Export</h2>
+<h2>✅ Markdown Export</h2>
+<p>CLOSED: [2026-01-18 Sun 10:08]</p>
+
 <p>Tables export in GitHub-flavored Markdown format:</p>
 
 <div class="org-src-container">
@@ -909,10 +881,10 @@ Bob &amp; 25 &amp; Boston \\
 </thead>
 <tbody>
 <tr><td>C-c \vert{}</td><td>Create table</td></tr>
-<tr><td>&lt;tab&gt;</td><td>Next cell / align</td></tr>
-<tr><td>S-&lt;tab&gt;</td><td>Previous cell</td></tr>
+<tr><td><tab></td><td>Next cell / align</td></tr>
+<tr><td>S-<tab></td><td>Previous cell</td></tr>
 <tr><td>C-c -</td><td>Insert separator</td></tr>
-<tr><td>M-&lt;return&gt;</td><td>Insert row below</td></tr>
+<tr><td>M-<return></td><td>Insert row below</td></tr>
 <tr><td>M-S-Right</td><td>Insert column right</td></tr>
 <tr><td>M-S-Backspace</td><td>Delete row</td></tr>
 <tr><td>C-c ^</td><td>Sort by column</td></tr>
@@ -975,332 +947,6 @@ Bob &amp; 25 &amp; Boston \\
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="05-links.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="03-todo-items.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#tables" class="toc-link">✅ Tables</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#creating-tables" class="toc-link">✅ Creating Tables</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#manual-creation" class="toc-link">✅ Manual Creation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#table-creation-command" class="toc-link">✅ Table Creation Command</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#converting-text-to-table" class="toc-link">✅ Converting Text to Table</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#table-navigation" class="toc-link">✅ Table Navigation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#moving-between-cells" class="toc-link">👀 Moving Between Cells</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#quick-navigation" class="toc-link">Quick Navigation</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#editing-tables" class="toc-link">⚠️ Editing Tables</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#addingremoving-rows" class="toc-link">✅ Adding/Removing Rows</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#addingremoving-columns" class="toc-link">✅ Adding/Removing Columns</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#moving-rowscolumns" class="toc-link">✅ Moving Rows/Columns</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#separator-lines" class="toc-link">✅ Separator Lines</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#table-alignment" class="toc-link">✅ Table Alignment</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#automatic-alignment" class="toc-link">✅ Automatic Alignment</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#column-width-specification" class="toc-link">⚠️ Column Width Specification</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#horizontal-alignment" class="toc-link">✅ Horizontal Alignment</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#table-formulas" class="toc-link">⚠️ Table Formulas</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#formula-line" class="toc-link">Formula Line</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#cell-references" class="toc-link">Cell References</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#column-references" class="toc-link">Column References</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#row-references" class="toc-link">Row References</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#combined-references" class="toc-link">Combined References</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#ranges" class="toc-link">Ranges</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#formula-syntax" class="toc-link">Formula Syntax</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#built-in-functions" class="toc-link">Built-in Functions</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#recalculating-formulas" class="toc-link">Recalculating Formulas</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#formula-examples" class="toc-link">Formula Examples</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#row-formula" class="toc-link">Row Formula</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#column-formula" class="toc-link">Column Formula</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#percentage-calculation" class="toc-link">Percentage Calculation</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#table-importexport" class="toc-link">⚠️ Table Import/Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#importing-tables" class="toc-link">Importing Tables</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#exporting-tables" class="toc-link">Exporting Tables</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#column-operations" class="toc-link">⚠️ Column Operations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#sorting" class="toc-link">✅ Sorting</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#named-tables" class="toc-link">✅ Named Tables</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#table-appearance-in-export" class="toc-link">⚠️ Table Appearance in Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#html-export" class="toc-link">HTML Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latex-export" class="toc-link">LaTeX Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#markdown-export" class="toc-link">Markdown Export</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">✅ Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#table-design" class="toc-link">✅ Table Design</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#formula-organization" class="toc-link">✅ Formula Organization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#large-tables" class="toc-link">✅ Large Tables</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#quick-reference" class="toc-link">✅ Quick Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#keybindings" class="toc-link">Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#commands" class="toc-link">Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-topics" class="toc-link">✅ Related Topics</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

@@ -1,260 +1,213 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Document Structure</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Document Structure</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Document Structure</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-document-structure">✅ Document Structure</a></li>
+<li><a href="#org-headlines">✅ Headlines</a></li>
+<ul>
+<li><a href="#org-creating-headlines">✅ Creating Headlines</a></li>
+<li><a href="#org-headline-components">✅ Headline Components</a></li>
+<li><a href="#org-headline-levels">✅ Headline Levels</a></li>
+</ul>
+<li><a href="#org-visibility-cycling">✅ Visibility Cycling</a></li>
+<ul>
+<li><a href="#org-folding-with-tab">✅ Folding with Tab</a></li>
+<li><a href="#org-global-cycling-with-shift-tab">✅ Global Cycling with Shift-Tab</a></li>
+<li><a href="#org-visibility-commands">✅ Visibility Commands</a></li>
+</ul>
+<li><a href="#org-motion-between-headlines">✅ Motion Between Headlines</a></li>
+<ul>
+<li><a href="#org-navigation-commands">✅ Navigation Commands</a></li>
+<li><a href="#org-using-the-outline-view">✅ Using the Outline View</a></li>
+<li><a href="#org-jump-to-heading">✅ Jump to Heading</a></li>
+<li><a href="#org-speed-command-navigation">✅ Speed Command Navigation</a></li>
+</ul>
+<li><a href="#org-structure-editing">✅ Structure Editing</a></li>
+<ul>
+<li><a href="#org-promote-demote-headlines">✅ Promote/Demote Headlines</a></li>
+<ul>
+<li><a href="#org-single-heading-vs-subtree">✅ Single Heading vs Subtree</a></li>
+</ul>
+<li><a href="#org-move-subtrees-up-down">✅ Move Subtrees Up/Down</a></li>
+<li><a href="#org-kill-clone-subtrees">✅ Kill/Clone Subtrees</a></li>
+<li><a href="#org-insert-new-headings">✅ Insert New Headings</a></li>
+</ul>
+<li><a href="#org-document-keywords">✅ Document Keywords</a></li>
+<ul>
+<li><a href="#org-common-keywords">✅ Common Keywords</a></li>
+<li><a href="#org-options-keyword">✅ Options Keyword</a></li>
+<li><a href="#org-startup-keyword">✅ Startup Keyword</a></li>
+<li><a href="#org-property-keyword">✅ Property Keyword</a></li>
+</ul>
+<li><a href="#org-properties-drawers">✅ Properties Drawers</a></li>
+<ul>
+<li><a href="#org-creating-properties-drawers">✅ Creating Properties Drawers</a></li>
+<li><a href="#org-special-properties">✅ Special Properties</a></li>
+<li><a href="#org-adding-properties">✅ Adding Properties</a></li>
+<li><a href="#org-inherited-properties">✅ Inherited Properties</a></li>
+</ul>
+<li><a href="#org-drawers">✅ Drawers</a></li>
+<ul>
+<li><a href="#org-standard-drawers">✅ Standard Drawers</a></li>
+<ul>
+<li><a href="#org-properties-drawer">✅ PROPERTIES Drawer</a></li>
+<li><a href="#org-logbook-drawer">✅ LOGBOOK Drawer</a></li>
+</ul>
+<li><a href="#org-custom-drawers">✅ Custom Drawers</a></li>
+<li><a href="#org-drawer-visibility">✅ Drawer Visibility</a></li>
+</ul>
+<li><a href="#org-inline-tasks">✅ Inline Tasks</a></li>
+<ul>
+<li><a href="#org-creating-inline-tasks">✅ Creating Inline Tasks</a></li>
+<li><a href="#org-inline-task-features">✅ Inline Task Features</a></li>
+<li><a href="#org-when-to-use-inline-tasks">✅ When to Use Inline Tasks</a></li>
+<li><a href="#org-configuration">✅ Configuration</a></li>
+</ul>
+<li><a href="#org-footnote-definitions">✅ Footnote Definitions</a></li>
+<ul>
+<li><a href="#org-footnote-definition-syntax">✅ Footnote Definition Syntax</a></li>
+<li><a href="#org-footnote-labels">✅ Footnote Labels</a></li>
+<li><a href="#org-multi-line-footnotes">✅ Multi-line Footnotes</a></li>
+<li><a href="#org-inline-footnotes">✅ Inline Footnotes</a></li>
+<li><a href="#org-related-topics">✅ Related Topics</a></li>
+</ul>
+<li><a href="#org-dynamic-blocks">✅ Dynamic Blocks</a></li>
+<ul>
+<li><a href="#org-dynamic-block-syntax">✅ Dynamic Block Syntax</a></li>
+<li><a href="#org-clock-table-example">✅ Clock Table Example</a></li>
+<li><a href="#org-column-view-example">✅ Column View Example</a></li>
+<li><a href="#org-dynamic-block-parameters">✅ Dynamic Block Parameters</a></li>
+<li><a href="#org-updating-dynamic-blocks">✅ Updating Dynamic Blocks</a></li>
+</ul>
+<li><a href="#org-best-practices">✅ Best Practices</a></li>
+<ul>
+<li><a href="#org-document-organization">✅ Document Organization</a></li>
+<li><a href="#org-heading-depth-guidelines">✅ Heading Depth Guidelines</a></li>
+<li><a href="#org-navigation-efficiency">✅ Navigation Efficiency</a></li>
+</ul>
+<li><a href="#org-related-topics">✅ Related Topics</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0 active ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-document-structure" class="org-section org-level-1">
+<div id="org-document-structure" class="org-section org-level-1">
 <h1>✅ Document Structure</h1>
 <p>CLOSED: [2026-01-15 Thu 14:25]</p>
 
@@ -370,7 +323,7 @@ from * to ***) works but may cause confusion.</p>
 <h2>✅ Global Cycling with Shift-Tab</h2>
 <p>CLOSED: [2026-01-15 Thu 14:26]</p>
 
-<p>Press S-&lt;tab&gt; anywhere in the document to cycle global visibility:</p>
+<p>Press S-<tab> anywhere in the document to cycle global visibility:</p>
 
 <table class="org-table">
 <thead>
@@ -393,8 +346,8 @@ from * to ***) works but may cause confusion.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td>&lt;tab&gt;</td><td>Cycle visibility at current heading</td></tr>
-<tr><td>S-&lt;tab&gt;</td><td>Cycle global visibility</td></tr>
+<tr><td><tab></td><td>Cycle visibility at current heading</td></tr>
+<tr><td>S-<tab></td><td>Cycle global visibility</td></tr>
 </tbody>
 </table>
 
@@ -501,8 +454,8 @@ manual cut-and-paste.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td>M-&lt;left&gt;</td><td>Promote heading (decrease level)</td></tr>
-<tr><td>M-&lt;right&gt;</td><td>Demote heading (increase level)</td></tr>
+<tr><td>M-<left></td><td>Promote heading (decrease level)</td></tr>
+<tr><td>M-<right></td><td>Demote heading (increase level)</td></tr>
 <tr><td>M-S-Left</td><td>Promote subtree</td></tr>
 <tr><td>M-S-Right</td><td>Demote subtree</td></tr>
 </tbody>
@@ -530,7 +483,9 @@ manual cut-and-paste.</p>
 </div>
 </div>
 <div id="org-move-subtrees-up-down" class="org-section org-level-2">
-<h2>⚠️ Move Subtrees Up/Down</h2>
+<h2>✅ Move Subtrees Up/Down</h2>
+<p>CLOSED: [2026-01-17 Sat 13:39]</p>
+
 <p>Reorder sections without changing their level:</p>
 
 <table class="org-table">
@@ -538,8 +493,8 @@ manual cut-and-paste.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td>M-&lt;up&gt;</td><td>Move subtree up (swap with previous)</td></tr>
-<tr><td>M-&lt;down&gt;</td><td>Move subtree down (swap with next)</td></tr>
+<tr><td>M-<up></td><td>Move subtree up (swap with previous)</td></tr>
+<tr><td>M-<down></td><td>Move subtree down (swap with next)</td></tr>
 </tbody>
 </table>
 
@@ -583,7 +538,7 @@ manual cut-and-paste.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td>C-&lt;return&gt;</td><td>Insert heading at same level</td></tr>
+<tr><td>C-<return></td><td>Insert heading at same level</td></tr>
 </tbody>
 </table>
 
@@ -655,7 +610,9 @@ document-wide settings.</p>
 
 </div>
 <div id="org-startup-keyword" class="org-section org-level-2">
-<h2>⚠️ Startup Keyword</h2>
+<h2>✅ Startup Keyword</h2>
+<p>CLOSED: [2026-01-18 Sun 09:18]</p>
+
 <p>Control initial visibility:</p>
 
 <div class="org-src-container">
@@ -666,7 +623,9 @@ document-wide settings.</p>
 
 </div>
 <div id="org-property-keyword" class="org-section org-level-2">
-<h2>⚠️ Property Keyword</h2>
+<h2>✅ Property Keyword</h2>
+<p>CLOSED: [2026-01-18 Sun 10:07]</p>
+
 <p>Set default properties for source blocks:</p>
 
 <div class="org-src-container">
@@ -729,25 +688,35 @@ document-wide settings.</p>
 
 </div>
 <div id="org-inherited-properties" class="org-section org-level-2">
-<h2>⚠️ Inherited Properties</h2>
+<h2>✅ Inherited Properties</h2>
+<p>CLOSED: [2026-01-18 Sun 11:39]</p>
+
 <p>Some properties are inherited by child headlines. The CATEGORY property, for
 example, applies to all children unless overridden.</p>
 
 </div>
 </div>
 <div id="org-drawers" class="org-section org-level-1">
-<h1>⚠️ Drawers</h1>
+<h1>✅ Drawers</h1>
+<p>CLOSED: [2026-01-17 Sat 13:40]</p>
+
 <p>Drawers are collapsible sections that hide auxiliary information.</p>
 
 <div id="org-standard-drawers" class="org-section org-level-2">
-<h2>⚠️ Standard Drawers</h2>
+<h2>✅ Standard Drawers</h2>
+<p>CLOSED: [2026-01-17 Sat 13:40]</p>
+
 <div id="org-properties-drawer" class="org-section org-level-3">
-<h3>⚠️ PROPERTIES Drawer</h3>
+<h3>✅ PROPERTIES Drawer</h3>
+<p>CLOSED: [2026-01-17 Sat 13:40]</p>
+
 <p>Stores headline metadata (see above).</p>
 
 </div>
 <div id="org-logbook-drawer" class="org-section org-level-3">
-<h3>⚠️ LOGBOOK Drawer</h3>
+<h3>✅ LOGBOOK Drawer</h3>
+<p>CLOSED: [2026-01-17 Sat 13:40]</p>
+
 <p>Stores clock entries and state change history:</p>
 
 <div class="org-src-container">
@@ -761,28 +730,20 @@ CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 10:30] =&gt;  1:30
 </div>
 </div>
 <div id="org-custom-drawers" class="org-section org-level-2">
-<h2>⚠️ Custom Drawers</h2>
-<p>Create custom drawers for any purpose:</p>
+<h2>✅ Custom Drawers</h2>
+<p>CLOSED: [2026-01-17 Sat 19:39]</p>
 
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">,* Research Notes
-:NOTES:
-These are private notes that won&#39;t be exported.
-- Reference: Smith et al. 2024
-- Follow up with collaborator
-:END:
+<p>Create custom drawers for any purpose. These are not exported.</p>
 
-:REFERENCES:
-- [[cite:smith-2024]]
-- [[cite:jones-2023]]
-:END:</code></pre>
-</div>
+
 
 <p>Drawer names must be uppercase letters and can contain numbers and underscores.</p>
 
 </div>
 <div id="org-drawer-visibility" class="org-section org-level-2">
-<h2>⚠️ Drawer Visibility</h2>
+<h2>✅ Drawer Visibility</h2>
+<p>CLOSED: [2026-01-17 Sat 19:39]</p>
+
 <p>Drawers are typically displayed collapsed. Click or use fold commands to
 expand/collapse them.</p>
 
@@ -951,40 +912,101 @@ Content that will be replaced when block is updated.
 
 </div>
 <div id="org-clock-table-example" class="org-section org-level-2">
-<h2>✅ Clock Table Example</h2>
+<h2><span class="org-priority">[#C]</span> ✅ Clock Table Example</h2>
 <p>CLOSED: [2026-01-15 Thu 14:35]</p>
 
 <p>The most common dynamic block is the clock table, which summarizes time spent:</p>
 
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">,#+BEGIN: clocktable :maxlevel 2 :scope file
-| Headline          | Time   |
-|-------------------+--------|
-| * Project work    |  10:30 |
-| ** Implementation |   6:00 |
-| ** Testing        |   4:30 |
-,#+END:</code></pre>
-</div>
+<table class="org-table">
+<thead>
+<tr><th>Headline</th><th>Time</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Total</strong></td><td>0:00</td></tr>
+</tbody>
+</table>
+
 
 </div>
 <div id="org-column-view-example" class="org-section org-level-2">
-<h2>⚠️ Column View Example</h2>
+<h2>✅ Column View Example<span class="org-tags"><span class="org-tag">columns</span></span></h2>
+<p>CLOSED: [2026-01-17 Sat 19:40]</p>
+
 <p>Column view displays properties in a table format:</p>
 
 <table class="org-table">
 <thead>
-<tr><th>ITEM</th><th>EFFORT</th><th>PRIORITY</th></tr>
+<tr><th>ITEM</th><th>TODO</th><th>PRIORITY</th><th>TAGS</th></tr>
 </thead>
 <tbody>
-<tr><td>Task 1</td><td>2:00</td><td>A</td></tr>
-<tr><td>Task 2</td><td>1:30</td><td>B</td></tr>
+<tr><td>✅ Document Structure</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Headlines</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Creating Headlines</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Headline Components</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Headline Levels</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Visibility Cycling</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Folding with Tab</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Global Cycling with Shift-Tab</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Visibility Commands</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Motion Between Headlines</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Navigation Commands</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Using the Outline View</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Jump to Heading</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Speed Command Navigation</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Structure Editing</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Promote/Demote Headlines</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Single Heading vs Subtree</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Move Subtrees Up/Down</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Kill/Clone Subtrees</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Insert New Headings</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Document Keywords</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Common Keywords</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Options Keyword</td><td></td><td></td><td></td></tr>
+<tr><td>⚠️ Startup Keyword</td><td></td><td></td><td></td></tr>
+<tr><td>⚠️ Property Keyword</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Properties Drawers</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Creating Properties Drawers</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Special Properties</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Adding Properties</td><td></td><td></td><td></td></tr>
+<tr><td>⚠️ Inherited Properties</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Drawers</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Standard Drawers</td><td></td><td></td><td></td></tr>
+<tr><td>✅ PROPERTIES Drawer</td><td></td><td></td><td></td></tr>
+<tr><td>✅ LOGBOOK Drawer</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Custom Drawers</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Drawer Visibility</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Inline Tasks</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Creating Inline Tasks</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Inline Task Features</td><td></td><td></td><td></td></tr>
+<tr><td>✅ When to Use Inline Tasks</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Configuration</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Footnote Definitions</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Footnote Definition Syntax</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Footnote Labels</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Multi-line Footnotes</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Inline Footnotes</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Related Topics</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Dynamic Blocks</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Dynamic Block Syntax</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Clock Table Example</td><td></td><td>[#C]</td><td></td></tr>
+<tr><td>✅ Column View Example</td><td></td><td></td><td>:columns:</td></tr>
+<tr><td>⚠️ Dynamic Block Parameters</td><td></td><td></td><td></td></tr>
+<tr><td>⚠️ Updating Dynamic Blocks</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Best Practices</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Document Organization</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Heading Depth Guidelines</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Navigation Efficiency</td><td></td><td></td><td></td></tr>
+<tr><td>✅ Related Topics</td><td></td><td></td><td></td></tr>
+<tr><td>Navigation</td><td></td><td></td><td></td></tr>
 </tbody>
 </table>
 
 
 </div>
 <div id="org-dynamic-block-parameters" class="org-section org-level-2">
-<h2>⚠️ Dynamic Block Parameters</h2>
+<h2>✅ Dynamic Block Parameters</h2>
+<p>CLOSED: [2026-01-17 Sat 19:41]</p>
+
 <p>Common parameters for clock tables:</p>
 
 <table class="org-table">
@@ -994,16 +1016,18 @@ Content that will be replaced when block is updated.
 <tbody>
 <tr><td>:maxlevel</td><td>Maximum headline depth</td><td>:maxlevel 3</td></tr>
 <tr><td>:scope</td><td>Scope of clock data</td><td>:scope file</td></tr>
-<tr><td>:tstart</td><td>Start time for report</td><td>:tstart &quot;&lt;-1w&gt;&quot;</td></tr>
-<tr><td>:tend</td><td>End time for report</td><td>:tend &quot;&lt;now&gt;&quot;</td></tr>
+<tr><td>:tstart</td><td>Start time for report</td><td>:tstart &quot;<-1w>&quot;</td></tr>
+<tr><td>:tend</td><td>End time for report</td><td>:tend &quot;<now>&quot;</td></tr>
 <tr><td>:block</td><td>Time block (today, thisweek, etc.)</td><td>:block thisweek</td></tr>
 </tbody>
 </table>
 
 </div>
 <div id="org-updating-dynamic-blocks" class="org-section org-level-2">
-<h2>⚠️ Updating Dynamic Blocks</h2>
-<p>Dynamic blocks are updated when explicitly requested. The content between</p>
+<h2>✅ Updating Dynamic Blocks</h2>
+<p>CLOSED: [2026-01-17 Sat 19:41]</p>
+
+<p>Dynamic blocks are updated when explicitly requested (C-c C-c on the header). The content between</p>
 
 </div>
 </div>
@@ -1056,7 +1080,7 @@ Content that will be replaced when block is updated.
 </li>
 <li><p><strong>Enable speed commands</strong> for rapid single-key navigation</p>
 </li>
-<li><p><strong>Use S-&lt;tab&gt;</strong> to get an overview before diving in</p>
+<li><p><strong>Use S-<tab></strong> to get an overview before diving in</p>
 </li>
 </ol>
 
@@ -1083,7 +1107,7 @@ Content that will be replaced when block is updated.
 <div id="org-navigation" class="org-section org-level-1">
 <h1>Navigation</h1>
 <ul>
-<li><p>Previous: <a href="01-getting-started.html">Getting Started</a></p>
+<li><p>Previous: <a href="01.5-basic-syntax.html">Basic Syntax</a></p>
 </li>
 <li><p>Index: <a href="00-index.html">Documentation Index</a></p>
 </li>
@@ -1092,379 +1116,6 @@ Content that will be replaced when block is updated.
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="25-commands.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="21-navigation.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#document-structure" class="toc-link">✅ Document Structure</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#headlines" class="toc-link">✅ Headlines</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#creating-headlines" class="toc-link">✅ Creating Headlines</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#headline-components" class="toc-link">✅ Headline Components</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#headline-levels" class="toc-link">✅ Headline Levels</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#visibility-cycling" class="toc-link">✅ Visibility Cycling</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#folding-with-tab" class="toc-link">✅ Folding with Tab</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#global-cycling-with-shift-tab" class="toc-link">✅ Global Cycling with Shift-Tab</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#visibility-commands" class="toc-link">✅ Visibility Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#motion-between-headlines" class="toc-link">✅ Motion Between Headlines</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#navigation-commands" class="toc-link">✅ Navigation Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#using-the-outline-view" class="toc-link">✅ Using the Outline View</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#jump-to-heading" class="toc-link">✅ Jump to Heading</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#speed-command-navigation" class="toc-link">✅ Speed Command Navigation</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#structure-editing" class="toc-link">✅ Structure Editing</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#promotedemote-headlines" class="toc-link">✅ Promote/Demote Headlines</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#single-heading-vs-subtree" class="toc-link">✅ Single Heading vs Subtree</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#move-subtrees-updown" class="toc-link">⚠️ Move Subtrees Up/Down</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#killclone-subtrees" class="toc-link">✅ Kill/Clone Subtrees</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#insert-new-headings" class="toc-link">✅ Insert New Headings</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#document-keywords" class="toc-link">✅ Document Keywords</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#common-keywords" class="toc-link">✅ Common Keywords</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#options-keyword" class="toc-link">✅ Options Keyword</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#startup-keyword" class="toc-link">⚠️ Startup Keyword</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#property-keyword" class="toc-link">⚠️ Property Keyword</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#properties-drawers" class="toc-link">✅ Properties Drawers</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#creating-properties-drawers" class="toc-link">✅ Creating Properties Drawers</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#special-properties" class="toc-link">✅ Special Properties</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#adding-properties" class="toc-link">✅ Adding Properties</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#inherited-properties" class="toc-link">⚠️ Inherited Properties</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#drawers" class="toc-link">⚠️ Drawers</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#standard-drawers" class="toc-link">⚠️ Standard Drawers</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#properties-drawer" class="toc-link">⚠️ PROPERTIES Drawer</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#logbook-drawer" class="toc-link">⚠️ LOGBOOK Drawer</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#custom-drawers" class="toc-link">⚠️ Custom Drawers</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#drawer-visibility" class="toc-link">⚠️ Drawer Visibility</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#inline-tasks" class="toc-link">✅ Inline Tasks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#creating-inline-tasks" class="toc-link">✅ Creating Inline Tasks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#inline-task-features" class="toc-link">✅ Inline Task Features</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#when-to-use-inline-tasks" class="toc-link">✅ When to Use Inline Tasks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#configuration" class="toc-link">✅ Configuration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#footnote-definitions" class="toc-link">✅ Footnote Definitions</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#footnote-definition-syntax" class="toc-link">✅ Footnote Definition Syntax</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#footnote-labels" class="toc-link">✅ Footnote Labels</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#multi-line-footnotes" class="toc-link">✅ Multi-line Footnotes</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#inline-footnotes" class="toc-link">✅ Inline Footnotes</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#related-topics" class="toc-link">✅ Related Topics</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#dynamic-blocks" class="toc-link">✅ Dynamic Blocks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#dynamic-block-syntax" class="toc-link">✅ Dynamic Block Syntax</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#clock-table-example" class="toc-link">✅ Clock Table Example</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#column-view-example" class="toc-link">⚠️ Column View Example</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#dynamic-block-parameters" class="toc-link">⚠️ Dynamic Block Parameters</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#updating-dynamic-blocks" class="toc-link">⚠️ Updating Dynamic Blocks</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">✅ Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#document-organization" class="toc-link">✅ Document Organization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#heading-depth-guidelines" class="toc-link">✅ Heading Depth Guidelines</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#navigation-efficiency" class="toc-link">✅ Navigation Efficiency</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-topics" class="toc-link">✅ Related Topics</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

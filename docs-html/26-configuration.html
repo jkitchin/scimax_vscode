@@ -1,269 +1,323 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Scimax VS Code Configuration Guide</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scimax VS Code Configuration Guide</title>
+<meta name="author" content="Scimax Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Scimax VS Code Configuration Guide</h1>
+<p class="author">Scimax Team</p>
+<p class="date">2026-01-14</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-accessing-settings">✅ Accessing Settings</a></li>
+<li><a href="#org-settings-file-locations">Settings File Locations</a></li>
+<li><a href="#org-settings-format">Settings Format</a></li>
+</ul>
+<li><a href="#org-journal-settings">✅ Journal Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">✅ Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">✅ Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-journal-directory">✅ scimax.journal.directory</a></li>
+<li><a href="#org-scimax-journal-format">✅ scimax.journal.format</a></li>
+<li><a href="#org-scimax-journal-template">✅ scimax.journal.template</a></li>
+<li><a href="#org-scimax-journal-dateformat">✅ scimax.journal.dateFormat</a></li>
+<li><a href="#org-scimax-journal-autotimestamp">✅ scimax.journal.autoTimestamp</a></li>
+<li><a href="#org-scimax-journal-weekstartson">✅ scimax.journal.weekStartsOn</a></li>
+</ul>
+</ul>
+<li><a href="#org-database-search-settings">✅ Database &amp; Search Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-db-directories">scimax.db.directories</a></li>
+<li><a href="#org-scimax-db-excludepatterns">scimax.db.excludePatterns</a></li>
+<li><a href="#org-scimax-db-ignorepatterns">scimax.db.ignorePatterns</a></li>
+<li><a href="#org-scimax-db-autoindex">scimax.db.autoIndex</a></li>
+<li><a href="#org-scimax-db-embeddingprovider">scimax.db.embeddingProvider</a></li>
+<li><a href="#org-scimax-db-localmodel">scimax.db.localModel</a></li>
+<li><a href="#org-scimax-db-ollamaurl">scimax.db.ollamaUrl</a></li>
+<li><a href="#org-scimax-db-ollamamodel">scimax.db.ollamaModel</a></li>
+<li><a href="#org-scimax-db-openaiapikey">scimax.db.openaiApiKey</a></li>
+</ul>
+</ul>
+<li><a href="#org-code-execution-settings">Code Execution Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-literate-pythonpath">scimax.literate.pythonPath</a></li>
+<li><a href="#org-scimax-literate-jupyterpath">scimax.literate.jupyterPath</a></li>
+</ul>
+</ul>
+<li><a href="#org-reference-citation-settings">Reference/Citation Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-ref-bibliographyfiles">scimax.ref.bibliographyFiles</a></li>
+<li><a href="#org-scimax-ref-pdfdirectory">scimax.ref.pdfDirectory</a></li>
+<li><a href="#org-scimax-ref-notesdirectory">scimax.ref.notesDirectory</a></li>
+<li><a href="#org-scimax-ref-defaultcitestyle">scimax.ref.defaultCiteStyle</a></li>
+</ul>
+</ul>
+<li><a href="#org-export-settings">Export Settings</a></li>
+<ul>
+<li><a href="#org-latex-export-settings">LaTeX Export Settings</a></li>
+<ul>
+<li><a href="#org-scimax-export-latex-customheader">scimax.export.latex.customHeader</a></li>
+<li><a href="#org-scimax-export-latex-documentclass">scimax.export.latex.documentClass</a></li>
+<li><a href="#org-scimax-export-latex-classoptions">scimax.export.latex.classOptions</a></li>
+<li><a href="#org-scimax-export-latex-defaultpreamble">scimax.export.latex.defaultPreamble</a></li>
+</ul>
+<li><a href="#org-pdf-export-settings">PDF Export Settings</a></li>
+<ul>
+<li><a href="#org-scimax-export-pdf-compiler">scimax.export.pdf.compiler</a></li>
+<li><a href="#org-scimax-export-pdf-bibtexcommand">scimax.export.pdf.bibtexCommand</a></li>
+<li><a href="#org-scimax-export-pdf-shellescape">scimax.export.pdf.shellEscape</a></li>
+<li><a href="#org-scimax-export-pdf-extraargs">scimax.export.pdf.extraArgs</a></li>
+<li><a href="#org-scimax-export-pdf-openlogonerror">scimax.export.pdf.openLogOnError</a></li>
+<li><a href="#org-scimax-export-pdf-cleanauxfiles">scimax.export.pdf.cleanAuxFiles</a></li>
+</ul>
+</ul>
+<li><a href="#org-latex-preview-settings">LaTeX Preview Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-latexpreview-enabled">scimax.latexPreview.enabled</a></li>
+<li><a href="#org-scimax-latexpreview-cacheenabled">scimax.latexPreview.cacheEnabled</a></li>
+<li><a href="#org-scimax-latexpreview-darkmodeaware">scimax.latexPreview.darkModeAware</a></li>
+</ul>
+</ul>
+<li><a href="#org-latex-live-preview-settings">LaTeX Live Preview Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-latexlivepreview-buildonsave">scimax.latexLivePreview.buildOnSave</a></li>
+<li><a href="#org-scimax-latexlivepreview-buildonidle">scimax.latexLivePreview.buildOnIdle</a></li>
+<li><a href="#org-scimax-latexlivepreview-idledelay">scimax.latexLivePreview.idleDelay</a></li>
+<li><a href="#org-scimax-latexlivepreview-compiler">scimax.latexLivePreview.compiler</a></li>
+<li><a href="#org-scimax-latexlivepreview-uselatexmk">scimax.latexLivePreview.useLatexmk</a></li>
+</ul>
+</ul>
+<li><a href="#org-notebook-settings">Notebook Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-notebook-directory">scimax.notebook.directory</a></li>
+<li><a href="#org-scimax-notebook-defaulttemplate">scimax.notebook.defaultTemplate</a></li>
+<li><a href="#org-scimax-notebook-autodetect">scimax.notebook.autoDetect</a></li>
+</ul>
+</ul>
+<li><a href="#org-hydra-menu-settings">Hydra Menu Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-hydra-showkeyhints">scimax.hydra.showKeyHints</a></li>
+<li><a href="#org-scimax-hydra-singlekeyselection">scimax.hydra.singleKeySelection</a></li>
+<li><a href="#org-scimax-hydra-dimnonmatching">scimax.hydra.dimNonMatching</a></li>
+<li><a href="#org-scimax-hydra-sortbykey">scimax.hydra.sortByKey</a></li>
+</ul>
+</ul>
+<li><a href="#org-speed-commands-settings">Speed Commands Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-speedcommands-enabled">scimax.speedCommands.enabled</a></li>
+</ul>
+</ul>
+<li><a href="#org-agenda-settings">Agenda Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-agenda-files">scimax.agenda.files</a></li>
+<li><a href="#org-scimax-agenda-excludepatterns">scimax.agenda.excludePatterns</a></li>
+<li><a href="#org-scimax-agenda-defaultspan">scimax.agenda.defaultSpan</a></li>
+<li><a href="#org-scimax-agenda-showdone">scimax.agenda.showDone</a></li>
+<li><a href="#org-scimax-agenda-showhabits">scimax.agenda.showHabits</a></li>
+<li><a href="#org-scimax-agenda-todostates">scimax.agenda.todoStates</a></li>
+<li><a href="#org-scimax-agenda-donestates">scimax.agenda.doneStates</a></li>
+</ul>
+</ul>
+<li><a href="#org-image-overlay-settings">Image Overlay Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-imageoverlays-enabled">scimax.imageOverlays.enabled</a></li>
+<li><a href="#org-scimax-imageoverlays-maxwidth">scimax.imageOverlays.maxWidth</a></li>
+<li><a href="#org-scimax-imageoverlays-maxheight">scimax.imageOverlays.maxHeight</a></li>
+<li><a href="#org-scimax-imageoverlays-rendermode">scimax.imageOverlays.renderMode</a></li>
+<li><a href="#org-scimax-imageoverlays-onlywhencursornotinlink">scimax.imageOverlays.onlyWhenCursorNotInLink</a></li>
+<li><a href="#org-scimax-imageoverlays-excludepatterns">scimax.imageOverlays.excludePatterns</a></li>
+<li><a href="#org-scimax-imageoverlays-maxoverlaysperdocument">scimax.imageOverlays.maxOverlaysPerDocument</a></li>
+<li><a href="#org-scimax-imageoverlays-showdimensions">scimax.imageOverlays.showDimensions</a></li>
+<li><a href="#org-scimax-imageoverlays-cacheenabled">scimax.imageOverlays.cacheEnabled</a></li>
+</ul>
+</ul>
+<li><a href="#org-capture-settings">Capture Settings</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-detailed-configuration">Detailed Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-capture-templates">scimax.capture.templates</a></li>
+<li><a href="#org-scimax-capture-defaultfile">scimax.capture.defaultFile</a></li>
+<li><a href="#org-scimax-capture-datetreeformat">scimax.capture.datetreeFormat</a></li>
+<li><a href="#org-scimax-capture-autosave">scimax.capture.autoSave</a></li>
+</ul>
+</ul>
+<li><a href="#org-common-configurations">Common Configurations</a></li>
+<ul>
+<li><a href="#org-academic-writing-setup">Academic Writing Setup</a></li>
+<li><a href="#org-software-development-setup">Software Development Setup</a></li>
+<li><a href="#org-personal-notes-pkm-setup">Personal Notes &amp; PKM Setup</a></li>
+<li><a href="#org-minimal-configuration">Minimal Configuration</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-database-performance">Database Performance</a></li>
+<li><a href="#org-jupyter-kernels-not-found">Jupyter Kernels Not Found</a></li>
+<li><a href="#org-latex-preview-not-working">LaTeX Preview Not Working</a></li>
+<li><a href="#org-semantic-search-not-working">Semantic Search Not Working</a></li>
+</ul>
+<li><a href="#org-related-documentation">Related Documentation</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-17 Sat 17:35]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-introduction" class="org-section org-level-1">
-<h1>Introduction</h1>
 <p>Scimax VS Code provides extensive configuration options to customize your scientific computing environment. This guide covers all available settings and provides examples for common use cases.</p>
 
 <div id="org-accessing-settings" class="org-section org-level-2">
-<h2>Accessing Settings</h2>
+<h2>✅ Accessing Settings</h2>
+<p>CLOSED: [2026-01-17 Sat 17:35]</p>
+
 <p>There are multiple ways to access and modify Scimax settings:</p>
 
 <ol>
-<li><p><strong>Settings UI</strong>: Press <kbd>C-,</kbd> (or <kbd>s-,</kbd> on macOS) to open the VS Code settings interface. Search for &quot;scimax&quot; to see all Scimax-related settings.</p>
+<li><p><strong>Settings UI</strong>: Press <kbd>C/Cmd-,</kbd> to open the VS Code settings interface. Search for &quot;scimax&quot; to see all Scimax-related settings.</p>
 </li>
 <li><p><strong>settings.json</strong>: Edit your settings file directly for more control:</p>
 </li>
@@ -279,10 +333,10 @@
 <tr><th>Type</th><th>Scope</th><th>Location</th></tr>
 </thead>
 <tbody>
-<tr><td>User</td><td>All workspaces</td><td>Linux: <code class="verbatim">~/.config/Code/User/settings.json</code></td></tr>
-<tr><td></td><td></td><td>macOS: <code class="verbatim">~/Library/Application Support/Code/User/settings.json</code></td></tr>
-<tr><td></td><td></td><td>Windows: <code class="verbatim">%APPDATA%\Code\User\settings.json</code></td></tr>
-<tr><td>Workspace</td><td>Current workspace only</td><td><code class="verbatim">.vscode/settings.json</code> in workspace root</td></tr>
+<tr><td>User</td><td>All workspaces</td><td>Linux: ~/.config/Code/User/settings.json</td></tr>
+<tr><td></td><td></td><td>macOS: ~/Library/Application Support/Code/User/settings.json</td></tr>
+<tr><td></td><td></td><td>Windows: %APPDATA%\Code\User\settings.json</td></tr>
+<tr><td>Workspace</td><td>Current workspace only</td><td>.vscode/settings.json in workspace root</td></tr>
 </tbody>
 </table>
 
@@ -304,30 +358,38 @@
 </div>
 </div>
 <div id="org-journal-settings" class="org-section org-level-1">
-<h1>Journal Settings</h1>
+<h1>✅ Journal Settings</h1>
+<p>CLOSED: [2026-01-17 Sat 17:36]</p>
+
 <p>Configure the journal system for daily note-taking and logging.</p>
 
 <div id="org-settings-overview" class="org-section org-level-2">
-<h2>Settings Overview</h2>
+<h2>✅ Settings Overview</h2>
+<p>CLOSED: [2026-01-17 Sat 17:36]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.journal.directory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Directory for journal files</td></tr>
-<tr><td><code class="verbatim">scimax.journal.format</code></td><td>string</td><td><code class="verbatim">&quot;org&quot;</code></td><td>File format (org or markdown)</td></tr>
-<tr><td><code class="verbatim">scimax.journal.template</code></td><td>string</td><td><code class="verbatim">&quot;default&quot;</code></td><td>Template name for new entries</td></tr>
-<tr><td><code class="verbatim">scimax.journal.dateFormat</code></td><td>string</td><td><code class="verbatim">&quot;YYYY-MM-DD&quot;</code></td><td>Date format for filenames</td></tr>
-<tr><td><code class="verbatim">scimax.journal.autoTimestamp</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-add timestamps to log entries</td></tr>
-<tr><td><code class="verbatim">scimax.journal.weekStartsOn</code></td><td>string</td><td><code class="verbatim">&quot;monday&quot;</code></td><td>First day of week (monday or sunday)</td></tr>
+<tr><td>scimax.journal.directory</td><td>string</td><td>&quot;&quot;</td><td>Directory for journal files</td></tr>
+<tr><td>scimax.journal.format</td><td>string</td><td>&quot;org&quot;</td><td>File format (org or markdown)</td></tr>
+<tr><td>scimax.journal.template</td><td>string</td><td>&quot;default&quot;</td><td>Template name for new entries</td></tr>
+<tr><td>scimax.journal.dateFormat</td><td>string</td><td>&quot;YYYY-MM-DD&quot;</td><td>Date format for filenames</td></tr>
+<tr><td>scimax.journal.autoTimestamp</td><td>boolean</td><td>true</td><td>Auto-add timestamps to log entries</td></tr>
+<tr><td>scimax.journal.weekStartsOn</td><td>string</td><td>&quot;monday&quot;</td><td>First day of week (monday or sunday)</td></tr>
 </tbody>
 </table>
 
 </div>
 <div id="org-detailed-configuration" class="org-section org-level-2">
-<h2>Detailed Configuration</h2>
+<h2>✅ Detailed Configuration</h2>
+<p>CLOSED: [2026-01-17 Sat 17:36]</p>
+
 <div id="org-scimax-journal-directory" class="org-section org-level-3">
-<h3>scimax.journal.directory</h3>
+<h3>✅ scimax.journal.directory</h3>
+<p>CLOSED: [2026-01-17 Sat 17:36]</p>
+
 <ul>
 <li><p><strong>Type</strong>: string</p>
 </li>
@@ -345,7 +407,9 @@
 
 </div>
 <div id="org-scimax-journal-format" class="org-section org-level-3">
-<h3>scimax.journal.format</h3>
+<h3>✅ scimax.journal.format</h3>
+<p>CLOSED: [2026-01-17 Sat 17:37]</p>
+
 <ul>
 <li><p><strong>Type</strong>: string (enum)</p>
 </li>
@@ -365,7 +429,9 @@
 
 </div>
 <div id="org-scimax-journal-template" class="org-section org-level-3">
-<h3>scimax.journal.template</h3>
+<h3>✅ scimax.journal.template</h3>
+<p>CLOSED: [2026-01-17 Sat 17:37]</p>
+
 <ul>
 <li><p><strong>Type</strong>: string</p>
 </li>
@@ -383,7 +449,9 @@
 
 </div>
 <div id="org-scimax-journal-dateformat" class="org-section org-level-3">
-<h3>scimax.journal.dateFormat</h3>
+<h3>✅ scimax.journal.dateFormat</h3>
+<p>CLOSED: [2026-01-17 Sat 17:37]</p>
+
 <ul>
 <li><p><strong>Type</strong>: string</p>
 </li>
@@ -410,7 +478,9 @@
 
 </div>
 <div id="org-scimax-journal-autotimestamp" class="org-section org-level-3">
-<h3>scimax.journal.autoTimestamp</h3>
+<h3>✅ scimax.journal.autoTimestamp</h3>
+<p>CLOSED: [2026-01-17 Sat 17:37]</p>
+
 <ul>
 <li><p><strong>Type</strong>: boolean</p>
 </li>
@@ -428,7 +498,9 @@
 
 </div>
 <div id="org-scimax-journal-weekstartson" class="org-section org-level-3">
-<h3>scimax.journal.weekStartsOn</h3>
+<h3>✅ scimax.journal.weekStartsOn</h3>
+<p>CLOSED: [2026-01-17 Sat 17:37]</p>
+
 <ul>
 <li><p><strong>Type</strong>: string (enum)</p>
 </li>
@@ -450,7 +522,9 @@
 </div>
 </div>
 <div id="org-database-search-settings" class="org-section org-level-1">
-<h1>Database &amp; Search Settings</h1>
+<h1>✅ Database &amp; Search Settings</h1>
+<p>CLOSED: [2026-01-17 Sat 17:37]</p>
+
 <p>Configure the full-text search database and semantic search capabilities.</p>
 
 <div id="org-settings-overview" class="org-section org-level-2">
@@ -460,15 +534,15 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.db.directories</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Additional directories to index</td></tr>
-<tr><td><code class="verbatim">scimax.db.excludePatterns</code></td><td>array</td><td>See below</td><td>Glob patterns to exclude</td></tr>
-<tr><td><code class="verbatim">scimax.db.ignorePatterns</code></td><td>array</td><td>See below</td><td>Files to ignore during indexing</td></tr>
-<tr><td><code class="verbatim">scimax.db.autoIndex</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Auto-index workspace on activation</td></tr>
-<tr><td><code class="verbatim">scimax.db.embeddingProvider</code></td><td>string</td><td><code class="verbatim">&quot;none&quot;</code></td><td>Embedding provider for semantic search</td></tr>
-<tr><td><code class="verbatim">scimax.db.localModel</code></td><td>string</td><td><code class="verbatim">&quot;Xenova/all-MiniLM-L6-v2&quot;</code></td><td>Local embedding model</td></tr>
-<tr><td><code class="verbatim">scimax.db.ollamaUrl</code></td><td>string</td><td><code class="verbatim">&quot;http://localhost:11434&quot;</code></td><td>Ollama API URL</td></tr>
-<tr><td><code class="verbatim">scimax.db.ollamaModel</code></td><td>string</td><td><code class="verbatim">&quot;nomic-embed-text&quot;</code></td><td>Ollama embedding model</td></tr>
-<tr><td><code class="verbatim">scimax.db.openaiApiKey</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>OpenAI API key</td></tr>
+<tr><td>scimax.db.directories</td><td>array</td><td>[ ]</td><td>Additional directories to index</td></tr>
+<tr><td>scimax.db.excludePatterns</td><td>array</td><td>See below</td><td>Glob patterns to exclude</td></tr>
+<tr><td>scimax.db.ignorePatterns</td><td>array</td><td>See below</td><td>Files to ignore during indexing</td></tr>
+<tr><td>scimax.db.autoIndex</td><td>boolean</td><td>false</td><td>Auto-index workspace on activation</td></tr>
+<tr><td>scimax.db.embeddingProvider</td><td>string</td><td>&quot;none&quot;</td><td>Embedding provider for semantic search</td></tr>
+<tr><td>scimax.db.localModel</td><td>string</td><td>&quot;Xenova/all-MiniLM-L6-v2&quot;</td><td>Local embedding model</td></tr>
+<tr><td>scimax.db.ollamaUrl</td><td>string</td><td>&quot;http://localhost:11434&quot;</td><td>Ollama API URL</td></tr>
+<tr><td>scimax.db.ollamaModel</td><td>string</td><td>&quot;nomic-embed-text&quot;</td><td>Ollama embedding model</td></tr>
+<tr><td>scimax.db.openaiApiKey</td><td>string</td><td>&quot;&quot;</td><td>OpenAI API key</td></tr>
 </tbody>
 </table>
 
@@ -570,7 +644,7 @@
 <ul>
 <li><p><strong>Type</strong>: string (enum)</p>
 </li>
-<li><p><strong>Default</strong>: <kbd>&quot;none&quot;</kbd></p>
+<li><p><strong>Default</strong>: <kbd>&quot;local&quot;</kbd></p>
 </li>
 <li><p><strong>Options</strong>: <kbd>&quot;none&quot;</kbd>, <kbd>&quot;local&quot;</kbd>, <kbd>&quot;ollama&quot;</kbd>, <kbd>&quot;openai&quot;</kbd></p>
 </li>
@@ -676,8 +750,8 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.literate.pythonPath</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Path to Python executable</td></tr>
-<tr><td><code class="verbatim">scimax.literate.jupyterPath</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Path to Jupyter executable</td></tr>
+<tr><td>scimax.literate.pythonPath</td><td>string</td><td>&quot;&quot;</td><td>Path to Python executable</td></tr>
+<tr><td>scimax.literate.jupyterPath</td><td>string</td><td>&quot;&quot;</td><td>Path to Jupyter executable</td></tr>
 </tbody>
 </table>
 
@@ -741,10 +815,10 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.ref.bibliographyFiles</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Paths to BibTeX files</td></tr>
-<tr><td><code class="verbatim">scimax.ref.pdfDirectory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Directory with PDF files</td></tr>
-<tr><td><code class="verbatim">scimax.ref.notesDirectory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Directory for reference notes</td></tr>
-<tr><td><code class="verbatim">scimax.ref.defaultCiteStyle</code></td><td>string</td><td><code class="verbatim">&quot;cite&quot;</code></td><td>Default citation style</td></tr>
+<tr><td>scimax.ref.bibliographyFiles</td><td>array</td><td>[ ]</td><td>Paths to BibTeX files</td></tr>
+<tr><td>scimax.ref.pdfDirectory</td><td>string</td><td>&quot;&quot;</td><td>Directory with PDF files</td></tr>
+<tr><td>scimax.ref.notesDirectory</td><td>string</td><td>&quot;&quot;</td><td>Directory for reference notes</td></tr>
+<tr><td>scimax.ref.defaultCiteStyle</td><td>string</td><td>&quot;cite&quot;</td><td>Default citation style</td></tr>
 </tbody>
 </table>
 
@@ -832,22 +906,22 @@
 </div>
 <div id="org-export-settings" class="org-section org-level-1">
 <h1>Export Settings</h1>
-<p>Configure LaTeX export options.</p>
+<p>Configure LaTeX and PDF export options.</p>
 
-<div id="org-settings-overview" class="org-section org-level-2">
-<h2>Settings Overview</h2>
+<div id="org-latex-export-settings" class="org-section org-level-2">
+<h2>LaTeX Export Settings</h2>
 <table class="org-table">
 <thead>
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.export.latex.customHeader</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Custom LaTeX preamble</td></tr>
+<tr><td>scimax.export.latex.customHeader</td><td>string</td><td>&quot;&quot;</td><td>Custom LaTeX preamble</td></tr>
+<tr><td>scimax.export.latex.documentClass</td><td>string</td><td>&quot;article&quot;</td><td>Default document class</td></tr>
+<tr><td>scimax.export.latex.classOptions</td><td>string</td><td>&quot;12pt,letterpaper&quot;</td><td>Default class options</td></tr>
+<tr><td>scimax.export.latex.defaultPreamble</td><td>string</td><td>(see below)</td><td>Default LaTeX packages</td></tr>
 </tbody>
 </table>
 
-</div>
-<div id="org-detailed-configuration" class="org-section org-level-2">
-<h2>Detailed Configuration</h2>
 <div id="org-scimax-export-latex-customheader" class="org-section org-level-3">
 <h3>scimax.export.latex.customHeader</h3>
 <ul>
@@ -861,17 +935,182 @@
 
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
-  &quot;scimax.export.latex.customHeader&quot;: &quot;\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n\\usepackage[margin=1in]{geometry}&quot;
+  &quot;scimax.export.latex.customHeader&quot;: &quot;\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n\\usepackage[margin1in]{geometry}&quot;
 }</code></pre>
 </div>
 
-<p>For better readability in JSON, use a single line or array of lines:</p>
+</div>
+<div id="org-scimax-export-latex-documentclass" class="org-section org-level-3">
+<h3>scimax.export.latex.documentClass</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;article&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Default LaTeX document class. Can be overridden by <code class="verbatim">#+LATEX_CLASS:</code> in the document.</p>
+</li>
+</ul>
 
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
-  &quot;scimax.export.latex.customHeader&quot;: &quot;\\documentclass[11pt]{article}\\n\\usepackage[utf8]{inputenc}\\n\\usepackage{graphicx}&quot;
+  &quot;scimax.export.latex.documentClass&quot;: &quot;report&quot;
 }</code></pre>
 </div>
+
+</div>
+<div id="org-scimax-export-latex-classoptions" class="org-section org-level-3">
+<h3>scimax.export.latex.classOptions</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;12pt,letterpaper&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Default LaTeX class options. Can be overridden by <code class="verbatim">#+LATEX_CLASS_OPTIONS:</code> in the document.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.latex.classOptions&quot;: &quot;11pt,a4paper,twoside&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-export-latex-defaultpreamble" class="org-section org-level-3">
+<h3>scimax.export.latex.defaultPreamble</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: Standard academic packages (inputenc, graphicx, amsmath, etc.)</p>
+</li>
+<li><p><strong>Description</strong>: Default LaTeX preamble packages. Can be extended by <code class="verbatim">#+LATEX_HEADER:</code> in the document.</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.latex.defaultPreamble&quot;: &quot;\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-pdf-export-settings" class="org-section org-level-2">
+<h2>PDF Export Settings</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.export.pdf.compiler</td><td>string</td><td>&quot;latexmk-lualatex&quot;</td><td>LaTeX compiler for PDF</td></tr>
+<tr><td>scimax.export.pdf.bibtexCommand</td><td>string</td><td>&quot;bibtex&quot;</td><td>Bibliography processor</td></tr>
+<tr><td>scimax.export.pdf.shellEscape</td><td>string</td><td>&quot;restricted&quot;</td><td>Shell escape mode</td></tr>
+<tr><td>scimax.export.pdf.extraArgs</td><td>string</td><td>&quot;&quot;</td><td>Extra compiler arguments</td></tr>
+<tr><td>scimax.export.pdf.openLogOnError</td><td>boolean</td><td>true</td><td>Open log on compilation failure</td></tr>
+<tr><td>scimax.export.pdf.cleanAuxFiles</td><td>boolean</td><td>true</td><td>Clean auxiliary files on success</td></tr>
+</tbody>
+</table>
+
+<div id="org-scimax-export-pdf-compiler" class="org-section org-level-3">
+<h3>scimax.export.pdf.compiler</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;latexmk-lualatex&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;latexmk-lualatex&quot;</kbd>, <kbd>&quot;latexmk-pdflatex&quot;</kbd>, <kbd>&quot;latexmk-xelatex&quot;</kbd>, <kbd>&quot;lualatex&quot;</kbd>, <kbd>&quot;pdflatex&quot;</kbd>, <kbd>&quot;xelatex&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: LaTeX compiler to use for PDF generation</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.pdf.compiler&quot;: &quot;latexmk-xelatex&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-export-pdf-bibtexcommand" class="org-section org-level-3">
+<h3>scimax.export.pdf.bibtexCommand</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;bibtex&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;biber&quot;</kbd>, <kbd>&quot;bibtex&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Bibliography processor (only used when not using latexmk)</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.pdf.bibtexCommand&quot;: &quot;biber&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-export-pdf-shellescape" class="org-section org-level-3">
+<h3>scimax.export.pdf.shellEscape</h3>
+<ul>
+<li><p><strong>Type</strong>: string (enum)</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;restricted&quot;</kbd></p>
+</li>
+<li><p><strong>Options</strong>: <kbd>&quot;restricted&quot;</kbd>, <kbd>&quot;full&quot;</kbd>, <kbd>&quot;disabled&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Shell escape mode for LaTeX compilation</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.pdf.shellEscape&quot;: &quot;full&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-export-pdf-extraargs" class="org-section org-level-3">
+<h3>scimax.export.pdf.extraArgs</h3>
+<ul>
+<li><p><strong>Type</strong>: string</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>&quot;&quot;</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Extra arguments to pass to the LaTeX compiler</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.pdf.extraArgs&quot;: &quot;-synctex=1&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-export-pdf-openlogonerror" class="org-section org-level-3">
+<h3>scimax.export.pdf.openLogOnError</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Automatically open the log file when PDF compilation fails</p>
+</li>
+</ul>
+
+</div>
+<div id="org-scimax-export-pdf-cleanauxfiles" class="org-section org-level-3">
+<h3>scimax.export.pdf.cleanAuxFiles</h3>
+<ul>
+<li><p><strong>Type</strong>: boolean</p>
+</li>
+<li><p><strong>Default</strong>: <kbd>true</kbd></p>
+</li>
+<li><p><strong>Description</strong>: Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation</p>
+</li>
+</ul>
 
 </div>
 </div>
@@ -887,9 +1126,9 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.latexPreview.enabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Enable LaTeX preview on hover</td></tr>
-<tr><td><code class="verbatim">scimax.latexPreview.cacheEnabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Cache rendered equations</td></tr>
-<tr><td><code class="verbatim">scimax.latexPreview.darkModeAware</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Adjust rendering for dark themes</td></tr>
+<tr><td>scimax.latexPreview.enabled</td><td>boolean</td><td>true</td><td>Enable LaTeX preview on hover</td></tr>
+<tr><td>scimax.latexPreview.cacheEnabled</td><td>boolean</td><td>true</td><td>Cache rendered equations</td></tr>
+<tr><td>scimax.latexPreview.darkModeAware</td><td>boolean</td><td>true</td><td>Adjust rendering for dark themes</td></tr>
 </tbody>
 </table>
 
@@ -963,11 +1202,11 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.latexLivePreview.buildOnSave</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-rebuild PDF on save</td></tr>
-<tr><td><code class="verbatim">scimax.latexLivePreview.buildOnIdle</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Auto-rebuild after idle period</td></tr>
-<tr><td><code class="verbatim">scimax.latexLivePreview.idleDelay</code></td><td>number</td><td><code class="verbatim">2000</code></td><td>Idle delay in milliseconds</td></tr>
-<tr><td><code class="verbatim">scimax.latexLivePreview.compiler</code></td><td>string</td><td><code class="verbatim">&quot;pdflatex&quot;</code></td><td>LaTeX compiler to use</td></tr>
-<tr><td><code class="verbatim">scimax.latexLivePreview.useLatexmk</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Use latexmk for smart builds</td></tr>
+<tr><td>scimax.latexLivePreview.buildOnSave</td><td>boolean</td><td>true</td><td>Auto-rebuild PDF on save</td></tr>
+<tr><td>scimax.latexLivePreview.buildOnIdle</td><td>boolean</td><td>false</td><td>Auto-rebuild after idle period</td></tr>
+<tr><td>scimax.latexLivePreview.idleDelay</td><td>number</td><td>2000</td><td>Idle delay in milliseconds</td></tr>
+<tr><td>scimax.latexLivePreview.compiler</td><td>string</td><td>&quot;pdflatex&quot;</td><td>LaTeX compiler to use</td></tr>
+<tr><td>scimax.latexLivePreview.useLatexmk</td><td>boolean</td><td>true</td><td>Use latexmk for smart builds</td></tr>
 </tbody>
 </table>
 
@@ -1081,9 +1320,9 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.notebook.directory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Default parent directory</td></tr>
-<tr><td><code class="verbatim">scimax.notebook.defaultTemplate</code></td><td>string</td><td><code class="verbatim">&quot;research&quot;</code></td><td>Default template</td></tr>
-<tr><td><code class="verbatim">scimax.notebook.autoDetect</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-detect projects</td></tr>
+<tr><td>scimax.notebook.directory</td><td>string</td><td>&quot;&quot;</td><td>Default parent directory</td></tr>
+<tr><td>scimax.notebook.defaultTemplate</td><td>string</td><td>&quot;research&quot;</td><td>Default template</td></tr>
+<tr><td>scimax.notebook.autoDetect</td><td>boolean</td><td>true</td><td>Auto-detect projects</td></tr>
 </tbody>
 </table>
 
@@ -1159,10 +1398,10 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.hydra.showKeyHints</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Show keyboard shortcuts inline</td></tr>
-<tr><td><code class="verbatim">scimax.hydra.singleKeySelection</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Single keypress selection</td></tr>
-<tr><td><code class="verbatim">scimax.hydra.dimNonMatching</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Dim non-matching items</td></tr>
-<tr><td><code class="verbatim">scimax.hydra.sortByKey</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Sort items by keyboard shortcut</td></tr>
+<tr><td>scimax.hydra.showKeyHints</td><td>boolean</td><td>true</td><td>Show keyboard shortcuts inline</td></tr>
+<tr><td>scimax.hydra.singleKeySelection</td><td>boolean</td><td>true</td><td>Single keypress selection</td></tr>
+<tr><td>scimax.hydra.dimNonMatching</td><td>boolean</td><td>true</td><td>Dim non-matching items</td></tr>
+<tr><td>scimax.hydra.sortByKey</td><td>boolean</td><td>false</td><td>Sort items by keyboard shortcut</td></tr>
 </tbody>
 </table>
 
@@ -1254,7 +1493,7 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.speedCommands.enabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Enable speed commands at heading start</td></tr>
+<tr><td>scimax.speedCommands.enabled</td><td>boolean</td><td>true</td><td>Enable speed commands at heading start</td></tr>
 </tbody>
 </table>
 
@@ -1294,13 +1533,13 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.agenda.files</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Directories/files for agenda</td></tr>
-<tr><td><code class="verbatim">scimax.agenda.excludePatterns</code></td><td>array</td><td>See below</td><td>Patterns to exclude</td></tr>
-<tr><td><code class="verbatim">scimax.agenda.defaultSpan</code></td><td>number</td><td><code class="verbatim">7</code></td><td>Days to show in agenda</td></tr>
-<tr><td><code class="verbatim">scimax.agenda.showDone</code></td><td>boolean</td><td><code class="verbatim">false</code></td><td>Show completed items</td></tr>
-<tr><td><code class="verbatim">scimax.agenda.showHabits</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Show habit-tagged items</td></tr>
-<tr><td><code class="verbatim">scimax.agenda.todoStates</code></td><td>array</td><td><code class="verbatim">[&quot;TODO&quot;, &quot;NEXT&quot;, &quot;WAITING&quot;]</code></td><td>Active TODO states</td></tr>
-<tr><td><code class="verbatim">scimax.agenda.doneStates</code></td><td>array</td><td><code class="verbatim">[&quot;DONE&quot;, &quot;CANCELLED&quot;]</code></td><td>Completed states</td></tr>
+<tr><td>scimax.agenda.files</td><td>array</td><td>[ ]</td><td>Directories/files for agenda</td></tr>
+<tr><td>scimax.agenda.excludePatterns</td><td>array</td><td>See below</td><td>Patterns to exclude</td></tr>
+<tr><td>scimax.agenda.defaultSpan</td><td>number</td><td>7</td><td>Days to show in agenda</td></tr>
+<tr><td>scimax.agenda.showDone</td><td>boolean</td><td>false</td><td>Show completed items</td></tr>
+<tr><td>scimax.agenda.showHabits</td><td>boolean</td><td>true</td><td>Show habit-tagged items</td></tr>
+<tr><td>scimax.agenda.todoStates</td><td>array</td><td>[&quot;TODO&quot;, &quot;NEXT&quot;, &quot;WAITING&quot;]</td><td>Active TODO states</td></tr>
+<tr><td>scimax.agenda.doneStates</td><td>array</td><td>[&quot;DONE&quot;, &quot;CANCELLED&quot;]</td><td>Completed states</td></tr>
 </tbody>
 </table>
 
@@ -1466,15 +1705,15 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.imageOverlays.enabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Enable inline image thumbnails</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.maxWidth</code></td><td>number</td><td><code class="verbatim">96</code></td><td>Maximum thumbnail width in pixels</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.maxHeight</code></td><td>number</td><td><code class="verbatim">96</code></td><td>Maximum thumbnail height in pixels</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.renderMode</code></td><td>string</td><td><code class="verbatim">&quot;gutter&quot;</code></td><td>Where to display thumbnails</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.onlyWhenCursorNotInLink</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Hide when cursor in link</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.excludePatterns</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Regex patterns to exclude</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.maxOverlaysPerDocument</code></td><td>number</td><td><code class="verbatim">200</code></td><td>Max overlays per document</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.showDimensions</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Show image dimensions</td></tr>
-<tr><td><code class="verbatim">scimax.imageOverlays.cacheEnabled</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Cache generated thumbnails</td></tr>
+<tr><td>scimax.imageOverlays.enabled</td><td>boolean</td><td>true</td><td>Enable inline image thumbnails</td></tr>
+<tr><td>scimax.imageOverlays.maxWidth</td><td>number</td><td>96</td><td>Maximum thumbnail width in pixels</td></tr>
+<tr><td>scimax.imageOverlays.maxHeight</td><td>number</td><td>96</td><td>Maximum thumbnail height in pixels</td></tr>
+<tr><td>scimax.imageOverlays.renderMode</td><td>string</td><td>&quot;gutter&quot;</td><td>Where to display thumbnails</td></tr>
+<tr><td>scimax.imageOverlays.onlyWhenCursorNotInLink</td><td>boolean</td><td>true</td><td>Hide when cursor in link</td></tr>
+<tr><td>scimax.imageOverlays.excludePatterns</td><td>array</td><td>[ ]</td><td>Regex patterns to exclude</td></tr>
+<tr><td>scimax.imageOverlays.maxOverlaysPerDocument</td><td>number</td><td>200</td><td>Max overlays per document</td></tr>
+<tr><td>scimax.imageOverlays.showDimensions</td><td>boolean</td><td>true</td><td>Show image dimensions</td></tr>
+<tr><td>scimax.imageOverlays.cacheEnabled</td><td>boolean</td><td>true</td><td>Cache generated thumbnails</td></tr>
 </tbody>
 </table>
 
@@ -1661,10 +1900,10 @@
 <tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">scimax.capture.templates</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Capture templates</td></tr>
-<tr><td><code class="verbatim">scimax.capture.defaultFile</code></td><td>string</td><td><code class="verbatim">&quot;~/org/notes.org&quot;</code></td><td>Default capture file</td></tr>
-<tr><td><code class="verbatim">scimax.capture.datetreeFormat</code></td><td>string</td><td><code class="verbatim">&quot;day&quot;</code></td><td>Datetree granularity</td></tr>
-<tr><td><code class="verbatim">scimax.capture.autoSave</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Auto-save after capture</td></tr>
+<tr><td>scimax.capture.templates</td><td>array</td><td>[ ]</td><td>Capture templates</td></tr>
+<tr><td>scimax.capture.defaultFile</td><td>string</td><td>&quot;~/org/notes.org&quot;</td><td>Default capture file</td></tr>
+<tr><td>scimax.capture.datetreeFormat</td><td>string</td><td>&quot;day&quot;</td><td>Datetree granularity</td></tr>
+<tr><td>scimax.capture.autoSave</td><td>boolean</td><td>true</td><td>Auto-save after capture</td></tr>
 </tbody>
 </table>
 
@@ -2121,681 +2360,6 @@
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="01-getting-started.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="24-keybindings.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#introduction" class="toc-link">Introduction</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#accessing-settings" class="toc-link">Accessing Settings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#settings-file-locations" class="toc-link">Settings File Locations</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#settings-format" class="toc-link">Settings Format</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#journal-settings" class="toc-link">Journal Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournaldirectory" class="toc-link">scimax.journal.directory</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournalformat" class="toc-link">scimax.journal.format</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournaltemplate" class="toc-link">scimax.journal.template</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournaldateformat" class="toc-link">scimax.journal.dateFormat</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournalautotimestamp" class="toc-link">scimax.journal.autoTimestamp</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournalweekstartson" class="toc-link">scimax.journal.weekStartsOn</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#database-search-settings" class="toc-link">Database &amp; Search Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbdirectories" class="toc-link">scimax.db.directories</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbexcludepatterns" class="toc-link">scimax.db.excludePatterns</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbignorepatterns" class="toc-link">scimax.db.ignorePatterns</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbautoindex" class="toc-link">scimax.db.autoIndex</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbembeddingprovider" class="toc-link">scimax.db.embeddingProvider</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdblocalmodel" class="toc-link">scimax.db.localModel</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbollamaurl" class="toc-link">scimax.db.ollamaUrl</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbollamamodel" class="toc-link">scimax.db.ollamaModel</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxdbopenaiapikey" class="toc-link">scimax.db.openaiApiKey</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#code-execution-settings" class="toc-link">Code Execution Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxliteratepythonpath" class="toc-link">scimax.literate.pythonPath</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxliteratejupyterpath" class="toc-link">scimax.literate.jupyterPath</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#referencecitation-settings" class="toc-link">Reference/Citation Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxrefbibliographyfiles" class="toc-link">scimax.ref.bibliographyFiles</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxrefpdfdirectory" class="toc-link">scimax.ref.pdfDirectory</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxrefnotesdirectory" class="toc-link">scimax.ref.notesDirectory</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxrefdefaultcitestyle" class="toc-link">scimax.ref.defaultCiteStyle</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#export-settings" class="toc-link">Export Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxexportlatexcustomheader" class="toc-link">scimax.export.latex.customHeader</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#latex-preview-settings" class="toc-link">LaTeX Preview Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexpreviewenabled" class="toc-link">scimax.latexPreview.enabled</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexpreviewcacheenabled" class="toc-link">scimax.latexPreview.cacheEnabled</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexpreviewdarkmodeaware" class="toc-link">scimax.latexPreview.darkModeAware</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#latex-live-preview-settings" class="toc-link">LaTeX Live Preview Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexlivepreviewbuildonsave" class="toc-link">scimax.latexLivePreview.buildOnSave</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexlivepreviewbuildonidle" class="toc-link">scimax.latexLivePreview.buildOnIdle</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexlivepreviewidledelay" class="toc-link">scimax.latexLivePreview.idleDelay</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexlivepreviewcompiler" class="toc-link">scimax.latexLivePreview.compiler</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxlatexlivepreviewuselatexmk" class="toc-link">scimax.latexLivePreview.useLatexmk</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#notebook-settings" class="toc-link">Notebook Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxnotebookdirectory" class="toc-link">scimax.notebook.directory</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxnotebookdefaulttemplate" class="toc-link">scimax.notebook.defaultTemplate</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxnotebookautodetect" class="toc-link">scimax.notebook.autoDetect</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#hydra-menu-settings" class="toc-link">Hydra Menu Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrashowkeyhints" class="toc-link">scimax.hydra.showKeyHints</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrasinglekeyselection" class="toc-link">scimax.hydra.singleKeySelection</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydradimnonmatching" class="toc-link">scimax.hydra.dimNonMatching</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrasortbykey" class="toc-link">scimax.hydra.sortByKey</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#speed-commands-settings" class="toc-link">Speed Commands Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxspeedcommandsenabled" class="toc-link">scimax.speedCommands.enabled</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#agenda-settings" class="toc-link">Agenda Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxagendafiles" class="toc-link">scimax.agenda.files</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxagendaexcludepatterns" class="toc-link">scimax.agenda.excludePatterns</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxagendadefaultspan" class="toc-link">scimax.agenda.defaultSpan</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxagendashowdone" class="toc-link">scimax.agenda.showDone</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxagendashowhabits" class="toc-link">scimax.agenda.showHabits</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxagendatodostates" class="toc-link">scimax.agenda.todoStates</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxagendadonestates" class="toc-link">scimax.agenda.doneStates</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#image-overlay-settings" class="toc-link">Image Overlay Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysenabled" class="toc-link">scimax.imageOverlays.enabled</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysmaxwidth" class="toc-link">scimax.imageOverlays.maxWidth</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysmaxheight" class="toc-link">scimax.imageOverlays.maxHeight</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysrendermode" class="toc-link">scimax.imageOverlays.renderMode</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysonlywhencursornotinlink" class="toc-link">scimax.imageOverlays.onlyWhenCursorNotInLink</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysexcludepatterns" class="toc-link">scimax.imageOverlays.excludePatterns</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysmaxoverlaysperdocument" class="toc-link">scimax.imageOverlays.maxOverlaysPerDocument</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlaysshowdimensions" class="toc-link">scimax.imageOverlays.showDimensions</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaximageoverlayscacheenabled" class="toc-link">scimax.imageOverlays.cacheEnabled</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#capture-settings" class="toc-link">Capture Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings-overview" class="toc-link">Settings Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#detailed-configuration" class="toc-link">Detailed Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxcapturetemplates" class="toc-link">scimax.capture.templates</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxcapturedefaultfile" class="toc-link">scimax.capture.defaultFile</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxcapturedatetreeformat" class="toc-link">scimax.capture.datetreeFormat</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxcaptureautosave" class="toc-link">scimax.capture.autoSave</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#common-configurations" class="toc-link">Common Configurations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#academic-writing-setup" class="toc-link">Academic Writing Setup</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#software-development-setup" class="toc-link">Software Development Setup</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#personal-notes-pkm-setup" class="toc-link">Personal Notes &amp; PKM Setup</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#minimal-configuration" class="toc-link">Minimal Configuration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#database-performance" class="toc-link">Database Performance</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#jupyter-kernels-not-found" class="toc-link">Jupyter Kernels Not Found</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latex-preview-not-working" class="toc-link">LaTeX Preview Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#semantic-search-not-working" class="toc-link">Semantic Search Not Working</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-documentation" class="toc-link">Related Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

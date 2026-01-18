@@ -1,260 +1,256 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hydra Menus</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hydra Menus</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Hydra Menus</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-what-are-hydra-menus">✅ What Are Hydra Menus?</a></li>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+<li><a href="#org-philosophy">✅ Philosophy</a></li>
+</ul>
+<li><a href="#org-getting-started">✅ Getting Started</a></li>
+<ul>
+<li><a href="#org-opening-the-main-menu">Opening the Main Menu</a></li>
+<li><a href="#org-basic-navigation">✅ Basic Navigation</a></li>
+<li><a href="#org-understanding-exit-behaviors">✅ Understanding Exit Behaviors</a></li>
+<ul>
+<li><a href="#org-exit-blue-head-sign-out">✅ Exit (Blue Head) - $(sign-out)</a></li>
+<li><a href="#org-stay-red-head-sync">✅ Stay (Red Head) - $(sync)</a></li>
+<li><a href="#org-submenu-chevron-right">✅ Submenu - $(chevron-right)</a></li>
+</ul>
+</ul>
+<li><a href="#org-available-hydras">✅ Available Hydras</a></li>
+<ul>
+<li><a href="#org-main-menu-scimax-main">✅ Main Menu (scimax.main)</a></li>
+<li><a href="#org-journal-menu-scimax-journal">✅ Journal Menu (scimax.journal)</a></li>
+<li><a href="#org-references-menu-scimax-references">✅ References Menu (scimax.references)</a></li>
+<li><a href="#org-notebook-menu-scimax-notebook">✅ Notebook Menu (scimax.notebook)</a></li>
+<li><a href="#org-projectile-menu-scimax-projectile">✅ Projectile Menu (scimax.projectile)</a></li>
+<li><a href="#org-search-menu-scimax-search">✅ Search Menu (scimax.search)</a></li>
+<li><a href="#org-jump-menu-scimax-jump">✅ Jump Menu (scimax.jump)</a></li>
+<li><a href="#org-database-menu-scimax-database">✅ Database Menu (scimax.database)</a></li>
+</ul>
+<li><a href="#org-commands-and-keybindings">✅ Commands and Keybindings</a></li>
+<ul>
+<li><a href="#org-global-keybindings">✅ Global Keybindings</a></li>
+<li><a href="#org-available-commands">✅ Available Commands</a></li>
+<ul>
+<li><a href="#org-scimax-hydra-show">✅ scimax.hydra.show</a></li>
+<li><a href="#org-scimax-hydra-hide">✅ scimax.hydra.hide</a></li>
+<li><a href="#org-scimax-hydra-back">✅ scimax.hydra.back</a></li>
+<li><a href="#org-scimax-hydra-main">✅ scimax.hydra.main</a></li>
+<li><a href="#org-scimax-hydra-contextmenu">✅ scimax.hydra.contextMenu</a></li>
+<li><a href="#org-scimax-hydra-toggle">✅ scimax.hydra.toggle</a></li>
+</ul>
+</ul>
+<li><a href="#org-configuration">✅ Configuration</a></li>
+<ul>
+<li><a href="#org-settings">✅ Settings</a></li>
+<ul>
+<li><a href="#org-scimax-hydra-showkeyhints">✅ scimax.hydra.showKeyHints</a></li>
+<li><a href="#org-scimax-hydra-singlekeyselection">✅ scimax.hydra.singleKeySelection</a></li>
+<li><a href="#org-scimax-hydra-dimnonmatching">✅ scimax.hydra.dimNonMatching</a></li>
+<li><a href="#org-scimax-hydra-sortbykey">✅ scimax.hydra.sortByKey</a></li>
+</ul>
+<li><a href="#org-example-configuration">✅ Example Configuration</a></li>
+</ul>
+<li><a href="#org-creating-custom-hydras">✅ Creating Custom Hydras</a></li>
+<ul>
+<li><a href="#org-menu-structure">✅ Menu Structure</a></li>
+<li><a href="#org-using-the-fluent-builder-api">✅ Using the Fluent Builder API</a></li>
+<li><a href="#org-menu-item-types">✅ Menu Item Types</a></li>
+<ul>
+<li><a href="#org-exit-commands-blue-heads">✅ Exit Commands (Blue Heads)</a></li>
+<li><a href="#org-persistent-commands-red-heads">✅ Persistent Commands (Red Heads)</a></li>
+<li><a href="#org-submenu-links">✅ Submenu Links</a></li>
+</ul>
+<li><a href="#org-manual-menu-definition">✅ Manual Menu Definition</a></li>
+<li><a href="#org-advanced-features">✅ Advanced Features</a></li>
+<ul>
+<li><a href="#org-conditional-visibility">✅ Conditional Visibility</a></li>
+<li><a href="#org-toggle-items">✅ Toggle Items</a></li>
+<li><a href="#org-lifecycle-hooks">✅ Lifecycle Hooks</a></li>
+</ul>
+<li><a href="#org-registering-multiple-menus">✅ Registering Multiple Menus</a></li>
+<li><a href="#org-unregistering-menus">✅ Unregistering Menus</a></li>
+</ul>
+<li><a href="#org-practical-examples">✅ Practical Examples</a></li>
+<ul>
+<li><a href="#org-example-1-opening-today-s-journal">✅ Example 1: Opening Today&#39;s Journal</a></li>
+<li><a href="#org-example-2-inserting-a-citation">✅ Example 2: Inserting a Citation</a></li>
+<li><a href="#org-example-3-quick-navigation-with-jump">✅ Example 3: Quick Navigation with Jump</a></li>
+<li><a href="#org-example-4-searching-todo-items">✅ Example 4: Searching TODO Items</a></li>
+<li><a href="#org-example-5-navigating-back">✅ Example 5: Navigating Back</a></li>
+</ul>
+<li><a href="#org-differences-from-emacs-hydra">✅ Differences from Emacs Hydra</a></li>
+<ul>
+<li><a href="#org-similarities">✅ Similarities</a></li>
+<li><a href="#org-differences">✅ Differences</a></li>
+<ul>
+<li><a href="#org-quick-pick-vs-minibuffer">✅ Quick Pick vs. Minibuffer</a></li>
+<li><a href="#org-no-dedicated-hydra-mode">✅ No Dedicated Hydra Mode</a></li>
+<li><a href="#org-async-command-execution">✅ Async Command Execution</a></li>
+<li><a href="#org-icon-based-indicators-instead-of-colors">Icon-Based Indicators Instead of Colors</a></li>
+<li><a href="#org-menu-state-persistence">✅ Menu State Persistence</a></li>
+<li><a href="#org-configuration-through-settings">✅ Configuration Through Settings</a></li>
+<li><a href="#org-no-posframe-support">✅ No Posframe Support</a></li>
+</ul>
+<li><a href="#org-migration-tips">✅ Migration Tips</a></li>
+</ul>
+<li><a href="#org-tips-and-best-practices">✅ Tips and Best Practices</a></li>
+<ul>
+<li><a href="#org-discoverability">✅ Discoverability</a></li>
+<li><a href="#org-performance">✅ Performance</a></li>
+<li><a href="#org-keyboard-shortcuts">✅ Keyboard Shortcuts</a></li>
+<li><a href="#org-user-experience">✅ User Experience</a></li>
+<li><a href="#org-debugging">✅ Debugging</a></li>
+</ul>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+<ul>
+<li><a href="#org-menu-not-appearing">✅ Menu Not Appearing</a></li>
+<li><a href="#org-commands-not-executing">✅ Commands Not Executing</a></li>
+<li><a href="#org-items-not-showing">✅ Items Not Showing</a></li>
+<li><a href="#org-single-key-selection-not-working">✅ Single-Key Selection Not Working</a></li>
+<li><a href="#org-submenus-not-navigating">✅ Submenus Not Navigating</a></li>
+</ul>
+<li><a href="#org-frequently-asked-questions">✅ Frequently Asked Questions</a></li>
+<ul>
+<li><a href="#org-can-i-create-hydras-for-non-scimax-commands">✅ Can I create hydras for non-Scimax commands?</a></li>
+<li><a href="#org-how-do-i-add-a-hydra-to-the-command-palette">✅ How do I add a hydra to the command palette?</a></li>
+<li><a href="#org-can-i-bind-a-hydra-to-a-custom-keybinding">✅ Can I bind a hydra to a custom keybinding?</a></li>
+<li><a href="#org-how-do-i-share-custom-hydras-with-my-team">✅ How do I share custom hydras with my team?</a></li>
+<li><a href="#org-can-hydras-work-with-multiple-workspaces">✅ Can hydras work with multiple workspaces?</a></li>
+<li><a href="#org-how-do-i-disable-hydras">✅ How do I disable hydras?</a></li>
+</ul>
+<li><a href="#org-additional-resources">✅ Additional Resources</a></li>
+<ul>
+<li><a href="#org-source-code">✅ Source Code</a></li>
+<li><a href="#org-related-documentation">✅ Related Documentation</a></li>
+<li><a href="#org-external-references">✅ External References</a></li>
+</ul>
+<li><a href="#org-conclusion">✅ Conclusion</a></li>
+<li><a href="#org-navigation">✅ Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-introduction" class="org-section org-level-1">
+<div id="org-introduction" class="org-section org-level-1">
 <h1>✅ Introduction</h1>
 <p>CLOSED: [2026-01-16 Fri 07:36]</p>
 
@@ -358,19 +354,23 @@
 </li>
 <li><p>Press Enter to execute the selected command</p>
 </li>
-<li><p>Press Escape or Backspace (when a parent menu exists) to close or go back</p>
+<li><p>Press Escape to close, or select &quot;Back&quot; to return to parent menu</p>
 </li>
 </ol>
 
 </div>
 <div id="org-understanding-exit-behaviors" class="org-section org-level-2">
-<h2>👀 Understanding Exit Behaviors</h2>
+<h2>✅ Understanding Exit Behaviors</h2>
+<p>CLOSED: [2026-01-17 Sat 19:52]</p>
+
 <p>Each menu item has one of three exit behaviors, indicated by icons in the interface.</p>
 
 <p>Note: The terms &quot;Blue Head&quot; and &quot;Red Head&quot; come from Emacs Hydra, which uses colored text. VS Code&#39;s QuickPick API doesn&#39;t support per-item colors, so we use icons instead.</p>
 
 <div id="org-exit-blue-head-sign-out" class="org-section org-level-3">
-<h3>👀 Exit (Blue Head) - $(sign-out)</h3>
+<h3>✅ Exit (Blue Head) - $(sign-out)</h3>
+<p>CLOSED: [2026-01-17 Sat 12:13]</p>
+
 <p>The menu closes after executing the command. Most commands use this behavior. These items are marked with a $(sign-out) icon (exit door).</p>
 
 <pre class="example">[t] Today $(sign-out)           → Opens today&#39;s journal and closes menu
@@ -378,7 +378,9 @@
 
 </div>
 <div id="org-stay-red-head-sync" class="org-section org-level-3">
-<h3>👀 Stay (Red Head) - $(sync)</h3>
+<h3>✅ Stay (Red Head) - $(sync)</h3>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>The menu remains open after executing the command, allowing you to execute it multiple times or try different commands. These items are marked with a $(sync) icon (circular arrows).</p>
 
 <pre class="example">[r] Refresh $(sync)             → Refreshes data and keeps menu open
@@ -386,7 +388,9 @@
 
 </div>
 <div id="org-submenu-chevron-right" class="org-section org-level-3">
-<h3>Submenu - $(chevron-right)</h3>
+<h3>✅ Submenu - $(chevron-right)</h3>
+<p>CLOSED: [2026-01-17 Sat 12:14]</p>
+
 <p>Navigates to a child menu. These items are marked with a $(chevron-right) icon (arrow).</p>
 
 <pre class="example">[j] Journal $(chevron-right)    → Opens journal submenu
@@ -424,7 +428,9 @@ Database:
 
 </div>
 <div id="org-journal-menu-scimax-journal" class="org-section org-level-2">
-<h2>⚠️ Journal Menu (scimax.journal)</h2>
+<h2>✅ Journal Menu (scimax.journal)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>Date-based journaling commands for creating and navigating entries.</p>
 
 <pre class="example">Journal
@@ -458,7 +464,9 @@ Insert:
 
 </div>
 <div id="org-references-menu-scimax-references" class="org-section org-level-2">
-<h2>⚠️ References Menu (scimax.references)</h2>
+<h2>✅ References Menu (scimax.references)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>Bibliography and citation management powered by org-ref.</p>
 
 <pre class="example">References
@@ -495,7 +503,9 @@ Management:
 
 </div>
 <div id="org-notebook-menu-scimax-notebook" class="org-section org-level-2">
-<h2>⚠️ Notebook Menu (scimax.notebook)</h2>
+<h2>✅ Notebook Menu (scimax.notebook)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>Project-based organization for scientific computing.</p>
 
 <pre class="example">Notebook
@@ -526,7 +536,9 @@ Files:
 
 </div>
 <div id="org-projectile-menu-scimax-projectile" class="org-section org-level-2">
-<h2>⚠️ Projectile Menu (scimax.projectile)</h2>
+<h2>✅ Projectile Menu (scimax.projectile)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>Project management and switching inspired by Emacs projectile.</p>
 
 <pre class="example">Projects (Projectile)
@@ -554,7 +566,9 @@ Files:
 
 </div>
 <div id="org-search-menu-scimax-search" class="org-section org-level-2">
-<h2>⚠️ Search Menu (scimax.search)</h2>
+<h2>✅ Search Menu (scimax.search)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>Comprehensive search across files and content.</p>
 
 <pre class="example">Search
@@ -583,7 +597,9 @@ Tasks &amp; Agenda:
 
 </div>
 <div id="org-jump-menu-scimax-jump" class="org-section org-level-2">
-<h2>⚠️ Jump Menu (scimax.jump)</h2>
+<h2>✅ Jump Menu (scimax.jump)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>Avy-style quick navigation for jumping to visible text.</p>
 
 <pre class="example">Jump (Avy)
@@ -613,7 +629,9 @@ Jump to Line:
 
 </div>
 <div id="org-database-menu-scimax-database" class="org-section org-level-2">
-<h2>⚠️ Database Menu (scimax.database)</h2>
+<h2>✅ Database Menu (scimax.database)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <p>Org database operations including search and indexing.</p>
 
 <pre class="example">Database
@@ -650,9 +668,13 @@ Statistics:
 </div>
 </div>
 <div id="org-commands-and-keybindings" class="org-section org-level-1">
-<h1>⚠️ Commands and Keybindings</h1>
+<h1>✅ Commands and Keybindings</h1>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <div id="org-global-keybindings" class="org-section org-level-2">
-<h2>⚠️ Global Keybindings</h2>
+<h2>✅ Global Keybindings</h2>
+<p>CLOSED: [2026-01-17 Sat 12:15]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Keybinding</th><th>Command</th><th>Description</th></tr>
@@ -663,13 +685,19 @@ Statistics:
 </tbody>
 </table>
 
+<p><a href="#org-cmd-scimax-hydra-main">C-c m</a> opens the main hydra menu, while <a href="#org-cmd-scimax-hydra-contextmenu">C-c C-m</a> opens a menu tailored to the current file type.</p>
+
 </div>
 <div id="org-available-commands" class="org-section org-level-2">
-<h2>⚠️ Available Commands</h2>
-<p>All hydra commands can be invoked through the command palette (C-S-P):</p>
+<h2>✅ Available Commands</h2>
+<p>CLOSED: [2026-01-17 Sat 12:16]</p>
+
+<p>All hydra commands can be invoked through the command palette (Cmd/C-S-P):</p>
 
 <div id="org-scimax-hydra-show" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.show</h3>
+<h3>✅ scimax.hydra.show</h3>
+<p>CLOSED: [2026-01-17 Sat 12:16]</p>
+
 <p>Show a specific hydra menu by ID. If no ID is provided, shows a picker to select from available menus.</p>
 
 <div class="org-src-container">
@@ -682,27 +710,37 @@ await vscode.commands.executeCommand(&#39;scimax.hydra.show&#39;);</code></pre>
 
 </div>
 <div id="org-scimax-hydra-hide" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.hide</h3>
+<h3>✅ scimax.hydra.hide</h3>
+<p>CLOSED: [2026-01-17 Sat 12:16]</p>
+
 <p>Hide the currently visible hydra menu.</p>
 
 </div>
 <div id="org-scimax-hydra-back" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.back</h3>
+<h3>✅ scimax.hydra.back</h3>
+<p>CLOSED: [2026-01-17 Sat 12:16]</p>
+
 <p>Navigate back to the parent menu. If there&#39;s no parent, closes the menu.</p>
 
 </div>
 <div id="org-scimax-hydra-main" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.main</h3>
+<h3>✅ scimax.hydra.main</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Open the main Scimax menu (scimax.main).</p>
 
 </div>
 <div id="org-scimax-hydra-contextmenu" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.contextMenu</h3>
+<h3>✅ scimax.hydra.contextMenu</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Open a context-aware menu based on the current file type. Falls back to the main menu if no language-specific menu exists.</p>
 
 </div>
 <div id="org-scimax-hydra-toggle" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.toggle</h3>
+<h3>✅ scimax.hydra.toggle</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Toggle visibility of a specific menu.</p>
 
 <div class="org-src-container">
@@ -713,13 +751,19 @@ await vscode.commands.executeCommand(&#39;scimax.hydra.show&#39;);</code></pre>
 </div>
 </div>
 <div id="org-configuration" class="org-section org-level-1">
-<h1>⚠️ Configuration</h1>
+<h1>✅ Configuration</h1>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <div id="org-settings" class="org-section org-level-2">
-<h2>⚠️ Settings</h2>
-<p>Configure hydra behavior through VS Code settings (File &gt; Preferences &gt; Settings or C-,):</p>
+<h2>✅ Settings</h2>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
+<p>Configure hydra behavior through VS Code settings (File &gt; Preferences &gt; Settings or Cmd/C-,):</p>
 
 <div id="org-scimax-hydra-showkeyhints" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.showKeyHints</h3>
+<h3>✅ scimax.hydra.showKeyHints</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Show keyboard shortcuts inline with menu items.</p>
 
 <ul>
@@ -742,7 +786,9 @@ Today               - Without key hints</pre>
 
 </div>
 <div id="org-scimax-hydra-singlekeyselection" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.singleKeySelection</h3>
+<h3>✅ scimax.hydra.singleKeySelection</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Select menu items with a single keypress (no Enter needed).</p>
 
 <ul>
@@ -762,7 +808,9 @@ Today               - Without key hints</pre>
 
 </div>
 <div id="org-scimax-hydra-dimnonmatching" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.dimNonMatching</h3>
+<h3>✅ scimax.hydra.dimNonMatching</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Dim menu items that don&#39;t match the current filter.</p>
 
 <ul>
@@ -782,7 +830,9 @@ Today               - Without key hints</pre>
 
 </div>
 <div id="org-scimax-hydra-sortbykey" class="org-section org-level-3">
-<h3>⚠️ scimax.hydra.sortByKey</h3>
+<h3>✅ scimax.hydra.sortByKey</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Sort menu items by their keyboard shortcut instead of definition order.</p>
 
 <ul>
@@ -803,7 +853,9 @@ Today               - Without key hints</pre>
 </div>
 </div>
 <div id="org-example-configuration" class="org-section org-level-2">
-<h2>⚠️ Example Configuration</h2>
+<h2>✅ Example Configuration</h2>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>A complete hydra configuration might look like:</p>
 
 <div class="org-src-container">
@@ -818,11 +870,15 @@ Today               - Without key hints</pre>
 </div>
 </div>
 <div id="org-creating-custom-hydras" class="org-section org-level-1">
-<h1>⚠️ Creating Custom Hydras</h1>
+<h1>✅ Creating Custom Hydras</h1>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>You can create custom hydra menus programmatically in extension code or through configuration.</p>
 
 <div id="org-menu-structure" class="org-section org-level-2">
-<h2>⚠️ Menu Structure</h2>
+<h2>✅ Menu Structure</h2>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>A hydra menu definition consists of:</p>
 
 <ul>
@@ -840,7 +896,9 @@ Today               - Without key hints</pre>
 
 </div>
 <div id="org-using-the-fluent-builder-api" class="org-section org-level-2">
-<h2>⚠️ Using the Fluent Builder API</h2>
+<h2>✅ Using the Fluent Builder API</h2>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>The easiest way to create a custom menu is with the fluent builder:</p>
 
 <div class="org-src-container">
@@ -865,9 +923,13 @@ hydraManager.registerMenu(menu);</code></pre>
 
 </div>
 <div id="org-menu-item-types" class="org-section org-level-2">
-<h2>⚠️ Menu Item Types</h2>
+<h2>✅ Menu Item Types</h2>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <div id="org-exit-commands-blue-heads" class="org-section org-level-3">
-<h3>⚠️ Exit Commands (Blue Heads)</h3>
+<h3>✅ Exit Commands (Blue Heads)</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Close the menu after executing:</p>
 
 <div class="org-src-container">
@@ -876,7 +938,9 @@ hydraManager.registerMenu(menu);</code></pre>
 
 </div>
 <div id="org-persistent-commands-red-heads" class="org-section org-level-3">
-<h3>⚠️ Persistent Commands (Red Heads)</h3>
+<h3>✅ Persistent Commands (Red Heads)</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Keep the menu open after executing:</p>
 
 <div class="org-src-container">
@@ -885,7 +949,9 @@ hydraManager.registerMenu(menu);</code></pre>
 
 </div>
 <div id="org-submenu-links" class="org-section org-level-3">
-<h3>⚠️ Submenu Links</h3>
+<h3>✅ Submenu Links</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Navigate to a child menu:</p>
 
 <div class="org-src-container">
@@ -895,7 +961,9 @@ hydraManager.registerMenu(menu);</code></pre>
 </div>
 </div>
 <div id="org-manual-menu-definition" class="org-section org-level-2">
-<h2>⚠️ Manual Menu Definition</h2>
+<h2>✅ Manual Menu Definition</h2>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>For more control, you can define menus manually:</p>
 
 <div class="org-src-container">
@@ -948,9 +1016,13 @@ hydraManager.registerMenu(customMenu);</code></pre>
 
 </div>
 <div id="org-advanced-features" class="org-section org-level-2">
-<h2>⚠️ Advanced Features</h2>
+<h2>✅ Advanced Features</h2>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <div id="org-conditional-visibility" class="org-section org-level-3">
-<h3>⚠️ Conditional Visibility</h3>
+<h3>✅ Conditional Visibility</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Show items only when certain conditions are met:</p>
 
 <div class="org-src-container">
@@ -968,7 +1040,9 @@ hydraManager.registerMenu(customMenu);</code></pre>
 
 </div>
 <div id="org-toggle-items" class="org-section org-level-3">
-<h3>⚠️ Toggle Items</h3>
+<h3>✅ Toggle Items</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Display on/off state for toggle commands:</p>
 
 <div class="org-src-container">
@@ -985,11 +1059,13 @@ hydraManager.registerMenu(customMenu);</code></pre>
 }</code></pre>
 </div>
 
-<p>Toggle items display $(check) when on and $(circle-outline) when off.</p>
+<p>Toggle items display \((check) when on and \)(circle-outline) when off.</p>
 
 </div>
 <div id="org-lifecycle-hooks" class="org-section org-level-3">
-<h3>⚠️ Lifecycle Hooks</h3>
+<h3>✅ Lifecycle Hooks</h3>
+<p>CLOSED: [2026-01-17 Sat 12:17]</p>
+
 <p>Execute code when menus are shown or hidden:</p>
 
 <div class="org-src-container">
@@ -1011,7 +1087,9 @@ hydraManager.registerMenu(customMenu);</code></pre>
 </div>
 </div>
 <div id="org-registering-multiple-menus" class="org-section org-level-2">
-<h2>⚠️ Registering Multiple Menus</h2>
+<h2>✅ Registering Multiple Menus</h2>
+<p>CLOSED: [2026-01-17 Sat 12:18]</p>
+
 <p>Register several menus at once:</p>
 
 <div class="org-src-container">
@@ -1021,7 +1099,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-unregistering-menus" class="org-section org-level-2">
-<h2>⚠️ Unregistering Menus</h2>
+<h2>✅ Unregistering Menus</h2>
+<p>CLOSED: [2026-01-17 Sat 12:18]</p>
+
 <p>Remove a menu from the registry:</p>
 
 <div class="org-src-container">
@@ -1031,9 +1111,13 @@ hydraManager.registerMenus(menus);</code></pre>
 </div>
 </div>
 <div id="org-practical-examples" class="org-section org-level-1">
-<h1>⚠️ Practical Examples</h1>
+<h1>✅ Practical Examples</h1>
+<p>CLOSED: [2026-01-17 Sat 12:18]</p>
+
 <div id="org-example-1-opening-today-s-journal" class="org-section org-level-2">
-<h2>⚠️ Example 1: Opening Today&#39;s Journal</h2>
+<h2>✅ Example 1: Opening Today&#39;s Journal</h2>
+<p>CLOSED: [2026-01-17 Sat 12:18]</p>
+
 <p>The quickest way to open today&#39;s journal entry:</p>
 
 <ol>
@@ -1049,7 +1133,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-example-2-inserting-a-citation" class="org-section org-level-2">
-<h2>⚠️ Example 2: Inserting a Citation</h2>
+<h2>✅ Example 2: Inserting a Citation</h2>
+<p>CLOSED: [2026-01-17 Sat 12:18]</p>
+
 <p>To insert a citation in your document:</p>
 
 <ol>
@@ -1069,7 +1155,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-example-3-quick-navigation-with-jump" class="org-section org-level-2">
-<h2>⚠️ Example 3: Quick Navigation with Jump</h2>
+<h2>✅ Example 3: Quick Navigation with Jump</h2>
+<p>CLOSED: [2026-01-17 Sat 12:18]</p>
+
 <p>To jump to a visible word on screen:</p>
 
 <ol>
@@ -1089,7 +1177,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-example-4-searching-todo-items" class="org-section org-level-2">
-<h2>⚠️ Example 4: Searching TODO Items</h2>
+<h2>✅ Example 4: Searching TODO Items</h2>
+<p>CLOSED: [2026-01-17 Sat 12:18]</p>
+
 <p>To find all TODO items in your org files:</p>
 
 <ol>
@@ -1106,36 +1196,18 @@ hydraManager.registerMenus(menus);</code></pre>
 </ol>
 
 </div>
-<div id="org-example-5-persistent-actions" class="org-section org-level-2">
-<h2>⚠️ Example 5: Persistent Actions</h2>
-<p>To index multiple files in sequence:</p>
+<div id="org-example-5-navigating-back" class="org-section org-level-2">
+<h2>✅ Example 5: Navigating Back</h2>
+<p>CLOSED: [2026-01-17 Sat 19:50]</p>
 
-<ol>
-<li><p>Press C-c m → opens main menu</p>
-</li>
-<li><p>Press d → opens database submenu</p>
-</li>
-<li><p>Press i → indexes current file, menu stays open</p>
-</li>
-<li><p>Switch to another file (menu remains visible)</p>
-</li>
-<li><p>Press i again → indexes that file</p>
-</li>
-<li><p>Press Escape when done</p>
-</li>
-</ol>
-
-</div>
-<div id="org-example-6-navigating-back" class="org-section org-level-2">
-<h2>⚠️ Example 6: Navigating Back</h2>
-<p>When in a deep submenu:</p>
+<p>When in a submenu:</p>
 
 <ol>
 <li><p>Press C-c m → main menu</p>
 </li>
 <li><p>Press d → database menu</p>
 </li>
-<li><p>Press Backspace or select &quot;Back&quot; → returns to main menu</p>
+<li><p>Select &quot;Back&quot; at the top of the menu → returns to main menu</p>
 </li>
 <li><p>Press Escape → closes all menus</p>
 </li>
@@ -1144,11 +1216,15 @@ hydraManager.registerMenus(menus);</code></pre>
 </div>
 </div>
 <div id="org-differences-from-emacs-hydra" class="org-section org-level-1">
-<h1>⚠️ Differences from Emacs Hydra</h1>
+<h1>✅ Differences from Emacs Hydra</h1>
+<p>CLOSED: [2026-01-17 Sat 12:19]</p>
+
 <p>While inspired by Emacs hydra, the VS Code implementation has some differences due to platform constraints and design choices:</p>
 
 <div id="org-similarities" class="org-section org-level-2">
-<h2>⚠️ Similarities</h2>
+<h2>✅ Similarities</h2>
+<p>CLOSED: [2026-01-17 Sat 12:19]</p>
+
 <ul>
 <li><p>Keyboard-driven navigation with single-key selection</p>
 </li>
@@ -1164,9 +1240,13 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-differences" class="org-section org-level-2">
-<h2>⚠️ Differences</h2>
+<h2>✅ Differences</h2>
+<p>CLOSED: [2026-01-17 Sat 12:19]</p>
+
 <div id="org-quick-pick-vs-minibuffer" class="org-section org-level-3">
-<h3>⚠️ Quick Pick vs. Minibuffer</h3>
+<h3>✅ Quick Pick vs. Minibuffer</h3>
+<p>CLOSED: [2026-01-17 Sat 12:19]</p>
+
 <p>VS Code uses the native quick pick interface instead of Emacs&#39;s minibuffer. This provides:</p>
 
 <ul>
@@ -1184,23 +1264,28 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-no-dedicated-hydra-mode" class="org-section org-level-3">
-<h3>⚠️ No Dedicated Hydra Mode</h3>
+<h3>✅ No Dedicated Hydra Mode</h3>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>VS Code doesn&#39;t have a dedicated &quot;hydra mode&quot; like Emacs. Hydras appear as quick picks that temporarily take focus but don&#39;t create a new modal mode.</p>
 
 </div>
 <div id="org-async-command-execution" class="org-section org-level-3">
-<h3>⚠️ Async Command Execution</h3>
+<h3>✅ Async Command Execution</h3>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Commands execute asynchronously and can return Promises, supporting VS Code&#39;s async command pattern.</p>
 
 </div>
 <div id="org-icon-based-indicators-instead-of-colors" class="org-section org-level-3">
-<h3>👀 Icon-Based Indicators Instead of Colors</h3>
+<h3>Icon-Based Indicators Instead of Colors</h3>
 <p>Unlike Emacs hydra which uses colored text (blue for exit, red for stay), VS Code&#39;s QuickPick API doesn&#39;t support per-item color customization. Instead, we use codicons to indicate behavior:</p>
 
 <table class="org-table">
+<thead>
+<tr><th>Behavior</th><th>Icon</th><th>Meaning</th></tr>
+</thead>
 <tbody>
-<tr><td>Behavior</td><td>Icon</td><td>Meaning</td></tr>
-<tr><td>----------</td><td>----------------</td><td>--------------------------------------</td></tr>
 <tr><td>Exit</td><td>$(sign-out)</td><td>Menu closes after command executes</td></tr>
 <tr><td>Stay</td><td>$(sync)</td><td>Menu stays open after command</td></tr>
 <tr><td>Submenu</td><td>$(chevron-right)</td><td>Navigates to a child menu</td></tr>
@@ -1213,23 +1298,31 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-menu-state-persistence" class="org-section org-level-3">
-<h3>⚠️ Menu State Persistence</h3>
+<h3>✅ Menu State Persistence</h3>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>The hydra state is not persisted across VS Code restarts. Each session starts fresh.</p>
 
 </div>
 <div id="org-configuration-through-settings" class="org-section org-level-3">
-<h3>⚠️ Configuration Through Settings</h3>
+<h3>✅ Configuration Through Settings</h3>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Configuration uses VS Code&#39;s settings system (JSON) rather than Emacs Lisp variables.</p>
 
 </div>
 <div id="org-no-posframe-support" class="org-section org-level-3">
-<h3>⚠️ No Posframe Support</h3>
+<h3>✅ No Posframe Support</h3>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Menus don&#39;t appear at specific screen positions like Emacs posframe. They always appear in the standard quick pick location (top center).</p>
 
 </div>
 </div>
 <div id="org-migration-tips" class="org-section org-level-2">
-<h2>⚠️ Migration Tips</h2>
+<h2>✅ Migration Tips</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>If you&#39;re coming from Emacs hydra:</p>
 
 <ol>
@@ -1248,9 +1341,13 @@ hydraManager.registerMenus(menus);</code></pre>
 </div>
 </div>
 <div id="org-tips-and-best-practices" class="org-section org-level-1">
-<h1>⚠️ Tips and Best Practices</h1>
+<h1>✅ Tips and Best Practices</h1>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <div id="org-discoverability" class="org-section org-level-2">
-<h2>⚠️ Discoverability</h2>
+<h2>✅ Discoverability</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Keep menus organized in logical groups</p>
 </li>
@@ -1264,7 +1361,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-performance" class="org-section org-level-2">
-<h2>⚠️ Performance</h2>
+<h2>✅ Performance</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Use conditional visibility (when) to hide irrelevant items</p>
 </li>
@@ -1278,7 +1377,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-keyboard-shortcuts" class="org-section org-level-2">
-<h2>⚠️ Keyboard Shortcuts</h2>
+<h2>✅ Keyboard Shortcuts</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Assign memorable single-letter keys</p>
 </li>
@@ -1292,7 +1393,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-user-experience" class="org-section org-level-2">
-<h2>⚠️ User Experience</h2>
+<h2>✅ User Experience</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Provide clear hints in menu titles</p>
 </li>
@@ -1308,7 +1411,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-debugging" class="org-section org-level-2">
-<h2>⚠️ Debugging</h2>
+<h2>✅ Debugging</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>To debug custom menus:</p>
 
 <ol>
@@ -1327,9 +1432,13 @@ hydraManager.registerMenus(menus);</code></pre>
 </div>
 </div>
 <div id="org-troubleshooting" class="org-section org-level-1">
-<h1>⚠️ Troubleshooting</h1>
+<h1>✅ Troubleshooting</h1>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <div id="org-menu-not-appearing" class="org-section org-level-2">
-<h2>⚠️ Menu Not Appearing</h2>
+<h2>✅ Menu Not Appearing</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Verify the menu is registered: Check hydraManager.getMenuIds()</p>
 </li>
@@ -1343,7 +1452,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-commands-not-executing" class="org-section org-level-2">
-<h2>⚠️ Commands Not Executing</h2>
+<h2>✅ Commands Not Executing</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Verify the command is registered in VS Code</p>
 </li>
@@ -1357,7 +1468,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-items-not-showing" class="org-section org-level-2">
-<h2>⚠️ Items Not Showing</h2>
+<h2>✅ Items Not Showing</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Check the when condition if present</p>
 </li>
@@ -1371,7 +1484,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-single-key-selection-not-working" class="org-section org-level-2">
-<h2>⚠️ Single-Key Selection Not Working</h2>
+<h2>✅ Single-Key Selection Not Working</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Verify scimax.hydra.singleKeySelection is true</p>
 </li>
@@ -1385,7 +1500,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-submenus-not-navigating" class="org-section org-level-2">
-<h2>⚠️ Submenus Not Navigating</h2>
+<h2>✅ Submenus Not Navigating</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p>Verify submenu ID exists and is registered</p>
 </li>
@@ -1400,14 +1517,20 @@ hydraManager.registerMenus(menus);</code></pre>
 </div>
 </div>
 <div id="org-frequently-asked-questions" class="org-section org-level-1">
-<h1>⚠️ Frequently Asked Questions</h1>
+<h1>✅ Frequently Asked Questions</h1>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <div id="org-can-i-create-hydras-for-non-scimax-commands" class="org-section org-level-2">
-<h2>⚠️ Can I create hydras for non-Scimax commands?</h2>
+<h2>✅ Can I create hydras for non-Scimax commands?</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Yes! You can create hydras that execute any VS Code command, including those from other extensions.</p>
 
 </div>
 <div id="org-how-do-i-add-a-hydra-to-the-command-palette" class="org-section org-level-2">
-<h2>⚠️ How do I add a hydra to the command palette?</h2>
+<h2>✅ How do I add a hydra to the command palette?</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Hydra commands like scimax.hydra.show are automatically available in the command palette. To show a specific menu, register it first, then call:</p>
 
 <div class="org-src-container">
@@ -1416,7 +1539,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-can-i-bind-a-hydra-to-a-custom-keybinding" class="org-section org-level-2">
-<h2>⚠️ Can I bind a hydra to a custom keybinding?</h2>
+<h2>✅ Can I bind a hydra to a custom keybinding?</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Yes! Add a keybinding in keybindings.json:</p>
 
 <div class="org-src-container">
@@ -1429,17 +1554,23 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-how-do-i-share-custom-hydras-with-my-team" class="org-section org-level-2">
-<h2>⚠️ How do I share custom hydras with my team?</h2>
+<h2>✅ How do I share custom hydras with my team?</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Custom hydras defined in extension code are automatically shared. For configuration-based hydras, share your workspace .vscode/settings.json file.</p>
 
 </div>
 <div id="org-can-hydras-work-with-multiple-workspaces" class="org-section org-level-2">
-<h2>⚠️ Can hydras work with multiple workspaces?</h2>
+<h2>✅ Can hydras work with multiple workspaces?</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Yes! Hydras are global to the VS Code window and work across all workspace folders.</p>
 
 </div>
 <div id="org-how-do-i-disable-hydras" class="org-section org-level-2">
-<h2>⚠️ How do I disable hydras?</h2>
+<h2>✅ How do I disable hydras?</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Unmap the keybindings in your keybindings.json:</p>
 
 <div class="org-src-container">
@@ -1454,9 +1585,13 @@ hydraManager.registerMenus(menus);</code></pre>
 </div>
 </div>
 <div id="org-additional-resources" class="org-section org-level-1">
-<h1>⚠️ Additional Resources</h1>
+<h1>✅ Additional Resources</h1>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <div id="org-source-code" class="org-section org-level-2">
-<h2>⚠️ Source Code</h2>
+<h2>✅ Source Code</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>The hydra framework source is located in src<em>hydra</em>:</p>
 
 <ul>
@@ -1472,7 +1607,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-related-documentation" class="org-section org-level-2">
-<h2>⚠️ Related Documentation</h2>
+<h2>✅ Related Documentation</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p><a href="24-keybindings.html">Keybindings</a> - All Scimax keyboard shortcuts</p>
 </li>
@@ -1488,7 +1625,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-external-references" class="org-section org-level-2">
-<h2>⚠️ External References</h2>
+<h2>✅ External References</h2>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <ul>
 <li><p><a href="https://github.com/abo-abo/hydra">Emacs Hydra Package</a> - Original inspiration</p>
 </li>
@@ -1501,7 +1640,9 @@ hydraManager.registerMenus(menus);</code></pre>
 </div>
 </div>
 <div id="org-conclusion" class="org-section org-level-1">
-<h1>⚠️ Conclusion</h1>
+<h1>✅ Conclusion</h1>
+<p>CLOSED: [2026-01-17 Sat 12:20]</p>
+
 <p>Hydra menus provide a powerful and discoverable way to access Scimax features. Whether you&#39;re a new user exploring available commands or an experienced user building custom workflows, hydras help you work efficiently without memorizing dozens of keyboard shortcuts.</p>
 
 <p>Start with C-c m to open the main menu and explore. Over time, you&#39;ll develop muscle memory for frequently-used commands and can invoke them directly or through submenus.</p>
@@ -1510,7 +1651,9 @@ hydraManager.registerMenus(menus);</code></pre>
 
 </div>
 <div id="org-navigation" class="org-section org-level-1">
-<h1>Navigation</h1>
+<h1>✅ Navigation</h1>
+<p>CLOSED: [2026-01-17 Sat 19:51]</p>
+
 <ul>
 <li><p>Previous: <a href="21-navigation.html">Navigation</a></p>
 </li>
@@ -1521,559 +1664,6 @@ hydraManager.registerMenus(menus);</code></pre>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="17-projectile.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="20-editmarks.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#introduction" class="toc-link">✅ Introduction</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#what-are-hydra-menus" class="toc-link">✅ What Are Hydra Menus?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">✅ Key Features</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#philosophy" class="toc-link">✅ Philosophy</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#getting-started" class="toc-link">✅ Getting Started</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#opening-the-main-menu" class="toc-link">Opening the Main Menu</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#basic-navigation" class="toc-link">✅ Basic Navigation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#understanding-exit-behaviors" class="toc-link">👀 Understanding Exit Behaviors</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#exit-blue-head-sign-out" class="toc-link">👀 Exit (Blue Head) - $(sign-out)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#stay-red-head-sync" class="toc-link">👀 Stay (Red Head) - $(sync)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#submenu-chevron-right" class="toc-link">Submenu - $(chevron-right)</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#available-hydras" class="toc-link">✅ Available Hydras</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#main-menu-scimaxmain" class="toc-link">✅ Main Menu (scimax.main)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#journal-menu-scimaxjournal" class="toc-link">⚠️ Journal Menu (scimax.journal)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#references-menu-scimaxreferences" class="toc-link">⚠️ References Menu (scimax.references)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#notebook-menu-scimaxnotebook" class="toc-link">⚠️ Notebook Menu (scimax.notebook)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#projectile-menu-scimaxprojectile" class="toc-link">⚠️ Projectile Menu (scimax.projectile)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#search-menu-scimaxsearch" class="toc-link">⚠️ Search Menu (scimax.search)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#jump-menu-scimaxjump" class="toc-link">⚠️ Jump Menu (scimax.jump)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#database-menu-scimaxdatabase" class="toc-link">⚠️ Database Menu (scimax.database)</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#commands-and-keybindings" class="toc-link">⚠️ Commands and Keybindings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#global-keybindings" class="toc-link">⚠️ Global Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#available-commands" class="toc-link">⚠️ Available Commands</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrashow" class="toc-link">⚠️ scimax.hydra.show</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrahide" class="toc-link">⚠️ scimax.hydra.hide</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydraback" class="toc-link">⚠️ scimax.hydra.back</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydramain" class="toc-link">⚠️ scimax.hydra.main</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydracontextmenu" class="toc-link">⚠️ scimax.hydra.contextMenu</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydratoggle" class="toc-link">⚠️ scimax.hydra.toggle</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#configuration" class="toc-link">⚠️ Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#settings" class="toc-link">⚠️ Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrashowkeyhints" class="toc-link">⚠️ scimax.hydra.showKeyHints</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrasinglekeyselection" class="toc-link">⚠️ scimax.hydra.singleKeySelection</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydradimnonmatching" class="toc-link">⚠️ scimax.hydra.dimNonMatching</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxhydrasortbykey" class="toc-link">⚠️ scimax.hydra.sortByKey</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#example-configuration" class="toc-link">⚠️ Example Configuration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#creating-custom-hydras" class="toc-link">⚠️ Creating Custom Hydras</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#menu-structure" class="toc-link">⚠️ Menu Structure</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#using-the-fluent-builder-api" class="toc-link">⚠️ Using the Fluent Builder API</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#menu-item-types" class="toc-link">⚠️ Menu Item Types</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#exit-commands-blue-heads" class="toc-link">⚠️ Exit Commands (Blue Heads)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#persistent-commands-red-heads" class="toc-link">⚠️ Persistent Commands (Red Heads)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#submenu-links" class="toc-link">⚠️ Submenu Links</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#manual-menu-definition" class="toc-link">⚠️ Manual Menu Definition</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#advanced-features" class="toc-link">⚠️ Advanced Features</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#conditional-visibility" class="toc-link">⚠️ Conditional Visibility</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#toggle-items" class="toc-link">⚠️ Toggle Items</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#lifecycle-hooks" class="toc-link">⚠️ Lifecycle Hooks</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#registering-multiple-menus" class="toc-link">⚠️ Registering Multiple Menus</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#unregistering-menus" class="toc-link">⚠️ Unregistering Menus</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#practical-examples" class="toc-link">⚠️ Practical Examples</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#example-1-opening-todays-journal" class="toc-link">⚠️ Example 1: Opening Today's Journal</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#example-2-inserting-a-citation" class="toc-link">⚠️ Example 2: Inserting a Citation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#example-3-quick-navigation-with-jump" class="toc-link">⚠️ Example 3: Quick Navigation with Jump</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#example-4-searching-todo-items" class="toc-link">⚠️ Example 4: Searching TODO Items</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#example-5-persistent-actions" class="toc-link">⚠️ Example 5: Persistent Actions</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#example-6-navigating-back" class="toc-link">⚠️ Example 6: Navigating Back</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#differences-from-emacs-hydra" class="toc-link">⚠️ Differences from Emacs Hydra</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#similarities" class="toc-link">⚠️ Similarities</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#differences" class="toc-link">⚠️ Differences</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#quick-pick-vs-minibuffer" class="toc-link">⚠️ Quick Pick vs. Minibuffer</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#no-dedicated-hydra-mode" class="toc-link">⚠️ No Dedicated Hydra Mode</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#async-command-execution" class="toc-link">⚠️ Async Command Execution</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#icon-based-indicators-instead-of-colors" class="toc-link">👀 Icon-Based Indicators Instead of Colors</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#menu-state-persistence" class="toc-link">⚠️ Menu State Persistence</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#configuration-through-settings" class="toc-link">⚠️ Configuration Through Settings</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#no-posframe-support" class="toc-link">⚠️ No Posframe Support</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#migration-tips" class="toc-link">⚠️ Migration Tips</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#tips-and-best-practices" class="toc-link">⚠️ Tips and Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#discoverability" class="toc-link">⚠️ Discoverability</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#performance" class="toc-link">⚠️ Performance</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#keyboard-shortcuts" class="toc-link">⚠️ Keyboard Shortcuts</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#user-experience" class="toc-link">⚠️ User Experience</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#debugging" class="toc-link">⚠️ Debugging</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">⚠️ Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#menu-not-appearing" class="toc-link">⚠️ Menu Not Appearing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#commands-not-executing" class="toc-link">⚠️ Commands Not Executing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#items-not-showing" class="toc-link">⚠️ Items Not Showing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#single-key-selection-not-working" class="toc-link">⚠️ Single-Key Selection Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#submenus-not-navigating" class="toc-link">⚠️ Submenus Not Navigating</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#frequently-asked-questions" class="toc-link">⚠️ Frequently Asked Questions</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#can-i-create-hydras-for-non-scimax-commands" class="toc-link">⚠️ Can I create hydras for non-Scimax commands?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#how-do-i-add-a-hydra-to-the-command-palette" class="toc-link">⚠️ How do I add a hydra to the command palette?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#can-i-bind-a-hydra-to-a-custom-keybinding" class="toc-link">⚠️ Can I bind a hydra to a custom keybinding?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#how-do-i-share-custom-hydras-with-my-team" class="toc-link">⚠️ How do I share custom hydras with my team?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#can-hydras-work-with-multiple-workspaces" class="toc-link">⚠️ Can hydras work with multiple workspaces?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#how-do-i-disable-hydras" class="toc-link">⚠️ How do I disable hydras?</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#additional-resources" class="toc-link">⚠️ Additional Resources</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#source-code" class="toc-link">⚠️ Source Code</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#related-documentation" class="toc-link">⚠️ Related Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#external-references" class="toc-link">⚠️ External References</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#conclusion" class="toc-link">⚠️ Conclusion</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

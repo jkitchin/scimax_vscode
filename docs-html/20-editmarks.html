@@ -1,260 +1,230 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Editmarks (Track Changes)</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Editmarks (Track Changes)</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Editmarks (Track Changes)</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+<li><a href="#org-use-cases">✅ Use Cases</a></li>
+</ul>
+<li><a href="#org-markup-syntax">✅ Markup Syntax</a></li>
+<ul>
+<li><a href="#org-universal-format-recommended">✅ Universal Format (Recommended)</a></li>
+<li><a href="#org-criticmarkup-format-alternative">✅ CriticMarkup Format (Alternative)</a></li>
+</ul>
+<li><a href="#org-types-of-editmarks">✅ Types of Editmarks</a></li>
+<ul>
+<li><a href="#org-insertion">✅ Insertion</a></li>
+<li><a href="#org-deletion">✅ Deletion</a></li>
+<li><a href="#org-comment">✅ Comment</a></li>
+<li><a href="#org-typo-correction">✅ Typo Correction</a></li>
+</ul>
+<li><a href="#org-creating-editmarks">✅ Creating Editmarks</a></li>
+<ul>
+<li><a href="#org-mark-insertion">✅ Mark Insertion</a></li>
+<li><a href="#org-mark-deletion">✅ Mark Deletion</a></li>
+<li><a href="#org-insert-comment">✅ Insert Comment</a></li>
+<li><a href="#org-mark-typo-correction">✅ Mark Typo Correction</a></li>
+</ul>
+<li><a href="#org-reviewing-and-processing-editmarks">✅ Reviewing and Processing Editmarks</a></li>
+<ul>
+<li><a href="#org-accept-edit-mark">✅ Accept Edit Mark</a></li>
+<li><a href="#org-reject-edit-mark">✅ Reject Edit Mark</a></li>
+<li><a href="#org-accept-all-edit-marks">✅ Accept All Edit Marks</a></li>
+<li><a href="#org-reject-all-edit-marks">✅ Reject All Edit Marks</a></li>
+<li><a href="#org-hover-actions">✅ Hover Actions</a></li>
+</ul>
+<li><a href="#org-navigation">✅ Navigation</a></li>
+<ul>
+<li><a href="#org-next-edit-mark">✅ Next Edit Mark</a></li>
+<li><a href="#org-previous-edit-mark">✅ Previous Edit Mark</a></li>
+<li><a href="#org-keyboard-navigation-pattern">✅ Keyboard Navigation Pattern</a></li>
+</ul>
+<li><a href="#org-summary-view">✅ Summary View</a></li>
+<li><a href="#org-visual-appearance">✅ Visual Appearance</a></li>
+<li><a href="#org-complete-command-reference">Complete Command Reference</a></li>
+<ul>
+<li><a href="#org-insertion-commands">Insertion Commands</a></li>
+<li><a href="#org-deletion-commands">Deletion Commands</a></li>
+<li><a href="#org-comment-commands">Comment Commands</a></li>
+<li><a href="#org-typo-correction-commands">Typo Correction Commands</a></li>
+<li><a href="#org-review-commands">Review Commands</a></li>
+<li><a href="#org-navigation-commands">Navigation Commands</a></li>
+<li><a href="#org-utility-commands">Utility Commands</a></li>
+</ul>
+<li><a href="#org-keybinding-pattern">Keybinding Pattern</a></li>
+<li><a href="#org-typical-workflows">Typical Workflows</a></li>
+<ul>
+<li><a href="#org-workflow-1-peer-review">Workflow 1: Peer Review</a></li>
+<li><a href="#org-workflow-2-self-editing">Workflow 2: Self-Editing</a></li>
+<li><a href="#org-workflow-3-collaborative-writing">Workflow 3: Collaborative Writing</a></li>
+<li><a href="#org-workflow-4-student-feedback">Workflow 4: Student Feedback</a></li>
+<li><a href="#org-workflow-5-document-review-cycle">Workflow 5: Document Review Cycle</a></li>
+</ul>
+<li><a href="#org-best-practices">✅ Best Practices</a></li>
+<ul>
+<li><a href="#org-do-s">✅ Do&#39;s</a></li>
+<li><a href="#org-don-ts">✅ Don&#39;ts</a></li>
+<li><a href="#org-tips">✅ Tips</a></li>
+</ul>
+<li><a href="#org-integration-with-other-features">✅ Integration with Other Features</a></li>
+<ul>
+<li><a href="#org-source-blocks">✅ Source Blocks</a></li>
+<li><a href="#org-tables">✅ Tables</a></li>
+<li><a href="#org-export-compatibility">✅ Export Compatibility</a></li>
+<ul>
+<li><a href="#org-export-modes">Export Modes</a></li>
+<li><a href="#org-html-export">HTML Export</a></li>
+<li><a href="#org-latex-pdf-export">LaTeX/PDF Export</a></li>
+<li><a href="#org-configuration">Configuration</a></li>
+<li><a href="#org-workflow-recommendations">Workflow Recommendations</a></li>
+</ul>
+<li><a href="#org-version-control">✅ Version Control</a></li>
+</ul>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+<ul>
+<li><a href="#org-editmarks-not-showing">✅ Editmarks Not Showing</a></li>
+<li><a href="#org-navigation-not-working">✅ Navigation Not Working</a></li>
+<li><a href="#org-accept-reject-not-working">Accept/Reject Not Working</a></li>
+<li><a href="#org-nested-marks-issue">✅ Nested Marks Issue</a></li>
+<li><a href="#org-performance-with-many-marks">✅ Performance with Many Marks</a></li>
+</ul>
+<li><a href="#org-faq">✅ FAQ</a></li>
+<ul>
+<li><a href="#org-q-can-i-customize-the-colors">Q: Can I customize the colors?</a></li>
+<li><a href="#org-q-do-editmarks-work-in-any-file-type">Q: Do editmarks work in any file type?</a></li>
+<li><a href="#org-q-can-i-export-documents-with-editmarks">Q: Can I export documents with editmarks?</a></li>
+<li><a href="#org-q-how-do-i-see-who-made-which-mark">Q: How do I see who made which mark?</a></li>
+<li><a href="#org-q-can-i-use-editmarks-with-word-documents">Q: Can I use editmarks with Word documents?</a></li>
+<li><a href="#org-q-do-editmarks-interfere-with-syntax-highlighting">Q: Do editmarks interfere with syntax highlighting?</a></li>
+<li><a href="#org-q-can-i-undo-an-accept-reject-action">Q: Can I undo an accept/reject action?</a></li>
+<li><a href="#org-q-are-editmarks-saved-with-the-file">Q: Are editmarks saved with the file?</a></li>
+<li><a href="#org-q-can-i-search-for-editmarks">Q: Can I search for editmarks?</a></li>
+</ul>
+<li><a href="#org-related-features">✅ Related Features</a></li>
+<li><a href="#org-conclusion">✅ Conclusion</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-introduction" class="org-section org-level-1">
+<div id="org-introduction" class="org-section org-level-1">
 <h1>✅ Introduction</h1>
 <p>CLOSED: [2026-01-15 Thu 14:10]</p>
 
@@ -483,7 +453,9 @@
 
 </div>
 <div id="org-mark-typo-correction" class="org-section org-level-2">
-<h2>⚠️ Mark Typo Correction</h2>
+<h2>✅ Mark Typo Correction</h2>
+<p>CLOSED: [2026-01-17 Sat 15:39]</p>
+
 <ul>
 <li><p>Requires text selection (the incorrect text)</p>
 </li>
@@ -1032,25 +1004,86 @@ After:  The quick fox</pre>
 <tr><th>Item</th><th>Original</th><th>Revised</th><th>Notes</th></tr>
 </thead>
 <tbody>
-<tr><td>Budget</td><td>@@-$100K-@@</td><td>@@<del>$120K</del>@@</td><td>@@&gt;approved by CFO&lt;@@</td></tr>
-<tr><td>Time</td><td>6 months</td><td>@@<del>8 months</del>@@</td><td>@@&gt;realistic estimate&lt;@@</td></tr>
+<tr><td>Budget</td><td><del class="editmark-del">$100K</del></td><td>@@<del>$120K</del>@@</td><td><mark class="editmark-comment">approved by CFO</mark></td></tr>
+<tr><td>Time</td><td>6 months</td><td>@@<del>8 months</del>@@</td><td><mark class="editmark-comment">realistic estimate</mark></td></tr>
 </tbody>
 </table>
 
 </div>
 <div id="org-export-compatibility" class="org-section org-level-2">
-<h2>⚠️ Export Compatibility</h2>
-<p>When exporting documents (HTML, LaTeX, PDF):</p>
+<h2>✅ Export Compatibility</h2>
+<p>CLOSED: [2026-01-18 Sun 11:19]</p>
+
+<p>Editmarks are fully supported in HTML, LaTeX, and PDF exports. The export behavior is controlled by the <code class="verbatim">scimax.export.editmarkMode</code> setting.</p>
+
+<div id="org-export-modes" class="org-section org-level-3">
+<h3>Export Modes</h3>
+<table class="org-table">
+<thead>
+<tr><th>Mode</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">show</code></td><td>Render with visual markup (colored insertions/deletions)</td></tr>
+<tr><td><code class="verbatim">accept</code></td><td>Apply all changes (keep insertions, remove deletions)</td></tr>
+<tr><td><code class="verbatim">reject</code></td><td>Revert all changes (remove insertions, keep deletions)</td></tr>
+<tr><td><code class="verbatim">hide</code></td><td>Remove all editmarks without any replacement</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-html-export" class="org-section org-level-3">
+<h3>HTML Export</h3>
+<p>In HTML, editmarks are rendered using semantic HTML elements with CSS styling:</p>
 
 <ul>
-<li><p><strong>Unprocessed marks</strong> appear in the exported output</p>
+<li><p><strong>Insertions</strong>: <code class="verbatim">&lt;ins class</code>&quot;editmark-ins&quot;&gt;text</ins>= (green background)</p>
 </li>
-<li><p><strong>Process marks first</strong> before final export</p>
+<li><p><strong>Deletions</strong>: <code class="verbatim">&lt;del class</code>&quot;editmark-del&quot;&gt;text</del>= (red background, strikethrough)</p>
 </li>
-<li><p>Or use regex to strip marks during export if needed</p>
+<li><p><strong>Comments</strong>: <code class="verbatim">&lt;mark class</code>&quot;editmark-comment&quot;&gt;text</mark>= (yellow background, italic)</p>
+</li>
+<li><p><strong>Typos</strong>: <code class="verbatim">&lt;span class</code>&quot;editmark-typo&quot;&gt;<del>old</del><ins>new</ins></span>=</p>
 </li>
 </ul>
 
+</div>
+<div id="org-latex-pdf-export" class="org-section org-level-3">
+<h3>LaTeX/PDF Export</h3>
+<p>In LaTeX, editmarks use custom commands defined in the preamble:</p>
+
+<pre class="example">\editins{inserted text}           % Green underlined text
+\editdel{deleted text}            % Red strikethrough text
+\editcomment{comment text}        % Orange italic text in brackets
+\edittypo{old text}{new text}     % Old crossed out, new inserted</pre>
+
+<p>The required packages (<code class="verbatim">xcolor</code>, <code class="verbatim">ulem</code>) and command definitions are automatically added to the preamble when editmarks are detected.</p>
+
+</div>
+<div id="org-configuration" class="org-section org-level-3">
+<h3>Configuration</h3>
+<p>Set the export mode in VS Code settings:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.editmarkMode&quot;: &quot;show&quot;
+}</code></pre>
+</div>
+
+<p>Or use the Settings UI: Search for &quot;editmark&quot; and select the desired mode.</p>
+
+</div>
+<div id="org-workflow-recommendations" class="org-section org-level-3">
+<h3>Workflow Recommendations</h3>
+<ul>
+<li><p><strong>Draft review</strong>: Use <code class="verbatim">show</code> mode to see all changes visually in the export</p>
+</li>
+<li><p><strong>Final publication</strong>: Use <code class="verbatim">accept</code> or <code class="verbatim">reject</code> mode, or process marks manually before export</p>
+</li>
+<li><p><strong>Clean copy</strong>: Use <code class="verbatim">hide</code> to remove all editmarks without deciding on them</p>
+</li>
+</ul>
+
+</div>
 </div>
 <div id="org-version-control" class="org-section org-level-2">
 <h2>✅ Version Control</h2>
@@ -1154,7 +1187,18 @@ git commit -m &quot;Incorporate reviewer suggestions&quot;</code></pre>
 </div>
 <div id="org-q-can-i-export-documents-with-editmarks" class="org-section org-level-2">
 <h2>Q: Can I export documents with editmarks?</h2>
-<p>A: Yes, but the markup will appear in the exported output. It&#39;s recommended to process all editmarks before final export.</p>
+<p>A: Yes! Editmarks are fully supported in HTML, LaTeX, and PDF exports. Use the <code class="verbatim">scimax.export.editmarkMode</code> setting to control how they appear:</p>
+
+<ul>
+<li><p><code class="verbatim">show</code>: Visual markup with colors (default)</p>
+</li>
+<li><p><code class="verbatim">accept</code>: Apply all changes automatically</p>
+</li>
+<li><p><code class="verbatim">reject</code>: Revert all changes</p>
+</li>
+<li><p><code class="verbatim">hide</code>: Remove editmarks silently</p>
+</li>
+</ul>
 
 </div>
 <div id="org-q-how-do-i-see-who-made-which-mark" class="org-section org-level-2">
@@ -1255,437 +1299,6 @@ git commit -m &quot;Incorporate reviewer suggestions&quot;</code></pre>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="22-hydra-menus.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="27-org-api.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#introduction" class="toc-link">✅ Introduction</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">✅ Key Features</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#use-cases" class="toc-link">✅ Use Cases</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#markup-syntax" class="toc-link">✅ Markup Syntax</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#universal-format-recommended" class="toc-link">✅ Universal Format (Recommended)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#criticmarkup-format-alternative" class="toc-link">✅ CriticMarkup Format (Alternative)</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#types-of-editmarks" class="toc-link">✅ Types of Editmarks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#insertion" class="toc-link">✅ Insertion</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#deletion" class="toc-link">✅ Deletion</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#comment" class="toc-link">✅ Comment</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#typo-correction" class="toc-link">✅ Typo Correction</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#creating-editmarks" class="toc-link">✅ Creating Editmarks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#mark-insertion" class="toc-link">✅ Mark Insertion</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#mark-deletion" class="toc-link">✅ Mark Deletion</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#insert-comment" class="toc-link">✅ Insert Comment</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#mark-typo-correction" class="toc-link">⚠️ Mark Typo Correction</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#reviewing-and-processing-editmarks" class="toc-link">✅ Reviewing and Processing Editmarks</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#accept-edit-mark" class="toc-link">✅ Accept Edit Mark</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#reject-edit-mark" class="toc-link">✅ Reject Edit Mark</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#accept-all-edit-marks" class="toc-link">✅ Accept All Edit Marks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#reject-all-edit-marks" class="toc-link">✅ Reject All Edit Marks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#hover-actions" class="toc-link">✅ Hover Actions</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">✅ Navigation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#next-edit-mark" class="toc-link">✅ Next Edit Mark</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#previous-edit-mark" class="toc-link">✅ Previous Edit Mark</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#keyboard-navigation-pattern" class="toc-link">✅ Keyboard Navigation Pattern</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#summary-view" class="toc-link">✅ Summary View</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#visual-appearance" class="toc-link">✅ Visual Appearance</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#complete-command-reference" class="toc-link">Complete Command Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#insertion-commands" class="toc-link">Insertion Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#deletion-commands" class="toc-link">Deletion Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#comment-commands" class="toc-link">Comment Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#typo-correction-commands" class="toc-link">Typo Correction Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#review-commands" class="toc-link">Review Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#navigation-commands" class="toc-link">Navigation Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#utility-commands" class="toc-link">Utility Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#keybinding-pattern" class="toc-link">Keybinding Pattern</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#typical-workflows" class="toc-link">Typical Workflows</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#workflow-1-peer-review" class="toc-link">Workflow 1: Peer Review</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#workflow-2-self-editing" class="toc-link">Workflow 2: Self-Editing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#workflow-3-collaborative-writing" class="toc-link">Workflow 3: Collaborative Writing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#workflow-4-student-feedback" class="toc-link">Workflow 4: Student Feedback</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#workflow-5-document-review-cycle" class="toc-link">Workflow 5: Document Review Cycle</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">✅ Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#dos" class="toc-link">✅ Do's</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#donts" class="toc-link">✅ Don'ts</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#tips" class="toc-link">✅ Tips</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#integration-with-other-features" class="toc-link">✅ Integration with Other Features</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#source-blocks" class="toc-link">✅ Source Blocks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#tables" class="toc-link">✅ Tables</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-compatibility" class="toc-link">⚠️ Export Compatibility</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#version-control" class="toc-link">✅ Version Control</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">✅ Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#editmarks-not-showing" class="toc-link">✅ Editmarks Not Showing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#navigation-not-working" class="toc-link">✅ Navigation Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#acceptreject-not-working" class="toc-link">Accept/Reject Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#nested-marks-issue" class="toc-link">✅ Nested Marks Issue</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#performance-with-many-marks" class="toc-link">✅ Performance with Many Marks</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#faq" class="toc-link">✅ FAQ</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#q-can-i-customize-the-colors" class="toc-link">Q: Can I customize the colors?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-do-editmarks-work-in-any-file-type" class="toc-link">Q: Do editmarks work in any file type?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-can-i-export-documents-with-editmarks" class="toc-link">Q: Can I export documents with editmarks?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-how-do-i-see-who-made-which-mark" class="toc-link">Q: How do I see who made which mark?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-can-i-use-editmarks-with-word-documents" class="toc-link">Q: Can I use editmarks with Word documents?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-do-editmarks-interfere-with-syntax-highlighting" class="toc-link">Q: Do editmarks interfere with syntax highlighting?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-can-i-undo-an-acceptreject-action" class="toc-link">Q: Can I undo an accept/reject action?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-are-editmarks-saved-with-the-file" class="toc-link">Q: Are editmarks saved with the file?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#q-can-i-search-for-editmarks" class="toc-link">Q: Can I search for editmarks?</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-features" class="toc-link">✅ Related Features</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#conclusion" class="toc-link">✅ Conclusion</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

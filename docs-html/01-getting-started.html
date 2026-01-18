@@ -1,260 +1,199 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Getting Started with Scimax VS Code</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Getting Started with Scimax VS Code</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Getting Started with Scimax VS Code</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-getting-started">Getting Started</a></li>
+<li><a href="#org-system-requirements">System Requirements</a></li>
+<ul>
+<li><a href="#org-vs-code-version">VS Code Version</a></li>
+<li><a href="#org-optional-dependencies">Optional Dependencies</a></li>
+<ul>
+<li><a href="#org-for-code-execution">For Code Execution</a></li>
+<li><a href="#org-for-jupyter-integration">For Jupyter Integration</a></li>
+<li><a href="#org-for-latex-pdf-export">For LaTeX/PDF Export</a></li>
+<li><a href="#org-for-latex-equation-preview">For LaTeX Equation Preview</a></li>
+</ul>
+</ul>
+<li><a href="#org-installation">Installation</a></li>
+<ul>
+<li><a href="#org-from-vs-code-marketplace">From VS Code Marketplace</a></li>
+<li><a href="#org-from-vsix-file">From VSIX File</a></li>
+<li><a href="#org-from-source-github">From Source (GitHub)</a></li>
+<li><a href="#org-verify-installation">Verify Installation</a></li>
+</ul>
+<li><a href="#org-first-steps">First Steps</a></li>
+<ul>
+<li><a href="#org-opening-an-org-file">Opening an Org File</a></li>
+<li><a href="#org-creating-your-first-document">Creating Your First Document</a></li>
+<li><a href="#org-basic-navigation">Basic Navigation</a></li>
+<ul>
+<li><a href="#org-folding">Folding</a></li>
+<li><a href="#org-moving-between-headings">Moving Between Headings</a></li>
+<li><a href="#org-executing-code">Executing Code</a></li>
+</ul>
+</ul>
+<li><a href="#org-understanding-the-interface">Understanding the Interface</a></li>
+<ul>
+<li><a href="#org-outline-view">Outline View</a></li>
+<li><a href="#org-tree-views">Tree Views</a></li>
+<ul>
+<li><a href="#org-journal-tree">Journal Tree</a></li>
+<li><a href="#org-projects-tree">Projects Tree</a></li>
+<li><a href="#org-agenda-tree">Agenda Tree</a></li>
+</ul>
+<li><a href="#org-status-bar">Status Bar</a></li>
+<li><a href="#org-hydra-menus">Hydra Menus</a></li>
+</ul>
+<li><a href="#org-essential-commands">Essential Commands</a></li>
+<ul>
+<li><a href="#org-document-commands">Document Commands</a></li>
+<li><a href="#org-source-block-commands">Source Block Commands</a></li>
+<li><a href="#org-export-commands">Export Commands</a></li>
+<li><a href="#org-navigation-commands">Navigation Commands</a></li>
+<li><a href="#org-help-commands">Help Commands</a></li>
+</ul>
+<li><a href="#org-recommended-settings">Recommended Settings</a></li>
+<ul>
+<li><a href="#org-essential-settings">Essential Settings</a></li>
+<li><a href="#org-python-configuration">Python Configuration</a></li>
+<li><a href="#org-latex-configuration">LaTeX Configuration</a></li>
+</ul>
+<li><a href="#org-migrating-from-emacs">Migrating from Emacs</a></li>
+<ul>
+<li><a href="#org-similar-features">Similar Features</a></li>
+<li><a href="#org-different-behaviors">Different Behaviors</a></li>
+<li><a href="#org-missing-features">Missing Features</a></li>
+</ul>
+<li><a href="#org-next-steps">Next Steps</a></li>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-code-blocks-not-executing">Code Blocks Not Executing</a></li>
+<li><a href="#org-latex-preview-not-working">LaTeX Preview Not Working</a></li>
+<li><a href="#org-search-not-finding-results">Search Not Finding Results</a></li>
+<li><a href="#org-journal-not-opening">Journal Not Opening</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0 active ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-getting-started" class="org-section org-level-1">
+<div id="org-getting-started" class="org-section org-level-1">
 <h1>Getting Started</h1>
 <p>This guide will help you install Scimax VS Code and get started with its core
 features. By the end, you&#39;ll be able to create structured documents, execute
@@ -440,7 +379,7 @@ print(&quot;Hello from Scimax VS Code!&quot;)
 <ul>
 <li><p>Press <kbd>Tab</kbd> on a heading to cycle its visibility (folded/children/subtree)</p>
 </li>
-<li><p>Press `S-&lt;tab&gt;&#39; anywhere to cycle global visibility</p>
+<li><p>Press `S-<tab>&#39; anywhere to cycle global visibility</p>
 </li>
 </ul>
 
@@ -452,11 +391,11 @@ print(&quot;Hello from Scimax VS Code!&quot;)
 <tr><th>Key</th><th>Action</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c C-j</code></td><td>Jump to any heading</td></tr>
-<tr><td><code class="verbatim">M-&lt;up&gt;</code></td><td>Move heading up</td></tr>
-<tr><td><code class="verbatim">M-&lt;down&gt;</code></td><td>Move heading down</td></tr>
-<tr><td><code class="verbatim">M-&lt;left&gt;</code></td><td>Promote heading (←level)</td></tr>
-<tr><td><code class="verbatim">M-&lt;right&gt;</code></td><td>Demote heading (→level)</td></tr>
+<tr><td>`C-c C-j&#39;</td><td>Jump to any heading</td></tr>
+<tr><td>`M-<up>&#39;</td><td>Move heading up</td></tr>
+<tr><td>`M-<down>&#39;</td><td>Move heading down</td></tr>
+<tr><td>`M-<left>&#39;</td><td>Promote heading (←level)</td></tr>
+<tr><td>`M-<right>&#39;</td><td>Demote heading (→level)</td></tr>
 </tbody>
 </table>
 
@@ -466,7 +405,7 @@ print(&quot;Hello from Scimax VS Code!&quot;)
 <ol>
 <li><p>Place your cursor inside a source block</p>
 </li>
-<li><p>Press `C-&lt;return&gt;&#39; or `C-c C-c&#39;</p>
+<li><p>Press `C-<return>&#39; or `C-c C-c&#39;</p>
 </li>
 <li><p>Results appear below the block</p>
 </li>
@@ -551,12 +490,12 @@ a command or `Escape&#39; to close the menu.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">Tab</code></td><td>Cycle fold at heading</td></tr>
-<tr><td><code class="verbatim">S-&lt;tab&gt;</code></td><td>Cycle global fold</td></tr>
-<tr><td><code class="verbatim">C-c C-j</code></td><td>Jump to heading</td></tr>
-<tr><td><code class="verbatim">C-&lt;return&gt;</code></td><td>Insert new heading (at heading)</td></tr>
-<tr><td><code class="verbatim">C-c C-t</code></td><td>Cycle TODO state</td></tr>
-<tr><td><code class="verbatim">C-c C-c</code></td><td>Context action (execute/toggle)</td></tr>
+<tr><td>Tab</td><td>Cycle fold at heading</td></tr>
+<tr><td>S-<tab></td><td>Cycle global fold</td></tr>
+<tr><td>C-c C-j</td><td>Jump to heading</td></tr>
+<tr><td>C-<return></td><td>Insert new heading (at heading)</td></tr>
+<tr><td>C-c C-t</td><td>Cycle TODO state</td></tr>
+<tr><td>C-c C-c</td><td>Context action (execute/toggle)</td></tr>
 </tbody>
 </table>
 
@@ -568,10 +507,10 @@ a command or `Escape&#39; to close the menu.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-&lt;return&gt;</code></td><td>Execute current block</td></tr>
-<tr><td><code class="verbatim">S-&lt;return&gt;</code></td><td>Execute block and move to next</td></tr>
-<tr><td><code class="verbatim">C-&lt;up&gt;</code></td><td>Go to previous block</td></tr>
-<tr><td><code class="verbatim">C-&lt;down&gt;</code></td><td>Go to next block</td></tr>
+<tr><td>C-<return></td><td>Execute current block</td></tr>
+<tr><td>S-<return></td><td>Execute block and move to next</td></tr>
+<tr><td>C-<up></td><td>Go to previous block</td></tr>
+<tr><td>C-<down></td><td>Go to next block</td></tr>
 </tbody>
 </table>
 
@@ -583,10 +522,10 @@ a command or `Escape&#39; to close the menu.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c C-e</code></td><td>Open export dispatcher</td></tr>
-<tr><td><code class="verbatim">C-c C-e h h</code></td><td>Export to HTML</td></tr>
-<tr><td><code class="verbatim">C-c C-e l l</code></td><td>Export to LaTeX</td></tr>
-<tr><td><code class="verbatim">C-c C-e l p</code></td><td>Export to PDF</td></tr>
+<tr><td>C-c C-e</td><td>Open export dispatcher</td></tr>
+<tr><td>C-c C-e h h</td><td>Export to HTML</td></tr>
+<tr><td>C-c C-e l l</td><td>Export to LaTeX</td></tr>
+<tr><td>C-c C-e l p</td><td>Export to PDF</td></tr>
 </tbody>
 </table>
 
@@ -598,24 +537,26 @@ a command or `Escape&#39; to close the menu.</p>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c s</code></td><td>Fuzzy search current file</td></tr>
-<tr><td><code class="verbatim">C-c j c</code></td><td>Jump to character (Avy-style)</td></tr>
-<tr><td><code class="verbatim">C-c j w</code></td><td>Jump to word</td></tr>
-<tr><td><code class="verbatim">C-c j l</code></td><td>Jump to line</td></tr>
+<tr><td>C-c s</td><td>Fuzzy search current file</td></tr>
+<tr><td>C-c j c</td><td>Jump to character (Avy-style)</td></tr>
+<tr><td>C-c j w</td><td>Jump to word</td></tr>
+<tr><td>C-c j l</td><td>Jump to line</td></tr>
 </tbody>
 </table>
 
 </div>
 <div id="org-help-commands" class="org-section org-level-2">
-<h2>⚠️ Help Commands</h2>
+<h2>Help Commands</h2>
 <table class="org-table">
 <thead>
 <tr><th>Key</th><th>Command</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-h k</code></td><td>Describe key (type a key to see its command)</td></tr>
-<tr><td><code class="verbatim">C-h b</code></td><td>List all keybindings</td></tr>
-<tr><td><code class="verbatim">C-h f</code></td><td>Describe command (find command by name)</td></tr>
+<tr><td>C-h k</td><td>Describe key (type a key to see its command)</td></tr>
+<tr><td>C-h b</td><td>List all keybindings</td></tr>
+<tr><td>C-h f</td><td>Describe command (find command by name)</td></tr>
+<tr><td>C-h v</td><td>Describe variable (view setting details)</td></tr>
+<tr><td>C-h a</td><td>Apropos (search documentation for keywords)</td></tr>
 </tbody>
 </table>
 
@@ -682,14 +623,14 @@ a command or `Escape&#39; to close the menu.</p>
 <tr><th>Emacs</th><th>VS Code</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">C-c C-c</code></td><td><code class="verbatim">C-c C-c</code></td></tr>
-<tr><td><code class="verbatim">C-c C-t</code></td><td><code class="verbatim">C-c C-t</code></td></tr>
-<tr><td><code class="verbatim">C-c C-e</code></td><td><code class="verbatim">C-c C-e</code></td></tr>
-<tr><td><code class="verbatim">TAB</code> on heading</td><td><code class="verbatim">Tab</code> on heading</td></tr>
-<tr><td><code class="verbatim">S-TAB</code></td><td><code class="verbatim">S-&lt;tab&gt;</code></td></tr>
-<tr><td><code class="verbatim">M-RET</code></td><td><code class="verbatim">C-&lt;return&gt;</code> (at heading)</td></tr>
-<tr><td><code class="verbatim">M-left/right</code></td><td><code class="verbatim">M-&lt;left&gt;/Right</code></td></tr>
-<tr><td><code class="verbatim">M-up/down</code></td><td><code class="verbatim">M-&lt;up&gt;/Down</code></td></tr>
+<tr><td>C-c C-c</td><td>C-c C-c</td></tr>
+<tr><td>C-c C-t</td><td>C-c C-t</td></tr>
+<tr><td>C-c C-e</td><td>C-c C-e</td></tr>
+<tr><td>TAB on heading</td><td>Tab on heading</td></tr>
+<tr><td>S-TAB</td><td>S-<tab></td></tr>
+<tr><td>M-RET</td><td>C-<return> (at heading)</td></tr>
+<tr><td>M-left/right</td><td>M-<left>/Right</td></tr>
+<tr><td>M-up/down</td><td>M-<up>/Down</td></tr>
 <tr><td>Speed commands</td><td>Same keys (when enabled)</td></tr>
 </tbody>
 </table>
@@ -802,330 +743,11 @@ a command or `Escape&#39; to close the menu.</p>
 </li>
 <li><p>Index: <a href="00-index.html">Documentation Index</a></p>
 </li>
-<li><p>Next: <a href="02-document-structure.html">Document Structure</a></p>
+<li><p>Next: <a href="01.5-basic-syntax.html">Basic Syntax</a></p>
 </li>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="00-index.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="26-configuration.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#getting-started" class="toc-link">Getting Started</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#system-requirements" class="toc-link">System Requirements</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#vs-code-version" class="toc-link">VS Code Version</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#optional-dependencies" class="toc-link">Optional Dependencies</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#for-code-execution" class="toc-link">For Code Execution</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#for-jupyter-integration" class="toc-link">For Jupyter Integration</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#for-latexpdf-export" class="toc-link">For LaTeX/PDF Export</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#for-latex-equation-preview" class="toc-link">For LaTeX Equation Preview</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#installation" class="toc-link">Installation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#from-vs-code-marketplace" class="toc-link">From VS Code Marketplace</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#from-vsix-file" class="toc-link">From VSIX File</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#from-source-github" class="toc-link">From Source (GitHub)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#verify-installation" class="toc-link">Verify Installation</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#first-steps" class="toc-link">First Steps</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#opening-an-org-file" class="toc-link">Opening an Org File</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#creating-your-first-document" class="toc-link">Creating Your First Document</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#basic-navigation" class="toc-link">Basic Navigation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#folding" class="toc-link">Folding</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#moving-between-headings" class="toc-link">Moving Between Headings</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#executing-code" class="toc-link">Executing Code</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#understanding-the-interface" class="toc-link">Understanding the Interface</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#outline-view" class="toc-link">Outline View</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#tree-views" class="toc-link">Tree Views</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#journal-tree" class="toc-link">Journal Tree</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#projects-tree" class="toc-link">Projects Tree</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#agenda-tree" class="toc-link">Agenda Tree</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#status-bar" class="toc-link">Status Bar</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#hydra-menus" class="toc-link">Hydra Menus</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#essential-commands" class="toc-link">Essential Commands</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#document-commands" class="toc-link">Document Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#source-block-commands" class="toc-link">Source Block Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-commands" class="toc-link">Export Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#navigation-commands" class="toc-link">Navigation Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#help-commands" class="toc-link">⚠️ Help Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#recommended-settings" class="toc-link">Recommended Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#essential-settings" class="toc-link">Essential Settings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#python-configuration" class="toc-link">Python Configuration</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latex-configuration" class="toc-link">LaTeX Configuration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#migrating-from-emacs" class="toc-link">Migrating from Emacs</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#similar-features" class="toc-link">Similar Features</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#different-behaviors" class="toc-link">Different Behaviors</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#missing-features" class="toc-link">Missing Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#next-steps" class="toc-link">Next Steps</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#code-blocks-not-executing" class="toc-link">Code Blocks Not Executing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latex-preview-not-working" class="toc-link">LaTeX Preview Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#search-not-finding-results" class="toc-link">Search Not Finding Results</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#journal-not-opening" class="toc-link">Journal Not Opening</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

@@ -1,261 +1,296 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>References and Citations</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>References and Citations</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">References and Citations</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<li><a href="#org-setting-up-bibliography-files">✅ Setting Up Bibliography Files</a></li>
+<ul>
+<li><a href="#org-configuration">Configuration</a></li>
+<ul>
+<li><a href="#org-example-configuration">✅ Example Configuration</a></li>
+</ul>
+<li><a href="#org-document-local-bibliography-files">✅ Document-Local Bibliography Files</a></li>
+<ul>
+<li><a href="#org-bibliography-links">✅ Bibliography Links</a></li>
+<li><a href="#org-bibliography-keywords">✅ Bibliography Keywords</a></li>
+</ul>
+<li><a href="#org-workspace-bibliography-files">✅ Workspace Bibliography Files</a></li>
+<li><a href="#org-creating-a-bibliography-file">✅ Creating a Bibliography File</a></li>
+</ul>
+<li><a href="#org-citation-link-types">✅ Citation Link Types</a></li>
+<ul>
+<li><a href="#org-citation-styles">✅ Citation Styles</a></li>
+<li><a href="#org-multiple-citations">✅ Multiple Citations</a></li>
+<li><a href="#org-citation-formats-by-file-type">Citation Formats by File Type</a></li>
+<ul>
+<li><a href="#org-org-mode-format">Org-Mode Format</a></li>
+<li><a href="#org-markdown-pandoc-format">Markdown/Pandoc Format</a></li>
+<li><a href="#org-latex-format">LaTeX Format</a></li>
+</ul>
+<li><a href="#org-org-mode-9-5-citation-syntax">Org-Mode 9.5+ Citation Syntax</a></li>
+</ul>
+<li><a href="#org-inserting-citations">✅ Inserting Citations</a></li>
+<ul>
+<li><a href="#org-insert-citation-command">✅ Insert Citation Command</a></li>
+<ul>
+<li><a href="#org-interactive-citation-insertion">✅ Interactive Citation Insertion</a></li>
+<li><a href="#org-appending-to-existing-citations">✅ Appending to Existing Citations</a></li>
+</ul>
+<li><a href="#org-citation-completion">✅ Citation Completion</a></li>
+<li><a href="#org-quick-citation-commands">✅ Quick Citation Commands</a></li>
+<li><a href="#org-insert-from-zotero">✅ Insert from Zotero</a></li>
+<ul>
+<li><a href="#org-requirements">✅ Requirements</a></li>
+<li><a href="#org-usage">✅ Usage</a></li>
+<li><a href="#org-workflow">✅ Workflow</a></li>
+<li><a href="#org-bibliography-file-handling">✅ Bibliography File Handling</a></li>
+<li><a href="#org-example">✅ Example</a></li>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+</ul>
+</ul>
+<li><a href="#org-following-citation-links">✅ Following Citation Links</a></li>
+<ul>
+<li><a href="#org-citation-link-actions">✅ Citation Link Actions</a></li>
+<ul>
+<li><a href="#org-for-known-citations">✅ For Known Citations</a></li>
+<li><a href="#org-for-unknown-citations">✅ For Unknown Citations</a></li>
+</ul>
+<li><a href="#org-citation-hover-information">✅ Citation Hover Information</a></li>
+<li><a href="#org-opening-pdfs">✅ Opening PDFs</a></li>
+<li><a href="#org-reference-notes">Reference Notes</a></li>
+</ul>
+<li><a href="#org-citation-manipulation">Citation Manipulation</a></li>
+<ul>
+<li><a href="#org-transpose-citations">Transpose Citations</a></li>
+<li><a href="#org-sort-citations">Sort Citations</a></li>
+<li><a href="#org-delete-citation-key">Delete Citation Key</a></li>
+</ul>
+<li><a href="#org-bibliography-display">Bibliography Display</a></li>
+<ul>
+<li><a href="#org-references-tree-view">References Tree View</a></li>
+<li><a href="#org-search-references">Search References</a></li>
+<li><a href="#org-find-citations">Find Citations</a></li>
+</ul>
+<li><a href="#org-fetching-references-from-doi">Fetching References from DOI</a></li>
+<ul>
+<li><a href="#org-add-reference-from-doi">Add Reference from DOI</a></li>
+<ul>
+<li><a href="#org-usage">Usage</a></li>
+<li><a href="#org-doi-resolution">DOI Resolution</a></li>
+</ul>
+<li><a href="#org-openalex-integration">OpenAlex Integration</a></li>
+<ul>
+<li><a href="#org-show-citing-works">Show Citing Works</a></li>
+<li><a href="#org-show-related-works">Show Related Works</a></li>
+<li><a href="#org-search-openalex">Search OpenAlex</a></li>
+</ul>
+<li><a href="#org-doi-hover-information">DOI Hover Information</a></li>
+</ul>
+<li><a href="#org-cross-references">Cross-References</a></li>
+<ul>
+<li><a href="#org-reference-link-types">Reference Link Types</a></li>
+<li><a href="#org-insert-cross-reference">Insert Cross-Reference</a></li>
+<li><a href="#org-label-definitions">Label Definitions</a></li>
+<ul>
+<li><a href="#org-org-mode-labels">Org-Mode Labels</a></li>
+<li><a href="#org-latex-labels">LaTeX Labels</a></li>
+</ul>
+<li><a href="#org-reference-hover">Reference Hover</a></li>
+</ul>
+<li><a href="#org-export-of-citations">Export of Citations</a></li>
+<ul>
+<li><a href="#org-html-export">HTML Export</a></li>
+<ul>
+<li><a href="#org-citation-link-types">Citation Link Types</a></li>
+<li><a href="#org-specifying-citation-style">Specifying Citation Style</a></li>
+<li><a href="#org-bibliography-generation">Bibliography Generation</a></li>
+</ul>
+<li><a href="#org-latex-export">LaTeX Export</a></li>
+<li><a href="#org-markdown-export">Markdown Export</a></li>
+<li><a href="#org-extract-bibliography-for-document">Extract Bibliography for Document</a></li>
+</ul>
+<li><a href="#org-managing-your-bibliography">Managing Your Bibliography</a></li>
+<ul>
+<li><a href="#org-opening-bibliography-files">Opening Bibliography Files</a></li>
+<li><a href="#org-copy-bibtex-entry">Copy BibTeX Entry</a></li>
+<li><a href="#org-refresh-bibliography">Refresh Bibliography</a></li>
+<li><a href="#org-bibliography-file-diagnostics">Bibliography File Diagnostics</a></li>
+<li><a href="#org-code-lenses-in-bib-files">Code Lenses in .bib Files</a></li>
+</ul>
+<li><a href="#org-command-reference">Command Reference</a></li>
+<ul>
+<li><a href="#org-citation-commands">Citation Commands</a></li>
+<li><a href="#org-bibliography-commands">Bibliography Commands</a></li>
+<li><a href="#org-doi-and-external-commands">DOI and External Commands</a></li>
+</ul>
+<li><a href="#org-best-practices">Best Practices</a></li>
+<ul>
+<li><a href="#org-organizing-your-bibliography">Organizing Your Bibliography</a></li>
+<ul>
+<li><a href="#org-use-consistent-citation-keys">Use Consistent Citation Keys</a></li>
+<li><a href="#org-maintain-multiple-bib-files">Maintain Multiple .bib Files</a></li>
+<li><a href="#org-store-pdfs-systematically">Store PDFs Systematically</a></li>
+</ul>
+<li><a href="#org-citation-workflow">Citation Workflow</a></li>
+<ul>
+<li><a href="#org-literature-review-workflow">Literature Review Workflow</a></li>
+<li><a href="#org-writing-workflow">Writing Workflow</a></li>
+</ul>
+<li><a href="#org-managing-notes">Managing Notes</a></li>
+<li><a href="#org-export-considerations">Export Considerations</a></li>
+<ul>
+<li><a href="#org-for-latex-pdf-export">For LaTeX/PDF Export</a></li>
+<li><a href="#org-for-html-export">For HTML Export</a></li>
+<li><a href="#org-for-standalone-documents">For Standalone Documents</a></li>
+</ul>
+<li><a href="#org-bibtex-entry-quality">BibTeX Entry Quality</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-citation-not-found">Citation Not Found</a></li>
+<li><a href="#org-pdf-not-found">PDF Not Found</a></li>
+<li><a href="#org-doi-fetch-fails">DOI Fetch Fails</a></li>
+<li><a href="#org-bibliography-link-not-recognized">Bibliography Link Not Recognized</a></li>
+<li><a href="#org-export-issues">Export Issues</a></li>
+</ul>
+<li><a href="#org-related-topics">Related Topics</a></li>
+<li><a href="#org-quick-reference-card">Quick Reference Card</a></li>
+<ul>
+<li><a href="#org-essential-keybindings">Essential Keybindings</a></li>
+<li><a href="#org-citation-syntax-quick-reference">Citation Syntax Quick Reference</a></li>
+<li><a href="#org-common-workflows">Common Workflows</a></li>
+<ul>
+<li><a href="#org-add-new-reference">Add New Reference</a></li>
+<li><a href="#org-insert-citation">Insert Citation</a></li>
+<li><a href="#org-find-related-papers">Find Related Papers</a></li>
+<li><a href="#org-prepare-for-export">Prepare for Export</a></li>
+</ul>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-overview" class="org-section org-level-1">
+<h1>✅ Overview</h1>
+<p>CLOSED: [2026-01-17 Sat 10:07]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-overview" class="org-section org-level-1">
-<h1>Overview</h1>
 <p>Scimax VS Code provides comprehensive bibliography and citation management inspired by Emacs org-ref. This system allows you to:</p>
 
 <ul>
@@ -277,10 +312,12 @@
 
 </div>
 <div id="org-setting-up-bibliography-files" class="org-section org-level-1">
-<h1>Setting Up Bibliography Files</h1>
+<h1>✅ Setting Up Bibliography Files</h1>
+<p>CLOSED: [2026-01-17 Sat 10:07]</p>
+
 <div id="org-configuration" class="org-section org-level-2">
 <h2>Configuration</h2>
-<p>Configure your bibliography files in VS Code settings (Preferences: Open Settings (UI) → search for &quot;scimax ref&quot;):</p>
+<p>Configure your default bibliography files in VS Code settings (Preferences: Open Settings (UI) → search for &quot;scimax ref&quot;):</p>
 
 <table class="org-table">
 <thead>
@@ -295,8 +332,12 @@
 </tbody>
 </table>
 
+<p>These files are used when you do not specify document-local bibliography files.</p>
+
 <div id="org-example-configuration" class="org-section org-level-3">
-<h3>Example Configuration</h3>
+<h3>✅ Example Configuration</h3>
+<p>CLOSED: [2026-01-17 Sat 10:07]</p>
+
 <!-- Unknown element type: property-drawer -->
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
@@ -313,11 +354,15 @@
 </div>
 </div>
 <div id="org-document-local-bibliography-files" class="org-section org-level-2">
-<h2>Document-Local Bibliography Files</h2>
+<h2>✅ Document-Local Bibliography Files</h2>
+<p>CLOSED: [2026-01-17 Sat 10:07]</p>
+
 <p>You can specify bibliography files per document using:</p>
 
 <div id="org-bibliography-links" class="org-section org-level-3">
-<h3>Bibliography Links</h3>
+<h3>✅ Bibliography Links</h3>
+<p>CLOSED: [2026-01-17 Sat 10:08]</p>
+
 <div class="org-src-container">
 <pre class="src src-org"><code class="language-org">bibliography:~/Documents/refs.bib
 bibliography:./local-refs.bib,~/global-refs.bib</code></pre>
@@ -336,7 +381,9 @@ bibliography:./local-refs.bib,~/global-refs.bib</code></pre>
 
 </div>
 <div id="org-bibliography-keywords" class="org-section org-level-3">
-<h3>Bibliography Keywords</h3>
+<h3>✅ Bibliography Keywords</h3>
+<p>CLOSED: [2026-01-17 Sat 10:08]</p>
+
 <p>Alternative org-mode syntax:</p>
 
 <div class="org-src-container">
@@ -346,16 +393,20 @@ bibliography:./local-refs.bib,~/global-refs.bib</code></pre>
 </div>
 </div>
 <div id="org-workspace-bibliography-files" class="org-section org-level-2">
-<h2>Workspace Bibliography Files</h2>
+<h2>✅ Workspace Bibliography Files</h2>
+<p>CLOSED: [2026-01-17 Sat 10:08]</p>
+
 <p>The extension automatically discovers all .bib files in your workspace and makes them available for citation completion.</p>
 
 </div>
 <div id="org-creating-a-bibliography-file" class="org-section org-level-2">
-<h2>Creating a Bibliography File</h2>
+<h2>✅ Creating a Bibliography File</h2>
+<p>CLOSED: [2026-01-17 Sat 10:08]</p>
+
 <p>Create a new .bib file manually or use the command:</p>
 
 <ul>
-<li><p>scimax.ref.openBibliography - Opens bibliography file or creates new one</p>
+<li><p><a href="#org-cmd-scimax-ref-openbibliography">[[cmd:scimax.ref.openBibliography]]</a> - Opens bibliography file or creates new one</p>
 </li>
 </ul>
 
@@ -377,35 +428,38 @@ bibliography:./local-refs.bib,~/global-refs.bib</code></pre>
 </div>
 </div>
 <div id="org-citation-link-types" class="org-section org-level-1">
-<h1>Citation Link Types</h1>
+<h1>✅ Citation Link Types</h1>
+<p>CLOSED: [2026-01-17 Sat 10:08]</p>
+
 <p>Scimax VS Code supports multiple citation styles for different contexts:</p>
 
 <div id="org-citation-styles" class="org-section org-level-2">
-<h2>Citation Styles</h2>
+<h2>✅ Citation Styles</h2>
+<p>CLOSED: [2026-01-17 Sat 10:09]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Style</th><th>Syntax</th><th>Rendered As (typical)</th><th>Use Case</th></tr>
 </thead>
 <tbody>
-<tr><td>cite</td><td><a href="cite:key">cite:key</a></td><td>[1] or (Smith, 2024)</td><td>Basic citation</td></tr>
-<tr><td>citet</td><td><a href="citet:key">citet:key</a></td><td>Smith (2024)</td><td>Textual citation</td></tr>
-<tr><td>citep</td><td><a href="citep:key">citep:key</a></td><td>(Smith, 2024)</td><td>Parenthetical citation</td></tr>
-<tr><td>citeauthor</td><td><a href="citeauthor:key">citeauthor:key</a></td><td>Smith</td><td>Author name only</td></tr>
-<tr><td>citeyear</td><td><a href="citeyear:key">citeyear:key</a></td><td>2024</td><td>Year only</td></tr>
+<tr><td>cite</td><td><span class="citation citation-cite" id="cite-1">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>[1] or (Smith, 2024)</td><td>Basic citation</td></tr>
+<tr><td>citet</td><td><span class="citation citation-citet" id="cite-2"><a href="#ref-key" class="citation-link">key</a></span></td><td>Smith (2024)</td><td>Textual citation</td></tr>
+<tr><td>citep</td><td><span class="citation citation-citep" id="cite-3">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>(Smith, 2024)</td><td>Parenthetical citation</td></tr>
+<tr><td>citeauthor</td><td><span class="citation citation-citeauthor" id="cite-4"><a href="#ref-key" class="citation-link">key</a></span></td><td>Smith</td><td>Author name only</td></tr>
+<tr><td>citeyear</td><td><span class="citation citation-citeyear" id="cite-5">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>2024</td><td>Year only</td></tr>
 </tbody>
 </table>
 
 </div>
 <div id="org-multiple-citations" class="org-section org-level-2">
-<h2>Multiple Citations</h2>
-<p>Cite multiple sources by separating keys with commas:</p>
+<h2>✅ Multiple Citations</h2>
+<p>CLOSED: [2026-01-18 Sun 10:15]</p>
 
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">cite:smith2024,jones2023,doe2022
-citet:nguyen2023,chen2024</code></pre>
-</div>
+<p>Cite multiple sources by separating keys with commas or semicolons:</p>
 
-<p>Renders as: (Smith, 2024; Jones, 2023; Doe, 2022) or [1-3]</p>
+<p><span class="citation citation-cite" id="cite-6">(<a href="#ref-kitchin-2015-examp-effec" class="citation-link">kitchin-2015-examp-effec</a>, <a href="#ref-kitchin-2025-beyon-fourt" class="citation-link">kitchin-2025-beyon-fourt</a>)</span>          # Version 2</p>
+
+<p>cite:&amp;kitchin-2015-examp-effec;&amp;kitchin-2025-beyon-fourt        # Version 3</p>
 
 </div>
 <div id="org-citation-formats-by-file-type" class="org-section org-level-2">
@@ -414,11 +468,11 @@ citet:nguyen2023,chen2024</code></pre>
 
 <div id="org-org-mode-format" class="org-section org-level-3">
 <h3>Org-Mode Format</h3>
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">cite:smith2024
-citet:jones2023
-citep:doe2022,nguyen2023</code></pre>
-</div>
+<p>in scimax the preferred org-mode citation syntax is org-ref v3L</p>
+
+<p>cite:&amp;kitchin-2015-examp-effec  
+citet:&amp;kitchin-2015-examp-effec;&amp;kitchin-2025-beyon-fourt  
+citep:&amp;kitchin-2015-examp-effec;&amp;kitchin-2025-beyon-fourt  </p>
 
 </div>
 <div id="org-markdown-pandoc-format" class="org-section org-level-3">
@@ -426,9 +480,9 @@ citep:doe2022,nguyen2023</code></pre>
 <p>The insert citation command generates Pandoc-style citations in Markdown files:</p>
 
 <div class="org-src-container">
-<pre class="src src-markdown"><code class="language-markdown">[@smith2024]
-[@jones2023, p. 42]
-[see @smith2024; also @jones2023]</code></pre>
+<pre class="src src-markdown"><code class="language-markdown">[@kitchin-2015-examp-effec]
+[@kitchin-2015-examp-effec, p. 42]
+[see @kitchin-2015-examp-effec; also @kitchin-2025-beyon-fourt]</code></pre>
 </div>
 
 </div>
@@ -437,9 +491,9 @@ citep:doe2022,nguyen2023</code></pre>
 <p>For LaTeX documents, citations use standard LaTeX commands:</p>
 
 <div class="org-src-container">
-<pre class="src src-latex"><code class="language-latex">\cite{smith2024}
-\citet{jones2023}
-\citep{doe2022,nguyen2023}</code></pre>
+<pre class="src src-latex"><code class="language-latex">\cite{kitchin-2015-examp-effec}
+\citet{kitchin-2025-beyon-fourt}
+\citep{kitchin-2015-examp-effec,kitchin-2025-beyon-fourt}</code></pre>
 </div>
 
 </div>
@@ -449,17 +503,21 @@ citep:doe2022,nguyen2023</code></pre>
 <p>Modern org-mode citation syntax is also supported:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">[cite:@smith2024]
-[cite/t:@jones2023]
-[cite/p:@doe2022;@nguyen2023]</code></pre>
+<pre class="src src-org"><code class="language-org">[cite:@kitchin-2015-examp-effec]
+[cite/t:@kitchin-2025-beyon-fourt]
+[cite/p:@kitchin-2015-examp-effec;@kitchin-2025-beyon-fourt]</code></pre>
 </div>
 
 </div>
 </div>
 <div id="org-inserting-citations" class="org-section org-level-1">
-<h1>Inserting Citations</h1>
+<h1>✅ Inserting Citations</h1>
+<p>CLOSED: [2026-01-17 Sat 10:14]</p>
+
 <div id="org-insert-citation-command" class="org-section org-level-2">
-<h2>Insert Citation Command</h2>
+<h2>✅ Insert Citation Command</h2>
+<p>CLOSED: [2026-01-17 Sat 10:14]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Key</th><th>Command</th></tr>
@@ -470,9 +528,11 @@ citep:doe2022,nguyen2023</code></pre>
 </table>
 
 <div id="org-interactive-citation-insertion" class="org-section org-level-3">
-<h3>Interactive Citation Insertion</h3>
+<h3>✅ Interactive Citation Insertion</h3>
+<p>CLOSED: [2026-01-17 Sat 10:16]</p>
+
 <ol>
-<li><p>Press C-c ] or run command scimax.ref.insertCitation</p>
+<li><p>Press C-c ] or run command <a href="#org-cmd-scimax-ref-insertcitation">[[cmd:scimax.ref.insertCitation]]</a></p>
 </li>
 <li><p>Search and select a reference (searches key, author, title, year)</p>
 </li>
@@ -484,7 +544,9 @@ citep:doe2022,nguyen2023</code></pre>
 
 </div>
 <div id="org-appending-to-existing-citations" class="org-section org-level-3">
-<h3>Appending to Existing Citations</h3>
+<h3>✅ Appending to Existing Citations</h3>
+<p>CLOSED: [2026-01-17 Sat 10:16]</p>
+
 <p>When cursor is on an existing citation:</p>
 
 <ol>
@@ -492,7 +554,7 @@ citep:doe2022,nguyen2023</code></pre>
 </li>
 <li><p>Select additional reference</p>
 </li>
-<li><p>Key is automatically appended: <a href="cite:key1,key2">cite:key1,key2</a></p>
+<li><p>Key is automatically appended: <span class="citation citation-cite" id="cite-7">(<a href="#ref-key1" class="citation-link">key1</a>, <a href="#ref-key2" class="citation-link">key2</a>)</span></p>
 </li>
 </ol>
 
@@ -501,7 +563,9 @@ citep:doe2022,nguyen2023</code></pre>
 </div>
 </div>
 <div id="org-citation-completion" class="org-section org-level-2">
-<h2>Citation Completion</h2>
+<h2>✅ Citation Completion</h2>
+<p>CLOSED: [2026-01-17 Sat 10:16]</p>
+
 <p>Auto-completion triggers after typing:</p>
 
 <ul>
@@ -526,28 +590,163 @@ citep:doe2022,nguyen2023</code></pre>
 
 </div>
 <div id="org-quick-citation-commands" class="org-section org-level-2">
-<h2>Quick Citation Commands</h2>
+<h2>✅ Quick Citation Commands</h2>
+<p>CLOSED: [2026-01-17 Sat 10:16]</p>
+
+
 <table class="org-table">
 <thead>
-<tr><th>Command</th><th>Description</th></tr>
+<tr><th>Command</th><th></th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td>scimax.ref.insertCitation</td><td>Insert/append citation</td></tr>
-<tr><td>scimax.ref.insertRef</td><td>Insert cross-reference (ref:, eqref:)</td></tr>
-<tr><td>scimax.ref.insertBibliography</td><td>Insert bibliography link</td></tr>
+<tr><td>scimax.ref.insertCitation</td><td>C-c - ]</td><td>Insert/append citation</td></tr>
+<tr><td>scimax.ref.insertRef</td><td>C-u C-c ]</td><td>Insert cross-reference (ref:, eqref:)</td></tr>
+<tr><td>scimax.ref.insertBibliography</td><td></td><td>Insert bibliography link</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-insert-from-zotero" class="org-section org-level-2">
+<h2>✅ Insert from Zotero</h2>
+<p>CLOSED: [2026-01-18 Sun 11:44]</p>
+
+<p>Scimax can insert citations directly from your Zotero library using the Better BibTeX plugin. This provides seamless integration between your Zotero reference manager and org-mode documents.</p>
+
+<div id="org-requirements" class="org-section org-level-3">
+<h3>✅ Requirements</h3>
+<p>CLOSED: [2026-01-18 Sun 11:44]</p>
+
+<p>To use Zotero integration, you need:</p>
+
+<ol>
+<li><p><strong>Zotero desktop application</strong> - Must be running when inserting citations</p>
+</li>
+<li><p><strong>Better BibTeX plugin</strong> - Install from https://retorque.re<em>zotero-better-bibtex</em></p>
+</li>
+</ol>
+
+<p>Better BibTeX provides the local API that Scimax uses to communicate with Zotero.</p>
+
+</div>
+<div id="org-usage" class="org-section org-level-3">
+<h3>✅ Usage</h3>
+<p>CLOSED: [2026-01-18 Sun 11:44]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keybinding</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c z</td><td>scimax.zotero.insertCitation</td><td>Insert citation from Zotero</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-workflow" class="org-section org-level-3">
+<h3>✅ Workflow</h3>
+<p>CLOSED: [2026-01-18 Sun 11:44]</p>
+
+<ol>
+<li><p>Press <code class="verbatim">C-c z</code> in an org, markdown, or LaTeX file</p>
+</li>
+<li><p>Zotero&#39;s native citation picker opens (you may need to switch to the Zotero window)</p>
+</li>
+<li><p>Search and select one or more references</p>
+</li>
+<li><p>Click &quot;OK&quot; or press Enter to confirm your selection</p>
+</li>
+<li><p>The citation is inserted at the cursor position</p>
+</li>
+<li><p>The BibTeX entry is automatically added to your bibliography file</p>
+</li>
+</ol>
+
+</div>
+<div id="org-bibliography-file-handling" class="org-section org-level-3">
+<h3>✅ Bibliography File Handling</h3>
+<p>CLOSED: [2026-01-18 Sun 11:44]</p>
+
+<p>When inserting from Zotero, the extension intelligently manages your bibliography file:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Scenario</th><th>Behavior</th></tr>
+</thead>
+<tbody>
+<tr><td>Document has <code class="verbatim">bibliography:</code> link</td><td>Uses that file</td></tr>
+<tr><td>No link, but <code class="verbatim">references.bib</code> exists in dir</td><td>Asks if you want to use it</td></tr>
+<tr><td>No link, no <code class="verbatim">references.bib</code></td><td>Creates <code class="verbatim">references.bib</code> and adds bibliography link</td></tr>
+</tbody>
+</table>
+
+<p>The extension automatically:</p>
+
+<ul>
+<li><p>Avoids adding duplicate entries (checks by citation key)</p>
+</li>
+<li><p>Preserves the original BibTeX formatting from Zotero/Better BibTeX</p>
+</li>
+<li><p>Adds a <code class="verbatim">bibliography:</code> link at the end of the document if needed</p>
+</li>
+</ul>
+
+</div>
+<div id="org-example" class="org-section org-level-3">
+<h3>✅ Example</h3>
+<p>CLOSED: [2026-01-18 Sun 11:44]</p>
+
+<p>Before (no bibliography):</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* My Research Paper
+
+Some text discussing machine learning.</code></pre>
+</div>
+
+<p>After pressing <code class="verbatim">C-c z</code> and selecting a reference:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* My Research Paper
+
+Some text discussing machine learning cite:&amp;smith2024machine.
+
+bibliography:./references.bib</code></pre>
+</div>
+
+</div>
+<div id="org-troubleshooting" class="org-section org-level-3">
+<h3>✅ Troubleshooting</h3>
+<p>CLOSED: [2026-01-18 Sun 11:44]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Problem</th><th>Solution</th></tr>
+</thead>
+<tbody>
+<tr><td>&quot;Zotero is not running&quot;</td><td>Start Zotero desktop application</td></tr>
+<tr><td>Picker doesn&#39;t appear</td><td>Switch to Zotero window; it may be behind VS Code</td></tr>
+<tr><td>&quot;Failed to fetch BibTeX&quot;</td><td>Ensure Better BibTeX is installed and enabled</td></tr>
+<tr><td>Wrong citation format</td><td>Check <code class="verbatim">scimax.ref.citationSyntax</code> setting (v2 vs v3)</td></tr>
 </tbody>
 </table>
 
 </div>
 </div>
+</div>
 <div id="org-following-citation-links" class="org-section org-level-1">
-<h1>Following Citation Links</h1>
+<h1>✅ Following Citation Links</h1>
+<p>CLOSED: [2026-01-17 Sat 10:18]</p>
+
 <div id="org-citation-link-actions" class="org-section org-level-2">
-<h2>Citation Link Actions</h2>
+<h2>✅ Citation Link Actions</h2>
+<p>CLOSED: [2026-01-17 Sat 10:19]</p>
+
 <p>Click on a citation or press C-c C-o on a citation to open an action menu:</p>
 
 <div id="org-for-known-citations" class="org-section org-level-3">
-<h3>For Known Citations</h3>
+<h3>✅ For Known Citations</h3>
+<p>CLOSED: [2026-01-17 Sat 10:19]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Action</th><th>Description</th></tr>
@@ -568,7 +767,9 @@ citep:doe2022,nguyen2023</code></pre>
 
 </div>
 <div id="org-for-unknown-citations" class="org-section org-level-3">
-<h3>For Unknown Citations</h3>
+<h3>✅ For Unknown Citations</h3>
+<p>CLOSED: [2026-01-17 Sat 10:19]</p>
+
 <p>If citation key is not found in bibliography:</p>
 
 <table class="org-table">
@@ -583,10 +784,16 @@ citep:doe2022,nguyen2023</code></pre>
 </tbody>
 </table>
 
+<p><span class="citation citation-cite" id="cite-8">(<a href="#ref-unknown-key" class="citation-link">unknown-key</a>)</span></p>
+
+<p><mark class="editmark-comment">I am not totally sure these make sense to have and I may remove them later.</mark></p>
+
 </div>
 </div>
 <div id="org-citation-hover-information" class="org-section org-level-2">
-<h2>Citation Hover Information</h2>
+<h2>✅ Citation Hover Information</h2>
+<p>CLOSED: [2026-01-17 Sat 10:20]</p>
+
 <p>Hover over a citation to see:</p>
 
 <ul>
@@ -608,7 +815,9 @@ citep:doe2022,nguyen2023</code></pre>
 
 </div>
 <div id="org-opening-pdfs" class="org-section org-level-2">
-<h2>Opening PDFs</h2>
+<h2>✅ Opening PDFs</h2>
+<p>CLOSED: [2026-01-17 Sat 10:20]</p>
+
 <p>The system looks for PDF files in scimax.ref.pdfDirectory using these patterns:</p>
 
 <ol>
@@ -670,8 +879,8 @@ citep:doe2022,nguyen2023</code></pre>
 <tr><th>Key</th><th>Command</th><th>Action</th></tr>
 </thead>
 <tbody>
-<tr><td>S-&lt;left&gt; Arrow</td><td>scimax.ref.transposeCitationLeft</td><td>Swap with previous key</td></tr>
-<tr><td>S-&lt;right&gt; Arrow</td><td>scimax.ref.transposeCitationRight</td><td>Swap with next key</td></tr>
+<tr><td>S-<left> Arrow</td><td>scimax.ref.transposeCitationLeft</td><td>Swap with previous key</td></tr>
+<tr><td>S-<right> Arrow</td><td>scimax.ref.transposeCitationRight</td><td>Swap with next key</td></tr>
 </tbody>
 </table>
 
@@ -692,8 +901,8 @@ cite:jones2023,doe2022,smith2024
 <tr><th>Key</th><th>Command</th><th>Action</th></tr>
 </thead>
 <tbody>
-<tr><td>S-&lt;up&gt; Arrow</td><td>scimax.ref.sortCitations</td><td>Sort by year (oldest first)</td></tr>
-<tr><td>S-&lt;down&gt;</td><td>scimax.ref.sortCitationsByYear</td><td>Sort by year (newest first)</td></tr>
+<tr><td>S-<up> Arrow</td><td>scimax.ref.sortCitations</td><td>Sort by year (oldest first)</td></tr>
+<tr><td>S-<down></td><td>scimax.ref.sortCitationsByYear</td><td>Sort by year (newest first)</td></tr>
 <tr><td></td><td>scimax.ref.sortCitationsAlphabetically</td><td>Sort alphabetically by key</td></tr>
 </tbody>
 </table>
@@ -1035,20 +1244,46 @@ See equation \eqref{eq:main} for details.</code></pre>
 <h1>Export of Citations</h1>
 <div id="org-html-export" class="org-section org-level-2">
 <h2>HTML Export</h2>
-<p>Citations in HTML export:</p>
+<p>HTML export uses citation-js for full CSL-based citation formatting. Citations are processed according to standard citation styles like APA, MLA, Chicago, etc.</p>
+
+<div id="org-citation-link-types" class="org-section org-level-3">
+<h3>Citation Link Types</h3>
+<table class="org-table">
+<thead>
+<tr><th>Org Citation</th><th>Rendered Output</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">cite:smith2024</code></td><td>(Smith, 2024)</td></tr>
+<tr><td><code class="verbatim">citep:smith2024</code></td><td>(Smith, 2024)</td></tr>
+<tr><td><code class="verbatim">citet:smith2024</code></td><td>Smith (2024)</td></tr>
+<tr><td><code class="verbatim">citeauthor:smith2024</code></td><td>Smith</td></tr>
+<tr><td><code class="verbatim">citeyear:smith2024</code></td><td>2024</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-specifying-citation-style" class="org-section org-level-3">
+<h3>Specifying Citation Style</h3>
+<p>Use <code class="verbatim">#+CSL_STYLE:</code> to set the citation format:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">cite:smith2024</code></pre>
+<pre class="src src-org"><code class="language-org">#+CSL_STYLE: apa</code></pre>
 </div>
 
-<p>Exports to:</p>
+<p>Available styles: <code class="verbatim">apa</code> (default), <code class="verbatim">mla</code>, <code class="verbatim">chicago</code>, <code class="verbatim">harvard</code>, <code class="verbatim">ieee</code>, <code class="verbatim">vancouver</code></p>
+
+</div>
+<div id="org-bibliography-generation" class="org-section org-level-3">
+<h3>Bibliography Generation</h3>
+<p>The HTML export automatically generates a formatted bibliography section at the end of the document. Ensure your document includes a bibliography reference:</p>
 
 <div class="org-src-container">
-<pre class="src src-html"><code class="language-html">&lt;a href=&quot;#smith2024&quot; class=&quot;citation&quot;&gt;Smith (2024)&lt;/a&gt;</code></pre>
+<pre class="src src-org"><code class="language-org">#+BIBLIOGRAPHY: references.bib</code></pre>
 </div>
 
-<p>Bibliography sections are formatted as lists with anchors.</p>
+<p>See <a href="10-export.org::*HTML Citation Export">Export System: HTML Citation Export</a> for complete documentation.</p>
 
+</div>
 </div>
 <div id="org-latex-export" class="org-section org-level-2">
 <h2>LaTeX Export</h2>
@@ -1059,11 +1294,11 @@ See equation \eqref{eq:main} for details.</code></pre>
 <tr><th>Org Citation</th><th>LaTeX Output</th></tr>
 </thead>
 <tbody>
-<tr><td><a href="cite:key">cite:key</a></td><td>\cite{key}</td></tr>
-<tr><td><a href="citet:key">citet:key</a></td><td>\citet{key}</td></tr>
-<tr><td><a href="citep:key">citep:key</a></td><td>\citep{key}</td></tr>
-<tr><td><a href="citeauthor:key">citeauthor:key</a></td><td>\citeauthor{key}</td></tr>
-<tr><td><a href="citeyear:key">citeyear:key</a></td><td>\citeyear{key}</td></tr>
+<tr><td><span class="citation citation-cite" id="cite-9">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>\cite{key}</td></tr>
+<tr><td><span class="citation citation-citet" id="cite-10"><a href="#ref-key" class="citation-link">key</a></span></td><td>\citet{key}</td></tr>
+<tr><td><span class="citation citation-citep" id="cite-11">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>\citep{key}</td></tr>
+<tr><td><span class="citation citation-citeauthor" id="cite-12"><a href="#ref-key" class="citation-link">key</a></span></td><td>\citeauthor{key}</td></tr>
+<tr><td><span class="citation citation-citeyear" id="cite-13">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>\citeyear{key}</td></tr>
 </tbody>
 </table>
 
@@ -1079,9 +1314,9 @@ See equation \eqref{eq:main} for details.</code></pre>
 <tr><th>Org Citation</th><th>Pandoc Markdown Output</th></tr>
 </thead>
 <tbody>
-<tr><td><a href="cite:key">cite:key</a></td><td>[@key]</td></tr>
-<tr><td><a href="citet:key">citet:key</a></td><td>@key</td></tr>
-<tr><td><a href="citep:key">citep:key</a></td><td>[@key]</td></tr>
+<tr><td><span class="citation citation-cite" id="cite-14">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>[@key]</td></tr>
+<tr><td><span class="citation citation-citet" id="cite-15"><a href="#ref-key" class="citation-link">key</a></span></td><td>@key</td></tr>
+<tr><td><span class="citation citation-citep" id="cite-16">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>[@key]</td></tr>
 </tbody>
 </table>
 
@@ -1193,12 +1428,13 @@ See equation \eqref{eq:main} for details.</code></pre>
 </thead>
 <tbody>
 <tr><td>scimax.ref.insertCitation</td><td>C-c ]</td><td>Insert/append citation</td></tr>
+<tr><td>scimax.zotero.insertCitation</td><td>C-c z</td><td>Insert citation from Zotero</td></tr>
 <tr><td>scimax.ref.insertRef</td><td>C-S-]</td><td>Insert cross-reference</td></tr>
 <tr><td>scimax.ref.insertBibliography</td><td></td><td>Insert bibliography link</td></tr>
-<tr><td>scimax.ref.transposeCitationLeft</td><td>S-&lt;left&gt;</td><td>Swap citation left</td></tr>
-<tr><td>scimax.ref.transposeCitationRight</td><td>S-&lt;right&gt;</td><td>Swap citation right</td></tr>
-<tr><td>scimax.ref.sortCitations</td><td>S-&lt;up&gt;</td><td>Sort by year ascending</td></tr>
-<tr><td>scimax.ref.sortCitationsByYear</td><td>S-&lt;down&gt;</td><td>Sort by year descending</td></tr>
+<tr><td>scimax.ref.transposeCitationLeft</td><td>S-<left></td><td>Swap citation left</td></tr>
+<tr><td>scimax.ref.transposeCitationRight</td><td>S-<right></td><td>Swap citation right</td></tr>
+<tr><td>scimax.ref.sortCitations</td><td>S-<up></td><td>Sort by year ascending</td></tr>
+<tr><td>scimax.ref.sortCitationsByYear</td><td>S-<down></td><td>Sort by year descending</td></tr>
 <tr><td>scimax.ref.sortCitationsAlphabetically</td><td></td><td>Sort alphabetically</td></tr>
 <tr><td>scimax.ref.deleteCitation</td><td></td><td>Delete citation key</td></tr>
 </tbody>
@@ -1554,12 +1790,13 @@ Connections to my research...
 </thead>
 <tbody>
 <tr><td>C-c ]</td><td>Insert citation</td></tr>
+<tr><td>C-c z</td><td>Insert citation from Zotero</td></tr>
 <tr><td>C-S-]</td><td>Insert cross-reference</td></tr>
 <tr><td>C-c C-o</td><td>Open link/citation at point</td></tr>
-<tr><td>S-&lt;left&gt;</td><td>Transpose citation left</td></tr>
-<tr><td>S-&lt;right&gt;</td><td>Transpose citation right</td></tr>
-<tr><td>S-&lt;up&gt;</td><td>Sort citations (oldest first)</td></tr>
-<tr><td>S-&lt;down&gt;</td><td>Sort citations (newest first)</td></tr>
+<tr><td>S-<left></td><td>Transpose citation left</td></tr>
+<tr><td>S-<right></td><td>Transpose citation right</td></tr>
+<tr><td>S-<up></td><td>Sort citations (oldest first)</td></tr>
+<tr><td>S-<down></td><td>Sort citations (newest first)</td></tr>
 </tbody>
 </table>
 
@@ -1571,12 +1808,12 @@ Connections to my research...
 <tr><th>Format</th><th>Org-Mode</th><th>Markdown</th><th>LaTeX</th></tr>
 </thead>
 <tbody>
-<tr><td>Basic</td><td><a href="cite:key">cite:key</a></td><td>[@key]</td><td>\cite{key}</td></tr>
-<tr><td>Textual</td><td><a href="citet:key">citet:key</a></td><td>@key</td><td>\citet{key}</td></tr>
-<tr><td>Parenthetical</td><td><a href="citep:key">citep:key</a></td><td>[@key]</td><td>\citep{key}</td></tr>
-<tr><td>Author only</td><td><a href="citeauthor:key">citeauthor:key</a></td><td>N/A</td><td>\citeauthor{key}</td></tr>
-<tr><td>Year only</td><td><a href="citeyear:key">citeyear:key</a></td><td>N/A</td><td>\citeyear{key}</td></tr>
-<tr><td>Multiple</td><td><a href="cite:k1,k2,k3">cite:k1,k2,k3</a></td><td>[@k1; @k2]</td><td>\cite{k1,k2,k3}</td></tr>
+<tr><td>Basic</td><td><span class="citation citation-cite" id="cite-17">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>[@key]</td><td>\cite{key}</td></tr>
+<tr><td>Textual</td><td><span class="citation citation-citet" id="cite-18"><a href="#ref-key" class="citation-link">key</a></span></td><td>@key</td><td>\citet{key}</td></tr>
+<tr><td>Parenthetical</td><td><span class="citation citation-citep" id="cite-19">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>[@key]</td><td>\citep{key}</td></tr>
+<tr><td>Author only</td><td><span class="citation citation-citeauthor" id="cite-20"><a href="#ref-key" class="citation-link">key</a></span></td><td>N/A</td><td>\citeauthor{key}</td></tr>
+<tr><td>Year only</td><td><span class="citation citation-citeyear" id="cite-21">(<a href="#ref-key" class="citation-link">key</a>)</span></td><td>N/A</td><td>\citeyear{key}</td></tr>
+<tr><td>Multiple</td><td><span class="citation citation-cite" id="cite-22">(<a href="#ref-k1" class="citation-link">k1</a>, <a href="#ref-k2" class="citation-link">k2</a>, <a href="#ref-k3" class="citation-link">k3</a>)</span></td><td>[@k1; @k2]</td><td>\cite{k1,k2,k3}</td></tr>
 </tbody>
 </table>
 
@@ -1651,605 +1888,6 @@ Connections to my research...
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="18-database-search.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="14-journal.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#overview" class="toc-link">Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#setting-up-bibliography-files" class="toc-link">Setting Up Bibliography Files</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#configuration" class="toc-link">Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#example-configuration" class="toc-link">Example Configuration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#document-local-bibliography-files" class="toc-link">Document-Local Bibliography Files</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#bibliography-links" class="toc-link">Bibliography Links</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#bibliography-keywords" class="toc-link">Bibliography Keywords</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#workspace-bibliography-files" class="toc-link">Workspace Bibliography Files</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#creating-a-bibliography-file" class="toc-link">Creating a Bibliography File</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#citation-link-types" class="toc-link">Citation Link Types</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#citation-styles" class="toc-link">Citation Styles</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#multiple-citations" class="toc-link">Multiple Citations</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#citation-formats-by-file-type" class="toc-link">Citation Formats by File Type</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#org-mode-format" class="toc-link">Org-Mode Format</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#markdownpandoc-format" class="toc-link">Markdown/Pandoc Format</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#latex-format" class="toc-link">LaTeX Format</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#org-mode-95-citation-syntax" class="toc-link">Org-Mode 9.5+ Citation Syntax</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#inserting-citations" class="toc-link">Inserting Citations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#insert-citation-command" class="toc-link">Insert Citation Command</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#interactive-citation-insertion" class="toc-link">Interactive Citation Insertion</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#appending-to-existing-citations" class="toc-link">Appending to Existing Citations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#citation-completion" class="toc-link">Citation Completion</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#quick-citation-commands" class="toc-link">Quick Citation Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#following-citation-links" class="toc-link">Following Citation Links</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#citation-link-actions" class="toc-link">Citation Link Actions</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#for-known-citations" class="toc-link">For Known Citations</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#for-unknown-citations" class="toc-link">For Unknown Citations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#citation-hover-information" class="toc-link">Citation Hover Information</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#opening-pdfs" class="toc-link">Opening PDFs</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#reference-notes" class="toc-link">Reference Notes</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#citation-manipulation" class="toc-link">Citation Manipulation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#transpose-citations" class="toc-link">Transpose Citations</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#sort-citations" class="toc-link">Sort Citations</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#delete-citation-key" class="toc-link">Delete Citation Key</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#bibliography-display" class="toc-link">Bibliography Display</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#references-tree-view" class="toc-link">References Tree View</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#search-references" class="toc-link">Search References</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#find-citations" class="toc-link">Find Citations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#fetching-references-from-doi" class="toc-link">Fetching References from DOI</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#add-reference-from-doi" class="toc-link">Add Reference from DOI</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#usage" class="toc-link">Usage</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#doi-resolution" class="toc-link">DOI Resolution</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#openalex-integration" class="toc-link">OpenAlex Integration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#show-citing-works" class="toc-link">Show Citing Works</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#show-related-works" class="toc-link">Show Related Works</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#search-openalex" class="toc-link">Search OpenAlex</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#doi-hover-information" class="toc-link">DOI Hover Information</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#cross-references" class="toc-link">Cross-References</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#reference-link-types" class="toc-link">Reference Link Types</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#insert-cross-reference" class="toc-link">Insert Cross-Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#label-definitions" class="toc-link">Label Definitions</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#org-mode-labels" class="toc-link">Org-Mode Labels</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#latex-labels" class="toc-link">LaTeX Labels</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#reference-hover" class="toc-link">Reference Hover</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#export-of-citations" class="toc-link">Export of Citations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#html-export" class="toc-link">HTML Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latex-export" class="toc-link">LaTeX Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#markdown-export" class="toc-link">Markdown Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#extract-bibliography-for-document" class="toc-link">Extract Bibliography for Document</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#managing-your-bibliography" class="toc-link">Managing Your Bibliography</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#opening-bibliography-files" class="toc-link">Opening Bibliography Files</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#copy-bibtex-entry" class="toc-link">Copy BibTeX Entry</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#refresh-bibliography" class="toc-link">Refresh Bibliography</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#bibliography-file-diagnostics" class="toc-link">Bibliography File Diagnostics</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#code-lenses-in-bib-files" class="toc-link">Code Lenses in .bib Files</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#command-reference" class="toc-link">Command Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#citation-commands" class="toc-link">Citation Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#bibliography-commands" class="toc-link">Bibliography Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#doi-and-external-commands" class="toc-link">DOI and External Commands</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#organizing-your-bibliography" class="toc-link">Organizing Your Bibliography</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#use-consistent-citation-keys" class="toc-link">Use Consistent Citation Keys</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#maintain-multiple-bib-files" class="toc-link">Maintain Multiple .bib Files</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#store-pdfs-systematically" class="toc-link">Store PDFs Systematically</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#citation-workflow" class="toc-link">Citation Workflow</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#literature-review-workflow" class="toc-link">Literature Review Workflow</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#writing-workflow" class="toc-link">Writing Workflow</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#managing-notes" class="toc-link">Managing Notes</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-considerations" class="toc-link">Export Considerations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#for-latexpdf-export" class="toc-link">For LaTeX/PDF Export</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#for-html-export" class="toc-link">For HTML Export</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#for-standalone-documents" class="toc-link">For Standalone Documents</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#bibtex-entry-quality" class="toc-link">BibTeX Entry Quality</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#citation-not-found" class="toc-link">Citation Not Found</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#pdf-not-found" class="toc-link">PDF Not Found</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#doi-fetch-fails" class="toc-link">DOI Fetch Fails</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#bibliography-link-not-recognized" class="toc-link">Bibliography Link Not Recognized</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-issues" class="toc-link">Export Issues</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-topics" class="toc-link">Related Topics</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#quick-reference-card" class="toc-link">Quick Reference Card</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#essential-keybindings" class="toc-link">Essential Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#citation-syntax-quick-reference" class="toc-link">Citation Syntax Quick Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#common-workflows" class="toc-link">Common Workflows</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#add-new-reference" class="toc-link">Add New Reference</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#insert-citation" class="toc-link">Insert Citation</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#find-related-papers" class="toc-link">Find Related Papers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#prepare-for-export" class="toc-link">Prepare for Export</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

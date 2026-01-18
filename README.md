@@ -294,16 +294,16 @@ Enhanced editing commands for org-mode, markdown, and LaTeX files.
 | `Scimax: Add/Change Repeater`   | `Ctrl+c Ctrl+r` | Add repeater to timestamp  |
 
 **Table Commands:**
-| Command                       | Keybinding            | Description                 |                    |
-| ---------                     | ------------          | -------------               |                    |
-| `Scimax: Create Table`        | `Ctrl+c \             | `                           | Create a new table |
-| `Scimax: Insert Row Below`    | `Alt+Enter`           | Insert row below current    |                    |
-| `Scimax: Insert Row Above`    | `Alt+Shift+Enter`     | Insert row above current    |                    |
-| `Scimax: Delete Row`          | `Alt+Shift+Backspace` | Delete current row          |                    |
-| `Scimax: Insert Column Right` | `Alt+Shift+Right`     | Insert column (in table)    |                    |
-| `Scimax: Delete Column`       | `Alt+Shift+Left`      | Delete column (in table)    |                    |
-| `Scimax: Insert Separator`    | `Ctrl+c -`            | Insert table separator line |                    |
-| `Scimax: Align Table`         | -                     | Align table columns         |                    |
+| Command                       | Keybinding            | Description                 |
+| ---------                     | ------------          | -------------               |
+| `Scimax: Create Table`        | `Ctrl+c \|`           | Create a new table          |
+| `Scimax: Insert Row Below`    | `Alt+Enter`           | Insert row below current    |
+| `Scimax: Insert Row Above`    | `Alt+Shift+Enter`     | Insert row above current    |
+| `Scimax: Delete Row`          | `Alt+Shift+Backspace` | Delete current row          |
+| `Scimax: Insert Column Right` | `Alt+Shift+Right`     | Insert column (in table)    |
+| `Scimax: Delete Column`       | `Alt+Shift+Left`      | Delete column (in table)    |
+| `Scimax: Insert Separator`    | `Ctrl+c -`            | Insert table separator line |
+| `Scimax: Align Table`         | -                     | Align table columns         |
 
 **Heading Commands:**
 | Command                     | Keybinding        | Description                  |
@@ -385,7 +385,7 @@ Jupyter notebook-like editing for org-mode source blocks.
 | Command                              | Keybinding      | Description                     |
 | ------------------------------------ | --------------- | ------------------------------- |
 | `Scimax: Insert Block Above`         | -               | Insert new block above current  |
-| `Scimax: Insert Block Below`         | `Ctrl+c Ctrl+n` | Insert new block below current  |
+| `Scimax: Insert Block Below`         | `Ctrl+c Ctrl+,` | Insert new block below current  |
 | `Scimax: Insert Block Below (Same)`  | -               | Insert block with same language |
 
 **Block Manipulation:**
@@ -772,7 +772,7 @@ The extension adds a **Scimax** activity bar icon with these views:
 | -------------- | ----------------------- | ------------- |
 | `Ctrl+Down`    | Next Source Block       | In org/md     |
 | `Ctrl+Up`      | Previous Source Block   | In org/md     |
-| `Ctrl+c Ctrl+n`| Insert Block Below      | In org/md     |
+| `Ctrl+c Ctrl+,`| Insert Block Below      | In org/md     |
 | `Ctrl+c Ctrl+b`| Jump to Source Block    | In org/md     |
 | `Ctrl+c Ctrl+j`| Jump to Heading         | In org/md     |
 | `Ctrl+c Ctrl+o`| Open Link at Point      | In org/md     |
@@ -809,7 +809,7 @@ The extension supports:
 | Export               | ox-*               | Full support (HTML, LaTeX, MD, PDF)   |
 | Tables               | org-table          | Full support + export to CSV/HTML     |
 | Speed Commands       | org-speed-commands | Full support (37 commands)            |
-| Clocking             | org-clock          | Partial (basic clocking)              |
+| Clocking             | org-clock          | Full support (in/out, reports, tables)|
 | Contacts             | org-contacts       | Not yet                               |
 | Capture Templates    | org-capture        | Full support (templates, datetree)    |
 

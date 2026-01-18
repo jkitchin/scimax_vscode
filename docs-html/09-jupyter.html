@@ -1,261 +1,254 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Jupyter Integration</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jupyter Integration</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Jupyter Integration</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-jupyter-integration">✅ Jupyter Integration</a></li>
+<li><a href="#org-overview">✅ Overview</a></li>
+<ul>
+<li><a href="#org-what-is-jupyter">✅ What is Jupyter?</a></li>
+<li><a href="#org-what-jupyter-integration-provides">✅ What Jupyter Integration Provides</a></li>
+<li><a href="#org-jupyter-vs-native-executors">✅ Jupyter vs Native Executors</a></li>
+<ul>
+<li><a href="#org-when-to-use-jupyter">✅ When to Use Jupyter</a></li>
+<li><a href="#org-when-to-use-native-executors">✅ When to Use Native Executors</a></li>
+</ul>
+</ul>
+<li><a href="#org-installation-and-setup">✅ Installation and Setup</a></li>
+<ul>
+<li><a href="#org-prerequisites">✅ Prerequisites</a></li>
+<li><a href="#org-installing-jupyter">✅ Installing Jupyter</a></li>
+<ul>
+<li><a href="#org-python-users">✅ Python Users</a></li>
+<li><a href="#org-system-package-managers">✅ System Package Managers</a></li>
+<li><a href="#org-macos-with-homebrew">✅ macOS with Homebrew</a></li>
+</ul>
+<li><a href="#org-installing-kernels">✅ Installing Kernels</a></li>
+<ul>
+<li><a href="#org-python-ipython-kernel">✅ Python (IPython Kernel)</a></li>
+<li><a href="#org-julia">✅ Julia</a></li>
+<li><a href="#org-r">✅ R</a></li>
+<li><a href="#org-other-languages">✅ Other Languages</a></li>
+</ul>
+<li><a href="#org-verifying-installation">✅ Verifying Installation</a></li>
+<li><a href="#org-troubleshooting-zeromq">✅ Troubleshooting ZeroMQ</a></li>
+</ul>
+<li><a href="#org-using-jupyter-kernels">✅ Using Jupyter Kernels</a></li>
+<ul>
+<li><a href="#org-basic-execution">✅ Basic Execution</a></li>
+<ul>
+<li><a href="#org-explicit-jupyter-syntax">✅ Explicit Jupyter Syntax</a></li>
+<li><a href="#org-supported-languages">✅ Supported Languages</a></li>
+</ul>
+<li><a href="#org-session-management">✅ Session Management</a></li>
+<ul>
+<li><a href="#org-named-sessions">✅ Named Sessions</a></li>
+<li><a href="#org-default-session">✅ Default Session</a></li>
+<li><a href="#org-multiple-sessions">✅ Multiple Sessions</a></li>
+</ul>
+<li><a href="#org-rich-output-and-visualization">✅ Rich Output and Visualization</a></li>
+<ul>
+<li><a href="#org-image-output">✅ Image Output</a></li>
+<li><a href="#org-supported-output-types">✅ Supported Output Types</a></li>
+<li><a href="#org-the-ob-jupyter-directory">✅ The .ob-jupyter Directory</a></li>
+</ul>
+<li><a href="#org-header-arguments">✅ Header Arguments</a></li>
+<ul>
+<li><a href="#org-common-header-arguments">✅ Common Header Arguments</a></li>
+<li><a href="#org-less-common-header-arguments">✅ Less Common Header Arguments</a></li>
+</ul>
+</ul>
+<li><a href="#org-kernel-management">✅ Kernel Management</a></li>
+<ul>
+<li><a href="#org-starting-kernels">✅ Starting Kernels</a></li>
+<ul>
+<li><a href="#org-automatic-start">✅ Automatic Start</a></li>
+<li><a href="#org-manual-start">✅ Manual Start</a></li>
+<li><a href="#org-selecting-a-specific-kernel">✅ Selecting a Specific Kernel</a></li>
+</ul>
+<li><a href="#org-viewing-running-kernels">✅ Viewing Running Kernels</a></li>
+<li><a href="#org-kernel-states">✅ Kernel States</a></li>
+<li><a href="#org-restarting-kernels">✅ Restarting Kernels</a></li>
+<li><a href="#org-interrupting-kernels">✅ Interrupting Kernels</a></li>
+<li><a href="#org-stopping-kernels">✅ Stopping Kernels</a></li>
+<li><a href="#org-changing-kernels">✅ Changing Kernels</a></li>
+</ul>
+<li><a href="#org-advanced-usage">✅ Advanced Usage</a></li>
+<ul>
+<li><a href="#org-mixing-languages">✅ Mixing Languages</a></li>
+<li><a href="#org-ipython-magics">✅ IPython Magics</a></li>
+<li><a href="#org-kernel-introspection">✅ Kernel Introspection</a></li>
+<li><a href="#org-custom-kernel-discovery">✅ Custom Kernel Discovery</a></li>
+<li><a href="#org-performance-considerations">✅ Performance Considerations</a></li>
+<ul>
+<li><a href="#org-kernel-startup-time">✅ Kernel Startup Time</a></li>
+<li><a href="#org-memory-usage">✅ Memory Usage</a></li>
+<li><a href="#org-image-output">✅ Image Output</a></li>
+</ul>
+</ul>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+<ul>
+<li><a href="#org-kernel-not-found">✅ Kernel Not Found</a></li>
+<li><a href="#org-kernel-dies-immediately">✅ Kernel Dies Immediately</a></li>
+<li><a href="#org-zeromq-errors">✅ ZeroMQ Errors</a></li>
+<li><a href="#org-connection-timeout">✅ Connection Timeout</a></li>
+<li><a href="#org-output-not-appearing">✅ Output Not Appearing</a></li>
+<li><a href="#org-images-not-saving">✅ Images Not Saving</a></li>
+<li><a href="#org-kernel-state-confusion">✅ Kernel State Confusion</a></li>
+<li><a href="#org-multiple-kernel-versions">✅ Multiple Kernel Versions</a></li>
+<li><a href="#org-session-conflicts">✅ Session Conflicts</a></li>
+</ul>
+<li><a href="#org-tips-and-best-practices">✅ Tips and Best Practices</a></li>
+<ul>
+<li><a href="#org-session-naming">✅ Session Naming</a></li>
+<li><a href="#org-image-management">✅ Image Management</a></li>
+<li><a href="#org-performance-optimization">✅ Performance Optimization</a></li>
+<li><a href="#org-reproducibility">✅ Reproducibility</a></li>
+<li><a href="#org-error-handling">✅ Error Handling</a></li>
+<li><a href="#org-literate-programming">✅ Literate Programming</a></li>
+<li><a href="#org-mixed-language-workflows">✅ Mixed Language Workflows</a></li>
+</ul>
+<li><a href="#org-examples">✅ Examples</a></li>
+<ul>
+<li><a href="#org-complete-data-analysis-example">✅ Complete Data Analysis Example</a></li>
+<li><a href="#org-julia-scientific-computing-example">✅ Julia Scientific Computing Example</a></li>
+<li><a href="#org-r-statistical-analysis-example">✅ R Statistical Analysis Example</a></li>
+</ul>
+<li><a href="#org-further-reading">✅ Further Reading</a></li>
+<ul>
+<li><a href="#org-official-documentation">✅ Official Documentation</a></li>
+<li><a href="#org-org-mode-and-babel">✅ Org-Mode and Babel</a></li>
+<li><a href="#org-language-specific-resources">✅ Language-Specific Resources</a></li>
+</ul>
+<li><a href="#org-appendix-jupyter-protocol">✅ Appendix: Jupyter Protocol</a></li>
+<ul>
+<li><a href="#org-connection-files">✅ Connection Files</a></li>
+</ul>
+<li><a href="#org-related-topics">✅ Related Topics</a></li>
+<li><a href="#org-navigation">✅ Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-jupyter-integration" class="org-section org-level-1">
+<h1>✅ Jupyter Integration</h1>
+<p>CLOSED: [2026-01-16 Fri 20:44]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-jupyter-integration" class="org-section org-level-1">
-<h1>⚠️ Jupyter Integration</h1>
 <p>Scimax VS Code provides comprehensive integration with Jupyter kernels, allowing you
 to execute source code blocks using Jupyter&#39;s powerful kernel infrastructure. This
 enables interactive computing with support for multiple programming languages, rich
@@ -266,16 +259,22 @@ VS Code org-mode documents.</p>
 
 </div>
 <div id="org-overview" class="org-section org-level-1">
-<h1>⚠️ Overview</h1>
+<h1>✅ Overview</h1>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <div id="org-what-is-jupyter" class="org-section org-level-2">
-<h2>⚠️ What is Jupyter?</h2>
+<h2>✅ What is Jupyter?</h2>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>Jupyter is an open-source project that provides interactive computing environments
 across dozens of programming languages. At its core, Jupyter uses &quot;kernels&quot; -
 language-specific execution engines that run code and return results.</p>
 
 </div>
 <div id="org-what-jupyter-integration-provides" class="org-section org-level-2">
-<h2>⚠️ What Jupyter Integration Provides</h2>
+<h2>✅ What Jupyter Integration Provides</h2>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>The Jupyter integration in Scimax VS Code brings the following capabilities:</p>
 
 <ul>
@@ -299,7 +298,9 @@ language-specific execution engines that run code and return results.</p>
 
 </div>
 <div id="org-jupyter-vs-native-executors" class="org-section org-level-2">
-<h2>⚠️ Jupyter vs Native Executors</h2>
+<h2>✅ Jupyter vs Native Executors</h2>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>Scimax provides two ways to execute code blocks:</p>
 
 <ol>
@@ -310,7 +311,9 @@ language-specific execution engines that run code and return results.</p>
 </ol>
 
 <div id="org-when-to-use-jupyter" class="org-section org-level-3">
-<h3>⚠️ When to Use Jupyter</h3>
+<h3>✅ When to Use Jupyter</h3>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>Use Jupyter kernels when you need:</p>
 
 <ul>
@@ -328,7 +331,9 @@ language-specific execution engines that run code and return results.</p>
 
 </div>
 <div id="org-when-to-use-native-executors" class="org-section org-level-3">
-<h3>⚠️ When to Use Native Executors</h3>
+<h3>✅ When to Use Native Executors</h3>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>Use native executors when you need:</p>
 
 <ul>
@@ -346,9 +351,13 @@ language-specific execution engines that run code and return results.</p>
 </div>
 </div>
 <div id="org-installation-and-setup" class="org-section org-level-1">
-<h1>⚠️ Installation and Setup</h1>
+<h1>✅ Installation and Setup</h1>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <div id="org-prerequisites" class="org-section org-level-2">
-<h2>⚠️ Prerequisites</h2>
+<h2>✅ Prerequisites</h2>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>Before using Jupyter kernels, you need:</p>
 
 <ol>
@@ -362,9 +371,13 @@ language-specific execution engines that run code and return results.</p>
 
 </div>
 <div id="org-installing-jupyter" class="org-section org-level-2">
-<h2>⚠️ Installing Jupyter</h2>
+<h2>✅ Installing Jupyter</h2>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <div id="org-python-users" class="org-section org-level-3">
-<h3>⚠️ Python Users</h3>
+<h3>✅ Python Users</h3>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>If you have Python installed, install Jupyter using pip:</p>
 
 <div class="org-src-container">
@@ -377,7 +390,9 @@ conda install jupyter</code></pre>
 
 </div>
 <div id="org-system-package-managers" class="org-section org-level-3">
-<h3>⚠️ System Package Managers</h3>
+<h3>✅ System Package Managers</h3>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>On Linux systems, Jupyter may be available via package managers:</p>
 
 <div class="org-src-container">
@@ -393,7 +408,9 @@ sudo pacman -S jupyter jupyter-core python-ipykernel</code></pre>
 
 </div>
 <div id="org-macos-with-homebrew" class="org-section org-level-3">
-<h3>⚠️ macOS with Homebrew</h3>
+<h3>✅ macOS with Homebrew</h3>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <div class="org-src-container">
 <pre class="src src-shell"><code class="language-shell">brew install jupyter</code></pre>
 </div>
@@ -401,9 +418,13 @@ sudo pacman -S jupyter jupyter-core python-ipykernel</code></pre>
 </div>
 </div>
 <div id="org-installing-kernels" class="org-section org-level-2">
-<h2>⚠️ Installing Kernels</h2>
+<h2>✅ Installing Kernels</h2>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <div id="org-python-ipython-kernel" class="org-section org-level-3">
-<h3>⚠️ Python (IPython Kernel)</h3>
+<h3>✅ Python (IPython Kernel)</h3>
+<p>CLOSED: [2026-01-16 Fri 20:45]</p>
+
 <p>The IPython kernel is installed automatically with Jupyter:</p>
 
 <div class="org-src-container">
@@ -412,7 +433,9 @@ sudo pacman -S jupyter jupyter-core python-ipykernel</code></pre>
 
 </div>
 <div id="org-julia" class="org-section org-level-3">
-<h3>⚠️ Julia</h3>
+<h3>✅ Julia</h3>
+<p>CLOSED: [2026-01-17 Sat 11:00]</p>
+
 <p>Install the IJulia kernel from Julia:</p>
 
 <div class="org-src-container">
@@ -420,9 +443,12 @@ sudo pacman -S jupyter jupyter-core python-ipykernel</code></pre>
 Pkg.add(&quot;IJulia&quot;)</code></pre>
 </div>
 
+
 </div>
 <div id="org-r" class="org-section org-level-3">
-<h3>⚠️ R</h3>
+<h3>✅ R</h3>
+<p>CLOSED: [2026-01-17 Sat 11:00]</p>
+
 <p>Install the IRkernel from R:</p>
 
 <div class="org-src-container">
@@ -430,9 +456,12 @@ Pkg.add(&quot;IJulia&quot;)</code></pre>
 IRkernel::installspec()</code></pre>
 </div>
 
+
 </div>
 <div id="org-other-languages" class="org-section org-level-3">
-<h3>⚠️ Other Languages</h3>
+<h3>✅ Other Languages</h3>
+<p>CLOSED: [2026-01-17 Sat 11:16]</p>
+
 <p>Jupyter supports many languages through community kernels:</p>
 
 <table class="org-table">
@@ -455,18 +484,28 @@ IRkernel::installspec()</code></pre>
 </div>
 </div>
 <div id="org-verifying-installation" class="org-section org-level-2">
-<h2>⚠️ Verifying Installation</h2>
+<h2>✅ Verifying Installation</h2>
+<p>CLOSED: [2026-01-17 Sat 11:00]</p>
+
 <p>Check which kernels are installed:</p>
 
 <div class="org-src-container">
 <pre class="src src-shell"><code class="language-shell">jupyter kernelspec list</code></pre>
 </div>
 
+
+<pre class="fixed-width">Available kernels:
+  ir            /Users/jkitchin/Library/Jupyter/kernels/ir
+  julia-1.12    /Users/jkitchin/Library/Jupyter/kernels/julia-1.12
+  python3       /Users/jkitchin/Dropbox/uv/.venv/share/jupyter/kernels/python3</pre>
+
 <p>This will display all available kernels with their installation paths.</p>
 
 </div>
 <div id="org-troubleshooting-zeromq" class="org-section org-level-2">
-<h2>⚠️ Troubleshooting ZeroMQ</h2>
+<h2>✅ Troubleshooting ZeroMQ</h2>
+<p>CLOSED: [2026-01-16 Fri 20:46]</p>
+
 <p>If you encounter ZeroMQ-related errors, the native module may need rebuilding for
 VS Code&#39;s Electron version. Scimax will display instructions if this is required.</p>
 
@@ -480,16 +519,21 @@ compiled for a different Node.js version.</pre>
 </div>
 </div>
 <div id="org-using-jupyter-kernels" class="org-section org-level-1">
-<h1>⚠️ Using Jupyter Kernels</h1>
+<h1>✅ Using Jupyter Kernels</h1>
+<p>CLOSED: [2026-01-16 Fri 20:46]</p>
+
 <div id="org-basic-execution" class="org-section org-level-2">
-<h2>⚠️ Basic Execution</h2>
+<h2>✅ Basic Execution</h2>
+<p>CLOSED: [2026-01-16 Fri 20:46]</p>
+
 <div id="org-explicit-jupyter-syntax" class="org-section org-level-3">
-<h3>⚠️ Explicit Jupyter Syntax</h3>
+<h3>✅ Explicit Jupyter Syntax</h3>
+<p>CLOSED: [2026-01-16 Fri 20:47]</p>
+
 <p>To explicitly use a Jupyter kernel, prefix the language name with jupyter-:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python
-import numpy as np
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import numpy as np
 print(np.array([1, 2, 3, 4, 5]).mean())</code></pre>
 </div>
 
@@ -500,7 +544,9 @@ print(np.array([1, 2, 3, 4, 5]).mean())</code></pre>
 
 </div>
 <div id="org-supported-languages" class="org-section org-level-3">
-<h3>⚠️ Supported Languages</h3>
+<h3>✅ Supported Languages</h3>
+<p>CLOSED: [2026-01-16 Fri 20:47]</p>
+
 <p>The Jupyter executor recognizes these language prefixes:</p>
 
 <table class="org-table">
@@ -526,14 +572,17 @@ print(np.array([1, 2, 3, 4, 5]).mean())</code></pre>
 </div>
 </div>
 <div id="org-session-management" class="org-section org-level-2">
-<h2>⚠️ Session Management</h2>
+<h2>✅ Session Management</h2>
+<p>CLOSED: [2026-01-16 Fri 20:47]</p>
+
 <div id="org-named-sessions" class="org-section org-level-3">
-<h3>⚠️ Named Sessions</h3>
+<h3>✅ Named Sessions</h3>
+<p>CLOSED: [2026-01-16 Fri 20:47]</p>
+
 <p>Use the :session header argument to maintain persistent kernel state:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :session my-analysis
-import pandas as pd
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import pandas as pd
 data = pd.DataFrame({&#39;x&#39;: [1, 2, 3], &#39;y&#39;: [4, 5, 6]})
 print(&quot;Data loaded&quot;)</code></pre>
 </div>
@@ -547,21 +596,23 @@ print(data.describe())</code></pre>
 </div>
 
 
-<pre class="fixed-width">              x         y
-count  3.000000  3.000000
-mean   2.000000  5.000000
-std    1.000000  1.000000
-min    1.000000  4.000000
-25%    1.500000  4.500000
-50%    2.000000  5.000000
-75%    2.500000  5.500000
-max    3.000000  6.000000</pre>
+<pre class="fixed-width">x    y
+count  3.0  3.0
+mean   2.0  5.0
+std    1.0  1.0
+min    1.0  4.0
+25%    1.5  4.5
+50%    2.0  5.0
+75%    2.5  5.5
+max    3.0  6.0</pre>
 
 <p>All blocks with the same :session name share the same kernel and namespace.</p>
 
 </div>
 <div id="org-default-session" class="org-section org-level-3">
-<h3>⚠️ Default Session</h3>
+<h3>✅ Default Session</h3>
+<p>CLOSED: [2026-01-16 Fri 20:47]</p>
+
 <p>If no session name is specified, blocks use a language-specific default session:</p>
 
 <div class="org-src-container">
@@ -577,42 +628,63 @@ print(x)</code></pre>
 
 </div>
 <div id="org-multiple-sessions" class="org-section org-level-3">
-<h3>⚠️ Multiple Sessions</h3>
+<h3>✅ Multiple Sessions</h3>
+<p>CLOSED: [2026-01-17 Sat 10:24]</p>
+
 <p>You can run multiple independent sessions simultaneously:</p>
 
+<!-- Unknown element type: comment -->
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org"># Session 1: Training model
-#+BEGIN_SRC jupyter-python :session training
-import time
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import time
 print(&quot;Training model...&quot;)
 time.sleep(5)  # Simulate training
-model = &quot;trained_model&quot;</code></pre>
+model = &quot;trained_model&quot;
+with open(&#39;data.csv&#39;, &#39;w&#39;) as f:
+    f.write(&quot;id,value\n1,10\n2,20\n3,30\n&quot;)</code></pre>
 </div>
+
+
+<pre class="fixed-width">Training model...</pre>
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><code class="language-jupyter-python">import pandas as pd
 data = pd.read_csv(&#39;data.csv&#39;)
-print(f&quot;Loaded {len(data)} rows&quot;)</code></pre>
+print(f&quot;Loaded {len(data)} rows&quot;)
+try:
+   print(model)  # This will raise an error since &#39;model&#39; is not defined here
+except Exception as e:
+    print(f&quot;model is not defined in this session&quot;)
+</code></pre>
 </div>
 
+
+<pre class="fixed-width">Loaded 3 rows
+model is not defined in this session</pre>
+
+<!-- Unknown element type: comment -->
 <p>Each session runs in its own kernel with isolated state.</p>
 
 </div>
 </div>
 <div id="org-rich-output-and-visualization" class="org-section org-level-2">
-<h2>⚠️ Rich Output and Visualization</h2>
+<h2>✅ Rich Output and Visualization</h2>
+<p>CLOSED: [2026-01-17 Sat 10:24]</p>
+
 <div id="org-image-output" class="org-section org-level-3">
-<h3>⚠️ Image Output</h3>
+<h3>✅ Image Output</h3>
+<p>CLOSED: [2026-01-17 Sat 10:25]</p>
+
 <p>Jupyter kernels can produce rich output including images. When a code block generates
 an image (matplotlib plot, Julia plot, etc.), it is automatically saved to the
 .ob-jupyter/ directory in your document&#39;s folder.</p>
 
 <div id="org-python-matplotlib-example" class="org-section org-level-4">
-<h4>⚠️ Python Matplotlib Example</h4>
+<h4>✅ Python Matplotlib Example</h4>
+<p>CLOSED: [2026-01-17 Sat 10:26]</p>
+
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :session :results file
-import matplotlib.pyplot as plt
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import matplotlib.pyplot as plt
 import numpy as np
 
 x = np.linspace(0, 2 * np.pi, 100)
@@ -622,21 +694,23 @@ plt.xlabel(&#39;x&#39;)
 plt.ylabel(&#39;y&#39;)
 plt.title(&#39;Trigonometric Functions&#39;)
 plt.legend()
-plt.grid(True)
-plt.show()</code></pre>
+plt.grid(True)</code></pre>
 </div>
 
 
-<p><img src="#org-ob-jupyter-output-1705171200000-0-png" alt="" /></p>
+<p><img src=".ob-jupyter/output-1768663562237-0.png" alt="" /></p>
 
 <p>The image is automatically linked in the results, and you&#39;ll see it rendered in
-VS Code&#39;s org-mode preview.</p>
+VS Code&#39;s org-mode preview (default is on hover).</p>
 
 </div>
 <div id="org-julia-plots-example" class="org-section org-level-4">
-<h4>⚠️ Julia Plots Example</h4>
+<h4>✅ Julia Plots Example</h4>
+<p>CLOSED: [2026-01-17 Sat 11:16]</p>
+
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-julia :session :results file
+<pre class="src src-jupyter-julia"><code class="language-jupyter-julia">import Pkg; Pkg.add(&quot;Plots&quot;)
+
 using Plots
 x = 0:0.1:2π
 plot(x, [sin.(x) cos.(x)], label=[&quot;sin&quot; &quot;cos&quot;],
@@ -644,26 +718,29 @@ plot(x, [sin.(x) cos.(x)], label=[&quot;sin&quot; &quot;cos&quot;],
 </div>
 
 
-<p><img src="#org-ob-jupyter-output-1705171200001-0-png" alt="" /></p>
+<p><img src=".ob-jupyter/output-1768665825557-0.png" alt="" /></p>
 
 </div>
 <div id="org-r-graphics-example" class="org-section org-level-4">
-<h4>⚠️ R Graphics Example</h4>
+<h4>✅ R Graphics Example</h4>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-r :session :results file
-x &lt;- seq(0, 2*pi, length.out=100)
+<pre class="src src-jupyter-r"><code class="language-jupyter-r">x &lt;- seq(0, 2*pi, length.out=100)
 plot(x, sin(x), type=&#39;l&#39;, col=&#39;blue&#39;, ylab=&#39;y&#39;, main=&#39;Sine Wave&#39;)
 lines(x, cos(x), col=&#39;red&#39;)
 legend(&#39;topright&#39;, c(&#39;sin(x)&#39;, &#39;cos(x)&#39;), col=c(&#39;blue&#39;, &#39;red&#39;), lty=1)</code></pre>
 </div>
 
 
-<p><img src="#org-ob-jupyter-output-1705171200002-0-png" alt="" /></p>
+<p><img src=".ob-jupyter/output-1768666364826-0.png" alt="" /></p>
 
 </div>
 </div>
 <div id="org-supported-output-types" class="org-section org-level-3">
-<h3>⚠️ Supported Output Types</h3>
+<h3>✅ Supported Output Types</h3>
+<p>CLOSED: [2026-01-17 Sat 11:16]</p>
+
 <p>The Jupyter integration automatically handles these MIME types:</p>
 
 <ul>
@@ -685,7 +762,9 @@ legend(&#39;topright&#39;, c(&#39;sin(x)&#39;, &#39;cos(x)&#39;), col=c(&#39;blu
 
 </div>
 <div id="org-the-ob-jupyter-directory" class="org-section org-level-3">
-<h3>⚠️ The .ob-jupyter Directory</h3>
+<h3>✅ The .ob-jupyter Directory</h3>
+<p>CLOSED: [2026-01-16 Fri 20:50]</p>
+
 <p>All Jupyter output files are saved to .ob-jupyter/ in your document&#39;s directory:</p>
 
 <pre class="example">my-analysis.org
@@ -694,26 +773,31 @@ legend(&#39;topright&#39;, c(&#39;sin(x)&#39;, &#39;cos(x)&#39;), col=c(&#39;blu
   ├── output-1705171200001-0.svg
   └── output-1705171200002-0.html</pre>
 
-<p>Files are named output-&lt;timestamp&gt;-&lt;counter&gt;.&lt;ext&gt; to ensure uniqueness.</p>
+<p>Files are named output-<timestamp>-<counter>.<ext> to ensure uniqueness.</p>
 
 <p>generated outputs to version control.</p>
 
 </div>
 </div>
 <div id="org-header-arguments" class="org-section org-level-2">
-<h2>⚠️ Header Arguments</h2>
+<h2>✅ Header Arguments</h2>
+<p>CLOSED: [2026-01-16 Fri 20:51]</p>
+
 <p>Jupyter blocks support all standard Babel header arguments plus Jupyter-specific
 options.</p>
 
 <div id="org-common-header-arguments" class="org-section org-level-3">
-<h3>⚠️ Common Header Arguments</h3>
+<h3>✅ Common Header Arguments</h3>
+<p>CLOSED: [2026-01-16 Fri 20:51]</p>
+
 <div id="org-session" class="org-section org-level-4">
-<h4>⚠️ :session</h4>
+<h4>✅ :session</h4>
+<p>CLOSED: [2026-01-16 Fri 20:51]</p>
+
 <p>Controls which kernel session to use:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :session mysession
-# Code runs in the &quot;mysession&quot; kernel</code></pre>
+<pre class="src src-jupyter-python"><code class="language-jupyter-python"># Code runs in the &quot;mysession&quot; kernel</code></pre>
 </div>
 
 <div class="org-src-container">
@@ -726,20 +810,28 @@ options.</p>
 
 </div>
 <div id="org-results" class="org-section org-level-4">
-<h4>⚠️ :results</h4>
+<h4>✅ :results</h4>
+<p>CLOSED: [2026-01-16 Fri 20:51]</p>
+
 <p>Controls how results are collected and displayed:</p>
 
+<!-- Unknown element type: comment -->
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org"># Collect printed output
-#+BEGIN_SRC jupyter-python :results output
-print(&quot;Hello&quot;)
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">print(&quot;Hello&quot;)
 print(&quot;World&quot;)</code></pre>
 </div>
+
+
+<pre class="fixed-width">Hello
+World</pre>
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><code class="language-jupyter-python">2 + 2</code></pre>
 </div>
+
+
+<pre class="fixed-width">4</pre>
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
@@ -748,6 +840,9 @@ plt.plot([1, 2, 3], [1, 4, 9])
 plt.show()</code></pre>
 </div>
 
+
+<p><img src=".ob-jupyter/output-1768614701539-1.png" alt="" /></p>
+
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><code class="language-jupyter-python">x = expensive_computation()</code></pre>
@@ -755,54 +850,71 @@ plt.show()</code></pre>
 
 </div>
 <div id="org-exports" class="org-section org-level-4">
-<h4>⚠️ :exports</h4>
-<p>Controls what gets exported to HTML/PDF/LaTeX:</p>
+<h4>✅ :exports</h4>
+<p>CLOSED: [2026-01-17 Sat 10:33]</p>
 
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org"># Export both code and results
-#+BEGIN_SRC jupyter-python :exports both
-print(&quot;This will show code AND output in exports&quot;)</code></pre>
-</div>
+<p>Controls what gets exported to HTML/PDF/LaTeX:</p>
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
-<pre class="src src-jupyter-python"><code class="language-jupyter-python">print(&quot;This will show ONLY output in exports&quot;)</code></pre>
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">print(&quot;This will show code AND output in exports&quot;)</code></pre>
 </div>
+
+
+<pre class="fixed-width">This will show code AND output in exports</pre>
+
+<!-- Unknown element type: comment -->
+
+
+<pre class="fixed-width">This will show ONLY output in exports</pre>
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><code class="language-jupyter-python">print(&quot;This will show ONLY code in exports&quot;)</code></pre>
 </div>
 
+
+
 <!-- Unknown element type: comment -->
-<div class="org-src-container">
-<pre class="src src-jupyter-python"><code class="language-jupyter-python">import matplotlib
-matplotlib.use(&#39;Agg&#39;)  # Backend setup not shown</code></pre>
-</div>
+
 
 </div>
 <div id="org-dir" class="org-section org-level-4">
-<h4>⚠️ :dir</h4>
+<h4>✅ :dir</h4>
+<p>CLOSED: [2026-01-17 Sat 11:23]</p>
+
 <p>Set the working directory for code execution:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :dir /path/to/project
-import os
-print(os.getcwd())  # Prints: /path/to/project</code></pre>
+<pre class="src src-python"><code class="language-python">import os
+print(os.getcwd())  # Prints: the working directory</code></pre>
 </div>
+
+
+<pre class="fixed-width">/Users/jkitchin/Dropbox/projects/scimax_vscode/.github</pre>
+
+<p>Or by absolute path:</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><code class="language-bash">ls</code></pre>
+</div>
+
+
+<pre class="fixed-width">workflows</pre>
 
 </div>
 <div id="org-var" class="org-section org-level-4">
-<h4>⚠️ :var</h4>
+<h4>✅ :var</h4>
+<p>CLOSED: [2026-01-17 Sat 11:37]</p>
+
 <p>Pass variables between blocks:</p>
 
+
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC shell :results output
-echo &quot;Alice 30&quot;
+<pre class="src src-shell"><code class="language-shell">echo &quot;Alice 30&quot;
 echo &quot;Bob 25&quot;
 echo &quot;Carol 35&quot;</code></pre>
 </div>
-
 
 
 <pre class="fixed-width">Alice 30
@@ -810,93 +922,124 @@ Bob 25
 Carol 35</pre>
 
 <div class="org-src-container">
-<pre class="src src-jupyter-python"><code class="language-jupyter-python"># The shell output is passed as a string
+<pre class="src src-python"><code class="language-python"># The shell output is passed as a string
 lines = data.strip().split(&#39;\n&#39;)
-for line in lines:
-    name, age = line.split()
-    print(f&quot;{name} is {age} years old&quot;)</code></pre>
+[line.split() for line in lines]</code></pre>
 </div>
 
 
-<pre class="fixed-width">Alice is 30 years old
-Bob is 25 years old
-Carol is 35 years old</pre>
+<pre class="fixed-width">[[&#39;Alice&#39;, &#39;30&#39;], [&#39;Bob&#39;, &#39;25&#39;], [&#39;Carol&#39;, &#39;35&#39;]]</pre>
 
 </div>
 <div id="org-file" class="org-section org-level-4">
-<h4>⚠️ :file</h4>
+<h4>✅ :file</h4>
+<p>CLOSED: [2026-01-17 Sat 11:37]</p>
+
 <p>Explicitly specify output file path (overrides auto-naming):</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :file my-plot.png
-import matplotlib.pyplot as plt
-plt.plot([1, 2, 3], [1, 4, 9])
-plt.savefig(&#39;my-plot.png&#39;)</code></pre>
+<pre class="src src-python"><code class="language-python">import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 20 * np.pi, 500)
+y1 = np.cos(x) * np.exp(-.2 * x)
+y2 = np.sin(x) * np.exp(-.2 * x)
+
+plt.plot(y1, y2)</code></pre>
 </div>
 
 
-<p><img src="my-plot.png" alt="" /></p>
+<p><img src="_static/my-plot.png" alt="" /></p>
 
 </div>
 </div>
 <div id="org-less-common-header-arguments" class="org-section org-level-3">
-<h3>⚠️ Less Common Header Arguments</h3>
+<h3>✅ Less Common Header Arguments</h3>
+<p>CLOSED: [2026-01-17 Sat 10:36]</p>
+
 <div id="org-cache" class="org-section org-level-4">
-<h4>⚠️ :cache</h4>
+<h4>✅ :cache</h4>
+<p>CLOSED: [2026-01-17 Sat 10:47]</p>
+
 <p>Cache results to avoid re-execution:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :cache yes
-import time
-time.sleep(10)  # Slow operation
+<pre class="src src-python"><code class="language-python">import time
+
+def compute_expensive_value():
+   time.sleep(10)  # Slow operation
+   return 42
+
 result = compute_expensive_value()
 print(result)</code></pre>
 </div>
+
+<pre class="fixed-width">43</pre>
 
 <p>Results are cached based on code content. Changes to code invalidate the cache.</p>
 
 </div>
 <div id="org-async" class="org-section org-level-4">
-<h4>⚠️ :async</h4>
+<h4>✅ :async</h4>
+<p>CLOSED: [2026-01-17 Sat 11:38]</p>
+
 <p>Run block asynchronously (non-blocking):</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :async yes
-import time
+<pre class="src src-python"><code class="language-python">import time
 print(&quot;Starting...&quot;)
 time.sleep(30)
 print(&quot;Done!&quot;)</code></pre>
 </div>
 
+
+<pre class="fixed-width">Starting...
+Done!</pre>
+
+<p><mark class="editmark-comment">Code blocks generally run in async mode in VS Code.</mark></p>
+
 </div>
 <div id="org-prologue-epilogue" class="org-section org-level-4">
-<h4>⚠️ :prologue / :epilogue</h4>
+<h4>✅ :prologue / :epilogue</h4>
+<p>CLOSED: [2026-01-17 Sat 11:38]</p>
+
 <p>Add code before/after the block:</p>
 
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :prologue &quot;import numpy as np&quot; :epilogue &quot;print(&#39;Done&#39;)&quot;
-# numpy is already imported due to prologue
+<pre class="src src-python"><code class="language-python"># numpy is already imported due to prologue
 x = np.array([1, 2, 3])
 print(x.mean())
 # &quot;Done&quot; will be printed due to epilogue</code></pre>
 </div>
+
+
+<pre class="fixed-width">2.0
+Done</pre>
 
 </div>
 </div>
 </div>
 </div>
 <div id="org-kernel-management" class="org-section org-level-1">
-<h1>⚠️ Kernel Management</h1>
+<h1>✅ Kernel Management</h1>
+<p>CLOSED: [2026-01-17 Sat 11:07]</p>
+
 <div id="org-starting-kernels" class="org-section org-level-2">
-<h2>⚠️ Starting Kernels</h2>
+<h2>✅ Starting Kernels</h2>
+<p>CLOSED: [2026-01-17 Sat 11:07]</p>
+
 <div id="org-automatic-start" class="org-section org-level-3">
-<h3>⚠️ Automatic Start</h3>
+<h3>✅ Automatic Start</h3>
+<p>CLOSED: [2026-01-17 Sat 11:07]</p>
+
 <p>Kernels start automatically when you execute a Jupyter block. The first execution
 creates the kernel; subsequent blocks reuse it.</p>
 
 </div>
 <div id="org-manual-start" class="org-section org-level-3">
-<h3>⚠️ Manual Start</h3>
+<h3>✅ Manual Start</h3>
+<p>CLOSED: [2026-01-17 Sat 11:41]</p>
+
 <p>You can manually start a kernel before executing code:</p>
 
 <p>This command:</p>
@@ -912,7 +1055,9 @@ creates the kernel; subsequent blocks reuse it.</p>
 
 </div>
 <div id="org-selecting-a-specific-kernel" class="org-section org-level-3">
-<h3>⚠️ Selecting a Specific Kernel</h3>
+<h3>✅ Selecting a Specific Kernel</h3>
+<p>CLOSED: [2026-01-17 Sat 11:41]</p>
+
 <p>This command:</p>
 
 <ol>
@@ -927,7 +1072,9 @@ creates the kernel; subsequent blocks reuse it.</p>
 </div>
 </div>
 <div id="org-viewing-running-kernels" class="org-section org-level-2">
-<h2>⚠️ Viewing Running Kernels</h2>
+<h2>✅ Viewing Running Kernels</h2>
+<p>CLOSED: [2026-01-17 Sat 11:41]</p>
+
 <p>This displays all active kernels with:</p>
 
 <ul>
@@ -956,7 +1103,9 @@ creates the kernel; subsequent blocks reuse it.</p>
 
 </div>
 <div id="org-kernel-states" class="org-section org-level-2">
-<h2>⚠️ Kernel States</h2>
+<h2>✅ Kernel States</h2>
+<p>CLOSED: [2026-01-17 Sat 11:40]</p>
+
 <p>Kernels can be in one of several states:</p>
 
 <table class="org-table">
@@ -975,7 +1124,9 @@ creates the kernel; subsequent blocks reuse it.</p>
 
 </div>
 <div id="org-restarting-kernels" class="org-section org-level-2">
-<h2>⚠️ Restarting Kernels</h2>
+<h2>✅ Restarting Kernels</h2>
+<p>CLOSED: [2026-01-16 Fri 20:54]</p>
+
 <p>Restarting a kernel:</p>
 
 <ul>
@@ -1004,7 +1155,9 @@ creates the kernel; subsequent blocks reuse it.</p>
 
 </div>
 <div id="org-interrupting-kernels" class="org-section org-level-2">
-<h2>⚠️ Interrupting Kernels</h2>
+<h2>✅ Interrupting Kernels</h2>
+<p>CLOSED: [2026-01-17 Sat 11:38]</p>
+
 <p>Interrupting sends a SIGINT (Ctrl+C) to the kernel:</p>
 
 <ul>
@@ -1029,7 +1182,9 @@ creates the kernel; subsequent blocks reuse it.</p>
 
 </div>
 <div id="org-stopping-kernels" class="org-section org-level-2">
-<h2>⚠️ Stopping Kernels</h2>
+<h2>✅ Stopping Kernels</h2>
+<p>CLOSED: [2026-01-17 Sat 11:38]</p>
+
 <p>Stopping a kernel:</p>
 
 <ul>
@@ -1045,7 +1200,9 @@ creates the kernel; subsequent blocks reuse it.</p>
 
 </div>
 <div id="org-changing-kernels" class="org-section org-level-2">
-<h2>⚠️ Changing Kernels</h2>
+<h2>✅ Changing Kernels</h2>
+<p>CLOSED: [2026-01-17 Sat 11:39]</p>
+
 <p>This allows you to:</p>
 
 <ol>
@@ -1064,28 +1221,38 @@ creates the kernel; subsequent blocks reuse it.</p>
 </div>
 </div>
 <div id="org-advanced-usage" class="org-section org-level-1">
-<h1>⚠️ Advanced Usage</h1>
+<h1>✅ Advanced Usage</h1>
+<p>CLOSED: [2026-01-17 Sat 11:39]</p>
+
 <div id="org-mixing-languages" class="org-section org-level-2">
-<h2>⚠️ Mixing Languages</h2>
+<h2>✅ Mixing Languages</h2>
+<p>CLOSED: [2026-01-17 Sat 11:39]</p>
+
 <p>You can use multiple Jupyter kernels in a single document:</p>
 
+<!-- Unknown element type: comment -->
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org"># Generate data in Python
-#+BEGIN_SRC jupyter-python :session py-session :results output
-import json
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import json
 data = {&#39;values&#39;: [1, 2, 3, 4, 5]}
 with open(&#39;/tmp/data.json&#39;, &#39;w&#39;) as f:
     json.dump(data, f)
 print(&quot;Data saved to /tmp/data.json&quot;)</code></pre>
 </div>
 
+
+<pre class="fixed-width">Data saved to /tmp/data.json</pre>
+
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
-<pre class="src src-jupyter-julia"><code class="language-jupyter-julia">using JSON
+<pre class="src src-jupyter-julia"><code class="language-jupyter-julia">import Pkg; Pkg.add(&quot;JSON&quot;)
+using JSON
 data = JSON.parsefile(&quot;/tmp/data.json&quot;)
 result = sum(data[&quot;values&quot;])
 println(&quot;Sum: $result&quot;)</code></pre>
 </div>
+
+
+<pre class="fixed-width">Sum: 15</pre>
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
@@ -1094,19 +1261,26 @@ data &lt;- fromJSON(&quot;/tmp/data.json&quot;)
 barplot(data$values, main=&quot;Values&quot;, col=&quot;steelblue&quot;)</code></pre>
 </div>
 
+
+<p><img src=".ob-jupyter/output-1768666116932-0.png" alt="" /></p>
+
 <p>Each language runs in its own kernel with isolated state. Use files or other IPC
 mechanisms to pass data between languages.</p>
 
 </div>
 <div id="org-ipython-magics" class="org-section org-level-2">
-<h2>⚠️ IPython Magics</h2>
+<h2>✅ IPython Magics</h2>
+<p>CLOSED: [2026-01-17 Sat 11:39]</p>
+
 <p>When using Python kernels, you have access to IPython magic commands:</p>
 
+<!-- Unknown element type: comment -->
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org"># Line magics (single line)
-#+BEGIN_SRC jupyter-python :session
-%timeit sum(range(1000))</code></pre>
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">%timeit sum(range(1000))</code></pre>
 </div>
+
+
+<pre class="fixed-width">5.23 μs ± 31.3 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</pre>
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
@@ -1116,6 +1290,9 @@ for i in range(1000):
     total += i</code></pre>
 </div>
 
+
+<pre class="fixed-width">11.9 μs ± 85.7 ns per loop (mean ± std. dev. of 7 runs, 100,000 loops each)</pre>
+
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><code class="language-jupyter-python">%run my_script.py</code></pre>
@@ -1123,8 +1300,13 @@ for i in range(1000):
 
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
-<pre class="src src-jupyter-python"><code class="language-jupyter-python">!pip list | grep numpy</code></pre>
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">! uv pip list | grep numpy</code></pre>
 </div>
+
+
+<pre class="fixed-width">[2mUsing Python 3.12.11 environment at: /Users/jkitchin/Dropbox/uv/.venv[0m
+numpy                                    2.3.5
+numpyro                                  0.19.0</pre>
 
 <p>Common magic commands:</p>
 
@@ -1147,7 +1329,9 @@ for i in range(1000):
 
 </div>
 <div id="org-kernel-introspection" class="org-section org-level-2">
-<h2>⚠️ Kernel Introspection</h2>
+<h2>✅ Kernel Introspection</h2>
+<p>CLOSED: [2026-01-17 Sat 11:39]</p>
+
 <p>Jupyter kernels support code introspection (when exposed via VS Code APIs):</p>
 
 <ul>
@@ -1163,7 +1347,9 @@ for i in range(1000):
 
 </div>
 <div id="org-custom-kernel-discovery" class="org-section org-level-2">
-<h2>⚠️ Custom Kernel Discovery</h2>
+<h2>✅ Custom Kernel Discovery</h2>
+<p>CLOSED: [2026-01-17 Sat 11:10]</p>
+
 <p>Jupyter looks for kernels in standard locations:</p>
 
 <ul>
@@ -1193,9 +1379,13 @@ for i in range(1000):
 
 </div>
 <div id="org-performance-considerations" class="org-section org-level-2">
-<h2>⚠️ Performance Considerations</h2>
+<h2>✅ Performance Considerations</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <div id="org-kernel-startup-time" class="org-section org-level-3">
-<h3>⚠️ Kernel Startup Time</h3>
+<h3>✅ Kernel Startup Time</h3>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <p>First execution in a new session incurs kernel startup overhead:</p>
 
 <ul>
@@ -1211,7 +1401,9 @@ for i in range(1000):
 
 </div>
 <div id="org-memory-usage" class="org-section org-level-3">
-<h3>⚠️ Memory Usage</h3>
+<h3>✅ Memory Usage</h3>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <p>Each kernel is a separate process with its own memory:</p>
 
 <ul>
@@ -1225,7 +1417,9 @@ for i in range(1000):
 
 </div>
 <div id="org-image-output" class="org-section org-level-3">
-<h3>⚠️ Image Output</h3>
+<h3>✅ Image Output</h3>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <p>Large images increase document size:</p>
 
 <ul>
@@ -1241,9 +1435,13 @@ for i in range(1000):
 </div>
 </div>
 <div id="org-troubleshooting" class="org-section org-level-1">
-<h1>⚠️ Troubleshooting</h1>
+<h1>✅ Troubleshooting</h1>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <div id="org-kernel-not-found" class="org-section org-level-2">
-<h2>⚠️ Kernel Not Found</h2>
+<h2>✅ Kernel Not Found</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>Verify the kernel is installed:</p>
 </li>
@@ -1257,7 +1455,9 @@ for i in range(1000):
 
 </div>
 <div id="org-kernel-dies-immediately" class="org-section org-level-2">
-<h2>⚠️ Kernel Dies Immediately</h2>
+<h2>✅ Kernel Dies Immediately</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>Check the Jupyter output channel for error messages:</p>
 </li>
@@ -1271,7 +1471,9 @@ for i in range(1000):
 
 </div>
 <div id="org-zeromq-errors" class="org-section org-level-2">
-<h2>⚠️ ZeroMQ Errors</h2>
+<h2>✅ ZeroMQ Errors</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>The extension will display instructions to rebuild the module</p>
 </li>
@@ -1285,7 +1487,9 @@ for i in range(1000):
 
 </div>
 <div id="org-connection-timeout" class="org-section org-level-2">
-<h2>⚠️ Connection Timeout</h2>
+<h2>✅ Connection Timeout</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>Increase timeout if using a slow kernel (Julia)</p>
 </li>
@@ -1299,7 +1503,9 @@ for i in range(1000):
 
 </div>
 <div id="org-output-not-appearing" class="org-section org-level-2">
-<h2>⚠️ Output Not Appearing</h2>
+<h2>✅ Output Not Appearing</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>:results silent header argument</p>
 </li>
@@ -1324,7 +1530,9 @@ for i in range(1000):
 
 </div>
 <div id="org-images-not-saving" class="org-section org-level-2">
-<h2>⚠️ Images Not Saving</h2>
+<h2>✅ Images Not Saving</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>Ensure :results file is set (or omitted, file is default for graphics)</p>
 </li>
@@ -1338,7 +1546,9 @@ for i in range(1000):
 
 </div>
 <div id="org-kernel-state-confusion" class="org-section org-level-2">
-<h2>⚠️ Kernel State Confusion</h2>
+<h2>✅ Kernel State Confusion</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>Verify you&#39;re using the same :session name</p>
 </li>
@@ -1352,7 +1562,9 @@ for i in range(1000):
 
 </div>
 <div id="org-multiple-kernel-versions" class="org-section org-level-2">
-<h2>⚠️ Multiple Kernel Versions</h2>
+<h2>✅ Multiple Kernel Versions</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ol>
 <li><p>List all kernel specs:</p>
 </li>
@@ -1364,7 +1576,9 @@ for i in range(1000):
 
 </div>
 <div id="org-session-conflicts" class="org-section org-level-2">
-<h2>⚠️ Session Conflicts</h2>
+<h2>✅ Session Conflicts</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <p>This is by design! Blocks with the same :session name share state.</p>
 
 <ol>
@@ -1379,9 +1593,13 @@ for i in range(1000):
 </div>
 </div>
 <div id="org-tips-and-best-practices" class="org-section org-level-1">
-<h1>⚠️ Tips and Best Practices</h1>
+<h1>✅ Tips and Best Practices</h1>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <div id="org-session-naming" class="org-section org-level-2">
-<h2>⚠️ Session Naming</h2>
+<h2>✅ Session Naming</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ul>
 <li><p>Use descriptive session names: :session data-preprocessing</p>
 </li>
@@ -1395,7 +1613,9 @@ for i in range(1000):
 
 </div>
 <div id="org-image-management" class="org-section org-level-2">
-<h2>⚠️ Image Management</h2>
+<h2>✅ Image Management</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ul>
 <li><p>Add .ob-jupyter/ to .gitignore if outputs are generated</p>
 </li>
@@ -1409,7 +1629,9 @@ for i in range(1000):
 
 </div>
 <div id="org-performance-optimization" class="org-section org-level-2">
-<h2>⚠️ Performance Optimization</h2>
+<h2>✅ Performance Optimization</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ul>
 <li><p>Keep kernels running during active development</p>
 </li>
@@ -1425,7 +1647,9 @@ for i in range(1000):
 
 </div>
 <div id="org-reproducibility" class="org-section org-level-2">
-<h2>⚠️ Reproducibility</h2>
+<h2>✅ Reproducibility</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ul>
 <li><p>Document kernel versions and dependencies</p>
 </li>
@@ -1441,7 +1665,9 @@ for i in range(1000):
 
 </div>
 <div id="org-error-handling" class="org-section org-level-2">
-<h2>⚠️ Error Handling</h2>
+<h2>✅ Error Handling</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ul>
 <li><p>Check the &quot;Jupyter Kernels&quot; output channel for detailed errors</p>
 </li>
@@ -1455,7 +1681,9 @@ for i in range(1000):
 
 </div>
 <div id="org-literate-programming" class="org-section org-level-2">
-<h2>⚠️ Literate Programming</h2>
+<h2>✅ Literate Programming</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ul>
 <li><p>Explain code intent before each block</p>
 </li>
@@ -1471,7 +1699,9 @@ for i in range(1000):
 
 </div>
 <div id="org-mixed-language-workflows" class="org-section org-level-2">
-<h2>⚠️ Mixed Language Workflows</h2>
+<h2>✅ Mixed Language Workflows</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <ul>
 <li><p>Use JSON/CSV files to pass data between languages</p>
 </li>
@@ -1488,9 +1718,13 @@ for i in range(1000):
 </div>
 </div>
 <div id="org-examples" class="org-section org-level-1">
-<h1>⚠️ Examples</h1>
+<h1>✅ Examples</h1>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <div id="org-complete-data-analysis-example" class="org-section org-level-2">
-<h2>⚠️ Complete Data Analysis Example</h2>
+<h2>✅ Complete Data Analysis Example</h2>
+<p>CLOSED: [2026-01-17 Sat 11:11]</p>
+
 <p>Here&#39;s a complete example showing a data analysis workflow:</p>
 
 <div class="org-src-container">
@@ -1560,14 +1794,15 @@ during summer months.</code></pre>
 
 </div>
 <div id="org-julia-scientific-computing-example" class="org-section org-level-2">
-<h2>⚠️ Julia Scientific Computing Example</h2>
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">,* Numerical Methods: Newton&#39;s Method
+<h2>✅ Julia Scientific Computing Example</h2>
+<p>CLOSED: [2026-01-17 Sat 15:52]</p>
 
-,#+BEGIN_SRC jupyter-julia :session numerics :exports both
-# Define function and derivative
+<p>Numerical Methods: Newton&#39;s Method</p>
+
+<div class="org-src-container">
+<pre class="src src-jupyter-julia"><code class="language-jupyter-julia"># Define function and derivative
 f(x) = x^2 - 2
-f&#39;(x) = 2x
+fp(x) = 2x
 
 # Newton&#39;s method implementation
 function newton(f, df, x0; tol=1e-6, maxiter=100)
@@ -1583,63 +1818,65 @@ function newton(f, df, x0; tol=1e-6, maxiter=100)
 end
 
 # Find sqrt(2)
-root, iters = newton(f, f&#39;, 1.0)
+root, iters = newton(f, fp, 1.0)
 println(&quot;Root: $root&quot;)
 println(&quot;Iterations: $iters&quot;)
-println(&quot;Error: $(abs(root - sqrt(2)))&quot;)
-,#+END_SRC
-
-,#+BEGIN_SRC jupyter-julia :session numerics :results file :exports results
-using Plots
-
-x = 0:0.01:3
-plot(x, f.(x), label=&quot;f(x) = x² - 2&quot;, legend=:topleft)
-hline!([0], label=&quot;&quot;, linestyle=:dash, color=:gray)
-vline!([sqrt(2)], label=&quot;√2&quot;, linestyle=:dash, color=:red)
-xlabel!(&quot;x&quot;)
-ylabel!(&quot;f(x)&quot;)
-title!(&quot;Finding √2 using Newton&#39;s Method&quot;)
-,#+END_SRC</code></pre>
+println(&quot;Error: $(abs(root - sqrt(2)))&quot;)</code></pre>
 </div>
+
+
+<pre class="fixed-width">Root: 1.4142135623746899
+Iterations: 5
+Error: 1.5947243525715749e-12</pre>
+
+
+
+<p><img src=".ob-jupyter/output-1768683112464-0.png" alt="" /></p>
 
 </div>
 <div id="org-r-statistical-analysis-example" class="org-section org-level-2">
-<h2>⚠️ R Statistical Analysis Example</h2>
-<div class="org-src-container">
-<pre class="src src-org"><code class="language-org">,* Statistical Analysis: t-test
+<h2>✅ R Statistical Analysis Example</h2>
+<p>CLOSED: [2026-01-17 Sat 15:52]</p>
 
-,#+BEGIN_SRC jupyter-r :session stats :exports both
-# Generate two samples
+<p>Statistical Analysis: t-test</p>
+
+<div class="org-src-container">
+<pre class="src src-jupyter-r"><code class="language-jupyter-r"># Generate two samples
 set.seed(123)
 group_a &lt;- rnorm(50, mean=100, sd=15)
 group_b &lt;- rnorm(50, mean=105, sd=15)
 
 # Perform t-test
 result &lt;- t.test(group_a, group_b)
-print(result)
-,#+END_SRC
-
-,#+BEGIN_SRC jupyter-r :session stats :results file :exports results
-# Visualize distributions
-boxplot(group_a, group_b,
-        names=c(&quot;Group A&quot;, &quot;Group B&quot;),
-        main=&quot;Comparison of Two Groups&quot;,
-        ylab=&quot;Value&quot;,
-        col=c(&quot;lightblue&quot;, &quot;lightcoral&quot;))
-
-# Add means
-points(c(1, 2), c(mean(group_a), mean(group_b)),
-       pch=19, col=&quot;red&quot;, cex=1.5)
-legend(&quot;topright&quot;, &quot;Mean&quot;, pch=19, col=&quot;red&quot;)
-,#+END_SRC</code></pre>
+print(result)</code></pre>
 </div>
+
+
+<pre class="fixed-width">Welch Two Sample t-test
+
+data:  group_a and group_b
+t = -2.4316, df = 97.951, p-value = 0.01685
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -12.131728  -1.228414
+sample estimates:
+mean of x mean of y 
+ 100.5161  107.1961</pre>
+
+
+
+<p><img src=".ob-jupyter/output-1768683123789-1.png" alt="" /></p>
 
 </div>
 </div>
 <div id="org-further-reading" class="org-section org-level-1">
-<h1>⚠️ Further Reading</h1>
+<h1>✅ Further Reading</h1>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <div id="org-official-documentation" class="org-section org-level-2">
-<h2>⚠️ Official Documentation</h2>
+<h2>✅ Official Documentation</h2>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <ul>
 <li><p><a href="https://jupyter.org/">Jupyter Project Website</a></p>
 </li>
@@ -1653,7 +1890,9 @@ legend(&quot;topright&quot;, &quot;Mean&quot;, pch=19, col=&quot;red&quot;)
 
 </div>
 <div id="org-org-mode-and-babel" class="org-section org-level-2">
-<h2>⚠️ Org-Mode and Babel</h2>
+<h2>✅ Org-Mode and Babel</h2>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <ul>
 <li><p><a href="https://orgmode.org/manual/Working-with-Source-Code.html">Org Manual: Working with Source Code</a></p>
 </li>
@@ -1665,7 +1904,9 @@ legend(&quot;topright&quot;, &quot;Mean&quot;, pch=19, col=&quot;red&quot;)
 
 </div>
 <div id="org-language-specific-resources" class="org-section org-level-2">
-<h2>⚠️ Language-Specific Resources</h2>
+<h2>✅ Language-Specific Resources</h2>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <ul>
 <li><p><a href="https://ipython.readthedocs.io/en/stable/interactive/magics.html">IPython Magic Commands</a></p>
 </li>
@@ -1678,7 +1919,9 @@ legend(&quot;topright&quot;, &quot;Mean&quot;, pch=19, col=&quot;red&quot;)
 </div>
 </div>
 <div id="org-appendix-jupyter-protocol" class="org-section org-level-1">
-<h1>⚠️ Appendix: Jupyter Protocol</h1>
+<h1>✅ Appendix: Jupyter Protocol</h1>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <p>The Jupyter integration uses the Jupyter Messaging Protocol (version 5.3) over
 ZeroMQ sockets. This provides:</p>
 
@@ -1698,7 +1941,9 @@ ZeroMQ sockets. This provides:</p>
 <p>Message signing uses HMAC-SHA256 to ensure message integrity.</p>
 
 <div id="org-connection-files" class="org-section org-level-2">
-<h2>⚠️ Connection Files</h2>
+<h2>✅ Connection Files</h2>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <p>Kernels are started with connection files containing:</p>
 
 <div class="org-src-container">
@@ -1721,7 +1966,9 @@ kernels stop.</p>
 </div>
 </div>
 <div id="org-related-topics" class="org-section org-level-1">
-<h1>⚠️ Related Topics</h1>
+<h1>✅ Related Topics</h1>
+<p>CLOSED: [2026-01-17 Sat 11:12]</p>
+
 <ul>
 <li><p><a href="07-source-blocks.html">Source Code Blocks</a> - Code execution and header arguments</p>
 </li>
@@ -1735,7 +1982,9 @@ kernels stop.</p>
 
 </div>
 <div id="org-navigation" class="org-section org-level-1">
-<h1>Navigation</h1>
+<h1>✅ Navigation</h1>
+<p>CLOSED: [2026-01-18 Sun 08:57]</p>
+
 <ul>
 <li><p>Previous: <a href="08-supported-languages.html">Supported Languages</a></p>
 </li>
@@ -1746,521 +1995,6 @@ kernels stop.</p>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="08-supported-languages.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="10-export.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#jupyter-integration" class="toc-link">⚠️ Jupyter Integration</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#overview" class="toc-link">⚠️ Overview</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#what-is-jupyter" class="toc-link">⚠️ What is Jupyter?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#what-jupyter-integration-provides" class="toc-link">⚠️ What Jupyter Integration Provides</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#jupyter-vs-native-executors" class="toc-link">⚠️ Jupyter vs Native Executors</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#when-to-use-jupyter" class="toc-link">⚠️ When to Use Jupyter</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#when-to-use-native-executors" class="toc-link">⚠️ When to Use Native Executors</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#installation-and-setup" class="toc-link">⚠️ Installation and Setup</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#prerequisites" class="toc-link">⚠️ Prerequisites</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#installing-jupyter" class="toc-link">⚠️ Installing Jupyter</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#python-users" class="toc-link">⚠️ Python Users</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#system-package-managers" class="toc-link">⚠️ System Package Managers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#macos-with-homebrew" class="toc-link">⚠️ macOS with Homebrew</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#installing-kernels" class="toc-link">⚠️ Installing Kernels</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#python-ipython-kernel" class="toc-link">⚠️ Python (IPython Kernel)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#julia" class="toc-link">⚠️ Julia</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#r" class="toc-link">⚠️ R</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#other-languages" class="toc-link">⚠️ Other Languages</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#verifying-installation" class="toc-link">⚠️ Verifying Installation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#troubleshooting-zeromq" class="toc-link">⚠️ Troubleshooting ZeroMQ</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#using-jupyter-kernels" class="toc-link">⚠️ Using Jupyter Kernels</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#basic-execution" class="toc-link">⚠️ Basic Execution</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#explicit-jupyter-syntax" class="toc-link">⚠️ Explicit Jupyter Syntax</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#supported-languages" class="toc-link">⚠️ Supported Languages</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#session-management" class="toc-link">⚠️ Session Management</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#named-sessions" class="toc-link">⚠️ Named Sessions</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#default-session" class="toc-link">⚠️ Default Session</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#multiple-sessions" class="toc-link">⚠️ Multiple Sessions</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#rich-output-and-visualization" class="toc-link">⚠️ Rich Output and Visualization</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#image-output" class="toc-link">⚠️ Image Output</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#supported-output-types" class="toc-link">⚠️ Supported Output Types</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#the-ob-jupyter-directory" class="toc-link">⚠️ The .ob-jupyter Directory</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#header-arguments" class="toc-link">⚠️ Header Arguments</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#common-header-arguments" class="toc-link">⚠️ Common Header Arguments</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#less-common-header-arguments" class="toc-link">⚠️ Less Common Header Arguments</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#kernel-management" class="toc-link">⚠️ Kernel Management</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#starting-kernels" class="toc-link">⚠️ Starting Kernels</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#automatic-start" class="toc-link">⚠️ Automatic Start</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#manual-start" class="toc-link">⚠️ Manual Start</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#selecting-a-specific-kernel" class="toc-link">⚠️ Selecting a Specific Kernel</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#viewing-running-kernels" class="toc-link">⚠️ Viewing Running Kernels</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#kernel-states" class="toc-link">⚠️ Kernel States</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#restarting-kernels" class="toc-link">⚠️ Restarting Kernels</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#interrupting-kernels" class="toc-link">⚠️ Interrupting Kernels</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#stopping-kernels" class="toc-link">⚠️ Stopping Kernels</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#changing-kernels" class="toc-link">⚠️ Changing Kernels</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-usage" class="toc-link">⚠️ Advanced Usage</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#mixing-languages" class="toc-link">⚠️ Mixing Languages</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#ipython-magics" class="toc-link">⚠️ IPython Magics</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#kernel-introspection" class="toc-link">⚠️ Kernel Introspection</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#custom-kernel-discovery" class="toc-link">⚠️ Custom Kernel Discovery</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#performance-considerations" class="toc-link">⚠️ Performance Considerations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#kernel-startup-time" class="toc-link">⚠️ Kernel Startup Time</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#memory-usage" class="toc-link">⚠️ Memory Usage</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#image-output" class="toc-link">⚠️ Image Output</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">⚠️ Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#kernel-not-found" class="toc-link">⚠️ Kernel Not Found</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#kernel-dies-immediately" class="toc-link">⚠️ Kernel Dies Immediately</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#zeromq-errors" class="toc-link">⚠️ ZeroMQ Errors</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#connection-timeout" class="toc-link">⚠️ Connection Timeout</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#output-not-appearing" class="toc-link">⚠️ Output Not Appearing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#images-not-saving" class="toc-link">⚠️ Images Not Saving</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#kernel-state-confusion" class="toc-link">⚠️ Kernel State Confusion</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#multiple-kernel-versions" class="toc-link">⚠️ Multiple Kernel Versions</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#session-conflicts" class="toc-link">⚠️ Session Conflicts</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#tips-and-best-practices" class="toc-link">⚠️ Tips and Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#session-naming" class="toc-link">⚠️ Session Naming</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#image-management" class="toc-link">⚠️ Image Management</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#performance-optimization" class="toc-link">⚠️ Performance Optimization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#reproducibility" class="toc-link">⚠️ Reproducibility</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#error-handling" class="toc-link">⚠️ Error Handling</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#literate-programming" class="toc-link">⚠️ Literate Programming</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#mixed-language-workflows" class="toc-link">⚠️ Mixed Language Workflows</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#examples" class="toc-link">⚠️ Examples</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#complete-data-analysis-example" class="toc-link">⚠️ Complete Data Analysis Example</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#julia-scientific-computing-example" class="toc-link">⚠️ Julia Scientific Computing Example</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#r-statistical-analysis-example" class="toc-link">⚠️ R Statistical Analysis Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#further-reading" class="toc-link">⚠️ Further Reading</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#official-documentation" class="toc-link">⚠️ Official Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#org-mode-and-babel" class="toc-link">⚠️ Org-Mode and Babel</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#language-specific-resources" class="toc-link">⚠️ Language-Specific Resources</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#appendix-jupyter-protocol" class="toc-link">⚠️ Appendix: Jupyter Protocol</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#connection-files" class="toc-link">⚠️ Connection Files</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#related-topics" class="toc-link">⚠️ Related Topics</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

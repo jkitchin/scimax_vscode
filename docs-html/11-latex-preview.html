@@ -1,270 +1,274 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>LaTeX Preview</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LaTeX Preview</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">LaTeX Preview</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-what-is-latex-preview">✅ What is LaTeX Preview?</a></li>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+</ul>
+<li><a href="#org-math-syntax">✅ Math Syntax</a></li>
+<ul>
+<li><a href="#org-inline-math">✅ Inline Math</a></li>
+<ul>
+<li><a href="#org-dollar-sign-delimiter">✅ Dollar Sign Delimiter: `$...$&#39;</a></li>
+<li><a href="#org-backslash-parenthesis-delimiter">✅ Backslash-Parenthesis Delimiter: `\(...\)&#39;</a></li>
+<li><a href="#org-currency-detection">✅ Currency Detection</a></li>
+</ul>
+<li><a href="#org-display-math">✅ Display Math</a></li>
+<ul>
+<li><a href="#org-double-dollar-signs">✅ Double Dollar Signs: `$$...$$&#39;</a></li>
+<li><a href="#org-backslash-brackets">Backslash Brackets: `\[...\]&#39;</a></li>
+</ul>
+<li><a href="#org-math-environments">Math Environments</a></li>
+<ul>
+<li><a href="#org-equation-environment">Equation Environment</a></li>
+<li><a href="#org-equation-environment-unnumbered">Equation* Environment (Unnumbered)</a></li>
+<li><a href="#org-align-environment">Align Environment</a></li>
+<li><a href="#org-align-environment-unnumbered">Align* Environment (Unnumbered)</a></li>
+<li><a href="#org-other-numbered-environments">Other Numbered Environments</a></li>
+<li><a href="#org-matrix-environments">Matrix Environments</a></li>
+</ul>
+</ul>
+<li><a href="#org-previewing-math-fragments">Previewing Math Fragments</a></li>
+<ul>
+<li><a href="#org-hover-preview">Hover Preview</a></li>
+<li><a href="#org-preview-caching">Preview Caching</a></li>
+<li><a href="#org-clearing-the-cache">Clearing the Cache</a></li>
+</ul>
+<li><a href="#org-latex-fragment-settings">LaTeX Fragment Settings</a></li>
+<ul>
+<li><a href="#org-document-level-configuration">Document-Level Configuration</a></li>
+<ul>
+<li><a href="#org-custom-packages">Custom Packages</a></li>
+<li><a href="#org-custom-commands">Custom Commands</a></li>
+<li><a href="#org-custom-preamble">Custom Preamble</a></li>
+</ul>
+<li><a href="#org-vs-code-settings">VS Code Settings</a></li>
+<ul>
+<li><a href="#org-enable-disable-preview">Enable/Disable Preview</a></li>
+<li><a href="#org-cache-control">Cache Control</a></li>
+<li><a href="#org-dark-mode-awareness">Dark Mode Awareness</a></li>
+</ul>
+</ul>
+<li><a href="#org-common-latex-math-commands">Common LaTeX Math Commands</a></li>
+<ul>
+<li><a href="#org-greek-letters">Greek Letters</a></li>
+<ul>
+<li><a href="#org-lowercase">Lowercase</a></li>
+<li><a href="#org-uppercase">Uppercase</a></li>
+</ul>
+<li><a href="#org-math-operators">Math Operators</a></li>
+<li><a href="#org-relations-and-operators">Relations and Operators</a></li>
+<li><a href="#org-arrows">Arrows</a></li>
+<li><a href="#org-special-symbols">Special Symbols</a></li>
+<li><a href="#org-delimiters">Delimiters</a></li>
+<li><a href="#org-accents-and-decorations">Accents and Decorations</a></li>
+</ul>
+<li><a href="#org-example-equations">Example Equations</a></li>
+<ul>
+<li><a href="#org-calculus">Calculus</a></li>
+<li><a href="#org-linear-algebra">Linear Algebra</a></li>
+<li><a href="#org-physics">Physics</a></li>
+<li><a href="#org-statistics">Statistics</a></li>
+<li><a href="#org-computer-science">Computer Science</a></li>
+</ul>
+<li><a href="#org-troubleshooting-rendering-issues">Troubleshooting Rendering Issues</a></li>
+<ul>
+<li><a href="#org-common-problems-and-solutions">Common Problems and Solutions</a></li>
+<ul>
+<li><a href="#org-problem-pdflatex-not-found-error">Problem: &quot;pdflatex not found&quot; Error</a></li>
+<li><a href="#org-problem-equations-not-rendering-on-hover">Problem: Equations Not Rendering on Hover</a></li>
+<li><a href="#org-problem-slow-hover-response">Problem: Slow Hover Response</a></li>
+<li><a href="#org-problem-rendering-wrong-in-dark-mode">Problem: Rendering Wrong in Dark Mode</a></li>
+<li><a href="#org-problem-equation-numbers-wrong">Problem: Equation Numbers Wrong</a></li>
+<li><a href="#org-problem-dvisvgm-not-available">Problem: dvisvgm Not Available</a></li>
+<li><a href="#org-problem-currency-detected-as-math">Problem: Currency Detected as Math</a></li>
+</ul>
+</ul>
+<li><a href="#org-integration-with-export">Integration with Export</a></li>
+<ul>
+<li><a href="#org-html-export">HTML Export</a></li>
+<li><a href="#org-latex-pdf-export">LaTeX/PDF Export</a></li>
+<li><a href="#org-export-and-preview-consistency">Export and Preview Consistency</a></li>
+</ul>
+<li><a href="#org-commands-and-keybindings">Commands and Keybindings</a></li>
+<ul>
+<li><a href="#org-preview-commands">Preview Commands</a></li>
+<li><a href="#org-live-pdf-preview-commands">Live PDF Preview Commands</a></li>
+<li><a href="#org-markup-commands">Markup Commands</a></li>
+<li><a href="#org-using-commands">Using Commands</a></li>
+<li><a href="#org-custom-keybindings">Custom Keybindings</a></li>
+</ul>
+<li><a href="#org-advanced-topics">Advanced Topics</a></li>
+<ul>
+<li><a href="#org-multi-line-equations">Multi-line Equations</a></li>
+<li><a href="#org-aligned-equations-at-specific-points">Aligned Equations at Specific Points</a></li>
+<li><a href="#org-cases-and-piecewise-functions">Cases and Piecewise Functions</a></li>
+<li><a href="#org-chemical-formulas">Chemical Formulas</a></li>
+<li><a href="#org-physics-notation">Physics Notation</a></li>
+<li><a href="#org-si-units">SI Units</a></li>
+</ul>
+<li><a href="#org-best-practices">Best Practices</a></li>
+<ul>
+<li><a href="#org-document-organization">Document Organization</a></li>
+<li><a href="#org-writing-maintainable-math">Writing Maintainable Math</a></li>
+<li><a href="#org-performance-tips">Performance Tips</a></li>
+<li><a href="#org-accessibility">Accessibility</a></li>
+</ul>
+<li><a href="#org-quick-reference-card">Quick Reference Card</a></li>
+<ul>
+<li><a href="#org-math-delimiters">Math Delimiters</a></li>
+<li><a href="#org-common-environments">Common Environments</a></li>
+<li><a href="#org-essential-commands">Essential Commands</a></li>
+<li><a href="#org-keybindings">Keybindings</a></li>
+<li><a href="#org-settings">Settings</a></li>
+</ul>
+<li><a href="#org-additional-resources">Additional Resources</a></li>
+<ul>
+<li><a href="#org-latex-documentation">LaTeX Documentation</a></li>
+<li><a href="#org-package-documentation">Package Documentation</a></li>
+<li><a href="#org-org-mode-export">Org-Mode Export</a></li>
+<li><a href="#org-scimax-vs-code-documentation">Scimax VS Code Documentation</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-16 Fri 20:58]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-introduction" class="org-section org-level-1">
-<h1>Introduction</h1>
 <p>The Scimax VS Code extension provides comprehensive LaTeX preview functionality for org-mode documents, enabling inline rendering of mathematical equations and formulas. This feature brings publication-quality mathematics directly into your editing workflow without requiring manual compilation or external viewers.</p>
 
 <div id="org-what-is-latex-preview" class="org-section org-level-2">
-<h2>What is LaTeX Preview?</h2>
+<h2>✅ What is LaTeX Preview?</h2>
+<p>CLOSED: [2026-01-16 Fri 20:58]</p>
+
 <p>LaTeX preview is a system that automatically compiles and renders LaTeX mathematical expressions as images when you hover over them in your org-mode documents. This provides instant visual feedback for complex equations, matrices, and mathematical notation.</p>
 
 </div>
 <div id="org-key-features" class="org-section org-level-2">
-<h2>Key Features</h2>
+<h2>✅ Key Features</h2>
+<p>CLOSED: [2026-01-16 Fri 20:58]</p>
+
 <ul>
 <li><p><strong>Hover Preview</strong>: Rendered equations appear in tooltips when hovering over LaTeX code</p>
 </li>
@@ -285,47 +289,61 @@
 </div>
 </div>
 <div id="org-math-syntax" class="org-section org-level-1">
-<h1>Math Syntax</h1>
+<h1>✅ Math Syntax</h1>
+<p>CLOSED: [2026-01-16 Fri 20:58]</p>
+
 <div id="org-inline-math" class="org-section org-level-2">
-<h2>Inline Math</h2>
+<h2>✅ Inline Math</h2>
+<p>CLOSED: [2026-01-16 Fri 20:58]</p>
+
 <p>Inline math appears within text paragraphs and uses the following delimiters:</p>
 
 <div id="org-dollar-sign-delimiter" class="org-section org-level-3">
-<h3>Dollar Sign Delimiter: <kbd>$...$</kbd></h3>
+<h3>✅ Dollar Sign Delimiter: <kbd>$...$</kbd></h3>
+<p>CLOSED: [2026-01-16 Fri 20:58]</p>
+
 <p>The most common inline math syntax. Text between single dollar signs is rendered as mathematics.</p>
 
-<p>The quadratic formula is $x <kbd> \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$ for equation $ax^2 + bx + c </kbd> 0$.</p>
+<p>The quadratic formula is \(x ` \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}\) for equation \(ax^2 + bx + c &#39; 0\).</p>
 
 </div>
 <div id="org-backslash-parenthesis-delimiter" class="org-section org-level-3">
-<h3>Backslash-Parenthesis Delimiter: <kbd>\(...\)</kbd></h3>
+<h3>✅ Backslash-Parenthesis Delimiter: <kbd>\(...\)</kbd></h3>
+<p>CLOSED: [2026-01-16 Fri 20:59]</p>
+
 <p>Alternative inline math syntax, preferred in some LaTeX style guides.</p>
 
 <p>Einstein&#39;s mass-energy equivalence is \(E = mc^2\), where \(c\) is the speed of light.</p>
 
 </div>
 <div id="org-currency-detection" class="org-section org-level-3">
-<h3>Currency Detection</h3>
-<p>The preview system intelligently avoids treating dollar amounts as math. Currency patterns like `$100&#39; or `$5.99&#39; are ignored.</p>
+<h3>✅ Currency Detection</h3>
+<p>CLOSED: [2026-01-16 Fri 20:59]</p>
+
+<p>The preview system intelligently avoids treating dollar amounts as math. Currency patterns like <kbd>$100</kbd> or <kbd>$5.99</kbd> are ignored.</p>
 
 </div>
 </div>
 <div id="org-display-math" class="org-section org-level-2">
-<h2>Display Math</h2>
+<h2>✅ Display Math</h2>
+<p>CLOSED: [2026-01-16 Fri 20:59]</p>
+
 <p>Display math appears on its own line, centered and larger than inline math.</p>
 
 <div id="org-double-dollar-signs" class="org-section org-level-3">
-<h3>Double Dollar Signs: <kbd>$$...$$</kbd></h3>
+<h3>✅ Double Dollar Signs: <kbd>$$...$$</kbd></h3>
+<p>CLOSED: [2026-01-16 Fri 20:59]</p>
+
 <p>Creates unnumbered display equations.</p>
 
-<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p>
+<p>\[\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}\]</p>
 
 <p>∫₋∞^∞ e^(-x²) dx = √π</p>
 
 </div>
 <div id="org-backslash-brackets" class="org-section org-level-3">
 <h3>Backslash Brackets: <kbd>\[...\]</kbd></h3>
-<p>Alternative display math syntax, equivalent to `$$...$$&#39;.</p>
+<p>Alternative display math syntax, equivalent to <kbd>$$...$$</kbd>.</p>
 
 <pre class="example">\[
 \sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
@@ -610,18 +628,18 @@ $$</pre>
 <tr><th>Command</th><th>Symbol</th><th>Command</th><th>Symbol</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\alpha</code></td><td>α</td><td><code class="verbatim">\nu</code></td><td>ν</td></tr>
-<tr><td><code class="verbatim">\beta</code></td><td>β</td><td><code class="verbatim">\xi</code></td><td>ξ</td></tr>
-<tr><td><code class="verbatim">\gamma</code></td><td>γ</td><td><code class="verbatim">\pi</code></td><td>π</td></tr>
-<tr><td><code class="verbatim">\delta</code></td><td>δ</td><td><code class="verbatim">\rho</code></td><td>ρ</td></tr>
-<tr><td><code class="verbatim">\epsilon</code></td><td>ε</td><td><code class="verbatim">\sigma</code></td><td>σ</td></tr>
-<tr><td><code class="verbatim">\zeta</code></td><td>ζ</td><td><code class="verbatim">\tau</code></td><td>τ</td></tr>
-<tr><td><code class="verbatim">\eta</code></td><td>η</td><td><code class="verbatim">\upsilon</code></td><td>υ</td></tr>
-<tr><td><code class="verbatim">\theta</code></td><td>θ</td><td><code class="verbatim">\phi</code></td><td>φ</td></tr>
-<tr><td><code class="verbatim">\iota</code></td><td>ι</td><td><code class="verbatim">\chi</code></td><td>χ</td></tr>
-<tr><td><code class="verbatim">\kappa</code></td><td>κ</td><td><code class="verbatim">\psi</code></td><td>ψ</td></tr>
-<tr><td><code class="verbatim">\lambda</code></td><td>λ</td><td><code class="verbatim">\omega</code></td><td>ω</td></tr>
-<tr><td><code class="verbatim">\mu</code></td><td>μ</td><td></td><td></td></tr>
+<tr><td>\alpha</td><td>α</td><td>\nu</td><td>ν</td></tr>
+<tr><td>\beta</td><td>β</td><td>\xi</td><td>ξ</td></tr>
+<tr><td>\gamma</td><td>γ</td><td>\pi</td><td>π</td></tr>
+<tr><td>\delta</td><td>δ</td><td>\rho</td><td>ρ</td></tr>
+<tr><td>\epsilon</td><td>ε</td><td>\sigma</td><td>σ</td></tr>
+<tr><td>\zeta</td><td>ζ</td><td>\tau</td><td>τ</td></tr>
+<tr><td>\eta</td><td>η</td><td>\upsilon</td><td>υ</td></tr>
+<tr><td>\theta</td><td>θ</td><td>\phi</td><td>φ</td></tr>
+<tr><td>\iota</td><td>ι</td><td>\chi</td><td>χ</td></tr>
+<tr><td>\kappa</td><td>κ</td><td>\psi</td><td>ψ</td></tr>
+<tr><td>\lambda</td><td>λ</td><td>\omega</td><td>ω</td></tr>
+<tr><td>\mu</td><td>μ</td><td></td><td></td></tr>
 </tbody>
 </table>
 
@@ -633,12 +651,12 @@ $$</pre>
 <tr><th>Command</th><th>Symbol</th><th>Command</th><th>Symbol</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\Gamma</code></td><td>Γ</td><td><code class="verbatim">\Xi</code></td><td>Ξ</td></tr>
-<tr><td><code class="verbatim">\Delta</code></td><td>Δ</td><td><code class="verbatim">\Pi</code></td><td>Π</td></tr>
-<tr><td><code class="verbatim">\Theta</code></td><td>Θ</td><td><code class="verbatim">\Sigma</code></td><td>Σ</td></tr>
-<tr><td><code class="verbatim">\Lambda</code></td><td>Λ</td><td><code class="verbatim">\Phi</code></td><td>Φ</td></tr>
-<tr><td><code class="verbatim">\Upsilon</code></td><td>Υ</td><td><code class="verbatim">\Psi</code></td><td>Ψ</td></tr>
-<tr><td><code class="verbatim">\Omega</code></td><td>Ω</td><td></td><td></td></tr>
+<tr><td>\Gamma</td><td>Γ</td><td>\Xi</td><td>Ξ</td></tr>
+<tr><td>\Delta</td><td>Δ</td><td>\Pi</td><td>Π</td></tr>
+<tr><td>\Theta</td><td>Θ</td><td>\Sigma</td><td>Σ</td></tr>
+<tr><td>\Lambda</td><td>Λ</td><td>\Phi</td><td>Φ</td></tr>
+<tr><td>\Upsilon</td><td>Υ</td><td>\Psi</td><td>Ψ</td></tr>
+<tr><td>\Omega</td><td>Ω</td><td></td><td></td></tr>
 </tbody>
 </table>
 
@@ -651,18 +669,18 @@ $$</pre>
 <tr><th>Command</th><th>Output</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\frac{a}{b}</code></td><td>a/b</td><td>Fraction</td></tr>
-<tr><td><code class="verbatim">\sqrt{x}</code></td><td>√x</td><td>Square root</td></tr>
-<tr><td><code class="verbatim">\sqrt[n]{x}</code></td><td>ⁿ√x</td><td>nth root</td></tr>
-<tr><td><code class="verbatim">x^{2}</code></td><td>x²</td><td>Superscript (power)</td></tr>
-<tr><td><code class="verbatim">x_{i}</code></td><td>xᵢ</td><td>Subscript</td></tr>
-<tr><td><code class="verbatim">\int</code></td><td>∫</td><td>Integral</td></tr>
-<tr><td><code class="verbatim">\sum</code></td><td>∑</td><td>Summation</td></tr>
-<tr><td><code class="verbatim">\prod</code></td><td>∏</td><td>Product</td></tr>
-<tr><td><code class="verbatim">\lim</code></td><td>lim</td><td>Limit</td></tr>
-<tr><td><code class="verbatim">\partial</code></td><td>∂</td><td>Partial derivative</td></tr>
-<tr><td><code class="verbatim">\nabla</code></td><td>∇</td><td>Nabla (gradient)</td></tr>
-<tr><td><code class="verbatim">\infty</code></td><td>∞</td><td>Infinity</td></tr>
+<tr><td>\frac{a}{b}</td><td>a/b</td><td>Fraction</td></tr>
+<tr><td>\sqrt{x}</td><td>√x</td><td>Square root</td></tr>
+<tr><td>\sqrt[n]{x}</td><td>ⁿ√x</td><td>nth root</td></tr>
+<tr><td>x^{2}</td><td>x²</td><td>Superscript (power)</td></tr>
+<tr><td>x_{i}</td><td>xᵢ</td><td>Subscript</td></tr>
+<tr><td>\int</td><td>∫</td><td>Integral</td></tr>
+<tr><td>\sum</td><td>∑</td><td>Summation</td></tr>
+<tr><td>\prod</td><td>∏</td><td>Product</td></tr>
+<tr><td>\lim</td><td>lim</td><td>Limit</td></tr>
+<tr><td>\partial</td><td>∂</td><td>Partial derivative</td></tr>
+<tr><td>\nabla</td><td>∇</td><td>Nabla (gradient)</td></tr>
+<tr><td>\infty</td><td>∞</td><td>Infinity</td></tr>
 </tbody>
 </table>
 
@@ -674,17 +692,17 @@ $$</pre>
 <tr><th>Command</th><th>Symbol</th><th>Command</th><th>Symbol</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\leq</code></td><td>≤</td><td><code class="verbatim">\geq</code></td><td>≥</td></tr>
-<tr><td><code class="verbatim">\neq</code></td><td>≠</td><td><code class="verbatim">\approx</code></td><td>≈</td></tr>
-<tr><td><code class="verbatim">\equiv</code></td><td>≡</td><td><code class="verbatim">\sim</code></td><td>∼</td></tr>
-<tr><td><code class="verbatim">\propto</code></td><td>∝</td><td><code class="verbatim">\in</code></td><td>∈</td></tr>
-<tr><td><code class="verbatim">\notin</code></td><td>∉</td><td><code class="verbatim">\subset</code></td><td>⊂</td></tr>
-<tr><td><code class="verbatim">\supset</code></td><td>⊃</td><td><code class="verbatim">\cup</code></td><td>∪</td></tr>
-<tr><td><code class="verbatim">\cap</code></td><td>∩</td><td><code class="verbatim">\wedge</code></td><td>∧</td></tr>
-<tr><td><code class="verbatim">\vee</code></td><td>∨</td><td><code class="verbatim">\neg</code></td><td>¬</td></tr>
-<tr><td><code class="verbatim">\times</code></td><td>×</td><td><code class="verbatim">\div</code></td><td>÷</td></tr>
-<tr><td><code class="verbatim">\pm</code></td><td>±</td><td><code class="verbatim">\mp</code></td><td>∓</td></tr>
-<tr><td><code class="verbatim">\cdot</code></td><td>·</td><td><code class="verbatim">\circ</code></td><td>∘</td></tr>
+<tr><td>\leq</td><td>≤</td><td>\geq</td><td>≥</td></tr>
+<tr><td>\neq</td><td>≠</td><td>\approx</td><td>≈</td></tr>
+<tr><td>\equiv</td><td>≡</td><td>\sim</td><td>∼</td></tr>
+<tr><td>\propto</td><td>∝</td><td>\in</td><td>∈</td></tr>
+<tr><td>\notin</td><td>∉</td><td>\subset</td><td>⊂</td></tr>
+<tr><td>\supset</td><td>⊃</td><td>\cup</td><td>∪</td></tr>
+<tr><td>\cap</td><td>∩</td><td>\wedge</td><td>∧</td></tr>
+<tr><td>\vee</td><td>∨</td><td>\neg</td><td>¬</td></tr>
+<tr><td>\times</td><td>×</td><td>\div</td><td>÷</td></tr>
+<tr><td>\pm</td><td>±</td><td>\mp</td><td>∓</td></tr>
+<tr><td>\cdot</td><td>·</td><td>\circ</td><td>∘</td></tr>
 </tbody>
 </table>
 
@@ -696,15 +714,15 @@ $$</pre>
 <tr><th>Command</th><th>Symbol</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\rightarrow</code></td><td>→</td><td>Right arrow</td></tr>
-<tr><td><code class="verbatim">\leftarrow</code></td><td>←</td><td>Left arrow</td></tr>
-<tr><td><code class="verbatim">\Rightarrow</code></td><td>⇒</td><td>Implies</td></tr>
-<tr><td><code class="verbatim">\Leftarrow</code></td><td>⇐</td><td>Implied by</td></tr>
-<tr><td><code class="verbatim">\Leftrightarrow</code></td><td>⇔</td><td>If and only if</td></tr>
-<tr><td><code class="verbatim">\uparrow</code></td><td>↑</td><td>Up arrow</td></tr>
-<tr><td><code class="verbatim">\downarrow</code></td><td>↓</td><td>Down arrow</td></tr>
-<tr><td><code class="verbatim">\to</code></td><td>→</td><td>Alternative for →</td></tr>
-<tr><td><code class="verbatim">\mapsto</code></td><td>↦</td><td>Maps to</td></tr>
+<tr><td>\rightarrow</td><td>→</td><td>Right arrow</td></tr>
+<tr><td>\leftarrow</td><td>←</td><td>Left arrow</td></tr>
+<tr><td>\Rightarrow</td><td>⇒</td><td>Implies</td></tr>
+<tr><td>\Leftarrow</td><td>⇐</td><td>Implied by</td></tr>
+<tr><td>\Leftrightarrow</td><td>⇔</td><td>If and only if</td></tr>
+<tr><td>\uparrow</td><td>↑</td><td>Up arrow</td></tr>
+<tr><td>\downarrow</td><td>↓</td><td>Down arrow</td></tr>
+<tr><td>\to</td><td>→</td><td>Alternative for →</td></tr>
+<tr><td>\mapsto</td><td>↦</td><td>Maps to</td></tr>
 </tbody>
 </table>
 
@@ -716,16 +734,16 @@ $$</pre>
 <tr><th>Command</th><th>Symbol</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\mathbb{R}</code></td><td>ℝ</td><td>Real numbers</td></tr>
-<tr><td><code class="verbatim">\mathbb{N}</code></td><td>ℕ</td><td>Natural numbers</td></tr>
-<tr><td><code class="verbatim">\mathbb{Z}</code></td><td>ℤ</td><td>Integers</td></tr>
-<tr><td><code class="verbatim">\mathbb{Q}</code></td><td>ℚ</td><td>Rational numbers</td></tr>
-<tr><td><code class="verbatim">\mathbb{C}</code></td><td>ℂ</td><td>Complex numbers</td></tr>
-<tr><td><code class="verbatim">\emptyset</code></td><td>∅</td><td>Empty set</td></tr>
-<tr><td><code class="verbatim">\forall</code></td><td>∀</td><td>For all</td></tr>
-<tr><td><code class="verbatim">\exists</code></td><td>∃</td><td>There exists</td></tr>
-<tr><td><code class="verbatim">\ell</code></td><td>ℓ</td><td>Script lowercase L</td></tr>
-<tr><td><code class="verbatim">\hbar</code></td><td>ℏ</td><td>Reduced Planck constant</td></tr>
+<tr><td>\mathbb{R}</td><td>ℝ</td><td>Real numbers</td></tr>
+<tr><td>\mathbb{N}</td><td>ℕ</td><td>Natural numbers</td></tr>
+<tr><td>\mathbb{Z}</td><td>ℤ</td><td>Integers</td></tr>
+<tr><td>\mathbb{Q}</td><td>ℚ</td><td>Rational numbers</td></tr>
+<tr><td>\mathbb{C}</td><td>ℂ</td><td>Complex numbers</td></tr>
+<tr><td>\emptyset</td><td>∅</td><td>Empty set</td></tr>
+<tr><td>\forall</td><td>∀</td><td>For all</td></tr>
+<tr><td>\exists</td><td>∃</td><td>There exists</td></tr>
+<tr><td>\ell</td><td>ℓ</td><td>Script lowercase L</td></tr>
+<tr><td>\hbar</td><td>ℏ</td><td>Reduced Planck constant</td></tr>
 </tbody>
 </table>
 
@@ -737,13 +755,13 @@ $$</pre>
 <tr><th>Command</th><th>Output</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\left( \right)</code></td><td>( )</td><td>Auto-sized parentheses</td></tr>
-<tr><td><code class="verbatim">\left[ \right]</code></td><td>[ ]</td><td>Auto-sized brackets</td></tr>
-<tr><td><code class="verbatim">\left\{ \right\}</code></td><td>{ }</td><td>Auto-sized braces</td></tr>
-<tr><td>=\left</td><td>\right</td><td>=</td><td>\vert \vert</td><td>Auto-sized vertical bars</td></tr>
-<tr><td><code class="verbatim">\langle \rangle</code></td><td>⟨ ⟩</td><td>Angle brackets</td></tr>
-<tr><td><code class="verbatim">\lfloor \rfloor</code></td><td>⌊ ⌋</td><td>Floor function</td></tr>
-<tr><td><code class="verbatim">\lceil \rceil</code></td><td>⌈ ⌉</td><td>Ceiling function</td></tr>
+<tr><td>\left( \right)</td><td>( )</td><td>Auto-sized parentheses</td></tr>
+<tr><td>\left[ \right]</td><td>[ ]</td><td>Auto-sized brackets</td></tr>
+<tr><td>\left\{ \right\}</td><td>{ }</td><td>Auto-sized braces</td></tr>
+<tr><td>\left</td><td>\right</td><td></td><td>\vert \vert</td><td>Auto-sized vertical bars</td></tr>
+<tr><td>\langle \rangle</td><td>⟨ ⟩</td><td>Angle brackets</td></tr>
+<tr><td>\lfloor \rfloor</td><td>⌊ ⌋</td><td>Floor function</td></tr>
+<tr><td>\lceil \rceil</td><td>⌈ ⌉</td><td>Ceiling function</td></tr>
 </tbody>
 </table>
 
@@ -755,14 +773,14 @@ $$</pre>
 <tr><th>Command</th><th>Example</th><th>Description</th></tr>
 </thead>
 <tbody>
-<tr><td><code class="verbatim">\hat{x}</code></td><td>x̂</td><td>Hat accent</td></tr>
-<tr><td><code class="verbatim">\bar{x}</code></td><td>x̄</td><td>Bar (mean)</td></tr>
-<tr><td><code class="verbatim">\tilde{x}</code></td><td>x̃</td><td>Tilde</td></tr>
-<tr><td><code class="verbatim">\dot{x}</code></td><td>ẋ</td><td>Dot (derivative)</td></tr>
-<tr><td><code class="verbatim">\ddot{x}</code></td><td>ẍ</td><td>Double dot</td></tr>
-<tr><td><code class="verbatim">\vec{x}</code></td><td>x⃗</td><td>Vector arrow</td></tr>
-<tr><td><code class="verbatim">\overline{AB}</code></td><td>AB̄</td><td>Overline</td></tr>
-<tr><td><code class="verbatim">\underline{x}</code></td><td>x̲</td><td>Underline</td></tr>
+<tr><td>\hat{x}</td><td>x̂</td><td>Hat accent</td></tr>
+<tr><td>\bar{x}</td><td>x̄</td><td>Bar (mean)</td></tr>
+<tr><td>\tilde{x}</td><td>x̃</td><td>Tilde</td></tr>
+<tr><td>\dot{x}</td><td>ẋ</td><td>Dot (derivative)</td></tr>
+<tr><td>\ddot{x}</td><td>ẍ</td><td>Double dot</td></tr>
+<tr><td>\vec{x}</td><td>x⃗</td><td>Vector arrow</td></tr>
+<tr><td>\overline{AB}</td><td>AB̄</td><td>Overline</td></tr>
+<tr><td>\underline{x}</td><td>x̲</td><td>Underline</td></tr>
 </tbody>
 </table>
 
@@ -772,16 +790,16 @@ $$</pre>
 <h1>Example Equations</h1>
 <div id="org-calculus" class="org-section org-level-2">
 <h2>Calculus</h2>
-<pre class="example">$$f&#39;(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}$$</pre>
+<p>\[f&#39;(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}\]</p>
 
-<pre class="example">$$\int_a^b f&#39;(x) \,dx = f(b) - f(a)$$</pre>
+<p>\[\int_a^b f&#39;(x) \,dx = f(b) - f(a)\]</p>
 
-<pre class="example">$$\int u \,dv = uv - \int v \,du$$</pre>
+<p>\[\int u \,dv = uv - \int v \,du\]</p>
 
 </div>
 <div id="org-linear-algebra" class="org-section org-level-2">
 <h2>Linear Algebra</h2>
-<pre class="example">$$
+<p>\[
 \begin{pmatrix}
 a &amp; b \\
 c &amp; d
@@ -795,37 +813,37 @@ y
 ax + by \\
 cx + dy
 \end{pmatrix}
-$$</pre>
+\]</p>
 
-<pre class="example">$$\det(A) = \begin{vmatrix} a &amp; b \\ c &amp; d \end{vmatrix} = ad - bc$$</pre>
+<p>\[\det(A) = \begin{vmatrix} a &amp; b \\ c &amp; d \end{vmatrix} = ad - bc\]</p>
 
-<pre class="example">$$A\mathbf{v} = \lambda\mathbf{v}$$</pre>
+<p>\[A\mathbf{v} = \lambda\mathbf{v}\]</p>
 
 </div>
 <div id="org-physics" class="org-section org-level-2">
 <h2>Physics</h2>
-<pre class="example">$$i\hbar \frac{\partial}{\partial t}\Psi(\mathbf{r},t) = \hat{H}\Psi(\mathbf{r},t)$$</pre>
+<p>\[i\hbar \frac{\partial}{\partial t}\Psi(\mathbf{r},t) = \hat{H}\Psi(\mathbf{r},t)\]</p>
 
-<pre class="example">\begin{align*}
+<p>\begin{align<strong>}
 \nabla \cdot \mathbf{E} &amp;= \frac{\rho}{\epsilon_0} \\
 \nabla \cdot \mathbf{B} &amp;= 0 \\
 \nabla \times \mathbf{E} &amp;= -\frac{\partial \mathbf{B}}{\partial t} \\
 \nabla \times \mathbf{B} &amp;= \mu_0\mathbf{J} + \mu_0\epsilon_0\frac{\partial \mathbf{E}}{\partial t}
-\end{align*}</pre>
+\end{align</strong>}</p>
 
 </div>
 <div id="org-statistics" class="org-section org-level-2">
 <h2>Statistics</h2>
-<pre class="example">$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$</pre>
+<p>\[f(x) = \frac{1}{\sigma\sqrt{2\pi}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)\]</p>
 
-<pre class="example">$$P(A|B) = \frac{P(B|A)P(A)}{P(B)}$$</pre>
+<p>\[P(A|B) = \frac{P(B|A)P(A)}{P(B)}\]</p>
 
 </div>
 <div id="org-computer-science" class="org-section org-level-2">
 <h2>Computer Science</h2>
-<pre class="example">$$T(n) = O(n\log n)$$</pre>
+<p>\[T(n) = O(n\log n)\]</p>
 
-<pre class="example">$$T(n) = 2T\left(\frac{n}{2}\right) + O(n)$$</pre>
+<p>\[T(n) = 2T\left(\frac{n}{2}\right) + O(n)\]</p>
 
 </div>
 </div>
@@ -908,7 +926,7 @@ $$</pre>
 <p>This should not happen as the preview system detects dollar amounts starting with numbers. If it does occur:</p>
 
 <ul>
-<li><p>Use `\$100&#39; to escape the dollar sign</p>
+<li><p>Use <kbd>\$100</kbd> to escape the dollar sign</p>
 </li>
 <li><p>Or use proper currency notation outside of math mode</p>
 </li>
@@ -1003,8 +1021,8 @@ $$</pre>
 <tr><th>Command</th><th>Description</th><th>Keybinding</th></tr>
 </thead>
 <tbody>
-<tr><td>Scimax: LaTeX Math (Markup)</td><td>Insert inline math $...$</td><td>None</td></tr>
-<tr><td>Scimax: LaTeX Display Math (Markup)</td><td>Insert display math $$...$$</td><td>None</td></tr>
+<tr><td>Scimax: LaTeX Math (Markup)</td><td>Insert inline math \(...\)</td><td>None</td></tr>
+<tr><td>Scimax: LaTeX Display Math (Markup)</td><td>Insert display math \[...\]</td><td>None</td></tr>
 </tbody>
 </table>
 
@@ -1052,20 +1070,20 @@ $$</pre>
 <h2>Multi-line Equations</h2>
 <p>Use <kbd>\\</kbd> to break equations across multiple lines within display math:</p>
 
-<pre class="example">$$
+<p>\[
 f(x) = a_0 + a_1 x + a_2 x^2 + \cdots \\
      = \sum_{n=0}^{\infty} a_n x^n
-$$</pre>
+\]</p>
 
 </div>
 <div id="org-aligned-equations-at-specific-points" class="org-section org-level-2">
 <h2>Aligned Equations at Specific Points</h2>
 <p>Use <kbd>&amp;</kbd> in <kbd>align</kbd> environments to specify alignment points:</p>
 
-<pre class="example">\begin{align*}
+<p>\begin{align<strong>}
 x &amp;= r\cos\theta \\
 y &amp;= r\sin\theta
-\end{align*}</pre>
+\end{align</strong>}</p>
 
 <p>The `&amp;&#39; symbols align vertically.</p>
 
@@ -1074,21 +1092,25 @@ y &amp;= r\sin\theta
 <h2>Cases and Piecewise Functions</h2>
 <p>Use the <kbd>cases</kbd> environment:</p>
 
-<pre class="example">$$
+<p>$$
 f(x) = \begin{cases}
-x^2 &amp; \text{if } x \geq 0 \\
--x^2 &amp; \text{if } x &lt; 0
-\end{cases}
-$$</pre>
+x^2 &amp; \text{if } x \geq 0 \\</p>
+
+<p>\end{cases}
+$$</p>
 
 </div>
 <div id="org-chemical-formulas" class="org-section org-level-2">
 <h2>Chemical Formulas</h2>
 <p>With the <kbd>chemformula</kbd> package:</p>
 
-<pre class="example">#+LATEX_HEADER: \usepackage{chemformula}
 
-The reaction is \ch{2 H2 + O2 -&gt; 2 H2O}.</pre>
+<p>The reaction is \ch{2 H2 + O2 -&gt; 2 H2O}.</p>
+
+<p>or with `mhchem&#39;</p>
+
+
+<p>The reaction is \ce{2 H2 + O2 -&gt; 2 H2O}.</p>
 
 </div>
 <div id="org-physics-notation" class="org-section org-level-2">
@@ -1337,548 +1359,6 @@ The speed is \SI{3e8}{\meter\per\second}.</pre>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="publishing.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="12-image-overlays.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#introduction" class="toc-link">Introduction</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#what-is-latex-preview" class="toc-link">What is LaTeX Preview?</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">Key Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#math-syntax" class="toc-link">Math Syntax</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#inline-math" class="toc-link">Inline Math</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#dollar-sign-delimiter" class="toc-link">Dollar Sign Delimiter: $...$</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#backslash-parenthesis-delimiter" class="toc-link">Backslash-Parenthesis Delimiter: \(...\)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#currency-detection" class="toc-link">Currency Detection</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#display-math" class="toc-link">Display Math</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#double-dollar-signs" class="toc-link">Double Dollar Signs: $$...$$</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#backslash-brackets" class="toc-link">Backslash Brackets: \[...\]</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#math-environments" class="toc-link">Math Environments</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#equation-environment" class="toc-link">Equation Environment</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#equation-environment-unnumbered" class="toc-link">Equation* Environment (Unnumbered)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#align-environment" class="toc-link">Align Environment</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#align-environment-unnumbered" class="toc-link">Align* Environment (Unnumbered)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#other-numbered-environments" class="toc-link">Other Numbered Environments</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#matrix-environments" class="toc-link">Matrix Environments</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#previewing-math-fragments" class="toc-link">Previewing Math Fragments</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#hover-preview" class="toc-link">Hover Preview</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#preview-caching" class="toc-link">Preview Caching</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#clearing-the-cache" class="toc-link">Clearing the Cache</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#latex-fragment-settings" class="toc-link">LaTeX Fragment Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#document-level-configuration" class="toc-link">Document-Level Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#custom-packages" class="toc-link">Custom Packages</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#custom-commands" class="toc-link">Custom Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#custom-preamble" class="toc-link">Custom Preamble</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#vs-code-settings" class="toc-link">VS Code Settings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#enabledisable-preview" class="toc-link">Enable/Disable Preview</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#cache-control" class="toc-link">Cache Control</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dark-mode-awareness" class="toc-link">Dark Mode Awareness</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#common-latex-math-commands" class="toc-link">Common LaTeX Math Commands</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#greek-letters" class="toc-link">Greek Letters</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#lowercase" class="toc-link">Lowercase</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#uppercase" class="toc-link">Uppercase</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#math-operators" class="toc-link">Math Operators</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#relations-and-operators" class="toc-link">Relations and Operators</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#arrows" class="toc-link">Arrows</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#special-symbols" class="toc-link">Special Symbols</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#delimiters" class="toc-link">Delimiters</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#accents-and-decorations" class="toc-link">Accents and Decorations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#example-equations" class="toc-link">Example Equations</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#calculus" class="toc-link">Calculus</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#linear-algebra" class="toc-link">Linear Algebra</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#physics" class="toc-link">Physics</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#statistics" class="toc-link">Statistics</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#computer-science" class="toc-link">Computer Science</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting-rendering-issues" class="toc-link">Troubleshooting Rendering Issues</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#common-problems-and-solutions" class="toc-link">Common Problems and Solutions</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#problem-pdflatex-not-found-error" class="toc-link">Problem: &quot;pdflatex not found&quot; Error</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#problem-equations-not-rendering-on-hover" class="toc-link">Problem: Equations Not Rendering on Hover</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#problem-slow-hover-response" class="toc-link">Problem: Slow Hover Response</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#problem-rendering-wrong-in-dark-mode" class="toc-link">Problem: Rendering Wrong in Dark Mode</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#problem-equation-numbers-wrong" class="toc-link">Problem: Equation Numbers Wrong</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#problem-dvisvgm-not-available" class="toc-link">Problem: dvisvgm Not Available</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#problem-currency-detected-as-math" class="toc-link">Problem: Currency Detected as Math</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#integration-with-export" class="toc-link">Integration with Export</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#html-export" class="toc-link">HTML Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#latexpdf-export" class="toc-link">LaTeX/PDF Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#export-and-preview-consistency" class="toc-link">Export and Preview Consistency</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#commands-and-keybindings" class="toc-link">Commands and Keybindings</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#preview-commands" class="toc-link">Preview Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#live-pdf-preview-commands" class="toc-link">Live PDF Preview Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#markup-commands" class="toc-link">Markup Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#using-commands" class="toc-link">Using Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#custom-keybindings" class="toc-link">Custom Keybindings</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-topics" class="toc-link">Advanced Topics</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#multi-line-equations" class="toc-link">Multi-line Equations</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#aligned-equations-at-specific-points" class="toc-link">Aligned Equations at Specific Points</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#cases-and-piecewise-functions" class="toc-link">Cases and Piecewise Functions</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#chemical-formulas" class="toc-link">Chemical Formulas</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#physics-notation" class="toc-link">Physics Notation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#si-units" class="toc-link">SI Units</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#document-organization" class="toc-link">Document Organization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#writing-maintainable-math" class="toc-link">Writing Maintainable Math</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#performance-tips" class="toc-link">Performance Tips</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#accessibility" class="toc-link">Accessibility</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#quick-reference-card" class="toc-link">Quick Reference Card</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#math-delimiters" class="toc-link">Math Delimiters</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#common-environments" class="toc-link">Common Environments</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#essential-commands" class="toc-link">Essential Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#keybindings" class="toc-link">Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#settings" class="toc-link">Settings</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#additional-resources" class="toc-link">Additional Resources</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#latex-documentation" class="toc-link">LaTeX Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#package-documentation" class="toc-link">Package Documentation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#org-mode-export" class="toc-link">Org-Mode Export</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#scimax-vs-code-documentation" class="toc-link">Scimax VS Code Documentation</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

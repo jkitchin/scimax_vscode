@@ -1,265 +1,263 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Journal</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Journal</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Journal</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+<li><a href="#org-philosophy">✅ Philosophy</a></li>
+</ul>
+<li><a href="#org-getting-started">✅ Getting Started</a></li>
+<ul>
+<li><a href="#org-opening-your-first-journal-entry">✅ Opening Your First Journal Entry</a></li>
+<li><a href="#org-directory-structure">✅ Directory Structure</a></li>
+<li><a href="#org-configuration">✅ Configuration</a></li>
+<ul>
+<li><a href="#org-scimax-journal-directory">✅ scimax.journal.directory</a></li>
+<li><a href="#org-scimax-journal-format">✅ scimax.journal.format</a></li>
+<li><a href="#org-scimax-journal-template">✅ scimax.journal.template</a></li>
+<li><a href="#org-scimax-journal-dateformat">✅ scimax.journal.dateFormat</a></li>
+<li><a href="#org-scimax-journal-autotimestamp">✅ scimax.journal.autoTimestamp</a></li>
+<li><a href="#org-scimax-journal-weekstartson">✅ scimax.journal.weekStartsOn</a></li>
+</ul>
+</ul>
+<li><a href="#org-journal-templates">✅ Journal Templates</a></li>
+<ul>
+<li><a href="#org-built-in-templates">✅ Built-in Templates</a></li>
+<ul>
+<li><a href="#org-default">✅ default</a></li>
+<li><a href="#org-minimal">✅ minimal</a></li>
+<li><a href="#org-research">✅ research</a></li>
+<li><a href="#org-meeting">✅ meeting</a></li>
+<li><a href="#org-standup">✅ standup</a></li>
+</ul>
+<li><a href="#org-template-variables">✅ Template Variables</a></li>
+<li><a href="#org-creating-custom-templates">✅ Creating Custom Templates</a></li>
+<li><a href="#org-markdown-templates">✅ Markdown Templates</a></li>
+</ul>
+<li><a href="#org-creating-journal-entries">✅ Creating Journal Entries</a></li>
+<ul>
+<li><a href="#org-today-s-entry">✅ Today&#39;s Entry</a></li>
+<li><a href="#org-new-entry-for-any-date">✅ New Entry for Any Date</a></li>
+<li><a href="#org-using-different-templates">✅ Using Different Templates</a></li>
+</ul>
+<li><a href="#org-navigating-journal-entries">✅ Navigating Journal Entries</a></li>
+<ul>
+<li><a href="#org-keyboard-navigation">✅ Keyboard Navigation</a></li>
+<li><a href="#org-go-to-specific-date">✅ Go to Specific Date</a></li>
+<li><a href="#org-calendar-view">✅ Calendar View</a></li>
+<ul>
+<li><a href="#org-accessing-the-calendar">✅ Accessing the Calendar</a></li>
+<li><a href="#org-calendar-features">✅ Calendar Features</a></li>
+<li><a href="#org-quick-actions-in-calendar">✅ Quick Actions in Calendar</a></li>
+</ul>
+<li><a href="#org-week-view">✅ Week View</a></li>
+</ul>
+<li><a href="#org-searching-journal-entries">✅ Searching Journal Entries</a></li>
+<ul>
+<li><a href="#org-full-text-search">✅ Full-Text Search</a></li>
+<li><a href="#org-search-tips">✅ Search Tips</a></li>
+<li><a href="#org-advanced-search">✅ Advanced Search</a></li>
+</ul>
+<li><a href="#org-quick-capture-and-logging">✅ Quick Capture and Logging</a></li>
+<ul>
+<li><a href="#org-quick-log-entry">✅ Quick Log Entry</a></li>
+<li><a href="#org-insert-timestamp">✅ Insert Timestamp</a></li>
+</ul>
+<li><a href="#org-journal-statistics">✅ Journal Statistics</a></li>
+<ul>
+<li><a href="#org-viewing-statistics">✅ Viewing Statistics</a></li>
+<li><a href="#org-statistics-tracked">✅ Statistics Tracked</a></li>
+<ul>
+<li><a href="#org-entry-count">✅ Entry Count</a></li>
+<li><a href="#org-total-words">✅ Total Words</a></li>
+<li><a href="#org-current-streak">✅ Current Streak</a></li>
+<li><a href="#org-longest-streak">✅ Longest Streak</a></li>
+</ul>
+<li><a href="#org-streak-calculation">✅ Streak Calculation</a></li>
+<li><a href="#org-status-bar-integration">✅ Status Bar Integration</a></li>
+</ul>
+<li><a href="#org-integration-with-other-features">✅ Integration with Other Features</a></li>
+<ul>
+<li><a href="#org-agenda-integration">✅ Agenda Integration</a></li>
+<li><a href="#org-cross-referencing">✅ Cross-Referencing</a></li>
+<li><a href="#org-embedding-code-blocks">✅ Embedding Code Blocks</a></li>
+<li><a href="#org-citations-and-references">✅ Citations and References</a></li>
+</ul>
+<li><a href="#org-commands-reference">✅ Commands Reference</a></li>
+<ul>
+<li><a href="#org-all-journal-commands">✅ All Journal Commands</a></li>
+<li><a href="#org-command-palette">✅ Command Palette</a></li>
+</ul>
+<li><a href="#org-keyboard-shortcuts">✅ Keyboard Shortcuts</a></li>
+<ul>
+<li><a href="#org-default-keybindings">✅ Default Keybindings</a></li>
+<li><a href="#org-custom-keybindings">✅ Custom Keybindings</a></li>
+</ul>
+<li><a href="#org-tips-and-best-practices">✅ Tips and Best Practices</a></li>
+<ul>
+<li><a href="#org-daily-journaling-workflow">✅ Daily Journaling Workflow</a></li>
+<li><a href="#org-building-the-habit">✅ Building the Habit</a></li>
+<li><a href="#org-organizing-information">✅ Organizing Information</a></li>
+<li><a href="#org-performance-tips">✅ Performance Tips</a></li>
+<li><a href="#org-backup-and-sync">✅ Backup and Sync</a></li>
+<li><a href="#org-privacy-and-security">✅ Privacy and Security</a></li>
+</ul>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+<ul>
+<li><a href="#org-journal-directory-not-found">✅ Journal Directory Not Found</a></li>
+<li><a href="#org-templates-not-working">✅ Templates Not Working</a></li>
+<li><a href="#org-navigation-shortcuts-not-working">✅ Navigation Shortcuts Not Working</a></li>
+<li><a href="#org-statistics-not-updating">✅ Statistics Not Updating</a></li>
+<li><a href="#org-calendar-not-showing-entries">✅ Calendar Not Showing Entries</a></li>
+</ul>
+<li><a href="#org-advanced-usage">✅ Advanced Usage</a></li>
+<ul>
+<li><a href="#org-scripting-and-automation">✅ Scripting and Automation</a></li>
+<ul>
+<li><a href="#org-auto-generate-weekly-summary">✅ Auto-generate Weekly Summary</a></li>
+<li><a href="#org-export-to-pdf">✅ Export to PDF</a></li>
+</ul>
+<li><a href="#org-custom-template-variables">✅ Custom Template Variables</a></li>
+<li><a href="#org-integration-with-external-tools">✅ Integration with External Tools</a></li>
+<ul>
+<li><a href="#org-obsidian-daily-notes">✅ Obsidian Daily Notes</a></li>
+<li><a href="#org-emacs-org-journal">✅ Emacs org-journal</a></li>
+</ul>
+</ul>
+<li><a href="#org-future-enhancements">✅ Future Enhancements</a></li>
+<li><a href="#org-see-also">✅ See Also</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-16 Fri 21:06]</p>
 
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-introduction" class="org-section org-level-1">
-<h1>⚠️ Introduction</h1>
 <p>The Scimax Journal is a powerful date-based note-taking system that helps you maintain a daily journal, track your work, and build a personal knowledge base over time. Inspired by org-journal and bullet journaling, it provides a structured yet flexible way to capture thoughts, tasks, and logs throughout your day.</p>
 
 <div id="org-key-features" class="org-section org-level-2">
-<h2>⚠️ Key Features</h2>
+<h2>✅ Key Features</h2>
+<p>CLOSED: [2026-01-16 Fri 21:06]</p>
+
 <ul>
 <li><p>Automatic date-based organization with hierarchical directory structure</p>
 </li>
@@ -283,16 +281,22 @@
 
 </div>
 <div id="org-philosophy" class="org-section org-level-2">
-<h2>⚠️ Philosophy</h2>
-<p>The journal system is designed around the principle of friction-free capture. With a single keyboard shortcut (C-S-J), you can open today&#39;s journal entry and start writing. The system handles all organization automatically, storing files in a sensible directory structure that mirrors the calendar.</p>
+<h2>✅ Philosophy</h2>
+<p>CLOSED: [2026-01-16 Fri 21:06]</p>
+
+<p>The journal system is designed around the principle of friction-free capture. With a single keyboard shortcut (`Cmd-S-J&#39;), you can open today&#39;s journal entry and start writing. The system handles all organization automatically, storing files in a sensible directory structure that mirrors the calendar.</p>
 
 </div>
 </div>
 <div id="org-getting-started" class="org-section org-level-1">
-<h1>⚠️ Getting Started</h1>
+<h1>✅ Getting Started</h1>
+<p>CLOSED: [2026-01-17 Sat 14:02]</p>
+
 <div id="org-opening-your-first-journal-entry" class="org-section org-level-2">
-<h2>⚠️ Opening Your First Journal Entry</h2>
-<p>The quickest way to start journaling is to press C-S-J (s-S-J on Mac). This will:</p>
+<h2>✅ Opening Your First Journal Entry</h2>
+<p>CLOSED: [2026-01-17 Sat 14:02]</p>
+
+<p>The quickest way to start journaling is to press <kbd>Cmd-Shift-j</kbd>. This will:</p>
 
 <ol>
 <li><p>Create today&#39;s journal entry if it doesn&#39;t exist</p>
@@ -319,7 +323,9 @@
 
 </div>
 <div id="org-directory-structure" class="org-section org-level-2">
-<h2>⚠️ Directory Structure</h2>
+<h2>✅ Directory Structure</h2>
+<p>CLOSED: [2026-01-16 Fri 21:07]</p>
+
 <p>By default, journal entries are stored in ~/scimax-journal with the following structure:</p>
 
 <pre class="example">~/scimax-journal/
@@ -343,11 +349,15 @@
 
 </div>
 <div id="org-configuration" class="org-section org-level-2">
-<h2>⚠️ Configuration</h2>
-<p>Configure the journal system through VS Code settings (File &gt; Preferences &gt; Settings or C-,):</p>
+<h2>✅ Configuration</h2>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
+<p>Configure the journal system through VS Code settings (File &gt; Preferences &gt; Settings or Cmd/C-,):</p>
 
 <div id="org-scimax-journal-directory" class="org-section org-level-3">
-<h3>⚠️ scimax.journal.directory</h3>
+<h3>✅ scimax.journal.directory</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Directory where journal files are stored. If empty, defaults to ~/scimax-journal.</p>
 
 <div class="org-src-container">
@@ -360,7 +370,9 @@
 
 </div>
 <div id="org-scimax-journal-format" class="org-section org-level-3">
-<h3>⚠️ scimax.journal.format</h3>
+<h3>✅ scimax.journal.format</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Choose between org-mode or Markdown format for journal entries.</p>
 
 <div class="org-src-container">
@@ -373,7 +385,9 @@
 
 </div>
 <div id="org-scimax-journal-template" class="org-section org-level-3">
-<h3>⚠️ scimax.journal.template</h3>
+<h3>✅ scimax.journal.template</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>The default template to use when creating new entries.</p>
 
 <div class="org-src-container">
@@ -386,7 +400,9 @@
 
 </div>
 <div id="org-scimax-journal-dateformat" class="org-section org-level-3">
-<h3>⚠️ scimax.journal.dateFormat</h3>
+<h3>✅ scimax.journal.dateFormat</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Date format for file names (currently only YYYY-MM-DD is supported).</p>
 
 <div class="org-src-container">
@@ -399,7 +415,9 @@
 
 </div>
 <div id="org-scimax-journal-autotimestamp" class="org-section org-level-3">
-<h3>⚠️ scimax.journal.autoTimestamp</h3>
+<h3>✅ scimax.journal.autoTimestamp</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Automatically add timestamps when using the quick log feature.</p>
 
 <div class="org-src-container">
@@ -412,7 +430,9 @@
 
 </div>
 <div id="org-scimax-journal-weekstartson" class="org-section org-level-3">
-<h3>⚠️ scimax.journal.weekStartsOn</h3>
+<h3>✅ scimax.journal.weekStartsOn</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>First day of the week for calendar and week views.</p>
 
 <div class="org-src-container">
@@ -427,13 +447,19 @@
 </div>
 </div>
 <div id="org-journal-templates" class="org-section org-level-1">
-<h1>⚠️ Journal Templates</h1>
+<h1>✅ Journal Templates</h1>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Templates define the structure of new journal entries. Scimax provides several built-in templates and supports custom templates.</p>
 
 <div id="org-built-in-templates" class="org-section org-level-2">
-<h2>⚠️ Built-in Templates</h2>
+<h2>✅ Built-in Templates</h2>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <div id="org-default" class="org-section org-level-3">
-<h3>⚠️ default</h3>
+<h3>✅ default</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>A balanced template suitable for general daily journaling with tasks, notes, and a timestamped log.</p>
 
 <div class="org-src-container">
@@ -450,7 +476,9 @@
 
 </div>
 <div id="org-minimal" class="org-section org-level-3">
-<h3>⚠️ minimal</h3>
+<h3>✅ minimal</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>A minimal template with just a notes section, ideal for free-form journaling.</p>
 
 <div class="org-src-container">
@@ -462,7 +490,9 @@
 
 </div>
 <div id="org-research" class="org-section org-level-3">
-<h3>⚠️ research</h3>
+<h3>✅ research</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Designed for research work, with sections for goals, experiments, results, and references.</p>
 
 <div class="org-src-container">
@@ -484,7 +514,9 @@
 
 </div>
 <div id="org-meeting" class="org-section org-level-3">
-<h3>⚠️ meeting</h3>
+<h3>✅ meeting</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Structured template for meeting notes with attendees, agenda, and action items.</p>
 
 <div class="org-src-container">
@@ -507,7 +539,9 @@
 
 </div>
 <div id="org-standup" class="org-section org-level-3">
-<h3>⚠️ standup</h3>
+<h3>✅ standup</h3>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Daily standup format with yesterday, today, and blockers.</p>
 
 <div class="org-src-container">
@@ -527,7 +561,9 @@
 </div>
 </div>
 <div id="org-template-variables" class="org-section org-level-2">
-<h2>⚠️ Template Variables</h2>
+<h2>✅ Template Variables</h2>
+<p>CLOSED: [2026-01-16 Fri 21:08]</p>
+
 <p>Templates support the following variables that are automatically substituted:</p>
 
 <table class="org-table">
@@ -548,8 +584,10 @@
 
 </div>
 <div id="org-creating-custom-templates" class="org-section org-level-2">
-<h2>⚠️ Creating Custom Templates</h2>
-<p>Custom templates are stored in &lt;journal-directory&gt;/.scimax<em>templates</em>. Create a new template by:</p>
+<h2>✅ Creating Custom Templates</h2>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
+<p>Custom templates are stored in <journal-directory>/.scimax<em>templates</em>. Create a new template by:</p>
 
 <ol>
 <li><p>Create the templates directory if it doesn&#39;t exist:</p>
@@ -564,7 +602,9 @@
 
 </div>
 <div id="org-markdown-templates" class="org-section org-level-2">
-<h2>⚠️ Markdown Templates</h2>
+<h2>✅ Markdown Templates</h2>
+<p>CLOSED: [2026-01-17 Sat 14:02]</p>
+
 <p>If you configure the journal format as Markdown, the built-in templates use Markdown syntax:</p>
 
 <div class="org-src-container">
@@ -583,16 +623,22 @@
 </div>
 </div>
 <div id="org-creating-journal-entries" class="org-section org-level-1">
-<h1>⚠️ Creating Journal Entries</h1>
+<h1>✅ Creating Journal Entries</h1>
+<p>CLOSED: [2026-01-17 Sat 14:02]</p>
+
 <div id="org-today-s-entry" class="org-section org-level-2">
-<h2>⚠️ Today&#39;s Entry</h2>
-<p>Press C-S-J (s-S-J on Mac) or run the command Scimax: Open Today&#39;s Journal.</p>
+<h2>✅ Today&#39;s Entry</h2>
+<p>CLOSED: [2026-01-17 Sat 14:02]</p>
+
+<p>Press C-S-J or run the command Scimax: Open Today&#39;s Journal. <a href="#org-cmd-scimax-journal-new">[[cmd:scimax.journal.new]]</a></p>
 
 <p>This is the fastest way to start journaling. If today&#39;s entry doesn&#39;t exist, it will be created using your default template.</p>
 
 </div>
 <div id="org-new-entry-for-any-date" class="org-section org-level-2">
-<h2>⚠️ New Entry for Any Date</h2>
+<h2>✅ New Entry for Any Date</h2>
+<p>CLOSED: [2026-01-17 Sat 14:03]</p>
+
 <p>To create an entry for a different date:</p>
 
 <ol>
@@ -621,7 +667,9 @@
 
 </div>
 <div id="org-using-different-templates" class="org-section org-level-2">
-<h2>⚠️ Using Different Templates</h2>
+<h2>✅ Using Different Templates</h2>
+<p>CLOSED: [2026-01-17 Sat 14:03]</p>
+
 <p>You can create multiple entries for the same date using different templates by:</p>
 
 <ol>
@@ -645,15 +693,19 @@
 </div>
 </div>
 <div id="org-navigating-journal-entries" class="org-section org-level-1">
-<h1>⚠️ Navigating Journal Entries</h1>
+<h1>✅ Navigating Journal Entries</h1>
+<p>CLOSED: [2026-01-17 Sat 14:03]</p>
+
 <div id="org-keyboard-navigation" class="org-section org-level-2">
-<h2>⚠️ Keyboard Navigation</h2>
+<h2>✅ Keyboard Navigation</h2>
+<p>CLOSED: [2026-01-17 Sat 15:11]</p>
+
 <p>When viewing a journal entry:</p>
 
 <ul>
-<li><p>M-[ - Go to previous entry</p>
+<li><p>C-Cmd-[ - Go to previous entry</p>
 </li>
-<li><p>M-] - Go to next entry</p>
+<li><p>C-Cmd-] - Go to next entry</p>
 </li>
 </ul>
 
@@ -661,8 +713,10 @@
 
 </div>
 <div id="org-go-to-specific-date" class="org-section org-level-2">
-<h2>⚠️ Go to Specific Date</h2>
-<p>Run Scimax: Go to Journal Date to see a list of all your entries:</p>
+<h2>✅ Go to Specific Date</h2>
+<p>CLOSED: [2026-01-17 Sat 14:05]</p>
+
+<p>Run Scimax: Go to Journal Date to see a list of all your entries: <a href="#org-cmd-scimax-journal-goto">[[cmd:scimax.journal.goto]]</a></p>
 
 <pre class="example">&gt; Scimax: Go to Journal Date
 
@@ -676,27 +730,31 @@
 
 </div>
 <div id="org-calendar-view" class="org-section org-level-2">
-<h2>⚠️ Calendar View</h2>
+<h2>✅ Calendar View</h2>
+<p>CLOSED: [2026-01-17 Sat 14:06]</p>
+
 <p>The calendar view provides a visual way to navigate entries:</p>
 
 <div id="org-accessing-the-calendar" class="org-section org-level-3">
-<h3>⚠️ Accessing the Calendar</h3>
+<h3>✅ Accessing the Calendar</h3>
 <ul>
-<li><p>Click on the Journal view in the Activity Bar (left sidebar)</p>
+<li><p>Look for &quot;Journal Calendar&quot; in the Scimax sidebar (Activity Bar)</p>
 </li>
-<li><p>Or run: Scimax: Show Journal Calendar</p>
+<li><p>Or run: Scimax: Show Journal Calendar <a href="#org-cmd-scimax-journal-calendar">[[cmd:scimax.journal.calendar]]</a></p>
 </li>
 </ul>
 
 </div>
 <div id="org-calendar-features" class="org-section org-level-3">
-<h3>⚠️ Calendar Features</h3>
+<h3>✅ Calendar Features</h3>
+<p>CLOSED: [2026-01-18 Sun 12:06]</p>
+
 <p>The calendar shows:</p>
 
 <ul>
 <li><p>Current month with clickable days</p>
 </li>
-<li><p>Days with entries are highlighted</p>
+<li><p>Days with entries are highlighted with a blue dot</p>
 </li>
 <li><p>Today is marked with a border</p>
 </li>
@@ -721,7 +779,9 @@
 
 </div>
 <div id="org-quick-actions-in-calendar" class="org-section org-level-3">
-<h3>⚠️ Quick Actions in Calendar</h3>
+<h3>✅ Quick Actions in Calendar</h3>
+<p>CLOSED: [2026-01-18 Sun 12:52]</p>
+
 <p>At the bottom of the calendar view:</p>
 
 <ul>
@@ -735,36 +795,13 @@
 
 </div>
 </div>
-<div id="org-tree-view" class="org-section org-level-2">
-<h2>⚠️ Tree View</h2>
-<p>The journal tree view (in the sidebar) shows entries organized by year and month:</p>
-
-<pre class="example">📁 2026 (45 entries)
-  📁 January (15 entries)
-    ⭐ 14 (Tue)    ← Today
-    📄 13 (Mon)
-    📄 12 (Sun)
-  📁 December (30 entries)
-    📄 31 (Wed)
-    ...
-📁 2025 (312 entries)
-  ...</pre>
-
-<ul>
-<li><p>Click any entry to open it</p>
-</li>
-<li><p>Today&#39;s entry is marked with a star icon</p>
-</li>
-<li><p>Entries are sorted with most recent first</p>
-</li>
-</ul>
-
-</div>
 <div id="org-week-view" class="org-section org-level-2">
-<h2>⚠️ Week View</h2>
+<h2>✅ Week View</h2>
+<p>CLOSED: [2026-01-18 Sun 12:08]</p>
+
 <p>To see all entries for the current week:</p>
 
-<p>Run Scimax: This Week&#39;s Entries</p>
+<p>Run Scimax: This Week&#39;s Entries <a href="#org-cmd-scimax-journal-weekview">[[cmd:scimax.journal.weekView]]</a></p>
 
 <p>This shows a quick-pick list with:</p>
 
@@ -787,10 +824,14 @@
 </div>
 </div>
 <div id="org-searching-journal-entries" class="org-section org-level-1">
-<h1>⚠️ Searching Journal Entries</h1>
+<h1>✅ Searching Journal Entries</h1>
+<p>CLOSED: [2026-01-17 Sat 14:11]</p>
+
 <div id="org-full-text-search" class="org-section org-level-2">
-<h2>⚠️ Full-Text Search</h2>
-<p>Run Scimax: Search Journal to search your entries:</p>
+<h2>✅ Full-Text Search</h2>
+<p>CLOSED: [2026-01-18 Sun 12:52]</p>
+
+<p>Run Scimax: Search Journal to search your entries: <a href="#org-cmd-scimax-journal-search">[[cmd:scimax.journal.search]]</a></p>
 
 <ol>
 <li><p>Select a date range:</p>
@@ -813,7 +854,9 @@
 
 </div>
 <div id="org-search-tips" class="org-section org-level-2">
-<h2>⚠️ Search Tips</h2>
+<h2>✅ Search Tips</h2>
+<p>CLOSED: [2026-01-17 Sat 14:11]</p>
+
 <ul>
 <li><p>Searches are case-insensitive</p>
 </li>
@@ -827,7 +870,9 @@
 
 </div>
 <div id="org-advanced-search" class="org-section org-level-2">
-<h2>⚠️ Advanced Search</h2>
+<h2>✅ Advanced Search</h2>
+<p>CLOSED: [2026-01-17 Sat 14:11]</p>
+
 <p>For more advanced searching, you can use the global Scimax search commands which index all journal entries:</p>
 
 <ul>
@@ -844,10 +889,14 @@
 </div>
 </div>
 <div id="org-quick-capture-and-logging" class="org-section org-level-1">
-<h1>⚠️ Quick Capture and Logging</h1>
+<h1>✅ Quick Capture and Logging</h1>
+<p>CLOSED: [2026-01-17 Sat 14:17]</p>
+
 <div id="org-quick-log-entry" class="org-section org-level-2">
-<h2>⚠️ Quick Log Entry</h2>
-<p>The quick log feature lets you capture a timestamped note without opening a file:</p>
+<h2>✅ Quick Log Entry</h2>
+<p>CLOSED: [2026-01-17 Sat 14:18]</p>
+
+<p>The quick log feature lets you capture a timestamped note without opening a file: <a href="#org-cmd-scimax-journal-quicklog">[[cmd:scimax.journal.quickLog]]</a></p>
 
 <ol>
 <li><p>Run Scimax: Quick Log Entry or create a custom keybinding</p>
@@ -882,7 +931,9 @@
 
 </div>
 <div id="org-insert-timestamp" class="org-section org-level-2">
-<h2>⚠️ Insert Timestamp</h2>
+<h2>✅ Insert Timestamp</h2>
+<p>CLOSED: [2026-01-17 Sat 14:18]</p>
+
 <p>When editing a journal entry, run Scimax: Insert Timestamp to insert a timestamp at the cursor:</p>
 
 <p>Org format:</p>
@@ -907,39 +958,51 @@
 </div>
 </div>
 <div id="org-journal-statistics" class="org-section org-level-1">
-<h1>⚠️ Journal Statistics</h1>
+<h1>✅ Journal Statistics</h1>
+<p>CLOSED: [2026-01-17 Sat 14:18]</p>
+
 <div id="org-viewing-statistics" class="org-section org-level-2">
-<h2>⚠️ Viewing Statistics</h2>
-<p>Run Scimax: Show Journal Statistics to see:</p>
+<h2>✅ Viewing Statistics</h2>
+<p>CLOSED: [2026-01-17 Sat 14:18]</p>
+
+<p>Run Scimax: Show Journal Statistics to see:  <a href="#org-cmd-scimax-journal-stats">[[cmd:scimax.journal.stats]]</a></p>
 
 <pre class="example">Total entries: 45 | Total words: 32,450 | Current streak: 7 days | Longest streak: 12 days</pre>
 
 </div>
 <div id="org-statistics-tracked" class="org-section org-level-2">
-<h2>⚠️ Statistics Tracked</h2>
+<h2>✅ Statistics Tracked</h2>
+<p>CLOSED: [2026-01-17 Sat 14:18]</p>
+
 <div id="org-entry-count" class="org-section org-level-3">
-<h3>⚠️ Entry Count</h3>
-<p>Total number of journal entries you&#39;ve written.</p>
+<h3>✅ Entry Count</h3>
+<p>CLOSED: [2026-01-17 Sat 14:18]
+Total number of journal entries you&#39;ve written.</p>
 
 </div>
 <div id="org-total-words" class="org-section org-level-3">
-<h3>⚠️ Total Words</h3>
-<p>Combined word count across all entries. Only counts actual words, not markup.</p>
+<h3>✅ Total Words</h3>
+<p>CLOSED: [2026-01-17 Sat 14:18]
+Combined word count across all entries. Only counts actual words, not markup.</p>
 
 </div>
 <div id="org-current-streak" class="org-section org-level-3">
-<h3>⚠️ Current Streak</h3>
-<p>Number of consecutive days you&#39;ve written an entry (including today or ending yesterday).</p>
+<h3>✅ Current Streak</h3>
+<p>CLOSED: [2026-01-17 Sat 14:18]
+Number of consecutive days you&#39;ve written an entry (including today or ending yesterday).</p>
 
 </div>
 <div id="org-longest-streak" class="org-section org-level-3">
-<h3>⚠️ Longest Streak</h3>
-<p>Your best streak of consecutive journaling days.</p>
+<h3>✅ Longest Streak</h3>
+<p>CLOSED: [2026-01-17 Sat 14:18]
+Your best streak of consecutive journaling days.</p>
 
 </div>
 </div>
 <div id="org-streak-calculation" class="org-section org-level-2">
-<h2>⚠️ Streak Calculation</h2>
+<h2>✅ Streak Calculation</h2>
+<p>CLOSED: [2026-01-17 Sat 14:18]</p>
+
 <p>A streak is maintained if you create entries on consecutive days:</p>
 
 <ul>
@@ -955,7 +1018,9 @@
 
 </div>
 <div id="org-status-bar-integration" class="org-section org-level-2">
-<h2>⚠️ Status Bar Integration</h2>
+<h2>✅ Status Bar Integration</h2>
+<p>CLOSED: [2026-01-18 Sun 12:52]</p>
+
 <p>The status bar (bottom of window) shows journal information:</p>
 
 <p>When viewing a journal entry:</p>
@@ -982,15 +1047,19 @@
 </div>
 </div>
 <div id="org-integration-with-other-features" class="org-section org-level-1">
-<h1>⚠️ Integration with Other Features</h1>
+<h1>✅ Integration with Other Features</h1>
+<p>CLOSED: [2026-01-17 Sat 14:20]</p>
+
 <div id="org-agenda-integration" class="org-section org-level-2">
-<h2>⚠️ Agenda Integration</h2>
+<h2>✅ Agenda Integration</h2>
+<p>CLOSED: [2026-01-17 Sat 14:20]</p>
+
 <p>Journal entries are automatically indexed by the Scimax database if your journal directory is included in the search scope.</p>
 
 <p>This means journal entries with TODO items, scheduled items, and deadlines will appear in:</p>
 
 <ul>
-<li><p>Scimax: Show Agenda - Daily agenda view</p>
+<li><p>Scimax: Show Agenda - Daily agenda view </p>
 </li>
 <li><p>Scimax: Show TODO Items - All TODO items</p>
 </li>
@@ -1024,7 +1093,9 @@
 
 </div>
 <div id="org-cross-referencing" class="org-section org-level-2">
-<h2>⚠️ Cross-Referencing</h2>
+<h2>✅ Cross-Referencing</h2>
+<p>CLOSED: [2026-01-17 Sat 14:20]</p>
+
 <p>Use org-mode links to cross-reference between journal entries:</p>
 
 <div class="org-src-container">
@@ -1041,7 +1112,9 @@ See [[file:2026/01/13/2026-01-13.org::*Meeting Notes][yesterday&#39;s meeting no
 
 </div>
 <div id="org-embedding-code-blocks" class="org-section org-level-2">
-<h2>⚠️ Embedding Code Blocks</h2>
+<h2>✅ Embedding Code Blocks</h2>
+<p>CLOSED: [2026-01-17 Sat 14:20]</p>
+
 <p>Journal entries support full Babel functionality. Execute code blocks directly in your journal:</p>
 
 <div class="org-src-container">
@@ -1054,13 +1127,15 @@ print(data.describe())
 ,#+end_src</code></pre>
 </div>
 
-<p>Press C-&lt;return&gt; (s-&lt;return&gt; on Mac) to execute blocks.</p>
+<p>Press C-<return> (s-<return> on Mac) to execute blocks.</p>
 
 <p>See <a href="07-source-blocks.html">Source Blocks documentation</a> for details.</p>
 
 </div>
 <div id="org-citations-and-references" class="org-section org-level-2">
-<h2>⚠️ Citations and References</h2>
+<h2>✅ Citations and References</h2>
+<p>CLOSED: [2026-01-17 Sat 14:20]</p>
+
 <p>Use org-ref features to add citations to journal entries:</p>
 
 <div class="org-src-container">
@@ -1080,9 +1155,13 @@ bibliography:~/references.bib</code></pre>
 </div>
 </div>
 <div id="org-commands-reference" class="org-section org-level-1">
-<h1>⚠️ Commands Reference</h1>
+<h1>✅ Commands Reference</h1>
+<p>CLOSED: [2026-01-17 Sat 14:20]</p>
+
 <div id="org-all-journal-commands" class="org-section org-level-2">
-<h2>⚠️ All Journal Commands</h2>
+<h2>✅ All Journal Commands</h2>
+<p>CLOSED: [2026-01-17 Sat 14:20]</p>
+
 <table class="org-table">
 <thead>
 <tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
@@ -1090,8 +1169,8 @@ bibliography:~/references.bib</code></pre>
 <tbody>
 <tr><td>Scimax: Open Today&#39;s Journal</td><td>C-S-J</td><td>Open or create today&#39;s entry</td></tr>
 <tr><td>Scimax: New Journal Entry</td><td>-</td><td>Create entry with template selection</td></tr>
-<tr><td>Scimax: Previous Journal Entry</td><td>M-[</td><td>Navigate to previous entry</td></tr>
-<tr><td>Scimax: Next Journal Entry</td><td>M-]</td><td>Navigate to next entry</td></tr>
+<tr><td>Scimax: Previous Journal Entry</td><td>Cmd-[</td><td>Navigate to previous entry</td></tr>
+<tr><td>Scimax: Next Journal Entry</td><td>Cmd-]</td><td>Navigate to next entry</td></tr>
 <tr><td>Scimax: Go to Journal Date</td><td>-</td><td>Quick-pick list of all entries</td></tr>
 <tr><td>Scimax: Search Journal</td><td>-</td><td>Search entries with date range</td></tr>
 <tr><td>Scimax: Show Journal Calendar</td><td>-</td><td>Open calendar view</td></tr>
@@ -1106,8 +1185,10 @@ bibliography:~/references.bib</code></pre>
 
 </div>
 <div id="org-command-palette" class="org-section org-level-2">
-<h2>⚠️ Command Palette</h2>
-<p>Access all commands via Command Palette (C-S-P or s-S-P):</p>
+<h2>✅ Command Palette</h2>
+<p>CLOSED: [2026-01-17 Sat 14:23]</p>
+
+<p>Access all commands via Command Palette (C-S-P):</p>
 
 <ol>
 <li><p>Press C-S-P</p>
@@ -1121,9 +1202,13 @@ bibliography:~/references.bib</code></pre>
 </div>
 </div>
 <div id="org-keyboard-shortcuts" class="org-section org-level-1">
-<h1>⚠️ Keyboard Shortcuts</h1>
+<h1>✅ Keyboard Shortcuts</h1>
+<p>CLOSED: [2026-01-17 Sat 14:23]</p>
+
 <div id="org-default-keybindings" class="org-section org-level-2">
-<h2>⚠️ Default Keybindings</h2>
+<h2>✅ Default Keybindings</h2>
+<p>CLOSED: [2026-01-17 Sat 14:23]</p>
+
 <div class="org-src-container">
 <pre class="src src-json"><code class="language-json">{
   &quot;command&quot;: &quot;scimax.journal.today&quot;,
@@ -1146,7 +1231,9 @@ bibliography:~/references.bib</code></pre>
 
 </div>
 <div id="org-custom-keybindings" class="org-section org-level-2">
-<h2>⚠️ Custom Keybindings</h2>
+<h2>✅ Custom Keybindings</h2>
+<p>CLOSED: [2026-01-17 Sat 14:23]</p>
+
 <p>Add custom keybindings in keybindings.json (File &gt; Preferences &gt; Keyboard Shortcuts, then click the icon in the top right):</p>
 
 <div class="org-src-container">
@@ -1169,9 +1256,13 @@ bibliography:~/references.bib</code></pre>
 </div>
 </div>
 <div id="org-tips-and-best-practices" class="org-section org-level-1">
-<h1>⚠️ Tips and Best Practices</h1>
+<h1>✅ Tips and Best Practices</h1>
+<p>CLOSED: [2026-01-17 Sat 14:23]</p>
+
 <div id="org-daily-journaling-workflow" class="org-section org-level-2">
-<h2>⚠️ Daily Journaling Workflow</h2>
+<h2>✅ Daily Journaling Workflow</h2>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <ol>
 <li><p><strong>Morning</strong>: Open today&#39;s journal (C-S-J), review yesterday&#39;s entry (M-[), plan today&#39;s tasks</p>
 </li>
@@ -1185,7 +1276,9 @@ bibliography:~/references.bib</code></pre>
 
 </div>
 <div id="org-building-the-habit" class="org-section org-level-2">
-<h2>⚠️ Building the Habit</h2>
+<h2>✅ Building the Habit</h2>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <ul>
 <li><p>Set a reminder to journal at the same time each day</p>
 </li>
@@ -1201,7 +1294,9 @@ bibliography:~/references.bib</code></pre>
 
 </div>
 <div id="org-organizing-information" class="org-section org-level-2">
-<h2>⚠️ Organizing Information</h2>
+<h2>✅ Organizing Information</h2>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <ul>
 <li><p>Use consistent heading structures for easier searching</p>
 </li>
@@ -1217,7 +1312,9 @@ bibliography:~/references.bib</code></pre>
 
 </div>
 <div id="org-performance-tips" class="org-section org-level-2">
-<h2>⚠️ Performance Tips</h2>
+<h2>✅ Performance Tips</h2>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <ul>
 <li><p>The journal system caches entries for 30 seconds, so browsing is fast</p>
 </li>
@@ -1231,7 +1328,9 @@ bibliography:~/references.bib</code></pre>
 
 </div>
 <div id="org-backup-and-sync" class="org-section org-level-2">
-<h2>⚠️ Backup and Sync</h2>
+<h2>✅ Backup and Sync</h2>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <p>Since journal entries are plain text files in a standard directory structure:</p>
 
 <ul>
@@ -1266,7 +1365,9 @@ git push</code></pre>
 
 </div>
 <div id="org-privacy-and-security" class="org-section org-level-2">
-<h2>⚠️ Privacy and Security</h2>
+<h2>✅ Privacy and Security</h2>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <p>Journal entries are stored as plain text on your local filesystem. For sensitive information:</p>
 
 <ul>
@@ -1283,9 +1384,13 @@ git push</code></pre>
 </div>
 </div>
 <div id="org-troubleshooting" class="org-section org-level-1">
-<h1>⚠️ Troubleshooting</h1>
+<h1>✅ Troubleshooting</h1>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <div id="org-journal-directory-not-found" class="org-section org-level-2">
-<h2>⚠️ Journal Directory Not Found</h2>
+<h2>✅ Journal Directory Not Found</h2>
+<p>CLOSED: [2026-01-17 Sat 14:21]</p>
+
 <p>If you see errors about missing directory:</p>
 
 <ol>
@@ -1301,11 +1406,13 @@ git push</code></pre>
 
 </div>
 <div id="org-templates-not-working" class="org-section org-level-2">
-<h2>⚠️ Templates Not Working</h2>
+<h2>✅ Templates Not Working</h2>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>If custom templates aren&#39;t appearing:</p>
 
 <ol>
-<li><p>Verify template location: &lt;journal-directory&gt;/.scimax<em>templates</em></p>
+<li><p>Verify template location: <journal-directory>/.scimax<em>templates</em></p>
 </li>
 <li><p>Check file extension matches format (.org for org-mode, .md for Markdown)</p>
 </li>
@@ -1317,7 +1424,9 @@ git push</code></pre>
 
 </div>
 <div id="org-navigation-shortcuts-not-working" class="org-section org-level-2">
-<h2>⚠️ Navigation Shortcuts Not Working</h2>
+<h2>✅ Navigation Shortcuts Not Working</h2>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>M-[ and M-] only work when:</p>
 
 <ul>
@@ -1331,7 +1440,9 @@ git push</code></pre>
 
 </div>
 <div id="org-statistics-not-updating" class="org-section org-level-2">
-<h2>⚠️ Statistics Not Updating</h2>
+<h2>✅ Statistics Not Updating</h2>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>Statistics are cached for performance:</p>
 
 <ul>
@@ -1345,7 +1456,9 @@ git push</code></pre>
 
 </div>
 <div id="org-calendar-not-showing-entries" class="org-section org-level-2">
-<h2>⚠️ Calendar Not Showing Entries</h2>
+<h2>✅ Calendar Not Showing Entries</h2>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>If the calendar appears empty:</p>
 
 <ol>
@@ -1362,13 +1475,19 @@ git push</code></pre>
 </div>
 </div>
 <div id="org-advanced-usage" class="org-section org-level-1">
-<h1>⚠️ Advanced Usage</h1>
+<h1>✅ Advanced Usage</h1>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <div id="org-scripting-and-automation" class="org-section org-level-2">
-<h2>⚠️ Scripting and Automation</h2>
+<h2>✅ Scripting and Automation</h2>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>Since journal entries are plain text files in a predictable structure, you can script operations:</p>
 
 <div id="org-auto-generate-weekly-summary" class="org-section org-level-3">
-<h3>⚠️ Auto-generate Weekly Summary</h3>
+<h3>✅ Auto-generate Weekly Summary</h3>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <div class="org-src-container">
 <pre class="src src-python"><code class="language-python">#!/usr/bin/env python3
 import os
@@ -1405,7 +1524,9 @@ for day, content in entries:
 
 </div>
 <div id="org-export-to-pdf" class="org-section org-level-3">
-<h3>⚠️ Export to PDF</h3>
+<h3>✅ Export to PDF</h3>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <div class="org-src-container">
 <pre class="src src-bash"><code class="language-bash">#!/bin/bash
 # Export recent journal entries to PDF
@@ -1421,7 +1542,9 @@ done</code></pre>
 </div>
 </div>
 <div id="org-custom-template-variables" class="org-section org-level-2">
-<h2>⚠️ Custom Template Variables</h2>
+<h2>✅ Custom Template Variables</h2>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>Currently, template variables are fixed, but you can post-process entries:</p>
 
 <div class="org-src-container">
@@ -1431,9 +1554,13 @@ sed -i &#39;3i#+TAGS: daily&#39; ~/scimax-journal/2026/01/14/2026-01-14.org</cod
 
 </div>
 <div id="org-integration-with-external-tools" class="org-section org-level-2">
-<h2>⚠️ Integration with External Tools</h2>
+<h2>✅ Integration with External Tools</h2>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <div id="org-obsidian-daily-notes" class="org-section org-level-3">
-<h3>⚠️ Obsidian Daily Notes</h3>
+<h3>✅ Obsidian Daily Notes</h3>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>To use the same directory structure with Obsidian:</p>
 
 <ol>
@@ -1447,7 +1574,9 @@ sed -i &#39;3i#+TAGS: daily&#39; ~/scimax-journal/2026/01/14/2026-01-14.org</cod
 
 </div>
 <div id="org-emacs-org-journal" class="org-section org-level-3">
-<h3>⚠️ Emacs org-journal</h3>
+<h3>✅ Emacs org-journal</h3>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>The directory structure is compatible with some org-journal configurations:</p>
 
 <div class="org-src-container">
@@ -1460,7 +1589,9 @@ sed -i &#39;3i#+TAGS: daily&#39; ~/scimax-journal/2026/01/14/2026-01-14.org</cod
 </div>
 </div>
 <div id="org-future-enhancements" class="org-section org-level-1">
-<h1>⚠️ Future Enhancements</h1>
+<h1>✅ Future Enhancements</h1>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <p>Potential future features under consideration:</p>
 
 <ul>
@@ -1486,7 +1617,9 @@ sed -i &#39;3i#+TAGS: daily&#39; ~/scimax-journal/2026/01/14/2026-01-14.org</cod
 
 </div>
 <div id="org-see-also" class="org-section org-level-1">
-<h1>⚠️ See Also</h1>
+<h1>✅ See Also</h1>
+<p>CLOSED: [2026-01-17 Sat 14:22]</p>
+
 <ul>
 <li><p><a href="13-agenda.html">Agenda</a> - Task management and scheduling</p>
 </li>
@@ -1511,533 +1644,6 @@ sed -i &#39;3i#+TAGS: daily&#39; ~/scimax-journal/2026/01/14/2026-01-14.org</cod
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="19-references.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="16-notebook.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#introduction" class="toc-link">⚠️ Introduction</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#key-features" class="toc-link">⚠️ Key Features</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#philosophy" class="toc-link">⚠️ Philosophy</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#getting-started" class="toc-link">⚠️ Getting Started</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#opening-your-first-journal-entry" class="toc-link">⚠️ Opening Your First Journal Entry</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#directory-structure" class="toc-link">⚠️ Directory Structure</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#configuration" class="toc-link">⚠️ Configuration</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournaldirectory" class="toc-link">⚠️ scimax.journal.directory</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournalformat" class="toc-link">⚠️ scimax.journal.format</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournaltemplate" class="toc-link">⚠️ scimax.journal.template</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournaldateformat" class="toc-link">⚠️ scimax.journal.dateFormat</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournalautotimestamp" class="toc-link">⚠️ scimax.journal.autoTimestamp</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#scimaxjournalweekstartson" class="toc-link">⚠️ scimax.journal.weekStartsOn</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#journal-templates" class="toc-link">⚠️ Journal Templates</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#built-in-templates" class="toc-link">⚠️ Built-in Templates</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#default" class="toc-link">⚠️ default</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#minimal" class="toc-link">⚠️ minimal</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#research" class="toc-link">⚠️ research</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#meeting" class="toc-link">⚠️ meeting</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#standup" class="toc-link">⚠️ standup</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#template-variables" class="toc-link">⚠️ Template Variables</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#creating-custom-templates" class="toc-link">⚠️ Creating Custom Templates</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#markdown-templates" class="toc-link">⚠️ Markdown Templates</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#creating-journal-entries" class="toc-link">⚠️ Creating Journal Entries</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#todays-entry" class="toc-link">⚠️ Today's Entry</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#new-entry-for-any-date" class="toc-link">⚠️ New Entry for Any Date</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#using-different-templates" class="toc-link">⚠️ Using Different Templates</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#navigating-journal-entries" class="toc-link">⚠️ Navigating Journal Entries</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#keyboard-navigation" class="toc-link">⚠️ Keyboard Navigation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#go-to-specific-date" class="toc-link">⚠️ Go to Specific Date</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#calendar-view" class="toc-link">⚠️ Calendar View</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#accessing-the-calendar" class="toc-link">⚠️ Accessing the Calendar</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#calendar-features" class="toc-link">⚠️ Calendar Features</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#quick-actions-in-calendar" class="toc-link">⚠️ Quick Actions in Calendar</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#tree-view" class="toc-link">⚠️ Tree View</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#week-view" class="toc-link">⚠️ Week View</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#searching-journal-entries" class="toc-link">⚠️ Searching Journal Entries</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#full-text-search" class="toc-link">⚠️ Full-Text Search</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#search-tips" class="toc-link">⚠️ Search Tips</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#advanced-search" class="toc-link">⚠️ Advanced Search</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#quick-capture-and-logging" class="toc-link">⚠️ Quick Capture and Logging</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#quick-log-entry" class="toc-link">⚠️ Quick Log Entry</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#insert-timestamp" class="toc-link">⚠️ Insert Timestamp</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#journal-statistics" class="toc-link">⚠️ Journal Statistics</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#viewing-statistics" class="toc-link">⚠️ Viewing Statistics</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#statistics-tracked" class="toc-link">⚠️ Statistics Tracked</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#entry-count" class="toc-link">⚠️ Entry Count</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#total-words" class="toc-link">⚠️ Total Words</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#current-streak" class="toc-link">⚠️ Current Streak</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#longest-streak" class="toc-link">⚠️ Longest Streak</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#streak-calculation" class="toc-link">⚠️ Streak Calculation</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#status-bar-integration" class="toc-link">⚠️ Status Bar Integration</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#integration-with-other-features" class="toc-link">⚠️ Integration with Other Features</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#agenda-integration" class="toc-link">⚠️ Agenda Integration</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#cross-referencing" class="toc-link">⚠️ Cross-Referencing</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#embedding-code-blocks" class="toc-link">⚠️ Embedding Code Blocks</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#citations-and-references" class="toc-link">⚠️ Citations and References</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#commands-reference" class="toc-link">⚠️ Commands Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#all-journal-commands" class="toc-link">⚠️ All Journal Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#command-palette" class="toc-link">⚠️ Command Palette</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#keyboard-shortcuts" class="toc-link">⚠️ Keyboard Shortcuts</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#default-keybindings" class="toc-link">⚠️ Default Keybindings</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#custom-keybindings" class="toc-link">⚠️ Custom Keybindings</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#tips-and-best-practices" class="toc-link">⚠️ Tips and Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#daily-journaling-workflow" class="toc-link">⚠️ Daily Journaling Workflow</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#building-the-habit" class="toc-link">⚠️ Building the Habit</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#organizing-information" class="toc-link">⚠️ Organizing Information</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#performance-tips" class="toc-link">⚠️ Performance Tips</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#backup-and-sync" class="toc-link">⚠️ Backup and Sync</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#privacy-and-security" class="toc-link">⚠️ Privacy and Security</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">⚠️ Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#journal-directory-not-found" class="toc-link">⚠️ Journal Directory Not Found</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#templates-not-working" class="toc-link">⚠️ Templates Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#navigation-shortcuts-not-working" class="toc-link">⚠️ Navigation Shortcuts Not Working</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#statistics-not-updating" class="toc-link">⚠️ Statistics Not Updating</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#calendar-not-showing-entries" class="toc-link">⚠️ Calendar Not Showing Entries</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#advanced-usage" class="toc-link">⚠️ Advanced Usage</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#scripting-and-automation" class="toc-link">⚠️ Scripting and Automation</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#auto-generate-weekly-summary" class="toc-link">⚠️ Auto-generate Weekly Summary</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#export-to-pdf" class="toc-link">⚠️ Export to PDF</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#custom-template-variables" class="toc-link">⚠️ Custom Template Variables</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#integration-with-external-tools" class="toc-link">⚠️ Integration with External Tools</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#obsidian-daily-notes" class="toc-link">⚠️ Obsidian Daily Notes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#emacs-org-journal" class="toc-link">⚠️ Emacs org-journal</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#future-enhancements" class="toc-link">⚠️ Future Enhancements</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#see-also" class="toc-link">⚠️ See Also</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>

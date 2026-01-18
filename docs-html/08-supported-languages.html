@@ -1,264 +1,224 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Supported Languages in Scimax VS Code</title>
-    <link rel="stylesheet" href="./_static/book-theme.css">
-    
-    <style>:root { --primary-color: #0d6efd; }</style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Supported Languages in Scimax VS Code</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
 <body>
-    <header class="site-header">
-<div class="header-content">
-<div class="header-left">
-
-        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-            <span class="hamburger-icon">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
-        </button>
-    
-
-            <a href="./index.html" class="header-logo">
-                <img src="./_static/logo.svg" alt="Logo" />
-            </a>
-        
-
-            <a href="./index.html" class="header-title">
-                Scimax VS Code
-            </a>
-        
-</div>
-<div class="header-right">
-<nav class="header-nav">
-<ul class="nav-links">
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">
-                        GitHub<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
-
-                <li>
-                    <a href="https://marketplace.visualstudio.com/items?itemName=jkitchin.scimax-vscode" target="_blank" rel="noopener">
-                        VS Code Marketplace<span class="external-icon">&#8599;</span>
-                    </a>
-                </li>
-            
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Supported Languages in Scimax VS Code</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-17</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<li><a href="#org-execution-modes">✅ Execution Modes</a></li>
+<ul>
+<li><a href="#org-native-execution">✅ Native Execution</a></li>
+<li><a href="#org-jupyter-execution">✅ Jupyter Execution</a></li>
+<li><a href="#org-choosing-an-executor">✅ Choosing an Executor</a></li>
+</ul>
+<li><a href="#org-python">✅ Python</a></li>
+<ul>
+<li><a href="#org-language-identifiers">✅ Language Identifiers</a></li>
+<li><a href="#org-execution-modes">✅ Execution Modes</a></li>
+<li><a href="#org-session-support">✅ Session Support</a></li>
+<li><a href="#org-dependencies">✅ Dependencies</a></li>
+<li><a href="#org-basic-example-native">✅ Basic Example (Native)</a></li>
+<li><a href="#org-session-example-jupyter">✅ Session Example (Jupyter)</a></li>
+<li><a href="#org-plotting-example">✅ Plotting Example</a></li>
+<li><a href="#org-installing-ipython-kernel">✅ Installing IPython Kernel</a></li>
+</ul>
+<li><a href="#org-bash-shell">✅ Bash/Shell</a></li>
+<ul>
+<li><a href="#org-language-identifiers">✅ Language Identifiers</a></li>
+<li><a href="#org-execution-modes">✅ Execution Modes</a></li>
+<li><a href="#org-session-support">✅ Session Support</a></li>
+<li><a href="#org-dependencies">✅ Dependencies</a></li>
+<li><a href="#org-basic-example">✅ Basic Example</a></li>
+<li><a href="#org-command-pipeline">✅ Command Pipeline</a></li>
+<li><a href="#org-working-directory">✅ Working Directory</a></li>
+</ul>
+<li><a href="#org-julia">✅ Julia</a></li>
+<ul>
+<li><a href="#org-language-identifiers">✅ Language Identifiers</a></li>
+<li><a href="#org-execution-modes">✅ Execution Modes</a></li>
+<li><a href="#org-session-support">✅ Session Support</a></li>
+<li><a href="#org-dependencies">✅ Dependencies</a></li>
+<li><a href="#org-basic-example">✅ Basic Example</a></li>
+<li><a href="#org-array-operations">✅ Array Operations</a></li>
+<li><a href="#org-installing-ijulia-kernel">✅ Installing IJulia Kernel</a></li>
+</ul>
+<li><a href="#org-r">✅ R</a></li>
+<ul>
+<li><a href="#org-language-identifiers">✅ Language Identifiers</a></li>
+<li><a href="#org-execution-modes">✅ Execution Modes</a></li>
+<li><a href="#org-session-support">✅ Session Support</a></li>
+<li><a href="#org-dependencies">✅ Dependencies</a></li>
+<li><a href="#org-basic-example">✅ Basic Example</a></li>
+<li><a href="#org-data-frame-example">✅ Data Frame Example</a></li>
+<li><a href="#org-plotting-example">✅ Plotting Example</a></li>
+<li><a href="#org-installing-irkernel">✅ Installing IRkernel</a></li>
+</ul>
+<li><a href="#org-javascript-node-js">✅ JavaScript/Node.js</a></li>
+<ul>
+<li><a href="#org-language-identifiers">✅ Language Identifiers</a></li>
+<li><a href="#org-execution-modes">✅ Execution Modes</a></li>
+<li><a href="#org-session-support">✅ Session Support</a></li>
+<li><a href="#org-dependencies">✅ Dependencies</a></li>
+<li><a href="#org-basic-example">✅ Basic Example</a></li>
+<li><a href="#org-working-with-json">✅ Working with JSON</a></li>
+</ul>
+<li><a href="#org-other-languages-via-jupyter">✅ Other Languages via Jupyter</a></li>
+<ul>
+<li><a href="#org-popular-jupyter-kernels">✅ Popular Jupyter Kernels</a></li>
+<li><a href="#org-checking-available-kernels">✅ Checking Available Kernels</a></li>
+</ul>
+<li><a href="#org-header-arguments-reference">✅ Header Arguments Reference</a></li>
+<ul>
+<li><a href="#org-common-header-arguments">✅ Common Header Arguments</a></li>
+<li><a href="#org-session-example">✅ Session Example</a></li>
+<li><a href="#org-file-output-example">✅ File Output Example</a></li>
+</ul>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+<ul>
+<li><a href="#org-common-issues">✅ Common Issues</a></li>
+<ul>
+<li><a href="#org-no-executor-available-for-language-x">✅ &quot;No executor available for language: X&quot;</a></li>
+<li><a href="#org-jupyter-kernel-not-found">✅ &quot;Jupyter kernel not found&quot;</a></li>
+<li><a href="#org-session-state-not-persisting">✅ Session state not persisting</a></li>
+<li><a href="#org-code-executes-but-no-output-appears">✅ Code executes but no output appears</a></li>
+</ul>
+<li><a href="#org-getting-help">✅ Getting Help</a></li>
+</ul>
+<li><a href="#org-best-practices">✅ Best Practices</a></li>
+<ul>
+<li><a href="#org-language-selection">✅ Language Selection</a></li>
+<li><a href="#org-session-management">✅ Session Management</a></li>
+<li><a href="#org-code-organization">✅ Code Organization</a></li>
+<li><a href="#org-performance">✅ Performance</a></li>
+</ul>
+<li><a href="#org-quick-reference">✅ Quick Reference</a></li>
+<ul>
+<li><a href="#org-execute-commands">✅ Execute Commands</a></li>
+<li><a href="#org-session-control">✅ Session Control</a></li>
+<li><a href="#org-result-handling">✅ Result Handling</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
 </ul>
 </nav>
 
-        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-            <span class="theme-icon light-icon">
-                <!-- Sun icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </span>
-            <span class="theme-icon dark-icon">
-                <!-- Moon icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-            </span>
-        </button>
-    
-</div>
-</div>
-</header>
-
-    <div class="book-container">
-        
-        <aside class="sidebar-left" id="sidebar-left">
-            
-<div class="search-box">
-    <input type="search" id="search-input" placeholder="Search..." aria-label="Search">
-    <div id="search-results" class="search-results"></div>
-</div>
-
-<nav class="site-nav">
-
-            <div class="nav-entry nav-root ">
-                <a href="./00-index.html">Home</a>
-            </div>
-        
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Getting Started</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./01-getting-started.html" class="nav-link">01-getting-started</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./26-configuration.html" class="nav-link">26-configuration</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./24-keybindings.html" class="nav-link">24-keybindings</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./25-commands.html" class="nav-link">25-commands</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Document Editing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./02-document-structure.html" class="nav-link">02-document-structure</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./21-navigation.html" class="nav-link">21-navigation</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./23-speed-commands.html" class="nav-link">23-speed-commands</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./05-links.html" class="nav-link">05-links</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./04-tables.html" class="nav-link">04-tables</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Task Management</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./03-todo-items.html" class="nav-link">03-todo-items</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./13-agenda.html" class="nav-link">13-agenda</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./06-timestamps.html" class="nav-link">06-timestamps</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./15-capture.html" class="nav-link">15-capture</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Code &amp; Execution</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./07-source-blocks.html" class="nav-link">07-source-blocks</a>
-</li>
-<li class="nav-item level-0 active ">
-<a href="./08-supported-languages.html" class="nav-link">08-supported-languages</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./09-jupyter.html" class="nav-link">09-jupyter</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Export &amp; Publishing</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./10-export.html" class="nav-link">10-export</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./publishing.html" class="nav-link">publishing</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./11-latex-preview.html" class="nav-link">11-latex-preview</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./12-image-overlays.html" class="nav-link">12-image-overlays</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Advanced Features</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./18-database-search.html" class="nav-link">18-database-search</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./19-references.html" class="nav-link">19-references</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./14-journal.html" class="nav-link">14-journal</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./16-notebook.html" class="nav-link">16-notebook</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./17-projectile.html" class="nav-link">17-projectile</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./22-hydra-menus.html" class="nav-link">22-hydra-menus</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./20-editmarks.html" class="nav-link">20-editmarks</a>
-</li>
-</ul></div>
-
-        <div class="nav-part">
-            <button class="nav-part-toggle" aria-expanded="true">
-                <span class="toggle-icon">&#9660;</span>
-                <span class="part-caption">Reference</span>
-            </button>
-            <ul class="nav-list part-chapters">
-    
-<li class="nav-item level-0  ">
-<a href="./27-org-api.html" class="nav-link">27-org-api</a>
-</li>
-<li class="nav-item level-0  ">
-<a href="./28-non-standard-features.html" class="nav-link">28-non-standard-features</a>
-</li>
-</ul></div>
-</nav>
-        </aside>
-        
-
-        <main class="content" id="main-content">
-            <article class="page-content">
-                <div id="org-overview" class="org-section org-level-1">
+<div id="org-overview" class="org-section org-level-1">
 <h1>✅ Overview</h1>
-<p>CLOSED: [2026-01-15 Thu 15:44]</p>
-
-<p>Scimax VS Code supports a wide range of programming languages for source block execution through two primary mechanisms:</p>
+<p>Scimax VS Code supports code execution in source blocks through two mechanisms:</p>
 
 <ol>
 <li><p><strong>Native Execution</strong> - Direct language interpreters (Python, JavaScript, Shell)</p>
@@ -267,18 +227,14 @@
 </li>
 </ol>
 
-<p>This document provides a comprehensive reference for all supported languages, including syntax examples, execution modes, session support, and required dependencies.</p>
+<p>This document covers the primary supported languages. For Jupyter, any language with a kernel can theoretically be used, but these are the ones with tested support.</p>
 
 </div>
-<div id="org-understanding-execution-modes" class="org-section org-level-1">
-<h1>✅ Understanding Execution Modes</h1>
-<p>CLOSED: [2026-01-15 Thu 15:44]</p>
-
+<div id="org-execution-modes" class="org-section org-level-1">
+<h1>✅ Execution Modes</h1>
 <div id="org-native-execution" class="org-section org-level-2">
 <h2>✅ Native Execution</h2>
-<p>CLOSED: [2026-01-15 Thu 15:44]</p>
-
-<p>Native executors run code directly using installed command-line interpreters. They are:</p>
+<p>Native executors run code directly using command-line interpreters:</p>
 
 <ul>
 <li><p>Fast and lightweight</p>
@@ -289,14 +245,12 @@
 </li>
 </ul>
 
-<p>Supported natively: Python, JavaScript/Node.js, Shell/Bash</p>
+<p>Supported natively: <strong>Python, JavaScript/Node.js, Shell/Bash</strong></p>
 
 </div>
 <div id="org-jupyter-execution" class="org-section org-level-2">
 <h2>✅ Jupyter Execution</h2>
-<p>CLOSED: [2026-01-15 Thu 15:44]</p>
-
-<p>Jupyter executors use Jupyter kernels for code execution. They provide:</p>
+<p>Jupyter executors use Jupyter kernels for code execution:</p>
 
 <ul>
 <li><p>Full session support (variables persist between blocks)</p>
@@ -305,24 +259,20 @@
 </li>
 <li><p>Interactive features</p>
 </li>
-<li><p>Support for many languages</p>
-</li>
 </ul>
 
 <p>To use Jupyter for any language:</p>
 
 <ol>
-<li><p><strong>Explicit syntax</strong>: Use jupyter-&lt;language&gt; (e.g., jupyter-python)</p>
+<li><p><strong>Explicit syntax</strong>: Use <code class="verbatim">jupyter-&lt;language&gt;</code> (e.g., <code class="verbatim">jupyter-python</code>)</p>
 </li>
-<li><p><strong>Auto-detection</strong>: Some languages automatically use Jupyter if available</p>
+<li><p>Jupyter must be installed with the appropriate kernel</p>
 </li>
 </ol>
 
 </div>
-<div id="org-determining-which-executor-runs" class="org-section org-level-2">
-<h2>✅ Determining Which Executor Runs</h2>
-<p>CLOSED: [2026-01-15 Thu 15:44]</p>
-
+<div id="org-choosing-an-executor" class="org-section org-level-2">
+<h2>✅ Choosing an Executor</h2>
 <!-- Unknown element type: comment -->
 <div class="org-src-container">
 <pre class="src src-python"><code class="language-python">print(&quot;Hello from native Python&quot;)</code></pre>
@@ -341,41 +291,29 @@
 
 </div>
 </div>
-<div id="org-scripting-languages" class="org-section org-level-1">
-<h1>✅ Scripting Languages</h1>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
-<div id="org-python" class="org-section org-level-2">
-<h2>✅ Python</h2>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
+<div id="org-python" class="org-section org-level-1">
+<h1>✅ Python</h1>
 <!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>✅ Language Identifiers</h3>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
+<div id="org-language-identifiers" class="org-section org-level-2">
+<h2>✅ Language Identifiers</h2>
 <ul>
-<li><p>python, python3, py, ipython</p>
+<li><p><code class="verbatim">python</code>, <code class="verbatim">python3</code>, <code class="verbatim">py</code>, <code class="verbatim">ipython</code></p>
 </li>
 </ul>
 
 </div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>✅ Execution Modes</h3>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
+<div id="org-execution-modes" class="org-section org-level-2">
+<h2>✅ Execution Modes</h2>
 <ul>
-<li><p><strong>Native</strong>: Direct execution via python3 command</p>
+<li><p><strong>Native</strong>: Direct execution via <code class="verbatim">python3</code> command</p>
 </li>
-<li><p><strong>Jupyter</strong>: Use jupyter-python or jupyter-ipython</p>
+<li><p><strong>Jupyter</strong>: Use <code class="verbatim">jupyter-python</code> or <code class="verbatim">jupyter-ipython</code></p>
 </li>
 </ul>
 
 </div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>✅ Session Support</h3>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
+<div id="org-session-support" class="org-section org-level-2">
+<h2>✅ Session Support</h2>
 <ul>
 <li><p>Native: No (each block runs in isolation)</p>
 </li>
@@ -384,10 +322,8 @@
 </ul>
 
 </div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>✅ Dependencies</h3>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
+<div id="org-dependencies" class="org-section org-level-2">
+<h2>✅ Dependencies</h2>
 <ul>
 <li><p><strong>Native</strong>: Python 3.x installed and in PATH</p>
 </li>
@@ -396,10 +332,8 @@
 </ul>
 
 </div>
-<div id="org-basic-example-native" class="org-section org-level-3">
-<h3>✅ Basic Example (Native)</h3>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
+<div id="org-basic-example-native" class="org-section org-level-2">
+<h2>✅ Basic Example (Native)</h2>
 <div class="org-src-container">
 <pre class="src src-python"><code class="language-python"># Native Python execution
 import math
@@ -414,10 +348,8 @@ print(f&quot;Circle area: {area:.2f}&quot;)</code></pre>
 <pre class="fixed-width">Circle area: 78.54</pre>
 
 </div>
-<div id="org-session-example-jupyter" class="org-section org-level-3">
-<h3>✅ Session Example (Jupyter)</h3>
-<p>CLOSED: [2026-01-15 Thu 15:45]</p>
-
+<div id="org-session-example-jupyter" class="org-section org-level-2">
+<h2>✅ Session Example (Jupyter)</h2>
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><code class="language-jupyter-python"># First block - define variables
 data = [1, 2, 3, 4, 5]
@@ -438,10 +370,8 @@ print(f&quot;Mean: {mean}&quot;)</code></pre>
 <pre class="fixed-width">Mean: 3.0</pre>
 
 </div>
-<div id="org-plotting-example" class="org-section org-level-3">
-<h3>✅ Plotting Example</h3>
-<p>CLOSED: [2026-01-15 Thu 15:46]</p>
-
+<div id="org-plotting-example" class="org-section org-level-2">
+<h2>✅ Plotting Example</h2>
 <div class="org-src-container">
 <pre class="src src-jupyter-python"><code class="language-jupyter-python">import matplotlib.pyplot as plt
 import numpy as np
@@ -459,60 +389,289 @@ plt.grid(True)</code></pre>
 
 <p><img src=".ob-jupyter/output-1768510006544-2.png" alt="" /></p>
 
+</div>
+<div id="org-installing-ipython-kernel" class="org-section org-level-2">
+<h2>✅ Installing IPython Kernel</h2>
 <div class="org-src-container">
-<pre class="src src-jupyter-python"><code class="language-jupyter-python">plt.savefig(&#39;plot.png&#39;)</code></pre>
+<pre class="src src-bash"><code class="language-bash">pip install ipykernel
+python -m ipykernel install --user --name=python3</code></pre>
 </div>
-
-
-<pre class="fixed-width">Error: OSError: [Errno 30] Read-only file system: &#39;plot.png&#39;</pre>
-
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>Rich output in Jupyter (plots, tables, HTML)</p>
-</li>
-<li><p>NumPy, pandas, matplotlib integration</p>
-</li>
-<li><p>Automatic result formatting</p>
-</li>
-</ul>
-
-</div>
-<div id="org-limitations" class="org-section org-level-3">
-<h3>⚠️ Limitations</h3>
-<ul>
-<li><p>Native mode has no session support</p>
-</li>
-<li><p>Large output may be truncated</p>
-</li>
-</ul>
 
 </div>
 </div>
-<div id="org-javascript-node-js" class="org-section org-level-2">
-<h2>⚠️ JavaScript/Node.js</h2>
+<div id="org-bash-shell" class="org-section org-level-1">
+<h1>✅ Bash/Shell</h1>
 <!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
+<div id="org-language-identifiers" class="org-section org-level-2">
+<h2>✅ Language Identifiers</h2>
 <ul>
-<li><p>javascript, js, node, nodejs</p>
+<li><p><code class="verbatim">sh</code>, <code class="verbatim">bash</code>, <code class="verbatim">shell</code></p>
 </li>
 </ul>
 
 </div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
+<div id="org-execution-modes" class="org-section org-level-2">
+<h2>✅ Execution Modes</h2>
 <ul>
-<li><p><strong>Native</strong>: Direct execution via node command</p>
+<li><p><strong>Native</strong>: Direct shell execution (default on Unix)</p>
 </li>
-<li><p><strong>Jupyter</strong>: Use jupyter-javascript (requires IJavascript kernel)</p>
+<li><p><strong>Jupyter</strong>: Use <code class="verbatim">jupyter-bash</code> (requires Bash kernel)</p>
 </li>
 </ul>
 
 </div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
+<div id="org-session-support" class="org-section org-level-2">
+<h2>✅ Session Support</h2>
+<ul>
+<li><p>Native: No</p>
+</li>
+<li><p>Jupyter: Yes</p>
+</li>
+</ul>
+
+</div>
+<div id="org-dependencies" class="org-section org-level-2">
+<h2>✅ Dependencies</h2>
+<ul>
+<li><p><strong>Native</strong>: Bash shell (standard on Unix/Linux/macOS)</p>
+</li>
+<li><p><strong>Jupyter</strong>: Bash kernel (optional)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-basic-example" class="org-section org-level-2">
+<h2>✅ Basic Example</h2>
+<div class="org-src-container">
+<pre class="src src-bash"><code class="language-bash"># List files in current directory
+ls -la | head -n 5</code></pre>
+</div>
+
+
+<pre class="fixed-width">total 1728
+drwxr-xr-x@ 42 jkitchin  staff   1344 Jan 16 20:01 .
+drwxr-xr-x@ 53 jkitchin  staff   1696 Jan 16 19:58 ..
+drwxr-xr-x@  9 jkitchin  staff    288 Jan 15 15:46 .ob-jupyter
+-rw-r--r--@  1 jkitchin  staff  28933 Jan 16 20:04 00-index.org</pre>
+
+</div>
+<div id="org-command-pipeline" class="org-section org-level-2">
+<h2>✅ Command Pipeline</h2>
+<div class="org-src-container">
+<pre class="src src-bash"><code class="language-bash"># Find large files
+find . -type f -size +1k 2&gt;/dev/null | \
+  xargs ls -lh 2&gt;/dev/null | \
+  awk &#39;{print $5, $9}&#39; | \
+  sort -hr | \
+  head -5</code></pre>
+</div>
+
+</div>
+<div id="org-working-directory" class="org-section org-level-2">
+<h2>✅ Working Directory</h2>
+<div class="org-src-container">
+<pre class="src src-bash"><code class="language-bash"># Working directory can be set with :dir
+pwd</code></pre>
+</div>
+
+
+<pre class="fixed-width">/private/tmp</pre>
+
+</div>
+</div>
+<div id="org-julia" class="org-section org-level-1">
+<h1>✅ Julia</h1>
+<!-- Unknown element type: property-drawer -->
+<div id="org-language-identifiers" class="org-section org-level-2">
+<h2>✅ Language Identifiers</h2>
+<ul>
+<li><p><code class="verbatim">julia</code>, <code class="verbatim">jl</code></p>
+</li>
+</ul>
+
+</div>
+<div id="org-execution-modes" class="org-section org-level-2">
+<h2>✅ Execution Modes</h2>
+<ul>
+<li><p><strong>Jupyter</strong>: Use <code class="verbatim">jupyter-julia</code> (requires IJulia)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-session-support" class="org-section org-level-2">
+<h2>✅ Session Support</h2>
+<ul>
+<li><p>Yes (full state persistence)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-dependencies" class="org-section org-level-2">
+<h2>✅ Dependencies</h2>
+<ul>
+<li><p>Julia installed</p>
+</li>
+<li><p>IJulia: Install from Julia REPL with <code class="verbatim">using Pkg; Pkg.add(&quot;IJulia&quot;)</code></p>
+</li>
+</ul>
+
+</div>
+<div id="org-basic-example" class="org-section org-level-2">
+<h2>✅ Basic Example</h2>
+<div class="org-src-container">
+<pre class="src src-jupyter-julia"><code class="language-jupyter-julia"># Julia execution
+function fibonacci(n)
+    if n &lt;= 2
+        return 1
+    else
+        return fibonacci(n-1) + fibonacci(n-2)
+    end
+end
+
+println(&quot;First 10 Fibonacci numbers:&quot;)
+for i in 1:10
+    println(&quot;F($i) = $(fibonacci(i))&quot;)
+end</code></pre>
+</div>
+
+</div>
+<div id="org-array-operations" class="org-section org-level-2">
+<h2>✅ Array Operations</h2>
+<div class="org-src-container">
+<pre class="src src-jupyter-julia"><code class="language-jupyter-julia"># Efficient array operations
+A = [1 2 3; 4 5 6; 7 8 9]
+println(&quot;Matrix A:&quot;)
+println(A)
+
+# Element-wise operations
+B = A .^ 2
+println(&quot;\nA squared:&quot;)
+println(B)</code></pre>
+</div>
+
+</div>
+<div id="org-installing-ijulia-kernel" class="org-section org-level-2">
+<h2>✅ Installing IJulia Kernel</h2>
+<p>From Julia REPL:</p>
+
+<div class="org-src-container">
+<pre class="src src-julia"><code class="language-julia">using Pkg
+Pkg.add(&quot;IJulia&quot;)</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-r" class="org-section org-level-1">
+<h1>✅ R</h1>
+<!-- Unknown element type: property-drawer -->
+<div id="org-language-identifiers" class="org-section org-level-2">
+<h2>✅ Language Identifiers</h2>
+<ul>
+<li><p><code class="verbatim">r</code>, <code class="verbatim">R</code></p>
+</li>
+</ul>
+
+</div>
+<div id="org-execution-modes" class="org-section org-level-2">
+<h2>✅ Execution Modes</h2>
+<ul>
+<li><p><strong>Jupyter</strong>: Use <code class="verbatim">jupyter-r</code> (requires IRkernel)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-session-support" class="org-section org-level-2">
+<h2>✅ Session Support</h2>
+<ul>
+<li><p>Yes (full state persistence)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-dependencies" class="org-section org-level-2">
+<h2>✅ Dependencies</h2>
+<ul>
+<li><p>R installed</p>
+</li>
+<li><p>IRkernel: Install from R with <code class="verbatim">install.packages(&#39;IRkernel&#39;); IRkernel::installspec()</code></p>
+</li>
+</ul>
+
+</div>
+<div id="org-basic-example" class="org-section org-level-2">
+<h2>✅ Basic Example</h2>
+<div class="org-src-container">
+<pre class="src src-jupyter-r"><code class="language-jupyter-r"># R execution
+x &lt;- c(1, 2, 3, 4, 5)
+y &lt;- x^2
+print(y)</code></pre>
+</div>
+
+</div>
+<div id="org-data-frame-example" class="org-section org-level-2">
+<h2>✅ Data Frame Example</h2>
+<div class="org-src-container">
+<pre class="src src-jupyter-r"><code class="language-jupyter-r"># Working with data frames
+df &lt;- data.frame(
+  name = c(&quot;Alice&quot;, &quot;Bob&quot;, &quot;Charlie&quot;),
+  age = c(25, 30, 35),
+  score = c(85, 92, 78)
+)
+
+print(df)
+summary(df)</code></pre>
+</div>
+
+</div>
+<div id="org-plotting-example" class="org-section org-level-2">
+<h2>✅ Plotting Example</h2>
+<div class="org-src-container">
+<pre class="src src-jupyter-r"><code class="language-jupyter-r"># Create a plot
+x &lt;- seq(0, 2*pi, length.out=100)
+y &lt;- sin(x)
+
+png(&quot;rplot.png&quot;)
+plot(x, y, type=&quot;l&quot;, col=&quot;blue&quot;,
+     main=&quot;Sine Wave&quot;, xlab=&quot;x&quot;, ylab=&quot;sin(x)&quot;)
+grid()
+dev.off()</code></pre>
+</div>
+
+</div>
+<div id="org-installing-irkernel" class="org-section org-level-2">
+<h2>✅ Installing IRkernel</h2>
+<p>From R:</p>
+
+<div class="org-src-container">
+<pre class="src src-r"><code class="language-r">install.packages(&#39;IRkernel&#39;)
+IRkernel::installspec()</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-javascript-node-js" class="org-section org-level-1">
+<h1>✅ JavaScript/Node.js</h1>
+<!-- Unknown element type: property-drawer -->
+<div id="org-language-identifiers" class="org-section org-level-2">
+<h2>✅ Language Identifiers</h2>
+<ul>
+<li><p><code class="verbatim">javascript</code>, <code class="verbatim">js</code>, <code class="verbatim">node</code>, <code class="verbatim">nodejs</code></p>
+</li>
+</ul>
+
+</div>
+<div id="org-execution-modes" class="org-section org-level-2">
+<h2>✅ Execution Modes</h2>
+<ul>
+<li><p><strong>Native</strong>: Direct execution via <code class="verbatim">node</code> command</p>
+</li>
+<li><p><strong>Jupyter</strong>: Use <code class="verbatim">jupyter-javascript</code> (requires IJavascript kernel)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-session-support" class="org-section org-level-2">
+<h2>✅ Session Support</h2>
 <ul>
 <li><p>Native: No</p>
 </li>
@@ -521,31 +680,31 @@ plt.grid(True)</code></pre>
 </ul>
 
 </div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
+<div id="org-dependencies" class="org-section org-level-2">
+<h2>✅ Dependencies</h2>
 <ul>
 <li><p><strong>Native</strong>: Node.js installed and in PATH</p>
 </li>
-<li><p><strong>Jupyter</strong>: IJavascript kernel (npm install -g ijavascript)</p>
+<li><p><strong>Jupyter</strong>: IJavascript kernel (<code class="verbatim">npm install -g ijavascript</code>)</p>
 </li>
 </ul>
 
 </div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
+<div id="org-basic-example" class="org-section org-level-2">
+<h2>✅ Basic Example</h2>
 <div class="org-src-container">
 <pre class="src src-javascript"><code class="language-javascript">// JavaScript execution
-const numbers = [1, 2, 3, 4, 5];
+const numbers = [1, 2, 3, 4, 5, 6];
 const sum = numbers.reduce((a, b) =&gt; a + b, 0);
 console.log(`Sum: ${sum}`);</code></pre>
 </div>
 
 
-<pre class="fixed-width">Sum: 15</pre>
+<pre class="fixed-width">Sum: 21</pre>
 
 </div>
-<div id="org-working-with-json" class="org-section org-level-3">
-<h3>⚠️ Working with JSON</h3>
+<div id="org-working-with-json" class="org-section org-level-2">
+<h2>✅ Working with JSON</h2>
 <div class="org-src-container">
 <pre class="src src-javascript"><code class="language-javascript">const data = {
   name: &quot;Scimax&quot;,
@@ -568,1899 +727,47 @@ console.log(JSON.stringify(data, null, 2));</code></pre>
 }</pre>
 
 </div>
-<div id="org-async-await-example" class="org-section org-level-3">
-<h3>⚠️ Async/Await Example</h3>
+</div>
+<div id="org-other-languages-via-jupyter" class="org-section org-level-1">
+<h1>✅ Other Languages via Jupyter</h1>
+<p>Scimax VS Code can execute any language that has a Jupyter kernel installed. The general pattern is:</p>
+
 <div class="org-src-container">
-<pre class="src src-javascript"><code class="language-javascript">async function fetchData() {
-  // Simulate async operation
-  return new Promise(resolve =&gt; {
-    setTimeout(() =&gt; resolve(&quot;Data loaded&quot;), 100);
-  });
-}
-
-(async () =&gt; {
-  const result = await fetchData();
-  console.log(result);
-})();</code></pre>
+<pre class="src src-org"><code class="language-org">,#+BEGIN_SRC jupyter-&lt;language&gt;
+code here
+,#+END_SRC</code></pre>
 </div>
 
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>Full ES6+ support</p>
-</li>
-<li><p>NPM module access</p>
-</li>
-<li><p>Async/await support</p>
-</li>
-</ul>
+<div id="org-popular-jupyter-kernels" class="org-section org-level-2">
+<h2>✅ Popular Jupyter Kernels</h2>
+<table class="org-table">
+<thead>
+<tr><th>Language</th><th>Kernel</th><th>Install Command</th></tr>
+</thead>
+<tbody>
+<tr><td>TypeScript</td><td>TSLab</td><td><code class="verbatim">npm install -g tslab &amp;&amp; tslab install</code></td></tr>
+<tr><td>Ruby</td><td>IRuby</td><td><code class="verbatim">gem install iruby &amp;&amp; iruby register</code></td></tr>
+<tr><td>Rust</td><td>evcxr</td><td><code class="verbatim">cargo install evcxr_jupyter &amp;&amp; evcxr_jupyter --install</code></td></tr>
+<tr><td>Go</td><td>gophernotes</td><td><code class="verbatim">go install github.com/gopherdata/gophernotes@latest</code></td></tr>
+<tr><td>C++</td><td>xeus-cling</td><td><code class="verbatim">conda install xeus-cling -c conda-forge</code></td></tr>
+<tr><td>Haskell</td><td>IHaskell</td><td><code class="verbatim">stack install ihaskell &amp;&amp; ihaskell install</code></td></tr>
+<tr><td>Scala</td><td>Almond</td><td><code class="verbatim">coursier launch almond -- --install</code></td></tr>
+</tbody>
+</table>
 
 </div>
-<div id="org-limitations" class="org-section org-level-3">
-<h3>⚠️ Limitations</h3>
-<ul>
-<li><p>Native mode runs in separate process each time</p>
-</li>
-<li><p>No browser APIs (runs in Node.js)</p>
-</li>
-</ul>
-
-</div>
-</div>
-<div id="org-typescript" class="org-section org-level-2">
-<h2>⚠️ TypeScript</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>typescript, ts</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-typescript (requires TSLab kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (with TSLab kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>TSLab kernel: npm install -g tslab &amp;&amp; tslab install</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
+<div id="org-checking-available-kernels" class="org-section org-level-2">
+<h2>✅ Checking Available Kernels</h2>
 <div class="org-src-container">
-<pre class="src src-jupyter-typescript"><code class="language-jupyter-typescript">interface Person {
-  name: string;
-  age: number;
-}
-
-const person: Person = {
-  name: &quot;Alice&quot;,
-  age: 30
-};
-
-console.log(`${person.name} is ${person.age} years old`);</code></pre>
-</div>
-
-</div>
-<div id="org-type-checking" class="org-section org-level-3">
-<h3>⚠️ Type Checking</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-typescript"><code class="language-jupyter-typescript">function greet(name: string): string {
-  return `Hello, ${name}!`;
-}
-
-// Type checking works
-console.log(greet(&quot;World&quot;));
-
-// This would cause a type error:
-// console.log(greet(42));</code></pre>
-</div>
-
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>Full TypeScript type checking</p>
-</li>
-<li><p>Modern JavaScript features</p>
-</li>
-<li><p>Type inference</p>
-</li>
-</ul>
-
-</div>
-</div>
-<div id="org-ruby" class="org-section org-level-2">
-<h2>⚠️ Ruby</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>ruby</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-ruby (requires IRuby kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (with IRuby kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Ruby installed</p>
-</li>
-<li><p>IRuby kernel: gem install iruby &amp;&amp; iruby register</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-ruby"><code class="language-jupyter-ruby"># Ruby execution
-numbers = [1, 2, 3, 4, 5]
-squared = numbers.map { |n| n ** 2 }
-puts &quot;Squared: #{squared.inspect}&quot;</code></pre>
-</div>
-
-
-<pre class="fixed-width">Squared: [1, 4, 9, 16, 25]</pre>
-
-</div>
-<div id="org-object-oriented-example" class="org-section org-level-3">
-<h3>⚠️ Object-Oriented Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-ruby"><code class="language-jupyter-ruby">class Circle
-  attr_reader :radius
-
-  def initialize(radius)
-    @radius = radius
-  end
-
-  def area
-    Math::PI * @radius ** 2
-  end
-end
-
-circle = Circle.new(5)
-puts &quot;Area: #{circle.area.round(2)}&quot;</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-perl" class="org-section org-level-2">
-<h2>⚠️ Perl</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>perl</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-perl (requires IPerl kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (with IPerl kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Perl installed</p>
-</li>
-<li><p>IPerl kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-perl"><code class="language-jupyter-perl"># Perl execution
-my @numbers = (1, 2, 3, 4, 5);
-my $sum = 0;
-$sum += $_ for @numbers;
-print &quot;Sum: $sum\n&quot;;</code></pre>
-</div>
-
-</div>
-</div>
-</div>
-<div id="org-shell-languages" class="org-section org-level-1">
-<h1>⚠️ Shell Languages</h1>
-<div id="org-bash-shell" class="org-section org-level-2">
-<h2>⚠️ Bash/Shell</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>sh, bash, shell</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Native</strong>: Direct shell execution (default on Unix, cmd.exe on Windows)</p>
-</li>
-<li><p><strong>Jupyter</strong>: Use jupyter-bash (requires Bash kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Native: No</p>
-</li>
-<li><p>Jupyter: Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p><strong>Native</strong>: Bash shell (standard on Unix/Linux/macOS)</p>
-</li>
-<li><p><strong>Jupyter</strong>: Bash kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash"># List files in current directory
-ls -la | head -n 10</code></pre>
-</div>
-
-
-<pre class="fixed-width">total 100
-drwxr-xr-x  5 user staff  160 Jan 14 00:00 .
-drwxr-xr-x 10 user staff  320 Jan 13 23:00 ..</pre>
-
-</div>
-<div id="org-command-pipeline" class="org-section org-level-3">
-<h3>⚠️ Command Pipeline</h3>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash"># Find large files
-find . -type f -size +1M | \
-  xargs ls -lh | \
-  awk &#39;{print $5, $9}&#39; | \
-  sort -hr | \
-  head -5</code></pre>
-</div>
-
-</div>
-<div id="org-environment-variables" class="org-section org-level-3">
-<h3>⚠️ Environment Variables</h3>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash"># Working directory and environment
-export MY_VAR=&quot;Hello from Bash&quot;
-echo $MY_VAR
-pwd</code></pre>
-</div>
-
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>Full shell features (pipes, redirects, etc.)</p>
-</li>
-<li><p>Environment variable access</p>
-</li>
-<li><p>System command execution</p>
-</li>
-</ul>
-
-</div>
-<div id="org-limitations" class="org-section org-level-3">
-<h3>⚠️ Limitations</h3>
-<ul>
-<li><p>Native mode doesn&#39;t preserve state</p>
-</li>
-<li><p>Platform-specific behavior (Unix vs Windows)</p>
-</li>
-</ul>
-
-</div>
-</div>
-<div id="org-powershell" class="org-section org-level-2">
-<h2>⚠️ PowerShell</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>powershell, pwsh</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-powershell (requires PowerShell kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (with kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>PowerShell installed</p>
-</li>
-<li><p>PowerShell kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-powershell"><code class="language-jupyter-powershell"># PowerShell execution
-Get-ChildItem | Select-Object Name, Length | Format-Table</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-zsh" class="org-section org-level-2">
-<h2>⚠️ Zsh</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>zsh</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p>Can use bash executor as fallback</p>
-</li>
-<li><p><strong>Jupyter</strong>: Use jupyter-bash with zsh configured</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Zsh shell installed</p>
-</li>
-</ul>
-
-</div>
-</div>
-</div>
-<div id="org-data-science-languages" class="org-section org-level-1">
-<h1>⚠️ Data Science Languages</h1>
-<div id="org-r" class="org-section org-level-2">
-<h2>⚠️ R</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>r, R</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-r (requires IRkernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (full state persistence)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>R installed</p>
-</li>
-<li><p>IRkernel: Install from R with install.packages(&#39;IRkernel&#39;); IRkernel::installspec()</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-r"><code class="language-jupyter-r"># R execution
-x &lt;- c(1, 2, 3, 4, 5)
-y &lt;- x^2
-print(y)</code></pre>
-</div>
-
-
-<pre class="fixed-width">[1]  1  4  9 16 25</pre>
-
-</div>
-<div id="org-data-frame-example" class="org-section org-level-3">
-<h3>⚠️ Data Frame Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-r"><code class="language-jupyter-r"># Working with data frames
-df &lt;- data.frame(
-  name = c(&quot;Alice&quot;, &quot;Bob&quot;, &quot;Charlie&quot;),
-  age = c(25, 30, 35),
-  score = c(85, 92, 78)
-)
-
-print(df)
-summary(df)</code></pre>
-</div>
-
-</div>
-<div id="org-plotting-example" class="org-section org-level-3">
-<h3>⚠️ Plotting Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-r"><code class="language-jupyter-r"># Create a plot
-x &lt;- seq(0, 2*pi, length.out=100)
-y &lt;- sin(x)
-
-png(&quot;rplot.png&quot;)
-plot(x, y, type=&quot;l&quot;, col=&quot;blue&quot;,
-     main=&quot;Sine Wave&quot;, xlab=&quot;x&quot;, ylab=&quot;sin(x)&quot;)
-grid()
-dev.off()</code></pre>
-</div>
-
-
-<p><img src="rplot.png" alt="" /></p>
-
-</div>
-<div id="org-statistical-analysis" class="org-section org-level-3">
-<h3>⚠️ Statistical Analysis</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-r"><code class="language-jupyter-r"># Statistical functions
-data &lt;- rnorm(100, mean=0, sd=1)
-cat(&quot;Mean:&quot;, mean(data), &quot;\n&quot;)
-cat(&quot;Std Dev:&quot;, sd(data), &quot;\n&quot;)
-cat(&quot;Median:&quot;, median(data), &quot;\n&quot;)</code></pre>
-</div>
-
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>Full R statistical functions</p>
-</li>
-<li><p>ggplot2 and tidyverse support</p>
-</li>
-<li><p>Data frame manipulation</p>
-</li>
-<li><p>Rich plotting capabilities</p>
-</li>
-</ul>
-
-</div>
-</div>
-<div id="org-julia" class="org-section org-level-2">
-<h2>⚠️ Julia</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>julia, jl</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-julia (requires IJulia)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (full state persistence)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Julia installed</p>
-</li>
-<li><p>IJulia: Install from Julia REPL with using Pkg; Pkg.add(&quot;IJulia&quot;)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-julia"><code class="language-jupyter-julia"># Julia execution
-function fibonacci(n)
-    if n &lt;= 2
-        return 1
-    else
-        return fibonacci(n-1) + fibonacci(n-2)
-    end
-end
-
-println(&quot;First 10 Fibonacci numbers:&quot;)
-for i in 1:10
-    println(&quot;F($i) = $(fibonacci(i))&quot;)
-end</code></pre>
-</div>
-
-</div>
-<div id="org-array-operations" class="org-section org-level-3">
-<h3>⚠️ Array Operations</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-julia"><code class="language-jupyter-julia"># Efficient array operations
-A = [1 2 3; 4 5 6; 7 8 9]
-println(&quot;Matrix A:&quot;)
-println(A)
-
-# Element-wise operations
-B = A .^ 2
-println(&quot;\nA squared:&quot;)
-println(B)</code></pre>
-</div>
-
-</div>
-<div id="org-plotting-example" class="org-section org-level-3">
-<h3>⚠️ Plotting Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-julia"><code class="language-jupyter-julia">using Plots
-
-x = range(0, 2π, length=100)
-y = sin.(x)
-
-plot(x, y, label=&quot;sin(x)&quot;, linewidth=2)
-xlabel!(&quot;x&quot;)
-ylabel!(&quot;sin(x)&quot;)
-title!(&quot;Sine Wave&quot;)
-savefig(&quot;julia-plot.png&quot;)</code></pre>
-</div>
-
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>High-performance numerical computing</p>
-</li>
-<li><p>Multiple dispatch</p>
-</li>
-<li><p>LaTeX in output</p>
-</li>
-<li><p>Excellent package ecosystem</p>
-</li>
-</ul>
-
-</div>
-</div>
-</div>
-<div id="org-systems-programming-languages" class="org-section org-level-1">
-<h1>⚠️ Systems Programming Languages</h1>
-<div id="org-c" class="org-section org-level-2">
-<h2>⚠️ C</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>c</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-c (requires Jupyter kernel for C, e.g., xeus-cling)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Limited (depends on kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>C compiler (gcc/clang)</p>
-</li>
-<li><p>Xeus-cling kernel for Jupyter</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-c"><code class="language-jupyter-c">#include &lt;stdio.h&gt;
-#include &lt;math.h&gt;
-
-int main() {
-    double radius = 5.0;
-    double area = M_PI * radius * radius;
-    printf(&quot;Circle area: %.2f\n&quot;, area);
-    return 0;
-}</code></pre>
-</div>
-
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>Low-level system programming</p>
-</li>
-<li><p>Pointer manipulation</p>
-</li>
-<li><p>Direct memory access</p>
-</li>
-</ul>
-
-</div>
-<div id="org-limitations" class="org-section org-level-3">
-<h3>⚠️ Limitations</h3>
-<ul>
-<li><p>Requires compilation</p>
-</li>
-<li><p>Limited interactive features</p>
-</li>
-<li><p>Kernel availability varies</p>
-</li>
-</ul>
-
-</div>
-</div>
-<div id="org-c" class="org-section org-level-2">
-<h2>⚠️ C++</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>c++, cpp</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-cpp (requires xeus-cling or similar)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (with appropriate kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>C++ compiler</p>
-</li>
-<li><p>Xeus-cling kernel recommended</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-cpp"><code class="language-jupyter-cpp">#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;algorithm&gt;
-
-int main() {
-    std::vector&lt;int&gt; nums = {5, 2, 8, 1, 9};
-    std::sort(nums.begin(), nums.end());
-
-    std::cout &lt;&lt; &quot;Sorted: &quot;;
-    for (int n : nums) {
-        std::cout &lt;&lt; n &lt;&lt; &quot; &quot;;
-    }
-    std::cout &lt;&lt; std::endl;
-
-    return 0;
-}</code></pre>
-</div>
-
-</div>
-<div id="org-modern-c-example" class="org-section org-level-3">
-<h3>⚠️ Modern C++ Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-cpp"><code class="language-jupyter-cpp">#include &lt;iostream&gt;
-#include &lt;memory&gt;
-#include &lt;string&gt;
-
-class Person {
-private:
-    std::string name;
-    int age;
-
-public:
-    Person(std::string n, int a) : name(n), age(a) {}
-
-    void print() const {
-        std::cout &lt;&lt; name &lt;&lt; &quot; is &quot; &lt;&lt; age &lt;&lt; &quot; years old&quot; &lt;&lt; std::endl;
-    }
-};
-
-int main() {
-    auto person = std::make_unique&lt;Person&gt;(&quot;Alice&quot;, 30);
-    person-&gt;print();
-    return 0;
-}</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-rust" class="org-section org-level-2">
-<h2>⚠️ Rust</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>rust</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-rust (requires evcxr kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (with evcxr kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Rust toolchain (rustc, cargo)</p>
-</li>
-<li><p>evcxr kernel: cargo install evcxr_jupyter &amp;&amp; evcxr_jupyter --install</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-rust"><code class="language-jupyter-rust">// Rust execution
-fn factorial(n: u64) -&gt; u64 {
-    match n {
-        0 | 1 =&gt; 1,
-        _ =&gt; n * factorial(n - 1)
-    }
-}
-
-println!(&quot;Factorial of 5: {}&quot;, factorial(5));</code></pre>
-</div>
-
-
-<pre class="fixed-width">Factorial of 5: 120</pre>
-
-</div>
-<div id="org-ownership-example" class="org-section org-level-3">
-<h3>⚠️ Ownership Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-rust"><code class="language-jupyter-rust">fn main() {
-    let v = vec![1, 2, 3, 4, 5];
-    let sum: i32 = v.iter().sum();
-    println!(&quot;Sum: {}&quot;, sum);
-
-    // Vector is still accessible
-    println!(&quot;Length: {}&quot;, v.len());
-}
-
-main();</code></pre>
-</div>
-
-</div>
-<div id="org-special-features" class="org-section org-level-3">
-<h3>⚠️ Special Features</h3>
-<ul>
-<li><p>Memory safety without garbage collection</p>
-</li>
-<li><p>Zero-cost abstractions</p>
-</li>
-<li><p>Fearless concurrency</p>
-</li>
-</ul>
-
-</div>
-</div>
-<div id="org-go" class="org-section org-level-2">
-<h2>⚠️ Go</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>go, golang</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-go (requires gophernotes kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Limited (state resets between blocks)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Go installed</p>
-</li>
-<li><p>gophernotes: go install github.com/gopherdata/gophernotes@latest</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-go"><code class="language-jupyter-go">import &quot;fmt&quot;
-
-func main() {
-    numbers := []int{1, 2, 3, 4, 5}
-    sum := 0
-    for _, n := range numbers {
-        sum += n
-    }
-    fmt.Printf(&quot;Sum: %d\n&quot;, sum)
-}
-
-main()</code></pre>
-</div>
-
-</div>
-<div id="org-goroutines-example" class="org-section org-level-3">
-<h3>⚠️ Goroutines Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-go"><code class="language-jupyter-go">import (
-    &quot;fmt&quot;
-    &quot;sync&quot;
-)
-
-func worker(id int, wg *sync.WaitGroup) {
-    defer wg.Done()
-    fmt.Printf(&quot;Worker %d starting\n&quot;, id)
-    fmt.Printf(&quot;Worker %d done\n&quot;, id)
-}
-
-func main() {
-    var wg sync.WaitGroup
-    for i := 1; i &lt;= 3; i++ {
-        wg.Add(1)
-        go worker(i, &amp;wg)
-    }
-    wg.Wait()
-}
-
-main()</code></pre>
-</div>
-
-</div>
-</div>
-</div>
-<div id="org-jvm-languages" class="org-section org-level-1">
-<h1>⚠️ JVM Languages</h1>
-<div id="org-java" class="org-section org-level-2">
-<h2>⚠️ Java</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>java</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-java (requires IJava kernel)</p>
-</li>
-</ul>
-
+<pre class="src src-bash"><code class="language-bash">jupyter kernelspec list</code></pre>
 </div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (with IJava kernel)</p>
-</li>
-</ul>
 
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Java JDK 9 or later</p>
-</li>
-<li><p>IJava kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-java"><code class="language-jupyter-java">public class Example {
-    public static void main(String[] args) {
-        int[] numbers = {1, 2, 3, 4, 5};
-        int sum = 0;
-        for (int n : numbers) {
-            sum += n;
-        }
-        System.out.println(&quot;Sum: &quot; + sum);
-    }
-}
-
-Example.main(null);</code></pre>
-</div>
-
-</div>
-<div id="org-object-oriented-example" class="org-section org-level-3">
-<h3>⚠️ Object-Oriented Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-java"><code class="language-jupyter-java">class Circle {
-    private double radius;
-
-    public Circle(double radius) {
-        this.radius = radius;
-    }
-
-    public double getArea() {
-        return Math.PI * radius * radius;
-    }
-}
-
-Circle circle = new Circle(5);
-System.out.printf(&quot;Area: %.2f\n&quot;, circle.getArea());</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-scala" class="org-section org-level-2">
-<h2>⚠️ Scala</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>scala</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-scala (requires Almond kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Scala installed</p>
-</li>
-<li><p>Almond kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-scala"><code class="language-jupyter-scala">// Scala execution
-val numbers = List(1, 2, 3, 4, 5)
-val squared = numbers.map(x =&gt; x * x)
-println(s&quot;Squared: $squared&quot;)</code></pre>
-</div>
-
-</div>
-<div id="org-functional-programming" class="org-section org-level-3">
-<h3>⚠️ Functional Programming</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-scala"><code class="language-jupyter-scala">def factorial(n: Int): Int = {
-  if (n &lt;= 1) 1
-  else n * factorial(n - 1)
-}
-
-val result = (1 to 5).map(factorial)
-println(s&quot;Factorials: $result&quot;)</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-clojure" class="org-section org-level-2">
-<h2>⚠️ Clojure</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>clojure</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-clojure (requires clojupyter)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Clojure installed</p>
-</li>
-<li><p>clojupyter kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-clojure"><code class="language-jupyter-clojure">;; Clojure execution
-(def numbers [1 2 3 4 5])
-(def sum (reduce + numbers))
-(println &quot;Sum:&quot; sum)</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-kotlin" class="org-section org-level-2">
-<h2>⚠️ Kotlin</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>kotlin</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-kotlin (requires Kotlin kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Kotlin installed</p>
-</li>
-<li><p>Kotlin Jupyter kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-kotlin"><code class="language-jupyter-kotlin">// Kotlin execution
-val numbers = listOf(1, 2, 3, 4, 5)
-val sum = numbers.sum()
-println(&quot;Sum: $sum&quot;)</code></pre>
-</div>
-
-</div>
-</div>
-</div>
-<div id="org-functional-languages" class="org-section org-level-1">
-<h1>⚠️ Functional Languages</h1>
-<div id="org-haskell" class="org-section org-level-2">
-<h2>⚠️ Haskell</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>haskell</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-haskell (requires IHaskell)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>GHC (Glasgow Haskell Compiler)</p>
-</li>
-<li><p>IHaskell kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-haskell"><code class="language-jupyter-haskell">-- Haskell execution
-factorial :: Integer -&gt; Integer
-factorial 0 = 1
-factorial n = n * factorial (n - 1)
-
-main = do
-  putStrLn &quot;First 5 factorials:&quot;
-  mapM_ print [factorial n | n &lt;- [1..5]]
-
-main</code></pre>
-</div>
-
-</div>
-<div id="org-list-comprehension" class="org-section org-level-3">
-<h3>⚠️ List Comprehension</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-haskell"><code class="language-jupyter-haskell">-- Generate list of tuples
-pythagorean = [(a,b,c) | c &lt;- [1..10],
-                          b &lt;- [1..c],
-                          a &lt;- [1..b],
-                          a^2 + b^2 == c^2]
-print pythagorean</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-ocaml" class="org-section org-level-2">
-<h2>⚠️ OCaml</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>ocaml</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-ocaml (requires OCaml kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>OCaml installed</p>
-</li>
-<li><p>OCaml Jupyter kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-ocaml"><code class="language-jupyter-ocaml">(* OCaml execution *)
-let rec factorial n =
-  if n &lt;= 1 then 1
-  else n * factorial (n - 1)
-;;
-
-List.iter (fun i -&gt;
-  Printf.printf &quot;factorial(%d) = %d\n&quot; i (factorial i)
-) [1; 2; 3; 4; 5];;</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-lisp-scheme" class="org-section org-level-2">
-<h2>⚠️ Lisp/Scheme</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>lisp, scheme, common-lisp</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-lisp (requires appropriate kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (depends on kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Lisp/Scheme interpreter</p>
-</li>
-<li><p>Appropriate Jupyter kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-scheme"><code class="language-jupyter-scheme">;; Scheme execution
-(define (factorial n)
-  (if (&lt;= n 1)
-      1
-      (* n (factorial (- n 1)))))
-
-(display &quot;Factorial of 5: &quot;)
-(display (factorial 5))
-(newline)</code></pre>
-</div>
-
-</div>
-</div>
-</div>
-<div id="org-database-languages" class="org-section org-level-1">
-<h1>⚠️ Database Languages</h1>
-<div id="org-sql" class="org-section org-level-2">
-<h2>⚠️ SQL</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>sql</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-sql (requires SQL kernel and connection)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (connection persists)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Database server or SQLite</p>
-</li>
-<li><p>SQL kernel (e.g., xsql, sql_kernel)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-sql"><code class="language-jupyter-sql">-- SQL execution
-SELECT * FROM users
-WHERE age &gt; 25
-ORDER BY name
-LIMIT 10;</code></pre>
-</div>
-
-</div>
-<div id="org-table-creation" class="org-section org-level-3">
-<h3>⚠️ Table Creation</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-sql"><code class="language-jupyter-sql">CREATE TABLE IF NOT EXISTS products (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    price REAL,
-    stock INTEGER
-);
-
-INSERT INTO products (name, price, stock) VALUES
-    (&#39;Widget&#39;, 19.99, 100),
-    (&#39;Gadget&#39;, 29.99, 50),
-    (&#39;Doohickey&#39;, 9.99, 200);
-
-SELECT * FROM products;</code></pre>
-</div>
-
-</div>
-<div id="org-aggregation-example" class="org-section org-level-3">
-<h3>⚠️ Aggregation Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-sql"><code class="language-jupyter-sql">SELECT
-    category,
-    COUNT(*) as count,
-    AVG(price) as avg_price,
-    SUM(stock) as total_stock
-FROM products
-GROUP BY category
-ORDER BY avg_price DESC;</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-sqlite" class="org-section org-level-2">
-<h2>⚠️ SQLite</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>sqlite, sqlite3</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-sqlite</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes (database file persists)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>SQLite installed</p>
-</li>
-<li><p>SQLite Jupyter kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-sqlite"><code class="language-jupyter-sqlite">-- SQLite execution
-.mode column
-.headers on
-
-SELECT * FROM sqlite_master WHERE type=&#39;table&#39;;</code></pre>
-</div>
-
-</div>
-</div>
-</div>
-<div id="org-scientific-and-visualization-languages" class="org-section org-level-1">
-<h1>⚠️ Scientific and Visualization Languages</h1>
-<div id="org-octave-matlab" class="org-section org-level-2">
-<h2>⚠️ Octave/MATLAB</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>octave, matlab</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-octave or jupyter-matlab</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Octave or MATLAB installed</p>
-</li>
-<li><p>Appropriate kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-octave"><code class="language-jupyter-octave">% Octave/MATLAB execution
-x = linspace(0, 2*pi, 100);
-y = sin(x);
-
-plot(x, y);
-title(&#39;Sine Wave&#39;);
-xlabel(&#39;x&#39;);
-ylabel(&#39;sin(x)&#39;);
-grid on;</code></pre>
-</div>
-
-</div>
-<div id="org-matrix-operations" class="org-section org-level-3">
-<h3>⚠️ Matrix Operations</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-octave"><code class="language-jupyter-octave">A = [1 2 3; 4 5 6; 7 8 9];
-B = A * A&#39;;
-disp(&#39;A * A transpose:&#39;);
-disp(B);</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-maxima" class="org-section org-level-2">
-<h2>⚠️ Maxima</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>maxima</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-maxima</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Maxima installed</p>
-</li>
-<li><p>Maxima Jupyter kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-maxima"><code class="language-jupyter-maxima">/* Maxima symbolic math */
-expr: x^2 + 2*x + 1;
-factor(expr);</code></pre>
-</div>
-
-</div>
-<div id="org-calculus-example" class="org-section org-level-3">
-<h3>⚠️ Calculus Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-maxima"><code class="language-jupyter-maxima">/* Differentiation and integration */
-f(x) := x^3 - 3*x^2 + 2*x;
-diff(f(x), x);
-integrate(f(x), x);</code></pre>
-</div>
-
-</div>
-</div>
-<div id="org-lua" class="org-section org-level-2">
-<h2>⚠️ Lua</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>lua</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p><strong>Jupyter</strong>: Use jupyter-lua</p>
-</li>
-</ul>
-
-</div>
-<div id="org-session-support" class="org-section org-level-3">
-<h3>⚠️ Session Support</h3>
-<ul>
-<li><p>Yes</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Lua installed</p>
-</li>
-<li><p>iLua kernel</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-jupyter-lua"><code class="language-jupyter-lua">-- Lua execution
-function factorial(n)
-    if n &lt;= 1 then
-        return 1
-    else
-        return n * factorial(n - 1)
-    end
-end
-
-print(&quot;Factorial of 5:&quot;, factorial(5))</code></pre>
-</div>
-
-</div>
-</div>
-</div>
-<div id="org-markup-and-document-languages" class="org-section org-level-1">
-<h1>⚠️ Markup and Document Languages</h1>
-<div id="org-graphviz-dot" class="org-section org-level-2">
-<h2>⚠️ Graphviz (DOT)</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>dot, graphviz</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p>Generate graph visualizations</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Graphviz installed</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-dot"><code class="language-dot">digraph G {
-    rankdir=LR;
-
-    A [label=&quot;Start&quot;];
-    B [label=&quot;Process&quot;];
-    C [label=&quot;Decision&quot; shape=diamond];
-    D [label=&quot;End&quot;];
-
-    A -&gt; B;
-    B -&gt; C;
-    C -&gt; D [label=&quot;Yes&quot;];
-    C -&gt; A [label=&quot;No&quot;];
-}</code></pre>
-</div>
-
-
-<p><img src="graph.png" alt="" /></p>
-
-</div>
-</div>
-<div id="org-plantuml" class="org-section org-level-2">
-<h2>⚠️ PlantUML</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>plantuml</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p>Generate UML diagrams</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>PlantUML installed</p>
-</li>
-<li><p>Java runtime</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-plantuml"><code class="language-plantuml">@startuml
-actor User
-participant &quot;Web Server&quot; as WS
-database &quot;Database&quot; as DB
-
-User -&gt; WS: HTTP Request
-activate WS
-WS -&gt; DB: Query
-activate DB
-DB --&gt; WS: Result
-deactivate DB
-WS --&gt; User: HTTP Response
-deactivate WS
-@enduml</code></pre>
-</div>
-
-
-<p><img src="sequence.png" alt="" /></p>
-
-</div>
-</div>
-<div id="org-gnuplot" class="org-section org-level-2">
-<h2>⚠️ Gnuplot</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>gnuplot</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p>Generate plots</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>Gnuplot installed</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-gnuplot"><code class="language-gnuplot">set terminal png
-set output &#39;gnuplot.png&#39;
-
-set title &quot;Sample Plot&quot;
-set xlabel &quot;X axis&quot;
-set ylabel &quot;Y axis&quot;
-set grid
-
-plot sin(x) title &#39;sin(x)&#39;, cos(x) title &#39;cos(x)&#39;</code></pre>
-</div>
-
-
-<p><img src="gnuplot.png" alt="" /></p>
-
-</div>
-</div>
-</div>
-<div id="org-special-purpose-languages" class="org-section org-level-1">
-<h1>⚠️ Special Purpose Languages</h1>
-<div id="org-latex" class="org-section org-level-2">
-<h2>⚠️ LaTeX</h2>
-<!-- Unknown element type: property-drawer -->
-<div id="org-language-identifiers" class="org-section org-level-3">
-<h3>⚠️ Language Identifiers</h3>
-<ul>
-<li><p>latex</p>
-</li>
-</ul>
-
-</div>
-<div id="org-execution-modes" class="org-section org-level-3">
-<h3>⚠️ Execution Modes</h3>
-<ul>
-<li><p>Render LaTeX fragments</p>
-</li>
-</ul>
-
-</div>
-<div id="org-dependencies" class="org-section org-level-3">
-<h3>⚠️ Dependencies</h3>
-<ul>
-<li><p>LaTeX distribution (TeX Live, MiKTeX)</p>
-</li>
-</ul>
-
-</div>
-<div id="org-basic-example" class="org-section org-level-3">
-<h3>⚠️ Basic Example</h3>
-<div class="org-src-container">
-<pre class="src src-latex"><code class="language-latex">\documentclass{article}
-\usepackage{amsmath}
-\begin{document}
-\[
-E = mc^2
-\]
-\[
-\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
-\]
-\end{document}</code></pre>
-</div>
-
-</div>
 </div>
 </div>
 <div id="org-header-arguments-reference" class="org-section org-level-1">
-<h1>⚠️ Header Arguments Reference</h1>
+<h1>✅ Header Arguments Reference</h1>
 <div id="org-common-header-arguments" class="org-section org-level-2">
-<h2>⚠️ Common Header Arguments</h2>
+<h2>✅ Common Header Arguments</h2>
 <table class="org-table">
 <thead>
 <tr><th>Argument</th><th>Values</th><th>Description</th></tr>
@@ -2479,54 +786,51 @@ E = mc^2
 
 </div>
 <div id="org-session-example" class="org-section org-level-2">
-<h2>⚠️ Session Example</h2>
+<h2>✅ Session Example</h2>
 <div class="org-src-container">
 <pre class="src src-org"><code class="language-org"># Define variable in first block
-#+BEGIN_SRC jupyter-python :session *analysis*
-data = [1, 2, 3, 4, 5]</code></pre>
-</div>
+,#+BEGIN_SRC jupyter-python :session *analysis*
+data = [1, 2, 3, 4, 5]
+,#+END_SRC
 
-<!-- Unknown element type: comment -->
-<div class="org-src-container">
-<pre class="src src-jupyter-python"><code class="language-jupyter-python">import statistics
-print(f&quot;Mean: {statistics.mean(data)}&quot;)</code></pre>
+# Use variable in second block
+,#+BEGIN_SRC jupyter-python :session *analysis*
+import statistics
+print(f&quot;Mean: {statistics.mean(data)}&quot;)
+,#+END_SRC</code></pre>
 </div>
 
 </div>
 <div id="org-file-output-example" class="org-section org-level-2">
-<h2>⚠️ File Output Example</h2>
+<h2>✅ File Output Example</h2>
 <div class="org-src-container">
-<pre class="src src-org"><code class="language-org">#+BEGIN_SRC jupyter-python :results file :file output.png
+<pre class="src src-org"><code class="language-org">,#+BEGIN_SRC jupyter-python :results file :file output.png
 import matplotlib.pyplot as plt
 plt.plot([1,2,3], [1,4,9])
-plt.savefig(&#39;output.png&#39;)</code></pre>
+plt.savefig(&#39;output.png&#39;)
+,#+END_SRC</code></pre>
 </div>
 
 </div>
 </div>
 <div id="org-troubleshooting" class="org-section org-level-1">
-<h1>⚠️ Troubleshooting</h1>
-<div id="org-checking-available-executors" class="org-section org-level-2">
-<h2>⚠️ Checking Available Executors</h2>
-<p>Use the command Scimax: Check Available Executors to see which language executors are available.</p>
-
-</div>
+<h1>✅ Troubleshooting</h1>
 <div id="org-common-issues" class="org-section org-level-2">
-<h2>⚠️ Common Issues</h2>
+<h2>✅ Common Issues</h2>
 <div id="org-no-executor-available-for-language-x" class="org-section org-level-3">
-<h3>⚠️ &quot;No executor available for language: X&quot;</h3>
+<h3>✅ &quot;No executor available for language: X&quot;</h3>
 <ol>
 <li><p>For native languages: Install the language (python3, node, etc.)</p>
 </li>
 <li><p>For Jupyter languages: Install the appropriate kernel</p>
 </li>
-<li><p>Verify installation: jupyter kernelspec list</p>
+<li><p>Verify: <code class="verbatim">jupyter kernelspec list</code></p>
 </li>
 </ol>
 
 </div>
 <div id="org-jupyter-kernel-not-found" class="org-section org-level-3">
-<h3>⚠️ &quot;Jupyter kernel not found&quot;</h3>
+<h3>✅ &quot;Jupyter kernel not found&quot;</h3>
 <div class="org-src-container">
 <pre class="src src-bash"><code class="language-bash"># Install Jupyter
 pip install jupyter
@@ -2540,11 +844,11 @@ jupyter kernelspec list</code></pre>
 
 </div>
 <div id="org-session-state-not-persisting" class="org-section org-level-3">
-<h3>⚠️ Session state not persisting</h3>
+<h3>✅ Session state not persisting</h3>
 <ul>
-<li><p>Use jupyter-&lt;language&gt; syntax</p>
+<li><p>Use <code class="verbatim">jupyter-&lt;language&gt;</code> syntax</p>
 </li>
-<li><p>Add :session &lt;name&gt; header argument</p>
+<li><p>Add <code class="verbatim">:session &lt;name&gt;</code> header argument</p>
 </li>
 <li><p>Ensure all blocks use the same session name</p>
 </li>
@@ -2552,157 +856,49 @@ jupyter kernelspec list</code></pre>
 
 </div>
 <div id="org-code-executes-but-no-output-appears" class="org-section org-level-3">
-<h3>⚠️ Code executes but no output appears</h3>
+<h3>✅ Code executes but no output appears</h3>
 <ul>
-<li><p>Check :results header (use :results output)</p>
+<li><p>Check <code class="verbatim">:results</code> header (use <code class="verbatim">:results output</code>)</p>
 </li>
-<li><p>Ensure :eval is not set to no</p>
+<li><p>Ensure <code class="verbatim">:eval</code> is not set to <code class="verbatim">no</code></p>
 </li>
 <li><p>Add explicit print statements</p>
 </li>
-<li><p>Check if :results silent is set</p>
-</li>
 </ul>
-
-</div>
-<div id="org-import-module-not-found-errors" class="org-section org-level-3">
-<h3>⚠️ Import/Module not found errors</h3>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash"># Check which Python is being used
-which python3
-
-# Install missing package
-pip install package-name
-
-# Use specific environment
-conda activate myenv</code></pre>
-</div>
 
 </div>
 </div>
 <div id="org-getting-help" class="org-section org-level-2">
-<h2>⚠️ Getting Help</h2>
+<h2>✅ Getting Help</h2>
 <ul>
-<li><p>View Babel output: Scimax: Show Babel Output</p>
+<li><p>View Babel output: <code class="verbatim">Scimax: Show Babel Output</code></p>
 </li>
-<li><p>Check executor status: Scimax: Check Available Executors</p>
+<li><p>Check executor status: <code class="verbatim">Scimax: Check Available Executors</code></p>
 </li>
-<li><p>View Jupyter kernel list: jupyter kernelspec list in terminal</p>
+<li><p>View Jupyter kernel list: <code class="verbatim">jupyter kernelspec list</code> in terminal</p>
 </li>
 </ul>
 
 </div>
 </div>
-<div id="org-installing-jupyter-kernels" class="org-section org-level-1">
-<h1>⚠️ Installing Jupyter Kernels</h1>
-<div id="org-python-ipython" class="org-section org-level-2">
-<h2>⚠️ Python (IPython)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">pip install ipykernel
-python -m ipykernel install --user --name=python3</code></pre>
-</div>
-
-</div>
-<div id="org-julia-ijulia" class="org-section org-level-2">
-<h2>⚠️ Julia (IJulia)</h2>
-<div class="org-src-container">
-<pre class="src src-julia"><code class="language-julia">using Pkg
-Pkg.add(&quot;IJulia&quot;)</code></pre>
-</div>
-
-</div>
-<div id="org-r-irkernel" class="org-section org-level-2">
-<h2>⚠️ R (IRkernel)</h2>
-<div class="org-src-container">
-<pre class="src src-r"><code class="language-r">install.packages(&#39;IRkernel&#39;)
-IRkernel::installspec()</code></pre>
-</div>
-
-</div>
-<div id="org-ruby-iruby" class="org-section org-level-2">
-<h2>⚠️ Ruby (IRuby)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">gem install iruby
-iruby register --force</code></pre>
-</div>
-
-</div>
-<div id="org-javascript-ijavascript" class="org-section org-level-2">
-<h2>⚠️ JavaScript (IJavascript)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">npm install -g ijavascript
-ijsinstall</code></pre>
-</div>
-
-</div>
-<div id="org-typescript-tslab" class="org-section org-level-2">
-<h2>⚠️ TypeScript (TSLab)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">npm install -g tslab
-tslab install</code></pre>
-</div>
-
-</div>
-<div id="org-rust-evcxr" class="org-section org-level-2">
-<h2>⚠️ Rust (evcxr)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">cargo install evcxr_jupyter
-evcxr_jupyter --install</code></pre>
-</div>
-
-</div>
-<div id="org-go-gophernotes" class="org-section org-level-2">
-<h2>⚠️ Go (gophernotes)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">go install github.com/gopherdata/gophernotes@latest
-mkdir -p ~/.local/share/jupyter/kernels/gophernotes
-cd ~/.local/share/jupyter/kernels/gophernotes
-cp &quot;$(go env GOPATH)&quot;/pkg/mod/github.com/gopherdata/gophernotes@*/kernel/* .
-chmod +w ./kernel.json</code></pre>
-</div>
-
-</div>
-<div id="org-c-xeus-cling" class="org-section org-level-2">
-<h2>⚠️ C++ (xeus-cling)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">conda install xeus-cling -c conda-forge</code></pre>
-</div>
-
-</div>
-<div id="org-scala-almond" class="org-section org-level-2">
-<h2>⚠️ Scala (Almond)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">coursier launch --use-bootstrap almond -- --install</code></pre>
-</div>
-
-</div>
-<div id="org-haskell-ihaskell" class="org-section org-level-2">
-<h2>⚠️ Haskell (IHaskell)</h2>
-<div class="org-src-container">
-<pre class="src src-bash"><code class="language-bash">stack install ihaskell
-ihaskell install --stack</code></pre>
-</div>
-
-</div>
-</div>
 <div id="org-best-practices" class="org-section org-level-1">
-<h1>⚠️ Best Practices</h1>
+<h1>✅ Best Practices</h1>
 <div id="org-language-selection" class="org-section org-level-2">
-<h2>⚠️ Language Selection</h2>
+<h2>✅ Language Selection</h2>
 <ul>
 <li><p>Use native executors for simple, stateless scripts</p>
 </li>
 <li><p>Use Jupyter for interactive work requiring sessions</p>
 </li>
-<li><p>Use explicit jupyter-&lt;language&gt; when you need Jupyter features</p>
+<li><p>Use explicit <code class="verbatim">jupyter-&lt;language&gt;</code> when you need Jupyter features</p>
 </li>
 </ul>
 
 </div>
 <div id="org-session-management" class="org-section org-level-2">
-<h2>⚠️ Session Management</h2>
+<h2>✅ Session Management</h2>
 <ul>
-<li><p>Name sessions descriptively (:session <strong>data-analysis</strong>)</p>
+<li><p>Name sessions descriptively (<code class="verbatim">:session *data-analysis*</code>)</p>
 </li>
 <li><p>Use separate sessions for independent workflows</p>
 </li>
@@ -2712,11 +908,11 @@ ihaskell install --stack</code></pre>
 
 </div>
 <div id="org-code-organization" class="org-section org-level-2">
-<h2>⚠️ Code Organization</h2>
+<h2>✅ Code Organization</h2>
 <ul>
 <li><p>One concept per block for clarity</p>
 </li>
-<li><p>Use named blocks (#+NAME:) for reusable code</p>
+<li><p>Use named blocks (<code class="verbatim">#+NAME:</code>) for reusable code</p>
 </li>
 <li><p>Document complex blocks with comments</p>
 </li>
@@ -2724,50 +920,38 @@ ihaskell install --stack</code></pre>
 
 </div>
 <div id="org-performance" class="org-section org-level-2">
-<h2>⚠️ Performance</h2>
+<h2>✅ Performance</h2>
 <ul>
-<li><p>Cache expensive computations (:cache yes)</p>
+<li><p>Cache expensive computations (<code class="verbatim">:cache yes</code>)</p>
 </li>
-<li><p>Use appropriate result types (:results output vs value)</p>
+<li><p>Use appropriate result types (<code class="verbatim">:results output</code> vs <code class="verbatim">value</code>)</p>
 </li>
 <li><p>Close unused Jupyter sessions</p>
 </li>
 </ul>
 
 </div>
-<div id="org-reproducibility" class="org-section org-level-2">
-<h2>⚠️ Reproducibility</h2>
-<ul>
-<li><p>Specify explicit :dir for file operations</p>
-</li>
-<li><p>Use :session consistently in related blocks</p>
-</li>
-<li><p>Document dependencies and versions</p>
-</li>
-</ul>
-
-</div>
 </div>
 <div id="org-quick-reference" class="org-section org-level-1">
-<h1>⚠️ Quick Reference</h1>
+<h1>✅ Quick Reference</h1>
 <div id="org-execute-commands" class="org-section org-level-2">
-<h2>⚠️ Execute Commands</h2>
+<h2>✅ Execute Commands</h2>
 <ul>
-<li><p>C-&lt;return&gt; / s-&lt;return&gt;: Execute current block</p>
+<li><p><code class="verbatim">C-&lt;return&gt;</code> / <code class="verbatim">s-&lt;return&gt;</code>: Execute current block</p>
 </li>
-<li><p>S-&lt;return&gt;: Execute and move to next</p>
+<li><p><code class="verbatim">S-&lt;return&gt;</code>: Execute and move to next</p>
 </li>
-<li><p>C-c C-c: Execute (Emacs style)</p>
+<li><p><code class="verbatim">C-c C-c</code>: Execute (Emacs style)</p>
 </li>
 </ul>
 
 </div>
 <div id="org-session-control" class="org-section org-level-2">
-<h2>⚠️ Session Control</h2>
+<h2>✅ Session Control</h2>
 <ul>
-<li><p>:session &lt;name&gt;: Use named session</p>
+<li><p><code class="verbatim">:session &lt;name&gt;</code>: Use named session</p>
 </li>
-<li><p>:session none: Disable session</p>
+<li><p><code class="verbatim">:session none</code>: Disable session</p>
 </li>
 <li><p>Sessions persist until VS Code restart or manual close</p>
 </li>
@@ -2775,40 +959,19 @@ ihaskell install --stack</code></pre>
 
 </div>
 <div id="org-result-handling" class="org-section org-level-2">
-<h2>⚠️ Result Handling</h2>
+<h2>✅ Result Handling</h2>
 <ul>
-<li><p>:results output: Capture stdout</p>
+<li><p><code class="verbatim">:results output</code>: Capture stdout</p>
 </li>
-<li><p>:results value: Return last value</p>
+<li><p><code class="verbatim">:results value</code>: Return last value</p>
 </li>
-<li><p>:results silent: No results</p>
+<li><p><code class="verbatim">:results silent</code>: No results</p>
 </li>
-<li><p>:results file: Save to file</p>
+<li><p><code class="verbatim">:results file</code>: Save to file</p>
 </li>
 </ul>
 
 </div>
-<div id="org-jupyter-features" class="org-section org-level-2">
-<h2>⚠️ Jupyter Features</h2>
-<ul>
-<li><p>Rich output (plots, tables, HTML)</p>
-</li>
-<li><p>Tab completion</p>
-</li>
-<li><p>Object inspection</p>
-</li>
-<li><p>Persistent state</p>
-</li>
-</ul>
-
-</div>
-</div>
-<div id="org-conclusion" class="org-section org-level-1">
-<h1>⚠️ Conclusion</h1>
-<p>Scimax VS Code provides comprehensive support for executing code in dozens of programming languages, from traditional scripting languages to specialized scientific computing environments. Whether you need quick Python scripts, interactive R analysis, or complex multi-language workflows, the Babel execution system provides a powerful and flexible foundation for literate programming and reproducible research.</p>
-
-<p>For language-specific details, installation instructions, and troubleshooting help, refer to the relevant sections above or consult the official documentation for each language and its Jupyter kernel.</p>
-
 </div>
 <div id="org-navigation" class="org-section org-level-1">
 <h1>Navigation</h1>
@@ -2822,1462 +985,6 @@ ihaskell install --stack</code></pre>
 </ul>
 
 </div>
-            </article>
-            <nav class="page-nav">
-
-            <a href="07-source-blocks.html" class="nav-prev">
-                <span class="nav-label">Previous</span>
-                <span class="nav-title">← Previous</span>
-            </a>
-        
-
-            <a href="09-jupyter.html" class="nav-next">
-                <span class="nav-label">Next</span>
-                <span class="nav-title">Next →</span>
-            </a>
-        
-</nav>
-            <footer class="site-footer">
-<div class="footer-content">
-<nav class="footer-links">
-<ul>
-
-                <li>
-                    <a href="https://github.com/jkitchin/scimax-vscode/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
-                </li>
-            
-</ul>
-</nav>
-
-            <p class="copyright">
-                &copy; 2024-2026 John Kitchin
-            </p>
-        
-
-        <p class="powered-by">
-            Built with <a href="https://github.com/jkitchin/scimax-vscode" target="_blank" rel="noopener">scimax-vscode</a>
-        </p>
-    
-</div>
-</footer>
-        </main>
-
-        
-        <aside class="sidebar-right" id="sidebar-right">
-            <nav class="page-toc">
-<h4 class="toc-title">On this page</h4>
-<ul class="toc-list">
-<ul class="toc-sublist">
-
-            <li class="toc-item level-1">
-                <a href="#overview" class="toc-link">✅ Overview</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#understanding-execution-modes" class="toc-link">✅ Understanding Execution Modes</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#native-execution" class="toc-link">✅ Native Execution</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#jupyter-execution" class="toc-link">✅ Jupyter Execution</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#determining-which-executor-runs" class="toc-link">✅ Determining Which Executor Runs</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#scripting-languages" class="toc-link">✅ Scripting Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#python" class="toc-link">✅ Python</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">✅ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">✅ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">✅ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">✅ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example-native" class="toc-link">✅ Basic Example (Native)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-example-jupyter" class="toc-link">✅ Session Example (Jupyter)</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#plotting-example" class="toc-link">✅ Plotting Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#limitations" class="toc-link">⚠️ Limitations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#javascriptnodejs" class="toc-link">⚠️ JavaScript/Node.js</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#working-with-json" class="toc-link">⚠️ Working with JSON</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#asyncawait-example" class="toc-link">⚠️ Async/Await Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#limitations" class="toc-link">⚠️ Limitations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#typescript" class="toc-link">⚠️ TypeScript</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#type-checking" class="toc-link">⚠️ Type Checking</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#ruby" class="toc-link">⚠️ Ruby</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#object-oriented-example" class="toc-link">⚠️ Object-Oriented Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#perl" class="toc-link">⚠️ Perl</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#shell-languages" class="toc-link">⚠️ Shell Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#bashshell" class="toc-link">⚠️ Bash/Shell</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#command-pipeline" class="toc-link">⚠️ Command Pipeline</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#environment-variables" class="toc-link">⚠️ Environment Variables</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#limitations" class="toc-link">⚠️ Limitations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#powershell" class="toc-link">⚠️ PowerShell</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#zsh" class="toc-link">⚠️ Zsh</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#data-science-languages" class="toc-link">⚠️ Data Science Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#r" class="toc-link">⚠️ R</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#data-frame-example" class="toc-link">⚠️ Data Frame Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#plotting-example" class="toc-link">⚠️ Plotting Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#statistical-analysis" class="toc-link">⚠️ Statistical Analysis</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#julia" class="toc-link">⚠️ Julia</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#array-operations" class="toc-link">⚠️ Array Operations</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#plotting-example" class="toc-link">⚠️ Plotting Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#systems-programming-languages" class="toc-link">⚠️ Systems Programming Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#c" class="toc-link">⚠️ C</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#limitations" class="toc-link">⚠️ Limitations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#c" class="toc-link">⚠️ C++</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#modern-c-example" class="toc-link">⚠️ Modern C++ Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#rust" class="toc-link">⚠️ Rust</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#ownership-example" class="toc-link">⚠️ Ownership Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#special-features" class="toc-link">⚠️ Special Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#go" class="toc-link">⚠️ Go</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#goroutines-example" class="toc-link">⚠️ Goroutines Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#jvm-languages" class="toc-link">⚠️ JVM Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#java" class="toc-link">⚠️ Java</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#object-oriented-example" class="toc-link">⚠️ Object-Oriented Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#scala" class="toc-link">⚠️ Scala</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#functional-programming" class="toc-link">⚠️ Functional Programming</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#clojure" class="toc-link">⚠️ Clojure</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#kotlin" class="toc-link">⚠️ Kotlin</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#functional-languages" class="toc-link">⚠️ Functional Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#haskell" class="toc-link">⚠️ Haskell</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#list-comprehension" class="toc-link">⚠️ List Comprehension</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#ocaml" class="toc-link">⚠️ OCaml</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#lispscheme" class="toc-link">⚠️ Lisp/Scheme</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#database-languages" class="toc-link">⚠️ Database Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#sql" class="toc-link">⚠️ SQL</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#table-creation" class="toc-link">⚠️ Table Creation</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#aggregation-example" class="toc-link">⚠️ Aggregation Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#sqlite" class="toc-link">⚠️ SQLite</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#scientific-and-visualization-languages" class="toc-link">⚠️ Scientific and Visualization Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#octavematlab" class="toc-link">⚠️ Octave/MATLAB</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#matrix-operations" class="toc-link">⚠️ Matrix Operations</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#maxima" class="toc-link">⚠️ Maxima</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#calculus-example" class="toc-link">⚠️ Calculus Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#lua" class="toc-link">⚠️ Lua</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-support" class="toc-link">⚠️ Session Support</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#markup-and-document-languages" class="toc-link">⚠️ Markup and Document Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#graphviz-dot" class="toc-link">⚠️ Graphviz (DOT)</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#plantuml" class="toc-link">⚠️ PlantUML</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#gnuplot" class="toc-link">⚠️ Gnuplot</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#special-purpose-languages" class="toc-link">⚠️ Special Purpose Languages</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#latex" class="toc-link">⚠️ LaTeX</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#language-identifiers" class="toc-link">⚠️ Language Identifiers</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#execution-modes" class="toc-link">⚠️ Execution Modes</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#dependencies" class="toc-link">⚠️ Dependencies</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#basic-example" class="toc-link">⚠️ Basic Example</a>
-            </li>
-        
-</ul></li>
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#header-arguments-reference" class="toc-link">⚠️ Header Arguments Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#common-header-arguments" class="toc-link">⚠️ Common Header Arguments</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#session-example" class="toc-link">⚠️ Session Example</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#file-output-example" class="toc-link">⚠️ File Output Example</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#troubleshooting" class="toc-link">⚠️ Troubleshooting</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#checking-available-executors" class="toc-link">⚠️ Checking Available Executors</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#common-issues" class="toc-link">⚠️ Common Issues</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-3">
-                <a href="#no-executor-available-for-language-x" class="toc-link">⚠️ &quot;No executor available for language: X&quot;</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#jupyter-kernel-not-found" class="toc-link">⚠️ &quot;Jupyter kernel not found&quot;</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#session-state-not-persisting" class="toc-link">⚠️ Session state not persisting</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#code-executes-but-no-output-appears" class="toc-link">⚠️ Code executes but no output appears</a>
-            </li>
-        
-
-            <li class="toc-item level-3">
-                <a href="#importmodule-not-found-errors" class="toc-link">⚠️ Import/Module not found errors</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-2">
-                <a href="#getting-help" class="toc-link">⚠️ Getting Help</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#installing-jupyter-kernels" class="toc-link">⚠️ Installing Jupyter Kernels</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#python-ipython" class="toc-link">⚠️ Python (IPython)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#julia-ijulia" class="toc-link">⚠️ Julia (IJulia)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#r-irkernel" class="toc-link">⚠️ R (IRkernel)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#ruby-iruby" class="toc-link">⚠️ Ruby (IRuby)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#javascript-ijavascript" class="toc-link">⚠️ JavaScript (IJavascript)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#typescript-tslab" class="toc-link">⚠️ TypeScript (TSLab)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#rust-evcxr" class="toc-link">⚠️ Rust (evcxr)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#go-gophernotes" class="toc-link">⚠️ Go (gophernotes)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#c-xeus-cling" class="toc-link">⚠️ C++ (xeus-cling)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#scala-almond" class="toc-link">⚠️ Scala (Almond)</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#haskell-ihaskell" class="toc-link">⚠️ Haskell (IHaskell)</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#best-practices" class="toc-link">⚠️ Best Practices</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#language-selection" class="toc-link">⚠️ Language Selection</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#session-management" class="toc-link">⚠️ Session Management</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#code-organization" class="toc-link">⚠️ Code Organization</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#performance" class="toc-link">⚠️ Performance</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#reproducibility" class="toc-link">⚠️ Reproducibility</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#quick-reference" class="toc-link">⚠️ Quick Reference</a>
-            </li>
-        
-<ul class="toc-sublist">
-
-            <li class="toc-item level-2">
-                <a href="#execute-commands" class="toc-link">⚠️ Execute Commands</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#session-control" class="toc-link">⚠️ Session Control</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#result-handling" class="toc-link">⚠️ Result Handling</a>
-            </li>
-        
-
-            <li class="toc-item level-2">
-                <a href="#jupyter-features" class="toc-link">⚠️ Jupyter Features</a>
-            </li>
-        
-</ul></li>
-
-            <li class="toc-item level-1">
-                <a href="#conclusion" class="toc-link">⚠️ Conclusion</a>
-            </li>
-        
-
-            <li class="toc-item level-1">
-                <a href="#navigation" class="toc-link">Navigation</a>
-            </li>
-        
-</ul>
-</nav>
-        </aside>
-        
-    </div>
-
-    <script src="./_static/book-theme.js"></script>
+</main>
 </body>
 </html>
