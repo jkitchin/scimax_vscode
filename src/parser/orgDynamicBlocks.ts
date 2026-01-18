@@ -15,6 +15,7 @@ import type {
     HeadlineElement,
     DynamicBlockElement
 } from './orgElementTypes';
+import { generateClockTable, type ClockTableConfig } from './orgClocking';
 
 // =============================================================================
 // Types
@@ -87,6 +88,50 @@ function parseColumnViewParams(argsString: string | undefined): ColumnViewParams
         excludeTags: args.exclude_tags?.split(':').filter(Boolean),
         match: args.match,
         indent: args.indent === 't' || args.indent === 'yes',
+    };
+}
+
+/**
+ * Parse clocktable-specific parameters
+ */
+function parseClockTableParams(argsString: string | undefined): ClockTableConfig {
+    const args = parseBlockArgs(argsString);
+
+    // Map :scope parameter to ClockTableConfig scope
+    let scope: 'file' | 'subtree' | 'agenda' = 'file';
+    if (args.scope) {
+        if (args.scope === 'tree' || args.scope === 'subtree') {
+            scope = 'subtree';
+        } else if (args.scope === 'agenda') {
+            scope = 'agenda';
+        } else if (args.scope === 'file') {
+            scope = 'file';
+        }
+    }
+
+    // Map :block parameter to span
+    let span: ClockTableConfig['span'];
+    if (args.block) {
+        const blockValue = args.block.toLowerCase();
+        if (blockValue === 'today') {
+            span = 'today';
+        } else if (blockValue === 'thisweek') {
+            span = 'thisweek';
+        } else if (blockValue === 'thismonth') {
+            span = 'thismonth';
+        } else if (blockValue === 'untilnow') {
+            span = 'untilnow';
+        }
+    }
+
+    return {
+        scope,
+        maxLevel: args.maxlevel ? parseInt(args.maxlevel, 10) : undefined,
+        timestamps: args.timestamps === 't' || args.timestamps === 'yes',
+        block: args.block,
+        formula: args.formula,
+        showFile: args.fileskip0 !== 't' && scope === 'agenda', // Show file column for agenda scope
+        span,
     };
 }
 
@@ -331,6 +376,53 @@ function generateOrgTable(rows: string[][], hlines?: number): string {
 }
 
 // =============================================================================
+// Clocktable Execution
+// =============================================================================
+
+/**
+ * Execute a clocktable dynamic block
+ */
+export function executeClockTable(
+    doc: OrgDocumentNode,
+    params: ClockTableConfig,
+    documentPath?: string
+): DynamicBlockResult {
+    try {
+        // Get headlines based on scope
+        let headlines: HeadlineElement[] = [];
+
+        if (params.scope === 'agenda') {
+            // TODO: Search agenda files - for now just use current file
+            headlines = org.getAllHeadlines(doc);
+        } else if (params.scope === 'subtree') {
+            // For subtree scope, we would need cursor position context
+            // For now, use all headlines in the file
+            headlines = org.getAllHeadlines(doc);
+        } else {
+            // file scope - all headlines in current file
+            headlines = org.getAllHeadlines(doc);
+        }
+
+        // Filter to top-level headlines only (children are handled recursively in generateClockTable)
+        const topLevelHeadlines = headlines.filter(h => h.properties.level === 1);
+
+        // Generate the clock table
+        const table = generateClockTable(
+            topLevelHeadlines.length > 0 ? topLevelHeadlines : headlines,
+            params
+        );
+
+        return { success: true, content: table };
+    } catch (error) {
+        return {
+            success: false,
+            content: '',
+            error: error instanceof Error ? error.message : String(error)
+        };
+    }
+}
+
+// =============================================================================
 // Dynamic Block Execution Entry Point
 // =============================================================================
 
@@ -349,12 +441,8 @@ export function executeDynamicBlock(
             return executeColumnView(doc, params, documentPath);
 
         case 'clocktable':
-            // TODO: Implement clocktable
-            return {
-                success: false,
-                content: '',
-                error: 'clocktable not yet implemented'
-            };
+            const clockParams = parseClockTableParams(argsString);
+            return executeClockTable(doc, clockParams, documentPath);
 
         default:
             return {
