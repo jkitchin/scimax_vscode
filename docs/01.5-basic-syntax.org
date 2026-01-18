@@ -140,7 +140,8 @@ Definition lists are perfect for:
 
 The term appears before =::= and the definition follows. Long definitions wrap naturally to subsequent lines.
 
-** ⚠️ Checkboxes
+** ✅ Checkboxes
+CLOSED: [2026-01-17 Sat 19:35]
 
 Add checkboxes to list items for task tracking:
 
@@ -152,21 +153,22 @@ Toggle checkboxes with =C-c C-c= when the cursor is on the line.
 
 Parent items can show progress:
 
-- Project tasks [1/3]
+- Project tasks [2/3]
   - [x] Design the interface
-  - [ ] Implement the backend
-  - [x] Write documentation
+  - [X] Implement the backend
+  - [ ] Write documentation
 
 The =[1/3]= updates automatically as you check off subtasks. You can also use percentage format =[33%]=.
 
 You can use an attribute to create radio button style checkboxes where only one item can be selected:
 
 #+attr_org: :radio t                
- - [x] Option A                        
- - [x] Option B  
- - [x] Option C   
+ - [ ] Option A                        
+ - [ ] Option B  
+ - [X] Option C   
 
-* ⚠️ Paragraphs and Line Breaks
+* ✅ Paragraphs and Line Breaks
+CLOSED: [2026-01-17 Sat 19:36]
 
 Paragraphs are simply blocks of text separated by blank lines:
 
@@ -174,7 +176,8 @@ This is the first paragraph. It can contain multiple sentences that flow togethe
 
 This is the second paragraph. The blank line above separates it from the first. Each paragraph represents a distinct thought or topic.
 
-** ⚠️ Preserving Line Breaks
+** ✅ Preserving Line Breaks
+CLOSED: [2026-01-17 Sat 19:36]
 
 Normally, single line breaks within a paragraph are treated as spaces when exported. To force a line break, end the line with =\\=:
 
@@ -269,13 +272,15 @@ Org-mode[fn:1] provides excellent support for academic writing. You can place fo
 
 [fn:2] Footnote definitions can appear anywhere, but placing them near their reference aids readability.
 
-** ⚠️ Inline Footnotes
+** ✅ Inline Footnotes
+CLOSED: [2026-01-17 Sat 19:36]
 
 For quick notes, use inline footnotes that combine reference and definition:
 
 The algorithm runs in O(n log n) time[fn:: This assumes a comparison-based sort; radix sort can achieve O(n) for integers.], making it practical for large datasets.
 
-** ⚠️ Named Footnotes
+** ✅ Named Footnotes
+CLOSED: [2026-01-17 Sat 19:36]
 
 Use descriptive names for footnotes you reference multiple times:
 

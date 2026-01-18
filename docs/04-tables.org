@@ -54,23 +54,26 @@ leads to
 * ✅ Table Navigation
 CLOSED: [2026-01-15 Thu 15:26]
 
-** 👀 Moving Between Cells
+** ✅ Moving Between Cells
+CLOSED: [2026-01-17 Sat 19:43]
 
 | Key        | Action                                 |
 |------------+----------------------------------------|
-| <tab>        | Move to next cell (creates row at end) |
-| S-<tab>  | Move to previous cell                  |
+| <tab>      | Move to next cell (creates row at end) |
+| S-<tab>    | Move to previous cell                  |
 | Arrow keys | Move in that direction                 |
 
-** Quick Navigation
+** ✅ Quick Navigation
+CLOSED: [2026-01-17 Sat 19:43]
 
-| Command                  | Description           |
-|--------------------------+-----------------------|
+| Command                | Description           |
+|------------------------+-----------------------|
 | scimax.table.nextCell  | Go to next cell       |
 | scimax.table.prevCell  | Go to previous cell   |
 | scimax.table.gotoNamed | Jump to a named table |
 
-* ⚠️ Editing Tables
+* ✅ Editing Tables
+CLOSED: [2026-01-17 Sat 19:43]
 
 ** ✅ Adding/Removing Rows
 CLOSED: [2026-01-15 Thu 15:41]
@@ -127,7 +130,8 @@ CLOSED: [2026-01-15 Thu 15:15]
 
 Tables auto-align when you press Tab. Column widths adjust to fit content.
 
-** ⚠️ Column Width Specification
+** ✅ Column Width Specification
+CLOSED: [2026-01-17 Sat 19:43]
 
 Specify fixed column widths using <N> in a cell:
 
@@ -279,39 +283,41 @@ Calculate total for each row:
 *** Column Formula
 
 Sum a column:
-#+BEGIN_SRC org
+
 | Month | Revenue |
 |-------+---------|
-| Jan   |   10000 |
-| Feb   |   12000 |
-| Mar   |   15000 |
+| Jan   | 10000   |
+| Feb   | 12000   |
+| Mar   | 15000   |
 |-------+---------|
-| Total |   37000 |
-,#+TBLFM: @>$2=vsum(@2$2..@-1$2)
-#+END_SRC
+| Total | 37000   |
+#+TBLFM: @>$2=vsum(@2$2..@-1$2)
 
-*** Percentage Calculation
 
-#+BEGIN_SRC org
+*** ✅ Percentage Calculation
+CLOSED: [2026-01-17 Sat 20:01]
+
 | Category | Amount | Percent |
 |----------+--------+---------|
-| A        |    500 |     50% |
-| B        |    300 |     30% |
-| C        |    200 |     20% |
+| A        | 500    | 50%     |
+| B        | 300    | 30%     |
+| C        | 200    | 20%     |
 |----------+--------+---------|
-| Total    |   1000 |    100% |
-,#+TBLFM: $3=100*$2/@>$2;%.0f%%::@>$2=vsum(@2$2..@-1$2)
-#+END_SRC
+| Total    | 1000   | 100     |
+|----------+--------+---------|
+#+TBLFM: @>$2=vsum(@2$2..@-1$2)::@>$3=100::@2$3..@-1$3=100*$2/@>$2;%.0f%%
+ 
+* ✅ Table Import/Export
+CLOSED: [2026-01-17 Sat 19:44]
 
-* ⚠️ Table Import/Export
-
-** Importing Tables
+** ✅ Importing Tables
+CLOSED: [2026-01-17 Sat 19:48]
 
 Import data from CSV files:
 
-| Command                   | Description                     |
-|---------------------------+---------------------------------|
-| =scimax.table.import=      | Import table from file          |
+| Command             | Description            |
+|---------------------+------------------------|
+| scimax.table.import | Import table from file |
 
 The import command will prompt for the file path and delimiter.
 
@@ -319,8 +325,8 @@ The import command will prompt for the file path and delimiter.
 
 | Key/Command           | Description          |
 |-----------------------+----------------------|
-| =C-c C-e t=     | Export table         |
-| =scimax.table.export= | Export table to file |
+| C-c C-e t     | Export table         |
+| scimax.table.export | Export table to file |
 
 Export formats:
 - CSV (comma-separated values)
@@ -342,7 +348,7 @@ CLOSED: [2026-01-15 Thu 15:31]
 
 | Key/Command               | Description                  |
 |---------------------------+------------------------------|
-| C-c ^                  | Sort table by current column |
+| C-c ^                     | Sort table by current column |
 | scimax.table.sortByColumn | Sort by column               |
 
 Sorting options:
@@ -377,11 +383,13 @@ Named tables can be:
 * ✅ Table Appearance in Export
 CLOSED: [2026-01-17 Sat 13:43]
 
-** 👀 HTML Export
+** ✅ HTML Export
+CLOSED: [2026-01-17 Sat 19:55]
 
 Tables export as HTML `<table>' elements with proper styling.
 
-** 👀 LaTeX Export
+** ✅ LaTeX Export
+CLOSED: [2026-01-17 Sat 19:55]
 
 Tables export as LaTeX `tabular' environments:
 
@@ -436,23 +444,23 @@ CLOSED: [2026-01-15 Thu 15:24]
 
 ** Keybindings
 
-| Key                   | Action                 |
-|-----------------------+------------------------|
-| C-c \vert{}      | Create table           |
-| <tab>                 | Next cell / align      |
-| S-<tab>           | Previous cell          |
-| C-c -            | Insert separator       |
-| M-<return>           | Insert row below       |
+| Key           | Action                 |
+|---------------+------------------------|
+| C-c \vert{}   | Create table           |
+| <tab>         | Next cell / align      |
+| S-<tab>       | Previous cell          |
+| C-c -         | Insert separator       |
+| M-<return>    | Insert row below       |
 | M-S-Right     | Insert column right    |
 | M-S-Backspace | Delete row             |
-| C-c ^            | Sort by column         |
+| C-c ^         | Sort by column         |
 | C-c C-c       | Recalculate (on TBLFM) |
 | C-c C-e t     | Export table           |
 
 ** Commands
 
-| Command                          | Description            |
-|----------------------------------+------------------------|
+| Command                        | Description            |
+|--------------------------------+------------------------|
 | scimax.table.create            | Create new table       |
 | scimax.table.insertRowAbove    | Insert row above       |
 | scimax.table.insertRowBelow    | Insert row below       |

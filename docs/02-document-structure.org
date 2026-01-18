@@ -365,9 +365,10 @@ CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 10:30] =>  1:30
 :END:
 #+END_SRC
 
-** ⚠️ Custom Drawers
+** ✅ Custom Drawers
+CLOSED: [2026-01-17 Sat 19:39]
 
-Create custom drawers for any purpose:
+Create custom drawers for any purpose. These are not exported.
 
 
 :NOTES:
@@ -384,7 +385,8 @@ cite:&kitchin-2015-examp-effec
 
 Drawer names must be uppercase letters and can contain numbers and underscores.
 
-** ⚠️ Drawer Visibility
+** ✅ Drawer Visibility
+CLOSED: [2026-01-17 Sat 19:39]
 
 Drawers are typically displayed collapsed. Click or use fold commands to
 expand/collapse them.
@@ -515,35 +517,92 @@ Content that will be replaced when block is updated.
 ,#+END:
 #+END_SRC
 
-** ✅ Clock Table Example
+** [#C] ✅ Clock Table Example
 CLOSED: [2026-01-15 Thu 14:35]
 
 The most common dynamic block is the clock table, which summarizes time spent:
 
-#+BEGIN_SRC org
-,#+BEGIN: clocktable :maxlevel 2 :scope file
-| Headline          | Time   |
-|-------------------+--------|
-| * Project work    |  10:30 |
-| ** Implementation |   6:00 |
-| ** Testing        |   4:30 |
-,#+END:
-#+END_SRC
+#+BEGIN: clocktable :maxlevel 2 :scope file
+| Headline | Time |
+|---+---|
+|---+---|
+| *Total* | 0:00 |
+#+END:
 
-** ⚠️ Column View Example
+
+** ✅ Column View Example  :columns:
+CLOSED: [2026-01-17 Sat 19:40]
 
 Column view displays properties in a table format:
 
 
 #+BEGIN: columnview :hlines 1 
-| ITEM   | EFFORT | PRIORITY |
-|--------+--------+----------|
-| Task 1 | 2:00   | A        |
-| Task 2 | 1:30   | B        |
+| ITEM                             | TODO | PRIORITY | TAGS      |
+|----------------------------------+------+----------+-----------|
+| ✅ Document Structure            |      |          |           |
+| ✅ Headlines                     |      |          |           |
+| ✅ Creating Headlines            |      |          |           |
+| ✅ Headline Components           |      |          |           |
+| ✅ Headline Levels               |      |          |           |
+| ✅ Visibility Cycling            |      |          |           |
+| ✅ Folding with Tab              |      |          |           |
+| ✅ Global Cycling with Shift-Tab |      |          |           |
+| ✅ Visibility Commands           |      |          |           |
+| ✅ Motion Between Headlines      |      |          |           |
+| ✅ Navigation Commands           |      |          |           |
+| ✅ Using the Outline View        |      |          |           |
+| ✅ Jump to Heading               |      |          |           |
+| ✅ Speed Command Navigation      |      |          |           |
+| ✅ Structure Editing             |      |          |           |
+| ✅ Promote/Demote Headlines      |      |          |           |
+| ✅ Single Heading vs Subtree     |      |          |           |
+| ✅ Move Subtrees Up/Down         |      |          |           |
+| ✅ Kill/Clone Subtrees           |      |          |           |
+| ✅ Insert New Headings           |      |          |           |
+| ✅ Document Keywords             |      |          |           |
+| ✅ Common Keywords               |      |          |           |
+| ✅ Options Keyword               |      |          |           |
+| ⚠️ Startup Keyword               |      |          |           |
+| ⚠️ Property Keyword              |      |          |           |
+| ✅ Properties Drawers            |      |          |           |
+| ✅ Creating Properties Drawers   |      |          |           |
+| ✅ Special Properties            |      |          |           |
+| ✅ Adding Properties             |      |          |           |
+| ⚠️ Inherited Properties          |      |          |           |
+| ✅ Drawers                       |      |          |           |
+| ✅ Standard Drawers              |      |          |           |
+| ✅ PROPERTIES Drawer             |      |          |           |
+| ✅ LOGBOOK Drawer                |      |          |           |
+| ✅ Custom Drawers                |      |          |           |
+| ✅ Drawer Visibility             |      |          |           |
+| ✅ Inline Tasks                  |      |          |           |
+| ✅ Creating Inline Tasks         |      |          |           |
+| ✅ Inline Task Features          |      |          |           |
+| ✅ When to Use Inline Tasks      |      |          |           |
+| ✅ Configuration                 |      |          |           |
+| ✅ Footnote Definitions          |      |          |           |
+| ✅ Footnote Definition Syntax    |      |          |           |
+| ✅ Footnote Labels               |      |          |           |
+| ✅ Multi-line Footnotes          |      |          |           |
+| ✅ Inline Footnotes              |      |          |           |
+| ✅ Related Topics                |      |          |           |
+| ✅ Dynamic Blocks                |      |          |           |
+| ✅ Dynamic Block Syntax          |      |          |           |
+| ✅ Clock Table Example           |      | [#C]     |           |
+| ✅ Column View Example           |      |          | :columns: |
+| ⚠️ Dynamic Block Parameters      |      |          |           |
+| ⚠️ Updating Dynamic Blocks       |      |          |           |
+| ✅ Best Practices                |      |          |           |
+| ✅ Document Organization         |      |          |           |
+| ✅ Heading Depth Guidelines      |      |          |           |
+| ✅ Navigation Efficiency         |      |          |           |
+| ✅ Related Topics                |      |          |           |
+| Navigation                       |      |          |           |
 #+END:
 
 
-** ⚠️ Dynamic Block Parameters
+** ✅ Dynamic Block Parameters
+CLOSED: [2026-01-17 Sat 19:41]
 
 Common parameters for clock tables:
 
@@ -555,9 +614,10 @@ Common parameters for clock tables:
 | :tend     | End time for report                | :tend "<now>"   |
 | :block    | Time block (today, thisweek, etc.) | :block thisweek |
 
-** ⚠️ Updating Dynamic Blocks
+** ✅ Updating Dynamic Blocks
+CLOSED: [2026-01-17 Sat 19:41]
 
-Dynamic blocks are updated when explicitly requested. The content between
+Dynamic blocks are updated when explicitly requested (C-c C-c on the header). The content between
 #+BEGIN: and #+END: is regenerated based on the block type and parameters.
 
 * ✅ Best Practices

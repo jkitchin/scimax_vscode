@@ -55,7 +55,8 @@ Additional states available:
 | HOLD       | On hold / paused                     |
 | CANCELLED  | Task cancelled (won't be done)       |
 
-** ⚠️ Logging Completion
+** ✅ Logging Completion
+CLOSED: [2026-01-17 Sat 19:41]
 
 When you mark a task as DONE, a CLOSED timestamp is automatically added:
 
@@ -105,26 +106,30 @@ Track progress through subtasks using statistics cookies and checkboxes.
 
 ** ✅ Statistics Cookies [/]
 
-*** ⚠️ Fraction Format
+*** ✅ Fraction Format
+CLOSED: [2026-01-17 Sat 19:42]
 
 Shows completed/total count:
 
 
-**** Project Tasks [3/4]
+**** Project Tasks [2/4]
 ***** ⚠️ Task 1
-***** ✅ Task 2
+***** 👀 Task 2
 ***** ✅ Task 3
 ***** ✅ [#C] Task 4
 
 
-*** ⚠️ Percentage Format
+*** ✅ Percentage Format
+CLOSED: [2026-01-17 Sat 19:47]
 
 Shows completion percentage:
 
-**** Project Progress [25%]
+**** Project Progress [50%]
 ***** DONE Design
-***** DONE Implementation
+***** ✅ Implementation
+CLOSED: [2026-01-17 Sat 19:47]
 ***** ✅ Testing
+CLOSED: [2026-01-17 Sat 19:47]
 ***** TODO Deployment
 
 Statistics cookies update automatically when child TODO states change.

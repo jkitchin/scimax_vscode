@@ -239,7 +239,8 @@ ID links work across files:
 * ✅ File Links
 CLOSED: [2026-01-14 Wed 20:54]
 
-** 👀 Basic File Links
+** ✅ Basic File Links
+CLOSED: [2026-01-17 Sat 19:53]
 
 [[14-journal.org]]
 
@@ -297,15 +298,14 @@ Not many protocols are supported beyond HTTP(S) and FILE, but a few useful ones 
 [[doi:10.1000/xyz123][DOI Reference]]
 
 
-** ⚠️ Image Links
+** ✅ Image Links
+CLOSED: [2026-01-17 Sat 19:54]
 
 
 Link to images (see also [[file:12-image-overlays.org][Image Overlays]]):
 
-#+BEGIN_SRC org
-[[file:./images/figure1.png]]
-[[./images/figure1.png]]
-#+END_SRC
+[[./_static/plot.png][Scimax Logo]]
+
 
 Images are displayed in tooltips or overlays when hovering over the link.
 
@@ -382,22 +382,6 @@ Links become standard Markdown format:
 #+BEGIN_SRC markdown
 [Visit Example.com](https://www.example.com)
 #+END_SRC
-
-* ✅ Managing Links
-CLOSED: [2026-01-15 Thu 19:43]
-
-** ⚠️ Finding Broken Links
-
-Use search to find potentially broken links:
-- scimax.db.searchLinks - Search all links in indexed files
-- Check for file: links to non-existent files
-
-** ⚠️ Updating Links
-
-When files move:
-1. Update file: links manually
-2. Use id: links which are location-independent
-3. Use relative paths that move with your file structure
 
 * ✅ Citation Links
 CLOSED: [2026-01-15 Thu 19:44]

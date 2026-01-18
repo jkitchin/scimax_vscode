@@ -45,39 +45,22 @@ fi
 : * Review Agenda
 : 
 : ** [[file:01-getting-started.org][01-getting-started.org]] (1 items)
-:    - [[file:01-getting-started.org::249][** 👀 Help Commands]]
+:    - [[file:01-getting-s1tarted.org::249][** 👀 Help Commands]]
 : 
-: ** [[file:01.5-basic-syntax.org][01.5-basic-syntax.org]] (5 items)
-:    - [[file:01.5-basic-syntax.org::143][** ⚠️ Checkboxes]]
-:    - [[file:01.5-basic-syntax.org::169][* ⚠️ Paragraphs and Line Breaks]]
-:    - [[file:01.5-basic-syntax.org::177][** ⚠️ Preserving Line Breaks]]
-:    - [[file:01.5-basic-syntax.org::272][** ⚠️ Inline Footnotes]]
-:    - [[file:01.5-basic-syntax.org::278][** ⚠️ Named Footnotes]]
-: 
-: ** [[file:02-document-structure.org][02-document-structure.org]] (8 items)
+: ** [[file:02-document-structure.org][02-document-structure.org]] (3 items)
 :    - [[file:02-document-structure.org::278][** ⚠️ Startup Keyword]]
 :    - [[file:02-document-structure.org::288][** ⚠️ Property Keyword]]
 :    - [[file:02-document-structure.org::337][** ⚠️ Inherited Properties]]
-:    - [[file:02-document-structure.org::368][** ⚠️ Custom Drawers]]
-:    - [[file:02-document-structure.org::387][** ⚠️ Drawer Visibility]]
-:    - [[file:02-document-structure.org::533][** ⚠️ Column View Example]]
-:    - [[file:02-document-structure.org::546][** ⚠️ Dynamic Block Parameters]]
-:    - [[file:02-document-structure.org::558][** ⚠️ Updating Dynamic Blocks]]
 : 
-: ** [[file:03-todo-items.org][03-todo-items.org]] (4 items)
-:    - [[file:03-todo-items.org::58][** ⚠️ Logging Completion]]
-:    - [[file:03-todo-items.org::108][*** ⚠️ Fraction Format]]
-:    - [[file:03-todo-items.org::114][***** ⚠️ Task 1]]
-:    - [[file:03-todo-items.org::120][*** ⚠️ Percentage Format]]
+: ** [[file:03-todo-items.org][03-todo-items.org]] (2 items)
+:    - [[file:03-todo-items.org::116][***** ⚠️ Task 1]]
+:    - [[file:03-todo-items.org::117][***** 👀 Task 2]]
 : 
-: ** [[file:04-tables.org][04-tables.org]] (7 items)
-:    - [[file:04-tables.org::57][** 👀 Moving Between Cells]]
-:    - [[file:04-tables.org::73][* ⚠️ Editing Tables]]
-:    - [[file:04-tables.org::130][** ⚠️ Column Width Specification]]
-:    - [[file:04-tables.org::306][* ⚠️ Table Import/Export]]
-:    - [[file:04-tables.org::380][** 👀 HTML Export]]
-:    - [[file:04-tables.org::384][** 👀 LaTeX Export]]
-:    - [[file:04-tables.org::397][** 👀 Markdown Export]]
+: ** [[file:04-tables.org][04-tables.org]] (4 items)
+:    - [[file:04-tables.org::297][*** ⚠️ Percentage Calculation]]
+:    - [[file:04-tables.org::385][** 👀 HTML Export]]
+:    - [[file:04-tables.org::389][** 👀 LaTeX Export]]
+:    - [[file:04-tables.org::402][** 👀 Markdown Export]]
 : 
 : ** [[file:05-links.org][05-links.org]] (4 items)
 :    - [[file:05-links.org::242][** 👀 Basic File Links]]
@@ -174,12 +157,10 @@ fi
 : ** [[file:20-editmarks.org][20-editmarks.org]] (1 items)
 :    - [[file:20-editmarks.org::604][** 👀 Export Compatibility]]
 : 
-: ** [[file:22-hydra-menus.org][22-hydra-menus.org]] (3 items)
+: ** [[file:22-hydra-menus.org][22-hydra-menus.org]] (1 items)
 :    - [[file:22-hydra-menus.org::73][** 👀 Understanding Exit Behaviors]]
-:    - [[file:22-hydra-menus.org::775][** 👀 Example 5: Navigating Back]]
-:    - [[file:22-hydra-menus.org::1044][* 👀 Navigation]]
 : 
-: Total: 97 items need review
+: Total: 80 items need review
 
 * Current Review Status
 :PROPERTIES:
