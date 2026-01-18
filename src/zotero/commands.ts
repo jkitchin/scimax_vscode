@@ -13,8 +13,9 @@ import { parseBibTeX, BibEntry } from '../references/bibtexParser';
 /**
  * Find the bibliography file linked in the document
  * Returns the first bibliography path found, or null if none
+ * @internal Exported for testing
  */
-function findDocumentBibliography(documentText: string, documentPath: string): string | null {
+export function findDocumentBibliography(documentText: string, documentPath: string): string | null {
     const docDir = path.dirname(documentPath);
     const homeDir = process.env.HOME || process.env.USERPROFILE || '';
 
@@ -141,8 +142,9 @@ async function appendBibTeXEntries(
 
 /**
  * Escape special regex characters
+ * @internal Exported for testing
  */
-function escapeRegExp(string: string): string {
+export function escapeRegExp(string: string): string {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
@@ -182,8 +184,9 @@ async function addBibliographyLink(
 
 /**
  * Format citation for insertion using org-ref syntax
+ * @internal Exported for testing
  */
-function formatOrgRefCitation(keys: string[]): string {
+export function formatOrgRefCitation(keys: string[]): string {
     // Check user's preferred syntax (v2 or v3)
     const config = vscode.workspace.getConfiguration('scimax.ref');
     const syntax = config.get<string>('citationSyntax') || 'org-ref-v3';
