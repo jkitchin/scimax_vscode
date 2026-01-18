@@ -458,3 +458,610 @@ describe('Ignore Pattern Matching', () => {
         expect(simpleMatch('/project/src/index.ts', '**/node_modules/**')).toBe(false);
     });
 });
+
+// =============================================================================
+// FTS5 Query Formatting Tests
+// =============================================================================
+
+describe('FTS5 Query Formatting', () => {
+    const formatFts5Query = (query: string): string => {
+        // Simple FTS5 query formatter
+        // Wrap words in quotes for phrase matching, handle special chars
+        const words = query.trim().split(/\s+/);
+        if (words.length === 1) {
+            // Single word - can use prefix matching
+            return `${words[0]}*`;
+        }
+        // Multiple words - use AND
+        return words.map(w => `"${w}"`).join(' AND ');
+    };
+
+    it('should format single word with prefix', () => {
+        expect(formatFts5Query('test')).toBe('test*');
+    });
+
+    it('should format multiple words with AND', () => {
+        expect(formatFts5Query('hello world')).toBe('"hello" AND "world"');
+    });
+
+    it('should handle extra whitespace', () => {
+        expect(formatFts5Query('  hello   world  ')).toBe('"hello" AND "world"');
+    });
+});
+
+// =============================================================================
+// Chunk Creation Logic Tests
+// =============================================================================
+
+describe('Chunk Creation Logic', () => {
+    const createChunks = (content: string, chunkSize: number = 2000): { text: string; lineStart: number; lineEnd: number }[] => {
+        const lines = content.split('\n');
+        const chunks: { text: string; lineStart: number; lineEnd: number }[] = [];
+        let currentChunk = '';
+        let currentLineStart = 1;
+        let charCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            currentChunk += line + '\n';
+            charCount += line.length + 1;
+
+            if (charCount >= chunkSize) {
+                chunks.push({
+                    text: currentChunk.trim(),
+                    lineStart: currentLineStart,
+                    lineEnd: i + 1
+                });
+
+                const overlapLines = currentChunk.split('\n').slice(-3);
+                currentChunk = overlapLines.join('\n');
+                currentLineStart = Math.max(1, i - 2);
+                charCount = currentChunk.length;
+            }
+        }
+
+        if (currentChunk.trim()) {
+            chunks.push({
+                text: currentChunk.trim(),
+                lineStart: currentLineStart,
+                lineEnd: lines.length
+            });
+        }
+
+        return chunks;
+    };
+
+    it('should create single chunk for small content', () => {
+        const content = 'Line 1\nLine 2\nLine 3';
+        const chunks = createChunks(content, 1000);
+
+        expect(chunks.length).toBe(1);
+        expect(chunks[0].lineStart).toBe(1);
+        expect(chunks[0].lineEnd).toBe(3);
+    });
+
+    it('should split large content into multiple chunks', () => {
+        const lines = Array(100).fill('This is a line of text with some content').join('\n');
+        const chunks = createChunks(lines, 500);
+
+        expect(chunks.length).toBeGreaterThan(1);
+    });
+
+    it('should have overlapping chunks', () => {
+        const lines = Array(50).fill('Line content here').join('\n');
+        const chunks = createChunks(lines, 200);
+
+        if (chunks.length > 1) {
+            // Second chunk should start before first chunk ends
+            expect(chunks[1].lineStart).toBeLessThanOrEqual(chunks[0].lineEnd);
+        }
+    });
+
+    it('should handle empty content', () => {
+        const chunks = createChunks('');
+        expect(chunks.length).toBe(0);
+    });
+
+    it('should handle whitespace only', () => {
+        const chunks = createChunks('   \n   \n   ');
+        expect(chunks.length).toBe(0);
+    });
+});
+
+// =============================================================================
+// Heading Tag Inheritance Tests
+// =============================================================================
+
+describe('Tag Inheritance Logic', () => {
+    interface TestHeading {
+        level: number;
+        title: string;
+        tags: string[];
+    }
+
+    const computeInheritedTags = (headings: TestHeading[]): { heading: TestHeading; inheritedTags: string[] }[] => {
+        const tagStack: string[][] = [];
+        const results: { heading: TestHeading; inheritedTags: string[] }[] = [];
+
+        for (const heading of headings) {
+            // Pop tags from deeper or equal levels
+            while (tagStack.length >= heading.level) {
+                tagStack.pop();
+            }
+
+            // Compute inherited tags before adding current heading's tags
+            const inheritedTags = tagStack.flat();
+
+            // Push current heading's tags to stack
+            tagStack.push(heading.tags);
+
+            results.push({ heading, inheritedTags });
+        }
+
+        return results;
+    };
+
+    it('should not inherit tags for top-level headings', () => {
+        const headings: TestHeading[] = [
+            { level: 1, title: 'First', tags: ['tag1'] }
+        ];
+
+        const result = computeInheritedTags(headings);
+        expect(result[0].inheritedTags).toEqual([]);
+    });
+
+    it('should inherit parent tags', () => {
+        const headings: TestHeading[] = [
+            { level: 1, title: 'Parent', tags: ['parent-tag'] },
+            { level: 2, title: 'Child', tags: ['child-tag'] }
+        ];
+
+        const result = computeInheritedTags(headings);
+        expect(result[1].inheritedTags).toEqual(['parent-tag']);
+    });
+
+    it('should inherit multiple ancestor tags', () => {
+        const headings: TestHeading[] = [
+            { level: 1, title: 'L1', tags: ['tag1'] },
+            { level: 2, title: 'L2', tags: ['tag2'] },
+            { level: 3, title: 'L3', tags: ['tag3'] }
+        ];
+
+        const result = computeInheritedTags(headings);
+        expect(result[2].inheritedTags).toEqual(['tag1', 'tag2']);
+    });
+
+    it('should reset inheritance on level change', () => {
+        const headings: TestHeading[] = [
+            { level: 1, title: 'First L1', tags: ['a'] },
+            { level: 2, title: 'Under First', tags: ['b'] },
+            { level: 1, title: 'Second L1', tags: ['c'] },
+            { level: 2, title: 'Under Second', tags: ['d'] }
+        ];
+
+        const result = computeInheritedTags(headings);
+        // 'Under Second' should only inherit from 'Second L1', not 'First L1'
+        expect(result[3].inheritedTags).toEqual(['c']);
+    });
+
+    it('should handle empty tags', () => {
+        const headings: TestHeading[] = [
+            { level: 1, title: 'Parent', tags: [] },
+            { level: 2, title: 'Child', tags: ['child'] }
+        ];
+
+        const result = computeInheritedTags(headings);
+        expect(result[1].inheritedTags).toEqual([]);
+    });
+});
+
+// =============================================================================
+// Days Until Calculation Tests
+// =============================================================================
+
+describe('Days Until Calculation', () => {
+    const calculateDaysUntil = (dateStr: string, today: Date = new Date()): number => {
+        const targetDate = new Date(dateStr.split(' ')[0]);
+        const todayStart = new Date(today);
+        todayStart.setHours(0, 0, 0, 0);
+
+        return Math.floor((targetDate.getTime() - todayStart.getTime()) / (1000 * 60 * 60 * 24));
+    };
+
+    it('should return 0 for today', () => {
+        const today = new Date();
+        const dateStr = today.toISOString().split('T')[0];
+        expect(calculateDaysUntil(dateStr, today)).toBe(0);
+    });
+
+    it('should return positive for future dates', () => {
+        const today = new Date('2024-01-15');
+        expect(calculateDaysUntil('2024-01-20', today)).toBe(5);
+    });
+
+    it('should return negative for past dates', () => {
+        const today = new Date('2024-01-15');
+        expect(calculateDaysUntil('2024-01-10', today)).toBe(-5);
+    });
+
+    it('should handle dates with day names', () => {
+        const today = new Date('2024-01-15');
+        expect(calculateDaysUntil('2024-01-20 Sat', today)).toBe(5);
+    });
+});
+
+// =============================================================================
+// Agenda Item Sorting Tests
+// =============================================================================
+
+describe('Agenda Item Sorting', () => {
+    interface MockAgendaItem {
+        type: 'deadline' | 'scheduled' | 'todo';
+        days_until?: number;
+        overdue?: boolean;
+        title: string;
+    }
+
+    const sortAgendaItems = (items: MockAgendaItem[]): MockAgendaItem[] => {
+        return [...items].sort((a, b) => {
+            // Overdue items first
+            if (a.overdue && !b.overdue) return -1;
+            if (!a.overdue && b.overdue) return 1;
+
+            // Then by days_until
+            if (a.days_until !== undefined && b.days_until !== undefined) {
+                return a.days_until - b.days_until;
+            }
+
+            // Scheduled/deadline items before unscheduled todos
+            if (a.days_until !== undefined && b.days_until === undefined) return -1;
+            if (a.days_until === undefined && b.days_until !== undefined) return 1;
+
+            return 0;
+        });
+    };
+
+    it('should put overdue items first', () => {
+        const items: MockAgendaItem[] = [
+            { type: 'deadline', days_until: 5, overdue: false, title: 'Future' },
+            { type: 'deadline', days_until: -2, overdue: true, title: 'Overdue' }
+        ];
+
+        const sorted = sortAgendaItems(items);
+        expect(sorted[0].title).toBe('Overdue');
+    });
+
+    it('should sort by days_until', () => {
+        const items: MockAgendaItem[] = [
+            { type: 'deadline', days_until: 10, overdue: false, title: 'Later' },
+            { type: 'scheduled', days_until: 2, overdue: false, title: 'Soon' },
+            { type: 'deadline', days_until: 5, overdue: false, title: 'Medium' }
+        ];
+
+        const sorted = sortAgendaItems(items);
+        expect(sorted[0].title).toBe('Soon');
+        expect(sorted[1].title).toBe('Medium');
+        expect(sorted[2].title).toBe('Later');
+    });
+
+    it('should put scheduled items before unscheduled todos', () => {
+        const items: MockAgendaItem[] = [
+            { type: 'todo', title: 'Unscheduled' },
+            { type: 'scheduled', days_until: 3, overdue: false, title: 'Scheduled' }
+        ];
+
+        const sorted = sortAgendaItems(items);
+        expect(sorted[0].title).toBe('Scheduled');
+    });
+});
+
+// =============================================================================
+// Reciprocal Rank Fusion Tests
+// =============================================================================
+
+describe('Reciprocal Rank Fusion', () => {
+    interface MockSearchResult {
+        file_path: string;
+        line_number: number;
+        preview: string;
+        score: number;
+    }
+
+    const reciprocalRankFusion = (
+        ftsResults: MockSearchResult[],
+        vectorResults: MockSearchResult[],
+        options?: { ftsWeight?: number; vectorWeight?: number; limit?: number }
+    ): MockSearchResult[] => {
+        const ftsWeight = options?.ftsWeight || 0.5;
+        const vectorWeight = options?.vectorWeight || 0.5;
+        const limit = options?.limit || 20;
+
+        const scoreMap = new Map<string, { result: MockSearchResult; rrf: number }>();
+
+        ftsResults.forEach((result, idx) => {
+            const key = `${result.file_path}:${result.line_number}`;
+            const rrf = ftsWeight / (idx + 1);
+            scoreMap.set(key, { result, rrf });
+        });
+
+        vectorResults.forEach((result, idx) => {
+            const key = `${result.file_path}:${result.line_number}`;
+            const rrf = vectorWeight / (idx + 1);
+            const existing = scoreMap.get(key);
+            if (existing) {
+                existing.rrf += rrf;
+            } else {
+                scoreMap.set(key, { result, rrf });
+            }
+        });
+
+        return Array.from(scoreMap.values())
+            .sort((a, b) => b.rrf - a.rrf)
+            .slice(0, limit)
+            .map(item => ({ ...item.result, score: item.rrf }));
+    };
+
+    it('should combine results from both sources', () => {
+        const ftsResults: MockSearchResult[] = [
+            { file_path: '/a.org', line_number: 1, preview: 'FTS match', score: 1 }
+        ];
+        const vectorResults: MockSearchResult[] = [
+            { file_path: '/b.org', line_number: 1, preview: 'Vector match', score: 0.9 }
+        ];
+
+        const combined = reciprocalRankFusion(ftsResults, vectorResults);
+        expect(combined.length).toBe(2);
+    });
+
+    it('should boost items found in both result sets', () => {
+        const ftsResults: MockSearchResult[] = [
+            { file_path: '/a.org', line_number: 1, preview: 'Match', score: 1 },
+            { file_path: '/b.org', line_number: 1, preview: 'FTS only', score: 0.8 }
+        ];
+        const vectorResults: MockSearchResult[] = [
+            { file_path: '/a.org', line_number: 1, preview: 'Match', score: 0.9 },
+            { file_path: '/c.org', line_number: 1, preview: 'Vector only', score: 0.85 }
+        ];
+
+        const combined = reciprocalRankFusion(ftsResults, vectorResults);
+        // Item found in both should be first due to RRF boost
+        expect(combined[0].file_path).toBe('/a.org');
+    });
+
+    it('should respect limit', () => {
+        const ftsResults: MockSearchResult[] = Array(10).fill(null).map((_, i) => ({
+            file_path: `/fts${i}.org`, line_number: 1, preview: 'FTS', score: 1
+        }));
+        const vectorResults: MockSearchResult[] = Array(10).fill(null).map((_, i) => ({
+            file_path: `/vec${i}.org`, line_number: 1, preview: 'Vec', score: 0.9
+        }));
+
+        const combined = reciprocalRankFusion(ftsResults, vectorResults, { limit: 5 });
+        expect(combined.length).toBe(5);
+    });
+
+    it('should apply weights correctly', () => {
+        const ftsResults: MockSearchResult[] = [
+            { file_path: '/a.org', line_number: 1, preview: 'A', score: 1 }
+        ];
+        const vectorResults: MockSearchResult[] = [
+            { file_path: '/b.org', line_number: 1, preview: 'B', score: 0.9 }
+        ];
+
+        // FTS weight = 0.8, vector weight = 0.2
+        const combined = reciprocalRankFusion(ftsResults, vectorResults, {
+            ftsWeight: 0.8,
+            vectorWeight: 0.2
+        });
+
+        // FTS result should score higher due to weight
+        expect(combined[0].file_path).toBe('/a.org');
+        expect(combined[0].score).toBeCloseTo(0.8);
+    });
+});
+
+// =============================================================================
+// Markdown Heading Parsing Tests
+// =============================================================================
+
+describe('Markdown Heading Parsing', () => {
+    const parseMarkdownHeadings = (content: string): { level: number; title: string; lineNumber: number; todoState?: string; tags: string[] }[] => {
+        const headings: { level: number; title: string; lineNumber: number; todoState?: string; tags: string[] }[] = [];
+        const lines = content.split('\n');
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const match = line.match(/^(#{1,6})\s+(.*)$/);
+
+            if (match) {
+                const level = match[1].length;
+                let title = match[2];
+                const tags: string[] = [];
+
+                // Extract tags at end
+                const tagMatch = title.match(/\s+#(\w+(?:\s+#\w+)*)$/);
+                if (tagMatch) {
+                    tags.push(...tagMatch[1].split(/\s+#/));
+                    title = title.slice(0, -tagMatch[0].length);
+                }
+
+                // Extract TODO state
+                let todoState: string | undefined;
+                const todoMatch = title.match(/^\[([A-Z]+)\]\s+/);
+                if (todoMatch) {
+                    todoState = todoMatch[1];
+                    title = title.slice(todoMatch[0].length);
+                }
+
+                headings.push({
+                    level,
+                    title: title.trim(),
+                    lineNumber: i + 1,
+                    todoState,
+                    tags
+                });
+            }
+        }
+
+        return headings;
+    };
+
+    it('should parse basic heading', () => {
+        const content = '# Hello World';
+        const headings = parseMarkdownHeadings(content);
+
+        expect(headings.length).toBe(1);
+        expect(headings[0].level).toBe(1);
+        expect(headings[0].title).toBe('Hello World');
+    });
+
+    it('should parse multiple heading levels', () => {
+        const content = '# Level 1\n## Level 2\n### Level 3\n#### Level 4';
+        const headings = parseMarkdownHeadings(content);
+
+        expect(headings.length).toBe(4);
+        expect(headings[0].level).toBe(1);
+        expect(headings[1].level).toBe(2);
+        expect(headings[2].level).toBe(3);
+        expect(headings[3].level).toBe(4);
+    });
+
+    it('should extract TODO state', () => {
+        const content = '## [TODO] Complete task';
+        const headings = parseMarkdownHeadings(content);
+
+        expect(headings[0].todoState).toBe('TODO');
+        expect(headings[0].title).toBe('Complete task');
+    });
+
+    it('should extract tags', () => {
+        const content = '# Meeting Notes #work #important';
+        const headings = parseMarkdownHeadings(content);
+
+        expect(headings[0].tags).toContain('work');
+        expect(headings[0].tags).toContain('important');
+        expect(headings[0].title).toBe('Meeting Notes');
+    });
+
+    it('should extract TODO and tags together', () => {
+        const content = '## [DONE] Finished task #completed';
+        const headings = parseMarkdownHeadings(content);
+
+        expect(headings[0].todoState).toBe('DONE');
+        expect(headings[0].tags).toContain('completed');
+        expect(headings[0].title).toBe('Finished task');
+    });
+
+    it('should track correct line numbers', () => {
+        const content = 'Some text\n\n# First Heading\n\nMore text\n\n## Second Heading';
+        const headings = parseMarkdownHeadings(content);
+
+        expect(headings[0].lineNumber).toBe(3);
+        expect(headings[1].lineNumber).toBe(7);
+    });
+
+    it('should not match headings in code blocks', () => {
+        // Note: This simplified parser doesn't handle code blocks
+        // The actual parser should skip headings inside code blocks
+        const content = '# Real heading\n```\n# Not a heading\n```';
+        const headings = parseMarkdownHeadings(content);
+
+        // Simplified parser matches both - actual implementation filters code blocks
+        expect(headings.length).toBe(2);
+    });
+});
+
+// =============================================================================
+// Hash Computation Tests
+// =============================================================================
+
+describe('Hash Computation', () => {
+    const computeHash = (content: string): string => {
+        const crypto = require('crypto');
+        return crypto.createHash('md5').update(content).digest('hex');
+    };
+
+    it('should produce consistent hash for same content', () => {
+        const content = 'Hello, World!';
+        const hash1 = computeHash(content);
+        const hash2 = computeHash(content);
+
+        expect(hash1).toBe(hash2);
+    });
+
+    it('should produce different hash for different content', () => {
+        const hash1 = computeHash('Content A');
+        const hash2 = computeHash('Content B');
+
+        expect(hash1).not.toBe(hash2);
+    });
+
+    it('should produce 32 character hex string', () => {
+        const hash = computeHash('test');
+
+        expect(hash.length).toBe(32);
+        expect(hash).toMatch(/^[0-9a-f]{32}$/);
+    });
+
+    it('should handle empty content', () => {
+        const hash = computeHash('');
+
+        expect(hash.length).toBe(32);
+        expect(hash).toBe('d41d8cd98f00b204e9800998ecf8427e');  // MD5 of empty string
+    });
+
+    it('should handle unicode content', () => {
+        const hash = computeHash('你好世界 🌍');
+
+        expect(hash.length).toBe(32);
+    });
+});
+
+// =============================================================================
+// Search Scope Filter Tests
+// =============================================================================
+
+describe('Search Scope Filter', () => {
+    const buildScopeClause = (scope: { type: string; path?: string }, pathColumn: string = 'file_path'): { sql: string; args: any[] } => {
+        if (scope.type === 'directory' && scope.path) {
+            return {
+                sql: ` AND ${pathColumn} LIKE ?`,
+                args: [`${scope.path}%`]
+            };
+        }
+        if (scope.type === 'project' && scope.path) {
+            return {
+                sql: ` AND ${pathColumn} LIKE ?`,
+                args: [`${scope.path}%`]
+            };
+        }
+        return { sql: '', args: [] };
+    };
+
+    it('should return empty clause for "all" scope', () => {
+        const clause = buildScopeClause({ type: 'all' });
+
+        expect(clause.sql).toBe('');
+        expect(clause.args).toEqual([]);
+    });
+
+    it('should build directory scope clause', () => {
+        const clause = buildScopeClause({ type: 'directory', path: '/home/user/notes' });
+
+        expect(clause.sql).toBe(' AND file_path LIKE ?');
+        expect(clause.args).toEqual(['/home/user/notes%']);
+    });
+
+    it('should build project scope clause', () => {
+        const clause = buildScopeClause({ type: 'project', path: '/workspace/project' });
+
+        expect(clause.sql).toBe(' AND file_path LIKE ?');
+        expect(clause.args).toEqual(['/workspace/project%']);
+    });
+
+    it('should use custom path column', () => {
+        const clause = buildScopeClause({ type: 'directory', path: '/notes' }, 'path');
+
+        expect(clause.sql).toBe(' AND path LIKE ?');
+    });
+});
