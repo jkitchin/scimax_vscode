@@ -601,7 +601,8 @@ Use editmarks in table cells:
 | Budget | @@-$100K-@@ | @@+$120K+@@    | @@>approved by CFO<@@    |
 | Time   | 6 months    | @@+8 months+@@ | @@>realistic estimate<@@ |
 
-** 👀 Export Compatibility
+** ✅ Export Compatibility
+CLOSED: [2026-01-18 Sun 11:19]
 
 Editmarks are fully supported in HTML, LaTeX, and PDF exports. The export behavior is controlled by the =scimax.export.editmarkMode= setting.
 

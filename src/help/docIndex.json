@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-01-18T16:16:43.129Z",
+  "buildDate": "2026-01-18T16:23:59.651Z",
   "count": 2758,
   "entries": [
     {
@@ -57964,7 +57964,7 @@
       "level": 2,
       "file": "20-editmarks.org",
       "line": 604,
-      "content": "Editmarks are fully supported in HTML, LaTeX, and PDF exports. The export behavior is controlled by the =scimax.export.editmarkMode= setting.",
+      "content": "CLOSED: [2026-01-18 Sun 11:19] Editmarks are fully supported in HTML, LaTeX, and PDF exports. The export behavior is controlled by the =scimax.export.editmarkMode= setting.",
       "path": [
         "Integration with Other Features"
       ],
@@ -57975,6 +57975,10 @@
       "keywords": [
         "export",
         "compatibility",
+        "closed",
+        "2026-01-18",
+        "sun",
+        "1119",
         "editmarks",
         "fully",
         "supported",
@@ -57991,7 +57995,7 @@
       "heading": "Export Modes",
       "level": 3,
       "file": "20-editmarks.org",
-      "line": 608,
+      "line": 609,
       "content": "| Mode     | Description                                              | |----------+----------------------------------------------------------| | =show=   | Render with visual markup (colored insertions/deletions) | | =accept= | Apply all changes (keep insertions, remove deletions)    | | =reject= | Revert all changes (remove insertions, keep deletions)   | | =hide=   | Remove all editmarks without any replacement             |",
       "path": [
         "Integration with Other Features",
@@ -58026,7 +58030,7 @@
       "heading": "HTML Export",
       "level": 3,
       "file": "20-editmarks.org",
-      "line": 617,
+      "line": 618,
       "content": "In HTML, editmarks are rendered using semantic HTML elements with CSS styling: - *Insertions*: =<ins class=\"editmark-ins\">text</ins>= (green background) - *Deletions*: =<del class=\"editmark-del\">text</del>= (red background, strikethrough) - *Comments*: =<mark class=\"editmark-comment\">text</mark>= (yellow background, italic) - *Typos*: =<span class=\"editmark-typo\"><del>old</del><ins>new</ins></span>=",
       "path": [
         "Integration with Other Features",
@@ -58061,7 +58065,7 @@
       "heading": "LaTeX/PDF Export",
       "level": 3,
       "file": "20-editmarks.org",
-      "line": 626,
+      "line": 627,
       "content": "In LaTeX, editmarks use custom commands defined in the preamble: #+begin_example \\editins{inserted text}           % Green underlined text \\editdel{deleted text}            % Red strikethrough text \\editcomment{comment text}        % Orange italic text in brackets \\edittypo{old text}{new text}     % Old crossed out, new inserted #+end_example The required packages (=xcolor=, =ulem=) and command definitions are automatically added to the preamble when editmarks are detected.",
       "path": [
         "Integration with Other Features",
@@ -58096,7 +58100,7 @@
       "heading": "Configuration",
       "level": 3,
       "file": "20-editmarks.org",
-      "line": 639,
+      "line": 640,
       "content": "Set the export mode in VS Code settings: #+begin_src json { \"scimax.export.editmarkMode\": \"show\" } #+end_src Or use the Settings UI: Search for \"editmark\" and select the desired mode.",
       "path": [
         "Integration with Other Features",
@@ -58127,7 +58131,7 @@
       "heading": "Workflow Recommendations",
       "level": 3,
       "file": "20-editmarks.org",
-      "line": 651,
+      "line": 652,
       "content": "- *Draft review*: Use =show= mode to see all changes visually in the export - *Final publication*: Use =accept= or =reject= mode, or process marks manually before export - *Clean copy*: Use =hide= to remove all editmarks without deciding on them",
       "path": [
         "Integration with Other Features",
@@ -58162,7 +58166,7 @@
       "heading": "Version Control",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 657,
+      "line": 658,
       "content": "CLOSED: [2026-01-15 Thu 14:19] Editmarks are perfect for version control workflows: #+begin_src bash # Add document with editmarks git add manuscript.org # Commit with descriptive message git commit -m \"Add reviewer feedback as editmarks\" # Later, after processing git add manuscript.org git commit -m \"Incorporate reviewer suggestions\" #+end_src The diff shows both the markup and the final changes, providing complete review history.",
       "path": [
         "Integration with Other Features"
@@ -58196,7 +58200,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "20-editmarks.org",
-      "line": 676,
+      "line": 677,
       "content": "CLOSED: [2026-01-15 Thu 14:19]",
       "path": [],
       "commands": [],
@@ -58213,7 +58217,7 @@
       "heading": "Editmarks Not Showing",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 679,
+      "line": 680,
       "content": "CLOSED: [2026-01-15 Thu 14:19] *Problem*: Markup is visible but not decorated with colors. *Solutions*: 1. Check that you're in a supported file (any text file works) 2. Reload window: `C-S-P' → \"Developer: Reload Window\" 3. Verify syntax: Ensure markup is exactly correct (e.g., `@@+text+@@' not `@@+ text +@@')",
       "path": [
         "Troubleshooting"
@@ -58249,7 +58253,7 @@
       "heading": "Navigation Not Working",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 689,
+      "line": 690,
       "content": "CLOSED: [2026-01-15 Thu 14:19] *Problem*: `C-c e ]' doesn't jump to next mark. *Solutions*: 1. Verify editmarks exist: Press `C-c e s' to see summary 2. Ensure cursor is in the editor window 3. Check keybinding conflicts: File → Preferences → Keyboard Shortcuts",
       "path": [
         "Troubleshooting"
@@ -58285,7 +58289,7 @@
       "heading": "Accept/Reject Not Working",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 699,
+      "line": 700,
       "content": "*Problem*: Nothing happens when pressing `C-c e a'. *Solutions*: 1. Position cursor *inside* the editmark (between the markup symbols) 2. Hover over the mark to see the tooltip - if visible, cursor is positioned correctly 3. Check that the editmark syntax is valid",
       "path": [
         "Troubleshooting"
@@ -58321,7 +58325,7 @@
       "heading": "Nested Marks Issue",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 708,
+      "line": 709,
       "content": "CLOSED: [2026-01-15 Thu 14:19] *Problem*: Marks inside other marks behave unexpectedly. *Solution*: Don't nest editmarks. Instead, process the inner mark first, then add the outer mark.",
       "path": [
         "Troubleshooting"
@@ -58355,7 +58359,7 @@
       "heading": "Performance with Many Marks",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 715,
+      "line": 716,
       "content": "CLOSED: [2026-01-15 Thu 14:19] *Problem*: Editor becomes slow with hundreds of editmarks. *Solutions*: 1. Process marks in batches (accept/reject groups of related changes) 2. Use \"Accept All\" or \"Reject All\" for bulk processing 3. Split large documents into smaller files",
       "path": [
         "Troubleshooting"
@@ -58389,7 +58393,7 @@
       "heading": "FAQ",
       "level": 1,
       "file": "20-editmarks.org",
-      "line": 725,
+      "line": 726,
       "content": "CLOSED: [2026-01-15 Thu 14:19]",
       "path": [],
       "commands": [],
@@ -58406,7 +58410,7 @@
       "heading": "Q: Can I customize the colors?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 728,
+      "line": 729,
       "content": "A: Currently, colors are fixed (green for insertion, red for deletion, yellow for comments, orange for typos). Custom theme support may be added in future versions.",
       "path": [
         "FAQ"
@@ -58438,7 +58442,7 @@
       "heading": "Q: Do editmarks work in any file type?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 732,
+      "line": 733,
       "content": "A: Yes! Editmarks work in any text file: .org, .md, .tex, .txt, .py, etc. The markup is plain text.",
       "path": [
         "FAQ"
@@ -58464,7 +58468,7 @@
       "heading": "Q: Can I export documents with editmarks?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 736,
+      "line": 737,
       "content": "A: Yes! Editmarks are fully supported in HTML, LaTeX, and PDF exports. Use the =scimax.export.editmarkMode= setting to control how they appear: - =show=: Visual markup with colors (default) - =accept=: Apply all changes automatically - =reject=: Revert all changes - =hide=: Remove editmarks silently",
       "path": [
         "FAQ"
@@ -58500,7 +58504,7 @@
       "heading": "Q: How do I see who made which mark?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 744,
+      "line": 745,
       "content": "A: Editmarks don't automatically track authors. Add author names manually in comments: #+begin_example @@>(Author: John Doe) This needs clarification<@@ #+end_example",
       "path": [
         "FAQ"
@@ -58532,7 +58536,7 @@
       "heading": "Q: Can I use editmarks with Word documents?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 751,
+      "line": 752,
       "content": "A: No, editmarks require plain text files. Convert Word documents to Markdown or use Word's built-in track changes.",
       "path": [
         "FAQ"
@@ -58557,7 +58561,7 @@
       "heading": "Q: Do editmarks interfere with syntax highlighting?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 755,
+      "line": 756,
       "content": "A: No, they're implemented as decorations that overlay the text without modifying syntax highlighting.",
       "path": [
         "FAQ"
@@ -58581,7 +58585,7 @@
       "heading": "Q: Can I undo an accept/reject action?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 759,
+      "line": 760,
       "content": "A: Yes, use VS Code's regular undo (`C-z') immediately after accepting or rejecting a mark.",
       "path": [
         "FAQ"
@@ -58609,7 +58613,7 @@
       "heading": "Q: Are editmarks saved with the file?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 763,
+      "line": 764,
       "content": "A: Yes! Editmarks are plain text markup, so they're saved as part of the document content.",
       "path": [
         "FAQ"
@@ -58632,7 +58636,7 @@
       "heading": "Q: Can I search for editmarks?",
       "level": 2,
       "file": "20-editmarks.org",
-      "line": 767,
+      "line": 768,
       "content": "A: Yes, use regular search (`C-f') for `@@+' or `{++' to find all insertions, etc. Or use `C-c e s' for the summary view.",
       "path": [
         "FAQ"
@@ -58660,7 +58664,7 @@
       "heading": "Related Features",
       "level": 1,
       "file": "20-editmarks.org",
-      "line": 771,
+      "line": 772,
       "content": "CLOSED: [2026-01-15 Thu 14:19] - *Source Blocks*: See [[file:07-source-blocks.org][Source Blocks documentation]] for code execution - *Export*: See [[file:10-export.org][Export documentation]] for converting documents with editmarks - *Document Structure*: See [[file:02-document-structure.org][Document Structure documentation]] for heading navigation - *Tables*: See [[file:04-tables.org][Tables documentation]] for working with tables containing editmarks",
       "path": [],
       "commands": [],
@@ -58692,7 +58696,7 @@
       "heading": "Conclusion",
       "level": 1,
       "file": "20-editmarks.org",
-      "line": 779,
+      "line": 780,
       "content": "CLOSED: [2026-01-15 Thu 14:20] Editmarks provide a powerful, plain-text approach to track changes that integrates seamlessly with modern developer workflows. By using simple markup instead of complex binary formats, editmarks offer: - *Transparency*: Changes are always visible and readable - *Portability*: Works across editors and platforms - *Version control*: Perfect for Git-based collaboration - *Flexibility*: Use as much or as little as you need Whether you're reviewing papers, collaborating",
       "path": [],
       "commands": [],
@@ -58724,7 +58728,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "20-editmarks.org",
-      "line": 800,
+      "line": 801,
       "content": "- Previous: [[file:19-references.org][References]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:21-navigation.org][Navigation]]",
       "path": [],
       "commands": [],

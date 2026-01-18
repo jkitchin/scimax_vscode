@@ -532,6 +532,10 @@ const EDITMARK_PATTERNS = {
     deletionCritic: /\{--([^-]*)--\}/g,
     commentCritic: /\{>>([^<]*)<<\}/g,
     typoCritic: /\{~~([^~]*)~>([^~]*)~~\}/g,
+
+    // Bare format: @@text@@ (fallback - treated as insertion/highlight)
+    // Must not start with +, -, >, ~ to avoid matching partial delimited forms
+    bare: /@@(?![+\->~])([^@]+)@@/g,
 };
 
 /**
@@ -546,16 +550,65 @@ export function hasEditmarks(text: string): boolean {
         EDITMARK_PATTERNS.insertionCritic.test(text) ||
         EDITMARK_PATTERNS.deletionCritic.test(text) ||
         EDITMARK_PATTERNS.commentCritic.test(text) ||
-        EDITMARK_PATTERNS.typoCritic.test(text)
+        EDITMARK_PATTERNS.typoCritic.test(text) ||
+        EDITMARK_PATTERNS.bare.test(text)
     );
 }
 
 /**
+ * Helper to escape HTML special characters
+ */
+function escapeHtml(str: string): string {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+/**
+ * Escape text that's outside of HTML tags.
+ * After editmark processing, we have a mix of HTML tags and raw text.
+ * This function escapes only the raw text portions.
+ */
+function escapeNonEditmarkText(text: string): string {
+    // Match HTML tags (our editmark tags) vs raw text
+    // This regex captures text outside of < > pairs
+    const parts: string[] = [];
+    let lastIndex = 0;
+    const tagRegex = /<[^>]+>/g;
+    let match;
+
+    while ((match = tagRegex.exec(text)) !== null) {
+        // Escape text before this tag
+        if (match.index > lastIndex) {
+            parts.push(escapeHtml(text.slice(lastIndex, match.index)));
+        }
+        // Keep the tag as-is
+        parts.push(match[0]);
+        lastIndex = tagRegex.lastIndex;
+    }
+
+    // Escape remaining text after last tag
+    if (lastIndex < text.length) {
+        parts.push(escapeHtml(text.slice(lastIndex)));
+    }
+
+    return parts.join('');
+}
+
+/**
  * Process editmarks in text for HTML export
+ *
+ * IMPORTANT: This function expects RAW (unescaped) text as input.
+ * It will HTML-escape the content inside editmarks and any remaining text.
+ * The editmark delimiters contain special characters (>, <) that would be
+ * escaped if we processed after HTML escaping.
  */
 export function processEditmarksHtml(text: string, mode: EditmarkExportMode = 'show'): string {
     if (mode === 'hide') {
-        // Remove all editmarks without replacement
+        // Remove all editmarks, then escape remaining text
         let result = text;
         result = result.replace(EDITMARK_PATTERNS.insertion, '');
         result = result.replace(EDITMARK_PATTERNS.deletion, '');
@@ -565,11 +618,13 @@ export function processEditmarksHtml(text: string, mode: EditmarkExportMode = 's
         result = result.replace(EDITMARK_PATTERNS.deletionCritic, '');
         result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
         result = result.replace(EDITMARK_PATTERNS.typoCritic, '');
-        return result;
+        // Bare format (must be last)
+        result = result.replace(EDITMARK_PATTERNS.bare, '');
+        return escapeHtml(result);
     }
 
     if (mode === 'accept') {
-        // Accept all changes
+        // Accept all changes, then escape
         let result = text;
         // Insertions: keep the inserted text
         result = result.replace(EDITMARK_PATTERNS.insertion, '$1');
@@ -583,11 +638,13 @@ export function processEditmarksHtml(text: string, mode: EditmarkExportMode = 's
         // Typos: keep the new text
         result = result.replace(EDITMARK_PATTERNS.typo, '$2');
         result = result.replace(EDITMARK_PATTERNS.typoCritic, '$2');
-        return result;
+        // Bare format: keep the text (treated as insertion)
+        result = result.replace(EDITMARK_PATTERNS.bare, '$1');
+        return escapeHtml(result);
     }
 
     if (mode === 'reject') {
-        // Reject all changes
+        // Reject all changes, then escape
         let result = text;
         // Insertions: remove
         result = result.replace(EDITMARK_PATTERNS.insertion, '');
@@ -601,29 +658,45 @@ export function processEditmarksHtml(text: string, mode: EditmarkExportMode = 's
         // Typos: keep the old text
         result = result.replace(EDITMARK_PATTERNS.typo, '$1');
         result = result.replace(EDITMARK_PATTERNS.typoCritic, '$1');
-        return result;
+        // Bare format: remove (treated as insertion being rejected)
+        result = result.replace(EDITMARK_PATTERNS.bare, '');
+        return escapeHtml(result);
     }
 
     // mode === 'show': Render with visual markup
+    // We need to escape content inside editmarks while preserving the HTML tags
     let result = text;
 
     // Insertions: <ins class="editmark-ins">text</ins>
-    result = result.replace(EDITMARK_PATTERNS.insertion, '<ins class="editmark-ins">$1</ins>');
-    result = result.replace(EDITMARK_PATTERNS.insertionCritic, '<ins class="editmark-ins">$1</ins>');
+    result = result.replace(EDITMARK_PATTERNS.insertion, (_, content) =>
+        `<ins class="editmark-ins">${escapeHtml(content)}</ins>`);
+    result = result.replace(EDITMARK_PATTERNS.insertionCritic, (_, content) =>
+        `<ins class="editmark-ins">${escapeHtml(content)}</ins>`);
 
     // Deletions: <del class="editmark-del">text</del>
-    result = result.replace(EDITMARK_PATTERNS.deletion, '<del class="editmark-del">$1</del>');
-    result = result.replace(EDITMARK_PATTERNS.deletionCritic, '<del class="editmark-del">$1</del>');
+    result = result.replace(EDITMARK_PATTERNS.deletion, (_, content) =>
+        `<del class="editmark-del">${escapeHtml(content)}</del>`);
+    result = result.replace(EDITMARK_PATTERNS.deletionCritic, (_, content) =>
+        `<del class="editmark-del">${escapeHtml(content)}</del>`);
 
-    // Comments: <mark class="editmark-comment" title="comment">text</mark>
-    result = result.replace(EDITMARK_PATTERNS.comment, '<mark class="editmark-comment">$1</mark>');
-    result = result.replace(EDITMARK_PATTERNS.commentCritic, '<mark class="editmark-comment">$1</mark>');
+    // Comments: <mark class="editmark-comment">text</mark>
+    result = result.replace(EDITMARK_PATTERNS.comment, (_, content) =>
+        `<mark class="editmark-comment">${escapeHtml(content)}</mark>`);
+    result = result.replace(EDITMARK_PATTERNS.commentCritic, (_, content) =>
+        `<mark class="editmark-comment">${escapeHtml(content)}</mark>`);
 
     // Typos: <span class="editmark-typo"><del>old</del><ins>new</ins></span>
-    result = result.replace(EDITMARK_PATTERNS.typo, '<span class="editmark-typo"><del>$1</del><ins>$2</ins></span>');
-    result = result.replace(EDITMARK_PATTERNS.typoCritic, '<span class="editmark-typo"><del>$1</del><ins>$2</ins></span>');
+    result = result.replace(EDITMARK_PATTERNS.typo, (_, oldText, newText) =>
+        `<span class="editmark-typo"><del>${escapeHtml(oldText)}</del><ins>${escapeHtml(newText)}</ins></span>`);
+    result = result.replace(EDITMARK_PATTERNS.typoCritic, (_, oldText, newText) =>
+        `<span class="editmark-typo"><del>${escapeHtml(oldText)}</del><ins>${escapeHtml(newText)}</ins></span>`);
 
-    return result;
+    // Bare format: @@text@@ rendered as insertion (must be LAST to avoid matching delimited forms)
+    result = result.replace(EDITMARK_PATTERNS.bare, (_, content) =>
+        `<ins class="editmark-ins">${escapeHtml(content)}</ins>`);
+
+    // Escape any remaining text that's outside HTML tags
+    return escapeNonEditmarkText(result);
 }
 
 /**
@@ -640,6 +713,8 @@ export function processEditmarksLatex(text: string, mode: EditmarkExportMode = '
         result = result.replace(EDITMARK_PATTERNS.deletionCritic, '');
         result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
         result = result.replace(EDITMARK_PATTERNS.typoCritic, '');
+        // Bare format (must be last)
+        result = result.replace(EDITMARK_PATTERNS.bare, '');
         return result;
     }
 
@@ -653,6 +728,8 @@ export function processEditmarksLatex(text: string, mode: EditmarkExportMode = '
         result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
         result = result.replace(EDITMARK_PATTERNS.typo, '$2');
         result = result.replace(EDITMARK_PATTERNS.typoCritic, '$2');
+        // Bare format: keep the text (treated as insertion)
+        result = result.replace(EDITMARK_PATTERNS.bare, '$1');
         return result;
     }
 
@@ -666,6 +743,8 @@ export function processEditmarksLatex(text: string, mode: EditmarkExportMode = '
         result = result.replace(EDITMARK_PATTERNS.commentCritic, '');
         result = result.replace(EDITMARK_PATTERNS.typo, '$1');
         result = result.replace(EDITMARK_PATTERNS.typoCritic, '$1');
+        // Bare format: remove (treated as insertion being rejected)
+        result = result.replace(EDITMARK_PATTERNS.bare, '');
         return result;
     }
 
@@ -687,6 +766,9 @@ export function processEditmarksLatex(text: string, mode: EditmarkExportMode = '
     // Typos: \edittypo{old}{new}
     result = result.replace(EDITMARK_PATTERNS.typo, '\\edittypo{$1}{$2}');
     result = result.replace(EDITMARK_PATTERNS.typoCritic, '\\edittypo{$1}{$2}');
+
+    // Bare format: @@text@@ rendered as insertion (must be LAST)
+    result = result.replace(EDITMARK_PATTERNS.bare, '\\editins{$1}');
 
     return result;
 }

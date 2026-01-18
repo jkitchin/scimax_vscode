@@ -403,11 +403,12 @@ export class HtmlExportBackend implements ExportBackend {
                 return '<br />\n';
             case 'plain-text': {
                 const text = (object as PlainTextObject).properties.value;
-                const escaped = escapeString(text, 'html');
-                // Process editmarks after escaping (editmark delimiters don't need escaping)
+                // Process editmarks on RAW text - the function handles HTML escaping internally
+                // This is important because editmark comment syntax @@>text<@@ uses > and <
+                // which would be escaped to &gt; and &lt; if we escaped first
                 const htmlState = state as HtmlExportState;
                 const editmarkMode = htmlState.htmlOptions?.editmarkMode || 'show';
-                return processEditmarksHtml(escaped, editmarkMode);
+                return processEditmarksHtml(text, editmarkMode);
             }
             case 'inline-src-block':
                 return this.exportInlineSrcBlock(object as InlineSrcBlockObject, state);
