@@ -17,15 +17,7 @@ import {
     getNotebookFullText,
     NotebookDocument
 } from '../parser/ipynbParser';
-
-/**
- * Embedding service interface for semantic search
- */
-export interface EmbeddingService {
-    embed(text: string): Promise<number[]>;
-    embedBatch(texts: string[]): Promise<number[][]>;
-    dimensions: number;
-}
+import type { EmbeddingService } from './embeddingService';
 
 /**
  * Database record types
