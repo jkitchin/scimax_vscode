@@ -1114,6 +1114,108 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             }
         }),
 
+        // Search agenda items
+        vscode.commands.registerCommand('scimax.agenda.search', async () => {
+            const query = await vscode.window.showInputBox({
+                prompt: 'Search agenda items',
+                placeHolder: 'Enter search term...',
+            });
+
+            if (!query) return;
+
+            const queryLower = query.toLowerCase();
+
+            // Get both agenda view and todo list for comprehensive search
+            const [agendaView, todoList] = await Promise.all([
+                manager.getAgendaView({ days: 365 }), // Search up to a year ahead
+                manager.getTodoList(),
+            ]);
+
+            // Collect all unique items (avoid duplicates)
+            const seenItems = new Set<string>();
+            const matchingItems: AgendaItem[] = [];
+
+            // Search agenda items
+            for (const group of agendaView.groups) {
+                for (const item of group.items) {
+                    const key = `${item.file}:${item.line}:${item.title}`;
+                    if (seenItems.has(key)) continue;
+
+                    // Search in title, category, tags, and file name
+                    const searchText = [
+                        item.title,
+                        item.category,
+                        item.tags.join(' '),
+                        path.basename(item.file),
+                        item.todoState || '',
+                    ].join(' ').toLowerCase();
+
+                    if (searchText.includes(queryLower)) {
+                        matchingItems.push(item);
+                        seenItems.add(key);
+                    }
+                }
+            }
+
+            // Search TODO list items that might not be in agenda view
+            for (const items of todoList.byState.values()) {
+                for (const item of items) {
+                    const key = `${item.file}:${item.line}:${item.title}`;
+                    if (seenItems.has(key)) continue;
+
+                    const searchText = [
+                        item.title,
+                        item.category,
+                        item.tags.join(' '),
+                        path.basename(item.file),
+                        item.todoState || '',
+                    ].join(' ').toLowerCase();
+
+                    if (searchText.includes(queryLower)) {
+                        matchingItems.push(item);
+                        seenItems.add(key);
+                    }
+                }
+            }
+
+            if (matchingItems.length === 0) {
+                vscode.window.showInformationMessage(`No agenda items found matching "${query}"`);
+                return;
+            }
+
+            // Sort by relevance (title matches first) then by date
+            matchingItems.sort((a, b) => {
+                const aTitle = a.title.toLowerCase().includes(queryLower);
+                const bTitle = b.title.toLowerCase().includes(queryLower);
+                if (aTitle && !bTitle) return -1;
+                if (!aTitle && bTitle) return 1;
+
+                // Then by date
+                const dateA = a.scheduled || a.deadline || a.timestamp || new Date(0);
+                const dateB = b.scheduled || b.deadline || b.timestamp || new Date(0);
+                return dateA.getTime() - dateB.getTime();
+            });
+
+            // Create quick pick items
+            const items: vscode.QuickPickItem[] = matchingItems.map(item => ({
+                label: `${item.todoState ? `[${item.todoState}] ` : ''}${item.title}`,
+                description: formatItemDescription(item),
+                detail: `${path.basename(item.file)}:${item.line}${item.tags.length > 0 ? ` :${item.tags.join(':')}:` : ''}`,
+                // @ts-ignore
+                agendaItem: item,
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `Found ${items.length} items matching "${query}"`,
+                matchOnDescription: true,
+                matchOnDetail: true,
+            });
+
+            if (selected && (selected as any).agendaItem) {
+                await jumpToAgendaItem((selected as any).agendaItem);
+            }
+        }),
+
         // Agenda clock report - generates time report across all agenda files
         vscode.commands.registerCommand('scimax.agenda.clockReport', async () => {
             // Ask for report type

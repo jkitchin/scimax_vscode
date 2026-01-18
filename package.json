@@ -2025,6 +2025,11 @@
         "title": "Scimax: Agenda Filter by Tag"
       },
       {
+        "command": "scimax.agenda.search",
+        "title": "Scimax: Search Agenda",
+        "icon": "$(search)"
+      },
+      {
         "command": "scimax.agenda.clockReport",
         "title": "Scimax: Agenda Clock Report"
       },
@@ -3854,6 +3859,11 @@
         }
       ],
       "view/title": [
+        {
+          "command": "scimax.agenda.search",
+          "when": "view == scimax.agenda",
+          "group": "navigation"
+        },
         {
           "command": "scimax.agenda.refresh",
           "when": "view == scimax.agenda",
