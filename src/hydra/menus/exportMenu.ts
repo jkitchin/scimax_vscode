@@ -4,9 +4,42 @@
  * Emacs org-mode style export menu with:
  * - First level: choose export format (h=HTML, l=LaTeX, m=Markdown)
  * - Second level: format-specific export options
+ * - Body-only toggle: [b] to toggle body-only export mode
  */
 
 import { HydraMenuDefinition } from '../types';
+
+// =============================================================================
+// Export State
+// =============================================================================
+
+/**
+ * Body-only export mode toggle state
+ * When true, exports produce only the document body without wrapper/preamble
+ */
+let bodyOnlyMode = false;
+
+/**
+ * Get the current body-only mode state
+ */
+export function isBodyOnlyMode(): boolean {
+    return bodyOnlyMode;
+}
+
+/**
+ * Set the body-only mode state
+ */
+export function setBodyOnlyMode(value: boolean): void {
+    bodyOnlyMode = value;
+}
+
+/**
+ * Toggle body-only mode and return the new state
+ */
+export function toggleBodyOnlyMode(): boolean {
+    bodyOnlyMode = !bodyOnlyMode;
+    return bodyOnlyMode;
+}
 
 /**
  * Main export dispatcher - first level menu
@@ -14,9 +47,27 @@ import { HydraMenuDefinition } from '../types';
 export const exportMenu: HydraMenuDefinition = {
     id: 'scimax.export',
     title: 'Org Export Dispatcher',
-    hint: 'Select export format...',
+    hint: 'Select export format... [b] toggles body-only mode',
     groups: [
         {
+            title: 'Options',
+            items: [
+                {
+                    key: 'b',
+                    label: 'Body only',
+                    description: 'Export without document wrapper/preamble',
+                    icon: 'symbol-namespace',
+                    exit: 'stay',
+                    action: () => {
+                        toggleBodyOnlyMode();
+                    },
+                    isToggle: true,
+                    getToggleState: () => bodyOnlyMode,
+                },
+            ],
+        },
+        {
+            title: 'Export Formats',
             items: [
                 {
                     key: 'h',

@@ -15,6 +15,7 @@ import { parseBibTeX } from '../references/bibtexParser';
 import type { BibEntry } from '../references/bibtexParser';
 import type { ExportOptions } from '../parser/orgExport';
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
+import { isBodyOnlyMode } from '../hydra/menus/exportMenu';
 
 /**
  * Execute a command using spawn (no shell, prevents command injection)
@@ -1052,12 +1053,14 @@ async function quickExportHtml(): Promise<void> {
     const inputDir = path.dirname(inputPath);
     const content = preprocessContent(editor.document.getText(), inputDir);
     const outputPath = inputPath.replace(/\.org$/, '.html');
+    const bodyOnly = isBodyOnlyMode();
 
     try {
         await deleteExistingOutput(outputPath);
-        const result = await exportHtml(content, {}, false, inputDir);
+        const result = await exportHtml(content, {}, bodyOnly, inputDir);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
-        vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
+        const suffix = bodyOnly ? ' (body only)' : '';
+        vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}${suffix}`);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         vscode.window.showErrorMessage(`Export failed: ${message}`);
@@ -1078,12 +1081,14 @@ async function quickExportLatex(): Promise<void> {
     const inputDir = path.dirname(inputPath);
     const content = preprocessContent(editor.document.getText(), inputDir);
     const outputPath = inputPath.replace(/\.org$/, '.tex');
+    const bodyOnly = isBodyOnlyMode();
 
     try {
         await deleteExistingOutput(outputPath);
-        const result = await exportLatex(content, {}, false);
+        const result = await exportLatex(content, {}, bodyOnly);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
-        vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
+        const suffix = bodyOnly ? ' (body only)' : '';
+        vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}${suffix}`);
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         vscode.window.showErrorMessage(`Export failed: ${message}`);
@@ -1313,9 +1318,10 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 const inputDir = path.dirname(inputPath);
                 const content = preprocessContent(editor.document.getText(), inputDir);
                 const outputPath = inputPath.replace(/\.org$/, '.html');
+                const bodyOnly = isBodyOnlyMode();
                 try {
                     await deleteExistingOutput(outputPath);
-                    const html = await exportHtml(content, {}, false, inputDir);
+                    const html = await exportHtml(content, {}, bodyOnly, inputDir);
                     await fs.promises.writeFile(outputPath, html, 'utf-8');
                     await vscode.env.openExternal(vscode.Uri.file(outputPath));
                 } catch (error) {
@@ -1407,25 +1413,28 @@ async function exportDispatcher(): Promise<void> {
     const inputDir = path.dirname(inputPath);
     const content = preprocessContent(editor.document.getText(), inputDir);
 
+    const bodyOnly = isBodyOnlyMode();
     try {
         switch (selected.value) {
             case 'html-file': {
                 const outputPath = inputPath.replace(/\.org$/, '.html');
                 await deleteExistingOutput(outputPath);
-                const html = await exportHtml(content, {}, false, inputDir);
+                const html = await exportHtml(content, {}, bodyOnly, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
-                vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
+                const suffix = bodyOnly ? ' (body only)' : '';
+                vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}${suffix}`);
                 break;
             }
             case 'html-open': {
                 const outputPath = inputPath.replace(/\.org$/, '.html');
                 await deleteExistingOutput(outputPath);
-                const html = await exportHtml(content, {}, false, inputDir);
+                const html = await exportHtml(content, {}, bodyOnly, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 await vscode.env.openExternal(vscode.Uri.file(outputPath));
                 break;
             }
             case 'html-body': {
+                // Explicit body-only export (ignores toggle, always body-only)
                 const outputPath = inputPath.replace(/\.org$/, '.html');
                 await deleteExistingOutput(outputPath);
                 const html = await exportHtml(content, {}, true, inputDir);
@@ -1442,6 +1451,7 @@ async function exportDispatcher(): Promise<void> {
                 break;
             }
             case 'latex-body': {
+                // Explicit body-only export (ignores toggle, always body-only)
                 const outputPath = inputPath.replace(/\.org$/, '.tex');
                 await deleteExistingOutput(outputPath);
                 const latex = await exportLatex(content, {}, true);

@@ -17,6 +17,9 @@ import {
     latexExportMenu,
     markdownExportMenu,
     exportMenus,
+    isBodyOnlyMode,
+    setBodyOnlyMode,
+    toggleBodyOnlyMode,
 } from './exportMenu';
 
 /**
@@ -48,4 +51,7 @@ export {
     latexExportMenu,
     markdownExportMenu,
     exportMenus,
+    isBodyOnlyMode,
+    setBodyOnlyMode,
+    toggleBodyOnlyMode,
 };

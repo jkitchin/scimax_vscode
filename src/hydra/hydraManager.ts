@@ -214,6 +214,12 @@ export class HydraManager {
 
         // Build items from menu definition
         const items = await this.buildQuickPickItems(menu);
+
+        // Check if quickPick was disposed during async item building (race condition)
+        if (!this.quickPick) {
+            return;
+        }
+
         this.quickPick.items = items;
 
         // Reset key buffer
