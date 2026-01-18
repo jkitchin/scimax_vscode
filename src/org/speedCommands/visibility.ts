@@ -69,3 +69,94 @@ export async function showAll(): Promise<void> {
     await vscode.commands.executeCommand('editor.unfoldAll');
     vscode.window.setStatusBarMessage('Show all: Expanded', 2000);
 }
+
+/**
+ * Parse #+STARTUP: options from the beginning of a document
+ * Returns an array of startup option strings (e.g., ['overview', 'indent'])
+ */
+export function parseStartupOptions(document: vscode.TextDocument): string[] {
+    // Only check the first 50 lines for performance
+    const maxLines = Math.min(50, document.lineCount);
+    for (let i = 0; i < maxLines; i++) {
+        const line = document.lineAt(i).text;
+        // Match #+STARTUP: with optional values, handling comments
+        const match = line.match(/^#\+STARTUP:\s*(.*)$/i);
+        if (match) {
+            // Remove comments (anything after #) and split by whitespace
+            const value = match[1].split('#')[0].trim();
+            if (value) {
+                return value.split(/\s+/).map(s => s.toLowerCase());
+            }
+        }
+    }
+    return [];
+}
+
+/**
+ * Apply startup visibility options to the active editor
+ * Silently applies folding without status bar messages
+ */
+export async function applyStartupVisibility(options: string[]): Promise<boolean> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return false;
+
+    let applied = false;
+
+    for (const option of options) {
+        switch (option) {
+            case 'overview':
+            case 'fold':
+                // Fold everything - show only top-level headings
+                await vscode.commands.executeCommand('editor.foldAll');
+                applied = true;
+                break;
+
+            case 'content':
+            case 'contents':
+                // Show all headings but fold body text
+                await vscode.commands.executeCommand('editor.unfoldAll');
+                await vscode.commands.executeCommand('editor.foldLevel2');
+                applied = true;
+                break;
+
+            case 'showall':
+            case 'showeverything':
+            case 'nofold':
+                // Expand everything
+                await vscode.commands.executeCommand('editor.unfoldAll');
+                applied = true;
+                break;
+
+            case 'show2levels':
+                await vscode.commands.executeCommand('editor.unfoldAll');
+                await vscode.commands.executeCommand('editor.foldLevel2');
+                applied = true;
+                break;
+
+            case 'show3levels':
+                await vscode.commands.executeCommand('editor.unfoldAll');
+                await vscode.commands.executeCommand('editor.foldLevel3');
+                applied = true;
+                break;
+
+            case 'show4levels':
+                await vscode.commands.executeCommand('editor.unfoldAll');
+                await vscode.commands.executeCommand('editor.foldLevel4');
+                applied = true;
+                break;
+
+            case 'show5levels':
+                await vscode.commands.executeCommand('editor.unfoldAll');
+                await vscode.commands.executeCommand('editor.foldLevel5');
+                applied = true;
+                break;
+
+            // Ignore other options (indent, hidestars, etc.) - not related to folding
+        }
+
+        // Stop after first visibility option is applied
+        if (applied) break;
+    }
+
+    return applied;
+}

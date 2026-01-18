@@ -43,6 +43,7 @@ import { registerExportCommands } from './org/exportProvider';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerSpeedCommands } from './org/speedCommands';
+import { parseStartupOptions, applyStartupVisibility } from './org/speedCommands/visibility';
 import { registerImageOverlayCommands } from './org/imageOverlayProvider';
 import { registerAgendaCommands } from './org/agendaProvider';
 import { registerTableFormulaCommands } from './org/tableFormula';
@@ -240,6 +241,41 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Folding Provider for org-mode
     registerFoldingProvider(context);
+
+    // Track documents that have had #+STARTUP: folding applied
+    const startupAppliedDocs = new Set<string>();
+
+    // Apply #+STARTUP: visibility options when opening org files
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(async (editor) => {
+            if (!editor) return;
+
+            const document = editor.document;
+            // Only process org files
+            if (document.languageId !== 'org') return;
+
+            const docKey = document.uri.toString();
+            // Only apply once per document (per session)
+            if (startupAppliedDocs.has(docKey)) return;
+            startupAppliedDocs.add(docKey);
+
+            // Parse and apply startup options
+            const options = parseStartupOptions(document);
+            if (options.length > 0) {
+                // Small delay to ensure folding provider is ready
+                setTimeout(async () => {
+                    await applyStartupVisibility(options);
+                }, 100);
+            }
+        })
+    );
+
+    // Clean up tracking when documents are closed
+    context.subscriptions.push(
+        vscode.workspace.onDidCloseTextDocument((document) => {
+            startupAppliedDocs.delete(document.uri.toString());
+        })
+    );
 
     // Register Block Decorations (background colors for src blocks, etc.)
     registerBlockDecorations(context);
