@@ -242,6 +242,36 @@ for fname in sorted(os.listdir(".")):
 print(f"\nTotal: {total} headings updated" if total else "All headings have TODO states.")
 #+end_src
 
- #+attr_org: :radio t                                                                                                                
- - [X] Option 1                                                                                                                      
- - [ ] Option 2  
+* Add Review Markers (TypeScript API)
+
+Uses the scimax org modification API to add ⚠️ markers to unmarked headings.
+
+#+begin_src typescript :results output
+import { org } from './src/parser/orgModify';
+import * as fs from 'fs';
+
+const TODO_STATES = ['⚠️', '👀', '✅', 'TODO', 'DONE', 'NEXT', 'WAITING', 'CANCELLED'];
+let total = 0;
+
+for (const fname of fs.readdirSync('.').filter(f => f.endsWith('.org') && f !== 'review-agenda.org')) {
+    const doc = org.parseFile(fname);
+    let changes: string[] = [];
+
+    org.mapHeadlines(doc, h => {
+        if (!h.properties.todoKeyword || !TODO_STATES.includes(h.properties.todoKeyword)) {
+            h.properties.todoKeyword = '⚠️';
+            h.properties.todoType = 'todo';
+            changes.push(`  Line ${h.properties.lineNumber}: ${h.properties.rawValue}`);
+        }
+    });
+
+    if (changes.length > 0) {
+        org.writeFile(fname, doc);
+        console.log(`\n${fname}:`);
+        changes.forEach(c => console.log(c));
+        total += changes.length;
+    }
+}
+
+console.log(total > 0 ? `\nTotal: ${total} headings updated` : 'All headings have TODO states.');
+#+end_src
