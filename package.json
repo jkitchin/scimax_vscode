@@ -987,6 +987,10 @@
         "title": "Scimax: Insert Citation"
       },
       {
+        "command": "scimax.zotero.insertCitation",
+        "title": "Scimax: Insert Citation from Zotero"
+      },
+      {
         "command": "scimax.ref.openBibliography",
         "title": "Scimax: Open Bibliography"
       },
@@ -2330,6 +2334,12 @@
         "command": "scimax.ref.insertCitation",
         "key": "ctrl+c ]",
         "mac": "ctrl+c ]",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
+      },
+      {
+        "command": "scimax.zotero.insertCitation",
+        "key": "ctrl+c z",
+        "mac": "ctrl+c z",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
       },
       {
