@@ -449,8 +449,9 @@ export class AgendaManager {
                         charCount += lines[i].length + 1; // +1 for newline
                     }
 
-                    // Get the title from the next line or use sexp as title
-                    const title = this.getDiarySexpTitle(lines, lineNumber - 1);
+                    // Use description from sexp if available, otherwise look at context
+                    const title = diarySexp.properties.description ||
+                                  this.getDiarySexpTitle(lines, lineNumber - 1);
 
                     entries.push({
                         sexp: diarySexp.properties.value,

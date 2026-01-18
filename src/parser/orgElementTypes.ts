@@ -611,6 +611,8 @@ export interface DiarySexpElement extends OrgElement {
     properties: {
         /** The s-expression content */
         value: string;
+        /** Optional description text after the sexp */
+        description?: string;
     };
 }
 

@@ -137,7 +137,7 @@ const RE_FOOTNOTE_DEF = /^\[fn:([^\]]+)\]\s*/;
 const RE_BABEL_CALL = /^#\+CALL:\s*(\S+?)(?:\[([^\]]*)\])?\(([^)]*)\)(?:\[([^\]]*)\])?\s*$/i;
 
 // Diary sexp pattern
-const RE_DIARY_SEXP = /^%%\((.+)\)\s*$/;
+const RE_DIARY_SEXP = /^%%\((.+?)\)\s*(.*)$/;
 
 // Clock pattern
 const RE_CLOCK_LINE = /^CLOCK:\s*/;
@@ -1598,6 +1598,7 @@ export class OrgParserUnified {
             postBlank: 0,
             properties: {
                 value: match[1],
+                description: match[2]?.trim() || undefined,
             },
         };
     }
