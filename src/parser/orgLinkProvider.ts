@@ -796,21 +796,8 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                     fs.writeFileSync(file, JSON.stringify(emptyExcalidraw, null, 2));
                 }
 
-                // Try to open with Excalidraw editor
-                try {
-                    await vscode.commands.executeCommand('vscode.openWith', uri, 'excalidraw-editor.excalidraw');
-                } catch {
-                    // Fallback: try alternate editor ID used by some versions
-                    try {
-                        await vscode.commands.executeCommand('vscode.openWith', uri, 'editor.excalidraw');
-                    } catch {
-                        // Final fallback: open with default editor
-                        await vscode.window.showTextDocument(uri);
-                        vscode.window.showInformationMessage(
-                            'Excalidraw extension not found. Install it from the marketplace for visual editing.'
-                        );
-                    }
-                }
+                // Open with Excalidraw editor
+                await vscode.commands.executeCommand('vscode.openWith', uri, 'editor.excalidraw');
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open Excalidraw file: ${file}`);
             }

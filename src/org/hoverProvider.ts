@@ -39,6 +39,142 @@ function isExcalidrawFile(filePath: string): boolean {
     return EXCALIDRAW_EXTENSIONS.some(ext => lowerPath.endsWith(ext));
 }
 
+/**
+ * Excalidraw element interface for preview rendering
+ */
+interface ExcalidrawElement {
+    type: string;
+    x: number;
+    y: number;
+    width?: number;
+    height?: number;
+    points?: [number, number][];
+    strokeColor?: string;
+    backgroundColor?: string;
+    fillStyle?: string;
+    isDeleted?: boolean;
+    text?: string;
+}
+
+/**
+ * Generate a simple SVG preview from Excalidraw JSON
+ * This creates a simplified representation suitable for hover previews
+ */
+function generateExcalidrawPreviewSvg(data: { elements?: ExcalidrawElement[]; appState?: { viewBackgroundColor?: string } }): string | null {
+    const elements = data.elements?.filter(el => !el.isDeleted) || [];
+    if (elements.length === 0) {
+        return null;
+    }
+
+    // Calculate bounding box
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    for (const el of elements) {
+        const x = el.x || 0;
+        const y = el.y || 0;
+        const w = el.width || 0;
+        const h = el.height || 0;
+
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x + w);
+        maxY = Math.max(maxY, y + h);
+
+        // Handle line/arrow points
+        if (el.points) {
+            for (const [px, py] of el.points) {
+                minX = Math.min(minX, x + px);
+                minY = Math.min(minY, y + py);
+                maxX = Math.max(maxX, x + px);
+                maxY = Math.max(maxY, y + py);
+            }
+        }
+    }
+
+    // Add padding
+    const padding = 20;
+    minX -= padding;
+    minY -= padding;
+    maxX += padding;
+    maxY += padding;
+
+    const width = maxX - minX;
+    const height = maxY - minY;
+
+    // Scale to fit in preview size (max 400x300)
+    const maxWidth = 400;
+    const maxHeight = 300;
+    const scale = Math.min(maxWidth / width, maxHeight / height, 1);
+    const viewWidth = Math.ceil(width * scale);
+    const viewHeight = Math.ceil(height * scale);
+
+    const bgColor = data.appState?.viewBackgroundColor || '#ffffff';
+
+    // Generate SVG shapes
+    const shapes: string[] = [];
+    for (const el of elements) {
+        const x = (el.x || 0) - minX;
+        const y = (el.y || 0) - minY;
+        const w = el.width || 0;
+        const h = el.height || 0;
+        const stroke = el.strokeColor || '#000000';
+        const fill = el.fillStyle === 'solid' ? (el.backgroundColor || 'none') : 'none';
+
+        switch (el.type) {
+            case 'rectangle':
+                shapes.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" stroke="${stroke}" fill="${fill}" stroke-width="2"/>`);
+                break;
+            case 'ellipse':
+                shapes.push(`<ellipse cx="${x + w/2}" cy="${y + h/2}" rx="${w/2}" ry="${h/2}" stroke="${stroke}" fill="${fill}" stroke-width="2"/>`);
+                break;
+            case 'diamond':
+                const cx = x + w/2, cy = y + h/2;
+                shapes.push(`<polygon points="${cx},${y} ${x+w},${cy} ${cx},${y+h} ${x},${cy}" stroke="${stroke}" fill="${fill}" stroke-width="2"/>`);
+                break;
+            case 'line':
+            case 'arrow':
+                if (el.points && el.points.length >= 2) {
+                    const pts = el.points.map(([px, py]) => `${x + px},${y + py}`).join(' ');
+                    shapes.push(`<polyline points="${pts}" stroke="${stroke}" fill="none" stroke-width="2"/>`);
+                    if (el.type === 'arrow' && el.points.length >= 2) {
+                        // Add arrowhead
+                        const last = el.points[el.points.length - 1];
+                        const prev = el.points[el.points.length - 2];
+                        const angle = Math.atan2(last[1] - prev[1], last[0] - prev[0]);
+                        const ax = x + last[0], ay = y + last[1];
+                        const size = 10;
+                        shapes.push(`<polygon points="${ax},${ay} ${ax - size * Math.cos(angle - 0.5)},${ay - size * Math.sin(angle - 0.5)} ${ax - size * Math.cos(angle + 0.5)},${ay - size * Math.sin(angle + 0.5)}" fill="${stroke}"/>`);
+                    }
+                }
+                break;
+            case 'text':
+                // Show text placeholder
+                shapes.push(`<rect x="${x}" y="${y}" width="${Math.max(w, 50)}" height="${Math.max(h, 20)}" stroke="#aaa" fill="#f5f5f5" stroke-width="1" stroke-dasharray="4"/>`);
+                break;
+            case 'freedraw':
+                if (el.points && el.points.length >= 2) {
+                    const pts = el.points.map(([px, py]) => `${x + px},${y + py}`).join(' ');
+                    shapes.push(`<polyline points="${pts}" stroke="${stroke}" fill="none" stroke-width="2"/>`);
+                }
+                break;
+            case 'image':
+                // Show image placeholder
+                shapes.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" stroke="#666" fill="#e0e0e0" stroke-width="1"/>`);
+                shapes.push(`<text x="${x + w/2}" y="${y + h/2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#666">[image]</text>`);
+                break;
+        }
+    }
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${viewWidth}" height="${viewHeight}" viewBox="0 0 ${width} ${height}">
+  <rect width="100%" height="100%" fill="${bgColor}"/>
+  <g transform="scale(1)">
+    ${shapes.join('\n    ')}
+  </g>
+</svg>`;
+
+    return svg;
+}
+
 // Keyword descriptions
 const KEYWORD_DESCRIPTIONS: Record<string, string> = {
     'TITLE': 'Document title shown in exports',
@@ -456,14 +592,23 @@ export class OrgHoverProvider implements vscode.HoverProvider {
                         }
                     }
 
-                    // Try to read and parse the JSON to show element count
+                    // Try to read and parse the JSON to show element count and generate preview
                     try {
                         const content = fs.readFileSync(absolutePath, 'utf-8');
                         const data = JSON.parse(content);
                         const elementCount = Array.isArray(data.elements) ? data.elements.length : 0;
 
                         if (!foundExport) {
-                            markdown.appendMarkdown(`*No preview available*\n\n`);
+                            // Generate SVG preview from JSON
+                            const svgPreview = generateExcalidrawPreviewSvg(data);
+                            if (svgPreview) {
+                                const svgDataUri = `data:image/svg+xml;base64,${Buffer.from(svgPreview).toString('base64')}`;
+                                markdown.appendMarkdown(`<img src="${svgDataUri}" width="400" />\n\n`);
+                            } else if (elementCount === 0) {
+                                markdown.appendMarkdown(`*Empty drawing*\n\n`);
+                            } else {
+                                markdown.appendMarkdown(`*Preview not available*\n\n`);
+                            }
                         }
 
                         markdown.appendMarkdown(`**Elements:** ${elementCount}\n\n`);
