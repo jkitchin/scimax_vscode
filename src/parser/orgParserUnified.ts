@@ -136,8 +136,8 @@ const RE_FOOTNOTE_DEF = /^\[fn:([^\]]+)\]\s*/;
 // Babel call pattern (#+CALL: name[header](args)[end-header])
 const RE_BABEL_CALL = /^#\+CALL:\s*(\S+?)(?:\[([^\]]*)\])?\(([^)]*)\)(?:\[([^\]]*)\])?\s*$/i;
 
-// Diary sexp pattern
-const RE_DIARY_SEXP = /^%%\((.+?)\)\s*(.*)$/;
+// Diary sexp pattern (allows optional leading whitespace)
+const RE_DIARY_SEXP = /^\s*%%\((.+?)\)\s*(.*)$/;
 
 // Clock pattern
 const RE_CLOCK_LINE = /^CLOCK:\s*/;
@@ -598,8 +598,9 @@ export class OrgParserUnified {
                 }
             }
 
-            // Diary sexp - starts with %%
-            if (firstChar === '%' && line[1] === '%') {
+            // Diary sexp - starts with %% (may be indented)
+            if (firstChar === '%' && line[1] === '%' ||
+                (firstChar === ' ' || firstChar === '\t') && line.includes('%%')) {
                 const diarySexp = this.parseDiarySexp(line, lineStart);
                 if (diarySexp) {
                     elements.push(diarySexp);
