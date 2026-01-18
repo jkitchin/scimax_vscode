@@ -213,6 +213,94 @@ export function formatOrgRefCitation(keys: string[]): string {
 }
 
 /**
+ * Result of finding a citation at cursor position
+ */
+export interface CitationAtCursor {
+    /** The citation style (cite, citep, citet, etc.) */
+    style: string;
+    /** Whether the citation uses v3 syntax (true) or v2 syntax (false) */
+    isV3: boolean;
+    /** Start position of the citation in the line */
+    startColumn: number;
+    /** End position of the citation in the line (where cursor should be for append) */
+    endColumn: number;
+    /** The existing keys in the citation */
+    existingKeys: string[];
+}
+
+/**
+ * Check if cursor is at the end of an existing citation
+ * Returns citation info if at end of citation, null otherwise
+ * @internal Exported for testing
+ */
+export function findCitationAtCursor(
+    lineText: string,
+    cursorColumn: number
+): CitationAtCursor | null {
+    // Common citation styles
+    const citeStyles = ['cite', 'citep', 'citet', 'citeauthor', 'citeyear', 'citenum', 'citealp', 'citealt', 'nocite'];
+    const stylePattern = citeStyles.join('|');
+
+    // v3 pattern: style:&key1;&key2 (keys start with &, separated by ;)
+    // v2 pattern: style:key1,key2 (keys without &, separated by ,)
+
+    // Combined regex to match both formats
+    // Matches: cite:&key1;&key2 or cite:key1,key2
+    const citationRegex = new RegExp(
+        `(${stylePattern}):` +           // style:
+        `(&[\\w:._-]+(?:;&[\\w:._-]+)*` + // v3: &key1;&key2
+        `|[\\w:._-]+(?:,[\\w:._-]+)*)`,   // v2: key1,key2
+        'gi'
+    );
+
+    let match: RegExpExecArray | null;
+    while ((match = citationRegex.exec(lineText)) !== null) {
+        const citationStart = match.index;
+        const citationEnd = match.index + match[0].length;
+
+        // Check if cursor is at the end of this citation
+        if (cursorColumn === citationEnd) {
+            const style = match[1];
+            const keysStr = match[2];
+            const isV3 = keysStr.startsWith('&');
+
+            let existingKeys: string[];
+            if (isV3) {
+                // v3: &key1;&key2 -> ['key1', 'key2']
+                existingKeys = keysStr.split(';').map(k => k.replace(/^&/, ''));
+            } else {
+                // v2: key1,key2 -> ['key1', 'key2']
+                existingKeys = keysStr.split(',');
+            }
+
+            return {
+                style,
+                isV3,
+                startColumn: citationStart,
+                endColumn: citationEnd,
+                existingKeys
+            };
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Format keys to append to an existing citation
+ * @internal Exported for testing
+ */
+export function formatKeysForAppend(keys: string[], isV3: boolean): string {
+    if (isV3) {
+        // v3: append ;&key1;&key2
+        return keys.map(k => `;&${k}`).join('');
+    } else {
+        // v2: append ,key1,key2
+        return keys.map(k => `,${k}`).join('');
+    }
+}
+
+/**
  * Register Zotero commands
  */
 export function registerZoteroCommands(
@@ -369,22 +457,35 @@ export function registerZoteroCommands(
                 await addBibliographyLink(editor, bibPath, documentPath);
             }
 
-            // Insert citation at cursor
-            const citation = formatOrgRefCitation(result.keys);
+            // Check if cursor is at end of an existing citation
+            const cursorPos = editor.selection.active;
+            const currentLine = editor.document.lineAt(cursorPos.line);
+            const existingCitation = findCitationAtCursor(currentLine.text, cursorPos.character);
+
+            let insertedText: string;
+            if (existingCitation) {
+                // Append to existing citation using its syntax (v3 or v2)
+                insertedText = formatKeysForAppend(result.keys, existingCitation.isV3);
+            } else {
+                // Insert new citation
+                insertedText = formatOrgRefCitation(result.keys);
+            }
+
             await editor.edit((editBuilder: vscode.TextEditorEdit) => {
-                editBuilder.insert(editor.selection.active, citation);
+                editBuilder.insert(editor.selection.active, insertedText);
             });
 
-            // Move cursor to end of inserted citation
+            // Move cursor to end of inserted text
             const newPosition = new vscode.Position(
                 editor.selection.active.line,
-                editor.selection.active.character + citation.length
+                editor.selection.active.character + insertedText.length
             );
             editor.selection = new vscode.Selection(newPosition, newPosition);
 
             // Show feedback
             const duplicateCount = result.keys.length - addedKeys.length;
-            let message = `Inserted ${result.keys.length} citation(s)`;
+            const action = existingCitation ? 'Appended' : 'Inserted';
+            let message = `${action} ${result.keys.length} citation(s)`;
             if (addedKeys.length > 0) {
                 message += `, added ${addedKeys.length} to ${path.basename(bibPath)}`;
             }

@@ -69,7 +69,9 @@ import {
     escapeRegExp,
     formatOrgRefCitation,
     registerZoteroCommands,
-    appendBibTeXEntries
+    appendBibTeXEntries,
+    findCitationAtCursor,
+    formatKeysForAppend
 } from '../commands';
 import * as vscode from 'vscode';
 import * as fsPromises from 'fs/promises';
@@ -696,5 +698,204 @@ describe('appendBibTeXEntries', () => {
         // Verify the full entry is preserved
         const writeCall = (fsPromises.writeFile as ReturnType<typeof vi.fn>).mock.calls[0];
         expect(writeCall[1]).toContain('{Title with {nested} braces}');
+    });
+});
+
+describe('findCitationAtCursor', () => {
+    describe('v3 syntax (org-ref v3)', () => {
+        it('should detect cursor at end of single-key v3 citation', () => {
+            const line = 'Some text cite:&smith2024 more text';
+            const cursorColumn = 25; // right after 'cite:&smith2024'
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.style).toBe('cite');
+            expect(result?.isV3).toBe(true);
+            expect(result?.existingKeys).toEqual(['smith2024']);
+        });
+
+        it('should detect cursor at end of multi-key v3 citation', () => {
+            const line = 'cite:&smith2024;&jones2023;&doe2022';
+            const cursorColumn = 35;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.style).toBe('cite');
+            expect(result?.isV3).toBe(true);
+            expect(result?.existingKeys).toEqual(['smith2024', 'jones2023', 'doe2022']);
+        });
+
+        it('should detect citep v3 style', () => {
+            const line = 'citep:&author2024';
+            const cursorColumn = 17;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.style).toBe('citep');
+            expect(result?.isV3).toBe(true);
+        });
+
+        it('should detect citet v3 style', () => {
+            const line = 'citet:&author2024';
+            const cursorColumn = 17;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.style).toBe('citet');
+            expect(result?.isV3).toBe(true);
+        });
+    });
+
+    describe('v2 syntax (org-ref v2)', () => {
+        it('should detect cursor at end of single-key v2 citation', () => {
+            const line = 'Some text cite:smith2024 more text';
+            const cursorColumn = 24; // right after 'cite:smith2024'
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.style).toBe('cite');
+            expect(result?.isV3).toBe(false);
+            expect(result?.existingKeys).toEqual(['smith2024']);
+        });
+
+        it('should detect cursor at end of multi-key v2 citation', () => {
+            const line = 'cite:smith2024,jones2023,doe2022';
+            const cursorColumn = 32;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.style).toBe('cite');
+            expect(result?.isV3).toBe(false);
+            expect(result?.existingKeys).toEqual(['smith2024', 'jones2023', 'doe2022']);
+        });
+
+        it('should detect citep v2 style', () => {
+            const line = 'citep:author2024';
+            const cursorColumn = 16;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.style).toBe('citep');
+            expect(result?.isV3).toBe(false);
+        });
+    });
+
+    describe('cursor not at citation end', () => {
+        it('should return null when cursor is before citation', () => {
+            const line = 'Some text cite:&smith2024 more text';
+            const cursorColumn = 5; // in the middle of "Some text"
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).toBeNull();
+        });
+
+        it('should return null when cursor is after citation with space', () => {
+            const line = 'cite:&smith2024 more text';
+            const cursorColumn = 16; // after the space
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).toBeNull();
+        });
+
+        it('should return null when cursor is in middle of citation', () => {
+            const line = 'cite:&smith2024;&jones2023';
+            const cursorColumn = 15; // in the middle
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).toBeNull();
+        });
+
+        it('should return null for empty line', () => {
+            const result = findCitationAtCursor('', 0);
+            expect(result).toBeNull();
+        });
+
+        it('should return null for line without citation', () => {
+            const line = 'Just some regular text without citations';
+            const result = findCitationAtCursor(line, line.length);
+            expect(result).toBeNull();
+        });
+    });
+
+    describe('edge cases', () => {
+        it('should handle keys with special characters', () => {
+            const line = 'cite:&smith-jones_2024';
+            const cursorColumn = 22;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.existingKeys).toEqual(['smith-jones_2024']);
+        });
+
+        it('should handle keys with colons', () => {
+            const line = 'cite:&prefix:key2024';
+            const cursorColumn = 20;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.existingKeys).toEqual(['prefix:key2024']);
+        });
+
+        it('should handle multiple citations on same line', () => {
+            const line = 'cite:&first2024 and cite:&second2024';
+            // Cursor at end of second citation
+            const cursorColumn = 36;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.existingKeys).toEqual(['second2024']);
+        });
+
+        it('should detect citation at very end of line', () => {
+            const line = 'cite:&endkey2024';
+            const cursorColumn = 16;
+            const result = findCitationAtCursor(line, cursorColumn);
+
+            expect(result).not.toBeNull();
+            expect(result?.existingKeys).toEqual(['endkey2024']);
+        });
+    });
+});
+
+describe('formatKeysForAppend', () => {
+    describe('v3 syntax', () => {
+        it('should format single key for v3 append', () => {
+            const result = formatKeysForAppend(['newkey2024'], true);
+            expect(result).toBe(';&newkey2024');
+        });
+
+        it('should format multiple keys for v3 append', () => {
+            const result = formatKeysForAppend(['key1', 'key2', 'key3'], true);
+            expect(result).toBe(';&key1;&key2;&key3');
+        });
+    });
+
+    describe('v2 syntax', () => {
+        it('should format single key for v2 append', () => {
+            const result = formatKeysForAppend(['newkey2024'], false);
+            expect(result).toBe(',newkey2024');
+        });
+
+        it('should format multiple keys for v2 append', () => {
+            const result = formatKeysForAppend(['key1', 'key2', 'key3'], false);
+            expect(result).toBe(',key1,key2,key3');
+        });
+    });
+
+    describe('edge cases', () => {
+        it('should handle empty keys array for v3', () => {
+            const result = formatKeysForAppend([], true);
+            expect(result).toBe('');
+        });
+
+        it('should handle empty keys array for v2', () => {
+            const result = formatKeysForAppend([], false);
+            expect(result).toBe('');
+        });
+
+        it('should handle keys with special characters', () => {
+            const result = formatKeysForAppend(['smith-jones_2024'], true);
+            expect(result).toBe(';&smith-jones_2024');
+        });
     });
 });
