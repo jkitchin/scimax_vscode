@@ -18,6 +18,7 @@ import {
 } from '../parser/orgBabel';
 import type { SrcBlockElement } from '../parser/orgElementTypes';
 import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall } from '../parser/orgBabelAdvanced';
+import { OrgParser } from '../parser/orgParser';
 import { getKernelManager } from '../jupyter/kernelManager';
 
 // Output channel for Babel execution
@@ -31,6 +32,37 @@ function getOutputChannel(): vscode.OutputChannel {
         outputChannel = vscode.window.createOutputChannel('Org Babel');
     }
     return outputChannel;
+}
+
+/**
+ * Get file-level header arguments from #+PROPERTY: declarations
+ * Supports both generic header-args and language-specific header-args:lang
+ *
+ * @param document The text document to parse
+ * @param language The source block language (for language-specific args)
+ * @returns Merged header arguments (generic + language-specific)
+ */
+function getFileLevelHeaderArgs(document: vscode.TextDocument, language: string): HeaderArguments {
+    const parser = new OrgParser();
+    const orgDoc = parser.parse(document.getText());
+
+    let mergedArgs: HeaderArguments = {};
+
+    // First, apply generic header-args
+    const genericHeaderArgs = orgDoc.properties['header-args'];
+    if (genericHeaderArgs) {
+        mergedArgs = { ...parseHeaderArguments(genericHeaderArgs) };
+    }
+
+    // Then, apply language-specific header-args (overrides generic)
+    const langKey = `header-args:${language.toLowerCase()}`;
+    const langHeaderArgs = orgDoc.properties[langKey];
+    if (langHeaderArgs) {
+        const langArgs = parseHeaderArguments(langHeaderArgs);
+        mergedArgs = { ...mergedArgs, ...langArgs };
+    }
+
+    return mergedArgs;
 }
 
 /**
@@ -71,6 +103,232 @@ function showStatus(message: string, isError = false): void {
 function hideStatus(): void {
     const item = getStatusBarItem();
     item.hide();
+}
+
+// =============================================================================
+// Org Context for Source Blocks
+// =============================================================================
+
+/**
+ * Org context object that gets injected into JS/TS source blocks
+ */
+interface OrgContext {
+    /** Path to the current file */
+    file: string;
+    /** Line number of the source block */
+    line: number;
+    /** Current heading info (if inside a heading) */
+    heading?: {
+        title: string;
+        level: number;
+        tags: string[];
+        todoState?: string;
+        priority?: string;
+        properties: Record<string, string>;
+    };
+    /** All properties (including inherited) */
+    properties: Record<string, string>;
+    /** Document-level keywords */
+    keywords: Record<string, string>;
+}
+
+/**
+ * Build org context for a source block at a given line
+ */
+function buildOrgContext(document: vscode.TextDocument, blockLine: number): OrgContext {
+    const parser = new OrgParser();
+    const orgDoc = parser.parse(document.getText());
+
+    const context: OrgContext = {
+        file: document.uri.fsPath,
+        line: blockLine,
+        properties: {},
+        keywords: orgDoc.keywords,
+    };
+
+    // Add document-level properties
+    Object.assign(context.properties, orgDoc.properties);
+
+    // Find the heading containing this source block
+    const allHeadings = parser.flattenHeadings(orgDoc);
+
+    // Find the closest heading before the block line
+    let containingHeading = null;
+    for (const heading of allHeadings) {
+        if (heading.lineNumber <= blockLine) {
+            containingHeading = heading;
+        } else {
+            break;
+        }
+    }
+
+    if (containingHeading) {
+        context.heading = {
+            title: containingHeading.title,
+            level: containingHeading.level,
+            tags: containingHeading.tags,
+            todoState: containingHeading.todoState,
+            priority: containingHeading.priority,
+            properties: { ...containingHeading.properties },
+        };
+
+        // Collect inherited properties by walking up the heading tree
+        // Start with this heading's properties
+        Object.assign(context.properties, containingHeading.properties);
+
+        // Walk up to find parent headings and inherit their properties
+        for (const heading of allHeadings) {
+            if (heading.lineNumber < containingHeading.lineNumber &&
+                heading.level < containingHeading.level) {
+                // This is an ancestor - add its properties (don't override existing)
+                for (const [key, value] of Object.entries(heading.properties)) {
+                    if (!(key in context.properties)) {
+                        context.properties[key] = value;
+                    }
+                }
+            }
+        }
+    }
+
+    return context;
+}
+
+/**
+ * Generate JavaScript code to inject the __org__ context object
+ */
+function generateOrgContextCode(context: OrgContext): string {
+    return `const __org__ = ${JSON.stringify(context, null, 2)};
+__org__.getProperty = (key) => __org__.properties[key];
+__org__.getKeyword = (key) => __org__.keywords[key];
+`;
+}
+
+/**
+ * Execute a "scimax" source block in the extension context
+ * This provides full access to the VS Code API
+ */
+async function executeScimaxBlock(
+    editor: vscode.TextEditor,
+    block: SourceBlockInfo,
+    channel: vscode.OutputChannel
+): Promise<ExecutionResult> {
+    const startTime = Date.now();
+
+    try {
+        // Build org context
+        const orgContext = buildOrgContext(editor.document, block.startLine);
+
+        // Capture console output
+        const outputs: string[] = [];
+        const mockConsole = {
+            log: (...args: unknown[]) => outputs.push(args.map(String).join(' ')),
+            error: (...args: unknown[]) => outputs.push('ERROR: ' + args.map(String).join(' ')),
+            warn: (...args: unknown[]) => outputs.push('WARN: ' + args.map(String).join(' ')),
+            info: (...args: unknown[]) => outputs.push(args.map(String).join(' ')),
+        };
+
+        // Create the execution context with useful APIs
+        const contextObj = {
+            vscode,
+            __org__: {
+                ...orgContext,
+                getProperty: (key: string) => orgContext.properties[key],
+                getKeyword: (key: string) => orgContext.keywords[key],
+            },
+            console: mockConsole,
+            // Helper to open a file and optionally go to a line
+            openFile: async (filePath: string, line?: number) => {
+                const absPath = path.isAbsolute(filePath)
+                    ? filePath
+                    : path.resolve(path.dirname(editor.document.uri.fsPath), filePath);
+                const doc = await vscode.workspace.openTextDocument(absPath);
+                const ed = await vscode.window.showTextDocument(doc);
+                if (line !== undefined) {
+                    const pos = new vscode.Position(line - 1, 0);
+                    ed.selection = new vscode.Selection(pos, pos);
+                    ed.revealRange(new vscode.Range(pos, pos));
+                }
+                return ed;
+            },
+            // Helper to read and parse an org file
+            parseOrgFile: (filePath: string) => {
+                const fs = require('fs');
+                const absPath = path.isAbsolute(filePath)
+                    ? filePath
+                    : path.resolve(path.dirname(editor.document.uri.fsPath), filePath);
+                const content = fs.readFileSync(absPath, 'utf-8');
+                const parser = new OrgParser();
+                return parser.parse(content);
+            },
+            // Helper to get property from any org file (with inheritance)
+            getPropertyFromFile: (filePath: string, propName: string, lineNum?: number) => {
+                const fs = require('fs');
+                const absPath = path.isAbsolute(filePath)
+                    ? filePath
+                    : path.resolve(path.dirname(editor.document.uri.fsPath), filePath);
+                const content = fs.readFileSync(absPath, 'utf-8');
+                const parser = new OrgParser();
+                const doc = parser.parse(content);
+
+                // If no line specified, check document properties
+                if (lineNum === undefined) {
+                    return doc.properties[propName];
+                }
+
+                // Find heading at or before the line
+                const headings = parser.flattenHeadings(doc);
+                const properties: Record<string, string> = { ...doc.properties };
+
+                for (const h of headings) {
+                    if (h.lineNumber <= lineNum) {
+                        Object.assign(properties, h.properties);
+                    }
+                }
+                return properties[propName];
+            },
+            // Current editor
+            editor,
+            // Path utilities
+            path,
+            // Require for loading modules
+            require,
+        };
+
+        // Wrap code in async function to allow await
+        const wrappedCode = `
+(async () => {
+    ${block.code}
+})()
+`;
+
+        // Execute using Function constructor with context
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        const fn = new AsyncFunction(
+            ...Object.keys(contextObj),
+            wrappedCode
+        );
+
+        const result = await fn(...Object.values(contextObj));
+
+        // If the code returned a value, add it to outputs
+        if (result !== undefined) {
+            outputs.push(String(result));
+        }
+
+        return {
+            success: true,
+            stdout: outputs.join('\n'),
+            executionTime: Date.now() - startTime,
+        };
+
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+            stderr: error instanceof Error ? error.stack : String(error),
+            executionTime: Date.now() - startTime,
+        };
+    }
 }
 
 // =============================================================================
@@ -775,8 +1033,8 @@ async function executeBlock(
     const channel = getOutputChannel();
     const language = block.language;
 
-    // Check if language is supported
-    if (!executorRegistry.isSupported(language)) {
+    // Check if language is supported (scimax runs in extension context, not via executor)
+    if (language.toLowerCase() !== 'scimax' && !executorRegistry.isSupported(language)) {
         const msg = `No executor available for language: ${language}`;
         channel.appendLine(`[ERROR] ${msg}`);
         vscode.window.showErrorMessage(msg);
@@ -786,8 +1044,11 @@ async function executeBlock(
         };
     }
 
-    // Parse header arguments
-    const headers = parseHeaderArguments(block.parameters);
+    // Parse header arguments with file-level inheritance
+    // Priority: block headers > language-specific file headers > generic file headers
+    const fileLevelHeaders = getFileLevelHeaderArgs(editor.document, language);
+    const blockHeaders = parseHeaderArguments(block.parameters);
+    const headers: HeaderArguments = { ...fileLevelHeaders, ...blockHeaders };
 
     // Check if evaluation is disabled
     if (headers.eval === 'no' || headers.eval === 'never-export') {
@@ -917,6 +1178,15 @@ if plt.get_fignums():
         channel.appendLine(`[DEBUG] :file header: "${headers.file}" -> "${outputFilePath}"`);
     }
 
+    // Inject __org__ context for JavaScript/TypeScript blocks
+    const jsLangs = ['js', 'javascript', 'ts', 'typescript', 'node'];
+    if (jsLangs.includes(language.toLowerCase())) {
+        const orgContext = buildOrgContext(editor.document, block.startLine);
+        const orgContextCode = generateOrgContextCode(orgContext);
+        codeToExecute = orgContextCode + codeToExecute;
+        channel.appendLine(`[DEBUG] Injected __org__ context for ${language} block`);
+    }
+
     // Create the SrcBlockElement for the executor
     const srcBlock: SrcBlockElement = {
         type: 'src-block',
@@ -965,8 +1235,15 @@ if plt.get_fignums():
     showStatus(`Executing ${language}...`);
 
     try {
-        // Execute the block
-        const result = await executeSourceBlock(srcBlock, context);
+        let result: ExecutionResult;
+
+        // Special handling for "scimax" language - runs in extension context
+        if (language.toLowerCase() === 'scimax') {
+            result = await executeScimaxBlock(editor, block, channel);
+        } else {
+            // Execute the block normally
+            result = await executeSourceBlock(srcBlock, context);
+        }
 
         // Log results
         if (result.success) {

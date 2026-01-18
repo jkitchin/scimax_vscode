@@ -20,6 +20,7 @@ import {
     updateDynamicBlockAtCursor,
     isInDynamicBlock
 } from '../parser/orgDynamicBlocks';
+import { OrgParser } from '../parser/orgParser';
 
 // =============================================================================
 // Text Markup Functions
@@ -3019,6 +3020,69 @@ async function queryReplace(): Promise<void> {
 }
 
 // =============================================================================
+// TODO List Functions
+// =============================================================================
+
+/**
+ * Show TODO items in the current file
+ * Displays a QuickPick with all TODO items, allowing navigation to each
+ */
+async function showTodosInFile(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showWarningMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    if (document.languageId !== 'org' && !document.fileName.endsWith('.org')) {
+        vscode.window.showWarningMessage('Not an org-mode file');
+        return;
+    }
+
+    const parser = new OrgParser();
+    const orgDoc = parser.parse(document.getText());
+    const todos = parser.findTodos(orgDoc);
+
+    if (todos.length === 0) {
+        vscode.window.showInformationMessage('No TODO items found in this file');
+        return;
+    }
+
+    // Create QuickPick items
+    const items = todos.map(todo => {
+        const stateLabel = todo.todoState || '';
+        const priorityLabel = todo.priority ? `[#${todo.priority}]` : '';
+        const tagsLabel = todo.tags.length > 0 ? `:${todo.tags.join(':')}:` : '';
+        const stars = '*'.repeat(todo.level);
+
+        return {
+            label: `${stateLabel} ${todo.title}`.trim(),
+            description: `${stars} ${priorityLabel} ${tagsLabel}`.trim(),
+            detail: `Line ${todo.lineNumber}`,
+            lineNumber: todo.lineNumber
+        };
+    });
+
+    const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: `${todos.length} TODO item${todos.length !== 1 ? 's' : ''} in ${path.basename(document.fileName)}`,
+        matchOnDescription: true,
+        matchOnDetail: true
+    });
+
+    if (selected) {
+        // Navigate to the selected TODO
+        const line = selected.lineNumber - 1; // Convert to 0-indexed
+        const position = new vscode.Position(line, 0);
+        editor.selection = new vscode.Selection(position, position);
+        editor.revealRange(
+            new vscode.Range(position, position),
+            vscode.TextEditorRevealType.InCenter
+        );
+    }
+}
+
+// =============================================================================
 // Command Registration
 // =============================================================================
 
@@ -3075,7 +3139,8 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
             await toggleCheckboxAt(uri, args.line);
         }),
         vscode.commands.registerCommand('scimax.org.insertCheckbox', insertCheckbox),
-        vscode.commands.registerCommand('scimax.org.updateStatistics', updateStatisticsAtCursor)
+        vscode.commands.registerCommand('scimax.org.updateStatistics', updateStatisticsAtCursor),
+        vscode.commands.registerCommand('scimax.org.showTodos', showTodosInFile)
     );
 
     // Links

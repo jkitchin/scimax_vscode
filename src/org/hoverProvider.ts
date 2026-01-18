@@ -12,6 +12,7 @@ import {
     createLatexHover,
     invalidateEquationCounterCache,
 } from './latexPreviewProvider';
+import { parseDiarySexp, getDiarySexpDates } from '../parser/orgDiarySexp';
 
 // Entity lookup map for fast access
 const ENTITY_MAP = new Map<string, { utf8: string; latex: string; html: string }>();
@@ -328,6 +329,10 @@ export class OrgHoverProvider implements vscode.HoverProvider {
 
         // Timestamp hover
         hover = this.getTimestampHover(line, position);
+        if (hover) return hover;
+
+        // Diary sexp hover (%%(diary-anniversary ...) etc.)
+        hover = this.getDiarySexpHover(line, position);
         if (hover) return hover;
 
         // Source block language hover
@@ -835,6 +840,149 @@ export class OrgHoverProvider implements vscode.HoverProvider {
         }
 
         return null;
+    }
+
+    /**
+     * Get hover for diary sexp expressions
+     * Shows human-readable interpretation and next occurrence
+     */
+    private getDiarySexpHover(line: string, position: vscode.Position): vscode.Hover | null {
+        // Match diary sexp: %%(function args) optional-description
+        const sexpPattern = /^%%(\([^)]+\))(?:\s+(.*))?$/;
+        const match = line.match(sexpPattern);
+        if (!match) return null;
+
+        const sexpEnd = 2 + match[1].length; // 2 for %%, then the sexp length
+
+        // Only show hover when over the sexp portion (including %%)
+        if (position.character > sexpEnd) return null;
+
+        const sexp = match[1]; // e.g., "(diary-anniversary 1 22 2010)"
+        const description = match[2]?.trim(); // e.g., "Wedding Anniversary"
+
+        const parsed = parseDiarySexp(sexp);
+        if (!parsed) return null;
+
+        const markdown = new vscode.MarkdownString();
+        markdown.isTrusted = true;
+
+        // Header with event description if available
+        markdown.appendMarkdown(`## 📅 Diary Sexp\n\n`);
+        if (description) {
+            markdown.appendMarkdown(`**Event:** ${description}\n\n`);
+        }
+        markdown.appendMarkdown(`**Type:** \`${parsed.fn}\`\n\n`);
+
+        // Human-readable interpretation based on function type
+        const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+        const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const ordinals = ['', 'first', 'second', 'third', 'fourth', 'fifth'];
+
+        switch (parsed.fn) {
+            case 'diary-anniversary': {
+                const [month, day, year] = parsed.args as number[];
+                if (typeof month === 'number' && typeof day === 'number' && typeof year === 'number') {
+                    markdown.appendMarkdown(`**Original date:** ${monthNames[month - 1]} ${day}, ${year}\n\n`);
+                    markdown.appendMarkdown(`**Recurs:** Every year on ${monthNames[month - 1]} ${day}\n\n`);
+                }
+                break;
+            }
+            case 'diary-float': {
+                const [month, dayname, n] = parsed.args;
+                if (typeof dayname === 'number' && typeof n === 'number') {
+                    let ord: string;
+                    if (n > 0 && n <= 5) {
+                        ord = ordinals[n];
+                    } else if (n === -1) {
+                        ord = 'last';
+                    } else if (n < -1) {
+                        ord = `${-n}${-n === 2 ? 'nd' : -n === 3 ? 'rd' : 'th'}-to-last`;
+                    } else {
+                        ord = `${n}th`;
+                    }
+                    const monthStr = month !== null && typeof month === 'number' ? monthNames[month - 1] : 'every month';
+                    markdown.appendMarkdown(`**Pattern:** ${ord} ${dayNames[dayname]} of ${monthStr}\n\n`);
+                }
+                break;
+            }
+            case 'diary-cyclic': {
+                const [n, month, day, year] = parsed.args as number[];
+                if (typeof n === 'number' && typeof month === 'number' && typeof day === 'number' && typeof year === 'number') {
+                    markdown.appendMarkdown(`**Start date:** ${monthNames[month - 1]} ${day}, ${year}\n\n`);
+                    markdown.appendMarkdown(`**Recurs:** Every ${n} day${n === 1 ? '' : 's'}\n\n`);
+                }
+                break;
+            }
+            case 'diary-block': {
+                const [m1, d1, y1, m2, d2, y2] = parsed.args as number[];
+                if (typeof m1 === 'number' && typeof d1 === 'number' && typeof y1 === 'number' &&
+                    typeof m2 === 'number' && typeof d2 === 'number' && typeof y2 === 'number') {
+                    markdown.appendMarkdown(`**From:** ${monthNames[m1 - 1]} ${d1}, ${y1}\n\n`);
+                    markdown.appendMarkdown(`**To:** ${monthNames[m2 - 1]} ${d2}, ${y2}\n\n`);
+                }
+                break;
+            }
+            case 'diary-date': {
+                const [month, day, year] = parsed.args;
+                const parts: string[] = [];
+                if (month !== null && typeof month === 'number') parts.push(`${monthNames[month - 1]}`);
+                if (day !== null && typeof day === 'number') parts.push(`day ${day}`);
+                if (year !== null && typeof year === 'number') parts.push(`${year}`);
+                if (parts.length > 0) {
+                    markdown.appendMarkdown(`**Matches:** ${parts.join(', ')}\n\n`);
+                } else {
+                    markdown.appendMarkdown(`**Matches:** Any date\n\n`);
+                }
+                break;
+            }
+            case 'org-class': {
+                const [y1, m1, d1, y2, m2, d2, daynum] = parsed.args as number[];
+                if (typeof y1 === 'number' && typeof m1 === 'number' && typeof d1 === 'number' &&
+                    typeof y2 === 'number' && typeof m2 === 'number' && typeof d2 === 'number' &&
+                    typeof daynum === 'number') {
+                    markdown.appendMarkdown(`**Day:** ${dayNames[daynum]}s\n\n`);
+                    markdown.appendMarkdown(`**Period:** ${monthNames[m1 - 1]} ${d1}, ${y1} - ${monthNames[m2 - 1]} ${d2}, ${y2}\n\n`);
+                }
+                break;
+            }
+        }
+
+        // Calculate next occurrence
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const futureDate = new Date();
+        futureDate.setFullYear(today.getFullYear() + 2); // Look 2 years ahead
+
+        const matches = getDiarySexpDates(sexp, today, futureDate);
+        if (matches.length > 0) {
+            const next = matches[0];
+            const diffTime = next.date.getTime() - today.getTime();
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            markdown.appendMarkdown(`---\n\n`);
+            markdown.appendMarkdown(`**Next occurrence:** ${next.date.toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            })}\n\n`);
+
+            if (diffDays === 0) {
+                markdown.appendMarkdown(`📌 **Today!**`);
+            } else if (diffDays === 1) {
+                markdown.appendMarkdown(`📌 **Tomorrow**`);
+            } else {
+                markdown.appendMarkdown(`📌 **In ${diffDays} days**`);
+            }
+
+            // For anniversary, show how many years it will be
+            if (parsed.fn === 'diary-anniversary' && next.result.years !== undefined) {
+                markdown.appendMarkdown(`\n\n🎂 Will be **${next.result.years} year${next.result.years === 1 ? '' : 's'}**`);
+            }
+        }
+
+        return new vscode.Hover(markdown, new vscode.Range(
+            position.line, 0,
+            position.line, sexpEnd
+        ));
     }
 
     /**

@@ -773,8 +773,10 @@ export const pythonExecutor: LanguageExecutor = {
                 // Wrap code to capture the value of the last expression
                 // We use exec() for statements and eval() for the final expression
                 // Also handle org-babel 'return' convention
+                // For :results value, suppress stdout during execution
                 wrappedCode = `
 import sys
+import io
 __org_babel_code__ = ${JSON.stringify(wrappedCode)}
 # Split by newlines first, then expand semicolon-separated statements
 __org_babel_lines__ = []
@@ -809,10 +811,16 @@ while __org_babel_last_idx__ >= 0:
     __org_babel_last_idx__ -= 1
 
 if __org_babel_last_idx__ >= 0:
-    # Execute all lines except the last
-    __org_babel_setup__ = '\\n'.join(__org_babel_lines__[:__org_babel_last_idx__])
-    if __org_babel_setup__.strip():
-        exec(__org_babel_setup__)
+    # Suppress stdout during setup (for :results value)
+    __org_babel_old_stdout__ = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        # Execute all lines except the last
+        __org_babel_setup__ = '\\n'.join(__org_babel_lines__[:__org_babel_last_idx__])
+        if __org_babel_setup__.strip():
+            exec(__org_babel_setup__)
+    finally:
+        sys.stdout = __org_babel_old_stdout__
     # Handle the last line
     __org_babel_last__ = __org_babel_lines__[__org_babel_last_idx__].strip()
     # Handle 'return' statements (org-babel convention - not Python syntax)
