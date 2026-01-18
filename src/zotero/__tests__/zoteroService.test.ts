@@ -571,3 +571,87 @@ describe('ZoteroService Edge Cases', () => {
         expect(result?.keys).toEqual([longKey]);
     });
 });
+
+describe('Cancellation Support', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockRequestInstance.on.mockImplementation(function(this: typeof mockRequestInstance) {
+            return this;
+        });
+        mockRequestInstance.write.mockImplementation(function(this: typeof mockRequestInstance) {
+            return this;
+        });
+        mockRequestInstance.end.mockImplementation(function(this: typeof mockRequestInstance) {
+            return this;
+        });
+    });
+
+    it('should return null when cancellation is already requested', async () => {
+        const cancellationToken = {
+            isCancellationRequested: true,
+            onCancellationRequested: vi.fn()
+        };
+
+        const result = await openCitationPicker(cancellationToken);
+
+        expect(result).toBeNull();
+        expect(mockRequestInstance.destroy).toHaveBeenCalled();
+    });
+
+    it('should register cancellation handler', async () => {
+        let capturedCallback: (() => void) | null = null;
+        const cancellationToken = {
+            isCancellationRequested: false,
+            onCancellationRequested: vi.fn().mockImplementation((callback: () => void) => {
+                capturedCallback = callback;
+            })
+        };
+
+        const promise = openCitationPicker(cancellationToken);
+
+        // Verify callback was registered
+        expect(cancellationToken.onCancellationRequested).toHaveBeenCalled();
+
+        // Simulate successful response
+        setImmediate(() => {
+            simulateResponse(200, '[@smith2024]');
+        });
+
+        const result = await promise;
+        expect(result?.keys).toEqual(['smith2024']);
+    });
+
+    it('should cancel request when cancellation is triggered', async () => {
+        let capturedCallback: (() => void) | null = null;
+        const cancellationToken = {
+            isCancellationRequested: false,
+            onCancellationRequested: vi.fn().mockImplementation((callback: () => void) => {
+                capturedCallback = callback;
+            })
+        };
+
+        const promise = openCitationPicker(cancellationToken);
+
+        // Trigger cancellation before response
+        setImmediate(() => {
+            if (capturedCallback) {
+                capturedCallback();
+            }
+        });
+
+        const result = await promise;
+        expect(result).toBeNull();
+        expect(mockRequestInstance.destroy).toHaveBeenCalled();
+    });
+
+    it('should work without cancellation token', async () => {
+        const promise = openCitationPicker();
+
+        setImmediate(() => {
+            simulateResponse(200, '[@smith2024]');
+        });
+
+        const result = await promise;
+        expect(result?.keys).toEqual(['smith2024']);
+    });
+});

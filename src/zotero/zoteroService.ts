@@ -60,8 +60,9 @@ export interface CAYWResult {
 /**
  * Open Zotero's citation picker (CAYW - Cite As You Write)
  * Returns the selected citation keys
+ * @param cancellationToken Optional token to cancel the request
  */
-export async function openCitationPicker(): Promise<CAYWResult | null> {
+export async function openCitationPicker(cancellationToken?: { isCancellationRequested: boolean; onCancellationRequested: (callback: () => void) => void }): Promise<CAYWResult | null> {
     return new Promise((resolve) => {
         // Use pandoc format to get @citekey format, which we can parse
         const url = `${BBT_CAYW_PATH}?format=pandoc&brackets=1`;
@@ -107,6 +108,19 @@ export async function openCitationPicker(): Promise<CAYWResult | null> {
             req.destroy();
             resolve(null);
         });
+
+        // Handle cancellation
+        if (cancellationToken) {
+            if (cancellationToken.isCancellationRequested) {
+                req.destroy();
+                resolve(null);
+                return;
+            }
+            cancellationToken.onCancellationRequested(() => {
+                req.destroy();
+                resolve(null);
+            });
+        }
 
         req.end();
     });

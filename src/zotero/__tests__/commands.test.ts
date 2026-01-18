@@ -61,7 +61,8 @@ import {
     findDocumentBibliography,
     escapeRegExp,
     formatOrgRefCitation,
-    registerZoteroCommands
+    registerZoteroCommands,
+    appendBibTeXEntries
 } from '../commands';
 import * as vscode from 'vscode';
 import * as fsPromises from 'fs/promises';
@@ -567,5 +568,124 @@ describe('Citation key edge cases', () => {
 
         const result = formatOrgRefCitation(['smith:2024']);
         expect(result).toBe('cite:&smith:2024');
+    });
+});
+
+describe('appendBibTeXEntries', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it('should add new entry to empty file', async () => {
+        const bibtex = '@article{smith2024,\n  author = {Smith},\n  title = {Test}\n}';
+        const existingKeys = new Set<string>();
+
+        // File doesn't exist
+        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockRejectedValue(
+            Object.assign(new Error('ENOENT'), { code: 'ENOENT' })
+        );
+        (fsPromises.writeFile as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+        const addedKeys = await appendBibTeXEntries('/path/to/refs.bib', bibtex, existingKeys);
+
+        expect(addedKeys).toEqual(['smith2024']);
+        expect(fsPromises.writeFile).toHaveBeenCalledWith(
+            '/path/to/refs.bib',
+            expect.stringContaining('@article{smith2024'),
+            'utf8'
+        );
+    });
+
+    it('should append entry to existing file', async () => {
+        const existingBib = '@article{jones2023,\n  author = {Jones}\n}';
+        const newBib = '@article{smith2024,\n  author = {Smith},\n  title = {Test}\n}';
+        const existingKeys = new Set<string>();
+
+        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockResolvedValue(existingBib);
+        (fsPromises.writeFile as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+        const addedKeys = await appendBibTeXEntries('/path/to/refs.bib', newBib, existingKeys);
+
+        expect(addedKeys).toEqual(['smith2024']);
+        expect(fsPromises.writeFile).toHaveBeenCalledWith(
+            '/path/to/refs.bib',
+            expect.stringContaining('@article{jones2023'),
+            'utf8'
+        );
+        expect(fsPromises.writeFile).toHaveBeenCalledWith(
+            '/path/to/refs.bib',
+            expect.stringContaining('@article{smith2024'),
+            'utf8'
+        );
+    });
+
+    it('should skip duplicate entries', async () => {
+        const bibtex = '@article{smith2024,\n  author = {Smith},\n  title = {Test}\n}';
+        const existingKeys = new Set<string>(['smith2024']);
+
+        const addedKeys = await appendBibTeXEntries('/path/to/refs.bib', bibtex, existingKeys);
+
+        expect(addedKeys).toEqual([]);
+        expect(fsPromises.writeFile).not.toHaveBeenCalled();
+    });
+
+    it('should add only non-duplicate entries from multiple', async () => {
+        const bibtex = `@article{smith2024,
+  author = {Smith}
+}
+
+@book{jones2023,
+  author = {Jones}
+}`;
+        const existingKeys = new Set<string>(['jones2023']);
+
+        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockResolvedValue('');
+        (fsPromises.writeFile as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+        const addedKeys = await appendBibTeXEntries('/path/to/refs.bib', bibtex, existingKeys);
+
+        expect(addedKeys).toEqual(['smith2024']);
+    });
+
+    it('should throw on non-ENOENT read errors', async () => {
+        const bibtex = '@article{smith2024,\n  author = {Smith}\n}';
+        const existingKeys = new Set<string>();
+
+        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockRejectedValue(
+            Object.assign(new Error('Permission denied'), { code: 'EACCES' })
+        );
+
+        await expect(appendBibTeXEntries('/path/to/refs.bib', bibtex, existingKeys))
+            .rejects.toThrow('Permission denied');
+    });
+
+    it('should throw on write errors', async () => {
+        const bibtex = '@article{smith2024,\n  author = {Smith}\n}';
+        const existingKeys = new Set<string>();
+
+        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockResolvedValue('');
+        (fsPromises.writeFile as ReturnType<typeof vi.fn>).mockRejectedValue(
+            new Error('Disk full')
+        );
+
+        await expect(appendBibTeXEntries('/path/to/refs.bib', bibtex, existingKeys))
+            .rejects.toThrow('Failed to write bibliography file: Disk full');
+    });
+
+    it('should handle entries with nested braces', async () => {
+        const bibtex = '@article{smith2024,\n  author = {Smith, {John}},\n  title = {{Title with {nested} braces}}\n}';
+        const existingKeys = new Set<string>();
+
+        (fsPromises.readFile as ReturnType<typeof vi.fn>).mockRejectedValue(
+            Object.assign(new Error('ENOENT'), { code: 'ENOENT' })
+        );
+        (fsPromises.writeFile as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
+
+        const addedKeys = await appendBibTeXEntries('/path/to/refs.bib', bibtex, existingKeys);
+
+        expect(addedKeys).toEqual(['smith2024']);
+        // Verify the full entry is preserved
+        const writeCall = (fsPromises.writeFile as ReturnType<typeof vi.fn>).mock.calls[0];
+        expect(writeCall[1]).toContain('{Title with {nested} braces}');
     });
 });

@@ -70,8 +70,9 @@ async function fileExists(filePath: string): Promise<boolean> {
 /**
  * Append BibTeX entries to a file, avoiding duplicates
  * @returns Array of keys that were actually added (not duplicates)
+ * @internal Exported for testing
  */
-async function appendBibTeXEntries(
+export async function appendBibTeXEntries(
     bibPath: string,
     bibtexContent: string,
     existingKeys: Set<string>
@@ -93,10 +94,15 @@ async function appendBibTeXEntries(
         return addedKeys;
     }
 
-    // Read existing content or start fresh
+    // Read existing content atomically (avoiding race condition between exists check and read)
     let existingContent = '';
-    if (await fileExists(bibPath)) {
+    try {
         existingContent = await fsPromises.readFile(bibPath, 'utf8');
+    } catch (err) {
+        // File doesn't exist - that's fine, we'll create it
+        if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+            throw err;
+        }
     }
 
     // Build the content to append (use raw BibTeX from Zotero for each entry)
@@ -241,9 +247,12 @@ export function registerZoteroCommands(
             const result = await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: 'Waiting for Zotero citation selection...',
-                cancellable: false
-            }, async () => {
-                return await openCitationPicker();
+                cancellable: true
+            }, async (_progress: vscode.Progress<{ message?: string }>, token: vscode.CancellationToken) => {
+                return await openCitationPicker({
+                    isCancellationRequested: token.isCancellationRequested,
+                    onCancellationRequested: (callback: () => void) => token.onCancellationRequested(callback)
+                });
             });
 
             if (!result || result.keys.length === 0) {
