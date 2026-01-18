@@ -6,24 +6,7 @@
 
 import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
-
-/**
- * Extract tags from a heading line
- * Tags are in format :tag1:tag2:tag3: at the end of the line
- */
-function extractTags(line: string): string[] {
-    const match = line.match(/:([A-Za-z0-9_@#%:]+):\s*$/);
-    if (!match) return [];
-    return match[1].split(':').filter(t => t.length > 0);
-}
-
-/**
- * Format tags for insertion into heading
- */
-function formatTags(tags: string[]): string {
-    if (tags.length === 0) return '';
-    return `:${tags.join(':')}:`;
-}
+import { extractTags, formatTags, removeTagsFromLine } from './utils';
 
 /**
  * Set tags on the current heading
@@ -57,7 +40,7 @@ export async function setTags(): Promise<void> {
     const newTags = input.split(':').map(t => t.trim()).filter(t => t.length > 0);
 
     // Remove existing tags from line
-    let newLineText = line.text.replace(/\s*:[A-Za-z0-9_@#%:]+:\s*$/, '');
+    let newLineText = removeTagsFromLine(line.text);
 
     // Add new tags if any
     if (newTags.length > 0) {

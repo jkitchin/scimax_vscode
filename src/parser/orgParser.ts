@@ -3,6 +3,8 @@
  * Supports headings, source blocks, links, tags, properties, and timestamps
  */
 
+import { DEFAULT_TODO_STATES } from '../org/todoStates';
+
 export interface OrgHeading {
     level: number;
     title: string;
@@ -45,9 +47,6 @@ export interface OrgDocument {
     properties: Record<string, string>;
     keywords: Record<string, string>;
 }
-
-// Common TODO states
-const DEFAULT_TODO_STATES = ['TODO', 'NEXT', 'WAIT', 'DONE', 'CANCELLED', 'IN-PROGRESS', 'WAITING'];
 
 /**
  * Parse #+TODO: or #+SEQ_TODO: line to extract workflow states

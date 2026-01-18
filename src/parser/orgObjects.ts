@@ -1073,4 +1073,5 @@ export {
     PRE_EMPHASIS_CHARS,
     POST_EMPHASIS_CHARS,
     EMPHASIS_MARKERS,
+    createPlainText,
 };

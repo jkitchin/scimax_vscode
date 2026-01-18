@@ -54,18 +54,29 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.demoteSubtree]]  | Demote Subtree    | M-S-RIGHT          |
 | [[cmd:scimax.org.moveSubtreeUp]]  | Move Subtree Up   | M-UP (heading)     |
 | [[cmd:scimax.org.moveSubtreeDown]]| Move Subtree Down | M-DOWN (heading)   |
-| [[cmd:scimax.org.insertHeading]]  | Insert Heading    | C-RET (heading)    |
-| [[cmd:scimax.org.insertSubheading]]| Insert Subheading | -                  |
-| [[cmd:scimax.org.killSubtree]]    | Kill Subtree      | -                  |
-| [[cmd:scimax.org.cloneSubtree]]   | Clone Subtree     | -                  |
+| [[cmd:scimax.org.insertHeading]]   | Insert Heading           | C-RET (heading)    |
+| [[cmd:scimax.org.insertSubheading]]| Insert Subheading        | -                  |
+| [[cmd:scimax.org.insertInlineTask]]| Insert Inline Task       | -                  |
+| [[cmd:scimax.org.killSubtree]]     | Kill Subtree             | -                  |
+| [[cmd:scimax.org.cloneSubtree]]    | Clone Subtree            | -                  |
+| [[cmd:scimax.org.markSubtree]]     | Mark (Select) Subtree    | C-c @ (org)        |
+| [[cmd:scimax.org.addIdToHeading]]  | Add ID to Heading        | -                  |
 
 ** ✅ DWIM Commands
 CLOSED: [2026-01-17 Sat 15:21]
 
-| Command ID                    | Description | Default Keybinding |
-|-------------------------------+-------------+--------------------|
-| [[cmd:scimax.org.dwimReturn]] | DWIM Return | -                  |
+| Command ID                    | Description     | Default Keybinding |
+|-------------------------------+-----------------+--------------------|
+| [[cmd:scimax.org.dwimReturn]] | DWIM Return     | -                  |
+| [[cmd:scimax.insertNewline]]  | Insert Newline  | -                  |
 
+** ⚠️ Org Utility Commands
+
+| Command ID                          | Description               | Default Keybinding |
+|-------------------------------------+---------------------------+--------------------|
+| [[cmd:scimax.org.updateStatistics]] | Update Statistics Cookie  | -                  |
+| [[cmd:scimax.org.renumberList]]     | Renumber Ordered List     | -                  |
+| [[cmd:scimax.org.updateDynamicBlock]]| Update Dynamic Block     | C-c C-x C-u (org)  |
 
 * ✅ TODO and Tasks
 CLOSED: [2026-01-17 Sat 12:24]
@@ -119,11 +130,12 @@ CLOSED: [2026-01-17 Sat 12:25]
 
 | Command ID                           | Description               | Default Keybinding   |
 |--------------------------------------+---------------------------+----------------------|
-| [[cmd:scimax.table.insertRowBelow]]  | Insert Table Row Below    | M-RET                |
-| [[cmd:scimax.table.insertRowAbove]]  | Insert Table Row Above    | M-S-RET              |
-| [[cmd:scimax.table.deleteRow]]       | Delete Table Row          | M-S-BACKSPACE        |
+| [[cmd:scimax.table.insertRowBelow]]   | Insert Table Row Below    | M-RET                |
+| [[cmd:scimax.table.insertRowAbove]]   | Insert Table Row Above    | M-S-RET              |
+| [[cmd:scimax.table.deleteRow]]        | Delete Table Row          | M-S-BACKSPACE        |
+| [[cmd:scimax.table.insertColumnLeft]] | Insert Table Column Left  | -                    |
 | [[cmd:scimax.table.insertColumnRight]]| Insert Table Column Right | M-S-RIGHT (in table) |
-| [[cmd:scimax.table.deleteColumn]]    | Delete Table Column       | M-S-LEFT (in table)  |
+| [[cmd:scimax.table.deleteColumn]]     | Delete Table Column       | M-S-LEFT (in table)  |
 | [[cmd:scimax.table.moveRowUp]]       | Move Table Row Up         | -                    |
 | [[cmd:scimax.table.moveRowDown]]     | Move Table Row Down       | -                    |
 | [[cmd:scimax.table.moveColumnLeft]]  | Move Table Column Left    | -                    |
@@ -170,6 +182,8 @@ CLOSED: [2026-01-17 Sat 12:26]
 | [[cmd:scimax.org.clearAllResults]]  | Clear All Results           | -                  |
 | [[cmd:scimax.org.showBabelOutput]]  | Show Babel Output           | -                  |
 | [[cmd:scimax.org.checkExecutors]]   | Check Available Executors   | -                  |
+| [[cmd:scimax.org.interruptBlockKernel]] | Interrupt Jupyter Kernel for Block | -          |
+| [[cmd:scimax.org.restartBlockKernel]]   | Restart Jupyter Kernel for Block   | -          |
 
 ** ✅ Advanced Babel Operations (scimax-ob)
 CLOSED: [2026-01-17 Sat 12:26]
@@ -192,6 +206,7 @@ CLOSED: [2026-01-17 Sat 12:26]
 | [[cmd:scimax.ob.jumpToBlock]]         | Jump to Source Block            | C-c C-b            |
 | [[cmd:scimax.ob.jumpToResults]]       | Jump to Results                 | -                  |
 | [[cmd:scimax.ob.executeAndNext]]      | Execute and Next                | S-RET              |
+| [[cmd:scimax.ob.executeAndNew]]       | Execute and New Block           | -                  |
 | [[cmd:scimax.ob.executeToPoint]]      | Execute to Point                | -                  |
 | [[cmd:scimax.ob.executeAll]]          | Execute All Blocks              | -                  |
 | [[cmd:scimax.ob.clearResults]]        | Clear Results                   | -                  |
@@ -207,6 +222,7 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.babel.tangle]]      | Tangle Source Blocks             | C-c C-v t          |
 | [[cmd:scimax.babel.executeToPoint]]| Execute Blocks to Point          | C-c C-v p          |
 | [[cmd:scimax.babel.executeInline]]| Execute Inline Source at Cursor  | C-c C-v i          |
+| [[cmd:scimax.babel.executeInlineBabelCall]]| Execute Inline Babel Call at Cursor | - |
 | [[cmd:scimax.babel.clearCache]]  | Clear Babel Result Cache         | -                  |
 | [[cmd:scimax.babel.cacheStats]]  | Show Babel Cache Statistics      | -                  |
 | [[cmd:scimax.babel.showQueue]]   | Show Execution Queue             | -                  |
@@ -225,7 +241,8 @@ CLOSED: [2026-01-17 Sat 12:27]
 | Command ID                         | Description           | Default Keybinding |
 |------------------------------------+-----------------------+--------------------|
 | [[cmd:scimax.org.export]]          | Export Org Document   | -                  |
-| [[cmd:scimax.org.exportDispatcher]]| Export Dispatcher     | C-c C-e            |
+| [[cmd:scimax.org.exportDispatcher]]| Export Dispatcher     | -                  |
+| [[cmd:scimax.org.exportMenu]]      | Export Menu (C-c C-e) | C-c C-e            |
 | [[cmd:scimax.org.previewHtml]]     | Preview HTML          | -                  |
 
 ** ✅ HTML Export
@@ -255,22 +272,39 @@ CLOSED: [2026-01-17 Sat 12:27]
 * ✅ Links
 CLOSED: [2026-01-17 Sat 12:27]
 
-| Command ID                    | Description         | Default Keybinding            |
-|-------------------------------+---------------------+-------------------------------|
-| [[cmd:scimax.org.insertLink]] | Insert Link         | C-c C-l                       |
-| [[cmd:scimax.org.openLink]]   | Open Link at Point  | C-c C-o / RET (on link)       |
+| Command ID                       | Description                           | Default Keybinding      |
+|----------------------------------+---------------------------------------+-------------------------|
+| [[cmd:scimax.org.insertLink]]    | Insert Link                           | C-c C-l                 |
+| [[cmd:scimax.org.openLink]]      | Open Link at Point                    | C-c C-o / RET (on link) |
+| [[cmd:scimax.org.storeLink]]     | Store Link (for later insertion)      | -                       |
+| [[cmd:scimax.org.deleteFileLink]]| Delete File Link (and optionally file)| -                       |
 
 * ✅ Timestamps
 CLOSED: [2026-01-17 Sat 12:27]
 
-| Command ID                           | Description                      | Default Keybinding |
-|--------------------------------------+----------------------------------+--------------------|
-| [[cmd:scimax.org.insertTimestamp]]   | Insert Timestamp                 | C-c .              |
-| [[cmd:scimax.org.shiftTimestampUp]]  | Shift Timestamp Up               | S-UP               |
-| [[cmd:scimax.org.shiftTimestampDown]]| Shift Timestamp Down             | S-DOWN             |
-| [[cmd:scimax.org.shiftTimestampLeft]]| Shift Timestamp Left (Prev Day)  | S-LEFT             |
-| [[cmd:scimax.org.shiftTimestampRight]]| Shift Timestamp Right (Next Day) | S-RIGHT            |
-| [[cmd:scimax.org.addRepeater]]       | Add/Change Repeater on Timestamp | C-c C-r            |
+| Command ID                             | Description                      | Default Keybinding |
+|----------------------------------------+----------------------------------+--------------------|
+| [[cmd:scimax.org.insertTimestamp]]     | Insert Timestamp                 | C-c .              |
+| [[cmd:scimax.org.insertActiveTimestamp]]| Insert Active Timestamp          | -                  |
+| [[cmd:scimax.org.insertInactiveTimestamp]]| Insert Inactive Timestamp      | C-c !              |
+| [[cmd:scimax.org.shiftTimestampUp]]    | Shift Timestamp Up               | S-UP               |
+| [[cmd:scimax.org.shiftTimestampDown]]  | Shift Timestamp Down             | S-DOWN             |
+| [[cmd:scimax.org.shiftTimestampLeft]]  | Shift Timestamp Left (Prev Day)  | S-LEFT             |
+| [[cmd:scimax.org.shiftTimestampRight]] | Shift Timestamp Right (Next Day) | S-RIGHT            |
+| [[cmd:scimax.org.addRepeater]]         | Add/Change Repeater on Timestamp | C-c C-r            |
+
+** ⚠️ Clocking
+
+Time tracking commands for measuring effort on tasks.
+
+| Command ID                     | Description           | Default Keybinding |
+|--------------------------------+-----------------------+--------------------|
+| [[cmd:scimax.speed.clockIn]]   | Clock In              | I (speed cmd)      |
+| [[cmd:scimax.speed.clockOut]]  | Clock Out             | O (speed cmd)      |
+| [[cmd:scimax.org.clockReport]] | Generate Clock Report | -                  |
+| [[cmd:scimax.org.clockTable]]  | Insert Clock Table    | -                  |
+
+Clock entries are stored in a :LOGBOOK: drawer under the heading. Use =scimax.org.clockReport= to generate a summary of time spent.
 
 * ✅ Agenda
 CLOSED: [2026-01-17 Sat 12:28]
@@ -298,7 +332,9 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.deadlines]]       | Upcoming Deadlines       | -                  |
 | [[cmd:scimax.agenda.scheduled]]       | Scheduled Items          | -                  |
 | [[cmd:scimax.agenda.filterByTag]]     | Agenda Filter by Tag     | -                  |
+| [[cmd:scimax.agenda.clockReport]]     | Agenda Clock Report      | -                  |
 | [[cmd:scimax.agenda.refresh]]         | Refresh Agenda           | -                  |
+| [[cmd:scimax.agenda.cancelScan]]      | Cancel Agenda Scan       | -                  |
 | [[cmd:scimax.agenda.showAgenda]]      | Show Agenda View         | -                  |
 | [[cmd:scimax.agenda.showTodos]]       | Show TODO List View      | -                  |
 | [[cmd:scimax.agenda.groupByDate]]     | Group Agenda by Date     | -                  |
@@ -423,6 +459,7 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.ref.showCitingWorks]]  | Show Citing Works (OpenAlex)  | -                  |
 | [[cmd:scimax.ref.showRelatedWorks]] | Show Related Works (OpenAlex) | -                  |
 | [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  |
+| [[cmd:scimax.ref.configureOpenAlex]]| Configure OpenAlex API        | -                  |
 
 * ✅ Notebook
 CLOSED: [2026-01-17 Sat 12:46]
@@ -519,6 +556,7 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.hydra.hide]]       | Hide Hydra Menu  | -                  |
 | [[cmd:scimax.hydra.back]]       | Hydra Menu Back  | -                  |
 | [[cmd:scimax.hydra.main]]       | Main Menu        | C-c m              |
+| [[cmd:scimax.hydra.database]]   | Database Menu    | -                  |
 | [[cmd:scimax.hydra.contextMenu]]| Context Menu     | C-c C-m            |
 
 * ✅ Markup
@@ -830,10 +868,97 @@ Results appear in the Problems panel.
 
 Shows available lint checkers and allows enabling/disabling specific checks.
 
+* ⚠️ Mark Ring
+:PROPERTIES:
+:CUSTOM_ID: mark-ring
+:END:
+
+Emacs-style mark and point stack for navigation and selection. These commands allow you to save positions (marks) and return to them later, similar to Emacs' mark ring functionality.
+
+| Command ID                       | Description               | Default Keybinding |
+|----------------------------------+---------------------------+--------------------|
+| [[cmd:scimax.mark.set]]          | Set Mark (for selection)  | C-SPC              |
+| [[cmd:scimax.mark.cancel]]       | Cancel Selection          | C-g                |
+| [[cmd:scimax.mark.push]]         | Push Mark                 | C-SPC C-SPC        |
+| [[cmd:scimax.mark.pop]]          | Pop Mark                  | C-u C-SPC          |
+| [[cmd:scimax.mark.popGlobal]]    | Pop Global Mark           | C-x C-SPC          |
+| [[cmd:scimax.mark.exchange]]     | Exchange Point and Mark   | C-x C-x            |
+| [[cmd:scimax.mark.selectToMark]] | Select to Mark            | -                  |
+| [[cmd:scimax.mark.show]]         | Show Mark Ring            | -                  |
+| [[cmd:scimax.mark.clear]]        | Clear Mark Ring           | -                  |
+| [[cmd:scimax.mark.clearAll]]     | Clear All Mark Rings      | -                  |
+
+** Mark Ring Concepts
+
+- **Mark**: A saved cursor position that you can return to
+- **Point**: The current cursor position
+- **Mark Ring**: A stack of marks (per-buffer), most recent first
+- **Global Mark Ring**: A cross-file stack of marks
+
+** Common Workflows
+
+*** Setting a Mark for Selection
+1. Press =C-SPC= to set mark at current position
+2. Move cursor to end of desired selection
+3. Region between mark and point is now selected
+
+*** Returning to Previous Positions
+1. Press =C-SPC C-SPC= to push mark without activating selection
+2. Navigate elsewhere in the file
+3. Press =C-u C-SPC= to return to the saved mark
+
+*** Cross-file Navigation
+1. Navigate to different files; each jump pushes to global ring
+2. Press =C-x C-SPC= to jump back through global mark history
+
+* ⚠️ Publishing
+:PROPERTIES:
+:CUSTOM_ID: publishing
+:END:
+
+Commands for publishing org files to HTML, creating static sites similar to Emacs org-publish.
+
+| Command ID                        | Description                   | Default Keybinding |
+|-----------------------------------+-------------------------------+--------------------|
+| [[cmd:scimax.publish.init]]       | Initialize Publishing Project | -                  |
+| [[cmd:scimax.publish.project]]    | Publish Project               | -                  |
+| [[cmd:scimax.publish.all]]        | Publish All Projects          | -                  |
+| [[cmd:scimax.publish.file]]       | Publish Current File          | -                  |
+| [[cmd:scimax.publish.preview]]    | Preview Published Site        | -                  |
+| [[cmd:scimax.publish.openConfig]] | Open Publishing Config        | -                  |
+
+** Setting Up a Publishing Project
+
+1. Run =scimax.publish.init= to create a publishing configuration
+2. Configure the project in the generated =.org-publish.json= file
+3. Use =scimax.publish.project= to publish the configured project
+
+** Publishing Configuration
+
+The =.org-publish.json= file configures:
+- Source directory for org files
+- Output directory for HTML
+- Include/exclude patterns
+- HTML template settings
+- Asset handling (CSS, images)
+
+* ⚠️ Query Replace
+:PROPERTIES:
+:CUSTOM_ID: query-replace
+:END:
+
+Interactive search and replace.
+
+| Command ID              | Description   | Default Keybinding |
+|-------------------------+---------------+--------------------|
+| [[cmd:scimax.queryReplace]] | Query Replace | M-%                |
+
+Provides Emacs-style interactive query-replace with confirmation for each replacement.
+
 * ✅ Index
 CLOSED: [2026-01-17 Sat 12:51]
 
-This document contains [[*Introduction][274 commands]] organized into [[*Document Structure][24 categories]] with their keybindings and descriptions.
+This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions.
 
 For configuration options, see the VS Code settings under scimax.*.
 

@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { getHeadingLevel, getSubtreeRange } from './context';
+import { extractTags, hasTag, toggleTag } from './utils';
 
 /**
  * Get the archive file path for a given org file
@@ -21,48 +22,10 @@ function getArchiveFilePath(filePath: string): string {
 }
 
 /**
- * Extract tags from a heading line
- */
-function extractTags(line: string): string[] {
-    const match = line.match(/:([A-Za-z0-9_@#%:]+):\s*$/);
-    if (!match) return [];
-    return match[1].split(':').filter(t => t.length > 0);
-}
-
-/**
  * Check if heading has :ARCHIVE: tag
  */
 function hasArchiveTag(line: string): boolean {
-    const tags = extractTags(line);
-    return tags.some(t => t.toUpperCase() === 'ARCHIVE');
-}
-
-/**
- * Add or remove a tag from a heading line
- */
-function toggleTag(line: string, tag: string): { newLine: string; added: boolean } {
-    const tags = extractTags(line);
-    const tagUpper = tag.toUpperCase();
-    const hasTag = tags.some(t => t.toUpperCase() === tagUpper);
-
-    // Remove existing tags from line
-    let newLine = line.replace(/\s*:[A-Za-z0-9_@#%:]+:\s*$/, '').trimEnd();
-
-    let newTags: string[];
-    if (hasTag) {
-        // Remove the tag
-        newTags = tags.filter(t => t.toUpperCase() !== tagUpper);
-    } else {
-        // Add the tag
-        newTags = [...tags, tag];
-    }
-
-    if (newTags.length > 0) {
-        const tagStr = `:${newTags.join(':')}:`;
-        newLine = newLine + ' ' + tagStr;
-    }
-
-    return { newLine, added: !hasTag };
+    return hasTag(line, 'ARCHIVE');
 }
 
 /**
