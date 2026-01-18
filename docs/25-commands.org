@@ -272,12 +272,13 @@ CLOSED: [2026-01-17 Sat 12:27]
 * ✅ Links
 CLOSED: [2026-01-17 Sat 12:27]
 
-| Command ID                       | Description                           | Default Keybinding      |
-|----------------------------------+---------------------------------------+-------------------------|
-| [[cmd:scimax.org.insertLink]]    | Insert Link                           | C-c C-l                 |
-| [[cmd:scimax.org.openLink]]      | Open Link at Point                    | C-c C-o / RET (on link) |
-| [[cmd:scimax.org.storeLink]]     | Store Link (for later insertion)      | -                       |
-| [[cmd:scimax.org.deleteFileLink]]| Delete File Link (and optionally file)| -                       |
+| Command ID                       | Description                            | Default Keybinding      |
+|----------------------------------+----------------------------------------+-------------------------|
+| [[cmd:scimax.org.insertLink]]    | Insert Link                            | C-c C-l                 |
+| [[cmd:scimax.org.openLink]]      | Open Link at Point                     | C-c C-o / RET (on link) |
+| [[cmd:scimax.org.storeLink]]     | Store Link (for later insertion)       | -                       |
+| [[cmd:scimax.org.deleteFileLink]]| Delete File Link (and optionally file) | -                       |
+| [[cmd:scimax.org.openExcalidraw]]| Open Excalidraw Drawing                | (via link click)        |
 
 * ✅ Timestamps
 CLOSED: [2026-01-17 Sat 12:27]
