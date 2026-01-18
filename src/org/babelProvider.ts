@@ -1050,16 +1050,6 @@ async function executeBlock(
     const blockHeaders = parseHeaderArguments(block.parameters);
     const headers: HeaderArguments = { ...fileLevelHeaders, ...blockHeaders };
 
-    // Show header args popup for debugging
-    const headerSummary = Object.entries(headers)
-        .filter(([_, v]) => v !== undefined)
-        .map(([k, v]) => `:${k} ${v}`)
-        .join(' ');
-    vscode.window.showInformationMessage(`Header args: ${headerSummary || '(none)'}`);
-    channel.appendLine(`[DEBUG] File-level headers: ${JSON.stringify(fileLevelHeaders)}`);
-    channel.appendLine(`[DEBUG] Block headers: ${JSON.stringify(blockHeaders)}`);
-    channel.appendLine(`[DEBUG] Merged headers: ${JSON.stringify(headers)}`);
-
     // Check if evaluation is disabled
     if (headers.eval === 'no' || headers.eval === 'never-export') {
         channel.appendLine(`[INFO] Skipping block (eval: ${headers.eval})`);
