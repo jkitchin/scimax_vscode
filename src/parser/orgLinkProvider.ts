@@ -406,9 +406,18 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
 /**
  * Unfold at the given line to ensure content is visible after navigation.
  * This is needed when navigating to a location in a file with folded headings.
+ * We unfold both ancestors (so the line becomes visible) and children (so content is shown).
  */
 async function unfoldAtLine(editor: vscode.TextEditor, line: number): Promise<void> {
-    // Unfold at the cursor position with many levels to ensure visibility
+    // First, unfold ancestors so the target line becomes visible
+    // This handles the case where the target is inside a folded parent heading
+    await vscode.commands.executeCommand('editor.unfold', {
+        selectionLines: [line],
+        direction: 'up',
+        levels: 100
+    });
+
+    // Then unfold children at the target position
     await vscode.commands.executeCommand('editor.unfold', {
         selectionLines: [line],
         direction: 'down',
