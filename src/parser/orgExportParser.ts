@@ -36,6 +36,8 @@ import type {
     OrgRange,
 } from './orgElementTypes';
 
+import { createPlainText } from './orgObjects';
+
 // =============================================================================
 // Fast Inline Object Parser (Regex-based)
 // =============================================================================
@@ -331,15 +333,6 @@ export function parseObjectsFast(text: string): OrgObject[] {
     }
 
     return objects;
-}
-
-function createPlainText(value: string, start: number, end: number): PlainTextObject {
-    return {
-        type: 'plain-text',
-        range: { start, end },
-        postBlank: 0,
-        properties: { value },
-    };
 }
 
 function detectLinkType(path: string): string {

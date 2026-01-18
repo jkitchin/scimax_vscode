@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { JournalManager } from './journalManager';
 import { JournalTreeProvider } from './journalTreeProvider';
+import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 export function registerJournalCommands(
     context: vscode.ExtensionContext,
@@ -102,8 +103,7 @@ export function registerJournalCommands(
             // Create quick pick items from entries
             const items = entries.reverse().map(entry => {
                 const date = entry.date;
-                const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                const weekday = weekdays[date.getDay()];
+                const weekday = DAY_NAMES_SHORT[date.getDay()];
                 const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
 
                 return {
@@ -269,10 +269,9 @@ export function registerJournalCommands(
                 return;
             }
 
-            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             const items = entries.map(entry => {
                 const date = entry.date;
-                const weekday = weekdays[date.getDay()];
+                const weekday = DAY_NAMES_SHORT[date.getDay()];
                 const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
                 const stats = manager.getEntryStats(entry);
 

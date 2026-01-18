@@ -24,10 +24,10 @@ import { CITATION_PATTERN_CONFIG } from './citationTypes';
  */
 
 /**
- * Legacy CitationInfo interface for backward compatibility
- * @deprecated Use ParsedCitation from citationTypes.ts instead
+ * Internal citation info structure used for manipulation operations.
+ * Wraps ParsedCitation with a simplified keys array for transposition/sorting.
  */
-export interface CitationInfo {
+interface CitationInfo {
     fullMatch: string;
     prefix: string;           // e.g., "cite:", "citep:", "\cite{"
     suffix: string;           // e.g., "" or "}"
@@ -37,12 +37,11 @@ export interface CitationInfo {
     start: number;            // Start position in line
     end: number;              // End position in line
     keysStart: number;        // Start of keys within fullMatch
-    // New fields from ParsedCitation
-    parsedCitation?: ParsedCitation;
+    parsedCitation?: ParsedCitation;  // Original parsed citation for rebuilding
 }
 
 /**
- * Convert ParsedCitation to CitationInfo for backward compatibility
+ * Convert ParsedCitation to CitationInfo for internal manipulation
  */
 function parsedToCitationInfo(parsed: ParsedCitation): CitationInfo {
     const config = CITATION_PATTERN_CONFIG[parsed.syntax];
@@ -101,12 +100,12 @@ export function findCitationAtPosition(line: string, position: number): Citation
  * Find which key index the cursor is on
  */
 function findKeyIndexAtPosition(citation: CitationInfo, line: string, position: number): number {
-    // Use new parser function if parsed citation is available
+    // Use parser function if parsed citation is available
     if (citation.parsedCitation) {
         return findReferenceIndexAtPosition(citation.parsedCitation, line, position);
     }
 
-    // Fallback to legacy implementation
+    // Manual calculation fallback
     let currentPos = citation.keysStart;
 
     for (let i = 0; i < citation.keys.length; i++) {
@@ -142,7 +141,7 @@ function rebuildCitation(citation: CitationInfo): string {
         return rebuildCitationNew(parsed);
     }
 
-    // Fallback for legacy usage
+    // Manual rebuild fallback
     const keysWithPrefix = citation.keys.map(k => citation.keyPrefix + k);
     return citation.prefix + keysWithPrefix.join(citation.separator) + citation.suffix;
 }

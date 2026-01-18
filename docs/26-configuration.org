@@ -251,7 +251,7 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.embeddingProvider
 
 - *Type*: string (enum)
-- *Default*: `"none"'
+- *Default*: `"local"'
 - *Options*: `"none"', `"local"', `"ollama"', `"openai"'
 - *Description*: Embedding provider for semantic/AI-powered search
   - `none': No semantic search (text-only)
@@ -450,16 +450,16 @@ Configure bibliography management and citation styles.
 
 * Export Settings
 
-Configure LaTeX export options.
+Configure LaTeX and PDF export options.
 
-** Settings Overview
+** LaTeX Export Settings
 
-| Setting                          | Type   | Default | Description           |
-|----------------------------------+--------+---------+-----------------------|
-| scimax.export.latex.customHeader | string | ""      | Custom LaTeX preamble |
-
-
-** Detailed Configuration
+| Setting                             | Type   | Default           | Description                      |
+|-------------------------------------+--------+-------------------+----------------------------------|
+| scimax.export.latex.customHeader    | string | ""                | Custom LaTeX preamble            |
+| scimax.export.latex.documentClass   | string | "article"         | Default document class           |
+| scimax.export.latex.classOptions    | string | "12pt,letterpaper"| Default class options            |
+| scimax.export.latex.defaultPreamble | string | (see below)       | Default LaTeX packages           |
 
 *** scimax.export.latex.customHeader
 
@@ -474,12 +474,129 @@ Configure LaTeX export options.
 }
 #+end_src
 
-For better readability in JSON, use a single line or array of lines:
+*** scimax.export.latex.documentClass
+
+- *Type*: string
+- *Default*: `"article"'
+- *Description*: Default LaTeX document class. Can be overridden by =#+LATEX_CLASS:= in the document.
+
+*Example*:
 #+begin_src json
 {
-  "scimax.export.latex.customHeader": "\\documentclass[11pt]{article}\\n\\usepackage[utf8]{inputenc}\\n\\usepackage{graphicx}"
+  "scimax.export.latex.documentClass": "report"
 }
 #+end_src
+
+*** scimax.export.latex.classOptions
+
+- *Type*: string
+- *Default*: `"12pt,letterpaper"'
+- *Description*: Default LaTeX class options. Can be overridden by =#+LATEX_CLASS_OPTIONS:= in the document.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.latex.classOptions": "11pt,a4paper,twoside"
+}
+#+end_src
+
+*** scimax.export.latex.defaultPreamble
+
+- *Type*: string
+- *Default*: Standard academic packages (inputenc, graphicx, amsmath, etc.)
+- *Description*: Default LaTeX preamble packages. Can be extended by =#+LATEX_HEADER:= in the document.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.latex.defaultPreamble": "\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}"
+}
+#+end_src
+
+** PDF Export Settings
+
+| Setting                         | Type    | Default           | Description                      |
+|---------------------------------+---------+-------------------+----------------------------------|
+| scimax.export.pdf.compiler      | string  | "latexmk-lualatex"| LaTeX compiler for PDF           |
+| scimax.export.pdf.bibtexCommand | string  | "bibtex"          | Bibliography processor           |
+| scimax.export.pdf.shellEscape   | string  | "restricted"      | Shell escape mode                |
+| scimax.export.pdf.extraArgs     | string  | ""                | Extra compiler arguments         |
+| scimax.export.pdf.openLogOnError| boolean | true              | Open log on compilation failure  |
+| scimax.export.pdf.cleanAuxFiles | boolean | true              | Clean auxiliary files on success |
+
+*** scimax.export.pdf.compiler
+
+- *Type*: string (enum)
+- *Default*: `"latexmk-lualatex"'
+- *Options*: `"latexmk-lualatex"', `"latexmk-pdflatex"', `"latexmk-xelatex"', `"lualatex"', `"pdflatex"', `"xelatex"'
+- *Description*: LaTeX compiler to use for PDF generation
+  - =latexmk-*=: Uses latexmk which automatically handles multiple passes for references and bibliography (recommended)
+  - Direct compilers: Manual handling of bibliography passes
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.pdf.compiler": "latexmk-xelatex"
+}
+#+end_src
+
+*** scimax.export.pdf.bibtexCommand
+
+- *Type*: string (enum)
+- *Default*: `"bibtex"'
+- *Options*: `"biber"', `"bibtex"'
+- *Description*: Bibliography processor (only used when not using latexmk)
+  - =bibtex=: Traditional, works with .bst styles
+  - =biber=: Modern, required for biblatex
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.pdf.bibtexCommand": "biber"
+}
+#+end_src
+
+*** scimax.export.pdf.shellEscape
+
+- *Type*: string (enum)
+- *Default*: `"restricted"'
+- *Options*: `"restricted"', `"full"', `"disabled"'
+- *Description*: Shell escape mode for LaTeX compilation
+  - =restricted=: Allows minted/pygments but blocks dangerous commands (safe default)
+  - =full=: Allows all shell commands (security risk, but needed for some packages)
+  - =disabled=: No shell escape
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.pdf.shellEscape": "full"
+}
+#+end_src
+
+*** scimax.export.pdf.extraArgs
+
+- *Type*: string
+- *Default*: `""'
+- *Description*: Extra arguments to pass to the LaTeX compiler
+
+*Example*:
+#+begin_src json
+{
+  "scimax.export.pdf.extraArgs": "-synctex=1"
+}
+#+end_src
+
+*** scimax.export.pdf.openLogOnError
+
+- *Type*: boolean
+- *Default*: `true'
+- *Description*: Automatically open the log file when PDF compilation fails
+
+*** scimax.export.pdf.cleanAuxFiles
+
+- *Type*: boolean
+- *Default*: `true'
+- *Description*: Clean up auxiliary files (.aux, .bbl, .blg, etc.) after successful compilation
 
 * LaTeX Preview Settings
 

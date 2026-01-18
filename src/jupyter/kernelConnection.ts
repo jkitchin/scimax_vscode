@@ -289,11 +289,17 @@ export class KernelConnection {
         this.stdinSocket.routingId = identity;
         this.controlSocket.routingId = identity;
 
-        // Connect sockets
-        await this.shellSocket.connect(`${baseUrl}:${shell_port}`);
-        await this.iopubSocket.connect(`${baseUrl}:${iopub_port}`);
-        await this.stdinSocket.connect(`${baseUrl}:${stdin_port}`);
-        await this.controlSocket.connect(`${baseUrl}:${control_port}`);
+        // Connect sockets with error handling - clean up on failure
+        try {
+            await this.shellSocket.connect(`${baseUrl}:${shell_port}`);
+            await this.iopubSocket.connect(`${baseUrl}:${iopub_port}`);
+            await this.stdinSocket.connect(`${baseUrl}:${stdin_port}`);
+            await this.controlSocket.connect(`${baseUrl}:${control_port}`);
+        } catch (error) {
+            // Clean up any sockets that were created/connected before the failure
+            this.cleanupSockets();
+            throw new Error(`Failed to connect to kernel: ${error instanceof Error ? error.message : String(error)}`);
+        }
 
         // Subscribe to all IOPub messages
         this.iopubSocket.subscribe('');
@@ -305,6 +311,32 @@ export class KernelConnection {
     }
 
     /**
+     * Clean up all sockets (helper for error handling and disconnect)
+     */
+    private cleanupSockets(): void {
+        if (this.shellSocket) {
+            try { this.shellSocket.close(); } catch { /* ignore close errors */ }
+            this.shellSocket = null;
+        }
+        if (this.iopubSocket) {
+            try { this.iopubSocket.close(); } catch { /* ignore close errors */ }
+            this.iopubSocket = null;
+        }
+        if (this.stdinSocket) {
+            try { this.stdinSocket.close(); } catch { /* ignore close errors */ }
+            this.stdinSocket = null;
+        }
+        if (this.controlSocket) {
+            try { this.controlSocket.close(); } catch { /* ignore close errors */ }
+            this.controlSocket = null;
+        }
+        if (this.hbSocket) {
+            try { this.hbSocket.close(); } catch { /* ignore close errors */ }
+            this.hbSocket = null;
+        }
+    }
+
+    /**
      * Disconnect from the kernel
      */
     public async disconnect(): Promise<void> {
@@ -313,27 +345,8 @@ export class KernelConnection {
         this.iopubListening = false;
         this.connected = false;
 
-        // Close sockets
-        if (this.shellSocket) {
-            this.shellSocket.close();
-            this.shellSocket = null;
-        }
-        if (this.iopubSocket) {
-            this.iopubSocket.close();
-            this.iopubSocket = null;
-        }
-        if (this.stdinSocket) {
-            this.stdinSocket.close();
-            this.stdinSocket = null;
-        }
-        if (this.controlSocket) {
-            this.controlSocket.close();
-            this.controlSocket = null;
-        }
-        if (this.hbSocket) {
-            this.hbSocket.close();
-            this.hbSocket = null;
-        }
+        // Close all sockets
+        this.cleanupSockets();
 
         // Reject pending requests
         for (const [, pending] of this.pendingRequests) {

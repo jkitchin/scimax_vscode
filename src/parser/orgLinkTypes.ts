@@ -39,6 +39,27 @@ export interface LinkContext {
     roamDir?: string;
     /** Custom data passed to handlers */
     custom?: Record<string, unknown>;
+    /**
+     * Callback to search bibliography entries.
+     * Returns entries matching the query (searches key, author, title, year).
+     */
+    searchBibliography?: (query: string) => Promise<BibliographyEntry[]>;
+}
+
+/**
+ * Bibliography entry for citation completion
+ */
+export interface BibliographyEntry {
+    /** Citation key */
+    key: string;
+    /** Entry type (article, book, etc.) */
+    type: string;
+    /** Authors */
+    author?: string;
+    /** Title */
+    title?: string;
+    /** Year */
+    year?: string;
 }
 
 /**
@@ -374,11 +395,47 @@ export const citeHandler: LinkTypeHandler = {
     },
 
     async complete(prefix: string, context: LinkContext): Promise<LinkCompletion[]> {
-        // Would search bibliography files for matching keys
-        // Placeholder implementation
-        return [];
+        // Use searchBibliography callback if provided
+        if (!context.searchBibliography) {
+            return [];
+        }
+
+        const entries = await context.searchBibliography(prefix);
+        return entries.map(entry => ({
+            text: entry.key,
+            label: entry.key,
+            detail: formatBibEntry(entry),
+            sortPriority: 0,
+        }));
     },
 };
+
+/**
+ * Format a bibliography entry for display
+ */
+function formatBibEntry(entry: BibliographyEntry): string {
+    const parts: string[] = [];
+    if (entry.author) {
+        // Shorten to first author + et al if multiple
+        const authors = entry.author.split(' and ');
+        if (authors.length > 2) {
+            parts.push(`${authors[0].trim()} et al.`);
+        } else {
+            parts.push(entry.author);
+        }
+    }
+    if (entry.year) {
+        parts.push(`(${entry.year})`);
+    }
+    if (entry.title) {
+        // Truncate long titles
+        const title = entry.title.length > 60
+            ? entry.title.substring(0, 57) + '...'
+            : entry.title;
+        parts.push(title);
+    }
+    return parts.join(' ');
+}
 
 /**
  * Mailto link handler

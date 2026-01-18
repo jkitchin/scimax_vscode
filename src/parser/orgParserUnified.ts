@@ -44,6 +44,7 @@ import type {
 import { parseObjects } from './orgObjects';
 import { parseTable, parsePlanningLine, parseClockLine, parseList } from './orgElements';
 import { PositionTracker, addPositionsToDocument } from './orgPosition';
+import { DEFAULT_TODO_STATES } from '../org/todoStates';
 
 // =============================================================================
 // Parser Configuration
@@ -64,7 +65,7 @@ export interface OrgParserConfig {
     inlinetaskMinLevel?: number;
 }
 
-const DEFAULT_TODO_KEYWORDS = ['TODO', 'NEXT', 'WAITING', 'HOLD', 'SOMEDAY'];
+// Done keywords are a subset of DEFAULT_TODO_STATES from todoStates.ts
 const DEFAULT_DONE_KEYWORDS = ['DONE', 'CANCELLED', 'CANCELED'];
 const DEFAULT_INLINETASK_MIN_LEVEL = 15;
 
@@ -195,7 +196,7 @@ export class OrgParserUnified {
 
     constructor(config: OrgParserConfig = {}) {
         this.config = {
-            todoKeywords: config.todoKeywords ?? DEFAULT_TODO_KEYWORDS,
+            todoKeywords: config.todoKeywords ?? DEFAULT_TODO_STATES,
             doneKeywords: config.doneKeywords ?? DEFAULT_DONE_KEYWORDS,
             parseInlineObjects: config.parseInlineObjects ?? true,
             addPositions: config.addPositions ?? true,

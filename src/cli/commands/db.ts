@@ -4,7 +4,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { createCliDatabase, CliDbStats } from '../database';
+import { createCliDatabase, CliDocument } from '../database';
+import { parseToLegacyFormat, flattenHeadings } from '../../parser/orgParserAdapter';
 
 interface CliConfig {
     dbPath: string;
@@ -75,21 +76,71 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
     console.log(`Database path: ${config.dbPath}`);
     console.log();
 
-    // Note: Full rebuild requires VS Code context for proper indexing
-    // This is a placeholder showing what the CLI would do
-    console.log('NOTE: Database rebuild from CLI is not yet fully implemented.');
-    console.log('For now, open the folder in VS Code and the extension will index automatically.');
+    // Find all org files
+    const orgFiles = findOrgFiles(scanDir);
+    console.log(`Found ${orgFiles.length} org file(s) to index.`);
     console.log();
 
-    // Find all org files to show what would be indexed
-    const orgFiles = findOrgFiles(scanDir);
-    console.log(`Found ${orgFiles.length} org file(s) that would be indexed:`);
-
-    for (const file of orgFiles.slice(0, 10)) {
-        console.log(`  ${path.relative(scanDir, file)}`);
+    if (orgFiles.length === 0) {
+        console.log('No org files found.');
+        return;
     }
-    if (orgFiles.length > 10) {
-        console.log(`  ... and ${orgFiles.length - 10} more`);
+
+    const db = await createCliDatabase(config.dbPath);
+
+    try {
+        let indexed = 0;
+        let errors = 0;
+
+        for (const filePath of orgFiles) {
+            const relativePath = path.relative(scanDir, filePath);
+            process.stdout.write(`  Indexing: ${relativePath}...`);
+
+            try {
+                const content = fs.readFileSync(filePath, 'utf-8');
+                const legacyDoc = parseToLegacyFormat(content);
+
+                // Convert LegacyDocument to CliDocument format
+                const cliDoc: CliDocument = {
+                    headings: flattenHeadings(legacyDoc.headings).map(h => ({
+                        level: h.level,
+                        title: h.title,
+                        lineNumber: h.lineNumber,
+                        todoState: h.todoState,
+                        priority: h.priority,
+                        tags: h.tags,
+                        properties: h.properties,
+                    })),
+                    sourceBlocks: legacyDoc.sourceBlocks.map(b => ({
+                        language: b.language,
+                        content: b.content,
+                        lineNumber: b.lineNumber,
+                        headers: b.headers,
+                    })),
+                    links: legacyDoc.links.map(l => ({
+                        type: l.type,
+                        target: l.target,
+                        description: l.description,
+                        lineNumber: l.lineNumber,
+                    })),
+                };
+
+                await db.indexFile(filePath, cliDoc);
+                indexed++;
+                console.log(' OK');
+            } catch (err) {
+                errors++;
+                console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
+            }
+        }
+
+        console.log();
+        console.log(`Indexed: ${indexed} file(s)`);
+        if (errors > 0) {
+            console.log(`Errors: ${errors} file(s)`);
+        }
+    } finally {
+        await db.close();
     }
 }
 

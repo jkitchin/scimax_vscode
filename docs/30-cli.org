@@ -294,12 +294,32 @@ Open VS Code to rebuild the index.
 
 *** Rebuild
 
-Show what would be indexed (full rebuild requires VS Code):
+Rebuild the database from org files. This parses all org files in the specified directory and indexes headings, source blocks, and links.
 
 #+begin_src bash
+# Rebuild from current directory
 scimax db rebuild
+
+# Rebuild from a specific path
 scimax db rebuild --path ./docs
 #+end_src
+
+Output:
+#+begin_example
+Rebuilding database from: /home/user/project
+Database path: .scimax/org.db
+
+Found 42 org file(s) to index.
+
+  Indexing: notes/meeting.org... OK
+  Indexing: docs/guide.org... OK
+  Indexing: projects/paper.org... OK
+  ...
+
+Indexed: 42 file(s)
+#+end_example
+
+Note: While the CLI can rebuild the database, VS Code provides additional features like auto-indexing on save and embedded file watching. For best results, use VS Code for day-to-day editing and the CLI for batch operations or CI/CD.
 
 * Scripting Examples
 
@@ -350,13 +370,13 @@ scimax search ":research:" --limit 50
 
 The CLI has some limitations compared to the VS Code extension:
 
-1. *Database Creation*: The database must be created by VS Code first. The CLI reads from it but doesn't fully support creating it from scratch.
+1. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code.
 
-2. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code.
+2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db rebuild= or VS Code re-indexes them.
 
-3. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until VS Code re-indexes them.
+3. *Interactive Features*: No support for interactive features like completion or live preview.
 
-4. *Interactive Features*: No support for interactive features like completion or live preview.
+4. *FTS Index*: The CLI rebuild populates the main tables but doesn't rebuild the FTS5 full-text index triggers. For full FTS support, use VS Code to create the initial database.
 
 * Related Topics
 

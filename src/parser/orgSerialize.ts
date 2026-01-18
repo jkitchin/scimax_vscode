@@ -585,13 +585,13 @@ export function serializeObject(obj: OrgObject): string {
         case 'latex-fragment':
             return (obj as LatexFragmentObject).properties.value;
         case 'subscript':
-            return '_' + (obj as SubscriptObject).properties.usesBraces
+            return '_' + ((obj as SubscriptObject).properties.usesBraces
                 ? '{' + serializeObjects((obj as SubscriptObject).children) + '}'
-                : serializeObjects((obj as SubscriptObject).children);
+                : serializeObjects((obj as SubscriptObject).children));
         case 'superscript':
-            return '^' + (obj as SuperscriptObject).properties.usesBraces
+            return '^' + ((obj as SuperscriptObject).properties.usesBraces
                 ? '{' + serializeObjects((obj as SuperscriptObject).children) + '}'
-                : serializeObjects((obj as SuperscriptObject).children);
+                : serializeObjects((obj as SuperscriptObject).children));
         case 'footnote-reference':
             return serializeFootnoteReference(obj as FootnoteReferenceObject);
         case 'statistics-cookie':
