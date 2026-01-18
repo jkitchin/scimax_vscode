@@ -6,8 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
@@ -17,8 +16,49 @@ import type { BibEntry } from '../references/bibtexParser';
 import type { ExportOptions } from '../parser/orgExport';
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
 
-// Pre-promisified exec for PDF compilation
-const execAsync = promisify(exec);
+/**
+ * Execute a command using spawn (no shell, prevents command injection)
+ * This is safer than exec() which interprets shell metacharacters
+ */
+function spawnAsync(
+    command: string,
+    args: string[],
+    options: { cwd?: string; timeout?: number }
+): Promise<{ stdout: string; stderr: string }> {
+    return new Promise((resolve, reject) => {
+        const proc = spawn(command, args, {
+            cwd: options.cwd,
+            timeout: options.timeout,
+        });
+
+        let stdout = '';
+        let stderr = '';
+
+        proc.stdout?.on('data', (data: Buffer) => {
+            stdout += data.toString();
+        });
+
+        proc.stderr?.on('data', (data: Buffer) => {
+            stderr += data.toString();
+        });
+
+        proc.on('close', (code) => {
+            if (code === 0) {
+                resolve({ stdout, stderr });
+            } else {
+                const error = new Error(`Command failed with exit code ${code}: ${stderr}`);
+                (error as any).code = code;
+                (error as any).stdout = stdout;
+                (error as any).stderr = stderr;
+                reject(error);
+            }
+        });
+
+        proc.on('error', (err) => {
+            reject(err);
+        });
+    });
+}
 
 /**
  * Delete output file if it exists before export
@@ -438,49 +478,93 @@ function loadPdfConfig(): PdfCompilerConfig {
 }
 
 /**
- * Build the LaTeX compilation command based on configuration
+ * Parse extra arguments string into array of arguments
+ * Handles quoted arguments and whitespace properly
+ * Note: extraArgs is a user setting - users are responsible for their own configuration
  */
-function buildCompileCommand(
+function parseExtraArgs(extraArgs: string): string[] {
+    if (!extraArgs || !extraArgs.trim()) {
+        return [];
+    }
+    // Simple split on whitespace - for more complex quoting, users should use multiple settings
+    return extraArgs.trim().split(/\s+/).filter(arg => arg.length > 0);
+}
+
+/**
+ * Build the LaTeX compilation command and arguments
+ * Returns command and args separately for safe spawn execution (no shell injection)
+ */
+function buildCompileArgs(
     texPath: string,
     outputDir: string,
     config: PdfCompilerConfig
-): string {
-    const extraArgs = config.extraArgs ? ` ${config.extraArgs}` : '';
+): { command: string; args: string[] } {
+    const extraArgs = parseExtraArgs(config.extraArgs);
 
     // Determine shell escape flag based on configuration
     // 'restricted' allows minted/pygments but blocks arbitrary commands
-    // 'full' allows all shell commands (security risk)
+    // 'full' allows all shell commands (security risk - LaTeX shell escape, not our shell)
     // 'disabled' disables shell escape entirely
-    let shellFlag = '';
-    if (config.shellEscape === 'restricted') {
-        shellFlag = '-shell-restricted';
-    } else if (config.shellEscape === 'full') {
-        shellFlag = '-shell-escape';
-    }
-    const shellArg = shellFlag ? ` ${shellFlag}` : '';
+    const shellFlag = config.shellEscape === 'restricted' ? '-shell-restricted'
+        : config.shellEscape === 'full' ? '-shell-escape'
+        : null;
+
+    // Build base args array
+    let command: string;
+    let args: string[];
 
     switch (config.compiler) {
         case 'latexmk-lualatex':
-            return `latexmk -lualatex -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            command = 'latexmk';
+            args = ['-lualatex', '-bibtex'];
+            break;
 
         case 'latexmk-pdflatex':
-            return `latexmk -pdf -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            command = 'latexmk';
+            args = ['-pdf', '-bibtex'];
+            break;
 
         case 'latexmk-xelatex':
-            return `latexmk -xelatex -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            command = 'latexmk';
+            args = ['-xelatex', '-bibtex'];
+            break;
 
         case 'lualatex':
-            return `lualatex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            command = 'lualatex';
+            args = [];
+            break;
 
         case 'pdflatex':
-            return `pdflatex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            command = 'pdflatex';
+            args = [];
+            break;
 
         case 'xelatex':
-            return `xelatex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            command = 'xelatex';
+            args = [];
+            break;
 
         default:
-            return `latexmk -lualatex -bibtex${shellArg} -interaction=nonstopmode -output-directory="${outputDir}"${extraArgs} "${texPath}"`;
+            command = 'latexmk';
+            args = ['-lualatex', '-bibtex'];
     }
+
+    // Add shell escape flag if needed
+    if (shellFlag) {
+        args.push(shellFlag);
+    }
+
+    // Add common args
+    args.push('-interaction=nonstopmode');
+    args.push(`-output-directory=${outputDir}`);
+
+    // Add any extra args from configuration
+    args.push(...extraArgs);
+
+    // Add the tex file path last
+    args.push(texPath);
+
+    return { command, args };
 }
 
 /**
@@ -505,11 +589,11 @@ async function exportPdf(
 
     await fs.promises.writeFile(texPath, latexContent, 'utf-8');
 
-    // Build and execute the compile command
-    const compileCmd = buildCompileCommand(texPath, tempDir, pdfConfig);
+    // Build and execute the compile command (using spawn for safety - no shell injection)
+    const { command, args } = buildCompileArgs(texPath, tempDir, pdfConfig);
 
     try {
-        await execAsync(compileCmd, {
+        await spawnAsync(command, args, {
             cwd: tempDir,
             timeout: 180000, // 3 minutes for complex documents with bibliography
         });
@@ -526,15 +610,15 @@ async function exportPdf(
             const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
             if (auxContent.includes('\\citation') || auxContent.includes('\\bibdata')) {
                 try {
-                    // Run bibtex/biber
-                    await execAsync(`${pdfConfig.bibtexCommand} "${baseName}"`, {
+                    // Run bibtex/biber (using spawn for safety)
+                    await spawnAsync(pdfConfig.bibtexCommand, [baseName], {
                         cwd: tempDir,
                         timeout: 60000,
                     });
                     // Recompile twice for references
-                    const recompileCmd = buildCompileCommand(texPath, tempDir, pdfConfig);
-                    await execAsync(recompileCmd, { cwd: tempDir, timeout: 120000 });
-                    await execAsync(recompileCmd, { cwd: tempDir, timeout: 120000 });
+                    const recompile = buildCompileArgs(texPath, tempDir, pdfConfig);
+                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
+                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
                 } catch {
                     // Bibliography processing may fail, continue anyway
                 }

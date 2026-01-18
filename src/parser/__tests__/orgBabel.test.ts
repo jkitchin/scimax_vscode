@@ -865,8 +865,12 @@ describe('tangleSourceBlocks', () => {
             language,
             value: code,
             parameters: params,
+            headers: {},
+            lineNumber: 1,
+            endLineNumber: 5,
         },
-        range: { start: 0, end: 100, startLine: 0, endLine: 5, startColumn: 0, endColumn: 0 },
+        range: { start: 0, end: 100 },
+        postBlank: 0,
     });
 
     it('should return empty map for blocks without :tangle', () => {
