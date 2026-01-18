@@ -6,7 +6,6 @@
 import * as http from 'http';
 import type { IncomingMessage } from 'http';
 
-const BBT_BASE_URL = 'http://127.0.0.1:23119';
 const BBT_JSON_RPC_PATH = '/better-bibtex/json-rpc';
 const BBT_CAYW_PATH = '/better-bibtex/cayw';
 
@@ -84,7 +83,8 @@ export async function openCitationPicker(): Promise<CAYWResult | null> {
                 if (res.statusCode === 200 && data.trim()) {
                     // Parse pandoc format: [@key1; @key2; @key3]
                     const raw = data.trim();
-                    const keyMatches = raw.match(/@([a-zA-Z0-9_:-]+)/g);
+                    // Match citation keys: alphanumeric, underscore, hyphen, colon, dot
+                    const keyMatches = raw.match(/@([a-zA-Z0-9_:.+-]+)/g);
                     if (keyMatches && keyMatches.length > 0) {
                         const keys = keyMatches.map(k => k.slice(1)); // Remove @ prefix
                         resolve({ keys, raw });
@@ -198,6 +198,7 @@ export async function exportBibTeX(citekeys: string[]): Promise<string | null> {
  * Search Zotero library
  * @param terms Search terms
  * @returns Array of matching citation keys
+ * @remarks Reserved for future inline completion support
  */
 export async function searchZotero(terms: string): Promise<string[]> {
     const result = await jsonRpcCall<Array<{ citekey: string }>>('item.search', [terms]);
@@ -211,6 +212,7 @@ export async function searchZotero(terms: string): Promise<string[]> {
  * Get attachments for an item
  * @param citekey Citation key
  * @returns Array of attachment paths
+ * @remarks Reserved for future PDF opening support
  */
 export async function getAttachments(citekey: string): Promise<string[]> {
     const result = await jsonRpcCall<Array<{ path: string }>>('item.attachments', [citekey]);

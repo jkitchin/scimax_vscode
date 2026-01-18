@@ -3,7 +3,6 @@
  */
 
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
 import * as path from 'path';
 import { isZoteroRunning, openCitationPicker, exportBibTeX } from './zoteroService';
@@ -135,7 +134,13 @@ async function appendBibTeXEntries(
     // Append to file
     const separator = existingContent.trim() ? '\n\n' : '';
     const newContent = existingContent + separator + entriesToAdd.join('\n\n') + '\n';
-    await fsPromises.writeFile(bibPath, newContent, 'utf8');
+
+    try {
+        await fsPromises.writeFile(bibPath, newContent, 'utf8');
+    } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : String(err);
+        throw new Error(`Failed to write bibliography file: ${errorMsg}`);
+    }
 
     return addedKeys;
 }
@@ -341,7 +346,14 @@ export function registerZoteroCommands(
             }
 
             // Append entries to bib file
-            const addedKeys = await appendBibTeXEntries(bibPath, bibtex, existingKeys);
+            let addedKeys: string[];
+            try {
+                addedKeys = await appendBibTeXEntries(bibPath, bibtex, existingKeys);
+            } catch (err) {
+                const errorMsg = err instanceof Error ? err.message : String(err);
+                vscode.window.showErrorMessage(`Failed to update bibliography: ${errorMsg}`);
+                return;
+            }
 
             // Add bibliography link if needed
             if (needToAddLink) {
