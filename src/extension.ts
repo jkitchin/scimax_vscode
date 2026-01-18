@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { JournalManager } from './journal/journalManager';
-import { JournalTreeProvider } from './journal/journalTreeProvider';
 import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
@@ -94,11 +93,6 @@ export async function activate(context: vscode.ExtensionContext) {
     // Set up lazy database loading - database initializes on first use
     setExtensionContext(context);
 
-    // Journal Tree View (uses async caching for performance)
-    const journalTreeProvider = new JournalTreeProvider(journalManager);
-    vscode.window.registerTreeDataProvider('scimax.journal', journalTreeProvider);
-    context.subscriptions.push({ dispose: () => journalTreeProvider.dispose() });
-
     // Register Journal Calendar WebView
     const calendarProvider = new JournalCalendarProvider(journalManager, context.extensionUri);
     context.subscriptions.push(
@@ -109,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     // Register Journal Commands
-    registerJournalCommands(context, journalManager, journalTreeProvider);
+    registerJournalCommands(context, journalManager);
 
     // Register Database Commands (uses lazy loading - db initializes on first command use)
     registerDbCommands(context);
@@ -119,7 +113,6 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('scimax.journal')) {
                 journalManager.reloadConfig();
-                journalTreeProvider.refresh();
             }
         })
     );

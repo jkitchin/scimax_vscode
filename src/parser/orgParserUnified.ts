@@ -96,7 +96,7 @@ const RE_VERSE_BLOCK = /^#\+BEGIN_VERSE/i;
 const RE_COMMENT_BLOCK = /^#\+BEGIN_COMMENT/i;
 const RE_EXPORT_BLOCK = /^#\+BEGIN_EXPORT(?:\s+(\S+))?/i;
 const RE_SPECIAL_BLOCK = /^#\+BEGIN_(\w+)/i;
-const RE_LATEX_BEGIN = /^\\begin\{(\w+)\}/;
+const RE_LATEX_BEGIN = /^\\begin\{(\w+\*?)\}/;
 const RE_DRAWER = /^:(\w+):\s*$/;
 
 // Content patterns
@@ -188,7 +188,9 @@ export class OrgParserUnified {
     private static getLatexEndPattern(envName: string): RegExp {
         let pattern = OrgParserUnified.latexEndPatterns.get(envName);
         if (!pattern) {
-            pattern = new RegExp(`^\\\\end\\{${envName}\\}`);
+            // Escape special regex characters in environment name (e.g., align* -> align\*)
+            const escapedName = envName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            pattern = new RegExp(`^\\\\end\\{${escapedName}\\}`);
             OrgParserUnified.latexEndPatterns.set(envName, pattern);
         }
         return pattern;

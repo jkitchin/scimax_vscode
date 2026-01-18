@@ -113,18 +113,14 @@
           "icon": "$(folder)"
         },
         {
-          "id": "scimax.journal",
-          "name": "Journal",
-          "icon": "$(notebook)"
+          "id": "scimax.journal.calendar",
+          "type": "webview",
+          "name": "Journal Calendar",
+          "icon": "$(calendar)"
         }
       ]
     },
-    "viewsWelcome": [
-      {
-        "view": "scimax.journal",
-        "contents": "No journal entries yet.\n[Create Today's Entry](command:scimax.journal.today)\n[Open Calendar](command:scimax.journal.calendar)\n[Open Journal Directory](command:scimax.journal.openDirectory)"
-      }
-    ],
+    "viewsWelcome": [],
     "colors": [
       {
         "id": "scimax.srcBlockBackground",
@@ -3419,8 +3415,8 @@
             "ollama",
             "openai"
           ],
-          "default": "local",
-          "description": "Embedding provider for semantic search (local uses Transformers.js, downloads model on first use)"
+          "default": "none",
+          "description": "Embedding provider for semantic search. 'local' uses Transformers.js (~100MB memory), 'ollama' uses local Ollama server, 'openai' uses OpenAI API. Set to 'none' to disable semantic search and reduce memory usage."
         },
         "scimax.db.localModel": {
           "type": "string",

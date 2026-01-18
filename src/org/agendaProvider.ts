@@ -32,7 +32,8 @@ import {
 
 export interface AgendaFile {
     path: string;
-    document: OrgDocumentNode;
+    // Note: document is NOT cached to avoid memory issues with large file sets
+    // For operations needing the full AST (like clock reports), re-parse on demand
     headlines: HeadlineElement[];
     diarySexps: DiarySexpEntry[];
     mtime: number;
@@ -106,9 +107,9 @@ export class AgendaManager {
             showHabits: config.get<boolean>('showHabits', true),
             todoStates: config.get<string[]>('todoStates', ['TODO', 'NEXT', 'WAITING']),
             doneStates: config.get<string[]>('doneStates', ['DONE', 'CANCELLED']),
-            maxFiles: config.get<number>('maxFiles', 500),
-            batchSize: config.get<number>('batchSize', 10),
-            batchDelayMs: config.get<number>('batchDelayMs', 5),
+            maxFiles: config.get<number>('maxFiles', 50), // Reduced default to prevent OOM
+            batchSize: config.get<number>('batchSize', 5),
+            batchDelayMs: config.get<number>('batchDelayMs', 10),
         };
     }
 
@@ -206,6 +207,12 @@ export class AgendaManager {
         // Deduplicate
         const uniqueFiles = [...new Set(allFiles)];
 
+        // Log what we're about to scan
+        this.outputChannel.appendLine(`Agenda: Found ${uniqueFiles.length} org files to scan`);
+        this.outputChannel.appendLine(`Agenda: Config: agendaFiles=${JSON.stringify(this.config.agendaFiles)}`);
+        this.outputChannel.appendLine(`Agenda: Workspace folders: ${vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath).join(', ') || 'none'}`);
+        this.outputChannel.show(true); // Show output channel
+
         // Apply max files limit
         const maxFiles = this.config.maxFiles;
         const filesToProcess = maxFiles > 0 ? uniqueFiles.slice(0, maxFiles) : uniqueFiles;
@@ -216,6 +223,8 @@ export class AgendaManager {
                 `Configure 'scimax.agenda.files' to specify directories or increase 'scimax.agenda.maxFiles'.`
             );
         }
+
+        this.outputChannel.appendLine(`Agenda: Will process ${filesToProcess.length} files`);
 
         // Yield files in batches
         const batchSize = this.config.batchSize;
@@ -290,41 +299,61 @@ export class AgendaManager {
     }
 
     /**
-     * Parse an org file and cache the result
+     * Parse an org file and cache the result (async for better responsiveness)
      */
     async parseFile(filePath: string): Promise<AgendaFile | null> {
+        const basename = path.basename(filePath);
+        const startTime = Date.now();
         try {
-            const stat = fs.statSync(filePath);
+            const stat = await fs.promises.stat(filePath);
+            const sizeKB = Math.round(stat.size / 1024);
+
             const cached = this.fileCache.get(filePath);
 
             // Return cached if not modified
             if (cached && cached.mtime === stat.mtimeMs) {
+                this.outputChannel.appendLine(`  ${basename} (${sizeKB}KB): cached`);
                 return cached;
             }
 
-            // Parse file with fast mode (skip inline object parsing for agenda)
-            const content = fs.readFileSync(filePath, 'utf-8');
+            // Skip very large files (> 100KB) to prevent OOM
+            if (stat.size > 100 * 1024) {
+                this.outputChannel.appendLine(`  ${basename}: skipping (${sizeKB}KB > 100KB)`);
+                return null;
+            }
+
+            this.outputChannel.appendLine(`  ${basename} (${sizeKB}KB): reading...`);
+            const content = await fs.promises.readFile(filePath, 'utf-8');
+            const readTime = Date.now();
+            this.outputChannel.appendLine(`  ${basename}: read ${readTime - startTime}ms, parsing...`);
+
             const document = parseOrg(content, {
                 parseInlineObjects: false,
                 addPositions: false,
             });
+            const parseTime = Date.now();
+            this.outputChannel.appendLine(`  ${basename}: parsed ${parseTime - readTime}ms, extracting...`);
 
-            // Extract headlines and diary sexps
             const headlines = this.extractHeadlines(document);
-            const diarySexps = this.extractDiarySexps(document, filePath);
+            const diarySexps = this.extractDiarySexps(document, filePath, content);
+            const extractTime = Date.now();
 
             const agendaFile: AgendaFile = {
                 path: filePath,
-                document,
                 headlines,
                 diarySexps,
                 mtime: stat.mtimeMs,
             };
 
             this.fileCache.set(filePath, agendaFile);
+
+            this.outputChannel.appendLine(
+                `  ${basename}: done (read=${readTime - startTime}ms, parse=${parseTime - readTime}ms, extract=${extractTime - parseTime}ms, headlines=${headlines.length})`
+            );
+
             return agendaFile;
         } catch (error) {
-            this.outputChannel.appendLine(`Error parsing ${filePath}: ${error}`);
+            this.outputChannel.appendLine(`  ${basename}: ERROR ${error}`);
             return null;
         }
     }
@@ -334,7 +363,9 @@ export class AgendaManager {
 
         for (const child of doc.children) {
             if (child.type === 'headline') {
-                headlines.push(child as HeadlineElement);
+                // Strip section content to save memory - agenda only needs metadata
+                const stripped = this.stripHeadlineSection(child as HeadlineElement);
+                headlines.push(stripped);
             }
         }
 
@@ -342,11 +373,64 @@ export class AgendaManager {
     }
 
     /**
-     * Extract diary sexp entries from a document
+     * Create a lightweight copy of headline with only agenda-relevant fields
+     * This avoids copying the entire AST structure which can be very large
+     * IMPORTANT: We must deep-copy nested objects to avoid keeping AST references alive
      */
-    private extractDiarySexps(doc: OrgDocumentNode, filePath: string): DiarySexpEntry[] {
+    private stripHeadlineSection(headline: HeadlineElement): HeadlineElement {
+        // Deep copy planning to avoid AST references
+        let planning: any = undefined;
+        if (headline.planning) {
+            planning = {
+                type: 'planning',
+                range: headline.planning.range,
+                postBlank: headline.planning.postBlank,
+                properties: {
+                    scheduled: headline.planning.properties.scheduled ? { ...headline.planning.properties.scheduled } : undefined,
+                    deadline: headline.planning.properties.deadline ? { ...headline.planning.properties.deadline } : undefined,
+                    closed: headline.planning.properties.closed ? { ...headline.planning.properties.closed } : undefined,
+                }
+            };
+        }
+
+        // Deep copy properties drawer (it's just key-value pairs)
+        const propertiesDrawer = headline.propertiesDrawer ? { ...headline.propertiesDrawer } : undefined;
+
+        return {
+            type: 'headline',
+            range: headline.range,
+            postBlank: headline.postBlank,
+            properties: {
+                level: headline.properties.level,
+                rawValue: headline.properties.rawValue,
+                todoKeyword: headline.properties.todoKeyword,
+                todoType: headline.properties.todoType,
+                priority: headline.properties.priority,
+                tags: [...headline.properties.tags], // Copy array
+                archivedp: headline.properties.archivedp,
+                commentedp: headline.properties.commentedp,
+                footnoteSection: headline.properties.footnoteSection,
+                customId: headline.properties.customId,
+                id: headline.properties.id,
+                category: headline.properties.category,
+                effort: headline.properties.effort,
+                lineNumber: headline.properties.lineNumber,
+            },
+            planning,
+            propertiesDrawer,
+            // No section - that's the heavy part we want to exclude
+            children: headline.children.map(child => this.stripHeadlineSection(child)),
+        };
+    }
+
+    /**
+     * Extract diary sexp entries from a document
+     * @param doc The parsed org document
+     * @param filePath Path to the file (for metadata)
+     * @param content File content (passed to avoid re-reading)
+     */
+    private extractDiarySexps(doc: OrgDocumentNode, filePath: string, content: string): DiarySexpEntry[] {
         const entries: DiarySexpEntry[] = [];
-        const content = fs.readFileSync(filePath, 'utf-8');
         const lines = content.split('\n');
 
         // Helper to extract diary sexps from an element's children
@@ -467,19 +551,26 @@ export class AgendaManager {
                 }
 
                 // Process each file in the batch
-                for (const filePath of batch) {
+                this.outputChannel.appendLine(`Processing batch of ${batch.length} files...`);
+                for (let i = 0; i < batch.length; i++) {
+                    const filePath = batch[i];
                     if (token.isCancellationRequested) break;
 
+                    this.outputChannel.appendLine(`Starting file ${i + 1}/${batch.length}: ${filePath}`);
                     const agendaFile = await this.parseFile(filePath);
                     if (agendaFile) {
+                        this.outputChannel.appendLine(`  - Collecting ${agendaFile.headlines.length} headlines...`);
                         for (const headline of agendaFile.headlines) {
                             this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
                         }
+                        this.outputChannel.appendLine(`  - Total headlines so far: ${allHeadlines.length}`);
                         // Collect diary sexps
                         allDiarySexps.push(...agendaFile.diarySexps);
                     }
                     filesProcessed++;
+                    this.outputChannel.appendLine(`  - File ${filesProcessed} complete`);
                 }
+                this.outputChannel.appendLine(`Batch complete. Total: ${filesProcessed} files, ${allHeadlines.length} headlines`);
 
                 // Log progress for large scans
                 if (filesProcessed % 50 === 0) {
@@ -692,6 +783,7 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
     private todoList: TodoListView | null = null;
     private viewMode: 'agenda' | 'todo' = 'agenda';
     private groupBy: 'date' | 'category' | 'priority' | 'todo' = 'date';
+    private refreshInProgress: Promise<void> | null = null;
 
     constructor(private manager: AgendaManager) {
         manager.onDidRefresh(() => this.refresh());
@@ -708,6 +800,20 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
     }
 
     async refresh(): Promise<void> {
+        // Prevent duplicate concurrent refreshes - return existing promise if in progress
+        if (this.refreshInProgress) {
+            return this.refreshInProgress;
+        }
+
+        this.refreshInProgress = this.doRefresh();
+        try {
+            await this.refreshInProgress;
+        } finally {
+            this.refreshInProgress = null;
+        }
+    }
+
+    private async doRefresh(): Promise<void> {
         if (this.viewMode === 'agenda') {
             this.agendaView = await this.manager.getAgendaView({ groupBy: this.groupBy });
         } else {
@@ -722,17 +828,30 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
 
     async getChildren(element?: AgendaTreeItem): Promise<AgendaTreeItem[]> {
         if (!element) {
+            // If a refresh is in progress, wait for it to complete
+            if (this.refreshInProgress) {
+                await this.refreshInProgress;
+            }
+
             // Root level - return groups
             if (this.viewMode === 'agenda') {
                 if (!this.agendaView) {
-                    this.agendaView = await this.manager.getAgendaView({ groupBy: this.groupBy });
+                    // No data yet - trigger a refresh and wait for it
+                    await this.refresh();
+                }
+                if (!this.agendaView) {
+                    return []; // Still no data after refresh (scan may have been cancelled)
                 }
                 return this.agendaView.groups
                     .filter(g => g.items.length > 0)
                     .map(g => new AgendaGroupItem(g, 'agenda'));
             } else {
                 if (!this.todoList) {
-                    this.todoList = await this.manager.getTodoList({ excludeDone: true });
+                    // No data yet - trigger a refresh and wait for it
+                    await this.refresh();
+                }
+                if (!this.todoList) {
+                    return []; // Still no data after refresh
                 }
                 // Convert TODO list to groups
                 const groups: AgendaGroup[] = [];
@@ -1009,21 +1128,6 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             if (!reportType) return;
 
             try {
-                // Get all headlines from agenda files
-                const allHeadlines: HeadlineElement[] = [];
-                const allEntries: ReturnType<typeof collectAllClockEntries> = [];
-
-                for (const [, agendaFile] of manager.getFileCache()) {
-                    const entries = collectAllClockEntries(agendaFile.document);
-                    allEntries.push(...entries);
-                    allHeadlines.push(...agendaFile.headlines);
-                }
-
-                if (allEntries.length === 0) {
-                    vscode.window.showInformationMessage('No clock entries found in agenda files');
-                    return;
-                }
-
                 // Generate the report config
                 const config = {
                     type: reportType.value === 'today' ? 'daily' as const :
@@ -1034,22 +1138,43 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                     includeEmpty: false,
                 };
 
-                // Generate reports per file
+                // Generate reports per file - re-parse each file for clock entries
+                // (documents are not cached to save memory)
                 const reportLines: string[] = [];
                 let totalMinutes = 0;
+                let totalEntries = 0;
 
-                for (const [filePath, agendaFile] of manager.getFileCache()) {
-                    const report = generateTimeReport(agendaFile.document.children, config);
-                    if (report.length > 0) {
-                        const fileTotal = report.reduce((sum, e) => sum + e.totalMinutes, 0);
-                        totalMinutes += fileTotal;
+                for (const [filePath] of manager.getFileCache()) {
+                    try {
+                        // Re-parse file to get clock entries
+                        const content = fs.readFileSync(filePath, 'utf-8');
+                        const document = parseOrg(content, {
+                            parseInlineObjects: false,
+                            addPositions: false,
+                        });
 
-                        reportLines.push(`** ${path.basename(filePath)}`);
-                        reportLines.push(`   Total: ${formatDuration(fileTotal)}`);
-                        reportLines.push('');
-                        reportLines.push(formatTimeReport(report, 1));
-                        reportLines.push('');
+                        const entries = collectAllClockEntries(document);
+                        totalEntries += entries.length;
+
+                        const report = generateTimeReport(document.children, config);
+                        if (report.length > 0) {
+                            const fileTotal = report.reduce((sum, e) => sum + e.totalMinutes, 0);
+                            totalMinutes += fileTotal;
+
+                            reportLines.push(`** ${path.basename(filePath)}`);
+                            reportLines.push(`   Total: ${formatDuration(fileTotal)}`);
+                            reportLines.push('');
+                            reportLines.push(formatTimeReport(report, 1));
+                            reportLines.push('');
+                        }
+                    } catch (err) {
+                        console.warn(`Failed to parse ${filePath} for clock report:`, err);
                     }
+                }
+
+                if (totalEntries === 0) {
+                    vscode.window.showInformationMessage('No clock entries found in agenda files');
+                    return;
                 }
 
                 if (reportLines.length === 0) {

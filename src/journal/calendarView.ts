@@ -93,9 +93,26 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
     }
 
     private getHtmlContent(): string {
-        const entries = this.manager.getEntriesForMonth(this.currentYear, this.currentMonth);
+        // Get all entries once and derive everything from them (no file reads)
+        const allEntries = this.manager.getAllEntries();
+
+        // Filter entries for current month
+        const entries = allEntries.filter(e =>
+            e.date.getFullYear() === this.currentYear &&
+            e.date.getMonth() === this.currentMonth
+        );
         const entryDays = new Set(entries.map(e => e.date.getDate()));
-        const totalStats = this.manager.getTotalStats();
+
+        // Pre-compute which months have entries for the current year (for month picker)
+        const monthsWithEntries = new Set<number>();
+        for (const entry of allEntries) {
+            if (entry.date.getFullYear() === this.currentYear) {
+                monthsWithEntries.add(entry.date.getMonth());
+            }
+        }
+
+        // Use basic stats (no file reads - just counts and streaks from dates)
+        const totalStats = this.manager.getBasicStats(allEntries);
 
         const monthNames = [
             'January', 'February', 'March', 'April', 'May', 'June',
@@ -161,11 +178,11 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
 
         calendarHtml += '</div>';
 
-        // Month picker
+        // Month picker (uses pre-computed monthsWithEntries - no additional calls)
         let monthPickerHtml = '<div class="month-picker">';
         for (let m = 0; m < 12; m++) {
             const isActive = m === this.currentMonth;
-            const hasEntries = this.manager.getEntriesForMonth(this.currentYear, m).length > 0;
+            const hasEntries = monthsWithEntries.has(m);
             let mClass = 'month-btn';
             if (isActive) mClass += ' active';
             if (hasEntries) mClass += ' has-entries';
@@ -315,12 +332,22 @@ export class JournalCalendarProvider implements vscode.WebviewViewProvider {
         }
 
         .day.has-entry {
-            background: var(--vscode-button-secondaryBackground);
             font-weight: bold;
+            color: var(--vscode-textLink-foreground);
+        }
+
+        .day.has-entry::after {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 4px;
+            background: var(--vscode-textLink-foreground);
+            border-radius: 50%;
+            margin: 2px auto 0;
         }
 
         .day.has-entry:hover {
-            background: var(--vscode-button-secondaryHoverBackground);
+            background: var(--vscode-list-hoverBackground);
         }
 
         .day.today {
