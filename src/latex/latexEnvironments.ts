@@ -386,6 +386,7 @@ export async function toggleEnvironmentStar(): Promise<void> {
 
 /**
  * Add a label to the current environment
+ * If there's an existing label, it will be pre-filled and replaced
  */
 export async function addLabelToEnvironment(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -399,67 +400,118 @@ export async function addLabelToEnvironment(): Promise<void> {
         return;
     }
 
-    // Suggest a label prefix based on environment type
-    let prefix = '';
-    switch (env.name.replace('*', '')) {
-        case 'figure':
-            prefix = 'fig:';
+    // Check for existing label within the environment
+    let existingLabel: { name: string; line: number; start: number; end: number } | null = null;
+    const labelPattern = /\\label\{([^}]+)\}/;
+
+    // Find the end of the environment
+    let envEndLine = env.line;
+    for (let i = env.line + 1; i < document.lineCount; i++) {
+        const lineText = document.lineAt(i).text;
+        if (lineText.includes(`\\end{${env.name}}`)) {
+            envEndLine = i;
             break;
-        case 'table':
-            prefix = 'tab:';
+        }
+    }
+
+    // Search for label within environment bounds
+    for (let i = env.line; i <= envEndLine; i++) {
+        const lineText = document.lineAt(i).text;
+        const match = labelPattern.exec(lineText);
+        if (match) {
+            existingLabel = {
+                name: match[1],
+                line: i,
+                start: match.index,
+                end: match.index + match[0].length
+            };
             break;
-        case 'equation':
-        case 'align':
-        case 'gather':
-        case 'multline':
-            prefix = 'eq:';
-            break;
-        case 'theorem':
-            prefix = 'thm:';
-            break;
-        case 'lemma':
-            prefix = 'lem:';
-            break;
-        case 'definition':
-            prefix = 'def:';
-            break;
-        case 'proposition':
-            prefix = 'prop:';
-            break;
-        case 'corollary':
-            prefix = 'cor:';
-            break;
-        case 'lstlisting':
-        case 'minted':
-            prefix = 'lst:';
-            break;
-        default:
-            prefix = '';
+        }
+    }
+
+    // Determine default value for input
+    let defaultValue = '';
+    let valueSelection: [number, number] = [0, 0];
+
+    if (existingLabel) {
+        // Pre-fill with existing label
+        defaultValue = existingLabel.name;
+        valueSelection = [0, defaultValue.length];
+    } else {
+        // Suggest a label prefix based on environment type
+        switch (env.name.replace('*', '')) {
+            case 'figure':
+                defaultValue = 'fig:';
+                break;
+            case 'table':
+                defaultValue = 'tab:';
+                break;
+            case 'equation':
+            case 'align':
+            case 'gather':
+            case 'multline':
+                defaultValue = 'eq:';
+                break;
+            case 'theorem':
+                defaultValue = 'thm:';
+                break;
+            case 'lemma':
+                defaultValue = 'lem:';
+                break;
+            case 'definition':
+                defaultValue = 'def:';
+                break;
+            case 'proposition':
+                defaultValue = 'prop:';
+                break;
+            case 'corollary':
+                defaultValue = 'cor:';
+                break;
+            case 'lstlisting':
+            case 'minted':
+                defaultValue = 'lst:';
+                break;
+            default:
+                defaultValue = '';
+        }
+        valueSelection = [defaultValue.length, defaultValue.length];
     }
 
     const labelName = await vscode.window.showInputBox({
-        prompt: 'Enter label name',
-        value: prefix,
-        valueSelection: [prefix.length, prefix.length]
+        prompt: existingLabel ? 'Edit label name' : 'Enter label name',
+        value: defaultValue,
+        valueSelection: valueSelection
     });
 
     if (!labelName) {
         return;
     }
 
-    // Insert label after \begin line
-    const insertLine = env.line;
-    const beginLine = document.lineAt(insertLine).text;
-    const indent = beginLine.match(/^(\s*)/)?.[1] || '';
-
-    await editor.edit(editBuilder => {
-        editBuilder.insert(
-            new vscode.Position(insertLine + 1, 0),
-            `${indent}  \\label{${labelName}}\n`
+    if (existingLabel) {
+        // Replace existing label
+        const labelLine = document.lineAt(existingLabel.line);
+        const range = new vscode.Range(
+            existingLabel.line, existingLabel.start,
+            existingLabel.line, existingLabel.end
         );
-    });
+        await editor.edit(editBuilder => {
+            editBuilder.replace(range, `\\label{${labelName}}`);
+        });
+        vscode.window.setStatusBarMessage(`Updated \\label{${labelName}}`, 2000);
+    } else {
+        // Insert label after \begin line
+        const insertLine = env.line;
+        const beginLine = document.lineAt(insertLine).text;
+        const indent = beginLine.match(/^(\s*)/)?.[1] || '';
 
-    vscode.window.setStatusBarMessage(`Added \\label{${labelName}}`, 2000);
+        await editor.edit(editBuilder => {
+            editBuilder.insert(
+                new vscode.Position(insertLine + 1, 0),
+                `${indent}  \\label{${labelName}}\n`
+            );
+        });
+        vscode.window.setStatusBarMessage(`Added \\label{${labelName}}`, 2000);
+    }
 }
 
 /**

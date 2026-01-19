@@ -14,6 +14,7 @@ import * as visibility from './visibility';
 import * as clocking from './clocking';
 import * as archive from './archive';
 import * as structure from './structure';
+import { isSectionLine } from '../../latex/latexNavigation';
 
 /**
  * Check if cursor is at the start of a heading (column 0)
@@ -50,6 +51,49 @@ export function isAtSrcBlockStart(document: vscode.TextDocument, position: vscod
     }
 
     return false;
+}
+
+/**
+ * Check if cursor is at the start of a LaTeX section (at or before the backslash)
+ */
+export function isAtLatexSectionStart(document: vscode.TextDocument, position: vscode.Position): boolean {
+    if (document.languageId !== 'latex') return false;
+
+    const line = document.lineAt(position.line).text;
+
+    // Check if it's a section line
+    if (!isSectionLine(line)) {
+        return false;
+    }
+
+    // Check if cursor is at or before the backslash
+    const backslashIndex = line.indexOf('\\');
+    return position.character <= backslashIndex;
+}
+
+/**
+ * Check if a line is a LaTeX environment begin line
+ */
+export function isEnvironmentLine(line: string): boolean {
+    return /^\s*\\begin\{[\w*]+\}/.test(line);
+}
+
+/**
+ * Check if cursor is at the start of a LaTeX environment (at or before the backslash)
+ */
+export function isAtLatexEnvironmentStart(document: vscode.TextDocument, position: vscode.Position): boolean {
+    if (document.languageId !== 'latex') return false;
+
+    const line = document.lineAt(position.line).text;
+
+    // Check if it's an environment begin line
+    if (!isEnvironmentLine(line)) {
+        return false;
+    }
+
+    // Check if cursor is at or before the backslash
+    const backslashIndex = line.indexOf('\\');
+    return position.character <= backslashIndex;
 }
 
 /**
@@ -110,21 +154,36 @@ export function setupSpeedCommandContext(context: vscode.ExtensionContext): void
     // Set initial context
     vscode.commands.executeCommand('setContext', 'scimax.speedCommandsEnabled', enabled);
 
-    // Track cursor position for atHeadingStart and atSrcBlockStart contexts
+    // Track cursor position for atHeadingStart, atSrcBlockStart, and atLatexSectionStart contexts
     context.subscriptions.push(
         vscode.window.onDidChangeTextEditorSelection(e => {
             const editor = e.textEditor;
             const document = editor.document;
+            const position = editor.selection.active;
+            const isEmpty = editor.selection.isEmpty;
 
-            // Only check for org/markdown files
-            if (!['org', 'markdown'].includes(document.languageId)) {
+            // Check for LaTeX files
+            if (document.languageId === 'latex') {
                 vscode.commands.executeCommand('setContext', 'scimax.atHeadingStart', false);
                 vscode.commands.executeCommand('setContext', 'scimax.atSrcBlockStart', false);
+                const atLatexSectionStart = isAtLatexSectionStart(document, position) && isEmpty;
+                vscode.commands.executeCommand('setContext', 'scimax.atLatexSectionStart', atLatexSectionStart);
+                const atLatexEnvironmentStart = isAtLatexEnvironmentStart(document, position) && isEmpty;
+                vscode.commands.executeCommand('setContext', 'scimax.atLatexEnvironmentStart', atLatexEnvironmentStart);
                 return;
             }
 
-            const position = editor.selection.active;
-            const isEmpty = editor.selection.isEmpty;
+            // Check for org/markdown files
+            if (!['org', 'markdown'].includes(document.languageId)) {
+                vscode.commands.executeCommand('setContext', 'scimax.atHeadingStart', false);
+                vscode.commands.executeCommand('setContext', 'scimax.atSrcBlockStart', false);
+                vscode.commands.executeCommand('setContext', 'scimax.atLatexSectionStart', false);
+                vscode.commands.executeCommand('setContext', 'scimax.atLatexEnvironmentStart', false);
+                return;
+            }
+
+            vscode.commands.executeCommand('setContext', 'scimax.atLatexSectionStart', false);
+            vscode.commands.executeCommand('setContext', 'scimax.atLatexEnvironmentStart', false);
 
             const atHeadingStart = isAtHeadingStart(document, position) && isEmpty;
             vscode.commands.executeCommand('setContext', 'scimax.atHeadingStart', atHeadingStart);

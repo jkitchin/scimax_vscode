@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-19T07:43:18.825Z",
-  "count": 2870,
+  "buildDate": "2026-01-19T14:52:38.529Z",
+  "count": 2871,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -66844,16 +66844,16 @@
       "level": 2,
       "file": "24-keybindings.org",
       "line": 428,
-      "content": "| Key       | Action                 | |-----------+------------------------| | C-c C-c   | Compile document       | | C-c C-v   | View PDF               | | C-c C-a   | Compile and view PDF   | | C-c C-j   | SyncTeX forward search | | C-c C-k   | Clean auxiliary files  | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
+      "content": "| Key       | Action                      | |-----------+-----------------------------| | C-c C-c   | Compile document            | | C-c v     | View PDF (built-in panel)   | | C-c C-v   | View PDF (external viewer)  | | C-c C-a   | Compile and view PDF        | | C-c g     | SyncTeX forward search      | | C-c C-k   | Clean auxiliary files       | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
       ],
       "commands": [],
       "keybindings": [
         "C-c C-c",
+        "C-c",
         "C-c C-v",
         "C-c C-a",
-        "C-c C-j",
         "C-c C-k"
       ],
       "keywords": [
@@ -66861,29 +66861,29 @@
         "preview",
         "key",
         "action",
-        "-----------------------------------",
+        "----------------------------------------",
         "c-c",
         "document",
-        "c-v",
         "view",
         "pdf",
+        "built-in",
+        "panel",
+        "c-v",
+        "external",
+        "viewer",
         "c-a",
-        "c-j",
         "synctex",
         "forward",
         "search",
         "c-k",
-        "clean",
-        "auxiliary",
-        "file33-latex-navigationorg",
-        "latex"
+        "clean"
       ]
     },
     {
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 440,
+      "line": 441,
       "content": "",
       "path": [],
       "commands": [],
@@ -66898,7 +66898,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 442,
+      "line": 443,
       "content": "| Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -66939,7 +66939,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 457,
+      "line": 458,
       "content": "| Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote subtree |",
       "path": [
         "Quick Reference Card"
@@ -66969,7 +66969,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 468,
+      "line": 469,
       "content": "- Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -67004,7 +67004,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 475,
+      "line": 476,
       "content": "- Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -77505,7 +77505,7 @@
       "level": 1,
       "file": "29-unsupported-features.org",
       "line": 181,
-      "content": "To prevent crashes or unresponsiveness when opening malformed org files, the parser enforces several safety limits. These limits are set high enough that they should never affect legitimate files.",
+      "content": "CLOSED: [2026-01-19 Mon 09:23] To prevent crashes or unresponsiveness when opening malformed org files, the parser enforces several safety limits. These limits are set high enough that they should never affect legitimate files.",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -77513,6 +77513,10 @@
         "parser",
         "safety",
         "limits",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0923",
         "prevent",
         "crashes",
         "unresponsiveness",
@@ -77525,16 +77529,15 @@
         "high",
         "enough",
         "never",
-        "affect",
-        "legitimate"
+        "affect"
       ]
     },
     {
       "heading": "Heading Nesting Depth",
       "level": 2,
       "file": "29-unsupported-features.org",
-      "line": 185,
-      "content": "*Limit*: 100 levels maximum *Rationale*: Prevents stack overflow from deeply nested headings. Real org files rarely exceed 10 levels of nesting. *What happens*: Headings beyond 100 levels deep are not included in search results or the document outline.",
+      "line": 186,
+      "content": "CLOSED: [2026-01-19 Mon 09:23] *Limit*: 100 levels maximum *Rationale*: Prevents stack overflow from deeply nested headings. Real org files rarely exceed 10 levels of nesting. *What happens*: Headings beyond 100 levels deep are not included in search results or the document outline.",
       "path": [
         "Parser Safety Limits"
       ],
@@ -77544,6 +77547,10 @@
         "heading",
         "nesting",
         "depth",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0923",
         "limit",
         "100",
         "levels",
@@ -77556,19 +77563,15 @@
         "nested",
         "headings",
         "real",
-        "org",
-        "rarely",
-        "exceed",
-        "happens",
-        "beyond"
+        "org"
       ]
     },
     {
       "heading": "Block Line Limits",
       "level": 2,
       "file": "29-unsupported-features.org",
-      "line": 193,
-      "content": "*Limit*: 50,000 lines per block *Affected blocks*: - Source blocks (=#+BEGIN_SRC= ... =#+END_SRC=) - Quote blocks (=#+BEGIN_QUOTE= ... =#+END_QUOTE=) - Example blocks (=#+BEGIN_EXAMPLE= ... =#+END_EXAMPLE=) - Export blocks (=#+BEGIN_EXPORT= ... =#+END_EXPORT=) - Special blocks (=#+BEGIN_name= ... =#+END_name=) - LaTeX environments (=\\begin{env}= ... =\\end{env}=) - Drawers (=:DRAWER:= ... =:END:=) - Dynamic blocks (=#+BEGIN:= ... =#+END:=) *Rationale*: Prevents unbounded memory consumption if a b",
+      "line": 195,
+      "content": "CLOSED: [2026-01-19 Mon 09:23] *Limit*: 50,000 lines per block *Affected blocks*: - Source blocks (=#+BEGIN_SRC= ... =#+END_SRC=) - Quote blocks (=#+BEGIN_QUOTE= ... =#+END_QUOTE=) - Example blocks (=#+BEGIN_EXAMPLE= ... =#+END_EXAMPLE=) - Export blocks (=#+BEGIN_EXPORT= ... =#+END_EXPORT=) - Special blocks (=#+BEGIN_name= ... =#+END_name=) - LaTeX environments (=\\begin{env}= ... =\\end{env}=) - Drawers (=:DRAWER:= ... =:END:=) - Dynamic blocks (=#+BEGIN:= ... =#+END:=) *Rationale*: Prevents unbo",
       "path": [
         "Parser Safety Limits"
       ],
@@ -77578,6 +77581,10 @@
         "block",
         "line",
         "limits",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0923",
         "limit",
         "50000",
         "lines",
@@ -77590,19 +77597,15 @@
         "quote",
         "beginquote",
         "endquote",
-        "example",
-        "beginexample",
-        "endexample",
-        "export",
-        "beginexport"
+        "example"
       ]
     },
     {
       "heading": "Properties Drawer Limit",
       "level": 2,
       "file": "29-unsupported-features.org",
-      "line": 211,
-      "content": "*Limit*: 1,000 lines *Rationale*: Properties drawers are typically small (<50 lines). A tighter limit catches unclosed drawers faster.",
+      "line": 214,
+      "content": "CLOSED: [2026-01-19 Mon 09:23] *Limit*: 1,000 lines *Rationale*: Properties drawers are typically small (<50 lines). A tighter limit catches unclosed drawers faster.",
       "path": [
         "Parser Safety Limits"
       ],
@@ -77612,6 +77615,10 @@
         "properties",
         "drawer",
         "limit",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0923",
         "1000",
         "lines",
         "rationale",
@@ -77628,8 +77635,8 @@
       "heading": "Tag Restrictions",
       "level": 2,
       "file": "29-unsupported-features.org",
-      "line": 217,
-      "content": "*Limit*: 50 tags per heading *Allowed characters*: Letters, numbers, underscore (=_=), at-sign (=@=), hash (=#=), percent (=%=), hyphen (=-=) *Not allowed*: Spaces, colons, and most punctuation (=!=, =$=, =^=, =&=, =*=, etc.) *Rationale*: The previous tag parser used a regex pattern that could cause exponential backtracking (ReDoS) on malformed input like =:::::::::::::=. The character restrictions prevent this vulnerability while supporting all common tag formats. *Example valid tags*: #+BEGIN_",
+      "line": 221,
+      "content": "CLOSED: [2026-01-19 Mon 09:23] *Limit*: 50 tags per heading *Allowed characters*: Letters, numbers, underscore (=_=), at-sign (=@=), hash (=#=), percent (=%=), hyphen (=-=) *Not allowed*: Spaces, colons, and most punctuation (=!=, =$=, =^=, =&=, =*=, etc.) *Rationale*: The previous tag parser used a regex pattern that could cause exponential backtracking (ReDoS) on malformed input like =:::::::::::::=. The character restrictions prevent this vulnerability while supporting all common tag formats.",
       "path": [
         "Parser Safety Limits"
       ],
@@ -77638,6 +77645,10 @@
       "keywords": [
         "tag",
         "restrictions",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0923",
         "limit",
         "tags",
         "per",
@@ -77651,18 +77662,14 @@
         "hash",
         "percent",
         "hyphen",
-        "spaces",
-        "colons",
-        "punctuation",
-        "etc",
-        "rationale"
+        "spaces"
       ]
     },
     {
       "heading": "My Task :work:urgent:project-alpha:",
       "level": 1,
       "file": "29-unsupported-features.org",
-      "line": 229,
+      "line": 234,
       "content": "",
       "path": [],
       "commands": [],
@@ -77676,7 +77683,7 @@
       "heading": "Meeting :@office:2024:Q1_review:",
       "level": 1,
       "file": "29-unsupported-features.org",
-      "line": 230,
+      "line": 235,
       "content": "#+END_EXAMPLE *If you need exotic characters*: Tags with unsupported characters will not be recognized. Consider using standard alphanumeric tags with hyphens or underscores instead.",
       "path": [],
       "commands": [],
@@ -77703,8 +77710,8 @@
       "heading": "When Limits Are Hit",
       "level": 2,
       "file": "29-unsupported-features.org",
-      "line": 235,
-      "content": "When any limit is reached: - The parser stops consuming input at the limit boundary - No error is thrown to the user - Parsing continues with remaining content - The file remains usable, just with incomplete parsing of the oversized element This \"graceful degradation\" approach ensures that even malformed files can be opened and edited, rather than causing the extension to crash or hang.",
+      "line": 240,
+      "content": "CLOSED: [2026-01-19 Mon 09:23] When any limit is reached: - The parser stops consuming input at the limit boundary - No error is thrown to the user - Parsing continues with remaining content - The file remains usable, just with incomplete parsing of the oversized element This \"graceful degradation\" approach ensures that even malformed files can be opened and edited, rather than causing the extension to crash or hang.",
       "path": [
         "Meeting :@office:2024:Q1_review:"
       ],
@@ -77713,6 +77720,10 @@
       "keywords": [
         "limits",
         "hit",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0923",
         "any",
         "limit",
         "reached",
@@ -77726,25 +77737,25 @@
         "user",
         "parsing",
         "continues",
-        "remaining",
-        "content",
-        "remains",
-        "usable",
-        "incomplete"
+        "remaining"
       ]
     },
     {
       "heading": "Related Topics",
       "level": 1,
       "file": "29-unsupported-features.org",
-      "line": 245,
-      "content": "- [[file:10-export.org][Export System]] - What export features ARE supported - [[file:07-source-blocks.org][Source Blocks]] - Supported code execution features - [[file:08-supported-languages.org][Supported Languages]] - Languages with full Babel support - [[file:13-agenda.org][Agenda]] - Available agenda features - [[file:28-non-standard-features.org][Non-Standard Features]] - VS Code-specific features not in Emacs",
+      "line": 251,
+      "content": "CLOSED: [2026-01-19 Mon 09:23] - [[file:10-export.org][Export System]] - What export features ARE supported - [[file:07-source-blocks.org][Source Blocks]] - Supported code execution features - [[file:08-supported-languages.org][Supported Languages]] - Languages with full Babel support - [[file:13-agenda.org][Agenda]] - Available agenda features - [[file:28-non-standard-features.org][Non-Standard Features]] - VS Code-specific features not in Emacs",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "related",
         "topics",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0923",
         "file10-exportorg",
         "export",
         "system",
@@ -77758,11 +77769,7 @@
         "file08-supported-languagesorg",
         "languages",
         "full",
-        "babel",
-        "support",
-        "file13-agendaorg",
-        "agenda",
-        "available"
+        "babel"
       ]
     },
     {
@@ -78599,13 +78606,17 @@
       "level": 1,
       "file": "30-markdown-compatibility.org",
       "line": 10,
-      "content": "Scimax VS Code provides first-class support for org-mode files, with substantial structural editing and navigation support for Markdown documents as well. This chapter documents which features work in Markdown files and how to use them.",
+      "content": "CLOSED: [2026-01-19 Mon 09:32] Scimax VS Code provides first-class support for org-mode files, with substantial structural editing and navigation support for Markdown documents as well. This chapter documents which features work in Markdown files and how to use them.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "markdown",
         "compatibility",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0932",
         "scimax",
         "code",
         "provides",
@@ -78619,17 +78630,15 @@
         "documents",
         "well",
         "chapter",
-        "features",
-        "work",
-        "them"
+        "features"
       ]
     },
     {
       "heading": "Design Philosophy",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 16,
-      "content": "The extension treats Markdown as a first-class citizen for *structural editing and navigation*. Features that rely on org-mode specific syntax (TODO states, scheduling, clocking, properties) are not available in Markdown since they would require non-standard Markdown extensions. | Category                | Markdown Support | Notes                              | |-------------------------+------------------+------------------------------------| | Structural editing      | Full             | Headi",
+      "line": 17,
+      "content": "CLOSED: [2026-01-19 Mon 09:32] The extension treats Markdown as a first-class citizen for *structural editing and navigation*. Features that rely on org-mode specific syntax (TODO states, scheduling, clocking, properties) are not available in Markdown since they would require non-standard Markdown extensions. | Category                | Markdown Support | Notes                              | |-------------------------+------------------+------------------------------------| | Structural editing ",
       "path": [
         "Markdown Compatibility"
       ],
@@ -78638,6 +78647,10 @@
       "keywords": [
         "design",
         "philosophy",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0932",
         "extension",
         "treats",
         "markdown",
@@ -78651,33 +78664,33 @@
         "org-mode",
         "specific",
         "syntax",
-        "todo",
-        "states",
-        "scheduling",
-        "clocking",
-        "properties"
+        "todo"
       ]
     },
     {
       "heading": "Supported Features",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 35,
-      "content": "",
+      "line": 37,
+      "content": "CLOSED: [2026-01-19 Mon 09:33]",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "supported",
-        "features"
+        "features",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0933"
       ]
     },
     {
       "heading": "Document Outline and Navigation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 37,
-      "content": "Markdown files have full support for the VS Code outline view and breadcrumb navigation.",
+      "line": 40,
+      "content": "CLOSED: [2026-01-19 Mon 09:33] Markdown files have full support for the VS Code outline view and breadcrumb navigation.",
       "path": [
         "Supported Features"
       ],
@@ -78687,6 +78700,10 @@
         "document",
         "outline",
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0933",
         "markdown",
         "full",
         "support",
@@ -78699,8 +78716,8 @@
       "heading": "Outline View",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 42,
-      "content": "The extension provides a =DocumentSymbolProvider= for Markdown that recognizes: - Headings (lines starting with =#=) - Fenced code blocks (=```language= or =~~~language=) - YAML frontmatter title Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the document structure.",
+      "line": 46,
+      "content": "CLOSED: [2026-01-19 Mon 09:33] The extension provides a =DocumentSymbolProvider= for Markdown that recognizes: - Headings (lines starting with =#=) - Fenced code blocks (=```language= or =~~~language=) - YAML frontmatter title Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the document structure.",
       "path": [
         "Supported Features",
         "Document Outline and Navigation"
@@ -78712,6 +78729,10 @@
       "keywords": [
         "outline",
         "view",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0933",
         "extension",
         "provides",
         "documentsymbolprovider",
@@ -78725,19 +78746,15 @@
         "blocks",
         "language",
         "yaml",
-        "frontmatter",
-        "title",
-        "open",
-        "explorer",
-        "sidebar"
+        "frontmatter"
       ]
     },
     {
       "heading": "Breadcrumbs",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 53,
-      "content": "Breadcrumbs show the current heading hierarchy in the editor title bar. This works automatically for Markdown files.",
+      "line": 58,
+      "content": "CLOSED: [2026-01-19 Mon 09:33] Breadcrumbs show the current heading hierarchy in the editor title bar. This works automatically for Markdown files.",
       "path": [
         "Supported Features",
         "Document Outline and Navigation"
@@ -78746,6 +78763,10 @@
       "keybindings": [],
       "keywords": [
         "breadcrumbs",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0933",
         "show",
         "current",
         "heading",
@@ -78762,8 +78783,8 @@
       "heading": "Jump to Heading",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 58,
-      "content": "Press =C-c C-j= to open a quick-pick menu of all headings in the current file. Type to filter and press Enter to jump.",
+      "line": 64,
+      "content": "CLOSED: [2026-01-19 Mon 09:34] Press =C-c C-j= to open a quick-pick menu of all headings in the current file. Type to filter and press Enter to jump.  `Cmd-C/Shift-o' also works.",
       "path": [
         "Supported Features",
         "Document Outline and Navigation"
@@ -78775,6 +78796,10 @@
       "keywords": [
         "jump",
         "heading",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0934",
         "press",
         "c-c",
         "c-j",
@@ -78785,15 +78810,17 @@
         "current",
         "type",
         "filter",
-        "enter"
+        "enter",
+        "cmd-cshift-o",
+        "works"
       ]
     },
     {
       "heading": "Heading Navigation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 63,
-      "content": "All heading navigation commands work in Markdown: | Key       | Command                   | Description                      | |-----------+---------------------------+----------------------------------| | C-c C-n   | Next Heading              | Move to next heading (any level) | | C-c C-p   | Previous Heading          | Move to previous heading         | | C-c C-u   | Parent Heading            | Move to parent (higher level)    | | C-c C-j   | Jump to Heading           | Quick-pick menu of all ",
+      "line": 70,
+      "content": "CLOSED: [2026-01-19 Mon 09:35] All heading navigation commands work in Markdown: | Key       | Command                   | Description                      | |-----------+---------------------------+----------------------------------| | C-c C-n   | Next Heading              | Move to next heading (any level) | | C-c C-p   | Previous Heading          | Move to previous heading         | | C-c C-u   | Parent Heading            | Move to parent (higher level)    | | C-c C-j   | Jump to Heading     ",
       "path": [
         "Supported Features"
       ],
@@ -78807,6 +78834,10 @@
       "keywords": [
         "heading",
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0935",
         "commands",
         "work",
         "markdown",
@@ -78820,19 +78851,15 @@
         "move",
         "any",
         "level",
-        "c-p",
-        "previous",
-        "c-u",
-        "parent",
-        "higher"
+        "c-p"
       ]
     },
     {
       "heading": "Heading Manipulation",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 85,
-      "content": "Change heading levels and move subtrees: | Key         | Command           | Description                      | |-------------+-------------------+----------------------------------| | M-<left>    | Promote Heading   | Decrease level (## -> #)         | | M-<right>   | Demote Heading    | Increase level (# -> ##)         | | M-S-<left>  | Promote Subtree   | Promote heading and all children | | M-S-<right> | Demote Subtree    | Demote heading and all children  | | M-<up>      | Move Subtree Up  ",
+      "line": 93,
+      "content": "CLOSED: [2026-01-19 Mon 09:35] Change heading levels and move subtrees: | Key         | Command           | Description                      | |-------------+-------------------+----------------------------------| | M-<left>    | Promote Heading   | Decrease level (## -> #)         | | M-<right>   | Demote Heading    | Increase level (# -> ##)         | | M-S-<left>  | Promote Subtree   | Promote heading and all children | | M-S-<right> | Demote Subtree    | Demote heading and all children  | | ",
       "path": [
         "Supported Features"
       ],
@@ -78843,6 +78870,10 @@
       "keywords": [
         "heading",
         "manipulation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0935",
         "change",
         "levels",
         "move",
@@ -78856,19 +78887,15 @@
         "decrease",
         "level",
         "m-right",
-        "demote",
-        "increase",
-        "m-s-left",
-        "subtree",
-        "children"
+        "demote"
       ]
     },
     {
       "heading": "Insert Headings",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 98,
-      "content": "| Key        | Command           | Description                           | |------------+-------------------+---------------------------------------| | C-<return> | Insert Heading    | Insert new heading at same level      | | -          | Insert Subheading | Insert heading one level deeper       | The extension automatically uses =#= characters for Markdown (not =*= like org).",
+      "line": 107,
+      "content": "CLOSED: [2026-01-19 Mon 09:35] | Key        | Command           | Description                           | |------------+-------------------+---------------------------------------| | C-<return> | Insert Heading    | Insert new heading at same level      | | -          | Insert Subheading | Insert heading one level deeper       | The extension automatically uses =#= characters for Markdown (not =*= like org).",
       "path": [
         "Supported Features",
         "Heading Manipulation"
@@ -78878,6 +78905,10 @@
       "keywords": [
         "insert",
         "headings",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0935",
         "key",
         "command",
         "description",
@@ -78891,19 +78922,15 @@
         "deeper",
         "extension",
         "automatically",
-        "uses",
-        "characters",
-        "markdown",
-        "like",
-        "org"
+        "uses"
       ]
     },
     {
       "heading": "Subtree Operations",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 107,
-      "content": "All subtree operations work in Markdown: | Command                   | Speed Key | Description                     | |---------------------------+-----------+---------------------------------| | scimax.org.markSubtree    | @         | Select entire subtree           | | scimax.org.killSubtree    | w         | Cut subtree to clipboard        | | scimax.org.cloneSubtree   | W         | Duplicate subtree below         | | scimax.org.yankSubtree    | y         | Paste subtree from clipboard    | | s",
+      "line": 117,
+      "content": "CLOSED: [2026-01-19 Mon 09:35] All subtree operations work in Markdown: | Command                    | Speed Key | Description                    | |----------------------------+-----------+--------------------------------| | scimax.org.markSubtree     | @         | Select entire subtree          | | scimax.org.killSubtree     | w         | Cut subtree to clipboard       | | scimax.org.cloneSubtree    | W         | Duplicate subtree below        | | scimax.org.yankSubtree     | y         | Paste",
       "path": [
         "Supported Features"
       ],
@@ -78917,6 +78944,10 @@
       "keywords": [
         "subtree",
         "operations",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0935",
         "work",
         "markdown",
         "command",
@@ -78937,8 +78968,8 @@
       "heading": "Yank Subtree Level Adjustment",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 120,
-      "content": "When yanking (pasting) a subtree, the extension automatically adjusts heading levels to match the context: #+BEGIN_SRC markdown ## Target Section <!-- Yank a subtree that was cut from a different level --> <!-- Headings are automatically adjusted to match ## level --> #+END_SRC",
+      "line": 131,
+      "content": "CLOSED: [2026-01-19 Mon 09:35] When yanking (pasting) a subtree, the extension automatically adjusts heading levels to match the context: #+BEGIN_SRC markdown ## Target Section <!-- Yank a subtree that was cut from a different level --> <!-- Headings are automatically adjusted to match ## level --> #+END_SRC",
       "path": [
         "Supported Features",
         "Subtree Operations"
@@ -78950,6 +78981,10 @@
         "subtree",
         "level",
         "adjustment",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0935",
         "yanking",
         "pasting",
         "extension",
@@ -78961,19 +78996,15 @@
         "context",
         "beginsrc",
         "markdown",
-        "target",
-        "section",
-        "cut",
-        "different",
-        "headings"
+        "target"
       ]
     },
     {
       "heading": "Code Block Support",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 132,
-      "content": "Markdown fenced code blocks have full support for: - Detection and navigation - Execution via Babel/Jupyter - Block manipulation (split, merge, clone)",
+      "line": 144,
+      "content": "CLOSED: [2026-01-19 Mon 09:37] Markdown fenced code blocks have full support for: - Detection and navigation - Execution via Babel/Jupyter - Block manipulation (split, merge, clone)",
       "path": [
         "Supported Features"
       ],
@@ -78983,6 +79014,10 @@
         "code",
         "block",
         "support",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0937",
         "markdown",
         "fenced",
         "blocks",
@@ -79002,8 +79037,8 @@
       "heading": "Fenced Block Syntax",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 140,
-      "content": "Both backtick and tilde fences are supported: #+BEGIN_SRC markdown ```python print(\"Hello from Python\") ``` ~~~javascript console.log(\"Hello from JS\"); ~~~ #+END_SRC",
+      "line": 153,
+      "content": "CLOSED: [2026-01-19 Mon 09:37] Both backtick and tilde fences are supported: #+BEGIN_SRC markdown ```python print(\"Hello from Python\") ``` ~~~javascript console.log(\"Hello from JS\"); ~~~ #+END_SRC",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -79014,6 +79049,10 @@
         "fenced",
         "block",
         "syntax",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0937",
         "backtick",
         "tilde",
         "fences",
@@ -79032,7 +79071,7 @@
       "heading": "Code Block Navigation",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 154,
+      "line": 168,
       "content": "| Key       | Command              | Description                    | |-----------+----------------------+--------------------------------| | C-c C-v n | Next Source Block    | Jump to next fenced block      | | C-c C-v p | Previous Source Block| Jump to previous fenced block  | | C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |",
       "path": [
         "Supported Features",
@@ -79066,8 +79105,8 @@
       "heading": "Code Block Execution",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 162,
-      "content": "Press =C-c C-c= inside a fenced code block to execute it. Results appear below the block. Supported languages include Python, JavaScript, TypeScript, Shell, and any language with a Jupyter kernel installed.",
+      "line": 176,
+      "content": "CLOSED: [2026-01-19 Mon 09:50] Press =C-c C-c= inside a fenced code block to execute it. Results appear below the block. Supported languages include Python, JavaScript, TypeScript, Shell, and any language with a Jupyter kernel installed.",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -79080,6 +79119,10 @@
         "code",
         "block",
         "execution",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0950",
         "press",
         "c-c",
         "inside",
@@ -79092,19 +79135,15 @@
         "languages",
         "include",
         "python",
-        "javascript",
-        "typescript",
-        "shell",
-        "any",
-        "language"
+        "javascript"
       ]
     },
     {
       "heading": "Code Block Manipulation",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 170,
-      "content": "| Command                        | Description                          | |--------------------------------+--------------------------------------| | scimax.ob.splitBlock           | Split block at cursor                | | scimax.ob.mergeWithPrevious    | Merge with previous block            | | scimax.ob.mergeWithNext        | Merge with next block                | | scimax.ob.insertBlockAbove     | Insert new block above               | | scimax.ob.insertBlockBelow     | Insert new block belo",
+      "line": 185,
+      "content": "CLOSED: [2026-01-19 Mon 09:50] | Command                        | Description                          | |--------------------------------+--------------------------------------| | scimax.ob.splitBlock           | Split block at cursor                | | scimax.ob.mergeWithPrevious    | Merge with previous block            | | scimax.ob.mergeWithNext        | Merge with next block                | | scimax.ob.insertBlockAbove     | Insert new block above               | | scimax.ob.insertBlockBe",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -79114,13 +79153,17 @@
         "scimax.ob.mergeWithPrevious",
         "scimax.ob.mergeWithNext",
         "scimax.ob.insertBlockAbove",
-        "scimax.ob.insertBlockBelow"
+        "scimax.ob.insertBlockBe"
       ],
       "keybindings": [],
       "keywords": [
         "code",
         "block",
         "manipulation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0950",
         "command",
         "description",
         "----------------------------------------------------------------------",
@@ -79131,16 +79174,15 @@
         "next",
         "insert",
         "new",
-        "above",
-        "belo"
+        "above"
       ]
     },
     {
       "heading": "Speed Commands",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 185,
-      "content": "Speed commands work at the beginning of Markdown headings (column 0 of a line starting with =#=).",
+      "line": 201,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] Speed commands work at the beginning of Markdown headings (column 0 of a line starting with =#=).",
       "path": [
         "Supported Features"
       ],
@@ -79149,6 +79191,10 @@
       "keywords": [
         "speed",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "work",
         "beginning",
         "markdown",
@@ -79162,8 +79208,8 @@
       "heading": "Navigation Speed Commands",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 190,
-      "content": "| Key | Action                               | |-----+--------------------------------------| | n   | Next heading                         | | p   | Previous heading                     | | f   | Forward to same-level heading        | | b   | Back to same-level heading           | | u   | Up to parent heading                 | | j   | Jump to heading (quick-pick)         | | g   | Go to... (navigation menu)           |",
+      "line": 207,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                               | |-----+--------------------------------------| | n   | Next heading                         | | p   | Previous heading                     | | f   | Forward to same-level heading        | | b   | Back to same-level heading           | | u   | Up to parent heading                 | | j   | Jump to heading (quick-pick)         | | g   | Go to... (navigation menu)           |",
       "path": [
         "Supported Features",
         "Speed Commands"
@@ -79174,6 +79220,10 @@
         "navigation",
         "speed",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "key",
         "action",
         "-------------------------------------------",
@@ -79193,8 +79243,8 @@
       "heading": "Structure Speed Commands",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 202,
-      "content": "| Key | Action                    | |-----+---------------------------| | @   | Mark (select) subtree     | | w   | Kill (cut) subtree        | | W   | Clone subtree             | | y   | Yank (paste) subtree      | | s   | Narrow to subtree         | | S   | Widen (show all)          |",
+      "line": 220,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                    | |-----+---------------------------| | @   | Mark (select) subtree     | | w   | Kill (cut) subtree        | | W   | Clone subtree             | | y   | Yank (paste) subtree      | | s   | Narrow to subtree         | | S   | Widen (show all)          |",
       "path": [
         "Supported Features",
         "Speed Commands"
@@ -79205,6 +79255,10 @@
         "structure",
         "speed",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "key",
         "action",
         "--------------------------------",
@@ -79217,16 +79271,15 @@
         "yank",
         "paste",
         "narrow",
-        "widen",
-        "show"
+        "widen"
       ]
     },
     {
       "heading": "Visibility Speed Commands",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 213,
-      "content": "| Key | Action               | |-----+----------------------| | c   | Cycle visibility     | | C   | Show children        | | o   | Overview (fold all)  |",
+      "line": 232,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action               | |-----+----------------------| | c   | Cycle visibility     | | C   | Show children        | | o   | Overview (fold all)  |",
       "path": [
         "Supported Features",
         "Speed Commands"
@@ -79237,6 +79290,10 @@
         "visibility",
         "speed",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "key",
         "action",
         "---------------------------",
@@ -79251,8 +79308,8 @@
       "heading": "Folding",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 221,
-      "content": "Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter",
+      "line": 241,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter",
       "path": [
         "Supported Features"
       ],
@@ -79262,6 +79319,10 @@
       ],
       "keywords": [
         "folding",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "markdown",
         "headings",
         "support",
@@ -79276,19 +79337,15 @@
         "fold",
         "state",
         "shifttab",
-        "anywhere",
-        "global",
-        "cycling",
-        "icons",
-        "gutter"
+        "anywhere"
       ]
     },
     {
       "heading": "Features Not Available in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 229,
-      "content": "The following org-mode features are *not* supported in Markdown files because they require org-specific syntax:",
+      "line": 250,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] The following org-mode features are *not* supported in Markdown files because they require org-specific syntax:",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -79296,6 +79353,10 @@
         "features",
         "available",
         "markdown",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "following",
         "org-mode",
         "supported",
@@ -79309,8 +79370,8 @@
       "heading": "Task Management",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 234,
-      "content": "| Feature        | Reason                                      | |----------------+---------------------------------------------| | TODO keywords  | Org syntax: =* TODO Task=                   | | Priorities     | Org syntax: =[#A]=                          | | Checkbox lists | Markdown checkboxes work differently        | | Progress cookies| Org syntax: =[2/5]= or =[40%]=             |",
+      "line": 256,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature        | Reason                                      | |----------------+---------------------------------------------| | TODO keywords  | Org syntax: =* TODO Task=                   | | Priorities     | Org syntax: =[#A]=                          | | Checkbox lists | Markdown checkboxes work differently        | | Progress cookies| Org syntax: =[2/5]= or =[40%]=             |",
       "path": [
         "Features Not Available in Markdown"
       ],
@@ -79319,6 +79380,10 @@
       "keywords": [
         "task",
         "management",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "feature",
         "reason",
         "-------------------------------------------------------------",
@@ -79332,17 +79397,15 @@
         "markdown",
         "checkboxes",
         "work",
-        "differently",
-        "progress",
-        "cookies"
+        "differently"
       ]
     },
     {
       "heading": "Planning",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 243,
-      "content": "| Feature    | Reason                                         | |------------+------------------------------------------------| | SCHEDULED  | Org syntax: =SCHEDULED: <2026-01-20>=          | | DEADLINE   | Org syntax: =DEADLINE: <2026-01-20>=           | | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  | | Agenda     | Requires TODO states and scheduling            |",
+      "line": 266,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature    | Reason                                         | |------------+------------------------------------------------| | SCHEDULED  | Org syntax: =SCHEDULED: <2026-01-20>=          | | DEADLINE   | Org syntax: =DEADLINE: <2026-01-20>=           | | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  | | Agenda     | Requires TODO states and scheduling            |",
       "path": [
         "Features Not Available in Markdown"
       ],
@@ -79350,6 +79413,10 @@
       "keybindings": [],
       "keywords": [
         "planning",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "feature",
         "reason",
         "------------------------------------------------------------",
@@ -79364,16 +79431,15 @@
         "agenda",
         "requires",
         "todo",
-        "states",
-        "scheduling"
+        "states"
       ]
     },
     {
       "heading": "Metadata",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 252,
-      "content": "| Feature         | Reason                                    | |-----------------+-------------------------------------------| | Properties      | Org syntax: =:PROPERTIES:= drawer         | | Tags            | Org syntax: =* Heading :tag1:tag2:=       | | Inherited tags  | Requires org tag syntax                   | | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |",
+      "line": 276,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Properties      | Org syntax: =:PROPERTIES:= drawer         | | Tags            | Org syntax: =* Heading :tag1:tag2:=       | | Inherited tags  | Requires org tag syntax                   | | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |",
       "path": [
         "Features Not Available in Markdown"
       ],
@@ -79381,6 +79447,10 @@
       "keybindings": [],
       "keywords": [
         "metadata",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "feature",
         "reason",
         "------------------------------------------------------------",
@@ -79401,8 +79471,8 @@
       "heading": "Special Elements",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 261,
-      "content": "| Feature         | Reason                                    | |-----------------+-------------------------------------------| | Inline tasks    | Org syntax: 15+ stars                     | | Dynamic blocks  | Org syntax: =#+BEGIN:=                    | | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |",
+      "line": 286,
+      "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Inline tasks    | Org syntax: 15+ stars                     | | Dynamic blocks  | Org syntax: =#+BEGIN:=                    | | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |",
       "path": [
         "Features Not Available in Markdown"
       ],
@@ -79411,6 +79481,10 @@
       "keywords": [
         "special",
         "elements",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940",
         "feature",
         "reason",
         "------------------------------------------------------------",
@@ -79430,23 +79504,27 @@
       "heading": "Tips for Markdown Users",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 269,
-      "content": "",
+      "line": 295,
+      "content": "CLOSED: [2026-01-19 Mon 09:40]",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "tips",
         "markdown",
-        "users"
+        "users",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0940"
       ]
     },
     {
       "heading": "Maximizing Compatibility",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 271,
-      "content": "To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension fully supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks",
+      "line": 298,
+      "content": "CLOSED: [2026-01-19 Mon 09:41] To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension fully supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks",
       "path": [
         "Tips for Markdown Users"
       ],
@@ -79458,6 +79536,10 @@
       "keywords": [
         "maximizing",
         "compatibility",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0941",
         "get",
         "out",
         "scimax",
@@ -79471,19 +79553,15 @@
         "headings",
         "rapid",
         "single-key",
-        "operations",
-        "fenced",
-        "blocks",
-        "extension",
-        "fully"
+        "operations"
       ]
     },
     {
       "heading": "When to Use Org-Mode Instead",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 286,
-      "content": "Consider using org-mode files when you need: - Task management with TODO states and priorities - Scheduling and deadlines with agenda integration - Time tracking with clocking - Inherited properties and tags - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
+      "line": 314,
+      "content": "CLOSED: [2026-01-19 Mon 09:41] Consider using org-mode files when you need: - Task management with TODO states and priorities - Scheduling and deadlines with agenda integration - Time tracking with clocking - Inherited properties and tags - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
       "path": [
         "Tips for Markdown Users"
       ],
@@ -79492,6 +79570,10 @@
       "keywords": [
         "org-mode",
         "instead",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0941",
         "consider",
         "need",
         "task",
@@ -79505,25 +79587,25 @@
         "integration",
         "time",
         "tracking",
-        "clocking",
-        "inherited",
-        "properties",
-        "tags",
-        "advanced"
+        "clocking"
       ]
     },
     {
       "heading": "Related Topics",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 299,
-      "content": "- [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference - [[file:07-source-blocks.org][Source Blocks]] - Code execution details - [[file:21-navigation.org][Navigation]] - All navigation features",
+      "line": 328,
+      "content": "CLOSED: [2026-01-19 Mon 09:41] - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference - [[file:07-source-blocks.org][Source Blocks]] - Code execution details - [[file:21-navigation.org][Navigation]] - All navigation features",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "related",
         "topics",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0941",
         "file02-document-structureorg",
         "document",
         "structure",
@@ -79537,24 +79619,24 @@
         "command",
         "reference",
         "file07-source-blocksorg",
-        "source",
-        "blocks",
-        "code",
-        "execution",
-        "details"
+        "source"
       ]
     },
     {
       "heading": "Navigation",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 306,
-      "content": "- Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
+      "line": 336,
+      "content": "CLOSED: [2026-01-19 Mon 09:44] - Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0944",
         "previous",
         "file29-unsupported-featuresorg",
         "unsupported",
@@ -81643,7 +81725,7 @@
       "level": 1,
       "file": "33-latex-navigation.org",
       "line": 10,
-      "content": "Scimax VS Code provides comprehensive navigation, structure editing, and tooltips for LaTeX documents. These features mirror the org-mode heading navigation and structure editing commands, adapted for LaTeX section commands and environments.",
+      "content": "CLOSED: [2026-01-19 Mon 09:24] Scimax VS Code provides comprehensive navigation, structure editing, and tooltips for LaTeX documents. These features mirror the org-mode heading navigation and structure editing commands, adapted for LaTeX section commands and environments.",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -81651,6 +81733,10 @@
         "latex",
         "navigation",
         "structure",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0924",
         "scimax",
         "code",
         "provides",
@@ -81663,17 +81749,15 @@
         "org-mode",
         "heading",
         "commands",
-        "adapted",
-        "section",
-        "environments"
+        "adapted"
       ]
     },
     {
       "heading": "Overview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 14,
-      "content": "LaTeX support in Scimax VS Code includes: 1. *Document Outline* - Hierarchical view of sections, environments, and labels 2. *Section Navigation* - Move between sections at any level 3. *Structure Editing* - Promote/demote, move, and manipulate sections 4. *Environment Commands* - Select, change, wrap, and unwrap environments 5. *Hover Tooltips* - Information about references, citations, packages, and commands 6. *Speed Commands* - Single-key shortcuts at section start 7. *Folding* - Collapse an",
+      "line": 15,
+      "content": "CLOSED: [2026-01-19 Mon 09:24] LaTeX support in Scimax VS Code includes: 1. *Document Outline* - Hierarchical view of sections, environments, and labels 2. *Section Navigation* - Move between sections at any level 3. *Structure Editing* - Promote/demote, move, and manipulate sections 4. *Environment Commands* - Select, change, wrap, and unwrap environments 5. *Hover Tooltips* - Information about references, citations, packages, and commands 6. *Speed Commands* - Single-key shortcuts at section s",
       "path": [
         "LaTeX Navigation and Structure"
       ],
@@ -81681,6 +81765,10 @@
       "keybindings": [],
       "keywords": [
         "overview",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0924",
         "latex",
         "support",
         "scimax",
@@ -81695,29 +81783,32 @@
         "labels",
         "section",
         "navigation",
-        "move",
-        "between",
-        "any",
-        "level",
-        "structure"
+        "move"
       ]
     },
     {
       "heading": "Document Outline",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 41,
-      "content": "The outline view (VS Code's built-in outline panel) shows the structure of your LaTeX document: - *Sections* (part, chapter, section, subsection, etc.) - *Labeled Environments* (figures, tables, equations with labels) - *Labels* for cross-referencing The outline uses hierarchical nesting to show the document structure. Click any item to jump to it.",
+      "line": 43,
+      "content": "CLOSED: [2026-01-19 Mon 09:24] The outline view (VS Code's built-in outline panel `Cmd/C-Shift-o') shows the structure of your LaTeX document: - *Sections* (part, chapter, section, subsection, etc.) - *Labeled Environments* (figures, tables, equations with labels) - *Labels* for cross-referencing The outline uses hierarchical nesting to show the document structure. Click any item to jump to it.",
       "path": [],
       "commands": [],
-      "keybindings": [],
+      "keybindings": [
+        "C-Shift-o"
+      ],
       "keywords": [
         "document",
         "outline",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0924",
         "view",
         "code",
         "built-in",
         "panel",
+        "cmdc-shift-o",
         "shows",
         "structure",
         "latex",
@@ -81726,20 +81817,15 @@
         "chapter",
         "section",
         "subsection",
-        "etc",
-        "labeled",
-        "environments",
-        "figures",
-        "tables",
-        "equations"
+        "etc"
       ]
     },
     {
       "heading": "Section Hierarchy",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 51,
-      "content": "LaTeX sections are organized hierarchically: | Level | Command         | Symbol Kind | |-------+-----------------+-------------| |     0 | \\part           | Module      | |     1 | \\chapter        | Class       | |     2 | \\section        | Method      | |     3 | \\subsection     | Function    | |     4 | \\subsubsection  | Field       | |     5 | \\paragraph      | Property    | |     6 | \\subparagraph   | Property    | Starred variants (e.g., =\\section*{...}=) are also recognized and marked in t",
+      "line": 54,
+      "content": "CLOSED: [2026-01-19 Mon 09:26] LaTeX sections are organized hierarchically: | Level | Command         | Symbol Kind | |-------+-----------------+-------------| |     0 | \\part           | Module      | |     1 | \\chapter        | Class       | |     2 | \\section        | Method      | |     3 | \\subsection     | Function    | |     4 | \\subsubsection  | Field       | |     5 | \\paragraph      | Property    | |     6 | \\subparagraph   | Property    | Starred variants (e.g., =\\section*{...}=) are ",
       "path": [
         "Document Outline"
       ],
@@ -81748,6 +81834,10 @@
       "keywords": [
         "section",
         "hierarchy",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0926",
         "latex",
         "sections",
         "organized",
@@ -81761,33 +81851,32 @@
         "module",
         "chapter",
         "class",
-        "method",
-        "subsection",
-        "function",
-        "subsubsection",
-        "field"
+        "method"
       ]
     },
     {
       "heading": "Section Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 67,
-      "content": "Navigate between sections in your LaTeX document using these commands: | Command                               | Key Binding   | Description                        | |---------------------------------------+---------------+------------------------------------| | scimax.latex.nextSection              | C-c C-n       | Jump to next section               | | scimax.latex.previousSection          | C-c C-p       | Jump to previous section           | | scimax.latex.parentSection            | C-c C-u",
+      "line": 71,
+      "content": "CLOSED: [2026-01-19 Mon 09:26] Navigate between sections in your LaTeX document using these commands: | Command                               | Key Binding   | Description                        | |---------------------------------------+---------------+------------------------------------| | scimax.latex.nextSection              | C-c C-n       | Jump to next section               | | scimax.latex.previousSection          | C-c C-p       | Jump to previous section           | | scimax.latex.par",
       "path": [],
       "commands": [
         "scimax.latex.nextSection",
         "scimax.latex.previousSection",
-        "scimax.latex.parentSection"
+        "scimax.latex.par"
       ],
       "keybindings": [
         "C-c C-n",
-        "C-c C-p",
-        "C-c C-u"
+        "C-c C-p"
       ],
       "keywords": [
         "section",
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0926",
         "navigate",
         "between",
         "sections",
@@ -81801,19 +81890,15 @@
         "------------------------------------------------------------------------------------------",
         "c-c",
         "c-n",
-        "jump",
-        "next",
-        "c-p",
-        "previous",
-        "c-u"
+        "jump"
       ]
     },
     {
       "heading": "Next/Previous Section",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 82,
-      "content": "Move through all sections in document order: #+BEGIN_SRC latex \\section{Introduction} Content here... \\subsection{Background}    % <- Current position \\subsection{Motivation}    % <- Next section \\section{Methods}          % <- Another next section #+END_SRC =nextSection= moves forward through sections regardless of level. =previousSection= moves backward.",
+      "line": 87,
+      "content": "CLOSED: [2026-01-19 Mon 09:26] Move through all sections in document order: #+BEGIN_SRC latex \\section{Introduction} Content here... \\subsection{Background}    % <- Current position \\subsection{Motivation}    % <- Next section \\section{Methods}          % <- Another next section #+END_SRC =nextSection= moves forward through sections regardless of level. =previousSection= moves backward.",
       "path": [
         "Section Navigation"
       ],
@@ -81822,6 +81907,10 @@
       "keywords": [
         "nextprevious",
         "section",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0926",
         "move",
         "through",
         "sections",
@@ -81835,19 +81924,15 @@
         "subsection",
         "background",
         "current",
-        "position",
-        "motivation",
-        "next",
-        "methods",
-        "another"
+        "position"
       ]
     },
     {
       "heading": "Sibling Navigation",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 99,
-      "content": "Move between sections at the same level: #+BEGIN_SRC latex \\section{Introduction} \\subsection{Background}    % <- Current position \\subsection{Motivation}    % <- Next sibling (same level) \\subsection{Goals}         % <- Another sibling \\section{Methods}          % <- NOT a sibling (different level) #+END_SRC =nextSiblingSection= moves to the next section at the same hierarchical level. =previousSiblingSection= moves backward.",
+      "line": 105,
+      "content": "CLOSED: [2026-01-19 Mon 09:26] Move between sections at the same level: #+BEGIN_SRC latex \\section{Introduction} \\subsection{Background}    % <- Current position \\subsection{Motivation}    % <- Next sibling (same level) \\subsection{Goals}         % <- Another sibling \\section{Methods}          % <- NOT a sibling (different level) #+END_SRC =nextSiblingSection= moves to the next section at the same hierarchical level. =previousSiblingSection= moves backward.",
       "path": [
         "Section Navigation"
       ],
@@ -81856,6 +81941,10 @@
       "keywords": [
         "sibling",
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0926",
         "move",
         "between",
         "sections",
@@ -81869,19 +81958,15 @@
         "current",
         "position",
         "motivation",
-        "next",
-        "goals",
-        "another",
-        "methods",
-        "different"
+        "next"
       ]
     },
     {
       "heading": "Parent Section",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 116,
-      "content": "Jump to the containing (parent) section: #+BEGIN_SRC latex \\section{Methods}            % <- Jump here (parent) \\subsection{Data Collection} \\subsubsection{Sampling}     % <- From here #+END_SRC",
+      "line": 123,
+      "content": "CLOSED: [2026-01-19 Mon 09:26] Jump to the containing (parent) section: #+BEGIN_SRC latex \\section{Methods}            % <- Jump here (parent) \\subsection{Data Collection} \\subsubsection{Sampling}     % <- From here #+END_SRC",
       "path": [
         "Section Navigation"
       ],
@@ -81890,6 +81975,10 @@
       "keywords": [
         "parent",
         "section",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0926",
         "jump",
         "containing",
         "beginsrc",
@@ -81908,7 +81997,7 @@
       "heading": "Jump to Section",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 126,
+      "line": 134,
       "content": "The =jumpToSection= command (C-c C-j or C-c j) opens a quick pick showing all sections with: - Hierarchical indentation showing structure - Section type (=\\section=, =\\subsection=, etc.) - Line numbers Type to filter, then select a section to jump to it.",
       "path": [
         "Section Navigation"
@@ -81945,8 +82034,8 @@
       "heading": "Structure Editing",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 136,
-      "content": "Edit the document structure by promoting, demoting, and moving sections. | Command                          | Key Binding      | Description                     | |----------------------------------+------------------+---------------------------------| | scimax.latex.promoteSection      | Alt+Left         | Promote section (e.g., sub→sec) | | scimax.latex.demoteSection       | Alt+Right        | Demote section (e.g., sec→sub)  | | scimax.latex.promoteSubtree      | Alt+Shift+Left   | Promote sec",
+      "line": 144,
+      "content": "CLOSED: [2026-01-19 Mon 09:27] Edit the document structure by promoting, demoting, and moving sections. | Command                          | Key Binding      | Description                     | |----------------------------------+------------------+---------------------------------| | scimax.latex.promoteSection      | Alt+Left         | Promote section (e.g., sub→sec) | | scimax.latex.demoteSection       | Alt+Right        | Demote section (e.g., sec→sub)  | | scimax.latex.promoteSubtree      |",
       "path": [],
       "commands": [
         "scimax.latex.promoteSection",
@@ -81955,12 +82044,15 @@
       ],
       "keybindings": [
         "Alt+Left",
-        "Alt+Right",
-        "Alt+Shift+Left"
+        "Alt+Right"
       ],
       "keywords": [
         "structure",
         "editing",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0927",
         "edit",
         "document",
         "promoting",
@@ -81974,19 +82066,15 @@
         "-------------------------------------------------------------------------------------",
         "altleft",
         "promote",
-        "section",
-        "subsec",
-        "altright",
-        "demote",
-        "secsub"
+        "section"
       ]
     },
     {
       "heading": "Promote/Demote",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 154,
-      "content": "Change the level of a section command: #+BEGIN_SRC latex % Before promote: \\subsection{Methods} % After promote (Alt+Left): \\section{Methods} % Before demote: \\section{Results} % After demote (Alt+Right): \\subsection{Results} #+END_SRC",
+      "line": 163,
+      "content": "CLOSED: [2026-01-19 Mon 09:27] Change the level of a section command: #+BEGIN_SRC latex % Before promote: \\subsection{Methods} % After promote (Alt+Left): \\section{Methods} % Before demote: \\section{Results} % After demote (Alt+Right): \\subsection{Results} #+END_SRC",
       "path": [
         "Structure Editing"
       ],
@@ -81997,6 +82085,10 @@
       ],
       "keywords": [
         "promotedemote",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0927",
         "change",
         "level",
         "section",
@@ -82011,16 +82103,15 @@
         "altleft",
         "demote",
         "results",
-        "altright",
-        "endsrc"
+        "altright"
       ]
     },
     {
       "heading": "Promote/Demote Subtree",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 172,
-      "content": "Promote or demote a section and all its children: #+BEGIN_SRC latex % Before promoteSubtree on \"Methods\": \\subsection{Methods} \\subsubsection{Data} \\subsubsection{Analysis} % After promoteSubtree (Alt+Shift+Left): \\section{Methods} \\subsection{Data} \\subsection{Analysis} #+END_SRC",
+      "line": 182,
+      "content": "CLOSED: [2026-01-19 Mon 09:27] Promote or demote a section and all its children: #+BEGIN_SRC latex % Before promoteSubtree on \"Methods\": \\subsection{Methods} \\subsubsection{Data} \\subsubsection{Analysis} % After promoteSubtree (Alt+Shift+Left): \\section{Methods} \\subsection{Data} \\subsection{Analysis} #+END_SRC",
       "path": [
         "Structure Editing"
       ],
@@ -82031,6 +82122,10 @@
       "keywords": [
         "promotedemote",
         "subtree",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0927",
         "promote",
         "demote",
         "section",
@@ -82044,17 +82139,15 @@
         "subsubsection",
         "data",
         "analysis",
-        "after",
-        "altshiftleft",
-        "endsrc"
+        "after"
       ]
     },
     {
       "heading": "Move Section Up/Down",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 188,
-      "content": "Swap a section with its previous or next sibling: #+BEGIN_SRC latex % Before moveSectionDown on \"Introduction\": \\section{Introduction} Content A... \\section{Methods} Content B... % After moveSectionDown (Alt+Down): \\section{Methods} Content B... \\section{Introduction} Content A... #+END_SRC The entire section subtree (including all nested content) is moved.",
+      "line": 199,
+      "content": "CLOSED: [2026-01-19 Mon 09:27] Swap a section with its previous or next sibling: #+BEGIN_SRC latex % Before moveSectionDown on \"Introduction\": \\section{Introduction} Content A... \\section{Methods} Content B... % After moveSectionDown (Alt+Down): \\section{Methods} Content B... \\section{Introduction} Content A... #+END_SRC The entire section subtree (including all nested content) is moved.",
       "path": [
         "Structure Editing"
       ],
@@ -82066,6 +82159,10 @@
         "move",
         "section",
         "updown",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0927",
         "swap",
         "previous",
         "next",
@@ -82078,19 +82175,15 @@
         "content",
         "methods",
         "after",
-        "altdown",
-        "endsrc",
-        "entire",
-        "subtree",
-        "including"
+        "altdown"
       ]
     },
     {
       "heading": "Environment Commands",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 210,
-      "content": "Work with LaTeX environments (=\\begin{...}= / =\\end{...}=): | Command                             | Key Binding  | Description                        | |-------------------------------------+--------------+------------------------------------| | scimax.latex.selectEnvironment      | C-c C-e      | Select entire environment          | | scimax.latex.selectEnvironmentContent | -          | Select content (not begin/end)     | | scimax.latex.changeEnvironment      | C-c e        | Change environmen",
+      "line": 222,
+      "content": "CLOSED: [2026-01-19 Mon 09:27] Work with LaTeX environments (=\\begin{...}= / =\\end{...}=): | Command                                | Key Binding | Description                    | |----------------------------------------+-------------+--------------------------------| | scimax.latex.selectEnvironment         | C-c C-e     | Select entire environment      | | scimax.latex.selectEnvironmentContent  | -           | Select content (not begin/end) | | scimax.latex.changeEnvironment         | C-c e ",
       "path": [],
       "commands": [
         "scimax.latex.selectEnvironment",
@@ -82104,6 +82197,10 @@
       "keywords": [
         "environment",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0927",
         "work",
         "latex",
         "environments",
@@ -82113,23 +82210,19 @@
         "key",
         "binding",
         "description",
-        "---------------------------------------------------------------------------------------",
+        "-------------------------------------------------------------------------------------",
         "c-c",
         "c-e",
         "select",
-        "entire",
-        "content",
-        "beginend",
-        "change",
-        "environmen"
+        "entire"
       ]
     },
     {
       "heading": "Environment Navigation",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 227,
-      "content": "Navigate between environments: | Command                            | Key Binding | Description               | |------------------------------------+-------------+---------------------------| | scimax.latex.nextEnvironment       | -           | Jump to next environment  | | scimax.latex.previousEnvironment   | -           | Jump to previous environment | | scimax.latex.jumpToEnvironment     | -           | Quick pick all environments |",
+      "line": 240,
+      "content": "CLOSED: [2026-01-19 Mon 09:28] Navigate between environments: | Command                            | Key Binding | Description               | |------------------------------------+-------------+---------------------------| | scimax.latex.nextEnvironment       | -           | Jump to next environment  | | scimax.latex.previousEnvironment   | -           | Jump to previous environment | | scimax.latex.jumpToEnvironment     | -           | Quick pick all environments |",
       "path": [
         "Environment Commands"
       ],
@@ -82142,6 +82235,10 @@
       "keywords": [
         "environment",
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0928",
         "navigate",
         "between",
         "environments",
@@ -82161,8 +82258,8 @@
       "heading": "Change Environment",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 237,
-      "content": "The =changeEnvironment= command (C-c e) prompts to change the environment type: #+BEGIN_SRC latex % Before: \\begin{equation} E = mc^2 \\end{equation} % After changing to \"align\": \\begin{align} E = mc^2 \\end{align} #+END_SRC Both =\\begin= and =\\end= are updated simultaneously.",
+      "line": 251,
+      "content": "CLOSED: [2026-01-19 Mon 09:28] The =changeEnvironment= command (C-c e) prompts to change the environment type: #+BEGIN_SRC latex % Before: \\begin{equation} E = mc^2 \\end{equation} % After changing to \"align\": \\begin{align} E = mc^2 \\end{align} #+END_SRC Both =\\begin= and =\\end= are updated simultaneously.",
       "path": [
         "Environment Commands"
       ],
@@ -82173,6 +82270,10 @@
       "keywords": [
         "change",
         "environment",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0928",
         "changeenvironment",
         "command",
         "c-c",
@@ -82186,19 +82287,15 @@
         "mc2",
         "end",
         "after",
-        "changing",
-        "align",
-        "endsrc",
-        "updated",
-        "simultaneously"
+        "changing"
       ]
     },
     {
       "heading": "Wrap in Environment",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 255,
-      "content": "Select text and use =wrapInEnvironment= (C-c w) to surround it: #+BEGIN_SRC latex % Before (with \"E = mc^2\" selected): E = mc^2 % After wrapping in \"equation\": \\begin{equation} E = mc^2 \\end{equation} #+END_SRC",
+      "line": 270,
+      "content": "CLOSED: [2026-01-19 Mon 09:28] Select text and use =wrapInEnvironment= (C-c w) to surround it: #+BEGIN_SRC latex % Before (with \"E = mc^2\" selected): E = mc^2 % After wrapping in \"equation\": \\begin{equation} E = mc^2 \\end{equation} #+END_SRC",
       "path": [
         "Environment Commands"
       ],
@@ -82209,6 +82306,10 @@
       "keywords": [
         "wrap",
         "environment",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0928",
         "select",
         "text",
         "wrapinenvironment",
@@ -82222,17 +82323,15 @@
         "after",
         "wrapping",
         "equation",
-        "begin",
-        "end",
-        "endsrc"
+        "begin"
       ]
     },
     {
       "heading": "Toggle Star",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 269,
-      "content": "Toggle the starred variant of an environment: #+BEGIN_SRC latex % Before: \\begin{equation} E = mc^2 \\end{equation} % After toggleEnvironmentStar (C-c *): \\begin{equation*} E = mc^2 \\end{equation*} #+END_SRC",
+      "line": 285,
+      "content": "CLOSED: [2026-01-19 Mon 09:28] Toggle the starred variant of an environment: #+BEGIN_SRC latex % Before: \\begin{equation} E = mc^2 \\end{equation} % After toggleEnvironmentStar (C-c *): \\begin{equation*} E = mc^2 \\end{equation*} #+END_SRC",
       "path": [
         "Environment Commands"
       ],
@@ -82243,6 +82342,10 @@
       "keywords": [
         "toggle",
         "star",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0928",
         "starred",
         "variant",
         "environment",
@@ -82263,14 +82366,18 @@
       "heading": "Hover Tooltips",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 285,
-      "content": "Hover over LaTeX elements to see helpful information: | Element              | Information Shown                           | |----------------------+---------------------------------------------| | =\\ref{label}=        | What the label refers to, line number       | | =\\cite{key}=         | Citation keys (bib integration planned)     | | =\\label{name}=       | Where label is referenced, context          | | =\\usepackage{pkg}=   | Package description                         | | =\\begin{env}=     ",
+      "line": 302,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] Hover over LaTeX elements to see helpful information: | Element              | Information Shown                           | |----------------------+---------------------------------------------| | =\\ref{label}=        | What the label refers to, line number       | | =\\cite{key}=         | Citation keys (bib integration planned)     | | =\\label{name}=       | Where label is referenced, context          | | =\\usepackage{pkg}=   | Package description                ",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "hover",
         "tooltips",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "over",
         "latex",
         "elements",
@@ -82284,19 +82391,15 @@
         "refers",
         "line",
         "number",
-        "cite",
-        "key",
-        "citation",
-        "keys",
-        "bib"
+        "cite"
       ]
     },
     {
       "heading": "Reference Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 301,
-      "content": "Hovering over =\\ref{fig:example}= shows: - The label name - Line number where label is defined - Context (section or environment containing the label) - Preview of the labeled line",
+      "line": 319,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] Hovering over =\\ref{fig:example}= shows: - The label name - Line number where label is defined - Context (section or environment containing the label) - Preview of the labeled line",
       "path": [
         "Hover Tooltips"
       ],
@@ -82305,6 +82408,10 @@
       "keywords": [
         "reference",
         "hover",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "hovering",
         "over",
         "ref",
@@ -82318,17 +82425,15 @@
         "context",
         "section",
         "environment",
-        "containing",
-        "preview",
-        "labeled"
+        "containing"
       ]
     },
     {
       "heading": "Citation Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 310,
-      "content": "Hovering over =\\cite{key}= shows rich BibTeX information: - Full title - Authors with proper formatting - Year - Journal or book title - Volume, number, pages - DOI (as clickable link) - Abstract preview Supports all natbib and biblatex citation commands: - =\\cite=, =\\citep=, =\\citet= - =\\citealt=, =\\citealp= - =\\citeauthor=, =\\citeyear= - =\\nocite=",
+      "line": 329,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] Hovering over =\\cite{key}= shows rich BibTeX information: - Full title - Authors with proper formatting - Year - Journal or book title - Volume, number, pages - DOI (as clickable link) - Abstract preview Supports all natbib and biblatex citation commands: - =\\cite=, =\\citep=, =\\citet= - =\\citealt=, =\\citealp= - =\\citeauthor=, =\\citeyear= - =\\nocite=",
       "path": [
         "Hover Tooltips"
       ],
@@ -82337,6 +82442,10 @@
       "keywords": [
         "citation",
         "hover",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "hovering",
         "over",
         "cite",
@@ -82350,19 +82459,15 @@
         "authors",
         "proper",
         "formatting",
-        "year",
-        "journal",
-        "book",
-        "volume",
-        "number"
+        "year"
       ]
     },
     {
       "heading": "Package Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 328,
-      "content": "Hovering over =\\usepackage{amsmath}= shows: - Package name - Description of what the package provides",
+      "line": 348,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] Hovering over =\\usepackage{amsmath}= shows: - Package name - Description of what the package provides",
       "path": [
         "Hover Tooltips"
       ],
@@ -82371,6 +82476,10 @@
       "keywords": [
         "package",
         "hover",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "hovering",
         "over",
         "usepackage",
@@ -82385,8 +82494,8 @@
       "heading": "Math Symbol Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 335,
-      "content": "Hovering over math commands like =\\alpha= shows: - Unicode representation: α - Unicode code point: U+03B1 - Description: Greek lowercase alpha",
+      "line": 356,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] Hovering over math commands like =\\alpha= shows: - Unicode representation: α - Unicode code point: U+03B1 - Description: Greek lowercase alpha",
       "path": [
         "Hover Tooltips"
       ],
@@ -82396,6 +82505,10 @@
         "math",
         "symbol",
         "hover",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "hovering",
         "over",
         "commands",
@@ -82408,22 +82521,25 @@
         "point",
         "u03b1",
         "description",
-        "greek",
-        "lowercase"
+        "greek"
       ]
     },
     {
       "heading": "Speed Commands",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 343,
-      "content": "At the beginning of a section line, single keys trigger commands: | Key | Action                 | Key | Action             | |-----+------------------------+-----+--------------------| | n   | Next section           | <   | Promote section    | | p   | Previous section       | >   | Demote section     | | f   | Next sibling           | U   | Move section up    | | b   | Previous sibling       | D   | Move section down  | | u   | Parent section         | m   | Mark section       | | j   | Jump t",
+      "line": 365,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] At the beginning of a section line, single keys trigger commands: | Key | Action                 | Key | Action             | |-----+------------------------+-----+--------------------| | n   | Next section           | <   | Promote section    | | p   | Previous section       | >   | Demote section     | | f   | Next sibling           | U   | Move section up    | | b   | Previous sibling       | D   | Move section down  | | u   | Parent section         | m   | Mark",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "speed",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "beginning",
         "section",
         "line",
@@ -82437,19 +82553,15 @@
         "promote",
         "previous",
         "demote",
-        "sibling",
-        "move",
-        "down",
-        "parent",
-        "mark"
+        "sibling"
       ]
     },
     {
       "heading": "Using Speed Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 364,
-      "content": "1. Place cursor at the start of a section line (column 0 or before =\\=) 2. Press a single key 3. The corresponding action executes Example: #+BEGIN_SRC latex \\section{Introduction}   % <- Place cursor here, press 'n' to go to next section ^ |__ Cursor position #+END_SRC",
+      "line": 387,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] 1. Place cursor at the start of a section line (column 0 or before =\\=) 2. Press a single key 3. The corresponding action executes Example: #+BEGIN_SRC latex \\section{Introduction}   % <- Place cursor here, press 'n' to go to next section ^ |__ Cursor position #+END_SRC",
       "path": [
         "Speed Commands"
       ],
@@ -82458,6 +82570,10 @@
       "keywords": [
         "speed",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "place",
         "cursor",
         "start",
@@ -82471,19 +82587,15 @@
         "corresponding",
         "action",
         "executes",
-        "example",
-        "beginsrc",
-        "latex",
-        "introduction",
-        "here"
+        "example"
       ]
     },
     {
       "heading": "Folding",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 377,
-      "content": "LaTeX documents support folding for sections and environments. | Command               | Key Binding | Description                  | |-----------------------+-------------+------------------------------| | scimax.org.toggleFold | Tab         | Toggle fold at cursor        | | scimax.org.cycleGlobalFold | Shift+Tab | Cycle all folds         |",
+      "line": 401,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] LaTeX documents support folding for sections and environments. | Command               | Key Binding | Description                  | |-----------------------+-------------+------------------------------| | scimax.org.toggleFold | Tab         | Toggle fold at cursor        | | scimax.org.cycleGlobalFold | Shift+Tab | Cycle all folds         |",
       "path": [],
       "commands": [
         "scimax.org.toggleFold",
@@ -82494,6 +82606,10 @@
       ],
       "keywords": [
         "folding",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "latex",
         "documents",
         "support",
@@ -82508,17 +82624,15 @@
         "toggle",
         "fold",
         "cursor",
-        "shifttab",
-        "cycle",
-        "folds"
+        "shifttab"
       ]
     },
     {
       "heading": "Section Folding",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 386,
-      "content": "Sections fold from the section command to the next section at the same or higher level: #+BEGIN_SRC latex \\section{Introduction}...  % <- Folds from here Content... \\subsection{Background}    % <- Included in fold More content... \\section{Methods}          % <- Fold ends before this #+END_SRC",
+      "line": 411,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] Sections fold from the section command to the next section at the same or higher level: #+BEGIN_SRC latex \\section{Introduction}...  % <- Folds from here Content... \\subsection{Background}    % <- Included in fold More content... \\section{Methods}          % <- Fold ends before this #+END_SRC",
       "path": [
         "Folding"
       ],
@@ -82527,6 +82641,10 @@
       "keywords": [
         "section",
         "folding",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "sections",
         "fold",
         "command",
@@ -82540,19 +82658,15 @@
         "here",
         "content",
         "subsection",
-        "background",
-        "included",
-        "methods",
-        "ends",
-        "before"
+        "background"
       ]
     },
     {
       "heading": "Environment Folding",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 398,
-      "content": "Environments fold from =\\begin= to =\\end=: #+BEGIN_SRC latex \\begin{figure}...          % <- Folds from here \\includegraphics{...} \\caption{...} \\end{figure}               % <- Fold ends here #+END_SRC",
+      "line": 424,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] Environments fold from =\\begin= to =\\end=: #+BEGIN_SRC latex \\begin{figure}...          % <- Folds from here \\includegraphics{...} \\caption{...} \\end{figure}               % <- Fold ends here #+END_SRC",
       "path": [
         "Folding"
       ],
@@ -82561,6 +82675,10 @@
       "keywords": [
         "environment",
         "folding",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "environments",
         "fold",
         "begin",
@@ -82580,8 +82698,8 @@
       "heading": "Global Fold Cycling",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 409,
-      "content": "=Shift+Tab= cycles through three states: 1. *OVERVIEW* - All sections folded 2. *CONTENTS* - Top-level sections visible 3. *SHOWALL* - Everything expanded",
+      "line": 436,
+      "content": "CLOSED: [2026-01-19 Mon 09:29] =Shift+Tab= cycles through three states: 1. *OVERVIEW* - All sections folded 2. *CONTENTS* - Top-level sections visible 3. *SHOWALL* - Everything expanded",
       "path": [
         "Folding"
       ],
@@ -82593,6 +82711,10 @@
         "global",
         "fold",
         "cycling",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0929",
         "shifttab",
         "cycles",
         "through",
@@ -82605,16 +82727,15 @@
         "top-level",
         "visible",
         "showall",
-        "everything",
-        "expanded"
+        "everything"
       ]
     },
     {
       "heading": "Label Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 417,
-      "content": "Navigate to labels in your document: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.jumpToLabel   | C-c l       | Quick pick all labels    | The quick pick shows: - Label name - Context (section or environment) - Line number",
+      "line": 445,
+      "content": "CLOSED: [2026-01-19 Mon 09:31] Navigate to labels in your document: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.jumpToLabel   | C-c l       | Quick pick all labels    | The quick pick shows: - Label name - Context (section or environment) - Line number",
       "path": [],
       "commands": [
         "scimax.latex.jumpToLabel"
@@ -82625,6 +82746,10 @@
       "keywords": [
         "label",
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0931",
         "navigate",
         "labels",
         "document",
@@ -82638,34 +82763,33 @@
         "pick",
         "shows",
         "name",
-        "context",
-        "section",
-        "environment",
-        "line",
-        "number"
+        "context"
       ]
     },
     {
       "heading": "Compile and Preview",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 430,
-      "content": "Compile LaTeX documents and view the generated PDF. | Command                         | Key Binding    | Description                    | |---------------------------------+----------------+--------------------------------| | scimax.latex.compile            | C-c C-c        | Compile the document           | | scimax.latex.viewPdf            | C-c C-v        | View the PDF                   | | scimax.latex.compileAndView     | C-c C-a        | Compile and view PDF           | | scimax.latex.cle",
+      "line": 459,
+      "content": "CLOSED: [2026-01-19 Mon 09:31] Compile LaTeX documents and view the generated PDF. | Command                         | Key Binding    | Description                    | |---------------------------------+----------------+--------------------------------| | scimax.latex.compile            | C-c C-c        | Compile the document           | | scimax.latex.viewPdf            | C-c C-v        | View PDF (external viewer)     | | scimax.latex.viewPdfPanel       | C-c v          | View PDF (built-in p",
       "path": [],
       "commands": [
         "scimax.latex.compile",
         "scimax.latex.viewPdf",
-        "scimax.latex.compileAndView",
-        "scimax.latex.cle"
+        "scimax.latex.viewPdfPanel"
       ],
       "keybindings": [
         "C-c C-c",
         "C-c C-v",
-        "C-c C-a"
+        "C-c"
       ],
       "keywords": [
         "compile",
         "preview",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0931",
         "latex",
         "documents",
         "view",
@@ -82679,15 +82803,15 @@
         "c-c",
         "document",
         "c-v",
-        "c-a"
+        "external"
       ]
     },
     {
       "heading": "Compilation",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 443,
-      "content": "The =compile= command runs the configured LaTeX compiler (default: pdflatex): 1. Saves the document 2. Compiles with =-interaction=nonstopmode= for error handling 3. Shows compilation errors with line numbers 4. Outputs detailed log to the \"LaTeX\" output channel Configure the compiler via =scimax.latex.compiler= setting: - =pdflatex= (default) - =xelatex= - =lualatex= - =latexmk=",
+      "line": 474,
+      "content": "CLOSED: [2026-01-19 Mon 09:31] The =compile= command runs the configured LaTeX compiler (default: pdflatex): 1. Saves the document 2. Compiles with =-interaction=nonstopmode= for error handling 3. Shows compilation errors with line numbers 4. Outputs detailed log to the \"LaTeX\" output channel Configure the compiler via =scimax.latex.compiler= setting: - =pdflatex= (default) - =xelatex= - =lualatex= - =latexmk=",
       "path": [
         "Compile and Preview"
       ],
@@ -82697,6 +82821,10 @@
       "keybindings": [],
       "keywords": [
         "compilation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0931",
         "compile",
         "command",
         "runs",
@@ -82711,19 +82839,15 @@
         "-interaction",
         "nonstopmode",
         "error",
-        "handling",
-        "shows",
-        "errors",
-        "line",
-        "numbers"
+        "handling"
       ]
     },
     {
       "heading": "SyncTeX Support",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 458,
-      "content": "SyncTeX allows jumping between source and PDF positions. *Forward search* (C-c C-j): Jump from cursor position in source to corresponding PDF location. Supported PDF viewers: - *macOS*: Skim (recommended) - *Linux*: Zathura - *Windows*: SumatraPDF Configure via =scimax.latex.pdfViewer= setting.",
+      "line": 490,
+      "content": "CLOSED: [2026-01-19 Mon 09:31] SyncTeX allows jumping between source and PDF positions. *Forward search* (C-c g): Jump from cursor position in source to corresponding PDF location. Supported PDF viewers: - *macOS*: Skim (recommended) - *Linux*: Zathura - *Windows*: SumatraPDF Configure via =scimax.latex.pdfViewer= setting.",
       "path": [
         "Compile and Preview"
       ],
@@ -82731,11 +82855,15 @@
         "scimax.latex.pdfViewer"
       ],
       "keybindings": [
-        "C-c C-j"
+        "C-c"
       ],
       "keywords": [
         "synctex",
         "support",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0931",
         "allows",
         "jumping",
         "between",
@@ -82745,22 +82873,54 @@
         "forward",
         "search",
         "c-c",
-        "c-j",
         "jump",
         "cursor",
         "position",
         "corresponding",
-        "location",
-        "supported",
-        "viewers",
-        "macos"
+        "location"
+      ]
+    },
+    {
+      "heading": "Built-in PDF Viewer Panel",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 504,
+      "content": "For an Overleaf-like experience, use the built-in PDF viewer panel (=C-c v=): - Opens PDF in a VS Code panel beside your source - Auto-refreshes when you recompile - Zoom controls (+, -, Fit) - Page navigation - No external PDF viewer required This is ideal for side-by-side editing without leaving VS Code. | Viewer Option    | Key     | Description                          | |------------------+---------+--------------------------------------| | Built-in panel   | C-c v   | PDF in VS Code panel ",
+      "path": [
+        "Compile and Preview"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c"
+      ],
+      "keywords": [
+        "built-in",
+        "pdf",
+        "viewer",
+        "panel",
+        "overleaf-like",
+        "experience",
+        "c-c",
+        "opens",
+        "code",
+        "beside",
+        "source",
+        "auto-refreshes",
+        "recompile",
+        "zoom",
+        "controls",
+        "fit",
+        "page",
+        "navigation",
+        "external",
+        "required"
       ]
     },
     {
       "heading": "Insert Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 471,
+      "line": 521,
       "content": "Quick insertion of common LaTeX elements: | Command                       | Description                        | |-------------------------------+------------------------------------| | scimax.latex.insertFigure     | Insert figure environment snippet  | | scimax.latex.insertTable      | Insert table with booktabs snippet | | scimax.latex.insertEquation   | Insert equation environment        | These commands insert snippets with tab stops for easy navigation.",
       "path": [
         "Compile and Preview"
@@ -82798,7 +82958,7 @@
       "heading": "Go to Definition",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 483,
+      "line": 533,
       "content": "Jump to the definition of labels, citations, commands, and files: | Trigger              | What it does                                      | |----------------------+---------------------------------------------------| | =\\ref{label}=        | Jump to the =\\label{label}= definition            | | =\\cite{key}=         | Jump to the BibTeX entry in the .bib file         | | =\\input{file}=       | Open the included file                            | | =\\mycommand=         | Jump to =\\newcommand= or",
       "path": [],
       "commands": [],
@@ -82829,7 +82989,7 @@
       "heading": "Find All References",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 498,
+      "line": 548,
       "content": "Find all usages of a label or citation: | Position on          | Shows all                                         | |----------------------+---------------------------------------------------| | =\\label{name}=       | All =\\ref{name}= references                       | | =\\cite{key}=         | All citations of that key                         | Use =Shift+F12= or right-click → \"Find All References\". Works across all files in the project.",
       "path": [],
       "commands": [],
@@ -82861,7 +83021,7 @@
       "heading": "Auto-Completion",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 511,
+      "line": 561,
       "content": "Smart completions trigger as you type: | Context              | Completions                                       | |----------------------+---------------------------------------------------| | =\\ref{=              | All labels in project with context                | | =\\cite{=             | All BibTeX keys with author/year/title            | | =\\begin{=            | Common environments (equation, figure, etc.)      | | =\\usepackage{=       | Common packages with descriptions                 |",
       "path": [],
       "commands": [],
@@ -82893,7 +83053,7 @@
       "heading": "Multi-File Project Support",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 530,
+      "line": 580,
       "content": "Projects with multiple files (using =\\input= or =\\include=) are fully supported: - *Master document detection*: Automatically finds the main .tex file - *Cross-file labels*: Complete and navigate labels defined in any project file - *Shared bibliography*: Finds .bib files referenced anywhere in project - *Project-wide search*: Find References searches all included files The master document is detected by looking for =\\documentclass=.",
       "path": [],
       "commands": [],
@@ -82925,7 +83085,7 @@
       "heading": "Project Structure",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 541,
+      "line": 591,
       "content": "#+BEGIN_SRC text thesis/ ├── main.tex              # Master document (has \\documentclass) │   └── \\input{chapters/intro} │   └── \\input{chapters/methods} │   └── \\bibliography{refs} ├── chapters/ │   ├── intro.tex        # \\label{sec:intro} defined here │   └── methods.tex      # \\ref{sec:intro} works here too └── refs.bib              # Bibliography #+END_SRC",
       "path": [
         "Multi-File Project Support"
@@ -82959,7 +83119,7 @@
       "heading": "ChkTeX Linting",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 555,
+      "line": 605,
       "content": "Real-time linting with ChkTeX catches common LaTeX issues: - Missing or extra braces - Spacing issues - Style recommendations Errors appear in the Problems panel and as squiggles in the editor.",
       "path": [],
       "commands": [],
@@ -82990,7 +83150,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 565,
+      "line": 615,
       "content": "#+BEGIN_SRC json { \"scimax.latex.enableChktex\": true  // Enable/disable linting (default: true) } #+END_SRC Requires =chktex= to be installed: - *macOS*: =brew install chktex= - *Linux*: =apt install chktex= - *Windows*: Included with MiKTeX/TeX Live",
       "path": [
         "ChkTeX Linting"
@@ -83026,7 +83186,7 @@
       "heading": "Error Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 578,
+      "line": 628,
       "content": "Navigate through compilation errors: | Command                       | Key Binding      | Description                    | |-------------------------------+------------------+--------------------------------| | scimax.latex.nextError        | C-c `            | Jump to next error             | | scimax.latex.previousError    | C-c Shift+`      | Jump to previous error         | | scimax.latex.showErrors       | C-c C-e          | Show all errors in quick pick  | Errors are collected after compil",
       "path": [],
       "commands": [
@@ -83065,7 +83225,7 @@
       "heading": "Error Display",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 590,
+      "line": 640,
       "content": "When compilation fails: 1. First error is shown in a notification with \"Go to Error\" button 2. The Problems panel shows all parsed errors 3. Use navigation commands to cycle through errors Errors include: - File path (supports multi-file projects) - Line number - Error message",
       "path": [
         "Error Navigation"
@@ -83099,14 +83259,18 @@
       "heading": "Hover Previews",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 602,
-      "content": "Hover over LaTeX elements to see previews and information.",
+      "line": 652,
+      "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over LaTeX elements to see previews and information.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "hover",
         "previews",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0918",
         "over",
         "latex",
         "elements",
@@ -83117,8 +83281,8 @@
       "heading": "Equation Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 606,
-      "content": "Hover over any math expression to see a rendered preview: - Inline math: =$E=mc^2$=, =\\(E=mc^2\\)= - Display math: =$$...$$$=, =\\[...\\]= - Environments: =equation=, =align=, =gather=, etc. The preview: - Renders using the system LaTeX installation - Respects document preamble (packages, custom commands) - Adapts to dark/light VS Code theme - Shows the source LaTeX below the preview *Note:* Requires a LaTeX installation (TeX Live, MiKTeX, or MacTeX).",
+      "line": 657,
+      "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over any math expression to see a rendered preview: - Inline math: =$E=mc^2$=, =\\(E=mc^2\\)= - Display math: =$$...$$$=, =\\[...\\]= - Environments: =equation=, =align=, =gather=, etc. The preview: - Renders using the system LaTeX installation - Respects document preamble (packages, custom commands) - Adapts to dark/light VS Code theme - Shows the source LaTeX below the preview *Note:* Requires a LaTeX installation (TeX Live, MiKTeX, or MacTeX).",
       "path": [
         "Hover Previews"
       ],
@@ -83127,6 +83291,10 @@
       "keywords": [
         "equation",
         "preview",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0918",
         "hover",
         "over",
         "any",
@@ -83140,19 +83308,15 @@
         "align",
         "gather",
         "etc",
-        "renders",
-        "system",
-        "latex",
-        "installation",
-        "respects"
+        "renders"
       ]
     },
     {
       "heading": "Figure Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 622,
-      "content": "Hover over =\\includegraphics{...}= to see: - Image preview (PNG, JPG, SVG, GIF, WebP) - File path and size - Last modified date PDF and EPS files show file information without preview.",
+      "line": 674,
+      "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over =\\includegraphics{...}= to see: - Image preview (PNG, JPG, SVG, GIF, WebP) - File path and size - Last modified date PDF and EPS files show file information without preview.",
       "path": [
         "Hover Previews"
       ],
@@ -83161,6 +83325,10 @@
       "keywords": [
         "figure",
         "preview",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0918",
         "hover",
         "over",
         "includegraphics",
@@ -83174,25 +83342,25 @@
         "size",
         "last",
         "modified",
-        "date",
-        "pdf",
-        "eps",
-        "show",
-        "information"
+        "date"
       ]
     },
     {
       "heading": "Rename Symbol",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 631,
-      "content": "Rename a label and automatically update all references across the project: 1. Place cursor on a =\\label{name}= or =\\ref{name}= 2. Press =F2= or right-click → \"Rename Symbol\" 3. Enter the new name 4. All =\\label{}= and =\\ref{}= commands using that name are updated Works across all files in multi-file projects.",
+      "line": 684,
+      "content": "CLOSED: [2026-01-19 Mon 09:17] Rename a label and automatically update all references across the project: 1. Place cursor on a =\\label{name}= or =\\ref{name}= 2. Press =F2= or right-click → \"Rename Symbol\" 3. Enter the new name 4. All =\\label{}= and =\\ref{}= commands using that name are updated Works across all files in multi-file projects.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "rename",
         "symbol",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0917",
         "label",
         "automatically",
         "update",
@@ -83206,19 +83374,15 @@
         "press",
         "right-click",
         "enter",
-        "new",
-        "commands",
-        "updated",
-        "works",
-        "multi-file"
+        "new"
       ]
     },
     {
       "heading": "Supported Reference Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 642,
-      "content": "Rename works with all reference variants: - =\\label{...}= - the definition - =\\ref{...}=, =\\eqref{...}=, =\\pageref{...}= - =\\autoref{...}=, =\\cref{...}=, =\\Cref{...}=",
+      "line": 696,
+      "content": "CLOSED: [2026-01-19 Mon 09:17] Rename works with all reference variants: - =\\label{...}= - the definition - =\\ref{...}=, =\\eqref{...}=, =\\pageref{...}= - =\\autoref{...}=, =\\cref{...}=, =\\Cref{...}=",
       "path": [
         "Rename Symbol"
       ],
@@ -83228,6 +83392,10 @@
         "supported",
         "reference",
         "commands",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0917",
         "rename",
         "works",
         "variants",
@@ -83244,14 +83412,18 @@
       "heading": "Reference Validation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 649,
-      "content": "Automatic validation of label references: | Issue                    | Severity | Description                           | |--------------------------+----------+---------------------------------------| | Undefined reference      | Error    | =\\ref{name}= but no =\\label{name}=    | | Unused label             | Warning  | =\\label{name}= with no =\\ref{name}=   | Diagnostics appear in the Problems panel and as squiggles in the editor.",
+      "line": 704,
+      "content": "CLOSED: [2026-01-19 Mon 09:17] Automatic validation of label references: | Issue                    | Severity | Description                           | |--------------------------+----------+---------------------------------------| | Undefined reference      | Error    | =\\ref{name}= but no =\\label{name}=    | | Unused label             | Warning  | =\\label{name}= with no =\\ref{name}=   | Diagnostics appear in the Problems panel and as squiggles in the editor.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "reference",
         "validation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0917",
         "automatic",
         "label",
         "references",
@@ -83265,19 +83437,15 @@
         "name",
         "unused",
         "warning",
-        "diagnostics",
-        "appear",
-        "problems",
-        "panel",
-        "squiggles"
+        "diagnostics"
       ]
     },
     {
       "heading": "Configuration",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 660,
-      "content": "#+BEGIN_SRC json { \"scimax.latex.validateReferences\": true  // Enable/disable (default: true) } #+END_SRC",
+      "line": 716,
+      "content": "CLOSED: [2026-01-19 Mon 09:17] #+BEGIN_SRC json { \"scimax.latex.validateReferences\": true  // Enable/disable (default: true) } #+END_SRC",
       "path": [
         "Reference Validation"
       ],
@@ -83287,6 +83455,10 @@
       "keybindings": [],
       "keywords": [
         "configuration",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0917",
         "beginsrc",
         "json",
         "true",
@@ -83299,14 +83471,18 @@
       "heading": "Inverse SyncTeX",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 668,
-      "content": "Click in PDF to jump back to the corresponding source location.",
+      "line": 725,
+      "content": "CLOSED: [2026-01-19 Mon 09:17] Click in PDF to jump back to the corresponding source location.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "inverse",
         "synctex",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0917",
         "click",
         "pdf",
         "jump",
@@ -83320,7 +83496,7 @@
       "heading": "Setup",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 672,
+      "line": 730,
       "content": "Run the command =Scimax LaTeX: Show Inverse SyncTeX Command= to get the configuration command for your PDF viewer. | PDF Viewer | Configuration                                               | |------------+-------------------------------------------------------------| | Skim       | Preferences → Sync → Preset: Custom; Command: =code=        | | SumatraPDF | Settings → Options → Set inverse search command             | | Zathura    | Set =synctex-editor-command= in config                      |",
       "path": [
         "Inverse SyncTeX"
@@ -83354,8 +83530,8 @@
       "heading": "URI Handler",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 683,
-      "content": "The extension also registers a URI handler for =vscode://= URLs: #+BEGIN_SRC text vscode://file/path/to/file.tex:42 #+END_SRC This allows PDF viewers to communicate directly with VS Code.",
+      "line": 741,
+      "content": "CLOSED: [2026-01-19 Mon 09:17] The extension also registers a URI handler for =vscode://= URLs: #+BEGIN_SRC text vscode://file/path/to/file.tex:42 #+END_SRC This allows PDF viewers to communicate directly with VS Code.",
       "path": [
         "Inverse SyncTeX"
       ],
@@ -83364,6 +83540,10 @@
       "keywords": [
         "uri",
         "handler",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0917",
         "extension",
         "registers",
         "vscode",
@@ -83384,8 +83564,8 @@
       "heading": "Document Formatting",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 693,
-      "content": "Format LaTeX documents using =latexindent=: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.format        | C-c C-q     | Format entire document   |",
+      "line": 752,
+      "content": "CLOSED: [2026-01-19 Mon 09:17] Format LaTeX documents using =latexindent=: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.format        | C-c C-q     | Format entire document   |",
       "path": [],
       "commands": [
         "scimax.latex.format"
@@ -83396,6 +83576,10 @@
       "keywords": [
         "document",
         "formatting",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0917",
         "format",
         "latex",
         "documents",
@@ -83414,8 +83598,8 @@
       "heading": "Format on Save",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 701,
-      "content": "Enable automatic formatting when saving: #+BEGIN_SRC json { \"scimax.latex.formatOnSave\": true,          // Auto-format on save \"scimax.latex.latexindentPath\": \"latexindent\"  // Path to latexindent } #+END_SRC",
+      "line": 761,
+      "content": "CLOSED: [2026-01-19 Mon 09:12] Enable automatic formatting when saving: #+BEGIN_SRC json { \"scimax.latex.formatOnSave\": true,          // Auto-format on save \"scimax.latex.latexindentPath\": \"latexindent\"  // Path to latexindent } #+END_SRC",
       "path": [
         "Document Formatting"
       ],
@@ -83427,6 +83611,10 @@
       "keywords": [
         "format",
         "save",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0912",
         "enable",
         "automatic",
         "formatting",
@@ -83444,8 +83632,8 @@
       "heading": "Requirements",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 712,
-      "content": "=latexindent= must be installed: - *macOS*: Included with MacTeX, or =brew install latexindent= - *Linux*: =apt install texlive-extra-utils= or =cpanm YAML::Tiny File::HomeDir Unicode::GCString= - *Windows*: Included with MiKTeX/TeX Live",
+      "line": 773,
+      "content": "CLOSED: [2026-01-19 Mon 09:12] =latexindent= must be installed: - *macOS*: Included with MacTeX, or =brew install latexindent= - *Linux*: =apt install texlive-extra-utils= or =cpanm YAML::Tiny File::HomeDir Unicode::GCString= - *Windows*: Included with MiKTeX/TeX Live",
       "path": [
         "Document Formatting"
       ],
@@ -83453,6 +83641,10 @@
       "keybindings": [],
       "keywords": [
         "requirements",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0912",
         "latexindent",
         "must",
         "installed",
@@ -83467,18 +83659,15 @@
         "cpanm",
         "yamltiny",
         "filehomedir",
-        "unicodegcstring",
-        "windows",
-        "miktextex",
-        "live"
+        "unicodegcstring"
       ]
     },
     {
       "heading": "Customization",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 719,
-      "content": "Create a =.latexindent.yaml= file in your project to customize formatting rules. See the [[https://latexindentpl.readthedocs.io/][latexindent documentation]] for options.",
+      "line": 781,
+      "content": "CLOSED: [2026-01-19 Mon 09:12] Create a =.latexindent.yaml= file in your project to customize formatting rules. See the [[https://latexindentpl.readthedocs.io/][latexindent documentation]] for options.",
       "path": [
         "Document Formatting"
       ],
@@ -83486,6 +83675,10 @@
       "keybindings": [],
       "keywords": [
         "customization",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0912",
         "create",
         "latexindentyaml",
         "project",
@@ -83502,8 +83695,8 @@
       "heading": "LaTeX-Aware Spell Checking",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 724,
-      "content": "The extension provides infrastructure for LaTeX-aware spell checking that skips commands, math, and comments.",
+      "line": 787,
+      "content": "CLOSED: [2026-01-19 Mon 09:12] The extension provides infrastructure for LaTeX-aware spell checking that skips commands, math, and comments.",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -83511,6 +83704,10 @@
         "latex-aware",
         "spell",
         "checking",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0912",
         "extension",
         "provides",
         "infrastructure",
@@ -83524,8 +83721,8 @@
       "heading": "Regions Excluded from Spell Check",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 729,
-      "content": "| Pattern                          | Example                      | |----------------------------------+------------------------------| | Commands with arguments          | =\\textbf{word}=              | | Inline math                      | =$x^2 + y^2$=                | | Display math                     | =$$..$$= and =\\[..\\]=        | | Environments                     | =\\begin{...}...\\end{...}=    | | Comments                         | =% comment text=             |",
+      "line": 793,
+      "content": "CLOSED: [2026-01-19 Mon 09:12] | Pattern                          | Example                      | |----------------------------------+------------------------------| | Commands with arguments          | =\\textbf{word}=              | | Inline math                      | =$x^2 + y^2$=                | | Display math                     | =$$..$$= and =\\[..\\]=        | | Environments                     | =\\begin{...}...\\end{...}=    | | Comments                         | =% comment text=        ",
       "path": [
         "LaTeX-Aware Spell Checking"
       ],
@@ -83536,6 +83733,10 @@
         "excluded",
         "spell",
         "check",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0912",
         "pattern",
         "example",
         "----------------------------------------------------------------",
@@ -83547,19 +83748,15 @@
         "math",
         "display",
         "environments",
-        "begin",
-        "end",
-        "comments",
-        "comment",
-        "text"
+        "begin"
       ]
     },
     {
       "heading": "User Dictionary",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 739,
-      "content": "Add words to your personal dictionary: | Command                        | Description                        | |--------------------------------+------------------------------------| | scimax.latex.addToDictionary   | Add word at cursor to dictionary   | The dictionary is stored per-workspace and persists across sessions.",
+      "line": 804,
+      "content": "CLOSED: [2026-01-19 Mon 09:12] Add words to your personal dictionary: | Command                        | Description                        | |--------------------------------+------------------------------------| | scimax.latex.addToDictionary   | Add word at cursor to dictionary   | The dictionary is stored per-workspace and persists across sessions.",
       "path": [
         "LaTeX-Aware Spell Checking"
       ],
@@ -83570,6 +83767,10 @@
       "keywords": [
         "user",
         "dictionary",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0912",
         "add",
         "words",
         "personal",
@@ -83589,14 +83790,18 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 749,
-      "content": "- [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX - [[file:10-export.org][Export]] - Export org to LaTeX - [[file:19-references.org][References]] - BibTeX bibliography management - [[file:23-speed-commands.org][Speed Commands]] - Org-mode speed commands - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference",
+      "line": 815,
+      "content": "CLOSED: [2026-01-19 Mon 09:12] - [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX - [[file:10-export.org][Export]] - Export org to LaTeX - [[file:19-references.org][References]] - BibTeX bibliography management - [[file:23-speed-commands.org][Speed Commands]] - Org-mode speed commands - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "related",
         "topics",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0912",
         "file11-latex-previeworg",
         "latex",
         "preview",
@@ -83610,11 +83815,7 @@
         "references",
         "bibtex",
         "bibliography",
-        "management",
-        "file23-speed-commandsorg",
-        "speed",
-        "commands",
-        "org-mode"
+        "management"
       ]
     },
     {

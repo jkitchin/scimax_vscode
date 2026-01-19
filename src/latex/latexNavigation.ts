@@ -503,7 +503,7 @@ export async function jumpToMatchingEnvironment(): Promise<void> {
     const line = document.lineAt(position.line).text;
 
     // Check if on \begin line
-    const beginMatch = line.match(/\\begin\{(\w+)\}/);
+    const beginMatch = line.match(/\\begin\{(\w+\*?)\}/);
     if (beginMatch) {
         const env = findCurrentEnvironment(document, position);
         if (env) {
@@ -518,7 +518,7 @@ export async function jumpToMatchingEnvironment(): Promise<void> {
     }
 
     // Check if on \end line
-    const endMatch = line.match(/\\end\{(\w+)\}/);
+    const endMatch = line.match(/\\end\{(\w+\*?)\}/);
     if (endMatch) {
         const environments = getEnvironments(document);
         for (const env of environments) {

@@ -7,11 +7,13 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
 
-* ⚠️ LaTeX Navigation and Structure
+* ✅ LaTeX Navigation and Structure
+CLOSED: [2026-01-19 Mon 09:24]
 
 Scimax VS Code provides comprehensive navigation, structure editing, and tooltips for LaTeX documents. These features mirror the org-mode heading navigation and structure editing commands, adapted for LaTeX section commands and environments.
 
-** ⚠️ Overview
+** ✅ Overview
+CLOSED: [2026-01-19 Mon 09:24]
 
 LaTeX support in Scimax VS Code includes:
 
@@ -38,9 +40,10 @@ See also:
 - [[file:21-navigation.org][Navigation]] for general navigation features
 - [[file:24-keybindings.org][Keybindings]] for a complete reference of keyboard shortcuts
 
-* ⚠️ Document Outline
+* ✅ Document Outline
+CLOSED: [2026-01-19 Mon 09:24]
 
-The outline view (VS Code's built-in outline panel) shows the structure of your LaTeX document:
+The outline view (VS Code's built-in outline panel `Cmd/C-Shift-o') shows the structure of your LaTeX document:
 
 - *Sections* (part, chapter, section, subsection, etc.)
 - *Labeled Environments* (figures, tables, equations with labels)
@@ -48,7 +51,8 @@ The outline view (VS Code's built-in outline panel) shows the structure of your 
 
 The outline uses hierarchical nesting to show the document structure. Click any item to jump to it.
 
-** ⚠️ Section Hierarchy
+** ✅ Section Hierarchy
+CLOSED: [2026-01-19 Mon 09:26]
 
 LaTeX sections are organized hierarchically:
 
@@ -64,7 +68,8 @@ LaTeX sections are organized hierarchically:
 
 Starred variants (e.g., =\section*{...}=) are also recognized and marked in the outline.
 
-* ⚠️ Section Navigation
+* ✅ Section Navigation
+CLOSED: [2026-01-19 Mon 09:26]
 
 Navigate between sections in your LaTeX document using these commands:
 
@@ -79,7 +84,8 @@ Navigate between sections in your LaTeX document using these commands:
 | scimax.latex.lastSection              | -             | Jump to last section in document   |
 | scimax.latex.jumpToSection            | C-c C-j / C-c j | Quick pick to jump to any section  |
 
-** ⚠️ Next/Previous Section
+** ✅ Next/Previous Section
+CLOSED: [2026-01-19 Mon 09:26]
 
 Move through all sections in document order:
 
@@ -96,7 +102,8 @@ Content here...
 
 =nextSection= moves forward through sections regardless of level. =previousSection= moves backward.
 
-** ⚠️ Sibling Navigation
+** ✅ Sibling Navigation
+CLOSED: [2026-01-19 Mon 09:26]
 
 Move between sections at the same level:
 
@@ -113,7 +120,8 @@ Move between sections at the same level:
 =nextSiblingSection= moves to the next section at the same hierarchical level.
 =previousSiblingSection= moves backward.
 
-** ⚠️ Parent Section
+** ✅ Parent Section
+CLOSED: [2026-01-19 Mon 09:26]
 
 Jump to the containing (parent) section:
 
@@ -123,7 +131,7 @@ Jump to the containing (parent) section:
 \subsubsection{Sampling}     % <- From here
 #+END_SRC
 
-** ⚠️ Jump to Section
+** 👀 Jump to Section
 
 The =jumpToSection= command (C-c C-j or C-c j) opens a quick pick showing all sections with:
 
@@ -133,7 +141,8 @@ The =jumpToSection= command (C-c C-j or C-c j) opens a quick pick showing all se
 
 Type to filter, then select a section to jump to it.
 
-* ⚠️ Structure Editing
+* ✅ Structure Editing
+CLOSED: [2026-01-19 Mon 09:27]
 
 Edit the document structure by promoting, demoting, and moving sections.
 
@@ -151,7 +160,8 @@ Edit the document structure by promoting, demoting, and moving sections.
 | scimax.latex.insertSection       | -                | Insert new section at same level|
 | scimax.latex.insertSubsection    | -                | Insert subsection               |
 
-** ⚠️ Promote/Demote
+** ✅ Promote/Demote
+CLOSED: [2026-01-19 Mon 09:27]
 
 Change the level of a section command:
 
@@ -169,7 +179,8 @@ Change the level of a section command:
 \subsection{Results}
 #+END_SRC
 
-** ⚠️ Promote/Demote Subtree
+** ✅ Promote/Demote Subtree
+CLOSED: [2026-01-19 Mon 09:27]
 
 Promote or demote a section and all its children:
 
@@ -185,7 +196,8 @@ Promote or demote a section and all its children:
 \subsection{Analysis}
 #+END_SRC
 
-** ⚠️ Move Section Up/Down
+** ✅ Move Section Up/Down
+CLOSED: [2026-01-19 Mon 09:27]
 
 Swap a section with its previous or next sibling:
 
@@ -207,24 +219,26 @@ Content A...
 
 The entire section subtree (including all nested content) is moved.
 
-* ⚠️ Environment Commands
+* ✅ Environment Commands
+CLOSED: [2026-01-19 Mon 09:27]
 
 Work with LaTeX environments (=\begin{...}= / =\end{...}=):
 
-| Command                             | Key Binding  | Description                        |
-|-------------------------------------+--------------+------------------------------------|
-| scimax.latex.selectEnvironment      | C-c C-e      | Select entire environment          |
-| scimax.latex.selectEnvironmentContent | -          | Select content (not begin/end)     |
-| scimax.latex.changeEnvironment      | C-c e        | Change environment type            |
-| scimax.latex.wrapInEnvironment      | C-c w        | Wrap selection in environment      |
-| scimax.latex.unwrapEnvironment      | -            | Remove begin/end, keep content     |
-| scimax.latex.deleteEnvironment      | -            | Delete entire environment          |
-| scimax.latex.toggleEnvironmentStar  | C-c *        | Toggle starred variant             |
-| scimax.latex.addLabel               | C-c C-l      | Add \label to environment          |
-| scimax.latex.addCaption             | -            | Add \caption to figure/table       |
-| scimax.latex.jumpToMatchingEnvironment | C-c %     | Jump between \begin and \end       |
+| Command                                | Key Binding | Description                    |
+|----------------------------------------+-------------+--------------------------------|
+| scimax.latex.selectEnvironment         | C-c C-e     | Select entire environment      |
+| scimax.latex.selectEnvironmentContent  | -           | Select content (not begin/end) |
+| scimax.latex.changeEnvironment         | C-c e       | Change environment type        |
+| scimax.latex.wrapInEnvironment         | C-c w       | Wrap selection in environment  |
+| scimax.latex.unwrapEnvironment         | -           | Remove begin/end, keep content |
+| scimax.latex.deleteEnvironment         | -           | Delete entire environment      |
+| scimax.latex.toggleEnvironmentStar     | C-c *       | Toggle starred variant         |
+| scimax.latex.addLabel                  | C-c C-l     | Add \label to environment      |
+| scimax.latex.addCaption                | -           | Add \caption to figure/table   |
+| scimax.latex.jumpToMatchingEnvironment | C-c %       | Jump between \begin and \end   |
 
-** ⚠️ Environment Navigation
+** ✅ Environment Navigation
+CLOSED: [2026-01-19 Mon 09:28]
 
 Navigate between environments:
 
@@ -234,7 +248,8 @@ Navigate between environments:
 | scimax.latex.previousEnvironment   | -           | Jump to previous environment |
 | scimax.latex.jumpToEnvironment     | -           | Quick pick all environments |
 
-** ⚠️ Change Environment
+** ✅ Change Environment
+CLOSED: [2026-01-19 Mon 09:28]
 
 The =changeEnvironment= command (C-c e) prompts to change the environment type:
 
@@ -252,7 +267,8 @@ The =changeEnvironment= command (C-c e) prompts to change the environment type:
 
 Both =\begin= and =\end= are updated simultaneously.
 
-** ⚠️ Wrap in Environment
+** ✅ Wrap in Environment
+CLOSED: [2026-01-19 Mon 09:28]
 
 Select text and use =wrapInEnvironment= (C-c w) to surround it:
 
@@ -266,7 +282,8 @@ E = mc^2
 \end{equation}
 #+END_SRC
 
-** ⚠️ Toggle Star
+** ✅ Toggle Star
+CLOSED: [2026-01-19 Mon 09:28]
 
 Toggle the starred variant of an environment:
 
@@ -282,7 +299,8 @@ Toggle the starred variant of an environment:
 \end{equation*}
 #+END_SRC
 
-* ⚠️ Hover Tooltips
+* ✅ Hover Tooltips
+CLOSED: [2026-01-19 Mon 09:29]
 
 Hover over LaTeX elements to see helpful information:
 
@@ -298,7 +316,8 @@ Hover over LaTeX elements to see helpful information:
 | =\textbf=, etc.      | Command description                         |
 | =\input{file}=       | File path, size, preview                    |
 
-** ⚠️ Reference Hover
+** ✅ Reference Hover
+CLOSED: [2026-01-19 Mon 09:29]
 
 Hovering over =\ref{fig:example}= shows:
 
@@ -307,7 +326,8 @@ Hovering over =\ref{fig:example}= shows:
 - Context (section or environment containing the label)
 - Preview of the labeled line
 
-** ⚠️ Citation Hover
+** ✅ Citation Hover
+CLOSED: [2026-01-19 Mon 09:29]
 
 Hovering over =\cite{key}= shows rich BibTeX information:
 
@@ -325,14 +345,16 @@ Supports all natbib and biblatex citation commands:
 - =\citeauthor=, =\citeyear=
 - =\nocite=
 
-** ⚠️ Package Hover
+** ✅ Package Hover
+CLOSED: [2026-01-19 Mon 09:29]
 
 Hovering over =\usepackage{amsmath}= shows:
 
 - Package name
 - Description of what the package provides
 
-** ⚠️ Math Symbol Hover
+** ✅ Math Symbol Hover
+CLOSED: [2026-01-19 Mon 09:29]
 
 Hovering over math commands like =\alpha= shows:
 
@@ -340,7 +362,8 @@ Hovering over math commands like =\alpha= shows:
 - Unicode code point: U+03B1
 - Description: Greek lowercase alpha
 
-* ⚠️ Speed Commands
+* ✅ Speed Commands
+CLOSED: [2026-01-19 Mon 09:29]
 
 At the beginning of a section line, single keys trigger commands:
 
@@ -361,7 +384,8 @@ At the beginning of a section line, single keys trigger commands:
 
 Speed commands only activate when cursor is at or before the backslash of a section command.
 
-** ⚠️ Using Speed Commands
+** ✅ Using Speed Commands
+CLOSED: [2026-01-19 Mon 09:29]
 
 1. Place cursor at the start of a section line (column 0 or before =\=)
 2. Press a single key
@@ -374,7 +398,8 @@ Example:
   |__ Cursor position
 #+END_SRC
 
-* ⚠️ Folding
+* ✅ Folding
+CLOSED: [2026-01-19 Mon 09:29]
 
 LaTeX documents support folding for sections and environments.
 
@@ -383,7 +408,8 @@ LaTeX documents support folding for sections and environments.
 | scimax.org.toggleFold | Tab         | Toggle fold at cursor        |
 | scimax.org.cycleGlobalFold | Shift+Tab | Cycle all folds         |
 
-** ⚠️ Section Folding
+** ✅ Section Folding
+CLOSED: [2026-01-19 Mon 09:29]
 
 Sections fold from the section command to the next section at the same or higher level:
 
@@ -395,7 +421,8 @@ More content...
 \section{Methods}          % <- Fold ends before this
 #+END_SRC
 
-** ⚠️ Environment Folding
+** ✅ Environment Folding
+CLOSED: [2026-01-19 Mon 09:29]
 
 Environments fold from =\begin= to =\end=:
 
@@ -406,7 +433,8 @@ Environments fold from =\begin= to =\end=:
 \end{figure}               % <- Fold ends here
 #+END_SRC
 
-** ⚠️ Global Fold Cycling
+** ✅ Global Fold Cycling
+CLOSED: [2026-01-19 Mon 09:29]
 
 =Shift+Tab= cycles through three states:
 
@@ -414,7 +442,8 @@ Environments fold from =\begin= to =\end=:
 2. *CONTENTS* - Top-level sections visible
 3. *SHOWALL* - Everything expanded
 
-* ⚠️ Label Navigation
+* ✅ Label Navigation
+CLOSED: [2026-01-19 Mon 09:31]
 
 Navigate to labels in your document:
 
@@ -427,20 +456,23 @@ The quick pick shows:
 - Context (section or environment)
 - Line number
 
-* ⚠️ Compile and Preview
+* ✅ Compile and Preview
+CLOSED: [2026-01-19 Mon 09:31]
 
 Compile LaTeX documents and view the generated PDF.
 
 | Command                         | Key Binding    | Description                    |
 |---------------------------------+----------------+--------------------------------|
 | scimax.latex.compile            | C-c C-c        | Compile the document           |
-| scimax.latex.viewPdf            | C-c C-v        | View the PDF                   |
+| scimax.latex.viewPdf            | C-c C-v        | View PDF (external viewer)     |
+| scimax.latex.viewPdfPanel       | C-c v          | View PDF (built-in panel)      |
 | scimax.latex.compileAndView     | C-c C-a        | Compile and view PDF           |
 | scimax.latex.clean              | C-c C-k        | Clean auxiliary files          |
-| scimax.latex.syncTexForward     | C-c C-j        | SyncTeX forward search         |
+| scimax.latex.syncTexForward     | C-c g          | SyncTeX forward search         |
 | scimax.latex.wordCount          | -              | Count words (approximate)      |
 
-** ⚠️ Compilation
+** ✅ Compilation
+CLOSED: [2026-01-19 Mon 09:31]
 
 The =compile= command runs the configured LaTeX compiler (default: pdflatex):
 
@@ -455,11 +487,12 @@ Configure the compiler via =scimax.latex.compiler= setting:
 - =lualatex=
 - =latexmk=
 
-** ⚠️ SyncTeX Support
+** ✅ SyncTeX Support
+CLOSED: [2026-01-19 Mon 09:31]
 
 SyncTeX allows jumping between source and PDF positions.
 
-*Forward search* (C-c C-j): Jump from cursor position in source to corresponding PDF location.
+*Forward search* (C-c g): Jump from cursor position in source to corresponding PDF location.
 
 Supported PDF viewers:
 - *macOS*: Skim (recommended)
@@ -467,6 +500,23 @@ Supported PDF viewers:
 - *Windows*: SumatraPDF
 
 Configure via =scimax.latex.pdfViewer= setting.
+
+** ⚠️ Built-in PDF Viewer Panel
+
+For an Overleaf-like experience, use the built-in PDF viewer panel (=C-c v=):
+
+- Opens PDF in a VS Code panel beside your source
+- Auto-refreshes when you recompile
+- Zoom controls (+, -, Fit)
+- Page navigation
+- No external PDF viewer required
+
+This is ideal for side-by-side editing without leaving VS Code.
+
+| Viewer Option    | Key     | Description                          |
+|------------------+---------+--------------------------------------|
+| Built-in panel   | C-c v   | PDF in VS Code panel (Overleaf-like) |
+| External viewer  | C-c C-v | Opens in Skim/Zathura/SumatraPDF     |
 
 ** ⚠️ Insert Commands
 
@@ -599,11 +649,13 @@ Errors include:
 - Line number
 - Error message
 
-* ⚠️ Hover Previews
+* ✅ Hover Previews
+CLOSED: [2026-01-19 Mon 09:18]
 
 Hover over LaTeX elements to see previews and information.
 
-** ⚠️ Equation Preview
+** ✅ Equation Preview
+CLOSED: [2026-01-19 Mon 09:18]
 
 Hover over any math expression to see a rendered preview:
 
@@ -619,7 +671,8 @@ The preview:
 
 *Note:* Requires a LaTeX installation (TeX Live, MiKTeX, or MacTeX).
 
-** ⚠️ Figure Preview
+** ✅ Figure Preview
+CLOSED: [2026-01-19 Mon 09:18]
 
 Hover over =\includegraphics{...}= to see:
 - Image preview (PNG, JPG, SVG, GIF, WebP)
@@ -628,7 +681,8 @@ Hover over =\includegraphics{...}= to see:
 
 PDF and EPS files show file information without preview.
 
-* ⚠️ Rename Symbol
+* ✅ Rename Symbol
+CLOSED: [2026-01-19 Mon 09:17]
 
 Rename a label and automatically update all references across the project:
 
@@ -639,14 +693,16 @@ Rename a label and automatically update all references across the project:
 
 Works across all files in multi-file projects.
 
-** ⚠️ Supported Reference Commands
+** ✅ Supported Reference Commands
+CLOSED: [2026-01-19 Mon 09:17]
 
 Rename works with all reference variants:
 - =\label{...}= - the definition
 - =\ref{...}=, =\eqref{...}=, =\pageref{...}=
 - =\autoref{...}=, =\cref{...}=, =\Cref{...}=
 
-* ⚠️ Reference Validation
+* ✅ Reference Validation
+CLOSED: [2026-01-19 Mon 09:17]
 
 Automatic validation of label references:
 
@@ -657,7 +713,8 @@ Automatic validation of label references:
 
 Diagnostics appear in the Problems panel and as squiggles in the editor.
 
-** ⚠️ Configuration
+** ✅ Configuration
+CLOSED: [2026-01-19 Mon 09:17]
 
 #+BEGIN_SRC json
 {
@@ -665,11 +722,12 @@ Diagnostics appear in the Problems panel and as squiggles in the editor.
 }
 #+END_SRC
 
-* ⚠️ Inverse SyncTeX
+* ✅ Inverse SyncTeX
+CLOSED: [2026-01-19 Mon 09:17]
 
 Click in PDF to jump back to the corresponding source location.
 
-** ⚠️ Setup
+** 👀 Setup
 
 Run the command =Scimax LaTeX: Show Inverse SyncTeX Command= to get the
 configuration command for your PDF viewer.
@@ -680,7 +738,8 @@ configuration command for your PDF viewer.
 | SumatraPDF | Settings → Options → Set inverse search command             |
 | Zathura    | Set =synctex-editor-command= in config                      |
 
-** ⚠️ URI Handler
+** ✅ URI Handler
+CLOSED: [2026-01-19 Mon 09:17]
 
 The extension also registers a URI handler for =vscode://= URLs:
 
@@ -690,7 +749,8 @@ vscode://file/path/to/file.tex:42
 
 This allows PDF viewers to communicate directly with VS Code.
 
-* ⚠️ Document Formatting
+* ✅ Document Formatting
+CLOSED: [2026-01-19 Mon 09:17]
 
 Format LaTeX documents using =latexindent=:
 
@@ -698,7 +758,8 @@ Format LaTeX documents using =latexindent=:
 |----------------------------+-------------+--------------------------|
 | scimax.latex.format        | C-c C-q     | Format entire document   |
 
-** ⚠️ Format on Save
+** ✅ Format on Save
+CLOSED: [2026-01-19 Mon 09:12]
 
 Enable automatic formatting when saving:
 
@@ -709,24 +770,28 @@ Enable automatic formatting when saving:
 }
 #+END_SRC
 
-** ⚠️ Requirements
+** ✅ Requirements
+CLOSED: [2026-01-19 Mon 09:12]
 
 =latexindent= must be installed:
 - *macOS*: Included with MacTeX, or =brew install latexindent=
 - *Linux*: =apt install texlive-extra-utils= or =cpanm YAML::Tiny File::HomeDir Unicode::GCString=
 - *Windows*: Included with MiKTeX/TeX Live
 
-** ⚠️ Customization
+** ✅ Customization
+CLOSED: [2026-01-19 Mon 09:12]
 
 Create a =.latexindent.yaml= file in your project to customize formatting rules.
 See the [[https://latexindentpl.readthedocs.io/][latexindent documentation]] for options.
 
-* ⚠️ LaTeX-Aware Spell Checking
+* ✅ LaTeX-Aware Spell Checking
+CLOSED: [2026-01-19 Mon 09:12]
 
 The extension provides infrastructure for LaTeX-aware spell checking that
 skips commands, math, and comments.
 
-** ⚠️ Regions Excluded from Spell Check
+** ✅ Regions Excluded from Spell Check
+CLOSED: [2026-01-19 Mon 09:12]
 
 | Pattern                          | Example                      |
 |----------------------------------+------------------------------|
@@ -736,7 +801,8 @@ skips commands, math, and comments.
 | Environments                     | =\begin{...}...\end{...}=    |
 | Comments                         | =% comment text=             |
 
-** ⚠️ User Dictionary
+** ✅ User Dictionary
+CLOSED: [2026-01-19 Mon 09:12]
 
 Add words to your personal dictionary:
 
@@ -746,7 +812,8 @@ Add words to your personal dictionary:
 
 The dictionary is stored per-workspace and persists across sessions.
 
-* ⚠️ Related Topics
+* ✅ Related Topics
+CLOSED: [2026-01-19 Mon 09:12]
 
 - [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX
 - [[file:10-export.org][Export]] - Export org to LaTeX

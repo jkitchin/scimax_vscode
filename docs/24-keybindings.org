@@ -427,13 +427,14 @@ These keybindings are active in LaTeX files (=.tex=):
 
 ** ⚠️ Compile and Preview
 
-| Key       | Action                 |
-|-----------+------------------------|
-| C-c C-c   | Compile document       |
-| C-c C-v   | View PDF               |
-| C-c C-a   | Compile and view PDF   |
-| C-c C-j   | SyncTeX forward search |
-| C-c C-k   | Clean auxiliary files  |
+| Key       | Action                      |
+|-----------+-----------------------------|
+| C-c C-c   | Compile document            |
+| C-c v     | View PDF (built-in panel)   |
+| C-c C-v   | View PDF (external viewer)  |
+| C-c C-a   | Compile and view PDF        |
+| C-c g     | SyncTeX forward search      |
+| C-c C-k   | Clean auxiliary files       |
 
 See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.
 

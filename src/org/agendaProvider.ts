@@ -77,6 +77,7 @@ export class AgendaManager {
     private disposables: vscode.Disposable[] = [];
     private refreshEmitter = new vscode.EventEmitter<void>();
     readonly onDidRefresh = this.refreshEmitter.event;
+    private verbose: boolean = false;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
@@ -111,6 +112,36 @@ export class AgendaManager {
             batchSize: config.get<number>('batchSize', 5),
             batchDelayMs: config.get<number>('batchDelayMs', 10),
         };
+    }
+
+    /**
+     * Log a message to the output channel (only when verbose mode is enabled)
+     */
+    private log(message: string): void {
+        if (this.verbose) {
+            this.outputChannel.appendLine(message);
+        }
+    }
+
+    /**
+     * Toggle verbose logging mode
+     */
+    public toggleVerbose(): void {
+        this.verbose = !this.verbose;
+        if (this.verbose) {
+            this.outputChannel.show(true);
+            this.outputChannel.appendLine('Agenda: Verbose logging enabled');
+        } else {
+            this.outputChannel.appendLine('Agenda: Verbose logging disabled');
+        }
+        vscode.window.showInformationMessage(`Agenda verbose logging ${this.verbose ? 'enabled' : 'disabled'}`);
+    }
+
+    /**
+     * Check if verbose mode is enabled
+     */
+    public isVerbose(): boolean {
+        return this.verbose;
     }
 
     private setupFileWatcher(): void {
@@ -208,23 +239,26 @@ export class AgendaManager {
         const uniqueFiles = [...new Set(allFiles)];
 
         // Log what we're about to scan
-        this.outputChannel.appendLine(`Agenda: Found ${uniqueFiles.length} org files to scan`);
-        this.outputChannel.appendLine(`Agenda: Config: agendaFiles=${JSON.stringify(this.config.agendaFiles)}`);
-        this.outputChannel.appendLine(`Agenda: Workspace folders: ${vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath).join(', ') || 'none'}`);
-        this.outputChannel.show(true); // Show output channel
+        this.log(`Agenda: Found ${uniqueFiles.length} org files to scan`);
+        this.log(`Agenda: Config: agendaFiles=${JSON.stringify(this.config.agendaFiles)}`);
+        this.log(`Agenda: Workspace folders: ${vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath).join(', ') || 'none'}`);
+        // Only show output channel in verbose mode to avoid popup on every save
+        if (this.verbose) {
+            this.outputChannel.show(true);
+        }
 
         // Apply max files limit
         const maxFiles = this.config.maxFiles;
         const filesToProcess = maxFiles > 0 ? uniqueFiles.slice(0, maxFiles) : uniqueFiles;
 
         if (filesToProcess.length < uniqueFiles.length) {
-            this.outputChannel.appendLine(
+            this.log(
                 `Agenda: Limited scan to ${maxFiles} files (${uniqueFiles.length} total found). ` +
                 `Configure 'scimax.agenda.files' to specify directories or increase 'scimax.agenda.maxFiles'.`
             );
         }
 
-        this.outputChannel.appendLine(`Agenda: Will process ${filesToProcess.length} files`);
+        this.log(`Agenda: Will process ${filesToProcess.length} files`);
 
         // Yield files in batches
         const batchSize = this.config.batchSize;
@@ -312,27 +346,27 @@ export class AgendaManager {
 
             // Return cached if not modified
             if (cached && cached.mtime === stat.mtimeMs) {
-                this.outputChannel.appendLine(`  ${basename} (${sizeKB}KB): cached`);
+                this.log(`  ${basename} (${sizeKB}KB): cached`);
                 return cached;
             }
 
             // Skip very large files (> 100KB) to prevent OOM
             if (stat.size > 100 * 1024) {
-                this.outputChannel.appendLine(`  ${basename}: skipping (${sizeKB}KB > 100KB)`);
+                this.log(`  ${basename}: skipping (${sizeKB}KB > 100KB)`);
                 return null;
             }
 
-            this.outputChannel.appendLine(`  ${basename} (${sizeKB}KB): reading...`);
+            this.log(`  ${basename} (${sizeKB}KB): reading...`);
             const content = await fs.promises.readFile(filePath, 'utf-8');
             const readTime = Date.now();
-            this.outputChannel.appendLine(`  ${basename}: read ${readTime - startTime}ms, parsing...`);
+            this.log(`  ${basename}: read ${readTime - startTime}ms, parsing...`);
 
             const document = parseOrg(content, {
                 parseInlineObjects: false,
                 addPositions: false,
             });
             const parseTime = Date.now();
-            this.outputChannel.appendLine(`  ${basename}: parsed ${parseTime - readTime}ms, extracting...`);
+            this.log(`  ${basename}: parsed ${parseTime - readTime}ms, extracting...`);
 
             const headlines = this.extractHeadlines(document);
             const diarySexps = this.extractDiarySexps(document, filePath, content);
@@ -347,13 +381,13 @@ export class AgendaManager {
 
             this.fileCache.set(filePath, agendaFile);
 
-            this.outputChannel.appendLine(
+            this.log(
                 `  ${basename}: done (read=${readTime - startTime}ms, parse=${parseTime - readTime}ms, extract=${extractTime - parseTime}ms, headlines=${headlines.length})`
             );
 
             return agendaFile;
         } catch (error) {
-            this.outputChannel.appendLine(`  ${basename}: ERROR ${error}`);
+            this.log(`  ${basename}: ERROR ${error}`);
             return null;
         }
     }
@@ -547,39 +581,39 @@ export class AgendaManager {
             // Use lazy generator for rate-limited file processing
             for await (const batch of this.getAgendaFilesLazy(token)) {
                 if (token.isCancellationRequested) {
-                    this.outputChannel.appendLine('Agenda scan cancelled');
+                    this.log('Agenda scan cancelled');
                     break;
                 }
 
                 // Process each file in the batch
-                this.outputChannel.appendLine(`Processing batch of ${batch.length} files...`);
+                this.log(`Processing batch of ${batch.length} files...`);
                 for (let i = 0; i < batch.length; i++) {
                     const filePath = batch[i];
                     if (token.isCancellationRequested) break;
 
-                    this.outputChannel.appendLine(`Starting file ${i + 1}/${batch.length}: ${filePath}`);
+                    this.log(`Starting file ${i + 1}/${batch.length}: ${filePath}`);
                     const agendaFile = await this.parseFile(filePath);
                     if (agendaFile) {
-                        this.outputChannel.appendLine(`  - Collecting ${agendaFile.headlines.length} headlines...`);
+                        this.log(`  - Collecting ${agendaFile.headlines.length} headlines...`);
                         for (const headline of agendaFile.headlines) {
                             this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
                         }
-                        this.outputChannel.appendLine(`  - Total headlines so far: ${allHeadlines.length}`);
+                        this.log(`  - Total headlines so far: ${allHeadlines.length}`);
                         // Collect diary sexps
                         allDiarySexps.push(...agendaFile.diarySexps);
                     }
                     filesProcessed++;
-                    this.outputChannel.appendLine(`  - File ${filesProcessed} complete`);
+                    this.log(`  - File ${filesProcessed} complete`);
                 }
-                this.outputChannel.appendLine(`Batch complete. Total: ${filesProcessed} files, ${allHeadlines.length} headlines`);
+                this.log(`Batch complete. Total: ${filesProcessed} files, ${allHeadlines.length} headlines`);
 
                 // Log progress for large scans
                 if (filesProcessed % 50 === 0) {
-                    this.outputChannel.appendLine(`Agenda: Processed ${filesProcessed} files...`);
+                    this.log(`Agenda: Processed ${filesProcessed} files...`);
                 }
             }
 
-            this.outputChannel.appendLine(`Agenda: Scan complete. Processed ${filesProcessed} files, found ${allHeadlines.length} headlines, ${allDiarySexps.length} diary sexps.`);
+            this.log(`Agenda: Scan complete. Processed ${filesProcessed} files, found ${allHeadlines.length} headlines, ${allDiarySexps.length} diary sexps.`);
         } finally {
             this.scanInProgress = false;
         }
@@ -630,7 +664,7 @@ export class AgendaManager {
             // Use lazy generator for rate-limited file processing
             for await (const batch of this.getAgendaFilesLazy(token)) {
                 if (token.isCancellationRequested) {
-                    this.outputChannel.appendLine('TODO list scan cancelled');
+                    this.log('TODO list scan cancelled');
                     break;
                 }
 
@@ -648,7 +682,7 @@ export class AgendaManager {
                 }
             }
 
-            this.outputChannel.appendLine(`TODO list: Scan complete. Processed ${filesProcessed} files.`);
+            this.log(`TODO list: Scan complete. Processed ${filesProcessed} files.`);
         } finally {
             this.scanInProgress = false;
         }
@@ -917,6 +951,11 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             } else {
                 vscode.window.showInformationMessage('No agenda scan in progress');
             }
+        }),
+
+        // Toggle verbose logging
+        vscode.commands.registerCommand('scimax.agenda.toggleVerbose', () => {
+            manager.toggleVerbose();
         }),
 
         // View modes

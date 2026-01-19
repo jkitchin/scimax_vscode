@@ -765,6 +765,58 @@ function findSourceBlockAtCursor(
 }
 
 /**
+ * Find the markdown fenced block at cursor position
+ */
+function findMarkdownFencedBlockAtCursor(document: vscode.TextDocument, position: vscode.Position): SourceBlockInfo | null {
+    const lines = document.getText().split('\n');
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i];
+        const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
+
+        if (fenceMatch) {
+            const fence = fenceMatch[1];
+            const fenceChar = fence[0];
+            const fenceLen = fence.length;
+            const language = fenceMatch[2] || 'text';
+
+            // Look for closing fence
+            let closingLine = -1;
+            for (let j = i + 1; j < lines.length; j++) {
+                const closeMatch = lines[j].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
+                if (closeMatch) {
+                    closingLine = j;
+                    break;
+                }
+            }
+
+            if (closingLine !== -1) {
+                // Check if cursor is inside this block
+                if (position.line >= i && position.line <= closingLine) {
+                    // Extract code content
+                    const codeLines = lines.slice(i + 1, closingLine);
+                    const code = codeLines.join('\n');
+
+                    return {
+                        language: language,
+                        parameters: '',
+                        code: code,
+                        startLine: i,
+                        endLine: closingLine,
+                        codeStartLine: i + 1,
+                        codeEndLine: closingLine - 1,
+                    };
+                }
+                i = closingLine + 1;
+                continue;
+            }
+        }
+        i++;
+    }
+    return null;
+}
+
+/**
  * Find all source blocks in the document
  */
 function findAllSourceBlocks(document: vscode.TextDocument): SourceBlockInfo[] {
@@ -1329,7 +1381,8 @@ if plt.get_fignums():
 
 /**
  * Command: Execute source block at cursor
- * Also handles #+CALL: lines
+ * Also handles #+CALL: lines (org only)
+ * Supports both org-mode and markdown fenced code blocks
  */
 async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
     console.log(`[executeSourceBlockAtCursor] Called, lineNumber=${lineNumber}`);
@@ -1339,42 +1392,54 @@ async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
         return;
     }
 
-    if (editor.document.languageId !== 'org') {
-        vscode.window.showWarningMessage('Not an org-mode file');
+    const langId = editor.document.languageId;
+    if (langId !== 'org' && langId !== 'markdown') {
+        vscode.window.showWarningMessage('Not an org-mode or markdown file');
         return;
     }
 
     // Use provided line number or cursor position
     const targetLine = lineNumber ?? editor.selection.active.line;
-    const currentLine = editor.document.lineAt(targetLine).text;
+    const position = new vscode.Position(targetLine, 0);
 
-    // Check if on a #+CALL: line
-    const callSpec = parseCallLine(currentLine);
+    // For org files, also check for #+CALL: and inline calls
+    if (langId === 'org') {
+        const currentLine = editor.document.lineAt(targetLine).text;
 
-    if (callSpec) {
-        // Execute #+CALL:
-        await executeCallAtCursor(editor, callSpec);
-        return;
-    }
+        // Check if on a #+CALL: line
+        const callSpec = parseCallLine(currentLine);
 
-    // Check if cursor is on an inline babel call (call_name(args))
-    const text = editor.document.getText();
-    const offset = editor.document.offsetAt(editor.selection.active);
-    const inlineCall = findInlineBabelCallAtPosition(text, offset);
+        if (callSpec) {
+            // Execute #+CALL:
+            await executeCallAtCursor(editor, callSpec);
+            return;
+        }
 
-    if (inlineCall) {
-        // Execute the inline call directly
-        await executeInlineCallAtCursor(editor, inlineCall);
-        return;
+        // Check if cursor is on an inline babel call (call_name(args))
+        const text = editor.document.getText();
+        const offset = editor.document.offsetAt(editor.selection.active);
+        const inlineCall = findInlineBabelCallAtPosition(text, offset);
+
+        if (inlineCall) {
+            // Execute the inline call directly
+            await executeInlineCallAtCursor(editor, inlineCall);
+            return;
+        }
     }
 
     // Find source block - use lineNumber if provided, otherwise cursor position
     let block: SourceBlockInfo | null;
-    if (lineNumber !== undefined) {
-        const blocks = findAllSourceBlocks(editor.document);
-        block = blocks.find(b => b.startLine === lineNumber) || null;
+    if (langId === 'markdown') {
+        // For markdown, use the markdown fenced block finder
+        block = findMarkdownFencedBlockAtCursor(editor.document, position);
     } else {
-        block = findSourceBlockAtCursor(editor.document, editor.selection.active);
+        // For org, use the org source block finder
+        if (lineNumber !== undefined) {
+            const blocks = findAllSourceBlocks(editor.document);
+            block = blocks.find(b => b.startLine === lineNumber) || null;
+        } else {
+            block = findSourceBlockAtCursor(editor.document, editor.selection.active);
+        }
     }
 
     if (!block) {
@@ -2097,6 +2162,43 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
         },
     });
 
+    // Helper function to check if cursor is inside a markdown fenced code block
+    function isInMarkdownFencedBlock(document: vscode.TextDocument, position: vscode.Position): boolean {
+        const lines = document.getText().split('\n');
+        let i = 0;
+        while (i < lines.length) {
+            const line = lines[i];
+            const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
+
+            if (fenceMatch) {
+                const fence = fenceMatch[1];
+                const fenceChar = fence[0];
+                const fenceLen = fence.length;
+
+                // Look for closing fence
+                let closingLine = -1;
+                for (let j = i + 1; j < lines.length; j++) {
+                    const closeMatch = lines[j].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
+                    if (closeMatch) {
+                        closingLine = j;
+                        break;
+                    }
+                }
+
+                if (closingLine !== -1) {
+                    // Check if cursor is inside this block
+                    if (position.line >= i && position.line <= closingLine) {
+                        return true;
+                    }
+                    i = closingLine + 1;
+                    continue;
+                }
+            }
+            i++;
+        }
+        return false;
+    }
+
     // Helper function to update babel context for keybinding conditions
     function updateBabelContext(editor: vscode.TextEditor | undefined): void {
         if (!editor) {
@@ -2108,8 +2210,19 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
         }
 
         const document = editor.document;
+        const position = editor.selection.active;
 
-        // Only check for org files
+        // Check for markdown files
+        if (document.languageId === 'markdown') {
+            const inFencedBlock = isInMarkdownFencedBlock(document, position);
+            vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inFencedBlock);
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
+            vscode.commands.executeCommand('setContext', 'scimax.inInlineBabelCall', false);
+            vscode.commands.executeCommand('setContext', 'scimax.onCallLine', false);
+            return;
+        }
+
+        // Only check for org files beyond this point
         if (document.languageId !== 'org') {
             vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', false);
             vscode.commands.executeCommand('setContext', 'scimax.inInlineSrc', false);
@@ -2118,7 +2231,6 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
             return;
         }
 
-        const position = editor.selection.active;
         const blockInfo = findSourceBlockAtCursor(document, position);
         const inBlock = blockInfo !== null;
         vscode.commands.executeCommand('setContext', 'scimax.inSourceBlock', inBlock);

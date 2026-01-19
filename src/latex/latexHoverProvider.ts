@@ -150,14 +150,9 @@ const LATEX_COMMANDS: { [key: string]: string } = {
     'huge': 'Huge text size',
     'Huge': 'Largest text size',
 
-    // Structure
-    'part': 'Document part (book/report)',
-    'chapter': 'Chapter heading (book/report)',
-    'section': 'Section heading',
-    'subsection': 'Subsection heading',
-    'subsubsection': 'Subsubsection heading',
-    'paragraph': 'Paragraph heading',
-    'subparagraph': 'Subparagraph heading',
+    // Structure - section commands handled by hoverForSection for hierarchy path
+    // 'part', 'chapter', 'section', 'subsection', 'subsubsection', 'paragraph', 'subparagraph'
+    // are intentionally excluded - see hoverForSection() for richer hover info
 
     // References
     'ref': 'Reference to a label',
@@ -501,10 +496,10 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
         return this.hoverForLabel(document, position, line) ||
             this.hoverForPackage(document, position, line) ||
             this.hoverForEnvironment(document, position, line) ||
+            this.hoverForSection(document, position, line) ||  // Before hoverForCommand for hierarchy path
             this.hoverForCommand(word) ||
             this.hoverForMathSymbol(word) ||
             this.hoverForInclude(document, position, line) ||
-            this.hoverForSection(document, position, line) ||
             null;
     }
 

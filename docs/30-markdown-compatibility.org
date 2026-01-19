@@ -7,13 +7,15 @@
 
 *Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
 
-* ⚠️ Markdown Compatibility
+* ✅ Markdown Compatibility
+CLOSED: [2026-01-19 Mon 09:32]
 
 Scimax VS Code provides first-class support for org-mode files, with substantial
 structural editing and navigation support for Markdown documents as well. This
 chapter documents which features work in Markdown files and how to use them.
 
-** ⚠️ Design Philosophy
+** ✅ Design Philosophy
+CLOSED: [2026-01-19 Mon 09:32]
 
 The extension treats Markdown as a first-class citizen for *structural editing
 and navigation*. Features that rely on org-mode specific syntax (TODO states,
@@ -32,14 +34,17 @@ require non-standard Markdown extensions.
 | Properties              | None             | Org-mode specific syntax           |
 | Tags                    | Limited          | Hashtags work, not headline tags   |
 
-* ⚠️ Supported Features
+* ✅ Supported Features
+CLOSED: [2026-01-19 Mon 09:33]
 
-** ⚠️ Document Outline and Navigation
+** ✅ Document Outline and Navigation
+CLOSED: [2026-01-19 Mon 09:33]
 
 Markdown files have full support for the VS Code outline view and breadcrumb
 navigation.
 
-*** ⚠️ Outline View
+*** ✅ Outline View
+CLOSED: [2026-01-19 Mon 09:33]
 
 The extension provides a =DocumentSymbolProvider= for Markdown that recognizes:
 
@@ -50,17 +55,20 @@ The extension provides a =DocumentSymbolProvider= for Markdown that recognizes:
 Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the
 document structure.
 
-*** ⚠️ Breadcrumbs
+*** ✅ Breadcrumbs
+CLOSED: [2026-01-19 Mon 09:33]
 
 Breadcrumbs show the current heading hierarchy in the editor title bar. This
 works automatically for Markdown files.
 
-*** ⚠️ Jump to Heading
+*** ✅ Jump to Heading
+CLOSED: [2026-01-19 Mon 09:34]
 
 Press =C-c C-j= to open a quick-pick menu of all headings in the current file.
-Type to filter and press Enter to jump.
+Type to filter and press Enter to jump.  `Cmd-C/Shift-o' also works.
 
-** ⚠️ Heading Navigation
+** ✅ Heading Navigation
+CLOSED: [2026-01-19 Mon 09:35]
 
 All heading navigation commands work in Markdown:
 
@@ -82,7 +90,8 @@ Speed commands (when cursor is at column 0 of a heading line):
 | u   | Up to parent heading                 |
 | j   | Jump to heading (opens menu)         |
 
-** ⚠️ Heading Manipulation
+** ✅ Heading Manipulation
+CLOSED: [2026-01-19 Mon 09:35]
 
 Change heading levels and move subtrees:
 
@@ -95,7 +104,8 @@ Change heading levels and move subtrees:
 | M-<up>      | Move Subtree Up   | Swap with previous sibling       |
 | M-<down>    | Move Subtree Down | Swap with next sibling           |
 
-*** ⚠️ Insert Headings
+*** ✅ Insert Headings
+CLOSED: [2026-01-19 Mon 09:35]
 
 | Key        | Command           | Description                           |
 |------------+-------------------+---------------------------------------|
@@ -104,20 +114,22 @@ Change heading levels and move subtrees:
 
 The extension automatically uses =#= characters for Markdown (not =*= like org).
 
-** ⚠️ Subtree Operations
+** ✅ Subtree Operations
+CLOSED: [2026-01-19 Mon 09:35]
 
 All subtree operations work in Markdown:
 
-| Command                   | Speed Key | Description                     |
-|---------------------------+-----------+---------------------------------|
-| scimax.org.markSubtree    | @         | Select entire subtree           |
-| scimax.org.killSubtree    | w         | Cut subtree to clipboard        |
-| scimax.org.cloneSubtree   | W         | Duplicate subtree below         |
-| scimax.org.yankSubtree    | y         | Paste subtree from clipboard    |
-| scimax.org.narrowToSubtree| s         | Focus on subtree (fold others)  |
-| scimax.org.widen          | S         | Unfold all (undo narrow)        |
+| Command                    | Speed Key | Description                    |
+|----------------------------+-----------+--------------------------------|
+| scimax.org.markSubtree     | @         | Select entire subtree          |
+| scimax.org.killSubtree     | w         | Cut subtree to clipboard       |
+| scimax.org.cloneSubtree    | W         | Duplicate subtree below        |
+| scimax.org.yankSubtree     | y         | Paste subtree from clipboard   |
+| scimax.org.narrowToSubtree | s         | Focus on subtree (fold others) |
+| scimax.org.widen           | S         | Unfold all (undo narrow)       |
 
-*** ⚠️ Yank Subtree Level Adjustment
+*** ✅ Yank Subtree Level Adjustment
+CLOSED: [2026-01-19 Mon 09:35]
 
 When yanking (pasting) a subtree, the extension automatically adjusts heading
 levels to match the context:
@@ -129,7 +141,8 @@ levels to match the context:
 <!-- Headings are automatically adjusted to match ## level -->
 #+END_SRC
 
-** ⚠️ Code Block Support
+** ✅ Code Block Support
+CLOSED: [2026-01-19 Mon 09:37]
 
 Markdown fenced code blocks have full support for:
 
@@ -137,7 +150,8 @@ Markdown fenced code blocks have full support for:
 - Execution via Babel/Jupyter
 - Block manipulation (split, merge, clone)
 
-*** ⚠️ Fenced Block Syntax
+*** ✅ Fenced Block Syntax
+CLOSED: [2026-01-19 Mon 09:37]
 
 Both backtick and tilde fences are supported:
 
@@ -151,7 +165,8 @@ console.log("Hello from JS");
 ~~~
 #+END_SRC
 
-*** ⚠️ Code Block Navigation
+*** ✅ Code Block Navigation
+CLOSED: [2026-01-19 Mon 09:53]
 
 | Key       | Command              | Description                    |
 |-----------+----------------------+--------------------------------|
@@ -159,7 +174,8 @@ console.log("Hello from JS");
 | C-c C-v p | Previous Source Block| Jump to previous fenced block  |
 | C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |
 
-*** ⚠️ Code Block Execution
+*** ✅ Code Block Execution
+CLOSED: [2026-01-19 Mon 09:50]
 
 Press =C-c C-c= inside a fenced code block to execute it. Results appear below
 the block.
@@ -167,7 +183,8 @@ the block.
 Supported languages include Python, JavaScript, TypeScript, Shell, and any
 language with a Jupyter kernel installed.
 
-*** ⚠️ Code Block Manipulation
+*** ✅ Code Block Manipulation
+CLOSED: [2026-01-19 Mon 09:50]
 
 | Command                        | Description                          |
 |--------------------------------+--------------------------------------|
@@ -182,12 +199,14 @@ language with a Jupyter kernel installed.
 
 The extension preserves the fence style (=```= or =~~~=) when manipulating blocks.
 
-** ⚠️ Speed Commands
+** ✅ Speed Commands
+CLOSED: [2026-01-19 Mon 09:40]
 
 Speed commands work at the beginning of Markdown headings (column 0 of a line
 starting with =#=).
 
-*** ⚠️ Navigation Speed Commands
+*** ✅ Navigation Speed Commands
+CLOSED: [2026-01-19 Mon 09:40]
 
 | Key | Action                               |
 |-----+--------------------------------------|
@@ -199,7 +218,8 @@ starting with =#=).
 | j   | Jump to heading (quick-pick)         |
 | g   | Go to... (navigation menu)           |
 
-*** ⚠️ Structure Speed Commands
+*** ✅ Structure Speed Commands
+CLOSED: [2026-01-19 Mon 09:40]
 
 | Key | Action                    |
 |-----+---------------------------|
@@ -210,7 +230,8 @@ starting with =#=).
 | s   | Narrow to subtree         |
 | S   | Widen (show all)          |
 
-*** ⚠️ Visibility Speed Commands
+*** ✅ Visibility Speed Commands
+CLOSED: [2026-01-19 Mon 09:40]
 
 | Key | Action               |
 |-----+----------------------|
@@ -218,7 +239,8 @@ starting with =#=).
 | C   | Show children        |
 | o   | Overview (fold all)  |
 
-** ⚠️ Folding
+** ✅ Folding
+CLOSED: [2026-01-19 Mon 09:40]
 
 Markdown headings support folding via the standard VS Code folding mechanism:
 
@@ -226,12 +248,14 @@ Markdown headings support folding via the standard VS Code folding mechanism:
 - Press =Shift+Tab= anywhere for global fold cycling
 - Use the fold icons in the gutter
 
-* ⚠️ Features Not Available in Markdown
+* ✅ Features Not Available in Markdown
+CLOSED: [2026-01-19 Mon 09:40]
 
 The following org-mode features are *not* supported in Markdown files because
 they require org-specific syntax:
 
-** ⚠️ Task Management
+** ✅ Task Management
+CLOSED: [2026-01-19 Mon 09:40]
 
 | Feature        | Reason                                      |
 |----------------+---------------------------------------------|
@@ -240,7 +264,8 @@ they require org-specific syntax:
 | Checkbox lists | Markdown checkboxes work differently        |
 | Progress cookies| Org syntax: =[2/5]= or =[40%]=             |
 
-** ⚠️ Planning
+** ✅ Planning
+CLOSED: [2026-01-19 Mon 09:40]
 
 | Feature    | Reason                                         |
 |------------+------------------------------------------------|
@@ -249,7 +274,8 @@ they require org-specific syntax:
 | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  |
 | Agenda     | Requires TODO states and scheduling            |
 
-** ⚠️ Metadata
+** ✅ Metadata
+CLOSED: [2026-01-19 Mon 09:40]
 
 | Feature         | Reason                                    |
 |-----------------+-------------------------------------------|
@@ -258,7 +284,8 @@ they require org-specific syntax:
 | Inherited tags  | Requires org tag syntax                   |
 | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |
 
-** ⚠️ Special Elements
+** ✅ Special Elements
+CLOSED: [2026-01-19 Mon 09:40]
 
 | Feature         | Reason                                    |
 |-----------------+-------------------------------------------|
@@ -266,9 +293,11 @@ they require org-specific syntax:
 | Dynamic blocks  | Org syntax: =#+BEGIN:=                    |
 | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |
 
-* ⚠️ Tips for Markdown Users
+* ✅ Tips for Markdown Users
+CLOSED: [2026-01-19 Mon 09:40]
 
-** ⚠️ Maximizing Compatibility
+** ✅ Maximizing Compatibility
+CLOSED: [2026-01-19 Mon 09:41]
 
 To get the most out of Scimax VS Code with Markdown:
 
@@ -283,7 +312,8 @@ To get the most out of Scimax VS Code with Markdown:
 
 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks
 
-** ⚠️ When to Use Org-Mode Instead
+** ✅ When to Use Org-Mode Instead
+CLOSED: [2026-01-19 Mon 09:41]
 
 Consider using org-mode files when you need:
 
@@ -296,14 +326,16 @@ Consider using org-mode files when you need:
 Org files can be exported to Markdown when sharing with others who don't use
 org-mode.
 
-* ⚠️ Related Topics
+* ✅ Related Topics
+CLOSED: [2026-01-19 Mon 09:41]
 
 - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation
 - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference
 - [[file:07-source-blocks.org][Source Blocks]] - Code execution details
 - [[file:21-navigation.org][Navigation]] - All navigation features
 
-* Navigation
+* ✅ Navigation
+CLOSED: [2026-01-19 Mon 09:44]
 
 - Previous: [[file:29-unsupported-features.org][Unsupported Features]]
 - Index: [[file:00-index.org][Documentation Index]]

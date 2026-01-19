@@ -242,3 +242,22 @@ Tasks can have multiple tags:
 
 
 *End of test file*
+
+
+
+```python
+print('hello world')
+```
+
+```python
+print("Hello from Python")
+```
+
+#+RESULTS:
+: Hello from Python
+
+~~~javascript
+console.log("Hello from JS");
+~~~
+#+RESULTS:
+: Hello from JS

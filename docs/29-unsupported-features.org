@@ -178,11 +178,13 @@ These are not bugs but fundamental differences in how VS Code works compared to 
 | Extension language   | Emacs Lisp              | TypeScript/JavaScript          |
 | Customization depth  | Everything customizable | Settings + extension API       |
 
-* ⚠️ Parser Safety Limits
+* ✅ Parser Safety Limits
+CLOSED: [2026-01-19 Mon 09:23]
 
 To prevent crashes or unresponsiveness when opening malformed org files, the parser enforces several safety limits. These limits are set high enough that they should never affect legitimate files.
 
-** ⚠️ Heading Nesting Depth
+** ✅ Heading Nesting Depth
+CLOSED: [2026-01-19 Mon 09:23]
 
 *Limit*: 100 levels maximum
 
@@ -190,7 +192,8 @@ To prevent crashes or unresponsiveness when opening malformed org files, the par
 
 *What happens*: Headings beyond 100 levels deep are not included in search results or the document outline.
 
-** ⚠️ Block Line Limits
+** ✅ Block Line Limits
+CLOSED: [2026-01-19 Mon 09:23]
 
 *Limit*: 50,000 lines per block
 
@@ -208,13 +211,15 @@ To prevent crashes or unresponsiveness when opening malformed org files, the par
 
 *What happens*: If the closing tag is not found within 50,000 lines, the block is treated as ending at that point.
 
-** ⚠️ Properties Drawer Limit
+** ✅ Properties Drawer Limit
+CLOSED: [2026-01-19 Mon 09:23]
 
 *Limit*: 1,000 lines
 
 *Rationale*: Properties drawers are typically small (<50 lines). A tighter limit catches unclosed drawers faster.
 
-** ⚠️ Tag Restrictions
+** ✅ Tag Restrictions
+CLOSED: [2026-01-19 Mon 09:23]
 
 *Limit*: 50 tags per heading
 
@@ -232,7 +237,8 @@ To prevent crashes or unresponsiveness when opening malformed org files, the par
 
 *If you need exotic characters*: Tags with unsupported characters will not be recognized. Consider using standard alphanumeric tags with hyphens or underscores instead.
 
-** ⚠️ When Limits Are Hit
+** ✅ When Limits Are Hit
+CLOSED: [2026-01-19 Mon 09:23]
 
 When any limit is reached:
 - The parser stops consuming input at the limit boundary
@@ -242,7 +248,8 @@ When any limit is reached:
 
 This "graceful degradation" approach ensures that even malformed files can be opened and edited, rather than causing the extension to crash or hang.
 
-* Related Topics
+* ✅ Related Topics
+CLOSED: [2026-01-19 Mon 09:23]
 
 - [[file:10-export.org][Export System]] - What export features ARE supported
 - [[file:07-source-blocks.org][Source Blocks]] - Supported code execution features

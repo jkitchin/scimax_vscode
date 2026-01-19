@@ -337,6 +337,10 @@ function findPreviousBlock(
     const blocks = findAllBlocks(document);
     let prev: BlockPosition | null = null;
     for (const block of blocks) {
+        // Skip if cursor is inside or at the start of this block
+        if (position.line >= block.block.startLine && position.line <= block.block.endLine) {
+            break;
+        }
         if (block.block.startLine >= position.line) {
             break;
         }

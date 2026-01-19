@@ -1130,6 +1130,41 @@ export class LaTeXRangeFormattingProvider implements vscode.DocumentRangeFormatt
     }
 }
 
+/**
+ * Parse latexindent errors and return a user-friendly message
+ */
+function parseLatexindentError(stderr: string, code: number): string {
+    // Check for missing Perl modules
+    if (stderr.includes("Can't locate") && stderr.includes('.pm')) {
+        const moduleMatch = stderr.match(/Can't locate ([^\s]+\.pm)/);
+        const moduleName = moduleMatch ? moduleMatch[1].replace(/\//g, '::').replace('.pm', '') : 'a Perl module';
+        return `latexindent requires the Perl module '${moduleName}'. ` +
+            `Install it with: cpan ${moduleName} (or: sudo cpan ${moduleName})`;
+    }
+
+    // Check for YAML::Tiny specifically (common issue)
+    if (stderr.includes('YAML/Tiny.pm') || stderr.includes('YAML::Tiny')) {
+        return 'latexindent requires YAML::Tiny. Install with: cpan YAML::Tiny';
+    }
+
+    // Check for Log::Log4perl (another common missing module)
+    if (stderr.includes('Log4perl') || stderr.includes('Log/Log4perl')) {
+        return 'latexindent requires Log::Log4perl. Install with: cpan Log::Log4perl';
+    }
+
+    // Check if latexindent is not found
+    if (stderr.includes('command not found') || stderr.includes('not recognized')) {
+        return 'latexindent not found. Install it via your TeX distribution or set scimax.latex.latexindentPath';
+    }
+
+    // Generic error - truncate to something readable
+    const firstLine = stderr.split('\n')[0];
+    if (firstLine.length > 100) {
+        return `latexindent error: ${firstLine.substring(0, 100)}...`;
+    }
+    return `latexindent error (code ${code}): ${firstLine || 'unknown error'}`;
+}
+
 async function runLatexindent(text: string, filePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
         const config = vscode.workspace.getConfiguration('scimax.latex');
@@ -1155,12 +1190,17 @@ async function runLatexindent(text: string, filePath: string): Promise<string> {
             if (code === 0) {
                 resolve(stdout);
             } else {
-                reject(new Error(`latexindent exited with code ${code}: ${stderr}`));
+                const errorMsg = parseLatexindentError(stderr, code || -1);
+                reject(new Error(errorMsg));
             }
         });
 
-        proc.on('error', (err) => {
-            reject(err);
+        proc.on('error', (err: NodeJS.ErrnoException) => {
+            if (err.code === 'ENOENT') {
+                reject(new Error('latexindent not found. Install it via your TeX distribution or set scimax.latex.latexindentPath'));
+            } else {
+                reject(err);
+            }
         });
 
         // Write input to stdin

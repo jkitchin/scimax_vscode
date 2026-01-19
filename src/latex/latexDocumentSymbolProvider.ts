@@ -81,8 +81,8 @@ export function parseLatexDocument(document: vscode.TextDocument): {
 
     // Regex patterns
     const sectionPattern = /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)(\*)?\s*(?:\[([^\]]*)\])?\s*\{([^}]*)\}/;
-    const beginEnvPattern = /^\s*\\begin\{(\w+)\}/;
-    const endEnvPattern = /^\s*\\end\{(\w+)\}/;
+    const beginEnvPattern = /^\s*\\begin\{(\w+\*?)\}/;
+    const endEnvPattern = /^\s*\\end\{(\w+\*?)\}/;
     const labelPattern = /\\label\{([^}]+)\}/;
     const captionPattern = /\\caption(?:\[[^\]]*\])?\{([^}]*)\}/;
 

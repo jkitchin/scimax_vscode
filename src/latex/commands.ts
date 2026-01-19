@@ -36,6 +36,7 @@ import {
     addToUserDictionary,
     disposeSpellCheckDiagnostics,
 } from './latexLanguageProvider';
+import { openPdfInPanel, syncForwardToPanel, PdfViewerPanel } from './pdfViewerPanel';
 
 /**
  * Register all LaTeX-related commands
@@ -578,19 +579,27 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             const pdfViewer = config.get<string>('pdfViewer', 'auto');
 
             if (pdfViewer === 'auto' || pdfViewer === 'skim') {
-                // Skim on macOS
+                // Skim on macOS - use displayline script for reliable SyncTeX
                 if (process.platform === 'darwin') {
-                    // Escape paths for AppleScript (escape backslashes and quotes)
-                    const escapedPdfPath = pdfPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-                    const escapedFilePath = filePath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
-                    spawn('osascript', [
-                        '-e',
-                        `tell application "Skim" to activate`,
-                        '-e',
-                        `tell application "Skim" to open "${escapedPdfPath}"`,
-                        '-e',
-                        `tell application "Skim" to go to TeX line ${line} from POSIX file "${escapedFilePath}"`
-                    ]);
+                    const displayline = '/Applications/Skim.app/Contents/SharedSupport/displayline';
+                    // Check if displayline exists, fall back to AppleScript if not
+                    if (fs.existsSync(displayline)) {
+                        // displayline [-r] [-b] [-g] LINE SOURCE PDF
+                        // -r: don't bring Skim to foreground, -b: read from background, -g: don't open new window
+                        spawn(displayline, ['-b', String(line), filePath, pdfPath]);
+                    } else {
+                        // Fallback to AppleScript
+                        const script = `
+                            tell application "Skim"
+                                activate
+                                open POSIX file "${pdfPath.replace(/"/g, '\\"')}"
+                                tell document 1
+                                    go to TeX line ${line} from POSIX file "${filePath.replace(/"/g, '\\"')}"
+                                end tell
+                            end tell
+                        `;
+                        spawn('osascript', ['-e', script]);
+                    }
                     return;
                 }
             }
@@ -814,6 +823,21 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
                 `Configure your PDF viewer with this inverse search command:\n${cmd}`,
                 { modal: true }
             );
+        }),
+
+        // Built-in PDF viewer panel (Overleaf-like experience)
+        vscode.commands.registerCommand('scimax.latex.viewPdfPanel', () => {
+            openPdfInPanel(context);
+        }),
+
+        // Forward sync to PDF panel
+        vscode.commands.registerCommand('scimax.latex.syncToPdfPanel', () => {
+            if (PdfViewerPanel.currentPanel) {
+                syncForwardToPanel();
+            } else {
+                // Open panel first, then sync
+                openPdfInPanel(context);
+            }
         })
     );
 }
