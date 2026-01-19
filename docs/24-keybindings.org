@@ -68,25 +68,30 @@ Select a result to see details or open the documentation file at that location.
 
 * Emacs-Style Editor Keybindings
 
-| Key             | Action                       |
-|-----------------+------------------------------|
-| M-x             | Show command palette         |
-| C-x C-f         | Quick open file              |
-| C-x C-s         | Save file                    |
-| C-x s           | Save all files               |
-| C-x k           | Close active editor          |
-| C-x 3           | Split editor right           |
-| C-x 2           | Split editor down            |
-| C-x 1           | Close other editors in group |
-| C-x 0           | Close all editors            |
-| C-x o           | Focus next editor group      |
-| C-x C-<left>    | Navigate back                |
-| C-x C-<right>   | Navigate forward             |
-| C-/             | Undo                         |
-| C-y             | Paste                        |
-| C-w             | Cut (with selection)         |
-| M-w             | Copy (with selection)        |
-| C-;             | Toggle comment               |
+| Key             | Action                        |
+|-----------------+-------------------------------|
+| M-x             | Show command palette          |
+| C-x C-f         | Quick open file               |
+| C-x C-s         | Save file                     |
+| C-x s           | Save all files                |
+| C-x k           | Close active editor           |
+| C-x 3           | Split editor right            |
+| C-x 2           | Split editor down             |
+| C-x 1           | Close other editors in group  |
+| C-x 0           | Close all editors             |
+| C-x o           | Focus next editor group       |
+| C-x C-<left>    | Navigate back                 |
+| C-x C-<right>   | Navigate forward              |
+| C-/             | Undo                          |
+| C-y             | Paste                         |
+| C-w             | Cut (with selection)          |
+| M-w             | Copy (with selection)         |
+| C-;             | Toggle comment                |
+| M-c             | Capitalize word and move next |
+| M-l             | Lowercase word and move next  |
+| M-u             | Uppercase word and move next  |
+| M-<             | Beginning of buffer           |
+| M->             | End of buffer                 |
 
 * Navigation
 

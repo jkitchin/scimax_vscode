@@ -141,6 +141,109 @@ export async function strikethroughRegionOrPoint(): Promise<void> {
     await applyMarkup('+', '+');
 }
 
+// =============================================================================
+// Word Case Functions (Emacs-style M-c, M-l, M-u)
+// =============================================================================
+
+/**
+ * Move cursor to the start of the next word
+ */
+async function moveToNextWord(editor: vscode.TextEditor): Promise<void> {
+    const position = editor.selection.active;
+    const document = editor.document;
+    const line = document.lineAt(position.line);
+
+    // First, skip any remaining characters of current word
+    let col = position.character;
+    while (col < line.text.length && /\w/.test(line.text[col])) {
+        col++;
+    }
+
+    // Then skip any whitespace/non-word characters
+    while (col < line.text.length && !/\w/.test(line.text[col])) {
+        col++;
+    }
+
+    // If we reached end of line, try next line
+    if (col >= line.text.length && position.line < document.lineCount - 1) {
+        const nextLine = document.lineAt(position.line + 1);
+        let nextCol = 0;
+        while (nextCol < nextLine.text.length && !/\w/.test(nextLine.text[nextCol])) {
+            nextCol++;
+        }
+        const newPosition = new vscode.Position(position.line + 1, nextCol);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
+    } else {
+        const newPosition = new vscode.Position(position.line, col);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
+    }
+}
+
+/**
+ * Capitalize word at point and move to next word (Emacs M-c)
+ * Capitalizes the first letter and lowercases the rest
+ */
+export async function capitalizeWordAndMove(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const wordRange = document.getWordRangeAtPosition(position);
+
+    if (wordRange) {
+        const word = document.getText(wordRange);
+        const capitalized = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        await editor.edit(editBuilder => {
+            editBuilder.replace(wordRange, capitalized);
+        });
+    }
+
+    await moveToNextWord(editor);
+}
+
+/**
+ * Lowercase word at point and move to next word (Emacs M-l)
+ */
+export async function lowercaseWordAndMove(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const wordRange = document.getWordRangeAtPosition(position);
+
+    if (wordRange) {
+        const word = document.getText(wordRange);
+        await editor.edit(editBuilder => {
+            editBuilder.replace(wordRange, word.toLowerCase());
+        });
+    }
+
+    await moveToNextWord(editor);
+}
+
+/**
+ * Uppercase word at point and move to next word (Emacs M-u)
+ */
+export async function uppercaseWordAndMove(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const wordRange = document.getWordRangeAtPosition(position);
+
+    if (wordRange) {
+        const word = document.getText(wordRange);
+        await editor.edit(editBuilder => {
+            editBuilder.replace(wordRange, word.toUpperCase());
+        });
+    }
+
+    await moveToNextWord(editor);
+}
+
 /**
  * Make text an Emacs-style command (`command')
  */
@@ -3166,6 +3269,35 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.markup.superscript', superscriptRegionOrPoint),
         vscode.commands.registerCommand('scimax.markup.latexMath', latexMathRegionOrPoint),
         vscode.commands.registerCommand('scimax.markup.latexDisplayMath', latexDisplayMathRegionOrPoint)
+    );
+
+    // Word case commands (Emacs M-c, M-l, M-u)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.capitalizeWord', capitalizeWordAndMove),
+        vscode.commands.registerCommand('scimax.lowercaseWord', lowercaseWordAndMove),
+        vscode.commands.registerCommand('scimax.uppercaseWord', uppercaseWordAndMove)
+    );
+
+    // File navigation (Emacs M-< and M->)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.beginningOfBuffer', () => {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const position = new vscode.Position(0, 0);
+                editor.selection = new vscode.Selection(position, position);
+                editor.revealRange(new vscode.Range(position, position));
+            }
+        }),
+        vscode.commands.registerCommand('scimax.endOfBuffer', () => {
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                const lastLine = editor.document.lineCount - 1;
+                const lastChar = editor.document.lineAt(lastLine).text.length;
+                const position = new vscode.Position(lastLine, lastChar);
+                editor.selection = new vscode.Selection(position, position);
+                editor.revealRange(new vscode.Range(position, position));
+            }
+        })
     );
 
     // Navigation

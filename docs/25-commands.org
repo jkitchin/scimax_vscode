@@ -591,6 +591,16 @@ CLOSED: [2026-01-17 Sat 12:48]
 | [[cmd:scimax.markup.latexDisplayMath]] | LaTeX Display Math (Markup) | -                  |
 | [[cmd:scimax.markup.command]]          | Command (Emacs-style)       | C-c '              |
 
+* ⚠️ Word Case & Navigation
+
+| Command ID                        | Description                   | Default Keybinding |
+|-----------------------------------+-------------------------------+--------------------|
+| [[cmd:scimax.capitalizeWord]]     | Capitalize Word and Move Next | M-c                |
+| [[cmd:scimax.lowercaseWord]]      | Lowercase Word and Move Next  | M-l                |
+| [[cmd:scimax.uppercaseWord]]      | Uppercase Word and Move Next  | M-u                |
+| [[cmd:scimax.beginningOfBuffer]]  | Beginning of Buffer           | M-<                |
+| [[cmd:scimax.endOfBuffer]]        | End of Buffer                 | M->                |
+
 * ✅ Speed Commands
 CLOSED: [2026-01-17 Sat 12:48]
 

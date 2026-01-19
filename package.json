@@ -1589,6 +1589,26 @@
         "title": "Scimax: LaTeX Display Math (Markup)"
       },
       {
+        "command": "scimax.capitalizeWord",
+        "title": "Scimax: Capitalize Word and Move"
+      },
+      {
+        "command": "scimax.lowercaseWord",
+        "title": "Scimax: Lowercase Word and Move"
+      },
+      {
+        "command": "scimax.uppercaseWord",
+        "title": "Scimax: Uppercase Word and Move"
+      },
+      {
+        "command": "scimax.beginningOfBuffer",
+        "title": "Scimax: Beginning of Buffer"
+      },
+      {
+        "command": "scimax.endOfBuffer",
+        "title": "Scimax: End of Buffer"
+      },
+      {
         "command": "scimax.org.jumpToHeading",
         "title": "Scimax: Jump to Heading"
       },
@@ -2517,6 +2537,36 @@
         "command": "undo",
         "key": "ctrl+/",
         "mac": "ctrl+/"
+      },
+      {
+        "command": "scimax.capitalizeWord",
+        "key": "alt+c",
+        "mac": "alt+c",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.lowercaseWord",
+        "key": "alt+l",
+        "mac": "alt+l",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.uppercaseWord",
+        "key": "alt+u",
+        "mac": "alt+u",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.beginningOfBuffer",
+        "key": "alt+shift+,",
+        "mac": "alt+shift+,",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.endOfBuffer",
+        "key": "alt+shift+.",
+        "mac": "alt+shift+.",
+        "when": "editorTextFocus"
       },
       {
         "command": "editor.action.clipboardPasteAction",
