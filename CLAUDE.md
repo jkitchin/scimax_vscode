@@ -236,6 +236,31 @@ When adding or changing keybindings, always check for conflicts with existing bi
    - Feature-specific docs that mention the keybinding
    - `package.json` contributes.keybindings section
 
+### Keybinding and Command Consistency Audit
+
+Run the audit script to check for discrepancies between package.json and documentation:
+
+```bash
+npx ts-node scripts/audit-keybindings.ts
+```
+
+This script detects:
+- Commands in package.json missing from `docs/25-commands.org`
+- Commands documented but not in package.json
+- Duplicate keybindings with overlapping `when` contexts (conflicts)
+
+**When adding new commands:**
+1. Add command definition in `package.json` under `contributes.commands`
+2. Add keybinding in `package.json` under `contributes.keybindings` (if applicable)
+3. Document the command in `docs/25-commands.org` in the appropriate section
+4. Document the keybinding in `docs/24-keybindings.org`
+5. Run the audit script to verify consistency
+
+**Avoiding keybinding conflicts:**
+- Use `when` context conditions to disambiguate same-key bindings
+- Common contexts: `scimax.inSourceBlock`, `scimax.onHeading`, `scimax.inTable`, `scimax.atHeadingStart`
+- More specific contexts take precedence (e.g., `scimax.onHeading` wins over generic `editorTextFocus`)
+
 ### README Statistics
 
 Before pushing to GitHub, update the "Codebase Statistics" section in `README.md` with current metrics:

@@ -85,9 +85,10 @@ CLOSED: [2026-01-17 Sat 12:24]
 ** ✅ TODO Keywords
 CLOSED: [2026-01-17 Sat 12:24]
 
-| Command ID                    | Description       | Default Keybinding |
-|-------------------------------+-------------------+--------------------|
-| [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State  | C-c C-t            |
+| Command ID                    | Description             | Default Keybinding |
+|-------------------------------+-------------------------+--------------------|
+| [[cmd:scimax.org.cycleTodo]]  | Cycle TODO State        | C-c C-t            |
+| [[cmd:scimax.org.showTodos]]  | Show TODOs in Document  | -                  |
 
 ** ✅ Checkboxes
 CLOSED: [2026-01-17 Sat 12:24]
@@ -302,10 +303,13 @@ Time tracking commands for measuring effort on tasks.
 
 | Command ID                     | Description           | Default Keybinding |
 |--------------------------------+-----------------------+--------------------|
-| [[cmd:scimax.speed.clockIn]]   | Clock In              | I (speed cmd)      |
-| [[cmd:scimax.speed.clockOut]]  | Clock Out             | O (speed cmd)      |
-| [[cmd:scimax.org.clockReport]] | Generate Clock Report | -                  |
-| [[cmd:scimax.org.clockTable]]  | Insert Clock Table    | -                  |
+| [[cmd:scimax.speed.clockIn]]        | Clock In                   | I (speed cmd) |
+| [[cmd:scimax.speed.clockOut]]       | Clock Out                  | O (speed cmd) |
+| [[cmd:scimax.org.clockReport]]      | Generate Clock Report      | -             |
+| [[cmd:scimax.org.clockTable]]       | Insert Clock Table         | -             |
+| [[cmd:scimax.clock.checkConsistency]]| Check Clock Consistency    | -             |
+| [[cmd:scimax.clock.modify]]         | Modify Clock Entry         | -             |
+| [[cmd:scimax.clock.toggleDecorations]]| Toggle Clock Decorations | -             |
 
 Clock entries are stored in a :LOGBOOK: drawer under the heading. Use =scimax.org.clockReport= to generate a summary of time spent.
 
@@ -345,6 +349,8 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.groupByPriority]] | Group Agenda by Priority | -                  |
 | [[cmd:scimax.agenda.configure]]       | Configure Agenda Files   | -                  |
 | [[cmd:scimax.agenda.gotoItem]]        | Go to Agenda Item        | -                  |
+| [[cmd:scimax.agenda.search]]          | Search Agenda Items      | -                  |
+| [[cmd:scimax.agenda.toggleVerbose]]   | Toggle Verbose Mode      | -                  |
 
 * ✅ Journal
 CLOSED: [2026-01-17 Sat 12:51]
@@ -524,6 +530,11 @@ CLOSED: [2026-01-17 Sat 12:47]
 | [[cmd:scimax.projectile.info]]        | Project Info                  | -                  |
 | [[cmd:scimax.projectile.cleanup]]     | Cleanup Non-existent Projects | -                  |
 | [[cmd:scimax.projectile.refreshTree]] | Refresh Projects              | -                  |
+| [[cmd:scimax.projectile.filterProjects]]| Filter Projects             | -                  |
+| [[cmd:scimax.projectile.clearFilter]] | Clear Project Filter          | -                  |
+| [[cmd:scimax.projectile.sortByName]]  | Sort Projects by Name         | -                  |
+| [[cmd:scimax.projectile.sortByNameDesc]]| Sort Projects by Name (Desc)| -                  |
+| [[cmd:scimax.projectile.sortByRecent]]| Sort Projects by Recent       | -                  |
 
 * ✅ Editmarks
 CLOSED: [2026-01-17 Sat 12:47]
@@ -570,7 +581,7 @@ CLOSED: [2026-01-17 Sat 12:48]
 |----------------------------------------+-----------------------------+--------------------|
 | [[cmd:scimax.markup.bold]]             | Bold (Markup)               | C-c b              |
 | [[cmd:scimax.markup.italic]]           | Italic (Markup)             | C-c i              |
-| [[cmd:scimax.markup.underline]]        | Underline (Markup)          | C-c u              |
+| [[cmd:scimax.markup.underline]]        | Underline (Markup)          | C-c _              |
 | [[cmd:scimax.markup.code]]             | Code (Markup)               | C-c `              |
 | [[cmd:scimax.markup.verbatim]]         | Verbatim (Markup)           | C-c =              |
 | [[cmd:scimax.markup.strikethrough]]    | Strikethrough (Markup)      | C-c +              |
@@ -683,21 +694,157 @@ CLOSED: [2026-01-17 Sat 12:49]
 | [[cmd:scimax.speed.help]]   | Speed Commands Help   | ? (S-/)   |
 | [[cmd:scimax.speed.toggle]] | Toggle Speed Commands | C-c C-x s |
 
-* ✅ LaTeX
-CLOSED: [2026-01-17 Sat 12:50]
+* ⚠️ LaTeX
 
-** ✅ LaTeX Preview and Compilation
-CLOSED: [2026-01-17 Sat 12:50]
+Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.
 
-| Command ID                       | Description                 | Default Keybinding |
-|----------------------------------+-----------------------------+--------------------|
-| [[cmd:scimax.latex.openPreview]] | Open LaTeX Live Preview     | C-c C-e l v        |
-| [[cmd:scimax.latex.forwardSync]] | Sync PDF to Cursor Position | C-c C-e l s        |
-| [[cmd:scimax.latex.rebuild]]     | Rebuild PDF                 | -                  |
-| [[cmd:scimax.latex.showOutput]]  | Show LaTeX Build Output     | -                  |
+** ⚠️ Section Navigation
 
-** ✅ LaTeX Cache Management
-CLOSED: [2026-01-17 Sat 12:50]
+| Command ID                                 | Description              | Default Keybinding |
+|--------------------------------------------+--------------------------+--------------------|
+| [[cmd:scimax.latex.nextSection]]           | Next Section             | C-c C-n            |
+| [[cmd:scimax.latex.previousSection]]       | Previous Section         | C-c C-p            |
+| [[cmd:scimax.latex.parentSection]]         | Parent Section           | C-c C-u            |
+| [[cmd:scimax.latex.nextSiblingSection]]    | Next Sibling Section     | C-c C-f            |
+| [[cmd:scimax.latex.previousSiblingSection]]| Previous Sibling Section | C-c C-b            |
+| [[cmd:scimax.latex.firstSection]]          | First Section            | -                  |
+| [[cmd:scimax.latex.lastSection]]           | Last Section             | -                  |
+| [[cmd:scimax.latex.jumpToSection]]         | Jump to Section          | C-c j / C-c C-j    |
+
+** ⚠️ Environment Navigation
+
+| Command ID                                    | Description                 | Default Keybinding |
+|-----------------------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.latex.nextEnvironment]]          | Next Environment            | -                  |
+| [[cmd:scimax.latex.previousEnvironment]]      | Previous Environment        | -                  |
+| [[cmd:scimax.latex.jumpToEnvironment]]        | Jump to Environment         | -                  |
+| [[cmd:scimax.latex.jumpToLabel]]              | Jump to Label               | C-c l              |
+| [[cmd:scimax.latex.jumpToMatchingEnvironment]]| Jump to Matching Begin/End  | C-c %              |
+
+** ⚠️ Structure Editing
+
+| Command ID                              | Description        | Default Keybinding |
+|-----------------------------------------+--------------------+--------------------|
+| [[cmd:scimax.latex.promoteSection]]     | Promote Section    | M-LEFT             |
+| [[cmd:scimax.latex.demoteSection]]      | Demote Section     | M-RIGHT            |
+| [[cmd:scimax.latex.promoteSubtree]]     | Promote Subtree    | M-S-LEFT           |
+| [[cmd:scimax.latex.demoteSubtree]]      | Demote Subtree     | M-S-RIGHT          |
+| [[cmd:scimax.latex.moveSectionUp]]      | Move Section Up    | M-UP               |
+| [[cmd:scimax.latex.moveSectionDown]]    | Move Section Down  | M-DOWN             |
+| [[cmd:scimax.latex.markSection]]        | Mark Section       | C-c @              |
+| [[cmd:scimax.latex.killSection]]        | Kill Section       | -                  |
+| [[cmd:scimax.latex.cloneSection]]       | Clone Section      | -                  |
+| [[cmd:scimax.latex.insertSection]]      | Insert Section     | -                  |
+| [[cmd:scimax.latex.insertSubsection]]   | Insert Subsection  | -                  |
+| [[cmd:scimax.latex.narrowToSection]]    | Narrow to Section  | -                  |
+| [[cmd:scimax.latex.widen]]              | Widen (Unfold All) | -                  |
+
+** ⚠️ Environment Manipulation
+
+| Command ID                                  | Description                 | Default Keybinding |
+|---------------------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.latex.selectEnvironment]]      | Select Environment          | C-c C-e            |
+| [[cmd:scimax.latex.selectEnvironmentContent]]| Select Environment Content  | -                  |
+| [[cmd:scimax.latex.changeEnvironment]]      | Change Environment          | C-c e              |
+| [[cmd:scimax.latex.wrapInEnvironment]]      | Wrap in Environment         | C-c w              |
+| [[cmd:scimax.latex.unwrapEnvironment]]      | Unwrap Environment          | -                  |
+| [[cmd:scimax.latex.deleteEnvironment]]      | Delete Environment          | -                  |
+| [[cmd:scimax.latex.toggleEnvironmentStar]]  | Toggle Environment Star     | C-c *              |
+| [[cmd:scimax.latex.addLabel]]               | Add Label to Environment    | C-c C-l            |
+| [[cmd:scimax.latex.addCaption]]             | Add Caption to Environment  | -                  |
+| [[cmd:scimax.latex.environmentInfo]]        | Show Environment Info       | -                  |
+
+** ⚠️ Compilation and PDF Viewing
+
+| Command ID                               | Description                        | Default Keybinding |
+|------------------------------------------+------------------------------------+--------------------|
+| [[cmd:scimax.latex.compile]]             | Compile Document                   | C-c C-c            |
+| [[cmd:scimax.latex.viewPdf]]             | View PDF (External)                | C-c C-v            |
+| [[cmd:scimax.latex.viewPdfPanel]]        | View PDF (Built-in Panel)          | C-c v              |
+| [[cmd:scimax.latex.compileAndView]]      | Compile and View PDF               | C-c C-a            |
+| [[cmd:scimax.latex.compileAndViewPanel]] | Compile and View PDF (Panel)       | C-c S-a            |
+| [[cmd:scimax.latex.syncTexForward]]      | SyncTeX Forward Search             | C-c g              |
+| [[cmd:scimax.latex.syncToPdfPanel]]      | Sync to PDF Panel                  | C-c C-s            |
+| [[cmd:scimax.latex.clean]]               | Clean Auxiliary Files              | C-c C-k            |
+| [[cmd:scimax.latex.openPreview]]         | Open LaTeX Live Preview            | C-c C-e l v        |
+| [[cmd:scimax.latex.forwardSync]]         | Sync PDF to Cursor Position        | C-c C-e l s        |
+| [[cmd:scimax.latex.rebuild]]             | Rebuild PDF                        | -                  |
+| [[cmd:scimax.latex.showOutput]]          | Show LaTeX Build Output            | -                  |
+
+** ⚠️ Error Navigation
+
+| Command ID                        | Description           | Default Keybinding |
+|-----------------------------------+-----------------------+--------------------|
+| [[cmd:scimax.latex.nextError]]    | Go to Next Error      | C-c `              |
+| [[cmd:scimax.latex.previousError]]| Go to Previous Error  | C-c S-`            |
+| [[cmd:scimax.latex.showErrors]]   | Show All Errors       | C-c !              |
+
+** ⚠️ Insertion Commands
+
+| Command ID                        | Description      | Default Keybinding |
+|-----------------------------------+------------------+--------------------|
+| [[cmd:scimax.latex.insertFigure]] | Insert Figure    | -                  |
+| [[cmd:scimax.latex.insertTable]]  | Insert Table     | -                  |
+| [[cmd:scimax.latex.insertEquation]]| Insert Equation | -                  |
+
+** ⚠️ Utilities
+
+| Command ID                                | Description                    | Default Keybinding |
+|-------------------------------------------+--------------------------------+--------------------|
+| [[cmd:scimax.latex.format]]               | Format Document                | C-c C-q            |
+| [[cmd:scimax.latex.wordCount]]            | Word Count                     | -                  |
+| [[cmd:scimax.latex.addToDictionary]]      | Add Word to Dictionary         | -                  |
+| [[cmd:scimax.latex.showInverseSyncTeXCommand]]| Show Inverse SyncTeX Command | -                  |
+
+** ⚠️ Speed Commands
+
+Speed commands are available when cursor is at the beginning of a section line.
+
+| Command ID                          | Description               | Speed Key |
+|-------------------------------------+---------------------------+-----------|
+| [[cmd:scimax.latex.speedCommandHelp]]| Speed Command Help        | ?         |
+
+Section speed commands (at \section, \subsection, etc.):
+- n :: Next section
+- p :: Previous section
+- f :: Next sibling
+- b :: Previous sibling
+- u :: Parent section
+- j :: Jump to section
+- L :: Promote section
+- R :: Demote section
+- U :: Move section up
+- D :: Move section down
+- m :: Mark section
+- k :: Kill section
+- c :: Clone section
+- i :: Insert section
+- Tab :: Toggle fold
+
+** ⚠️ Environment Speed Commands
+
+Environment speed commands available at \begin{...} lines.
+
+| Command ID                             | Description                  | Speed Key |
+|----------------------------------------+------------------------------+-----------|
+| [[cmd:scimax.latex.envSpeedCommand]]   | Environment Speed Command    | -         |
+| [[cmd:scimax.latex.envSpeedCommandHelp]]| Environment Speed Help       | ?         |
+
+Environment speed command keys:
+- n :: Next environment
+- p :: Previous environment
+- j :: Jump to environment
+- s :: Select environment
+- c :: Change environment
+- k :: Kill environment
+- w :: Wrap in environment
+- u :: Unwrap environment
+- * :: Toggle star
+- l :: Add label
+- C :: Add caption
+- i :: Environment info
+
+** ⚠️ LaTeX Cache Management
 
 | Command ID                     | Description                     | Default Keybinding |
 |--------------------------------+---------------------------------+--------------------|

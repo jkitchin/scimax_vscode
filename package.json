@@ -2367,7 +2367,11 @@
       },
       {
         "command": "scimax.latex.syncToPdfPanel",
-        "title": "Scimax LaTeX: Sync to PDF Panel"
+        "title": "Scimax LaTeX: Sync to PDF Panel (SyncTeX Forward)"
+      },
+      {
+        "command": "scimax.latex.compileAndViewPanel",
+        "title": "Scimax LaTeX: Compile and View PDF (Built-in Panel)"
       },
       {
         "command": "scimax.latex.compileAndView",
@@ -2582,7 +2586,7 @@
         "command": "scimax.org.executeBlock",
         "key": "ctrl+enter",
         "mac": "cmd+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock"
       },
       {
         "command": "scimax.ref.insertCitation",
@@ -2874,13 +2878,13 @@
         "command": "scimax.heading.promote",
         "key": "alt+left",
         "mac": "alt+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
       },
       {
         "command": "scimax.heading.demote",
         "key": "alt+right",
         "mac": "alt+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
       },
       {
         "command": "scimax.heading.promoteSubtree",
@@ -2898,19 +2902,19 @@
         "command": "scimax.heading.moveUp",
         "key": "alt+up",
         "mac": "alt+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
       },
       {
         "command": "scimax.heading.moveDown",
         "key": "alt+down",
         "mac": "alt+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
       },
       {
         "command": "scimax.heading.insert",
         "key": "ctrl+enter",
         "mac": "ctrl+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inSourceBlock && !scimax.onHeading"
       },
       {
         "command": "scimax.projectile.switch",
@@ -3152,8 +3156,8 @@
       },
       {
         "command": "scimax.markup.underline",
-        "key": "ctrl+c u",
-        "mac": "ctrl+c u",
+        "key": "ctrl+c _",
+        "mac": "ctrl+c _",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
@@ -3214,7 +3218,7 @@
         "command": "scimax.speed.previousSibling",
         "key": "ctrl+c ctrl+b",
         "mac": "ctrl+c ctrl+b",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart"
       },
       {
         "command": "scimax.org.promoteHeading",
@@ -4000,9 +4004,21 @@
         "when": "editorTextFocus && editorLangId == 'latex'"
       },
       {
+        "command": "scimax.latex.compileAndViewPanel",
+        "key": "ctrl+c shift+a",
+        "mac": "ctrl+c shift+a",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
         "command": "scimax.latex.syncTexForward",
         "key": "ctrl+c g",
         "mac": "ctrl+c g",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.syncToPdfPanel",
+        "key": "ctrl+c ctrl+s",
+        "mac": "ctrl+c ctrl+s",
         "when": "editorTextFocus && editorLangId == 'latex'"
       },
       {
@@ -4357,13 +4373,13 @@
         "scimax.latex.compiler": {
           "type": "string",
           "enum": [
+            "latexmk",
             "pdflatex",
             "xelatex",
-            "lualatex",
-            "latexmk"
+            "lualatex"
           ],
-          "default": "pdflatex",
-          "description": "LaTeX compiler to use for compiling .tex files"
+          "default": "latexmk",
+          "description": "LaTeX compiler to use. latexmk (default) automatically runs multiple passes to resolve references."
         },
         "scimax.latex.pdfViewer": {
           "type": "string",
