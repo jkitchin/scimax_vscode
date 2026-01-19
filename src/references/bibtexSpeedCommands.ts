@@ -84,10 +84,6 @@ export const BIBTEX_SPEED_COMMANDS: BibtexSpeedCommandDefinition[] = [
     { key: 'k', command: 'scimax.bibtex.killEntry', description: 'Kill (delete) entry' },
     { key: 'K', command: 'scimax.bibtex.generateKey', description: 'Generate citation key' },
 
-    // File-wide
-    { key: 'v', command: 'scimax.bibtex.validateFile', description: 'Validate file' },
-    { key: 'i', command: 'scimax.bibtex.showStatistics', description: 'Show file statistics' },
-
     // Help
     { key: '?', command: 'scimax.bibtex.help', description: 'Show speed commands help' }
 ];
@@ -1497,4 +1493,45 @@ export function registerBibtexSpeedCommands(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand('scimax.bibtex.validateFile', validateFile),
         vscode.commands.registerCommand('scimax.bibtex.showStatistics', showStatistics)
     );
+
+    // Register code lens provider for file-wide actions
+    context.subscriptions.push(
+        vscode.languages.registerCodeLensProvider(
+            { language: 'bibtex', scheme: 'file' },
+            new BibtexFileCodeLensProvider()
+        )
+    );
+}
+
+/**
+ * Code lens provider that shows file-wide actions at the top of BibTeX files
+ */
+export class BibtexFileCodeLensProvider implements vscode.CodeLensProvider {
+    provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
+        const codeLenses: vscode.CodeLens[] = [];
+
+        // Only show at the very top of the file (line 0)
+        const topRange = new vscode.Range(0, 0, 0, 0);
+
+        // Quick stats
+        const text = document.getText();
+        const result = parseBibTeX(text);
+        const entryCount = result.entries.length;
+
+        // Validate button
+        codeLenses.push(new vscode.CodeLens(topRange, {
+            title: `$(check) Validate`,
+            command: 'scimax.bibtex.validateFile',
+            tooltip: 'Validate BibTeX file for errors and warnings'
+        }));
+
+        // Statistics button with entry count
+        codeLenses.push(new vscode.CodeLens(topRange, {
+            title: `$(list-unordered) ${entryCount} entries`,
+            command: 'scimax.bibtex.showStatistics',
+            tooltip: 'Show file statistics'
+        }));
+
+        return codeLenses;
+    }
 }

@@ -4064,16 +4064,6 @@
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {
-        "command": "scimax.bibtex.validateFile",
-        "key": "v",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
-      },
-      {
-        "command": "scimax.bibtex.showStatistics",
-        "key": "i",
-        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
-      },
-      {
         "command": "scimax.bibtex.help",
         "key": "shift+/",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"

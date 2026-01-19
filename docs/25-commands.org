@@ -517,6 +517,15 @@ Speed commands for BibTeX files, active at column 0 of @entry lines.
 | [[cmd:scimax.bibtex.generateKey]]  | Generate Citation Key| K         |
 | [[cmd:scimax.bibtex.help]]         | Show Help            | ?         |
 
+*** ⚠️ File-Wide Commands
+
+These commands operate on the entire file. They appear as code lens buttons at the top of .bib files.
+
+| Command ID                          | Description          | Code Lens |
+|-------------------------------------+----------------------+-----------|
+| [[cmd:scimax.bibtex.validateFile]]  | Validate File        | ✓ Validate|
+| [[cmd:scimax.bibtex.showStatistics]]| Show File Statistics | N entries |
+
 * ✅ Notebook
 CLOSED: [2026-01-17 Sat 12:46]
 
