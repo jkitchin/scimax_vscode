@@ -356,6 +356,58 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 |-----+--------------------------|
 | ?   | Show speed commands help |
 
+** ⚠️ BibTeX Speed Commands
+
+Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@article{=, =@book{=).
+
+*** ⚠️ Navigation
+
+| Key | Action         |
+|-----+----------------|
+| n   | Next entry     |
+| p   | Previous entry |
+| j   | Jump to entry  |
+
+*** ⚠️ Formatting
+
+| Key | Action              |
+|-----+---------------------|
+| s   | Sort fields         |
+| d   | Downcase entry      |
+| t   | Title case title    |
+| S   | Sentence case title |
+| c   | Clean/format entry  |
+
+*** ⚠️ Access
+
+| Key | Action               |
+|-----+----------------------|
+| o   | Open PDF             |
+| u   | Open URL/DOI         |
+| N   | Open notes           |
+| g   | Google Scholar       |
+| x   | CrossRef             |
+| w   | Web of Science       |
+
+*** ⚠️ OpenAlex Integration
+
+| Key | Action                        |
+|-----+-------------------------------|
+| C   | Show citing works (OpenAlex)  |
+| R   | Show related works (OpenAlex) |
+| r   | Show references (OpenAlex)    |
+
+*** ⚠️ Actions
+
+| Key | Action               |
+|-----+----------------------|
+| y   | Copy citation key    |
+| b   | Copy BibTeX entry    |
+| k   | Delete entry         |
+| K   | Generate citation key|
+| U   | Update from web      |
+| ?   | Show help            |
+
 * Toggle Speed Commands
 
 | Key       | Action                       |

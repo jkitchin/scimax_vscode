@@ -471,6 +471,70 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  |
 | [[cmd:scimax.ref.configureOpenAlex]]| Configure OpenAlex API        | -                  |
 
+** ⚠️ BibTeX Speed Commands
+:PROPERTIES:
+:CUSTOM_ID: bibtex-speed-commands
+:END:
+
+Speed commands for BibTeX files, active at column 0 of @entry lines.
+
+*** ⚠️ Navigation
+
+| Command ID                         | Description      | Speed Key |
+|------------------------------------+------------------+-----------|
+| [[cmd:scimax.bibtex.nextEntry]]    | Next Entry       | n         |
+| [[cmd:scimax.bibtex.previousEntry]]| Previous Entry   | p         |
+| [[cmd:scimax.bibtex.jumpToEntry]]  | Jump to Entry    | j         |
+
+*** ⚠️ Formatting
+
+| Command ID                         | Description          | Speed Key |
+|------------------------------------+----------------------+-----------|
+| [[cmd:scimax.bibtex.sortFields]]   | Sort Fields          | s         |
+| [[cmd:scimax.bibtex.downcaseEntry]]| Downcase Entry       | d         |
+| [[cmd:scimax.bibtex.titleCase]]    | Title Case Title     | t         |
+| [[cmd:scimax.bibtex.sentenceCase]] | Sentence Case Title  | S         |
+| [[cmd:scimax.bibtex.cleanEntry]]   | Clean/Format Entry   | c         |
+
+*** ⚠️ Access
+
+| Command ID                         | Description          | Speed Key |
+|------------------------------------+----------------------+-----------|
+| [[cmd:scimax.bibtex.openPdf]]      | Open PDF             | o         |
+| [[cmd:scimax.bibtex.openUrl]]      | Open URL/DOI         | u         |
+| [[cmd:scimax.bibtex.openNotes]]    | Open Notes           | N         |
+| [[cmd:scimax.bibtex.googleScholar]]| Google Scholar       | g         |
+| [[cmd:scimax.bibtex.crossref]]     | Open in CrossRef     | x         |
+| [[cmd:scimax.bibtex.webOfScience]] | Open in Web of Science | w       |
+
+*** ⚠️ OpenAlex Integration
+
+| Command ID                             | Description           | Speed Key |
+|----------------------------------------+-----------------------+-----------|
+| [[cmd:scimax.bibtex.showCitingWorks]]  | Show Citing Works     | C         |
+| [[cmd:scimax.bibtex.showRelatedWorks]] | Show Related Works    | R         |
+| [[cmd:scimax.bibtex.showReferences]]   | Show References       | r         |
+
+*** ⚠️ Actions
+
+| Command ID                         | Description          | Speed Key |
+|------------------------------------+----------------------+-----------|
+| [[cmd:scimax.bibtex.copyKey]]      | Copy Citation Key    | y         |
+| [[cmd:scimax.bibtex.copyBibtex]]   | Copy BibTeX Entry    | b         |
+| [[cmd:scimax.bibtex.killEntry]]    | Delete Entry         | k         |
+| [[cmd:scimax.bibtex.generateKey]]  | Generate Citation Key| K         |
+| [[cmd:scimax.bibtex.updateFromWeb]]| Update from Web      | U         |
+| [[cmd:scimax.bibtex.help]]         | Show Help            | ?         |
+
+*** ⚠️ File-Wide Commands
+
+These commands operate on the entire file. They appear as code lens buttons at the top of .bib files.
+
+| Command ID                          | Description          | Code Lens |
+|-------------------------------------+----------------------+-----------|
+| [[cmd:scimax.bibtex.validateFile]]  | Validate File        | ✓ Validate|
+| [[cmd:scimax.bibtex.showStatistics]]| Show File Statistics | N entries |
+
 * ✅ Notebook
 CLOSED: [2026-01-17 Sat 12:46]
 
