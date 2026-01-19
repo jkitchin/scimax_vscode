@@ -93,6 +93,14 @@ Select a result to see details or open the documentation file at that location.
 | M-<             | Beginning of buffer           |
 | M->             | End of buffer                 |
 
+*Note for macOS:* Alt+u, Alt+c, and Alt+l are "dead keys" that insert accents (¨, ç, etc.) by default. To use these keybindings, disable the accent menu:
+
+#+begin_src bash
+defaults write -g ApplePressAndHoldEnabled -bool false
+#+end_src
+
+Then restart VS Code.
+
 * Navigation
 
 | Key         | Action                   |
