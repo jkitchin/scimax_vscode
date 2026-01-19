@@ -14,6 +14,15 @@ import * as structure from './latexStructure';
 import * as environments from './latexEnvironments';
 import { registerSpeedCommands } from './latexSpeedCommands';
 import { initLatexPreviewCache } from '../org/latexPreviewProvider';
+import {
+    LaTeXDefinitionProvider,
+    LaTeXReferenceProvider,
+    LaTeXCompletionProvider,
+    runChkTeX,
+    clearDiagnostics,
+    disposeDiagnostics,
+    clearProjectCache,
+} from './latexLanguageProvider';
 
 /**
  * Register all LaTeX-related commands
@@ -75,10 +84,12 @@ export function registerLatexCommands(context: vscode.ExtensionContext): void {
  * Register LaTeX language providers
  */
 export function registerLatexProviders(context: vscode.ExtensionContext): void {
+    const latexSelector = { language: 'latex', scheme: 'file' };
+
     // Document Symbol Provider (for outline view)
     context.subscriptions.push(
         vscode.languages.registerDocumentSymbolProvider(
-            { language: 'latex', scheme: 'file' },
+            latexSelector,
             new LaTeXDocumentSymbolProvider()
         )
     );
@@ -86,16 +97,172 @@ export function registerLatexProviders(context: vscode.ExtensionContext): void {
     // Hover Provider (for tooltips)
     context.subscriptions.push(
         vscode.languages.registerHoverProvider(
-            { language: 'latex', scheme: 'file' },
+            latexSelector,
             new LaTeXHoverProvider()
         )
     );
+
+    // Definition Provider (go to definition for labels, citations, commands)
+    context.subscriptions.push(
+        vscode.languages.registerDefinitionProvider(
+            latexSelector,
+            new LaTeXDefinitionProvider()
+        )
+    );
+
+    // Reference Provider (find all references to labels, citations)
+    context.subscriptions.push(
+        vscode.languages.registerReferenceProvider(
+            latexSelector,
+            new LaTeXReferenceProvider()
+        )
+    );
+
+    // Completion Provider (auto-complete labels, citations, environments)
+    context.subscriptions.push(
+        vscode.languages.registerCompletionItemProvider(
+            latexSelector,
+            new LaTeXCompletionProvider(),
+            '{', ',', '\\' // Trigger characters
+        )
+    );
+
+    // ChkTeX diagnostics
+    const config = vscode.workspace.getConfiguration('scimax.latex');
+    if (config.get<boolean>('enableChktex', true)) {
+        // Run on open
+        context.subscriptions.push(
+            vscode.workspace.onDidOpenTextDocument(doc => {
+                if (doc.languageId === 'latex') {
+                    runChkTeX(doc);
+                }
+            })
+        );
+
+        // Run on save
+        context.subscriptions.push(
+            vscode.workspace.onDidSaveTextDocument(doc => {
+                if (doc.languageId === 'latex') {
+                    runChkTeX(doc);
+                }
+            })
+        );
+
+        // Clear on close
+        context.subscriptions.push(
+            vscode.workspace.onDidCloseTextDocument(doc => {
+                if (doc.languageId === 'latex') {
+                    clearDiagnostics(doc);
+                }
+            })
+        );
+
+        // Run on already open documents
+        for (const doc of vscode.workspace.textDocuments) {
+            if (doc.languageId === 'latex') {
+                runChkTeX(doc);
+            }
+        }
+    }
+
+    // Clear project cache when files change
+    context.subscriptions.push(
+        vscode.workspace.onDidSaveTextDocument(() => {
+            clearProjectCache();
+        })
+    );
+
+    // Cleanup on deactivate
+    context.subscriptions.push({
+        dispose: () => {
+            disposeDiagnostics();
+            clearProjectCache();
+        }
+    });
+}
+
+// Store errors for navigation
+interface LaTeXError {
+    file: string;
+    line: number;
+    message: string;
+}
+let lastCompileErrors: LaTeXError[] = [];
+let currentErrorIndex = 0;
+
+/**
+ * Parse LaTeX log for errors
+ */
+function parseLatexErrors(output: string, baseDir: string): LaTeXError[] {
+    const errors: LaTeXError[] = [];
+    const lines = output.split('\n');
+
+    // Pattern for file:line: error
+    const errorPattern = /^([^:]+):(\d+): (.+)$/;
+    // Pattern for ! Error
+    const bangPattern = /^! (.+)$/;
+    // Pattern for l.123 ...
+    const linePattern = /^l\.(\d+)/;
+
+    let currentFile = '';
+    let pendingError = '';
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        // Standard file:line:error format
+        const errorMatch = errorPattern.exec(line);
+        if (errorMatch) {
+            const file = path.isAbsolute(errorMatch[1])
+                ? errorMatch[1]
+                : path.join(baseDir, errorMatch[1]);
+            errors.push({
+                file,
+                line: parseInt(errorMatch[2], 10),
+                message: errorMatch[3],
+            });
+            continue;
+        }
+
+        // TeX-style ! Error
+        const bangMatch = bangPattern.exec(line);
+        if (bangMatch) {
+            pendingError = bangMatch[1];
+            continue;
+        }
+
+        // l.123 shows line number for pending error
+        if (pendingError) {
+            const lineMatch = linePattern.exec(line);
+            if (lineMatch) {
+                errors.push({
+                    file: currentFile || path.join(baseDir, 'document.tex'),
+                    line: parseInt(lineMatch[1], 10),
+                    message: pendingError,
+                });
+                pendingError = '';
+            }
+        }
+
+        // Track current file from (filename
+        const fileOpenMatch = line.match(/\(([^()]+\.tex)/);
+        if (fileOpenMatch) {
+            currentFile = path.isAbsolute(fileOpenMatch[1])
+                ? fileOpenMatch[1]
+                : path.join(baseDir, fileOpenMatch[1]);
+        }
+    }
+
+    return errors;
 }
 
 /**
  * Register LaTeX compile and preview commands
  */
 export function registerLatexCompileCommands(context: vscode.ExtensionContext): void {
+    // Create output channel
+    const outputChannel = vscode.window.createOutputChannel('LaTeX');
+
     // Compile LaTeX document
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.latex.compile', async () => {
@@ -116,14 +283,38 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             const config = vscode.workspace.getConfiguration('scimax.latex');
             const compiler = config.get<string>('compiler', 'pdflatex');
 
+            // Build command and args based on compiler
+            let cmd: string;
+            let args: string[];
+
+            if (compiler === 'latexmk') {
+                // Use latexmk for smart builds
+                const engine = config.get<string>('latexmkEngine', 'pdflatex');
+                cmd = 'latexmk';
+                args = [
+                    `-${engine === 'lualatex' ? 'lualatex' : engine === 'xelatex' ? 'xelatex' : 'pdf'}`,
+                    '-interaction=nonstopmode',
+                    '-file-line-error',
+                    '-synctex=1',
+                    fileName
+                ];
+            } else {
+                cmd = compiler;
+                args = [
+                    '-interaction=nonstopmode',
+                    '-file-line-error',
+                    '-synctex=1',
+                    fileName
+                ];
+            }
+
             vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: `Compiling ${fileName}...`,
                 cancellable: true
             }, async (progress, token) => {
                 return new Promise<void>((resolve, reject) => {
-                    const args = ['-interaction=nonstopmode', '-file-line-error', fileName];
-                    const proc = spawn(compiler, args, {
+                    const proc = spawn(cmd, args, {
                         cwd: dir,
                         env: {
                             ...process.env,
@@ -148,28 +339,51 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
                     });
 
                     proc.on('close', (code: number | null) => {
+                        // Parse errors
+                        lastCompileErrors = parseLatexErrors(stdout, dir);
+                        currentErrorIndex = 0;
+
                         if (code === 0) {
                             vscode.window.showInformationMessage(`LaTeX compilation successful: ${fileName}`);
                             resolve();
                         } else {
-                            // Parse error from output
-                            const errorMatch = stdout.match(/^(.+):(\d+): (.+)$/m);
-                            if (errorMatch) {
-                                const [, file, line, message] = errorMatch;
-                                vscode.window.showErrorMessage(`LaTeX error at line ${line}: ${message}`);
+                            // Show first error with navigation option
+                            if (lastCompileErrors.length > 0) {
+                                const firstError = lastCompileErrors[0];
+                                vscode.window.showErrorMessage(
+                                    `LaTeX error at line ${firstError.line}: ${firstError.message}`,
+                                    'Go to Error',
+                                    'Next Error',
+                                    'Show Log'
+                                ).then(action => {
+                                    if (action === 'Go to Error' || action === 'Next Error') {
+                                        vscode.commands.executeCommand('scimax.latex.nextError');
+                                    } else if (action === 'Show Log') {
+                                        outputChannel.show(true);
+                                    }
+                                });
                             } else {
-                                vscode.window.showErrorMessage('LaTeX compilation failed. Check Output for details.');
+                                vscode.window.showErrorMessage(
+                                    'LaTeX compilation failed. Check Output for details.',
+                                    'Show Log'
+                                ).then(action => {
+                                    if (action === 'Show Log') {
+                                        outputChannel.show(true);
+                                    }
+                                });
                             }
 
                             // Show output in output channel
-                            const outputChannel = vscode.window.createOutputChannel('LaTeX');
                             outputChannel.clear();
+                            outputChannel.appendLine(`=== LaTeX Compilation: ${fileName} ===`);
+                            outputChannel.appendLine(`Compiler: ${cmd} ${args.join(' ')}`);
+                            outputChannel.appendLine(`Exit code: ${code}`);
+                            outputChannel.appendLine('');
                             outputChannel.appendLine(stdout);
                             if (stderr) {
                                 outputChannel.appendLine('--- STDERR ---');
                                 outputChannel.appendLine(stderr);
                             }
-                            outputChannel.show(true);
 
                             resolve();
                         }
@@ -411,6 +625,84 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             );
 
             await editor.insertSnippet(snippet);
+        }),
+
+        // Error navigation commands
+        vscode.commands.registerCommand('scimax.latex.nextError', async () => {
+            if (lastCompileErrors.length === 0) {
+                vscode.window.showInformationMessage('No LaTeX errors to navigate');
+                return;
+            }
+
+            const error = lastCompileErrors[currentErrorIndex];
+            currentErrorIndex = (currentErrorIndex + 1) % lastCompileErrors.length;
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(error.file);
+                const editor = await vscode.window.showTextDocument(doc);
+                const line = Math.max(0, error.line - 1);
+                const pos = new vscode.Position(line, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+
+                vscode.window.showInformationMessage(
+                    `Error ${currentErrorIndex}/${lastCompileErrors.length}: ${error.message}`
+                );
+            } catch {
+                vscode.window.showErrorMessage(`Could not open ${error.file}`);
+            }
+        }),
+
+        vscode.commands.registerCommand('scimax.latex.previousError', async () => {
+            if (lastCompileErrors.length === 0) {
+                vscode.window.showInformationMessage('No LaTeX errors to navigate');
+                return;
+            }
+
+            currentErrorIndex = (currentErrorIndex - 1 + lastCompileErrors.length) % lastCompileErrors.length;
+            const error = lastCompileErrors[currentErrorIndex];
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(error.file);
+                const editor = await vscode.window.showTextDocument(doc);
+                const line = Math.max(0, error.line - 1);
+                const pos = new vscode.Position(line, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+
+                vscode.window.showInformationMessage(
+                    `Error ${currentErrorIndex + 1}/${lastCompileErrors.length}: ${error.message}`
+                );
+            } catch {
+                vscode.window.showErrorMessage(`Could not open ${error.file}`);
+            }
+        }),
+
+        vscode.commands.registerCommand('scimax.latex.showErrors', async () => {
+            if (lastCompileErrors.length === 0) {
+                vscode.window.showInformationMessage('No LaTeX errors from last compilation');
+                return;
+            }
+
+            const items = lastCompileErrors.map((err, i) => ({
+                label: `${i + 1}. Line ${err.line}: ${err.message}`,
+                detail: path.basename(err.file),
+                error: err,
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `${lastCompileErrors.length} error(s) from last compilation`,
+            });
+
+            if (selected) {
+                const error = selected.error;
+                const doc = await vscode.workspace.openTextDocument(error.file);
+                const editor = await vscode.window.showTextDocument(doc);
+                const line = Math.max(0, error.line - 1);
+                const pos = new vscode.Position(line, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+            }
         })
     );
 }

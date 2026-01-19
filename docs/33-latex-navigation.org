@@ -19,9 +19,15 @@ LaTeX support in Scimax VS Code includes:
 2. *Section Navigation* - Move between sections at any level
 3. *Structure Editing* - Promote/demote, move, and manipulate sections
 4. *Environment Commands* - Select, change, wrap, and unwrap environments
-5. *Hover Tooltips* - Information about references, packages, and commands
+5. *Hover Tooltips* - Information about references, citations, packages, and commands
 6. *Speed Commands* - Single-key shortcuts at section start
 7. *Folding* - Collapse and expand sections and environments
+8. *Go to Definition* - Jump to labels, citations, commands, and included files
+9. *Find References* - Find all uses of a label or citation key
+10. *Auto-Completion* - Smart completions for labels, citations, environments, packages
+11. *Multi-File Projects* - Full support for projects using \input/\include
+12. *ChkTeX Linting* - Real-time warnings in Problems panel
+13. *Error Navigation* - Cycle through compilation errors
 
 See also:
 - [[file:21-navigation.org][Navigation]] for general navigation features
@@ -296,6 +302,24 @@ Hovering over =\ref{fig:example}= shows:
 - Context (section or environment containing the label)
 - Preview of the labeled line
 
+** ⚠️ Citation Hover
+
+Hovering over =\cite{key}= shows rich BibTeX information:
+
+- Full title
+- Authors with proper formatting
+- Year
+- Journal or book title
+- Volume, number, pages
+- DOI (as clickable link)
+- Abstract preview
+
+Supports all natbib and biblatex citation commands:
+- =\cite=, =\citep=, =\citet=
+- =\citealt=, =\citealp=
+- =\citeauthor=, =\citeyear=
+- =\nocite=
+
 ** ⚠️ Package Hover
 
 Hovering over =\usepackage{amsmath}= shows:
@@ -450,6 +474,125 @@ Quick insertion of common LaTeX elements:
 | scimax.latex.insertEquation   | Insert equation environment        |
 
 These commands insert snippets with tab stops for easy navigation.
+
+* ⚠️ Go to Definition
+
+Jump to the definition of labels, citations, commands, and files:
+
+| Trigger              | What it does                                      |
+|----------------------+---------------------------------------------------|
+| =\ref{label}=        | Jump to the =\label{label}= definition            |
+| =\cite{key}=         | Jump to the BibTeX entry in the .bib file         |
+| =\input{file}=       | Open the included file                            |
+| =\mycommand=         | Jump to =\newcommand= or =\def= definition        |
+
+Use =F12= or =Ctrl+Click= (standard VS Code "Go to Definition").
+
+Supports cross-file navigation in multi-file projects.
+
+* ⚠️ Find All References
+
+Find all usages of a label or citation:
+
+| Position on          | Shows all                                         |
+|----------------------+---------------------------------------------------|
+| =\label{name}=       | All =\ref{name}= references                       |
+| =\cite{key}=         | All citations of that key                         |
+
+Use =Shift+F12= or right-click → "Find All References".
+
+Works across all files in the project.
+
+* ⚠️ Auto-Completion
+
+Smart completions trigger as you type:
+
+| Context              | Completions                                       |
+|----------------------+---------------------------------------------------|
+| =\ref{=              | All labels in project with context                |
+| =\cite{=             | All BibTeX keys with author/year/title            |
+| =\begin{=            | Common environments (equation, figure, etc.)      |
+| =\usepackage{=       | Common packages with descriptions                 |
+| =\includegraphics{=  | Image files (.png, .jpg, .pdf, etc.)              |
+| =\input{=            | .tex files in directory                           |
+
+Completions show:
+- Label completions include file name and line context
+- Citation completions show author, year, and title
+- Environment completions include descriptions
+- Package completions describe what each package provides
+
+* ⚠️ Multi-File Project Support
+
+Projects with multiple files (using =\input= or =\include=) are fully supported:
+
+- *Master document detection*: Automatically finds the main .tex file
+- *Cross-file labels*: Complete and navigate labels defined in any project file
+- *Shared bibliography*: Finds .bib files referenced anywhere in project
+- *Project-wide search*: Find References searches all included files
+
+The master document is detected by looking for =\documentclass=.
+
+** ⚠️ Project Structure
+
+#+BEGIN_SRC text
+thesis/
+├── main.tex              # Master document (has \documentclass)
+│   └── \input{chapters/intro}
+│   └── \input{chapters/methods}
+│   └── \bibliography{refs}
+├── chapters/
+│   ├── intro.tex        # \label{sec:intro} defined here
+│   └── methods.tex      # \ref{sec:intro} works here too
+└── refs.bib              # Bibliography
+#+END_SRC
+
+* ⚠️ ChkTeX Linting
+
+Real-time linting with ChkTeX catches common LaTeX issues:
+
+- Missing or extra braces
+- Spacing issues
+- Style recommendations
+
+Errors appear in the Problems panel and as squiggles in the editor.
+
+** ⚠️ Configuration
+
+#+BEGIN_SRC json
+{
+  "scimax.latex.enableChktex": true  // Enable/disable linting (default: true)
+}
+#+END_SRC
+
+Requires =chktex= to be installed:
+- *macOS*: =brew install chktex=
+- *Linux*: =apt install chktex=
+- *Windows*: Included with MiKTeX/TeX Live
+
+* ⚠️ Error Navigation
+
+Navigate through compilation errors:
+
+| Command                       | Key Binding      | Description                    |
+|-------------------------------+------------------+--------------------------------|
+| scimax.latex.nextError        | C-c `            | Jump to next error             |
+| scimax.latex.previousError    | C-c Shift+`      | Jump to previous error         |
+| scimax.latex.showErrors       | C-c C-e          | Show all errors in quick pick  |
+
+Errors are collected after compilation and persist until the next build.
+
+** ⚠️ Error Display
+
+When compilation fails:
+1. First error is shown in a notification with "Go to Error" button
+2. The Problems panel shows all parsed errors
+3. Use navigation commands to cycle through errors
+
+Errors include:
+- File path (supports multi-file projects)
+- Line number
+- Error message
 
 * ⚠️ Hover Previews
 

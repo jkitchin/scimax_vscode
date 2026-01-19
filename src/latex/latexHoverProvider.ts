@@ -20,6 +20,7 @@ import {
     LatexDocumentSettings,
     initLatexPreviewCache,
 } from '../org/latexPreviewProvider';
+import { getCitationHover } from './latexLanguageProvider';
 
 // Common LaTeX commands with descriptions
 const LATEX_COMMANDS: { [key: string]: string } = {
@@ -388,10 +389,14 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
         if (!wordRange) return null;
         const word = document.getText(wordRange);
 
-        // Try different hover types
-        return this.hoverForReference(document, position, line) ||
-            this.hoverForCitation(document, position, line) ||
-            this.hoverForLabel(document, position, line) ||
+        // Try different hover types (some are async now)
+        const refHover = this.hoverForReference(document, position, line);
+        if (refHover) return refHover;
+
+        const citeHover = await this.hoverForCitation(document, position, line);
+        if (citeHover) return citeHover;
+
+        return this.hoverForLabel(document, position, line) ||
             this.hoverForPackage(document, position, line) ||
             this.hoverForEnvironment(document, position, line) ||
             this.hoverForCommand(word) ||
@@ -451,38 +456,15 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
     }
 
     /**
-     * Hover for \cite{...} - show citation info
+     * Hover for \cite{...} - show citation info from BibTeX
      */
-    private hoverForCitation(
+    private async hoverForCitation(
         document: vscode.TextDocument,
         position: vscode.Position,
         line: string
-    ): vscode.Hover | null {
-        const citePattern = /\\(cite|citep|citet|citealp|citealt|citeauthor|citeyear|nocite)\{([^}]+)\}/g;
-        let match;
-
-        while ((match = citePattern.exec(line)) !== null) {
-            const startCol = match.index;
-            const endCol = startCol + match[0].length;
-
-            if (position.character >= startCol && position.character <= endCol) {
-                const citeType = match[1];
-                const keys = match[2].split(',').map(k => k.trim());
-
-                const md = new vscode.MarkdownString();
-                md.appendMarkdown(`**\\\\${citeType}** citation(s)\n\n`);
-
-                for (const key of keys) {
-                    md.appendMarkdown(`- \`${key}\`\n`);
-                }
-
-                md.appendMarkdown('\n*Citation details from .bib file not yet implemented*');
-
-                return new vscode.Hover(md);
-            }
-        }
-
-        return null;
+    ): Promise<vscode.Hover | null> {
+        // Use the enhanced citation hover that looks up BibTeX entries
+        return getCitationHover(document, position, line);
     }
 
     /**

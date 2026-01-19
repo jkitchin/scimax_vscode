@@ -2351,6 +2351,18 @@
       {
         "command": "scimax.latex.insertEquation",
         "title": "Scimax LaTeX: Insert Equation"
+      },
+      {
+        "command": "scimax.latex.nextError",
+        "title": "Scimax LaTeX: Go to Next Error"
+      },
+      {
+        "command": "scimax.latex.previousError",
+        "title": "Scimax LaTeX: Go to Previous Error"
+      },
+      {
+        "command": "scimax.latex.showErrors",
+        "title": "Scimax LaTeX: Show All Errors"
       }
     ],
     "keybindings": [
@@ -3665,6 +3677,24 @@
         "key": "ctrl+c ctrl+k",
         "mac": "ctrl+c ctrl+k",
         "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.nextError",
+        "key": "ctrl+c `",
+        "mac": "ctrl+c `",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.previousError",
+        "key": "ctrl+c shift+`",
+        "mac": "ctrl+c shift+`",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.showErrors",
+        "key": "ctrl+c ctrl+e",
+        "mac": "ctrl+c ctrl+e",
+        "when": "editorTextFocus && editorLangId == 'latex'"
       }
     ],
     "configuration": {
@@ -3995,6 +4025,21 @@
           ],
           "default": "auto",
           "markdownDescription": "PDF viewer for SyncTeX support:\n- `auto`: Detect based on platform (Skim on macOS, Zathura on Linux, SumatraPDF on Windows)\n- `skim`: Skim (macOS)\n- `zathura`: Zathura (Linux)\n- `sumatra`: SumatraPDF (Windows)\n- `vscode`: VS Code's built-in viewer"
+        },
+        "scimax.latex.enableChktex": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable ChkTeX linting for LaTeX documents (provides warnings in Problems panel)"
+        },
+        "scimax.latex.latexmkEngine": {
+          "type": "string",
+          "enum": [
+            "pdflatex",
+            "xelatex",
+            "lualatex"
+          ],
+          "default": "pdflatex",
+          "description": "Engine to use when compiling with latexmk"
         },
         "scimax.notebook.directory": {
           "type": "string",
