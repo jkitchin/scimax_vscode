@@ -159,7 +159,11 @@ export class PdfViewerPanel {
         const pdfData = fs.readFileSync(this.pdfPath);
         const pdfBase64 = pdfData.toString('base64');
 
-        this.panel.webview.html = this.getHtmlContent(pdfBase64);
+        // Get debug popup setting
+        const config = vscode.workspace.getConfiguration('scimax.latex');
+        const showDebugPopup = config.get<boolean>('showSyncDebugPopup', false);
+
+        this.panel.webview.html = this.getHtmlContent(pdfBase64, showDebugPopup);
     }
 
     private handleMessage(message: { type: string; line?: number; file?: string; page?: number; x?: number; y?: number; clickedText?: string; contextText?: string }): void {
@@ -860,13 +864,17 @@ export class PdfViewerPanel {
         `;
     }
 
-    private getHtmlContent(pdfBase64: string): string {
+    private getHtmlContent(pdfBase64: string, showDebugPopupSetting: boolean = false): string {
         return `
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <script>
+                    // Debug popup setting from VS Code configuration
+                    const SHOW_DEBUG_POPUP = ${showDebugPopupSetting};
+                </script>
                 <style>
                     * {
                         margin: 0;
@@ -1449,6 +1457,9 @@ export class PdfViewerPanel {
                      * Show debug popup with click information
                      */
                     function showDebugPopup(info) {
+                        // Check if debug popup is enabled
+                        if (!SHOW_DEBUG_POPUP) return;
+
                         // Remove existing popup
                         const existing = document.querySelector('.debug-popup');
                         if (existing) existing.remove();
