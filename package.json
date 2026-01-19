@@ -2167,6 +2167,214 @@
       {
         "command": "scimax.publish.openConfig",
         "title": "Scimax: Open Publishing Config"
+      },
+      {
+        "command": "scimax.latex.nextSection",
+        "title": "Scimax LaTeX: Next Section"
+      },
+      {
+        "command": "scimax.latex.previousSection",
+        "title": "Scimax LaTeX: Previous Section"
+      },
+      {
+        "command": "scimax.latex.parentSection",
+        "title": "Scimax LaTeX: Parent Section"
+      },
+      {
+        "command": "scimax.latex.nextSiblingSection",
+        "title": "Scimax LaTeX: Next Sibling Section"
+      },
+      {
+        "command": "scimax.latex.previousSiblingSection",
+        "title": "Scimax LaTeX: Previous Sibling Section"
+      },
+      {
+        "command": "scimax.latex.firstSection",
+        "title": "Scimax LaTeX: First Section"
+      },
+      {
+        "command": "scimax.latex.lastSection",
+        "title": "Scimax LaTeX: Last Section"
+      },
+      {
+        "command": "scimax.latex.jumpToSection",
+        "title": "Scimax LaTeX: Jump to Section"
+      },
+      {
+        "command": "scimax.latex.nextEnvironment",
+        "title": "Scimax LaTeX: Next Environment"
+      },
+      {
+        "command": "scimax.latex.previousEnvironment",
+        "title": "Scimax LaTeX: Previous Environment"
+      },
+      {
+        "command": "scimax.latex.jumpToEnvironment",
+        "title": "Scimax LaTeX: Jump to Environment"
+      },
+      {
+        "command": "scimax.latex.jumpToLabel",
+        "title": "Scimax LaTeX: Jump to Label"
+      },
+      {
+        "command": "scimax.latex.jumpToMatchingEnvironment",
+        "title": "Scimax LaTeX: Jump to Matching Begin/End"
+      },
+      {
+        "command": "scimax.latex.promoteSection",
+        "title": "Scimax LaTeX: Promote Section"
+      },
+      {
+        "command": "scimax.latex.demoteSection",
+        "title": "Scimax LaTeX: Demote Section"
+      },
+      {
+        "command": "scimax.latex.promoteSubtree",
+        "title": "Scimax LaTeX: Promote Subtree"
+      },
+      {
+        "command": "scimax.latex.demoteSubtree",
+        "title": "Scimax LaTeX: Demote Subtree"
+      },
+      {
+        "command": "scimax.latex.moveSectionUp",
+        "title": "Scimax LaTeX: Move Section Up"
+      },
+      {
+        "command": "scimax.latex.moveSectionDown",
+        "title": "Scimax LaTeX: Move Section Down"
+      },
+      {
+        "command": "scimax.latex.markSection",
+        "title": "Scimax LaTeX: Mark Section"
+      },
+      {
+        "command": "scimax.latex.killSection",
+        "title": "Scimax LaTeX: Kill Section"
+      },
+      {
+        "command": "scimax.latex.cloneSection",
+        "title": "Scimax LaTeX: Clone Section"
+      },
+      {
+        "command": "scimax.latex.insertSection",
+        "title": "Scimax LaTeX: Insert Section"
+      },
+      {
+        "command": "scimax.latex.insertSubsection",
+        "title": "Scimax LaTeX: Insert Subsection"
+      },
+      {
+        "command": "scimax.latex.narrowToSection",
+        "title": "Scimax LaTeX: Narrow to Section"
+      },
+      {
+        "command": "scimax.latex.widen",
+        "title": "Scimax LaTeX: Widen (Unfold All)"
+      },
+      {
+        "command": "scimax.latex.selectEnvironment",
+        "title": "Scimax LaTeX: Select Environment"
+      },
+      {
+        "command": "scimax.latex.selectEnvironmentContent",
+        "title": "Scimax LaTeX: Select Environment Content"
+      },
+      {
+        "command": "scimax.latex.changeEnvironment",
+        "title": "Scimax LaTeX: Change Environment"
+      },
+      {
+        "command": "scimax.latex.wrapInEnvironment",
+        "title": "Scimax LaTeX: Wrap in Environment"
+      },
+      {
+        "command": "scimax.latex.unwrapEnvironment",
+        "title": "Scimax LaTeX: Unwrap Environment"
+      },
+      {
+        "command": "scimax.latex.deleteEnvironment",
+        "title": "Scimax LaTeX: Delete Environment"
+      },
+      {
+        "command": "scimax.latex.toggleEnvironmentStar",
+        "title": "Scimax LaTeX: Toggle Environment Star"
+      },
+      {
+        "command": "scimax.latex.addLabel",
+        "title": "Scimax LaTeX: Add Label to Environment"
+      },
+      {
+        "command": "scimax.latex.addCaption",
+        "title": "Scimax LaTeX: Add Caption to Environment"
+      },
+      {
+        "command": "scimax.latex.environmentInfo",
+        "title": "Scimax LaTeX: Show Environment Info"
+      },
+      {
+        "command": "scimax.latex.speedCommandHelp",
+        "title": "Scimax LaTeX: Speed Command Help"
+      },
+      {
+        "command": "scimax.latex.compile",
+        "title": "Scimax LaTeX: Compile Document"
+      },
+      {
+        "command": "scimax.latex.viewPdf",
+        "title": "Scimax LaTeX: View PDF"
+      },
+      {
+        "command": "scimax.latex.compileAndView",
+        "title": "Scimax LaTeX: Compile and View PDF"
+      },
+      {
+        "command": "scimax.latex.clean",
+        "title": "Scimax LaTeX: Clean Auxiliary Files"
+      },
+      {
+        "command": "scimax.latex.syncTexForward",
+        "title": "Scimax LaTeX: SyncTeX Forward Search"
+      },
+      {
+        "command": "scimax.latex.wordCount",
+        "title": "Scimax LaTeX: Word Count"
+      },
+      {
+        "command": "scimax.latex.insertFigure",
+        "title": "Scimax LaTeX: Insert Figure"
+      },
+      {
+        "command": "scimax.latex.insertTable",
+        "title": "Scimax LaTeX: Insert Table"
+      },
+      {
+        "command": "scimax.latex.insertEquation",
+        "title": "Scimax LaTeX: Insert Equation"
+      },
+      {
+        "command": "scimax.latex.nextError",
+        "title": "Scimax LaTeX: Go to Next Error"
+      },
+      {
+        "command": "scimax.latex.previousError",
+        "title": "Scimax LaTeX: Go to Previous Error"
+      },
+      {
+        "command": "scimax.latex.showErrors",
+        "title": "Scimax LaTeX: Show All Errors"
+      },
+      {
+        "command": "scimax.latex.format",
+        "title": "Scimax LaTeX: Format Document"
+      },
+      {
+        "command": "scimax.latex.addToDictionary",
+        "title": "Scimax LaTeX: Add Word to Dictionary"
+      },
+      {
+        "command": "scimax.latex.showInverseSyncTeXCommand",
+        "title": "Scimax LaTeX: Show Inverse SyncTeX Command"
       }
     ],
     "keybindings": [
@@ -3319,6 +3527,192 @@
         "command": "scimax.capture.todo",
         "key": "ctrl+c t",
         "mac": "ctrl+c t"
+      },
+      {
+        "command": "scimax.latex.nextSection",
+        "key": "ctrl+c ctrl+n",
+        "mac": "ctrl+c ctrl+n",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.previousSection",
+        "key": "ctrl+c ctrl+p",
+        "mac": "ctrl+c ctrl+p",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.parentSection",
+        "key": "ctrl+c ctrl+u",
+        "mac": "ctrl+c ctrl+u",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.nextSiblingSection",
+        "key": "ctrl+c ctrl+f",
+        "mac": "ctrl+c ctrl+f",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.previousSiblingSection",
+        "key": "ctrl+c ctrl+b",
+        "mac": "ctrl+c ctrl+b",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.jumpToSection",
+        "key": "ctrl+c j",
+        "mac": "ctrl+c j",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.promoteSection",
+        "key": "alt+left",
+        "mac": "alt+left",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.demoteSection",
+        "key": "alt+right",
+        "mac": "alt+right",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.moveSectionUp",
+        "key": "alt+up",
+        "mac": "alt+up",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.moveSectionDown",
+        "key": "alt+down",
+        "mac": "alt+down",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.promoteSubtree",
+        "key": "alt+shift+left",
+        "mac": "alt+shift+left",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.demoteSubtree",
+        "key": "alt+shift+right",
+        "mac": "alt+shift+right",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.markSection",
+        "key": "ctrl+c @",
+        "mac": "ctrl+c @",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.selectEnvironment",
+        "key": "ctrl+c ctrl+e",
+        "mac": "ctrl+c ctrl+e",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.changeEnvironment",
+        "key": "ctrl+c e",
+        "mac": "ctrl+c e",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.wrapInEnvironment",
+        "key": "ctrl+c w",
+        "mac": "ctrl+c w",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.toggleEnvironmentStar",
+        "key": "ctrl+c shift+8",
+        "mac": "ctrl+c shift+8",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.jumpToMatchingEnvironment",
+        "key": "ctrl+c %",
+        "mac": "ctrl+c %",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.jumpToLabel",
+        "key": "ctrl+c l",
+        "mac": "ctrl+c l",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.addLabel",
+        "key": "ctrl+c ctrl+l",
+        "mac": "ctrl+c ctrl+l",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.org.toggleFold",
+        "key": "tab",
+        "mac": "tab",
+        "when": "editorTextFocus && editorLangId == 'latex' && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
+        "command": "scimax.org.cycleGlobalFold",
+        "key": "shift+tab",
+        "mac": "shift+tab",
+        "when": "editorTextFocus && editorLangId == 'latex' && !suggestWidgetVisible"
+      },
+      {
+        "command": "scimax.latex.compile",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.viewPdf",
+        "key": "ctrl+c ctrl+v",
+        "mac": "ctrl+c ctrl+v",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.compileAndView",
+        "key": "ctrl+c ctrl+a",
+        "mac": "ctrl+c ctrl+a",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.syncTexForward",
+        "key": "ctrl+c ctrl+j",
+        "mac": "ctrl+c ctrl+j",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.clean",
+        "key": "ctrl+c ctrl+k",
+        "mac": "ctrl+c ctrl+k",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.nextError",
+        "key": "ctrl+c `",
+        "mac": "ctrl+c `",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.previousError",
+        "key": "ctrl+c shift+`",
+        "mac": "ctrl+c shift+`",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.showErrors",
+        "key": "ctrl+c ctrl+e",
+        "mac": "ctrl+c ctrl+e",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.format",
+        "key": "ctrl+c ctrl+q",
+        "mac": "ctrl+c ctrl+q",
+        "when": "editorTextFocus && editorLangId == 'latex'"
       }
     ],
     "configuration": {
@@ -3626,6 +4020,59 @@
           "type": "boolean",
           "default": true,
           "description": "Use latexmk for smart incremental builds (recommended)"
+        },
+        "scimax.latex.compiler": {
+          "type": "string",
+          "enum": [
+            "pdflatex",
+            "xelatex",
+            "lualatex",
+            "latexmk"
+          ],
+          "default": "pdflatex",
+          "description": "LaTeX compiler to use for compiling .tex files"
+        },
+        "scimax.latex.pdfViewer": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "skim",
+            "zathura",
+            "sumatra",
+            "vscode"
+          ],
+          "default": "auto",
+          "markdownDescription": "PDF viewer for SyncTeX support:\n- `auto`: Detect based on platform (Skim on macOS, Zathura on Linux, SumatraPDF on Windows)\n- `skim`: Skim (macOS)\n- `zathura`: Zathura (Linux)\n- `sumatra`: SumatraPDF (Windows)\n- `vscode`: VS Code's built-in viewer"
+        },
+        "scimax.latex.enableChktex": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable ChkTeX linting for LaTeX documents (provides warnings in Problems panel)"
+        },
+        "scimax.latex.latexmkEngine": {
+          "type": "string",
+          "enum": [
+            "pdflatex",
+            "xelatex",
+            "lualatex"
+          ],
+          "default": "pdflatex",
+          "description": "Engine to use when compiling with latexmk"
+        },
+        "scimax.latex.validateReferences": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate label references (warn about undefined/unused labels)"
+        },
+        "scimax.latex.formatOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically format LaTeX documents on save using latexindent"
+        },
+        "scimax.latex.latexindentPath": {
+          "type": "string",
+          "default": "latexindent",
+          "description": "Path to latexindent executable"
         },
         "scimax.notebook.directory": {
           "type": "string",

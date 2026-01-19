@@ -373,6 +373,64 @@ Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exce
 - s-S-r (reload window)
 - C-s-v (database menu)
 
+* LaTeX Navigation
+
+These keybindings are active in LaTeX files (=.tex=):
+
+** Section Navigation
+
+| Key         | Action                       |
+|-------------+------------------------------|
+| C-c C-n     | Next section                 |
+| C-c C-p     | Previous section             |
+| C-c C-u     | Parent section               |
+| C-c C-f     | Next sibling section         |
+| C-c C-b     | Previous sibling section     |
+| C-c j       | Jump to any section          |
+
+** Structure Editing
+
+| Key              | Action                     |
+|------------------+----------------------------|
+| Alt+Left         | Promote section            |
+| Alt+Right        | Demote section             |
+| Alt+Shift+Left   | Promote subtree            |
+| Alt+Shift+Right  | Demote subtree             |
+| Alt+Up           | Move section up            |
+| Alt+Down         | Move section down          |
+| C-c @            | Mark (select) section      |
+
+** Environment Commands
+
+| Key       | Action                          |
+|-----------+---------------------------------|
+| C-c C-e   | Select environment              |
+| C-c e     | Change environment type         |
+| C-c w     | Wrap selection in environment   |
+| C-c *     | Toggle starred variant          |
+| C-c %     | Jump to matching begin/end      |
+| C-c l     | Jump to label                   |
+| C-c C-l   | Add label to environment        |
+
+** Folding
+
+| Key       | Action            |
+|-----------+-------------------|
+| Tab       | Toggle fold       |
+| Shift+Tab | Cycle global fold |
+
+** ⚠️ Compile and Preview
+
+| Key       | Action                 |
+|-----------+------------------------|
+| C-c C-c   | Compile document       |
+| C-c C-v   | View PDF               |
+| C-c C-a   | Compile and view PDF   |
+| C-c C-j   | SyncTeX forward search |
+| C-c C-k   | Clean auxiliary files  |
+
+See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.
+
 * Quick Reference Card
 
 ** Most Common Commands
