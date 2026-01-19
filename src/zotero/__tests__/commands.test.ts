@@ -867,43 +867,81 @@ describe('findCitationAtCursor', () => {
 });
 
 describe('formatKeysForAppend', () => {
-    describe('v3 syntax', () => {
+    // Helper to create CitationAtCursor objects for testing
+    const makeOrgV3Citation = (): Parameters<typeof formatKeysForAppend>[1] => ({
+        format: 'org-v3', style: 'cite', isV3: true, startColumn: 0, endColumn: 10, existingKeys: []
+    });
+    const makeOrgV2Citation = (): Parameters<typeof formatKeysForAppend>[1] => ({
+        format: 'org-v2', style: 'cite', isV3: false, startColumn: 0, endColumn: 10, existingKeys: []
+    });
+    const makeLatexCitation = (): Parameters<typeof formatKeysForAppend>[1] => ({
+        format: 'latex', style: 'cite', isV3: false, startColumn: 0, endColumn: 10, existingKeys: []
+    });
+    const makeMarkdownCitation = (): Parameters<typeof formatKeysForAppend>[1] => ({
+        format: 'markdown', style: 'pandoc', isV3: false, startColumn: 0, endColumn: 10, existingKeys: []
+    });
+
+    describe('org-mode v3 syntax', () => {
         it('should format single key for v3 append', () => {
-            const result = formatKeysForAppend(['newkey2024'], true);
+            const result = formatKeysForAppend(['newkey2024'], makeOrgV3Citation());
             expect(result).toBe(';&newkey2024');
         });
 
         it('should format multiple keys for v3 append', () => {
-            const result = formatKeysForAppend(['key1', 'key2', 'key3'], true);
+            const result = formatKeysForAppend(['key1', 'key2', 'key3'], makeOrgV3Citation());
             expect(result).toBe(';&key1;&key2;&key3');
         });
     });
 
-    describe('v2 syntax', () => {
+    describe('org-mode v2 syntax', () => {
         it('should format single key for v2 append', () => {
-            const result = formatKeysForAppend(['newkey2024'], false);
+            const result = formatKeysForAppend(['newkey2024'], makeOrgV2Citation());
             expect(result).toBe(',newkey2024');
         });
 
         it('should format multiple keys for v2 append', () => {
-            const result = formatKeysForAppend(['key1', 'key2', 'key3'], false);
+            const result = formatKeysForAppend(['key1', 'key2', 'key3'], makeOrgV2Citation());
             expect(result).toBe(',key1,key2,key3');
+        });
+    });
+
+    describe('LaTeX syntax', () => {
+        it('should format single key for LaTeX append', () => {
+            const result = formatKeysForAppend(['newkey2024'], makeLatexCitation());
+            expect(result).toBe(',newkey2024');
+        });
+
+        it('should format multiple keys for LaTeX append', () => {
+            const result = formatKeysForAppend(['key1', 'key2'], makeLatexCitation());
+            expect(result).toBe(',key1,key2');
+        });
+    });
+
+    describe('Markdown syntax', () => {
+        it('should format single key for Markdown append', () => {
+            const result = formatKeysForAppend(['newkey2024'], makeMarkdownCitation());
+            expect(result).toBe('; @newkey2024');
+        });
+
+        it('should format multiple keys for Markdown append', () => {
+            const result = formatKeysForAppend(['key1', 'key2'], makeMarkdownCitation());
+            expect(result).toBe('; @key1; @key2');
         });
     });
 
     describe('edge cases', () => {
         it('should handle empty keys array for v3', () => {
-            const result = formatKeysForAppend([], true);
+            const result = formatKeysForAppend([], makeOrgV3Citation());
             expect(result).toBe('');
         });
 
         it('should handle empty keys array for v2', () => {
-            const result = formatKeysForAppend([], false);
+            const result = formatKeysForAppend([], makeOrgV2Citation());
             expect(result).toBe('');
         });
 
         it('should handle keys with special characters', () => {
-            const result = formatKeysForAppend(['smith-jones_2024'], true);
+            const result = formatKeysForAppend(['smith-jones_2024'], makeOrgV3Citation());
             expect(result).toBe(';&smith-jones_2024');
         });
     });

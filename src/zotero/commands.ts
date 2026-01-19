@@ -12,46 +12,86 @@ import { parseBibTeX, BibEntry } from '../references/bibtexParser';
 /**
  * Find the bibliography file linked in the document
  * Returns the first bibliography path found, or null if none
+ * Supports org-mode, markdown, and LaTeX formats
  * @internal Exported for testing
  */
-export function findDocumentBibliography(documentText: string, documentPath: string): string | null {
+export function findDocumentBibliography(documentText: string, documentPath: string, languageId?: string): string | null {
     const docDir = path.dirname(documentPath);
     const homeDir = process.env.HOME || process.env.USERPROFILE || '';
 
+    // Helper to resolve a path
+    const resolvePath = (bibPath: string): string => {
+        let resolved = bibPath.trim();
+        if (resolved.startsWith('~')) {
+            resolved = path.join(homeDir, resolved.slice(1));
+        } else if (!path.isAbsolute(resolved)) {
+            resolved = path.resolve(docDir, resolved);
+        }
+        if (!resolved.endsWith('.bib')) {
+            resolved = resolved + '.bib';
+        }
+        return resolved;
+    };
+
+    // Org-mode patterns
     // Match bibliography:path (org-ref style)
     const bibLinkRegex = /bibliography:([^\s<>\[\](){}]+)/i;
     // Match #+BIBLIOGRAPHY: path
     const bibKeywordRegex = /^#\+BIBLIOGRAPHY:\s*(.+?\.bib)\s*$/im;
 
-    let match = bibLinkRegex.exec(documentText);
+    // LaTeX patterns
+    // Match \bibliography{path} or \bibliography{path1,path2}
+    const latexBibRegex = /\\bibliography\{([^}]+)\}/;
+    // Match \addbibresource{path.bib}
+    const biblatexRegex = /\\addbibresource\{([^}]+)\}/;
+
+    // Markdown/Pandoc patterns
+    // Match bibliography: path in YAML frontmatter
+    const yamlBibRegex = /^bibliography:\s*(.+\.bib)\s*$/im;
+    // Match [bibliography]: path
+    const mdRefBibRegex = /^\[bibliography\]:\s*(.+\.bib)\s*$/im;
+
+    let match: RegExpExecArray | null;
+
+    // Try org-mode patterns
+    match = bibLinkRegex.exec(documentText);
     if (match) {
         const bibPaths = match[1].split(',');
         const firstPath = bibPaths[0].trim();
         if (firstPath) {
-            let resolved = firstPath;
-            if (resolved.startsWith('~')) {
-                // Use path.join to normalize separators on Windows
-                resolved = path.join(homeDir, resolved.slice(1));
-            } else if (!path.isAbsolute(resolved)) {
-                resolved = path.resolve(docDir, resolved);
-            }
-            if (!resolved.endsWith('.bib')) {
-                resolved = resolved + '.bib';
-            }
-            return resolved;
+            return resolvePath(firstPath);
         }
     }
 
     match = bibKeywordRegex.exec(documentText);
     if (match) {
-        let resolved = match[1].trim();
-        if (resolved.startsWith('~')) {
-            // Use path.join to normalize separators on Windows
-            resolved = path.join(homeDir, resolved.slice(1));
-        } else if (!path.isAbsolute(resolved)) {
-            resolved = path.resolve(docDir, resolved);
+        return resolvePath(match[1]);
+    }
+
+    // Try LaTeX patterns
+    match = latexBibRegex.exec(documentText);
+    if (match) {
+        const bibPaths = match[1].split(',');
+        const firstPath = bibPaths[0].trim();
+        if (firstPath) {
+            return resolvePath(firstPath);
         }
-        return resolved;
+    }
+
+    match = biblatexRegex.exec(documentText);
+    if (match) {
+        return resolvePath(match[1]);
+    }
+
+    // Try Markdown/Pandoc patterns
+    match = yamlBibRegex.exec(documentText);
+    if (match) {
+        return resolvePath(match[1]);
+    }
+
+    match = mdRefBibRegex.exec(documentText);
+    if (match) {
+        return resolvePath(match[1]);
     }
 
     return null;
@@ -162,7 +202,7 @@ export function escapeRegExp(string: string): string {
 }
 
 /**
- * Add bibliography link to the end of the document
+ * Add bibliography link to the document based on language
  */
 async function addBibliographyLink(
     editor: vscode.TextEditor,
@@ -170,6 +210,7 @@ async function addBibliographyLink(
     documentPath: string
 ): Promise<void> {
     const docDir = path.dirname(documentPath);
+    const languageId = editor.document.languageId;
 
     // Make path relative if possible
     let relativePath = bibPath;
@@ -183,12 +224,38 @@ async function addBibliographyLink(
     const document = editor.document;
     const lastLine = document.lineAt(document.lineCount - 1);
 
-    // Add bibliography link at the end
-    const insertText = lastLine.text.trim() === ''
-        ? `bibliography:${relativePath}\n`
-        : `\n\nbibliography:${relativePath}\n`;
+    let insertText: string;
+    let position: vscode.Position;
 
-    const position = new vscode.Position(document.lineCount - 1, lastLine.text.length);
+    if (languageId === 'latex') {
+        // LaTeX: add \bibliographystyle and \bibliography at end of file
+        // Remove .bib extension for \bibliography command
+        const bibName = relativePath.replace(/\.bib$/, '');
+        position = new vscode.Position(document.lineCount - 1, lastLine.text.length);
+        insertText = lastLine.text.trim() === ''
+            ? `\\bibliographystyle{unsrtnat}\n\\bibliography{${bibName}}\n`
+            : `\n\n\\bibliographystyle{unsrtnat}\n\\bibliography{${bibName}}\n`;
+    } else if (languageId === 'markdown') {
+        // Markdown: add YAML frontmatter or append to existing frontmatter
+        const text = document.getText();
+        const frontmatterMatch = text.match(/^---\n([\s\S]*?)\n---/);
+        if (frontmatterMatch) {
+            // Add to existing frontmatter
+            const frontmatterEnd = text.indexOf('---', 4);
+            position = document.positionAt(frontmatterEnd);
+            insertText = `bibliography: ${relativePath}\n`;
+        } else {
+            // Add new frontmatter at the beginning
+            position = new vscode.Position(0, 0);
+            insertText = `---\nbibliography: ${relativePath}\n---\n\n`;
+        }
+    } else {
+        // Org-mode: add bibliography link at the end
+        position = new vscode.Position(document.lineCount - 1, lastLine.text.length);
+        insertText = lastLine.text.trim() === ''
+            ? `bibliography:${relativePath}\n`
+            : `\n\nbibliography:${relativePath}\n`;
+    }
 
     await editor.edit((editBuilder: vscode.TextEditorEdit) => {
         editBuilder.insert(position, insertText);
@@ -196,71 +263,128 @@ async function addBibliographyLink(
 }
 
 /**
- * Format citation for insertion using org-ref syntax
+ * Format citation for insertion based on document language
+ * @internal Exported for testing
+ */
+export function formatCitation(keys: string[], languageId: string): string {
+    const config = vscode.workspace.getConfiguration('scimax.ref');
+
+    if (languageId === 'latex') {
+        // LaTeX format: \cite{key1,key2}
+        const style = config.get<string>('latexCiteStyle') || 'cite';
+        return `\\${style}{${keys.join(',')}}`;
+    } else if (languageId === 'markdown') {
+        // Pandoc markdown format: [@key1; @key2]
+        return `[${keys.map(k => `@${k}`).join('; ')}]`;
+    } else {
+        // Org-mode format (default)
+        const syntax = config.get<string>('citationSyntax') || 'org-ref-v3';
+        const style = config.get<string>('defaultCiteStyle') || 'cite';
+
+        if (syntax === 'org-ref-v3') {
+            // v3 format: cite:&key1;&key2
+            return `${style}:${keys.map(k => `&${k}`).join(';')}`;
+        } else {
+            // v2 format: cite:key1,key2
+            return `${style}:${keys.join(',')}`;
+        }
+    }
+}
+
+/**
+ * Format citation for insertion using org-ref syntax (legacy, for compatibility)
  * @internal Exported for testing
  */
 export function formatOrgRefCitation(keys: string[]): string {
-    // Check user's preferred syntax (v2 or v3)
-    const config = vscode.workspace.getConfiguration('scimax.ref');
-    const syntax = config.get<string>('citationSyntax') || 'org-ref-v3';
-    const style = config.get<string>('defaultCiteStyle') || 'cite';
-
-    if (syntax === 'org-ref-v3') {
-        // v3 format: cite:&key1;&key2
-        return `${style}:${keys.map(k => `&${k}`).join(';')}`;
-    } else {
-        // v2 format: cite:key1,key2
-        return `${style}:${keys.join(',')}`;
-    }
+    return formatCitation(keys, 'org');
 }
 
 /**
  * Result of finding a citation at cursor position
  */
 export interface CitationAtCursor {
+    /** The citation format type */
+    format: 'org-v3' | 'org-v2' | 'latex' | 'markdown';
     /** The citation style (cite, citep, citet, etc.) */
     style: string;
-    /** Whether the citation uses v3 syntax (true) or v2 syntax (false) */
-    isV3: boolean;
     /** Start position of the citation in the line */
     startColumn: number;
     /** End position of the citation in the line (where cursor should be for append) */
     endColumn: number;
     /** The existing keys in the citation */
     existingKeys: string[];
+    /** Whether the citation uses v3 syntax (for org-mode compatibility) */
+    isV3: boolean;
 }
 
 /**
  * Check if cursor is at the end of an existing citation
  * Returns citation info if at end of citation, null otherwise
+ * Supports org-mode, LaTeX, and Markdown citation formats
  * @internal Exported for testing
  */
 export function findCitationAtCursor(
     lineText: string,
-    cursorColumn: number
+    cursorColumn: number,
+    languageId?: string
 ): CitationAtCursor | null {
-    // Common citation styles
-    const citeStyles = ['cite', 'citep', 'citet', 'citeauthor', 'citeyear', 'citenum', 'citealp', 'citealt', 'nocite'];
+    // Common citation styles for org/LaTeX
+    const citeStyles = ['cite', 'citep', 'citet', 'citeauthor', 'citeyear', 'citenum', 'citealp', 'citealt', 'nocite', 'textcite', 'parencite', 'autocite'];
     const stylePattern = citeStyles.join('|');
 
+    let match: RegExpExecArray | null;
+
+    // Try LaTeX format: \cite{key1,key2}
+    const latexRegex = new RegExp(`\\\\(${stylePattern})\\{([^}]+)\\}`, 'gi');
+    while ((match = latexRegex.exec(lineText)) !== null) {
+        const citationEnd = match.index + match[0].length;
+        if (cursorColumn === citationEnd) {
+            const style = match[1];
+            const keysStr = match[2];
+            const existingKeys = keysStr.split(',').map(k => k.trim());
+            return {
+                format: 'latex',
+                style,
+                isV3: false,
+                startColumn: match.index,
+                endColumn: citationEnd,
+                existingKeys
+            };
+        }
+    }
+
+    // Try Markdown/Pandoc format: [@key1; @key2]
+    const markdownRegex = /\[(@[\w:._-]+(?:;\s*@[\w:._-]+)*)\]/g;
+    while ((match = markdownRegex.exec(lineText)) !== null) {
+        const citationEnd = match.index + match[0].length;
+        if (cursorColumn === citationEnd) {
+            const keysStr = match[1];
+            const existingKeys = keysStr.split(';').map(k => k.trim().replace(/^@/, ''));
+            return {
+                format: 'markdown',
+                style: 'pandoc',
+                isV3: false,
+                startColumn: match.index,
+                endColumn: citationEnd,
+                existingKeys
+            };
+        }
+    }
+
+    // Try org-mode formats
     // v3 pattern: style:&key1;&key2 (keys start with &, separated by ;)
     // v2 pattern: style:key1,key2 (keys without &, separated by ,)
-
-    // Combined regex to match both formats
-    // Matches: cite:&key1;&key2 or cite:key1,key2
-    const citationRegex = new RegExp(
+    const orgRegex = new RegExp(
         `(${stylePattern}):` +           // style:
         `(&[\\w:._-]+(?:;&[\\w:._-]+)*` + // v3: &key1;&key2
         `|[\\w:._-]+(?:,[\\w:._-]+)*)`,   // v2: key1,key2
         'gi'
     );
 
-    let match: RegExpExecArray | null;
-    while ((match = citationRegex.exec(lineText)) !== null) {
+    while ((match = orgRegex.exec(lineText)) !== null) {
         const citationStart = match.index;
         const citationEnd = match.index + match[0].length;
 
-        // Check if cursor is at the end of this citation
         if (cursorColumn === citationEnd) {
             const style = match[1];
             const keysStr = match[2];
@@ -268,14 +392,13 @@ export function findCitationAtCursor(
 
             let existingKeys: string[];
             if (isV3) {
-                // v3: &key1;&key2 -> ['key1', 'key2']
                 existingKeys = keysStr.split(';').map(k => k.replace(/^&/, ''));
             } else {
-                // v2: key1,key2 -> ['key1', 'key2']
                 existingKeys = keysStr.split(',');
             }
 
             return {
+                format: isV3 ? 'org-v3' : 'org-v2',
                 style,
                 isV3,
                 startColumn: citationStart,
@@ -292,13 +415,23 @@ export function findCitationAtCursor(
  * Format keys to append to an existing citation
  * @internal Exported for testing
  */
-export function formatKeysForAppend(keys: string[], isV3: boolean): string {
-    if (isV3) {
-        // v3: append ;&key1;&key2
-        return keys.map(k => `;&${k}`).join('');
-    } else {
-        // v2: append ,key1,key2
-        return keys.map(k => `,${k}`).join('');
+export function formatKeysForAppend(keys: string[], citation: CitationAtCursor): string {
+    switch (citation.format) {
+        case 'latex':
+            // LaTeX: we need to insert before the closing brace
+            // Return just the keys to add with comma prefix
+            return keys.map(k => `,${k}`).join('');
+        case 'markdown':
+            // Markdown: insert before closing bracket
+            // Return keys with semicolon and @ prefix
+            return keys.map(k => `; @${k}`).join('');
+        case 'org-v3':
+            // v3: append ;&key1;&key2
+            return keys.map(k => `;&${k}`).join('');
+        case 'org-v2':
+        default:
+            // v2: append ,key1,key2
+            return keys.map(k => `,${k}`).join('');
     }
 }
 
@@ -359,59 +492,10 @@ export function registerZoteroCommands(
             let needToAddLink = false;
 
             if (!bibPath) {
-                // No bibliography link in document
+                // No bibliography link in document - use references.bib (create if needed)
                 const defaultBibPath = path.join(documentDir, 'references.bib');
-                const bibExists = await fileExists(defaultBibPath);
-
-                if (bibExists) {
-                    // references.bib exists, ask user if they want to use it
-                    const choice = await vscode.window.showQuickPick([
-                        {
-                            label: 'Yes, use references.bib',
-                            description: 'Use the existing references.bib file and add a bibliography link',
-                            value: 'use'
-                        },
-                        {
-                            label: 'No, choose a different file',
-                            description: 'Select or create a different bibliography file',
-                            value: 'choose'
-                        },
-                        {
-                            label: 'Cancel',
-                            description: 'Cancel the operation',
-                            value: 'cancel'
-                        }
-                    ], {
-                        placeHolder: 'references.bib already exists in this directory. Use it?'
-                    });
-
-                    if (!choice || choice.value === 'cancel') {
-                        return;
-                    }
-
-                    if (choice.value === 'use') {
-                        bibPath = defaultBibPath;
-                        needToAddLink = true;
-                    } else {
-                        // Let user choose a file
-                        const chosen = await vscode.window.showSaveDialog({
-                            defaultUri: vscode.Uri.file(defaultBibPath),
-                            filters: { 'BibTeX': ['bib'] },
-                            title: 'Select or create bibliography file'
-                        });
-
-                        if (!chosen) {
-                            return;
-                        }
-
-                        bibPath = chosen.fsPath;
-                        needToAddLink = true;
-                    }
-                } else {
-                    // No references.bib exists, create it
-                    bibPath = defaultBibPath;
-                    needToAddLink = true;
-                }
+                bibPath = defaultBibPath;
+                needToAddLink = true;
             }
 
             // At this point bibPath is guaranteed to be set
@@ -462,27 +546,52 @@ export function registerZoteroCommands(
             // Check if cursor is at end of an existing citation
             const cursorPos = editor.selection.active;
             const currentLine = editor.document.lineAt(cursorPos.line);
-            const existingCitation = findCitationAtCursor(currentLine.text, cursorPos.character);
+            const existingCitation = findCitationAtCursor(currentLine.text, cursorPos.character, languageId);
 
             let insertedText: string;
+            let insertPosition = editor.selection.active;
+
             if (existingCitation) {
-                // Append to existing citation using its syntax (v3 or v2)
-                insertedText = formatKeysForAppend(result.keys, existingCitation.isV3);
+                // Append to existing citation
+                insertedText = formatKeysForAppend(result.keys, existingCitation);
+
+                // For LaTeX and Markdown, we need to insert BEFORE the closing brace/bracket
+                if (existingCitation.format === 'latex' || existingCitation.format === 'markdown') {
+                    // Move insert position back by 1 (before } or ])
+                    insertPosition = new vscode.Position(cursorPos.line, cursorPos.character - 1);
+                }
             } else {
-                // Insert new citation
-                insertedText = formatOrgRefCitation(result.keys);
+                // Insert new citation using language-specific format
+                insertedText = formatCitation(result.keys, languageId);
             }
 
             await editor.edit((editBuilder: vscode.TextEditorEdit) => {
-                editBuilder.insert(editor.selection.active, insertedText);
+                editBuilder.insert(insertPosition, insertedText);
             });
 
-            // Move cursor to end of inserted text
-            const newPosition = new vscode.Position(
-                editor.selection.active.line,
-                editor.selection.active.character + insertedText.length
-            );
+            // Move cursor to end of citation
+            let newPosition: vscode.Position;
+            if (existingCitation && (existingCitation.format === 'latex' || existingCitation.format === 'markdown')) {
+                // Cursor should be at the end of the citation (after the closing brace/bracket)
+                newPosition = new vscode.Position(
+                    cursorPos.line,
+                    cursorPos.character + insertedText.length
+                );
+            } else {
+                newPosition = new vscode.Position(
+                    editor.selection.active.line,
+                    editor.selection.active.character + insertedText.length
+                );
+            }
             editor.selection = new vscode.Selection(newPosition, newPosition);
+
+            // Restore focus to editor (Zotero picker takes focus)
+            // Note: VS Code extensions cannot bring the window to foreground on macOS
+            await vscode.window.showTextDocument(editor.document, {
+                viewColumn: editor.viewColumn,
+                preserveFocus: false,
+                preview: false
+            });
 
             // Show feedback
             const duplicateCount = result.keys.length - addedKeys.length;

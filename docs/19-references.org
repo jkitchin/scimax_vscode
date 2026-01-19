@@ -301,6 +301,9 @@ CLOSED: [2026-01-18 Sun 11:44]
 | Picker doesn't appear          | Switch to Zotero window; it may be behind VS Code     |
 | "Failed to fetch BibTeX"       | Ensure Better BibTeX is installed and enabled         |
 | Wrong citation format          | Check =scimax.ref.citationSyntax= setting (v2 vs v3)  |
+| VS Code loses focus after insert | This is an OS limitation; manually switch back to VS Code |
+
+*Note on window focus:* After selecting citations in Zotero, VS Code may not automatically regain window focus. This is a macOS security limitation - VS Code extensions cannot programmatically bring windows to the foreground. Use Cmd-Tab or Shift-Tab to switch back to VS Code after the citation is inserted.
 
 
 * ✅ Following Citation Links
