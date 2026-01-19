@@ -507,6 +507,14 @@ Speed commands for BibTeX files, active at column 0 of @entry lines.
 | [[cmd:scimax.bibtex.crossref]]     | Open in CrossRef     | x         |
 | [[cmd:scimax.bibtex.webOfScience]] | Open in Web of Science | w       |
 
+*** ⚠️ OpenAlex Integration
+
+| Command ID                             | Description           | Speed Key |
+|----------------------------------------+-----------------------+-----------|
+| [[cmd:scimax.bibtex.showCitingWorks]]  | Show Citing Works     | C         |
+| [[cmd:scimax.bibtex.showRelatedWorks]] | Show Related Works    | R         |
+| [[cmd:scimax.bibtex.showReferences]]   | Show References       | r         |
+
 *** ⚠️ Actions
 
 | Command ID                         | Description          | Speed Key |

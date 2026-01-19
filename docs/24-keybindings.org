@@ -389,6 +389,14 @@ Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@art
 | x   | CrossRef             |
 | w   | Web of Science       |
 
+*** ⚠️ OpenAlex Integration
+
+| Key | Action                        |
+|-----+-------------------------------|
+| C   | Show citing works (OpenAlex)  |
+| R   | Show related works (OpenAlex) |
+| r   | Show references (OpenAlex)    |
+
 *** ⚠️ Actions
 
 | Key | Action               |

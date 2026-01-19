@@ -2528,6 +2528,18 @@
         "title": "Scimax BibTeX: Open in Web of Science"
       },
       {
+        "command": "scimax.bibtex.showCitingWorks",
+        "title": "Scimax BibTeX: Show Citing Works (OpenAlex)"
+      },
+      {
+        "command": "scimax.bibtex.showRelatedWorks",
+        "title": "Scimax BibTeX: Show Related Works (OpenAlex)"
+      },
+      {
+        "command": "scimax.bibtex.showReferences",
+        "title": "Scimax BibTeX: Show References (OpenAlex)"
+      },
+      {
         "command": "scimax.bibtex.copyKey",
         "title": "Scimax BibTeX: Copy Citation Key"
       },
@@ -4045,6 +4057,21 @@
       {
         "command": "scimax.bibtex.webOfScience",
         "key": "w",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.showCitingWorks",
+        "key": "shift+c",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.showRelatedWorks",
+        "key": "shift+r",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.showReferences",
+        "key": "r",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {
