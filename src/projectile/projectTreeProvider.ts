@@ -63,12 +63,17 @@ class ProjectItem extends vscode.TreeItem {
     }
 }
 
+export type ProjectSortBy = 'recent' | 'name' | 'name-desc';
+
 /**
  * Tree data provider for projects sidebar
  */
 export class ProjectTreeProvider implements vscode.TreeDataProvider<ProjectItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<ProjectItem | undefined | null | void>();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+    private filterText: string = '';
+    private sortBy: ProjectSortBy = 'recent';
 
     constructor(private manager: ProjectileManager) {
         // Refresh when projects change
@@ -77,6 +82,36 @@ export class ProjectTreeProvider implements vscode.TreeDataProvider<ProjectItem>
 
     refresh(): void {
         this._onDidChangeTreeData.fire();
+    }
+
+    /**
+     * Set the filter text for project search
+     */
+    setFilter(text: string): void {
+        this.filterText = text.toLowerCase();
+        this.refresh();
+    }
+
+    /**
+     * Get the current filter text
+     */
+    getFilter(): string {
+        return this.filterText;
+    }
+
+    /**
+     * Set the sort order for projects
+     */
+    setSortBy(sort: ProjectSortBy): void {
+        this.sortBy = sort;
+        this.refresh();
+    }
+
+    /**
+     * Get the current sort order
+     */
+    getSortBy(): ProjectSortBy {
+        return this.sortBy;
     }
 
     getTreeItem(element: ProjectItem): vscode.TreeItem {
@@ -89,9 +124,31 @@ export class ProjectTreeProvider implements vscode.TreeDataProvider<ProjectItem>
             return Promise.resolve([]);
         }
 
-        const projects = this.manager.getProjects();
+        let projects = this.manager.getProjects();
         const currentFolders = vscode.workspace.workspaceFolders || [];
         const currentPaths = new Set(currentFolders.map(f => f.uri.fsPath));
+
+        // Apply filter
+        if (this.filterText) {
+            projects = projects.filter(project =>
+                project.name.toLowerCase().includes(this.filterText) ||
+                project.path.toLowerCase().includes(this.filterText)
+            );
+        }
+
+        // Apply sort
+        projects = [...projects].sort((a, b) => {
+            switch (this.sortBy) {
+                case 'name':
+                    return a.name.localeCompare(b.name);
+                case 'name-desc':
+                    return b.name.localeCompare(a.name);
+                case 'recent':
+                default:
+                    // Sort by lastOpened descending (most recent first)
+                    return (b.lastOpened || 0) - (a.lastOpened || 0);
+            }
+        });
 
         const items = projects.map(project =>
             new ProjectItem(project, currentPaths.has(project.path))

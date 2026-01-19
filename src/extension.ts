@@ -473,9 +473,13 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Projectile Commands
     registerProjectileCommands(context, projectileManager);
 
-    // Register Project Tree View
+    // Register Project Tree View with createTreeView for better control
     const projectTreeProvider = new ProjectTreeProvider(projectileManager);
-    vscode.window.registerTreeDataProvider('scimax.projects', projectTreeProvider);
+    const projectTreeView = vscode.window.createTreeView('scimax.projects', {
+        treeDataProvider: projectTreeProvider,
+        showCollapseAll: false
+    });
+    context.subscriptions.push(projectTreeView);
 
     // Command to open project from tree view
     context.subscriptions.push(
@@ -511,7 +515,40 @@ export async function activate(context: vscode.ExtensionContext) {
                     break;
             }
         }),
-        vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh())
+        vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh()),
+        // Filter and sort commands for Projects view
+        vscode.commands.registerCommand('scimax.projectile.filterProjects', async () => {
+            const currentFilter = projectTreeProvider.getFilter();
+            const input = await vscode.window.showInputBox({
+                prompt: 'Filter projects by name or path',
+                value: currentFilter,
+                placeHolder: 'Type to filter projects...'
+            });
+            if (input !== undefined) {
+                projectTreeProvider.setFilter(input);
+                if (input) {
+                    projectTreeView.message = `Filter: "${input}"`;
+                } else {
+                    projectTreeView.message = undefined;
+                }
+            }
+        }),
+        vscode.commands.registerCommand('scimax.projectile.clearFilter', () => {
+            projectTreeProvider.setFilter('');
+            projectTreeView.message = undefined;
+        }),
+        vscode.commands.registerCommand('scimax.projectile.sortByRecent', () => {
+            projectTreeProvider.setSortBy('recent');
+            vscode.window.showInformationMessage('Projects sorted by recent');
+        }),
+        vscode.commands.registerCommand('scimax.projectile.sortByName', () => {
+            projectTreeProvider.setSortBy('name');
+            vscode.window.showInformationMessage('Projects sorted A-Z');
+        }),
+        vscode.commands.registerCommand('scimax.projectile.sortByNameDesc', () => {
+            projectTreeProvider.setSortBy('name-desc');
+            vscode.window.showInformationMessage('Projects sorted Z-A');
+        })
     );
 
     // Defer projectile initialization to avoid blocking

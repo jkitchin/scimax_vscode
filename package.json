@@ -1347,6 +1347,31 @@
         "icon": "$(refresh)"
       },
       {
+        "command": "scimax.projectile.filterProjects",
+        "title": "Scimax: Filter Projects",
+        "icon": "$(search)"
+      },
+      {
+        "command": "scimax.projectile.clearFilter",
+        "title": "Scimax: Clear Project Filter",
+        "icon": "$(close)"
+      },
+      {
+        "command": "scimax.projectile.sortByRecent",
+        "title": "Scimax: Sort Projects by Recent",
+        "icon": "$(history)"
+      },
+      {
+        "command": "scimax.projectile.sortByName",
+        "title": "Scimax: Sort Projects A-Z",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "scimax.projectile.sortByNameDesc",
+        "title": "Scimax: Sort Projects Z-A",
+        "icon": "$(arrow-up)"
+      },
+      {
         "command": "scimax.fuzzySearch",
         "title": "Scimax: Fuzzy Search (Current File)"
       },
@@ -4368,6 +4393,46 @@
           "command": "scimax.agenda.configure",
           "when": "view == scimax.agenda",
           "group": "3_config"
+        },
+        {
+          "command": "scimax.projectile.filterProjects",
+          "when": "view == scimax.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.projectile.clearFilter",
+          "when": "view == scimax.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.projectile.refreshTree",
+          "when": "view == scimax.projects",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.projectile.sortByRecent",
+          "when": "view == scimax.projects",
+          "group": "1_sort"
+        },
+        {
+          "command": "scimax.projectile.sortByName",
+          "when": "view == scimax.projects",
+          "group": "1_sort"
+        },
+        {
+          "command": "scimax.projectile.sortByNameDesc",
+          "when": "view == scimax.projects",
+          "group": "1_sort"
+        },
+        {
+          "command": "scimax.projectile.add",
+          "when": "view == scimax.projects",
+          "group": "2_manage"
+        },
+        {
+          "command": "scimax.projectile.scan",
+          "when": "view == scimax.projects",
+          "group": "2_manage"
         }
       ],
       "view/item/context": [
