@@ -98,6 +98,18 @@ Enhanced editing commands for org-mode, markdown, and LaTeX files.
 | `Scimax: Toggle Fold at Cursor` | `Tab`       | Toggle fold at current heading |
 | `Scimax: Cycle Global Folding`  | `Shift+Tab` | Cycle all headings fold state  |
 
+**Unified Navigation:** (works in org, markdown, and LaTeX)
+| Keybinding    | Description                              |
+| ------------- | ---------------------------------------- |
+| `Ctrl+c Ctrl+n` | Next heading/section                   |
+| `Ctrl+c Ctrl+p` | Previous heading/section               |
+| `Ctrl+c Ctrl+f` | Next sibling (same level)              |
+| `Ctrl+c Ctrl+b` | Previous sibling                       |
+| `Ctrl+c Ctrl+u` | Parent heading/section                 |
+| `Ctrl+c Ctrl+j` | Jump to any heading/section            |
+
+See [Markdown Compatibility](docs/30-markdown-compatibility.org) and [LaTeX Navigation](docs/33-latex-navigation.org) for full details.
+
 ---
 
 ### Source Block Execution (Babel)
@@ -802,7 +814,8 @@ The extension adds a **Scimax** activity bar icon with these views:
 
 The extension supports:
 - **Org-mode** (`.org`): Full parsing of headings, properties, tags, timestamps, source blocks, links
-- **Markdown** (`.md`): Headings, code blocks, links, hashtags
+- **Markdown** (`.md`): Structural editing parity with org-mode (headings, code blocks, navigation, speed commands)
+- **LaTeX** (`.tex`): Section navigation, structure editing, environments, hover tooltips, completion
 - **BibTeX** (`.bib`): Bibliography entries with all standard fields
 
 ---
@@ -831,6 +844,8 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 | Clocking             | org-clock          | Full support (in/out, reports, tables)|
 | Contacts             | org-contacts       | Not yet                               |
 | Capture Templates    | org-capture        | Full support (templates, datetree)    |
+| Markdown Support     | -                  | Full structural editing parity        |
+| LaTeX Navigation     | AUCTeX             | Full support (sections, environments) |
 
 ---
 
