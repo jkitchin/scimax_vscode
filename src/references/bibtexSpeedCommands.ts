@@ -1685,6 +1685,9 @@ export async function updateFromWeb(): Promise<void> {
         return;
     }
 
+    // TypeScript doesn't track assignments in async callbacks well, so use assertion
+    const fetched = fetchedEntry as BibEntry;
+
     // Find fields to update (only update empty/missing fields)
     const updates: { field: string; oldValue: string; newValue: string }[] = [];
     const fieldsToCheck = [
@@ -1695,7 +1698,7 @@ export async function updateFromWeb(): Promise<void> {
 
     for (const field of fieldsToCheck) {
         const currentValue = entry.fields[field]?.trim() || '';
-        const newValue = fetchedEntry.fields[field]?.trim() || '';
+        const newValue = fetched.fields[field]?.trim() || '';
 
         if (!currentValue && newValue) {
             updates.push({ field, oldValue: currentValue, newValue });
