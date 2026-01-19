@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-01-19T07:37:12.327Z",
+  "buildDate": "2026-01-19T07:43:18.825Z",
   "count": 2870,
   "entries": [
     {
@@ -81909,12 +81909,13 @@
       "level": 2,
       "file": "33-latex-navigation.org",
       "line": 126,
-      "content": "The =jumpToSection= command (C-c j) opens a quick pick showing all sections with: - Hierarchical indentation showing structure - Section type (=\\section=, =\\subsection=, etc.) - Line numbers Type to filter, then select a section to jump to it.",
+      "content": "The =jumpToSection= command (C-c C-j or C-c j) opens a quick pick showing all sections with: - Hierarchical indentation showing structure - Section type (=\\section=, =\\subsection=, etc.) - Line numbers Type to filter, then select a section to jump to it.",
       "path": [
         "Section Navigation"
       ],
       "commands": [],
       "keybindings": [
+        "C-c C-j",
         "C-c"
       ],
       "keywords": [
@@ -81923,6 +81924,7 @@
         "jumptosection",
         "command",
         "c-c",
+        "c-j",
         "opens",
         "quick",
         "pick",
@@ -81936,8 +81938,7 @@
         "etc",
         "line",
         "numbers",
-        "filter",
-        "select"
+        "filter"
       ]
     },
     {
