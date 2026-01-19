@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-19T07:20:05.396Z",
-  "count": 2830,
+  "buildDate": "2026-01-19T07:37:12.327Z",
+  "count": 2870,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -59094,20 +59094,20 @@
       "level": 2,
       "file": "21-navigation.org",
       "line": 38,
-      "content": "CLOSED: [2026-01-15 Thu 07:36] Navigate between headings in org-mode and markdown documents: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.org.nextHeading     | C-c C-n       | Jump to next heading     | | scimax.org.previousHeading | C-c C-p       | Jump to previous heading | | scimax.org.parentHeading   | -           | Jump to parent heading   | | scimax.org.jumpToHeading   | C-c C-j     ",
+      "content": "CLOSED: [2026-01-15 Thu 07:36] Navigate between headings in org-mode, markdown, and LaTeX documents: | Command                    | Key Binding | Description                | |----------------------------+-------------+----------------------------| | scimax.org.nextHeading     | C-c C-n     | Jump to next heading       | | scimax.org.previousHeading | C-c C-p     | Jump to previous heading   | | scimax.speed.nextSibling   | C-c C-f     | Next sibling (same level)  | | scimax.speed.previousSiblin",
       "path": [
         "Outline Navigation"
       ],
       "commands": [
         "scimax.org.nextHeading",
         "scimax.org.previousHeading",
-        "scimax.org.parentHeading",
-        "scimax.org.jumpToHeading"
+        "scimax.speed.nextSibling",
+        "scimax.speed.previousSiblin"
       ],
       "keybindings": [
         "C-c C-n",
         "C-c C-p",
-        "C-c C-j"
+        "C-c C-f"
       ],
       "keywords": [
         "heading",
@@ -59121,22 +59121,22 @@
         "headings",
         "org-mode",
         "markdown",
+        "latex",
         "documents",
         "command",
         "key",
         "binding",
         "description",
-        "-------------------------------------------------------------------",
+        "---------------------------------------------------------------------",
         "c-c",
-        "c-n",
-        "jump"
+        "c-n"
       ]
     },
     {
       "heading": "Next/Previous Heading",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 52,
+      "line": 57,
       "content": "CLOSED: [2026-01-15 Thu 07:36] Move through all headings in document order: #+BEGIN_SRC org ,* First Heading Content here... ,** Subheading A        <- Current position Content... ,** Subheading B        <- Next heading More content... ,* Second Heading       <- Another next heading #+END_SRC The nextHeading command moves forward through headings regardless of level. Similarly, previousHeading moves backward.",
       "path": [
         "Outline Navigation",
@@ -59171,7 +59171,7 @@
       "heading": "Parent Heading",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 73,
+      "line": 78,
       "content": "CLOSED: [2026-01-15 Thu 08:01] Jump to the parent (containing) heading: #+BEGIN_SRC org ,* Parent Heading       <- Jump here ,** Child Heading ,*** Current Position   <- From here #+END_SRC This is useful for quickly navigating up the document hierarchy.",
       "path": [
         "Outline Navigation",
@@ -59206,7 +59206,7 @@
       "heading": "Jump to Heading",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 86,
+      "line": 91,
       "content": "CLOSED: [2026-01-15 Thu 07:38] The jumpToHeading command (C-c C-j) opens a fuzzy search picker showing all headings in the current document. Type to filter, and select a heading to jump to it. Features: - Live preview - cursor moves as you browse - Fuzzy matching - type any part of the heading title - Shows heading hierarchy with indentation - Displays TODO states and tags",
       "path": [
         "Outline Navigation",
@@ -59243,7 +59243,7 @@
       "heading": "Source Block Navigation",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 98,
+      "line": 103,
       "content": "CLOSED: [2026-01-15 Thu 08:03] Navigate between source blocks in org documents: | Command                 | Key Binding | Description               | |-------------------------+-------------+---------------------------| | scimax.ob.nextBlock     | C-c C-n       | Jump to next source block | | scimax.ob.previousBlock | C-c C-p       | Jump to previous block    | | scimax.ob.jumpToBlock   | -           | Fuzzy search blocks       | | scimax.ob.jumpToResults | -           | Jump to results section ",
       "path": [
         "Outline Navigation"
@@ -59285,7 +59285,7 @@
       "heading": "Next/Previous Source Block",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 112,
+      "line": 117,
       "content": "CLOSED: [2026-01-15 Thu 07:40] Move between source blocks in document order: #name: test-org #+BEGIN_SRC org Some text... ,#+BEGIN_SRC python      <- Current position print(\"Hello\") ,#+END_SRC More text... ,#+BEGIN_SRC python      <- Next block print(\"World\") ,#+END_SRC #+END_SRC These commands skip over regular text and headings, jumping directly to the next or previous #+BEGIN_SRC block.",
       "path": [
         "Outline Navigation",
@@ -59320,7 +59320,7 @@
       "heading": "Jump to Source Block",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 134,
+      "line": 139,
       "content": "CLOSED: [2026-01-17 Sat 15:36] [[cmd:scimax.ob.jumpToBlock]] The jumpToBlock command shows a fuzzy picker of all source blocks in the document. Each block is labeled with: - Language (e.g., python, javascript) - Block name (if it has a #+NAME: line) - Preview of first line of code",
       "path": [
         "Outline Navigation",
@@ -59357,7 +59357,7 @@
       "heading": "Jump to Results",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 145,
+      "line": 150,
       "content": "CLOSED: [2026-01-17 Sat 15:37] [[cmd:scimax.ob.jumpToResults]] When cursor is in a source block, jumpToResults jumps to the #+RESULTS: section below the block (if it exists). This is useful after executing a block to quickly review the output.",
       "path": [
         "Outline Navigation",
@@ -59394,7 +59394,7 @@
       "heading": "Sibling Navigation (Speed Commands)",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 154,
+      "line": 159,
       "content": "CLOSED: [2026-01-15 Thu 07:41] Speed commands provide efficient navigation between sibling headings (headings at the same level): | Key | Command                      | Description                    | |-----+------------------------------+--------------------------------| | f   | scimax.speed.nextSibling     | Next heading at same level     | | b   | scimax.speed.previousSibling | Previous heading at same level | These commands only work when: 1. Speed commands are enabled 2. Cursor is at the b",
       "path": [
         "Outline Navigation"
@@ -59431,7 +59431,7 @@
       "heading": "Fuzzy Search (Swiper-Style)",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 188,
+      "line": 193,
       "content": "CLOSED: [2026-01-15 Thu 07:42] Fuzzy search provides incremental search with live preview, inspired by Emacs Swiper. As you type, matching lines are filtered and the cursor moves to show a live preview.",
       "path": [],
       "commands": [],
@@ -59463,7 +59463,7 @@
       "heading": "Search Current File",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 195,
+      "line": 200,
       "content": "CLOSED: [2026-01-15 Thu 07:42] | Command            | Key Binding | Description                  | |--------------------+-------------+------------------------------| | scimax.fuzzySearch | C-c s       | Search lines in current file | Opens a quick pick showing all non-empty lines in the current file. Features: - *Live preview* - cursor moves to selected line as you browse - *Fuzzy matching* - type space-separated terms, all must match - *Match highlighting* - matching terms are highlighted in r",
       "path": [
         "Fuzzy Search (Swiper-Style)"
@@ -59501,7 +59501,7 @@
       "heading": "Search Open Files",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 216,
+      "line": 221,
       "content": "CLOSED: [2026-01-16 Fri 20:02] | Command                     | Key Binding | Description                    | |-----------------------------+-------------+--------------------------------| | scimax.fuzzySearchOpenFiles | C-c Shift-s | Search lines in all open files | Like fuzzy search but searches across all open buffers/files. Results are grouped by file with file separators. Use this to: - Find text across multiple open files - Navigate between related files quickly - Review related code acros",
       "path": [
         "Fuzzy Search (Swiper-Style)"
@@ -59539,7 +59539,7 @@
       "heading": "Search Outline (Headings/Symbols)",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 231,
+      "line": 236,
       "content": "CLOSED: [2026-01-15 Thu 07:45] | Command                   | Key Binding | Description                 | |---------------------------+-------------+-----------------------------| | scimax.fuzzySearchOutline | C-c M-s     | Search headings and symbols | Searches only structural elements: - *Org files* - Headlines (lines starting with *) - *Markdown files* - Headings (lines starting with #) - *Code files* - Function/class definitions This provides a fast way to navigate document structure without ",
       "path": [
         "Fuzzy Search (Swiper-Style)"
@@ -59578,7 +59578,7 @@
       "heading": "Jump Navigation (Avy-Style)",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 251,
+      "line": 256,
       "content": "CLOSED: [2026-01-15 Thu 07:46] Jump navigation provides character-based quick jumps to visible text, inspired by Emacs Avy. You specify what to jump to (character, word, line), and each match is labeled with a hint character. Type the hint to jump instantly.",
       "path": [],
       "commands": [],
@@ -59610,7 +59610,7 @@
       "heading": "Jump to Character",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 258,
+      "line": 263,
       "content": "CLOSED: [2026-01-15 Thu 07:49] | Command               | Key Binding | Description                  | |-----------------------+-------------+------------------------------| | scimax.jump.gotoChar  | C-c jc      | Jump to any character        | | scimax.jump.gotoChar2 | C-c jj      | Jump to 2-character sequence |",
       "path": [
         "Jump Navigation (Avy-Style)"
@@ -59644,7 +59644,7 @@
       "heading": "Single Character",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 266,
+      "line": 271,
       "content": "CLOSED: [2026-01-15 Thu 07:49] 1. Invoke scimax.jump.gotoChar 2. Type a character (e.g., \"e\") 3. All visible occurrences of \"e\" are labeled: a, s, d, f, etc. 4. Type the label to jump (e.g., type \"s\" to jump to the second occurrence)",
       "path": [
         "Jump Navigation (Avy-Style)",
@@ -59677,7 +59677,7 @@
       "heading": "Two Characters",
       "level": 3,
       "file": "21-navigation.org",
-      "line": 274,
+      "line": 279,
       "content": "CLOSED: [2026-01-15 Thu 07:49] For more precision, use scimax.jump.gotoChar2: 1. Invoke the command 2. Type two characters (e.g., \"th\") 3. All visible \"th\" sequences are labeled 4. Type the label to jump This reduces the number of matches, making jumps faster.",
       "path": [
         "Jump Navigation (Avy-Style)",
@@ -59714,7 +59714,7 @@
       "heading": "Jump to Word",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 286,
+      "line": 291,
       "content": "CLOSED: [2026-01-15 Thu 07:51] | Command              | Key Binding | Description         | |----------------------+-------------+---------------------| | scimax.jump.gotoWord | C-c jw      | Jump to word starts | Jumps to word boundaries. You can optionally filter by starting character: 1. Invoke scimax.jump.gotoWord 2. Enter a starting character or leave empty for all words 3. All matching word starts are labeled 4. Type the label to jump Example: Type \"f\" to see only words starting with \"f\" (",
       "path": [
         "Jump Navigation (Avy-Style)"
@@ -59752,7 +59752,7 @@
       "heading": "Jump to Line",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 302,
+      "line": 307,
       "content": "CLOSED: [2026-01-15 Thu 07:51] | Command              | Key Binding | Description              | |----------------------+-------------+--------------------------| | scimax.jump.gotoLine | C-c jl      | Jump to any visible line | Labels every visible line for quick vertical navigation: 1. Invoke scimax.jump.gotoLine 2. Every visible line gets a label (a, s, d, etc.) 3. Type the label to jump to that line The cursor is placed at the first non-whitespace character of the selected line.",
       "path": [
         "Jump Navigation (Avy-Style)"
@@ -59790,7 +59790,7 @@
       "heading": "Jump to Symbol",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 317,
+      "line": 322,
       "content": "CLOSED: [2026-01-16 Fri 20:02] | Command                | Key Binding | Description                  | |------------------------+-------------+------------------------------| | scimax.jump.gotoSymbol | C-c jo      | Jump to symbols and headings | Jumps to structural elements in the visible area: - Function/class definitions - Org headings (* Heading) - Markdown headings (# Heading) - Comment markers (TODO, FIXME, NOTE, etc.) Only visible symbols are labeled, making it very fast for navigating co",
       "path": [
         "Jump Navigation (Avy-Style)"
@@ -59828,7 +59828,7 @@
       "heading": "Jump to Subword",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 333,
+      "line": 338,
       "content": "CLOSED: [2026-01-15 Thu 07:53] | Command                 | Key Binding | Description                | |-------------------------+-------------+----------------------------| | scimax.jump.gotoSubword | C-c jw      | Jump to subword boundaries | Jumps to camelCase and snake_case boundaries: - myVariableName - Labels 'm', 'V', 'N' - my_variable_name - Labels 'm', 'v', 'n' - MY_CONSTANT - Labels 'M', 'C' Useful for navigating within identifiers in code.",
       "path": [
         "Jump Navigation (Avy-Style)"
@@ -59866,7 +59866,7 @@
       "heading": "Jump Actions",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 348,
+      "line": 353,
       "content": "CLOSED: [2026-01-15 Thu 07:53] Beyond navigation, jump commands can perform actions: | Command              | Key Binding | Description                 | |----------------------+-------------+-----------------------------| | scimax.jump.copyLine | -           | Select a line and copy it   | | scimax.jump.killLine | -           | Select a line and delete it | These commands use the same labeling system but perform actions instead of just moving the cursor.",
       "path": [
         "Jump Navigation (Avy-Style)"
@@ -59903,7 +59903,7 @@
       "heading": "Label Characters",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 361,
+      "line": 366,
       "content": "CLOSED: [2026-01-15 Thu 07:53] Jump labels use home row keys for efficiency, ordered by ease of typing: : a s d f j k l g h q w e r u i o p z x c v b n m t y - Small numbers of matches use single characters - Larger numbers of matches use two-character combinations (aa, as, ad, etc.)",
       "path": [
         "Jump Navigation (Avy-Style)"
@@ -59937,7 +59937,7 @@
       "heading": "Document Symbol Provider",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 371,
+      "line": 376,
       "content": "CLOSED: [2026-01-15 Thu 07:53] VS Code's built-in outline view and breadcrumb navigation are enhanced with org-mode support.",
       "path": [],
       "commands": [],
@@ -59965,7 +59965,7 @@
       "heading": "Outline View",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 377,
+      "line": 382,
       "content": "CLOSED: [2026-01-15 Thu 07:54] The Outline panel (View -> Outline) shows document structure: For org files: - Document title (from #+TITLE:) - All headings in hierarchical structure - TODO state indicators (box for TODO, check for DONE) - Tags and priorities shown as details - Source blocks (labeled with language) - Tables - Drawers Symbols use semantic icons: - $(symbol-class) - Level 1 headings - $(symbol-method) - Level 2 headings - $(symbol-function) - Level 3 headings - $(symbol-key) - TODO",
       "path": [
         "Document Symbol Provider"
@@ -59999,7 +59999,7 @@
       "heading": "Breadcrumb Navigation",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 398,
+      "line": 403,
       "content": "CLOSED: [2026-01-15 Thu 07:54] The breadcrumb bar at the top of the editor shows your location in the document hierarchy: : Document Title > Level 1 Heading > Level 2 Heading > Current Position Click any breadcrumb to see siblings and navigate quickly.",
       "path": [
         "Document Symbol Provider"
@@ -60033,7 +60033,7 @@
       "heading": "Quick Outline",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 408,
+      "line": 413,
       "content": "CLOSED: [2026-01-15 Thu 07:54] Press C-S-O (or s-S-O on Mac) to open VS Code's quick outline: - Shows all document symbols - Type to filter - Press Enter to jump to symbol This works similar to fuzzySearchOutline but uses VS Code's native UI.",
       "path": [
         "Document Symbol Provider"
@@ -60069,7 +60069,7 @@
       "heading": "Go to Definition",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 419,
+      "line": 424,
       "content": "CLOSED: [2026-01-15 Thu 07:54] While not Scimax-specific, VS Code's go to definition works in org files for: - Links ([[file:other.org][Other File]]) - Internal links ([[*Heading Name]]) - Reference citations (requires org-ref extension) | Command                        | Key Binding | Description         | |--------------------------------+-------------+---------------------| | editor.action.revealDefinition | F12         | Go to definition    | | editor.action.peekDefinition   | M-F12     | Pe",
       "path": [],
       "commands": [],
@@ -60103,7 +60103,7 @@
       "heading": "Navigation History",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 434,
+      "line": 439,
       "content": "CLOSED: [2026-01-15 Thu 08:00] VS Code tracks your navigation history across files: | Command                          | Key Binding | Description             | |----------------------------------+-------------+-------------------------| | workbench.action.navigateBack    | C-x C-Left  | Go to previous location | | workbench.action.navigateForward | C-x C-Right | Go to next location     | Every jump creates a history entry: - Jump to heading - Follow a link - Go to definition - Search result nav",
       "path": [],
       "commands": [],
@@ -60138,7 +60138,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 452,
+      "line": 457,
       "content": "CLOSED: [2026-01-15 Thu 07:56] Speed commands provide single-key navigation when the cursor is at the start of a heading. See the table in [[*Sibling Navigation (Speed Commands)]] above, or press ? at a heading start to see all speed commands. Navigation speed commands (available at heading start): | Key | Command                  | Description                    | |-----+--------------------------+--------------------------------| | n   | Next visible heading     | Move to next heading         ",
       "path": [],
       "commands": [],
@@ -60170,7 +60170,7 @@
       "heading": "Keybinding Reference",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 484,
+      "line": 489,
       "content": "CLOSED: [2026-01-15 Thu 07:56] All navigation keybindings:",
       "path": [],
       "commands": [],
@@ -60190,7 +60190,7 @@
       "heading": "Global (All Modes)",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 489,
+      "line": 494,
       "content": "CLOSED: [2026-01-16 Fri 20:04] | Key Binding | Command                          | Description                 | |-------------+----------------------------------+-----------------------------| | C-c s       | scimax.fuzzySearch               | Fuzzy search current file   | | C-c S-s     | scimax.fuzzySearchOpenFiles      | Fuzzy search open files     | | C-c M-s     | scimax.fuzzySearchOutline        | Fuzzy search outline        | | C-S-O       | VS Code Quick Outline            | Jump to symbo",
       "path": [
         "Keybinding Reference"
@@ -60232,7 +60232,7 @@
       "heading": "Org/Markdown Mode",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 499,
+      "line": 504,
       "content": "CLOSED: [2026-01-15 Thu 07:58] | Key Binding | Command                  | Description     | |-------------+--------------------------+-----------------| | C-c C-j     | scimax.org.jumpToHeading | Jump to heading |",
       "path": [
         "Keybinding Reference"
@@ -60265,7 +60265,7 @@
       "heading": "Speed Commands (at heading start)",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 506,
+      "line": 511,
       "content": "CLOSED: [2026-01-15 Thu 07:58] | Key | Command          | Description                    | |-----+------------------+--------------------------------| | n   | Next heading     | Move to next heading           | | p   | Previous heading | Move to previous heading       | | f   | Next sibling     | Next heading at same level     | | b   | Previous sibling | Previous heading at same level | | u   | Parent heading   | Jump to parent heading         | | j   | Jump to heading  | Fuzzy search headings ",
       "path": [
         "Keybinding Reference"
@@ -60299,7 +60299,7 @@
       "heading": "Tips and Workflows",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 518,
+      "line": 523,
       "content": "CLOSED: [2026-01-15 Thu 07:58]",
       "path": [],
       "commands": [],
@@ -60317,7 +60317,7 @@
       "heading": "Quick Heading Navigation",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 521,
+      "line": 526,
       "content": "CLOSED: [2026-01-15 Thu 07:58] Combine speed commands and fuzzy search: 1. Use j speed command for fuzzy heading search (when at heading start) 2. Use C-c C-j for heading search (from anywhere) 3. Use f/b speed commands to move between siblings 4. Use n/p speed commands to scan all headings",
       "path": [
         "Tips and Workflows"
@@ -60353,7 +60353,7 @@
       "heading": "Finding Code in Large Files",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 531,
+      "line": 536,
       "content": "CLOSED: [2026-01-15 Thu 07:58] For code files: 1. C-c M-s - Search outline to find function/class 2. scimax.jump.gotoSymbol - Jump to visible function 3. C-S-O - VS Code quick outline for all symbols",
       "path": [
         "Tips and Workflows"
@@ -60392,7 +60392,7 @@
       "heading": "Cross-File Navigation",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 540,
+      "line": 545,
       "content": "CLOSED: [2026-01-15 Thu 07:59] When working across multiple files: 1. C-c S-s - Search all open files 2. Open related files 3. Use navigation history (M-<left>/M-<right>) to move between locations 4. Use breadcrumbs to see context",
       "path": [
         "Tips and Workflows"
@@ -60428,7 +60428,7 @@
       "heading": "Precision Jumping",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 550,
+      "line": 555,
       "content": "CLOSED: [2026-01-15 Thu 07:59] For maximum precision: 1. scimax.jump.gotoChar2 - Two characters gives fewer matches 2. scimax.jump.gotoSubword - Jump within camelCase names 3. scimax.jump.gotoWord with starting character - Filter words",
       "path": [
         "Tips and Workflows"
@@ -60466,7 +60466,7 @@
       "heading": "Source Block Workflows",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 559,
+      "line": 564,
       "content": "CLOSED: [2026-01-15 Thu 07:59] When working with literate programming: 1. scimax.ob.jumpToBlock - Find block by name/language 2. scimax.ob.nextBlock/previousBlock - Navigate between blocks 3. scimax.ob.jumpToResults - Check execution results 4. Execute block (C-c C-c) 5. Jump to results to verify output",
       "path": [
         "Tips and Workflows"
@@ -60506,7 +60506,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 570,
+      "line": 575,
       "content": "CLOSED: [2026-01-15 Thu 07:35]",
       "path": [],
       "commands": [],
@@ -60523,7 +60523,7 @@
       "heading": "Enable/Disable Features",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 573,
+      "line": 578,
       "content": "CLOSED: [2026-01-15 Thu 07:35] #+BEGIN_SRC json { // Enable speed commands (single-key navigation at heading start) \"scimax.speedCommandsEnabled\": true, // Maximum number of items in fuzzy search (performance) \"scimax.fuzzySearch.maxResults\": 1000 } #+END_SRC",
       "path": [
         "Configuration"
@@ -60560,7 +60560,7 @@
       "heading": "Custom Keybindings",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 586,
+      "line": 591,
       "content": "CLOSED: [2026-01-15 Thu 07:35] Add custom keybindings in keybindings.json: #+BEGIN_SRC json [ // Custom jump to character binding { \"key\": \"ctrl+;\", \"command\": \"scimax.jump.gotoChar\", \"when\": \"editorTextFocus\" }, // Custom next source block binding { \"key\": \"ctrl+shift+n\", \"command\": \"scimax.ob.nextBlock\", \"when\": \"editorTextFocus && editorLangId == 'org'\" } ] #+END_SRC",
       "path": [
         "Configuration"
@@ -60597,7 +60597,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 609,
+      "line": 614,
       "content": "CLOSED: [2026-01-15 Thu 07:35]",
       "path": [],
       "commands": [],
@@ -60614,7 +60614,7 @@
       "heading": "Fuzzy Search Not Working",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 612,
+      "line": 617,
       "content": "CLOSED: [2026-01-15 Thu 07:34] If fuzzy search doesn't show results: 1. Check that the file has non-empty lines 2. Try searching with simpler terms 3. Check if file is too large (increase maxResults setting)",
       "path": [
         "Troubleshooting"
@@ -60648,7 +60648,7 @@
       "heading": "Speed Commands Not Triggering",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 621,
+      "line": 626,
       "content": "CLOSED: [2026-01-15 Thu 07:34] Speed commands require: 1. scimax.speedCommandsEnabled set to true 2. Cursor at column 0 (start of line) 3. Cursor on a heading line (starts with * in org, # in markdown) Move cursor to beginning of heading with Home key, then try speed command.",
       "path": [
         "Troubleshooting"
@@ -60684,7 +60684,7 @@
       "heading": "Jump Labels Not Appearing",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 632,
+      "line": 637,
       "content": "CLOSED: [2026-01-15 Thu 07:34] If jump commands don't show labels: 1. Make sure there are visible matches in the viewport 2. Check that the editor has focus 3. Try scrolling to ensure matches are visible",
       "path": [
         "Troubleshooting"
@@ -60718,7 +60718,7 @@
       "heading": "Navigation History Not Working",
       "level": 2,
       "file": "21-navigation.org",
-      "line": 641,
+      "line": 646,
       "content": "CLOSED: [2026-01-15 Thu 07:34] VS Code's navigation history works best when: 1. You make explicit jumps (jump commands, follow links) 2. You move between files 3. You use go to definition Cursor movement with arrow keys doesn't create history entries.",
       "path": [
         "Troubleshooting"
@@ -60752,7 +60752,7 @@
       "heading": "See Also",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 652,
+      "line": 657,
       "content": "CLOSED: [2026-01-15 Thu 07:34] - [[file:02-document-structure.org][Document Structure]] - Headlines, folding, and outline manipulation - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference - [[file:07-source-blocks.org][Source Blocks]] - Working with code blocks - [[file:05-links.org][Links]] - Following and managing links",
       "path": [],
       "commands": [],
@@ -60784,7 +60784,7 @@
       "heading": "Comparison with Emacs",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 660,
+      "line": 665,
       "content": "CLOSED: [2026-01-15 Thu 07:34] Scimax VS Code navigation is inspired by Emacs packages: | Emacs Package  | VS Code Equivalent       | Notes                           | |----------------+--------------------------+---------------------------------| | Avy            | scimax.jump.* commands   | Character-based jumping         | | Swiper         | scimax.fuzzySearch       | Incremental search with preview | | Helm/Ivy       | Quick Pick UI            | VS Code native fuzzy picker     | | Org speed ",
       "path": [],
       "commands": [
@@ -60819,7 +60819,7 @@
       "heading": "Index",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 680,
+      "line": 685,
       "content": "CLOSED: [2026-01-15 Thu 07:33] - Avy-style navigation: [[*Jump Navigation (Avy-Style)]] - Breadcrumbs: [[*Breadcrumb Navigation]] - Fuzzy search: [[*Fuzzy Search (Swiper-Style)]] - Go to definition: [[*Go to Definition]] - Heading navigation: [[*Heading Navigation]] - Jump to character: [[*Jump to Character]] - Jump to line: [[*Jump to Line]] - Jump to symbol: [[*Jump to Symbol]] - Jump to word: [[*Jump to Word]] - Navigation history: [[*Navigation History]] - Outline view: [[*Outline View]] - S",
       "path": [],
       "commands": [],
@@ -60851,7 +60851,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "21-navigation.org",
-      "line": 699,
+      "line": 704,
       "content": "- Previous: [[file:20-editmarks.org][Editmarks]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [],
       "commands": [],
@@ -65789,13 +65789,15 @@
       "level": 1,
       "file": "24-keybindings.org",
       "line": 91,
-      "content": "| Key         | Action                   | |-------------+--------------------------| | <tab>       | Toggle fold (on heading) | | S-<tab>     | Cycle global fold        | | C-c C-j     | Jump to heading          | | C-c C-n       | Next heading             | | C-c C-p       | Previous heading         | | C-<up>      | Previous source block    | | C-<down>    | Next source block        |",
+      "content": "| Key         | Action                   | |-------------+--------------------------| | <tab>       | Toggle fold (on heading) | | S-<tab>     | Cycle global fold        | | C-c C-j     | Jump to heading          | | C-c C-n     | Next heading             | | C-c C-p     | Previous heading         | | C-c C-f     | Next sibling heading     | | C-c C-b     | Previous sibling heading | | C-<up>      | Previous source block    | | C-<down>    | Next source block        | Note: Navigation keybinding",
       "path": [],
       "commands": [],
       "keybindings": [
         "C-c C-j",
         "C-c C-n",
-        "C-c C-p"
+        "C-c C-p",
+        "C-c C-f",
+        "C-c C-b"
       ],
       "keywords": [
         "navigation",
@@ -65816,15 +65818,15 @@
         "next",
         "c-p",
         "previous",
-        "c-up",
-        "source"
+        "c-f",
+        "sibling"
       ]
     },
     {
       "heading": "Headings",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 103,
+      "line": 108,
       "content": "| Key           | Action                         | |---------------+--------------------------------| | M-<left>      | Promote heading/subtree        | | M-<right>     | Demote heading/subtree         | | M-S-<left>    | Promote subtree (not in table) | | M-S-<right>   | Demote subtree (not in table)  | | M-<up>        | Move heading/subtree up        | | M-<down>      | Move heading/subtree down      | | C-<return>    | Insert new heading             | | s-<return>    | (Mac) Insert new headin",
       "path": [],
       "commands": [],
@@ -65858,7 +65860,7 @@
       "heading": "Items",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 116,
+      "line": 121,
       "content": "| Key     | Action                             | |---------+------------------------------------| | C-c C-t | Cycle TODO state                   | | C-c C-c | Toggle checkbox (not in src block) | | C-c C-d | Insert due date (DEADLINE)         | | C-c C-s | Insert scheduled date (SCHEDULED)  |",
       "path": [],
       "commands": [],
@@ -65895,7 +65897,7 @@
       "heading": "Timestamps",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 125,
+      "line": 130,
       "content": "| Key        | Action                               | |------------+--------------------------------------| | C-c .      | Insert timestamp                     | | C-c C-r    | Add repeater to timestamp            | | S-<up>     | Shift timestamp up                   | | S-<down>   | Shift timestamp down                 | | S-<left>   | Shift timestamp left (no selection)  | | S-<right>  | Shift timestamp right (no selection) | *Note:* S-<arrow> keys work on timestamps. When on a citation, they ",
       "path": [],
       "commands": [],
@@ -65930,7 +65932,7 @@
       "heading": "Tables",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 138,
+      "line": 143,
       "content": "| Key               | Action                            | |-------------------+-----------------------------------| | C-c \\vert         | Create table                      | | C-c -             | Insert table separator row        | | C-c ^             | Sort table by column              | | C-c C-c           | Recalculate table (on TBLFM line) | | C-c *             | Recalculate table (alternative)   | | C-c C-e t         | Export table                      | | M-<return>        | Insert row bel",
       "path": [],
       "commands": [],
@@ -65966,7 +65968,7 @@
       "heading": "Source Blocks (Babel)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 154,
+      "line": 159,
       "content": "",
       "path": [],
       "commands": [],
@@ -65981,7 +65983,7 @@
       "heading": "Execution",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 156,
+      "line": 161,
       "content": "| Key          | Action                              | |--------------+-------------------------------------| | C-<return>   | Execute source block                | | s-<return>   | (Mac) Execute source block          | | C-c C-c      | Execute source block (in src block) | | S-<return>   | Execute and move to next block      |",
       "path": [
         "Source Blocks (Babel)"
@@ -66011,7 +66013,7 @@
       "heading": "Navigation & Manipulation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 165,
+      "line": 170,
       "content": "| Key       | Action                       | |-----------+------------------------------| | C-<up>    | Previous source block        | | C-<down>  | Next source block            | | C-c C-b   | Jump to source block         | | C-c C-,   | Insert source block below    | | C-c -     | Split source block at cursor |",
       "path": [
         "Source Blocks (Babel)"
@@ -66046,7 +66048,7 @@
       "heading": "Advanced Babel Operations",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 175,
+      "line": 180,
       "content": "| Key       | Action                      | |-----------+-----------------------------| | C-c C-v t | Tangle source blocks        | | C-c C-v p | Execute all blocks to point | | C-c C-v i | Execute inline code         | | C-c C-v q | Queue block for execution   |",
       "path": [
         "Source Blocks (Babel)"
@@ -66080,7 +66082,7 @@
       "heading": "Export",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 184,
+      "line": 189,
       "content": "| Key           | Action                        | |---------------+-------------------------------| | C-c C-e       | Export dispatcher (show menu) | | C-c C-e h h   | Export to HTML                | | C-c C-e h o   | Export to HTML and open       | | C-c C-e l l   | Export to LaTeX               | | C-c C-e l o   | Export to LaTeX and open      | | C-c C-e l p   | Export to PDF                 | | C-c C-e l v   | Open LaTeX preview            | | C-c C-e l s   | LaTeX forward sync            | ",
       "path": [],
       "commands": [],
@@ -66110,7 +66112,7 @@
       "heading": "Links",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 198,
+      "line": 203,
       "content": "| Key        | Action                   | |------------+--------------------------| | C-c C-l    | Insert link              | | C-c C-o    | Open link                | | <return>   | Open link (when on link) |",
       "path": [],
       "commands": [],
@@ -66136,7 +66138,7 @@
       "heading": "Citations & References",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 206,
+      "line": 211,
       "content": "| Key        | Action                                 | |------------+----------------------------------------| | C-c ]      | Insert citation                        | | C-c z      | Insert citation from Zotero            | | C-u C-c ]  | Insert cross-reference                 | | S-<left>   | Transpose citation left (on citation)  | | S-<right>  | Transpose citation right (on citation) | | S-<up>     | Sort citations (on citation)           | | S-<down>   | Sort citations by year (on citation) ",
       "path": [],
       "commands": [],
@@ -66171,7 +66173,7 @@
       "heading": "Text Markup",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 220,
+      "line": 225,
       "content": "| Key   | Action                               | |-------+--------------------------------------| | C-c b | Bold                                 | | C-c i | Italic                               | | C-c u | Underline                            | | C-c ` | Code (inline)                        | | C-c = | Verbatim                             | | C-c + | Strikethrough                        | | C-c ' | Command (Emacs-style, non-standard)  |",
       "path": [],
       "commands": [],
@@ -66201,7 +66203,7 @@
       "heading": "Search & Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 232,
+      "line": 237,
       "content": "",
       "path": [],
       "commands": [],
@@ -66215,7 +66217,7 @@
       "heading": "Fuzzy Search (Swiper-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 234,
+      "line": 239,
       "content": "| Key     | Action                         | |---------+--------------------------------| | C-c s   | Fuzzy search in current buffer | | C-c S-s | Fuzzy search in open files     | | C-c M-s | Fuzzy search outline/headings  |",
       "path": [
         "Search & Navigation"
@@ -66245,7 +66247,7 @@
       "heading": "Jump (Avy-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 242,
+      "line": 247,
       "content": "| Key     | Action                 | |---------+------------------------| | C-c j c | Jump to character      | | C-c j j | Jump to 2 characters   | | C-c j w | Jump to word           | | C-c j l | Jump to line           | | C-c j o | Jump to symbol/outline | | C-c j s | Jump to subword        |",
       "path": [
         "Search & Navigation"
@@ -66273,7 +66275,7 @@
       "heading": "Projectile",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 253,
+      "line": 258,
       "content": "| Key     | Action                      | |---------+-----------------------------| | C-c p p | Switch project              | | C-c p f | Find file in project        | | C-c p s | Search in project           | | C-c p d | Open project root directory | | C-c p a | Add project                 |",
       "path": [
         "Search & Navigation"
@@ -66302,7 +66304,7 @@
       "heading": "Edit Marks (Track Changes)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 263,
+      "line": 268,
       "content": "| Key     | Action                  | |---------+-------------------------| | C-c e i | Mark insertion          | | C-c e d | Mark deletion           | | C-c e c | Add comment             | | C-c e t | Mark typo               | | C-c e a | Accept edit mark        | | C-c e r | Reject edit mark        | | C-c e ] | Next edit mark          | | C-c e [ | Previous edit mark      | | C-c e s | Show edit marks summary |",
       "path": [],
       "commands": [],
@@ -66336,7 +66338,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 277,
+      "line": 282,
       "content": "Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).",
       "path": [],
       "commands": [
@@ -66364,7 +66366,7 @@
       "heading": "Navigation Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 281,
+      "line": 286,
       "content": "| Key | Action                            | |-----+-----------------------------------| | n   | Next heading (same level)         | | p   | Previous heading (same level)     | | f   | Next sibling heading              | | b   | Previous sibling heading          | | u   | Parent heading (up one level)     | | j   | Jump to heading (quick picker)    | | g   | Goto menu (additional navigation) |",
       "path": [
         "Speed Commands"
@@ -66397,7 +66399,7 @@
       "heading": "Visibility Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 293,
+      "line": 298,
       "content": "| Key   | Action                          | |-------+---------------------------------| | <tab> | Toggle fold (same as regular tab) | | c     | Cycle global fold               | | C     | Show children only              | | o     | Overview (collapse all)         | | 1     | Show level 1 headings           | | 2     | Show level 2 headings           | | 3     | Show level 3 headings           | | 0     | Show all headings               |",
       "path": [
         "Speed Commands"
@@ -66429,7 +66431,7 @@
       "heading": "Structure Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 306,
+      "line": 311,
       "content": "| Key | Action               | |-----+----------------------| | l   | Promote subtree      | | r   | Demote subtree       | | L   | Promote heading only | | R   | Demote heading only  | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
@@ -66456,7 +66458,7 @@
       "heading": "TODO & Content Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 317,
+      "line": 322,
       "content": "| Key | Action              | |-----+---------------------| | t   | Cycle TODO state    | | d   | Insert DEADLINE     | | s   | Insert SCHEDULED    | | e   | Set effort estimate |",
       "path": [
         "Speed Commands"
@@ -66485,7 +66487,7 @@
       "heading": "Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 326,
+      "line": 331,
       "content": "| Key | Action               | |-----+----------------------| | w   | Kill (cut) subtree   | | y   | Yank (paste) subtree | | W   | Clone subtree        | | a   | Archive subtree      |",
       "path": [
         "Speed Commands"
@@ -66512,7 +66514,7 @@
       "heading": "Other Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 335,
+      "line": 340,
       "content": "| Key | Action                   | |-----+--------------------------| | ?   | Show speed commands help |",
       "path": [
         "Speed Commands"
@@ -66533,7 +66535,7 @@
       "heading": "Toggle Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 341,
+      "line": 346,
       "content": "| Key       | Action                       | |-----------+------------------------------| | C-c C-x s | Toggle speed commands on/off |",
       "path": [],
       "commands": [],
@@ -66556,7 +66558,7 @@
       "heading": "Additional Notes",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 347,
+      "line": 352,
       "content": "",
       "path": [],
       "commands": [],
@@ -66570,7 +66572,7 @@
       "heading": "Context-Dependent Keybindings",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 349,
+      "line": 354,
       "content": "Many keybindings are context-aware and behave differently depending on cursor position: - C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, and recalculates tables on TBLFM lines - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table - <return> opens links when cursor is on a link",
       "path": [
         "Additional Notes"
@@ -66607,7 +66609,7 @@
       "heading": "When Conditions",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 358,
+      "line": 363,
       "content": "Some keybindings only work in specific contexts: - Org-mode/Markdown files: Most document structure commands - On headings: Folding, promotion, demotion - In tables: Table-specific commands - In source blocks: Block execution - At heading start: Speed commands",
       "path": [
         "Additional Notes"
@@ -66641,7 +66643,7 @@
       "heading": "Mac vs Windows/Linux",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 367,
+      "line": 372,
       "content": "Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd): - s-S-j (journal) - s-<return> (execute/insert heading) - s-S-k (delete citation) - s-S-r (reload window) - C-s-v (database menu)",
       "path": [
         "Additional Notes"
@@ -66677,7 +66679,7 @@
       "heading": "LaTeX Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 376,
+      "line": 381,
       "content": "These keybindings are active in LaTeX files (=.tex=):",
       "path": [],
       "commands": [],
@@ -66694,8 +66696,8 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 380,
-      "content": "| Key         | Action                       | |-------------+------------------------------| | C-c C-n     | Next section                 | | C-c C-p     | Previous section             | | C-c C-u     | Parent section               | | C-c C-f     | Next sibling section         | | C-c C-b     | Previous sibling section     | | C-c j       | Jump to any section          |",
+      "line": 385,
+      "content": "| Key         | Action                       | |-------------+------------------------------| | C-c C-n     | Next section                 | | C-c C-p     | Previous section             | | C-c C-u     | Parent section               | | C-c C-f     | Next sibling section         | | C-c C-b     | Previous sibling section     | | C-c C-j     | Jump to any section          | | C-c j       | Jump to any section (alt)    |",
       "path": [
         "LaTeX Navigation"
       ],
@@ -66706,6 +66708,7 @@
         "C-c C-u",
         "C-c C-f",
         "C-c C-b",
+        "C-c C-j",
         "C-c"
       ],
       "keywords": [
@@ -66724,15 +66727,17 @@
         "c-f",
         "sibling",
         "c-b",
+        "c-j",
         "jump",
-        "any"
+        "any",
+        "alt"
       ]
     },
     {
       "heading": "Structure Editing",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 391,
+      "line": 397,
       "content": "| Key              | Action                     | |------------------+----------------------------| | Alt+Left         | Promote section            | | Alt+Right        | Demote section             | | Alt+Shift+Left   | Promote subtree            | | Alt+Shift+Right  | Demote subtree             | | Alt+Up           | Move section up            | | Alt+Down         | Move section down          | | C-c @            | Mark (select) section      |",
       "path": [
         "LaTeX Navigation"
@@ -66774,7 +66779,7 @@
       "heading": "Environment Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 403,
+      "line": 409,
       "content": "| Key       | Action                          | |-----------+---------------------------------| | C-c C-e   | Select environment              | | C-c e     | Change environment type         | | C-c w     | Wrap selection in environment   | | C-c *     | Toggle starred variant          | | C-c %     | Jump to matching begin/end      | | C-c l     | Jump to label                   | | C-c C-l   | Add label to environment        |",
       "path": [
         "LaTeX Navigation"
@@ -66812,7 +66817,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 415,
+      "line": 421,
       "content": "| Key       | Action            | |-----------+-------------------| | Tab       | Toggle fold       | | Shift+Tab | Cycle global fold |",
       "path": [
         "LaTeX Navigation"
@@ -66838,7 +66843,7 @@
       "heading": "Compile and Preview",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 422,
+      "line": 428,
       "content": "| Key       | Action                 | |-----------+------------------------| | C-c C-c   | Compile document       | | C-c C-v   | View PDF               | | C-c C-a   | Compile and view PDF   | | C-c C-j   | SyncTeX forward search | | C-c C-k   | Clean auxiliary files  | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
@@ -66878,7 +66883,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 434,
+      "line": 440,
       "content": "",
       "path": [],
       "commands": [],
@@ -66893,7 +66898,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 436,
+      "line": 442,
       "content": "| Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -66934,7 +66939,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 451,
+      "line": 457,
       "content": "| Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote subtree |",
       "path": [
         "Quick Reference Card"
@@ -66964,7 +66969,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 462,
+      "line": 468,
       "content": "- Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -66999,7 +67004,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 469,
+      "line": 475,
       "content": "- Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -77496,10 +77501,243 @@
       ]
     },
     {
-      "heading": "Related Topics",
+      "heading": "Parser Safety Limits",
       "level": 1,
       "file": "29-unsupported-features.org",
       "line": 181,
+      "content": "To prevent crashes or unresponsiveness when opening malformed org files, the parser enforces several safety limits. These limits are set high enough that they should never affect legitimate files.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "parser",
+        "safety",
+        "limits",
+        "prevent",
+        "crashes",
+        "unresponsiveness",
+        "opening",
+        "malformed",
+        "org",
+        "enforces",
+        "several",
+        "set",
+        "high",
+        "enough",
+        "never",
+        "affect",
+        "legitimate"
+      ]
+    },
+    {
+      "heading": "Heading Nesting Depth",
+      "level": 2,
+      "file": "29-unsupported-features.org",
+      "line": 185,
+      "content": "*Limit*: 100 levels maximum *Rationale*: Prevents stack overflow from deeply nested headings. Real org files rarely exceed 10 levels of nesting. *What happens*: Headings beyond 100 levels deep are not included in search results or the document outline.",
+      "path": [
+        "Parser Safety Limits"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "heading",
+        "nesting",
+        "depth",
+        "limit",
+        "100",
+        "levels",
+        "maximum",
+        "rationale",
+        "prevents",
+        "stack",
+        "overflow",
+        "deeply",
+        "nested",
+        "headings",
+        "real",
+        "org",
+        "rarely",
+        "exceed",
+        "happens",
+        "beyond"
+      ]
+    },
+    {
+      "heading": "Block Line Limits",
+      "level": 2,
+      "file": "29-unsupported-features.org",
+      "line": 193,
+      "content": "*Limit*: 50,000 lines per block *Affected blocks*: - Source blocks (=#+BEGIN_SRC= ... =#+END_SRC=) - Quote blocks (=#+BEGIN_QUOTE= ... =#+END_QUOTE=) - Example blocks (=#+BEGIN_EXAMPLE= ... =#+END_EXAMPLE=) - Export blocks (=#+BEGIN_EXPORT= ... =#+END_EXPORT=) - Special blocks (=#+BEGIN_name= ... =#+END_name=) - LaTeX environments (=\\begin{env}= ... =\\end{env}=) - Drawers (=:DRAWER:= ... =:END:=) - Dynamic blocks (=#+BEGIN:= ... =#+END:=) *Rationale*: Prevents unbounded memory consumption if a b",
+      "path": [
+        "Parser Safety Limits"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "block",
+        "line",
+        "limits",
+        "limit",
+        "50000",
+        "lines",
+        "per",
+        "affected",
+        "blocks",
+        "source",
+        "beginsrc",
+        "endsrc",
+        "quote",
+        "beginquote",
+        "endquote",
+        "example",
+        "beginexample",
+        "endexample",
+        "export",
+        "beginexport"
+      ]
+    },
+    {
+      "heading": "Properties Drawer Limit",
+      "level": 2,
+      "file": "29-unsupported-features.org",
+      "line": 211,
+      "content": "*Limit*: 1,000 lines *Rationale*: Properties drawers are typically small (<50 lines). A tighter limit catches unclosed drawers faster.",
+      "path": [
+        "Parser Safety Limits"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "properties",
+        "drawer",
+        "limit",
+        "1000",
+        "lines",
+        "rationale",
+        "drawers",
+        "typically",
+        "small",
+        "tighter",
+        "catches",
+        "unclosed",
+        "faster"
+      ]
+    },
+    {
+      "heading": "Tag Restrictions",
+      "level": 2,
+      "file": "29-unsupported-features.org",
+      "line": 217,
+      "content": "*Limit*: 50 tags per heading *Allowed characters*: Letters, numbers, underscore (=_=), at-sign (=@=), hash (=#=), percent (=%=), hyphen (=-=) *Not allowed*: Spaces, colons, and most punctuation (=!=, =$=, =^=, =&=, =*=, etc.) *Rationale*: The previous tag parser used a regex pattern that could cause exponential backtracking (ReDoS) on malformed input like =:::::::::::::=. The character restrictions prevent this vulnerability while supporting all common tag formats. *Example valid tags*: #+BEGIN_",
+      "path": [
+        "Parser Safety Limits"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tag",
+        "restrictions",
+        "limit",
+        "tags",
+        "per",
+        "heading",
+        "allowed",
+        "characters",
+        "letters",
+        "numbers",
+        "underscore",
+        "at-sign",
+        "hash",
+        "percent",
+        "hyphen",
+        "spaces",
+        "colons",
+        "punctuation",
+        "etc",
+        "rationale"
+      ]
+    },
+    {
+      "heading": "My Task :work:urgent:project-alpha:",
+      "level": 1,
+      "file": "29-unsupported-features.org",
+      "line": 229,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "task",
+        "workurgentproject-alpha"
+      ]
+    },
+    {
+      "heading": "Meeting :@office:2024:Q1_review:",
+      "level": 1,
+      "file": "29-unsupported-features.org",
+      "line": 230,
+      "content": "#+END_EXAMPLE *If you need exotic characters*: Tags with unsupported characters will not be recognized. Consider using standard alphanumeric tags with hyphens or underscores instead.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "meeting",
+        "office2024q1review",
+        "endexample",
+        "need",
+        "exotic",
+        "characters",
+        "tags",
+        "unsupported",
+        "recognized",
+        "consider",
+        "standard",
+        "alphanumeric",
+        "hyphens",
+        "underscores",
+        "instead"
+      ]
+    },
+    {
+      "heading": "When Limits Are Hit",
+      "level": 2,
+      "file": "29-unsupported-features.org",
+      "line": 235,
+      "content": "When any limit is reached: - The parser stops consuming input at the limit boundary - No error is thrown to the user - Parsing continues with remaining content - The file remains usable, just with incomplete parsing of the oversized element This \"graceful degradation\" approach ensures that even malformed files can be opened and edited, rather than causing the extension to crash or hang.",
+      "path": [
+        "Meeting :@office:2024:Q1_review:"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "limits",
+        "hit",
+        "any",
+        "limit",
+        "reached",
+        "parser",
+        "stops",
+        "consuming",
+        "input",
+        "boundary",
+        "error",
+        "thrown",
+        "user",
+        "parsing",
+        "continues",
+        "remaining",
+        "content",
+        "remains",
+        "usable",
+        "incomplete"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 1,
+      "file": "29-unsupported-features.org",
+      "line": 245,
       "content": "- [[file:10-export.org][Export System]] - What export features ARE supported - [[file:07-source-blocks.org][Source Blocks]] - Supported code execution features - [[file:08-supported-languages.org][Supported Languages]] - Languages with full Babel support - [[file:13-agenda.org][Agenda]] - Available agenda features - [[file:28-non-standard-features.org][Non-Standard Features]] - VS Code-specific features not in Emacs",
       "path": [],
       "commands": [],
