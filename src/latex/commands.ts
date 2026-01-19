@@ -293,13 +293,16 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             if (pdfViewer === 'auto' || pdfViewer === 'skim') {
                 // Skim on macOS
                 if (process.platform === 'darwin') {
+                    // Escape paths for AppleScript (escape backslashes and quotes)
+                    const escapedPdfPath = pdfPath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+                    const escapedFilePath = filePath.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
                     spawn('osascript', [
                         '-e',
                         `tell application "Skim" to activate`,
                         '-e',
-                        `tell application "Skim" to open "${pdfPath}"`,
+                        `tell application "Skim" to open "${escapedPdfPath}"`,
                         '-e',
-                        `tell application "Skim" to go to TeX line ${line} from POSIX file "${filePath}"`
+                        `tell application "Skim" to go to TeX line ${line} from POSIX file "${escapedFilePath}"`
                     ]);
                     return;
                 }
