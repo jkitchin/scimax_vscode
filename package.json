@@ -727,6 +727,15 @@
             "bold": true
           }
         }
+      },
+      "[org]": {
+        "editor.wordWrap": "on"
+      },
+      "[latex]": {
+        "editor.wordWrap": "on"
+      },
+      "[markdown]": {
+        "editor.wordWrap": "on"
       }
     },
     "commands": [
@@ -1936,6 +1945,11 @@
         "title": "Scimax: Apropos (Search Documentation)"
       },
       {
+        "command": "scimax.showDebugInfo",
+        "title": "Scimax: Show Debug/Diagnostic Info",
+        "icon": "$(info)"
+      },
+      {
         "command": "scimax.clearLatexCache",
         "title": "Scimax: Clear LaTeX Preview Cache"
       },
@@ -2368,6 +2382,10 @@
       {
         "command": "scimax.latex.syncToPdfPanel",
         "title": "Scimax LaTeX: Sync to PDF Panel (SyncTeX Forward)"
+      },
+      {
+        "command": "scimax.latex.jumpToPdf",
+        "title": "Scimax LaTeX: Jump to PDF (compile if needed)"
       },
       {
         "command": "scimax.latex.compileAndViewPanel",
@@ -4641,6 +4659,11 @@
         {
           "command": "scimax.org.executeBlock",
           "when": "editorLangId =~ /org|markdown/",
+          "group": "scimax"
+        },
+        {
+          "command": "scimax.latex.jumpToPdf",
+          "when": "editorLangId == latex",
           "group": "scimax"
         }
       ],

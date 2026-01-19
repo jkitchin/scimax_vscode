@@ -124,6 +124,54 @@ function runConverter(cmd: string, args: string[]): Promise<boolean> {
     });
 }
 
+/**
+ * Cache for kpsewhich results to avoid repeated calls
+ */
+const kpsewhichCache = new Map<string, string | null>();
+
+/**
+ * Run kpsewhich to find TeX files (packages, styles, etc.)
+ * Returns the path or null if not found
+ */
+async function kpsewhich(filename: string): Promise<string | null> {
+    // Check cache first
+    if (kpsewhichCache.has(filename)) {
+        return kpsewhichCache.get(filename)!;
+    }
+
+    return new Promise((resolve) => {
+        const proc = spawn('kpsewhich', [filename], { stdio: 'pipe' });
+        let output = '';
+
+        proc.stdout.on('data', (data) => {
+            output += data.toString();
+        });
+
+        proc.on('close', (code) => {
+            if (code === 0 && output.trim()) {
+                const result = output.trim();
+                kpsewhichCache.set(filename, result);
+                resolve(result);
+            } else {
+                kpsewhichCache.set(filename, null);
+                resolve(null);
+            }
+        });
+
+        proc.on('error', () => {
+            kpsewhichCache.set(filename, null);
+            resolve(null);
+        });
+
+        // Timeout after 5 seconds
+        setTimeout(() => {
+            proc.kill();
+            kpsewhichCache.set(filename, null);
+            resolve(null);
+        }, 5000);
+    });
+}
+
 // Common LaTeX commands with descriptions
 const LATEX_COMMANDS: { [key: string]: string } = {
     // Text formatting
@@ -493,9 +541,23 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
         const citeHover = await this.hoverForCitation(document, position, line);
         if (citeHover) return citeHover;
 
-        return this.hoverForLabel(document, position, line) ||
-            this.hoverForPackage(document, position, line) ||
-            this.hoverForEnvironment(document, position, line) ||
+        const labelHover = this.hoverForLabel(document, position, line);
+        if (labelHover) return labelHover;
+
+        // Bibliography and package hovers are async (use kpsewhich)
+        const bibHover = await this.hoverForBibliography(document, position, line);
+        if (bibHover) return bibHover;
+
+        const bibStyleHover = await this.hoverForBibliographyStyle(document, position, line);
+        if (bibStyleHover) return bibStyleHover;
+
+        const pkgHover = await this.hoverForPackage(document, position, line);
+        if (pkgHover) return pkgHover;
+
+        const docClassHover = await this.hoverForDocumentClass(document, position, line);
+        if (docClassHover) return docClassHover;
+
+        return this.hoverForEnvironment(document, position, line) ||
             this.hoverForSection(document, position, line) ||  // Before hoverForCommand for hierarchy path
             this.hoverForCommand(word) ||
             this.hoverForMathSymbol(word) ||
@@ -617,13 +679,174 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
     }
 
     /**
-     * Hover for \usepackage{...} - show package description
+     * Hover for \bibliography{...} or \addbibresource{...} - show info about the bib files
      */
-    private hoverForPackage(
+    private async hoverForBibliography(
         document: vscode.TextDocument,
         position: vscode.Position,
         line: string
-    ): vscode.Hover | null {
+    ): Promise<vscode.Hover | null> {
+        // Handle both \bibliography{...} and \addbibresource{...} (biblatex)
+        const bibPattern = /\\(bibliography|addbibresource)\{([^}]+)\}/g;
+        let match;
+
+        while ((match = bibPattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = startCol + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                const cmdName = match[1];
+                // \bibliography can have comma-separated files, \addbibresource typically has one
+                const bibFiles = match[2].split(',').map(f => f.trim());
+                const docDir = path.dirname(document.uri.fsPath);
+
+                const md = new vscode.MarkdownString();
+                md.isTrusted = true;
+                md.appendMarkdown(`**Bibliography Files:**\n\n`);
+
+                for (const bibFile of bibFiles) {
+                    const bibName = bibFile.endsWith('.bib') ? bibFile : `${bibFile}.bib`;
+                    md.appendMarkdown(`### ${bibName}\n`);
+
+                    // Try to find the file
+                    const localPath = path.resolve(docDir, bibName);
+                    if (fs.existsSync(localPath)) {
+                        try {
+                            const stats = fs.statSync(localPath);
+                            md.appendMarkdown(`**Location:** \`${localPath}\`\n\n`);
+                            md.appendMarkdown(`**Size:** ${(stats.size / 1024).toFixed(1)} KB\n\n`);
+                            md.appendMarkdown(`**Modified:** ${stats.mtime.toLocaleDateString()}\n\n`);
+
+                            // Count entries in the bib file
+                            const content = fs.readFileSync(localPath, 'utf-8');
+                            const entryMatches = content.match(/@\w+\s*\{/g);
+                            const entryCount = entryMatches ? entryMatches.length : 0;
+                            md.appendMarkdown(`**Entries:** ${entryCount}\n\n`);
+
+                            // Show preview of first few entries
+                            if (entryCount > 0) {
+                                const keyPattern = /@\w+\s*\{\s*([^,\s]+)/g;
+                                const keys: string[] = [];
+                                let keyMatch;
+                                while ((keyMatch = keyPattern.exec(content)) !== null && keys.length < 5) {
+                                    keys.push(keyMatch[1]);
+                                }
+                                if (keys.length > 0) {
+                                    md.appendMarkdown(`**Sample keys:** ${keys.join(', ')}${entryCount > 5 ? '...' : ''}\n\n`);
+                                }
+                            }
+                        } catch {
+                            md.appendMarkdown(`**Location:** \`${localPath}\`\n\n`);
+                        }
+                    } else {
+                        // Try kpsewhich to find in TeX installation
+                        const kpsePath = await kpsewhich(bibName);
+                        if (kpsePath) {
+                            md.appendMarkdown(`**Location (kpsewhich):** \`${kpsePath}\`\n\n`);
+                            try {
+                                const stats = fs.statSync(kpsePath);
+                                md.appendMarkdown(`**Size:** ${(stats.size / 1024).toFixed(1)} KB\n\n`);
+                            } catch {
+                                // Ignore stat errors
+                            }
+                        } else {
+                            md.appendMarkdown(`*File not found locally or via kpsewhich*\n\n`);
+                            md.appendMarkdown(`Searched in: \`${docDir}\`\n\n`);
+                        }
+                    }
+                }
+
+                return new vscode.Hover(md);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Hover for \bibliographystyle{...} - show style file location via kpsewhich
+     */
+    private async hoverForBibliographyStyle(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        line: string
+    ): Promise<vscode.Hover | null> {
+        const stylePattern = /\\bibliographystyle\{([^}]+)\}/g;
+        let match;
+
+        while ((match = stylePattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = startCol + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                const styleName = match[1];
+
+                const md = new vscode.MarkdownString();
+                md.isTrusted = true;
+                md.appendMarkdown(`**Bibliography Style:** \`${styleName}\`\n\n`);
+
+                // Common style descriptions
+                const styleDescriptions: { [key: string]: string } = {
+                    'plain': 'Entries sorted alphabetically, labeled with numbers',
+                    'unsrt': 'Entries in citation order, labeled with numbers',
+                    'alpha': 'Entries sorted alphabetically, labeled with author-year abbreviations',
+                    'abbrv': 'Like plain but with abbreviated first names and journal names',
+                    'acm': 'ACM Transactions style',
+                    'ieeetr': 'IEEE Transactions style, entries in citation order',
+                    'siam': 'SIAM style',
+                    'apalike': 'APA-like style with author-year citations',
+                    'apa': 'American Psychological Association style',
+                    'chicago': 'Chicago Manual of Style',
+                    'nature': 'Nature journal style',
+                    'science': 'Science journal style',
+                    'apsrev': 'American Physical Society review style',
+                    'apsrev4-1': 'American Physical Society review style (REVTeX 4.1)',
+                    'apsrev4-2': 'American Physical Society review style (REVTeX 4.2)',
+                    'achemso': 'American Chemical Society style',
+                    'rsc': 'Royal Society of Chemistry style',
+                    'plainnat': 'Natural bibliography style (natbib)',
+                    'abbrvnat': 'Abbreviated natural style (natbib)',
+                    'unsrtnat': 'Unsorted natural style (natbib)',
+                };
+
+                const description = styleDescriptions[styleName];
+                if (description) {
+                    md.appendMarkdown(`${description}\n\n`);
+                }
+
+                // Look up location via kpsewhich
+                const bstPath = await kpsewhich(`${styleName}.bst`);
+                if (bstPath) {
+                    md.appendMarkdown(`**Location:** \`${bstPath}\`\n\n`);
+
+                    // Show file size and modification date
+                    try {
+                        const stats = fs.statSync(bstPath);
+                        md.appendMarkdown(`**Size:** ${(stats.size / 1024).toFixed(1)} KB\n\n`);
+                        md.appendMarkdown(`**Modified:** ${stats.mtime.toLocaleDateString()}\n\n`);
+                    } catch {
+                        // Ignore stat errors
+                    }
+                } else {
+                    md.appendMarkdown(`*Style file not found via kpsewhich*\n\n`);
+                    md.appendMarkdown(`This style may be provided by a package or may not be installed.\n`);
+                }
+
+                return new vscode.Hover(md);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Hover for \usepackage{...} - show package description and location via kpsewhich
+     */
+    private async hoverForPackage(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        line: string
+    ): Promise<vscode.Hover | null> {
         const pkgPattern = /\\usepackage(?:\[[^\]]*\])?\{([^}]+)\}/g;
         let match;
 
@@ -635,14 +858,205 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
                 const packages = match[1].split(',').map(p => p.trim());
 
                 const md = new vscode.MarkdownString();
+                md.isTrusted = true;
                 md.appendMarkdown(`**Packages:**\n\n`);
 
                 for (const pkg of packages) {
                     const description = LATEX_PACKAGES[pkg] || 'No description available';
-                    md.appendMarkdown(`- **${pkg}**: ${description}\n`);
+                    md.appendMarkdown(`### ${pkg}\n`);
+                    md.appendMarkdown(`${description}\n\n`);
+
+                    // Look up location via kpsewhich
+                    const styPath = await kpsewhich(`${pkg}.sty`);
+                    if (styPath) {
+                        md.appendMarkdown(`**Location:** \`${styPath}\`\n\n`);
+                    } else {
+                        md.appendMarkdown(`*Location not found via kpsewhich*\n\n`);
+                    }
                 }
 
                 return new vscode.Hover(md);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Hover for \documentclass{...} - show class description and location via kpsewhich
+     * Supports multi-line options like:
+     *   \documentclass[
+     *     journal=iecred,
+     *     manuscript=article
+     *   ]{achemso}
+     */
+    private async hoverForDocumentClass(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        line: string
+    ): Promise<vscode.Hover | null> {
+        // Use full document text to handle multi-line documentclass
+        const text = document.getText();
+        const offset = document.offsetAt(position);
+
+        // Pattern that handles multi-line options ([\s\S]*? matches across lines)
+        const classPattern = /\\documentclass(?:\[([\s\S]*?)\])?\{([^}]+)\}/g;
+        let match;
+
+        while ((match = classPattern.exec(text)) !== null) {
+            const startOffset = match.index;
+            const endOffset = match.index + match[0].length;
+
+            // Check if cursor is within this match
+            if (offset >= startOffset && offset <= endOffset) {
+                const options = match[1] || '';
+                const className = match[2];
+
+                const md = new vscode.MarkdownString();
+                md.isTrusted = true;
+                md.appendMarkdown(`**Document Class:** \`${className}\`\n\n`);
+
+                // Common document class descriptions
+                const classDescriptions: { [key: string]: string } = {
+                    // Standard classes
+                    'article': 'Standard class for short documents, journal articles, and documentation. No chapters.',
+                    'report': 'Standard class for longer documents with chapters, suitable for theses and reports.',
+                    'book': 'Standard class for books with chapters, front/back matter, and two-sided layout.',
+                    'letter': 'Standard class for writing letters.',
+                    'slides': 'Standard class for creating slides (largely superseded by beamer).',
+                    'minimal': 'Minimal class for debugging, defines only page size and base font.',
+
+                    // KOMA-Script classes
+                    'scrartcl': 'KOMA-Script article class with European typography defaults.',
+                    'scrreprt': 'KOMA-Script report class with European typography defaults.',
+                    'scrbook': 'KOMA-Script book class with European typography defaults.',
+                    'scrlttr2': 'KOMA-Script letter class with extensive customization.',
+
+                    // Presentation
+                    'beamer': 'Class for creating presentations with slides, overlays, and themes.',
+                    'powerdot': 'Alternative presentation class with different styling options.',
+
+                    // Academic
+                    'memoir': 'Flexible class combining features of book, report, and article.',
+                    'thesis': 'Class for writing theses (various implementations exist).',
+
+                    // AMS classes
+                    'amsart': 'American Mathematical Society article class.',
+                    'amsbook': 'American Mathematical Society book class.',
+                    'amsproc': 'American Mathematical Society proceedings class.',
+
+                    // Scientific journals
+                    'revtex4-2': 'American Physical Society journal class (Physical Review, etc.).',
+                    'revtex4-1': 'American Physical Society journal class (older version).',
+                    'revtex4': 'American Physical Society journal class (legacy).',
+                    'aastex63': 'American Astronomical Society journal class.',
+                    'aastex62': 'American Astronomical Society journal class (older).',
+                    'achemso': 'American Chemical Society journal class.',
+                    'elsarticle': 'Elsevier journal article class.',
+                    'IEEEtran': 'IEEE Transactions and journals class.',
+                    'llncs': 'Springer Lecture Notes in Computer Science class.',
+                    'svjour3': 'Springer journal article class.',
+                    'sn-jnl': 'Springer Nature journal class.',
+
+                    // Letters and CVs
+                    'moderncv': 'Modern curriculum vitae/resume class.',
+                    'europecv': 'European curriculum vitae class.',
+                    'newlfm': 'Letter, fax, and memo class.',
+
+                    // Other
+                    'standalone': 'Class for compiling standalone pictures/diagrams.',
+                    'tufte-book': 'Book class inspired by Edward Tufte\'s designs.',
+                    'tufte-handout': 'Handout class inspired by Edward Tufte\'s designs.',
+                    'exam': 'Class for writing exams with questions and solutions.',
+                    'flashcards': 'Class for creating flashcards.',
+                    'tikzposter': 'Class for creating posters with TikZ.',
+                    'a0poster': 'Class for creating large format posters.',
+                    'sciposter': 'Class for scientific posters.',
+                };
+
+                const description = classDescriptions[className];
+                if (description) {
+                    md.appendMarkdown(`${description}\n\n`);
+                }
+
+                // Show options if present
+                if (options) {
+                    md.appendMarkdown(`**Options:** \`${options}\`\n\n`);
+
+                    // Explain common options
+                    const optionList = options.split(',').map(o => o.trim());
+                    const optionDescriptions: { [key: string]: string } = {
+                        // Paper sizes
+                        'a4paper': 'A4 paper size (210mm × 297mm)',
+                        'a5paper': 'A5 paper size (148mm × 210mm)',
+                        'b5paper': 'B5 paper size (176mm × 250mm)',
+                        'letterpaper': 'US Letter size (8.5in × 11in)',
+                        'legalpaper': 'US Legal size (8.5in × 14in)',
+                        'executivepaper': 'US Executive size (7.25in × 10.5in)',
+
+                        // Font sizes
+                        '10pt': '10 point base font size',
+                        '11pt': '11 point base font size',
+                        '12pt': '12 point base font size',
+
+                        // Sides and columns
+                        'oneside': 'One-sided document layout',
+                        'twoside': 'Two-sided document layout (different odd/even margins)',
+                        'onecolumn': 'Single column layout',
+                        'twocolumn': 'Two column layout',
+
+                        // Title page
+                        'titlepage': 'Title on separate page',
+                        'notitlepage': 'Title on first page with content',
+
+                        // Equations
+                        'leqno': 'Equation numbers on the left',
+                        'fleqn': 'Flush left equations',
+
+                        // Draft mode
+                        'draft': 'Draft mode (shows overfull boxes, no images)',
+                        'final': 'Final mode (default)',
+
+                        // Opening
+                        'openright': 'Chapters open on right-hand pages',
+                        'openany': 'Chapters can open on any page',
+
+                        // Landscape
+                        'landscape': 'Landscape orientation',
+                        'portrait': 'Portrait orientation (default)',
+                    };
+
+                    const knownOptions = optionList.filter(o => optionDescriptions[o]);
+                    if (knownOptions.length > 0) {
+                        md.appendMarkdown(`**Option details:**\n`);
+                        for (const opt of knownOptions) {
+                            md.appendMarkdown(`- \`${opt}\`: ${optionDescriptions[opt]}\n`);
+                        }
+                        md.appendMarkdown('\n');
+                    }
+                }
+
+                // Look up location via kpsewhich
+                const clsPath = await kpsewhich(`${className}.cls`);
+                if (clsPath) {
+                    md.appendMarkdown(`**Location:** \`${clsPath}\`\n\n`);
+
+                    // Show file size and modification date
+                    try {
+                        const stats = fs.statSync(clsPath);
+                        md.appendMarkdown(`**Size:** ${(stats.size / 1024).toFixed(1)} KB\n\n`);
+                        md.appendMarkdown(`**Modified:** ${stats.mtime.toLocaleDateString()}\n\n`);
+                    } catch {
+                        // Ignore stat errors
+                    }
+                } else {
+                    md.appendMarkdown(`*Class file not found via kpsewhich*\n\n`);
+                }
+
+                // Create range for multi-line match
+                const startPos = document.positionAt(startOffset);
+                const endPos = document.positionAt(endOffset);
+                return new vscode.Hover(md, new vscode.Range(startPos, endPos));
             }
         }
 

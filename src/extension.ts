@@ -63,6 +63,7 @@ import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 import { registerPublishCommands } from './publishing';
 import { registerHelpCommands } from './help';
 import { activateLatexFeatures } from './latex/commands';
+import { registerDiagnosticCommands } from './diagnostic';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -364,6 +365,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Help Commands (C-h k describe-key, C-h b list keybindings, C-h f describe command)
     registerHelpCommands(context);
+
+    // Register Diagnostic Commands (show debug/system info)
+    registerDiagnosticCommands(context);
 
     // Register Image Overlay Commands (inline image thumbnails)
     registerImageOverlayCommands(context);

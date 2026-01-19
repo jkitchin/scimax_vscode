@@ -36,7 +36,8 @@ import {
     addToUserDictionary,
     disposeSpellCheckDiagnostics,
 } from './latexLanguageProvider';
-import { openPdfInPanel, syncForwardToPanel, PdfViewerPanel } from './pdfViewerPanel';
+import { openPdfInPanel, PdfViewerPanel } from './pdfViewerPanel';
+import { runSyncTeXForward, isSyncTeXAvailable, getSyncTeXFilePath } from './synctexUtils';
 
 /**
  * Register all LaTeX-related commands
@@ -880,13 +881,229 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             openPdfInPanel(context);
         }),
 
-        // Forward sync to PDF panel
-        vscode.commands.registerCommand('scimax.latex.syncToPdfPanel', () => {
-            if (PdfViewerPanel.currentPanel) {
-                syncForwardToPanel();
+        // Forward sync to PDF panel with real SyncTeX
+        vscode.commands.registerCommand('scimax.latex.syncToPdfPanel', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || editor.document.languageId !== 'latex') {
+                vscode.window.showWarningMessage('No LaTeX document open');
+                return;
+            }
+
+            // Open panel if not already open
+            if (!PdfViewerPanel.currentPanel) {
+                await openPdfInPanel(context);
+                // Give the panel time to load
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            if (!PdfViewerPanel.currentPanel) {
+                return;
+            }
+
+            const panel = PdfViewerPanel.currentPanel;
+            const pdfPath = panel.currentPdfPath;
+            if (!pdfPath) {
+                vscode.window.showWarningMessage('No PDF loaded in panel');
+                return;
+            }
+
+            // Check if SyncTeX is available
+            const available = await isSyncTeXAvailable();
+            if (!available) {
+                vscode.window.showWarningMessage(
+                    'SyncTeX tool not found. Make sure TeX Live/MacTeX is installed and synctex is in your PATH.'
+                );
+                return;
+            }
+
+            // Check if .synctex.gz file exists
+            const synctexFile = getSyncTeXFilePath(pdfPath);
+            if (!synctexFile) {
+                const action = await vscode.window.showWarningMessage(
+                    'SyncTeX data file not found (.synctex.gz). Recompile with -synctex=1 flag.',
+                    'Recompile'
+                );
+                if (action === 'Recompile') {
+                    await vscode.commands.executeCommand('scimax.latex.compile');
+                }
+                return;
+            }
+
+            const line = editor.selection.active.line + 1;
+            const column = editor.selection.active.character + 1;
+            const texFile = editor.document.uri.fsPath;
+
+            console.log(`SyncTeX forward: ${texFile}:${line}:${column} -> ${pdfPath}`);
+
+            // Run SyncTeX forward lookup
+            const result = await runSyncTeXForward(texFile, line, column, pdfPath);
+            if (result) {
+                console.log('SyncTeX forward success:', result);
+                panel.scrollToPosition(result);
             } else {
-                // Open panel first, then sync
-                openPdfInPanel(context);
+                vscode.window.showWarningMessage(
+                    'SyncTeX: Could not find PDF position for this line. The line may not have corresponding PDF content.'
+                );
+            }
+        }),
+
+        // Compile and view in panel
+        vscode.commands.registerCommand('scimax.latex.compileAndViewPanel', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || editor.document.languageId !== 'latex') {
+                vscode.window.showWarningMessage('No LaTeX document open');
+                return;
+            }
+
+            // Compile first
+            await vscode.commands.executeCommand('scimax.latex.compile');
+
+            // Wait for compilation to finish, then open in panel
+            // The compile command shows progress, so user can see when it's done
+            setTimeout(async () => {
+                await openPdfInPanel(context);
+            }, 500);
+        }),
+
+        // Jump to PDF with auto-compile (for context menu and double-click)
+        vscode.commands.registerCommand('scimax.latex.jumpToPdf', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || editor.document.languageId !== 'latex') {
+                return;
+            }
+
+            const texFile = editor.document.uri.fsPath;
+            const pdfPath = texFile.replace(/\.tex$/, '.pdf');
+
+            console.log('Forward sync: TeX to PDF');
+            console.log('  TeX file:', texFile);
+            console.log('  PDF path:', pdfPath);
+
+            // Check if PDF exists
+            const pdfExists = await vscode.workspace.fs.stat(vscode.Uri.file(pdfPath)).then(
+                () => true,
+                () => false
+            );
+
+            if (!pdfExists) {
+                // Compile first
+                console.log('  PDF does not exist, compiling...');
+                vscode.window.showInformationMessage('Compiling LaTeX to generate PDF...');
+                await vscode.commands.executeCommand('scimax.latex.compile');
+                // Wait for compilation
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+
+            // Open panel if not already open, or reload if different PDF
+            if (!PdfViewerPanel.currentPanel) {
+                console.log('  Opening PDF panel...');
+                await openPdfInPanel(context);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            } else {
+                // Check if the panel has the right PDF loaded
+                const currentPdf = PdfViewerPanel.currentPanel.currentPdfPath;
+                if (currentPdf !== pdfPath) {
+                    console.log('  Panel has different PDF, reloading...');
+                    console.log('    Current:', currentPdf);
+                    console.log('    Needed:', pdfPath);
+                    await openPdfInPanel(context);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+
+            if (!PdfViewerPanel.currentPanel) {
+                console.log('  ERROR: Could not open PDF panel');
+                return;
+            }
+
+            const panel = PdfViewerPanel.currentPanel;
+            const panelPdfPath = panel.currentPdfPath;
+            if (!panelPdfPath) {
+                console.log('  ERROR: No PDF loaded in panel');
+                return;
+            }
+
+            // Check if synctex file exists
+            const synctexFile = getSyncTeXFilePath(panelPdfPath);
+            console.log('  SyncTeX file:', synctexFile || 'NOT FOUND');
+
+            if (!synctexFile) {
+                // Need to recompile with synctex
+                console.log('  Recompiling with SyncTeX...');
+                vscode.window.showInformationMessage('Recompiling with SyncTeX...');
+                await vscode.commands.executeCommand('scimax.latex.compile');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+
+            const line = editor.selection.active.line + 1;
+            const column = editor.selection.active.character + 1;
+
+            // Get the source text around the cursor for debug info
+            const lineText = editor.document.lineAt(editor.selection.active.line).text;
+            // Get a snippet around the cursor position (up to 60 chars)
+            const start = Math.max(0, column - 30);
+            const end = Math.min(lineText.length, column + 30);
+            let sourceText = lineText.substring(start, end).trim();
+            if (start > 0) sourceText = '...' + sourceText;
+            if (end < lineText.length) sourceText = sourceText + '...';
+
+            // Get the selected word (from double-click) for precise highlighting
+            let searchWord = '';
+            const selection = editor.selection;
+            if (!selection.isEmpty) {
+                searchWord = editor.document.getText(selection);
+                // Clean up the word - remove LaTeX commands/escapes
+                searchWord = searchWord.replace(/\\[a-zA-Z]+\{?/g, '').replace(/[{}]/g, '').trim();
+            }
+            console.log(`  Search word: "${searchWord}"`);
+
+            console.log(`  Source position: line ${line}, column ${column}`);
+            console.log(`  Source text: "${sourceText}"`);
+
+            const result = await runSyncTeXForward(texFile, line, column, panelPdfPath);
+            if (result) {
+                console.log('  SyncTeX result:', result);
+                // Pass debug info and search word to the PDF panel
+                panel.scrollToPosition(result, {
+                    line,
+                    column,
+                    text: sourceText,
+                    file: texFile,
+                    searchWord: searchWord
+                });
+            } else {
+                console.log('  SyncTeX returned no result for this position');
+                vscode.window.showWarningMessage('SyncTeX: No PDF position found for this line');
+            }
+        })
+    );
+
+    // Double-click handler for LaTeX files
+    // Double-click selects a word - detect when selection exactly matches a word
+    // Only trigger on mouse selections, not programmatic ones (to avoid feedback loop with inverse sync)
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(async (event) => {
+            const editor = event.textEditor;
+            if (editor.document.languageId !== 'latex') {
+                return;
+            }
+
+            // Only react to mouse selections (kind === 2), not keyboard (1) or command/API (3 or undefined)
+            // This prevents feedback loop when inverse sync programmatically selects text
+            if (event.kind !== vscode.TextEditorSelectionChangeKind.Mouse) {
+                return;
+            }
+
+            const selection = event.selections[0];
+            if (!selection || selection.isEmpty) {
+                return;
+            }
+
+            // Check if selection exactly matches a word (double-click behavior)
+            const wordRange = editor.document.getWordRangeAtPosition(selection.start);
+            if (wordRange && selection.isEqual(wordRange)) {
+                // Word selected via mouse - trigger jump to PDF
+                await vscode.commands.executeCommand('scimax.latex.jumpToPdf');
             }
         })
     );
