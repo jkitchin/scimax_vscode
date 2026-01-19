@@ -424,10 +424,9 @@ export class RefHoverProvider implements vscode.HoverProvider {
                 markdown.appendMarkdown(`\`\`\`\n\n`);
             }
 
-            // Link to definition
-            const uri = vscode.Uri.file(labelInfo.file);
-            const args = encodeURIComponent(JSON.stringify([uri, { selection: new vscode.Range(labelInfo.line, 0, labelInfo.line, 0) }]));
-            markdown.appendMarkdown(`[Go to definition](command:vscode.open?${args})`);
+            // Link to definition - use file URI with line fragment for reliable navigation
+            const targetUri = vscode.Uri.file(labelInfo.file).with({ fragment: `L${labelInfo.line + 1}` });
+            markdown.appendMarkdown(`[Go to definition](${targetUri.toString()})`);
         } else {
             markdown.appendMarkdown(`### ${refType}:${label}\n\n`);
             markdown.appendMarkdown(`*Label not found*\n\n`);

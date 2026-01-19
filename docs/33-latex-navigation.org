@@ -545,7 +545,8 @@ Use =F12= or =Ctrl+Click= (standard VS Code "Go to Definition").
 
 Supports cross-file navigation in multi-file projects.
 
-* ⚠️ Find All References
+* ✅ Find All References
+CLOSED: [2026-01-19 Mon 09:55]
 
 Find all usages of a label or citation:
 
@@ -558,7 +559,8 @@ Use =Shift+F12= or right-click → "Find All References".
 
 Works across all files in the project.
 
-* ⚠️ Auto-Completion
+* ✅ Auto-Completion
+CLOSED: [2026-01-19 Mon 09:56]
 
 Smart completions trigger as you type:
 
@@ -577,7 +579,8 @@ Completions show:
 - Environment completions include descriptions
 - Package completions describe what each package provides
 
-* ⚠️ Multi-File Project Support
+* ✅ Multi-File Project Support
+CLOSED: [2026-01-19 Mon 09:56]
 
 Projects with multiple files (using =\input= or =\include=) are fully supported:
 
@@ -588,7 +591,8 @@ Projects with multiple files (using =\input= or =\include=) are fully supported:
 
 The master document is detected by looking for =\documentclass=.
 
-** ⚠️ Project Structure
+** ✅ Project Structure
+CLOSED: [2026-01-19 Mon 09:56]
 
 #+BEGIN_SRC text
 thesis/
@@ -602,7 +606,8 @@ thesis/
 └── refs.bib              # Bibliography
 #+END_SRC
 
-* ⚠️ ChkTeX Linting
+* ✅ ChkTeX Linting
+CLOSED: [2026-01-19 Mon 09:56]
 
 Real-time linting with ChkTeX catches common LaTeX issues:
 
@@ -612,7 +617,8 @@ Real-time linting with ChkTeX catches common LaTeX issues:
 
 Errors appear in the Problems panel and as squiggles in the editor.
 
-** ⚠️ Configuration
+** ✅ Configuration
+CLOSED: [2026-01-19 Mon 09:56]
 
 #+BEGIN_SRC json
 {
@@ -637,7 +643,8 @@ Navigate through compilation errors:
 
 Errors are collected after compilation and persist until the next build.
 
-** ⚠️ Error Display
+** ✅ Error Display
+CLOSED: [2026-01-19 Mon 09:57]
 
 When compilation fails:
 1. First error is shown in a notification with "Go to Error" button

@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-01-19T14:52:38.529Z",
+  "buildDate": "2026-01-19T14:59:29.596Z",
   "count": 2871,
   "entries": [
     {
@@ -79072,7 +79072,7 @@
       "level": 3,
       "file": "30-markdown-compatibility.org",
       "line": 168,
-      "content": "| Key       | Command              | Description                    | |-----------+----------------------+--------------------------------| | C-c C-v n | Next Source Block    | Jump to next fenced block      | | C-c C-v p | Previous Source Block| Jump to previous fenced block  | | C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |",
+      "content": "CLOSED: [2026-01-19 Mon 09:53] | Key       | Command              | Description                    | |-----------+----------------------+--------------------------------| | C-c C-v n | Next Source Block    | Jump to next fenced block      | | C-c C-v p | Previous Source Block| Jump to previous fenced block  | | C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |",
       "path": [
         "Supported Features",
         "Code Block Support"
@@ -79085,6 +79085,10 @@
         "code",
         "block",
         "navigation",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0953",
         "key",
         "command",
         "description",
@@ -79097,15 +79101,14 @@
         "fenced",
         "previous",
         "quick-pick",
-        "menu",
-        "blocks"
+        "menu"
       ]
     },
     {
       "heading": "Code Block Execution",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 176,
+      "line": 177,
       "content": "CLOSED: [2026-01-19 Mon 09:50] Press =C-c C-c= inside a fenced code block to execute it. Results appear below the block. Supported languages include Python, JavaScript, TypeScript, Shell, and any language with a Jupyter kernel installed.",
       "path": [
         "Supported Features",
@@ -79142,7 +79145,7 @@
       "heading": "Code Block Manipulation",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 185,
+      "line": 186,
       "content": "CLOSED: [2026-01-19 Mon 09:50] | Command                        | Description                          | |--------------------------------+--------------------------------------| | scimax.ob.splitBlock           | Split block at cursor                | | scimax.ob.mergeWithPrevious    | Merge with previous block            | | scimax.ob.mergeWithNext        | Merge with next block                | | scimax.ob.insertBlockAbove     | Insert new block above               | | scimax.ob.insertBlockBe",
       "path": [
         "Supported Features",
@@ -79181,7 +79184,7 @@
       "heading": "Speed Commands",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 201,
+      "line": 202,
       "content": "CLOSED: [2026-01-19 Mon 09:40] Speed commands work at the beginning of Markdown headings (column 0 of a line starting with =#=).",
       "path": [
         "Supported Features"
@@ -79208,7 +79211,7 @@
       "heading": "Navigation Speed Commands",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 207,
+      "line": 208,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                               | |-----+--------------------------------------| | n   | Next heading                         | | p   | Previous heading                     | | f   | Forward to same-level heading        | | b   | Back to same-level heading           | | u   | Up to parent heading                 | | j   | Jump to heading (quick-pick)         | | g   | Go to... (navigation menu)           |",
       "path": [
         "Supported Features",
@@ -79243,7 +79246,7 @@
       "heading": "Structure Speed Commands",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 220,
+      "line": 221,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action                    | |-----+---------------------------| | @   | Mark (select) subtree     | | w   | Kill (cut) subtree        | | W   | Clone subtree             | | y   | Yank (paste) subtree      | | s   | Narrow to subtree         | | S   | Widen (show all)          |",
       "path": [
         "Supported Features",
@@ -79278,7 +79281,7 @@
       "heading": "Visibility Speed Commands",
       "level": 3,
       "file": "30-markdown-compatibility.org",
-      "line": 232,
+      "line": 233,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Key | Action               | |-----+----------------------| | c   | Cycle visibility     | | C   | Show children        | | o   | Overview (fold all)  |",
       "path": [
         "Supported Features",
@@ -79308,7 +79311,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 241,
+      "line": 242,
       "content": "CLOSED: [2026-01-19 Mon 09:40] Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter",
       "path": [
         "Supported Features"
@@ -79344,7 +79347,7 @@
       "heading": "Features Not Available in Markdown",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 250,
+      "line": 251,
       "content": "CLOSED: [2026-01-19 Mon 09:40] The following org-mode features are *not* supported in Markdown files because they require org-specific syntax:",
       "path": [],
       "commands": [],
@@ -79370,7 +79373,7 @@
       "heading": "Task Management",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 256,
+      "line": 257,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature        | Reason                                      | |----------------+---------------------------------------------| | TODO keywords  | Org syntax: =* TODO Task=                   | | Priorities     | Org syntax: =[#A]=                          | | Checkbox lists | Markdown checkboxes work differently        | | Progress cookies| Org syntax: =[2/5]= or =[40%]=             |",
       "path": [
         "Features Not Available in Markdown"
@@ -79404,7 +79407,7 @@
       "heading": "Planning",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 266,
+      "line": 267,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature    | Reason                                         | |------------+------------------------------------------------| | SCHEDULED  | Org syntax: =SCHEDULED: <2026-01-20>=          | | DEADLINE   | Org syntax: =DEADLINE: <2026-01-20>=           | | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  | | Agenda     | Requires TODO states and scheduling            |",
       "path": [
         "Features Not Available in Markdown"
@@ -79438,7 +79441,7 @@
       "heading": "Metadata",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 276,
+      "line": 277,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Properties      | Org syntax: =:PROPERTIES:= drawer         | | Tags            | Org syntax: =* Heading :tag1:tag2:=       | | Inherited tags  | Requires org tag syntax                   | | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |",
       "path": [
         "Features Not Available in Markdown"
@@ -79471,7 +79474,7 @@
       "heading": "Special Elements",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 286,
+      "line": 287,
       "content": "CLOSED: [2026-01-19 Mon 09:40] | Feature         | Reason                                    | |-----------------+-------------------------------------------| | Inline tasks    | Org syntax: 15+ stars                     | | Dynamic blocks  | Org syntax: =#+BEGIN:=                    | | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |",
       "path": [
         "Features Not Available in Markdown"
@@ -79504,7 +79507,7 @@
       "heading": "Tips for Markdown Users",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 295,
+      "line": 296,
       "content": "CLOSED: [2026-01-19 Mon 09:40]",
       "path": [],
       "commands": [],
@@ -79523,7 +79526,7 @@
       "heading": "Maximizing Compatibility",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 298,
+      "line": 299,
       "content": "CLOSED: [2026-01-19 Mon 09:41] To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension fully supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks",
       "path": [
         "Tips for Markdown Users"
@@ -79560,7 +79563,7 @@
       "heading": "When to Use Org-Mode Instead",
       "level": 2,
       "file": "30-markdown-compatibility.org",
-      "line": 314,
+      "line": 315,
       "content": "CLOSED: [2026-01-19 Mon 09:41] Consider using org-mode files when you need: - Task management with TODO states and priorities - Scheduling and deadlines with agenda integration - Time tracking with clocking - Inherited properties and tags - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
       "path": [
         "Tips for Markdown Users"
@@ -79594,7 +79597,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 328,
+      "line": 329,
       "content": "CLOSED: [2026-01-19 Mon 09:41] - [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference - [[file:07-source-blocks.org][Source Blocks]] - Code execution details - [[file:21-navigation.org][Navigation]] - All navigation features",
       "path": [],
       "commands": [],
@@ -79626,7 +79629,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "30-markdown-compatibility.org",
-      "line": 336,
+      "line": 337,
       "content": "CLOSED: [2026-01-19 Mon 09:44] - Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
       "path": [],
       "commands": [],
@@ -82990,7 +82993,7 @@
       "level": 1,
       "file": "33-latex-navigation.org",
       "line": 548,
-      "content": "Find all usages of a label or citation: | Position on          | Shows all                                         | |----------------------+---------------------------------------------------| | =\\label{name}=       | All =\\ref{name}= references                       | | =\\cite{key}=         | All citations of that key                         | Use =Shift+F12= or right-click → \"Find All References\". Works across all files in the project.",
+      "content": "CLOSED: [2026-01-19 Mon 09:55] Find all usages of a label or citation: | Position on          | Shows all                                         | |----------------------+---------------------------------------------------| | =\\label{name}=       | All =\\ref{name}= references                       | | =\\cite{key}=         | All citations of that key                         | Use =Shift+F12= or right-click → \"Find All References\". Works across all files in the project.",
       "path": [],
       "commands": [],
       "keybindings": [
@@ -82999,6 +83002,10 @@
       "keywords": [
         "find",
         "references",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0955",
         "usages",
         "label",
         "citation",
@@ -83012,22 +83019,24 @@
         "citations",
         "shiftf12",
         "right-click",
-        "works",
-        "across",
-        "project"
+        "works"
       ]
     },
     {
       "heading": "Auto-Completion",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 561,
-      "content": "Smart completions trigger as you type: | Context              | Completions                                       | |----------------------+---------------------------------------------------| | =\\ref{=              | All labels in project with context                | | =\\cite{=             | All BibTeX keys with author/year/title            | | =\\begin{=            | Common environments (equation, figure, etc.)      | | =\\usepackage{=       | Common packages with descriptions                 |",
+      "line": 562,
+      "content": "CLOSED: [2026-01-19 Mon 09:56] Smart completions trigger as you type: | Context              | Completions                                       | |----------------------+---------------------------------------------------| | =\\ref{=              | All labels in project with context                | | =\\cite{=             | All BibTeX keys with author/year/title            | | =\\begin{=            | Common environments (equation, figure, etc.)      | | =\\usepackage{=       | Common packages with",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "auto-completion",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0956",
         "smart",
         "completions",
         "trigger",
@@ -83042,19 +83051,15 @@
         "keys",
         "authoryeartitle",
         "begin",
-        "common",
-        "environments",
-        "equation",
-        "figure",
-        "etc"
+        "common"
       ]
     },
     {
       "heading": "Multi-File Project Support",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 580,
-      "content": "Projects with multiple files (using =\\input= or =\\include=) are fully supported: - *Master document detection*: Automatically finds the main .tex file - *Cross-file labels*: Complete and navigate labels defined in any project file - *Shared bibliography*: Finds .bib files referenced anywhere in project - *Project-wide search*: Find References searches all included files The master document is detected by looking for =\\documentclass=.",
+      "line": 582,
+      "content": "CLOSED: [2026-01-19 Mon 09:56] Projects with multiple files (using =\\input= or =\\include=) are fully supported: - *Master document detection*: Automatically finds the main .tex file - *Cross-file labels*: Complete and navigate labels defined in any project file - *Shared bibliography*: Finds .bib files referenced anywhere in project - *Project-wide search*: Find References searches all included files The master document is detected by looking for =\\documentclass=.",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -83062,6 +83067,10 @@
         "multi-file",
         "project",
         "support",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0956",
         "projects",
         "multiple",
         "input",
@@ -83074,19 +83083,15 @@
         "automatically",
         "finds",
         "main",
-        "tex",
-        "cross-file",
-        "labels",
-        "complete",
-        "navigate"
+        "tex"
       ]
     },
     {
       "heading": "Project Structure",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 591,
-      "content": "#+BEGIN_SRC text thesis/ ├── main.tex              # Master document (has \\documentclass) │   └── \\input{chapters/intro} │   └── \\input{chapters/methods} │   └── \\bibliography{refs} ├── chapters/ │   ├── intro.tex        # \\label{sec:intro} defined here │   └── methods.tex      # \\ref{sec:intro} works here too └── refs.bib              # Bibliography #+END_SRC",
+      "line": 594,
+      "content": "CLOSED: [2026-01-19 Mon 09:56] #+BEGIN_SRC text thesis/ ├── main.tex              # Master document (has \\documentclass) │   └── \\input{chapters/intro} │   └── \\input{chapters/methods} │   └── \\bibliography{refs} ├── chapters/ │   ├── intro.tex        # \\label{sec:intro} defined here │   └── methods.tex      # \\ref{sec:intro} works here too └── refs.bib              # Bibliography #+END_SRC",
       "path": [
         "Multi-File Project Support"
       ],
@@ -83095,6 +83100,10 @@
       "keywords": [
         "project",
         "structure",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0956",
         "beginsrc",
         "text",
         "thesis",
@@ -83108,25 +83117,25 @@
         "bibliography",
         "refs",
         "chapters",
-        "introtex",
-        "label",
-        "secintro",
-        "defined",
-        "here"
+        "introtex"
       ]
     },
     {
       "heading": "ChkTeX Linting",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 605,
-      "content": "Real-time linting with ChkTeX catches common LaTeX issues: - Missing or extra braces - Spacing issues - Style recommendations Errors appear in the Problems panel and as squiggles in the editor.",
+      "line": 609,
+      "content": "CLOSED: [2026-01-19 Mon 09:56] Real-time linting with ChkTeX catches common LaTeX issues: - Missing or extra braces - Spacing issues - Style recommendations Errors appear in the Problems panel and as squiggles in the editor.",
       "path": [],
       "commands": [],
       "keybindings": [],
       "keywords": [
         "chktex",
         "linting",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0956",
         "real-time",
         "catches",
         "common",
@@ -83140,18 +83149,15 @@
         "recommendations",
         "errors",
         "appear",
-        "problems",
-        "panel",
-        "squiggles",
-        "editor"
+        "problems"
       ]
     },
     {
       "heading": "Configuration",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 615,
-      "content": "#+BEGIN_SRC json { \"scimax.latex.enableChktex\": true  // Enable/disable linting (default: true) } #+END_SRC Requires =chktex= to be installed: - *macOS*: =brew install chktex= - *Linux*: =apt install chktex= - *Windows*: Included with MiKTeX/TeX Live",
+      "line": 620,
+      "content": "CLOSED: [2026-01-19 Mon 09:56] #+BEGIN_SRC json { \"scimax.latex.enableChktex\": true  // Enable/disable linting (default: true) } #+END_SRC Requires =chktex= to be installed: - *macOS*: =brew install chktex= - *Linux*: =apt install chktex= - *Windows*: Included with MiKTeX/TeX Live",
       "path": [
         "ChkTeX Linting"
       ],
@@ -83161,6 +83167,10 @@
       "keybindings": [],
       "keywords": [
         "configuration",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0956",
         "beginsrc",
         "json",
         "true",
@@ -83175,18 +83185,14 @@
         "brew",
         "install",
         "linux",
-        "apt",
-        "windows",
-        "included",
-        "miktextex",
-        "live"
+        "apt"
       ]
     },
     {
       "heading": "Error Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 628,
+      "line": 634,
       "content": "Navigate through compilation errors: | Command                       | Key Binding      | Description                    | |-------------------------------+------------------+--------------------------------| | scimax.latex.nextError        | C-c `            | Jump to next error             | | scimax.latex.previousError    | C-c Shift+`      | Jump to previous error         | | scimax.latex.showErrors       | C-c C-e          | Show all errors in quick pick  | Errors are collected after compil",
       "path": [],
       "commands": [
@@ -83225,8 +83231,8 @@
       "heading": "Error Display",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 640,
-      "content": "When compilation fails: 1. First error is shown in a notification with \"Go to Error\" button 2. The Problems panel shows all parsed errors 3. Use navigation commands to cycle through errors Errors include: - File path (supports multi-file projects) - Line number - Error message",
+      "line": 646,
+      "content": "CLOSED: [2026-01-19 Mon 09:57] When compilation fails: 1. First error is shown in a notification with \"Go to Error\" button 2. The Problems panel shows all parsed errors 3. Use navigation commands to cycle through errors Errors include: - File path (supports multi-file projects) - Line number - Error message",
       "path": [
         "Error Navigation"
       ],
@@ -83235,6 +83241,10 @@
       "keywords": [
         "error",
         "display",
+        "closed",
+        "2026-01-19",
+        "mon",
+        "0957",
         "compilation",
         "fails",
         "first",
@@ -83248,18 +83258,14 @@
         "errors",
         "navigation",
         "commands",
-        "cycle",
-        "through",
-        "include",
-        "path",
-        "supports"
+        "cycle"
       ]
     },
     {
       "heading": "Hover Previews",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 652,
+      "line": 659,
       "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over LaTeX elements to see previews and information.",
       "path": [],
       "commands": [],
@@ -83281,7 +83287,7 @@
       "heading": "Equation Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 657,
+      "line": 664,
       "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over any math expression to see a rendered preview: - Inline math: =$E=mc^2$=, =\\(E=mc^2\\)= - Display math: =$$...$$$=, =\\[...\\]= - Environments: =equation=, =align=, =gather=, etc. The preview: - Renders using the system LaTeX installation - Respects document preamble (packages, custom commands) - Adapts to dark/light VS Code theme - Shows the source LaTeX below the preview *Note:* Requires a LaTeX installation (TeX Live, MiKTeX, or MacTeX).",
       "path": [
         "Hover Previews"
@@ -83315,7 +83321,7 @@
       "heading": "Figure Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 674,
+      "line": 681,
       "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over =\\includegraphics{...}= to see: - Image preview (PNG, JPG, SVG, GIF, WebP) - File path and size - Last modified date PDF and EPS files show file information without preview.",
       "path": [
         "Hover Previews"
@@ -83349,7 +83355,7 @@
       "heading": "Rename Symbol",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 684,
+      "line": 691,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Rename a label and automatically update all references across the project: 1. Place cursor on a =\\label{name}= or =\\ref{name}= 2. Press =F2= or right-click → \"Rename Symbol\" 3. Enter the new name 4. All =\\label{}= and =\\ref{}= commands using that name are updated Works across all files in multi-file projects.",
       "path": [],
       "commands": [],
@@ -83381,7 +83387,7 @@
       "heading": "Supported Reference Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 696,
+      "line": 703,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Rename works with all reference variants: - =\\label{...}= - the definition - =\\ref{...}=, =\\eqref{...}=, =\\pageref{...}= - =\\autoref{...}=, =\\cref{...}=, =\\Cref{...}=",
       "path": [
         "Rename Symbol"
@@ -83412,7 +83418,7 @@
       "heading": "Reference Validation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 704,
+      "line": 711,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Automatic validation of label references: | Issue                    | Severity | Description                           | |--------------------------+----------+---------------------------------------| | Undefined reference      | Error    | =\\ref{name}= but no =\\label{name}=    | | Unused label             | Warning  | =\\label{name}= with no =\\ref{name}=   | Diagnostics appear in the Problems panel and as squiggles in the editor.",
       "path": [],
       "commands": [],
@@ -83444,7 +83450,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 716,
+      "line": 723,
       "content": "CLOSED: [2026-01-19 Mon 09:17] #+BEGIN_SRC json { \"scimax.latex.validateReferences\": true  // Enable/disable (default: true) } #+END_SRC",
       "path": [
         "Reference Validation"
@@ -83471,7 +83477,7 @@
       "heading": "Inverse SyncTeX",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 725,
+      "line": 732,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Click in PDF to jump back to the corresponding source location.",
       "path": [],
       "commands": [],
@@ -83496,7 +83502,7 @@
       "heading": "Setup",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 730,
+      "line": 737,
       "content": "Run the command =Scimax LaTeX: Show Inverse SyncTeX Command= to get the configuration command for your PDF viewer. | PDF Viewer | Configuration                                               | |------------+-------------------------------------------------------------| | Skim       | Preferences → Sync → Preset: Custom; Command: =code=        | | SumatraPDF | Settings → Options → Set inverse search command             | | Zathura    | Set =synctex-editor-command= in config                      |",
       "path": [
         "Inverse SyncTeX"
@@ -83530,7 +83536,7 @@
       "heading": "URI Handler",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 741,
+      "line": 748,
       "content": "CLOSED: [2026-01-19 Mon 09:17] The extension also registers a URI handler for =vscode://= URLs: #+BEGIN_SRC text vscode://file/path/to/file.tex:42 #+END_SRC This allows PDF viewers to communicate directly with VS Code.",
       "path": [
         "Inverse SyncTeX"
@@ -83564,7 +83570,7 @@
       "heading": "Document Formatting",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 752,
+      "line": 759,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Format LaTeX documents using =latexindent=: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.format        | C-c C-q     | Format entire document   |",
       "path": [],
       "commands": [
@@ -83598,7 +83604,7 @@
       "heading": "Format on Save",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 761,
+      "line": 768,
       "content": "CLOSED: [2026-01-19 Mon 09:12] Enable automatic formatting when saving: #+BEGIN_SRC json { \"scimax.latex.formatOnSave\": true,          // Auto-format on save \"scimax.latex.latexindentPath\": \"latexindent\"  // Path to latexindent } #+END_SRC",
       "path": [
         "Document Formatting"
@@ -83632,7 +83638,7 @@
       "heading": "Requirements",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 773,
+      "line": 780,
       "content": "CLOSED: [2026-01-19 Mon 09:12] =latexindent= must be installed: - *macOS*: Included with MacTeX, or =brew install latexindent= - *Linux*: =apt install texlive-extra-utils= or =cpanm YAML::Tiny File::HomeDir Unicode::GCString= - *Windows*: Included with MiKTeX/TeX Live",
       "path": [
         "Document Formatting"
@@ -83666,7 +83672,7 @@
       "heading": "Customization",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 781,
+      "line": 788,
       "content": "CLOSED: [2026-01-19 Mon 09:12] Create a =.latexindent.yaml= file in your project to customize formatting rules. See the [[https://latexindentpl.readthedocs.io/][latexindent documentation]] for options.",
       "path": [
         "Document Formatting"
@@ -83695,7 +83701,7 @@
       "heading": "LaTeX-Aware Spell Checking",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 787,
+      "line": 794,
       "content": "CLOSED: [2026-01-19 Mon 09:12] The extension provides infrastructure for LaTeX-aware spell checking that skips commands, math, and comments.",
       "path": [],
       "commands": [],
@@ -83721,7 +83727,7 @@
       "heading": "Regions Excluded from Spell Check",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 793,
+      "line": 800,
       "content": "CLOSED: [2026-01-19 Mon 09:12] | Pattern                          | Example                      | |----------------------------------+------------------------------| | Commands with arguments          | =\\textbf{word}=              | | Inline math                      | =$x^2 + y^2$=                | | Display math                     | =$$..$$= and =\\[..\\]=        | | Environments                     | =\\begin{...}...\\end{...}=    | | Comments                         | =% comment text=        ",
       "path": [
         "LaTeX-Aware Spell Checking"
@@ -83755,7 +83761,7 @@
       "heading": "User Dictionary",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 804,
+      "line": 811,
       "content": "CLOSED: [2026-01-19 Mon 09:12] Add words to your personal dictionary: | Command                        | Description                        | |--------------------------------+------------------------------------| | scimax.latex.addToDictionary   | Add word at cursor to dictionary   | The dictionary is stored per-workspace and persists across sessions.",
       "path": [
         "LaTeX-Aware Spell Checking"
@@ -83790,7 +83796,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 815,
+      "line": 822,
       "content": "CLOSED: [2026-01-19 Mon 09:12] - [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX - [[file:10-export.org][Export]] - Export org to LaTeX - [[file:19-references.org][References]] - BibTeX bibliography management - [[file:23-speed-commands.org][Speed Commands]] - Org-mode speed commands - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference",
       "path": [],
       "commands": [],

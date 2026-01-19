@@ -265,6 +265,53 @@ let lastCompileErrors: LaTeXError[] = [];
 let currentErrorIndex = 0;
 
 /**
+ * Format LaTeX log output for better readability with text markers
+ */
+function formatLatexOutput(output: string): string {
+    const lines = output.split('\n');
+    const formatted: string[] = [];
+
+    for (const line of lines) {
+        let result = line;
+
+        // Critical errors - add marker
+        if (/^!/.test(line)) {
+            result = `❌ ${line}`;
+        }
+        else if (/Emergency stop/.test(line) || /Fatal error/.test(line)) {
+            result = `🛑 ${line}`;
+        }
+        // File:line: error format
+        else if (/^[^:]+:\d+:/.test(line)) {
+            result = `⚠️  ${line}`;
+        }
+        // Warnings
+        else if (/Warning:/i.test(line) || /LaTeX Warning/.test(line)) {
+            result = `⚠️  ${line}`;
+        }
+        // Missing character warnings
+        else if (/Missing character:/.test(line)) {
+            result = `⚠️  ${line}`;
+        }
+        // Citation/reference undefined
+        else if (/Citation .* undefined/.test(line) || /Reference .* undefined/.test(line)) {
+            result = `📚 ${line}`;
+        }
+        // Output written successfully
+        else if (/Output written on/.test(line)) {
+            result = `✅ ${line}`;
+        }
+        else if (/Transcript written on/.test(line)) {
+            result = `📝 ${line}`;
+        }
+
+        formatted.push(result);
+    }
+
+    return formatted.join('\n');
+}
+
+/**
  * Parse LaTeX log for errors
  */
 function parseLatexErrors(output: string, baseDir: string): LaTeXError[] {
@@ -449,14 +496,17 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
 
                             // Show output in output channel
                             outputChannel.clear();
-                            outputChannel.appendLine(`=== LaTeX Compilation: ${fileName} ===`);
-                            outputChannel.appendLine(`Compiler: ${cmd} ${args.join(' ')}`);
-                            outputChannel.appendLine(`Exit code: ${code}`);
+                            outputChannel.appendLine(`════════════════════════════════════════════════════════`);
+                            outputChannel.appendLine(`  LaTeX Compilation: ${fileName}`);
+                            outputChannel.appendLine(`  Compiler: ${cmd} ${args.join(' ')}`);
+                            outputChannel.appendLine(`  Exit code: ${code}`);
+                            outputChannel.appendLine(`════════════════════════════════════════════════════════`);
                             outputChannel.appendLine('');
-                            outputChannel.appendLine(stdout);
+                            outputChannel.appendLine(formatLatexOutput(stdout));
                             if (stderr) {
+                                outputChannel.appendLine('');
                                 outputChannel.appendLine('--- STDERR ---');
-                                outputChannel.appendLine(stderr);
+                                outputChannel.appendLine(formatLatexOutput(stderr));
                             }
 
                             resolve();
