@@ -7,6 +7,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as crypto from 'crypto';
+import { spawn } from 'child_process';
 import {
     getSections,
     getLabels,
@@ -21,6 +24,105 @@ import {
     initLatexPreviewCache,
 } from '../org/latexPreviewProvider';
 import { getCitationHover } from './latexLanguageProvider';
+
+// =============================================================================
+// PDF to PNG Conversion for Figure Previews
+// =============================================================================
+
+// Cache for converted PDF previews: maps PDF path + mtime to PNG path
+const pdfPreviewCache = new Map<string, string>();
+
+/**
+ * Convert a PDF file to PNG for preview
+ * Tries multiple tools: pdftoppm (poppler), convert (ImageMagick), gs (Ghostscript)
+ */
+async function convertPdfToPng(pdfPath: string): Promise<string | null> {
+    // Create cache key based on path and modification time
+    const stats = fs.statSync(pdfPath);
+    const cacheKey = `${pdfPath}:${stats.mtimeMs}`;
+
+    // Check cache
+    const cached = pdfPreviewCache.get(cacheKey);
+    if (cached && fs.existsSync(cached)) {
+        return cached;
+    }
+
+    // Generate output path in temp directory
+    const hash = crypto.createHash('md5').update(cacheKey).digest('hex');
+    const tmpDir = path.join(os.tmpdir(), 'scimax-pdf-preview');
+    if (!fs.existsSync(tmpDir)) {
+        fs.mkdirSync(tmpDir, { recursive: true });
+    }
+    const outputPath = path.join(tmpDir, `${hash}.png`);
+
+    // If output already exists, use it
+    if (fs.existsSync(outputPath)) {
+        pdfPreviewCache.set(cacheKey, outputPath);
+        return outputPath;
+    }
+
+    // Try different conversion tools
+    const converters = [
+        // pdftoppm from poppler-utils (best quality, most common on Linux/macOS)
+        {
+            cmd: 'pdftoppm',
+            args: ['-png', '-f', '1', '-l', '1', '-r', '150', '-singlefile', pdfPath, outputPath.replace('.png', '')],
+            outputFile: outputPath,
+        },
+        // ImageMagick convert
+        {
+            cmd: 'convert',
+            args: ['-density', '150', `${pdfPath}[0]`, '-quality', '90', outputPath],
+            outputFile: outputPath,
+        },
+        // Ghostscript
+        {
+            cmd: 'gs',
+            args: [
+                '-dSAFER', '-dBATCH', '-dNOPAUSE', '-dFirstPage=1', '-dLastPage=1',
+                '-sDEVICE=png16m', '-r150', `-sOutputFile=${outputPath}`, pdfPath
+            ],
+            outputFile: outputPath,
+        },
+    ];
+
+    for (const converter of converters) {
+        try {
+            const success = await runConverter(converter.cmd, converter.args);
+            if (success && fs.existsSync(converter.outputFile)) {
+                pdfPreviewCache.set(cacheKey, converter.outputFile);
+                return converter.outputFile;
+            }
+        } catch {
+            // Try next converter
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Run a converter command and return success/failure
+ */
+function runConverter(cmd: string, args: string[]): Promise<boolean> {
+    return new Promise((resolve) => {
+        const proc = spawn(cmd, args, { stdio: 'pipe' });
+
+        proc.on('close', (code) => {
+            resolve(code === 0);
+        });
+
+        proc.on('error', () => {
+            resolve(false);
+        });
+
+        // Timeout after 10 seconds
+        setTimeout(() => {
+            proc.kill();
+            resolve(false);
+        }, 10000);
+    });
+}
 
 // Common LaTeX commands with descriptions
 const LATEX_COMMANDS: { [key: string]: string } = {
@@ -382,8 +484,8 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
         const equationHover = await this.hoverForEquation(document, position, line);
         if (equationHover) return equationHover;
 
-        // Check for figure/image hover
-        const figureHover = this.hoverForFigure(document, position, line);
+        // Check for figure/image hover (async for PDF/EPS conversion)
+        const figureHover = await this.hoverForFigure(document, position, line);
         if (figureHover) return figureHover;
 
         if (!wordRange) return null;
@@ -430,10 +532,22 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
                 const labels = getLabels(document);
                 const label = labels.find(l => l.name === labelName);
 
+                // Create range for the entire \ref{...} so Go to Definition link works
+                const hoverRange = new vscode.Range(
+                    position.line, startCol,
+                    position.line, endCol
+                );
+
                 if (label) {
                     const md = new vscode.MarkdownString();
+                    md.isTrusted = true;
+                    md.supportHtml = true;
                     md.appendMarkdown(`**\\\\${refType}** to \`${labelName}\`\n\n`);
-                    md.appendMarkdown(`**Location:** Line ${label.line + 1}\n\n`);
+
+                    // Create clickable link to jump to the label using file URI with line fragment
+                    const labelUri = document.uri.with({ fragment: `L${label.line + 1}` });
+                    md.appendMarkdown(`**Location:** [Line ${label.line + 1}](${labelUri.toString()}) \n\n`);
+
                     if (label.context) {
                         md.appendMarkdown(`**Context:** ${label.context}\n\n`);
                     }
@@ -442,12 +556,12 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
                     const labelLine = document.lineAt(label.line).text.trim();
                     md.appendCodeblock(labelLine, 'latex');
 
-                    return new vscode.Hover(md);
+                    return new vscode.Hover(md, hoverRange);
                 } else {
                     const md = new vscode.MarkdownString();
                     md.appendMarkdown(`**\\\\${refType}** to \`${labelName}\`\n\n`);
                     md.appendMarkdown(`*Label not found in this document*`);
-                    return new vscode.Hover(md);
+                    return new vscode.Hover(md, hoverRange);
                 }
             }
         }
@@ -956,12 +1070,13 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
 
     /**
      * Hover for figures - show image preview for \includegraphics
+     * Converts PDF/EPS to PNG for preview using available system tools
      */
-    private hoverForFigure(
+    private async hoverForFigure(
         document: vscode.TextDocument,
         position: vscode.Position,
         line: string
-    ): vscode.Hover | null {
+    ): Promise<vscode.Hover | null> {
         // Find \includegraphics[options]{filename}
         const graphicsPattern = /\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}/g;
         let match;
@@ -1001,10 +1116,16 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
                     if (['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'].includes(ext)) {
                         const imageUri = vscode.Uri.file(fullPath);
                         md.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 400px; max-height: 300px;" />\n\n`);
-                    } else if (ext === '.pdf') {
-                        md.appendMarkdown(`*PDF file (preview not available)*\n\n`);
-                    } else if (ext === '.eps') {
-                        md.appendMarkdown(`*EPS file (preview not available)*\n\n`);
+                    } else if (ext === '.pdf' || ext === '.eps') {
+                        // Try to convert PDF/EPS to PNG for preview
+                        const pngPath = await convertPdfToPng(fullPath);
+                        if (pngPath) {
+                            const imageUri = vscode.Uri.file(pngPath);
+                            md.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 400px; max-height: 300px;" />\n\n`);
+                            md.appendMarkdown(`*(${ext.toUpperCase().slice(1)} converted to PNG for preview)*\n\n`);
+                        } else {
+                            md.appendMarkdown(`*${ext.toUpperCase().slice(1)} preview requires pdftoppm, ImageMagick, or Ghostscript*\n\n`);
+                        }
                     }
 
                     // Show file info

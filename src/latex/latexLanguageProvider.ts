@@ -226,12 +226,9 @@ export class LaTeXDefinitionProvider implements vscode.DefinitionProvider {
         token: vscode.CancellationToken
     ): Promise<vscode.Definition | null> {
         const line = document.lineAt(position.line).text;
-        const wordRange = document.getWordRangeAtPosition(position, /[a-zA-Z0-9_:-]+/);
-        if (!wordRange) return null;
-
-        const word = document.getText(wordRange);
 
         // Check for \ref{label} - jump to \label{label}
+        // Do this BEFORE wordRange check so it works when cursor is on \, {, or }
         const refMatch = this.matchAtPosition(line, position.character, /\\(ref|eqref|pageref|autoref|cref|Cref)\{([^}]+)\}/g);
         if (refMatch) {
             const labelName = refMatch[2];
@@ -263,6 +260,12 @@ export class LaTeXDefinitionProvider implements vscode.DefinitionProvider {
             const filePath = inputMatch[2];
             return this.findFileDefinition(document, filePath);
         }
+
+        // For command definitions, we need a word at the cursor position
+        const wordRange = document.getWordRangeAtPosition(position, /[a-zA-Z0-9_:-]+/);
+        if (!wordRange) return null;
+
+        const word = document.getText(wordRange);
 
         // Check if cursor is on a command that might be user-defined
         if (line.charAt(position.character - word.length - 1) === '\\') {
