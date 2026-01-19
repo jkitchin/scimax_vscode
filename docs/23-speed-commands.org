@@ -507,6 +507,197 @@ CLOSED: [2026-01-15 Thu 14:52]
 
 *Solution*: The help is generated from code, so this shouldn't occur. If it does, report as a bug.
 
+* ⚠️ BibTeX Speed Commands
+:PROPERTIES:
+:CUSTOM_ID: bibtex-speed-commands
+:END:
+
+BibTeX speed commands provide single-key shortcuts for navigating and manipulating BibTeX entries when editing `.bib' files. These commands are active when the cursor is at column 0 of a line starting with `@' (entry definition line).
+
+** ⚠️ Activation
+
+BibTeX speed commands are active when:
+
+1. You are editing a `.bib' file
+2. Cursor is at column 0
+3. Line starts with `@' (e.g., `@article{', `@book{')
+4. Speed commands are enabled in settings
+
+** ⚠️ Command Reference
+
+| Key | Category    | Command                  |
+|-----+-------------+--------------------------|
+| n   | Navigation  | Next entry               |
+| p   | Navigation  | Previous entry           |
+| j   | Navigation  | Jump to entry (search)   |
+| s   | Formatting  | Sort fields in entry     |
+| d   | Formatting  | Downcase entry           |
+| t   | Formatting  | Title case article title |
+| S   | Formatting  | Sentence case title      |
+| c   | Formatting  | Clean/format entry       |
+| o   | Access      | Open PDF                 |
+| u   | Access      | Open URL/DOI             |
+| N   | Access      | Open notes               |
+| g   | Access      | Google Scholar search    |
+| x   | Access      | Open in CrossRef         |
+| w   | Access      | Open in Web of Science   |
+| y   | Actions     | Copy citation key        |
+| b   | Actions     | Copy BibTeX entry        |
+| k   | Actions     | Kill (delete) entry      |
+| ?   | Help        | Show speed commands help |
+
+** ⚠️ Navigation Commands
+
+*** ⚠️ Next Entry (n)
+
+Jump to the next BibTeX entry in the file.
+
+#+BEGIN_EXAMPLE
+@article{smith2020,
+  title = {First Article}
+}
+                       <- press n here
+@book{jones2021,       <- cursor moves here
+  title = {Second Book}
+}
+#+END_EXAMPLE
+
+*** ⚠️ Previous Entry (p)
+
+Jump to the previous BibTeX entry in the file.
+
+*** ⚠️ Jump to Entry (j)
+
+Opens a quick pick dialog showing all entries in the file. Search by key, author, or title.
+
+** ⚠️ Formatting Commands
+
+*** ⚠️ Sort Fields (s)
+
+Reorders fields in the current entry according to the standard BibLaTeX field order:
+
+1. author, title, journaltitle/journal, booktitle
+2. editor, edition, volume, number, pages
+3. publisher, location/address, year, date
+4. doi, url, isbn/issn
+5. note, abstract, keywords
+
+*** ⚠️ Downcase Entry (d)
+
+Converts entry type and field names to lowercase:
+
+#+BEGIN_EXAMPLE
+Before: @ARTICLE{key, AUTHOR = {Name}}
+After:  @article{key, author = {Name}}
+#+END_EXAMPLE
+
+*** ⚠️ Title Case (t)
+
+Converts the article title to Title Case, preserving braced content like `{DNA}' or `{LaTeX}'.
+
+*** ⚠️ Sentence Case (S)
+
+Converts the article title to Sentence case (only first letter capitalized), preserving braced content.
+
+*** ⚠️ Clean Entry (c)
+
+Applies all cleaning operations:
+- Normalizes whitespace
+- Downcases entry type and field names
+- Sorts fields
+- Removes double braces
+
+** ⚠️ Access Commands
+
+*** ⚠️ Open PDF (o)
+
+Attempts to open the PDF associated with the entry:
+1. Checks the `file' field in the entry
+2. Looks in the configured PDF directory
+3. Offers to open DOI in browser if no PDF found
+
+*** ⚠️ Open URL/DOI (u)
+
+Opens the URL or DOI associated with the entry:
+- Prefers DOI if available
+- Falls back to URL field
+- Supports arXiv eprint field
+
+*** ⚠️ Open Notes (N)
+
+Opens or creates notes for the entry. Notes are stored as org files in the configured notes directory.
+
+*** ⚠️ Google Scholar (g)
+
+Searches Google Scholar for the entry using DOI or title.
+
+*** ⚠️ CrossRef (x)
+
+Opens the entry in CrossRef search using the DOI.
+
+*** ⚠️ Web of Science (w)
+
+Opens the entry in Web of Science using the DOI.
+
+** ⚠️ Action Commands
+
+*** ⚠️ Copy Key (y)
+
+Copies the citation key to the clipboard.
+
+*** ⚠️ Copy BibTeX (b)
+
+Copies the entire BibTeX entry to the clipboard.
+
+*** ⚠️ Kill Entry (k)
+
+Deletes the entire entry (with confirmation). The deleted entry is copied to the clipboard for easy recovery.
+
+** ⚠️ Help Command
+
+*** ⚠️ Show Help (?)
+
+Displays a quick pick menu with all available BibTeX speed commands. Select a command to execute it.
+
+** ⚠️ Configuration
+
+BibTeX speed commands use the same enable/disable setting as org-mode speed commands:
+
+#+BEGIN_SRC json
+{
+  "scimax.speedCommands.enabled": true
+}
+#+END_SRC
+
+For PDF and notes access, configure:
+
+#+BEGIN_SRC json
+{
+  "scimax.ref.pdfDirectory": "~/Papers",
+  "scimax.ref.notesDirectory": "~/Notes/papers"
+}
+#+END_SRC
+
+** ⚠️ Comparison with Emacs org-ref
+
+These BibTeX speed commands are inspired by the functions in Emacs `org-ref-bibtex.el':
+
+| Scimax       | Emacs org-ref Function           |
+|--------------+----------------------------------|
+| n            | org-ref-bibtex-next-entry        |
+| p            | org-ref-bibtex-previous-entry    |
+| s            | org-ref-sort-bibtex-entry        |
+| d            | org-ref-downcase-bibtex-entry    |
+| t            | org-ref-title-case-article       |
+| S            | org-ref-sentence-case-article    |
+| c            | org-ref-clean-bibtex-entry       |
+| o            | org-ref-open-bibtex-pdf          |
+| u            | org-ref-open-in-browser          |
+| N            | org-ref-open-bibtex-notes        |
+| g            | org-ref-bibtex-google-scholar    |
+| x            | org-ref-bibtex-crossref          |
+| w            | org-ref-bibtex-wos               |
+
 * ✅ Related Documentation
 CLOSED: [2026-01-15 Thu 14:52]
 
@@ -529,7 +720,7 @@ CLOSED: [2026-01-15 Thu 14:52]
 CLOSED: [2026-01-15 Thu 14:52]
 
 Speed commands are implemented in:
-- `/src/org/speedCommands/' - Core implementation
+- `/src/org/speedCommands/' - Core implementation for org/markdown
   - `config.ts' - Command definitions and mappings
   - `context.ts' - Context detection and command registration
   - `navigation.ts' - Navigation commands
@@ -539,6 +730,11 @@ Speed commands are implemented in:
   - `clocking.ts' - Time tracking
   - `archive.ts' - Archive operations
   - `structure.ts' - Structure editing commands
+- `/src/references/bibtexSpeedCommands.ts' - BibTeX speed commands
+  - Entry navigation (next, previous, jump)
+  - Entry formatting (sort, downcase, title case, sentence case, clean)
+  - Entry access (PDF, URL, notes, Google Scholar, CrossRef, Web of Science)
+  - Entry actions (copy key, copy entry, delete)
 
 * Navigation
 

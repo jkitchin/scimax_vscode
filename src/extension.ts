@@ -58,6 +58,7 @@ import { registerFuzzySearchCommands } from './fuzzySearch/commands';
 import { registerJumpCommands } from './jump/commands';
 import { registerMarkCommands } from './mark/markRing';
 import { registerCitationManipulationCommands, checkCitationContext } from './references/citationManipulation';
+import { registerBibtexSpeedCommands } from './references/bibtexSpeedCommands';
 import { registerEditmarkCommands } from './editmarks/editmarks';
 import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 import { registerPublishCommands } from './publishing';
@@ -414,6 +415,9 @@ export async function activate(context: vscode.ExtensionContext) {
             new BibliographyCodeLensProvider(referenceManager)
         )
     );
+
+    // Register BibTeX Speed Commands (single-key shortcuts at entry start)
+    registerBibtexSpeedCommands(context);
 
     // Additional reference commands for code lens
     context.subscriptions.push(

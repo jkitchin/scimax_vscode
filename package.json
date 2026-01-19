@@ -2470,6 +2470,78 @@
       {
         "command": "scimax.latex.showInverseSyncTeXCommand",
         "title": "Scimax LaTeX: Show Inverse SyncTeX Command"
+      },
+      {
+        "command": "scimax.bibtex.nextEntry",
+        "title": "Scimax BibTeX: Next Entry"
+      },
+      {
+        "command": "scimax.bibtex.previousEntry",
+        "title": "Scimax BibTeX: Previous Entry"
+      },
+      {
+        "command": "scimax.bibtex.jumpToEntry",
+        "title": "Scimax BibTeX: Jump to Entry"
+      },
+      {
+        "command": "scimax.bibtex.sortFields",
+        "title": "Scimax BibTeX: Sort Fields in Entry"
+      },
+      {
+        "command": "scimax.bibtex.downcaseEntry",
+        "title": "Scimax BibTeX: Downcase Entry"
+      },
+      {
+        "command": "scimax.bibtex.titleCase",
+        "title": "Scimax BibTeX: Title Case Article Title"
+      },
+      {
+        "command": "scimax.bibtex.sentenceCase",
+        "title": "Scimax BibTeX: Sentence Case Article Title"
+      },
+      {
+        "command": "scimax.bibtex.cleanEntry",
+        "title": "Scimax BibTeX: Clean/Format Entry"
+      },
+      {
+        "command": "scimax.bibtex.openPdf",
+        "title": "Scimax BibTeX: Open PDF"
+      },
+      {
+        "command": "scimax.bibtex.openUrl",
+        "title": "Scimax BibTeX: Open URL/DOI"
+      },
+      {
+        "command": "scimax.bibtex.openNotes",
+        "title": "Scimax BibTeX: Open Notes"
+      },
+      {
+        "command": "scimax.bibtex.googleScholar",
+        "title": "Scimax BibTeX: Search Google Scholar"
+      },
+      {
+        "command": "scimax.bibtex.crossref",
+        "title": "Scimax BibTeX: Open in CrossRef"
+      },
+      {
+        "command": "scimax.bibtex.webOfScience",
+        "title": "Scimax BibTeX: Open in Web of Science"
+      },
+      {
+        "command": "scimax.bibtex.copyKey",
+        "title": "Scimax BibTeX: Copy Citation Key"
+      },
+      {
+        "command": "scimax.bibtex.copyBibtex",
+        "title": "Scimax BibTeX: Copy BibTeX Entry"
+      },
+      {
+        "command": "scimax.bibtex.killEntry",
+        "title": "Scimax BibTeX: Delete Entry"
+      },
+      {
+        "command": "scimax.bibtex.help",
+        "title": "Scimax BibTeX: Show Speed Commands Help"
       }
     ],
     "keybindings": [
@@ -3888,6 +3960,96 @@
         "args": { "key": "?" },
         "key": "shift+/",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.nextEntry",
+        "key": "n",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.previousEntry",
+        "key": "p",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.jumpToEntry",
+        "key": "j",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.sortFields",
+        "key": "s",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.downcaseEntry",
+        "key": "d",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.titleCase",
+        "key": "t",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.sentenceCase",
+        "key": "shift+s",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.cleanEntry",
+        "key": "c",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.openPdf",
+        "key": "o",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.openUrl",
+        "key": "u",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.openNotes",
+        "key": "shift+n",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.googleScholar",
+        "key": "g",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.crossref",
+        "key": "x",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.webOfScience",
+        "key": "w",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.copyKey",
+        "key": "y",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.copyBibtex",
+        "key": "b",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.killEntry",
+        "key": "k",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.help",
+        "key": "shift+/",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.org.insertInlineTask",
