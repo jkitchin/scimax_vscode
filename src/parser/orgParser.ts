@@ -217,8 +217,8 @@ export class OrgParser {
         }
 
         // Extract tags :tag1:tag2:
-        // Use non-greedy quantifier and atomic-like approach to prevent ReDoS
-        const tagMatch = title.match(/\s+:([\w@#%]+(?::[\w@#%]+){0,50}):$/);
+        // Use bounded character class to prevent ReDoS (allows alphanumeric, _, @, #, %, -)
+        const tagMatch = title.match(/\s+:([\w@#%\-]+(?::[\w@#%\-]+){0,50}):$/);
         if (tagMatch) {
             const tagStr = tagMatch[1];
             tags.push(...tagStr.split(':'));
