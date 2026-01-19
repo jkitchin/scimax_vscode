@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-19T20:00:56.936Z",
-  "count": 2886,
+  "buildDate": "2026-01-19T20:55:53.622Z",
+  "count": 2887,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -65898,7 +65898,7 @@
       "level": 1,
       "file": "24-keybindings.org",
       "line": 69,
-      "content": "| Key             | Action                       | |-----------------+------------------------------| | M-x             | Show command palette         | | C-x C-f         | Quick open file              | | C-x C-s         | Save file                    | | C-x s           | Save all files               | | C-x k           | Close active editor          | | C-x 3           | Split editor right           | | C-x 2           | Split editor down            | | C-x 1           | Close other editors i",
+      "content": "| Key             | Action                        | |-----------------+-------------------------------| | M-x             | Show command palette          | | C-x C-f         | Quick open file               | | C-x C-s         | Save file                     | | C-x s           | Save all files                | | C-x k           | Close active editor           | | C-x 3           | Split editor right            | | C-x 2           | Split editor down             | | C-x 1           | Close other ",
       "path": [],
       "commands": [],
       "keybindings": [
@@ -65913,7 +65913,7 @@
         "keybindings",
         "key",
         "action",
-        "-----------------------------------------------",
+        "------------------------------------------------",
         "m-x",
         "show",
         "command",
@@ -65934,7 +65934,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 91,
+      "line": 96,
       "content": "| Key         | Action                   | |-------------+--------------------------| | <tab>       | Toggle fold (on heading) | | S-<tab>     | Cycle global fold        | | C-c C-j     | Jump to heading          | | C-c C-n     | Next heading             | | C-c C-p     | Previous heading         | | C-c C-f     | Next sibling heading     | | C-c C-b     | Previous sibling heading | | C-<up>      | Previous source block    | | C-<down>    | Next source block        | Note: Navigation keybinding",
       "path": [],
       "commands": [],
@@ -65972,7 +65972,7 @@
       "heading": "Headings",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 108,
+      "line": 113,
       "content": "| Key           | Action                         | |---------------+--------------------------------| | M-<left>      | Promote heading/subtree        | | M-<right>     | Demote heading/subtree         | | M-S-<left>    | Promote subtree (not in table) | | M-S-<right>   | Demote subtree (not in table)  | | M-<up>        | Move heading/subtree up        | | M-<down>      | Move heading/subtree down      | | C-<return>    | Insert new heading             | | s-<return>    | (Mac) Insert new headin",
       "path": [],
       "commands": [],
@@ -66006,7 +66006,7 @@
       "heading": "Items",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 121,
+      "line": 126,
       "content": "| Key     | Action                             | |---------+------------------------------------| | C-c C-t | Cycle TODO state                   | | C-c C-c | Toggle checkbox (not in src block) | | C-c C-d | Insert due date (DEADLINE)         | | C-c C-s | Insert scheduled date (SCHEDULED)  |",
       "path": [],
       "commands": [],
@@ -66043,7 +66043,7 @@
       "heading": "Timestamps",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 130,
+      "line": 135,
       "content": "| Key        | Action                               | |------------+--------------------------------------| | C-c .      | Insert timestamp                     | | C-c C-r    | Add repeater to timestamp            | | S-<up>     | Shift timestamp up                   | | S-<down>   | Shift timestamp down                 | | S-<left>   | Shift timestamp left (no selection)  | | S-<right>  | Shift timestamp right (no selection) | *Note:* S-<arrow> keys work on timestamps. When on a citation, they ",
       "path": [],
       "commands": [],
@@ -66078,7 +66078,7 @@
       "heading": "Tables",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 143,
+      "line": 148,
       "content": "| Key               | Action                            | |-------------------+-----------------------------------| | C-c \\vert         | Create table                      | | C-c -             | Insert table separator row        | | C-c ^             | Sort table by column              | | C-c C-c           | Recalculate table (on TBLFM line) | | C-c *             | Recalculate table (alternative)   | | C-c C-e t         | Export table                      | | M-<return>        | Insert row bel",
       "path": [],
       "commands": [],
@@ -66114,7 +66114,7 @@
       "heading": "Source Blocks (Babel)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 159,
+      "line": 164,
       "content": "",
       "path": [],
       "commands": [],
@@ -66129,7 +66129,7 @@
       "heading": "Execution",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 161,
+      "line": 166,
       "content": "| Key          | Action                              | |--------------+-------------------------------------| | C-<return>   | Execute source block                | | s-<return>   | (Mac) Execute source block          | | C-c C-c      | Execute source block (in src block) | | S-<return>   | Execute and move to next block      |",
       "path": [
         "Source Blocks (Babel)"
@@ -66159,7 +66159,7 @@
       "heading": "Navigation & Manipulation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 170,
+      "line": 175,
       "content": "| Key       | Action                       | |-----------+------------------------------| | C-<up>    | Previous source block        | | C-<down>  | Next source block            | | C-c C-b   | Jump to source block         | | C-c C-,   | Insert source block below    | | C-c -     | Split source block at cursor |",
       "path": [
         "Source Blocks (Babel)"
@@ -66194,7 +66194,7 @@
       "heading": "Advanced Babel Operations",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 180,
+      "line": 185,
       "content": "| Key       | Action                      | |-----------+-----------------------------| | C-c C-v t | Tangle source blocks        | | C-c C-v p | Execute all blocks to point | | C-c C-v i | Execute inline code         | | C-c C-v q | Queue block for execution   |",
       "path": [
         "Source Blocks (Babel)"
@@ -66228,7 +66228,7 @@
       "heading": "Export",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 189,
+      "line": 194,
       "content": "| Key           | Action                        | |---------------+-------------------------------| | C-c C-e       | Export dispatcher (show menu) | | C-c C-e h h   | Export to HTML                | | C-c C-e h o   | Export to HTML and open       | | C-c C-e l l   | Export to LaTeX               | | C-c C-e l o   | Export to LaTeX and open      | | C-c C-e l p   | Export to PDF                 | | C-c C-e l v   | Open LaTeX preview            | | C-c C-e l s   | LaTeX forward sync            | ",
       "path": [],
       "commands": [],
@@ -66258,7 +66258,7 @@
       "heading": "Links",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 203,
+      "line": 208,
       "content": "| Key        | Action                   | |------------+--------------------------| | C-c C-l    | Insert link              | | C-c C-o    | Open link                | | <return>   | Open link (when on link) |",
       "path": [],
       "commands": [],
@@ -66284,7 +66284,7 @@
       "heading": "Citations & References",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 211,
+      "line": 216,
       "content": "| Key        | Action                                 | |------------+----------------------------------------| | C-c ]      | Insert citation                        | | C-c z      | Insert citation from Zotero            | | C-u C-c ]  | Insert cross-reference                 | | S-<left>   | Transpose citation left (on citation)  | | S-<right>  | Transpose citation right (on citation) | | S-<up>     | Sort citations (on citation)           | | S-<down>   | Sort citations by year (on citation) ",
       "path": [],
       "commands": [],
@@ -66319,7 +66319,7 @@
       "heading": "Text Markup",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 225,
+      "line": 230,
       "content": "| Key   | Action                               | |-------+--------------------------------------| | C-c b | Bold                                 | | C-c i | Italic                               | | C-c _ | Underline                            | | C-c ` | Code (inline)                        | | C-c = | Verbatim                             | | C-c + | Strikethrough                        | | C-c ' | Command (Emacs-style, non-standard)  |",
       "path": [],
       "commands": [],
@@ -66349,7 +66349,7 @@
       "heading": "Search & Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 237,
+      "line": 242,
       "content": "",
       "path": [],
       "commands": [],
@@ -66363,7 +66363,7 @@
       "heading": "Fuzzy Search (Swiper-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 239,
+      "line": 244,
       "content": "| Key     | Action                         | |---------+--------------------------------| | C-c s   | Fuzzy search in current buffer | | C-c S-s | Fuzzy search in open files     | | C-c M-s | Fuzzy search outline/headings  |",
       "path": [
         "Search & Navigation"
@@ -66393,7 +66393,7 @@
       "heading": "Jump (Avy-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 247,
+      "line": 252,
       "content": "| Key     | Action                 | |---------+------------------------| | C-c j c | Jump to character      | | C-c j j | Jump to 2 characters   | | C-c j w | Jump to word           | | C-c j l | Jump to line           | | C-c j o | Jump to symbol/outline | | C-c j s | Jump to subword        |",
       "path": [
         "Search & Navigation"
@@ -66421,7 +66421,7 @@
       "heading": "Projectile",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 258,
+      "line": 263,
       "content": "| Key     | Action                      | |---------+-----------------------------| | C-c p p | Switch project              | | C-c p f | Find file in project        | | C-c p s | Search in project           | | C-c p d | Open project root directory | | C-c p a | Add project                 |",
       "path": [
         "Search & Navigation"
@@ -66450,7 +66450,7 @@
       "heading": "Edit Marks (Track Changes)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 268,
+      "line": 273,
       "content": "| Key     | Action                  | |---------+-------------------------| | C-c e i | Mark insertion          | | C-c e d | Mark deletion           | | C-c e c | Add comment             | | C-c e t | Mark typo               | | C-c e a | Accept edit mark        | | C-c e r | Reject edit mark        | | C-c e ] | Next edit mark          | | C-c e [ | Previous edit mark      | | C-c e s | Show edit marks summary |",
       "path": [],
       "commands": [],
@@ -66484,7 +66484,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 282,
+      "line": 287,
       "content": "Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).",
       "path": [],
       "commands": [
@@ -66512,7 +66512,7 @@
       "heading": "Navigation Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 286,
+      "line": 291,
       "content": "| Key | Action                            | |-----+-----------------------------------| | n   | Next heading (same level)         | | p   | Previous heading (same level)     | | f   | Next sibling heading              | | b   | Previous sibling heading          | | u   | Parent heading (up one level)     | | j   | Jump to heading (quick picker)    | | g   | Goto menu (additional navigation) |",
       "path": [
         "Speed Commands"
@@ -66545,7 +66545,7 @@
       "heading": "Visibility Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 298,
+      "line": 303,
       "content": "| Key   | Action                          | |-------+---------------------------------| | <tab> | Toggle fold (same as regular tab) | | c     | Cycle global fold               | | C     | Show children only              | | o     | Overview (collapse all)         | | 1     | Show level 1 headings           | | 2     | Show level 2 headings           | | 3     | Show level 3 headings           | | 0     | Show all headings               |",
       "path": [
         "Speed Commands"
@@ -66577,7 +66577,7 @@
       "heading": "Structure Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 311,
+      "line": 316,
       "content": "| Key | Action               | |-----+----------------------| | l   | Promote subtree      | | r   | Demote subtree       | | L   | Promote heading only | | R   | Demote heading only  | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
@@ -66604,7 +66604,7 @@
       "heading": "TODO & Content Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 322,
+      "line": 327,
       "content": "| Key | Action              | |-----+---------------------| | t   | Cycle TODO state    | | d   | Insert DEADLINE     | | s   | Insert SCHEDULED    | | e   | Set effort estimate |",
       "path": [
         "Speed Commands"
@@ -66633,7 +66633,7 @@
       "heading": "Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 331,
+      "line": 336,
       "content": "| Key | Action               | |-----+----------------------| | w   | Kill (cut) subtree   | | y   | Yank (paste) subtree | | W   | Clone subtree        | | a   | Archive subtree      |",
       "path": [
         "Speed Commands"
@@ -66660,7 +66660,7 @@
       "heading": "Other Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 340,
+      "line": 345,
       "content": "| Key | Action                   | |-----+--------------------------| | ?   | Show speed commands help |",
       "path": [
         "Speed Commands"
@@ -66681,7 +66681,7 @@
       "heading": "Toggle Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 346,
+      "line": 351,
       "content": "| Key       | Action                       | |-----------+------------------------------| | C-c C-x s | Toggle speed commands on/off |",
       "path": [],
       "commands": [],
@@ -66704,7 +66704,7 @@
       "heading": "Additional Notes",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 352,
+      "line": 357,
       "content": "",
       "path": [],
       "commands": [],
@@ -66718,7 +66718,7 @@
       "heading": "Context-Dependent Keybindings",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 354,
+      "line": 359,
       "content": "Many keybindings are context-aware and behave differently depending on cursor position: - C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, and recalculates tables on TBLFM lines - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table - <return> opens links when cursor is on a link",
       "path": [
         "Additional Notes"
@@ -66755,7 +66755,7 @@
       "heading": "When Conditions",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 363,
+      "line": 368,
       "content": "Some keybindings only work in specific contexts: - Org-mode/Markdown files: Most document structure commands - On headings: Folding, promotion, demotion - In tables: Table-specific commands - In source blocks: Block execution - At heading start: Speed commands",
       "path": [
         "Additional Notes"
@@ -66789,7 +66789,7 @@
       "heading": "Mac vs Windows/Linux",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 372,
+      "line": 377,
       "content": "Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd): - s-S-j (journal) - s-<return> (execute/insert heading) - s-S-k (delete citation) - s-S-r (reload window) - C-s-v (database menu)",
       "path": [
         "Additional Notes"
@@ -66825,7 +66825,7 @@
       "heading": "LaTeX Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 381,
+      "line": 386,
       "content": "These keybindings are active in LaTeX files (=.tex=):",
       "path": [],
       "commands": [],
@@ -66842,7 +66842,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 385,
+      "line": 390,
       "content": "| Key         | Action                       | |-------------+------------------------------| | C-c C-n     | Next section                 | | C-c C-p     | Previous section             | | C-c C-u     | Parent section               | | C-c C-f     | Next sibling section         | | C-c C-b     | Previous sibling section     | | C-c C-j     | Jump to any section          | | C-c j       | Jump to any section (alt)    |",
       "path": [
         "LaTeX Navigation"
@@ -66883,7 +66883,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 397,
+      "line": 402,
       "content": "| Key              | Action                     | |------------------+----------------------------| | Alt+Left         | Promote section            | | Alt+Right        | Demote section             | | Alt+Shift+Left   | Promote subtree            | | Alt+Shift+Right  | Demote subtree             | | Alt+Up           | Move section up            | | Alt+Down         | Move section down          | | C-c @            | Mark (select) section      |",
       "path": [
         "LaTeX Navigation"
@@ -66925,7 +66925,7 @@
       "heading": "Environment Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 409,
+      "line": 414,
       "content": "| Key       | Action                          | |-----------+---------------------------------| | C-c C-e   | Select environment              | | C-c e     | Change environment type         | | C-c w     | Wrap selection in environment   | | C-c *     | Toggle starred variant          | | C-c %     | Jump to matching begin/end      | | C-c l     | Jump to label                   | | C-c C-l   | Add label to environment        |",
       "path": [
         "LaTeX Navigation"
@@ -66963,7 +66963,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 421,
+      "line": 426,
       "content": "| Key       | Action            | |-----------+-------------------| | Tab       | Toggle fold       | | Shift+Tab | Cycle global fold |",
       "path": [
         "LaTeX Navigation"
@@ -66989,7 +66989,7 @@
       "heading": "Compile and Preview",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 428,
+      "line": 433,
       "content": "| Key       | Action                      | |-----------+-----------------------------| | C-c C-c   | Compile document            | | C-c v     | View PDF (built-in panel)   | | C-c C-v   | View PDF (external viewer)  | | C-c C-a   | Compile and view PDF        | | C-c g     | SyncTeX forward search      | | C-c C-k   | Clean auxiliary files       | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
@@ -67029,7 +67029,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 441,
+      "line": 446,
       "content": "",
       "path": [],
       "commands": [],
@@ -67044,7 +67044,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 443,
+      "line": 448,
       "content": "| Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -67085,7 +67085,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 458,
+      "line": 463,
       "content": "| Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote subtree |",
       "path": [
         "Quick Reference Card"
@@ -67115,7 +67115,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 469,
+      "line": 474,
       "content": "- Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -67150,7 +67150,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 476,
+      "line": 481,
       "content": "- Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -68951,10 +68951,49 @@
       ]
     },
     {
-      "heading": "Speed Commands",
+      "heading": "Word Case & Navigation",
       "level": 1,
       "file": "25-commands.org",
       "line": 594,
+      "content": "| Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.capitalizeWord]]     | Capitalize Word and Move Next | M-c                | | [[cmd:scimax.lowercaseWord]]      | Lowercase Word and Move Next  | M-l                | | [[cmd:scimax.uppercaseWord]]      | Uppercase Word and Move Next  | M-u                | | [[cmd:scimax.beginningOfBuffer]]  | Beginni",
+      "path": [],
+      "commands": [
+        "scimax.capitalizeWord",
+        "scimax.lowercaseWord",
+        "scimax.uppercaseWord",
+        "scimax.beginningOfBuffer"
+      ],
+      "keybindings": [
+        "M-c",
+        "M-l",
+        "M-u"
+      ],
+      "keywords": [
+        "word",
+        "case",
+        "navigation",
+        "command",
+        "description",
+        "default",
+        "keybinding",
+        "--------------------------------------------------------------------------------------",
+        "cmd",
+        "capitalize",
+        "move",
+        "next",
+        "m-c",
+        "lowercase",
+        "m-l",
+        "uppercase",
+        "m-u",
+        "beginni"
+      ]
+    },
+    {
+      "heading": "Speed Commands",
+      "level": 1,
+      "file": "25-commands.org",
+      "line": 604,
       "content": "CLOSED: [2026-01-17 Sat 12:48] Speed commands are single-key commands available when cursor is at the beginning of a heading line (with scimax.speedCommandsEnabled).",
       "path": [],
       "commands": [
@@ -68980,7 +69019,7 @@
       "heading": "Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 599,
+      "line": 609,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                           | Description          | Speed Key | |--------------------------------------+----------------------+-----------| | [[cmd:scimax.speed.nextSibling]]     | Next Sibling Heading | f         | | [[cmd:scimax.speed.previousSibling]] | Previous Sibling     | b         | | [[cmd:scimax.org.nextHeading]]       | Next Heading         | n         | | [[cmd:scimax.org.previousHeading]]   | Previous Heading     | p         | | [[cmd:scima",
       "path": [
         "Speed Commands"
@@ -69015,7 +69054,7 @@
       "heading": "Visibility",
       "level": 2,
       "file": "25-commands.org",
-      "line": 614,
+      "line": 624,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                         | Description         | Speed Key | |------------------------------------+---------------------+-----------| | [[cmd:scimax.org.cycleGlobalFold]] | Cycle Global Fold   | c         | | [[cmd:scimax.speed.showChildren]]  | Show All Children   | C (S-c)   | | [[cmd:scimax.speed.overview]]      | Overview (Fold All) | o         |",
       "path": [
         "Speed Commands"
@@ -69051,7 +69090,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 623,
+      "line": 633,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description          | Speed Key | |---------------------------------------+----------------------+-----------| | [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   | | [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   | | [[cmd:scimax.heading.demoteSubtree]]  | Demote Subtree       | r         | | [[cmd:scimax.heading.promoteSubtree]] | Promote Subtree      | l         | | [[cmd",
       "path": [
         "Speed Commands"
@@ -69090,7 +69129,7 @@
       "heading": "TODO and Tags",
       "level": 2,
       "file": "25-commands.org",
-      "line": 638,
+      "line": 648,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                        | Description      | Speed Key | |-----------------------------------+------------------+-----------| | [[cmd:scimax.org.cycleTodo]]      | Cycle TODO State | t         | | [[cmd:scimax.speed.setTags]]      | Set Tags         | : (S-;)   | | [[cmd:scimax.speed.priorityA]]    | Set Priority A   | 1         | | [[cmd:scimax.speed.priorityB]]    | Set Priority B   | 2         | | [[cmd:scimax.speed.priorityC]]    | Set Priority C   ",
       "path": [
         "Speed Commands"
@@ -69126,7 +69165,7 @@
       "heading": "Scheduling and Timestamps",
       "level": 2,
       "file": "25-commands.org",
-      "line": 650,
+      "line": 660,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                          | Description        | Speed Key | |-------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.schedule]]       | Add/Edit SCHEDULED | s         | | [[cmd:scimax.speed.deadline]]       | Add/Edit DEADLINE  | d         | | [[cmd:scimax.org.insertTimestamp]]  | Insert Timestamp   | .         | | [[cmd:scimax.org.shiftTimestampUp]] | Shift Timestamp Up | ,         |",
       "path": [
         "Speed Commands"
@@ -69163,7 +69202,7 @@
       "heading": "Properties and Clocking",
       "level": 2,
       "file": "25-commands.org",
-      "line": 660,
+      "line": 670,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                       | Description  | Speed Key | |----------------------------------+--------------+-----------| | [[cmd:scimax.speed.setProperty]] | Set Property | P (S-p)   | | [[cmd:scimax.speed.setEffort]]   | Set Effort   | e         | | [[cmd:scimax.speed.clockIn]]     | Clock In     | I (S-i)   | | [[cmd:scimax.speed.clockOut]]    | Clock Out    | O (S-o)   |",
       "path": [
         "Speed Commands"
@@ -69202,7 +69241,7 @@
       "heading": "Archiving",
       "level": 2,
       "file": "25-commands.org",
-      "line": 670,
+      "line": 680,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description        | Speed Key | |---------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.archiveSubtree]]   | Archive Subtree    | a         | | [[cmd:scimax.speed.toggleArchiveTag]] | Toggle Archive Tag | A (S-a)   | | [[cmd:scimax.speed.archiveToSibling]] | Archive to Sibling | $ (S-4)   |",
       "path": [
         "Speed Commands"
@@ -69238,7 +69277,7 @@
       "heading": "Narrowing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 679,
+      "line": 689,
       "content": "CLOSED: [2026-01-17 Sat 12:50] Note this is not the same as narrowing in Emacs which restricts the visible portion of the window. | Command ID                           | Description       | Speed Key | |--------------------------------------+-------------------+-----------| | [[cmd:scimax.speed.narrowToSubtree]] | Narrow to Subtree | N (S-n)   | | [[cmd:scimax.speed.widen]]           | Widen             | S (S-s)   |",
       "path": [
         "Speed Commands"
@@ -69275,7 +69314,7 @@
       "heading": "Help",
       "level": 2,
       "file": "25-commands.org",
-      "line": 689,
+      "line": 699,
       "content": "CLOSED: [2026-01-17 Sat 12:49] | Command ID                  | Description           | Speed Key | |-----------------------------+-----------------------+-----------| | [[cmd:scimax.speed.help]]   | Speed Commands Help   | ? (S-/)   | | [[cmd:scimax.speed.toggle]] | Toggle Speed Commands | C-c C-x s |",
       "path": [
         "Speed Commands"
@@ -69309,7 +69348,7 @@
       "heading": "LaTeX",
       "level": 1,
       "file": "25-commands.org",
-      "line": 697,
+      "line": 707,
       "content": "Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.",
       "path": [],
       "commands": [],
@@ -69330,7 +69369,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 701,
+      "line": 711,
       "content": "| Command ID                                 | Description              | Default Keybinding | |--------------------------------------------+--------------------------+--------------------| | [[cmd:scimax.latex.nextSection]]           | Next Section             | C-c C-n            | | [[cmd:scimax.latex.previousSection]]       | Previous Section         | C-c C-p            | | [[cmd:scimax.latex.parentSection]]         | Parent Section           | C-c C-u            | | [[cmd:scimax.latex.next",
       "path": [
         "LaTeX"
@@ -69368,7 +69407,7 @@
       "heading": "Environment Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 714,
+      "line": 724,
       "content": "| Command ID                                    | Description                 | Default Keybinding | |-----------------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.latex.nextEnvironment]]          | Next Environment            | -                  | | [[cmd:scimax.latex.previousEnvironment]]      | Previous Environment        | -                  | | [[cmd:scimax.latex.jumpToEnvironment]]        | Jump to Environment         | -               ",
       "path": [
         "LaTeX"
@@ -69397,7 +69436,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 724,
+      "line": 734,
       "content": "| Command ID                              | Description        | Default Keybinding | |-----------------------------------------+--------------------+--------------------| | [[cmd:scimax.latex.promoteSection]]     | Promote Section    | M-LEFT             | | [[cmd:scimax.latex.demoteSection]]      | Demote Section     | M-RIGHT            | | [[cmd:scimax.latex.promoteSubtree]]     | Promote Subtree    | M-S-LEFT           | | [[cmd:scimax.latex.demoteSubtree]]      | Demote Subtree     | M-S-R",
       "path": [
         "LaTeX"
@@ -69437,7 +69476,7 @@
       "heading": "Environment Manipulation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 742,
+      "line": 752,
       "content": "| Command ID                                  | Description                 | Default Keybinding | |---------------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.latex.selectEnvironment]]      | Select Environment          | C-c C-e            | | [[cmd:scimax.latex.selectEnvironmentContent]]| Select Environment Content  | -                  | | [[cmd:scimax.latex.changeEnvironment]]      | Change Environment          | C-c e              | | [[",
       "path": [
         "LaTeX"
@@ -69471,7 +69510,7 @@
       "heading": "Compilation and PDF Viewing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 757,
+      "line": 767,
       "content": "| Command ID                               | Description                        | Default Keybinding | |------------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.latex.compile]]             | Compile Document                   | C-c C-c            | | [[cmd:scimax.latex.viewPdf]]             | View PDF (External)                | C-c C-v            | | [[cmd:scimax.latex.viewPdfPanel]]        | View PDF (Built-in Panel)          | C-c v ",
       "path": [
         "LaTeX"
@@ -69510,7 +69549,7 @@
       "heading": "Error Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 774,
+      "line": 784,
       "content": "| Command ID                        | Description           | Default Keybinding | |-----------------------------------+-----------------------+--------------------| | [[cmd:scimax.latex.nextError]]    | Go to Next Error      | C-c `              | | [[cmd:scimax.latex.previousError]]| Go to Previous Error  | C-c S-`            | | [[cmd:scimax.latex.showErrors]]   | Show All Errors       | C-c !              |",
       "path": [
         "LaTeX"
@@ -69543,7 +69582,7 @@
       "heading": "Insertion Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 782,
+      "line": 792,
       "content": "| Command ID                        | Description      | Default Keybinding | |-----------------------------------+------------------+--------------------| | [[cmd:scimax.latex.insertFigure]] | Insert Figure    | -                  | | [[cmd:scimax.latex.insertTable]]  | Insert Table     | -                  | | [[cmd:scimax.latex.insertEquation]]| Insert Equation | -                  |",
       "path": [
         "LaTeX"
@@ -69573,7 +69612,7 @@
       "heading": "Utilities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 790,
+      "line": 800,
       "content": "| Command ID                                | Description                    | Default Keybinding | |-------------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.latex.format]]               | Format Document                | C-c C-q            | | [[cmd:scimax.latex.wordCount]]            | Word Count                     | -                  | | [[cmd:scimax.latex.addToDictionary]]      | Add Word to Dictionary         | -                  | ",
       "path": [
         "LaTeX"
@@ -69608,7 +69647,7 @@
       "heading": "Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 799,
+      "line": 809,
       "content": "Speed commands are available when cursor is at the beginning of a section line. | Command ID                          | Description               | Speed Key | |-------------------------------------+---------------------------+-----------| | [[cmd:scimax.latex.speedCommandHelp]]| Speed Command Help        | ?         | Section speed commands (at \\section, \\subsection, etc.): - n :: Next section - p :: Previous section - f :: Next sibling - b :: Previous sibling - u :: Parent section - j :: Jump ",
       "path": [
         "LaTeX"
@@ -69644,7 +69683,7 @@
       "heading": "Environment Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 824,
+      "line": 834,
       "content": "Environment speed commands available at \\begin{...} lines. | Command ID                             | Description                  | Speed Key | |----------------------------------------+------------------------------+-----------| | [[cmd:scimax.latex.envSpeedCommand]]   | Environment Speed Command    | -         | | [[cmd:scimax.latex.envSpeedCommandHelp]]| Environment Speed Help       | ?         | Environment speed command keys: - n :: Next environment - p :: Previous environment - j :: Jump ",
       "path": [
         "LaTeX"
@@ -69677,7 +69716,7 @@
       "heading": "LaTeX Cache Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 847,
+      "line": 857,
       "content": "| Command ID                     | Description                     | Default Keybinding | |--------------------------------+---------------------------------+--------------------| | [[cmd:scimax.clearLatexCache]] | Clear LaTeX Preview Cache       | -                  | | [[cmd:scimax.checkLatexTools]] | Check LaTeX Tools Availability  | -                  | | [[cmd:scimax.latexCacheStats]] | Show LaTeX Cache Statistics     | -                  |",
       "path": [
         "LaTeX"
@@ -69711,7 +69750,7 @@
       "heading": "Capture",
       "level": 1,
       "file": "25-commands.org",
-      "line": 855,
+      "line": 865,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                            | Description                 | Default Keybinding | |---------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.capture]]                | Capture                     | C-c c              | | [[cmd:scimax.captureByKey]]           | Capture by Key              | -                  | | [[cmd:scimax.capture.todo]]           | Quick Capture TODO          | C-c t              | | [[",
       "path": [],
       "commands": [
@@ -69744,7 +69783,7 @@
       "heading": "Image Overlays",
       "level": 1,
       "file": "25-commands.org",
-      "line": 868,
+      "line": 878,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                                     | Description                            | Default Keybinding | |------------------------------------------------+----------------------------------------+--------------------| | [[cmd:scimax.imageOverlays.toggle]]            | Toggle Image Overlays                  | -                  | | [[cmd:scimax.imageOverlays.toggleCurrentFile]] | Toggle Image Overlays for Current File | -                  | | [[cmd:scimax.im",
       "path": [],
       "commands": [
@@ -69774,7 +69813,7 @@
       "heading": "Jupyter",
       "level": 1,
       "file": "25-commands.org",
-      "line": 879,
+      "line": 889,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -69791,7 +69830,7 @@
       "heading": "Kernel Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 882,
+      "line": 892,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.jupyter.showKernels]]     | Show Available Jupyter Kernels | -                  | | [[cmd:scimax.jupyter.showRunning]]     | Show Running Kernels           | -                  | | [[cmd:scimax.jupyter.startKernel]]     | Start Jupyter Kernel           | -    ",
       "path": [
         "Jupyter"
@@ -69827,7 +69866,7 @@
       "heading": "Appendix: Keybinding Quick Reference",
       "level": 1,
       "file": "25-commands.org",
-      "line": 896,
+      "line": 906,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -69847,7 +69886,7 @@
       "heading": "Most Common Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 899,
+      "line": 909,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding   | Command                             | |--------------+-------------------------------------| | C-RET        | Execute code block / Insert heading | | C-c C-e      | Export dispatcher                   | | C-c C-j      | Jump to heading                     | | C-c C-t      | Cycle TODO state                    | | C-c C-l      | Insert link                         | | C-c C-o      | Open link                           | | C-c ]        | Insert citat",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -69889,7 +69928,7 @@
       "heading": "Export Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 921,
+      "line": 931,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding  | Export Target      | |-------------+--------------------| | C-c C-e h h | HTML               | | C-c C-e h o | HTML and open      | | C-c C-e l l | LaTeX              | | C-c C-e l p | PDF                | | C-c C-e l o | PDF and open       | | C-c C-e l v | LaTeX live preview | | C-c C-e m m | Markdown           |",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -69923,7 +69962,7 @@
       "heading": "Babel/Source Block Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 934,
+      "line": 944,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                 | |------------+------------------------| | C-RET      | Execute block          | | C-c C-c    | Execute block (in src) | | S-RET      | Execute and next       | | C-c C-v t  | Tangle                 | | C-c C-v p  | Execute to point       | | C-c C-v i  | Execute inline         | | C-c C-v q  | Queue block            | | C-DOWN     | Next source block      | | C-UP       | Previous source block  | | C-c C-n    | Insert block b",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -69964,7 +70003,7 @@
       "heading": "Project and Navigation Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 951,
+      "line": 961,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                    | |------------+---------------------------| | C-c p p    | Switch project            | | C-c p f    | Find file in project      | | C-c p s    | Search in project         | | C-c p d    | Open project root         | | C-c p a    | Add project               | | C-c s      | Fuzzy search (current)    | | C-c S-s    | Fuzzy search (open files) | | C-c M-s    | Fuzzy search (outline)    | | C-c j c    | Jump to character       ",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -70001,7 +70040,7 @@
       "heading": "Help System",
       "level": 1,
       "file": "25-commands.org",
-      "line": 968,
+      "line": 978,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: help-system :END: Commands for discovering keybindings and command functionality. | Command ID                           | Description            | Default Keybinding | |--------------------------------------+------------------------+--------------------| | [[cmd:scimax.help.describeCommand]]  | Describe Command       | C-h f              | | [[cmd:scimax.help.describeKey]]      | Describe Key           | C-h k              | | [[cmd:scimax",
       "path": [],
       "commands": [
@@ -70038,7 +70077,7 @@
       "heading": "scimax.help.describeCommand",
       "level": 2,
       "file": "25-commands.org",
-      "line": 984,
+      "line": 994,
       "content": "Shows the keybindings for a specific command. Useful for learning keyboard shortcuts.",
       "path": [
         "Help System"
@@ -70062,7 +70101,7 @@
       "heading": "scimax.help.describeKey",
       "level": 2,
       "file": "25-commands.org",
-      "line": 988,
+      "line": 998,
       "content": "Describes what a specific key combination does. Enter the key sequence to see its bound command.",
       "path": [
         "Help System"
@@ -70086,7 +70125,7 @@
       "heading": "scimax.help.listKeybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 992,
+      "line": 1002,
       "content": "Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.",
       "path": [
         "Help System"
@@ -70112,7 +70151,7 @@
       "heading": "scimax.help.describeVariable",
       "level": 2,
       "file": "25-commands.org",
-      "line": 996,
+      "line": 1006,
       "content": "Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Select a setting to open VS Code Settings.",
       "path": [
         "Help System"
@@ -70142,7 +70181,7 @@
       "heading": "scimax.help.apropos",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1000,
+      "line": 1010,
       "content": "Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.",
       "path": [
         "Help System"
@@ -70178,7 +70217,7 @@
       "heading": "Linting",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1004,
+      "line": 1014,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: linting :END: Commands for checking org-mode document quality. | Command ID                     | Description        | Default Keybinding | |--------------------------------+--------------------+--------------------| | [[cmd:scimax.org.lint]]        | Run Linter         | -                  | | [[cmd:scimax.org.lintCheckers]]| Show Lint Checkers | -                  |",
       "path": [],
       "commands": [
@@ -70213,7 +70252,7 @@
       "heading": "scimax.org.lint",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1017,
+      "line": 1027,
       "content": "Runs the org-mode linter on the current document. The linter checks for: - Duplicate IDs - Broken internal links - Missing TODO keywords in sequences - Unbalanced brackets and quotes - Invalid timestamps - Missing required properties - And more Results appear in the Problems panel.",
       "path": [
         "Linting"
@@ -70249,7 +70288,7 @@
       "heading": "scimax.org.lintCheckers",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1030,
+      "line": 1040,
       "content": "Shows available lint checkers and allows enabling/disabling specific checks.",
       "path": [
         "Linting"
@@ -70273,7 +70312,7 @@
       "heading": "Mark Ring",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1034,
+      "line": 1044,
       "content": ":PROPERTIES: :CUSTOM_ID: mark-ring :END: Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there's a global mark ring that tracks positions across all documents. | Command ID                       | Description               | Default Keybinding | |----------------------------------+---------------------------+--------------------| | [[cmd:scimax.mark.set]]          | Set Mark (for selection)  | C",
       "path": [],
       "commands": [
@@ -70307,7 +70346,7 @@
       "heading": "Mark Ring Concepts",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1054,
+      "line": 1064,
       "content": "- **Mark**: A saved cursor position that you can return to - **Point**: The current cursor position - **Mark Ring**: A stack of marks (per-document), most recent first (default size: 16) - **Global Mark Ring**: A cross-file stack of marks for navigating between documents - **Selection Mode**: When mark is set, cursor movement extends the selection from the mark",
       "path": [
         "Mark Ring"
@@ -70341,7 +70380,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1062,
+      "line": 1072,
       "content": "",
       "path": [
         "Mark Ring"
@@ -70357,7 +70396,7 @@
       "heading": "Setting a Mark for Selection",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1064,
+      "line": 1074,
       "content": "1. Press =C-SPC= to set mark at current position (line flashes briefly as feedback) 2. Move cursor to end of desired selection - the region automatically expands 3. Press =C-SPC= again to deactivate selection mode (toggle behavior) 4. Press =C-g= to cancel selection and collapse to cursor position",
       "path": [
         "Mark Ring",
@@ -70395,7 +70434,7 @@
       "heading": "Returning to Previous Positions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1070,
+      "line": 1080,
       "content": "1. Press =C-SPC C-SPC= to push mark without activating selection mode 2. Navigate elsewhere in the file 3. Press =C-u C-SPC= to pop the most recent mark and jump to it 4. Current position is saved before jumping, so you can return with another pop",
       "path": [
         "Mark Ring",
@@ -70433,7 +70472,7 @@
       "heading": "Cross-file Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1076,
+      "line": 1086,
       "content": "1. Marks are automatically pushed to the global ring when set 2. Press =C-x C-SPC= to pop from global mark ring and jump (can cross files) 3. Use =C-x C-x= to exchange point and mark (swap current position with last mark)",
       "path": [
         "Mark Ring",
@@ -70471,7 +70510,7 @@
       "heading": "Viewing the Mark Ring",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1081,
+      "line": 1091,
       "content": "1. Run =scimax.mark.show= from command palette 2. Quick pick shows local marks and global marks with line previews 3. Select an entry to jump to that position 4. Timestamps show how long ago each mark was set",
       "path": [
         "Mark Ring",
@@ -70508,7 +70547,7 @@
       "heading": "Publishing",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1087,
+      "line": 1097,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: publishing :END: Commands for publishing org files to HTML, creating static sites similar to Emacs org-publish. | Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.publish.init]]       | Initialize Publishing Project | -                  | | [[cmd:scimax.publish.project]]    | Publish Project      ",
       "path": [],
       "commands": [
@@ -70543,7 +70582,7 @@
       "heading": "Setting Up a Publishing Project",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1104,
+      "line": 1114,
       "content": "1. Run =scimax.publish.init= to create a publishing configuration 2. Configure the project in the generated =.org-publish.json= file 3. Use =scimax.publish.project= to publish the configured project",
       "path": [
         "Publishing"
@@ -70571,7 +70610,7 @@
       "heading": "Publishing Configuration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1110,
+      "line": 1120,
       "content": "The =.org-publish.json= file configures: - Source directory for org files - Output directory for HTML - Include/exclude patterns - HTML template settings - Asset handling (CSS, images)",
       "path": [
         "Publishing"
@@ -70602,7 +70641,7 @@
       "heading": "Query Replace",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1119,
+      "line": 1129,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: query-replace :END: Interactive search and replace. | Command ID                  | Description   | Default Keybinding | |-----------------------------+---------------+--------------------| | [[cmd:scimax.queryReplace]] | Query Replace | M-%                | Provides Emacs-style interactive query-replace with confirmation for each replacement.",
       "path": [],
       "commands": [
@@ -70636,7 +70675,7 @@
       "heading": "Index",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1134,
+      "line": 1144,
       "content": "CLOSED: [2026-01-17 Sat 12:51] This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions. For configuration options, see the VS Code settings under scimax.*. For more information about the Scimax VS Code extension, visit the project repository.",
       "path": [],
       "commands": [],
@@ -70668,7 +70707,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1143,
+      "line": 1153,
       "content": "- Previous: [[file:24-keybindings.org][Keybindings]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:26-configuration.org][Configuration]]",
       "path": [],
       "commands": [],

@@ -504,6 +504,147 @@ const MATH_SYMBOLS: { [key: string]: { unicode: string; description: string } } 
     'ddots': { unicode: '\u22F1', description: 'Diagonal dots' },
 };
 
+// Element data for chemical formula tooltips
+const ELEMENTS: { [symbol: string]: { name: string; number: number; mass: number } } = {
+    'H': { name: 'Hydrogen', number: 1, mass: 1.008 },
+    'He': { name: 'Helium', number: 2, mass: 4.003 },
+    'Li': { name: 'Lithium', number: 3, mass: 6.941 },
+    'Be': { name: 'Beryllium', number: 4, mass: 9.012 },
+    'B': { name: 'Boron', number: 5, mass: 10.81 },
+    'C': { name: 'Carbon', number: 6, mass: 12.01 },
+    'N': { name: 'Nitrogen', number: 7, mass: 14.01 },
+    'O': { name: 'Oxygen', number: 8, mass: 16.00 },
+    'F': { name: 'Fluorine', number: 9, mass: 19.00 },
+    'Ne': { name: 'Neon', number: 10, mass: 20.18 },
+    'Na': { name: 'Sodium', number: 11, mass: 22.99 },
+    'Mg': { name: 'Magnesium', number: 12, mass: 24.31 },
+    'Al': { name: 'Aluminum', number: 13, mass: 26.98 },
+    'Si': { name: 'Silicon', number: 14, mass: 28.09 },
+    'P': { name: 'Phosphorus', number: 15, mass: 30.97 },
+    'S': { name: 'Sulfur', number: 16, mass: 32.07 },
+    'Cl': { name: 'Chlorine', number: 17, mass: 35.45 },
+    'Ar': { name: 'Argon', number: 18, mass: 39.95 },
+    'K': { name: 'Potassium', number: 19, mass: 39.10 },
+    'Ca': { name: 'Calcium', number: 20, mass: 40.08 },
+    'Sc': { name: 'Scandium', number: 21, mass: 44.96 },
+    'Ti': { name: 'Titanium', number: 22, mass: 47.87 },
+    'V': { name: 'Vanadium', number: 23, mass: 50.94 },
+    'Cr': { name: 'Chromium', number: 24, mass: 52.00 },
+    'Mn': { name: 'Manganese', number: 25, mass: 54.94 },
+    'Fe': { name: 'Iron', number: 26, mass: 55.85 },
+    'Co': { name: 'Cobalt', number: 27, mass: 58.93 },
+    'Ni': { name: 'Nickel', number: 28, mass: 58.69 },
+    'Cu': { name: 'Copper', number: 29, mass: 63.55 },
+    'Zn': { name: 'Zinc', number: 30, mass: 65.38 },
+    'Ga': { name: 'Gallium', number: 31, mass: 69.72 },
+    'Ge': { name: 'Germanium', number: 32, mass: 72.63 },
+    'As': { name: 'Arsenic', number: 33, mass: 74.92 },
+    'Se': { name: 'Selenium', number: 34, mass: 78.97 },
+    'Br': { name: 'Bromine', number: 35, mass: 79.90 },
+    'Kr': { name: 'Krypton', number: 36, mass: 83.80 },
+    'Rb': { name: 'Rubidium', number: 37, mass: 85.47 },
+    'Sr': { name: 'Strontium', number: 38, mass: 87.62 },
+    'Y': { name: 'Yttrium', number: 39, mass: 88.91 },
+    'Zr': { name: 'Zirconium', number: 40, mass: 91.22 },
+    'Nb': { name: 'Niobium', number: 41, mass: 92.91 },
+    'Mo': { name: 'Molybdenum', number: 42, mass: 95.95 },
+    'Tc': { name: 'Technetium', number: 43, mass: 98.00 },
+    'Ru': { name: 'Ruthenium', number: 44, mass: 101.07 },
+    'Rh': { name: 'Rhodium', number: 45, mass: 102.91 },
+    'Pd': { name: 'Palladium', number: 46, mass: 106.42 },
+    'Ag': { name: 'Silver', number: 47, mass: 107.87 },
+    'Cd': { name: 'Cadmium', number: 48, mass: 112.41 },
+    'In': { name: 'Indium', number: 49, mass: 114.82 },
+    'Sn': { name: 'Tin', number: 50, mass: 118.71 },
+    'Sb': { name: 'Antimony', number: 51, mass: 121.76 },
+    'Te': { name: 'Tellurium', number: 52, mass: 127.60 },
+    'I': { name: 'Iodine', number: 53, mass: 126.90 },
+    'Xe': { name: 'Xenon', number: 54, mass: 131.29 },
+    'Cs': { name: 'Cesium', number: 55, mass: 132.91 },
+    'Ba': { name: 'Barium', number: 56, mass: 137.33 },
+    'La': { name: 'Lanthanum', number: 57, mass: 138.91 },
+    'Ce': { name: 'Cerium', number: 58, mass: 140.12 },
+    'Pr': { name: 'Praseodymium', number: 59, mass: 140.91 },
+    'Nd': { name: 'Neodymium', number: 60, mass: 144.24 },
+    'Pm': { name: 'Promethium', number: 61, mass: 145.00 },
+    'Sm': { name: 'Samarium', number: 62, mass: 150.36 },
+    'Eu': { name: 'Europium', number: 63, mass: 151.96 },
+    'Gd': { name: 'Gadolinium', number: 64, mass: 157.25 },
+    'Tb': { name: 'Terbium', number: 65, mass: 158.93 },
+    'Dy': { name: 'Dysprosium', number: 66, mass: 162.50 },
+    'Ho': { name: 'Holmium', number: 67, mass: 164.93 },
+    'Er': { name: 'Erbium', number: 68, mass: 167.26 },
+    'Tm': { name: 'Thulium', number: 69, mass: 168.93 },
+    'Yb': { name: 'Ytterbium', number: 70, mass: 173.05 },
+    'Lu': { name: 'Lutetium', number: 71, mass: 174.97 },
+    'Hf': { name: 'Hafnium', number: 72, mass: 178.49 },
+    'Ta': { name: 'Tantalum', number: 73, mass: 180.95 },
+    'W': { name: 'Tungsten', number: 74, mass: 183.84 },
+    'Re': { name: 'Rhenium', number: 75, mass: 186.21 },
+    'Os': { name: 'Osmium', number: 76, mass: 190.23 },
+    'Ir': { name: 'Iridium', number: 77, mass: 192.22 },
+    'Pt': { name: 'Platinum', number: 78, mass: 195.08 },
+    'Au': { name: 'Gold', number: 79, mass: 196.97 },
+    'Hg': { name: 'Mercury', number: 80, mass: 200.59 },
+    'Tl': { name: 'Thallium', number: 81, mass: 204.38 },
+    'Pb': { name: 'Lead', number: 82, mass: 207.2 },
+    'Bi': { name: 'Bismuth', number: 83, mass: 208.98 },
+    'Po': { name: 'Polonium', number: 84, mass: 209.00 },
+    'At': { name: 'Astatine', number: 85, mass: 210.00 },
+    'Rn': { name: 'Radon', number: 86, mass: 222.00 },
+    'Fr': { name: 'Francium', number: 87, mass: 223.00 },
+    'Ra': { name: 'Radium', number: 88, mass: 226.00 },
+    'Ac': { name: 'Actinium', number: 89, mass: 227.00 },
+    'Th': { name: 'Thorium', number: 90, mass: 232.04 },
+    'Pa': { name: 'Protactinium', number: 91, mass: 231.04 },
+    'U': { name: 'Uranium', number: 92, mass: 238.03 },
+    'Np': { name: 'Neptunium', number: 93, mass: 237.00 },
+    'Pu': { name: 'Plutonium', number: 94, mass: 244.00 },
+    'Am': { name: 'Americium', number: 95, mass: 243.00 },
+    'Cm': { name: 'Curium', number: 96, mass: 247.00 },
+    'Bk': { name: 'Berkelium', number: 97, mass: 247.00 },
+    'Cf': { name: 'Californium', number: 98, mass: 251.00 },
+    'Es': { name: 'Einsteinium', number: 99, mass: 252.00 },
+    'Fm': { name: 'Fermium', number: 100, mass: 257.00 },
+    'Md': { name: 'Mendelevium', number: 101, mass: 258.00 },
+    'No': { name: 'Nobelium', number: 102, mass: 259.00 },
+    'Lr': { name: 'Lawrencium', number: 103, mass: 262.00 },
+};
+
+/**
+ * Parse a chemical formula from mhchem \ce{} notation
+ * Returns array of { symbol, count } for each element
+ * Handles formats like: W30Ta60Nb10, H2O, Fe2O3, CH3COOH
+ */
+function parseChemicalFormula(formula: string): Array<{ symbol: string; count: number }> {
+    const elements: Array<{ symbol: string; count: number }> = [];
+
+    // Remove mhchem syntax elements that aren't part of the formula
+    // Keep only element symbols and numbers
+    let cleaned = formula
+        .replace(/\^{[^}]*}/g, '')  // Remove superscripts like ^{2+}
+        .replace(/_{[^}]*}/g, '')    // Remove subscripts in braces
+        .replace(/[\s\-\+\=\>\<\(\)\[\]]/g, '')  // Remove operators and brackets
+        .replace(/\\[a-zA-Z]+/g, ''); // Remove LaTeX commands
+
+    // Match element symbols (1-2 letters, capital followed by optional lowercase) followed by optional number
+    const pattern = /([A-Z][a-z]?)(\d*\.?\d*)/g;
+    let match;
+
+    while ((match = pattern.exec(cleaned)) !== null) {
+        const symbol = match[1];
+        const countStr = match[2];
+
+        // Skip if not a known element
+        if (!ELEMENTS[symbol]) continue;
+
+        const count = countStr ? parseFloat(countStr) : 1;
+        elements.push({ symbol, count });
+    }
+
+    return elements;
+}
+
 export class LaTeXHoverProvider implements vscode.HoverProvider {
     private extensionContext: vscode.ExtensionContext | undefined;
 
@@ -530,6 +671,10 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
         // Check for figure/image hover (async for PDF/EPS conversion)
         const figureHover = await this.hoverForFigure(document, position, line);
         if (figureHover) return figureHover;
+
+        // Check for chemical formula hover (\ce{...})
+        const chemHover = this.hoverForChemicalFormula(document, position, line);
+        if (chemHover) return chemHover;
 
         if (!wordRange) return null;
         const word = document.getText(wordRange);
@@ -1130,6 +1275,99 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
             md.appendMarkdown(`Unicode: ${symbol.unicode} (U+${symbol.unicode.charCodeAt(0).toString(16).toUpperCase()})\n\n`);
             md.appendMarkdown(symbol.description);
             return new vscode.Hover(md);
+        }
+
+        return null;
+    }
+
+    /**
+     * Hover for \ce{...} - show chemical formula information (mhchem package)
+     * Parses the formula and shows element details, composition, and molecular weight
+     */
+    private hoverForChemicalFormula(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        line: string
+    ): vscode.Hover | null {
+        // Find \ce{...} at position
+        const cePattern = /\\ce\{([^}]+)\}/g;
+        let match;
+
+        while ((match = cePattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = startCol + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                const formula = match[1];
+                const elements = parseChemicalFormula(formula);
+
+                if (elements.length === 0) {
+                    return null;
+                }
+
+                const md = new vscode.MarkdownString();
+                md.isTrusted = true;
+
+                md.appendMarkdown(`**Chemical Formula:** \`${formula}\`\n\n`);
+
+                // Calculate total for percentage (for alloy-style notation like W30Ta60Nb10)
+                const totalCount = elements.reduce((sum, e) => sum + e.count, 0);
+                const isPercentageNotation = totalCount === 100 ||
+                    (totalCount > 1 && elements.every(e => e.count >= 1 && Number.isInteger(e.count)));
+
+                // Element details table
+                md.appendMarkdown('| Element | Symbol | Z | Mass (u) | Amount |\n');
+                md.appendMarkdown('|---------|--------|---|----------|--------|\n');
+
+                let totalMass = 0;
+                for (const { symbol, count } of elements) {
+                    const el = ELEMENTS[symbol];
+                    if (el) {
+                        const contribution = el.mass * count;
+                        totalMass += contribution;
+
+                        let amountStr: string;
+                        if (isPercentageNotation && totalCount === 100) {
+                            amountStr = `${count}%`;
+                        } else if (count === 1) {
+                            amountStr = '1';
+                        } else if (Number.isInteger(count)) {
+                            amountStr = count.toString();
+                        } else {
+                            amountStr = count.toFixed(2);
+                        }
+
+                        md.appendMarkdown(`| ${el.name} | ${symbol} | ${el.number} | ${el.mass.toFixed(2)} | ${amountStr} |\n`);
+                    }
+                }
+
+                md.appendMarkdown('\n');
+
+                // Show molecular/formula weight for molecular formulas
+                if (!isPercentageNotation || totalCount !== 100) {
+                    md.appendMarkdown(`**Formula Weight:** ${totalMass.toFixed(2)} g/mol\n\n`);
+                }
+
+                // For alloy notation, show weighted average atomic mass
+                if (isPercentageNotation && totalCount === 100) {
+                    const avgMass = elements.reduce((sum, { symbol, count }) => {
+                        const el = ELEMENTS[symbol];
+                        return sum + (el ? el.mass * count / 100 : 0);
+                    }, 0);
+                    md.appendMarkdown(`**Average Atomic Mass:** ${avgMass.toFixed(2)} g/mol\n\n`);
+                    md.appendMarkdown(`*Composition notation (atomic %)*\n`);
+                }
+
+                // Add note about mhchem package
+                md.appendMarkdown('\n---\n*Requires `mhchem` package*');
+
+                const hoverRange = new vscode.Range(
+                    position.line, startCol,
+                    position.line, endCol
+                );
+
+                return new vscode.Hover(md, hoverRange);
+            }
         }
 
         return null;
