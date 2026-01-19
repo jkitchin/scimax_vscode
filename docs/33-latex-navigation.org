@@ -77,7 +77,7 @@ Navigate between sections in your LaTeX document using these commands:
 | scimax.latex.previousSiblingSection   | C-c C-b       | Jump to previous sibling section   |
 | scimax.latex.firstSection             | -             | Jump to first section in document  |
 | scimax.latex.lastSection              | -             | Jump to last section in document   |
-| scimax.latex.jumpToSection            | C-c j         | Quick pick to jump to any section  |
+| scimax.latex.jumpToSection            | C-c C-j / C-c j | Quick pick to jump to any section  |
 
 ** ⚠️ Next/Previous Section
 
@@ -125,7 +125,7 @@ Jump to the containing (parent) section:
 
 ** ⚠️ Jump to Section
 
-The =jumpToSection= command (C-c j) opens a quick pick showing all sections with:
+The =jumpToSection= command (C-c C-j or C-c j) opens a quick pick showing all sections with:
 
 - Hierarchical indentation showing structure
 - Section type (=\section=, =\subsection=, etc.)
