@@ -2540,8 +2540,20 @@
         "title": "Scimax BibTeX: Delete Entry"
       },
       {
+        "command": "scimax.bibtex.generateKey",
+        "title": "Scimax BibTeX: Generate Citation Key"
+      },
+      {
         "command": "scimax.bibtex.help",
         "title": "Scimax BibTeX: Show Speed Commands Help"
+      },
+      {
+        "command": "scimax.bibtex.validateFile",
+        "title": "Scimax BibTeX: Validate File"
+      },
+      {
+        "command": "scimax.bibtex.showStatistics",
+        "title": "Scimax BibTeX: Show File Statistics"
       }
     ],
     "keybindings": [
@@ -4044,6 +4056,21 @@
       {
         "command": "scimax.bibtex.killEntry",
         "key": "k",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.generateKey",
+        "key": "shift+k",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.validateFile",
+        "key": "v",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.showStatistics",
+        "key": "i",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {

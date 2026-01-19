@@ -544,6 +544,7 @@ BibTeX speed commands are active when:
 | y   | Actions     | Copy citation key        |
 | b   | Actions     | Copy BibTeX entry        |
 | k   | Actions     | Kill (delete) entry      |
+| K   | Actions     | Generate citation key    |
 | ?   | Help        | Show speed commands help |
 
 ** ⚠️ Navigation Commands
@@ -652,6 +653,32 @@ Copies the entire BibTeX entry to the clipboard.
 *** ⚠️ Kill Entry (k)
 
 Deletes the entire entry (with confirmation). The deleted entry is copied to the clipboard for easy recovery.
+
+*** ⚠️ Generate Citation Key (K)
+
+Generates a standardized citation key from the entry's author and year fields. Offers multiple format options:
+
+- =lastname-year= (e.g., =smith-2020=)
+- =lastname-titleword-year= (e.g., =smith-machine-2020=)
+- =lastname-titlewords-year= (e.g., =smith-machine-learning-2020=)
+
+Features:
+- Extracts first author's last name from various formats ("John Smith", "Smith, John")
+- Removes stop words from title (the, a, an, using, novel, etc.)
+- *Checks for uniqueness* against all other entries in the file
+- Adds suffix (a, b, c) if key already exists
+- Shows quick pick menu to choose format
+
+Example:
+#+BEGIN_EXAMPLE
+Before: @article{ABC123,
+          author = {John Smith and Jane Doe},
+          title = {Machine Learning for Science},
+          year = {2020}
+        }
+
+After:  @article{smith-2020,  (or smith-machine-2020, smith-machine-learning-2020)
+#+END_EXAMPLE
 
 ** ⚠️ Help Command
 

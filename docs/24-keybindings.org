@@ -391,12 +391,13 @@ Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@art
 
 *** ⚠️ Actions
 
-| Key | Action            |
-|-----+-------------------|
-| y   | Copy citation key |
-| b   | Copy BibTeX entry |
-| k   | Delete entry      |
-| ?   | Show help         |
+| Key | Action               |
+|-----+----------------------|
+| y   | Copy citation key    |
+| b   | Copy BibTeX entry    |
+| k   | Delete entry         |
+| K   | Generate citation key|
+| ?   | Show help            |
 
 * Toggle Speed Commands
 
