@@ -256,6 +256,48 @@ Enable automatic PDF building in settings:
 }
 #+END_SRC
 
+*** ⚠️ PDF Viewer Panel with Bidirectional Sync
+
+For an Overleaf-like editing experience, use the built-in PDF viewer panel:
+
+*Command:* =scimax.org.viewPdfPanel= - "Scimax Org: View PDF in Panel (with sync)"
+
+This exports your org file to PDF and opens it in a VS Code panel with full
+bidirectional synchronization support.
+
+**** Forward Sync (Org → PDF)
+
+Double-click a word in your org source to jump to that location in the PDF.
+The word is highlighted with a yellow flash for easy identification.
+
+*Command:* =scimax.org.jumpToPdf= - "Scimax Org: Jump to PDF (forward sync)"
+
+The forward sync:
+1. Maps your org line to the generated LaTeX line
+2. Uses SyncTeX to find the PDF position
+3. Searches the PDF text layer to find the exact word
+4. Highlights the word with a flash animation
+
+**** Inverse Sync (PDF → Org)
+
+Double-click a word in the PDF viewer to jump back to the corresponding
+line in your org source file.
+
+The inverse sync:
+1. Gets PDF coordinates from your click
+2. Uses SyncTeX to find the LaTeX line
+3. Maps the LaTeX line back to your org source line
+4. Opens the org file and highlights the text
+
+**** How It Works
+
+The system maintains a mapping between org source lines and generated LaTeX
+lines. When you export to PDF, this mapping is stored so that both forward
+and inverse sync can translate between org positions and PDF positions.
+
+Note: The sync is approximate due to the org → LaTeX transformation.
+It works best with paragraph-level precision.
+
 ** ✅ Markdown Export
 CLOSED: [2026-01-17 Sat 09:18]
 

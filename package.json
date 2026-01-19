@@ -842,6 +842,14 @@
         "title": "Scimax: Export to PDF"
       },
       {
+        "command": "scimax.org.viewPdfPanel",
+        "title": "Scimax Org: View PDF in Panel (with sync)"
+      },
+      {
+        "command": "scimax.org.jumpToPdf",
+        "title": "Scimax Org: Jump to PDF (forward sync)"
+      },
+      {
         "command": "scimax.org.exportDispatcher",
         "title": "Scimax: Export Dispatcher (flat menu)"
       },

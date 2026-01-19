@@ -22,6 +22,7 @@ vi.mock('vscode', () => ({
         showInformationMessage: vi.fn(),
         showQuickPick: vi.fn(),
         showSaveDialog: vi.fn(),
+        showTextDocument: vi.fn().mockResolvedValue(undefined),
         withProgress: vi.fn().mockImplementation(async (_options, task) => {
             const progress = { report: vi.fn() };
             const token = {
@@ -489,7 +490,7 @@ describe('insertCitation command behavior', () => {
         );
     });
 
-    it('should prompt user when references.bib exists but not linked', async () => {
+    it('should use references.bib by default when no bibliography link in document', async () => {
         const bibtex = '@article{smith2024,\n  author = {Smith},\n  title = {Test}\n}';
 
         mockEditor.document.getText.mockReturnValue('* Content without bib link');
@@ -501,27 +502,16 @@ describe('insertCitation command behavior', () => {
         });
         (exportBibTeX as ReturnType<typeof vi.fn>).mockResolvedValue(bibtex);
 
-        // First access check (for references.bib) succeeds
-        (fsPromises.access as ReturnType<typeof vi.fn>).mockResolvedValueOnce(undefined);
-
-        // User chooses to use existing file
-        (vscode.window.showQuickPick as ReturnType<typeof vi.fn>).mockResolvedValue({
-            label: 'Yes, use references.bib',
-            value: 'use'
-        });
-
         (fsPromises.readFile as ReturnType<typeof vi.fn>).mockResolvedValue('');
         (fsPromises.writeFile as ReturnType<typeof vi.fn>).mockResolvedValue(undefined);
 
         await commandHandler();
 
-        expect(vscode.window.showQuickPick).toHaveBeenCalledWith(
-            expect.arrayContaining([
-                expect.objectContaining({ value: 'use' }),
-                expect.objectContaining({ value: 'choose' }),
-                expect.objectContaining({ value: 'cancel' })
-            ]),
-            expect.any(Object)
+        // Should write to references.bib in the document directory (use cross-platform path)
+        expect(fsPromises.writeFile).toHaveBeenCalledWith(
+            path.join(mockDocDir, 'references.bib'),
+            expect.any(String),
+            'utf8'
         );
     });
 

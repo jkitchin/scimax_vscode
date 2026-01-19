@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-19T19:37:57.784Z",
-  "count": 2882,
+  "buildDate": "2026-01-19T20:00:56.936Z",
+  "count": 2886,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -24361,10 +24361,156 @@
       ]
     },
     {
+      "heading": "PDF Viewer Panel with Bidirectional Sync",
+      "level": 3,
+      "file": "10-export.org",
+      "line": 259,
+      "content": "For an Overleaf-like editing experience, use the built-in PDF viewer panel: *Command:* =scimax.org.viewPdfPanel= - \"Scimax Org: View PDF in Panel (with sync)\" This exports your org file to PDF and opens it in a VS Code panel with full bidirectional synchronization support.",
+      "path": [
+        "Export Formats",
+        "PDF Export"
+      ],
+      "commands": [
+        "scimax.org.viewPdfPanel"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "pdf",
+        "viewer",
+        "panel",
+        "bidirectional",
+        "sync",
+        "overleaf-like",
+        "editing",
+        "experience",
+        "built-in",
+        "command",
+        "scimax",
+        "org",
+        "view",
+        "exports",
+        "opens",
+        "code",
+        "full",
+        "synchronization",
+        "support"
+      ]
+    },
+    {
+      "heading": "Forward Sync (Org → PDF)",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 268,
+      "content": "Double-click a word in your org source to jump to that location in the PDF. The word is highlighted with a yellow flash for easy identification. *Command:* =scimax.org.jumpToPdf= - \"Scimax Org: Jump to PDF (forward sync)\" The forward sync: 1. Maps your org line to the generated LaTeX line 2. Uses SyncTeX to find the PDF position 3. Searches the PDF text layer to find the exact word 4. Highlights the word with a flash animation",
+      "path": [
+        "Export Formats",
+        "PDF Export",
+        "PDF Viewer Panel with Bidirectional Sync"
+      ],
+      "commands": [
+        "scimax.org.jumpToPdf"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "forward",
+        "sync",
+        "org",
+        "pdf",
+        "double-click",
+        "word",
+        "source",
+        "jump",
+        "location",
+        "highlighted",
+        "yellow",
+        "flash",
+        "easy",
+        "identification",
+        "command",
+        "scimax",
+        "maps",
+        "line",
+        "generated",
+        "latex"
+      ]
+    },
+    {
+      "heading": "Inverse Sync (PDF → Org)",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 281,
+      "content": "Double-click a word in the PDF viewer to jump back to the corresponding line in your org source file. The inverse sync: 1. Gets PDF coordinates from your click 2. Uses SyncTeX to find the LaTeX line 3. Maps the LaTeX line back to your org source line 4. Opens the org file and highlights the text",
+      "path": [
+        "Export Formats",
+        "PDF Export",
+        "PDF Viewer Panel with Bidirectional Sync"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "inverse",
+        "sync",
+        "pdf",
+        "org",
+        "double-click",
+        "word",
+        "viewer",
+        "jump",
+        "back",
+        "corresponding",
+        "line",
+        "source",
+        "gets",
+        "coordinates",
+        "click",
+        "uses",
+        "synctex",
+        "find",
+        "latex",
+        "maps"
+      ]
+    },
+    {
+      "heading": "How It Works",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 292,
+      "content": "The system maintains a mapping between org source lines and generated LaTeX lines. When you export to PDF, this mapping is stored so that both forward and inverse sync can translate between org positions and PDF positions. Note: The sync is approximate due to the org → LaTeX transformation. It works best with paragraph-level precision.",
+      "path": [
+        "Export Formats",
+        "PDF Export",
+        "PDF Viewer Panel with Bidirectional Sync"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "works",
+        "system",
+        "maintains",
+        "mapping",
+        "between",
+        "org",
+        "source",
+        "lines",
+        "generated",
+        "latex",
+        "export",
+        "pdf",
+        "stored",
+        "forward",
+        "inverse",
+        "sync",
+        "translate",
+        "positions",
+        "note",
+        "approximate"
+      ]
+    },
+    {
       "heading": "Markdown Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 259,
+      "line": 301,
       "content": "CLOSED: [2026-01-17 Sat 09:18] Markdown export produces GitHub-flavored Markdown (GFM) suitable for GitHub, GitLab, and other platforms.",
       "path": [
         "Export Formats"
@@ -24391,7 +24537,7 @@
       "heading": "Features",
       "level": 3,
       "file": "10-export.org",
-      "line": 264,
+      "line": 306,
       "content": "CLOSED: [2026-01-17 Sat 09:18] - Headings (`# ## ###') - Emphasis (`*bold*', `_italic_', `~`strikethrough'~') - Lists (ordered and unordered) - Code blocks with syntax highlighting - Tables (GFM format) - Links and images - Blockquotes",
       "path": [
         "Export Formats",
@@ -24426,7 +24572,7 @@
       "heading": "Example Conversion",
       "level": 3,
       "file": "10-export.org",
-      "line": 274,
+      "line": 316,
       "content": "CLOSED: [2026-01-17 Sat 09:18] *Org input:* #+BEGIN_SRC org ,* Project Overview This is a *bold* statement and an /italic/ one. ,** Features - Fast rendering - Simple syntax - Wide support ,#+BEGIN_SRC python print(\"Hello, world!\") ,#+END_SRC #+END_SRC *Markdown output:* #+BEGIN_SRC markdown # Project Overview This is **bold** statement and an *italic* one. ## Features - Fast rendering - Simple syntax - Wide support ```python print(\"Hello, world!\") ``` #+END_SRC",
       "path": [
         "Export Formats",
@@ -24461,7 +24607,7 @@
       "heading": "Export Keybindings",
       "level": 1,
       "file": "10-export.org",
-      "line": 307,
+      "line": 349,
       "content": "",
       "path": [],
       "commands": [],
@@ -24475,7 +24621,7 @@
       "heading": "Primary Keybindings",
       "level": 2,
       "file": "10-export.org",
-      "line": 309,
+      "line": 351,
       "content": "| Keybinding  | Command              | Description                     | |-------------+----------------------+---------------------------------| | C-c C-e     | Export dispatcher    | Open export menu                | | C-c C-e h h | HTML export          | Export to HTML file             | | C-c C-e h o | HTML export and open | Export HTML and open in browser | | C-c C-e l l | LaTeX export         | Export to .tex file             | | C-c C-e l p | PDF export           | Export to PDF via LaTeX",
       "path": [
         "Export Keybindings"
@@ -24509,7 +24655,7 @@
       "heading": "Additional LaTeX Keybindings",
       "level": 2,
       "file": "10-export.org",
-      "line": 321,
+      "line": 363,
       "content": "| Keybinding  | Command            | Description                           | |-------------+--------------------+---------------------------------------| | C-c C-e l v | Open LaTeX preview | Open PDF preview (if built)           | | C-c C-e l s | Forward sync       | Sync cursor position to PDF (SyncTeX) |",
       "path": [
         "Export Keybindings"
@@ -24543,7 +24689,7 @@
       "heading": "Quick Access",
       "level": 2,
       "file": "10-export.org",
-      "line": 328,
+      "line": 370,
       "content": "For frequently used exports, use the quick commands: - [[cmd:scimax.org.exportHtmlOpen]] - [[cmd:scimax.org.exportLatexOpen]] - [[cmd:scimax.org.exportMarkdown]]",
       "path": [
         "Export Keybindings"
@@ -24567,7 +24713,7 @@
       "heading": "Export Scope",
       "level": 1,
       "file": "10-export.org",
-      "line": 335,
+      "line": 377,
       "content": "The export system supports three scope modes:",
       "path": [],
       "commands": [],
@@ -24585,7 +24731,7 @@
       "heading": "Full Document Export (default)",
       "level": 2,
       "file": "10-export.org",
-      "line": 339,
+      "line": 381,
       "content": "Exports the entire org file from beginning to end. Usage: Select \"Full document\" when prompted for export scope.",
       "path": [
         "Export Scope"
@@ -24612,7 +24758,7 @@
       "heading": "Subtree Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 345,
+      "line": 387,
       "content": "Exports only the current headline and its children. Usage: 1. Place cursor on or within a headline 2. Invoke export dispatcher (`C-c C-e') 3. Select \"Current subtree\" as scope Example: #+BEGIN_SRC org ,* Introduction Some intro text. ,* Methods                     ← Cursor here ,** Data Collection ,** Analysis ,* Results #+END_SRC Exporting with subtree scope from \"Methods\" exports: - Methods heading - Data Collection subsection - Analysis subsection - (Results is NOT included)",
       "path": [
         "Export Scope"
@@ -24648,7 +24794,7 @@
       "heading": "Use Cases for Subtree Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 372,
+      "line": 414,
       "content": "- Export a single chapter from a book - Generate standalone reports from sections - Create focused documentation for specific topics - Share individual project components",
       "path": [
         "Export Scope",
@@ -24682,7 +24828,7 @@
       "heading": "Visible Content Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 378,
+      "line": 420,
       "content": "Exports only content that is currently visible (not folded). Usage: 1. Fold sections you want to exclude (`Tab' on headings) 2. Invoke export (`C-c C-e') 3. Select \"Visible content\" as scope This is useful for: - Creating executive summaries (hide details) - Generating public versions (hide private notes) - Focusing on high-level structure",
       "path": [
         "Export Scope"
@@ -24718,7 +24864,7 @@
       "heading": "HTML Export Options",
       "level": 1,
       "file": "10-export.org",
-      "line": 392,
+      "line": 434,
       "content": "",
       "path": [],
       "commands": [],
@@ -24733,7 +24879,7 @@
       "heading": "Standalone vs. Body-Only",
       "level": 2,
       "file": "10-export.org",
-      "line": 394,
+      "line": 436,
       "content": "",
       "path": [
         "HTML Export Options"
@@ -24749,7 +24895,7 @@
       "heading": "Standalone (default)",
       "level": 3,
       "file": "10-export.org",
-      "line": 396,
+      "line": 438,
       "content": "Generates complete HTML document: #+BEGIN_SRC html <!DOCTYPE html> <html lang=\"en\"> <head> <meta charset=\"utf-8\" /> <title>My Document</title> <!-- CSS and JavaScript --> </head> <body> <main> <!-- Content --> </main> </body> </html> #+END_SRC",
       "path": [
         "HTML Export Options",
@@ -24784,7 +24930,7 @@
       "heading": "Custom CSS",
       "level": 2,
       "file": "10-export.org",
-      "line": 414,
+      "line": 456,
       "content": "Add custom styles via export options: #+BEGIN_SRC org #+HTML_HEAD: <style> #+HTML_HEAD: .org-content { max-width: 900px; } #+HTML_HEAD: h1 { color: #2c3e50; } #+HTML_HEAD: </style> #+END_SRC Or link external CSS: #+BEGIN_SRC org #+HTML_HEAD: <link rel=\"stylesheet\" href=\"custom.css\" /> #+END_SRC",
       "path": [
         "HTML Export Options"
@@ -24818,7 +24964,7 @@
       "heading": "JavaScript Support",
       "level": 2,
       "file": "10-export.org",
-      "line": 431,
+      "line": 473,
       "content": "Include custom JavaScript: #+BEGIN_SRC org #+HTML_HEAD: <script src=\"https://cdn.example.com/lib.js\"></script> #+HTML_HEAD: <script> #+HTML_HEAD:   // Custom initialization #+HTML_HEAD: </script> #+END_SRC",
       "path": [
         "HTML Export Options"
@@ -24844,7 +24990,7 @@
       "heading": "MathJax Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 442,
+      "line": 484,
       "content": "HTML exports use MathJax 3 by default. The CDN URL is: #+BEGIN_EXAMPLE https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js #+END_EXAMPLE MathJax automatically renders: - Inline math: `\\(...\\)' or `$...$' - Display math: `\\[...\\]' or `$$...$$' - LaTeX environments: `\\begin{equation}...\\end{equation}'",
       "path": [
         "HTML Export Options"
@@ -24878,7 +25024,7 @@
       "heading": "Syntax Highlighting",
       "level": 2,
       "file": "10-export.org",
-      "line": 454,
+      "line": 496,
       "content": "Code blocks use highlight.js for syntax highlighting: #+BEGIN_SRC org #+BEGIN_SRC python def greet(name): print(f\"Hello, {name}!\") #+END_SRC #+END_SRC Supported languages: Python, JavaScript, Java, C, C++, Rust, Go, Ruby, Shell, SQL, and many more.",
       "path": [
         "HTML Export Options"
@@ -24912,7 +25058,7 @@
       "heading": "LaTeX Export Options",
       "level": 1,
       "file": "10-export.org",
-      "line": 467,
+      "line": 509,
       "content": "",
       "path": [],
       "commands": [],
@@ -24927,7 +25073,7 @@
       "heading": "Document Structure",
       "level": 2,
       "file": "10-export.org",
-      "line": 469,
+      "line": 511,
       "content": "",
       "path": [
         "LaTeX Export Options"
@@ -24943,7 +25089,7 @@
       "heading": "Headline Levels",
       "level": 3,
       "file": "10-export.org",
-      "line": 471,
+      "line": 513,
       "content": "Control which headline levels become sections: #+BEGIN_SRC org #+OPTIONS: H:4 #+END_SRC - `H:1' → Only top-level headlines become sections - `H:2' → Two levels (section, subsection) - `H:3' → Three levels (section, subsection, subsubsection) - `H:4' → Four levels (adds paragraph)",
       "path": [
         "LaTeX Export Options",
@@ -24977,7 +25123,7 @@
       "heading": "Section Numbering",
       "level": 3,
       "file": "10-export.org",
-      "line": 484,
+      "line": 526,
       "content": "Control section numbering: #+BEGIN_SRC org #+OPTIONS: num:t      % Number all sections #+OPTIONS: num:nil    % No numbering #+OPTIONS: num:3      % Number up to level 3 #+END_SRC In LaTeX output, this sets: #+BEGIN_SRC latex \\setcounter{secnumdepth}{3} #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -25010,7 +25156,7 @@
       "heading": "Table of Contents",
       "level": 3,
       "file": "10-export.org",
-      "line": 499,
+      "line": 541,
       "content": "#+BEGIN_SRC org #+OPTIONS: toc:t      % Include TOC #+OPTIONS: toc:nil    % No TOC #+OPTIONS: toc:2      % TOC with 2 levels #+END_SRC Generates: #+BEGIN_SRC latex \\tableofcontents \\newpage #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -25041,7 +25187,7 @@
       "heading": "Images and Figures",
       "level": 2,
       "file": "10-export.org",
-      "line": 513,
+      "line": 555,
       "content": "Include images with captions and labels: #+BEGIN_SRC org #+CAPTION: System Architecture Diagram #+NAME: fig:architecture #+ATTR_LATEX: :width 0.8\\textwidth :placement [htbp] [[file:architecture.png]] #+END_SRC Exports to: #+BEGIN_SRC latex \\begin{figure}[htbp] \\centering \\includegraphics[width=0.8\\textwidth]{architecture.png} \\caption{System Architecture Diagram} \\label{fig:architecture} \\end{figure} #+END_SRC",
       "path": [
         "LaTeX Export Options"
@@ -25075,7 +25221,7 @@
       "heading": "Image Attributes",
       "level": 3,
       "file": "10-export.org",
-      "line": 534,
+      "line": 576,
       "content": "- `:width' - Image width (e.g., `0.8\\textwidth', `12cm') - `:height' - Image height - `:placement' - Float placement (`[htbp]') - `:scale' - Scale factor (`0.5' for 50%)",
       "path": [
         "LaTeX Export Options",
@@ -25101,7 +25247,7 @@
       "heading": "Bibliography Support",
       "level": 2,
       "file": "10-export.org",
-      "line": 541,
+      "line": 583,
       "content": "",
       "path": [
         "LaTeX Export Options"
@@ -25117,7 +25263,7 @@
       "heading": "BibTeX Integration",
       "level": 3,
       "file": "10-export.org",
-      "line": 543,
+      "line": 585,
       "content": "Include bibliography: #+BEGIN_SRC org #+LATEX_HEADER: \\usepackage{natbib} Reference a citation cite:knuth1984. bibliography:~/references.bib bibliographystyle:plainnat #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -25147,7 +25293,7 @@
       "heading": "Citation Links",
       "level": 3,
       "file": "10-export.org",
-      "line": 556,
+      "line": 598,
       "content": "Org-ref style citations work directly: - `cite:key' → `\\cite{key}' - `citep:key' → `\\citep{key}' (parenthetical) - `citet:key' → `\\citet{key}' (textual) - `citeauthor:key' → `\\citeauthor{key}' - `citeyear:key' → `\\citeyear{key}'",
       "path": [
         "LaTeX Export Options",
@@ -25182,7 +25328,7 @@
       "heading": "HTML Citation Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 565,
+      "line": 607,
       "content": "HTML export includes full citation processing using citation-js, which formats citations according to standard citation styles (CSL).",
       "path": [
         "LaTeX Export Options",
@@ -25210,7 +25356,7 @@
       "heading": "Supported Citation Formats",
       "level": 4,
       "file": "10-export.org",
-      "line": 569,
+      "line": 611,
       "content": "The following citation link types are supported in HTML export: | Link Type        | Example              | Output Style                    | |------------------+----------------------+---------------------------------| | =cite:=          | =cite:knuth1984=     | Parenthetical (Smith, 2020)     | | =citep:=         | =citep:knuth1984=    | Parenthetical (Smith, 2020)     | | =citet:=         | =citet:knuth1984=    | Textual: Smith (2020)           | | =citeauthor:=    | =citeauthor:knuth1984= | ",
       "path": [
         "LaTeX Export Options",
@@ -25246,7 +25392,7 @@
       "heading": "Specifying Bibliography Files",
       "level": 4,
       "file": "10-export.org",
-      "line": 582,
+      "line": 624,
       "content": "To include citations in HTML export, specify your bibliography file(s): #+BEGIN_SRC org #+BIBLIOGRAPHY: references.bib Or use a bibliography link: [[bibliography:~/path/to/references.bib]] #+END_SRC The export system automatically: 1. Finds all =#+BIBLIOGRAPHY:= keywords and =[[bibliography:...]]= links 2. Loads the BibTeX entries from those files 3. Formats citations according to the selected style 4. Generates a bibliography section at the end of the document",
       "path": [
         "LaTeX Export Options",
@@ -25282,7 +25428,7 @@
       "heading": "Citation Styles",
       "level": 4,
       "file": "10-export.org",
-      "line": 599,
+      "line": 641,
       "content": "The default citation style is APA. You can change it with the =#+CSL_STYLE:= keyword: #+BEGIN_SRC org #+CSL_STYLE: apa #+END_SRC Available built-in styles: | Style        | Description                              | |--------------+------------------------------------------| | =apa=        | American Psychological Association (default) | | =mla=        | Modern Language Association              | | =chicago=    | Chicago Manual of Style                  | | =harvard=    | Harvard referencing    ",
       "path": [
         "LaTeX Export Options",
@@ -25318,7 +25464,7 @@
       "heading": "Example Document with Citations",
       "level": 4,
       "file": "10-export.org",
-      "line": 617,
+      "line": 659,
       "content": "#+BEGIN_SRC org #+TITLE: My Research Paper #+AUTHOR: Jane Doe #+BIBLIOGRAPHY: references.bib #+CSL_STYLE: apa ,* Introduction Recent advances in machine learning cite:lecun2015 have enabled remarkable progress in computer vision. According to citet:krizhevsky2012, deep convolutional networks outperform traditional methods. ,* Methods We follow the approach of citep:he2016,simonyan2014 for our experiments. #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -25354,7 +25500,7 @@
       "heading": "Bibliography Output",
       "level": 4,
       "file": "10-export.org",
-      "line": 636,
+      "line": 678,
       "content": "The bibliography section is automatically generated at the end of the HTML document with: - A \"References\" heading (customizable) - Properly formatted entries according to the CSL style - Hanging indent formatting for readability",
       "path": [
         "LaTeX Export Options",
@@ -25390,7 +25536,7 @@
       "heading": "Missing Citations",
       "level": 4,
       "file": "10-export.org",
-      "line": 643,
+      "line": 685,
       "content": "If a citation key is not found in the bibliography: - The citation appears with a \"missing\" CSS class - It renders as =[missing: key]= in red italic text - Check your =.bib= file for the correct key spelling",
       "path": [
         "LaTeX Export Options",
@@ -25423,7 +25569,7 @@
       "heading": "Configuring Citation Defaults",
       "level": 4,
       "file": "10-export.org",
-      "line": 650,
+      "line": 692,
       "content": "You can configure default citation behavior in VS Code settings: #+BEGIN_SRC json { \"scimax.references.defaultCiteStyle\": \"citep\" } #+END_SRC Options: =cite=, =citep=, =citet=, =citeauthor=, =citeyear=",
       "path": [
         "LaTeX Export Options",
@@ -25458,7 +25604,7 @@
       "heading": "Advanced LaTeX Features",
       "level": 2,
       "file": "10-export.org",
-      "line": 662,
+      "line": 704,
       "content": "",
       "path": [
         "LaTeX Export Options"
@@ -25475,7 +25621,7 @@
       "heading": "Custom Environments",
       "level": 3,
       "file": "10-export.org",
-      "line": 664,
+      "line": 706,
       "content": "Use `#+BEGIN_LATEX' blocks for raw LaTeX: #+BEGIN_SRC org #+BEGIN_LATEX \\begin{theorem}[Pythagorean Theorem] For a right triangle with legs $a$ and $b$ and hypotenuse $c$: \\[a^2 + b^2 = c^2\\] \\end{theorem} #+END_LATEX #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -25508,7 +25654,7 @@
       "heading": "Special Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 677,
+      "line": 719,
       "content": "Special blocks map to LaTeX environments: #+BEGIN_SRC org #+BEGIN_abstract This paper presents a novel approach... #+END_abstract #+BEGIN_theorem If $P$, then $Q$. #+END_theorem #+BEGIN_proof Assume $P$. Then... #+END_proof #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -25542,7 +25688,7 @@
       "heading": "Math Environments",
       "level": 3,
       "file": "10-export.org",
-      "line": 695,
+      "line": 737,
       "content": "LaTeX math environments work directly: #+BEGIN_SRC org \\begin{equation} E = mc^2 \\label{eq:einstein} \\end{equation} \\begin{align} x &= a + b \\\\ y &= c + d \\end{align} #+END_SRC",
       "path": [
         "LaTeX Export Options",
@@ -25572,7 +25718,7 @@
       "heading": "PDF Export Configuration",
       "level": 1,
       "file": "10-export.org",
-      "line": 711,
+      "line": 753,
       "content": "",
       "path": [],
       "commands": [],
@@ -25587,7 +25733,7 @@
       "heading": "Compiler Selection",
       "level": 2,
       "file": "10-export.org",
-      "line": 713,
+      "line": 755,
       "content": "Set the LaTeX compiler in VS Code settings:",
       "path": [
         "PDF Export Configuration"
@@ -25607,7 +25753,7 @@
       "heading": "pdflatex (default)",
       "level": 3,
       "file": "10-export.org",
-      "line": 717,
+      "line": 759,
       "content": "- Fast compilation - Wide compatibility - Standard LaTeX packages - ASCII and Latin-1 support Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"pdflatex\" } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -25640,7 +25786,7 @@
       "heading": "xelatex",
       "level": 3,
       "file": "10-export.org",
-      "line": 730,
+      "line": 772,
       "content": "- Unicode support (UTF-8) - System fonts (TrueType, OpenType) - Modern typography - Required for non-Latin scripts Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC Example with system fonts: #+BEGIN_SRC org #+LATEX_HEADER: \\usepackage{fontspec} #+LATEX_HEADER: \\setmainfont{Libertinus Serif} #+LATEX_HEADER: \\setmonofont{Fira Code} #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -25677,7 +25823,7 @@
       "heading": "lualatex",
       "level": 3,
       "file": "10-export.org",
-      "line": 750,
+      "line": 792,
       "content": "- Unicode support - Lua scripting in LaTeX - Advanced typography - Memory-efficient for large documents Configuration: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"lualatex\" } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -25709,7 +25855,7 @@
       "heading": "latexmk Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 763,
+      "line": 805,
       "content": "The export system uses `latexmk' for reliable compilation:",
       "path": [
         "PDF Export Configuration"
@@ -25730,7 +25876,7 @@
       "heading": "Benefits",
       "level": 3,
       "file": "10-export.org",
-      "line": 767,
+      "line": 809,
       "content": "- Automatic multiple passes (for TOC, references, etc.) - Bibliography processing (BibTeX/Biber) - Dependency tracking - Incremental builds",
       "path": [
         "PDF Export Configuration",
@@ -25759,7 +25905,7 @@
       "heading": "Configuration File",
       "level": 3,
       "file": "10-export.org",
-      "line": 773,
+      "line": 815,
       "content": "Create `.latexmkrc' in your project directory: #+BEGIN_SRC perl # Use pdflatex $pdf_mode = 1; # Clean auxiliary files $clean_ext = \"synctex.gz synctex.gz(busy) run.xml\"; # Custom compiler options $pdflatex = 'pdflatex -interaction=nonstopmode -shell-escape %O %S'; #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -25794,7 +25940,7 @@
       "heading": "Disabling latexmk",
       "level": 3,
       "file": "10-export.org",
-      "line": 788,
+      "line": 830,
       "content": "If you prefer direct compiler invocation: #+BEGIN_SRC json { \"scimax.latexLivePreview.useLatexmk\": false } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -25821,7 +25967,7 @@
       "heading": "Build Automation",
       "level": 2,
       "file": "10-export.org",
-      "line": 797,
+      "line": 839,
       "content": "",
       "path": [
         "PDF Export Configuration"
@@ -25837,7 +25983,7 @@
       "heading": "Build on Save",
       "level": 3,
       "file": "10-export.org",
-      "line": 799,
+      "line": 841,
       "content": "Automatically rebuild PDF when saving: #+BEGIN_SRC json { \"scimax.latexLivePreview.buildOnSave\": true } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -25864,7 +26010,7 @@
       "heading": "Build on Idle",
       "level": 3,
       "file": "10-export.org",
-      "line": 808,
+      "line": 850,
       "content": "Build after idle period (useful for live preview): #+BEGIN_SRC json { \"scimax.latexLivePreview.buildOnIdle\": true, \"scimax.latexLivePreview.idleDelay\": 2000 } #+END_SRC",
       "path": [
         "PDF Export Configuration",
@@ -25894,7 +26040,7 @@
       "heading": "SyncTeX Integration",
       "level": 2,
       "file": "10-export.org",
-      "line": 818,
+      "line": 860,
       "content": "SyncTeX enables bidirectional sync between source and PDF:",
       "path": [
         "PDF Export Configuration"
@@ -25916,7 +26062,7 @@
       "heading": "Forward Sync (Source → PDF)",
       "level": 3,
       "file": "10-export.org",
-      "line": 822,
+      "line": 864,
       "content": "1. Place cursor in org file 2. Press `C-c C-e l s' 3. PDF viewer jumps to corresponding location",
       "path": [
         "PDF Export Configuration",
@@ -25947,7 +26093,7 @@
       "heading": "Reverse Sync (PDF → Source)",
       "level": 3,
       "file": "10-export.org",
-      "line": 827,
+      "line": 869,
       "content": "C-click in PDF viewer (if supported) to jump to source line.",
       "path": [
         "PDF Export Configuration",
@@ -25973,7 +26119,7 @@
       "heading": "Markdown Export Details",
       "level": 1,
       "file": "10-export.org",
-      "line": 830,
+      "line": 872,
       "content": "",
       "path": [],
       "commands": [],
@@ -25988,7 +26134,7 @@
       "heading": "GitHub-Flavored Markdown (GFM)",
       "level": 2,
       "file": "10-export.org",
-      "line": 832,
+      "line": 874,
       "content": "The Markdown export follows GitHub's flavor for maximum compatibility.",
       "path": [
         "Markdown Export Details"
@@ -26011,7 +26157,7 @@
       "heading": "Supported Elements",
       "level": 2,
       "file": "10-export.org",
-      "line": 836,
+      "line": 878,
       "content": "",
       "path": [
         "Markdown Export Details"
@@ -26027,7 +26173,7 @@
       "heading": "Headings",
       "level": 3,
       "file": "10-export.org",
-      "line": 838,
+      "line": 880,
       "content": "#+BEGIN_SRC org ,* Level 1      →  # Level 1 ,** Level 2     →  ## Level 2 ,*** Level 3    →  ### Level 3 #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -26047,7 +26193,7 @@
       "heading": "Text Formatting",
       "level": 3,
       "file": "10-export.org",
-      "line": 845,
+      "line": 887,
       "content": "#+BEGIN_SRC org *bold*          →  **bold** /italic/        →  *italic* _underline_     →  _underline_ +strikethrough+ →  ~~strikethrough~~ =code=          →  `code` ~verbatim~      →  `verbatim` #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -26073,7 +26219,7 @@
       "heading": "Lists",
       "level": 3,
       "file": "10-export.org",
-      "line": 855,
+      "line": 897,
       "content": "*Unordered:* #+BEGIN_SRC org - Item 1 - Item 2 - Nested #+END_SRC *Ordered:* #+BEGIN_SRC org 1. First 2. Second 3. Third #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -26099,7 +26245,7 @@
       "heading": "Code Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 871,
+      "line": 913,
       "content": "#+BEGIN_SRC org #+BEGIN_SRC python def hello(): print(\"Hello\") #+END_SRC #+END_SRC Exports to: #+BEGIN_SRC markdown ```python def hello(): print(\"Hello\") ``` #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -26125,7 +26271,7 @@
       "heading": "Tables",
       "level": 3,
       "file": "10-export.org",
-      "line": 888,
+      "line": 930,
       "content": "#+BEGIN_SRC org | Name  | Age | City       | |-------+-----+------------| | Alice |  30 | New York   | | Bob   |  25 | London     | #+END_SRC Exports to: #+BEGIN_SRC markdown | Name  | Age | City       | | ---   | --- | ---        | | Alice | 30  | New York   | | Bob   | 25  | London     | #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -26156,7 +26302,7 @@
       "heading": "Links",
       "level": 3,
       "file": "10-export.org",
-      "line": 905,
+      "line": 947,
       "content": "#+BEGIN_SRC org [[https://example.com][Example Site]]  →  [Example Site](https://example.com) [[file:image.png]]                     →  [image.png](image.png) #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -26180,7 +26326,7 @@
       "heading": "Images",
       "level": 3,
       "file": "10-export.org",
-      "line": 912,
+      "line": 954,
       "content": "#+BEGIN_SRC org [[file:diagram.png]]  →  ![](diagram.png) #+END_SRC",
       "path": [
         "Markdown Export Details",
@@ -26201,7 +26347,7 @@
       "heading": "Metadata Handling",
       "level": 2,
       "file": "10-export.org",
-      "line": 918,
+      "line": 960,
       "content": "Document metadata is converted: #+BEGIN_SRC org #+TITLE: My Document #+AUTHOR: Jane Doe #+DATE: 2024-01-15 #+END_SRC Becomes: #+BEGIN_SRC markdown # My Document *Jane Doe* 2024-01-15 #+END_SRC",
       "path": [
         "Markdown Export Details"
@@ -26230,7 +26376,7 @@
       "heading": "Export Options Reference",
       "level": 1,
       "file": "10-export.org",
-      "line": 936,
+      "line": 978,
       "content": "",
       "path": [],
       "commands": [],
@@ -26245,7 +26391,7 @@
       "heading": "#+OPTIONS Keyword",
       "level": 2,
       "file": "10-export.org",
-      "line": 938,
+      "line": 980,
       "content": "The `#+OPTIONS' keyword controls various export behaviors:",
       "path": [
         "Export Options Reference"
@@ -26265,7 +26411,7 @@
       "heading": "Syntax",
       "level": 3,
       "file": "10-export.org",
-      "line": 942,
+      "line": 984,
       "content": "#+BEGIN_SRC org #+OPTIONS: key1:value1 key2:value2 ... #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -26287,7 +26433,7 @@
       "heading": "Common Options",
       "level": 3,
       "file": "10-export.org",
-      "line": 947,
+      "line": 989,
       "content": "| Option  | Values           | Description                           | |---------+------------------+---------------------------------------| | =toc=   | =t=, =nil=, =N=  | Table of contents (N = depth)         | | =num=   | =t=, =nil=, =N=  | Section numbering (N = depth)         | | =H=     | =N=              | Headline levels to export             | | =author= | =t=, =nil=       | Include author                        | | =date=  | =t=, =nil=       | Include date                          | | ",
       "path": [
         "Export Options Reference",
@@ -26322,7 +26468,7 @@
       "heading": "Examples",
       "level": 3,
       "file": "10-export.org",
-      "line": 963,
+      "line": 1005,
       "content": "*Full configuration:* #+BEGIN_SRC org #+OPTIONS: toc:3 num:t H:4 author:t date:t tags:nil todo:nil #+END_SRC *Minimal export:* #+BEGIN_SRC org #+OPTIONS: toc:nil num:nil author:nil date:nil #+END_SRC *Academic paper:* #+BEGIN_SRC org #+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -26357,7 +26503,7 @@
       "heading": "Document Keywords",
       "level": 2,
       "file": "10-export.org",
-      "line": 980,
+      "line": 1022,
       "content": "",
       "path": [
         "Export Options Reference"
@@ -26373,7 +26519,7 @@
       "heading": "Required Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 982,
+      "line": 1024,
       "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+LANGUAGE: en #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -26400,7 +26546,7 @@
       "heading": "HTML-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 991,
+      "line": 1033,
       "content": "#+BEGIN_SRC org #+HTML_HEAD: <style>body { font-family: sans-serif; }</style> #+HTML_HEAD_EXTRA: <meta name=\"keywords\" content=\"research, science\" /> #+HTML_LINK_HOME: index.html #+HTML_LINK_UP: ../index.html #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -26434,7 +26580,7 @@
       "heading": "LaTeX-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1000,
+      "line": 1042,
       "content": "#+BEGIN_SRC org #+LATEX_CLASS: article #+LATEX_CLASS_OPTIONS: [11pt,a4paper] #+LATEX_HEADER: \\usepackage{geometry} #+LATEX_HEADER: \\geometry{margin=1in} #+LATEX_COMPILER: pdflatex #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -26465,7 +26611,7 @@
       "heading": "Export Settings",
       "level": 3,
       "file": "10-export.org",
-      "line": 1010,
+      "line": 1052,
       "content": "#+BEGIN_SRC org #+EXPORT_FILE_NAME: custom-name #+EXCLUDE_TAGS: noexport private #+SELECT_TAGS: export #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -26491,7 +26637,7 @@
       "heading": "Configuration Settings",
       "level": 1,
       "file": "10-export.org",
-      "line": 1018,
+      "line": 1060,
       "content": "",
       "path": [],
       "commands": [],
@@ -26505,7 +26651,7 @@
       "heading": "Export Settings Location",
       "level": 2,
       "file": "10-export.org",
-      "line": 1020,
+      "line": 1062,
       "content": "All export settings are in VS Code preferences: 1. `C-,' (`s-,' on Mac) to open Settings 2. Search for \"scimax export\" or \"scimax latex\" 3. Modify settings as needed",
       "path": [
         "Configuration Settings"
@@ -26531,7 +26677,7 @@
       "heading": "LaTeX Export Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1027,
+      "line": 1069,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -26548,7 +26694,7 @@
       "heading": "Custom Header",
       "level": 3,
       "file": "10-export.org",
-      "line": 1029,
+      "line": 1071,
       "content": "*Setting:* `scimax.export.latex.customHeader' *Type:* String (multiline) *Description:* Complete custom LaTeX preamble replacing auto-generated one. *Example:* #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": \"\\\\documentclass[12pt]{article}\\n\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\" } #+END_SRC Or in `settings.json': #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": [ \"\\\\documentclass[12pt]{article}\", \"\\\\usepackage[utf8]{inputenc}\", \"\\\\usepackage{gra",
       "path": [
         "Configuration Settings",
@@ -26585,7 +26731,7 @@
       "heading": "LaTeX Preview Settings",
       "level": 2,
       "file": "10-export.org",
-      "line": 1057,
+      "line": 1099,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -26602,7 +26748,7 @@
       "heading": "Compiler",
       "level": 3,
       "file": "10-export.org",
-      "line": 1059,
+      "line": 1101,
       "content": "*Setting:* `scimax.latexLivePreview.compiler' *Values:* `\"pdflatex\"', `\"xelatex\"', `\"lualatex\"' *Default:* `\"pdflatex\"' *Example:* #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC",
       "path": [
         "Configuration Settings",
@@ -26630,7 +26776,7 @@
       "heading": "Use latexmk",
       "level": 3,
       "file": "10-export.org",
-      "line": 1074,
+      "line": 1116,
       "content": "*Setting:* `scimax.latexLivePreview.useLatexmk' *Type:* Boolean *Default:* `true' *Description:* Use latexmk for smart incremental builds (recommended).",
       "path": [
         "Configuration Settings",
@@ -26658,7 +26804,7 @@
       "heading": "Build on Save",
       "level": 3,
       "file": "10-export.org",
-      "line": 1084,
+      "line": 1126,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnSave' *Type:* Boolean *Default:* `true' *Description:* Automatically rebuild PDF when org file is saved.",
       "path": [
         "Configuration Settings",
@@ -26688,7 +26834,7 @@
       "heading": "Build on Idle",
       "level": 3,
       "file": "10-export.org",
-      "line": 1094,
+      "line": 1136,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnIdle' *Type:* Boolean *Default:* `false' *Description:* Rebuild PDF after idle period (for live preview).",
       "path": [
         "Configuration Settings",
@@ -26719,7 +26865,7 @@
       "heading": "Idle Delay",
       "level": 3,
       "file": "10-export.org",
-      "line": 1104,
+      "line": 1146,
       "content": "*Setting:* `scimax.latexLivePreview.idleDelay' *Type:* Number (milliseconds) *Default:* `2000' *Description:* Delay before idle build triggers.",
       "path": [
         "Configuration Settings",
@@ -26748,7 +26894,7 @@
       "heading": "Complete Configuration Example",
       "level": 2,
       "file": "10-export.org",
-      "line": 1114,
+      "line": 1156,
       "content": "#+BEGIN_SRC json { // LaTeX Export \"scimax.export.latex.customHeader\": \"\", // LaTeX Preview \"scimax.latexLivePreview.compiler\": \"pdflatex\", \"scimax.latexLivePreview.useLatexmk\": true, \"scimax.latexLivePreview.buildOnSave\": true, \"scimax.latexLivePreview.buildOnIdle\": false, \"scimax.latexLivePreview.idleDelay\": 2000, // LaTeX Equation Preview \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": true, \"scimax.latexPreview.darkModeAware\": true } #+END_SRC",
       "path": [
         "Configuration Settings"
@@ -26786,7 +26932,7 @@
       "heading": "Advanced Export Techniques",
       "level": 1,
       "file": "10-export.org",
-      "line": 1135,
+      "line": 1177,
       "content": "",
       "path": [],
       "commands": [],
@@ -26801,7 +26947,7 @@
       "heading": "Conditional Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 1137,
+      "line": 1179,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -26817,7 +26963,7 @@
       "heading": "Exclude Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 1139,
+      "line": 1181,
       "content": "Tag headlines to exclude them from export: #+BEGIN_SRC org #+EXCLUDE_TAGS: noexport private draft ,* Public Section Content for everyone. ,* Private Notes                                    :noexport: Internal notes not included in export. ,* Draft Ideas                                      :draft: Work in progress, excluded. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -26852,7 +26998,7 @@
       "heading": "Select Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 1156,
+      "line": 1198,
       "content": "Only export tagged content: #+BEGIN_SRC org #+SELECT_TAGS: export publish ,* Internal Document This section won't be exported. ,* Published Chapter                                 :export: This section will be exported. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -26884,7 +27030,7 @@
       "heading": "Backend-Specific Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 1170,
+      "line": 1212,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -26900,7 +27046,7 @@
       "heading": "HTML-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1172,
+      "line": 1214,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT html <div class=\"alert alert-info\"> This appears only in HTML export. </div> #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -26929,7 +27075,7 @@
       "heading": "LaTeX-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1182,
+      "line": 1224,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT latex \\begin{tcolorbox}[title=Important] This appears only in LaTeX/PDF export. \\end{tcolorbox} #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -26960,7 +27106,7 @@
       "heading": "Export Snippets",
       "level": 3,
       "file": "10-export.org",
-      "line": 1192,
+      "line": 1234,
       "content": "Inline backend-specific content: #+BEGIN_SRC org Click @@html:<button>@@here@@html:</button>@@ to continue. The value is @@latex:\\textcolor{red}{@@important@@latex:}@@. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -26990,7 +27136,7 @@
       "heading": "Macros for Reusable Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 1202,
+      "line": 1244,
       "content": "Define macros for repeated content: #+BEGIN_SRC org #+MACRO: version 2.5.0 #+MACRO: author-email john.doe@example.com Current version: {{{version}}} Contact: {{{author-email}}} #+END_SRC Built-in macros: - `{{{date}}}' - Current date - `{{{time}}}' - Current time - `{{{title}}}' - Document title - `{{{author}}}' - Document author",
       "path": [
         "Advanced Export Techniques"
@@ -27024,7 +27170,7 @@
       "heading": "Include Files",
       "level": 2,
       "file": "10-export.org",
-      "line": 1221,
+      "line": 1263,
       "content": "Include content from other files using the `#+INCLUDE:' directive. Files are processed during export, allowing modular document organization.",
       "path": [
         "Advanced Export Techniques"
@@ -27048,7 +27194,7 @@
       "heading": "Basic Syntax",
       "level": 3,
       "file": "10-export.org",
-      "line": 1226,
+      "line": 1268,
       "content": "#+BEGIN_SRC org ,#+INCLUDE: \"chapter1.org\" ,#+INCLUDE: \"path/to/file.org\" #+END_SRC Paths can be relative (to the current document) or absolute.",
       "path": [
         "Advanced Export Techniques",
@@ -27076,7 +27222,7 @@
       "heading": "Block Wrappers",
       "level": 3,
       "file": "10-export.org",
-      "line": 1235,
+      "line": 1277,
       "content": "Wrap included content in a block: #+BEGIN_SRC org ,# Include as source code block ,#+INCLUDE: \"code/example.py\" src python ,#+INCLUDE: \"script.sh\" src bash ,# Include as example (verbatim) block ,#+INCLUDE: \"output.txt\" example ,# Include as quote block ,#+INCLUDE: \"excerpt.txt\" quote ,# Include as export block (raw format) ,#+INCLUDE: \"custom.html\" export html #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27111,7 +27257,7 @@
       "heading": "Line Selection with :lines",
       "level": 3,
       "file": "10-export.org",
-      "line": 1254,
+      "line": 1296,
       "content": "Include only specific lines from a file: #+BEGIN_SRC org ,# Lines 10 through 20 (inclusive, 1-indexed) ,#+INCLUDE: \"data.org\" :lines \"10-20\" ,# From line 10 to end of file ,#+INCLUDE: \"data.org\" :lines \"10-\" ,# From beginning to line 20 ,#+INCLUDE: \"data.org\" :lines \"-20\" ,# Single line ,#+INCLUDE: \"data.org\" :lines \"15\" #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27144,7 +27290,7 @@
       "heading": "Headline Level Adjustment with :minlevel",
       "level": 3,
       "file": "10-export.org",
-      "line": 1272,
+      "line": 1314,
       "content": "Shift all headlines in the included file to a minimum level: #+BEGIN_SRC org ,# Shift headlines so the minimum level is 2 ,#+INCLUDE: \"chapter.org\" :minlevel 2 #+END_SRC This is useful for including a standalone document as a section: - A file with `* Heading' becomes `** Heading' with `:minlevel 2' - Sub-headlines are adjusted proportionally",
       "path": [
         "Advanced Export Techniques",
@@ -27179,7 +27325,7 @@
       "heading": "Content Only with :only-contents",
       "level": 3,
       "file": "10-export.org",
-      "line": 1285,
+      "line": 1327,
       "content": "Strip the first headline and include only its contents: #+BEGIN_SRC org ,#+INCLUDE: \"section.org\" :only-contents t #+END_SRC This extracts the body of the first headline without including the headline itself.",
       "path": [
         "Advanced Export Techniques",
@@ -27210,7 +27356,7 @@
       "heading": "Combining Options",
       "level": 3,
       "file": "10-export.org",
-      "line": 1296,
+      "line": 1338,
       "content": "Options can be combined: #+BEGIN_SRC org ,# Include lines 5-25 of Python file, shift headlines to level 3 ,#+INCLUDE: \"code.py\" src python :lines \"5-25\" ,# Include chapter, make it a subsection (minlevel 2) ,#+INCLUDE: \"chapter.org\" :minlevel 2 :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27245,7 +27391,7 @@
       "heading": "Recursive Includes",
       "level": 3,
       "file": "10-export.org",
-      "line": 1308,
+      "line": 1350,
       "content": "Included files can themselves contain `#+INCLUDE:' directives, which are processed recursively. A maximum depth of 10 levels prevents infinite loops.",
       "path": [
         "Advanced Export Techniques",
@@ -27275,7 +27421,7 @@
       "heading": "Example: Modular Book Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 1313,
+      "line": 1355,
       "content": "#+BEGIN_SRC org ,#+TITLE: My Book ,#+AUTHOR: Author Name ,#+INCLUDE: \"frontmatter.org\" ,* Part I: Introduction ,#+INCLUDE: \"chapters/intro.org\" :minlevel 2 ,* Part II: Main Content ,#+INCLUDE: \"chapters/chapter1.org\" :minlevel 2 ,#+INCLUDE: \"chapters/chapter2.org\" :minlevel 2 ,* Appendices ,#+INCLUDE: \"appendices/code-samples.org\" :minlevel 2 ,* Index ,#+INCLUDE: \"backmatter/index.org\" :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27310,7 +27456,7 @@
       "heading": "Custom Link Types",
       "level": 2,
       "file": "10-export.org",
-      "line": 1335,
+      "line": 1377,
       "content": "Define custom export behavior for link types: #+BEGIN_SRC org # Link to bug tracker [[bug:1234][Bug #1234]] # Link to commit [[commit:abc123][View commit]] #+END_SRC",
       "path": [
         "Advanced Export Techniques"
@@ -27340,7 +27486,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "10-export.org",
-      "line": 1347,
+      "line": 1389,
       "content": "",
       "path": [],
       "commands": [],
@@ -27353,7 +27499,7 @@
       "heading": "HTML Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1349,
+      "line": 1391,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -27370,7 +27516,7 @@
       "heading": "MathJax Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 1351,
+      "line": 1393,
       "content": "*Problem:* Math equations appear as plain text. *Solution:* 1. Ensure internet connection (MathJax loads from CDN) 2. Check browser console for errors 3. Verify math syntax (use `\\(...\\)' or `$...$' for inline, `\\[...\\]' for display)",
       "path": [
         "Troubleshooting",
@@ -27405,7 +27551,7 @@
       "heading": "Broken Images",
       "level": 3,
       "file": "10-export.org",
-      "line": 1360,
+      "line": 1402,
       "content": "*Problem:* Images don't appear in exported HTML. *Solution:* 1. Use relative paths: `[[file:./images/plot.png]]' 2. Ensure images are in same directory or subdirectory 3. Check image file names (case-sensitive on Linux)",
       "path": [
         "Troubleshooting",
@@ -27439,7 +27585,7 @@
       "heading": "CSS Not Applied",
       "level": 3,
       "file": "10-export.org",
-      "line": 1369,
+      "line": 1411,
       "content": "*Problem:* Custom CSS doesn't show. *Solution:* 1. Verify `#+HTML_HEAD:' syntax 2. Check CSS selector specificity 3. Inspect generated HTML for CSS inclusion",
       "path": [
         "Troubleshooting",
@@ -27471,7 +27617,7 @@
       "heading": "LaTeX/PDF Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1378,
+      "line": 1420,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -27488,7 +27634,7 @@
       "heading": "Missing Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 1380,
+      "line": 1422,
       "content": "*Problem:* Compilation fails with \"! LaTeX Error: File `xyz.sty' not found\" *Solution:* #+BEGIN_SRC bash # TeX Live sudo tlmgr install xyz # MiKTeX (Windows) miktex packages install xyz # MacTeX sudo tlmgr install xyz #+END_SRC",
       "path": [
         "Troubleshooting",
@@ -27523,7 +27669,7 @@
       "heading": "Unicode Errors",
       "level": 3,
       "file": "10-export.org",
-      "line": 1396,
+      "line": 1438,
       "content": "*Problem:* \"! Package inputenc Error: Unicode character ... not set up\" *Solution:* 1. Switch to XeLaTeX or LuaLaTeX: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC 2. Or use LaTeX-safe characters",
       "path": [
         "Troubleshooting",
@@ -27557,7 +27703,7 @@
       "heading": "Bibliography Not Generated",
       "level": 3,
       "file": "10-export.org",
-      "line": 1408,
+      "line": 1450,
       "content": "*Problem:* Citations show as `[?]' in PDF. *Solution:* 1. Ensure `.bib' file exists 2. Use `latexmk' (handles BibTeX automatically) 3. Check citation keys match bibliography entries 4. Verify `bibliography:' and `bibliographystyle:' links",
       "path": [
         "Troubleshooting",
@@ -27592,7 +27738,7 @@
       "heading": "Images Not Found",
       "level": 3,
       "file": "10-export.org",
-      "line": 1418,
+      "line": 1460,
       "content": "*Problem:* LaTeX can't find image files. *Solution:* 1. Use relative paths from org file location 2. Avoid spaces in filenames 3. Use supported formats: PNG, JPG, PDF, EPS 4. Check `\\graphicspath' if using custom image directories",
       "path": [
         "Troubleshooting",
@@ -27627,7 +27773,7 @@
       "heading": "Compilation Timeout",
       "level": 3,
       "file": "10-export.org",
-      "line": 1428,
+      "line": 1470,
       "content": "*Problem:* PDF export hangs or times out. *Solution:* 1. Check for infinite loops in LaTeX code 2. Reduce document size 3. Disable auto-build: `buildOnSave: false' 4. Review `.log' file for warnings",
       "path": [
         "Troubleshooting",
@@ -27662,7 +27808,7 @@
       "heading": "Markdown Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1438,
+      "line": 1480,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -27679,7 +27825,7 @@
       "heading": "Table Alignment",
       "level": 3,
       "file": "10-export.org",
-      "line": 1440,
+      "line": 1482,
       "content": "*Problem:* Tables don't align properly. *Solution:* - GitHub-flavored Markdown tables are left-aligned by default - Org-mode alignment hints (`<l>', `<c>', `<r>') are not supported - Consider using HTML tables for complex layouts",
       "path": [
         "Troubleshooting",
@@ -27713,7 +27859,7 @@
       "heading": "Math Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 1449,
+      "line": 1491,
       "content": "*Problem:* Math equations don't work. *Solution:* - GitHub supports some math via `$$...$$' (display) and `$...$' (inline) - Other platforms may require MathJax integration - Consider exporting to HTML for math-heavy content",
       "path": [
         "Troubleshooting",
@@ -27748,7 +27894,7 @@
       "heading": "General Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1458,
+      "line": 1500,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -27765,7 +27911,7 @@
       "heading": "Empty Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1460,
+      "line": 1502,
       "content": "*Problem:* Export produces empty or minimal file. *Solution:* 1. Check export scope (full vs. subtree) 2. Verify content isn't excluded by tags 3. Ensure headlines match `H:' level setting 4. Review `#+OPTIONS' settings",
       "path": [
         "Troubleshooting",
@@ -27800,7 +27946,7 @@
       "heading": "Slow Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1470,
+      "line": 1512,
       "content": "*Problem:* Export takes very long. *Solution:* 1. Disable `buildOnIdle' for PDF export 2. Reduce `toc' depth 3. Split large documents into smaller files 4. Use `#+INCLUDE:' for modular organization",
       "path": [
         "Troubleshooting",
@@ -27835,7 +27981,7 @@
       "heading": "Wrong Output Location",
       "level": 3,
       "file": "10-export.org",
-      "line": 1480,
+      "line": 1522,
       "content": "*Problem:* Export file appears in unexpected location. *Solution:* 1. Check `#+EXPORT_FILE_NAME:' keyword 2. Verify save dialog selection 3. Review file permissions in target directory",
       "path": [
         "Troubleshooting",
@@ -27869,7 +28015,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "10-export.org",
-      "line": 1489,
+      "line": 1531,
       "content": "",
       "path": [],
       "commands": [],
@@ -27883,7 +28029,7 @@
       "heading": "Document Organization",
       "level": 2,
       "file": "10-export.org",
-      "line": 1491,
+      "line": 1533,
       "content": "",
       "path": [
         "Best Practices"
@@ -27899,7 +28045,7 @@
       "heading": "Use Meaningful Headings",
       "level": 3,
       "file": "10-export.org",
-      "line": 1493,
+      "line": 1535,
       "content": "- Clear, descriptive headline text - Logical hierarchy (avoid jumping levels) - Consistent depth for similar content",
       "path": [
         "Best Practices",
@@ -27929,7 +28075,7 @@
       "heading": "Metadata at Top",
       "level": 3,
       "file": "10-export.org",
-      "line": 1498,
+      "line": 1540,
       "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+OPTIONS: toc:t num:t #+LATEX_CLASS: article #+END_SRC",
       "path": [
         "Best Practices",
@@ -27960,7 +28106,7 @@
       "heading": "Separate Concerns",
       "level": 3,
       "file": "10-export.org",
-      "line": 1507,
+      "line": 1549,
       "content": "- Content in main file - References in `.bib' file - Images in `images/' directory - Custom styles in `.css' file",
       "path": [
         "Best Practices",
@@ -27986,7 +28132,7 @@
       "heading": "Version Control",
       "level": 2,
       "file": "10-export.org",
-      "line": 1513,
+      "line": 1555,
       "content": "",
       "path": [
         "Best Practices"
@@ -28002,7 +28148,7 @@
       "heading": "Track Generated Files Separately",
       "level": 3,
       "file": "10-export.org",
-      "line": 1515,
+      "line": 1557,
       "content": "Add to `.gitignore': #+BEGIN_SRC text *.pdf *.html *.tex *.aux *.log *.out *.toc #+END_SRC",
       "path": [
         "Best Practices",
@@ -28032,7 +28178,7 @@
       "heading": "Use Meaningful Commit Messages",
       "level": 3,
       "file": "10-export.org",
-      "line": 1527,
+      "line": 1569,
       "content": "#+BEGIN_SRC text Update export configuration for XeLaTeX support Add custom LaTeX preamble for ACM format Fix image paths in HTML export #+END_SRC",
       "path": [
         "Best Practices",
@@ -28067,7 +28213,7 @@
       "heading": "Performance Optimization",
       "level": 2,
       "file": "10-export.org",
-      "line": 1534,
+      "line": 1576,
       "content": "CLOSED: [2026-01-17 Sat 09:25]",
       "path": [
         "Best Practices"
@@ -28087,7 +28233,7 @@
       "heading": "For Large Documents",
       "level": 3,
       "file": "10-export.org",
-      "line": 1537,
+      "line": 1579,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Disable auto-build during editing 2. Use `#+INCLUDE:' for modular structure 3. Cache expensive computations 4. Optimize image sizes",
       "path": [
         "Best Practices",
@@ -28121,7 +28267,7 @@
       "heading": "For Fast Iteration",
       "level": 3,
       "file": "10-export.org",
-      "line": 1544,
+      "line": 1586,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Use HTML preview for quick checks 2. Enable `buildOnIdle' with appropriate delay 3. Use body-only export for faster generation 4. Minimize custom packages",
       "path": [
         "Best Practices",
@@ -28156,7 +28302,7 @@
       "heading": "Example Workflows",
       "level": 1,
       "file": "10-export.org",
-      "line": 1551,
+      "line": 1593,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [],
       "commands": [],
@@ -28174,7 +28320,7 @@
       "heading": "Academic Paper Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 1554,
+      "line": 1596,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [
         "Example Workflows"
@@ -28195,7 +28341,7 @@
       "heading": "1. Initial Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 1557,
+      "line": 1599,
       "content": "#+BEGIN_SRC org #+TITLE: Novel Approach to Machine Learning #+AUTHOR: Dr. Jane Smith #+DATE: \\today #+OPTIONS: toc:t num:t H:3 #+LATEX_CLASS: IEEEtran #+LATEX_HEADER: \\usepackage{amsmath,amssymb} #+LATEX_HEADER: \\usepackage{algorithm,algorithmic} #+BIBLIOGRAPHY: references.bib #+END_SRC",
       "path": [
         "Example Workflows",
@@ -28230,7 +28376,7 @@
       "heading": "2. Write Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1569,
+      "line": 1611,
       "content": "Structure with standard sections: - Abstract - Introduction - Related Work - Methodology - Results - Discussion - Conclusion",
       "path": [
         "Example Workflows",
@@ -28258,7 +28404,7 @@
       "heading": "3. Add Citations",
       "level": 3,
       "file": "10-export.org",
-      "line": 1579,
+      "line": 1621,
       "content": "#+BEGIN_SRC org Recent work cite:smith2023 has shown... #+END_SRC",
       "path": [
         "Example Workflows",
@@ -28282,7 +28428,7 @@
       "heading": "4. Export to PDF",
       "level": 3,
       "file": "10-export.org",
-      "line": 1584,
+      "line": 1626,
       "content": "`C-c C-e l p' → PDF via LaTeX",
       "path": [
         "Example Workflows",
@@ -28305,7 +28451,7 @@
       "heading": "5. Submit",
       "level": 3,
       "file": "10-export.org",
-      "line": 1587,
+      "line": 1629,
       "content": "Review generated PDF, make final edits, submit.",
       "path": [
         "Example Workflows",
@@ -28327,7 +28473,7 @@
       "heading": "Technical Documentation Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 1590,
+      "line": 1632,
       "content": "",
       "path": [
         "Example Workflows"
@@ -28344,7 +28490,7 @@
       "heading": "1. Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 1592,
+      "line": 1634,
       "content": "#+BEGIN_SRC org #+TITLE: API Documentation #+AUTHOR: Development Team #+OPTIONS: toc:2 num:nil H:4 #+HTML_HEAD: <link rel=\"stylesheet\" href=\"docs.css\" /> #+END_SRC",
       "path": [
         "Example Workflows",
@@ -28378,7 +28524,7 @@
       "heading": "2. Write Sections",
       "level": 3,
       "file": "10-export.org",
-      "line": 1600,
+      "line": 1642,
       "content": "- Getting Started - API Reference - Examples - Troubleshooting",
       "path": [
         "Example Workflows",
@@ -28401,7 +28547,7 @@
       "heading": "3. Export to HTML",
       "level": 3,
       "file": "10-export.org",
-      "line": 1606,
+      "line": 1648,
       "content": "`C-c C-e h h' → HTML",
       "path": [
         "Example Workflows",
@@ -28422,7 +28568,7 @@
       "heading": "4. Deploy",
       "level": 3,
       "file": "10-export.org",
-      "line": 1609,
+      "line": 1651,
       "content": "Copy HTML and CSS to docs server or GitHub Pages.",
       "path": [
         "Example Workflows",
@@ -28445,7 +28591,7 @@
       "heading": "Blog Post Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 1612,
+      "line": 1654,
       "content": "CLOSED: [2026-01-17 Sat 09:27]",
       "path": [
         "Example Workflows"
@@ -28466,7 +28612,7 @@
       "heading": "1. Write in Org",
       "level": 3,
       "file": "10-export.org",
-      "line": 1615,
+      "line": 1657,
       "content": "CLOSED: [2026-01-17 Sat 09:27] #+BEGIN_SRC org #+TITLE: 10 Tips for Better Python Code #+AUTHOR: Tech Blogger #+DATE: 2024-01-15 #+OPTIONS: toc:nil num:nil #+END_SRC",
       "path": [
         "Example Workflows",
@@ -28501,7 +28647,7 @@
       "heading": "2. Export to Markdown",
       "level": 3,
       "file": "10-export.org",
-      "line": 1624,
+      "line": 1666,
       "content": "CLOSED: [2026-01-17 Sat 09:27] `C-c C-e m m' → Markdown",
       "path": [
         "Example Workflows",
@@ -28526,7 +28672,7 @@
       "heading": "3. Publish",
       "level": 3,
       "file": "10-export.org",
-      "line": 1628,
+      "line": 1670,
       "content": "CLOSED: [2026-01-17 Sat 09:27] Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)",
       "path": [
         "Example Workflows",
@@ -28555,7 +28701,7 @@
       "heading": "Resources",
       "level": 1,
       "file": "10-export.org",
-      "line": 1633,
+      "line": 1675,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -28572,7 +28718,7 @@
       "heading": "External Links",
       "level": 2,
       "file": "10-export.org",
-      "line": 1636,
+      "line": 1678,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [
         "Resources"
@@ -28592,7 +28738,7 @@
       "heading": "Org-Mode Documentation",
       "level": 3,
       "file": "10-export.org",
-      "line": 1639,
+      "line": 1681,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://orgmode.org/manual/Exporting.html][Official Export Documentation]] - [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][LaTeX Export Tutorial]] - [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][HTML Export Tutorial]]",
       "path": [
         "Resources",
@@ -28621,7 +28767,7 @@
       "heading": "LaTeX Resources",
       "level": 3,
       "file": "10-export.org",
-      "line": 1645,
+      "line": 1687,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.latex-project.org/][LaTeX Project]] - [[https://ctan.org/][CTAN - Package Archive]] - [[https://www.overleaf.com/learn][Overleaf Learn LaTeX]]",
       "path": [
         "Resources",
@@ -28651,7 +28797,7 @@
       "heading": "Tools",
       "level": 3,
       "file": "10-export.org",
-      "line": 1651,
+      "line": 1693,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.mathjax.org/][MathJax Documentation]] - [[https://highlightjs.org/][highlight.js]] - [[https://pandoc.org/][Pandoc - Universal Document Converter]]",
       "path": [
         "Resources",
@@ -28681,7 +28827,7 @@
       "heading": "Related Scimax Documentation",
       "level": 2,
       "file": "10-export.org",
-      "line": 1657,
+      "line": 1699,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[file:01-getting-started.org][Getting Started with Scimax]] - [[file:04-tables.org][Working with Tables]] - [[file:05-links.org][Links and Cross-References]] - [[file:03-todo-items.org][TODO Items and Planning]]",
       "path": [
         "Resources"
@@ -28715,7 +28861,7 @@
       "heading": "Community",
       "level": 2,
       "file": "10-export.org",
-      "line": 1665,
+      "line": 1707,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://github.com/jkitchin/scimax_vscode][Scimax VS Code Repository]] - [[https://github.com/jkitchin/scimax_vscode/issues][Issue Tracker]] - [[https://github.com/jkitchin/scimax_vscode/discussions][Discussions]]",
       "path": [
         "Resources"
@@ -28743,7 +28889,7 @@
       "heading": "Appendix",
       "level": 1,
       "file": "10-export.org",
-      "line": 1672,
+      "line": 1714,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -28760,7 +28906,7 @@
       "heading": "Complete Keybinding Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 1675,
+      "line": 1717,
       "content": "CLOSED: [2026-01-17 Sat 09:29] | Keybinding       | Command                    | Description                      | |------------------+----------------------------+----------------------------------| | C-c C-e        | Export dispatcher          | Open export menu                 | | C-c C-e h h    | HTML export                | Export to .html                  | | C-c C-e h o    | HTML export and open       | Export and open in browser       | | C-c C-e h p    | HTML preview               | Pr",
       "path": [
         "Appendix"
@@ -28795,7 +28941,7 @@
       "heading": "Export Options Quick Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 1692,
+      "line": 1734,
       "content": "| Option   | Values         | Effect                                | |----------+----------------+---------------------------------------| | toc    | t/nil/N        | Table of contents (N  depth)         | | num    | t/nil/N        | Section numbering (N  depth)         | | H      | N              | Export headlines up to level N        | | author | t/nil          | Include author name                   | | date   | t/nil          | Include date                          | | title  | t/nil      ",
       "path": [
         "Appendix"
@@ -28829,7 +28975,7 @@
       "heading": "LaTeX Package Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 1709,
+      "line": 1751,
       "content": "",
       "path": [
         "Appendix"
@@ -28846,7 +28992,7 @@
       "heading": "Essential Packages (Auto-Included)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1711,
+      "line": 1753,
       "content": "| Package       | Purpose                              | |---------------+--------------------------------------| | inputenc    | Character encoding (UTF-8)           | | fontenc     | Font encoding (T1)                   | | hyperref    | Hyperlinks and PDF metadata          | | graphicx    | Image inclusion                      | | amsmath     | Mathematical typesetting             | | amssymb     | Math symbols                         | | booktabs    | Professional tables                  | |",
       "path": [
         "Appendix",
@@ -28881,7 +29027,7 @@
       "heading": "Optional Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 1725,
+      "line": 1767,
       "content": "| Package       | Purpose                              | Add With                        | |---------------+--------------------------------------+---------------------------------| | geometry    | Page layout                          | #+LATEX_HEADER:               | | natbib      | Bibliography                         | #+LATEX_HEADER:               | | minted      | Advanced syntax highlighting         | #+LATEX_HEADER:               | | tikz        | Graphics and diagrams                | #+",
       "path": [
         "Appendix",
@@ -28915,7 +29061,7 @@
       "heading": "HTML Classes and IDs",
       "level": 2,
       "file": "10-export.org",
-      "line": 1737,
+      "line": 1779,
       "content": "Exported HTML uses semantic classes for styling:",
       "path": [
         "Appendix"
@@ -28936,7 +29082,7 @@
       "heading": "Document Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 1741,
+      "line": 1783,
       "content": "- `.org-content' - Main content container - `.org-section' - Document section - `.org-preamble' - Document preamble - `#title-block' - Title, author, date header",
       "path": [
         "Appendix",
@@ -28966,7 +29112,7 @@
       "heading": "Headings and TOC",
       "level": 3,
       "file": "10-export.org",
-      "line": 1747,
+      "line": 1789,
       "content": "- `.org-toc' - Table of contents - `.section-number' - Section number prefix",
       "path": [
         "Appendix",
@@ -28990,7 +29136,7 @@
       "heading": "Text Elements",
       "level": 3,
       "file": "10-export.org",
-      "line": 1751,
+      "line": 1793,
       "content": "- `.org-todo' - TODO keyword - `.org-done' - DONE keyword - `.org-priority' - Priority marker - `.org-tags' - Tag container - `.org-tag' - Individual tag - `.org-timestamp' - Timestamp - `.org-underline' - Underlined text",
       "path": [
         "Appendix",
@@ -29024,7 +29170,7 @@
       "heading": "Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 1760,
+      "line": 1802,
       "content": "- `.org-src-container' - Source block wrapper - `.src' - Source block pre element - `.example' - Example block - `.org-center' - Centered content - `.org-latex-environment' - LaTeX environment",
       "path": [
         "Appendix",
@@ -29054,7 +29200,7 @@
       "heading": "Tables and Lists",
       "level": 3,
       "file": "10-export.org",
-      "line": 1767,
+      "line": 1809,
       "content": "- `.org-table' - Table element - `.org-footnotes' - Footnotes container - `.org-footnote' - Individual footnote - `.org-footnote-ref' - Footnote reference link",
       "path": [
         "Appendix",
@@ -29083,7 +29229,7 @@
       "heading": "Admonitions",
       "level": 3,
       "file": "10-export.org",
-      "line": 1773,
+      "line": 1815,
       "content": "- `.admonition' - Generic admonition - `.org-warning' - Warning box - `.org-note' - Note box - `.org-tip' - Tip box - `.org-important' - Important box",
       "path": [
         "Appendix",
@@ -29110,7 +29256,7 @@
       "heading": "Troubleshooting Decision Tree",
       "level": 2,
       "file": "10-export.org",
-      "line": 1780,
+      "line": 1822,
       "content": "#+BEGIN_SRC text Export Problem? ├─ HTML Export │  ├─ Math not rendering → Check MathJax CDN, internet connection │  ├─ Images broken → Verify paths, file existence │  └─ Styling wrong → Check CSS inclusion, specificity ├─ PDF Export │  ├─ Compilation fails │  │  ├─ Missing package → Install via tlmgr/MiKTeX │  │  ├─ Unicode error → Switch to XeLaTeX/LuaLaTeX │  │  └─ Timeout → Review .log, reduce complexity │  ├─ Bibliography missing → Check .bib file, use latexmk │  └─ Images not found → Verif",
       "path": [
         "Appendix"
@@ -29144,7 +29290,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "10-export.org",
-      "line": 1809,
+      "line": 1851,
       "content": "- [[file:07-source-blocks.org][Source Code Blocks]] - Code execution in documents - [[file:11-latex-preview.org][LaTeX Preview]] - Math preview before export - [[file:19-references.org][References]] - Citations and bibliography in exports - [[file:04-tables.org][Tables]] - Table formatting in exports - [[file:26-configuration.org][Configuration]] - Export settings and customization",
       "path": [],
       "commands": [],
@@ -29176,7 +29322,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "10-export.org",
-      "line": 1817,
+      "line": 1859,
       "content": "- Previous: [[file:09-jupyter.org][Jupyter]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:11-latex-preview.org][LaTeX Preview]]",
       "path": [],
       "commands": [],

@@ -11,6 +11,9 @@ import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
 import { processIncludes, hasIncludes } from '../parser/orgInclude';
+import { exportOrgToLatexWithMappings, storeSyncData, orgForwardSync, orgInverseSync, hasSyncData, getSyncData } from './orgPdfSync';
+import { PdfViewerPanel } from '../latex/pdfViewerPanel';
+import { getSyncTeXFilePath } from '../latex/synctexUtils';
 import { parseBibTeX } from '../references/bibtexParser';
 import type { BibEntry } from '../references/bibtexParser';
 import type { ExportOptions } from '../parser/orgExport';
@@ -557,6 +560,7 @@ function buildCompileArgs(
 
     // Add common args
     args.push('-interaction=nonstopmode');
+    args.push('-synctex=1');  // Enable SyncTeX for bidirectional sync
     args.push(`-output-directory=${outputDir}`);
 
     // Add any extra args from configuration
@@ -631,8 +635,9 @@ async function exportPdf(
     const pdfCreated = fs.existsSync(outputPath);
 
     // Clean up auxiliary files if configured
+    // Note: Keep .tex and .synctex.gz for bidirectional sync with PDF viewer
     if (pdfConfig.cleanAuxFiles) {
-        const auxFiles = ['.aux', '.bbl', '.blg', '.fdb_latexmk', '.fls', '.out', '.toc', '.synctex.gz', '.run.xml', '.bcf'];
+        const auxFiles = ['.aux', '.bbl', '.blg', '.fdb_latexmk', '.fls', '.out', '.toc', '.run.xml', '.bcf'];
         for (const ext of auxFiles) {
             try {
                 await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
@@ -648,9 +653,84 @@ async function exportPdf(
         return logPath;
     }
 
-    // Clean up log and tex on success (if cleanAuxFiles is enabled)
+    // Clean up log on success (if cleanAuxFiles is enabled)
+    // Note: Keep .tex file for SyncTeX to work
     if (pdfConfig.cleanAuxFiles) {
-        for (const ext of ['.log', '.tex']) {
+        try {
+            await fs.promises.unlink(path.join(tempDir, `${baseName}.log`));
+        } catch {
+            // Ignore cleanup errors
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * Export to PDF with sync data for bidirectional navigation
+ * Returns sync paths on success, or log path on error
+ */
+async function exportPdfWithSync(
+    content: string,
+    orgPath: string,
+    outputPath: string
+): Promise<{ success: true; texPath: string; pdfPath: string } | { success: false; logPath: string }> {
+    const pdfConfig = loadPdfConfig();
+
+    // Generate LaTeX with line mappings
+    const { latex: latexContent, lineMappings } = exportOrgToLatexWithMappings(content, {
+        toc: false,
+        standalone: true,
+    });
+
+    // Write to temp file
+    const tempDir = path.dirname(outputPath);
+    const baseName = path.basename(outputPath, '.pdf');
+    const texPath = path.join(tempDir, `${baseName}.tex`);
+    const logPath = path.join(tempDir, `${baseName}.log`);
+
+    await fs.promises.writeFile(texPath, latexContent, 'utf-8');
+
+    // Build and execute the compile command
+    const { command, args } = buildCompileArgs(texPath, tempDir, pdfConfig);
+
+    try {
+        await spawnAsync(command, args, {
+            cwd: tempDir,
+            timeout: 180000,
+        });
+    } catch {
+        // Compiler may return non-zero even when PDF is produced
+    }
+
+    // For non-latexmk compilers, we may need to run bibtex/biber and recompile
+    if (!pdfConfig.compiler.startsWith('latexmk')) {
+        const auxPath = path.join(tempDir, `${baseName}.aux`);
+        if (fs.existsSync(auxPath)) {
+            const auxContent = await fs.promises.readFile(auxPath, 'utf-8');
+            if (auxContent.includes('\\citation') || auxContent.includes('\\bibdata')) {
+                try {
+                    await spawnAsync(pdfConfig.bibtexCommand, [baseName], {
+                        cwd: tempDir,
+                        timeout: 60000,
+                    });
+                    const recompile = buildCompileArgs(texPath, tempDir, pdfConfig);
+                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
+                    await spawnAsync(recompile.command, recompile.args, { cwd: tempDir, timeout: 120000 });
+                } catch {
+                    // Bibliography processing may fail, continue anyway
+                }
+            }
+        }
+    }
+
+    // Check if PDF was created
+    const pdfCreated = fs.existsSync(outputPath);
+
+    // Clean up auxiliary files (but keep .tex and .synctex.gz for sync)
+    if (pdfConfig.cleanAuxFiles) {
+        const auxFiles = ['.aux', '.bbl', '.blg', '.fdb_latexmk', '.fls', '.out', '.toc', '.run.xml', '.bcf'];
+        for (const ext of auxFiles) {
             try {
                 await fs.promises.unlink(path.join(tempDir, `${baseName}${ext}`));
             } catch {
@@ -659,7 +739,31 @@ async function exportPdf(
         }
     }
 
-    return undefined;
+    if (!pdfCreated) {
+        return { success: false, logPath };
+    }
+
+    // Clean up log on success
+    if (pdfConfig.cleanAuxFiles) {
+        try {
+            await fs.promises.unlink(logPath);
+        } catch {
+            // Ignore cleanup errors
+        }
+    }
+
+    // Store sync data for bidirectional navigation
+    storeSyncData({
+        orgPath,
+        texPath,
+        pdfPath: outputPath,
+        lineMappings,
+        lastExportTime: Date.now(),
+    });
+
+    console.log(`Stored sync data for ${orgPath}: ${lineMappings.length} line mappings`);
+
+    return { success: true, texPath, pdfPath: outputPath };
 }
 
 /**
@@ -1368,6 +1472,170 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 await vscode.commands.executeCommand('scimax.hydra.show', 'scimax.export');
             }
         )
+    );
+
+    // View PDF in built-in panel (like LaTeX)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.viewPdfPanel', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || editor.document.languageId !== 'org') {
+                vscode.window.showWarningMessage('No org-mode file open');
+                return;
+            }
+
+            const inputPath = editor.document.uri.fsPath;
+            const inputDir = path.dirname(inputPath);
+            const content = preprocessContent(editor.document.getText(), inputDir);
+            const outputPath = inputPath.replace(/\.org$/, '.pdf');
+            const compilerDesc = getPdfCompilerDescription();
+
+            await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: `Exporting to PDF via ${compilerDesc}...`,
+                    cancellable: false,
+                },
+                async () => {
+                    try {
+                        await deleteExistingOutput(outputPath);
+                        const result = await exportPdfWithSync(content, inputPath, outputPath);
+                        if (!result.success) {
+                            await handlePdfExportError(result.logPath);
+                        } else {
+                            // Open in built-in PDF panel
+                            PdfViewerPanel.createOrShow(context.extensionUri, result.pdfPath, inputPath);
+                        }
+                    } catch (error) {
+                        const message = error instanceof Error ? error.message : String(error);
+                        vscode.window.showErrorMessage(`PDF export failed: ${message}`);
+                    }
+                }
+            );
+        })
+    );
+
+    // Jump to PDF location from org cursor (forward sync)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.jumpToPdf', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor || editor.document.languageId !== 'org') {
+                return;
+            }
+
+            const orgPath = editor.document.uri.fsPath;
+            const pdfPath = orgPath.replace(/\.org$/, '.pdf');
+
+            console.log('Org forward sync: org to PDF');
+            console.log('  Org file:', orgPath);
+            console.log('  PDF path:', pdfPath);
+
+            // Check if PDF exists
+            const pdfExists = await vscode.workspace.fs.stat(vscode.Uri.file(pdfPath)).then(
+                () => true,
+                () => false
+            );
+
+            if (!pdfExists || !hasSyncData(orgPath)) {
+                // Need to export first
+                console.log('  PDF or sync data missing, exporting...');
+                vscode.window.showInformationMessage('Exporting org to PDF...');
+                const inputDir = path.dirname(orgPath);
+                const content = preprocessContent(editor.document.getText(), inputDir);
+
+                const result = await exportPdfWithSync(content, orgPath, pdfPath);
+                if (!result.success) {
+                    await handlePdfExportError(result.logPath);
+                    return;
+                }
+            }
+
+            // Open panel if not already open
+            if (!PdfViewerPanel.currentPanel) {
+                console.log('  Opening PDF panel...');
+                PdfViewerPanel.createOrShow(context.extensionUri, pdfPath, orgPath);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            } else {
+                // Check if the panel has the right PDF loaded
+                const currentPdf = PdfViewerPanel.currentPanel.currentPdfPath;
+                if (currentPdf !== pdfPath) {
+                    console.log('  Panel has different PDF, reloading...');
+                    PdfViewerPanel.createOrShow(context.extensionUri, pdfPath, orgPath);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+
+            if (!PdfViewerPanel.currentPanel) {
+                console.log('  ERROR: Could not open PDF panel');
+                return;
+            }
+
+            const panel = PdfViewerPanel.currentPanel;
+            const line = editor.selection.active.line + 1;
+            const column = editor.selection.active.character + 1;
+
+            // Get the selected word for precise highlighting
+            let searchWord = '';
+            const selection = editor.selection;
+            if (!selection.isEmpty) {
+                searchWord = editor.document.getText(selection);
+                // Clean up org markup
+                searchWord = searchWord.replace(/[*/_=~+]/g, '').trim();
+            }
+
+            // Get source text for debug
+            const lineText = editor.document.lineAt(editor.selection.active.line).text;
+            const start = Math.max(0, column - 30);
+            const end = Math.min(lineText.length, column + 30);
+            let sourceText = lineText.substring(start, end).trim();
+            if (start > 0) sourceText = '...' + sourceText;
+            if (end < lineText.length) sourceText = sourceText + '...';
+
+            console.log(`  Source position: line ${line}, column ${column}`);
+            console.log(`  Search word: "${searchWord}"`);
+
+            // Run forward sync
+            const result = await orgForwardSync(orgPath, line, column);
+            if (result) {
+                console.log('  SyncTeX result:', result);
+                panel.scrollToPosition(result, {
+                    line,
+                    column,
+                    text: sourceText,
+                    file: orgPath,
+                    searchWord: searchWord
+                });
+            } else {
+                console.log('  SyncTeX returned no result for this position');
+                vscode.window.showWarningMessage('Could not sync to PDF position');
+            }
+        })
+    );
+
+    // Double-click handler for org files to trigger jump to PDF
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(async (event) => {
+            const editor = event.textEditor;
+            if (editor.document.languageId !== 'org') {
+                return;
+            }
+
+            // Only react to mouse selections
+            if (event.kind !== vscode.TextEditorSelectionChangeKind.Mouse) {
+                return;
+            }
+
+            const selection = event.selections[0];
+            if (!selection || selection.isEmpty) {
+                return;
+            }
+
+            // Check if selection exactly matches a word (double-click behavior)
+            const wordRange = editor.document.getWordRangeAtPosition(selection.start);
+            if (wordRange && selection.isEqual(wordRange)) {
+                // Word selected via mouse - trigger jump to PDF
+                await vscode.commands.executeCommand('scimax.org.jumpToPdf');
+            }
+        })
     );
 }
 

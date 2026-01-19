@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { runSyncTeXInverse, SyncTeXForwardResult } from './synctexUtils';
+import { orgInverseSync, hasSyncData } from '../org/orgPdfSync';
 
 export class PdfViewerPanel {
     public static currentPanel: PdfViewerPanel | undefined;
@@ -183,12 +184,38 @@ export class PdfViewerPanel {
 
     /**
      * Handle inverse SyncTeX lookup (PDF click -> source line)
+     * Supports both LaTeX (.tex) and Org-mode (.org) source files
      */
     private async handleInverseSync(page: number, x: number, y: number, clickedText?: string, contextText?: string): Promise<void> {
         if (!this.pdfPath) {
             return;
         }
 
+        // Check if source is an org file with sync data
+        if (this.sourceFile && this.sourceFile.endsWith('.org') && hasSyncData(this.sourceFile)) {
+            console.log('Inverse sync: Using org-mode sync for', this.sourceFile);
+            const orgResult = await orgInverseSync(this.sourceFile, page, x, y);
+            if (orgResult) {
+                // Send result back to webview
+                const filename = path.basename(this.sourceFile);
+                this.panel.webview.postMessage({
+                    type: 'syncTexResult',
+                    file: filename,
+                    line: orgResult.line,
+                    column: orgResult.column
+                });
+
+                // Jump to the org file
+                if (clickedText) {
+                    await this.jumpToSourceWithText(this.sourceFile, orgResult.line, orgResult.column, clickedText, contextText);
+                } else {
+                    await this.jumpToSource(this.sourceFile, orgResult.line, orgResult.column);
+                }
+                return;
+            }
+        }
+
+        // Default: use standard SyncTeX (for LaTeX files)
         const result = await runSyncTeXInverse(this.pdfPath, page, x, y);
         if (result) {
             // Send SyncTeX result back to webview to update the debug popup
