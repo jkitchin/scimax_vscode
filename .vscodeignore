@@ -40,13 +40,34 @@ node_modules/**
 !node_modules/fetch-ponyfill/**
 # other runtime deps
 !node_modules/@babel/**
-!node_modules/date-fns/**
+# date-fns: include only CJS (index.js files), exclude esm/fp/locale
+!node_modules/date-fns/*
+!node_modules/date-fns/*/index.js
+!node_modules/date-fns/*/package.json
+!node_modules/date-fns/_lib/*
+!node_modules/date-fns/_lib/*/index.js
+!node_modules/date-fns/parse/*
+!node_modules/date-fns/parse/*/index.js
 !node_modules/minimatch/**
 !node_modules/brace-expansion/**
 !node_modules/balanced-match/**
 !node_modules/uuid/**
 !node_modules/zeromq/**
 !node_modules/cmake-ts/**
+# Exclude test/doc files from included packages
+**/node_modules/**/test/**
+**/node_modules/**/tests/**
+**/node_modules/**/*.md
+**/node_modules/**/docs/**
+**/node_modules/**/*.d.ts
+**/node_modules/**/.history/**
+
+# zeromq: exclude source files (only need compiled)
+node_modules/zeromq/src/**
+
+# cmake-ts: exclude source files
+node_modules/cmake-ts/src/**
+
 *.vsix
 .claude/**
 !syntaxes/**
