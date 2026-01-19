@@ -23,6 +23,43 @@ import {
 import { OrgParser } from '../parser/orgParser';
 
 // =============================================================================
+// Heading Detection Helpers (org and markdown support)
+// =============================================================================
+
+/**
+ * Get the heading pattern for the document type
+ */
+function getHeadingPattern(document: vscode.TextDocument): RegExp {
+    if (document.languageId === 'markdown') {
+        return /^(#{1,6})\s/;
+    }
+    return /^(\*+)\s/;
+}
+
+/**
+ * Get the heading character for the document type
+ */
+function getHeadingChar(document: vscode.TextDocument): string {
+    return document.languageId === 'markdown' ? '#' : '*';
+}
+
+/**
+ * Check if a line is a heading and return its level
+ */
+function getHeadingLevel(document: vscode.TextDocument, lineText: string): number {
+    const pattern = getHeadingPattern(document);
+    const match = lineText.match(pattern);
+    return match ? match[1].length : 0;
+}
+
+/**
+ * Check if a line is a heading
+ */
+function isHeadingLine(document: vscode.TextDocument, lineText: string): boolean {
+    return getHeadingLevel(document, lineText) > 0;
+}
+
+// =============================================================================
 // Text Markup Functions
 // =============================================================================
 
@@ -465,11 +502,15 @@ export async function jumpToHeading(): Promise<void> {
 
     const document = editor.document;
     const headings: { label: string; line: number; level: number }[] = [];
+    const isMarkdown = document.languageId === 'markdown';
+
+    // Pattern for headings: org uses *, markdown uses #
+    const headingPattern = isMarkdown ? /^(#{1,6})\s+(.*)$/ : /^(\*+)\s+(.*)$/;
 
     // Find all headings
     for (let i = 0; i < document.lineCount; i++) {
         const line = document.lineAt(i).text;
-        const match = line.match(/^(\*+)\s+(.*)$/);
+        const match = line.match(headingPattern);
         if (match) {
             const level = match[1].length;
             const title = match[2].replace(/\s*:[\w:]+:\s*$/, ''); // Remove tags
@@ -507,7 +548,7 @@ export async function jumpToHeading(): Promise<void> {
 }
 
 /**
- * Jump to next heading
+ * Jump to next heading (supports org and markdown)
  */
 export async function nextHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -517,7 +558,7 @@ export async function nextHeading(): Promise<void> {
     const currentLine = editor.selection.active.line;
 
     for (let i = currentLine + 1; i < document.lineCount; i++) {
-        if (document.lineAt(i).text.match(/^\*+\s/)) {
+        if (isHeadingLine(document, document.lineAt(i).text)) {
             const pos = new vscode.Position(i, 0);
             editor.selection = new vscode.Selection(pos, pos);
             editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
@@ -529,7 +570,7 @@ export async function nextHeading(): Promise<void> {
 }
 
 /**
- * Jump to previous heading
+ * Jump to previous heading (supports org and markdown)
  */
 export async function previousHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -539,7 +580,7 @@ export async function previousHeading(): Promise<void> {
     const currentLine = editor.selection.active.line;
 
     for (let i = currentLine - 1; i >= 0; i--) {
-        if (document.lineAt(i).text.match(/^\*+\s/)) {
+        if (isHeadingLine(document, document.lineAt(i).text)) {
             const pos = new vscode.Position(i, 0);
             editor.selection = new vscode.Selection(pos, pos);
             editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
@@ -551,7 +592,7 @@ export async function previousHeading(): Promise<void> {
 }
 
 /**
- * Jump to parent heading
+ * Jump to parent heading (supports org and markdown)
  */
 export async function parentHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -563,9 +604,9 @@ export async function parentHeading(): Promise<void> {
     // Find current heading level
     let currentLevel = 0;
     for (let i = currentLine; i >= 0; i--) {
-        const match = document.lineAt(i).text.match(/^(\*+)\s/);
-        if (match) {
-            currentLevel = match[1].length;
+        const level = getHeadingLevel(document, document.lineAt(i).text);
+        if (level > 0) {
+            currentLevel = level;
             break;
         }
     }
@@ -575,10 +616,10 @@ export async function parentHeading(): Promise<void> {
         return;
     }
 
-    // Find parent (heading with fewer stars)
+    // Find parent (heading with lower level)
     for (let i = currentLine - 1; i >= 0; i--) {
-        const match = document.lineAt(i).text.match(/^(\*+)\s/);
-        if (match && match[1].length < currentLevel) {
+        const level = getHeadingLevel(document, document.lineAt(i).text);
+        if (level > 0 && level < currentLevel) {
             const pos = new vscode.Position(i, 0);
             editor.selection = new vscode.Selection(pos, pos);
             editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
@@ -594,7 +635,7 @@ export async function parentHeading(): Promise<void> {
 // =============================================================================
 
 /**
- * Promote heading (decrease level)
+ * Promote heading (decrease level) - supports org and markdown
  */
 export async function promoteHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -603,9 +644,9 @@ export async function promoteHeading(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
     const line = document.lineAt(position.line);
-    const match = line.text.match(/^(\*+)\s/);
+    const level = getHeadingLevel(document, line.text);
 
-    if (!match || match[1].length <= 1) {
+    if (level <= 1) {
         vscode.window.showInformationMessage('Cannot promote further');
         return;
     }
@@ -616,7 +657,7 @@ export async function promoteHeading(): Promise<void> {
 }
 
 /**
- * Demote heading (increase level)
+ * Demote heading (increase level) - supports org and markdown
  */
 export async function demoteHeading(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -625,19 +666,27 @@ export async function demoteHeading(): Promise<void> {
     const document = editor.document;
     const position = editor.selection.active;
     const line = document.lineAt(position.line);
+    const level = getHeadingLevel(document, line.text);
 
-    if (!line.text.match(/^\*+\s/)) {
+    if (level === 0) {
         vscode.window.showInformationMessage('Not on a heading');
         return;
     }
 
+    // Markdown headings max out at level 6
+    if (document.languageId === 'markdown' && level >= 6) {
+        vscode.window.showInformationMessage('Cannot demote further (max level 6)');
+        return;
+    }
+
+    const headingChar = getHeadingChar(document);
     await editor.edit(editBuilder => {
-        editBuilder.insert(new vscode.Position(position.line, 0), '*');
+        editBuilder.insert(new vscode.Position(position.line, 0), headingChar);
     });
 }
 
 /**
- * Promote subtree (heading and all children)
+ * Promote subtree (heading and all children) - supports org and markdown
  */
 export async function promoteSubtree(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -649,8 +698,8 @@ export async function promoteSubtree(): Promise<void> {
 
     // Check if can promote
     const firstLine = document.lineAt(startLine).text;
-    const match = firstLine.match(/^(\*+)\s/);
-    if (!match || match[1].length <= 1) {
+    const level = getHeadingLevel(document, firstLine);
+    if (level <= 1) {
         vscode.window.showInformationMessage('Cannot promote further');
         return;
     }
@@ -658,7 +707,7 @@ export async function promoteSubtree(): Promise<void> {
     await editor.edit(editBuilder => {
         for (let i = startLine; i <= endLine; i++) {
             const line = document.lineAt(i).text;
-            if (line.match(/^\*+\s/)) {
+            if (isHeadingLine(document, line)) {
                 editBuilder.delete(new vscode.Range(i, 0, i, 1));
             }
         }
@@ -666,7 +715,7 @@ export async function promoteSubtree(): Promise<void> {
 }
 
 /**
- * Demote subtree (heading and all children)
+ * Demote subtree (heading and all children) - supports org and markdown
  */
 export async function demoteSubtree(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -676,40 +725,51 @@ export async function demoteSubtree(): Promise<void> {
     const position = editor.selection.active;
     const { startLine, endLine } = getSubtreeRange(document, position.line);
 
+    // Check if any heading would exceed max level (markdown: 6)
+    if (document.languageId === 'markdown') {
+        for (let i = startLine; i <= endLine; i++) {
+            const level = getHeadingLevel(document, document.lineAt(i).text);
+            if (level >= 6) {
+                vscode.window.showInformationMessage('Cannot demote: subtree contains heading at max level (6)');
+                return;
+            }
+        }
+    }
+
+    const headingChar = getHeadingChar(document);
     await editor.edit(editBuilder => {
         for (let i = startLine; i <= endLine; i++) {
             const line = document.lineAt(i).text;
-            if (line.match(/^\*+\s/)) {
-                editBuilder.insert(new vscode.Position(i, 0), '*');
+            if (isHeadingLine(document, line)) {
+                editBuilder.insert(new vscode.Position(i, 0), headingChar);
             }
         }
     });
 }
 
 /**
- * Get the range of a subtree (heading + all children)
+ * Get the range of a subtree (heading + all children) - supports org and markdown
  */
 function getSubtreeRange(document: vscode.TextDocument, line: number): { startLine: number; endLine: number } {
     const lineText = document.lineAt(line).text;
-    const match = lineText.match(/^(\*+)\s/);
+    const level = getHeadingLevel(document, lineText);
 
-    if (!match) {
+    if (level === 0) {
         // Not on a heading, find the parent heading
         for (let i = line - 1; i >= 0; i--) {
-            if (document.lineAt(i).text.match(/^\*+\s/)) {
+            if (isHeadingLine(document, document.lineAt(i).text)) {
                 return getSubtreeRange(document, i);
             }
         }
         return { startLine: line, endLine: line };
     }
 
-    const level = match[1].length;
     let endLine = line;
 
     // Find end of subtree (next heading at same or higher level, or end of file)
     for (let i = line + 1; i < document.lineCount; i++) {
-        const nextMatch = document.lineAt(i).text.match(/^(\*+)\s/);
-        if (nextMatch && nextMatch[1].length <= level) {
+        const nextLevel = getHeadingLevel(document, document.lineAt(i).text);
+        if (nextLevel > 0 && nextLevel <= level) {
             break;
         }
         endLine = i;
@@ -719,7 +779,7 @@ function getSubtreeRange(document: vscode.TextDocument, line: number): { startLi
 }
 
 /**
- * Move subtree up (swap with previous sibling)
+ * Move subtree up (swap with previous sibling) - supports org and markdown
  */
 export async function moveSubtreeUp(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -735,19 +795,17 @@ export async function moveSubtreeUp(): Promise<void> {
     }
 
     // Get the level of current heading
-    const lineText = document.lineAt(current.startLine).text;
-    const match = lineText.match(/^(\*+)\s/);
-    const level = match ? match[1].length : 0;
+    const level = getHeadingLevel(document, document.lineAt(current.startLine).text);
 
     // Find the previous sibling at the same level
     let prevStart = -1;
     for (let i = current.startLine - 1; i >= 0; i--) {
-        const prevMatch = document.lineAt(i).text.match(/^(\*+)\s/);
-        if (prevMatch) {
-            if (prevMatch[1].length === level) {
+        const prevLevel = getHeadingLevel(document, document.lineAt(i).text);
+        if (prevLevel > 0) {
+            if (prevLevel === level) {
                 prevStart = i;
                 break;
-            } else if (prevMatch[1].length < level) {
+            } else if (prevLevel < level) {
                 // Hit a parent heading, no previous sibling
                 break;
             }
@@ -782,7 +840,7 @@ export async function moveSubtreeUp(): Promise<void> {
 }
 
 /**
- * Move subtree down (swap with next sibling)
+ * Move subtree down (swap with next sibling) - supports org and markdown
  */
 export async function moveSubtreeDown(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -798,19 +856,17 @@ export async function moveSubtreeDown(): Promise<void> {
     }
 
     // Get the level of current heading
-    const lineText = document.lineAt(current.startLine).text;
-    const match = lineText.match(/^(\*+)\s/);
-    const level = match ? match[1].length : 0;
+    const level = getHeadingLevel(document, document.lineAt(current.startLine).text);
 
     // Find the next sibling at the same level
     let nextStart = -1;
     for (let i = current.endLine + 1; i < document.lineCount; i++) {
-        const nextMatch = document.lineAt(i).text.match(/^(\*+)\s/);
-        if (nextMatch) {
-            if (nextMatch[1].length === level) {
+        const nextLevel = getHeadingLevel(document, document.lineAt(i).text);
+        if (nextLevel > 0) {
+            if (nextLevel === level) {
                 nextStart = i;
                 break;
-            } else if (nextMatch[1].length < level) {
+            } else if (nextLevel < level) {
                 // Hit a parent heading, no next sibling
                 break;
             }
@@ -918,18 +974,20 @@ export async function insertHeading(): Promise<void> {
 
     const document = editor.document;
     const position = editor.selection.active;
+    const headingPattern = getHeadingPattern(document);
+    const headingChar = getHeadingChar(document);
 
     // Find the current heading level
     let level = 1;
     for (let i = position.line; i >= 0; i--) {
-        const match = document.lineAt(i).text.match(/^(\*+)\s/);
+        const match = document.lineAt(i).text.match(headingPattern);
         if (match) {
             level = match[1].length;
             break;
         }
     }
 
-    const heading = '\n' + '*'.repeat(level) + ' ';
+    const heading = '\n' + headingChar.repeat(level) + ' ';
 
     await editor.edit(editBuilder => {
         editBuilder.insert(new vscode.Position(position.line, document.lineAt(position.line).text.length), heading);
@@ -948,18 +1006,20 @@ export async function insertSubheading(): Promise<void> {
 
     const document = editor.document;
     const position = editor.selection.active;
+    const headingPattern = getHeadingPattern(document);
+    const headingChar = getHeadingChar(document);
 
     // Find the current heading level
     let level = 1;
     for (let i = position.line; i >= 0; i--) {
-        const match = document.lineAt(i).text.match(/^(\*+)\s/);
+        const match = document.lineAt(i).text.match(headingPattern);
         if (match) {
             level = match[1].length + 1;
             break;
         }
     }
 
-    const heading = '\n' + '*'.repeat(level) + ' ';
+    const heading = '\n' + headingChar.repeat(level) + ' ';
 
     await editor.edit(editBuilder => {
         editBuilder.insert(new vscode.Position(position.line, document.lineAt(position.line).text.length), heading);
