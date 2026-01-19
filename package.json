@@ -3154,6 +3154,18 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
+        "command": "scimax.speed.nextSibling",
+        "key": "ctrl+c ctrl+f",
+        "mac": "ctrl+c ctrl+f",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.speed.previousSibling",
+        "key": "ctrl+c ctrl+b",
+        "mac": "ctrl+c ctrl+b",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
         "command": "scimax.org.promoteHeading",
         "key": "alt+left",
         "mac": "alt+left",
@@ -3562,6 +3574,12 @@
         "command": "scimax.latex.jumpToSection",
         "key": "ctrl+c j",
         "mac": "ctrl+c j",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.jumpToSection",
+        "key": "ctrl+c ctrl+j",
+        "mac": "ctrl+c ctrl+j",
         "when": "editorTextFocus && editorLangId == 'latex'"
       },
       {

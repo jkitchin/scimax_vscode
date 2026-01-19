@@ -17,7 +17,11 @@ describe('LaTeX Math Detection', () => {
         let match;
         while ((match = pattern.exec(text)) !== null) {
             // Skip if looks like currency
-            if (/^\d/.test(match[1].trim())) continue;
+            if (/^\d/.test(match[1].trim())) {
+                // Reset to just after opening $ to find potential matches within
+                pattern.lastIndex = match.index + 1;
+                continue;
+            }
             results.push({
                 content: match[1],
                 start: match.index,
@@ -292,14 +296,14 @@ describe('LaTeX Word Count', () => {
         // Remove comments
         const noComments = text.replace(/%.*$/gm, '');
 
-        // Remove commands
-        const noCommands = noComments.replace(/\\[a-zA-Z]+(\[[^\]]*\])?(\{[^}]*\})?/g, ' ');
+        // Remove environment markers first (these should be completely removed)
+        const noEnvMarkers = noComments.replace(/\\(begin|end)\{[^}]+\}/g, '');
 
-        // Remove environment markers
-        const noEnvMarkers = noCommands.replace(/\\(begin|end)\{[^}]+\}/g, '');
+        // Remove command names (but preserve content in braces for formatting commands)
+        const noCommands = noEnvMarkers.replace(/\\[a-zA-Z]+(\[[^\]]*\])?/g, '');
 
         // Count words
-        const words = noEnvMarkers.match(/\b[a-zA-Z]+\b/g) || [];
+        const words = noCommands.match(/\b[a-zA-Z]+\b/g) || [];
         return words.length;
     }
 

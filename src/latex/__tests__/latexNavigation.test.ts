@@ -2,7 +2,23 @@
  * Tests for LaTeX navigation utilities
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+// Mock vscode module before importing modules that depend on it
+vi.mock('vscode', () => ({
+    Position: class { constructor(public line: number, public character: number) {} },
+    Selection: class { constructor(public anchor: any, public active: any) {} },
+    Range: class { constructor(public start: any, public end: any) {} },
+    TextEditorRevealType: { InCenter: 1 },
+    window: {
+        activeTextEditor: null,
+        showQuickPick: vi.fn(),
+        showInformationMessage: vi.fn(),
+        setStatusBarMessage: vi.fn()
+    },
+    SymbolKind: { Function: 11 }
+}));
+
 import { isSectionLine, parseSectionLine } from '../latexNavigation';
 
 // =============================================================================

@@ -2,7 +2,34 @@
  * Tests for LaTeX document parsing and symbol provider
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Mock vscode module before importing modules that depend on it
+vi.mock('vscode', () => ({
+    Position: class { constructor(public line: number, public character: number) {} },
+    Selection: class { constructor(public anchor: any, public active: any) {} },
+    Range: class { constructor(public start: any, public end: any) {} },
+    SymbolKind: {
+        Class: 4,
+        Function: 11,
+        Variable: 12,
+        String: 14,
+        Key: 19
+    },
+    DocumentSymbol: class {
+        constructor(
+            public name: string,
+            public detail: string,
+            public kind: number,
+            public range: any,
+            public selectionRange: any
+        ) {
+            this.children = [];
+        }
+        children: any[];
+    }
+}));
+
 import {
     parseLatexDocument,
     getSectionLevel,

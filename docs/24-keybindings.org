@@ -95,10 +95,15 @@ Select a result to see details or open the documentation file at that location.
 | <tab>       | Toggle fold (on heading) |
 | S-<tab>     | Cycle global fold        |
 | C-c C-j     | Jump to heading          |
-| C-c C-n       | Next heading             |
-| C-c C-p       | Previous heading         |
+| C-c C-n     | Next heading             |
+| C-c C-p     | Previous heading         |
+| C-c C-f     | Next sibling heading     |
+| C-c C-b     | Previous sibling heading |
 | C-<up>      | Previous source block    |
 | C-<down>    | Next source block        |
+
+Note: Navigation keybindings (C-c C-n, C-c C-p, C-c C-f, C-c C-b, C-c C-j) work in
+org-mode, markdown, and LaTeX files with consistent behavior.
 
 * Headings
 
@@ -386,7 +391,8 @@ These keybindings are active in LaTeX files (=.tex=):
 | C-c C-u     | Parent section               |
 | C-c C-f     | Next sibling section         |
 | C-c C-b     | Previous sibling section     |
-| C-c j       | Jump to any section          |
+| C-c C-j     | Jump to any section          |
+| C-c j       | Jump to any section (alt)    |
 
 ** Structure Editing
 

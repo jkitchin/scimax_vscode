@@ -38,14 +38,19 @@ headings, source blocks, and other landmarks.
 ** ✅ Heading Navigation
 CLOSED: [2026-01-15 Thu 07:36]
 
-Navigate between headings in org-mode and markdown documents:
+Navigate between headings in org-mode, markdown, and LaTeX documents:
 
-| Command                    | Key Binding | Description              |
-|----------------------------+-------------+--------------------------|
-| scimax.org.nextHeading     | C-c C-n       | Jump to next heading     |
-| scimax.org.previousHeading | C-c C-p       | Jump to previous heading |
-| scimax.org.parentHeading   | -           | Jump to parent heading   |
-| scimax.org.jumpToHeading   | C-c C-j     | Fuzzy search headings    |
+| Command                    | Key Binding | Description                |
+|----------------------------+-------------+----------------------------|
+| scimax.org.nextHeading     | C-c C-n     | Jump to next heading       |
+| scimax.org.previousHeading | C-c C-p     | Jump to previous heading   |
+| scimax.speed.nextSibling   | C-c C-f     | Next sibling (same level)  |
+| scimax.speed.previousSibling| C-c C-b    | Previous sibling           |
+| scimax.org.parentHeading   | C-c C-u     | Jump to parent heading     |
+| scimax.org.jumpToHeading   | C-c C-j     | Fuzzy search headings      |
+
+Note: These keybindings work consistently across org-mode, markdown, and LaTeX
+files. In LaTeX, headings correspond to =\section{}=, =\subsection{}=, etc.
 
 
 
