@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-19T01:44:13.310Z",
-  "count": 2816,
+  "buildDate": "2026-01-19T02:47:05.877Z",
+  "count": 2830,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -80496,7 +80496,7 @@
       "heading": "Document Outline",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 36,
+      "line": 41,
       "content": "The outline view (VS Code's built-in outline panel) shows the structure of your LaTeX document: - *Sections* (part, chapter, section, subsection, etc.) - *Labeled Environments* (figures, tables, equations with labels) - *Labels* for cross-referencing The outline uses hierarchical nesting to show the document structure. Click any item to jump to it.",
       "path": [],
       "commands": [],
@@ -80528,7 +80528,7 @@
       "heading": "Section Hierarchy",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 46,
+      "line": 51,
       "content": "LaTeX sections are organized hierarchically: | Level | Command         | Symbol Kind | |-------+-----------------+-------------| |     0 | \\part           | Module      | |     1 | \\chapter        | Class       | |     2 | \\section        | Method      | |     3 | \\subsection     | Function    | |     4 | \\subsubsection  | Field       | |     5 | \\paragraph      | Property    | |     6 | \\subparagraph   | Property    | Starred variants (e.g., =\\section*{...}=) are also recognized and marked in t",
       "path": [
         "Document Outline"
@@ -80562,7 +80562,7 @@
       "heading": "Section Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 62,
+      "line": 67,
       "content": "Navigate between sections in your LaTeX document using these commands: | Command                               | Key Binding   | Description                        | |---------------------------------------+---------------+------------------------------------| | scimax.latex.nextSection              | C-c C-n       | Jump to next section               | | scimax.latex.previousSection          | C-c C-p       | Jump to previous section           | | scimax.latex.parentSection            | C-c C-u",
       "path": [],
       "commands": [
@@ -80602,7 +80602,7 @@
       "heading": "Next/Previous Section",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 77,
+      "line": 82,
       "content": "Move through all sections in document order: #+BEGIN_SRC latex \\section{Introduction} Content here... \\subsection{Background}    % <- Current position \\subsection{Motivation}    % <- Next section \\section{Methods}          % <- Another next section #+END_SRC =nextSection= moves forward through sections regardless of level. =previousSection= moves backward.",
       "path": [
         "Section Navigation"
@@ -80636,7 +80636,7 @@
       "heading": "Sibling Navigation",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 94,
+      "line": 99,
       "content": "Move between sections at the same level: #+BEGIN_SRC latex \\section{Introduction} \\subsection{Background}    % <- Current position \\subsection{Motivation}    % <- Next sibling (same level) \\subsection{Goals}         % <- Another sibling \\section{Methods}          % <- NOT a sibling (different level) #+END_SRC =nextSiblingSection= moves to the next section at the same hierarchical level. =previousSiblingSection= moves backward.",
       "path": [
         "Section Navigation"
@@ -80670,7 +80670,7 @@
       "heading": "Parent Section",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 111,
+      "line": 116,
       "content": "Jump to the containing (parent) section: #+BEGIN_SRC latex \\section{Methods}            % <- Jump here (parent) \\subsection{Data Collection} \\subsubsection{Sampling}     % <- From here #+END_SRC",
       "path": [
         "Section Navigation"
@@ -80698,7 +80698,7 @@
       "heading": "Jump to Section",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 121,
+      "line": 126,
       "content": "The =jumpToSection= command (C-c j) opens a quick pick showing all sections with: - Hierarchical indentation showing structure - Section type (=\\section=, =\\subsection=, etc.) - Line numbers Type to filter, then select a section to jump to it.",
       "path": [
         "Section Navigation"
@@ -80734,7 +80734,7 @@
       "heading": "Structure Editing",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 131,
+      "line": 136,
       "content": "Edit the document structure by promoting, demoting, and moving sections. | Command                          | Key Binding      | Description                     | |----------------------------------+------------------+---------------------------------| | scimax.latex.promoteSection      | Alt+Left         | Promote section (e.g., sub→sec) | | scimax.latex.demoteSection       | Alt+Right        | Demote section (e.g., sec→sub)  | | scimax.latex.promoteSubtree      | Alt+Shift+Left   | Promote sec",
       "path": [],
       "commands": [
@@ -80774,7 +80774,7 @@
       "heading": "Promote/Demote",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 149,
+      "line": 154,
       "content": "Change the level of a section command: #+BEGIN_SRC latex % Before promote: \\subsection{Methods} % After promote (Alt+Left): \\section{Methods} % Before demote: \\section{Results} % After demote (Alt+Right): \\subsection{Results} #+END_SRC",
       "path": [
         "Structure Editing"
@@ -80808,7 +80808,7 @@
       "heading": "Promote/Demote Subtree",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 167,
+      "line": 172,
       "content": "Promote or demote a section and all its children: #+BEGIN_SRC latex % Before promoteSubtree on \"Methods\": \\subsection{Methods} \\subsubsection{Data} \\subsubsection{Analysis} % After promoteSubtree (Alt+Shift+Left): \\section{Methods} \\subsection{Data} \\subsection{Analysis} #+END_SRC",
       "path": [
         "Structure Editing"
@@ -80842,7 +80842,7 @@
       "heading": "Move Section Up/Down",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 183,
+      "line": 188,
       "content": "Swap a section with its previous or next sibling: #+BEGIN_SRC latex % Before moveSectionDown on \"Introduction\": \\section{Introduction} Content A... \\section{Methods} Content B... % After moveSectionDown (Alt+Down): \\section{Methods} Content B... \\section{Introduction} Content A... #+END_SRC The entire section subtree (including all nested content) is moved.",
       "path": [
         "Structure Editing"
@@ -80878,7 +80878,7 @@
       "heading": "Environment Commands",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 205,
+      "line": 210,
       "content": "Work with LaTeX environments (=\\begin{...}= / =\\end{...}=): | Command                             | Key Binding  | Description                        | |-------------------------------------+--------------+------------------------------------| | scimax.latex.selectEnvironment      | C-c C-e      | Select entire environment          | | scimax.latex.selectEnvironmentContent | -          | Select content (not begin/end)     | | scimax.latex.changeEnvironment      | C-c e        | Change environmen",
       "path": [],
       "commands": [
@@ -80917,7 +80917,7 @@
       "heading": "Environment Navigation",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 222,
+      "line": 227,
       "content": "Navigate between environments: | Command                            | Key Binding | Description               | |------------------------------------+-------------+---------------------------| | scimax.latex.nextEnvironment       | -           | Jump to next environment  | | scimax.latex.previousEnvironment   | -           | Jump to previous environment | | scimax.latex.jumpToEnvironment     | -           | Quick pick all environments |",
       "path": [
         "Environment Commands"
@@ -80950,7 +80950,7 @@
       "heading": "Change Environment",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 232,
+      "line": 237,
       "content": "The =changeEnvironment= command (C-c e) prompts to change the environment type: #+BEGIN_SRC latex % Before: \\begin{equation} E = mc^2 \\end{equation} % After changing to \"align\": \\begin{align} E = mc^2 \\end{align} #+END_SRC Both =\\begin= and =\\end= are updated simultaneously.",
       "path": [
         "Environment Commands"
@@ -80986,7 +80986,7 @@
       "heading": "Wrap in Environment",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 250,
+      "line": 255,
       "content": "Select text and use =wrapInEnvironment= (C-c w) to surround it: #+BEGIN_SRC latex % Before (with \"E = mc^2\" selected): E = mc^2 % After wrapping in \"equation\": \\begin{equation} E = mc^2 \\end{equation} #+END_SRC",
       "path": [
         "Environment Commands"
@@ -81020,7 +81020,7 @@
       "heading": "Toggle Star",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 264,
+      "line": 269,
       "content": "Toggle the starred variant of an environment: #+BEGIN_SRC latex % Before: \\begin{equation} E = mc^2 \\end{equation} % After toggleEnvironmentStar (C-c *): \\begin{equation*} E = mc^2 \\end{equation*} #+END_SRC",
       "path": [
         "Environment Commands"
@@ -81052,7 +81052,7 @@
       "heading": "Hover Tooltips",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 280,
+      "line": 285,
       "content": "Hover over LaTeX elements to see helpful information: | Element              | Information Shown                           | |----------------------+---------------------------------------------| | =\\ref{label}=        | What the label refers to, line number       | | =\\cite{key}=         | Citation keys (bib integration planned)     | | =\\label{name}=       | Where label is referenced, context          | | =\\usepackage{pkg}=   | Package description                         | | =\\begin{env}=     ",
       "path": [],
       "commands": [],
@@ -81084,7 +81084,7 @@
       "heading": "Reference Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 296,
+      "line": 301,
       "content": "Hovering over =\\ref{fig:example}= shows: - The label name - Line number where label is defined - Context (section or environment containing the label) - Preview of the labeled line",
       "path": [
         "Hover Tooltips"
@@ -81116,7 +81116,7 @@
       "heading": "Citation Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 305,
+      "line": 310,
       "content": "Hovering over =\\cite{key}= shows rich BibTeX information: - Full title - Authors with proper formatting - Year - Journal or book title - Volume, number, pages - DOI (as clickable link) - Abstract preview Supports all natbib and biblatex citation commands: - =\\cite=, =\\citep=, =\\citet= - =\\citealt=, =\\citealp= - =\\citeauthor=, =\\citeyear= - =\\nocite=",
       "path": [
         "Hover Tooltips"
@@ -81150,7 +81150,7 @@
       "heading": "Package Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 323,
+      "line": 328,
       "content": "Hovering over =\\usepackage{amsmath}= shows: - Package name - Description of what the package provides",
       "path": [
         "Hover Tooltips"
@@ -81174,7 +81174,7 @@
       "heading": "Math Symbol Hover",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 330,
+      "line": 335,
       "content": "Hovering over math commands like =\\alpha= shows: - Unicode representation: α - Unicode code point: U+03B1 - Description: Greek lowercase alpha",
       "path": [
         "Hover Tooltips"
@@ -81205,7 +81205,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 338,
+      "line": 343,
       "content": "At the beginning of a section line, single keys trigger commands: | Key | Action                 | Key | Action             | |-----+------------------------+-----+--------------------| | n   | Next section           | <   | Promote section    | | p   | Previous section       | >   | Demote section     | | f   | Next sibling           | U   | Move section up    | | b   | Previous sibling       | D   | Move section down  | | u   | Parent section         | m   | Mark section       | | j   | Jump t",
       "path": [],
       "commands": [],
@@ -81237,7 +81237,7 @@
       "heading": "Using Speed Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 359,
+      "line": 364,
       "content": "1. Place cursor at the start of a section line (column 0 or before =\\=) 2. Press a single key 3. The corresponding action executes Example: #+BEGIN_SRC latex \\section{Introduction}   % <- Place cursor here, press 'n' to go to next section ^ |__ Cursor position #+END_SRC",
       "path": [
         "Speed Commands"
@@ -81271,7 +81271,7 @@
       "heading": "Folding",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 372,
+      "line": 377,
       "content": "LaTeX documents support folding for sections and environments. | Command               | Key Binding | Description                  | |-----------------------+-------------+------------------------------| | scimax.org.toggleFold | Tab         | Toggle fold at cursor        | | scimax.org.cycleGlobalFold | Shift+Tab | Cycle all folds         |",
       "path": [],
       "commands": [
@@ -81306,7 +81306,7 @@
       "heading": "Section Folding",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 381,
+      "line": 386,
       "content": "Sections fold from the section command to the next section at the same or higher level: #+BEGIN_SRC latex \\section{Introduction}...  % <- Folds from here Content... \\subsection{Background}    % <- Included in fold More content... \\section{Methods}          % <- Fold ends before this #+END_SRC",
       "path": [
         "Folding"
@@ -81340,7 +81340,7 @@
       "heading": "Environment Folding",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 393,
+      "line": 398,
       "content": "Environments fold from =\\begin= to =\\end=: #+BEGIN_SRC latex \\begin{figure}...          % <- Folds from here \\includegraphics{...} \\caption{...} \\end{figure}               % <- Fold ends here #+END_SRC",
       "path": [
         "Folding"
@@ -81369,7 +81369,7 @@
       "heading": "Global Fold Cycling",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 404,
+      "line": 409,
       "content": "=Shift+Tab= cycles through three states: 1. *OVERVIEW* - All sections folded 2. *CONTENTS* - Top-level sections visible 3. *SHOWALL* - Everything expanded",
       "path": [
         "Folding"
@@ -81402,7 +81402,7 @@
       "heading": "Label Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 412,
+      "line": 417,
       "content": "Navigate to labels in your document: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.jumpToLabel   | C-c l       | Quick pick all labels    | The quick pick shows: - Label name - Context (section or environment) - Line number",
       "path": [],
       "commands": [
@@ -81438,7 +81438,7 @@
       "heading": "Compile and Preview",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 425,
+      "line": 430,
       "content": "Compile LaTeX documents and view the generated PDF. | Command                         | Key Binding    | Description                    | |---------------------------------+----------------+--------------------------------| | scimax.latex.compile            | C-c C-c        | Compile the document           | | scimax.latex.viewPdf            | C-c C-v        | View the PDF                   | | scimax.latex.compileAndView     | C-c C-a        | Compile and view PDF           | | scimax.latex.cle",
       "path": [],
       "commands": [
@@ -81475,7 +81475,7 @@
       "heading": "Compilation",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 438,
+      "line": 443,
       "content": "The =compile= command runs the configured LaTeX compiler (default: pdflatex): 1. Saves the document 2. Compiles with =-interaction=nonstopmode= for error handling 3. Shows compilation errors with line numbers 4. Outputs detailed log to the \"LaTeX\" output channel Configure the compiler via =scimax.latex.compiler= setting: - =pdflatex= (default) - =xelatex= - =lualatex= - =latexmk=",
       "path": [
         "Compile and Preview"
@@ -81511,7 +81511,7 @@
       "heading": "SyncTeX Support",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 453,
+      "line": 458,
       "content": "SyncTeX allows jumping between source and PDF positions. *Forward search* (C-c C-j): Jump from cursor position in source to corresponding PDF location. Supported PDF viewers: - *macOS*: Skim (recommended) - *Linux*: Zathura - *Windows*: SumatraPDF Configure via =scimax.latex.pdfViewer= setting.",
       "path": [
         "Compile and Preview"
@@ -81549,7 +81549,7 @@
       "heading": "Insert Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 466,
+      "line": 471,
       "content": "Quick insertion of common LaTeX elements: | Command                       | Description                        | |-------------------------------+------------------------------------| | scimax.latex.insertFigure     | Insert figure environment snippet  | | scimax.latex.insertTable      | Insert table with booktabs snippet | | scimax.latex.insertEquation   | Insert equation environment        | These commands insert snippets with tab stops for easy navigation.",
       "path": [
         "Compile and Preview"
@@ -81587,7 +81587,7 @@
       "heading": "Go to Definition",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 478,
+      "line": 483,
       "content": "Jump to the definition of labels, citations, commands, and files: | Trigger              | What it does                                      | |----------------------+---------------------------------------------------| | =\\ref{label}=        | Jump to the =\\label{label}= definition            | | =\\cite{key}=         | Jump to the BibTeX entry in the .bib file         | | =\\input{file}=       | Open the included file                            | | =\\mycommand=         | Jump to =\\newcommand= or",
       "path": [],
       "commands": [],
@@ -81618,7 +81618,7 @@
       "heading": "Find All References",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 493,
+      "line": 498,
       "content": "Find all usages of a label or citation: | Position on          | Shows all                                         | |----------------------+---------------------------------------------------| | =\\label{name}=       | All =\\ref{name}= references                       | | =\\cite{key}=         | All citations of that key                         | Use =Shift+F12= or right-click → \"Find All References\". Works across all files in the project.",
       "path": [],
       "commands": [],
@@ -81650,7 +81650,7 @@
       "heading": "Auto-Completion",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 506,
+      "line": 511,
       "content": "Smart completions trigger as you type: | Context              | Completions                                       | |----------------------+---------------------------------------------------| | =\\ref{=              | All labels in project with context                | | =\\cite{=             | All BibTeX keys with author/year/title            | | =\\begin{=            | Common environments (equation, figure, etc.)      | | =\\usepackage{=       | Common packages with descriptions                 |",
       "path": [],
       "commands": [],
@@ -81682,7 +81682,7 @@
       "heading": "Multi-File Project Support",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 525,
+      "line": 530,
       "content": "Projects with multiple files (using =\\input= or =\\include=) are fully supported: - *Master document detection*: Automatically finds the main .tex file - *Cross-file labels*: Complete and navigate labels defined in any project file - *Shared bibliography*: Finds .bib files referenced anywhere in project - *Project-wide search*: Find References searches all included files The master document is detected by looking for =\\documentclass=.",
       "path": [],
       "commands": [],
@@ -81714,7 +81714,7 @@
       "heading": "Project Structure",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 536,
+      "line": 541,
       "content": "#+BEGIN_SRC text thesis/ ├── main.tex              # Master document (has \\documentclass) │   └── \\input{chapters/intro} │   └── \\input{chapters/methods} │   └── \\bibliography{refs} ├── chapters/ │   ├── intro.tex        # \\label{sec:intro} defined here │   └── methods.tex      # \\ref{sec:intro} works here too └── refs.bib              # Bibliography #+END_SRC",
       "path": [
         "Multi-File Project Support"
@@ -81748,7 +81748,7 @@
       "heading": "ChkTeX Linting",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 550,
+      "line": 555,
       "content": "Real-time linting with ChkTeX catches common LaTeX issues: - Missing or extra braces - Spacing issues - Style recommendations Errors appear in the Problems panel and as squiggles in the editor.",
       "path": [],
       "commands": [],
@@ -81779,7 +81779,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 560,
+      "line": 565,
       "content": "#+BEGIN_SRC json { \"scimax.latex.enableChktex\": true  // Enable/disable linting (default: true) } #+END_SRC Requires =chktex= to be installed: - *macOS*: =brew install chktex= - *Linux*: =apt install chktex= - *Windows*: Included with MiKTeX/TeX Live",
       "path": [
         "ChkTeX Linting"
@@ -81815,7 +81815,7 @@
       "heading": "Error Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 573,
+      "line": 578,
       "content": "Navigate through compilation errors: | Command                       | Key Binding      | Description                    | |-------------------------------+------------------+--------------------------------| | scimax.latex.nextError        | C-c `            | Jump to next error             | | scimax.latex.previousError    | C-c Shift+`      | Jump to previous error         | | scimax.latex.showErrors       | C-c C-e          | Show all errors in quick pick  | Errors are collected after compil",
       "path": [],
       "commands": [
@@ -81854,7 +81854,7 @@
       "heading": "Error Display",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 585,
+      "line": 590,
       "content": "When compilation fails: 1. First error is shown in a notification with \"Go to Error\" button 2. The Problems panel shows all parsed errors 3. Use navigation commands to cycle through errors Errors include: - File path (supports multi-file projects) - Line number - Error message",
       "path": [
         "Error Navigation"
@@ -81888,7 +81888,7 @@
       "heading": "Hover Previews",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 597,
+      "line": 602,
       "content": "Hover over LaTeX elements to see previews and information.",
       "path": [],
       "commands": [],
@@ -81906,7 +81906,7 @@
       "heading": "Equation Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 601,
+      "line": 606,
       "content": "Hover over any math expression to see a rendered preview: - Inline math: =$E=mc^2$=, =\\(E=mc^2\\)= - Display math: =$$...$$$=, =\\[...\\]= - Environments: =equation=, =align=, =gather=, etc. The preview: - Renders using the system LaTeX installation - Respects document preamble (packages, custom commands) - Adapts to dark/light VS Code theme - Shows the source LaTeX below the preview *Note:* Requires a LaTeX installation (TeX Live, MiKTeX, or MacTeX).",
       "path": [
         "Hover Previews"
@@ -81940,7 +81940,7 @@
       "heading": "Figure Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 617,
+      "line": 622,
       "content": "Hover over =\\includegraphics{...}= to see: - Image preview (PNG, JPG, SVG, GIF, WebP) - File path and size - Last modified date PDF and EPS files show file information without preview.",
       "path": [
         "Hover Previews"
@@ -81971,10 +81971,414 @@
       ]
     },
     {
+      "heading": "Rename Symbol",
+      "level": 1,
+      "file": "33-latex-navigation.org",
+      "line": 631,
+      "content": "Rename a label and automatically update all references across the project: 1. Place cursor on a =\\label{name}= or =\\ref{name}= 2. Press =F2= or right-click → \"Rename Symbol\" 3. Enter the new name 4. All =\\label{}= and =\\ref{}= commands using that name are updated Works across all files in multi-file projects.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "rename",
+        "symbol",
+        "label",
+        "automatically",
+        "update",
+        "references",
+        "across",
+        "project",
+        "place",
+        "cursor",
+        "name",
+        "ref",
+        "press",
+        "right-click",
+        "enter",
+        "new",
+        "commands",
+        "updated",
+        "works",
+        "multi-file"
+      ]
+    },
+    {
+      "heading": "Supported Reference Commands",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 642,
+      "content": "Rename works with all reference variants: - =\\label{...}= - the definition - =\\ref{...}=, =\\eqref{...}=, =\\pageref{...}= - =\\autoref{...}=, =\\cref{...}=, =\\Cref{...}=",
+      "path": [
+        "Rename Symbol"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "supported",
+        "reference",
+        "commands",
+        "rename",
+        "works",
+        "variants",
+        "label",
+        "definition",
+        "ref",
+        "eqref",
+        "pageref",
+        "autoref",
+        "cref"
+      ]
+    },
+    {
+      "heading": "Reference Validation",
+      "level": 1,
+      "file": "33-latex-navigation.org",
+      "line": 649,
+      "content": "Automatic validation of label references: | Issue                    | Severity | Description                           | |--------------------------+----------+---------------------------------------| | Undefined reference      | Error    | =\\ref{name}= but no =\\label{name}=    | | Unused label             | Warning  | =\\label{name}= with no =\\ref{name}=   | Diagnostics appear in the Problems panel and as squiggles in the editor.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "reference",
+        "validation",
+        "automatic",
+        "label",
+        "references",
+        "issue",
+        "severity",
+        "description",
+        "---------------------------------------------------------------------------",
+        "undefined",
+        "error",
+        "ref",
+        "name",
+        "unused",
+        "warning",
+        "diagnostics",
+        "appear",
+        "problems",
+        "panel",
+        "squiggles"
+      ]
+    },
+    {
+      "heading": "Configuration",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 660,
+      "content": "#+BEGIN_SRC json { \"scimax.latex.validateReferences\": true  // Enable/disable (default: true) } #+END_SRC",
+      "path": [
+        "Reference Validation"
+      ],
+      "commands": [
+        "scimax.latex.validateReferences"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "configuration",
+        "beginsrc",
+        "json",
+        "true",
+        "enabledisable",
+        "default",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Inverse SyncTeX",
+      "level": 1,
+      "file": "33-latex-navigation.org",
+      "line": 668,
+      "content": "Click in PDF to jump back to the corresponding source location.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "inverse",
+        "synctex",
+        "click",
+        "pdf",
+        "jump",
+        "back",
+        "corresponding",
+        "source",
+        "location"
+      ]
+    },
+    {
+      "heading": "Setup",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 672,
+      "content": "Run the command =Scimax LaTeX: Show Inverse SyncTeX Command= to get the configuration command for your PDF viewer. | PDF Viewer | Configuration                                               | |------------+-------------------------------------------------------------| | Skim       | Preferences → Sync → Preset: Custom; Command: =code=        | | SumatraPDF | Settings → Options → Set inverse search command             | | Zathura    | Set =synctex-editor-command= in config                      |",
+      "path": [
+        "Inverse SyncTeX"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "setup",
+        "run",
+        "command",
+        "scimax",
+        "latex",
+        "show",
+        "inverse",
+        "synctex",
+        "get",
+        "configuration",
+        "pdf",
+        "viewer",
+        "-------------------------------------------------------------------------",
+        "skim",
+        "preferences",
+        "sync",
+        "preset",
+        "custom",
+        "code",
+        "sumatrapdf"
+      ]
+    },
+    {
+      "heading": "URI Handler",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 683,
+      "content": "The extension also registers a URI handler for =vscode://= URLs: #+BEGIN_SRC text vscode://file/path/to/file.tex:42 #+END_SRC This allows PDF viewers to communicate directly with VS Code.",
+      "path": [
+        "Inverse SyncTeX"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "uri",
+        "handler",
+        "extension",
+        "registers",
+        "vscode",
+        "urls",
+        "beginsrc",
+        "text",
+        "vscodefilepathtofiletex42",
+        "endsrc",
+        "allows",
+        "pdf",
+        "viewers",
+        "communicate",
+        "directly",
+        "code"
+      ]
+    },
+    {
+      "heading": "Document Formatting",
+      "level": 1,
+      "file": "33-latex-navigation.org",
+      "line": 693,
+      "content": "Format LaTeX documents using =latexindent=: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.format        | C-c C-q     | Format entire document   |",
+      "path": [],
+      "commands": [
+        "scimax.latex.format"
+      ],
+      "keybindings": [
+        "C-c C-q"
+      ],
+      "keywords": [
+        "document",
+        "formatting",
+        "format",
+        "latex",
+        "documents",
+        "latexindent",
+        "command",
+        "key",
+        "binding",
+        "description",
+        "-------------------------------------------------------------------",
+        "c-c",
+        "c-q",
+        "entire"
+      ]
+    },
+    {
+      "heading": "Format on Save",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 701,
+      "content": "Enable automatic formatting when saving: #+BEGIN_SRC json { \"scimax.latex.formatOnSave\": true,          // Auto-format on save \"scimax.latex.latexindentPath\": \"latexindent\"  // Path to latexindent } #+END_SRC",
+      "path": [
+        "Document Formatting"
+      ],
+      "commands": [
+        "scimax.latex.formatOnSave",
+        "scimax.latex.latexindentPath"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "format",
+        "save",
+        "enable",
+        "automatic",
+        "formatting",
+        "saving",
+        "beginsrc",
+        "json",
+        "true",
+        "auto-format",
+        "latexindent",
+        "path",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Requirements",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 712,
+      "content": "=latexindent= must be installed: - *macOS*: Included with MacTeX, or =brew install latexindent= - *Linux*: =apt install texlive-extra-utils= or =cpanm YAML::Tiny File::HomeDir Unicode::GCString= - *Windows*: Included with MiKTeX/TeX Live",
+      "path": [
+        "Document Formatting"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "requirements",
+        "latexindent",
+        "must",
+        "installed",
+        "macos",
+        "included",
+        "mactex",
+        "brew",
+        "install",
+        "linux",
+        "apt",
+        "texlive-extra-utils",
+        "cpanm",
+        "yamltiny",
+        "filehomedir",
+        "unicodegcstring",
+        "windows",
+        "miktextex",
+        "live"
+      ]
+    },
+    {
+      "heading": "Customization",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 719,
+      "content": "Create a =.latexindent.yaml= file in your project to customize formatting rules. See the [[https://latexindentpl.readthedocs.io/][latexindent documentation]] for options.",
+      "path": [
+        "Document Formatting"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "customization",
+        "create",
+        "latexindentyaml",
+        "project",
+        "customize",
+        "formatting",
+        "rules",
+        "httpslatexindentplreadthedocsio",
+        "latexindent",
+        "documentation",
+        "options"
+      ]
+    },
+    {
+      "heading": "LaTeX-Aware Spell Checking",
+      "level": 1,
+      "file": "33-latex-navigation.org",
+      "line": 724,
+      "content": "The extension provides infrastructure for LaTeX-aware spell checking that skips commands, math, and comments.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "latex-aware",
+        "spell",
+        "checking",
+        "extension",
+        "provides",
+        "infrastructure",
+        "skips",
+        "commands",
+        "math",
+        "comments"
+      ]
+    },
+    {
+      "heading": "Regions Excluded from Spell Check",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 729,
+      "content": "| Pattern                          | Example                      | |----------------------------------+------------------------------| | Commands with arguments          | =\\textbf{word}=              | | Inline math                      | =$x^2 + y^2$=                | | Display math                     | =$$..$$= and =\\[..\\]=        | | Environments                     | =\\begin{...}...\\end{...}=    | | Comments                         | =% comment text=             |",
+      "path": [
+        "LaTeX-Aware Spell Checking"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "regions",
+        "excluded",
+        "spell",
+        "check",
+        "pattern",
+        "example",
+        "----------------------------------------------------------------",
+        "commands",
+        "arguments",
+        "textbf",
+        "word",
+        "inline",
+        "math",
+        "display",
+        "environments",
+        "begin",
+        "end",
+        "comments",
+        "comment",
+        "text"
+      ]
+    },
+    {
+      "heading": "User Dictionary",
+      "level": 2,
+      "file": "33-latex-navigation.org",
+      "line": 739,
+      "content": "Add words to your personal dictionary: | Command                        | Description                        | |--------------------------------+------------------------------------| | scimax.latex.addToDictionary   | Add word at cursor to dictionary   | The dictionary is stored per-workspace and persists across sessions.",
+      "path": [
+        "LaTeX-Aware Spell Checking"
+      ],
+      "commands": [
+        "scimax.latex.addToDictionary"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "user",
+        "dictionary",
+        "add",
+        "words",
+        "personal",
+        "command",
+        "description",
+        "--------------------------------------------------------------------",
+        "word",
+        "cursor",
+        "stored",
+        "per-workspace",
+        "persists",
+        "across",
+        "sessions"
+      ]
+    },
+    {
       "heading": "Related Topics",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 626,
+      "line": 749,
       "content": "- [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX - [[file:10-export.org][Export]] - Export org to LaTeX - [[file:19-references.org][References]] - BibTeX bibliography management - [[file:23-speed-commands.org][Speed Commands]] - Org-mode speed commands - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference",
       "path": [],
       "commands": [],

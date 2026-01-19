@@ -28,6 +28,11 @@ LaTeX support in Scimax VS Code includes:
 11. *Multi-File Projects* - Full support for projects using \input/\include
 12. *ChkTeX Linting* - Real-time warnings in Problems panel
 13. *Error Navigation* - Cycle through compilation errors
+14. *Rename Symbol* - Rename labels and update all references automatically
+15. *Reference Validation* - Warn about undefined and unused labels
+16. *Inverse SyncTeX* - Click in PDF to jump to source
+17. *Document Formatting* - Format with latexindent
+18. *LaTeX-Aware Spell Checking* - Skip commands and math in spell check
 
 See also:
 - [[file:21-navigation.org][Navigation]] for general navigation features
@@ -622,6 +627,124 @@ Hover over =\includegraphics{...}= to see:
 - Last modified date
 
 PDF and EPS files show file information without preview.
+
+* ⚠️ Rename Symbol
+
+Rename a label and automatically update all references across the project:
+
+1. Place cursor on a =\label{name}= or =\ref{name}=
+2. Press =F2= or right-click → "Rename Symbol"
+3. Enter the new name
+4. All =\label{}= and =\ref{}= commands using that name are updated
+
+Works across all files in multi-file projects.
+
+** ⚠️ Supported Reference Commands
+
+Rename works with all reference variants:
+- =\label{...}= - the definition
+- =\ref{...}=, =\eqref{...}=, =\pageref{...}=
+- =\autoref{...}=, =\cref{...}=, =\Cref{...}=
+
+* ⚠️ Reference Validation
+
+Automatic validation of label references:
+
+| Issue                    | Severity | Description                           |
+|--------------------------+----------+---------------------------------------|
+| Undefined reference      | Error    | =\ref{name}= but no =\label{name}=    |
+| Unused label             | Warning  | =\label{name}= with no =\ref{name}=   |
+
+Diagnostics appear in the Problems panel and as squiggles in the editor.
+
+** ⚠️ Configuration
+
+#+BEGIN_SRC json
+{
+  "scimax.latex.validateReferences": true  // Enable/disable (default: true)
+}
+#+END_SRC
+
+* ⚠️ Inverse SyncTeX
+
+Click in PDF to jump back to the corresponding source location.
+
+** ⚠️ Setup
+
+Run the command =Scimax LaTeX: Show Inverse SyncTeX Command= to get the
+configuration command for your PDF viewer.
+
+| PDF Viewer | Configuration                                               |
+|------------+-------------------------------------------------------------|
+| Skim       | Preferences → Sync → Preset: Custom; Command: =code=        |
+| SumatraPDF | Settings → Options → Set inverse search command             |
+| Zathura    | Set =synctex-editor-command= in config                      |
+
+** ⚠️ URI Handler
+
+The extension also registers a URI handler for =vscode://= URLs:
+
+#+BEGIN_SRC text
+vscode://file/path/to/file.tex:42
+#+END_SRC
+
+This allows PDF viewers to communicate directly with VS Code.
+
+* ⚠️ Document Formatting
+
+Format LaTeX documents using =latexindent=:
+
+| Command                    | Key Binding | Description              |
+|----------------------------+-------------+--------------------------|
+| scimax.latex.format        | C-c C-q     | Format entire document   |
+
+** ⚠️ Format on Save
+
+Enable automatic formatting when saving:
+
+#+BEGIN_SRC json
+{
+  "scimax.latex.formatOnSave": true,          // Auto-format on save
+  "scimax.latex.latexindentPath": "latexindent"  // Path to latexindent
+}
+#+END_SRC
+
+** ⚠️ Requirements
+
+=latexindent= must be installed:
+- *macOS*: Included with MacTeX, or =brew install latexindent=
+- *Linux*: =apt install texlive-extra-utils= or =cpanm YAML::Tiny File::HomeDir Unicode::GCString=
+- *Windows*: Included with MiKTeX/TeX Live
+
+** ⚠️ Customization
+
+Create a =.latexindent.yaml= file in your project to customize formatting rules.
+See the [[https://latexindentpl.readthedocs.io/][latexindent documentation]] for options.
+
+* ⚠️ LaTeX-Aware Spell Checking
+
+The extension provides infrastructure for LaTeX-aware spell checking that
+skips commands, math, and comments.
+
+** ⚠️ Regions Excluded from Spell Check
+
+| Pattern                          | Example                      |
+|----------------------------------+------------------------------|
+| Commands with arguments          | =\textbf{word}=              |
+| Inline math                      | =$x^2 + y^2$=                |
+| Display math                     | =$$..$$= and =\[..\]=        |
+| Environments                     | =\begin{...}...\end{...}=    |
+| Comments                         | =% comment text=             |
+
+** ⚠️ User Dictionary
+
+Add words to your personal dictionary:
+
+| Command                        | Description                        |
+|--------------------------------+------------------------------------|
+| scimax.latex.addToDictionary   | Add word at cursor to dictionary   |
+
+The dictionary is stored per-workspace and persists across sessions.
 
 * ⚠️ Related Topics
 

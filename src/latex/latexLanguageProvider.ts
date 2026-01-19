@@ -848,6 +848,636 @@ export function disposeDiagnostics(): void {
 // Enhanced Hover for Citations
 // =============================================================================
 
+// =============================================================================
+// Rename Provider
+// =============================================================================
+
+export class LaTeXRenameProvider implements vscode.RenameProvider {
+    async provideRenameEdits(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        newName: string,
+        token: vscode.CancellationToken
+    ): Promise<vscode.WorkspaceEdit | null> {
+        const line = document.lineAt(position.line).text;
+
+        // Check if on a \label{} or \ref{}
+        const labelMatch = this.matchLabelOrRef(line, position.character);
+        if (labelMatch) {
+            return this.renameLabelReferences(document, labelMatch.name, newName);
+        }
+
+        return null;
+    }
+
+    async prepareRename(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        token: vscode.CancellationToken
+    ): Promise<vscode.Range | { range: vscode.Range; placeholder: string } | null> {
+        const line = document.lineAt(position.line).text;
+
+        const labelMatch = this.matchLabelOrRef(line, position.character);
+        if (labelMatch) {
+            const startCol = line.indexOf(labelMatch.name, labelMatch.braceStart);
+            const endCol = startCol + labelMatch.name.length;
+            return {
+                range: new vscode.Range(position.line, startCol, position.line, endCol),
+                placeholder: labelMatch.name
+            };
+        }
+
+        return null;
+    }
+
+    private matchLabelOrRef(line: string, col: number): { name: string; braceStart: number } | null {
+        // Match \label{name} or \ref{name} variants
+        const pattern = /\\(label|ref|eqref|pageref|autoref|cref|Cref)\{([^}]+)\}/g;
+        let match;
+        while ((match = pattern.exec(line)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+            if (col >= start && col <= end) {
+                const braceStart = match.index + match[1].length + 2; // after \cmd{
+                return { name: match[2], braceStart };
+            }
+        }
+        return null;
+    }
+
+    private async renameLabelReferences(
+        document: vscode.TextDocument,
+        oldName: string,
+        newName: string
+    ): Promise<vscode.WorkspaceEdit> {
+        const edit = new vscode.WorkspaceEdit();
+        const masterFile = findMasterDocument(document);
+        const project = await parseProject(masterFile);
+
+        const escapedOld = oldName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+        // Pattern to match both \label{name} and all \ref{name} variants
+        const patterns = [
+            new RegExp(`(\\\\label\\{)${escapedOld}(\\})`, 'g'),
+            new RegExp(`(\\\\(?:ref|eqref|pageref|autoref|cref|Cref)\\{)${escapedOld}(\\})`, 'g'),
+        ];
+
+        for (const file of project.includedFiles) {
+            try {
+                const content = fs.readFileSync(file, 'utf-8');
+                const uri = vscode.Uri.file(file);
+                const lines = content.split('\n');
+
+                for (let lineNum = 0; lineNum < lines.length; lineNum++) {
+                    const lineText = lines[lineNum];
+                    for (const pattern of patterns) {
+                        pattern.lastIndex = 0;
+                        let match;
+                        while ((match = pattern.exec(lineText)) !== null) {
+                            // Calculate position of the label name (after the opening brace)
+                            const nameStart = match.index + match[1].length;
+                            const nameEnd = nameStart + oldName.length;
+                            const range = new vscode.Range(lineNum, nameStart, lineNum, nameEnd);
+                            edit.replace(uri, range, newName);
+                        }
+                    }
+                }
+            } catch {
+                // Skip files that can't be read
+            }
+        }
+
+        return edit;
+    }
+}
+
+// =============================================================================
+// Reference Validation (Diagnostics for undefined/unused labels)
+// =============================================================================
+
+const refValidationDiagnostics = vscode.languages.createDiagnosticCollection('latex-refs');
+
+export async function validateReferences(document: vscode.TextDocument): Promise<void> {
+    if (document.languageId !== 'latex') return;
+
+    const config = vscode.workspace.getConfiguration('scimax.latex');
+    if (!config.get<boolean>('validateReferences', true)) {
+        refValidationDiagnostics.delete(document.uri);
+        return;
+    }
+
+    const masterFile = findMasterDocument(document);
+    const project = await parseProject(masterFile);
+
+    // Collect all defined labels and their locations
+    const definedLabels = new Map<string, { file: string; line: number }>();
+    // Collect all referenced labels and their locations
+    const referencedLabels = new Map<string, { file: string; line: number; col: number }[]>();
+
+    for (const file of project.includedFiles) {
+        try {
+            const content = fs.readFileSync(file, 'utf-8');
+            const lines = content.split('\n');
+
+            for (let lineNum = 0; lineNum < lines.length; lineNum++) {
+                const lineText = lines[lineNum];
+
+                // Find defined labels
+                const labelPattern = /\\label\{([^}]+)\}/g;
+                let match;
+                while ((match = labelPattern.exec(lineText)) !== null) {
+                    definedLabels.set(match[1], { file, line: lineNum });
+                }
+
+                // Find referenced labels
+                const refPattern = /\\(ref|eqref|pageref|autoref|cref|Cref)\{([^}]+)\}/g;
+                while ((match = refPattern.exec(lineText)) !== null) {
+                    const labelName = match[2];
+                    const col = match.index + match[1].length + 2;
+                    if (!referencedLabels.has(labelName)) {
+                        referencedLabels.set(labelName, []);
+                    }
+                    referencedLabels.get(labelName)!.push({ file, line: lineNum, col });
+                }
+            }
+        } catch {
+            // Skip unreadable files
+        }
+    }
+
+    // Create diagnostics per file
+    const diagnosticsMap = new Map<string, vscode.Diagnostic[]>();
+
+    // Check for undefined references
+    for (const [labelName, refs] of referencedLabels) {
+        if (!definedLabels.has(labelName)) {
+            for (const ref of refs) {
+                if (!diagnosticsMap.has(ref.file)) {
+                    diagnosticsMap.set(ref.file, []);
+                }
+                const range = new vscode.Range(ref.line, ref.col, ref.line, ref.col + labelName.length);
+                const diagnostic = new vscode.Diagnostic(
+                    range,
+                    `Undefined reference: \\label{${labelName}} not found`,
+                    vscode.DiagnosticSeverity.Error
+                );
+                diagnostic.source = 'LaTeX References';
+                diagnostic.code = 'undefined-ref';
+                diagnosticsMap.get(ref.file)!.push(diagnostic);
+            }
+        }
+    }
+
+    // Check for unused labels (warning, not error)
+    for (const [labelName, def] of definedLabels) {
+        if (!referencedLabels.has(labelName)) {
+            if (!diagnosticsMap.has(def.file)) {
+                diagnosticsMap.set(def.file, []);
+            }
+            // Find the column of the label in the line
+            const content = fs.readFileSync(def.file, 'utf-8');
+            const lines = content.split('\n');
+            const lineText = lines[def.line];
+            const labelMatch = lineText.match(/\\label\{([^}]+)\}/);
+            const col = labelMatch ? lineText.indexOf(labelMatch[0]) : 0;
+
+            const range = new vscode.Range(def.line, col, def.line, col + `\\label{${labelName}}`.length);
+            const diagnostic = new vscode.Diagnostic(
+                range,
+                `Unused label: ${labelName} is defined but never referenced`,
+                vscode.DiagnosticSeverity.Warning
+            );
+            diagnostic.source = 'LaTeX References';
+            diagnostic.code = 'unused-label';
+            diagnosticsMap.get(def.file)!.push(diagnostic);
+        }
+    }
+
+    // Apply diagnostics
+    for (const [file, diagnostics] of diagnosticsMap) {
+        refValidationDiagnostics.set(vscode.Uri.file(file), diagnostics);
+    }
+
+    // Clear diagnostics for files with no issues
+    for (const file of project.includedFiles) {
+        if (!diagnosticsMap.has(file)) {
+            refValidationDiagnostics.delete(vscode.Uri.file(file));
+        }
+    }
+}
+
+export function clearRefValidationDiagnostics(): void {
+    refValidationDiagnostics.clear();
+}
+
+export function disposeRefValidationDiagnostics(): void {
+    refValidationDiagnostics.dispose();
+}
+
+// =============================================================================
+// Document Formatting Provider (latexindent integration)
+// =============================================================================
+
+export class LaTeXFormattingProvider implements vscode.DocumentFormattingEditProvider {
+    async provideDocumentFormattingEdits(
+        document: vscode.TextDocument,
+        options: vscode.FormattingOptions,
+        token: vscode.CancellationToken
+    ): Promise<vscode.TextEdit[]> {
+        const config = vscode.workspace.getConfiguration('scimax.latex');
+        if (!config.get<boolean>('formatOnSave', false)) {
+            return [];
+        }
+
+        try {
+            const formatted = await runLatexindent(document.getText(), document.uri.fsPath);
+            if (formatted && formatted !== document.getText()) {
+                const fullRange = new vscode.Range(
+                    document.positionAt(0),
+                    document.positionAt(document.getText().length)
+                );
+                return [vscode.TextEdit.replace(fullRange, formatted)];
+            }
+        } catch (error) {
+            console.log('latexindent not available or failed:', error);
+        }
+
+        return [];
+    }
+}
+
+export class LaTeXRangeFormattingProvider implements vscode.DocumentRangeFormattingEditProvider {
+    async provideDocumentRangeFormattingEdits(
+        document: vscode.TextDocument,
+        range: vscode.Range,
+        options: vscode.FormattingOptions,
+        token: vscode.CancellationToken
+    ): Promise<vscode.TextEdit[]> {
+        try {
+            const text = document.getText(range);
+            const formatted = await runLatexindent(text, document.uri.fsPath);
+            if (formatted && formatted !== text) {
+                return [vscode.TextEdit.replace(range, formatted)];
+            }
+        } catch (error) {
+            console.log('latexindent failed:', error);
+        }
+
+        return [];
+    }
+}
+
+async function runLatexindent(text: string, filePath: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const config = vscode.workspace.getConfiguration('scimax.latex');
+        const latexindentPath = config.get<string>('latexindentPath', 'latexindent');
+        const args = ['-m', '-']; // -m for modifylinebreaks, - for stdin
+
+        const proc = spawn(latexindentPath, args, {
+            cwd: path.dirname(filePath)
+        });
+
+        let stdout = '';
+        let stderr = '';
+
+        proc.stdout?.on('data', (data: Buffer) => {
+            stdout += data.toString();
+        });
+
+        proc.stderr?.on('data', (data: Buffer) => {
+            stderr += data.toString();
+        });
+
+        proc.on('close', (code) => {
+            if (code === 0) {
+                resolve(stdout);
+            } else {
+                reject(new Error(`latexindent exited with code ${code}: ${stderr}`));
+            }
+        });
+
+        proc.on('error', (err) => {
+            reject(err);
+        });
+
+        // Write input to stdin
+        proc.stdin?.write(text);
+        proc.stdin?.end();
+    });
+}
+
+// Manual format command
+export async function formatLatexDocument(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'latex') {
+        vscode.window.showWarningMessage('No LaTeX document is open');
+        return;
+    }
+
+    try {
+        const document = editor.document;
+        const formatted = await runLatexindent(document.getText(), document.uri.fsPath);
+        if (formatted && formatted !== document.getText()) {
+            const fullRange = new vscode.Range(
+                document.positionAt(0),
+                document.positionAt(document.getText().length)
+            );
+            await editor.edit(editBuilder => {
+                editBuilder.replace(fullRange, formatted);
+            });
+            vscode.window.showInformationMessage('Document formatted with latexindent');
+        } else {
+            vscode.window.showInformationMessage('Document is already properly formatted');
+        }
+    } catch (error) {
+        vscode.window.showErrorMessage(`Formatting failed: ${error}`);
+    }
+}
+
+// =============================================================================
+// Inverse SyncTeX (PDF to source)
+// =============================================================================
+
+export async function inverseSyncTeX(pdfPath: string, page: number, x: number, y: number): Promise<void> {
+    try {
+        // Run synctex view to get source location
+        const result = await runSyncTeXView(pdfPath, page, x, y);
+        if (result) {
+            const uri = vscode.Uri.file(result.file);
+            const position = new vscode.Position(result.line - 1, result.column);
+            const doc = await vscode.workspace.openTextDocument(uri);
+            const editor = await vscode.window.showTextDocument(doc);
+            editor.selection = new vscode.Selection(position, position);
+            editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+        }
+    } catch (error) {
+        console.error('Inverse SyncTeX failed:', error);
+    }
+}
+
+interface SyncTeXResult {
+    file: string;
+    line: number;
+    column: number;
+}
+
+async function runSyncTeXView(pdfPath: string, page: number, x: number, y: number): Promise<SyncTeXResult | null> {
+    return new Promise((resolve, reject) => {
+        // synctex view -i "page:x:y:pdffile"
+        const proc = spawn('synctex', ['view', '-i', `${page}:${x}:${y}:${pdfPath}`]);
+        let output = '';
+
+        proc.stdout?.on('data', (data: Buffer) => {
+            output += data.toString();
+        });
+
+        proc.on('close', (code) => {
+            if (code === 0) {
+                // Parse synctex output
+                const inputMatch = output.match(/Input:(.+)/);
+                const lineMatch = output.match(/Line:(\d+)/);
+                const columnMatch = output.match(/Column:(\d+)/);
+
+                if (inputMatch && lineMatch) {
+                    resolve({
+                        file: inputMatch[1].trim(),
+                        line: parseInt(lineMatch[1], 10),
+                        column: columnMatch ? parseInt(columnMatch[1], 10) : 0
+                    });
+                } else {
+                    resolve(null);
+                }
+            } else {
+                resolve(null);
+            }
+        });
+
+        proc.on('error', () => {
+            resolve(null);
+        });
+    });
+}
+
+// Start listening for inverse SyncTeX from PDF viewers
+export function startInverseSyncTeXServer(context: vscode.ExtensionContext): void {
+    // For Skim on macOS: it can call a custom URL scheme
+    // For SumatraPDF: it can execute a command
+    // For Zathura: it uses D-Bus
+
+    // We'll register a URI handler for synctex:// URLs
+    const handler = vscode.window.registerUriHandler({
+        handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
+            // Expected format: synctex://open?file=path&line=123
+            if (uri.path === '/open') {
+                const params = new URLSearchParams(uri.query);
+                const file = params.get('file');
+                const line = params.get('line');
+
+                if (file && line) {
+                    const fileUri = vscode.Uri.file(file);
+                    const position = new vscode.Position(parseInt(line, 10) - 1, 0);
+                    vscode.workspace.openTextDocument(fileUri).then(doc => {
+                        vscode.window.showTextDocument(doc).then(editor => {
+                            editor.selection = new vscode.Selection(position, position);
+                            editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+                        });
+                    });
+                }
+            }
+        }
+    });
+
+    context.subscriptions.push(handler);
+}
+
+// Get the inverse SyncTeX command for different PDF viewers
+export function getInverseSyncTeXCommand(): string {
+    const config = vscode.workspace.getConfiguration('scimax.latex');
+    const viewer = config.get<string>('pdfViewer', 'auto');
+
+    // Return command that PDF viewer should execute for inverse search
+    // This is used when configuring the PDF viewer
+    const extensionId = 'scimax-vscode';
+
+    switch (viewer) {
+        case 'skim':
+            // Skim uses AppleScript or custom URL
+            return `code --goto "%file:%line"`;
+        case 'sumatra':
+            // SumatraPDF: use -inverse-search option
+            return `code --goto "%f:%l"`;
+        case 'zathura':
+            // Zathura: use synctex-editor-command
+            return `code --goto "%{input}:%{line}"`;
+        default:
+            return `code --goto "%file:%line"`;
+    }
+}
+
+// =============================================================================
+// LaTeX-aware Spell Checking
+// =============================================================================
+
+// Regions to skip during spell checking
+const SKIP_PATTERNS = [
+    /\\[a-zA-Z]+(\[[^\]]*\])?(\{[^}]*\})?/g,  // Commands with optional args
+    /\$[^$]+\$/g,                               // Inline math
+    /\$\$[\s\S]*?\$\$/g,                        // Display math
+    /\\\[[^\]]*\\\]/g,                          // \[...\] math
+    /\\\([^)]*\\\)/g,                           // \(...\) math
+    /\\begin\{[^}]+\}[\s\S]*?\\end\{[^}]+\}/g,  // Environments
+    /%[^\n]*/g,                                  // Comments
+    /\\[a-zA-Z]+/g,                             // Bare commands
+];
+
+export interface SpellCheckRegion {
+    start: number;
+    end: number;
+    text: string;
+}
+
+/**
+ * Extract regions of text that should be spell-checked (excluding LaTeX commands/math)
+ */
+export function extractSpellCheckRegions(text: string): SpellCheckRegion[] {
+    // Create a mask of characters to skip
+    const skip = new Array(text.length).fill(false);
+
+    for (const pattern of SKIP_PATTERNS) {
+        pattern.lastIndex = 0;
+        let match;
+        while ((match = pattern.exec(text)) !== null) {
+            for (let i = match.index; i < match.index + match[0].length; i++) {
+                if (i < skip.length) skip[i] = true;
+            }
+        }
+    }
+
+    // Extract contiguous non-skipped regions
+    const regions: SpellCheckRegion[] = [];
+    let regionStart: number | null = null;
+
+    for (let i = 0; i <= text.length; i++) {
+        const shouldSkip = i === text.length || skip[i];
+
+        if (!shouldSkip && regionStart === null) {
+            regionStart = i;
+        } else if (shouldSkip && regionStart !== null) {
+            const regionText = text.substring(regionStart, i).trim();
+            if (regionText.length > 0) {
+                regions.push({
+                    start: regionStart,
+                    end: i,
+                    text: regionText
+                });
+            }
+            regionStart = null;
+        }
+    }
+
+    return regions;
+}
+
+/**
+ * Check if a position is within a spell-checkable region
+ */
+export function isSpellCheckable(text: string, offset: number): boolean {
+    const regions = extractSpellCheckRegions(text);
+    return regions.some(r => offset >= r.start && offset < r.end);
+}
+
+/**
+ * Get words that should be spell-checked from a LaTeX document
+ */
+export function getSpellCheckableWords(text: string): { word: string; start: number; end: number }[] {
+    const regions = extractSpellCheckRegions(text);
+    const words: { word: string; start: number; end: number }[] = [];
+    const wordPattern = /\b[a-zA-Z']+\b/g;
+
+    for (const region of regions) {
+        wordPattern.lastIndex = 0;
+        let match;
+        while ((match = wordPattern.exec(region.text)) !== null) {
+            // Skip very short words
+            if (match[0].length < 2) continue;
+
+            words.push({
+                word: match[0],
+                start: region.start + match.index,
+                end: region.start + match.index + match[0].length
+            });
+        }
+    }
+
+    return words;
+}
+
+// Diagnostic collection for spell checking
+const spellCheckDiagnostics = vscode.languages.createDiagnosticCollection('latex-spelling');
+
+// Simple word list for demonstration - in production, use a real dictionary
+const KNOWN_WORDS = new Set<string>();
+
+/**
+ * Add words to the known words list (user dictionary)
+ */
+export function addToUserDictionary(word: string): void {
+    KNOWN_WORDS.add(word.toLowerCase());
+}
+
+/**
+ * Load user dictionary from workspace state
+ */
+export function loadUserDictionary(context: vscode.ExtensionContext): void {
+    const words = context.workspaceState.get<string[]>('latexUserDictionary', []);
+    for (const word of words) {
+        KNOWN_WORDS.add(word.toLowerCase());
+    }
+}
+
+/**
+ * Save user dictionary to workspace state
+ */
+export async function saveUserDictionary(context: vscode.ExtensionContext): Promise<void> {
+    await context.workspaceState.update('latexUserDictionary', Array.from(KNOWN_WORDS));
+}
+
+/**
+ * Check if a word is likely misspelled
+ * This is a simple heuristic - real implementation would use a dictionary
+ */
+function isLikelyMisspelled(word: string): boolean {
+    // Skip known words
+    if (KNOWN_WORDS.has(word.toLowerCase())) return false;
+
+    // Skip words that look like proper nouns (capitalized)
+    if (word[0] === word[0].toUpperCase() && word.length > 1) return false;
+
+    // Skip words that look like acronyms (all caps)
+    if (word === word.toUpperCase()) return false;
+
+    // Skip words with numbers
+    if (/\d/.test(word)) return false;
+
+    // Skip very common LaTeX-related words
+    const latexWords = new Set([
+        'latex', 'tex', 'pdf', 'eps', 'png', 'jpg', 'svg',
+        'documentclass', 'usepackage', 'begin', 'end',
+        'section', 'subsection', 'chapter', 'paragraph',
+        'figure', 'table', 'equation', 'align', 'enumerate', 'itemize',
+        'ref', 'cite', 'label', 'caption', 'includegraphics',
+        'textbf', 'textit', 'emph', 'texttt',
+        'bibitem', 'bibliography', 'bibliographystyle',
+    ]);
+    if (latexWords.has(word.toLowerCase())) return false;
+
+    return false; // Disabled by default - need real dictionary
+}
+
+export function disposeSpellCheckDiagnostics(): void {
+    spellCheckDiagnostics.dispose();
+}
+
 export async function getCitationHover(
     document: vscode.TextDocument,
     position: vscode.Position,

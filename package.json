@@ -2363,6 +2363,18 @@
       {
         "command": "scimax.latex.showErrors",
         "title": "Scimax LaTeX: Show All Errors"
+      },
+      {
+        "command": "scimax.latex.format",
+        "title": "Scimax LaTeX: Format Document"
+      },
+      {
+        "command": "scimax.latex.addToDictionary",
+        "title": "Scimax LaTeX: Add Word to Dictionary"
+      },
+      {
+        "command": "scimax.latex.showInverseSyncTeXCommand",
+        "title": "Scimax LaTeX: Show Inverse SyncTeX Command"
       }
     ],
     "keybindings": [
@@ -3695,6 +3707,12 @@
         "key": "ctrl+c ctrl+e",
         "mac": "ctrl+c ctrl+e",
         "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.format",
+        "key": "ctrl+c ctrl+q",
+        "mac": "ctrl+c ctrl+q",
+        "when": "editorTextFocus && editorLangId == 'latex'"
       }
     ],
     "configuration": {
@@ -4040,6 +4058,21 @@
           ],
           "default": "pdflatex",
           "description": "Engine to use when compiling with latexmk"
+        },
+        "scimax.latex.validateReferences": {
+          "type": "boolean",
+          "default": true,
+          "description": "Validate label references (warn about undefined/unused labels)"
+        },
+        "scimax.latex.formatOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically format LaTeX documents on save using latexindent"
+        },
+        "scimax.latex.latexindentPath": {
+          "type": "string",
+          "default": "latexindent",
+          "description": "Path to latexindent executable"
         },
         "scimax.notebook.directory": {
           "type": "string",

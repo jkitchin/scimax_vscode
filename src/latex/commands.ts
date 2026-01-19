@@ -18,10 +18,23 @@ import {
     LaTeXDefinitionProvider,
     LaTeXReferenceProvider,
     LaTeXCompletionProvider,
+    LaTeXRenameProvider,
+    LaTeXFormattingProvider,
+    LaTeXRangeFormattingProvider,
     runChkTeX,
     clearDiagnostics,
     disposeDiagnostics,
     clearProjectCache,
+    validateReferences,
+    clearRefValidationDiagnostics,
+    disposeRefValidationDiagnostics,
+    formatLatexDocument,
+    startInverseSyncTeXServer,
+    getInverseSyncTeXCommand,
+    loadUserDictionary,
+    saveUserDictionary,
+    addToUserDictionary,
+    disposeSpellCheckDiagnostics,
 } from './latexLanguageProvider';
 
 /**
@@ -127,6 +140,35 @@ export function registerLatexProviders(context: vscode.ExtensionContext): void {
         )
     );
 
+    // Rename Provider (rename labels and update all references)
+    context.subscriptions.push(
+        vscode.languages.registerRenameProvider(
+            latexSelector,
+            new LaTeXRenameProvider()
+        )
+    );
+
+    // Formatting Provider (latexindent integration)
+    context.subscriptions.push(
+        vscode.languages.registerDocumentFormattingEditProvider(
+            latexSelector,
+            new LaTeXFormattingProvider()
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.languages.registerDocumentRangeFormattingEditProvider(
+            latexSelector,
+            new LaTeXRangeFormattingProvider()
+        )
+    );
+
+    // Start inverse SyncTeX server for PDF to source jumping
+    startInverseSyncTeXServer(context);
+
+    // Load user dictionary for spell checking
+    loadUserDictionary(context);
+
     // ChkTeX diagnostics
     const config = vscode.workspace.getConfiguration('scimax.latex');
     if (config.get<boolean>('enableChktex', true)) {
@@ -165,6 +207,34 @@ export function registerLatexProviders(context: vscode.ExtensionContext): void {
         }
     }
 
+    // Reference validation (undefined/unused labels)
+    if (config.get<boolean>('validateReferences', true)) {
+        // Run on open
+        context.subscriptions.push(
+            vscode.workspace.onDidOpenTextDocument(doc => {
+                if (doc.languageId === 'latex') {
+                    validateReferences(doc);
+                }
+            })
+        );
+
+        // Run on save
+        context.subscriptions.push(
+            vscode.workspace.onDidSaveTextDocument(doc => {
+                if (doc.languageId === 'latex') {
+                    validateReferences(doc);
+                }
+            })
+        );
+
+        // Run on already open documents
+        for (const doc of vscode.workspace.textDocuments) {
+            if (doc.languageId === 'latex') {
+                validateReferences(doc);
+            }
+        }
+    }
+
     // Clear project cache when files change
     context.subscriptions.push(
         vscode.workspace.onDidSaveTextDocument(() => {
@@ -174,9 +244,12 @@ export function registerLatexProviders(context: vscode.ExtensionContext): void {
 
     // Cleanup on deactivate
     context.subscriptions.push({
-        dispose: () => {
+        dispose: async () => {
             disposeDiagnostics();
+            disposeRefValidationDiagnostics();
+            disposeSpellCheckDiagnostics();
             clearProjectCache();
+            await saveUserDictionary(context);
         }
     });
 }
@@ -703,6 +776,44 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
                 editor.selection = new vscode.Selection(pos, pos);
                 editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
             }
+        }),
+
+        // Format document with latexindent
+        vscode.commands.registerCommand('scimax.latex.format', formatLatexDocument),
+
+        // Add word to user dictionary
+        vscode.commands.registerCommand('scimax.latex.addToDictionary', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            const selection = editor.selection;
+            let word: string;
+
+            if (selection.isEmpty) {
+                // Get word at cursor
+                const range = editor.document.getWordRangeAtPosition(selection.active);
+                if (!range) {
+                    vscode.window.showWarningMessage('No word at cursor');
+                    return;
+                }
+                word = editor.document.getText(range);
+            } else {
+                word = editor.document.getText(selection);
+            }
+
+            if (word) {
+                addToUserDictionary(word);
+                vscode.window.showInformationMessage(`Added "${word}" to LaTeX dictionary`);
+            }
+        }),
+
+        // Show inverse SyncTeX command for PDF viewer configuration
+        vscode.commands.registerCommand('scimax.latex.showInverseSyncTeXCommand', () => {
+            const cmd = getInverseSyncTeXCommand();
+            vscode.window.showInformationMessage(
+                `Configure your PDF viewer with this inverse search command:\n${cmd}`,
+                { modal: true }
+            );
         })
     );
 }

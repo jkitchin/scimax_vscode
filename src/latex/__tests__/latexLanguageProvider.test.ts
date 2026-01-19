@@ -520,3 +520,345 @@ describe('Completion Trigger Patterns', () => {
         });
     });
 });
+
+// =============================================================================
+// Rename Symbol Tests
+// =============================================================================
+
+describe('Rename Symbol', () => {
+    function matchLabelOrRef(line: string, col: number): { name: string; braceStart: number } | null {
+        const pattern = /\\(label|ref|eqref|pageref|autoref|cref|Cref)\{([^}]+)\}/g;
+        let match;
+        while ((match = pattern.exec(line)) !== null) {
+            const start = match.index;
+            const end = start + match[0].length;
+            if (col >= start && col <= end) {
+                const braceStart = match.index + match[1].length + 2;
+                return { name: match[2], braceStart };
+            }
+        }
+        return null;
+    }
+
+    it('should match label at cursor', () => {
+        const line = '\\label{sec:intro}';
+        const result = matchLabelOrRef(line, 10);
+        expect(result).not.toBeNull();
+        expect(result!.name).toBe('sec:intro');
+    });
+
+    it('should match ref at cursor', () => {
+        const line = 'See \\ref{fig:diagram} for details.';
+        const result = matchLabelOrRef(line, 12);
+        expect(result).not.toBeNull();
+        expect(result!.name).toBe('fig:diagram');
+    });
+
+    it('should match eqref at cursor', () => {
+        const line = 'From \\eqref{eq:energy}, we see...';
+        const result = matchLabelOrRef(line, 15);
+        expect(result).not.toBeNull();
+        expect(result!.name).toBe('eq:energy');
+    });
+
+    it('should match autoref at cursor', () => {
+        const line = 'As shown in \\autoref{tab:results}...';
+        const result = matchLabelOrRef(line, 25);
+        expect(result).not.toBeNull();
+        expect(result!.name).toBe('tab:results');
+    });
+
+    it('should return null when not on label/ref', () => {
+        const line = 'Just some text here.';
+        const result = matchLabelOrRef(line, 10);
+        expect(result).toBeNull();
+    });
+
+    it('should return null when cursor outside command', () => {
+        const line = 'See \\ref{fig:test} and more.';
+        const result = matchLabelOrRef(line, 25); // on "and"
+        expect(result).toBeNull();
+    });
+});
+
+// =============================================================================
+// Reference Validation Tests
+// =============================================================================
+
+describe('Reference Validation', () => {
+    function collectLabelsAndRefs(content: string): {
+        labels: string[];
+        refs: string[];
+    } {
+        const labels: string[] = [];
+        const refs: string[] = [];
+
+        const labelPattern = /\\label\{([^}]+)\}/g;
+        let match;
+        while ((match = labelPattern.exec(content)) !== null) {
+            labels.push(match[1]);
+        }
+
+        const refPattern = /\\(ref|eqref|pageref|autoref|cref|Cref)\{([^}]+)\}/g;
+        while ((match = refPattern.exec(content)) !== null) {
+            refs.push(match[2]);
+        }
+
+        return { labels, refs };
+    }
+
+    function findUndefinedRefs(labels: string[], refs: string[]): string[] {
+        const labelSet = new Set(labels);
+        return refs.filter(ref => !labelSet.has(ref));
+    }
+
+    function findUnusedLabels(labels: string[], refs: string[]): string[] {
+        const refSet = new Set(refs);
+        return labels.filter(label => !refSet.has(label));
+    }
+
+    it('should find all labels in content', () => {
+        const content = `\\section{Intro}
+\\label{sec:intro}
+\\begin{equation}
+\\label{eq:main}
+\\end{equation}`;
+        const { labels } = collectLabelsAndRefs(content);
+        expect(labels).toContain('sec:intro');
+        expect(labels).toContain('eq:main');
+    });
+
+    it('should find all refs in content', () => {
+        const content = 'See \\ref{sec:intro} and \\eqref{eq:main}.';
+        const { refs } = collectLabelsAndRefs(content);
+        expect(refs).toContain('sec:intro');
+        expect(refs).toContain('eq:main');
+    });
+
+    it('should detect undefined references', () => {
+        const labels = ['sec:intro', 'fig:one'];
+        const refs = ['sec:intro', 'fig:one', 'fig:missing'];
+        const undefined = findUndefinedRefs(labels, refs);
+        expect(undefined).toEqual(['fig:missing']);
+    });
+
+    it('should detect unused labels', () => {
+        const labels = ['sec:intro', 'sec:unused', 'fig:one'];
+        const refs = ['sec:intro', 'fig:one'];
+        const unused = findUnusedLabels(labels, refs);
+        expect(unused).toEqual(['sec:unused']);
+    });
+
+    it('should handle empty labels', () => {
+        const labels: string[] = [];
+        const refs = ['sec:missing'];
+        const undefined = findUndefinedRefs(labels, refs);
+        expect(undefined).toEqual(['sec:missing']);
+    });
+
+    it('should handle empty refs', () => {
+        const labels = ['sec:lonely'];
+        const refs: string[] = [];
+        const unused = findUnusedLabels(labels, refs);
+        expect(unused).toEqual(['sec:lonely']);
+    });
+});
+
+// =============================================================================
+// Spell Check Region Tests
+// =============================================================================
+
+describe('Spell Check Regions', () => {
+    // Simplified version of extractSpellCheckRegions for testing
+    function extractTextRegions(text: string): string[] {
+        // Remove commands
+        let result = text.replace(/\\[a-zA-Z]+(\[[^\]]*\])?(\{[^}]*\})?/g, ' ');
+        // Remove math
+        result = result.replace(/\$[^$]+\$/g, ' ');
+        result = result.replace(/\$\$[\s\S]*?\$\$/g, ' ');
+        // Remove comments
+        result = result.replace(/%[^\n]*/g, '');
+        // Split into words
+        return result.split(/\s+/).filter(w => w.length > 0);
+    }
+
+    it('should extract plain text words', () => {
+        const text = 'This is some plain text.';
+        const words = extractTextRegions(text);
+        expect(words).toContain('This');
+        expect(words).toContain('is');
+        expect(words).toContain('plain');
+    });
+
+    it('should skip commands', () => {
+        const text = 'Hello \\textbf{world} there.';
+        const words = extractTextRegions(text);
+        expect(words).toContain('Hello');
+        expect(words).toContain('there.');
+        expect(words).not.toContain('\\textbf');
+    });
+
+    it('should skip inline math', () => {
+        const text = 'The value $x^2 + y^2$ is computed.';
+        const words = extractTextRegions(text);
+        expect(words).toContain('The');
+        expect(words).toContain('value');
+        expect(words).toContain('computed.');
+        expect(words).not.toContain('x^2');
+    });
+
+    it('should skip comments', () => {
+        const text = 'Real text % this is a comment\nMore text.';
+        const words = extractTextRegions(text);
+        expect(words).toContain('Real');
+        expect(words).toContain('text');
+        expect(words).not.toContain('comment');
+    });
+
+    it('should handle nested commands', () => {
+        const text = '\\section{Introduction to \\LaTeX}';
+        const words = extractTextRegions(text);
+        // The text inside {} is removed with the command
+        expect(words.join(' ')).not.toContain('Introduction');
+    });
+});
+
+// =============================================================================
+// Formatting Pattern Tests
+// =============================================================================
+
+describe('Formatting Patterns', () => {
+    function hasTrailingWhitespace(text: string): boolean {
+        return /[ \t]+$/m.test(text);  // Space or tab before end of line
+    }
+
+    function hasTabs(text: string): boolean {
+        return /\t/.test(text);
+    }
+
+    function hasExcessiveBlankLines(text: string): boolean {
+        return /\n{3,}/.test(text);  // 3 or more consecutive newlines
+    }
+
+    it('should detect trailing whitespace', () => {
+        const text = 'Some text   \nMore text.';
+        expect(hasTrailingWhitespace(text)).toBe(true);
+    });
+
+    it('should not detect trailing whitespace when clean', () => {
+        const text = 'Clean text here.\nAnother paragraph.';
+        expect(hasTrailingWhitespace(text)).toBe(false);
+    });
+
+    it('should detect tabs', () => {
+        const text = 'Some\ttext here.';
+        expect(hasTabs(text)).toBe(true);
+    });
+
+    it('should not detect tabs when using spaces', () => {
+        const text = 'Some    text here.';
+        expect(hasTabs(text)).toBe(false);
+    });
+
+    it('should detect multiple blank lines', () => {
+        const text = 'Line 1\n\n\n\nLine 2';
+        expect(hasExcessiveBlankLines(text)).toBe(true);
+    });
+
+    it('should allow single blank line', () => {
+        const text = 'Line 1\n\nLine 2';
+        expect(hasExcessiveBlankLines(text)).toBe(false);
+    });
+});
+
+// =============================================================================
+// SyncTeX Pattern Tests
+// =============================================================================
+
+describe('SyncTeX Patterns', () => {
+    function parseSyncTeXOutput(output: string): { file: string; line: number; column: number } | null {
+        const inputMatch = output.match(/Input:(.+)/);
+        const lineMatch = output.match(/Line:(\d+)/);
+        const columnMatch = output.match(/Column:(\d+)/);
+
+        if (inputMatch && lineMatch) {
+            return {
+                file: inputMatch[1].trim(),
+                line: parseInt(lineMatch[1], 10),
+                column: columnMatch ? parseInt(columnMatch[1], 10) : 0
+            };
+        }
+        return null;
+    }
+
+    it('should parse synctex output', () => {
+        const output = `SyncTeX result
+Input:/path/to/document.tex
+Line:42
+Column:15
+`;
+        const result = parseSyncTeXOutput(output);
+        expect(result).not.toBeNull();
+        expect(result!.file).toBe('/path/to/document.tex');
+        expect(result!.line).toBe(42);
+        expect(result!.column).toBe(15);
+    });
+
+    it('should handle missing column', () => {
+        const output = `Input:/path/to/file.tex
+Line:100
+`;
+        const result = parseSyncTeXOutput(output);
+        expect(result).not.toBeNull();
+        expect(result!.column).toBe(0);
+    });
+
+    it('should return null for invalid output', () => {
+        const output = 'Some random text without synctex info';
+        const result = parseSyncTeXOutput(output);
+        expect(result).toBeNull();
+    });
+});
+
+// =============================================================================
+// Inverse Search Command Tests
+// =============================================================================
+
+describe('Inverse Search Commands', () => {
+    function getInverseSyncTeXCommand(viewer: string): string {
+        switch (viewer) {
+            case 'skim':
+                return 'code --goto "%file:%line"';
+            case 'sumatra':
+                return 'code --goto "%f:%l"';
+            case 'zathura':
+                return 'code --goto "%{input}:%{line}"';
+            default:
+                return 'code --goto "%file:%line"';
+        }
+    }
+
+    it('should return Skim command', () => {
+        const cmd = getInverseSyncTeXCommand('skim');
+        expect(cmd).toContain('code --goto');
+        expect(cmd).toContain('%file');
+    });
+
+    it('should return SumatraPDF command', () => {
+        const cmd = getInverseSyncTeXCommand('sumatra');
+        expect(cmd).toContain('code --goto');
+        expect(cmd).toContain('%f');
+        expect(cmd).toContain('%l');
+    });
+
+    it('should return Zathura command', () => {
+        const cmd = getInverseSyncTeXCommand('zathura');
+        expect(cmd).toContain('code --goto');
+        expect(cmd).toContain('%{input}');
+    });
+
+    it('should return default command for unknown viewer', () => {
+        const cmd = getInverseSyncTeXCommand('unknown');
+        expect(cmd).toContain('code --goto');
+    });
+});
