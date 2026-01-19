@@ -398,6 +398,88 @@ The quick pick shows:
 - Context (section or environment)
 - Line number
 
+* ⚠️ Compile and Preview
+
+Compile LaTeX documents and view the generated PDF.
+
+| Command                         | Key Binding    | Description                    |
+|---------------------------------+----------------+--------------------------------|
+| scimax.latex.compile            | C-c C-c        | Compile the document           |
+| scimax.latex.viewPdf            | C-c C-v        | View the PDF                   |
+| scimax.latex.compileAndView     | C-c C-a        | Compile and view PDF           |
+| scimax.latex.clean              | C-c C-k        | Clean auxiliary files          |
+| scimax.latex.syncTexForward     | C-c C-j        | SyncTeX forward search         |
+| scimax.latex.wordCount          | -              | Count words (approximate)      |
+
+** ⚠️ Compilation
+
+The =compile= command runs the configured LaTeX compiler (default: pdflatex):
+
+1. Saves the document
+2. Compiles with =-interaction=nonstopmode= for error handling
+3. Shows compilation errors with line numbers
+4. Outputs detailed log to the "LaTeX" output channel
+
+Configure the compiler via =scimax.latex.compiler= setting:
+- =pdflatex= (default)
+- =xelatex=
+- =lualatex=
+- =latexmk=
+
+** ⚠️ SyncTeX Support
+
+SyncTeX allows jumping between source and PDF positions.
+
+*Forward search* (C-c C-j): Jump from cursor position in source to corresponding PDF location.
+
+Supported PDF viewers:
+- *macOS*: Skim (recommended)
+- *Linux*: Zathura
+- *Windows*: SumatraPDF
+
+Configure via =scimax.latex.pdfViewer= setting.
+
+** ⚠️ Insert Commands
+
+Quick insertion of common LaTeX elements:
+
+| Command                       | Description                        |
+|-------------------------------+------------------------------------|
+| scimax.latex.insertFigure     | Insert figure environment snippet  |
+| scimax.latex.insertTable      | Insert table with booktabs snippet |
+| scimax.latex.insertEquation   | Insert equation environment        |
+
+These commands insert snippets with tab stops for easy navigation.
+
+* ⚠️ Hover Previews
+
+Hover over LaTeX elements to see previews and information.
+
+** ⚠️ Equation Preview
+
+Hover over any math expression to see a rendered preview:
+
+- Inline math: =$E=mc^2$=, =\(E=mc^2\)=
+- Display math: =$$...$$$=, =\[...\]=
+- Environments: =equation=, =align=, =gather=, etc.
+
+The preview:
+- Renders using the system LaTeX installation
+- Respects document preamble (packages, custom commands)
+- Adapts to dark/light VS Code theme
+- Shows the source LaTeX below the preview
+
+*Note:* Requires a LaTeX installation (TeX Live, MiKTeX, or MacTeX).
+
+** ⚠️ Figure Preview
+
+Hover over =\includegraphics{...}= to see:
+- Image preview (PNG, JPG, SVG, GIF, WebP)
+- File path and size
+- Last modified date
+
+PDF and EPS files show file information without preview.
+
 * ⚠️ Related Topics
 
 - [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX

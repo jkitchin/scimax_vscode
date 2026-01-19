@@ -1,6 +1,7 @@
 /**
  * LaTeX Hover Provider
  * Provides tooltips for references, citations, packages, commands, and environments
+ * Now includes rendered equation previews and figure previews
  */
 
 import * as vscode from 'vscode';
@@ -13,6 +14,12 @@ import {
     findSectionAtLine,
     LaTeXLabel
 } from './latexDocumentSymbolProvider';
+import {
+    renderLatexToSvg,
+    LatexFragment,
+    LatexDocumentSettings,
+    initLatexPreviewCache,
+} from '../org/latexPreviewProvider';
 
 // Common LaTeX commands with descriptions
 const LATEX_COMMANDS: { [key: string]: string } = {
@@ -352,6 +359,15 @@ const MATH_SYMBOLS: { [key: string]: { unicode: string; description: string } } 
 };
 
 export class LaTeXHoverProvider implements vscode.HoverProvider {
+    private extensionContext: vscode.ExtensionContext | undefined;
+
+    /**
+     * Set the extension context for cache initialization
+     */
+    setContext(context: vscode.ExtensionContext): void {
+        this.extensionContext = context;
+        initLatexPreviewCache(context);
+    }
 
     async provideHover(
         document: vscode.TextDocument,
@@ -360,8 +376,16 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
     ): Promise<vscode.Hover | null> {
         const line = document.lineAt(position.line).text;
         const wordRange = document.getWordRangeAtPosition(position, /\\?[\w@*]+/);
-        if (!wordRange) return null;
 
+        // First check for rendered equation hover (highest priority for math)
+        const equationHover = await this.hoverForEquation(document, position, line);
+        if (equationHover) return equationHover;
+
+        // Check for figure/image hover
+        const figureHover = this.hoverForFigure(document, position, line);
+        if (figureHover) return figureHover;
+
+        if (!wordRange) return null;
         const word = document.getText(wordRange);
 
         // Try different hover types
@@ -706,6 +730,314 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
                     if (path.length > 0) {
                         md.appendMarkdown(`**Path:** ${path.join(' > ')} > ${title}`);
                     }
+                }
+
+                return new vscode.Hover(md);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Hover for equations - render math expressions
+     * Handles inline $...$, display $$...$$, \(...\), \[...\], and math environments
+     */
+    private async hoverForEquation(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        line: string
+    ): Promise<vscode.Hover | null> {
+        // Find if cursor is inside any math expression
+        const text = document.getText();
+        const offset = document.offsetAt(position);
+
+        // Try to find math at current position
+        const fragment = this.findMathAtPosition(text, offset, document);
+        if (!fragment) return null;
+
+        // Create document settings for LaTeX rendering
+        const settings = this.parseDocumentSettings(document);
+
+        // Detect dark mode
+        const isDarkMode = vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.Dark ||
+                          vscode.window.activeColorTheme.kind === vscode.ColorThemeKind.HighContrast;
+
+        // Render the equation
+        const result = await renderLatexToSvg(fragment, settings, null, isDarkMode);
+
+        const md = new vscode.MarkdownString();
+        md.isTrusted = true;
+        md.supportHtml = true;
+
+        if (result.success) {
+            const imagePath = result.svgPath || result.pngPath;
+            if (imagePath && fs.existsSync(imagePath)) {
+                const imageUri = vscode.Uri.file(imagePath);
+
+                // Add type label
+                const typeLabel = fragment.type === 'inline' ? 'Inline Math' :
+                                 fragment.type === 'display' ? 'Display Math' :
+                                 `Environment: ${fragment.environment}`;
+                md.appendMarkdown(`**${typeLabel}**\n\n`);
+
+                // Add rendered image
+                md.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 500px;" />\n\n`);
+
+                // Show source LaTeX
+                md.appendMarkdown('---\n\n');
+                md.appendMarkdown('**Source:**\n');
+                md.appendCodeblock(fragment.content.trim(), 'latex');
+            }
+        } else {
+            // Show error with the LaTeX source
+            md.appendMarkdown('**LaTeX Preview**\n\n');
+            md.appendMarkdown(`*Rendering unavailable: ${result.error || 'LaTeX tools not found'}*\n\n`);
+            md.appendMarkdown('---\n\n');
+            md.appendCodeblock(fragment.content.trim(), 'latex');
+        }
+
+        // Calculate range for the hover
+        const startPos = document.positionAt(fragment.startOffset);
+        const endPos = document.positionAt(fragment.endOffset);
+
+        return new vscode.Hover(md, new vscode.Range(startPos, endPos));
+    }
+
+    /**
+     * Find math expression at a given position
+     */
+    private findMathAtPosition(
+        text: string,
+        offset: number,
+        document: vscode.TextDocument
+    ): LatexFragment | null {
+        // Check for environment first (multi-line)
+        const envPattern = /\\begin\{(equation\*?|align\*?|gather\*?|multline\*?|eqnarray\*?|displaymath)\}([\s\S]*?)\\end\{\1\}/g;
+        let match: RegExpExecArray | null;
+
+        while ((match = envPattern.exec(text)) !== null) {
+            const startOffset = match.index;
+            const endOffset = match.index + match[0].length;
+
+            if (offset >= startOffset && offset <= endOffset) {
+                const startPos = document.positionAt(startOffset);
+                return {
+                    raw: match[0],
+                    content: match[2],
+                    type: 'environment',
+                    environment: match[1],
+                    numbered: !match[1].endsWith('*'),
+                    startCol: startPos.character,
+                    endCol: 0,
+                    line: startPos.line,
+                    startOffset,
+                    endOffset,
+                };
+            }
+        }
+
+        // Check for display math $$...$$
+        const displayDollarPattern = /\$\$([^$]+?)\$\$/g;
+        while ((match = displayDollarPattern.exec(text)) !== null) {
+            const startOffset = match.index;
+            const endOffset = match.index + match[0].length;
+
+            if (offset >= startOffset && offset <= endOffset) {
+                const startPos = document.positionAt(startOffset);
+                return {
+                    raw: match[0],
+                    content: match[1],
+                    type: 'display',
+                    numbered: false,
+                    startCol: startPos.character,
+                    endCol: 0,
+                    line: startPos.line,
+                    startOffset,
+                    endOffset,
+                };
+            }
+        }
+
+        // Check for display math \[...\]
+        const displayBracketPattern = /\\\[([\s\S]*?)\\\]/g;
+        while ((match = displayBracketPattern.exec(text)) !== null) {
+            const startOffset = match.index;
+            const endOffset = match.index + match[0].length;
+
+            if (offset >= startOffset && offset <= endOffset) {
+                const startPos = document.positionAt(startOffset);
+                return {
+                    raw: match[0],
+                    content: match[1],
+                    type: 'display',
+                    numbered: false,
+                    startCol: startPos.character,
+                    endCol: 0,
+                    line: startPos.line,
+                    startOffset,
+                    endOffset,
+                };
+            }
+        }
+
+        // Check for inline math $...$
+        const inlineDollarPattern = /(?<![\\$])\$(?!\$)([^$\n]+?)(?<![\\$])\$(?!\$)/g;
+        while ((match = inlineDollarPattern.exec(text)) !== null) {
+            const startOffset = match.index;
+            const endOffset = match.index + match[0].length;
+
+            if (offset >= startOffset && offset <= endOffset) {
+                const content = match[1];
+                // Skip if it looks like currency
+                if (/^\d/.test(content.trim())) continue;
+
+                const startPos = document.positionAt(startOffset);
+                return {
+                    raw: match[0],
+                    content,
+                    type: 'inline',
+                    numbered: false,
+                    startCol: startPos.character,
+                    endCol: 0,
+                    line: startPos.line,
+                    startOffset,
+                    endOffset,
+                };
+            }
+        }
+
+        // Check for inline math \(...\)
+        const inlineParenPattern = /\\\(([\s\S]*?)\\\)/g;
+        while ((match = inlineParenPattern.exec(text)) !== null) {
+            const startOffset = match.index;
+            const endOffset = match.index + match[0].length;
+
+            if (offset >= startOffset && offset <= endOffset) {
+                const startPos = document.positionAt(startOffset);
+                return {
+                    raw: match[0],
+                    content: match[1],
+                    type: 'inline',
+                    numbered: false,
+                    startCol: startPos.character,
+                    endCol: 0,
+                    line: startPos.line,
+                    startOffset,
+                    endOffset,
+                };
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Parse document for LaTeX header settings
+     */
+    private parseDocumentSettings(document: vscode.TextDocument): LatexDocumentSettings {
+        const settings: LatexDocumentSettings = {
+            packages: [],
+            preamble: '',
+            documentClass: 'standalone',
+            classOptions: ['preview', 'border=2pt'],
+        };
+
+        const text = document.getText();
+        const preambleLines: string[] = [];
+
+        // Extract usepackage commands from preamble (before \begin{document})
+        const docStartMatch = text.match(/\\begin\{document\}/);
+        const preambleText = docStartMatch ? text.substring(0, docStartMatch.index) : text;
+
+        // Find all \usepackage commands
+        const pkgPattern = /\\usepackage(?:\[[^\]]*\])?\{([^}]+)\}/g;
+        let match;
+        while ((match = pkgPattern.exec(preambleText)) !== null) {
+            const pkgs = match[1].split(',').map(p => p.trim());
+            settings.packages.push(...pkgs);
+            preambleLines.push(match[0]);
+        }
+
+        // Find custom commands
+        const cmdPattern = /\\(newcommand|renewcommand|DeclareMathOperator)(\*?)(\{[^}]+\}|\[[^\]]*\])*\{[^}]*\}/g;
+        while ((match = cmdPattern.exec(preambleText)) !== null) {
+            preambleLines.push(match[0]);
+        }
+
+        if (preambleLines.length > 0) {
+            settings.preamble = preambleLines.join('\n');
+        }
+
+        return settings;
+    }
+
+    /**
+     * Hover for figures - show image preview for \includegraphics
+     */
+    private hoverForFigure(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        line: string
+    ): vscode.Hover | null {
+        // Find \includegraphics[options]{filename}
+        const graphicsPattern = /\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}/g;
+        let match;
+
+        while ((match = graphicsPattern.exec(line)) !== null) {
+            const startCol = match.index;
+            const endCol = startCol + match[0].length;
+
+            if (position.character >= startCol && position.character <= endCol) {
+                let imagePath = match[1];
+
+                // Resolve path relative to document
+                const docDir = path.dirname(document.uri.fsPath);
+
+                // Try with common extensions if not specified
+                const extensions = ['', '.png', '.jpg', '.jpeg', '.pdf', '.eps', '.svg'];
+                let fullPath: string | null = null;
+
+                for (const ext of extensions) {
+                    const tryPath = path.resolve(docDir, imagePath + ext);
+                    if (fs.existsSync(tryPath)) {
+                        fullPath = tryPath;
+                        break;
+                    }
+                }
+
+                const md = new vscode.MarkdownString();
+                md.isTrusted = true;
+                md.supportHtml = true;
+
+                md.appendMarkdown(`**Figure:** \`${imagePath}\`\n\n`);
+
+                if (fullPath) {
+                    const ext = path.extname(fullPath).toLowerCase();
+
+                    // Check if it's a displayable image format
+                    if (['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'].includes(ext)) {
+                        const imageUri = vscode.Uri.file(fullPath);
+                        md.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 400px; max-height: 300px;" />\n\n`);
+                    } else if (ext === '.pdf') {
+                        md.appendMarkdown(`*PDF file (preview not available)*\n\n`);
+                    } else if (ext === '.eps') {
+                        md.appendMarkdown(`*EPS file (preview not available)*\n\n`);
+                    }
+
+                    // Show file info
+                    try {
+                        const stats = fs.statSync(fullPath);
+                        md.appendMarkdown('---\n\n');
+                        md.appendMarkdown(`**Path:** \`${fullPath}\`\n\n`);
+                        md.appendMarkdown(`**Size:** ${(stats.size / 1024).toFixed(1)} KB\n\n`);
+                        md.appendMarkdown(`**Modified:** ${stats.mtime.toLocaleDateString()}`);
+                    } catch {
+                        // Ignore stat errors
+                    }
+                } else {
+                    md.appendMarkdown(`*File not found*\n\n`);
+                    md.appendMarkdown(`Searched in: \`${docDir}\``);
                 }
 
                 return new vscode.Hover(md);

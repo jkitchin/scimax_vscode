@@ -2315,6 +2315,42 @@
       {
         "command": "scimax.latex.speedCommandHelp",
         "title": "Scimax LaTeX: Speed Command Help"
+      },
+      {
+        "command": "scimax.latex.compile",
+        "title": "Scimax LaTeX: Compile Document"
+      },
+      {
+        "command": "scimax.latex.viewPdf",
+        "title": "Scimax LaTeX: View PDF"
+      },
+      {
+        "command": "scimax.latex.compileAndView",
+        "title": "Scimax LaTeX: Compile and View PDF"
+      },
+      {
+        "command": "scimax.latex.clean",
+        "title": "Scimax LaTeX: Clean Auxiliary Files"
+      },
+      {
+        "command": "scimax.latex.syncTexForward",
+        "title": "Scimax LaTeX: SyncTeX Forward Search"
+      },
+      {
+        "command": "scimax.latex.wordCount",
+        "title": "Scimax LaTeX: Word Count"
+      },
+      {
+        "command": "scimax.latex.insertFigure",
+        "title": "Scimax LaTeX: Insert Figure"
+      },
+      {
+        "command": "scimax.latex.insertTable",
+        "title": "Scimax LaTeX: Insert Table"
+      },
+      {
+        "command": "scimax.latex.insertEquation",
+        "title": "Scimax LaTeX: Insert Equation"
       }
     ],
     "keybindings": [
@@ -3599,6 +3635,36 @@
         "key": "shift+tab",
         "mac": "shift+tab",
         "when": "editorTextFocus && editorLangId == 'latex' && !suggestWidgetVisible"
+      },
+      {
+        "command": "scimax.latex.compile",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.viewPdf",
+        "key": "ctrl+c ctrl+v",
+        "mac": "ctrl+c ctrl+v",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.compileAndView",
+        "key": "ctrl+c ctrl+a",
+        "mac": "ctrl+c ctrl+a",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.syncTexForward",
+        "key": "ctrl+c ctrl+j",
+        "mac": "ctrl+c ctrl+j",
+        "when": "editorTextFocus && editorLangId == 'latex'"
+      },
+      {
+        "command": "scimax.latex.clean",
+        "key": "ctrl+c ctrl+k",
+        "mac": "ctrl+c ctrl+k",
+        "when": "editorTextFocus && editorLangId == 'latex'"
       }
     ],
     "configuration": {
@@ -3906,6 +3972,29 @@
           "type": "boolean",
           "default": true,
           "description": "Use latexmk for smart incremental builds (recommended)"
+        },
+        "scimax.latex.compiler": {
+          "type": "string",
+          "enum": [
+            "pdflatex",
+            "xelatex",
+            "lualatex",
+            "latexmk"
+          ],
+          "default": "pdflatex",
+          "description": "LaTeX compiler to use for compiling .tex files"
+        },
+        "scimax.latex.pdfViewer": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "skim",
+            "zathura",
+            "sumatra",
+            "vscode"
+          ],
+          "default": "auto",
+          "markdownDescription": "PDF viewer for SyncTeX support:\n- `auto`: Detect based on platform (Skim on macOS, Zathura on Linux, SumatraPDF on Windows)\n- `skim`: Skim (macOS)\n- `zathura`: Zathura (Linux)\n- `sumatra`: SumatraPDF (Windows)\n- `vscode`: VS Code's built-in viewer"
         },
         "scimax.notebook.directory": {
           "type": "string",
