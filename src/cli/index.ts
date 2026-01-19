@@ -9,6 +9,7 @@
  *   scimax export <file> [--format html|pdf|latex]
  *   scimax cite [extract|check] <file>
  *   scimax db [rebuild|stats]
+ *   scimax publish [project] [--init|--list]
  */
 
 import * as path from 'path';
@@ -20,6 +21,7 @@ import { searchCommand } from './commands/search';
 import { exportCommand } from './commands/export';
 import { citeCommand } from './commands/cite';
 import { dbCommand } from './commands/db';
+import { publishCommand } from './commands/publish';
 
 interface CliConfig {
     dbPath: string;
@@ -109,6 +111,7 @@ COMMANDS:
     export <file>           Export org file to HTML, PDF, or LaTeX
     cite <subcommand>       Citation operations (extract, check, convert)
     db <subcommand>         Database operations (rebuild, stats)
+    publish [project]       Publish org project(s) to HTML
     help                    Show this help message
 
 EXAMPLES:
@@ -120,6 +123,8 @@ EXAMPLES:
     scimax cite extract paper.org
     scimax cite check paper.org --bib refs.bib
     scimax db rebuild
+    scimax publish
+    scimax publish --init
 
 OPTIONS:
     --help, -h              Show help for a command
@@ -159,6 +164,9 @@ async function main(): Promise<void> {
                 break;
             case 'db':
                 await dbCommand(config, args);
+                break;
+            case 'publish':
+                await publishCommand(config, args);
                 break;
             case 'help':
             default:
