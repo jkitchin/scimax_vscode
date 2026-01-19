@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-01-19T14:59:29.596Z",
+  "buildDate": "2026-01-19T15:27:28.973Z",
   "count": 2871,
   "entries": [
     {
@@ -54374,7 +54374,7 @@
       "heading": "Following Citation Links",
       "level": 1,
       "file": "19-references.org",
-      "line": 306,
+      "line": 309,
       "content": "CLOSED: [2026-01-17 Sat 10:18]",
       "path": [],
       "commands": [],
@@ -54393,7 +54393,7 @@
       "heading": "Citation Link Actions",
       "level": 2,
       "file": "19-references.org",
-      "line": 309,
+      "line": 312,
       "content": "CLOSED: [2026-01-17 Sat 10:19] Click on a citation or press C-c C-o on a citation to open an action menu:",
       "path": [
         "Following Citation Links"
@@ -54423,7 +54423,7 @@
       "heading": "For Known Citations",
       "level": 3,
       "file": "19-references.org",
-      "line": 314,
+      "line": 317,
       "content": "CLOSED: [2026-01-17 Sat 10:19] | Action                  | Description                                    | |-------------------------+------------------------------------------------| | Open BibTeX Entry       | Jump to entry in .bib file                     | | Open DOI                | Open DOI URL in browser                        | | Open URL                | Open entry's URL field in browser              | | Open PDF                | Open PDF file if available                     | | Open/",
       "path": [
         "Following Citation Links",
@@ -54458,7 +54458,7 @@
       "heading": "For Unknown Citations",
       "level": 3,
       "file": "19-references.org",
-      "line": 330,
+      "line": 333,
       "content": "CLOSED: [2026-01-17 Sat 10:19] If citation key is not found in bibliography: | Action                  | Description                                    | |-------------------------+------------------------------------------------| | Search Google Scholar   | Search for the key on Google Scholar           | | Search CrossRef         | Search CrossRef database                       | | Add from DOI            | Fetch BibTeX from DOI                          | | Copy Key                | Copy citat",
       "path": [
         "Following Citation Links",
@@ -54493,7 +54493,7 @@
       "heading": "Citation Hover Information",
       "level": 2,
       "file": "19-references.org",
-      "line": 346,
+      "line": 349,
       "content": "CLOSED: [2026-01-17 Sat 10:20] Hover over a citation to see: - Full title and authors - Publication venue and year - Abstract (if available) - DOI and URL links - Citation count (via OpenAlex) - Open Access status - Quick action links",
       "path": [
         "Following Citation Links"
@@ -54527,7 +54527,7 @@
       "heading": "Opening PDFs",
       "level": 2,
       "file": "19-references.org",
-      "line": 358,
+      "line": 361,
       "content": "CLOSED: [2026-01-17 Sat 10:20] The system looks for PDF files in scimax.ref.pdfDirectory using these patterns: 1. key.pdf (exact key match) 2. Author_Year.pdf (first author and year) 3. DOI.pdf (DOI with slashes replaced by underscores) If no local PDF is found but the entry has a DOI: - Prompts to open DOI in browser - OpenAlex integration may provide Open Access PDF link",
       "path": [
         "Following Citation Links"
@@ -54563,7 +54563,7 @@
       "heading": "Reference Notes",
       "level": 2,
       "file": "19-references.org",
-      "line": 370,
+      "line": 373,
       "content": "Each reference can have an associated notes file: #+BEGIN_SRC org #+TITLE: Notes on Machine Learning for Scientific Computing #+AUTHOR: Smith and Doe #+DATE: 2024 #+CITE_KEY: smith2024machine ,* Summary ,* Key Points - ,* Quotes #+BEGIN_QUOTE #+END_QUOTE ,* Notes ,* References #+END_SRC Notes are stored in scimax.ref.notesDirectory as key.org files and created automatically with a template when first opened.",
       "path": [
         "Following Citation Links"
@@ -54599,7 +54599,7 @@
       "heading": "Citation Manipulation",
       "level": 1,
       "file": "19-references.org",
-      "line": 397,
+      "line": 400,
       "content": "When cursor is on a citation with multiple keys:",
       "path": [],
       "commands": [],
@@ -54616,7 +54616,7 @@
       "heading": "Transpose Citations",
       "level": 2,
       "file": "19-references.org",
-      "line": 401,
+      "line": 404,
       "content": "| Key             | Command                           | Action                 | |-----------------+-----------------------------------+------------------------| | S-<left> Arrow  | scimax.ref.transposeCitationLeft  | Swap with previous key | | S-<right> Arrow | scimax.ref.transposeCitationRight | Swap with next key     | Example: #+BEGIN_EXAMPLE cite:jones2023,smith2024,doe2022 ^cursor here Press S-<right>: cite:jones2023,doe2022,smith2024 ^cursor follows #+END_EXAMPLE",
       "path": [
         "Citation Manipulation"
@@ -54653,7 +54653,7 @@
       "heading": "Sort Citations",
       "level": 2,
       "file": "19-references.org",
-      "line": 418,
+      "line": 421,
       "content": "| Key          | Command                                | Action                      | |--------------+----------------------------------------+-----------------------------| | S-<up> Arrow | scimax.ref.sortCitations               | Sort by year (oldest first) | | S-<down>     | scimax.ref.sortCitationsByYear         | Sort by year (newest first) | |              | scimax.ref.sortCitationsAlphabetically | Sort alphabetically by key  | Citations are sorted by extracting year from: 1. Bibliograph",
       "path": [
         "Citation Manipulation"
@@ -54688,7 +54688,7 @@
       "heading": "Delete Citation Key",
       "level": 2,
       "file": "19-references.org",
-      "line": 430,
+      "line": 433,
       "content": "| Command                   | Action                                | |---------------------------+---------------------------------------| | scimax.ref.deleteCitation | Delete current key or entire citation | - If multiple keys: Removes current key only - If single key: Deletes entire citation",
       "path": [
         "Citation Manipulation"
@@ -54717,7 +54717,7 @@
       "heading": "Bibliography Display",
       "level": 1,
       "file": "19-references.org",
-      "line": 439,
+      "line": 442,
       "content": "",
       "path": [],
       "commands": [],
@@ -54731,7 +54731,7 @@
       "heading": "References Tree View",
       "level": 2,
       "file": "19-references.org",
-      "line": 441,
+      "line": 444,
       "content": "The References view shows your bibliography organized by entry type: #+BEGIN_EXAMPLE REFERENCES ├─ article (45) │  ├─ smith2024machine: Smith (2024) │  ├─ jones2023deep: Jones (2023) │  └─ ... ├─ book (12) │  ├─ doe2022python: Doe (2022) │  └─ ... └─ inproceedings (23) └─ ... #+END_EXAMPLE Click an entry to open the action menu.",
       "path": [
         "Bibliography Display"
@@ -54765,7 +54765,7 @@
       "heading": "Search References",
       "level": 2,
       "file": "19-references.org",
-      "line": 460,
+      "line": 463,
       "content": "| Command                     | Description                              | |-----------------------------+------------------------------------------| | scimax.ref.searchReferences | Search bibliography by author/title/year | Searches across: - Citation keys - Author names - Titles - Years - Journals - Keywords Results are ranked by relevance (key matches first, then author, then title).",
       "path": [
         "Bibliography Display"
@@ -54801,7 +54801,7 @@
       "heading": "Find Citations",
       "level": 2,
       "file": "19-references.org",
-      "line": 476,
+      "line": 479,
       "content": "| Command                  | Description                       | |--------------------------+-----------------------------------| | scimax.ref.findCitations | Find all citations of a reference | Searches workspace for citations of a selected key in all org, markdown, and LaTeX files. Results shown in peek view for quick navigation.",
       "path": [
         "Bibliography Display"
@@ -54836,7 +54836,7 @@
       "heading": "Fetching References from DOI",
       "level": 1,
       "file": "19-references.org",
-      "line": 484,
+      "line": 487,
       "content": "",
       "path": [],
       "commands": [],
@@ -54851,7 +54851,7 @@
       "heading": "Add Reference from DOI",
       "level": 2,
       "file": "19-references.org",
-      "line": 486,
+      "line": 489,
       "content": "| Command                 | Description                              | |-------------------------+------------------------------------------| | scimax.ref.fetchFromDOI | Fetch BibTeX entry from DOI via CrossRef |",
       "path": [
         "Fetching References from DOI"
@@ -54878,7 +54878,7 @@
       "heading": "Usage",
       "level": 3,
       "file": "19-references.org",
-      "line": 492,
+      "line": 495,
       "content": "1. Run scimax.ref.fetchFromDOI 2. Enter DOI (accepts 10.xxx/xxx or https://doi.org/10.xxx/xxx) 3. Preview the fetched entry 4. Choose action: - Add to Bibliography - Appends to first configured .bib file - Copy BibTeX - Copies to clipboard - Cancel",
       "path": [
         "Fetching References from DOI",
@@ -54915,7 +54915,7 @@
       "heading": "DOI Resolution",
       "level": 3,
       "file": "19-references.org",
-      "line": 502,
+      "line": 505,
       "content": "The system fetches metadata from CrossRef API and converts it to BibTeX format. If the key already exists, you can: - Replace the existing entry - Generate a new unique key - Cancel",
       "path": [
         "Fetching References from DOI",
@@ -54950,7 +54950,7 @@
       "heading": "OpenAlex Integration",
       "level": 2,
       "file": "19-references.org",
-      "line": 509,
+      "line": 512,
       "content": "OpenAlex provides enhanced metadata for academic works:",
       "path": [
         "Fetching References from DOI"
@@ -54971,7 +54971,7 @@
       "heading": "Show Citing Works",
       "level": 3,
       "file": "19-references.org",
-      "line": 513,
+      "line": 516,
       "content": "| Command                    | Description                  | |----------------------------+------------------------------| | scimax.ref.showCitingWorks | Show papers citing this work | Displays papers that cite the selected reference with: - Title, authors, year - Citation count - Open Access status and PDF link - Publication venue",
       "path": [
         "Fetching References from DOI",
@@ -55008,7 +55008,7 @@
       "heading": "Show Related Works",
       "level": 3,
       "file": "19-references.org",
-      "line": 525,
+      "line": 528,
       "content": "| Command                     | Description         | |-----------------------------+---------------------| | scimax.ref.showRelatedWorks | Show related papers | Shows papers related to the selected reference based on OpenAlex's relatedness algorithm.",
       "path": [
         "Fetching References from DOI",
@@ -55039,7 +55039,7 @@
       "heading": "Search OpenAlex",
       "level": 3,
       "file": "19-references.org",
-      "line": 533,
+      "line": 536,
       "content": "| Command                   | Description              | |---------------------------+--------------------------| | scimax.ref.searchOpenAlex | Search OpenAlex database | Search the global OpenAlex database for works by title, author, or keywords. Results include: - Citation counts - Open Access status - Topic classification - Abstracts",
       "path": [
         "Fetching References from DOI",
@@ -55076,7 +55076,7 @@
       "heading": "DOI Hover Information",
       "level": 2,
       "file": "19-references.org",
-      "line": 545,
+      "line": 548,
       "content": "Hover over DOI links (doi:10.xxx, https://doi.org/10.xxx) to see: - Title, authors, publication info - Citation count (via OpenAlex) - Open Access status and PDF link - Abstract - Quick actions: Add to bibliography, open DOI, view citing works",
       "path": [
         "Fetching References from DOI"
@@ -55110,7 +55110,7 @@
       "heading": "Cross-References",
       "level": 1,
       "file": "19-references.org",
-      "line": 554,
+      "line": 557,
       "content": "Beyond citations, Scimax supports cross-references to figures, tables, equations, and sections.",
       "path": [],
       "commands": [],
@@ -55131,7 +55131,7 @@
       "heading": "Reference Link Types",
       "level": 2,
       "file": "19-references.org",
-      "line": 558,
+      "line": 561,
       "content": "| Type    | Example         | References                               | |---------+-----------------+------------------------------------------| | ref     | ref:fig-results | Figures, tables, sections                | | eqref   | eqref:eq-1      | Equations (with parentheses)             | | pageref | pageref:intro   | Page number reference                    | | nameref | nameref:methods | Name/title of section                    | | autoref | autoref:tbl-1   | Auto-formatted (Figure 1, Table ",
       "path": [
         "Cross-References"
@@ -55165,7 +55165,7 @@
       "heading": "Insert Cross-Reference",
       "level": 2,
       "file": "19-references.org",
-      "line": 568,
+      "line": 571,
       "content": "| Key   | Command                           | |-------+-----------------------------------| | C-S-] | Insert ref (scimax.ref.insertRef) | 1. Run scimax.ref.insertRef 2. Select label from workspace 3. Choose reference type (ref, eqref, pageref, etc.) 4. Reference inserted at cursor",
       "path": [
         "Cross-References"
@@ -55202,7 +55202,7 @@
       "heading": "Label Definitions",
       "level": 2,
       "file": "19-references.org",
-      "line": 579,
+      "line": 582,
       "content": "Define labels for cross-referencing:",
       "path": [
         "Cross-References"
@@ -55221,7 +55221,7 @@
       "heading": "Org-Mode Labels",
       "level": 3,
       "file": "19-references.org",
-      "line": 583,
+      "line": 586,
       "content": "#+BEGIN_SRC org ,#+NAME: fig-results ,#+CAPTION: Experimental results [[file:./images/results.png]] ,#+NAME: tbl-data ,#+CAPTION: Data summary | Column 1 | Column 2 | |----------+----------| | Data     | Values   | label:eq-main  \\[ E = mc^2 \\] ,* Methods :PROPERTIES: :CUSTOM_ID: methods :END: #+END_SRC References: #+BEGIN_SRC org See ref:fig-results for the results. As shown in eqref:eq-main, energy equals... The ref:methods section describes our approach. #+END_SRC",
       "path": [
         "Cross-References",
@@ -55256,7 +55256,7 @@
       "heading": "LaTeX Labels",
       "level": 3,
       "file": "19-references.org",
-      "line": 611,
+      "line": 614,
       "content": "#+BEGIN_SRC latex \\begin{equation} \\label{eq:main} E = mc^2 \\end{equation} See equation \\eqref{eq:main} for details. #+END_SRC",
       "path": [
         "Cross-References",
@@ -55283,7 +55283,7 @@
       "heading": "Reference Hover",
       "level": 2,
       "file": "19-references.org",
-      "line": 622,
+      "line": 625,
       "content": "Hover over cross-references to see: - Label type (figure, table, equation, heading) - Caption or heading text - Surrounding context - Link to jump to definition",
       "path": [
         "Cross-References"
@@ -55314,7 +55314,7 @@
       "heading": "Export of Citations",
       "level": 1,
       "file": "19-references.org",
-      "line": 630,
+      "line": 633,
       "content": "",
       "path": [],
       "commands": [],
@@ -55328,7 +55328,7 @@
       "heading": "HTML Export",
       "level": 2,
       "file": "19-references.org",
-      "line": 632,
+      "line": 635,
       "content": "HTML export uses citation-js for full CSL-based citation formatting. Citations are processed according to standard citation styles like APA, MLA, Chicago, etc.",
       "path": [
         "Export of Citations"
@@ -55360,7 +55360,7 @@
       "heading": "Citation Link Types",
       "level": 3,
       "file": "19-references.org",
-      "line": 636,
+      "line": 639,
       "content": "| Org Citation       | Rendered Output               | |--------------------+-------------------------------| | =cite:smith2024=   | (Smith, 2024)                 | | =citep:smith2024=  | (Smith, 2024)                 | | =citet:smith2024=  | Smith (2024)                  | | =citeauthor:smith2024= | Smith                     | | =citeyear:smith2024= | 2024                        |",
       "path": [
         "Export of Citations",
@@ -55389,7 +55389,7 @@
       "heading": "Specifying Citation Style",
       "level": 3,
       "file": "19-references.org",
-      "line": 646,
+      "line": 649,
       "content": "Use =#+CSL_STYLE:= to set the citation format: #+BEGIN_SRC org #+CSL_STYLE: apa #+END_SRC Available styles: =apa= (default), =mla=, =chicago=, =harvard=, =ieee=, =vancouver=",
       "path": [
         "Export of Citations",
@@ -55422,7 +55422,7 @@
       "heading": "Bibliography Generation",
       "level": 3,
       "file": "19-references.org",
-      "line": 656,
+      "line": 659,
       "content": "The HTML export automatically generates a formatted bibliography section at the end of the document. Ensure your document includes a bibliography reference: #+BEGIN_SRC org #+BIBLIOGRAPHY: references.bib #+END_SRC See [[file:10-export.org::*HTML Citation Export][Export System: HTML Citation Export]] for complete documentation.",
       "path": [
         "Export of Citations",
@@ -55457,7 +55457,7 @@
       "heading": "LaTeX Export",
       "level": 2,
       "file": "19-references.org",
-      "line": 666,
+      "line": 669,
       "content": "Citations convert to LaTeX commands: | Org Citation   | LaTeX Output     | |----------------+------------------| | cite:key       | \\cite{key}       | | citet:key      | \\citet{key}      | | citep:key      | \\citep{key}      | | citeauthor:key | \\citeauthor{key} | | citeyear:key   | \\citeyear{key}   | Bibliography links export to \\bibliography{file} commands.",
       "path": [
         "Export of Citations"
@@ -55491,7 +55491,7 @@
       "heading": "Markdown Export",
       "level": 2,
       "file": "19-references.org",
-      "line": 680,
+      "line": 683,
       "content": "Citations export to Pandoc citation syntax: | Org Citation | Pandoc Markdown Output | |--------------+------------------------| | cite:key     | [@key]                 | | citet:key    | @key                   | | citep:key    | [@key]                 |",
       "path": [
         "Export of Citations"
@@ -55518,7 +55518,7 @@
       "heading": "Extract Bibliography for Document",
       "level": 2,
       "file": "19-references.org",
-      "line": 690,
+      "line": 693,
       "content": "| Command                        | Description                               | |--------------------------------+-------------------------------------------| | scimax.ref.extractBibliography | Extract cited references to new .bib file | Useful for creating document-specific bibliography files: 1. Scans current document for all citations 2. Looks up entries in your bibliography 3. Saves to new .bib file or copies to clipboard Generates a portable .bib file containing only the references cited in ",
       "path": [
         "Export of Citations"
@@ -55554,7 +55554,7 @@
       "heading": "Managing Your Bibliography",
       "level": 1,
       "file": "19-references.org",
-      "line": 703,
+      "line": 706,
       "content": "",
       "path": [],
       "commands": [],
@@ -55568,7 +55568,7 @@
       "heading": "Opening Bibliography Files",
       "level": 2,
       "file": "19-references.org",
-      "line": 705,
+      "line": 708,
       "content": "| Command                     | Description                       | |-----------------------------+-----------------------------------| | scimax.ref.openBibliography | Open configured bibliography file | If multiple files configured, shows a picker.",
       "path": [
         "Managing Your Bibliography"
@@ -55594,7 +55594,7 @@
       "heading": "Copy BibTeX Entry",
       "level": 2,
       "file": "19-references.org",
-      "line": 713,
+      "line": 716,
       "content": "| Command               | Description                              | |-----------------------+------------------------------------------| | scimax.ref.copyBibTeX | Copy BibTeX entry for selected reference | Select a reference and copy its BibTeX source to clipboard.",
       "path": [
         "Managing Your Bibliography"
@@ -55621,7 +55621,7 @@
       "heading": "Refresh Bibliography",
       "level": 2,
       "file": "19-references.org",
-      "line": 721,
+      "line": 724,
       "content": "| Command            | Description                   | |--------------------+-------------------------------| | scimax.ref.refresh | Reload all bibliography files | Reloads all configured and workspace .bib files. Useful after external changes.",
       "path": [
         "Managing Your Bibliography"
@@ -55651,7 +55651,7 @@
       "heading": "Bibliography File Diagnostics",
       "level": 2,
       "file": "19-references.org",
-      "line": 729,
+      "line": 732,
       "content": "The extension validates bibliography links in org files: - Highlights missing bibliography files - Shows error diagnostics for invalid paths - Suggests creating missing files",
       "path": [
         "Managing Your Bibliography"
@@ -55679,7 +55679,7 @@
       "heading": "Code Lenses in .bib Files",
       "level": 2,
       "file": "19-references.org",
-      "line": 736,
+      "line": 739,
       "content": "When viewing a .bib file, code lenses appear for each entry: - Find citations - Search workspace for citations of this key - Copy key - Copy citation key to clipboard",
       "path": [
         "Managing Your Bibliography"
@@ -55707,7 +55707,7 @@
       "heading": "Command Reference",
       "level": 1,
       "file": "19-references.org",
-      "line": 742,
+      "line": 745,
       "content": "",
       "path": [],
       "commands": [],
@@ -55721,7 +55721,7 @@
       "heading": "Citation Commands",
       "level": 2,
       "file": "19-references.org",
-      "line": 744,
+      "line": 747,
       "content": "| Command                                | Default Key | Description                 | |----------------------------------------+-------------+-----------------------------| | scimax.ref.insertCitation              | C-c ]       | Insert/append citation      | | scimax.zotero.insertCitation           | C-c z       | Insert citation from Zotero | | scimax.ref.insertRef                   | C-S-]       | Insert cross-reference      | | scimax.ref.insertBibliography          |             | Insert b",
       "path": [
         "Command Reference"
@@ -55756,7 +55756,7 @@
       "heading": "Bibliography Commands",
       "level": 2,
       "file": "19-references.org",
-      "line": 759,
+      "line": 762,
       "content": "| Command                        | Description                 | |--------------------------------+-----------------------------| | scimax.ref.openBibliography    | Open bibliography file      | | scimax.ref.searchReferences    | Search bibliography         | | scimax.ref.findCitations       | Find citations of reference | | scimax.ref.copyBibTeX          | Copy BibTeX entry           | | scimax.ref.refresh             | Reload bibliography files   | | scimax.ref.extractBibliography | Extract ci",
       "path": [
         "Command Reference"
@@ -55792,7 +55792,7 @@
       "heading": "DOI and External Commands",
       "level": 2,
       "file": "19-references.org",
-      "line": 770,
+      "line": 773,
       "content": "| Command                     | Description                   | |-----------------------------+-------------------------------| | scimax.ref.fetchFromDOI     | Add reference from DOI        | | scimax.ref.showCitingWorks  | Show citing works (OpenAlex)  | | scimax.ref.showRelatedWorks | Show related works (OpenAlex) | | scimax.ref.searchOpenAlex   | Search OpenAlex database      |",
       "path": [
         "Command Reference"
@@ -55826,7 +55826,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "19-references.org",
-      "line": 779,
+      "line": 782,
       "content": "",
       "path": [],
       "commands": [],
@@ -55840,7 +55840,7 @@
       "heading": "Organizing Your Bibliography",
       "level": 2,
       "file": "19-references.org",
-      "line": 781,
+      "line": 784,
       "content": "",
       "path": [
         "Best Practices"
@@ -55856,7 +55856,7 @@
       "heading": "Use Consistent Citation Keys",
       "level": 3,
       "file": "19-references.org",
-      "line": 783,
+      "line": 786,
       "content": "Good key format: author-year-keyword Examples: - smith-2024-machine-learning - jones-2023-deep-neural - doe-2022-python-scientific Benefits: - Easy to remember and type - Sorting by name is meaningful - Year visible in key - Keyword aids recall",
       "path": [
         "Best Practices",
@@ -55891,7 +55891,7 @@
       "heading": "Maintain Multiple .bib Files",
       "level": 3,
       "file": "19-references.org",
-      "line": 798,
+      "line": 801,
       "content": "Organize by topic or project: #+BEGIN_EXAMPLE ~/Documents/ ├── machine-learning.bib      # ML papers ├── statistics.bib             # Statistics references └── projects/ └── thesis/ └── thesis-refs.bib    # Thesis-specific #+END_EXAMPLE Configure global files + use document-local links for project-specific references.",
       "path": [
         "Best Practices",
@@ -55926,7 +55926,7 @@
       "heading": "Store PDFs Systematically",
       "level": 3,
       "file": "19-references.org",
-      "line": 813,
+      "line": 816,
       "content": "Use consistent naming in PDF directory: - smith-2024-machine-learning.pdf - Match citation keys when possible - Or use FirstAuthor_Year.pdf format",
       "path": [
         "Best Practices",
@@ -55955,7 +55955,7 @@
       "heading": "Citation Workflow",
       "level": 2,
       "file": "19-references.org",
-      "line": 820,
+      "line": 823,
       "content": "",
       "path": [
         "Best Practices"
@@ -55971,7 +55971,7 @@
       "heading": "Literature Review Workflow",
       "level": 3,
       "file": "19-references.org",
-      "line": 822,
+      "line": 825,
       "content": "1. Search OpenAlex: scimax.ref.searchOpenAlex 2. Find relevant paper 3. Add to bibliography via DOI 4. Check citing works: scimax.ref.showCitingWorks 5. Explore related works: scimax.ref.showRelatedWorks 6. Create notes file for each key reference 7. Download PDFs to configured directory",
       "path": [
         "Best Practices",
@@ -56010,7 +56010,7 @@
       "heading": "Writing Workflow",
       "level": 3,
       "file": "19-references.org",
-      "line": 832,
+      "line": 835,
       "content": "1. Write draft with placeholder citations 2. Insert citations: C-c ] 3. Search references interactively 4. Hover citations to verify 5. Before final export: scimax.ref.extractBibliography 6. Creates portable .bib file with your document",
       "path": [
         "Best Practices",
@@ -56049,7 +56049,7 @@
       "heading": "Managing Notes",
       "level": 2,
       "file": "19-references.org",
-      "line": 841,
+      "line": 844,
       "content": "Create comprehensive notes for key papers: #+BEGIN_SRC org ,#+TITLE: Notes on Smith (2024) - Machine Learning ,#+CITE_KEY: smith2024machine ,* Summary Three-sentence summary of the paper ,* Key Points - Main contribution 1 - Main contribution 2 - Methodology highlights ,* Quotes ,#+BEGIN_QUOTE \"Important quote from the paper\" (p. 42) ,#+END_QUOTE ,* Personal Notes Connections to my research... ,* Follow-up References - cite:jones2023deep - Related deep learning work - cite:nguyen2024neural - Ext",
       "path": [
         "Best Practices"
@@ -56083,7 +56083,7 @@
       "heading": "Export Considerations",
       "level": 2,
       "file": "19-references.org",
-      "line": 875,
+      "line": 878,
       "content": "",
       "path": [
         "Best Practices"
@@ -56099,7 +56099,7 @@
       "heading": "For LaTeX/PDF Export",
       "level": 3,
       "file": "19-references.org",
-      "line": 877,
+      "line": 880,
       "content": "Ensure bibliography link includes all cited .bib files: #+BEGIN_SRC org bibliography:~/Documents/refs.bib,./local-refs.bib #+END_SRC Use standard citation styles LaTeX understands (cite, citet, citep).",
       "path": [
         "Best Practices",
@@ -56134,7 +56134,7 @@
       "heading": "For HTML Export",
       "level": 3,
       "file": "19-references.org",
-      "line": 887,
+      "line": 890,
       "content": "Citations export as links. For proper bibliography rendering: 1. Ensure #+BIBLIOGRAPHY: keyword is present 2. Or include bibliography: link 3. HTML export generates bibliography section automatically",
       "path": [
         "Best Practices",
@@ -56164,7 +56164,7 @@
       "heading": "For Standalone Documents",
       "level": 3,
       "file": "19-references.org",
-      "line": 894,
+      "line": 897,
       "content": "Before sharing: 1. Run scimax.ref.extractBibliography 2. Save extracted .bib alongside document 3. Update bibliography link to local file: #+BEGIN_SRC org bibliography:./references.bib #+END_SRC",
       "path": [
         "Best Practices",
@@ -56199,7 +56199,7 @@
       "heading": "BibTeX Entry Quality",
       "level": 2,
       "file": "19-references.org",
-      "line": 904,
+      "line": 907,
       "content": "Ensure complete entries for best results: #+BEGIN_SRC bibtex @article{key, author = {Required}, title = {Required}, journal = {Recommended for articles}, year = {Required}, volume = {Recommended}, number = {Recommended}, pages = {Recommended}, doi = {Highly recommended - enables OpenAlex integration}, url = {Useful if no DOI}, abstract = {Helpful for hover info}, keywords = {Aids search} } #+END_SRC",
       "path": [
         "Best Practices"
@@ -56233,7 +56233,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "19-references.org",
-      "line": 924,
+      "line": 927,
       "content": "",
       "path": [],
       "commands": [],
@@ -56246,7 +56246,7 @@
       "heading": "Citation Not Found",
       "level": 2,
       "file": "19-references.org",
-      "line": 926,
+      "line": 929,
       "content": "If citation shows \"not found in bibliography\": 1. Check spelling of citation key 2. Verify .bib file is configured or linked in document 3. Run `scimax.ref.refresh' to reload bibliography 4. Check .bib file for entry with that exact key",
       "path": [
         "Troubleshooting"
@@ -56278,7 +56278,7 @@
       "heading": "PDF Not Found",
       "level": 2,
       "file": "19-references.org",
-      "line": 934,
+      "line": 937,
       "content": "If \"PDF not found\" when trying to open: 1. Check `scimax.ref.pdfDirectory' is set correctly 2. Verify PDF filename matches key or `Author_Year.pdf' pattern 3. Check file exists with `ls' or file explorer 4. Try opening from DOI if available",
       "path": [
         "Troubleshooting"
@@ -56313,7 +56313,7 @@
       "heading": "DOI Fetch Fails",
       "level": 2,
       "file": "19-references.org",
-      "line": 942,
+      "line": 945,
       "content": "If fetching from DOI fails: 1. Verify DOI is correct (should start with 10.) 2. Check internet connection 3. Try searching on https://crossref.org directly 4. Some DOIs may not be in CrossRef database 5. Try OpenAlex search as alternative",
       "path": [
         "Troubleshooting"
@@ -56347,7 +56347,7 @@
       "heading": "Bibliography Link Not Recognized",
       "level": 2,
       "file": "19-references.org",
-      "line": 951,
+      "line": 954,
       "content": "If bibliography link isn't recognized: 1. Check path is correct (try absolute path first) 2. Ensure .bib extension is included 3. Verify file exists at that location 4. Check for typos in filename 5. Use `~' for home directory, not `$HOME'",
       "path": [
         "Troubleshooting"
@@ -56381,7 +56381,7 @@
       "heading": "Export Issues",
       "level": 2,
       "file": "19-references.org",
-      "line": 960,
+      "line": 963,
       "content": "If citations don't export correctly: 1. Check export format supports citations 2. Verify bibliography link is present in document 3. Ensure citation keys are in bibliography 4. For LaTeX: check LaTeX citation package is available 5. For Pandoc: use Pandoc-compatible citation syntax",
       "path": [
         "Troubleshooting"
@@ -56415,7 +56415,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "19-references.org",
-      "line": 969,
+      "line": 972,
       "content": "- [[file:05-links.org][Hyperlinks]] - General link syntax and usage - [[file:10-export.org][Export System]] - Exporting documents with citations - [[file:07-source-blocks.org][Source Blocks]] - BibTeX as source blocks - [[file:26-configuration.org][Configuration]] - Reference system settings",
       "path": [],
       "commands": [],
@@ -56447,7 +56447,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "19-references.org",
-      "line": 976,
+      "line": 979,
       "content": "",
       "path": [],
       "commands": [],
@@ -56462,7 +56462,7 @@
       "heading": "Essential Keybindings",
       "level": 2,
       "file": "19-references.org",
-      "line": 978,
+      "line": 981,
       "content": "| Key       | Action                        | |-----------+-------------------------------| | C-c ]     | Insert citation               | | C-c z     | Insert citation from Zotero   | | C-S-]     | Insert cross-reference        | | C-c C-o   | Open link/citation at point   | | S-<left>  | Transpose citation left       | | S-<right> | Transpose citation right      | | S-<up>    | Sort citations (oldest first) | | S-<down>  | Sort citations (newest first) |",
       "path": [
         "Quick Reference Card"
@@ -56500,7 +56500,7 @@
       "heading": "Citation Syntax Quick Reference",
       "level": 2,
       "file": "19-references.org",
-      "line": 991,
+      "line": 994,
       "content": "| Format        | Org-Mode       | Markdown   | LaTeX            | |---------------+----------------+------------+------------------| | Basic         | cite:key       | [@key]     | \\cite{key}       | | Textual       | citet:key      | @key       | \\citet{key}      | | Parenthetical | citep:key      | [@key]     | \\citep{key}      | | Author only   | citeauthor:key | N/A        | \\citeauthor{key} | | Year only     | citeyear:key   | N/A        | \\citeyear{key}   | | Multiple      | cite:k1,k2,k3",
       "path": [
         "Quick Reference Card"
@@ -56534,7 +56534,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "19-references.org",
-      "line": 1002,
+      "line": 1005,
       "content": "",
       "path": [
         "Quick Reference Card"
@@ -56550,7 +56550,7 @@
       "heading": "Add New Reference",
       "level": 3,
       "file": "19-references.org",
-      "line": 1004,
+      "line": 1007,
       "content": "1. scimax.ref.fetchFromDOI or scimax.ref.searchOpenAlex 2. Review metadata 3. Add to bibliography",
       "path": [
         "Quick Reference Card",
@@ -56574,7 +56574,7 @@
       "heading": "Insert Citation",
       "level": 3,
       "file": "19-references.org",
-      "line": 1009,
+      "line": 1012,
       "content": "1. C-c ] 2. Search for reference 3. Select citation style 4. Citation inserted",
       "path": [
         "Quick Reference Card",
@@ -56599,7 +56599,7 @@
       "heading": "Find Related Papers",
       "level": 3,
       "file": "19-references.org",
-      "line": 1015,
+      "line": 1018,
       "content": "1. Hover over citation or DOI 2. Click \"Citing Works\" or \"Related Works\" 3. Browse results 4. Add relevant papers",
       "path": [
         "Quick Reference Card",
@@ -56628,7 +56628,7 @@
       "heading": "Prepare for Export",
       "level": 3,
       "file": "19-references.org",
-      "line": 1021,
+      "line": 1024,
       "content": "1. scimax.ref.extractBibliography 2. Save to document directory 3. Update bibliography link 4. Export document",
       "path": [
         "Quick Reference Card",
@@ -56653,7 +56653,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "19-references.org",
-      "line": 1027,
+      "line": 1030,
       "content": "- Previous: [[file:18-database-search.org][Database and Search]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:20-editmarks.org][Editmarks]]",
       "path": [],
       "commands": [],
@@ -85171,7 +85171,7 @@
       "heading": "Current Review Status",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 50,
+      "line": 61,
       "content": ":PROPERTIES: :VISIBILITY: folded :END: The results from running the above block will appear here after execution. Items link directly to the source file and line number for quick navigation.",
       "path": [],
       "commands": [],
@@ -85203,7 +85203,7 @@
       "heading": "Workflow",
       "level": 2,
       "file": "review-agenda.org",
-      "line": 58,
+      "line": 69,
       "content": "1. Run the source block above with `C-c C-c' 2. Click on any item link to jump to that heading 3. Review the content 4. Change the heading's TODO state from ⚠️ to ✅ when satisfied 5. Re-run the block to update the agenda",
       "path": [
         "Current Review Status"
@@ -85239,7 +85239,7 @@
       "heading": "Legend",
       "level": 2,
       "file": "review-agenda.org",
-      "line": 66,
+      "line": 77,
       "content": "| State | Meaning | |-------+---------| | ⚠️    | New heading, needs review | | 👀    | Changed heading, needs review | | ✅    | Reviewed and approved |",
       "path": [
         "Current Review Status"
@@ -85264,7 +85264,7 @@
       "heading": "Add Review Markers to Unmarked Headings",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 76,
+      "line": 87,
       "content": "Run this block to add ⚠️ to all headings that do not have a TODO state. #+begin_src python :results output import os, re TODO_STATES = [\"⚠️\", \"👀\", \"✅\", \"TODO\", \"DONE\", \"NEXT\", \"WAITING\", \"CANCELLED\"] def has_todo(line): m = re.match(r\"^\\*+\\s+(.*)$\", line) if not m: return True first = m.group(1).split()[0] if m.group(1).split() else \"\" return first in TODO_STATES total = 0 for fname in sorted(os.listdir(\".\")): if not fname.endswith(\".org\") or fname == \"review-agenda.org\": continue with open(fna",
       "path": [],
       "commands": [],
@@ -85296,7 +85296,7 @@
       "heading": "Add Review Markers (TypeScript API)",
       "level": 1,
       "file": "review-agenda.org",
-      "line": 111,
+      "line": 122,
       "content": "Uses the scimax org modification API to add ⚠️ markers to unmarked headings. #+begin_src typescript :results output import { org } from './src/parser/orgModify'; import * as fs from 'fs'; const TODO_STATES = ['⚠️', '👀', '✅', 'TODO', 'DONE', 'NEXT', 'WAITING', 'CANCELLED']; let total = 0; for (const fname of fs.readdirSync('.').filter(f => f.endsWith('.org') && f !== 'review-agenda.org')) { const doc = org.parseFile(fname); let changes: string[] = []; org.mapHeadlines(doc, h => { if (!h.properti",
       "path": [],
       "commands": [],
