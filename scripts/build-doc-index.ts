@@ -191,9 +191,35 @@ if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
 }
 
-fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
+// Check if content changed (ignore buildDate to avoid unnecessary updates)
+let shouldWrite = true;
+let existingBuildDate: string | null = null;
 
-console.log(`Documentation index built successfully!`);
-console.log(`  Entries: ${index.count}`);
-console.log(`  Output: ${outputPath}`);
-console.log(`  Build date: ${index.buildDate}`);
+if (fs.existsSync(outputPath)) {
+    try {
+        const existing: DocIndex = JSON.parse(fs.readFileSync(outputPath, 'utf-8'));
+        existingBuildDate = existing.buildDate;
+
+        // Compare entries (excluding buildDate)
+        const existingEntries = JSON.stringify(existing.entries);
+        const newEntries = JSON.stringify(index.entries);
+
+        if (existingEntries === newEntries && existing.count === index.count) {
+            shouldWrite = false;
+            console.log(`Documentation index unchanged, skipping write.`);
+            console.log(`  Entries: ${index.count}`);
+            console.log(`  Output: ${outputPath}`);
+            console.log(`  Build date: ${existingBuildDate} (preserved)`);
+        }
+    } catch {
+        // If we can't read existing file, write new one
+    }
+}
+
+if (shouldWrite) {
+    fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
+    console.log(`Documentation index built successfully!`);
+    console.log(`  Entries: ${index.count}`);
+    console.log(`  Output: ${outputPath}`);
+    console.log(`  Build date: ${index.buildDate}`);
+}
