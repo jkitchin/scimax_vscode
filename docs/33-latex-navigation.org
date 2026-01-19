@@ -1,0 +1,407 @@
+#+TITLE: LaTeX Navigation and Structure
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-19
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
+
+* ⚠️ LaTeX Navigation and Structure
+
+Scimax VS Code provides comprehensive navigation, structure editing, and tooltips for LaTeX documents. These features mirror the org-mode heading navigation and structure editing commands, adapted for LaTeX section commands and environments.
+
+** ⚠️ Overview
+
+LaTeX support in Scimax VS Code includes:
+
+1. *Document Outline* - Hierarchical view of sections, environments, and labels
+2. *Section Navigation* - Move between sections at any level
+3. *Structure Editing* - Promote/demote, move, and manipulate sections
+4. *Environment Commands* - Select, change, wrap, and unwrap environments
+5. *Hover Tooltips* - Information about references, packages, and commands
+6. *Speed Commands* - Single-key shortcuts at section start
+7. *Folding* - Collapse and expand sections and environments
+
+See also:
+- [[file:21-navigation.org][Navigation]] for general navigation features
+- [[file:24-keybindings.org][Keybindings]] for a complete reference of keyboard shortcuts
+
+* ⚠️ Document Outline
+
+The outline view (VS Code's built-in outline panel) shows the structure of your LaTeX document:
+
+- *Sections* (part, chapter, section, subsection, etc.)
+- *Labeled Environments* (figures, tables, equations with labels)
+- *Labels* for cross-referencing
+
+The outline uses hierarchical nesting to show the document structure. Click any item to jump to it.
+
+** ⚠️ Section Hierarchy
+
+LaTeX sections are organized hierarchically:
+
+| Level | Command         | Symbol Kind |
+|-------+-----------------+-------------|
+|     0 | \part           | Module      |
+|     1 | \chapter        | Class       |
+|     2 | \section        | Method      |
+|     3 | \subsection     | Function    |
+|     4 | \subsubsection  | Field       |
+|     5 | \paragraph      | Property    |
+|     6 | \subparagraph   | Property    |
+
+Starred variants (e.g., =\section*{...}=) are also recognized and marked in the outline.
+
+* ⚠️ Section Navigation
+
+Navigate between sections in your LaTeX document using these commands:
+
+| Command                               | Key Binding   | Description                        |
+|---------------------------------------+---------------+------------------------------------|
+| scimax.latex.nextSection              | C-c C-n       | Jump to next section               |
+| scimax.latex.previousSection          | C-c C-p       | Jump to previous section           |
+| scimax.latex.parentSection            | C-c C-u       | Jump to parent section             |
+| scimax.latex.nextSiblingSection       | C-c C-f       | Jump to next sibling section       |
+| scimax.latex.previousSiblingSection   | C-c C-b       | Jump to previous sibling section   |
+| scimax.latex.firstSection             | -             | Jump to first section in document  |
+| scimax.latex.lastSection              | -             | Jump to last section in document   |
+| scimax.latex.jumpToSection            | C-c j         | Quick pick to jump to any section  |
+
+** ⚠️ Next/Previous Section
+
+Move through all sections in document order:
+
+#+BEGIN_SRC latex
+\section{Introduction}
+Content here...
+
+\subsection{Background}    % <- Current position
+
+\subsection{Motivation}    % <- Next section
+
+\section{Methods}          % <- Another next section
+#+END_SRC
+
+=nextSection= moves forward through sections regardless of level. =previousSection= moves backward.
+
+** ⚠️ Sibling Navigation
+
+Move between sections at the same level:
+
+#+BEGIN_SRC latex
+\section{Introduction}
+
+\subsection{Background}    % <- Current position
+\subsection{Motivation}    % <- Next sibling (same level)
+\subsection{Goals}         % <- Another sibling
+
+\section{Methods}          % <- NOT a sibling (different level)
+#+END_SRC
+
+=nextSiblingSection= moves to the next section at the same hierarchical level.
+=previousSiblingSection= moves backward.
+
+** ⚠️ Parent Section
+
+Jump to the containing (parent) section:
+
+#+BEGIN_SRC latex
+\section{Methods}            % <- Jump here (parent)
+\subsection{Data Collection}
+\subsubsection{Sampling}     % <- From here
+#+END_SRC
+
+** ⚠️ Jump to Section
+
+The =jumpToSection= command (C-c j) opens a quick pick showing all sections with:
+
+- Hierarchical indentation showing structure
+- Section type (=\section=, =\subsection=, etc.)
+- Line numbers
+
+Type to filter, then select a section to jump to it.
+
+* ⚠️ Structure Editing
+
+Edit the document structure by promoting, demoting, and moving sections.
+
+| Command                          | Key Binding      | Description                     |
+|----------------------------------+------------------+---------------------------------|
+| scimax.latex.promoteSection      | Alt+Left         | Promote section (e.g., sub→sec) |
+| scimax.latex.demoteSection       | Alt+Right        | Demote section (e.g., sec→sub)  |
+| scimax.latex.promoteSubtree      | Alt+Shift+Left   | Promote section and children    |
+| scimax.latex.demoteSubtree       | Alt+Shift+Right  | Demote section and children     |
+| scimax.latex.moveSectionUp       | Alt+Up           | Move section above sibling      |
+| scimax.latex.moveSectionDown     | Alt+Down         | Move section below sibling      |
+| scimax.latex.markSection         | C-c @            | Select entire section           |
+| scimax.latex.killSection         | -                | Delete section (copy to clip)   |
+| scimax.latex.cloneSection        | -                | Duplicate section               |
+| scimax.latex.insertSection       | -                | Insert new section at same level|
+| scimax.latex.insertSubsection    | -                | Insert subsection               |
+
+** ⚠️ Promote/Demote
+
+Change the level of a section command:
+
+#+BEGIN_SRC latex
+% Before promote:
+\subsection{Methods}
+
+% After promote (Alt+Left):
+\section{Methods}
+
+% Before demote:
+\section{Results}
+
+% After demote (Alt+Right):
+\subsection{Results}
+#+END_SRC
+
+** ⚠️ Promote/Demote Subtree
+
+Promote or demote a section and all its children:
+
+#+BEGIN_SRC latex
+% Before promoteSubtree on "Methods":
+\subsection{Methods}
+\subsubsection{Data}
+\subsubsection{Analysis}
+
+% After promoteSubtree (Alt+Shift+Left):
+\section{Methods}
+\subsection{Data}
+\subsection{Analysis}
+#+END_SRC
+
+** ⚠️ Move Section Up/Down
+
+Swap a section with its previous or next sibling:
+
+#+BEGIN_SRC latex
+% Before moveSectionDown on "Introduction":
+\section{Introduction}
+Content A...
+
+\section{Methods}
+Content B...
+
+% After moveSectionDown (Alt+Down):
+\section{Methods}
+Content B...
+
+\section{Introduction}
+Content A...
+#+END_SRC
+
+The entire section subtree (including all nested content) is moved.
+
+* ⚠️ Environment Commands
+
+Work with LaTeX environments (=\begin{...}= / =\end{...}=):
+
+| Command                             | Key Binding  | Description                        |
+|-------------------------------------+--------------+------------------------------------|
+| scimax.latex.selectEnvironment      | C-c C-e      | Select entire environment          |
+| scimax.latex.selectEnvironmentContent | -          | Select content (not begin/end)     |
+| scimax.latex.changeEnvironment      | C-c e        | Change environment type            |
+| scimax.latex.wrapInEnvironment      | C-c w        | Wrap selection in environment      |
+| scimax.latex.unwrapEnvironment      | -            | Remove begin/end, keep content     |
+| scimax.latex.deleteEnvironment      | -            | Delete entire environment          |
+| scimax.latex.toggleEnvironmentStar  | C-c *        | Toggle starred variant             |
+| scimax.latex.addLabel               | C-c C-l      | Add \label to environment          |
+| scimax.latex.addCaption             | -            | Add \caption to figure/table       |
+| scimax.latex.jumpToMatchingEnvironment | C-c %     | Jump between \begin and \end       |
+
+** ⚠️ Environment Navigation
+
+Navigate between environments:
+
+| Command                            | Key Binding | Description               |
+|------------------------------------+-------------+---------------------------|
+| scimax.latex.nextEnvironment       | -           | Jump to next environment  |
+| scimax.latex.previousEnvironment   | -           | Jump to previous environment |
+| scimax.latex.jumpToEnvironment     | -           | Quick pick all environments |
+
+** ⚠️ Change Environment
+
+The =changeEnvironment= command (C-c e) prompts to change the environment type:
+
+#+BEGIN_SRC latex
+% Before:
+\begin{equation}
+  E = mc^2
+\end{equation}
+
+% After changing to "align":
+\begin{align}
+  E = mc^2
+\end{align}
+#+END_SRC
+
+Both =\begin= and =\end= are updated simultaneously.
+
+** ⚠️ Wrap in Environment
+
+Select text and use =wrapInEnvironment= (C-c w) to surround it:
+
+#+BEGIN_SRC latex
+% Before (with "E = mc^2" selected):
+E = mc^2
+
+% After wrapping in "equation":
+\begin{equation}
+  E = mc^2
+\end{equation}
+#+END_SRC
+
+** ⚠️ Toggle Star
+
+Toggle the starred variant of an environment:
+
+#+BEGIN_SRC latex
+% Before:
+\begin{equation}
+  E = mc^2
+\end{equation}
+
+% After toggleEnvironmentStar (C-c *):
+\begin{equation*}
+  E = mc^2
+\end{equation*}
+#+END_SRC
+
+* ⚠️ Hover Tooltips
+
+Hover over LaTeX elements to see helpful information:
+
+| Element              | Information Shown                           |
+|----------------------+---------------------------------------------|
+| =\ref{label}=        | What the label refers to, line number       |
+| =\cite{key}=         | Citation keys (bib integration planned)     |
+| =\label{name}=       | Where label is referenced, context          |
+| =\usepackage{pkg}=   | Package description                         |
+| =\begin{env}=        | Environment description                     |
+| =\section{...}=      | Section hierarchy path                      |
+| =\alpha=, =\beta=, etc. | Unicode symbol and description           |
+| =\textbf=, etc.      | Command description                         |
+| =\input{file}=       | File path, size, preview                    |
+
+** ⚠️ Reference Hover
+
+Hovering over =\ref{fig:example}= shows:
+
+- The label name
+- Line number where label is defined
+- Context (section or environment containing the label)
+- Preview of the labeled line
+
+** ⚠️ Package Hover
+
+Hovering over =\usepackage{amsmath}= shows:
+
+- Package name
+- Description of what the package provides
+
+** ⚠️ Math Symbol Hover
+
+Hovering over math commands like =\alpha= shows:
+
+- Unicode representation: α
+- Unicode code point: U+03B1
+- Description: Greek lowercase alpha
+
+* ⚠️ Speed Commands
+
+At the beginning of a section line, single keys trigger commands:
+
+| Key | Action                 | Key | Action             |
+|-----+------------------------+-----+--------------------|
+| n   | Next section           | <   | Promote section    |
+| p   | Previous section       | >   | Demote section     |
+| f   | Next sibling           | U   | Move section up    |
+| b   | Previous sibling       | D   | Move section down  |
+| u   | Parent section         | m   | Mark section       |
+| j   | Jump to section        | k   | Kill section       |
+| J   | Jump to label          | c   | Clone section      |
+| g   | First section          | i   | Insert section     |
+| G   | Last section           | I   | Insert subsection  |
+| Tab | Toggle fold            | N   | Narrow to section  |
+| S-Tab | Cycle global fold    | W   | Widen              |
+| ?   | Show speed commands    |     |                    |
+
+Speed commands only activate when cursor is at or before the backslash of a section command.
+
+** ⚠️ Using Speed Commands
+
+1. Place cursor at the start of a section line (column 0 or before =\=)
+2. Press a single key
+3. The corresponding action executes
+
+Example:
+#+BEGIN_SRC latex
+\section{Introduction}   % <- Place cursor here, press 'n' to go to next section
+  ^
+  |__ Cursor position
+#+END_SRC
+
+* ⚠️ Folding
+
+LaTeX documents support folding for sections and environments.
+
+| Command               | Key Binding | Description                  |
+|-----------------------+-------------+------------------------------|
+| scimax.org.toggleFold | Tab         | Toggle fold at cursor        |
+| scimax.org.cycleGlobalFold | Shift+Tab | Cycle all folds         |
+
+** ⚠️ Section Folding
+
+Sections fold from the section command to the next section at the same or higher level:
+
+#+BEGIN_SRC latex
+\section{Introduction}...  % <- Folds from here
+Content...
+\subsection{Background}    % <- Included in fold
+More content...
+\section{Methods}          % <- Fold ends before this
+#+END_SRC
+
+** ⚠️ Environment Folding
+
+Environments fold from =\begin= to =\end=:
+
+#+BEGIN_SRC latex
+\begin{figure}...          % <- Folds from here
+  \includegraphics{...}
+  \caption{...}
+\end{figure}               % <- Fold ends here
+#+END_SRC
+
+** ⚠️ Global Fold Cycling
+
+=Shift+Tab= cycles through three states:
+
+1. *OVERVIEW* - All sections folded
+2. *CONTENTS* - Top-level sections visible
+3. *SHOWALL* - Everything expanded
+
+* ⚠️ Label Navigation
+
+Navigate to labels in your document:
+
+| Command                    | Key Binding | Description              |
+|----------------------------+-------------+--------------------------|
+| scimax.latex.jumpToLabel   | C-c l       | Quick pick all labels    |
+
+The quick pick shows:
+- Label name
+- Context (section or environment)
+- Line number
+
+* ⚠️ Related Topics
+
+- [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX
+- [[file:10-export.org][Export]] - Export org to LaTeX
+- [[file:19-references.org][References]] - BibTeX bibliography management
+- [[file:23-speed-commands.org][Speed Commands]] - Org-mode speed commands
+- [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference
