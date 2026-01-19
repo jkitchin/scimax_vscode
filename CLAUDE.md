@@ -317,3 +317,32 @@ This extension executes user code (Babel source blocks), so security requires ca
 - Source blocks are **NOT executed during export** (unlike Emacs with `:exports results`)
 - Blocks with `:eval no` header are skipped
 - "Execute All" commands have no default keybinding (command palette only)
+
+### Parser Safety Limits
+
+The parser has built-in limits to prevent crashes or unresponsiveness from malformed input:
+
+| Limit | Value | Rationale |
+|-------|-------|-----------|
+| **Heading recursion depth** | 100 levels | Prevents stack overflow from deeply nested headings. Real org files rarely exceed 10 levels. |
+| **Block line limit** | 50,000 lines | Prevents unbounded memory consumption from unclosed blocks (`#+BEGIN_SRC` without `#+END_SRC`). No legitimate block approaches this size. |
+| **Properties drawer limit** | 1,000 lines | Smaller limit for property drawers which are typically <50 lines. |
+| **Tag count per heading** | 50 tags | Prevents ReDoS from malformed tag patterns. No real heading has 50+ tags. |
+| **Tag character set** | `[\w@#%\-]` | Restricted from "any non-colon" to prevent regex backtracking. Allows: letters, numbers, `_`, `@`, `#`, `%`, `-`. |
+
+**Affected functions:**
+- `findHeadings()`, `flattenHeadings()` - depth-limited recursion
+- `parseSrcBlock()`, `parseSimpleBlock()`, `parseExportBlock()`, `parseSpecialBlock()` - line limits
+- `parseLatexEnvironment()`, `parseDrawer()`, `parsePropertiesDrawer()` - line limits
+- `parseDynamicBlock()`, `parseInlinetask()` - line limits
+
+**What happens when limits are hit:**
+- Parser stops consuming input at the limit boundary
+- The unclosed block/element is treated as extending to the limit point
+- No error is thrown; parsing continues with remaining content
+- This matches graceful degradation behavior for malformed files
+
+**Characters NOT allowed in tags** (to prevent ReDoS):
+- Spaces, colons (standard org-mode restriction)
+- Most punctuation: `!`, `$`, `^`, `&`, `*`, etc.
+- If you need exotic tag characters, the old pattern was `[^:]` - but this caused exponential backtracking on malformed input like `:::::::::::::`
