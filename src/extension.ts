@@ -62,6 +62,7 @@ import { registerEditmarkCommands } from './editmarks/editmarks';
 import { HydraManager, registerHydraCommands, scimaxMenus } from './hydra';
 import { registerPublishCommands } from './publishing';
 import { registerHelpCommands } from './help';
+import { activateLatexFeatures } from './latex/commands';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -533,6 +534,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Editmark Commands (track changes)
     registerEditmarkCommands(context);
+
+    // Activate LaTeX navigation and structure features
+    activateLatexFeatures(context);
 
     // Initialize Hydra Menu Framework
     hydraManager = new HydraManager(context);
