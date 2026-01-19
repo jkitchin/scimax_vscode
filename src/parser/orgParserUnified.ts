@@ -69,6 +69,9 @@ export interface OrgParserConfig {
 const DEFAULT_DONE_KEYWORDS = ['DONE', 'CANCELLED', 'CANCELED'];
 const DEFAULT_INLINETASK_MIN_LEVEL = 15;
 
+// Maximum lines to consume when looking for block end tags (prevents unbounded memory consumption)
+const MAX_BLOCK_LINES = 50000;
+
 // =============================================================================
 // Pre-compiled Regex Patterns (Performance Optimization)
 // =============================================================================
@@ -78,7 +81,8 @@ const RE_HEADLINE = /^(\*+)\s+(.*)$/;
 const RE_HEADLINE_SIMPLE = /^\*+ /;
 const RE_TODO_PREFIX = /^(\S+)\s+/;
 const RE_PRIORITY = /^\[#([A-Z])\]\s+/;
-const RE_TAGS = /\s+:([^:\s]+(?::[^:\s]+)*):$/;
+// Use character class and bounded repetition to prevent ReDoS
+const RE_TAGS = /\s+:([\w@#%]+(?::[\w@#%]+){0,50}):$/;
 
 // Keyword and comment patterns
 const RE_KEYWORD = /^#\+(\w+):\s*(.*)$/;
@@ -914,9 +918,10 @@ export class OrgParserUnified {
     ): { element: SrcBlockElement; endLine: number; endOffset: number } {
         const contentLines: string[] = [];
         let i = startLine + 1;
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        // Use pre-compiled pattern
-        while (i < lines.length && !RE_SRC_BLOCK_END.test(lines[i])) {
+        // Use pre-compiled pattern with safety limit to prevent unbounded consumption
+        while (i < maxEndLine && !RE_SRC_BLOCK_END.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -976,8 +981,10 @@ export class OrgParserUnified {
         let i = startLine + 1;
         // Use cached pattern for performance
         const endPattern = OrgParserUnified.getBlockEndPattern(endTag);
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        while (i < lines.length && !endPattern.test(lines[i])) {
+        // Safety limit to prevent unbounded consumption for unclosed blocks
+        while (i < maxEndLine && !endPattern.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1067,8 +1074,11 @@ export class OrgParserUnified {
     ): { element: ExportBlockElement; endLine: number; endOffset: number } {
         const contentLines: string[] = [];
         let i = startLine + 1;
+        // Use cached pattern and safety limit
+        const endPattern = OrgParserUnified.getBlockEndPattern('EXPORT');
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        while (i < lines.length && !lines[i].match(/^#\+END_EXPORT/i)) {
+        while (i < maxEndLine && !endPattern.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1106,8 +1116,10 @@ export class OrgParserUnified {
         let i = startLine + 1;
         // Use cached pattern for performance
         const endPattern = OrgParserUnified.getBlockEndPattern(blockType);
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        while (i < lines.length && !endPattern.test(lines[i])) {
+        // Safety limit to prevent unbounded consumption for unclosed blocks
+        while (i < maxEndLine && !endPattern.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1145,8 +1157,10 @@ export class OrgParserUnified {
         let i = startLine + 1;
         // Use cached pattern for performance
         const endPattern = OrgParserUnified.getLatexEndPattern(envName);
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        while (i < lines.length && !endPattern.test(lines[i])) {
+        // Safety limit to prevent unbounded consumption for unclosed environments
+        while (i < maxEndLine && !endPattern.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1186,8 +1200,10 @@ export class OrgParserUnified {
     ): { element: DrawerElement; endLine: number; endOffset: number } {
         const contentLines: string[] = [];
         let i = startLine + 1;
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        while (i < lines.length && lines[i].trim() !== ':END:') {
+        // Safety limit to prevent unbounded consumption for unclosed drawers
+        while (i < maxEndLine && lines[i].trim() !== ':END:') {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1222,8 +1238,11 @@ export class OrgParserUnified {
     ): { properties: Record<string, string>; endLine: number; endOffset: number } {
         const properties: Record<string, string> = {};
         let i = startLine + 1;
+        // Properties drawers are typically small, use a smaller limit
+        const maxEndLine = Math.min(lines.length, startLine + 1000);
 
-        while (i < lines.length && lines[i].trim() !== RE_DRAWER_END) {
+        // Safety limit to prevent unbounded consumption for unclosed properties drawers
+        while (i < maxEndLine && lines[i].trim() !== RE_DRAWER_END) {
             // Use pre-compiled pattern
             const propMatch = lines[i].match(RE_PROPERTY_LINE);
             if (propMatch) {
@@ -1477,8 +1496,10 @@ export class OrgParserUnified {
     ): { element: DynamicBlockElement; endLine: number; endOffset: number } {
         const contentLines: string[] = [];
         let i = startLine + 1;
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        while (i < lines.length && !RE_DYNAMIC_BLOCK_END.test(lines[i])) {
+        // Safety limit to prevent unbounded consumption for unclosed dynamic blocks
+        while (i < maxEndLine && !RE_DYNAMIC_BLOCK_END.test(lines[i])) {
             contentLines.push(lines[i]);
             i++;
         }
@@ -1760,8 +1781,10 @@ export class OrgParserUnified {
         // Use pre-compiled pattern from cache (or create one for unusual levels)
         const endPattern = OrgParserUnified.inlinetaskEndPatterns.get(level)
             ?? new RegExp(`^\\*{${level}}\\s+END\\s*$`);
+        const maxEndLine = Math.min(lines.length, startLine + MAX_BLOCK_LINES);
 
-        while (i < lines.length) {
+        // Safety limit to prevent unbounded consumption for unclosed inline tasks
+        while (i < maxEndLine) {
             const line = lines[i];
             // Check for END marker (stars at same level followed by END)
             if (endPattern.test(line)) {

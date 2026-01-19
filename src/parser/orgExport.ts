@@ -540,8 +540,20 @@ const EDITMARK_PATTERNS = {
 
 /**
  * Check if text contains any editmarks
+ * Note: We reset lastIndex before each .test() because global regexes maintain state
  */
 export function hasEditmarks(text: string): boolean {
+    // Reset lastIndex for all patterns before testing (global regexes maintain state)
+    EDITMARK_PATTERNS.insertion.lastIndex = 0;
+    EDITMARK_PATTERNS.deletion.lastIndex = 0;
+    EDITMARK_PATTERNS.comment.lastIndex = 0;
+    EDITMARK_PATTERNS.typo.lastIndex = 0;
+    EDITMARK_PATTERNS.insertionCritic.lastIndex = 0;
+    EDITMARK_PATTERNS.deletionCritic.lastIndex = 0;
+    EDITMARK_PATTERNS.commentCritic.lastIndex = 0;
+    EDITMARK_PATTERNS.typoCritic.lastIndex = 0;
+    EDITMARK_PATTERNS.bare.lastIndex = 0;
+
     return (
         EDITMARK_PATTERNS.insertion.test(text) ||
         EDITMARK_PATTERNS.deletion.test(text) ||
