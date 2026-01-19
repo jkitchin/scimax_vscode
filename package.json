@@ -4441,6 +4441,11 @@
           "default": "latexindent",
           "description": "Path to latexindent executable"
         },
+        "scimax.latex.showSyncDebugPopup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show debug popup with SyncTeX coordinates when syncing between LaTeX source and PDF"
+        },
         "scimax.notebook.directory": {
           "type": "string",
           "default": "",

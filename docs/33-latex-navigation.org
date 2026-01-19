@@ -509,6 +509,7 @@ For an Overleaf-like experience, use the built-in PDF viewer panel (=C-c v=):
 - Auto-refreshes when you recompile
 - Zoom controls (+, -, Fit)
 - Page navigation
+- Bidirectional sync with text-based highlighting
 - No external PDF viewer required
 
 This is ideal for side-by-side editing without leaving VS Code.
@@ -517,6 +518,32 @@ This is ideal for side-by-side editing without leaving VS Code.
 |------------------+---------+--------------------------------------|
 | Built-in panel   | C-c v   | PDF in VS Code panel (Overleaf-like) |
 | External viewer  | C-c C-v | Opens in Skim/Zathura/SumatraPDF     |
+
+*** Bidirectional Sync
+
+The built-in PDF viewer supports precise bidirectional synchronization:
+
+*Forward sync (TeX → PDF):* Double-click a word in your LaTeX source to jump
+to that location in the PDF. The word is highlighted with a yellow flash.
+
+*Inverse sync (PDF → TeX):* Double-click a word in the PDF viewer to jump
+to the corresponding line in your LaTeX source.
+
+The forward sync uses SyncTeX coordinates combined with text-layer search
+to find the exact word you clicked, even if SyncTeX coordinates are imprecise.
+
+*** Debug Popup Setting
+
+To see SyncTeX coordinates and debug information when syncing:
+
+#+BEGIN_SRC json
+{
+  "scimax.latex.showSyncDebugPopup": true
+}
+#+END_SRC
+
+Default is =false=. When enabled, shows a popup with page, coordinates,
+source line/column, and search text for troubleshooting sync issues.
 
 ** ⚠️ Insert Commands
 

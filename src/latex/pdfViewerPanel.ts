@@ -106,6 +106,10 @@ export class PdfViewerPanel {
      * @param debugInfo Optional debug info including searchWord for precise text highlighting
      */
     public scrollToPosition(result: SyncTeXForwardResult, debugInfo?: { line: number; column: number; text: string; file: string; searchWord?: string }): void {
+        // Check if debug popup is enabled
+        const config = vscode.workspace.getConfiguration('scimax.latex');
+        const showDebugPopup = config.get<boolean>('showSyncDebugPopup', false);
+
         this.panel.webview.postMessage({
             type: 'scrollToPosition',
             page: result.page,
@@ -114,7 +118,8 @@ export class PdfViewerPanel {
             width: result.width,
             height: result.height,
             debugInfo: debugInfo,
-            searchWord: debugInfo?.searchWord || ''
+            searchWord: debugInfo?.searchWord || '',
+            showDebugPopup: showDebugPopup
         });
     }
 
@@ -1723,10 +1728,10 @@ export class PdfViewerPanel {
                                 // Forward sync: scroll to position and show indicator
                                 console.log('scrollToPosition: SyncTeX result:', message);
                                 console.log('Available pages:', Array.from(pageWrappers.keys()));
-                                const { page, x, y, width, height, debugInfo, searchWord } = message;
+                                const { page, x, y, width, height, debugInfo, searchWord, showDebugPopup } = message;
 
-                                // Show debug popup for forward sync (TeX → PDF)
-                                if (debugInfo) {
+                                // Show debug popup for forward sync (TeX → PDF) only if enabled
+                                if (showDebugPopup && debugInfo) {
                                     showForwardSyncDebugPopup({
                                         page: page,
                                         pdfX: x,

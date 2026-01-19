@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-19T16:17:36.118Z",
-  "count": 2880,
+  "buildDate": "2026-01-19T19:37:57.784Z",
+  "count": 2882,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -83198,7 +83198,7 @@
       "level": 2,
       "file": "33-latex-navigation.org",
       "line": 504,
-      "content": "For an Overleaf-like experience, use the built-in PDF viewer panel (=C-c v=): - Opens PDF in a VS Code panel beside your source - Auto-refreshes when you recompile - Zoom controls (+, -, Fit) - Page navigation - No external PDF viewer required This is ideal for side-by-side editing without leaving VS Code. | Viewer Option    | Key     | Description                          | |------------------+---------+--------------------------------------| | Built-in panel   | C-c v   | PDF in VS Code panel ",
+      "content": "For an Overleaf-like experience, use the built-in PDF viewer panel (=C-c v=): - Opens PDF in a VS Code panel beside your source - Auto-refreshes when you recompile - Zoom controls (+, -, Fit) - Page navigation - Bidirectional sync with text-based highlighting - No external PDF viewer required This is ideal for side-by-side editing without leaving VS Code. | Viewer Option    | Key     | Description                          | |------------------+---------+--------------------------------------| | ",
       "path": [
         "Compile and Preview"
       ],
@@ -83225,15 +83225,87 @@
         "fit",
         "page",
         "navigation",
-        "external",
-        "required"
+        "bidirectional",
+        "sync"
+      ]
+    },
+    {
+      "heading": "Bidirectional Sync",
+      "level": 3,
+      "file": "33-latex-navigation.org",
+      "line": 522,
+      "content": "The built-in PDF viewer supports precise bidirectional synchronization: *Forward sync (TeX → PDF):* Double-click a word in your LaTeX source to jump to that location in the PDF. The word is highlighted with a yellow flash. *Inverse sync (PDF → TeX):* Double-click a word in the PDF viewer to jump to the corresponding line in your LaTeX source. The forward sync uses SyncTeX coordinates combined with text-layer search to find the exact word you clicked, even if SyncTeX coordinates are imprecise.",
+      "path": [
+        "Compile and Preview",
+        "Built-in PDF Viewer Panel"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "bidirectional",
+        "sync",
+        "built-in",
+        "pdf",
+        "viewer",
+        "supports",
+        "precise",
+        "synchronization",
+        "forward",
+        "tex",
+        "double-click",
+        "word",
+        "latex",
+        "source",
+        "jump",
+        "location",
+        "highlighted",
+        "yellow",
+        "flash",
+        "inverse"
+      ]
+    },
+    {
+      "heading": "Debug Popup Setting",
+      "level": 3,
+      "file": "33-latex-navigation.org",
+      "line": 535,
+      "content": "To see SyncTeX coordinates and debug information when syncing: #+BEGIN_SRC json { \"scimax.latex.showSyncDebugPopup\": true } #+END_SRC Default is =false=. When enabled, shows a popup with page, coordinates, source line/column, and search text for troubleshooting sync issues.",
+      "path": [
+        "Compile and Preview",
+        "Built-in PDF Viewer Panel"
+      ],
+      "commands": [
+        "scimax.latex.showSyncDebugPopup"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "debug",
+        "popup",
+        "setting",
+        "synctex",
+        "coordinates",
+        "information",
+        "syncing",
+        "beginsrc",
+        "json",
+        "true",
+        "endsrc",
+        "default",
+        "false",
+        "enabled",
+        "shows",
+        "page",
+        "source",
+        "linecolumn",
+        "search",
+        "text"
       ]
     },
     {
       "heading": "Insert Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 521,
+      "line": 548,
       "content": "Quick insertion of common LaTeX elements: | Command                       | Description                        | |-------------------------------+------------------------------------| | scimax.latex.insertFigure     | Insert figure environment snippet  | | scimax.latex.insertTable      | Insert table with booktabs snippet | | scimax.latex.insertEquation   | Insert equation environment        | These commands insert snippets with tab stops for easy navigation.",
       "path": [
         "Compile and Preview"
@@ -83271,7 +83343,7 @@
       "heading": "Go to Definition",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 533,
+      "line": 560,
       "content": "Jump to the definition of labels, citations, commands, and files: | Trigger              | What it does                                      | |----------------------+---------------------------------------------------| | =\\ref{label}=        | Jump to the =\\label{label}= definition            | | =\\cite{key}=         | Jump to the BibTeX entry in the .bib file         | | =\\input{file}=       | Open the included file                            | | =\\mycommand=         | Jump to =\\newcommand= or",
       "path": [],
       "commands": [],
@@ -83302,7 +83374,7 @@
       "heading": "Find All References",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 548,
+      "line": 575,
       "content": "CLOSED: [2026-01-19 Mon 09:55] Find all usages of a label or citation: | Position on          | Shows all                                         | |----------------------+---------------------------------------------------| | =\\label{name}=       | All =\\ref{name}= references                       | | =\\cite{key}=         | All citations of that key                         | Use =Shift+F12= or right-click → \"Find All References\". Works across all files in the project.",
       "path": [],
       "commands": [],
@@ -83336,7 +83408,7 @@
       "heading": "Auto-Completion",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 562,
+      "line": 589,
       "content": "CLOSED: [2026-01-19 Mon 09:56] Smart completions trigger as you type: | Context              | Completions                                       | |----------------------+---------------------------------------------------| | =\\ref{=              | All labels in project with context                | | =\\cite{=             | All BibTeX keys with author/year/title            | | =\\begin{=            | Common environments (equation, figure, etc.)      | | =\\usepackage{=       | Common packages with",
       "path": [],
       "commands": [],
@@ -83368,7 +83440,7 @@
       "heading": "Multi-File Project Support",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 582,
+      "line": 609,
       "content": "CLOSED: [2026-01-19 Mon 09:56] Projects with multiple files (using =\\input= or =\\include=) are fully supported: - *Master document detection*: Automatically finds the main .tex file - *Cross-file labels*: Complete and navigate labels defined in any project file - *Shared bibliography*: Finds .bib files referenced anywhere in project - *Project-wide search*: Find References searches all included files The master document is detected by looking for =\\documentclass=.",
       "path": [],
       "commands": [],
@@ -83400,7 +83472,7 @@
       "heading": "Project Structure",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 594,
+      "line": 621,
       "content": "CLOSED: [2026-01-19 Mon 09:56] #+BEGIN_SRC text thesis/ ├── main.tex              # Master document (has \\documentclass) │   └── \\input{chapters/intro} │   └── \\input{chapters/methods} │   └── \\bibliography{refs} ├── chapters/ │   ├── intro.tex        # \\label{sec:intro} defined here │   └── methods.tex      # \\ref{sec:intro} works here too └── refs.bib              # Bibliography #+END_SRC",
       "path": [
         "Multi-File Project Support"
@@ -83434,7 +83506,7 @@
       "heading": "ChkTeX Linting",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 609,
+      "line": 636,
       "content": "CLOSED: [2026-01-19 Mon 09:56] Real-time linting with ChkTeX catches common LaTeX issues: - Missing or extra braces - Spacing issues - Style recommendations Errors appear in the Problems panel and as squiggles in the editor.",
       "path": [],
       "commands": [],
@@ -83466,7 +83538,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 620,
+      "line": 647,
       "content": "CLOSED: [2026-01-19 Mon 09:56] #+BEGIN_SRC json { \"scimax.latex.enableChktex\": true  // Enable/disable linting (default: true) } #+END_SRC Requires =chktex= to be installed: - *macOS*: =brew install chktex= - *Linux*: =apt install chktex= - *Windows*: Included with MiKTeX/TeX Live",
       "path": [
         "ChkTeX Linting"
@@ -83502,7 +83574,7 @@
       "heading": "Error Navigation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 634,
+      "line": 661,
       "content": "Navigate through compilation errors: | Command                       | Key Binding      | Description                    | |-------------------------------+------------------+--------------------------------| | scimax.latex.nextError        | C-c `            | Jump to next error             | | scimax.latex.previousError    | C-c Shift+`      | Jump to previous error         | | scimax.latex.showErrors       | C-c C-e          | Show all errors in quick pick  | Errors are collected after compil",
       "path": [],
       "commands": [
@@ -83541,7 +83613,7 @@
       "heading": "Error Display",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 646,
+      "line": 673,
       "content": "CLOSED: [2026-01-19 Mon 09:57] When compilation fails: 1. First error is shown in a notification with \"Go to Error\" button 2. The Problems panel shows all parsed errors 3. Use navigation commands to cycle through errors Errors include: - File path (supports multi-file projects) - Line number - Error message",
       "path": [
         "Error Navigation"
@@ -83575,7 +83647,7 @@
       "heading": "Hover Previews",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 659,
+      "line": 686,
       "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over LaTeX elements to see previews and information.",
       "path": [],
       "commands": [],
@@ -83597,7 +83669,7 @@
       "heading": "Equation Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 664,
+      "line": 691,
       "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over any math expression to see a rendered preview: - Inline math: =$E=mc^2$=, =\\(E=mc^2\\)= - Display math: =$$...$$$=, =\\[...\\]= - Environments: =equation=, =align=, =gather=, etc. The preview: - Renders using the system LaTeX installation - Respects document preamble (packages, custom commands) - Adapts to dark/light VS Code theme - Shows the source LaTeX below the preview *Note:* Requires a LaTeX installation (TeX Live, MiKTeX, or MacTeX).",
       "path": [
         "Hover Previews"
@@ -83631,7 +83703,7 @@
       "heading": "Figure Preview",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 681,
+      "line": 708,
       "content": "CLOSED: [2026-01-19 Mon 09:18] Hover over =\\includegraphics{...}= to see: - Image preview (PNG, JPG, SVG, GIF, WebP) - File path and size - Last modified date PDF and EPS files show file information without preview.",
       "path": [
         "Hover Previews"
@@ -83665,7 +83737,7 @@
       "heading": "Rename Symbol",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 691,
+      "line": 718,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Rename a label and automatically update all references across the project: 1. Place cursor on a =\\label{name}= or =\\ref{name}= 2. Press =F2= or right-click → \"Rename Symbol\" 3. Enter the new name 4. All =\\label{}= and =\\ref{}= commands using that name are updated Works across all files in multi-file projects.",
       "path": [],
       "commands": [],
@@ -83697,7 +83769,7 @@
       "heading": "Supported Reference Commands",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 703,
+      "line": 730,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Rename works with all reference variants: - =\\label{...}= - the definition - =\\ref{...}=, =\\eqref{...}=, =\\pageref{...}= - =\\autoref{...}=, =\\cref{...}=, =\\Cref{...}=",
       "path": [
         "Rename Symbol"
@@ -83728,7 +83800,7 @@
       "heading": "Reference Validation",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 711,
+      "line": 738,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Automatic validation of label references: | Issue                    | Severity | Description                           | |--------------------------+----------+---------------------------------------| | Undefined reference      | Error    | =\\ref{name}= but no =\\label{name}=    | | Unused label             | Warning  | =\\label{name}= with no =\\ref{name}=   | Diagnostics appear in the Problems panel and as squiggles in the editor.",
       "path": [],
       "commands": [],
@@ -83760,7 +83832,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 723,
+      "line": 750,
       "content": "CLOSED: [2026-01-19 Mon 09:17] #+BEGIN_SRC json { \"scimax.latex.validateReferences\": true  // Enable/disable (default: true) } #+END_SRC",
       "path": [
         "Reference Validation"
@@ -83787,7 +83859,7 @@
       "heading": "Inverse SyncTeX",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 732,
+      "line": 759,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Click in PDF to jump back to the corresponding source location.",
       "path": [],
       "commands": [],
@@ -83812,7 +83884,7 @@
       "heading": "Setup",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 737,
+      "line": 764,
       "content": "Run the command =Scimax LaTeX: Show Inverse SyncTeX Command= to get the configuration command for your PDF viewer. | PDF Viewer | Configuration                                               | |------------+-------------------------------------------------------------| | Skim       | Preferences → Sync → Preset: Custom; Command: =code=        | | SumatraPDF | Settings → Options → Set inverse search command             | | Zathura    | Set =synctex-editor-command= in config                      |",
       "path": [
         "Inverse SyncTeX"
@@ -83846,7 +83918,7 @@
       "heading": "URI Handler",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 748,
+      "line": 775,
       "content": "CLOSED: [2026-01-19 Mon 09:17] The extension also registers a URI handler for =vscode://= URLs: #+BEGIN_SRC text vscode://file/path/to/file.tex:42 #+END_SRC This allows PDF viewers to communicate directly with VS Code.",
       "path": [
         "Inverse SyncTeX"
@@ -83880,7 +83952,7 @@
       "heading": "Document Formatting",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 759,
+      "line": 786,
       "content": "CLOSED: [2026-01-19 Mon 09:17] Format LaTeX documents using =latexindent=: | Command                    | Key Binding | Description              | |----------------------------+-------------+--------------------------| | scimax.latex.format        | C-c C-q     | Format entire document   |",
       "path": [],
       "commands": [
@@ -83914,7 +83986,7 @@
       "heading": "Format on Save",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 768,
+      "line": 795,
       "content": "CLOSED: [2026-01-19 Mon 09:12] Enable automatic formatting when saving: #+BEGIN_SRC json { \"scimax.latex.formatOnSave\": true,          // Auto-format on save \"scimax.latex.latexindentPath\": \"latexindent\"  // Path to latexindent } #+END_SRC",
       "path": [
         "Document Formatting"
@@ -83948,7 +84020,7 @@
       "heading": "Requirements",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 780,
+      "line": 807,
       "content": "CLOSED: [2026-01-19 Mon 09:12] =latexindent= must be installed: - *macOS*: Included with MacTeX, or =brew install latexindent= - *Linux*: =apt install texlive-extra-utils= or =cpanm YAML::Tiny File::HomeDir Unicode::GCString= - *Windows*: Included with MiKTeX/TeX Live",
       "path": [
         "Document Formatting"
@@ -83982,7 +84054,7 @@
       "heading": "Customization",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 788,
+      "line": 815,
       "content": "CLOSED: [2026-01-19 Mon 09:12] Create a =.latexindent.yaml= file in your project to customize formatting rules. See the [[https://latexindentpl.readthedocs.io/][latexindent documentation]] for options.",
       "path": [
         "Document Formatting"
@@ -84011,7 +84083,7 @@
       "heading": "LaTeX-Aware Spell Checking",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 794,
+      "line": 821,
       "content": "CLOSED: [2026-01-19 Mon 09:12] The extension provides infrastructure for LaTeX-aware spell checking that skips commands, math, and comments.",
       "path": [],
       "commands": [],
@@ -84037,7 +84109,7 @@
       "heading": "Regions Excluded from Spell Check",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 800,
+      "line": 827,
       "content": "CLOSED: [2026-01-19 Mon 09:12] | Pattern                          | Example                      | |----------------------------------+------------------------------| | Commands with arguments          | =\\textbf{word}=              | | Inline math                      | =$x^2 + y^2$=                | | Display math                     | =$$..$$= and =\\[..\\]=        | | Environments                     | =\\begin{...}...\\end{...}=    | | Comments                         | =% comment text=        ",
       "path": [
         "LaTeX-Aware Spell Checking"
@@ -84071,7 +84143,7 @@
       "heading": "User Dictionary",
       "level": 2,
       "file": "33-latex-navigation.org",
-      "line": 811,
+      "line": 838,
       "content": "CLOSED: [2026-01-19 Mon 09:12] Add words to your personal dictionary: | Command                        | Description                        | |--------------------------------+------------------------------------| | scimax.latex.addToDictionary   | Add word at cursor to dictionary   | The dictionary is stored per-workspace and persists across sessions.",
       "path": [
         "LaTeX-Aware Spell Checking"
@@ -84106,7 +84178,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "33-latex-navigation.org",
-      "line": 822,
+      "line": 849,
       "content": "CLOSED: [2026-01-19 Mon 09:12] - [[file:11-latex-preview.org][LaTeX Preview]] - Live PDF preview with SyncTeX - [[file:10-export.org][Export]] - Export org to LaTeX - [[file:19-references.org][References]] - BibTeX bibliography management - [[file:23-speed-commands.org][Speed Commands]] - Org-mode speed commands - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference",
       "path": [],
       "commands": [],
