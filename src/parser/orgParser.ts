@@ -217,7 +217,8 @@ export class OrgParser {
         }
 
         // Extract tags :tag1:tag2:
-        const tagMatch = title.match(/\s+:([^:]+(?::[^:]+)*):$/);
+        // Use bounded character class to prevent ReDoS (allows alphanumeric, _, @, #, %, -)
+        const tagMatch = title.match(/\s+:([\w@#%\-]+(?::[\w@#%\-]+){0,50}):$/);
         if (tagMatch) {
             const tagStr = tagMatch[1];
             tags.push(...tagStr.split(':'));
@@ -424,23 +425,28 @@ export class OrgParser {
 
     /**
      * Find all headings matching a predicate
+     * @param maxDepth Maximum recursion depth to prevent stack overflow (default: 100)
      */
     public findHeadings(
         document: OrgDocument,
-        predicate: (heading: OrgHeading) => boolean
+        predicate: (heading: OrgHeading) => boolean,
+        maxDepth: number = 100
     ): OrgHeading[] {
         const results: OrgHeading[] = [];
 
-        const search = (headings: OrgHeading[]) => {
+        const search = (headings: OrgHeading[], depth: number) => {
+            if (depth > maxDepth) {
+                return; // Prevent stack overflow with deeply nested headings
+            }
             for (const heading of headings) {
                 if (predicate(heading)) {
                     results.push(heading);
                 }
-                search(heading.children);
+                search(heading.children, depth + 1);
             }
         };
 
-        search(document.headings);
+        search(document.headings, 0);
         return results;
     }
 
@@ -463,18 +469,22 @@ export class OrgParser {
 
     /**
      * Flatten heading tree
+     * @param maxDepth Maximum recursion depth to prevent stack overflow (default: 100)
      */
-    public flattenHeadings(document: OrgDocument): OrgHeading[] {
+    public flattenHeadings(document: OrgDocument, maxDepth: number = 100): OrgHeading[] {
         const results: OrgHeading[] = [];
 
-        const flatten = (headings: OrgHeading[]) => {
+        const flatten = (headings: OrgHeading[], depth: number) => {
+            if (depth > maxDepth) {
+                return; // Prevent stack overflow with deeply nested headings
+            }
             for (const heading of headings) {
                 results.push(heading);
-                flatten(heading.children);
+                flatten(heading.children, depth + 1);
             }
         };
 
-        flatten(document.headings);
+        flatten(document.headings, 0);
         return results;
     }
 }
