@@ -2,284 +2,46 @@
 
 [![Tests](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml/badge.svg)](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml)
 
-A scientific computing environment for VS Code inspired by [Scimax](https://github.com/jkitchin/scimax), the Emacs-based starter kit for scientists and engineers.
+A scientific computing environment for VS Code inspired by [Scimax](https://github.com/jkitchin/scimax), the Emacs-based starter kit for scientists and engineers. This project is 100% vibe-engineered with Claude Code. I have endeavored to make sure it is well tested, and used Claude Code to audit it for security and performance issues. I personally use this almost daily.
+
+## Roadmap
+
+For the forseeable future I envision this remaining a mono-repository. That is for practical reasons. As the sole maintainer at the moment, I don't have bandwidth to manage many separate repositories. I also see this as a "batteries included", low friction path to get org-mode in the hands of as many people as possible.
+
+I don't have new major features planned at this time. I anticipate several months of bug fixes and feature parity efforts. Those should be reported at https://github.com/jkitchin/scimax_vscode/issues. I am trying to extend some ideas from org-mode to Markdown so it is easier to go between these formats.
+
+## Installation
+
+### From VSIX
+
+1. Download the `.vsix` file from releases
+2. In VS Code, run `Extensions: Install from VSIX...`
+3. Select the downloaded file
+
+### From Source
+
+```bash
+git clone https://github.com/jkitchin/scimax_vscode.git
+cd scimax_vscode
+npm install
+npm run compile
+npm run package
+```
+
+Then install the generated `.vsix` file.
+
+### Dependencies
+
+- VS Code 1.85.0 or later
+- Node.js 18+ (for development)
+
+---
 
 ## Features
 
-### Journal System (scimax-journal)
-
-A date-organized journaling system for daily notes, research logs, and documentation.
-
-**Commands:**
-| Command                           | Keybinding                     | Description                                    |
-| ---------                         | ------------                   | -------------                                  |
-| `Scimax: Open Today's Journal`    | `Ctrl+Shift+J` / `Cmd+Shift+J` | Open or create today's journal entry           |
-| `Scimax: New Journal Entry`       | -                              | Create a new journal entry for a specific date |
-| `Scimax: Previous Journal Entry`  | `Alt+[`                        | Navigate to previous journal entry             |
-| `Scimax: Next Journal Entry`      | `Alt+]`                        | Navigate to next journal entry                 |
-| `Scimax: Go to Journal Date`      | -                              | Jump to a specific date's journal              |
-| `Scimax: Search Journal`          | -                              | Full-text search across all journal entries    |
-| `Scimax: Show Journal Calendar`   | -                              | Open the calendar webview                      |
-| `Scimax: This Week's Entries`     | -                              | Show journal entries from the current week     |
-| `Scimax: Quick Log Entry`         | -                              | Quick append a timestamped log entry           |
-| `Scimax: Insert Timestamp`        | -                              | Insert current timestamp at cursor             |
-| `Scimax: Show Journal Statistics` | -                              | Display word count, streaks, task completion   |
-
-**Templates:** Choose from `default`, `minimal`, `research`, `meeting`, or `standup` templates.
-
-**Configuration:**
-```json
-{
-  "scimax.journal.directory": "~/scimax-journal",
-  "scimax.journal.format": "markdown",
-  "scimax.journal.template": "default",
-  "scimax.journal.dateFormat": "YYYY-MM-DD",
-  "scimax.journal.autoTimestamp": true,
-  "scimax.journal.weekStartsOn": "monday"
-}
-```
-
----
-
-### Bibliography & Citations (org-ref)
-
-Full bibliography management with BibTeX support, DOI fetching, and citation insertion.
-
-**Commands:**
-| Command                                  | Keybinding        | Description                                          |
-| ---------                                | ------------      | -------------                                        |
-| `Scimax: Insert Citation`                | `Ctrl+c ]`        | Insert a citation at cursor                          |
-| `Scimax: Insert Reference Link`          | `Ctrl+u Ctrl+c ]` | Insert ref:/eqref:/pageref: link                     |
-| `Scimax: Fetch BibTeX from DOI`          | -                 | Fetch bibliography entry from DOI                    |
-| `Scimax: Search References`              | -                 | Search all bibliography entries                      |
-| `Scimax: Open Bibliography`              | -                 | Open a .bib file                                     |
-| `Scimax: Find Citations of Reference`    | -                 | Find all citations of a reference                    |
-| `Scimax: Copy BibTeX Entry`              | -                 | Copy BibTeX to clipboard                             |
-| `Scimax: Extract Bibliography from File` | -                 | Extract all cited references to a new .bib file      |
-| `Scimax: Show Citing Works (OpenAlex)`   | -                 | Show papers that cite a DOI                          |
-| `Scimax: Show Related Works (OpenAlex)`  | -                 | Show related papers for a DOI                        |
-| `Scimax: Search OpenAlex`                | -                 | Search the OpenAlex academic database                |
-| `Scimax: Transpose Citation Left`        | `Shift+Left`      | Swap citation with previous (when on citation)       |
-| `Scimax: Transpose Citation Right`       | `Shift+Right`     | Swap citation with next (when on citation)           |
-| `Scimax: Sort Citations Alphabetically`  | `Shift+Up`        | Sort citation keys alphabetically (when on citation) |
-| `Scimax: Sort Citations by Year`         | `Shift+Down`      | Sort citation keys by year (when on citation)        |
-| `Scimax: Delete Citation at Cursor`      | `Ctrl+Shift+K`    | Delete citation key at cursor (when on citation)     |
-
-**Features:**
-- **Hover preview**: Hover over citations to see reference details with source file
-- **DOI tooltips**: Hover over DOIs to see metadata from CrossRef + OpenAlex (citation count, open access status, topics)
-- **Autocomplete**: Type `cite:` or `@` for citation suggestions
-- **Go to definition**: Jump from citation to bibliography entry
-- **Code lens**: In .bib files, see citations count and quick actions
-- **Citation styles**: cite, citet, citep, citeauthor, citeyear
-- **OpenAlex integration**: View citation counts, open access links, citing works, related works
-- **Citation manipulation**: Transpose, sort, and delete citations with keyboard shortcuts (like org-ref)
-
-**Configuration:**
-```json
-{
-  "scimax.ref.bibliographyFiles": ["~/bibliography.bib"],
-  "scimax.ref.pdfDirectory": "~/papers",
-  "scimax.ref.notesDirectory": "~/notes",
-  "scimax.ref.defaultCiteStyle": "cite"
-}
-```
-
----
-
-### Fuzzy Search (swiper-style)
-
-Fast, interactive search for the current file and all open files, inspired by Emacs [swiper](https://github.com/abo-abo/swiper).
-
-**Commands:**
-| Command                               | Keybinding       | Description                                    |
-| ---------                             | ------------     | -------------                                  |
-| `Scimax: Fuzzy Search (Current File)` | `Ctrl+c s`       | Search lines in current file with live preview |
-| `Scimax: Fuzzy Search (Open Files)`   | `Ctrl+c Shift+s` | Search across all open editor tabs             |
-| `Scimax: Fuzzy Search (Outline)`      | `Ctrl+c Alt+s`   | Search headings/symbols in current file        |
-
-**Features:**
-- **Live preview**: Cursor moves to match as you type
-- **Match highlighting**: Matches highlighted in the editor
-- **Multi-file search**: Search all open tabs at once
-- **Outline mode**: Jump to headings, functions, classes
-
----
-
-### Jump Navigation (avy-style)
-
-Quick navigation to visible text using labeled targets, inspired by Emacs [avy](https://github.com/abo-abo/avy).
-
-**Commands:**
-| Command                                | Keybinding   | Description                                        |
-| ---------                              | ------------ | -------------                                      |
-| `Scimax: Jump to Character`            | `Ctrl+c j c` | Jump to any occurrence of a character              |
-| `Scimax: Jump to 2-Character Sequence` | `Ctrl+c j j` | Jump to a two-character sequence                   |
-| `Scimax: Jump to Word`                 | `Ctrl+c j w` | Jump to word starts                                |
-| `Scimax: Jump to Line`                 | `Ctrl+c j l` | Jump to any visible line                           |
-| `Scimax: Jump to Symbol`               | `Ctrl+c j o` | Jump to symbols/headings in view                   |
-| `Scimax: Jump to Subword`              | `Ctrl+c j s` | Jump to subword boundaries (camelCase, snake_case) |
-| `Scimax: Jump Copy Line`               | -            | Select a visible line and copy it                  |
-| `Scimax: Jump Kill Line`               | -            | Select a visible line and delete it                |
-
-**Features:**
-- **Label-based selection**: Type a label (a, s, d, f...) to instantly jump
-- **QuickPick fallback**: Browse and filter targets in a list
-- **Match highlighting**: All targets highlighted in the editor
-- **Works everywhere**: Functions in any file type
-
----
-
-### Edit Marks (Track Changes)
-
-Collaborative editing markup for reviewing changes, inspired by scimax-editmarks.
-
-**Commands:**
-| Command                           | Keybinding   | Description                     |
-| ---------                         | ------------ | -------------                   |
-| `Scimax: Mark Insertion`          | `Ctrl+c e i` | Mark selected text as insertion |
-| `Scimax: Mark Deletion`           | `Ctrl+c e d` | Mark selected text for deletion |
-| `Scimax: Insert Edit Comment`     | `Ctrl+c e c` | Insert a review comment         |
-| `Scimax: Mark Typo Correction`    | `Ctrl+c e t` | Mark typo with correction       |
-| `Scimax: Accept Edit Mark`        | `Ctrl+c e a` | Accept the edit mark at cursor  |
-| `Scimax: Reject Edit Mark`        | `Ctrl+c e r` | Reject the edit mark at cursor  |
-| `Scimax: Accept All Edit Marks`   | -            | Accept all marks in document    |
-| `Scimax: Reject All Edit Marks`   | -            | Reject all marks in document    |
-| `Scimax: Next Edit Mark`          | `Ctrl+c e ]` | Navigate to next edit mark      |
-| `Scimax: Previous Edit Mark`      | `Ctrl+c e [` | Navigate to previous edit mark  |
-| `Scimax: Show Edit Marks Summary` | `Ctrl+c e s` | Show summary of all edit marks  |
-
-**Markup Format:**
-```
-@@+inserted text+@@          # Insertion (green)
-@@-deleted text-@@           # Deletion (red, strikethrough)
-@@>comment text<@@           # Comment (yellow, italic)
-@@~old text|new text~@@      # Typo correction (orange)
-```
-
-Also supports CriticMarkup format: `{++insert++}`, `{--delete--}`, `{>>comment<<}`, `{~~old~>new~~}`
-
----
-
-### Project Management (projectile-style)
-
-Quick project switching and file finding, inspired by Emacs [projectile](https://github.com/bbatsov/projectile).
-
-**Commands:**
-| Command                                 | Keybinding   | Description                   |
-| ---------                               | ------------ | -------------                 |
-| `Scimax: Switch Project`                | `Ctrl+c p p` | Switch to a known project     |
-| `Scimax: Find File in Project`          | `Ctrl+c p f` | Find file in current project  |
-| `Scimax: Search in Project`             | `Ctrl+c p s` | Search text in project files  |
-| `Scimax: Open Project Root`             | `Ctrl+c p d` | Open project root directory   |
-| `Scimax: Add Project`                   | `Ctrl+c p a` | Add a project to the list     |
-| `Scimax: Remove Project`                | -            | Remove project from tracking  |
-| `Scimax: Scan Directory for Projects`   | -            | Scan a directory for projects |
-| `Scimax: Project Info`                  | -            | Show project statistics       |
-| `Scimax: Cleanup Non-existent Projects` | -            | Remove deleted projects       |
-
-**Project Detection:**
-Automatically detects projects via: `.projectile`, `.git`, `.scimax`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `build.gradle`, `.project`
-
----
-
-### File Database (org-db-v3)
-
-SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) with **FTS5 full-text search** and **vector semantic search**.
-
-**Commands:**
-| Command                               | Description                             |
-| ---------                             | -------------                           |
-| `Scimax: Reindex Files`               | Reindex all files in workspace          |
-| `Scimax: Search All Files`            | Full-text search with BM25 ranking      |
-| `Scimax: Semantic Search (AI)`        | Find by meaning using embeddings        |
-| `Scimax: Hybrid Search`               | Combined keyword + semantic search      |
-| `Scimax: Search Headings`             | Search document headings                |
-| `Scimax: Search by Tag`               | Filter headings by org-mode tags        |
-| `Scimax: Search by Property`          | Search by property drawer values        |
-| `Scimax: Search Code Blocks`          | Search source code blocks by language   |
-| `Scimax: Search by Hashtag`           | Find files containing #hashtags         |
-| `Scimax: Show TODO Items`             | List all TODO items                     |
-| `Scimax: Show Agenda`                 | View deadlines and scheduled items      |
-| `Scimax: Show Upcoming Deadlines`     | See deadlines in next 2 weeks           |
-| `Scimax: Browse Indexed Files`        | Browse all indexed files                |
-| `Scimax: Set Search Scope`            | Limit searches to directory/project     |
-| `Scimax: Configure Embedding Service` | Setup Ollama/OpenAI for semantic search |
-| `Scimax: Show Database Stats`         | Display indexing statistics             |
-| `Scimax: Optimize Database`           | Clean up stale entries (VACUUM)         |
-| `Scimax: Clear Database`              | Reset the database                      |
-
-**Features:**
-- **SQLite with FTS5**: Fast full-text search with BM25 ranking, scalable to 10k+ files
-- **Vector Search**: Semantic search using embeddings (cosine similarity)
-- **Hybrid Search**: Reciprocal rank fusion of keyword + semantic results
-- **Auto-indexing**: Files are automatically indexed on save
-- **Tag inheritance**: Inherited tags from parent headings
-- **Agenda view**: Deadlines, scheduled items, and TODOs with overdue detection
-- **Scoped search**: Limit searches to specific directories
-
-**Embedding Providers for Semantic Search:**
-| Provider                   | Model                    | Dimensions | Setup                          |
-| -------------------------- | ------------------------ | ---------- | ------------------------------ |
-| **Local** (TransformersJs) | Xenova/all-MiniLM-L6-v2  | 384        | No setup, runs in Node.js      |
-| **Local** (TransformersJs) | Xenova/all-mpnet-base-v2 | 768        | Config change                  |
-| **Ollama** (local)         | nomic-embed-text         | 768        | `ollama pull nomic-embed-text` |
-| **Ollama** (local)         | all-minilm               | 384        | `ollama pull all-minilm`       |
-| **OpenAI** (cloud)         | text-embedding-3-small   | 1536       | Requires API key               |
-
-**Configuration:**
-```json
-{
-  "scimax.db.directories": [],
-  "scimax.db.ignorePatterns": ["**/node_modules/**", "**/.git/**"],
-  "scimax.db.autoIndex": true,
-  "scimax.db.embeddingProvider": "ollama",
-  "scimax.db.ollamaUrl": "http://localhost:11434",
-  "scimax.db.ollamaModel": "nomic-embed-text",
-  "scimax.db.openaiApiKey": ""
-}
-```
-
----
-
-### Notebooks (scimax-notebook)
-
-Project-based organization for scientific research and software development.
-
-**Commands:**
-| Command                                 | Description                      |
-| ---------                               | -------------                    |
-| `Scimax: New Notebook`                  | Create a new notebook project    |
-| `Scimax: Open Notebook`                 | Switch to a different notebook   |
-| `Scimax: Open Notebook Master File`     | Open README.org or main file     |
-| `Scimax: Recent Files in Notebook`      | Browse recently modified files   |
-| `Scimax: Search in Notebook`            | Scoped search within notebook    |
-| `Scimax: Notebook Agenda`               | Show agenda for current notebook |
-| `Scimax: Add Collaborator`              | Add a team member to notebook    |
-| `Scimax: Archive Notebook`              | Create git archive (zip)         |
-| `Scimax: Notebook Settings`             | Edit .scimax/config.json         |
-| `Scimax: Index Notebook`                | Reindex notebook files           |
-| `Scimax: Notebook Info`                 | Show notebook statistics         |
-| `Scimax: Remove Notebook from Tracking` | Untrack a notebook               |
-
-**Templates:**
-- **empty**: Basic structure with README.org
-- **research**: Scientific research with data/, figures/, scripts/, references.bib
-- **software**: Software project with src/, tests/, docs/
-- **notes**: Note-taking with journal/ directory
-
-**Configuration:**
-```json
-{
-  "scimax.notebook.directory": "~/notebooks",
-  "scimax.notebook.defaultTemplate": "research",
-  "scimax.notebook.autoDetect": true
-}
-```
-
----
-
 ### Org-Mode & Markdown Editing Features
+
+org-mode is simultaneously a markup language and a library of software to manipulate it. It was created in Emacs, and aside from some syntax highlighters here and there, there has not been another editor capable of the things Emacs can do. Until now. 
 
 Enhanced editing commands for org-mode, markdown, and LaTeX files.
 
@@ -618,32 +380,287 @@ Spreadsheet-like table editing with export capabilities.
 
 ---
 
-## Installation
+### Journal System (scimax-journal)
 
-### From VSIX
+A date-organized journaling system for daily notes, research logs, and documentation.
 
-1. Download the `.vsix` file from releases
-2. In VS Code, run `Extensions: Install from VSIX...`
-3. Select the downloaded file
+**Commands:**
+| Command                           | Keybinding                     | Description                                    |
+| ---------                         | ------------                   | -------------                                  |
+| `Scimax: Open Today's Journal`    | `Ctrl+Shift+J` / `Cmd+Shift+J` | Open or create today's journal entry           |
+| `Scimax: New Journal Entry`       | -                              | Create a new journal entry for a specific date |
+| `Scimax: Previous Journal Entry`  | `Alt+[`                        | Navigate to previous journal entry             |
+| `Scimax: Next Journal Entry`      | `Alt+]`                        | Navigate to next journal entry                 |
+| `Scimax: Go to Journal Date`      | -                              | Jump to a specific date's journal              |
+| `Scimax: Search Journal`          | -                              | Full-text search across all journal entries    |
+| `Scimax: Show Journal Calendar`   | -                              | Open the calendar webview                      |
+| `Scimax: This Week's Entries`     | -                              | Show journal entries from the current week     |
+| `Scimax: Quick Log Entry`         | -                              | Quick append a timestamped log entry           |
+| `Scimax: Insert Timestamp`        | -                              | Insert current timestamp at cursor             |
+| `Scimax: Show Journal Statistics` | -                              | Display word count, streaks, task completion   |
 
-### From Source
+**Templates:** Choose from `default`, `minimal`, `research`, `meeting`, or `standup` templates.
 
-```bash
-git clone https://github.com/jkitchin/scimax_vscode.git
-cd scimax_vscode
-npm install
-npm run compile
-npm run package
+**Configuration:**
+```json
+{
+  "scimax.journal.directory": "~/scimax-journal",
+  "scimax.journal.format": "markdown",
+  "scimax.journal.template": "default",
+  "scimax.journal.dateFormat": "YYYY-MM-DD",
+  "scimax.journal.autoTimestamp": true,
+  "scimax.journal.weekStartsOn": "monday"
+}
 ```
 
-Then install the generated `.vsix` file.
+---
 
-### Dependencies
+### Project Management (projectile-style)
 
-- VS Code 1.85.0 or later
-- Node.js 18+ (for development)
+Quick project switching and file finding, inspired by Emacs [projectile](https://github.com/bbatsov/projectile). Projects are defined by a directory containing a git repo, or a project marker file like .projectile. 
+
+**Commands:**
+| Command                                 | Keybinding   | Description                   |
+| ---------                               | ------------ | -------------                 |
+| `Scimax: Switch Project`                | `Ctrl+c p p` | Switch to a known project     |
+| `Scimax: Find File in Project`          | `Ctrl+c p f` | Find file in current project  |
+| `Scimax: Search in Project`             | `Ctrl+c p s` | Search text in project files  |
+| `Scimax: Open Project Root`             | `Ctrl+c p d` | Open project root directory   |
+| `Scimax: Add Project`                   | `Ctrl+c p a` | Add a project to the list     |
+| `Scimax: Remove Project`                | -            | Remove project from tracking  |
+| `Scimax: Scan Directory for Projects`   | -            | Scan a directory for projects |
+| `Scimax: Project Info`                  | -            | Show project statistics       |
+| `Scimax: Cleanup Non-existent Projects` | -            | Remove deleted projects       |
+
+**Project Detection:**
+Automatically detects projects via: `.projectile`, `.git`, `.scimax`, `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `pom.xml`, `build.gradle`, `.project`
 
 ---
+
+### Notebooks (scimax-notebook)
+
+Project-based organization for scientific research and software development.
+
+**Commands:**
+| Command                                 | Description                      |
+| ---------                               | -------------                    |
+| `Scimax: New Notebook`                  | Create a new notebook project    |
+| `Scimax: Open Notebook`                 | Switch to a different notebook   |
+| `Scimax: Open Notebook Master File`     | Open README.org or main file     |
+| `Scimax: Recent Files in Notebook`      | Browse recently modified files   |
+| `Scimax: Search in Notebook`            | Scoped search within notebook    |
+| `Scimax: Notebook Agenda`               | Show agenda for current notebook |
+| `Scimax: Add Collaborator`              | Add a team member to notebook    |
+| `Scimax: Archive Notebook`              | Create git archive (zip)         |
+| `Scimax: Notebook Settings`             | Edit .scimax/config.json         |
+| `Scimax: Index Notebook`                | Reindex notebook files           |
+| `Scimax: Notebook Info`                 | Show notebook statistics         |
+| `Scimax: Remove Notebook from Tracking` | Untrack a notebook               |
+
+**Templates:**
+- **empty**: Basic structure with README.org
+- **research**: Scientific research with data/, figures/, scripts/, references.bib
+- **software**: Software project with src/, tests/, docs/
+- **notes**: Note-taking with journal/ directory
+
+**Configuration:**
+```json
+{
+  "scimax.notebook.directory": "~/notebooks",
+  "scimax.notebook.defaultTemplate": "research",
+  "scimax.notebook.autoDetect": true
+}
+```
+
+---
+
+### Bibliography & Citations (org-ref)
+
+Full bibliography management with BibTeX support, DOI fetching, and citation insertion. Projects are defined by a directory containing a git repo, or a project marker file like .projectile. 
+
+**Commands:**
+| Command                                  | Keybinding        | Description                                          |
+| ---------                                | ------------      | -------------                                        |
+| `Scimax: Insert Citation`                | `Ctrl+c ]`        | Insert a citation at cursor                          |
+| `Scimax: Insert Reference Link`          | `Ctrl+u Ctrl+c ]` | Insert ref:/eqref:/pageref: link                     |
+| `Scimax: Fetch BibTeX from DOI`          | -                 | Fetch bibliography entry from DOI                    |
+| `Scimax: Search References`              | -                 | Search all bibliography entries                      |
+| `Scimax: Open Bibliography`              | -                 | Open a .bib file                                     |
+| `Scimax: Find Citations of Reference`    | -                 | Find all citations of a reference                    |
+| `Scimax: Copy BibTeX Entry`              | -                 | Copy BibTeX to clipboard                             |
+| `Scimax: Extract Bibliography from File` | -                 | Extract all cited references to a new .bib file      |
+| `Scimax: Show Citing Works (OpenAlex)`   | -                 | Show papers that cite a DOI                          |
+| `Scimax: Show Related Works (OpenAlex)`  | -                 | Show related papers for a DOI                        |
+| `Scimax: Search OpenAlex`                | -                 | Search the OpenAlex academic database                |
+| `Scimax: Transpose Citation Left`        | `Shift+Left`      | Swap citation with previous (when on citation)       |
+| `Scimax: Transpose Citation Right`       | `Shift+Right`     | Swap citation with next (when on citation)           |
+| `Scimax: Sort Citations Alphabetically`  | `Shift+Up`        | Sort citation keys alphabetically (when on citation) |
+| `Scimax: Sort Citations by Year`         | `Shift+Down`      | Sort citation keys by year (when on citation)        |
+| `Scimax: Delete Citation at Cursor`      | `Ctrl+Shift+K`    | Delete citation key at cursor (when on citation)     |
+
+**Features:**
+- **Hover preview**: Hover over citations to see reference details with source file
+- **DOI tooltips**: Hover over DOIs to see metadata from CrossRef + OpenAlex (citation count, open access status, topics)
+- **Autocomplete**: Type `cite:` or `@` for citation suggestions
+- **Go to definition**: Jump from citation to bibliography entry
+- **Code lens**: In .bib files, see citations count and quick actions
+- **Citation styles**: cite, citet, citep, citeauthor, citeyear
+- **OpenAlex integration**: View citation counts, open access links, citing works, related works
+- **Citation manipulation**: Transpose, sort, and delete citations with keyboard shortcuts (like org-ref)
+
+**Configuration:**
+```json
+{
+  "scimax.ref.bibliographyFiles": ["~/bibliography.bib"],
+  "scimax.ref.pdfDirectory": "~/papers",
+  "scimax.ref.notesDirectory": "~/notes",
+  "scimax.ref.defaultCiteStyle": "cite"
+}
+```
+Works with Zotero too!
+
+---
+
+### Fuzzy Search (swiper-style)
+
+Fast, interactive search for the current file and all open files, inspired by Emacs [swiper](https://github.com/abo-abo/swiper).
+
+**Commands:**
+| Command                               | Keybinding       | Description                                    |
+| ---------                             | ------------     | -------------                                  |
+| `Scimax: Fuzzy Search (Current File)` | `Ctrl+c s`       | Search lines in current file with live preview |
+| `Scimax: Fuzzy Search (Open Files)`   | `Ctrl+c Shift+s` | Search across all open editor tabs             |
+| `Scimax: Fuzzy Search (Outline)`      | `Ctrl+c Alt+s`   | Search headings/symbols in current file        |
+
+**Features:**
+- **Live preview**: Cursor moves to match as you type
+- **Match highlighting**: Matches highlighted in the editor
+- **Multi-file search**: Search all open tabs at once
+- **Outline mode**: Jump to headings, functions, classes
+
+---
+
+### Jump Navigation (avy-style)
+
+Quick navigation to visible text using labeled targets, inspired by Emacs [avy](https://github.com/abo-abo/avy).
+
+**Commands:**
+| Command                                | Keybinding   | Description                                        |
+| ---------                              | ------------ | -------------                                      |
+| `Scimax: Jump to Character`            | `Ctrl+c j c` | Jump to any occurrence of a character              |
+| `Scimax: Jump to 2-Character Sequence` | `Ctrl+c j j` | Jump to a two-character sequence                   |
+| `Scimax: Jump to Word`                 | `Ctrl+c j w` | Jump to word starts                                |
+| `Scimax: Jump to Line`                 | `Ctrl+c j l` | Jump to any visible line                           |
+| `Scimax: Jump to Symbol`               | `Ctrl+c j o` | Jump to symbols/headings in view                   |
+| `Scimax: Jump to Subword`              | `Ctrl+c j s` | Jump to subword boundaries (camelCase, snake_case) |
+| `Scimax: Jump Copy Line`               | -            | Select a visible line and copy it                  |
+| `Scimax: Jump Kill Line`               | -            | Select a visible line and delete it                |
+
+**Features:**
+- **Label-based selection**: Type a label (a, s, d, f...) to instantly jump
+- **QuickPick fallback**: Browse and filter targets in a list
+- **Match highlighting**: All targets highlighted in the editor
+- **Works everywhere**: Functions in any file type
+
+---
+
+### Edit Marks (Track Changes)
+
+Collaborative editing markup for reviewing changes, inspired by scimax-editmarks.
+
+**Commands:**
+| Command                           | Keybinding   | Description                     |
+| ---------                         | ------------ | -------------                   |
+| `Scimax: Mark Insertion`          | `Ctrl+c e i` | Mark selected text as insertion |
+| `Scimax: Mark Deletion`           | `Ctrl+c e d` | Mark selected text for deletion |
+| `Scimax: Insert Edit Comment`     | `Ctrl+c e c` | Insert a review comment         |
+| `Scimax: Mark Typo Correction`    | `Ctrl+c e t` | Mark typo with correction       |
+| `Scimax: Accept Edit Mark`        | `Ctrl+c e a` | Accept the edit mark at cursor  |
+| `Scimax: Reject Edit Mark`        | `Ctrl+c e r` | Reject the edit mark at cursor  |
+| `Scimax: Accept All Edit Marks`   | -            | Accept all marks in document    |
+| `Scimax: Reject All Edit Marks`   | -            | Reject all marks in document    |
+| `Scimax: Next Edit Mark`          | `Ctrl+c e ]` | Navigate to next edit mark      |
+| `Scimax: Previous Edit Mark`      | `Ctrl+c e [` | Navigate to previous edit mark  |
+| `Scimax: Show Edit Marks Summary` | `Ctrl+c e s` | Show summary of all edit marks  |
+
+**Markup Format:**
+```
+@@+inserted text+@@          # Insertion (green)
+@@-deleted text-@@           # Deletion (red, strikethrough)
+@@>comment text<@@           # Comment (yellow, italic)
+@@~old text|new text~@@      # Typo correction (orange)
+```
+
+Also supports CriticMarkup format: `{++insert++}`, `{--delete--}`, `{>>comment<<}`, `{~~old~>new~~}`
+
+---
+
+
+
+### File Database (scimax-db)
+
+SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) with **FTS5 full-text search** and **vector semantic search**.
+
+**Commands:**
+| Command                               | Description                             |
+| ---------                             | -------------                           |
+| `Scimax: Reindex Files`               | Reindex all files in workspace          |
+| `Scimax: Search All Files`            | Full-text search with BM25 ranking      |
+| `Scimax: Semantic Search (AI)`        | Find by meaning using embeddings        |
+| `Scimax: Hybrid Search`               | Combined keyword + semantic search      |
+| `Scimax: Search Headings`             | Search document headings                |
+| `Scimax: Search by Tag`               | Filter headings by org-mode tags        |
+| `Scimax: Search by Property`          | Search by property drawer values        |
+| `Scimax: Search Code Blocks`          | Search source code blocks by language   |
+| `Scimax: Search by Hashtag`           | Find files containing #hashtags         |
+| `Scimax: Show TODO Items`             | List all TODO items                     |
+| `Scimax: Show Agenda`                 | View deadlines and scheduled items      |
+| `Scimax: Show Upcoming Deadlines`     | See deadlines in next 2 weeks           |
+| `Scimax: Browse Indexed Files`        | Browse all indexed files                |
+| `Scimax: Set Search Scope`            | Limit searches to directory/project     |
+| `Scimax: Configure Embedding Service` | Setup Ollama/OpenAI for semantic search |
+| `Scimax: Show Database Stats`         | Display indexing statistics             |
+| `Scimax: Optimize Database`           | Clean up stale entries (VACUUM)         |
+| `Scimax: Clear Database`              | Reset the database                      |
+
+**Features:**
+- **SQLite with FTS5**: Fast full-text search with BM25 ranking, scalable to 10k+ files
+- **Vector Search**: Semantic search using embeddings (cosine similarity)
+- **Hybrid Search**: Reciprocal rank fusion of keyword + semantic results
+- **Auto-indexing**: Files are automatically indexed on save
+- **Tag inheritance**: Inherited tags from parent headings
+- **Agenda view**: Deadlines, scheduled items, and TODOs with overdue detection
+- **Scoped search**: Limit searches to specific directories
+
+**Embedding Providers for Semantic Search:**
+| Provider                   | Model                    | Dimensions | Setup                          |
+| -------------------------- | ------------------------ | ---------- | ------------------------------ |
+| **Local** (TransformersJs) | Xenova/all-MiniLM-L6-v2  | 384        | No setup, runs in Node.js      |
+| **Local** (TransformersJs) | Xenova/all-mpnet-base-v2 | 768        | Config change                  |
+| **Ollama** (local)         | nomic-embed-text         | 768        | `ollama pull nomic-embed-text` |
+| **Ollama** (local)         | all-minilm               | 384        | `ollama pull all-minilm`       |
+| **OpenAI** (cloud)         | text-embedding-3-small   | 1536       | Requires API key               |
+
+**Configuration:**
+```json
+{
+  "scimax.db.directories": [],
+  "scimax.db.ignorePatterns": ["**/node_modules/**", "**/.git/**"],
+  "scimax.db.autoIndex": true,
+  "scimax.db.embeddingProvider": "ollama",
+  "scimax.db.ollamaUrl": "http://localhost:11434",
+  "scimax.db.ollamaModel": "nomic-embed-text",
+  "scimax.db.openaiApiKey": ""
+}
+```
+
+---
+
+
+
+
+
+
 
 ## Sidebar Views
 
@@ -667,17 +684,17 @@ The extension adds a **Scimax** activity bar icon with these views:
 | `Ctrl+Alt+V` / `Ctrl+Cmd+V`    | Database Menu (quick access to search commands) |
 
 ### Help (Emacs-style)
-| Shortcut   | Command                                              |
-| ---------- | ---------------------------------------------------- |
+| Shortcut   | Command                                               |
+|------------|-------------------------------------------------------|
 | `Ctrl+h k` | Describe Key (type a key sequence to see its command) |
-| `Ctrl+h b` | List all keybindings                                 |
-| `Ctrl+h f` | Describe Command (find command by name)              |
+| `Ctrl+h b` | List all keybindings                                  |
+| `Ctrl+h f` | Describe Command (find command by name)               |
 
 ### Capture
-| Shortcut   | Command                  |
-| ---------- | ------------------------ |
+| Shortcut   | Command                   |
+|------------|---------------------------|
 | `Ctrl+c c` | Capture (template picker) |
-| `Ctrl+c t` | Quick Capture TODO       |
+| `Ctrl+c t` | Quick Capture TODO        |
 
 ### Journal Navigation
 | Shortcut   | Command                | When            |
@@ -791,6 +808,8 @@ The extension supports:
 ---
 
 ## Comparison with Emacs Scimax
+
+This package almost achieves feature parity with Emacs Scimax. If there are features missing it is likely because I don't use them anymore or frequently.
 
 | Feature              | Emacs Scimax       | VS Code Scimax                        |
 |----------------------|--------------------|---------------------------------------|

@@ -45,26 +45,31 @@ const DONE_KEYWORDS = new Set(['DONE', 'CANCELLED', 'CANCELED']);
 /**
  * Fast, lightweight parser that only extracts headlines and blocks
  * Much faster than full AST parsing for document symbols
+ * Supports both org-mode and markdown syntax
  */
-function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks: LightBlock[] } {
+function parseLightweight(lines: string[], isMarkdown: boolean = false): { headlines: LightHeadline[]; blocks: LightBlock[] } {
     const rootHeadlines: LightHeadline[] = [];
     const blocks: LightBlock[] = [];
     const headlineStack: LightHeadline[] = [];
+
+    // Pattern for headlines: org uses *, markdown uses #
+    const headlinePattern = isMarkdown ? /^(#{1,6})\s+(.*)$/ : /^(\*+)\s+(.*)$/;
+    const headlineStartPattern = isMarkdown ? /^(#{1,6})\s/ : /^(\*+)\s/;
 
     let i = 0;
     while (i < lines.length) {
         const line = lines[i];
 
         // Check for headline
-        const headlineMatch = line.match(/^(\*+)\s+(.*)$/);
+        const headlineMatch = line.match(headlinePattern);
         if (headlineMatch) {
             const level = headlineMatch[1].length;
-            const headline = parseHeadlineLine(headlineMatch[2], level, i);
+            const headline = parseHeadlineLine(headlineMatch[2], level, i, isMarkdown);
 
             // Find end of this headline (next headline of same or higher level)
             let endLine = i + 1;
             while (endLine < lines.length) {
-                const nextMatch = lines[endLine].match(/^(\*+)\s/);
+                const nextMatch = lines[endLine].match(headlineStartPattern);
                 if (nextMatch && nextMatch[1].length <= level) {
                     break;
                 }
@@ -87,8 +92,8 @@ function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks
             continue;
         }
 
-        // Check for source block (fast check)
-        if (line.match(/^#\+BEGIN_SRC/i)) {
+        // Check for org-mode source block
+        if (!isMarkdown && line.match(/^#\+BEGIN_SRC/i)) {
             const langMatch = line.match(/^#\+BEGIN_SRC\s+(\S+)/i);
             const nameMatch = lines[i - 1]?.match(/^#\+NAME:\s*(.+)$/i);
             let endLine = i + 1;
@@ -106,6 +111,34 @@ function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks
             continue;
         }
 
+        // Check for markdown fenced code block (``` or ~~~)
+        if (isMarkdown) {
+            const fenceMatch = line.match(/^(`{3,}|~{3,})(\w*)$/);
+            if (fenceMatch) {
+                const fence = fenceMatch[1];
+                const language = fenceMatch[2] || 'code';
+                const fenceChar = fence[0];
+                const fenceLen = fence.length;
+                let endLine = i + 1;
+                // Find matching closing fence (same char, at least same length)
+                while (endLine < lines.length) {
+                    const closingMatch = lines[endLine].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
+                    if (closingMatch) {
+                        break;
+                    }
+                    endLine++;
+                }
+                blocks.push({
+                    type: 'src-block',
+                    language: language,
+                    lineNumber: i,
+                    endLineNumber: endLine,
+                });
+                i = endLine + 1;
+                continue;
+            }
+        }
+
         // Check for table (fast check)
         if (line.match(/^\s*\|/)) {
             const startLine = i;
@@ -120,22 +153,24 @@ function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks
             continue;
         }
 
-        // Check for drawer (fast check)
-        const drawerMatch = line.match(/^:(\w+):\s*$/);
-        if (drawerMatch && drawerMatch[1] !== 'END' && drawerMatch[1] !== 'PROPERTIES') {
-            const startLine = i;
-            i++;
-            while (i < lines.length && lines[i].trim() !== ':END:') {
+        // Check for drawer (fast check) - org-mode only
+        if (!isMarkdown) {
+            const drawerMatch = line.match(/^:(\w+):\s*$/);
+            if (drawerMatch && drawerMatch[1] !== 'END' && drawerMatch[1] !== 'PROPERTIES') {
+                const startLine = i;
                 i++;
+                while (i < lines.length && lines[i].trim() !== ':END:') {
+                    i++;
+                }
+                blocks.push({
+                    type: 'drawer',
+                    name: drawerMatch[1],
+                    lineNumber: startLine,
+                    endLineNumber: i,
+                });
+                i++;
+                continue;
             }
-            blocks.push({
-                type: 'drawer',
-                name: drawerMatch[1],
-                lineNumber: startLine,
-                endLineNumber: i,
-            });
-            i++;
-            continue;
         }
 
         i++;
@@ -146,15 +181,16 @@ function parseLightweight(lines: string[]): { headlines: LightHeadline[]; blocks
 
 /**
  * Parse a single headline line (very fast)
+ * Handles both org-mode and markdown syntax
  */
-function parseHeadlineLine(text: string, level: number, lineNumber: number): LightHeadline {
+function parseHeadlineLine(text: string, level: number, lineNumber: number, isMarkdown: boolean = false): LightHeadline {
     let title = text;
     let todoKeyword: string | undefined;
     let todoType: 'todo' | 'done' | undefined;
     let priority: string | undefined;
     const tags: string[] = [];
 
-    // Extract TODO keyword (first word)
+    // Extract TODO keyword (first word) - same for org and markdown
     const todoMatch = title.match(/^(\S+)\s+/);
     if (todoMatch) {
         const word = todoMatch[1];
@@ -169,14 +205,14 @@ function parseHeadlineLine(text: string, level: number, lineNumber: number): Lig
         }
     }
 
-    // Extract priority [#A]
+    // Extract priority [#A] - same for org and markdown
     const priorityMatch = title.match(/^\[#([A-Z])\]\s+/);
     if (priorityMatch) {
         priority = priorityMatch[1];
         title = title.slice(priorityMatch[0].length);
     }
 
-    // Extract tags :tag1:tag2:
+    // Extract tags :tag1:tag2: - same for org and markdown
     const tagMatch = title.match(/\s+:([^:\s]+(?::[^:\s]+)*):$/);
     if (tagMatch) {
         tags.push(...tagMatch[1].split(':'));
@@ -197,7 +233,7 @@ function parseHeadlineLine(text: string, level: number, lineNumber: number): Lig
 }
 
 /**
- * Document symbol provider for org-mode files
+ * Document symbol provider for org-mode and markdown files
  * Shows headlines, source blocks, tables, etc. in the outline view
  */
 export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
@@ -215,28 +251,61 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
         }
 
         const symbols: vscode.DocumentSymbol[] = [];
+        const isMarkdown = document.languageId === 'markdown';
 
         try {
             // Use fast lightweight parser - only extracts headlines and blocks
             const lines = document.getText().split('\n');
-            const { headlines, blocks } = parseLightweight(lines);
+            const { headlines, blocks } = parseLightweight(lines, isMarkdown);
 
             if (token.isCancellationRequested) {
                 return symbols;
             }
 
             // Check for document title in first few lines
-            for (let i = 0; i < Math.min(20, lines.length); i++) {
-                const titleMatch = lines[i].match(/^#\+TITLE:\s*(.+)$/i);
-                if (titleMatch) {
-                    symbols.push(new vscode.DocumentSymbol(
-                        `📄 ${titleMatch[1]}`,
-                        'Document title',
-                        vscode.SymbolKind.File,
-                        new vscode.Range(i, 0, i, lines[i].length),
-                        new vscode.Range(i, 0, i, lines[i].length)
-                    ));
-                    break;
+            // Org uses #+TITLE:, Markdown uses YAML frontmatter or first H1
+            if (!isMarkdown) {
+                for (let i = 0; i < Math.min(20, lines.length); i++) {
+                    const titleMatch = lines[i].match(/^#\+TITLE:\s*(.+)$/i);
+                    if (titleMatch) {
+                        symbols.push(new vscode.DocumentSymbol(
+                            `📄 ${titleMatch[1]}`,
+                            'Document title',
+                            vscode.SymbolKind.File,
+                            new vscode.Range(i, 0, i, lines[i].length),
+                            new vscode.Range(i, 0, i, lines[i].length)
+                        ));
+                        break;
+                    }
+                }
+            } else {
+                // For markdown, check YAML frontmatter title or first H1
+                let inFrontmatter = false;
+                let frontmatterStart = -1;
+                for (let i = 0; i < Math.min(30, lines.length); i++) {
+                    const line = lines[i];
+                    if (i === 0 && line === '---') {
+                        inFrontmatter = true;
+                        frontmatterStart = i;
+                        continue;
+                    }
+                    if (inFrontmatter) {
+                        if (line === '---' || line === '...') {
+                            inFrontmatter = false;
+                            continue;
+                        }
+                        const titleMatch = line.match(/^title:\s*["']?(.+?)["']?\s*$/i);
+                        if (titleMatch) {
+                            symbols.push(new vscode.DocumentSymbol(
+                                `📄 ${titleMatch[1]}`,
+                                'Document title',
+                                vscode.SymbolKind.File,
+                                new vscode.Range(i, 0, i, line.length),
+                                new vscode.Range(i, 0, i, line.length)
+                            ));
+                            break;
+                        }
+                    }
                 }
             }
 
@@ -393,13 +462,19 @@ export class OrgDocumentSymbolProvider implements vscode.DocumentSymbolProvider 
 }
 
 /**
- * Register the document symbol provider
+ * Register the document symbol provider for org and markdown files
  */
 export function registerDocumentSymbolProvider(context: vscode.ExtensionContext): void {
+    const provider = new OrgDocumentSymbolProvider();
+
     context.subscriptions.push(
         vscode.languages.registerDocumentSymbolProvider(
             { language: 'org', scheme: 'file' },
-            new OrgDocumentSymbolProvider()
+            provider
+        ),
+        vscode.languages.registerDocumentSymbolProvider(
+            { language: 'markdown', scheme: 'file' },
+            provider
         )
     );
 }

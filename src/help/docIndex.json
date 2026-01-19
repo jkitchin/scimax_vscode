@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-01-19T02:47:05.877Z",
+  "buildDate": "2026-01-19T07:20:05.396Z",
   "count": 2830,
   "entries": [
     {
@@ -39,7 +39,7 @@
       "level": 2,
       "file": "00-index.org",
       "line": 15,
-      "content": "Scimax VS Code transforms Visual Studio Code into a powerful environment for: - *Literate Programming* - Write documents that combine prose and executable code - *Scientific Computing* - Execute code in 30+ languages with Jupyter integration - *Knowledge Management* - Organize notes, tasks, and references in structured documents - *Academic Writing* - Manage citations, export to LaTeX/PDF, and write papers The extension provides first-class support for org-mode files (.org), with additional supp",
+      "content": "Scimax VS Code transforms Visual Studio Code into a powerful environment for: - *Literate Programming* - Write documents that combine prose and executable code - *Scientific Computing* - Execute code in 30+ languages with Jupyter integration - *Knowledge Management* - Organize notes, tasks, and references in structured documents - *Academic Writing* - Manage citations, export to LaTeX/PDF, and write papers The extension provides first-class support for org-mode files (.org), with full structural",
       "path": [
         "Scimax VS Code"
       ],
@@ -72,7 +72,7 @@
       "heading": "Key Features",
       "level": 2,
       "file": "00-index.org",
-      "line": 27,
+      "line": 28,
       "content": "",
       "path": [
         "Scimax VS Code"
@@ -88,7 +88,7 @@
       "heading": "Document Structure",
       "level": 3,
       "file": "00-index.org",
-      "line": 29,
+      "line": 30,
       "content": "Create hierarchical documents with collapsible headings, properties, and tags. Navigate efficiently with outline views, heading jumps, and fuzzy search. - Unlimited heading levels with folding support - Tags and inherited tags for organization - Properties drawers for metadata - Speed commands for rapid navigation See [[file:02-document-structure.org][Document Structure]] for details.",
       "path": [
         "Scimax VS Code",
@@ -123,7 +123,7 @@
       "heading": "Task Management",
       "level": 3,
       "file": "00-index.org",
-      "line": 41,
+      "line": 42,
       "content": "Track tasks with TODO states, priorities, deadlines, and scheduling. - Multiple TODO states (TODO, DONE, WAITING, NEXT, HOLD, CANCELLED) - Priorities [#A], [#B], [#C] - Checkbox lists with progress tracking [2/5] - Deadline and scheduled timestamps with warnings See [[file:03-todo-items.org][TODO Items]] for details.",
       "path": [
         "Scimax VS Code",
@@ -158,7 +158,7 @@
       "heading": "Tables",
       "level": 3,
       "file": "00-index.org",
-      "line": 52,
+      "line": 53,
       "content": "Create and edit tables with spreadsheet-like formulas. - Easy table creation and navigation - Column/row manipulation - Formula support (#+TBLFM:) - Import/export to CSV See [[file:04-tables.org][Tables]] for details.",
       "path": [
         "Scimax VS Code",
@@ -191,7 +191,7 @@
       "heading": "Source Code Execution",
       "level": 3,
       "file": "00-index.org",
-      "line": 63,
+      "line": 64,
       "content": "Execute code blocks in 30+ programming languages directly in your documents. - Python, JavaScript, Shell, R, Julia, and more - Jupyter kernel integration for rich output - Session support for stateful execution - Code tangling for extracting source files - Variable passing between blocks See [[file:07-source-blocks.org][Source Code Blocks]] for details.",
       "path": [
         "Scimax VS Code",
@@ -226,7 +226,7 @@
       "heading": "Export",
       "level": 3,
       "file": "00-index.org",
-      "line": 75,
+      "line": 76,
       "content": "Export documents to multiple formats with customizable options. - HTML with syntax highlighting - LaTeX with custom preambles - PDF via LaTeX compilation - Markdown (GitHub-flavored) See [[file:10-export.org][Export]] for details.",
       "path": [
         "Scimax VS Code",
@@ -260,7 +260,7 @@
       "heading": "Timestamps and Planning",
       "level": 3,
       "file": "00-index.org",
-      "line": 86,
+      "line": 87,
       "content": "Manage dates, deadlines, and scheduling with rich timestamp support. - Active and inactive timestamps - Date/time ranges - Repeating tasks (+1d, +1w, +1m) - Deadline warnings See [[file:06-timestamps.org][Timestamps]] for details.",
       "path": [
         "Scimax VS Code",
@@ -294,7 +294,7 @@
       "heading": "Links and References",
       "level": 3,
       "file": "00-index.org",
-      "line": 97,
+      "line": 98,
       "content": "Create hyperlinks to files, URLs, headings, and more. - External links (https://, file:) - Internal links to headings and targets - Citation links with bibliography support - Custom link types See [[file:05-links.org][Links]] for details.",
       "path": [
         "Scimax VS Code",
@@ -327,7 +327,7 @@
       "heading": "Agenda Views",
       "level": 3,
       "file": "00-index.org",
-      "line": 108,
+      "line": 109,
       "content": "View and filter tasks across multiple files. - Day, week, month views - TODO list aggregation - Deadline and scheduled item views - Tag and priority filtering See [[file:13-agenda.org][Agenda]] for details.",
       "path": [
         "Scimax VS Code",
@@ -362,7 +362,7 @@
       "heading": "Journal System",
       "level": 3,
       "file": "00-index.org",
-      "line": 119,
+      "line": 120,
       "content": "Maintain a daily journal with calendar navigation. - One file per day organization - Calendar-based navigation - Quick capture and logging - Full-text search across entries See [[file:14-journal.org][Journal]] for details.",
       "path": [
         "Scimax VS Code",
@@ -397,7 +397,7 @@
       "heading": "Database and Search",
       "level": 3,
       "file": "00-index.org",
-      "line": 130,
+      "line": 131,
       "content": "Full-text and semantic search across your documents. - SQLite FTS5 full-text search - Vector-based semantic search - Heading, source block, and hashtag search - Multiple embedding providers (local, Ollama, OpenAI) See [[file:18-database-search.org][Database and Search]] for details.",
       "path": [
         "Scimax VS Code",
@@ -432,7 +432,7 @@
       "heading": "Citations and Bibliography",
       "level": 3,
       "file": "00-index.org",
-      "line": 141,
+      "line": 142,
       "content": "Manage academic references with BibTeX integration. - Insert citations with multiple styles - DOI lookup for metadata - OpenAlex academic search - PDF management See [[file:19-references.org][References]] for details.",
       "path": [
         "Scimax VS Code",
@@ -466,7 +466,7 @@
       "heading": "How This Documentation is Organized",
       "level": 2,
       "file": "00-index.org",
-      "line": 152,
+      "line": 153,
       "content": "This documentation is organized into several sections:",
       "path": [
         "Scimax VS Code"
@@ -485,7 +485,7 @@
       "heading": "Core Documentation (01-07)",
       "level": 3,
       "file": "00-index.org",
-      "line": 156,
+      "line": 157,
       "content": "| Document                                               | Description                   | |--------------------------------------------------------+-------------------------------| | [[file:01-getting-started.org][Getting Started]]       | Installation and first steps  | | [[file:01.5-basic-syntax.org][Basic Syntax]]          | Markup, lists, math, blocks   | | [[file:02-document-structure.org][Document Structure]] | Headings, folding, navigation | | [[file:03-todo-items.org][TODO Items]]      ",
       "path": [
         "Scimax VS Code",
@@ -520,7 +520,7 @@
       "heading": "Code Execution (08-09)",
       "level": 3,
       "file": "00-index.org",
-      "line": 169,
+      "line": 170,
       "content": "| Document                                                 | Description                  | |----------------------------------------------------------+------------------------------| | [[file:08-supported-languages.org][Supported Languages]] | Languages for code execution | | [[file:09-jupyter.org][Jupyter]]                         | Jupyter kernel integration   |",
       "path": [
         "Scimax VS Code",
@@ -548,7 +548,7 @@
       "heading": "Export & Preview (10-12)",
       "level": 3,
       "file": "00-index.org",
-      "line": 176,
+      "line": 177,
       "content": "| Document                                       | Description                | |------------------------------------------------+----------------------------| | [[file:10-export.org][Export]]                 | Exporting documents        | | [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering and preview | | [[file:12-image-overlays.org][Image Overlays]] | Inline image display       |",
       "path": [
         "Scimax VS Code",
@@ -581,7 +581,7 @@
       "heading": "Organization & Planning (13-17)",
       "level": 3,
       "file": "00-index.org",
-      "line": 184,
+      "line": 185,
       "content": "| Document                               | Description                | |----------------------------------------+----------------------------| | [[file:13-agenda.org][Agenda]]         | Agenda views and planning  | | [[file:14-journal.org][Journal]]       | Daily journaling system    | | [[file:15-capture.org][Capture]]       | Quick note capture         | | [[file:16-notebook.org][Notebook]]     | Project-based organization | | [[file:17-projectile.org][Projectile]] | Project management       ",
       "path": [
         "Scimax VS Code",
@@ -616,7 +616,7 @@
       "heading": "Search & Knowledge (18-19)",
       "level": 3,
       "file": "00-index.org",
-      "line": 194,
+      "line": 195,
       "content": "| Document                                             | Description                   | |------------------------------------------------------+-------------------------------| | [[file:18-database-search.org][Database and Search]] | Full-text and semantic search | | [[file:19-references.org][References]]               | Citations and bibliography    |",
       "path": [
         "Scimax VS Code",
@@ -645,7 +645,7 @@
       "heading": "Editing & Navigation (20-23)",
       "level": 3,
       "file": "00-index.org",
-      "line": 201,
+      "line": 202,
       "content": "| Document                                       | Description                 | |------------------------------------------------+-----------------------------| | [[file:20-editmarks.org][Editmarks]]           | Track changes system        | | [[file:21-navigation.org][Navigation]]         | Fuzzy search and jump       | | [[file:22-hydra-menus.org][Hydra Menus]]       | Keyboard-driven menus       | | [[file:23-speed-commands.org][Speed Commands]] | Single-key heading commands |",
       "path": [
         "Scimax VS Code",
@@ -680,7 +680,7 @@
       "heading": "Reference Documentation (24-30)",
       "level": 3,
       "file": "00-index.org",
-      "line": 210,
+      "line": 211,
       "content": "| Document                                                     | Description                    | |--------------------------------------------------------------+--------------------------------| | [[file:24-keybindings.org][Keybindings]]                     | Complete keybinding reference  | | [[file:25-commands.org][Commands]]                           | All commands with descriptions | | [[file:26-configuration.org][Configuration]]                 | All settings and options       | | [[file:2",
       "path": [
         "Scimax VS Code",
@@ -713,7 +713,7 @@
       "heading": "Quick Start",
       "level": 2,
       "file": "00-index.org",
-      "line": 222,
+      "line": 223,
       "content": "1. *Install the extension* from the VS Code marketplace or from a VSIX file 2. *Open or create an org file* with the `.org' extension 3. *Create a heading* by typing `* My First Heading' 4. *Add a source block* and execute it: #+BEGIN_SRC org ,#+BEGIN_SRC python :results output print(\"Hello, Scimax VS Code!\") ,#+END_SRC #+END_SRC Press `C-<return>' or `C-c C-c' to execute. 5. *Explore the menus* with `C-c m' (main menu) or `C-c C-m' (context menu) See [[file:01-getting-started.org][Getting Start",
       "path": [
         "Scimax VS Code"
@@ -751,7 +751,7 @@
       "heading": "Getting Help",
       "level": 2,
       "file": "00-index.org",
-      "line": 242,
+      "line": 243,
       "content": "",
       "path": [
         "Scimax VS Code"
@@ -767,7 +767,7 @@
       "heading": "Within VS Code",
       "level": 3,
       "file": "00-index.org",
-      "line": 244,
+      "line": 245,
       "content": "- Press `C-c m' to open the main Hydra menu - Press `C-c C-m' for context-sensitive menus - Use `C-S-P' and search for \"Scimax\" commands - Hover over elements for tooltips and information",
       "path": [
         "Scimax VS Code",
@@ -806,7 +806,7 @@
       "heading": "Online Resources",
       "level": 3,
       "file": "00-index.org",
-      "line": 251,
+      "line": 252,
       "content": "- GitHub Issues: Report bugs and request features - Documentation: This documentation set",
       "path": [
         "Scimax VS Code",
@@ -831,7 +831,7 @@
       "heading": "Keybinding Help",
       "level": 3,
       "file": "00-index.org",
-      "line": 256,
+      "line": 257,
       "content": "Press `? ' at the beginning of a heading (with speed commands enabled) to see available speed commands. See [[file:24-keybindings.org][Keybindings]] for the complete reference.",
       "path": [
         "Scimax VS Code",
@@ -859,7 +859,7 @@
       "heading": "Acknowledgments",
       "level": 2,
       "file": "00-index.org",
-      "line": 263,
+      "line": 264,
       "content": "Scimax VS Code is inspired by: - [[https://github.com/jkitchin/scimax][Scimax]] - The original Emacs package by John Kitchin - [[https://orgmode.org][Org-mode]] - The powerful Emacs major mode for notes and planning - [[https://orgmode.org/worg/org-contrib/babel/][Org Babel]] - Literate programming in Org-mode",
       "path": [
         "Scimax VS Code"
@@ -893,7 +893,7 @@
       "heading": "License",
       "level": 2,
       "file": "00-index.org",
-      "line": 271,
+      "line": 272,
       "content": "Scimax VS Code is open source software. See the LICENSE file for details.",
       "path": [
         "Scimax VS Code"
@@ -914,7 +914,7 @@
       "heading": "Complete Documentation Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 275,
+      "line": 276,
       "content": "This section provides a comprehensive index of all documentation topics with links for quick navigation.",
       "path": [],
       "commands": [],
@@ -936,7 +936,7 @@
       "heading": "Navigation Guides",
       "level": 2,
       "file": "00-index.org",
-      "line": 279,
+      "line": 280,
       "content": "| Document                                         | Topics Covered                                   | |--------------------------------------------------+--------------------------------------------------| | [[file:01-getting-started.org][Getting Started]] | Installation, first steps, basic usage           | | [[file:01.5-basic-syntax.org][Basic Syntax]]    | Text markup, lists, equations, blocks            | | [[file:21-navigation.org][Navigation]]           | Fuzzy search, avy-style jump, ou",
       "path": [
         "Complete Documentation Index"
@@ -970,8 +970,8 @@
       "heading": "Document Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 291,
-      "content": "| Document                                               | Topics Covered                          | |--------------------------------------------------------+-----------------------------------------| | [[file:02-document-structure.org][Document Structure]] | Headings, folding, properties, drawers  | | [[file:03-todo-items.org][TODO Items]]                 | Tasks, priorities, checkboxes, states   | | [[file:06-timestamps.org][Timestamps]]                 | Dates, deadlines, scheduling, repeate",
+      "line": 292,
+      "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    | | [[file:03-todo-items.org][TODO Items]]            ",
       "path": [
         "Complete Documentation Index"
       ],
@@ -982,29 +982,28 @@
         "editing",
         "topics",
         "covered",
-        "-------------------------------------------------------------------------------------------------",
+        "------------------------------------------------------------------------------------------------------------",
         "file02-document-structureorg",
         "structure",
         "headings",
         "folding",
         "properties",
         "drawers",
+        "file30-markdown-compatibilityorg",
+        "markdown",
+        "compatibility",
+        "structural",
+        "navigation",
         "file03-todo-itemsorg",
         "todo",
-        "items",
-        "tasks",
-        "priorities",
-        "checkboxes",
-        "states",
-        "file06-timestampsorg",
-        "timestamps"
+        "items"
       ]
     },
     {
       "heading": "Code Execution",
       "level": 2,
       "file": "00-index.org",
-      "line": 302,
+      "line": 304,
       "content": "| Document                                                 | Topics Covered                               | |----------------------------------------------------------+----------------------------------------------| | [[file:07-source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments            | | [[file:08-supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more            | | [[file:09-jupyter.org][Jupyter Integration]]             | Kernel ",
       "path": [
         "Complete Documentation Index"
@@ -1038,7 +1037,7 @@
       "heading": "Export and Preview",
       "level": 2,
       "file": "00-index.org",
-      "line": 311,
+      "line": 313,
       "content": "| Document                                       | Topics Covered                    | |------------------------------------------------+-----------------------------------| | [[file:10-export.org][Export]]                 | HTML, LaTeX, PDF, Markdown export | | [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  | | [[file:12-image-overlays.org][Image Overlays]] | Inline image display              | | [[file:32-excalidraw.org][Excalidraw]]         | Diagram creati",
       "path": [
         "Complete Documentation Index"
@@ -1072,7 +1071,7 @@
       "heading": "Organization and Planning",
       "level": 2,
       "file": "00-index.org",
-      "line": 320,
+      "line": 322,
       "content": "| Document                               | Topics Covered                        | |----------------------------------------+---------------------------------------| | [[file:13-agenda.org][Agenda]]         | Agenda views, task filtering          | | [[file:14-journal.org][Journal]]       | Daily journaling, calendar navigation | | [[file:15-capture.org][Capture]]       | Quick note capture, templates         | | [[file:16-notebook.org][Notebook]]     | Project-based organization            | | ",
       "path": [
         "Complete Documentation Index"
@@ -1106,7 +1105,7 @@
       "heading": "Search and Database",
       "level": 2,
       "file": "00-index.org",
-      "line": 330,
+      "line": 332,
       "content": "| Document                                             | Topics Covered                                | |------------------------------------------------------+-----------------------------------------------| | [[file:18-database-search.org][Database and Search]] | Full-text search, semantic search, embeddings | | [[file:19-references.org][References]]               | Citations, bibliography, DOI lookup           |",
       "path": [
         "Complete Documentation Index"
@@ -1136,7 +1135,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "00-index.org",
-      "line": 337,
+      "line": 339,
       "content": "| Document                                     | Topics Covered                      | |----------------------------------------------+-------------------------------------| | [[file:26-configuration.org][Configuration]] | All settings, customization options |",
       "path": [
         "Complete Documentation Index"
@@ -1159,7 +1158,7 @@
       "heading": "Topic Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 343,
+      "line": 345,
       "content": "Quick reference to find specific features across documentation. | Topic                 | Primary Documentation                                        | Related Documentation                                                                                                      | |-----------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------| | Agenda",
       "path": [],
       "commands": [],
@@ -1184,7 +1183,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 417,
+      "line": 420,
       "content": "",
       "path": [],
       "commands": [],
@@ -1199,7 +1198,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 419,
+      "line": 422,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1214,7 +1213,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 421,
+      "line": 424,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1249,7 +1248,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 428,
+      "line": 431,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1283,7 +1282,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 434,
+      "line": 437,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1316,7 +1315,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 440,
+      "line": 443,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1342,7 +1341,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 445,
+      "line": 448,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1374,7 +1373,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 451,
+      "line": 454,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1409,7 +1408,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 458,
+      "line": 461,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1440,7 +1439,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 464,
+      "line": 467,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -78355,6 +78354,979 @@
         "management",
         "file13-agendaorg",
         "agenda"
+      ]
+    },
+    {
+      "heading": "Markdown Compatibility",
+      "level": 1,
+      "file": "30-markdown-compatibility.org",
+      "line": 10,
+      "content": "Scimax VS Code provides first-class support for org-mode files, with substantial structural editing and navigation support for Markdown documents as well. This chapter documents which features work in Markdown files and how to use them.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "markdown",
+        "compatibility",
+        "scimax",
+        "code",
+        "provides",
+        "first-class",
+        "support",
+        "org-mode",
+        "substantial",
+        "structural",
+        "editing",
+        "navigation",
+        "documents",
+        "well",
+        "chapter",
+        "features",
+        "work",
+        "them"
+      ]
+    },
+    {
+      "heading": "Design Philosophy",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 16,
+      "content": "The extension treats Markdown as a first-class citizen for *structural editing and navigation*. Features that rely on org-mode specific syntax (TODO states, scheduling, clocking, properties) are not available in Markdown since they would require non-standard Markdown extensions. | Category                | Markdown Support | Notes                              | |-------------------------+------------------+------------------------------------| | Structural editing      | Full             | Headi",
+      "path": [
+        "Markdown Compatibility"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "design",
+        "philosophy",
+        "extension",
+        "treats",
+        "markdown",
+        "first-class",
+        "citizen",
+        "structural",
+        "editing",
+        "navigation",
+        "features",
+        "rely",
+        "org-mode",
+        "specific",
+        "syntax",
+        "todo",
+        "states",
+        "scheduling",
+        "clocking",
+        "properties"
+      ]
+    },
+    {
+      "heading": "Supported Features",
+      "level": 1,
+      "file": "30-markdown-compatibility.org",
+      "line": 35,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "supported",
+        "features"
+      ]
+    },
+    {
+      "heading": "Document Outline and Navigation",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 37,
+      "content": "Markdown files have full support for the VS Code outline view and breadcrumb navigation.",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "document",
+        "outline",
+        "navigation",
+        "markdown",
+        "full",
+        "support",
+        "code",
+        "view",
+        "breadcrumb"
+      ]
+    },
+    {
+      "heading": "Outline View",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 42,
+      "content": "The extension provides a =DocumentSymbolProvider= for Markdown that recognizes: - Headings (lines starting with =#=) - Fenced code blocks (=```language= or =~~~language=) - YAML frontmatter title Open the Outline view in the Explorer sidebar or press =Ctrl+Shift+O= to see the document structure.",
+      "path": [
+        "Supported Features",
+        "Document Outline and Navigation"
+      ],
+      "commands": [],
+      "keybindings": [
+        "Ctrl+Shift+O"
+      ],
+      "keywords": [
+        "outline",
+        "view",
+        "extension",
+        "provides",
+        "documentsymbolprovider",
+        "markdown",
+        "recognizes",
+        "headings",
+        "lines",
+        "starting",
+        "fenced",
+        "code",
+        "blocks",
+        "language",
+        "yaml",
+        "frontmatter",
+        "title",
+        "open",
+        "explorer",
+        "sidebar"
+      ]
+    },
+    {
+      "heading": "Breadcrumbs",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 53,
+      "content": "Breadcrumbs show the current heading hierarchy in the editor title bar. This works automatically for Markdown files.",
+      "path": [
+        "Supported Features",
+        "Document Outline and Navigation"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "breadcrumbs",
+        "show",
+        "current",
+        "heading",
+        "hierarchy",
+        "editor",
+        "title",
+        "bar",
+        "works",
+        "automatically",
+        "markdown"
+      ]
+    },
+    {
+      "heading": "Jump to Heading",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 58,
+      "content": "Press =C-c C-j= to open a quick-pick menu of all headings in the current file. Type to filter and press Enter to jump.",
+      "path": [
+        "Supported Features",
+        "Document Outline and Navigation"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-j"
+      ],
+      "keywords": [
+        "jump",
+        "heading",
+        "press",
+        "c-c",
+        "c-j",
+        "open",
+        "quick-pick",
+        "menu",
+        "headings",
+        "current",
+        "type",
+        "filter",
+        "enter"
+      ]
+    },
+    {
+      "heading": "Heading Navigation",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 63,
+      "content": "All heading navigation commands work in Markdown: | Key       | Command                   | Description                      | |-----------+---------------------------+----------------------------------| | C-c C-n   | Next Heading              | Move to next heading (any level) | | C-c C-p   | Previous Heading          | Move to previous heading         | | C-c C-u   | Parent Heading            | Move to parent (higher level)    | | C-c C-j   | Jump to Heading           | Quick-pick menu of all ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-n",
+        "C-c C-p",
+        "C-c C-u",
+        "C-c C-j"
+      ],
+      "keywords": [
+        "heading",
+        "navigation",
+        "commands",
+        "work",
+        "markdown",
+        "key",
+        "command",
+        "description",
+        "------------------------------------------------------------------------",
+        "c-c",
+        "c-n",
+        "next",
+        "move",
+        "any",
+        "level",
+        "c-p",
+        "previous",
+        "c-u",
+        "parent",
+        "higher"
+      ]
+    },
+    {
+      "heading": "Heading Manipulation",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 85,
+      "content": "Change heading levels and move subtrees: | Key         | Command           | Description                      | |-------------+-------------------+----------------------------------| | M-<left>    | Promote Heading   | Decrease level (## -> #)         | | M-<right>   | Demote Heading    | Increase level (# -> ##)         | | M-S-<left>  | Promote Subtree   | Promote heading and all children | | M-S-<right> | Demote Subtree    | Demote heading and all children  | | M-<up>      | Move Subtree Up  ",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [
+        "M-S-"
+      ],
+      "keywords": [
+        "heading",
+        "manipulation",
+        "change",
+        "levels",
+        "move",
+        "subtrees",
+        "key",
+        "command",
+        "description",
+        "------------------------------------------------------------------",
+        "m-left",
+        "promote",
+        "decrease",
+        "level",
+        "m-right",
+        "demote",
+        "increase",
+        "m-s-left",
+        "subtree",
+        "children"
+      ]
+    },
+    {
+      "heading": "Insert Headings",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 98,
+      "content": "| Key        | Command           | Description                           | |------------+-------------------+---------------------------------------| | C-<return> | Insert Heading    | Insert new heading at same level      | | -          | Insert Subheading | Insert heading one level deeper       | The extension automatically uses =#= characters for Markdown (not =*= like org).",
+      "path": [
+        "Supported Features",
+        "Heading Manipulation"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "insert",
+        "headings",
+        "key",
+        "command",
+        "description",
+        "----------------------------------------------------------------------",
+        "c-return",
+        "heading",
+        "new",
+        "level",
+        "subheading",
+        "one",
+        "deeper",
+        "extension",
+        "automatically",
+        "uses",
+        "characters",
+        "markdown",
+        "like",
+        "org"
+      ]
+    },
+    {
+      "heading": "Subtree Operations",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 107,
+      "content": "All subtree operations work in Markdown: | Command                   | Speed Key | Description                     | |---------------------------+-----------+---------------------------------| | scimax.org.markSubtree    | @         | Select entire subtree           | | scimax.org.killSubtree    | w         | Cut subtree to clipboard        | | scimax.org.cloneSubtree   | W         | Duplicate subtree below         | | scimax.org.yankSubtree    | y         | Paste subtree from clipboard    | | s",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [
+        "scimax.org.markSubtree",
+        "scimax.org.killSubtree",
+        "scimax.org.cloneSubtree",
+        "scimax.org.yankSubtree"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "subtree",
+        "operations",
+        "work",
+        "markdown",
+        "command",
+        "speed",
+        "key",
+        "description",
+        "-----------------------------------------------------------------------",
+        "select",
+        "entire",
+        "cut",
+        "clipboard",
+        "duplicate",
+        "below",
+        "paste"
+      ]
+    },
+    {
+      "heading": "Yank Subtree Level Adjustment",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 120,
+      "content": "When yanking (pasting) a subtree, the extension automatically adjusts heading levels to match the context: #+BEGIN_SRC markdown ## Target Section <!-- Yank a subtree that was cut from a different level --> <!-- Headings are automatically adjusted to match ## level --> #+END_SRC",
+      "path": [
+        "Supported Features",
+        "Subtree Operations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "yank",
+        "subtree",
+        "level",
+        "adjustment",
+        "yanking",
+        "pasting",
+        "extension",
+        "automatically",
+        "adjusts",
+        "heading",
+        "levels",
+        "match",
+        "context",
+        "beginsrc",
+        "markdown",
+        "target",
+        "section",
+        "cut",
+        "different",
+        "headings"
+      ]
+    },
+    {
+      "heading": "Code Block Support",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 132,
+      "content": "Markdown fenced code blocks have full support for: - Detection and navigation - Execution via Babel/Jupyter - Block manipulation (split, merge, clone)",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "code",
+        "block",
+        "support",
+        "markdown",
+        "fenced",
+        "blocks",
+        "full",
+        "detection",
+        "navigation",
+        "execution",
+        "via",
+        "babeljupyter",
+        "manipulation",
+        "split",
+        "merge",
+        "clone"
+      ]
+    },
+    {
+      "heading": "Fenced Block Syntax",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 140,
+      "content": "Both backtick and tilde fences are supported: #+BEGIN_SRC markdown ```python print(\"Hello from Python\") ``` ~~~javascript console.log(\"Hello from JS\"); ~~~ #+END_SRC",
+      "path": [
+        "Supported Features",
+        "Code Block Support"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "fenced",
+        "block",
+        "syntax",
+        "backtick",
+        "tilde",
+        "fences",
+        "supported",
+        "beginsrc",
+        "markdown",
+        "python",
+        "print",
+        "hello",
+        "javascript",
+        "consolelog",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Code Block Navigation",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 154,
+      "content": "| Key       | Command              | Description                    | |-----------+----------------------+--------------------------------| | C-c C-v n | Next Source Block    | Jump to next fenced block      | | C-c C-v p | Previous Source Block| Jump to previous fenced block  | | C-c C-v g | Jump to Source Block | Quick-pick menu of all blocks  |",
+      "path": [
+        "Supported Features",
+        "Code Block Support"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-v"
+      ],
+      "keywords": [
+        "code",
+        "block",
+        "navigation",
+        "key",
+        "command",
+        "description",
+        "-----------------------------------------------------------------",
+        "c-c",
+        "c-v",
+        "next",
+        "source",
+        "jump",
+        "fenced",
+        "previous",
+        "quick-pick",
+        "menu",
+        "blocks"
+      ]
+    },
+    {
+      "heading": "Code Block Execution",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 162,
+      "content": "Press =C-c C-c= inside a fenced code block to execute it. Results appear below the block. Supported languages include Python, JavaScript, TypeScript, Shell, and any language with a Jupyter kernel installed.",
+      "path": [
+        "Supported Features",
+        "Code Block Support"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-c"
+      ],
+      "keywords": [
+        "code",
+        "block",
+        "execution",
+        "press",
+        "c-c",
+        "inside",
+        "fenced",
+        "execute",
+        "results",
+        "appear",
+        "below",
+        "supported",
+        "languages",
+        "include",
+        "python",
+        "javascript",
+        "typescript",
+        "shell",
+        "any",
+        "language"
+      ]
+    },
+    {
+      "heading": "Code Block Manipulation",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 170,
+      "content": "| Command                        | Description                          | |--------------------------------+--------------------------------------| | scimax.ob.splitBlock           | Split block at cursor                | | scimax.ob.mergeWithPrevious    | Merge with previous block            | | scimax.ob.mergeWithNext        | Merge with next block                | | scimax.ob.insertBlockAbove     | Insert new block above               | | scimax.ob.insertBlockBelow     | Insert new block belo",
+      "path": [
+        "Supported Features",
+        "Code Block Support"
+      ],
+      "commands": [
+        "scimax.ob.splitBlock",
+        "scimax.ob.mergeWithPrevious",
+        "scimax.ob.mergeWithNext",
+        "scimax.ob.insertBlockAbove",
+        "scimax.ob.insertBlockBelow"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "code",
+        "block",
+        "manipulation",
+        "command",
+        "description",
+        "----------------------------------------------------------------------",
+        "split",
+        "cursor",
+        "merge",
+        "previous",
+        "next",
+        "insert",
+        "new",
+        "above",
+        "belo"
+      ]
+    },
+    {
+      "heading": "Speed Commands",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 185,
+      "content": "Speed commands work at the beginning of Markdown headings (column 0 of a line starting with =#=).",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "speed",
+        "commands",
+        "work",
+        "beginning",
+        "markdown",
+        "headings",
+        "column",
+        "line",
+        "starting"
+      ]
+    },
+    {
+      "heading": "Navigation Speed Commands",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 190,
+      "content": "| Key | Action                               | |-----+--------------------------------------| | n   | Next heading                         | | p   | Previous heading                     | | f   | Forward to same-level heading        | | b   | Back to same-level heading           | | u   | Up to parent heading                 | | j   | Jump to heading (quick-pick)         | | g   | Go to... (navigation menu)           |",
+      "path": [
+        "Supported Features",
+        "Speed Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "navigation",
+        "speed",
+        "commands",
+        "key",
+        "action",
+        "-------------------------------------------",
+        "next",
+        "heading",
+        "previous",
+        "forward",
+        "same-level",
+        "back",
+        "parent",
+        "jump",
+        "quick-pick",
+        "menu"
+      ]
+    },
+    {
+      "heading": "Structure Speed Commands",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 202,
+      "content": "| Key | Action                    | |-----+---------------------------| | @   | Mark (select) subtree     | | w   | Kill (cut) subtree        | | W   | Clone subtree             | | y   | Yank (paste) subtree      | | s   | Narrow to subtree         | | S   | Widen (show all)          |",
+      "path": [
+        "Supported Features",
+        "Speed Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "structure",
+        "speed",
+        "commands",
+        "key",
+        "action",
+        "--------------------------------",
+        "mark",
+        "select",
+        "subtree",
+        "kill",
+        "cut",
+        "clone",
+        "yank",
+        "paste",
+        "narrow",
+        "widen",
+        "show"
+      ]
+    },
+    {
+      "heading": "Visibility Speed Commands",
+      "level": 3,
+      "file": "30-markdown-compatibility.org",
+      "line": 213,
+      "content": "| Key | Action               | |-----+----------------------| | c   | Cycle visibility     | | C   | Show children        | | o   | Overview (fold all)  |",
+      "path": [
+        "Supported Features",
+        "Speed Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "visibility",
+        "speed",
+        "commands",
+        "key",
+        "action",
+        "---------------------------",
+        "cycle",
+        "show",
+        "children",
+        "overview",
+        "fold"
+      ]
+    },
+    {
+      "heading": "Folding",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 221,
+      "content": "Markdown headings support folding via the standard VS Code folding mechanism: - Press =Tab= on a heading to cycle fold state - Press =Shift+Tab= anywhere for global fold cycling - Use the fold icons in the gutter",
+      "path": [
+        "Supported Features"
+      ],
+      "commands": [],
+      "keybindings": [
+        "Shift+Tab"
+      ],
+      "keywords": [
+        "folding",
+        "markdown",
+        "headings",
+        "support",
+        "via",
+        "standard",
+        "code",
+        "mechanism",
+        "press",
+        "tab",
+        "heading",
+        "cycle",
+        "fold",
+        "state",
+        "shifttab",
+        "anywhere",
+        "global",
+        "cycling",
+        "icons",
+        "gutter"
+      ]
+    },
+    {
+      "heading": "Features Not Available in Markdown",
+      "level": 1,
+      "file": "30-markdown-compatibility.org",
+      "line": 229,
+      "content": "The following org-mode features are *not* supported in Markdown files because they require org-specific syntax:",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "features",
+        "available",
+        "markdown",
+        "following",
+        "org-mode",
+        "supported",
+        "because",
+        "require",
+        "org-specific",
+        "syntax"
+      ]
+    },
+    {
+      "heading": "Task Management",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 234,
+      "content": "| Feature        | Reason                                      | |----------------+---------------------------------------------| | TODO keywords  | Org syntax: =* TODO Task=                   | | Priorities     | Org syntax: =[#A]=                          | | Checkbox lists | Markdown checkboxes work differently        | | Progress cookies| Org syntax: =[2/5]= or =[40%]=             |",
+      "path": [
+        "Features Not Available in Markdown"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "task",
+        "management",
+        "feature",
+        "reason",
+        "-------------------------------------------------------------",
+        "todo",
+        "keywords",
+        "org",
+        "syntax",
+        "priorities",
+        "checkbox",
+        "lists",
+        "markdown",
+        "checkboxes",
+        "work",
+        "differently",
+        "progress",
+        "cookies"
+      ]
+    },
+    {
+      "heading": "Planning",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 243,
+      "content": "| Feature    | Reason                                         | |------------+------------------------------------------------| | SCHEDULED  | Org syntax: =SCHEDULED: <2026-01-20>=          | | DEADLINE   | Org syntax: =DEADLINE: <2026-01-20>=           | | Clocking   | Org syntax: =CLOCK: [timestamp]--[timestamp]=  | | Agenda     | Requires TODO states and scheduling            |",
+      "path": [
+        "Features Not Available in Markdown"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "planning",
+        "feature",
+        "reason",
+        "------------------------------------------------------------",
+        "scheduled",
+        "org",
+        "syntax",
+        "2026-01-20",
+        "deadline",
+        "clocking",
+        "clock",
+        "timestamp",
+        "agenda",
+        "requires",
+        "todo",
+        "states",
+        "scheduling"
+      ]
+    },
+    {
+      "heading": "Metadata",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 252,
+      "content": "| Feature         | Reason                                    | |-----------------+-------------------------------------------| | Properties      | Org syntax: =:PROPERTIES:= drawer         | | Tags            | Org syntax: =* Heading :tag1:tag2:=       | | Inherited tags  | Requires org tag syntax                   | | LOGBOOK         | Org syntax: =:LOGBOOK:= drawer            |",
+      "path": [
+        "Features Not Available in Markdown"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "metadata",
+        "feature",
+        "reason",
+        "------------------------------------------------------------",
+        "properties",
+        "org",
+        "syntax",
+        "drawer",
+        "tags",
+        "heading",
+        "tag1tag2",
+        "inherited",
+        "requires",
+        "tag",
+        "logbook"
+      ]
+    },
+    {
+      "heading": "Special Elements",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 261,
+      "content": "| Feature         | Reason                                    | |-----------------+-------------------------------------------| | Inline tasks    | Org syntax: 15+ stars                     | | Dynamic blocks  | Org syntax: =#+BEGIN:=                    | | Special blocks  | Org syntax: =#+BEGIN_QUOTE=, etc.         |",
+      "path": [
+        "Features Not Available in Markdown"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "special",
+        "elements",
+        "feature",
+        "reason",
+        "------------------------------------------------------------",
+        "inline",
+        "tasks",
+        "org",
+        "syntax",
+        "stars",
+        "dynamic",
+        "blocks",
+        "begin",
+        "beginquote",
+        "etc"
+      ]
+    },
+    {
+      "heading": "Tips for Markdown Users",
+      "level": 1,
+      "file": "30-markdown-compatibility.org",
+      "line": 269,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tips",
+        "markdown",
+        "users"
+      ]
+    },
+    {
+      "heading": "Maximizing Compatibility",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 271,
+      "content": "To get the most out of Scimax VS Code with Markdown: 1. *Use speed commands* - Position cursor at column 0 of headings for rapid single-key operations 2. *Use fenced code blocks* - The extension fully supports =```language= blocks for execution and manipulation 3. *Use the outline view* - Provides visual navigation similar to org's sparse tree features 4. *Use jump commands* - =C-c C-j= for headings, =C-c C-v g= for code blocks",
+      "path": [
+        "Tips for Markdown Users"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-j",
+        "C-c C-v"
+      ],
+      "keywords": [
+        "maximizing",
+        "compatibility",
+        "get",
+        "out",
+        "scimax",
+        "code",
+        "markdown",
+        "speed",
+        "commands",
+        "position",
+        "cursor",
+        "column",
+        "headings",
+        "rapid",
+        "single-key",
+        "operations",
+        "fenced",
+        "blocks",
+        "extension",
+        "fully"
+      ]
+    },
+    {
+      "heading": "When to Use Org-Mode Instead",
+      "level": 2,
+      "file": "30-markdown-compatibility.org",
+      "line": 286,
+      "content": "Consider using org-mode files when you need: - Task management with TODO states and priorities - Scheduling and deadlines with agenda integration - Time tracking with clocking - Inherited properties and tags - Advanced export features Org files can be exported to Markdown when sharing with others who don't use org-mode.",
+      "path": [
+        "Tips for Markdown Users"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "org-mode",
+        "instead",
+        "consider",
+        "need",
+        "task",
+        "management",
+        "todo",
+        "states",
+        "priorities",
+        "scheduling",
+        "deadlines",
+        "agenda",
+        "integration",
+        "time",
+        "tracking",
+        "clocking",
+        "inherited",
+        "properties",
+        "tags",
+        "advanced"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 1,
+      "file": "30-markdown-compatibility.org",
+      "line": 299,
+      "content": "- [[file:02-document-structure.org][Document Structure]] - Full org-mode structure documentation - [[file:23-speed-commands.org][Speed Commands]] - Complete speed command reference - [[file:07-source-blocks.org][Source Blocks]] - Code execution details - [[file:21-navigation.org][Navigation]] - All navigation features",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "related",
+        "topics",
+        "file02-document-structureorg",
+        "document",
+        "structure",
+        "full",
+        "org-mode",
+        "documentation",
+        "file23-speed-commandsorg",
+        "speed",
+        "commands",
+        "complete",
+        "command",
+        "reference",
+        "file07-source-blocksorg",
+        "source",
+        "blocks",
+        "code",
+        "execution",
+        "details"
+      ]
+    },
+    {
+      "heading": "Navigation",
+      "level": 1,
+      "file": "30-markdown-compatibility.org",
+      "line": 306,
+      "content": "- Previous: [[file:29-unsupported-features.org][Unsupported Features]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:31-publishing.org][Publishing]]",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "navigation",
+        "previous",
+        "file29-unsupported-featuresorg",
+        "unsupported",
+        "features",
+        "index",
+        "file00-indexorg",
+        "documentation",
+        "next",
+        "file31-publishingorg",
+        "publishing"
       ]
     },
     {

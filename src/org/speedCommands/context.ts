@@ -34,17 +34,22 @@ export function isAtHeadingStart(document: vscode.TextDocument, position: vscode
 }
 
 /**
- * Check if cursor is at the start of a source block (column 0 on #+begin_src line)
+ * Check if cursor is at the start of a source block (column 0 on #+begin_src or ``` line)
  */
 export function isAtSrcBlockStart(document: vscode.TextDocument, position: vscode.Position): boolean {
     // Must be at column 0
     if (position.character !== 0) return false;
 
-    // Only for org files
-    if (document.languageId !== 'org') return false;
-
     const line = document.lineAt(position.line).text;
-    return /^#\+begin_src\s/i.test(line);
+
+    if (document.languageId === 'org') {
+        return /^#\+begin_src\s/i.test(line);
+    } else if (document.languageId === 'markdown') {
+        // Check for markdown fenced code block opening
+        return /^(`{3,}|~{3,})\w+$/.test(line);
+    }
+
+    return false;
 }
 
 /**

@@ -22,7 +22,8 @@ Scimax VS Code transforms Visual Studio Code into a powerful environment for:
 - *Academic Writing* - Manage citations, export to LaTeX/PDF, and write papers
 
 The extension provides first-class support for org-mode files (.org), with
-additional support for Markdown documents.
+full structural editing and navigation support for Markdown documents (see
+[[file:30-markdown-compatibility.org][Markdown Compatibility]]).
 
 ** Key Features
 
@@ -290,14 +291,15 @@ This section provides a comprehensive index of all documentation topics with lin
 
 ** Document Editing
 
-| Document                                               | Topics Covered                          |
-|--------------------------------------------------------+-----------------------------------------|
-| [[file:02-document-structure.org][Document Structure]] | Headings, folding, properties, drawers  |
-| [[file:03-todo-items.org][TODO Items]]                 | Tasks, priorities, checkboxes, states   |
-| [[file:06-timestamps.org][Timestamps]]                 | Dates, deadlines, scheduling, repeaters |
-| [[file:04-tables.org][Tables]]                         | Table creation, editing, formulas       |
-| [[file:05-links.org][Links]]                           | Hyperlinks, internal links, citations   |
-| [[file:20-editmarks.org][Editmarks]]                   | Track changes, revision marks           |
+| Document                                                       | Topics Covered                             |
+|----------------------------------------------------------------+--------------------------------------------|
+| [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     |
+| [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    |
+| [[file:03-todo-items.org][TODO Items]]                         | Tasks, priorities, checkboxes, states      |
+| [[file:06-timestamps.org][Timestamps]]                         | Dates, deadlines, scheduling, repeaters    |
+| [[file:04-tables.org][Tables]]                                 | Table creation, editing, formulas          |
+| [[file:05-links.org][Links]]                                   | Hyperlinks, internal links, citations      |
+| [[file:20-editmarks.org][Editmarks]]                           | Track changes, revision marks              |
 
 ** Code Execution
 
@@ -390,6 +392,7 @@ Quick reference to find specific features across documentation.
 | Limitations           | [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not available in VS Code                                                                                    |
 | Lists (ordered)       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Lists (unordered)     | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
+| Markdown support      | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]], [[file:07-source-blocks.org][Source Blocks]] |
 | Markup (text)         | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]], bold, italic, underline, code                                            |
 | Math preview          | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
 | Non-standard features | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:10-export.org][Export]]                                                     |
