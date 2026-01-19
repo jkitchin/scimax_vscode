@@ -515,6 +515,7 @@ Speed commands for BibTeX files, active at column 0 of @entry lines.
 | [[cmd:scimax.bibtex.copyBibtex]]   | Copy BibTeX Entry    | b         |
 | [[cmd:scimax.bibtex.killEntry]]    | Delete Entry         | k         |
 | [[cmd:scimax.bibtex.generateKey]]  | Generate Citation Key| K         |
+| [[cmd:scimax.bibtex.updateFromWeb]]| Update from Web      | U         |
 | [[cmd:scimax.bibtex.help]]         | Show Help            | ?         |
 
 *** ⚠️ File-Wide Commands

@@ -8,6 +8,7 @@
  */
 
 import * as vscode from 'vscode';
+import * as https from 'https';
 import { BibEntry, parseBibTeX, entryToBibTeX, formatAuthors } from './bibtexParser';
 
 /**
@@ -83,6 +84,7 @@ export const BIBTEX_SPEED_COMMANDS: BibtexSpeedCommandDefinition[] = [
     { key: 'b', command: 'scimax.bibtex.copyBibtex', description: 'Copy BibTeX entry' },
     { key: 'k', command: 'scimax.bibtex.killEntry', description: 'Kill (delete) entry' },
     { key: 'K', command: 'scimax.bibtex.generateKey', description: 'Generate citation key' },
+    { key: 'U', command: 'scimax.bibtex.updateFromWeb', description: 'Update fields from DOI/arXiv' },
 
     // Help
     { key: '?', command: 'scimax.bibtex.help', description: 'Show speed commands help' }
@@ -902,6 +904,477 @@ export async function generateKey(): Promise<void> {
     vscode.window.showInformationMessage(`Key changed: ${oldKey} → ${newKey}`);
 }
 
+interface CrossRefSearchResult {
+    doi: string;
+    title: string;
+    author: string;
+    year: string;
+    journal?: string;
+    type: string;
+    score: number;
+}
+
+/**
+ * Search CrossRef by title/author and return multiple results
+ */
+async function searchCrossRef(query: string, author?: string): Promise<CrossRefSearchResult[]> {
+    return new Promise((resolve, reject) => {
+        // Build query - prioritize author+title combination
+        let searchQuery = encodeURIComponent(query);
+        if (author) {
+            searchQuery = `query.title=${encodeURIComponent(query)}&query.author=${encodeURIComponent(author)}`;
+        } else {
+            searchQuery = `query=${encodeURIComponent(query)}`;
+        }
+
+        const options = {
+            hostname: 'api.crossref.org',
+            path: `/works?${searchQuery}&rows=10&select=DOI,title,author,issued,container-title,type,score`,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'scimax-vscode/1.0 (https://github.com/jkitchin/scimax_vscode)'
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    try {
+                        const json = JSON.parse(data);
+                        const items = json.message?.items || [];
+                        const results: CrossRefSearchResult[] = items.map((item: any) => {
+                            // Format authors
+                            const authors = item.author || [];
+                            const authorStr = authors
+                                .slice(0, 3)
+                                .map((a: any) => a.family || a.name || 'Unknown')
+                                .join(', ');
+
+                            // Get year from issued date
+                            const dateParts = item.issued?.['date-parts']?.[0] || [];
+                            const year = dateParts[0]?.toString() || '';
+
+                            return {
+                                doi: item.DOI,
+                                title: Array.isArray(item.title) ? item.title[0] : item.title || 'Untitled',
+                                author: authorStr + (authors.length > 3 ? ' et al.' : ''),
+                                year,
+                                journal: Array.isArray(item['container-title'])
+                                    ? item['container-title'][0]
+                                    : item['container-title'],
+                                type: item.type || 'unknown',
+                                score: item.score || 0
+                            };
+                        });
+                        resolve(results);
+                    } catch {
+                        resolve([]);
+                    }
+                } else {
+                    resolve([]);
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            reject(error);
+        });
+
+        req.setTimeout(15000, () => {
+            req.destroy();
+            reject(new Error('Request timed out'));
+        });
+
+        req.end();
+    });
+}
+
+/**
+ * Fetch BibTeX entry from CrossRef using DOI
+ */
+async function fetchFromCrossRef(doi: string): Promise<BibEntry | null> {
+    // Clean DOI
+    doi = doi.replace(/^https?:\/\/doi\.org\//, '').trim();
+
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: 'api.crossref.org',
+            path: `/works/${encodeURIComponent(doi)}/transform/application/x-bibtex`,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/x-bibtex',
+                'User-Agent': 'scimax-vscode/1.0 (https://github.com/jkitchin/scimax_vscode)'
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    const result = parseBibTeX(data);
+                    if (result.entries.length > 0) {
+                        resolve(result.entries[0]);
+                    } else {
+                        resolve(null);
+                    }
+                } else if (res.statusCode === 404) {
+                    resolve(null);
+                } else {
+                    reject(new Error(`CrossRef returned status ${res.statusCode}`));
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            reject(error);
+        });
+
+        req.setTimeout(10000, () => {
+            req.destroy();
+            reject(new Error('Request timed out'));
+        });
+
+        req.end();
+    });
+}
+
+/**
+ * Fetch BibTeX entry from arXiv API using eprint ID
+ */
+async function fetchFromArxiv(arxivId: string): Promise<BibEntry | null> {
+    // Clean arXiv ID (handle various formats)
+    arxivId = arxivId
+        .replace(/^https?:\/\/arxiv\.org\/abs\//, '')
+        .replace(/^arXiv:/, '')
+        .replace(/v\d+$/, '') // Remove version suffix
+        .trim();
+
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: 'export.arxiv.org',
+            path: `/api/query?id_list=${encodeURIComponent(arxivId)}`,
+            method: 'GET',
+            headers: {
+                'User-Agent': 'scimax-vscode/1.0 (https://github.com/jkitchin/scimax_vscode)'
+            }
+        };
+
+        const req = https.request(options, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    const entry = parseArxivResponse(data, arxivId);
+                    resolve(entry);
+                } else {
+                    resolve(null);
+                }
+            });
+        });
+
+        req.on('error', (error) => {
+            reject(error);
+        });
+
+        req.setTimeout(10000, () => {
+            req.destroy();
+            reject(new Error('Request timed out'));
+        });
+
+        req.end();
+    });
+}
+
+/**
+ * Parse arXiv API XML response into a BibEntry
+ */
+function parseArxivResponse(xml: string, arxivId: string): BibEntry | null {
+    // Simple XML parsing for arXiv response
+    const getTagContent = (tag: string): string | undefined => {
+        const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, 'i');
+        const match = xml.match(regex);
+        return match ? match[1].trim() : undefined;
+    };
+
+    const getAllTagContents = (tag: string): string[] => {
+        const regex = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, 'gi');
+        const matches: string[] = [];
+        let match;
+        while ((match = regex.exec(xml)) !== null) {
+            matches.push(match[1].trim());
+        }
+        return matches;
+    };
+
+    // Check if entry was found
+    if (xml.includes('<opensearch:totalResults>0</opensearch:totalResults>')) {
+        return null;
+    }
+
+    const title = getTagContent('title');
+    if (!title) return null;
+
+    // Get authors (in <author><name>...</name></author> format)
+    const authorNames = getAllTagContents('name');
+    const authors = authorNames.length > 0 ? authorNames.join(' and ') : undefined;
+
+    // Get published date
+    const published = getTagContent('published');
+    const year = published ? published.substring(0, 4) : undefined;
+
+    // Get abstract
+    const summary = getTagContent('summary');
+    const abstract = summary?.replace(/\s+/g, ' ').trim();
+
+    // Get DOI if present
+    const doiLink = xml.match(/href="https?:\/\/dx\.doi\.org\/([^"]+)"/);
+    const doi = doiLink ? doiLink[1] : undefined;
+
+    // Get primary category
+    const primaryCategory = xml.match(/term="([^"]+)"[^>]*scheme="http:\/\/arxiv\.org\/schemas\/atom"/);
+    const category = primaryCategory ? primaryCategory[1] : undefined;
+
+    // Build the entry
+    const entry: BibEntry = {
+        key: arxivId.replace(/[^a-zA-Z0-9]/g, '_'),
+        type: 'article',
+        fields: {
+            title: title.replace(/\s+/g, ' ').trim(),
+            eprint: arxivId,
+            archiveprefix: 'arXiv',
+            eprinttype: 'arxiv',
+        },
+        raw: ''
+    };
+
+    if (authors) entry.fields.author = authors;
+    if (year) entry.fields.year = year;
+    if (abstract) entry.fields.abstract = abstract;
+    if (doi) entry.fields.doi = doi;
+    if (category) entry.fields.primaryclass = category;
+
+    // Copy common fields to top-level
+    entry.author = entry.fields.author;
+    entry.title = entry.fields.title;
+    entry.year = entry.fields.year;
+    entry.doi = entry.fields.doi;
+    entry.abstract = entry.fields.abstract;
+
+    return entry;
+}
+
+/**
+ * Update entry fields from web sources (CrossRef/arXiv)
+ * Preserves the citation key and only fills in missing fields
+ */
+export async function updateFromWeb(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'bibtex') return;
+
+    const document = editor.document;
+    const range = getEntryRange(document, editor.selection.active);
+    if (!range) {
+        vscode.window.showWarningMessage('Not in a BibTeX entry');
+        return;
+    }
+
+    const entry = getEntryAtPosition(document, editor.selection.active);
+    if (!entry) {
+        vscode.window.showWarningMessage('Could not parse entry');
+        return;
+    }
+
+    // Determine source based on available identifiers
+    let fetchedEntry: BibEntry | null = null;
+    let source = '';
+
+    await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: 'Fetching metadata...',
+        cancellable: false
+    }, async () => {
+        // Try DOI first (most reliable)
+        if (entry.doi || entry.fields.doi) {
+            const doi = entry.doi || entry.fields.doi;
+            source = 'CrossRef';
+            try {
+                fetchedEntry = await fetchFromCrossRef(doi);
+            } catch (e) {
+                // Fall through to try arXiv
+            }
+        }
+
+        // Try arXiv if no DOI result
+        if (!fetchedEntry && (entry.fields.eprint || entry.fields.arxivid)) {
+            const arxivId = entry.fields.eprint || entry.fields.arxivid;
+            source = 'arXiv';
+            try {
+                fetchedEntry = await fetchFromArxiv(arxivId);
+            } catch {
+                // Continue
+            }
+        }
+
+        // Try to extract arXiv ID from URL field
+        if (!fetchedEntry && entry.url) {
+            const arxivMatch = entry.url.match(/arxiv\.org\/abs\/([^\s/]+)/);
+            if (arxivMatch) {
+                source = 'arXiv';
+                try {
+                    fetchedEntry = await fetchFromArxiv(arxivMatch[1]);
+                } catch {
+                    // Continue
+                }
+            }
+        }
+    });
+
+    // If still no result, try CrossRef search by title/author
+    if (!fetchedEntry && (entry.title || entry.author)) {
+        const searchResults = await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: 'Searching CrossRef...',
+            cancellable: false
+        }, async () => {
+            try {
+                return await searchCrossRef(entry.title || '', entry.author);
+            } catch {
+                return [];
+            }
+        });
+
+        if (searchResults.length > 0) {
+            // Let user choose from results
+            const items = searchResults.map((r, idx) => ({
+                label: r.title.length > 60 ? r.title.substring(0, 60) + '...' : r.title,
+                description: `${r.author} (${r.year || 'n.d.'})`,
+                detail: r.journal ? `${r.journal} | DOI: ${r.doi}` : `DOI: ${r.doi}`,
+                result: r
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `Found ${searchResults.length} result(s) - select the correct one`,
+                matchOnDescription: true,
+                matchOnDetail: true
+            });
+
+            if (selected) {
+                // Fetch full entry using the DOI
+                source = 'CrossRef';
+                await vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: 'Fetching full metadata...',
+                    cancellable: false
+                }, async () => {
+                    try {
+                        fetchedEntry = await fetchFromCrossRef(selected.result.doi);
+                    } catch {
+                        // Failed to fetch
+                    }
+                });
+            }
+        }
+    }
+
+    if (!fetchedEntry) {
+        vscode.window.showWarningMessage(
+            'Could not fetch metadata. Try adding a DOI or arXiv ID to the entry.'
+        );
+        return;
+    }
+
+    // Find fields to update (only update empty/missing fields)
+    const updates: { field: string; oldValue: string; newValue: string }[] = [];
+    const fieldsToCheck = [
+        'author', 'title', 'journal', 'journaltitle', 'booktitle',
+        'year', 'volume', 'number', 'pages', 'publisher', 'doi',
+        'url', 'abstract', 'issn', 'isbn'
+    ];
+
+    for (const field of fieldsToCheck) {
+        const currentValue = entry.fields[field]?.trim() || '';
+        const newValue = fetchedEntry.fields[field]?.trim() || '';
+
+        if (!currentValue && newValue) {
+            updates.push({ field, oldValue: currentValue, newValue });
+        }
+    }
+
+    if (updates.length === 0) {
+        vscode.window.showInformationMessage(
+            `No missing fields to update from ${source}`
+        );
+        return;
+    }
+
+    // Show what will be updated
+    const items = updates.map(u => ({
+        label: u.field,
+        description: u.newValue.length > 50 ? u.newValue.substring(0, 50) + '...' : u.newValue,
+        picked: true,
+        update: u
+    }));
+
+    const selected = await vscode.window.showQuickPick(items, {
+        canPickMany: true,
+        placeHolder: `Select fields to update from ${source} (${updates.length} available)`
+    });
+
+    if (!selected || selected.length === 0) return;
+
+    // Build updated entry
+    const updatedFields = { ...entry.fields };
+    for (const item of selected) {
+        updatedFields[item.update.field] = item.update.newValue;
+    }
+
+    // Sort and rebuild the entry (preserve the original key!)
+    const sortedFields: [string, string][] = [];
+
+    for (const field of BIBTEX_FIELD_ORDER) {
+        if (updatedFields[field] !== undefined) {
+            sortedFields.push([field, updatedFields[field]]);
+            delete updatedFields[field];
+        }
+    }
+
+    // Add remaining fields
+    for (const [field, value] of Object.entries(updatedFields)) {
+        sortedFields.push([field, value]);
+    }
+
+    // Build new entry text (preserve the original key)
+    let newEntry = `@${entry.type.toLowerCase()}{${entry.key},\n`;
+    for (const [field, value] of sortedFields) {
+        newEntry += `  ${field} = {${value}},\n`;
+    }
+    newEntry += '}';
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(range, newEntry);
+    });
+
+    vscode.window.showInformationMessage(
+        `Updated ${selected.length} field(s) from ${source}: ${selected.map(s => s.label).join(', ')}`
+    );
+}
+
 /**
  * Escape special regex characters in a string
  */
@@ -1480,7 +1953,8 @@ export function registerBibtexSpeedCommands(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand('scimax.bibtex.copyKey', copyKey),
         vscode.commands.registerCommand('scimax.bibtex.copyBibtex', copyBibtex),
         vscode.commands.registerCommand('scimax.bibtex.killEntry', killEntry),
-        vscode.commands.registerCommand('scimax.bibtex.generateKey', generateKey)
+        vscode.commands.registerCommand('scimax.bibtex.generateKey', generateKey),
+        vscode.commands.registerCommand('scimax.bibtex.updateFromWeb', updateFromWeb)
     );
 
     // Help command

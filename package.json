@@ -2544,6 +2544,10 @@
         "title": "Scimax BibTeX: Generate Citation Key"
       },
       {
+        "command": "scimax.bibtex.updateFromWeb",
+        "title": "Scimax BibTeX: Update Fields from Web (CrossRef/arXiv)"
+      },
+      {
         "command": "scimax.bibtex.help",
         "title": "Scimax BibTeX: Show Speed Commands Help"
       },
@@ -4061,6 +4065,11 @@
       {
         "command": "scimax.bibtex.generateKey",
         "key": "shift+k",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.updateFromWeb",
+        "key": "shift+u",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {
