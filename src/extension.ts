@@ -65,6 +65,7 @@ import { registerPublishCommands } from './publishing';
 import { registerHelpCommands } from './help';
 import { activateLatexFeatures } from './latex/commands';
 import { registerDiagnosticCommands } from './diagnostic';
+import { TemplateManager, registerTemplateCommands } from './templates';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -72,6 +73,7 @@ let journalStatusBar: JournalStatusBar;
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 let projectileManager: ProjectileManager;
+let templateManager: TemplateManager;
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Scimax VS Code extension activating...');
@@ -521,6 +523,12 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Notebook Commands (uses lazy database loading internally)
     registerNotebookCommands(context, notebookManager);
 
+    // Initialize Template Manager
+    templateManager = new TemplateManager(context);
+    context.subscriptions.push({ dispose: () => templateManager.dispose() });
+
+    // Register Template Commands
+    registerTemplateCommands(context, templateManager);
 
     // Initialize Projectile Manager (deferred to avoid blocking activation)
     projectileManager = new ProjectileManager(context);

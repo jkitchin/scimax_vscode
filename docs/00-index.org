@@ -220,7 +220,7 @@ This documentation is organized into several sections:
 | [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not in VS Code  |
 | [[file:30-cli.org][Command Line Interface]]                 | CLI for batch ops and scripts  |
 
-*** Specialized File Support (31-34)
+*** Specialized File Support (31-35)
 
 | Document                                               | Description                      |
 |--------------------------------------------------------+----------------------------------|
@@ -228,6 +228,7 @@ This documentation is organized into several sections:
 | [[file:32-excalidraw.org][Excalidraw]]               | Diagram editing integration      |
 | [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX file editing and commands  |
 | [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX file editing and commands |
+| [[file:35-templates.org][Document Templates]]           | Template system for documents    |
 
 ** Quick Start
 
@@ -429,6 +430,7 @@ Quick reference to find specific features across documentation.
 | Speed commands        | [[file:23-speed-commands.org][Speed Commands]]               | [[file:24-keybindings.org][Keybindings]], [[file:21-navigation.org][Navigation]]                                           |
 | Tables                | [[file:04-tables.org][Tables]]                               | [[file:10-export.org][Export]]                                                                                             |
 | Tags                  | [[file:02-document-structure.org][Document Structure]]       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
+| Templates             | [[file:35-templates.org][Document Templates]]                 | [[file:15-capture.org][Capture]], [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]              |
 | TODO states           | [[file:03-todo-items.org][TODO Items]]                       | [[file:13-agenda.org][Agenda]], [[file:26-configuration.org][Configuration]]                                               |
 | TODO custom keywords  | [[file:03-todo-items.org][TODO Items]]                       | Per-file #+TODO: definitions                                                                                               |
 | Track changes         | [[file:20-editmarks.org][Editmarks]]                         | [[file:02-document-structure.org][Document Structure]]                                                                     |
