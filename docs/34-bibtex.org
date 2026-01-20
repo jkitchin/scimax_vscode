@@ -15,6 +15,7 @@ Scimax VS Code provides comprehensive BibTeX file editing support with speed com
 - *Entry Operations* - Clean, format, and transform individual entries
 - *File Operations* - Sort entries, apply batch transformations, validate files
 - *Smart Author Parsing* - Proper handling of particles (von, van der), suffixes (Jr., III), and corporate authors
+- *Journal Abbreviations* - Toggle journal names between full and abbreviated forms using 50,000+ abbreviation database
 
 ** When to Use This
 
@@ -349,6 +350,158 @@ Bad keys:
 2. Run "Clean Entries" via =scimax.bibtex.applyToAllEntries=
 3. Optionally sort entries by key or year
 
+* ⚠️ Journal Abbreviations
+
+Scimax includes a comprehensive journal abbreviation database that allows you to toggle between full journal names and their standardized ISO 4 abbreviations.
+
+** Data Sources
+
+The abbreviation database is sourced from the [[https://github.com/JabRef/abbrv.jabref.org][JabRef Abbreviation Repository]], which aggregates abbreviations from multiple authoritative sources:
+
+| Source              | Description                                    | Entries |
+|---------------------+------------------------------------------------+---------|
+| General             | Cross-discipline abbreviations                 | ~1,900  |
+| ACS (Chemistry)     | American Chemical Society journals             | ~1,700  |
+| AMS (Mathematics)   | American Mathematical Society journals         | ~2,500  |
+| IEEE                | IEEE journals and conferences                  | ~280    |
+| Entrez/PubMed       | Medline abbreviations (dotless format)         | ~19,500 |
+| Life Science        | Biology and life science journals              | ~9,700  |
+| Index Medicus       | NLM/Index Medicus abbreviations                | ~3,200  |
+| Mathematics         | Mathematics journals from MathSciNet           | ~3,800  |
+| Geology & Physics   | Geology and physics journals                   | ~1,300  |
+| Mechanical          | Mechanical and biomechanical engineering       | ~4,800  |
+| Astronomy           | Astronomy and astrophysics journals            | ~20     |
+| Meteorology         | Atmospheric science journals                   | ~120    |
+| Sociology           | Sociology journals                             | ~100    |
+| AEA (Economics)     | American Economic Association journals         | ~1,000  |
+
+Total: approximately 50,000 abbreviation entries.
+
+** Important: Use Version Control
+
+Before making batch changes to your bibliography files, ensure your files are under version control (git). This allows you to:
+- Review changes with =git diff=
+- Undo changes with =git checkout= if something goes wrong
+- Track the history of modifications
+
+#+BEGIN_QUOTE
+*Tip*: Commit your .bib file before running batch abbreviation operations. If anything goes wrong, you can always revert.
+#+END_QUOTE
+
+** Toggling Journal Names
+
+*** Single Entry (Speed Key: A)
+
+Command: =scimax.bibtex.toggleJournalAbbreviation= (speed key: =A=)
+
+Toggles the journal field between full name and abbreviation:
+
+Before:
+#+BEGIN_SRC bibtex
+@article{smith2024,
+  author = {John Smith},
+  title = {A Great Paper},
+  journal = {Journal of the American Chemical Society},
+  year = {2024}
+}
+#+END_SRC
+
+After pressing =A=:
+#+BEGIN_SRC bibtex
+@article{smith2024,
+  author = {John Smith},
+  title = {A Great Paper},
+  journal = {J. Am. Chem. Soc.},
+  year = {2024}
+}
+#+END_SRC
+
+Press =A= again to toggle back to the full name.
+
+*** All Entries
+
+| Command                                | Description                            |
+|----------------------------------------+----------------------------------------|
+| scimax.bibtex.abbreviateAllJournals    | Abbreviate all journals in the file    |
+| scimax.bibtex.expandAllJournals        | Expand all journals to full names      |
+
+These commands:
+1. *Validate syntax* before starting - warns if parse errors exist
+2. Process every entry in the file
+3. *Validate results* - checks that entry count is preserved
+4. Report how many journals were changed and not found
+
+If validation fails, changes are not applied.
+
+*** Undo Behavior
+
+All batch changes are applied as a *single edit operation*, so:
+- Press =Ctrl+Z= (=Cmd+Z= on Mac) *once* to undo all changes at once
+- You cannot undo individual journal changes within a batch operation
+- For more granular control, use the single-entry toggle (=A= speed key) instead
+
+For single-entry toggles (speed key =A=), each toggle is a separate undo operation.
+
+** Searching Abbreviations
+
+Command: =scimax.bibtex.searchJournalAbbreviations=
+
+Search the abbreviation database by full name or abbreviation:
+
+1. Enter search query (e.g., "chemistry", "J. Am.")
+2. Browse matching results
+3. Select an entry to copy the abbreviation to clipboard
+
+** Custom Abbreviations
+
+You can add your own journal abbreviations that override the built-in database.
+
+*** Adding Custom Abbreviations
+
+Command: =scimax.bibtex.addJournalAbbreviation=
+
+1. Enter the full journal name
+2. Enter the abbreviation
+3. The mapping is saved to your VS Code user storage
+
+Custom abbreviations take priority over the bundled database, so you can correct or override any entry.
+
+*** Managing Custom Abbreviations
+
+Command: =scimax.bibtex.manageJournalAbbreviations=
+
+View and remove your custom abbreviations.
+
+** Updating the Database
+
+Command: =scimax.bibtex.updateJournalAbbreviations=
+
+Downloads the latest abbreviation lists from the JabRef repository:
+
+1. Select which sources to download (multi-select)
+2. Wait for downloads to complete
+3. Abbreviations are immediately available
+
+Use this to get the latest additions and corrections.
+
+** Statistics
+
+Command: =scimax.bibtex.journalAbbreviationStats=
+
+Shows the number of abbreviations loaded from each source.
+
+** Speed Command
+
+| Key | Command                                  | Description                    |
+|-----+------------------------------------------+--------------------------------|
+| A   | scimax.bibtex.toggleJournalAbbreviation  | Toggle journal abbreviation    |
+
+** Related Standards
+
+- *ISO 4* - International standard for abbreviating serial titles
+- *ISSN LTWA* - List of Title Word Abbreviations (56,000+ words in 65 languages)
+- *CASSI* - Chemical Abstracts Service Source Index (chemistry-specific)
+
 * ⚠️ Command Reference
 
 ** Entry Commands (require cursor in entry)
@@ -378,16 +531,24 @@ Bad keys:
 | scimax.bibtex.showCitingWorks| i         | Show citing works              |
 | scimax.bibtex.showRelatedWorks| r        | Show related works             |
 | scimax.bibtex.showReferences | R         | Show references                |
+| scimax.bibtex.toggleJournalAbbreviation | A | Toggle journal abbreviation  |
 | scimax.bibtex.help           | ?         | Show speed command help        |
 
 ** File Commands (operate on entire file)
 
-| Command                          | Description                          |
-|----------------------------------+--------------------------------------|
-| scimax.bibtex.sortEntries        | Sort all entries (by key/year/author)|
-| scimax.bibtex.applyToAllEntries  | Apply operation to all entries       |
-| scimax.bibtex.validateFile       | Validate file and show report        |
-| scimax.bibtex.showStatistics     | Show file statistics                 |
+| Command                                  | Description                           |
+|------------------------------------------+---------------------------------------|
+| scimax.bibtex.sortEntries                | Sort all entries (by key/year/author) |
+| scimax.bibtex.applyToAllEntries          | Apply operation to all entries        |
+| scimax.bibtex.validateFile               | Validate file and show report         |
+| scimax.bibtex.showStatistics             | Show file statistics                  |
+| scimax.bibtex.abbreviateAllJournals      | Abbreviate all journals in file       |
+| scimax.bibtex.expandAllJournals          | Expand all journals to full names     |
+| scimax.bibtex.searchJournalAbbreviations | Search journal abbreviation database  |
+| scimax.bibtex.updateJournalAbbreviations | Update abbreviations from online      |
+| scimax.bibtex.addJournalAbbreviation     | Add custom journal abbreviation       |
+| scimax.bibtex.manageJournalAbbreviations | Manage custom abbreviations           |
+| scimax.bibtex.journalAbbreviationStats   | Show abbreviation statistics          |
 
 * ⚠️ Related Topics
 

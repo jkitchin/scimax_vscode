@@ -20,6 +20,12 @@ import {
     reconstructAbstract,
     OpenAlexWork
 } from './openalexService';
+import {
+    getJournalAbbreviationService,
+    JournalAbbreviationService,
+    ABBREVIATION_SOURCES,
+    AbbreviationSourceKey
+} from './journalAbbreviations';
 
 /**
  * BibTeX field ordering for sort-entry command
@@ -100,6 +106,9 @@ export const BIBTEX_SPEED_COMMANDS: BibtexSpeedCommandDefinition[] = [
     { key: 'k', command: 'scimax.bibtex.killEntry', description: 'Kill (delete) entry' },
     { key: 'K', command: 'scimax.bibtex.generateKey', description: 'Generate citation key' },
     { key: 'U', command: 'scimax.bibtex.updateFromWeb', description: 'Update fields from DOI/arXiv' },
+
+    // Journal abbreviation
+    { key: 'A', command: 'scimax.bibtex.toggleJournalAbbreviation', description: 'Toggle journal abbreviation' },
 
     // Help
     { key: '?', command: 'scimax.bibtex.help', description: 'Show speed commands help' }
@@ -2771,6 +2780,419 @@ function toSentenceCase(str: string): string {
     }).join(' ');
 }
 
+// ============================================================================
+// Journal Abbreviation Commands
+// ============================================================================
+
+/**
+ * Service instance - lazy initialized
+ */
+let journalAbbrevService: JournalAbbreviationService | undefined;
+
+/**
+ * Get or initialize the journal abbreviation service
+ */
+async function getAbbrevService(context: vscode.ExtensionContext): Promise<JournalAbbreviationService> {
+    if (!journalAbbrevService) {
+        journalAbbrevService = getJournalAbbreviationService(context);
+        await journalAbbrevService.initialize();
+    }
+    return journalAbbrevService;
+}
+
+/**
+ * Toggle journal abbreviation for current entry
+ * Switches between full journal name and abbreviated form
+ */
+async function toggleJournalAbbreviation(context: vscode.ExtensionContext): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'bibtex') return;
+
+    const document = editor.document;
+    const position = editor.selection.active;
+    const entryRange = getEntryRange(document, position);
+
+    if (!entryRange) {
+        vscode.window.showWarningMessage('Cursor not in a BibTeX entry');
+        return;
+    }
+
+    const entryText = document.getText(entryRange);
+    const result = parseBibTeX(entryText);
+
+    if (result.entries.length === 0) {
+        vscode.window.showWarningMessage('Could not parse BibTeX entry');
+        return;
+    }
+
+    const entry = result.entries[0];
+    const journalField = entry.fields.journal || entry.fields.journaltitle;
+
+    if (!journalField) {
+        vscode.window.showWarningMessage('Entry has no journal field');
+        return;
+    }
+
+    const service = await getAbbrevService(context);
+    const toggleResult = service.toggle(journalField);
+
+    if (!toggleResult) {
+        // Not found - offer to add custom abbreviation
+        const action = await vscode.window.showWarningMessage(
+            `Journal "${journalField}" not found in abbreviation database`,
+            'Add Custom Abbreviation',
+            'Search Database'
+        );
+
+        if (action === 'Add Custom Abbreviation') {
+            await addCustomAbbreviationDialog(context, journalField);
+        } else if (action === 'Search Database') {
+            await searchJournalAbbreviations(context);
+        }
+        return;
+    }
+
+    // Find and replace the journal field in the entry text
+    const fieldName = entry.fields.journal ? 'journal' : 'journaltitle';
+
+    // Regex to match journal = {value} or journal = "value"
+    const journalRegex = new RegExp(
+        `(${fieldName}\\s*=\\s*)(?:\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}|"([^"]*)")`,
+        'i'
+    );
+
+    const match = entryText.match(journalRegex);
+    if (!match) {
+        vscode.window.showWarningMessage('Could not locate journal field in entry');
+        return;
+    }
+
+    const newEntryText = entryText.replace(
+        journalRegex,
+        `$1{${toggleResult.result}}`
+    );
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(entryRange, newEntryText);
+    });
+
+    const action = toggleResult.wasAbbreviated ? 'Expanded' : 'Abbreviated';
+    vscode.window.showInformationMessage(`${action}: "${toggleResult.result}"`);
+}
+
+/**
+ * Toggle journal abbreviations for all entries in the file
+ * Validates BibTeX syntax before and after changes
+ */
+async function toggleAllJournalAbbreviations(context: vscode.ExtensionContext, abbreviate: boolean): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'bibtex') return;
+
+    const document = editor.document;
+    const text = document.getText();
+    const result = parseBibTeX(text);
+
+    if (result.entries.length === 0) {
+        vscode.window.showWarningMessage('No BibTeX entries found');
+        return;
+    }
+
+    // Validate syntax before starting
+    if (result.errors.length > 0) {
+        const proceed = await vscode.window.showWarningMessage(
+            `File has ${result.errors.length} parse error(s). Proceed anyway?`,
+            'Proceed',
+            'Cancel'
+        );
+        if (proceed !== 'Proceed') return;
+    }
+
+    const service = await getAbbrevService(context);
+    let changed = 0;
+    let notFound: string[] = [];
+
+    // We need to process entries from bottom to top to maintain correct ranges
+    let newText = text;
+
+    for (const entry of result.entries.reverse()) {
+        const journalField = entry.fields.journal || entry.fields.journaltitle;
+        if (!journalField) continue;
+
+        const entryInfo = service.getEntry(journalField);
+        if (!entryInfo) {
+            notFound.push(journalField);
+            continue;
+        }
+
+        // Determine if we need to change
+        const isCurrentlyAbbreviated = service.getFullName(journalField) !== undefined;
+
+        if (abbreviate && !isCurrentlyAbbreviated) {
+            // Need to abbreviate
+            const abbrev = service.getAbbreviation(journalField);
+            if (abbrev) {
+                newText = replaceJournalInEntry(newText, entry.raw, journalField, abbrev);
+                changed++;
+            }
+        } else if (!abbreviate && isCurrentlyAbbreviated) {
+            // Need to expand
+            const full = service.getFullName(journalField);
+            if (full) {
+                newText = replaceJournalInEntry(newText, entry.raw, journalField, full);
+                changed++;
+            }
+        }
+    }
+
+    if (changed > 0) {
+        // Validate the new text before applying
+        const newResult = parseBibTeX(newText);
+        if (newResult.entries.length !== result.entries.length) {
+            vscode.window.showErrorMessage(
+                `Validation failed: modified text has ${newResult.entries.length} entries, original has ${result.entries.length}. Changes not applied.`
+            );
+            return;
+        }
+
+        const fullRange = new vscode.Range(
+            document.positionAt(0),
+            document.positionAt(text.length)
+        );
+        await editor.edit(editBuilder => {
+            editBuilder.replace(fullRange, newText);
+        });
+
+        // Verify after edit
+        const afterText = document.getText();
+        const afterResult = parseBibTeX(afterText);
+        if (afterResult.errors.length > result.errors.length) {
+            vscode.window.showWarningMessage(
+                `Warning: new parse errors detected after changes. Use Ctrl+Z to undo.`
+            );
+        }
+    }
+
+    let message = `${abbreviate ? 'Abbreviated' : 'Expanded'} ${changed} journal(s)`;
+    if (notFound.length > 0) {
+        message += `. ${notFound.length} not found in database`;
+    }
+    vscode.window.showInformationMessage(message);
+}
+
+/**
+ * Replace journal name in an entry's raw text
+ */
+function replaceJournalInEntry(fullText: string, entryRaw: string, oldJournal: string, newJournal: string): string {
+    // Find the entry in the full text
+    const entryStart = fullText.indexOf(entryRaw);
+    if (entryStart === -1) return fullText;
+
+    // Replace in the entry
+    const journalRegex = new RegExp(
+        `(journal(?:title)?\\s*=\\s*)(?:\\{${escapeRegExp(oldJournal)}\\}|"${escapeRegExp(oldJournal)}")`,
+        'i'
+    );
+    const newEntry = entryRaw.replace(journalRegex, `$1{${newJournal}}`);
+
+    return fullText.slice(0, entryStart) + newEntry + fullText.slice(entryStart + entryRaw.length);
+}
+
+/**
+ * Escape special regex characters
+ */
+function escapeRegExp(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Add a custom journal abbreviation
+ */
+async function addCustomAbbreviationDialog(context: vscode.ExtensionContext, prefillFullName?: string): Promise<void> {
+    const fullName = await vscode.window.showInputBox({
+        prompt: 'Enter full journal name',
+        value: prefillFullName,
+        placeHolder: 'e.g., Journal of the American Chemical Society'
+    });
+
+    if (!fullName) return;
+
+    const abbreviation = await vscode.window.showInputBox({
+        prompt: 'Enter abbreviation',
+        placeHolder: 'e.g., J. Am. Chem. Soc.'
+    });
+
+    if (!abbreviation) return;
+
+    const service = await getAbbrevService(context);
+    await service.addCustomAbbreviation(fullName, abbreviation);
+
+    vscode.window.showInformationMessage(
+        `Added custom abbreviation: "${fullName}" → "${abbreviation}"`
+    );
+}
+
+/**
+ * Search journal abbreviations database
+ */
+async function searchJournalAbbreviations(context: vscode.ExtensionContext): Promise<void> {
+    const service = await getAbbrevService(context);
+
+    const query = await vscode.window.showInputBox({
+        prompt: 'Search journals by name or abbreviation',
+        placeHolder: 'e.g., chemistry, J. Am.'
+    });
+
+    if (!query) return;
+
+    const results = service.search(query, 50);
+
+    if (results.length === 0) {
+        vscode.window.showInformationMessage(`No journals found matching "${query}"`);
+        return;
+    }
+
+    const items = results.map(entry => ({
+        label: entry.fullName,
+        description: entry.abbreviation,
+        detail: `Source: ${entry.source}`,
+        entry
+    }));
+
+    const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: `${results.length} results for "${query}"`,
+        matchOnDescription: true
+    });
+
+    if (!selected) return;
+
+    // Copy abbreviation to clipboard
+    await vscode.env.clipboard.writeText(selected.entry.abbreviation);
+    vscode.window.showInformationMessage(
+        `Copied "${selected.entry.abbreviation}" to clipboard`
+    );
+}
+
+/**
+ * Update journal abbreviations from online sources
+ */
+async function updateJournalAbbreviations(context: vscode.ExtensionContext): Promise<void> {
+    const service = await getAbbrevService(context);
+
+    const sources = service.getAvailableSources();
+    const items = sources.map(s => ({
+        label: s.name,
+        description: s.installed ? '$(check) Installed' : '$(cloud-download) Not installed',
+        detail: s.description,
+        picked: true,
+        key: s.key as AbbreviationSourceKey
+    }));
+
+    // Add "All sources" option at top
+    const selectedItems = await vscode.window.showQuickPick(items, {
+        placeHolder: 'Select abbreviation sources to download/update',
+        canPickMany: true
+    });
+
+    if (!selectedItems || selectedItems.length === 0) return;
+
+    await vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: 'Updating journal abbreviations',
+        cancellable: false
+    }, async (progress) => {
+        const total = selectedItems.length;
+        let current = 0;
+
+        for (const item of selectedItems) {
+            current++;
+            progress.report({
+                message: `Downloading ${item.label} (${current}/${total})...`,
+                increment: (1 / total) * 100
+            });
+
+            try {
+                await service.downloadAbbreviations(item.key);
+            } catch (error) {
+                vscode.window.showWarningMessage(`Failed to download ${item.label}: ${error}`);
+            }
+        }
+
+        // Reload abbreviations
+        await service.loadAllAbbreviations();
+    });
+
+    const stats = service.getStats();
+    vscode.window.showInformationMessage(
+        `Updated journal abbreviations. Total: ${stats.total} entries`
+    );
+}
+
+/**
+ * Show journal abbreviation statistics
+ */
+async function showJournalAbbreviationStats(context: vscode.ExtensionContext): Promise<void> {
+    const service = await getAbbrevService(context);
+    const stats = service.getStats();
+
+    const sources = Object.entries(stats.bySources)
+        .sort((a, b) => b[1] - a[1])
+        .map(([source, count]) => `${source}: ${count}`)
+        .join('\n');
+
+    vscode.window.showInformationMessage(
+        `Journal Abbreviations: ${stats.total} total entries\n\n${sources}`,
+        { modal: true }
+    );
+}
+
+/**
+ * Manage custom journal abbreviations
+ */
+async function manageCustomAbbreviations(context: vscode.ExtensionContext): Promise<void> {
+    const service = await getAbbrevService(context);
+    const customEntries = await service.getCustomAbbreviations();
+
+    const actions = [
+        { label: '$(add) Add New Abbreviation', action: 'add' },
+        ...(customEntries.length > 0 ? [
+            { label: '$(list-unordered) View/Remove Custom Abbreviations', action: 'view' }
+        ] : [])
+    ];
+
+    const selected = await vscode.window.showQuickPick(actions, {
+        placeHolder: `${customEntries.length} custom abbreviation(s)`
+    });
+
+    if (!selected) return;
+
+    if (selected.action === 'add') {
+        await addCustomAbbreviationDialog(context);
+    } else if (selected.action === 'view') {
+        const items = customEntries.map(entry => ({
+            label: entry.fullName,
+            description: entry.abbreviation,
+            entry
+        }));
+
+        const selectedEntry = await vscode.window.showQuickPick(items, {
+            placeHolder: 'Select to remove'
+        });
+
+        if (selectedEntry) {
+            const confirm = await vscode.window.showWarningMessage(
+                `Remove custom abbreviation for "${selectedEntry.entry.fullName}"?`,
+                'Remove',
+                'Cancel'
+            );
+
+            if (confirm === 'Remove') {
+                await service.removeCustomAbbreviation(selectedEntry.entry.fullName);
+                vscode.window.showInformationMessage('Custom abbreviation removed');
+            }
+        }
+    }
+}
+
 /**
  * Setup BibTeX speed command context tracking
  */
@@ -2853,6 +3275,26 @@ export function registerBibtexSpeedCommands(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand('scimax.bibtex.showStatistics', showStatistics),
         vscode.commands.registerCommand('scimax.bibtex.sortEntries', sortEntries),
         vscode.commands.registerCommand('scimax.bibtex.applyToAllEntries', applyToAllEntries)
+    );
+
+    // Journal abbreviation commands
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.bibtex.toggleJournalAbbreviation',
+            () => toggleJournalAbbreviation(context)),
+        vscode.commands.registerCommand('scimax.bibtex.abbreviateAllJournals',
+            () => toggleAllJournalAbbreviations(context, true)),
+        vscode.commands.registerCommand('scimax.bibtex.expandAllJournals',
+            () => toggleAllJournalAbbreviations(context, false)),
+        vscode.commands.registerCommand('scimax.bibtex.searchJournalAbbreviations',
+            () => searchJournalAbbreviations(context)),
+        vscode.commands.registerCommand('scimax.bibtex.updateJournalAbbreviations',
+            () => updateJournalAbbreviations(context)),
+        vscode.commands.registerCommand('scimax.bibtex.addJournalAbbreviation',
+            () => addCustomAbbreviationDialog(context)),
+        vscode.commands.registerCommand('scimax.bibtex.manageJournalAbbreviations',
+            () => manageCustomAbbreviations(context)),
+        vscode.commands.registerCommand('scimax.bibtex.journalAbbreviationStats',
+            () => showJournalAbbreviationStats(context))
     );
 
     // Register code lens provider for file-wide actions
