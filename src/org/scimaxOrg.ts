@@ -244,6 +244,475 @@ export async function uppercaseWordAndMove(): Promise<void> {
     await moveToNextWord(editor);
 }
 
+// =============================================================================
+// Non-ASCII Character Replacement
+// =============================================================================
+
+/**
+ * Comprehensive mapping of non-ASCII characters to ASCII, LaTeX, and HTML equivalents
+ */
+const NON_ASCII_MAP: Record<string, { ascii: string; latex: string; html: string }> = {
+    // Latin letters with diacritics - Acute
+    'á': { ascii: 'a', latex: "\\'a", html: '&aacute;' },
+    'Á': { ascii: 'A', latex: "\\'A", html: '&Aacute;' },
+    'é': { ascii: 'e', latex: "\\'e", html: '&eacute;' },
+    'É': { ascii: 'E', latex: "\\'E", html: '&Eacute;' },
+    'í': { ascii: 'i', latex: "\\'\\i", html: '&iacute;' },
+    'Í': { ascii: 'I', latex: "\\'I", html: '&Iacute;' },
+    'ó': { ascii: 'o', latex: "\\'o", html: '&oacute;' },
+    'Ó': { ascii: 'O', latex: "\\'O", html: '&Oacute;' },
+    'ú': { ascii: 'u', latex: "\\'u", html: '&uacute;' },
+    'Ú': { ascii: 'U', latex: "\\'U", html: '&Uacute;' },
+    'ý': { ascii: 'y', latex: "\\'y", html: '&yacute;' },
+    'Ý': { ascii: 'Y', latex: "\\'Y", html: '&Yacute;' },
+    'ć': { ascii: 'c', latex: "\\'c", html: '&#263;' },
+    'Ć': { ascii: 'C', latex: "\\'C", html: '&#262;' },
+    'ń': { ascii: 'n', latex: "\\'n", html: '&#324;' },
+    'Ń': { ascii: 'N', latex: "\\'N", html: '&#323;' },
+    'ś': { ascii: 's', latex: "\\'s", html: '&#347;' },
+    'Ś': { ascii: 'S', latex: "\\'S", html: '&#346;' },
+    'ź': { ascii: 'z', latex: "\\'z", html: '&#378;' },
+    'Ź': { ascii: 'Z', latex: "\\'Z", html: '&#377;' },
+
+    // Grave
+    'à': { ascii: 'a', latex: '\\`a', html: '&agrave;' },
+    'À': { ascii: 'A', latex: '\\`A', html: '&Agrave;' },
+    'è': { ascii: 'e', latex: '\\`e', html: '&egrave;' },
+    'È': { ascii: 'E', latex: '\\`E', html: '&Egrave;' },
+    'ì': { ascii: 'i', latex: '\\`\\i', html: '&igrave;' },
+    'Ì': { ascii: 'I', latex: '\\`I', html: '&Igrave;' },
+    'ò': { ascii: 'o', latex: '\\`o', html: '&ograve;' },
+    'Ò': { ascii: 'O', latex: '\\`O', html: '&Ograve;' },
+    'ù': { ascii: 'u', latex: '\\`u', html: '&ugrave;' },
+    'Ù': { ascii: 'U', latex: '\\`U', html: '&Ugrave;' },
+
+    // Circumflex
+    'â': { ascii: 'a', latex: '\\^a', html: '&acirc;' },
+    'Â': { ascii: 'A', latex: '\\^A', html: '&Acirc;' },
+    'ê': { ascii: 'e', latex: '\\^e', html: '&ecirc;' },
+    'Ê': { ascii: 'E', latex: '\\^E', html: '&Ecirc;' },
+    'î': { ascii: 'i', latex: '\\^\\i', html: '&icirc;' },
+    'Î': { ascii: 'I', latex: '\\^I', html: '&Icirc;' },
+    'ô': { ascii: 'o', latex: '\\^o', html: '&ocirc;' },
+    'Ô': { ascii: 'O', latex: '\\^O', html: '&Ocirc;' },
+    'û': { ascii: 'u', latex: '\\^u', html: '&ucirc;' },
+    'Û': { ascii: 'U', latex: '\\^U', html: '&Ucirc;' },
+    'ŵ': { ascii: 'w', latex: '\\^w', html: '&#373;' },
+    'Ŵ': { ascii: 'W', latex: '\\^W', html: '&#372;' },
+    'ŷ': { ascii: 'y', latex: '\\^y', html: '&#375;' },
+    'Ŷ': { ascii: 'Y', latex: '\\^Y', html: '&#374;' },
+
+    // Umlaut/Diaeresis
+    'ä': { ascii: 'a', latex: '\\"a', html: '&auml;' },
+    'Ä': { ascii: 'A', latex: '\\"A', html: '&Auml;' },
+    'ë': { ascii: 'e', latex: '\\"e', html: '&euml;' },
+    'Ë': { ascii: 'E', latex: '\\"E', html: '&Euml;' },
+    'ï': { ascii: 'i', latex: '\\"\\i', html: '&iuml;' },
+    'Ï': { ascii: 'I', latex: '\\"I', html: '&Iuml;' },
+    'ö': { ascii: 'o', latex: '\\"o', html: '&ouml;' },
+    'Ö': { ascii: 'O', latex: '\\"O', html: '&Ouml;' },
+    'ü': { ascii: 'u', latex: '\\"u', html: '&uuml;' },
+    'Ü': { ascii: 'U', latex: '\\"U', html: '&Uuml;' },
+    'ÿ': { ascii: 'y', latex: '\\"y', html: '&yuml;' },
+    'Ÿ': { ascii: 'Y', latex: '\\"Y', html: '&Yuml;' },
+
+    // Tilde
+    'ã': { ascii: 'a', latex: '\\~a', html: '&atilde;' },
+    'Ã': { ascii: 'A', latex: '\\~A', html: '&Atilde;' },
+    'ñ': { ascii: 'n', latex: '\\~n', html: '&ntilde;' },
+    'Ñ': { ascii: 'N', latex: '\\~N', html: '&Ntilde;' },
+    'õ': { ascii: 'o', latex: '\\~o', html: '&otilde;' },
+    'Õ': { ascii: 'O', latex: '\\~O', html: '&Otilde;' },
+
+    // Cedilla
+    'ç': { ascii: 'c', latex: '\\c{c}', html: '&ccedil;' },
+    'Ç': { ascii: 'C', latex: '\\c{C}', html: '&Ccedil;' },
+    'ş': { ascii: 's', latex: '\\c{s}', html: '&#351;' },
+    'Ş': { ascii: 'S', latex: '\\c{S}', html: '&#350;' },
+    'ţ': { ascii: 't', latex: '\\c{t}', html: '&#355;' },
+    'Ţ': { ascii: 'T', latex: '\\c{T}', html: '&#354;' },
+
+    // Ring
+    'å': { ascii: 'a', latex: '\\aa{}', html: '&aring;' },
+    'Å': { ascii: 'A', latex: '\\AA{}', html: '&Aring;' },
+    'ů': { ascii: 'u', latex: '\\r{u}', html: '&#367;' },
+    'Ů': { ascii: 'U', latex: '\\r{U}', html: '&#366;' },
+
+    // Stroke/Slash
+    'ø': { ascii: 'o', latex: '\\o{}', html: '&oslash;' },
+    'Ø': { ascii: 'O', latex: '\\O{}', html: '&Oslash;' },
+    'ł': { ascii: 'l', latex: '\\l{}', html: '&#322;' },
+    'Ł': { ascii: 'L', latex: '\\L{}', html: '&#321;' },
+    'đ': { ascii: 'd', latex: '\\dj{}', html: '&#273;' },
+    'Đ': { ascii: 'D', latex: '\\DJ{}', html: '&#272;' },
+
+    // Caron/Háček
+    'č': { ascii: 'c', latex: '\\v{c}', html: '&#269;' },
+    'Č': { ascii: 'C', latex: '\\v{C}', html: '&#268;' },
+    'š': { ascii: 's', latex: '\\v{s}', html: '&#353;' },
+    'Š': { ascii: 'S', latex: '\\v{S}', html: '&#352;' },
+    'ž': { ascii: 'z', latex: '\\v{z}', html: '&#382;' },
+    'Ž': { ascii: 'Z', latex: '\\v{Z}', html: '&#381;' },
+    'ř': { ascii: 'r', latex: '\\v{r}', html: '&#345;' },
+    'Ř': { ascii: 'R', latex: '\\v{R}', html: '&#344;' },
+    'ě': { ascii: 'e', latex: '\\v{e}', html: '&#283;' },
+    'Ě': { ascii: 'E', latex: '\\v{E}', html: '&#282;' },
+    'ň': { ascii: 'n', latex: '\\v{n}', html: '&#328;' },
+    'Ň': { ascii: 'N', latex: '\\v{N}', html: '&#327;' },
+    'ť': { ascii: 't', latex: '\\v{t}', html: '&#357;' },
+    'Ť': { ascii: 'T', latex: '\\v{T}', html: '&#356;' },
+    'ď': { ascii: 'd', latex: '\\v{d}', html: '&#271;' },
+    'Ď': { ascii: 'D', latex: '\\v{D}', html: '&#270;' },
+
+    // Macron
+    'ā': { ascii: 'a', latex: '\\={a}', html: '&#257;' },
+    'Ā': { ascii: 'A', latex: '\\={A}', html: '&#256;' },
+    'ē': { ascii: 'e', latex: '\\={e}', html: '&#275;' },
+    'Ē': { ascii: 'E', latex: '\\={E}', html: '&#274;' },
+    'ī': { ascii: 'i', latex: '\\={\\i}', html: '&#299;' },
+    'Ī': { ascii: 'I', latex: '\\={I}', html: '&#298;' },
+    'ō': { ascii: 'o', latex: '\\={o}', html: '&#333;' },
+    'Ō': { ascii: 'O', latex: '\\={O}', html: '&#332;' },
+    'ū': { ascii: 'u', latex: '\\={u}', html: '&#363;' },
+    'Ū': { ascii: 'U', latex: '\\={U}', html: '&#362;' },
+
+    // Breve
+    'ă': { ascii: 'a', latex: '\\u{a}', html: '&#259;' },
+    'Ă': { ascii: 'A', latex: '\\u{A}', html: '&#258;' },
+    'ğ': { ascii: 'g', latex: '\\u{g}', html: '&#287;' },
+    'Ğ': { ascii: 'G', latex: '\\u{G}', html: '&#286;' },
+    'ŭ': { ascii: 'u', latex: '\\u{u}', html: '&#365;' },
+    'Ŭ': { ascii: 'U', latex: '\\u{U}', html: '&#364;' },
+
+    // Ogonek
+    'ą': { ascii: 'a', latex: '\\k{a}', html: '&#261;' },
+    'Ą': { ascii: 'A', latex: '\\k{A}', html: '&#260;' },
+    'ę': { ascii: 'e', latex: '\\k{e}', html: '&#281;' },
+    'Ę': { ascii: 'E', latex: '\\k{E}', html: '&#280;' },
+
+    // Dot above
+    'ė': { ascii: 'e', latex: '\\.{e}', html: '&#279;' },
+    'Ė': { ascii: 'E', latex: '\\.{E}', html: '&#278;' },
+    'ż': { ascii: 'z', latex: '\\.{z}', html: '&#380;' },
+    'Ż': { ascii: 'Z', latex: '\\.{Z}', html: '&#379;' },
+    'İ': { ascii: 'I', latex: '\\.{I}', html: '&#304;' },
+
+    // Dotless
+    'ı': { ascii: 'i', latex: '\\i{}', html: '&#305;' },
+
+    // Special letters
+    'æ': { ascii: 'ae', latex: '\\ae{}', html: '&aelig;' },
+    'Æ': { ascii: 'AE', latex: '\\AE{}', html: '&AElig;' },
+    'œ': { ascii: 'oe', latex: '\\oe{}', html: '&oelig;' },
+    'Œ': { ascii: 'OE', latex: '\\OE{}', html: '&OElig;' },
+    'ß': { ascii: 'ss', latex: '\\ss{}', html: '&szlig;' },
+    'ð': { ascii: 'd', latex: '\\dh{}', html: '&eth;' },
+    'Ð': { ascii: 'D', latex: '\\DH{}', html: '&ETH;' },
+    'þ': { ascii: 'th', latex: '\\th{}', html: '&thorn;' },
+    'Þ': { ascii: 'Th', latex: '\\TH{}', html: '&THORN;' },
+
+    // Greek letters (common in scientific text)
+    'α': { ascii: 'alpha', latex: '$\\alpha$', html: '&alpha;' },
+    'β': { ascii: 'beta', latex: '$\\beta$', html: '&beta;' },
+    'γ': { ascii: 'gamma', latex: '$\\gamma$', html: '&gamma;' },
+    'δ': { ascii: 'delta', latex: '$\\delta$', html: '&delta;' },
+    'ε': { ascii: 'epsilon', latex: '$\\epsilon$', html: '&epsilon;' },
+    'ζ': { ascii: 'zeta', latex: '$\\zeta$', html: '&zeta;' },
+    'η': { ascii: 'eta', latex: '$\\eta$', html: '&eta;' },
+    'θ': { ascii: 'theta', latex: '$\\theta$', html: '&theta;' },
+    'ι': { ascii: 'iota', latex: '$\\iota$', html: '&iota;' },
+    'κ': { ascii: 'kappa', latex: '$\\kappa$', html: '&kappa;' },
+    'λ': { ascii: 'lambda', latex: '$\\lambda$', html: '&lambda;' },
+    'μ': { ascii: 'mu', latex: '$\\mu$', html: '&mu;' },
+    'ν': { ascii: 'nu', latex: '$\\nu$', html: '&nu;' },
+    'ξ': { ascii: 'xi', latex: '$\\xi$', html: '&xi;' },
+    'π': { ascii: 'pi', latex: '$\\pi$', html: '&pi;' },
+    'ρ': { ascii: 'rho', latex: '$\\rho$', html: '&rho;' },
+    'σ': { ascii: 'sigma', latex: '$\\sigma$', html: '&sigma;' },
+    'τ': { ascii: 'tau', latex: '$\\tau$', html: '&tau;' },
+    'υ': { ascii: 'upsilon', latex: '$\\upsilon$', html: '&upsilon;' },
+    'φ': { ascii: 'phi', latex: '$\\phi$', html: '&phi;' },
+    'χ': { ascii: 'chi', latex: '$\\chi$', html: '&chi;' },
+    'ψ': { ascii: 'psi', latex: '$\\psi$', html: '&psi;' },
+    'ω': { ascii: 'omega', latex: '$\\omega$', html: '&omega;' },
+    'Γ': { ascii: 'Gamma', latex: '$\\Gamma$', html: '&Gamma;' },
+    'Δ': { ascii: 'Delta', latex: '$\\Delta$', html: '&Delta;' },
+    'Θ': { ascii: 'Theta', latex: '$\\Theta$', html: '&Theta;' },
+    'Λ': { ascii: 'Lambda', latex: '$\\Lambda$', html: '&Lambda;' },
+    'Ξ': { ascii: 'Xi', latex: '$\\Xi$', html: '&Xi;' },
+    'Π': { ascii: 'Pi', latex: '$\\Pi$', html: '&Pi;' },
+    'Σ': { ascii: 'Sigma', latex: '$\\Sigma$', html: '&Sigma;' },
+    'Φ': { ascii: 'Phi', latex: '$\\Phi$', html: '&Phi;' },
+    'Ψ': { ascii: 'Psi', latex: '$\\Psi$', html: '&Psi;' },
+    'Ω': { ascii: 'Omega', latex: '$\\Omega$', html: '&Omega;' },
+
+    // Punctuation and symbols
+    '–': { ascii: '-', latex: '--', html: '&ndash;' },
+    '—': { ascii: '--', latex: '---', html: '&mdash;' },
+    '\u2018': { ascii: "'", latex: '`', html: '&lsquo;' },  // '
+    '\u2019': { ascii: "'", latex: "'", html: '&rsquo;' },  // '
+    '\u201C': { ascii: '"', latex: '``', html: '&ldquo;' }, // "
+    '\u201D': { ascii: '"', latex: "''", html: '&rdquo;' }, // "
+    '\u201E': { ascii: '"', latex: ',,', html: '&bdquo;' }, // „
+    '«': { ascii: '<<', latex: '\\guillemotleft{}', html: '&laquo;' },
+    '»': { ascii: '>>', latex: '\\guillemotright{}', html: '&raquo;' },
+    '‹': { ascii: '<', latex: '\\guilsinglleft{}', html: '&lsaquo;' },
+    '›': { ascii: '>', latex: '\\guilsinglright{}', html: '&rsaquo;' },
+    '…': { ascii: '...', latex: '\\ldots{}', html: '&hellip;' },
+    '·': { ascii: '.', latex: '\\cdot{}', html: '&middot;' },
+    '•': { ascii: '*', latex: '\\textbullet{}', html: '&bull;' },
+    '†': { ascii: '+', latex: '\\dag{}', html: '&dagger;' },
+    '‡': { ascii: '++', latex: '\\ddag{}', html: '&Dagger;' },
+    '§': { ascii: 'S', latex: '\\S{}', html: '&sect;' },
+    '¶': { ascii: 'P', latex: '\\P{}', html: '&para;' },
+    '©': { ascii: '(c)', latex: '\\copyright{}', html: '&copy;' },
+    '®': { ascii: '(R)', latex: '\\textregistered{}', html: '&reg;' },
+    '™': { ascii: '(TM)', latex: '\\texttrademark{}', html: '&trade;' },
+    '°': { ascii: 'deg', latex: '\\textdegree{}', html: '&deg;' },
+    '′': { ascii: "'", latex: "'", html: '&prime;' },
+    '″': { ascii: "''", latex: "''", html: '&Prime;' },
+    '±': { ascii: '+/-', latex: '$\\pm$', html: '&plusmn;' },
+    '×': { ascii: 'x', latex: '$\\times$', html: '&times;' },
+    '÷': { ascii: '/', latex: '$\\div$', html: '&divide;' },
+    '≤': { ascii: '<=', latex: '$\\leq$', html: '&le;' },
+    '≥': { ascii: '>=', latex: '$\\geq$', html: '&ge;' },
+    '≠': { ascii: '!=', latex: '$\\neq$', html: '&ne;' },
+    '≈': { ascii: '~=', latex: '$\\approx$', html: '&asymp;' },
+    '∞': { ascii: 'inf', latex: '$\\infty$', html: '&infin;' },
+    '√': { ascii: 'sqrt', latex: '$\\sqrt{}$', html: '&radic;' },
+    '∑': { ascii: 'sum', latex: '$\\sum$', html: '&sum;' },
+    '∏': { ascii: 'prod', latex: '$\\prod$', html: '&prod;' },
+    '∫': { ascii: 'int', latex: '$\\int$', html: '&int;' },
+    '∂': { ascii: 'd', latex: '$\\partial$', html: '&part;' },
+    '∇': { ascii: 'nabla', latex: '$\\nabla$', html: '&nabla;' },
+    '∈': { ascii: 'in', latex: '$\\in$', html: '&isin;' },
+    '∉': { ascii: 'notin', latex: '$\\notin$', html: '&notin;' },
+    '⊂': { ascii: 'subset', latex: '$\\subset$', html: '&sub;' },
+    '⊃': { ascii: 'supset', latex: '$\\supset$', html: '&sup;' },
+    '∪': { ascii: 'union', latex: '$\\cup$', html: '&cup;' },
+    '∩': { ascii: 'intersect', latex: '$\\cap$', html: '&cap;' },
+    '∧': { ascii: 'and', latex: '$\\land$', html: '&and;' },
+    '∨': { ascii: 'or', latex: '$\\lor$', html: '&or;' },
+    '¬': { ascii: 'not', latex: '$\\neg$', html: '&not;' },
+    '∀': { ascii: 'forall', latex: '$\\forall$', html: '&forall;' },
+    '∃': { ascii: 'exists', latex: '$\\exists$', html: '&exist;' },
+    '∅': { ascii: 'empty', latex: '$\\emptyset$', html: '&empty;' },
+    '→': { ascii: '->', latex: '$\\rightarrow$', html: '&rarr;' },
+    '←': { ascii: '<-', latex: '$\\leftarrow$', html: '&larr;' },
+    '↔': { ascii: '<->', latex: '$\\leftrightarrow$', html: '&harr;' },
+    '⇒': { ascii: '=>', latex: '$\\Rightarrow$', html: '&rArr;' },
+    '⇐': { ascii: '<=', latex: '$\\Leftarrow$', html: '&lArr;' },
+    '⇔': { ascii: '<=>', latex: '$\\Leftrightarrow$', html: '&hArr;' },
+
+    // Currency
+    '€': { ascii: 'EUR', latex: '\\euro{}', html: '&euro;' },
+    '£': { ascii: 'GBP', latex: '\\pounds{}', html: '&pound;' },
+    '¥': { ascii: 'JPY', latex: '\\textyen{}', html: '&yen;' },
+    '¢': { ascii: 'c', latex: '\\cent{}', html: '&cent;' },
+
+    // Fractions
+    '½': { ascii: '1/2', latex: '$\\frac{1}{2}$', html: '&frac12;' },
+    '¼': { ascii: '1/4', latex: '$\\frac{1}{4}$', html: '&frac14;' },
+    '¾': { ascii: '3/4', latex: '$\\frac{3}{4}$', html: '&frac34;' },
+    '⅓': { ascii: '1/3', latex: '$\\frac{1}{3}$', html: '&#8531;' },
+    '⅔': { ascii: '2/3', latex: '$\\frac{2}{3}$', html: '&#8532;' },
+
+    // Superscripts and subscripts
+    '¹': { ascii: '1', latex: '$^1$', html: '&sup1;' },
+    '²': { ascii: '2', latex: '$^2$', html: '&sup2;' },
+    '³': { ascii: '3', latex: '$^3$', html: '&sup3;' },
+    '⁰': { ascii: '0', latex: '$^0$', html: '&#8304;' },
+    '⁴': { ascii: '4', latex: '$^4$', html: '&#8308;' },
+    '⁵': { ascii: '5', latex: '$^5$', html: '&#8309;' },
+    '⁶': { ascii: '6', latex: '$^6$', html: '&#8310;' },
+    '⁷': { ascii: '7', latex: '$^7$', html: '&#8311;' },
+    '⁸': { ascii: '8', latex: '$^8$', html: '&#8312;' },
+    '⁹': { ascii: '9', latex: '$^9$', html: '&#8313;' },
+    '⁺': { ascii: '+', latex: '$^+$', html: '&#8314;' },
+    '⁻': { ascii: '-', latex: '$^-$', html: '&#8315;' },
+    '₀': { ascii: '0', latex: '$_0$', html: '&#8320;' },
+    '₁': { ascii: '1', latex: '$_1$', html: '&#8321;' },
+    '₂': { ascii: '2', latex: '$_2$', html: '&#8322;' },
+    '₃': { ascii: '3', latex: '$_3$', html: '&#8323;' },
+    '₄': { ascii: '4', latex: '$_4$', html: '&#8324;' },
+    '₅': { ascii: '5', latex: '$_5$', html: '&#8325;' },
+    '₆': { ascii: '6', latex: '$_6$', html: '&#8326;' },
+    '₇': { ascii: '7', latex: '$_7$', html: '&#8327;' },
+    '₈': { ascii: '8', latex: '$_8$', html: '&#8328;' },
+    '₉': { ascii: '9', latex: '$_9$', html: '&#8329;' },
+
+    // Misc
+    'ﬁ': { ascii: 'fi', latex: 'fi', html: 'fi' },
+    'ﬂ': { ascii: 'fl', latex: 'fl', html: 'fl' },
+    'ﬀ': { ascii: 'ff', latex: 'ff', html: 'ff' },
+    'ﬃ': { ascii: 'ffi', latex: 'ffi', html: 'ffi' },
+    'ﬄ': { ascii: 'ffl', latex: 'ffl', html: 'ffl' },
+    '\u00A0': { ascii: ' ', latex: '~', html: '&nbsp;' }, // Non-breaking space
+    '\u2009': { ascii: ' ', latex: '\\,', html: '&thinsp;' }, // Thin space
+    '\u2003': { ascii: '  ', latex: '\\quad{}', html: '&emsp;' }, // Em space
+    '\u2002': { ascii: ' ', latex: '\\enspace{}', html: '&ensp;' }, // En space
+};
+
+// Session storage for user-defined replacements
+const userDefinedReplacements: Record<string, { ascii: string; latex: string; html: string }> = {};
+
+/**
+ * Find all non-ASCII characters in text
+ */
+function findNonAsciiChars(text: string): { char: string; positions: number[] }[] {
+    const nonAscii: Map<string, number[]> = new Map();
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        if (char.charCodeAt(0) > 127) {
+            const positions = nonAscii.get(char) || [];
+            positions.push(i);
+            nonAscii.set(char, positions);
+        }
+    }
+
+    return Array.from(nonAscii.entries()).map(([char, positions]) => ({ char, positions }));
+}
+
+/**
+ * Get replacement for a character based on context
+ */
+function getReplacementForContext(
+    char: string,
+    context: 'ascii' | 'latex' | 'html'
+): string | undefined {
+    // Check user-defined first
+    if (userDefinedReplacements[char]) {
+        return userDefinedReplacements[char][context];
+    }
+    // Then check built-in map
+    if (NON_ASCII_MAP[char]) {
+        return NON_ASCII_MAP[char][context];
+    }
+    return undefined;
+}
+
+/**
+ * Replace non-ASCII characters in the current document
+ * Detects context (LaTeX, HTML, or plain text) and uses appropriate replacements
+ */
+export async function replaceNonAsciiChars(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const text = document.getText();
+
+    // Detect context based on language ID
+    let context: 'ascii' | 'latex' | 'html' = 'ascii';
+    if (document.languageId === 'latex' || document.languageId === 'tex') {
+        context = 'latex';
+    } else if (document.languageId === 'html' || document.languageId === 'xml') {
+        context = 'html';
+    }
+
+    // Find all non-ASCII characters
+    const nonAsciiChars = findNonAsciiChars(text);
+
+    if (nonAsciiChars.length === 0) {
+        vscode.window.showInformationMessage('No non-ASCII characters found');
+        return;
+    }
+
+    // Categorize characters
+    const knownChars: { char: string; replacement: string; positions: number[] }[] = [];
+    const unknownChars: { char: string; positions: number[] }[] = [];
+
+    for (const { char, positions } of nonAsciiChars) {
+        const replacement = getReplacementForContext(char, context);
+        if (replacement !== undefined) {
+            knownChars.push({ char, replacement, positions });
+        } else {
+            unknownChars.push({ char, positions });
+        }
+    }
+
+    // Handle unknown characters first - ask user what to do
+    for (const { char, positions } of unknownChars) {
+        const charCode = char.charCodeAt(0);
+        const charDisplay = `'${char}' (U+${charCode.toString(16).toUpperCase().padStart(4, '0')})`;
+
+        const action = await vscode.window.showQuickPick([
+            { label: 'Enter replacement', description: 'Provide a custom replacement' },
+            { label: 'Ignore', description: 'Skip this character' },
+            { label: 'Delete', description: 'Remove this character' },
+            { label: 'Cancel', description: 'Stop replacement process' }
+        ], {
+            placeHolder: `Unknown character ${charDisplay} found ${positions.length} time(s). What to do?`
+        });
+
+        if (!action || action.label === 'Cancel') {
+            return;
+        }
+
+        if (action.label === 'Enter replacement') {
+            const replacement = await vscode.window.showInputBox({
+                prompt: `Enter replacement for ${charDisplay}`,
+                placeHolder: 'Replacement text'
+            });
+
+            if (replacement !== undefined) {
+                // Store for this session
+                userDefinedReplacements[char] = {
+                    ascii: replacement,
+                    latex: replacement,
+                    html: replacement
+                };
+                knownChars.push({ char, replacement, positions });
+            }
+        } else if (action.label === 'Delete') {
+            knownChars.push({ char, replacement: '', positions });
+        }
+        // 'Ignore' does nothing - character stays
+    }
+
+    // Perform replacements
+    if (knownChars.length === 0) {
+        vscode.window.showInformationMessage('No replacements to make');
+        return;
+    }
+
+    // Build replacement map
+    const replacementMap = new Map<string, string>();
+    for (const { char, replacement } of knownChars) {
+        replacementMap.set(char, replacement);
+    }
+
+    // Apply replacements
+    let newText = text;
+    let totalReplacements = 0;
+
+    for (const [char, replacement] of replacementMap) {
+        const regex = new RegExp(char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        const matches = newText.match(regex);
+        if (matches) {
+            totalReplacements += matches.length;
+            newText = newText.replace(regex, replacement);
+        }
+    }
+
+    if (newText !== text) {
+        const fullRange = new vscode.Range(
+            document.positionAt(0),
+            document.positionAt(text.length)
+        );
+
+        await editor.edit(editBuilder => {
+            editBuilder.replace(fullRange, newText);
+        });
+
+        const contextName = context === 'latex' ? 'LaTeX' : context === 'html' ? 'HTML' : 'ASCII';
+        vscode.window.showInformationMessage(
+            `Replaced ${totalReplacements} non-ASCII character(s) with ${contextName} equivalents`
+        );
+    }
+}
+
 /**
  * Make text an Emacs-style command (`command')
  */
@@ -2640,6 +3109,8 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
             if (lineNum >= 0 && lineNum < doc.lineCount) {
                 const pos = new vscode.Position(lineNum, 0);
                 editor.selection = new vscode.Selection(pos, pos);
+                // Unfold at target line so content is visible
+                await vscode.commands.executeCommand('editor.unfold', { selectionLines: [lineNum] });
                 editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
             }
         } else {
@@ -2672,6 +3143,8 @@ async function searchAndJumpToHeading(document: vscode.TextDocument, headingTitl
                 if (editor && editor.document === document) {
                     const pos = new vscode.Position(i, 0);
                     editor.selection = new vscode.Selection(pos, pos);
+                    // Unfold at target line so content is visible
+                    await vscode.commands.executeCommand('editor.unfold', { selectionLines: [i] });
                     editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
                     return;
                 }
@@ -2695,6 +3168,8 @@ async function searchAndJumpToCustomId(document: vscode.TextDocument, customId: 
             if (editor && editor.document === document) {
                 const pos = new vscode.Position(i, 0);
                 editor.selection = new vscode.Selection(pos, pos);
+                // Unfold at target line so content is visible
+                await vscode.commands.executeCommand('editor.unfold', { selectionLines: [i] });
                 editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
                 return;
             }
@@ -3276,6 +3751,11 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         vscode.commands.registerCommand('scimax.capitalizeWord', capitalizeWordAndMove),
         vscode.commands.registerCommand('scimax.lowercaseWord', lowercaseWordAndMove),
         vscode.commands.registerCommand('scimax.uppercaseWord', uppercaseWordAndMove)
+    );
+
+    // Non-ASCII character replacement
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.replaceNonAscii', replaceNonAsciiChars)
     );
 
     // File navigation (Emacs M-< and M->)

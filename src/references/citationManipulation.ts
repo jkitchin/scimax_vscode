@@ -279,10 +279,18 @@ export function extractYear(key: string, getEntry?: (key: string) => any): numbe
     }
 
     // Try to extract year from key name
-    // Look for 4-digit year pattern (1900-2099)
-    const yearMatch = key.match(/\b(19|20)\d{2}\b/);
+    // Look for 4-digit year pattern (1900-2099) with various delimiters
+    // Handles: key-2009-title, key_2009_title, key2009, 2009-key
+    const yearMatch = key.match(/[-_]?(19|20)\d{2}[-_]?/);
     if (yearMatch) {
-        return parseInt(yearMatch[0]);
+        const yearStr = yearMatch[0].replace(/[-_]/g, '');
+        return parseInt(yearStr);
+    }
+
+    // Also try standalone 4-digit year
+    const standaloneYear = key.match(/(19|20)\d{2}/);
+    if (standaloneYear) {
+        return parseInt(standaloneYear[0]);
     }
 
     // No year found - return high value to sort last

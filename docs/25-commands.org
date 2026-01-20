@@ -495,6 +495,9 @@ Speed commands for BibTeX files, active at column 0 of @entry lines.
 | [[cmd:scimax.bibtex.titleCase]]    | Title Case Title     | t         |
 | [[cmd:scimax.bibtex.sentenceCase]] | Sentence Case Title  | S         |
 | [[cmd:scimax.bibtex.cleanEntry]]   | Clean/Format Entry   | c         |
+| [[cmd:scimax.bibtex.wrapBraces]]   | Wrap in Braces       | Cmd+Shift+] |
+
+The =wrapBraces= command wraps the selected text or word at cursor in curly braces ={}= for case protection (e.g., ={NASA}=, ={Python}=).
 
 *** ⚠️ Access
 

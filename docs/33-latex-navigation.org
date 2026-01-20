@@ -131,7 +131,8 @@ Jump to the containing (parent) section:
 \subsubsection{Sampling}     % <- From here
 #+END_SRC
 
-** 👀 Jump to Section
+** ✅ Jump to Section
+CLOSED: [2026-01-19 Mon 18:21]
 
 The =jumpToSection= command (C-c C-j or C-c j) opens a quick pick showing all sections with:
 
@@ -501,7 +502,8 @@ Supported PDF viewers:
 
 Configure via =scimax.latex.pdfViewer= setting.
 
-** ⚠️ Built-in PDF Viewer Panel
+** ✅ Built-in PDF Viewer Panel
+CLOSED: [2026-01-19 Mon 18:26]
 
 For an Overleaf-like experience, use the built-in PDF viewer panel (=C-c v=):
 
@@ -519,20 +521,27 @@ This is ideal for side-by-side editing without leaving VS Code.
 | Built-in panel   | C-c v   | PDF in VS Code panel (Overleaf-like) |
 | External viewer  | C-c C-v | Opens in Skim/Zathura/SumatraPDF     |
 
-*** Bidirectional Sync
+*** 👀 Bidirectional Sync
 
 The built-in PDF viewer supports precise bidirectional synchronization:
 
-*Forward sync (TeX → PDF):* Double-click a word in your LaTeX source to jump
-to that location in the PDF. The word is highlighted with a yellow flash.
+*Forward sync (TeX → PDF):*
+- Double-click a word in your LaTeX source to jump to that location in the PDF
+- Or use =C-c C-s= to sync the current cursor position to the PDF
+- The word is highlighted with a yellow flash
 
 *Inverse sync (PDF → TeX):* Double-click a word in the PDF viewer to jump
 to the corresponding line in your LaTeX source.
 
+| Key     | Action                              |
+|---------+-------------------------------------|
+| C-c C-s | Sync cursor position to PDF panel   |
+| C-c g   | SyncTeX forward to external viewer  |
+
 The forward sync uses SyncTeX coordinates combined with text-layer search
 to find the exact word you clicked, even if SyncTeX coordinates are imprecise.
 
-*** Debug Popup Setting
+*** 👀 Debug Popup Setting
 
 To see SyncTeX coordinates and debug information when syncing:
 
@@ -545,7 +554,22 @@ To see SyncTeX coordinates and debug information when syncing:
 Default is =false=. When enabled, shows a popup with page, coordinates,
 source line/column, and search text for troubleshooting sync issues.
 
-** ⚠️ Insert Commands
+*** 👀 Auto-Compile on Save
+
+When the PDF panel is open, saving a LaTeX file automatically recompiles and refreshes the PDF. This provides an Overleaf-like live preview experience.
+
+To disable auto-compile on save:
+
+#+BEGIN_SRC json
+{
+  "scimax.latex.autoCompileOnSave": false
+}
+#+END_SRC
+
+Default is =true=.
+
+** ✅ Insert Commands
+CLOSED: [2026-01-19 Mon 18:26]
 
 Quick insertion of common LaTeX elements:
 
@@ -557,7 +581,8 @@ Quick insertion of common LaTeX elements:
 
 These commands insert snippets with tab stops for easy navigation.
 
-* ⚠️ Go to Definition
+* ✅ Go to Definition
+CLOSED: [2026-01-19 Mon 18:26]
 
 Jump to the definition of labels, citations, commands, and files:
 

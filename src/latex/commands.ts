@@ -244,6 +244,51 @@ export function registerLatexProviders(context: vscode.ExtensionContext): void {
         })
     );
 
+    // Auto-compile on save when PDF panel is open
+    context.subscriptions.push(
+        vscode.workspace.onDidSaveTextDocument(async (doc) => {
+            if (doc.languageId !== 'latex') {
+                return;
+            }
+
+            // Check if auto-compile on save is enabled
+            const config = vscode.workspace.getConfiguration('scimax.latex');
+            if (!config.get<boolean>('autoCompileOnSave', true)) {
+                return;
+            }
+
+            // Only auto-compile if the PDF panel is open
+            if (!PdfViewerPanel.currentPanel) {
+                return;
+            }
+
+            // Check if the saved file is related to the current PDF
+            const pdfPath = PdfViewerPanel.currentPanel.currentPdfPath;
+            if (!pdfPath) {
+                return;
+            }
+
+            const texPath = doc.uri.fsPath;
+            const expectedPdf = texPath.replace(/\.tex$/, '.pdf');
+
+            // Only compile if this tex file corresponds to the open PDF
+            // or if it's in the same directory (could be an included file)
+            const isSameFile = pdfPath === expectedPdf;
+            const isSameDir = path.dirname(pdfPath) === path.dirname(texPath);
+
+            if (isSameFile || isSameDir) {
+                console.log('Auto-compiling LaTeX on save...');
+                await vscode.commands.executeCommand('scimax.latex.compile');
+                // Refresh the PDF after compilation
+                setTimeout(() => {
+                    if (PdfViewerPanel.currentPanel) {
+                        PdfViewerPanel.currentPanel.refresh();
+                    }
+                }, 1000);
+            }
+        })
+    );
+
     // Cleanup on deactivate
     context.subscriptions.push({
         dispose: async () => {
@@ -933,13 +978,38 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             const column = editor.selection.active.character + 1;
             const texFile = editor.document.uri.fsPath;
 
+            // Get the source text around the cursor for debug info
+            const lineText = editor.document.lineAt(editor.selection.active.line).text;
+            const start = Math.max(0, column - 30);
+            const end = Math.min(lineText.length, column + 30);
+            let sourceText = lineText.substring(start, end).trim();
+            if (start > 0) sourceText = '...' + sourceText;
+            if (end < lineText.length) sourceText = sourceText + '...';
+
+            // Get word at cursor for precise highlighting
+            let searchWord = '';
+            const wordRange = editor.document.getWordRangeAtPosition(editor.selection.active);
+            if (wordRange) {
+                searchWord = editor.document.getText(wordRange);
+                // Clean up the word - remove LaTeX commands/escapes
+                searchWord = searchWord.replace(/\\[a-zA-Z]+\{?/g, '').replace(/[{}]/g, '').trim();
+            }
+
             console.log(`SyncTeX forward: ${texFile}:${line}:${column} -> ${pdfPath}`);
+            console.log(`  Search word: "${searchWord}"`);
+            console.log(`  Source text: "${sourceText}"`);
 
             // Run SyncTeX forward lookup
             const result = await runSyncTeXForward(texFile, line, column, pdfPath);
             if (result) {
                 console.log('SyncTeX forward success:', result);
-                panel.scrollToPosition(result);
+                panel.scrollToPosition(result, {
+                    line,
+                    column,
+                    text: sourceText,
+                    file: texFile,
+                    searchWord: searchWord
+                });
             } else {
                 vscode.window.showWarningMessage(
                     'SyncTeX: Could not find PDF position for this line. The line may not have corresponding PDF content.'

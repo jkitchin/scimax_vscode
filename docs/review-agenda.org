@@ -44,18 +44,42 @@ fi
 #+RESULTS:
 : * Review Agenda
 : 
+: ** [[file:10-export.org][10-export.org]] (1 items)
+:    - [[file:10-export.org::259][*** ⚠️ PDF Viewer Panel with Bidirectional Sync]]
+: 
 : ** [[file:24-keybindings.org][24-keybindings.org]] (1 items)
-:    - [[file:24-keybindings.org::428][** ⚠️ Compile and Preview]]
+:    - [[file:24-keybindings.org::384][**** 👀 Wrap in Braces (Case Protection)]]
 : 
-: ** [[file:33-latex-navigation.org][33-latex-navigation.org]] (6 items)
-:    - [[file:33-latex-navigation.org::134][** 👀 Jump to Section]]
-:    - [[file:33-latex-navigation.org::504][** ⚠️ Built-in PDF Viewer Panel]]
-:    - [[file:33-latex-navigation.org::521][** ⚠️ Insert Commands]]
-:    - [[file:33-latex-navigation.org::533][* ⚠️ Go to Definition]]
-:    - [[file:33-latex-navigation.org::634][* ⚠️ Error Navigation]]
-:    - [[file:33-latex-navigation.org::737][** 👀 Setup]]
+: ** [[file:25-commands.org][25-commands.org]] (20 items)
+:    - [[file:25-commands.org::474][** ⚠️ BibTeX Speed Commands]]
+:    - [[file:25-commands.org::481][*** ⚠️ Navigation]]
+:    - [[file:25-commands.org::489][*** ⚠️ Formatting]]
+:    - [[file:25-commands.org::502][*** ⚠️ Access]]
+:    - [[file:25-commands.org::513][*** ⚠️ OpenAlex Integration]]
+:    - [[file:25-commands.org::521][*** ⚠️ Actions]]
+:    - [[file:25-commands.org::532][*** ⚠️ File-Wide Commands]]
+:    - [[file:25-commands.org::661][* ⚠️ Word Case & Navigation]]
+:    - [[file:25-commands.org::774][* ⚠️ LaTeX]]
+:    - [[file:25-commands.org::778][** ⚠️ Section Navigation]]
+:    - [[file:25-commands.org::791][** ⚠️ Environment Navigation]]
+:    - [[file:25-commands.org::801][** ⚠️ Structure Editing]]
+:    - [[file:25-commands.org::819][** ⚠️ Environment Manipulation]]
+:    - [[file:25-commands.org::834][** ⚠️ Compilation and PDF Viewing]]
+:    - [[file:25-commands.org::851][** ⚠️ Error Navigation]]
+:    - [[file:25-commands.org::859][** ⚠️ Insertion Commands]]
+:    - [[file:25-commands.org::867][** ⚠️ Utilities]]
+:    - [[file:25-commands.org::876][** ⚠️ Speed Commands]]
+:    - [[file:25-commands.org::901][** ⚠️ Environment Speed Commands]]
+:    - [[file:25-commands.org::924][** ⚠️ LaTeX Cache Management]]
 : 
-: Total: 7 items need review
+: ** [[file:33-latex-navigation.org][33-latex-navigation.org]] (5 items)
+:    - [[file:33-latex-navigation.org::524][*** 👀 Bidirectional Sync]]
+:    - [[file:33-latex-navigation.org::544][*** 👀 Debug Popup Setting]]
+:    - [[file:33-latex-navigation.org::557][*** 👀 Auto-Compile on Save]]
+:    - [[file:33-latex-navigation.org::686][* ⚠️ Error Navigation]]
+:    - [[file:33-latex-navigation.org::789][** 👀 Setup]]
+: 
+: Total: 27 items need review
 
 
 * Current Review Status

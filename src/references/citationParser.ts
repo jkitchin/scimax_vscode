@@ -384,12 +384,14 @@ export function findReferenceIndexAtPosition(
     line: string,
     position: number
 ): number {
-    const { keyPrefix } = CITATION_PATTERN_CONFIG[citation.syntax];
+    const { keyPrefix, separator } = CITATION_PATTERN_CONFIG[citation.syntax];
     const citationText = line.slice(citation.range.start, citation.range.end);
     const relativePos = position - citation.range.start;
 
     // Find positions of each key in the citation text
+    const keyPositions: { start: number; end: number }[] = [];
     let searchPos = 0;
+
     for (let i = 0; i < citation.references.length; i++) {
         const ref = citation.references[i];
         const keyPattern = keyPrefix ? `${keyPrefix}${ref.key}` : ref.key;
@@ -398,17 +400,39 @@ export function findReferenceIndexAtPosition(
         if (keyIndex === -1) continue;
 
         const keyEnd = keyIndex + keyPattern.length;
-
-        // Check if cursor is before next key
-        if (i === citation.references.length - 1 || relativePos <= keyEnd + 5) {
-            if (relativePos >= keyIndex - 5) {
-                return i;
-            }
-        }
-
+        keyPositions.push({ start: keyIndex, end: keyEnd });
         searchPos = keyEnd;
     }
 
+    if (keyPositions.length === 0) {
+        return 0;
+    }
+
+    // Find which key region the cursor is in
+    // Each key "owns" the region from just after the previous key (or start) to its end
+    for (let i = 0; i < keyPositions.length; i++) {
+        const pos = keyPositions[i];
+        const nextPos = keyPositions[i + 1];
+
+        // For the last key, it owns everything from its start to the end
+        if (i === keyPositions.length - 1) {
+            if (relativePos >= pos.start) {
+                return i;
+            }
+        } else {
+            // For other keys, they own up to the start of the next key
+            if (relativePos >= pos.start && relativePos < nextPos.start) {
+                return i;
+            }
+        }
+    }
+
+    // If cursor is before the first key, return 0
+    if (relativePos < keyPositions[0].start) {
+        return 0;
+    }
+
+    // Default to last key
     return citation.references.length - 1;
 }
 

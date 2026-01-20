@@ -1,0 +1,1384 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+
+% Hyperlinks
+\usepackage[linktocpage,
+  pdfstartview=FitH,
+  colorlinks,
+  linkcolor=blue,
+  anchorcolor=blue,
+  citecolor=blue,
+  filecolor=blue,
+  menucolor=blue,
+  urlcolor=blue]{hyperref}
+
+% Code highlighting with minted
+\usepackage{minted}
+
+% Better tables
+\usepackage{booktabs}
+
+% Citations
+\usepackage[numbers,super,sort&compress]{natbib}
+
+% User preamble
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{mhchem}
+
+\title{LaTeX Navigation and Structure}
+\author{Scimax VS Code Team}
+\date{2026-01-19}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{✅ LaTeX Navigation and Structure}
+\label{sec-latex-navigation-and-structure}
+CLOSED: [2026-01-19 Mon 09:24]
+
+
+Scimax VS Code provides comprehensive navigation, structure editing, and tooltips for LaTeX documents. These features mirror the org-mode heading navigation and structure editing commands, adapted for LaTeX section commands and environments.
+
+\subsection{✅ Overview}
+\label{sec-overview}
+CLOSED: [2026-01-19 Mon 09:24]
+
+
+LaTeX support in Scimax VS Code includes:
+
+
+\begin{enumerate}
+\item \textbf{Document Outline} - Hierarchical view of sections, environments, and labels
+
+\item \textbf{Section Navigation} - Move between sections at any level
+
+\item \textbf{Structure Editing} - Promote/demote, move, and manipulate sections
+
+\item \textbf{Environment Commands} - Select, change, wrap, and unwrap environments
+
+\item \textbf{Hover Tooltips} - Information about references, citations, packages, and commands
+
+\item \textbf{Speed Commands} - Single-key shortcuts at section start
+
+\item \textbf{Folding} - Collapse and expand sections and environments
+
+\item \textbf{Go to Definition} - Jump to labels, citations, commands, and included files
+
+\item \textbf{Find References} - Find all uses of a label or citation key
+
+\item \textbf{Auto-Completion} - Smart completions for labels, citations, environments, packages
+
+\item \textbf{Multi-File Projects} - Full support for projects using \textbackslash{}input/\textbackslash{}include
+
+\item \textbf{ChkTeX Linting} - Real-time warnings in Problems panel
+
+\item \textbf{Error Navigation} - Cycle through compilation errors
+
+\item \textbf{Rename Symbol} - Rename labels and update all references automatically
+
+\item \textbf{Reference Validation} - Warn about undefined and unused labels
+
+\item \textbf{Inverse SyncTeX} - Click in PDF to jump to source
+
+\item \textbf{Document Formatting} - Format with latexindent
+
+\item \textbf{LaTeX-Aware Spell Checking} - Skip commands and math in spell check
+
+\end{enumerate}
+
+
+See also:
+
+
+\begin{itemize}
+\item \href{file:21-navigation.org}{Navigation} for general navigation features
+
+\item \href{file:24-keybindings.org}{Keybindings} for a complete reference of keyboard shortcuts
+
+\end{itemize}
+
+
+\section{✅ Document Outline}
+\label{sec-document-outline}
+CLOSED: [2026-01-19 Mon 09:24]
+
+
+The outline view (VS Code's built-in outline panel \texttt{Cmd/C-Shift-o}) shows the structure of your LaTeX document:
+
+
+\begin{itemize}
+\item \textbf{Sections} (part, chapter, section, subsection, etc.)
+
+\item \textbf{Labeled Environments} (figures, tables, equations with labels)
+
+\item \textbf{Labels} for cross-referencing
+
+\end{itemize}
+
+
+The outline uses hierarchical nesting to show the document structure. Click any item to jump to it.
+
+\subsection{✅ Section Hierarchy}
+\label{sec-section-hierarchy}
+CLOSED: [2026-01-19 Mon 09:26]
+
+
+LaTeX sections are organized hierarchically:
+
+
+\begin{tabular}{lll}
+\toprule
+Level & Command & Symbol Kind \\
+\midrule
+0 & \textbackslash{}part & Module \\
+1 & \textbackslash{}chapter & Class \\
+2 & \textbackslash{}section & Method \\
+3 & \textbackslash{}subsection & Function \\
+4 & \textbackslash{}subsubsection & Field \\
+5 & \textbackslash{}paragraph & Property \\
+6 & \textbackslash{}subparagraph & Property \\
+\bottomrule
+\end{tabular}
+
+
+Starred variants (e.g., \texttt{\textbackslash{}section*\{...\}}) are also recognized and marked in the outline.
+
+
+\section{✅ Section Navigation}
+\label{sec-section-navigation}
+CLOSED: [2026-01-19 Mon 09:26]
+
+
+Navigate between sections in your LaTeX document using these commands:
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.nextSection & C-c C-n & Jump to next section \\
+scimax.latex.previousSection & C-c C-p & Jump to previous section \\
+scimax.latex.parentSection & C-c C-u & Jump to parent section \\
+scimax.latex.nextSiblingSection & C-c C-f & Jump to next sibling section \\
+scimax.latex.previousSiblingSection & C-c C-b & Jump to previous sibling section \\
+scimax.latex.firstSection & - & Jump to first section in document \\
+scimax.latex.lastSection & - & Jump to last section in document \\
+scimax.latex.jumpToSection & C-c C-j / C-c j & Quick pick to jump to any section \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Next/Previous Section}
+\label{sec-next-previous-section}
+CLOSED: [2026-01-19 Mon 09:26]
+
+
+Move through all sections in document order:
+
+
+\begin{minted}{latex}
+\section{Introduction}
+Content here...
+
+\subsection{Background}    % <- Current position
+
+\subsection{Motivation}    % <- Next section
+
+\section{Methods}          % <- Another next section
+\end{minted}
+
+\texttt{nextSection} moves forward through sections regardless of level. \texttt{previousSection} moves backward.
+
+\subsection{✅ Sibling Navigation}
+\label{sec-sibling-navigation}
+CLOSED: [2026-01-19 Mon 09:26]
+
+
+Move between sections at the same level:
+
+
+\begin{minted}{latex}
+\section{Introduction}
+
+\subsection{Background}    % <- Current position
+\subsection{Motivation}    % <- Next sibling (same level)
+\subsection{Goals}         % <- Another sibling
+
+\section{Methods}          % <- NOT a sibling (different level)
+\end{minted}
+
+\texttt{nextSiblingSection} moves to the next section at the same hierarchical level.
+\texttt{previousSiblingSection} moves backward.
+
+\subsection{✅ Parent Section}
+\label{sec-parent-section}
+CLOSED: [2026-01-19 Mon 09:26]
+
+
+Jump to the containing (parent) section:
+
+
+\begin{minted}{latex}
+\section{Methods}            % <- Jump here (parent)
+\subsection{Data Collection}
+\subsubsection{Sampling}     % <- From here
+\end{minted}
+\subsection{✅ Jump to Section}
+\label{sec-jump-to-section}
+CLOSED: [2026-01-19 Mon 18:21]
+
+
+The \texttt{jumpToSection} command (C-c C-j or C-c j) opens a quick pick showing all sections with:
+
+
+\begin{itemize}
+\item Hierarchical indentation showing structure
+
+\item Section type (\texttt{\textbackslash{}section}, \texttt{\textbackslash{}subsection}, etc.)
+
+\item Line numbers
+
+\end{itemize}
+
+
+Type to filter, then select a section to jump to it.
+
+
+\section{✅ Structure Editing}
+\label{sec-structure-editing}
+CLOSED: [2026-01-19 Mon 09:27]
+
+
+Edit the document structure by promoting, demoting, and moving sections.
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.promoteSection & Alt+Left & Promote section (e.g., sub→sec) \\
+scimax.latex.demoteSection & Alt+Right & Demote section (e.g., sec→sub) \\
+scimax.latex.promoteSubtree & Alt+Shift+Left & Promote section and children \\
+scimax.latex.demoteSubtree & Alt+Shift+Right & Demote section and children \\
+scimax.latex.moveSectionUp & Alt+Up & Move section above sibling \\
+scimax.latex.moveSectionDown & Alt+Down & Move section below sibling \\
+scimax.latex.markSection & C-c @ & Select entire section \\
+scimax.latex.killSection & - & Delete section (copy to clip) \\
+scimax.latex.cloneSection & - & Duplicate section \\
+scimax.latex.insertSection & - & Insert new section at same level \\
+scimax.latex.insertSubsection & - & Insert subsection \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Promote/Demote}
+\label{sec-promote-demote}
+CLOSED: [2026-01-19 Mon 09:27]
+
+
+Change the level of a section command:
+
+
+\begin{minted}{latex}
+% Before promote:
+\subsection{Methods}
+
+% After promote (Alt+Left):
+\section{Methods}
+
+% Before demote:
+\section{Results}
+
+% After demote (Alt+Right):
+\subsection{Results}
+\end{minted}
+\subsection{✅ Promote/Demote Subtree}
+\label{sec-promote-demote-subtree}
+CLOSED: [2026-01-19 Mon 09:27]
+
+
+Promote or demote a section and all its children:
+
+
+\begin{minted}{latex}
+% Before promoteSubtree on "Methods":
+\subsection{Methods}
+\subsubsection{Data}
+\subsubsection{Analysis}
+
+% After promoteSubtree (Alt+Shift+Left):
+\section{Methods}
+\subsection{Data}
+\subsection{Analysis}
+\end{minted}
+\subsection{✅ Move Section Up/Down}
+\label{sec-move-section-up-down}
+CLOSED: [2026-01-19 Mon 09:27]
+
+
+Swap a section with its previous or next sibling:
+
+
+\begin{minted}{latex}
+% Before moveSectionDown on "Introduction":
+\section{Introduction}
+Content A...
+
+\section{Methods}
+Content B...
+
+% After moveSectionDown (Alt+Down):
+\section{Methods}
+Content B...
+
+\section{Introduction}
+Content A...
+\end{minted}
+
+The entire section subtree (including all nested content) is moved.
+
+
+\section{✅ Environment Commands}
+\label{sec-environment-commands}
+CLOSED: [2026-01-19 Mon 09:27]
+
+
+Work with LaTeX environments (\texttt{\textbackslash{}begin\{...\}} / \texttt{\textbackslash{}end\{...\}}):
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.selectEnvironment & C-c C-e & Select entire environment \\
+scimax.latex.selectEnvironmentContent & - & Select content (not begin/end) \\
+scimax.latex.changeEnvironment & C-c e & Change environment type \\
+scimax.latex.wrapInEnvironment & C-c w & Wrap selection in environment \\
+scimax.latex.unwrapEnvironment & - & Remove begin/end, keep content \\
+scimax.latex.deleteEnvironment & - & Delete entire environment \\
+scimax.latex.toggleEnvironmentStar & C-c * & Toggle starred variant \\
+scimax.latex.addLabel & C-c C-l & Add \textbackslash{}label to environment \\
+scimax.latex.addCaption & - & Add \textbackslash{}caption to figure/table \\
+scimax.latex.jumpToMatchingEnvironment & C-c \% & Jump between \textbackslash{}begin and \textbackslash{}end \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Environment Navigation}
+\label{sec-environment-navigation}
+CLOSED: [2026-01-19 Mon 09:28]
+
+
+Navigate between environments:
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.nextEnvironment & - & Jump to next environment \\
+scimax.latex.previousEnvironment & - & Jump to previous environment \\
+scimax.latex.jumpToEnvironment & - & Quick pick all environments \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Change Environment}
+\label{sec-change-environment}
+CLOSED: [2026-01-19 Mon 09:28]
+
+
+The \texttt{changeEnvironment} command (C-c e) prompts to change the environment type:
+
+
+\begin{minted}{latex}
+% Before:
+\begin{equation}
+  E = mc^2
+\end{equation}
+
+% After changing to "align":
+\begin{align}
+  E = mc^2
+\end{align}
+\end{minted}
+
+Both \texttt{\textbackslash{}begin} and \texttt{\textbackslash{}end} are updated simultaneously.
+
+\subsection{✅ Wrap in Environment}
+\label{sec-wrap-in-environment}
+CLOSED: [2026-01-19 Mon 09:28]
+
+
+Select text and use \texttt{wrapInEnvironment} (C-c w) to surround it:
+
+
+\begin{minted}{latex}
+% Before (with "E = mc^2" selected):
+E = mc^2
+
+% After wrapping in "equation":
+\begin{equation}
+  E = mc^2
+\end{equation}
+\end{minted}
+\subsection{✅ Toggle Star}
+\label{sec-toggle-star}
+CLOSED: [2026-01-19 Mon 09:28]
+
+
+Toggle the starred variant of an environment:
+
+
+\begin{minted}{latex}
+% Before:
+\begin{equation}
+  E = mc^2
+\end{equation}
+
+% After toggleEnvironmentStar (C-c *):
+\begin{equation*}
+  E = mc^2
+\end{equation*}
+\end{minted}
+
+\section{✅ Hover Tooltips}
+\label{sec-hover-tooltips}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+Hover over LaTeX elements to see helpful information:
+
+
+\begin{tabular}{ll}
+\toprule
+Element & Information Shown \\
+\midrule
+\texttt{\textbackslash{}ref\{label\}} & What the label refers to, line number \\
+\texttt{\textbackslash{}cite\{key\}} & Citation keys (bib integration planned) \\
+\texttt{\textbackslash{}label\{name\}} & Where label is referenced, context \\
+\texttt{\textbackslash{}usepackage\{pkg\}} & Package description \\
+\texttt{\textbackslash{}begin\{env\}} & Environment description \\
+\texttt{\textbackslash{}section\{...\}} & Section hierarchy path \\
+\texttt{\textbackslash{}alpha}, \texttt{\textbackslash{}beta}, etc. & Unicode symbol and description \\
+\texttt{\textbackslash{}textbf}, etc. & Command description \\
+\texttt{\textbackslash{}input\{file\}} & File path, size, preview \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Reference Hover}
+\label{sec-reference-hover}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+Hovering over \texttt{\textbackslash{}ref\{fig:example\}} shows:
+
+
+\begin{itemize}
+\item The label name
+
+\item Line number where label is defined
+
+\item Context (section or environment containing the label)
+
+\item Preview of the labeled line
+
+\end{itemize}
+
+\subsection{✅ Citation Hover}
+\label{sec-citation-hover}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+Hovering over \texttt{\textbackslash{}cite\{key\}} shows rich BibTeX information:
+
+
+\begin{itemize}
+\item Full title
+
+\item Authors with proper formatting
+
+\item Year
+
+\item Journal or book title
+
+\item Volume, number, pages
+
+\item DOI (as clickable link)
+
+\item Abstract preview
+
+\end{itemize}
+
+
+Supports all natbib and biblatex citation commands:
+
+
+\begin{itemize}
+\item \texttt{\textbackslash{}cite}, \texttt{\textbackslash{}citep}, \texttt{\textbackslash{}citet}
+
+\item \texttt{\textbackslash{}citealt}, \texttt{\textbackslash{}citealp}
+
+\item \texttt{\textbackslash{}citeauthor}, \texttt{\textbackslash{}citeyear}
+
+\item \texttt{\textbackslash{}nocite}
+
+\end{itemize}
+
+\subsection{✅ Package Hover}
+\label{sec-package-hover}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+Hovering over \texttt{\textbackslash{}usepackage\{amsmath\}} shows:
+
+
+\begin{itemize}
+\item Package name
+
+\item Description of what the package provides
+
+\end{itemize}
+
+\subsection{✅ Math Symbol Hover}
+\label{sec-math-symbol-hover}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+Hovering over math commands like \texttt{\textbackslash{}alpha} shows:
+
+
+\begin{itemize}
+\item Unicode representation: α
+
+\item Unicode code point: U+03B1
+
+\item Description: Greek lowercase alpha
+
+\end{itemize}
+
+
+\section{✅ Speed Commands}
+\label{sec-speed-commands}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+At the beginning of a section line, single keys trigger commands:
+
+
+\begin{tabular}{llll}
+\toprule
+Key & Action & Key & Action \\
+\midrule
+n & Next section & < & Promote section \\
+p & Previous section & > & Demote section \\
+f & Next sibling & U & Move section up \\
+b & Previous sibling & D & Move section down \\
+u & Parent section & m & Mark section \\
+j & Jump to section & k & Kill section \\
+J & Jump to label & c & Clone section \\
+g & First section & i & Insert section \\
+G & Last section & I & Insert subsection \\
+Tab & Toggle fold & N & Narrow to section \\
+S-Tab & Cycle global fold & W & Widen \\
+? & Show speed commands &  &  \\
+\bottomrule
+\end{tabular}
+
+
+Speed commands only activate when cursor is at or before the backslash of a section command.
+
+\subsection{✅ Using Speed Commands}
+\label{sec-using-speed-commands}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+\begin{enumerate}
+\item Place cursor at the start of a section line (column 0 or before \texttt{\textbackslash{}})
+
+\item Press a single key
+
+\item The corresponding action executes
+
+\end{enumerate}
+
+
+Example:
+
+
+\begin{minted}{latex}
+\section{Introduction}   % <- Place cursor here, press 'n' to go to next section
+  ^
+  |__ Cursor position
+\end{minted}
+
+\section{✅ Folding}
+\label{sec-folding}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+LaTeX documents support folding for sections and environments.
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.org.toggleFold & Tab & Toggle fold at cursor \\
+scimax.org.cycleGlobalFold & Shift+Tab & Cycle all folds \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Section Folding}
+\label{sec-section-folding}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+Sections fold from the section command to the next section at the same or higher level:
+
+
+\begin{minted}{latex}
+\section{Introduction}...  % <- Folds from here
+Content...
+\subsection{Background}    % <- Included in fold
+More content...
+\section{Methods}          % <- Fold ends before this
+\end{minted}
+\subsection{✅ Environment Folding}
+\label{sec-environment-folding}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+Environments fold from \texttt{\textbackslash{}begin} to \texttt{\textbackslash{}end}:
+
+
+\begin{minted}{latex}
+\begin{figure}...          % <- Folds from here
+  \includegraphics{...}
+  \caption{...}
+\end{figure}               % <- Fold ends here
+\end{minted}
+\subsection{✅ Global Fold Cycling}
+\label{sec-global-fold-cycling}
+CLOSED: [2026-01-19 Mon 09:29]
+
+
+\texttt{Shift+Tab} cycles through three states:
+
+
+\begin{enumerate}
+\item \textbf{OVERVIEW} - All sections folded
+
+\item \textbf{CONTENTS} - Top-level sections visible
+
+\item \textbf{SHOWALL} - Everything expanded
+
+\end{enumerate}
+
+
+\section{✅ Label Navigation}
+\label{sec-label-navigation}
+CLOSED: [2026-01-19 Mon 09:31]
+
+
+Navigate to labels in your document:
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.jumpToLabel & C-c l & Quick pick all labels \\
+\bottomrule
+\end{tabular}
+
+
+The quick pick shows:
+
+
+\begin{itemize}
+\item Label name
+
+\item Context (section or environment)
+
+\item Line number
+
+\end{itemize}
+
+
+\section{✅ Compile and Preview}
+\label{sec-compile-and-preview}
+CLOSED: [2026-01-19 Mon 09:31]
+
+
+Compile LaTeX documents and view the generated PDF.
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.compile & C-c C-c & Compile the document \\
+scimax.latex.viewPdf & C-c C-v & View PDF (external viewer) \\
+scimax.latex.viewPdfPanel & C-c v & View PDF (built-in panel) \\
+scimax.latex.compileAndView & C-c C-a & Compile and view PDF \\
+scimax.latex.clean & C-c C-k & Clean auxiliary files \\
+scimax.latex.syncTexForward & C-c g & SyncTeX forward search \\
+scimax.latex.wordCount & - & Count words (approximate) \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Compilation}
+\label{sec-compilation}
+CLOSED: [2026-01-19 Mon 09:31]
+
+
+The \texttt{compile} command runs the configured LaTeX compiler (default: pdflatex):
+
+
+\begin{enumerate}
+\item Saves the document
+
+\item Compiles with \texttt{-interaction}nonstopmode= for error handling
+
+\item Shows compilation errors with line numbers
+
+\item Outputs detailed log to the "LaTeX" output channel
+
+\end{enumerate}
+
+
+Configure the compiler via \texttt{scimax.latex.compiler} setting:
+
+
+\begin{itemize}
+\item \texttt{pdflatex} (default)
+
+\item \texttt{xelatex}
+
+\item \texttt{lualatex}
+
+\item \texttt{latexmk}
+
+\end{itemize}
+
+\subsection{✅ SyncTeX Support}
+\label{sec-synctex-support}
+CLOSED: [2026-01-19 Mon 09:31]
+
+
+SyncTeX allows jumping between source and PDF positions.
+
+
+Supported PDF viewers:
+
+
+\begin{itemize}
+\item \textbf{macOS}: Skim (recommended)
+
+\item \textbf{Linux}: Zathura
+
+\item \textbf{Windows}: SumatraPDF
+
+\end{itemize}
+
+
+Configure via \texttt{scimax.latex.pdfViewer} setting.
+
+\subsection{⚠️ Built-in PDF Viewer Panel}
+\label{sec-built-in-pdf-viewer-panel}
+For an Overleaf-like experience, use the built-in PDF viewer panel (\texttt{C-c v}):
+
+
+\begin{itemize}
+\item Opens PDF in a VS Code panel beside your source
+
+\item Auto-refreshes when you recompile
+
+\item Zoom controls (+, -, Fit)
+
+\item Page navigation
+
+\item Bidirectional sync with text-based highlighting
+
+\item No external PDF viewer required
+
+\end{itemize}
+
+
+This is ideal for side-by-side editing without leaving VS Code.
+
+
+\begin{tabular}{lll}
+\toprule
+Viewer Option & Key & Description \\
+\midrule
+Built-in panel & C-c v & PDF in VS Code panel (Overleaf-like) \\
+External viewer & C-c C-v & Opens in Skim/Zathura/SumatraPDF \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Bidirectional Sync}
+\label{sec-bidirectional-sync}
+The built-in PDF viewer supports precise bidirectional synchronization:
+
+
+to that location in the PDF. The word is highlighted with a yellow flash.
+
+
+to the corresponding line in your LaTeX source.
+
+
+The forward sync uses SyncTeX coordinates combined with text-layer search
+to find the exact word you clicked, even if SyncTeX coordinates are imprecise.
+
+\subsubsection{Debug Popup Setting}
+\label{sec-debug-popup-setting}
+To see SyncTeX coordinates and debug information when syncing:
+
+
+\begin{minted}{json}
+{
+  "scimax.latex.showSyncDebugPopup": true
+}
+\end{minted}
+
+Default is \texttt{false}. When enabled, shows a popup with page, coordinates,
+source line/column, and search text for troubleshooting sync issues.
+
+\subsection{⚠️ Insert Commands}
+\label{sec-insert-commands}
+Quick insertion of common LaTeX elements:
+
+
+\begin{tabular}{ll}
+\toprule
+Command & Description \\
+\midrule
+scimax.latex.insertFigure & Insert figure environment snippet \\
+scimax.latex.insertTable & Insert table with booktabs snippet \\
+scimax.latex.insertEquation & Insert equation environment \\
+\bottomrule
+\end{tabular}
+
+
+These commands insert snippets with tab stops for easy navigation.
+
+
+\section{⚠️ Go to Definition}
+\label{sec-go-to-definition}
+Jump to the definition of labels, citations, commands, and files:
+
+
+\begin{tabular}{ll}
+\toprule
+Trigger & What it does \\
+\midrule
+\texttt{\textbackslash{}ref\{label\}} & Jump to the \texttt{\textbackslash{}label\{label\}} definition \\
+\texttt{\textbackslash{}cite\{key\}} & Jump to the BibTeX entry in the .bib file \\
+\texttt{\textbackslash{}input\{file\}} & Open the included file \\
+\texttt{\textbackslash{}mycommand} & Jump to \texttt{\textbackslash{}newcommand} or \texttt{\textbackslash{}def} definition \\
+\bottomrule
+\end{tabular}
+
+
+Use \texttt{F12} or \texttt{Ctrl+Click} (standard VS Code "Go to Definition").
+
+
+Supports cross-file navigation in multi-file projects.
+
+
+\section{✅ Find All References}
+\label{sec-find-all-references}
+CLOSED: [2026-01-19 Mon 09:55]
+
+
+Find all usages of a label or citation:
+
+
+\begin{tabular}{ll}
+\toprule
+Position on & Shows all \\
+\midrule
+\texttt{\textbackslash{}label\{name\}} & All \texttt{\textbackslash{}ref\{name\}} references \\
+\texttt{\textbackslash{}cite\{key\}} & All citations of that key \\
+\bottomrule
+\end{tabular}
+
+
+Use \texttt{Shift+F12} or right-click → "Find All References".
+
+
+Works across all files in the project.
+
+
+\section{✅ Auto-Completion}
+\label{sec-auto-completion}
+CLOSED: [2026-01-19 Mon 09:56]
+
+
+Smart completions trigger as you type:
+
+
+\begin{tabular}{ll}
+\toprule
+Context & Completions \\
+\midrule
+\texttt{\textbackslash{}ref\{} & All labels in project with context \\
+\texttt{\textbackslash{}cite\{} & All BibTeX keys with author/year/title \\
+\texttt{\textbackslash{}begin\{} & Common environments (equation, figure, etc.) \\
+\texttt{\textbackslash{}usepackage\{} & Common packages with descriptions \\
+\texttt{\textbackslash{}includegraphics\{} & Image files (.png, .jpg, .pdf, etc.) \\
+\texttt{\textbackslash{}input\{} & .tex files in directory \\
+\bottomrule
+\end{tabular}
+
+
+Completions show:
+
+
+\begin{itemize}
+\item Label completions include file name and line context
+
+\item Citation completions show author, year, and title
+
+\item Environment completions include descriptions
+
+\item Package completions describe what each package provides
+
+\end{itemize}
+
+
+\section{✅ Multi-File Project Support}
+\label{sec-multi-file-project-support}
+CLOSED: [2026-01-19 Mon 09:56]
+
+
+Projects with multiple files (using \texttt{\textbackslash{}input} or \texttt{\textbackslash{}include}) are fully supported:
+
+
+\begin{itemize}
+\item \textbf{Master document detection}: Automatically finds the main .tex file
+
+\item \textbf{Cross-file labels}: Complete and navigate labels defined in any project file
+
+\item \textbf{Shared bibliography}: Finds .bib files referenced anywhere in project
+
+\item \textbf{Project-wide search}: Find References searches all included files
+
+\end{itemize}
+
+
+The master document is detected by looking for \texttt{\textbackslash{}documentclass}.
+
+\subsection{✅ Project Structure}
+\label{sec-project-structure}
+CLOSED: [2026-01-19 Mon 09:56]
+
+
+\begin{minted}{text}
+thesis/
+├── main.tex              # Master document (has \documentclass)
+│   └── \input{chapters/intro}
+│   └── \input{chapters/methods}
+│   └── \bibliography{refs}
+├── chapters/
+│   ├── intro.tex        # \label{sec:intro} defined here
+│   └── methods.tex      # \ref{sec:intro} works here too
+└── refs.bib              # Bibliography
+\end{minted}
+
+\section{✅ ChkTeX Linting}
+\label{sec-chktex-linting}
+CLOSED: [2026-01-19 Mon 09:56]
+
+
+Real-time linting with ChkTeX catches common LaTeX issues:
+
+
+\begin{itemize}
+\item Missing or extra braces
+
+\item Spacing issues
+
+\item Style recommendations
+
+\end{itemize}
+
+
+Errors appear in the Problems panel and as squiggles in the editor.
+
+\subsection{✅ Configuration}
+\label{sec-configuration}
+CLOSED: [2026-01-19 Mon 09:56]
+
+
+\begin{minted}{json}
+{
+  "scimax.latex.enableChktex": true  // Enable/disable linting (default: true)
+}
+\end{minted}
+
+Requires \texttt{chktex} to be installed:
+
+
+\begin{itemize}
+\item \textbf{macOS}: \texttt{brew install chktex}
+
+\item \textbf{Linux}: \texttt{apt install chktex}
+
+\item \textbf{Windows}: Included with MiKTeX/TeX Live
+
+\end{itemize}
+
+
+\section{⚠️ Error Navigation}
+\label{sec-error-navigation}
+Navigate through compilation errors:
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.nextError & C-c ` & Jump to next error \\
+scimax.latex.previousError & C-c Shift+` & Jump to previous error \\
+scimax.latex.showErrors & C-c C-e & Show all errors in quick pick \\
+\bottomrule
+\end{tabular}
+
+
+Errors are collected after compilation and persist until the next build.
+
+\subsection{✅ Error Display}
+\label{sec-error-display}
+CLOSED: [2026-01-19 Mon 09:57]
+
+
+When compilation fails:
+
+
+\begin{enumerate}
+\item First error is shown in a notification with "Go to Error" button
+
+\item The Problems panel shows all parsed errors
+
+\item Use navigation commands to cycle through errors
+
+\end{enumerate}
+
+
+Errors include:
+
+
+\begin{itemize}
+\item File path (supports multi-file projects)
+
+\item Line number
+
+\item Error message
+
+\end{itemize}
+
+
+\section{✅ Hover Previews}
+\label{sec-hover-previews}
+CLOSED: [2026-01-19 Mon 09:18]
+
+
+Hover over LaTeX elements to see previews and information.
+
+\subsection{✅ Equation Preview}
+\label{sec-equation-preview}
+CLOSED: [2026-01-19 Mon 09:18]
+
+
+Hover over any math expression to see a rendered preview:
+
+
+\begin{itemize}
+\item Inline math: \texttt{\$E}mc\textasciicircum{}2\$=, \texttt{\textbackslash{}(E}mc\textasciicircum{}2\textbackslash{})=
+
+\item Display math: \texttt{\$\$...\$\$\$}, \texttt{\textbackslash{}[...\textbackslash{}]}
+
+\item Environments: \texttt{equation}, \texttt{align}, \texttt{gather}, etc.
+
+\end{itemize}
+
+
+The preview:
+
+
+\begin{itemize}
+\item Renders using the system LaTeX installation
+
+\item Respects document preamble (packages, custom commands)
+
+\item Adapts to dark/light VS Code theme
+
+\item Shows the source LaTeX below the preview
+
+\end{itemize}
+
+\subsection{✅ Figure Preview}
+\label{sec-figure-preview}
+CLOSED: [2026-01-19 Mon 09:18]
+
+
+Hover over \texttt{\textbackslash{}includegraphics\{...\}} to see:
+
+
+\begin{itemize}
+\item Image preview (PNG, JPG, SVG, GIF, WebP)
+
+\item File path and size
+
+\item Last modified date
+
+\end{itemize}
+
+
+PDF and EPS files show file information without preview.
+
+
+\section{✅ Rename Symbol}
+\label{sec-rename-symbol}
+CLOSED: [2026-01-19 Mon 09:17]
+
+
+Rename a label and automatically update all references across the project:
+
+
+\begin{enumerate}
+\item Place cursor on a \texttt{\textbackslash{}label\{name\}} or \texttt{\textbackslash{}ref\{name\}}
+
+\item Press \texttt{F2} or right-click → "Rename Symbol"
+
+\item Enter the new name
+
+\item All \texttt{\textbackslash{}label\{\}} and \texttt{\textbackslash{}ref\{\}} commands using that name are updated
+
+\end{enumerate}
+
+
+Works across all files in multi-file projects.
+
+\subsection{✅ Supported Reference Commands}
+\label{sec-supported-reference-commands}
+CLOSED: [2026-01-19 Mon 09:17]
+
+
+Rename works with all reference variants:
+
+
+\begin{itemize}
+\item \texttt{\textbackslash{}label\{...\}} - the definition
+
+\item \texttt{\textbackslash{}ref\{...\}}, \texttt{\textbackslash{}eqref\{...\}}, \texttt{\textbackslash{}pageref\{...\}}
+
+\item \texttt{\textbackslash{}autoref\{...\}}, \texttt{\textbackslash{}cref\{...\}}, \texttt{\textbackslash{}Cref\{...\}}
+
+\end{itemize}
+
+
+\section{✅ Reference Validation}
+\label{sec-reference-validation}
+CLOSED: [2026-01-19 Mon 09:17]
+
+
+Automatic validation of label references:
+
+
+\begin{tabular}{lll}
+\toprule
+Issue & Severity & Description \\
+\midrule
+Undefined reference & Error & \texttt{\textbackslash{}ref\{name\}} but no \texttt{\textbackslash{}label\{name\}} \\
+Unused label & Warning & \texttt{\textbackslash{}label\{name\}} with no \texttt{\textbackslash{}ref\{name\}} \\
+\bottomrule
+\end{tabular}
+
+
+Diagnostics appear in the Problems panel and as squiggles in the editor.
+
+\subsection{✅ Configuration}
+\label{sec-configuration}
+CLOSED: [2026-01-19 Mon 09:17]
+
+
+\begin{minted}{json}
+{
+  "scimax.latex.validateReferences": true  // Enable/disable (default: true)
+}
+\end{minted}
+
+\section{✅ Inverse SyncTeX}
+\label{sec-inverse-synctex}
+CLOSED: [2026-01-19 Mon 09:17]
+
+
+Click in PDF to jump back to the corresponding source location.
+
+\subsection{👀 Setup}
+\label{sec-setup}
+Run the command \texttt{Scimax LaTeX: Show Inverse SyncTeX Command} to get the
+configuration command for your PDF viewer.
+
+
+\begin{tabular}{ll}
+\toprule
+PDF Viewer & Configuration \\
+\midrule
+Skim & Preferences → Sync → Preset: Custom; Command: \texttt{code} \\
+SumatraPDF & Settings → Options → Set inverse search command \\
+Zathura & Set \texttt{synctex-editor-command} in config \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ URI Handler}
+\label{sec-uri-handler}
+CLOSED: [2026-01-19 Mon 09:17]
+
+
+The extension also registers a URI handler for \texttt{vscode://} URLs:
+
+
+\begin{minted}{text}
+vscode://file/path/to/file.tex:42
+\end{minted}
+
+This allows PDF viewers to communicate directly with VS Code.
+
+
+\section{✅ Document Formatting}
+\label{sec-document-formatting}
+CLOSED: [2026-01-19 Mon 09:17]
+
+
+Format LaTeX documents using \texttt{latexindent}:
+
+
+\begin{tabular}{lll}
+\toprule
+Command & Key Binding & Description \\
+\midrule
+scimax.latex.format & C-c C-q & Format entire document \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ Format on Save}
+\label{sec-format-on-save}
+CLOSED: [2026-01-19 Mon 09:12]
+
+
+Enable automatic formatting when saving:
+
+
+\begin{minted}{json}
+{
+  "scimax.latex.formatOnSave": true,          // Auto-format on save
+  "scimax.latex.latexindentPath": "latexindent"  // Path to latexindent
+}
+\end{minted}
+\subsection{✅ Requirements}
+\label{sec-requirements}
+CLOSED: [2026-01-19 Mon 09:12]
+
+
+\texttt{latexindent} must be installed:
+
+
+\begin{itemize}
+\item \textbf{macOS}: Included with MacTeX, or \texttt{brew install latexindent}
+
+\item \textbf{Linux}: \texttt{apt install texlive-extra-utils} or \texttt{cpanm YAML::Tiny File::HomeDir Unicode::GCString}
+
+\item \textbf{Windows}: Included with MiKTeX/TeX Live
+
+\end{itemize}
+
+\subsection{✅ Customization}
+\label{sec-customization}
+CLOSED: [2026-01-19 Mon 09:12]
+
+
+Create a \texttt{.latexindent.yaml} file in your project to customize formatting rules.
+See the \href{[[https://latexindentpl.readthedocs.io/][latexindent documentation]]}{latexindent documentation} for options.
+
+
+\section{✅ LaTeX-Aware Spell Checking}
+\label{sec-latex-aware-spell-checking}
+CLOSED: [2026-01-19 Mon 09:12]
+
+
+The extension provides infrastructure for LaTeX-aware spell checking that
+skips commands, math, and comments.
+
+\subsection{✅ Regions Excluded from Spell Check}
+\label{sec-regions-excluded-from-spell-check}
+CLOSED: [2026-01-19 Mon 09:12]
+
+
+\begin{tabular}{ll}
+\toprule
+Pattern & Example \\
+\midrule
+Commands with arguments & \texttt{\textbackslash{}textbf\{word\}} \\
+Inline math & \texttt{\$x\textasciicircum{}2 + y\textasciicircum{}2\$} \\
+Display math & \texttt{\$\$..\$\$} and \texttt{\textbackslash{}[..\textbackslash{}]} \\
+Environments & \texttt{\textbackslash{}begin\{...\}...\textbackslash{}end\{...\}} \\
+Comments & \texttt{\% comment text} \\
+\bottomrule
+\end{tabular}
+
+\subsection{✅ User Dictionary}
+\label{sec-user-dictionary}
+CLOSED: [2026-01-19 Mon 09:12]
+
+
+Add words to your personal dictionary:
+
+
+\begin{tabular}{ll}
+\toprule
+Command & Description \\
+\midrule
+scimax.latex.addToDictionary & Add word at cursor to dictionary \\
+\bottomrule
+\end{tabular}
+
+
+The dictionary is stored per-workspace and persists across sessions.
+
+
+\section{✅ Related Topics}
+\label{sec-related-topics}
+CLOSED: [2026-01-19 Mon 09:12]
+
+
+\begin{itemize}
+\item \href{file:11-latex-preview.org}{LaTeX Preview} - Live PDF preview with SyncTeX
+
+\item \href{file:10-export.org}{Export} - Export org to LaTeX
+
+\item \href{file:19-references.org}{References} - BibTeX bibliography management
+
+\item \href{file:23-speed-commands.org}{Speed Commands} - Org-mode speed commands
+
+\item \href{file:24-keybindings.org}{Keybindings} - Complete keybinding reference
+
+\end{itemize}
+
+
+\end{document}

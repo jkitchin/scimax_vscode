@@ -507,14 +507,16 @@ CLOSED: [2026-01-15 Thu 14:52]
 
 *Solution*: The help is generated from code, so this shouldn't occur. If it does, report as a bug.
 
-* ⚠️ BibTeX Speed Commands
+* ✅ BibTeX Speed Commands
+CLOSED: [2026-01-19 Mon 18:22]
 :PROPERTIES:
 :CUSTOM_ID: bibtex-speed-commands
 :END:
 
 BibTeX speed commands provide single-key shortcuts for navigating and manipulating BibTeX entries when editing `.bib' files. These commands are active when the cursor is at column 0 of a line starting with `@' (entry definition line).
 
-** ⚠️ Activation
+** ✅ Activation
+CLOSED: [2026-01-19 Mon 18:22]
 
 BibTeX speed commands are active when:
 
@@ -523,7 +525,8 @@ BibTeX speed commands are active when:
 3. Line starts with `@' (e.g., `@article{', `@book{')
 4. Speed commands are enabled in settings
 
-** ⚠️ Command Reference
+** ✅ Command Reference
+CLOSED: [2026-01-19 Mon 18:22]
 
 | Key | Category    | Command                  |
 |-----+-------------+--------------------------|
@@ -547,9 +550,11 @@ BibTeX speed commands are active when:
 | K   | Actions     | Generate citation key    |
 | ?   | Help        | Show speed commands help |
 
-** ⚠️ Navigation Commands
+** ✅ Navigation Commands
+CLOSED: [2026-01-19 Mon 18:23]
 
-*** ⚠️ Next Entry (n)
+*** ✅ Next Entry (n)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Jump to the next BibTeX entry in the file.
 
@@ -563,17 +568,21 @@ Jump to the next BibTeX entry in the file.
 }
 #+END_EXAMPLE
 
-*** ⚠️ Previous Entry (p)
+*** ✅ Previous Entry (p)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Jump to the previous BibTeX entry in the file.
 
-*** ⚠️ Jump to Entry (j)
+*** ✅ Jump to Entry (j)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Opens a quick pick dialog showing all entries in the file. Search by key, author, or title.
 
-** ⚠️ Formatting Commands
+** ✅ Formatting Commands
+CLOSED: [2026-01-19 Mon 18:23]
 
-*** ⚠️ Sort Fields (s)
+*** ✅ Sort Fields (s)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Reorders fields in the current entry according to the standard BibLaTeX field order:
 
@@ -583,7 +592,8 @@ Reorders fields in the current entry according to the standard BibLaTeX field or
 4. doi, url, isbn/issn
 5. note, abstract, keywords
 
-*** ⚠️ Downcase Entry (d)
+*** ✅ Downcase Entry (d)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Converts entry type and field names to lowercase:
 
@@ -592,15 +602,18 @@ Before: @ARTICLE{key, AUTHOR = {Name}}
 After:  @article{key, author = {Name}}
 #+END_EXAMPLE
 
-*** ⚠️ Title Case (t)
+*** ✅ Title Case (t)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Converts the article title to Title Case, preserving braced content like `{DNA}' or `{LaTeX}'.
 
-*** ⚠️ Sentence Case (S)
+*** ✅ Sentence Case (S)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Converts the article title to Sentence case (only first letter capitalized), preserving braced content.
 
-*** ⚠️ Clean Entry (c)
+*** ✅ Clean Entry (c)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Applies all cleaning operations:
 - Normalizes whitespace
@@ -608,53 +621,65 @@ Applies all cleaning operations:
 - Sorts fields
 - Removes double braces
 
-** ⚠️ Access Commands
+** ✅ Access Commands
+CLOSED: [2026-01-19 Mon 18:23]
 
-*** ⚠️ Open PDF (o)
+*** ✅ Open PDF (o)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Attempts to open the PDF associated with the entry:
 1. Checks the `file' field in the entry
 2. Looks in the configured PDF directory
 3. Offers to open DOI in browser if no PDF found
 
-*** ⚠️ Open URL/DOI (u)
+*** ✅ Open URL/DOI (u)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Opens the URL or DOI associated with the entry:
 - Prefers DOI if available
 - Falls back to URL field
 - Supports arXiv eprint field
 
-*** ⚠️ Open Notes (N)
+*** ✅ Open Notes (N)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Opens or creates notes for the entry. Notes are stored as org files in the configured notes directory.
 
-*** ⚠️ Google Scholar (g)
+*** ✅ Google Scholar (g)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Searches Google Scholar for the entry using DOI or title.
 
-*** ⚠️ CrossRef (x)
+*** ✅ CrossRef (x)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Opens the entry in CrossRef search using the DOI.
 
-*** ⚠️ Web of Science (w)
+*** ✅ Web of Science (w)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Opens the entry in Web of Science using the DOI.
 
-** ⚠️ Action Commands
+** ✅ Action Commands
+CLOSED: [2026-01-19 Mon 18:23]
 
-*** ⚠️ Copy Key (y)
+*** ✅ Copy Key (y)
+CLOSED: [2026-01-19 Mon 18:23]
 
 Copies the citation key to the clipboard.
 
-*** ⚠️ Copy BibTeX (b)
+*** ✅ Copy BibTeX (b)
+CLOSED: [2026-01-19 Mon 18:24]
 
 Copies the entire BibTeX entry to the clipboard.
 
-*** ⚠️ Kill Entry (k)
+*** ✅ Kill Entry (k)
+CLOSED: [2026-01-19 Mon 18:24]
 
 Deletes the entire entry (with confirmation). The deleted entry is copied to the clipboard for easy recovery.
 
-*** ⚠️ Generate Citation Key (K)
+*** ✅ Generate Citation Key (K)
+CLOSED: [2026-01-19 Mon 18:24]
 
 Generates a standardized citation key from the entry's author and year fields. Offers multiple format options:
 
@@ -680,13 +705,16 @@ Before: @article{ABC123,
 After:  @article{smith-2020,  (or smith-machine-2020, smith-machine-learning-2020)
 #+END_EXAMPLE
 
-** ⚠️ Help Command
+** ✅ Help Command
+CLOSED: [2026-01-19 Mon 18:24]
 
-*** ⚠️ Show Help (?)
+*** ✅ Show Help (?)
+CLOSED: [2026-01-19 Mon 18:24]
 
 Displays a quick pick menu with all available BibTeX speed commands. Select a command to execute it.
 
-** ⚠️ Configuration
+** ✅ Configuration
+CLOSED: [2026-01-19 Mon 18:24]
 
 BibTeX speed commands use the same enable/disable setting as org-mode speed commands:
 
@@ -705,7 +733,8 @@ For PDF and notes access, configure:
 }
 #+END_SRC
 
-** ⚠️ Comparison with Emacs org-ref
+** ✅ Comparison with Emacs org-ref
+CLOSED: [2026-01-19 Mon 18:24]
 
 These BibTeX speed commands are inspired by the functions in Emacs `org-ref-bibtex.el':
 

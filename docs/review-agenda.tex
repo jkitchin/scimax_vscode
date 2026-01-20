@@ -1,0 +1,233 @@
+\documentclass[11pt,a4paper]{article}
+
+% Encoding
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Hyperlinks
+\usepackage[linktocpage,
+  pdfstartview=FitH,
+  colorlinks,
+  linkcolor=blue,
+  anchorcolor=blue,
+  citecolor=blue,
+  filecolor=blue,
+  menucolor=blue,
+  urlcolor=blue]{hyperref}
+
+% Code highlighting with minted
+\usepackage{minted}
+
+% Better tables
+\usepackage{booktabs}
+
+% Graphics
+\usepackage{graphicx}
+
+% Strike-through
+\usepackage[normalem]{ulem}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Citations
+\usepackage[numbers,super,sort&compress]{natbib}
+
+\title{Documentation Review Agenda}
+\author{Scimax VSCode}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+This file generates a dynamic agenda of documentation headings that need review.
+Headings marked with ⚠️ are new and need inspection before being marked ✅.
+
+
+\section{Generate Review Agenda}
+\label{sec-generate-review-agenda}
+Run this block (C-c C-c) to generate the current review agenda from docs/*.org files.
+
+
+\begin{minted}{bash}
+
+echo "* Review Agenda"
+echo ""
+
+total=0
+for file in *.org; do
+    [ "$file" = "review-agenda.org" ] && continue
+
+    # Find lines with ⚠️ or 👀 headings
+    matches=$(grep -n "^\*.*⚠️\|^\*.*👀" "$file" 2>/dev/null || true)
+
+    if [ -n "$matches" ]; then
+        count=$(echo "$matches" | wc -l | tr -d ' ')
+        total=$((total + count))
+        echo "** [[file:$file][$file]] ($count items)"
+        echo "$matches" | while IFS=: read -r linenum content; do
+            # Extract the heading title (remove stars and TODO keyword)
+            title=$(echo "$content" | sed 's/^\*\+ //' | sed 's/^⚠️ //' | sed 's/^👀 //')
+            echo "   - [[file:$file::$linenum][$title]]"
+        done
+        echo ""
+    fi
+done
+
+if [ "$total" -eq 0 ]; then
+    echo "No items marked with ⚠️ or 👀 found. All documentation reviewed!"
+else
+    echo "Total: $total items need review"
+fi
+\end{minted}
+
+
+
+\begin{verbatim}
+* Review Agenda
+
+** [[file:10-export.org][10-export.org]] (1 items)
+   - [[file:10-export.org::259][*** ⚠️ PDF Viewer Panel with Bidirectional Sync]]
+
+** [[file:25-commands.org][25-commands.org]] (20 items)
+   - [[file:25-commands.org::474][** ⚠️ BibTeX Speed Commands]]
+   - [[file:25-commands.org::481][*** ⚠️ Navigation]]
+   - [[file:25-commands.org::489][*** ⚠️ Formatting]]
+   - [[file:25-commands.org::499][*** ⚠️ Access]]
+   - [[file:25-commands.org::510][*** ⚠️ OpenAlex Integration]]
+   - [[file:25-commands.org::518][*** ⚠️ Actions]]
+   - [[file:25-commands.org::529][*** ⚠️ File-Wide Commands]]
+   - [[file:25-commands.org::658][* ⚠️ Word Case & Navigation]]
+   - [[file:25-commands.org::771][* ⚠️ LaTeX]]
+   - [[file:25-commands.org::775][** ⚠️ Section Navigation]]
+   - [[file:25-commands.org::788][** ⚠️ Environment Navigation]]
+   - [[file:25-commands.org::798][** ⚠️ Structure Editing]]
+   - [[file:25-commands.org::816][** ⚠️ Environment Manipulation]]
+   - [[file:25-commands.org::831][** ⚠️ Compilation and PDF Viewing]]
+   - [[file:25-commands.org::848][** ⚠️ Error Navigation]]
+   - [[file:25-commands.org::856][** ⚠️ Insertion Commands]]
+   - [[file:25-commands.org::864][** ⚠️ Utilities]]
+   - [[file:25-commands.org::873][** ⚠️ Speed Commands]]
+   - [[file:25-commands.org::898][** ⚠️ Environment Speed Commands]]
+   - [[file:25-commands.org::921][** ⚠️ LaTeX Cache Management]]
+
+** [[file:33-latex-navigation.org][33-latex-navigation.org]] (4 items)
+   - [[file:33-latex-navigation.org::524][*** 👀 Bidirectional Sync]]
+   - [[file:33-latex-navigation.org::537][*** 👀 Debug Popup Setting]]
+   - [[file:33-latex-navigation.org::665][* ⚠️ Error Navigation]]
+   - [[file:33-latex-navigation.org::768][** 👀 Setup]]
+
+Total: 25 items need review
+\end{verbatim}
+
+
+\section{Current Review Status}
+\label{sec-current-review-status}
+% Unknown element type: property-drawer
+
+
+The results from running the above block will appear here after execution.
+Items link directly to the source file and line number for quick navigation.
+
+\subsection{Workflow}
+\label{sec-workflow}
+\begin{enumerate}
+\item Run the source block above with `C-c C-c'
+
+\item Click on any item link to jump to that heading
+
+\item Review the content
+
+\item Change the heading's TODO state from ⚠️ to ✅ when satisfied
+
+\item Re-run the block to update the agenda
+
+\end{enumerate}
+
+\subsection{Legend}
+\label{sec-legend}
+\begin{tabular}{ll}
+\toprule
+State & Meaning \\
+\midrule
+⚠️ & New heading, needs review \\
+👀 & Changed heading, needs review \\
+✅ & Reviewed and approved \\
+\bottomrule
+\end{tabular}
+
+
+\section{Add Review Markers to Unmarked Headings}
+\label{sec-add-review-markers-to-unmarked-headings}
+Run this block to add ⚠️ to all headings that do not have a TODO state.
+
+
+\begin{minted}{python}
+import os, re
+
+TODO_STATES = ["⚠️", "👀", "✅", "TODO", "DONE", "NEXT", "WAITING", "CANCELLED"]
+
+def has_todo(line):
+    m = re.match(r"^\*+\s+(.*)$", line)
+    if not m: return True
+    first = m.group(1).split()[0] if m.group(1).split() else ""
+    return first in TODO_STATES
+
+total = 0
+for fname in sorted(os.listdir(".")):
+    if not fname.endswith(".org") or fname == "review-agenda.org": continue
+    with open(fname, "r") as f: lines = f.readlines()
+    new_lines, changes = [], []
+    for i, line in enumerate(lines):
+        if re.match(r"^\*+\s", line) and not has_todo(line):
+            new_lines.append(re.sub(r"^(\*+\s+)", r"\1⚠️ ", line))
+            changes.append(f"  Line {i+1}: {line.strip()}")
+        else:
+            new_lines.append(line)
+    if changes:
+        with open(fname, "w") as f: f.writelines(new_lines)
+        print(f"\n{fname}:")
+        for c in changes: print(c)
+        total += len(changes)
+
+print(f"\nTotal: {total} headings updated" if total else "All headings have TODO states.")
+\end{minted}
+
+\section{Add Review Markers (TypeScript API)}
+\label{sec-add-review-markers-typescript-api}
+Uses the scimax org modification API to add ⚠️ markers to unmarked headings.
+
+
+\begin{minted}{typescript}
+import { org } from './src/parser/orgModify';
+import * as fs from 'fs';
+
+const TODO_STATES = ['⚠️', '👀', '✅', 'TODO', 'DONE', 'NEXT', 'WAITING', 'CANCELLED'];
+let total = 0;
+
+for (const fname of fs.readdirSync('.').filter(f => f.endsWith('.org') && f !== 'review-agenda.org')) {
+    const doc = org.parseFile(fname);
+    let changes: string[] = [];
+
+    org.mapHeadlines(doc, h => {
+        if (!h.properties.todoKeyword || !TODO_STATES.includes(h.properties.todoKeyword)) {
+            h.properties.todoKeyword = '⚠️';
+            h.properties.todoType = 'todo';
+            changes.push(`  Line ${h.properties.lineNumber}: ${h.properties.rawValue}`);
+        }
+    });
+
+    if (changes.length > 0) {
+        org.writeFile(fname, doc);
+        console.log(`\n${fname}:`);
+        changes.forEach(c => console.log(c));
+        total += changes.length;
+    }
+}
+
+console.log(total > 0 ? `\nTotal: ${total} headings updated` : 'All headings have TODO states.');
+\end{minted}
+
+\end{document}

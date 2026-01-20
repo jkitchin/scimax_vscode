@@ -421,6 +421,93 @@ export async function sentenceCaseTitle(): Promise<void> {
 }
 
 /**
+ * Wrap selected text or word at cursor in curly braces for case protection
+ * Works in any file type, but designed for BibTeX
+ */
+export async function wrapBraces(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const selection = editor.selection;
+
+    if (!selection.isEmpty) {
+        // Wrap selected text
+        const selectedText = editor.document.getText(selection);
+        await editor.edit(editBuilder => {
+            editBuilder.replace(selection, `{${selectedText}}`);
+        });
+    } else {
+        // Wrap word at cursor
+        const wordRange = editor.document.getWordRangeAtPosition(selection.active);
+        if (wordRange) {
+            const word = editor.document.getText(wordRange);
+            await editor.edit(editBuilder => {
+                editBuilder.replace(wordRange, `{${word}}`);
+            });
+        } else {
+            vscode.window.showWarningMessage('No word at cursor to wrap');
+        }
+    }
+}
+
+/**
+ * Extract raw field values from BibTeX entry text, preserving inner braces
+ */
+function extractRawFields(entryText: string): Record<string, string> {
+    const fields: Record<string, string> = {};
+
+    // Match field = {value} or field = "value" patterns
+    const fieldRegex = /(\w+)\s*=\s*/g;
+    let match;
+
+    while ((match = fieldRegex.exec(entryText)) !== null) {
+        const fieldName = match[1].toLowerCase();
+        const valueStart = match.index + match[0].length;
+
+        if (valueStart >= entryText.length) continue;
+
+        const firstChar = entryText[valueStart];
+        let value: string | null = null;
+
+        if (firstChar === '{') {
+            // Extract braced value preserving inner braces
+            let depth = 1;
+            let i = valueStart + 1;
+            while (i < entryText.length && depth > 0) {
+                if (entryText[i] === '{') depth++;
+                else if (entryText[i] === '}') depth--;
+                i++;
+            }
+            if (depth === 0) {
+                value = entryText.slice(valueStart + 1, i - 1);
+            }
+        } else if (firstChar === '"') {
+            // Extract quoted value
+            let i = valueStart + 1;
+            while (i < entryText.length && entryText[i] !== '"') {
+                if (entryText[i] === '\\' && i + 1 < entryText.length) i++;
+                i++;
+            }
+            if (i < entryText.length) {
+                value = entryText.slice(valueStart + 1, i);
+            }
+        } else {
+            // Numeric or bare value
+            const endMatch = entryText.slice(valueStart).match(/^([^,}\n]+)/);
+            if (endMatch) {
+                value = endMatch[1].trim();
+            }
+        }
+
+        if (value !== null) {
+            fields[fieldName] = value;
+        }
+    }
+
+    return fields;
+}
+
+/**
  * Clean/format the current entry
  */
 export async function cleanEntry(): Promise<void> {
@@ -440,24 +527,41 @@ export async function cleanEntry(): Promise<void> {
         return;
     }
 
-    // Clean fields
+    // Extract raw fields from document text to preserve inner braces
+    const entryText = document.getText(range);
+    const rawFields = extractRawFields(entryText);
+
+    // Clean fields while preserving inner braces
     const cleanedFields: Record<string, string> = {};
 
-    for (const [field, value] of Object.entries(entry.fields)) {
+    for (const [field, value] of Object.entries(rawFields)) {
         // Normalize field name
         const normalizedField = field.toLowerCase();
 
-        // Clean value
+        // Clean value - only normalize whitespace, preserve braces
         let cleanedValue = value
             // Normalize whitespace
             .replace(/\s+/g, ' ')
             .trim();
 
-        // Remove duplicate braces
-        if (cleanedValue.startsWith('{') && cleanedValue.endsWith('}')) {
-            // Check for double braces like {{Title}}
-            if (cleanedValue.startsWith('{{') && cleanedValue.endsWith('}}')) {
+        // Remove duplicate outer braces only (e.g., {{Title}} -> {Title})
+        // But preserve inner braces for case protection
+        while (cleanedValue.startsWith('{') && cleanedValue.endsWith('}')) {
+            // Check if the braces are balanced and wrap the entire content
+            let depth = 0;
+            let isOuterBrace = true;
+            for (let i = 0; i < cleanedValue.length - 1; i++) {
+                if (cleanedValue[i] === '{') depth++;
+                else if (cleanedValue[i] === '}') depth--;
+                if (depth === 0 && i < cleanedValue.length - 1) {
+                    isOuterBrace = false;
+                    break;
+                }
+            }
+            if (isOuterBrace && cleanedValue.startsWith('{{')) {
                 cleanedValue = cleanedValue.slice(1, -1);
+            } else {
+                break;
             }
         }
 
@@ -2324,7 +2428,8 @@ export function registerBibtexSpeedCommands(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand('scimax.bibtex.downcaseEntry', downcaseEntry),
         vscode.commands.registerCommand('scimax.bibtex.titleCase', titleCaseTitle),
         vscode.commands.registerCommand('scimax.bibtex.sentenceCase', sentenceCaseTitle),
-        vscode.commands.registerCommand('scimax.bibtex.cleanEntry', cleanEntry)
+        vscode.commands.registerCommand('scimax.bibtex.cleanEntry', cleanEntry),
+        vscode.commands.registerCommand('scimax.bibtex.wrapBraces', wrapBraces)
     );
 
     // Access commands

@@ -1609,6 +1609,10 @@
         "title": "Scimax: End of Buffer"
       },
       {
+        "command": "scimax.replaceNonAscii",
+        "title": "Scimax: Replace Non-ASCII Characters"
+      },
+      {
         "command": "scimax.org.jumpToHeading",
         "title": "Scimax: Jump to Heading"
       },
@@ -2502,6 +2506,10 @@
       {
         "command": "scimax.bibtex.cleanEntry",
         "title": "Scimax BibTeX: Clean/Format Entry"
+      },
+      {
+        "command": "scimax.bibtex.wrapBraces",
+        "title": "Scimax BibTeX: Wrap Selection/Word in Braces (Case Protection)"
       },
       {
         "command": "scimax.bibtex.openPdf",
@@ -4030,6 +4038,12 @@
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {
+        "command": "scimax.bibtex.wrapBraces",
+        "key": "ctrl+shift+]",
+        "mac": "cmd+shift+]",
+        "when": "editorTextFocus && editorLangId == 'bibtex'"
+      },
+      {
         "command": "scimax.bibtex.openPdf",
         "key": "o",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
@@ -4708,6 +4722,11 @@
           "type": "boolean",
           "default": false,
           "description": "Automatically format LaTeX documents on save using latexindent"
+        },
+        "scimax.latex.autoCompileOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically compile LaTeX and refresh PDF when saving (only when PDF panel is open)"
         },
         "scimax.latex.latexindentPath": {
           "type": "string",

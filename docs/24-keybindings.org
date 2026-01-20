@@ -356,11 +356,13 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 |-----+--------------------------|
 | ?   | Show speed commands help |
 
-** ⚠️ BibTeX Speed Commands
+** ✅ BibTeX Speed Commands
+CLOSED: [2026-01-19 Mon 18:18]
 
 Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@article{=, =@book{=).
 
-*** ⚠️ Navigation
+*** ✅ Navigation
+CLOSED: [2026-01-19 Mon 18:18]
 
 | Key | Action         |
 |-----+----------------|
@@ -368,7 +370,8 @@ Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@art
 | p   | Previous entry |
 | j   | Jump to entry  |
 
-*** ⚠️ Formatting
+*** ✅ Formatting
+CLOSED: [2026-01-19 Mon 18:18]
 
 | Key | Action              |
 |-----+---------------------|
@@ -378,7 +381,16 @@ Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@art
 | S   | Sentence case title |
 | c   | Clean/format entry  |
 
-*** ⚠️ Access
+**** 👀 Wrap in Braces (Case Protection)
+
+| Key         | Action                                      |
+|-------------+---------------------------------------------|
+| Cmd+Shift+] | Wrap selection or word at cursor in braces |
+
+Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.
+
+*** ✅ Access
+CLOSED: [2026-01-19 Mon 18:18]
 
 | Key | Action               |
 |-----+----------------------|
@@ -389,7 +401,8 @@ Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@art
 | x   | CrossRef             |
 | w   | Web of Science       |
 
-*** ⚠️ OpenAlex Integration
+*** ✅ OpenAlex Integration
+CLOSED: [2026-01-19 Mon 18:18]
 
 | Key | Action                        |
 |-----+-------------------------------|
@@ -397,7 +410,8 @@ Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@art
 | R   | Show related works (OpenAlex) |
 | r   | Show references (OpenAlex)    |
 
-*** ⚠️ Actions
+*** ✅ Actions
+CLOSED: [2026-01-19 Mon 18:18]
 
 | Key | Action               |
 |-----+----------------------|
@@ -408,15 +422,18 @@ Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@art
 | U   | Update from web      |
 | ?   | Show help            |
 
-* Toggle Speed Commands
+* ✅ Toggle Speed Commands
+CLOSED: [2026-01-19 Mon 18:19]
 
 | Key       | Action                       |
 |-----------+------------------------------|
 | C-c C-x s | Toggle speed commands on/off |
 
-* Additional Notes
+* ✅ Additional Notes
+CLOSED: [2026-01-19 Mon 18:19]
 
-** Context-Dependent Keybindings
+** ✅ Context-Dependent Keybindings
+CLOSED: [2026-01-19 Mon 18:19]
 
 Many keybindings are context-aware and behave differently depending on cursor position:
 
@@ -425,7 +442,8 @@ Many keybindings are context-aware and behave differently depending on cursor po
 - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table
 - <return> opens links when cursor is on a link
 
-** When Conditions
+** ✅ When Conditions
+CLOSED: [2026-01-19 Mon 18:19]
 
 Some keybindings only work in specific contexts:
 - Org-mode/Markdown files: Most document structure commands
@@ -434,7 +452,8 @@ Some keybindings only work in specific contexts:
 - In source blocks: Block execution
 - At heading start: Speed commands
 
-** Mac vs Windows/Linux
+** ✅ Mac vs Windows/Linux
+CLOSED: [2026-01-19 Mon 18:19]
 
 Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd):
 - s-S-j (journal)
@@ -443,11 +462,13 @@ Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exce
 - s-S-r (reload window)
 - C-s-v (database menu)
 
-* LaTeX Navigation
+* ✅ LaTeX Navigation
+CLOSED: [2026-01-19 Mon 18:20]
 
 These keybindings are active in LaTeX files (=.tex=):
 
-** Section Navigation
+** ✅ Section Navigation
+CLOSED: [2026-01-19 Mon 18:19]
 
 | Key         | Action                       |
 |-------------+------------------------------|
@@ -459,7 +480,8 @@ These keybindings are active in LaTeX files (=.tex=):
 | C-c C-j     | Jump to any section          |
 | C-c j       | Jump to any section (alt)    |
 
-** Structure Editing
+** ✅ Structure Editing
+CLOSED: [2026-01-19 Mon 18:20]
 
 | Key              | Action                     |
 |------------------+----------------------------|
@@ -471,7 +493,8 @@ These keybindings are active in LaTeX files (=.tex=):
 | Alt+Down         | Move section down          |
 | C-c @            | Mark (select) section      |
 
-** Environment Commands
+** ✅ Environment Commands
+CLOSED: [2026-01-19 Mon 18:20]
 
 | Key       | Action                          |
 |-----------+---------------------------------|
@@ -483,14 +506,16 @@ These keybindings are active in LaTeX files (=.tex=):
 | C-c l     | Jump to label                   |
 | C-c C-l   | Add label to environment        |
 
-** Folding
+** ✅ Folding
+CLOSED: [2026-01-19 Mon 18:20]
 
 | Key       | Action            |
 |-----------+-------------------|
 | Tab       | Toggle fold       |
 | Shift+Tab | Cycle global fold |
 
-** ⚠️ Compile and Preview
+** ✅ Compile and Preview
+CLOSED: [2026-01-19 Mon 18:20]
 
 | Key       | Action                      |
 |-----------+-----------------------------|
@@ -503,9 +528,11 @@ These keybindings are active in LaTeX files (=.tex=):
 
 See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.
 
-* Quick Reference Card
+* ✅ Quick Reference Card
+CLOSED: [2026-01-19 Mon 18:20]
 
-** Most Common Commands
+** ✅ Most Common Commands
+CLOSED: [2026-01-19 Mon 18:20]
 
 | Command            | Keybinding   |
 |--------------------+--------------|
@@ -520,7 +547,8 @@ See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complet
 | Fuzzy search       | C-c s        |
 | Hydra menu         | C-c m        |
 
-** Most Common Speed Commands
+** ✅ Most Common Speed Commands
+CLOSED: [2026-01-19 Mon 18:20]
 
 | Speed Key | Action                 |
 |-----------+------------------------|
@@ -531,14 +559,16 @@ See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complet
 | t         | Cycle TODO             |
 | l/r       | Promote/Demote subtree |
 
-* Further Help
+* ✅ Further Help
+CLOSED: [2026-01-19 Mon 18:20]
 
 - Use C-c m to open the Hydra menu for guided command discovery
 - Use M-x to search all commands by name
 - Enable speed commands help with ? when at heading start
 - See [[file:00-index.org][Documentation Index]] for comprehensive guides
 
-* Navigation
+* ✅ Navigation
+CLOSED: [2026-01-19 Mon 18:20]
 
 - Previous: [[file:23-speed-commands.org][Speed Commands]]
 - Index: [[file:00-index.org][Documentation Index]]

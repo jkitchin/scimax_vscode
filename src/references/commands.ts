@@ -180,15 +180,103 @@ export function registerReferenceCommands(
     // Fetch from DOI
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.fetchFromDOI', async () => {
+            // IMPORTANT: Capture target bib file NOW, before any dialogs change focus
+            let targetBibFile: string | undefined;
+            const activeEditor = vscode.window.activeTextEditor;
+
+            if (activeEditor) {
+                const langId = activeEditor.document.languageId;
+                const docPath = activeEditor.document.uri.fsPath;
+                const docDir = require('path').dirname(docPath);
+
+                if (langId === 'bibtex') {
+                    // If in a bib file, use that
+                    targetBibFile = docPath;
+                    console.log('Target: active bibtex file');
+                } else if (langId === 'org' || langId === 'latex' || langId === 'markdown') {
+                    // Look for bibliography reference in the document
+                    const text = activeEditor.document.getText();
+
+                    // Org-mode: #+bibliography: file.bib or bibliography:file.bib
+                    const orgBibMatch = text.match(/^#\+bibliography:\s*(.+)$/mi) ||
+                                        text.match(/bibliography:([^\s\]]+\.bib)/i);
+                    // LaTeX: \bibliography{file} or \addbibresource{file.bib}
+                    const latexBibMatch = text.match(/\\bibliography\{([^}]+)\}/) ||
+                                          text.match(/\\addbibresource\{([^}]+)\}/);
+
+                    let bibRef = orgBibMatch?.[1]?.trim() || latexBibMatch?.[1]?.trim();
+
+                    if (bibRef) {
+                        // Resolve relative path
+                        if (!bibRef.endsWith('.bib')) bibRef += '.bib';
+                        const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+                        bibRef = bibRef.replace(/^~/, homeDir);
+                        if (!require('path').isAbsolute(bibRef)) {
+                            bibRef = require('path').join(docDir, bibRef);
+                        }
+                        if (require('fs').existsSync(bibRef)) {
+                            targetBibFile = bibRef;
+                            console.log('Target: bibliography from document:', bibRef);
+                        }
+                    }
+                }
+            }
+
+            // Fall back to configured bibliography files
+            if (!targetBibFile) {
+                const config = manager.getConfig();
+                if (config.bibliographyFiles.length > 0) {
+                    const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+                    targetBibFile = config.bibliographyFiles[0].replace(/^~/, homeDir);
+                    console.log('Target: configured bibliography:', targetBibFile);
+                }
+            }
+
+            // Fall back to any open bib file
+            if (!targetBibFile) {
+                const openBib = vscode.workspace.textDocuments.find(
+                    d => d.languageId === 'bibtex'
+                );
+                if (openBib) {
+                    targetBibFile = openBib.uri.fsPath;
+                    console.log('Target: open bibtex document:', targetBibFile);
+                }
+            }
+
+            console.log('Final target bib file:', targetBibFile);
+
+            // Helper to extract DOI from various formats
+            const extractDoi = (text: string): string | null => {
+                const trimmed = text.trim();
+                // Remove common DOI URL prefixes
+                const cleaned = trimmed
+                    .replace(/^https?:\/\/(dx\.)?doi\.org\//, '')
+                    .replace(/^doi:/, '');
+                if (cleaned.startsWith('10.')) {
+                    return cleaned;
+                }
+                return null;
+            };
+
+            // Check clipboard for DOI to prefill
+            let prefillValue = '';
+            try {
+                const clipboardText = await vscode.env.clipboard.readText();
+                if (clipboardText && extractDoi(clipboardText)) {
+                    prefillValue = clipboardText.trim();
+                }
+            } catch {
+                // Clipboard read failed, continue without prefill
+            }
+
             const doi = await vscode.window.showInputBox({
                 prompt: 'Enter DOI',
                 placeHolder: '10.1000/example or https://doi.org/10.1000/example',
+                value: prefillValue,
                 validateInput: (value) => {
                     if (!value) return 'DOI is required';
-                    // Basic DOI validation
-                    const cleaned = value.replace(/^https?:\/\/doi\.org\//, '');
-                    if (!cleaned.startsWith('10.')) {
-                        return 'DOI should start with 10.';
+                    if (!extractDoi(value)) {
+                        return 'DOI should start with 10. (or be a doi.org/dx.doi.org URL)';
                     }
                     return null;
                 }
@@ -196,37 +284,54 @@ export function registerReferenceCommands(
 
             if (!doi) return;
 
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: 'Fetching from CrossRef...',
-                cancellable: false
-            }, async () => {
-                try {
-                    const entry = await manager.fetchFromDOI(doi);
+            // Fetch the entry with progress indicator
+            let entry: any = null;
+            try {
+                entry = await vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: 'Fetching from CrossRef...',
+                    cancellable: false
+                }, async () => {
+                    return await manager.fetchFromDOI(doi);
+                });
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to fetch DOI: ${error}`);
+                return;
+            }
 
-                    if (!entry) {
-                        vscode.window.showErrorMessage(`No entry found for DOI: ${doi}`);
-                        return;
-                    }
+            if (!entry) {
+                vscode.window.showErrorMessage(`No entry found for DOI: ${doi}`);
+                return;
+            }
 
-                    // Show preview
-                    const preview = formatCitation(entry, 'full');
-                    const action = await vscode.window.showInformationMessage(
-                        `Found: ${preview.substring(0, 100)}...`,
-                        'Add to Bibliography', 'Copy BibTeX', 'Cancel'
+            // Check if we already have this DOI in the target file only
+            if (targetBibFile && entry.doi) {
+                const existingEntry = manager.findByDOIInFile(entry.doi, targetBibFile);
+                if (existingEntry) {
+                    const action = await vscode.window.showWarningMessage(
+                        `Already have entry "${existingEntry.key}" for this DOI`,
+                        'Show Entry', 'Cancel'
                     );
-
-                    if (action === 'Add to Bibliography') {
-                        await manager.addEntry(entry);
-                    } else if (action === 'Copy BibTeX') {
-                        const { entryToBibTeX } = await import('./bibtexParser');
-                        await vscode.env.clipboard.writeText(entryToBibTeX(entry));
-                        vscode.window.showInformationMessage('BibTeX copied to clipboard');
+                    if (action === 'Show Entry') {
+                        await manager.showEntryInFile(existingEntry);
                     }
-                } catch (error) {
-                    vscode.window.showErrorMessage(`Failed to fetch DOI: ${error}`);
+                    return;
                 }
-            });
+            }
+
+            // Show preview before adding
+            const preview = formatCitation(entry, 'full');
+            const action = await vscode.window.showInformationMessage(
+                `${entry.key}: ${preview.substring(0, 150)}...`,
+                'Add', 'Cancel'
+            );
+
+            if (action !== 'Add') {
+                return;
+            }
+
+            // Generate unique key if needed, add to the captured target file
+            await manager.addEntryWithUniqueKey(entry, targetBibFile);
         })
     );
 

@@ -274,6 +274,118 @@ export class ReferenceManager {
     }
 
     /**
+     * Find entry by DOI in a specific file only
+     */
+    public findByDOIInFile(doi: string, filePath: string): BibEntry | undefined {
+        if (!doi || !filePath) return undefined;
+        const normalizedDoi = doi.toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+
+        // Check if file is open in editor (get latest content)
+        const openDoc = vscode.workspace.textDocuments.find(
+            doc => doc.uri.fsPath === filePath
+        );
+
+        const content = openDoc ? openDoc.getText() :
+            (fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '');
+
+        if (!content) return undefined;
+
+        const result = parseBibTeX(content);
+        for (const entry of result.entries) {
+            if (entry.doi) {
+                const entryDoi = entry.doi.toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+                if (entryDoi === normalizedDoi) {
+                    return entry;
+                }
+            }
+        }
+        return undefined;
+    }
+
+    /**
+     * Find entry by DOI, returns entry and source file
+     */
+    public findByDOI(doi: string): { entry: BibEntry; sourceFile: string } | undefined {
+        if (!doi) return undefined;
+        const normalizedDoi = doi.toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+
+        // Search through each bib file to find the entry and its source
+        for (const bibFile of this.config.bibliographyFiles) {
+            const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+            const bibPath = bibFile.replace('~', homeDir);
+
+            if (!fs.existsSync(bibPath)) continue;
+
+            const content = fs.readFileSync(bibPath, 'utf8');
+            const result = parseBibTeX(content);
+
+            for (const entry of result.entries) {
+                if (entry.doi) {
+                    const entryDoi = entry.doi.toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+                    if (entryDoi === normalizedDoi) {
+                        return { entry, sourceFile: bibPath };
+                    }
+                }
+            }
+        }
+
+        // Also check any open bib documents not in config
+        for (const doc of vscode.workspace.textDocuments) {
+            if (doc.languageId === 'bibtex') {
+                const bibPath = doc.uri.fsPath;
+                // Skip if already checked via config
+                const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+                const configPaths = this.config.bibliographyFiles.map(f => f.replace('~', homeDir));
+                if (configPaths.includes(bibPath)) continue;
+
+                const result = parseBibTeX(doc.getText());
+                for (const entry of result.entries) {
+                    if (entry.doi) {
+                        const entryDoi = entry.doi.toLowerCase().replace(/^https?:\/\/(dx\.)?doi\.org\//, '');
+                        if (entryDoi === normalizedDoi) {
+                            return { entry, sourceFile: bibPath };
+                        }
+                    }
+                }
+            }
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Show entry in its source file
+     */
+    public async showEntryInFile(entry: BibEntry): Promise<void> {
+        // Find which file contains this entry
+        for (const bibFile of this.config.bibliographyFiles) {
+            const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+            const bibPath = bibFile.replace('~', homeDir);
+
+            if (!fs.existsSync(bibPath)) continue;
+
+            const content = fs.readFileSync(bibPath, 'utf8');
+            const keyPattern = new RegExp(`@\\w+\\s*\\{\\s*${entry.key}\\s*,`, 'i');
+            const match = keyPattern.exec(content);
+
+            if (match) {
+                // Found the entry - open file and go to position
+                const doc = await vscode.workspace.openTextDocument(bibPath);
+                const editor = await vscode.window.showTextDocument(doc);
+
+                // Find line number
+                const lines = content.substring(0, match.index).split('\n');
+                const lineNumber = lines.length - 1;
+
+                const pos = new vscode.Position(lineNumber, 0);
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.InCenter);
+                return;
+            }
+        }
+    }
+
+    /**
      * Get PDF path for an entry
      */
     public getPdfPath(entry: BibEntry): string | undefined {
@@ -405,49 +517,161 @@ export class ReferenceManager {
     public async addEntry(entry: BibEntry, targetFile?: string): Promise<void> {
         // Determine target file
         let bibPath = targetFile;
+        let sourceReason = 'provided as argument';
+
         if (!bibPath) {
-            if (this.config.bibliographyFiles.length > 0) {
+            // First priority: currently focused .bib file
+            const activeEditor = vscode.window.activeTextEditor;
+            if (activeEditor && activeEditor.document.languageId === 'bibtex') {
+                bibPath = activeEditor.document.uri.fsPath;
+                sourceReason = 'active editor is bibtex';
+            }
+            // Second priority: any visible .bib file editor
+            if (!bibPath) {
+                const visibleBibEditor = vscode.window.visibleTextEditors.find(
+                    editor => editor.document.languageId === 'bibtex'
+                );
+                if (visibleBibEditor) {
+                    bibPath = visibleBibEditor.document.uri.fsPath;
+                    sourceReason = 'visible bibtex editor';
+                }
+            }
+            // Third priority: any open .bib file in workspace
+            if (!bibPath) {
+                const openBibDoc = vscode.workspace.textDocuments.find(
+                    doc => doc.languageId === 'bibtex'
+                );
+                if (openBibDoc) {
+                    bibPath = openBibDoc.uri.fsPath;
+                    sourceReason = 'open bibtex document';
+                }
+            }
+            // Fourth priority: first configured bibliography file
+            if (!bibPath && this.config.bibliographyFiles.length > 0) {
                 const homeDir = process.env.HOME || process.env.USERPROFILE || '';
                 bibPath = this.config.bibliographyFiles[0].replace('~', homeDir);
-            } else {
-                // Create default bibliography
+                sourceReason = 'configured bibliography file';
+            }
+            // Last resort: create default bibliography
+            if (!bibPath) {
                 const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
                 if (workspaceFolder) {
                     bibPath = path.join(workspaceFolder.uri.fsPath, 'references.bib');
+                    sourceReason = 'default references.bib in workspace';
                 } else {
                     throw new Error('No bibliography file configured and no workspace open');
                 }
             }
         }
 
-        // Check for duplicate key
-        if (this.entries.has(entry.key)) {
-            const action = await vscode.window.showWarningMessage(
-                `Entry with key "${entry.key}" already exists. Replace it?`,
-                'Replace', 'Generate New Key', 'Cancel'
-            );
-
-            if (action === 'Cancel') {
-                return;
-            } else if (action === 'Generate New Key') {
-                entry.key = generateKey(
-                    entry.author || 'unknown',
-                    entry.year || new Date().getFullYear().toString(),
-                    entry.title || 'untitled'
-                );
-            }
-        }
+        console.log('Target bib file:', bibPath, '- reason:', sourceReason);
+        console.log('Open documents:', vscode.workspace.textDocuments.map(d => `${d.languageId}: ${d.uri.fsPath}`));
 
         // Append to file
         const bibtex = entryToBibTeX(entry);
-        const existingContent = fs.existsSync(bibPath) ? fs.readFileSync(bibPath, 'utf8') : '';
-        const newContent = existingContent + '\n' + bibtex;
-        fs.writeFileSync(bibPath, newContent, 'utf8');
 
-        // Reload
+        console.log('Adding BibTeX entry to:', bibPath);
+
+        // Check if the file is open in an editor - if so, use workspace edit for immediate update
+        const openDoc = vscode.workspace.textDocuments.find(
+            doc => doc.uri.fsPath === bibPath
+        );
+        console.log('File is open in editor:', !!openDoc);
+
+        if (openDoc) {
+            // File is open - use workspace edit to update the editor directly
+            const edit = new vscode.WorkspaceEdit();
+            const lastLine = openDoc.lineCount - 1;
+            const lastChar = openDoc.lineAt(lastLine).text.length;
+            const endPosition = new vscode.Position(lastLine, lastChar);
+            edit.insert(openDoc.uri, endPosition, '\n' + bibtex);
+            await vscode.workspace.applyEdit(edit);
+            // Save the document
+            await openDoc.save();
+        } else {
+            // File is not open - write directly
+            const existingContent = fs.existsSync(bibPath) ? fs.readFileSync(bibPath, 'utf8') : '';
+            const newContent = existingContent + '\n' + bibtex;
+            fs.writeFileSync(bibPath, newContent, 'utf8');
+        }
+
+        // Reload bibliography cache
         await this.loadBibliographies();
 
-        vscode.window.showInformationMessage(`Added entry: ${entry.key}`);
+        const fileName = path.basename(bibPath);
+        vscode.window.showInformationMessage(`Added entry "${entry.key}" to ${fileName}`);
+    }
+
+    /**
+     * Add entry with unique key (appends suffix if key exists)
+     */
+    public async addEntryWithUniqueKey(entry: BibEntry, targetFile?: string): Promise<void> {
+        // Generate unique key if needed
+        let key = entry.key;
+        let suffix = 0;
+        while (this.entries.has(key)) {
+            suffix++;
+            // Append letter suffix: a, b, c, ...
+            const letter = String.fromCharCode(96 + suffix); // 'a' = 97
+            key = `${entry.key}${letter}`;
+        }
+        entry.key = key;
+
+        await this.addEntry(entry, targetFile);
+    }
+
+    /**
+     * Remove entry from bibliography file by key
+     */
+    public async removeEntry(key: string): Promise<boolean> {
+        const entry = this.entries.get(key);
+        if (!entry) {
+            return false;
+        }
+
+        // Find which file contains this entry
+        for (const bibFile of this.config.bibliographyFiles) {
+            const homeDir = process.env.HOME || process.env.USERPROFILE || '';
+            const bibPath = bibFile.replace('~', homeDir);
+
+            if (!fs.existsSync(bibPath)) continue;
+
+            const content = fs.readFileSync(bibPath, 'utf8');
+
+            // Match the entry pattern: @type{key, ... }
+            // This regex finds the entire entry block
+            const entryPattern = new RegExp(
+                `@\\w+\\s*\\{\\s*${key}\\s*,[^@]*?\\n\\}`,
+                'gs'
+            );
+
+            if (entryPattern.test(content)) {
+                const newContent = content.replace(entryPattern, '').replace(/\n{3,}/g, '\n\n');
+
+                // Check if file is open in editor
+                const openDoc = vscode.workspace.textDocuments.find(
+                    doc => doc.uri.fsPath === bibPath
+                );
+
+                if (openDoc) {
+                    const edit = new vscode.WorkspaceEdit();
+                    const fullRange = new vscode.Range(
+                        new vscode.Position(0, 0),
+                        new vscode.Position(openDoc.lineCount - 1, openDoc.lineAt(openDoc.lineCount - 1).text.length)
+                    );
+                    edit.replace(openDoc.uri, fullRange, newContent);
+                    await vscode.workspace.applyEdit(edit);
+                    await openDoc.save();
+                } else {
+                    fs.writeFileSync(bibPath, newContent, 'utf8');
+                }
+
+                await this.loadBibliographies();
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
