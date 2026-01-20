@@ -2910,37 +2910,52 @@ async function toggleAllJournalAbbreviations(context: vscode.ExtensionContext, a
     const service = await getAbbrevService(context);
     let changed = 0;
     let notFound: string[] = [];
+    let errors: string[] = [];
 
     // We need to process entries from bottom to top to maintain correct ranges
     let newText = text;
 
     for (const entry of result.entries.reverse()) {
-        const journalField = entry.fields.journal || entry.fields.journaltitle;
-        if (!journalField) continue;
+        try {
+            const journalField = entry.fields.journal || entry.fields.journaltitle;
+            if (!journalField) continue;
 
-        const entryInfo = service.getEntry(journalField);
-        if (!entryInfo) {
-            notFound.push(journalField);
-            continue;
-        }
-
-        // Determine if we need to change
-        const isCurrentlyAbbreviated = service.getFullName(journalField) !== undefined;
-
-        if (abbreviate && !isCurrentlyAbbreviated) {
-            // Need to abbreviate
-            const abbrev = service.getAbbreviation(journalField);
-            if (abbrev) {
-                newText = replaceJournalInEntry(newText, entry.raw, journalField, abbrev);
-                changed++;
+            const entryInfo = service.getEntry(journalField);
+            if (!entryInfo) {
+                notFound.push(journalField);
+                continue;
             }
-        } else if (!abbreviate && isCurrentlyAbbreviated) {
-            // Need to expand
-            const full = service.getFullName(journalField);
-            if (full) {
-                newText = replaceJournalInEntry(newText, entry.raw, journalField, full);
-                changed++;
+
+            // Determine if we need to change
+            const isCurrentlyAbbreviated = service.getFullName(journalField) !== undefined;
+
+            if (abbreviate && !isCurrentlyAbbreviated) {
+                // Need to abbreviate
+                const abbrev = service.getAbbreviation(journalField);
+                if (abbrev) {
+                    const updatedText = replaceJournalInEntry(newText, entry.raw, journalField, abbrev);
+                    if (updatedText === newText) {
+                        errors.push(`Could not locate journal field in "${entry.key}"`);
+                    } else {
+                        newText = updatedText;
+                        changed++;
+                    }
+                }
+            } else if (!abbreviate && isCurrentlyAbbreviated) {
+                // Need to expand
+                const full = service.getFullName(journalField);
+                if (full) {
+                    const updatedText = replaceJournalInEntry(newText, entry.raw, journalField, full);
+                    if (updatedText === newText) {
+                        errors.push(`Could not locate journal field in "${entry.key}"`);
+                    } else {
+                        newText = updatedText;
+                        changed++;
+                    }
+                }
             }
+        } catch (err) {
+            errors.push(`Error processing "${entry.key}": ${err instanceof Error ? err.message : String(err)}`);
         }
     }
 
@@ -2976,7 +2991,18 @@ async function toggleAllJournalAbbreviations(context: vscode.ExtensionContext, a
     if (notFound.length > 0) {
         message += `. ${notFound.length} not found in database`;
     }
-    vscode.window.showInformationMessage(message);
+    if (errors.length > 0) {
+        message += `. ${errors.length} error(s)`;
+        // Log errors to output channel for details
+        console.warn('Journal abbreviation errors:', errors);
+        vscode.window.showWarningMessage(message, 'Show Details').then(action => {
+            if (action === 'Show Details') {
+                vscode.window.showErrorMessage(errors.join('\n'), { modal: true });
+            }
+        });
+    } else {
+        vscode.window.showInformationMessage(message);
+    }
 }
 
 /**
