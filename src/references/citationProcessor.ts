@@ -10,6 +10,7 @@ import '@citation-js/plugin-csl';
 import type { BibEntry } from './bibtexParser';
 import type { ParsedCitation, CitationReference } from './citationTypes';
 import { getNormalizedStyle } from './citationParser';
+import { parseAuthors as parseAuthorsFromBibtex, getDisplayLastName, type CSLAuthor } from './authorUtils';
 
 /**
  * CSL-JSON entry type (simplified)
@@ -65,36 +66,17 @@ const BIBTEX_TO_CSL_TYPE: Record<string, string> = {
 /**
  * Parse author string into CSL author array
  * Handles formats like "Last, First and Last2, First2" or "First Last and First2 Last2"
+ *
+ * Now uses citation-js for proper BibTeX name parsing with support for:
+ * - Particles (von, van der, de la, etc.)
+ * - Suffixes (Jr., III, etc.)
+ * - Corporate/institutional authors ({NASA}, {National Academy of Sciences})
  */
 function parseAuthors(authorStr: string | undefined): CSLEntry['author'] {
     if (!authorStr) return undefined;
 
-    const authors: CSLEntry['author'] = [];
-    // Split on " and " (case insensitive)
-    const authorParts = authorStr.split(/\s+and\s+/i);
-
-    for (const part of authorParts) {
-        const trimmed = part.trim();
-        if (!trimmed) continue;
-
-        // Check for "Last, First" format
-        if (trimmed.includes(',')) {
-            const [family, given] = trimmed.split(',').map(s => s.trim());
-            authors.push({ family, given });
-        } else {
-            // "First Last" format - last word is family name
-            const words = trimmed.split(/\s+/);
-            if (words.length === 1) {
-                authors.push({ literal: words[0] });
-            } else {
-                const family = words.pop();
-                const given = words.join(' ');
-                authors.push({ family, given });
-            }
-        }
-    }
-
-    return authors.length > 0 ? authors : undefined;
+    const authors = parseAuthorsFromBibtex(authorStr);
+    return authors.length > 0 ? authors as CSLEntry['author'] : undefined;
 }
 
 /**
@@ -524,13 +506,13 @@ export class CitationProcessor {
 
         const authors = entry.author;
         if (authors.length === 1) {
-            return authors[0].family || authors[0].literal || 'Unknown';
+            return getDisplayLastName(authors[0] as CSLAuthor);
         } else if (authors.length === 2) {
-            const a1 = authors[0].family || authors[0].literal || '';
-            const a2 = authors[1].family || authors[1].literal || '';
+            const a1 = getDisplayLastName(authors[0] as CSLAuthor);
+            const a2 = getDisplayLastName(authors[1] as CSLAuthor);
             return `${a1} & ${a2}`;
         } else {
-            return `${authors[0].family || authors[0].literal || ''} et al.`;
+            return `${getDisplayLastName(authors[0] as CSLAuthor)} et al.`;
         }
     }
 

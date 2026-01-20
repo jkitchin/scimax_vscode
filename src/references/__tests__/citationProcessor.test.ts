@@ -269,7 +269,8 @@ describe('CitationProcessor', () => {
             };
             processor.loadEntries([entry]);
             const csl = processor.getEntry('aristotle');
-            expect(csl?.author?.[0].literal).toBe('Aristotle');
+            // citation-js puts single names in family, not literal
+            expect(csl?.author?.[0].family || csl?.author?.[0].literal).toBe('Aristotle');
         });
 
         it('handles "First Last" author format', () => {

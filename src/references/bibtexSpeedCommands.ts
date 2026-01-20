@@ -10,6 +10,7 @@
 import * as vscode from 'vscode';
 import * as https from 'https';
 import { BibEntry, parseBibTeX, entryToBibTeX, formatAuthors } from './bibtexParser';
+import { getFirstAuthorKeyName } from './authorUtils';
 import {
     fetchOpenAlexWork,
     fetchCitingWorks,
@@ -1235,28 +1236,6 @@ function getAllKeysInDocument(document: vscode.TextDocument): Set<string> {
     return new Set(result.entries.map(e => e.key));
 }
 
-/**
- * Extract the last name from an author string
- * Handles formats like "John Smith", "Smith, John", "John von Smith"
- */
-function extractLastName(author: string | undefined): string {
-    if (!author) return 'unknown';
-
-    // Take first author if multiple (split by " and ")
-    const firstAuthor = author.split(/\s+and\s+/i)[0].trim();
-
-    // Handle "Last, First" format
-    if (firstAuthor.includes(',')) {
-        return firstAuthor.split(',')[0].trim();
-    }
-
-    // Handle "First Last" or "First von Last" format
-    const parts = firstAuthor.split(/\s+/);
-    if (parts.length === 0) return 'unknown';
-
-    // Return last part, but skip common prefixes if they're at the end
-    return parts[parts.length - 1];
-}
 
 /**
  * Extract meaningful words from a title for key generation
@@ -1306,10 +1285,8 @@ export async function generateKey(): Promise<void> {
         return;
     }
 
-    // Extract components for key
-    const lastName = extractLastName(entry.author || entry.fields.editor)
-        .toLowerCase()
-        .replace(/[^a-z]/g, ''); // Remove non-alpha chars
+    // Extract components for key using citation-js for proper BibTeX name parsing
+    const lastName = getFirstAuthorKeyName(entry.author || entry.fields.editor || '');
 
     const year = entry.year || '';
     const titleWords = extractTitleWords(entry.title);
@@ -2300,6 +2277,115 @@ export async function showStatistics(): Promise<void> {
 }
 
 /**
+ * Sort criteria for BibTeX entries
+ */
+type SortCriteria = 'key' | 'year' | 'author';
+
+/**
+ * Sort all entries in the BibTeX file
+ * User selects sort criteria from a menu
+ */
+export async function sortEntries(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'bibtex') {
+        vscode.window.showWarningMessage('Not a BibTeX file');
+        return;
+    }
+
+    // Show sort options menu
+    const sortOptions: Array<{ label: string; description: string; criteria: SortCriteria }> = [
+        { label: '$(key) By Key', description: 'Sort alphabetically by citation key', criteria: 'key' },
+        { label: '$(calendar) By Year', description: 'Sort by publication year (oldest first)', criteria: 'year' },
+        { label: '$(person) By Author', description: 'Sort alphabetically by first author last name', criteria: 'author' },
+    ];
+
+    const selected = await vscode.window.showQuickPick(sortOptions, {
+        placeHolder: 'Select sort order for BibTeX entries',
+        matchOnDescription: true,
+    });
+
+    if (!selected) {
+        return; // User cancelled
+    }
+
+    const document = editor.document;
+    const text = document.getText();
+    const result = parseBibTeX(text);
+
+    if (result.entries.length === 0) {
+        vscode.window.showInformationMessage('No BibTeX entries found');
+        return;
+    }
+
+    // Sort entries based on selected criteria
+    const sortedEntries = [...result.entries].sort((a, b) => {
+        switch (selected.criteria) {
+            case 'key':
+                return a.key.toLowerCase().localeCompare(b.key.toLowerCase());
+
+            case 'year': {
+                const yearA = parseInt(a.year || '9999', 10);
+                const yearB = parseInt(b.year || '9999', 10);
+                // If years are equal, sort by key as secondary
+                if (yearA === yearB) {
+                    return a.key.toLowerCase().localeCompare(b.key.toLowerCase());
+                }
+                return yearA - yearB;
+            }
+
+            case 'author': {
+                const authorA = getFirstAuthorKeyName(a.author || a.fields.editor || '');
+                const authorB = getFirstAuthorKeyName(b.author || b.fields.editor || '');
+                // If authors are equal, sort by year, then key
+                if (authorA === authorB) {
+                    const yearA = parseInt(a.year || '9999', 10);
+                    const yearB = parseInt(b.year || '9999', 10);
+                    if (yearA === yearB) {
+                        return a.key.toLowerCase().localeCompare(b.key.toLowerCase());
+                    }
+                    return yearA - yearB;
+                }
+                return authorA.localeCompare(authorB);
+            }
+
+            default:
+                return 0;
+        }
+    });
+
+    // Find any content before the first entry (preambles, comments, @string definitions)
+    const firstEntryMatch = text.match(/@\w+\s*\{/);
+    const preamble = firstEntryMatch ? text.substring(0, firstEntryMatch.index).trim() : '';
+
+    // Rebuild the file with sorted entries
+    let newContent = preamble ? preamble + '\n\n' : '';
+
+    for (let i = 0; i < sortedEntries.length; i++) {
+        const entry = sortedEntries[i];
+        newContent += entryToBibTeX(entry);
+        if (i < sortedEntries.length - 1) {
+            newContent += '\n';
+        }
+    }
+
+    // Replace entire document content
+    const fullRange = new vscode.Range(
+        document.positionAt(0),
+        document.positionAt(text.length)
+    );
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(fullRange, newContent);
+    });
+
+    const criteriaLabel = selected.criteria === 'key' ? 'key' :
+                          selected.criteria === 'year' ? 'year' : 'author';
+    vscode.window.showInformationMessage(
+        `Sorted ${sortedEntries.length} entries by ${criteriaLabel}`
+    );
+}
+
+/**
  * Show BibTeX speed commands help
  */
 export async function showBibtexHelp(): Promise<void> {
@@ -2463,7 +2549,8 @@ export function registerBibtexSpeedCommands(context: vscode.ExtensionContext): v
     // File-wide commands
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.bibtex.validateFile', validateFile),
-        vscode.commands.registerCommand('scimax.bibtex.showStatistics', showStatistics)
+        vscode.commands.registerCommand('scimax.bibtex.showStatistics', showStatistics),
+        vscode.commands.registerCommand('scimax.bibtex.sortEntries', sortEntries)
     );
 
     // Register code lens provider for file-wide actions

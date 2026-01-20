@@ -2,7 +2,52 @@
  * Tests for BibTeX speed commands
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+// Mock vscode module before importing modules that depend on it
+vi.mock('vscode', () => ({
+    Position: class { constructor(public line: number, public character: number) {} },
+    Selection: class { constructor(public anchor: any, public active: any) {} },
+    Range: class { constructor(public start: any, public end: any) {} },
+    TextEditorRevealType: { InCenter: 1 },
+    window: {
+        activeTextEditor: null,
+        showQuickPick: vi.fn(),
+        showInformationMessage: vi.fn(),
+        showWarningMessage: vi.fn(),
+        showErrorMessage: vi.fn(),
+        setStatusBarMessage: vi.fn(),
+        createOutputChannel: vi.fn(() => ({
+            clear: vi.fn(),
+            appendLine: vi.fn(),
+            show: vi.fn()
+        }))
+    },
+    commands: {
+        executeCommand: vi.fn(),
+        registerCommand: vi.fn()
+    },
+    workspace: {
+        getConfiguration: vi.fn(() => ({
+            get: vi.fn()
+        })),
+        openTextDocument: vi.fn()
+    },
+    env: {
+        clipboard: {
+            writeText: vi.fn()
+        },
+        openExternal: vi.fn()
+    },
+    Uri: {
+        parse: vi.fn(),
+        file: vi.fn()
+    },
+    QuickPickItemKind: {
+        Separator: -1
+    }
+}));
+
 import {
     isAtBibtexEntryStart,
     getEntryRange,

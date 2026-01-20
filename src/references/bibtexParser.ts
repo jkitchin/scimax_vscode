@@ -3,6 +3,13 @@
  * Extracts entries with all fields for citation management
  */
 
+import {
+    parseAuthors,
+    getDisplayLastName,
+    getFirstAuthorKeyName,
+    formatAuthorListDisplay,
+} from './authorUtils';
+
 export interface BibEntry {
     key: string;
     type: string;  // article, book, inproceedings, etc.
@@ -192,32 +199,17 @@ function cleanBibValue(value: string): string {
  * Format author names for display
  * Input: "Last, First and Another, Name and Third, Person"
  * Output: "Last, Another, Third" or "Last et al."
+ *
+ * Now uses citation-js for proper BibTeX name parsing with support for:
+ * - Particles (von, van der, de la, etc.)
+ * - Suffixes (Jr., III, etc.)
+ * - Corporate/institutional authors ({NASA}, {National Academy of Sciences})
  */
 export function formatAuthors(author: string | undefined, maxAuthors: number = 3): string {
     if (!author) return 'Unknown';
 
-    const authors = author.split(/\s+and\s+/i);
-    const lastNames = authors.map(a => {
-        // Handle "Last, First" format
-        if (a.includes(',')) {
-            return a.split(',')[0].trim();
-        }
-        // Handle "First Last" format
-        const parts = a.trim().split(/\s+/);
-        return parts[parts.length - 1];
-    });
-
-    if (lastNames.length <= maxAuthors) {
-        if (lastNames.length === 1) {
-            return lastNames[0];
-        } else if (lastNames.length === 2) {
-            return `${lastNames[0]} and ${lastNames[1]}`;
-        } else {
-            return lastNames.slice(0, -1).join(', ') + ', and ' + lastNames[lastNames.length - 1];
-        }
-    } else {
-        return `${lastNames[0]} et al.`;
-    }
+    const parsedAuthors = parseAuthors(author);
+    return formatAuthorListDisplay(parsedAuthors, maxAuthors);
 }
 
 /**
@@ -310,21 +302,15 @@ export function formatCitationLink(
 
 /**
  * Generate a BibTeX key from entry metadata
+ *
+ * Now uses citation-js for proper BibTeX name parsing with support for:
+ * - Particles (von, van der, de la, etc.)
+ * - Suffixes (Jr., III, etc.)
+ * - Corporate/institutional authors ({NASA}, {National Academy of Sciences})
  */
 export function generateKey(author: string, year: string, title: string): string {
-    // Get first author's last name
-    const firstAuthor = author.split(/\s+and\s+/i)[0];
-    let lastName = firstAuthor;
-    if (firstAuthor.includes(',')) {
-        lastName = firstAuthor.split(',')[0].trim();
-    } else {
-        const parts = firstAuthor.trim().split(/\s+/);
-        lastName = parts[parts.length - 1];
-    }
-
-    // Clean and lowercase
-    lastName = lastName.toLowerCase()
-        .replace(/[^a-z]/g, '');
+    // Get first author's last name using citation-js parsing
+    const lastName = getFirstAuthorKeyName(author);
 
     // Get first significant word from title
     const titleWords = title.toLowerCase()
