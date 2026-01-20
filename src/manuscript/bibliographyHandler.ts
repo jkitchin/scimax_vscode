@@ -83,13 +83,21 @@ export function replaceBibliographyWithBbl(
 
   if (isBiblatex) {
     // For biblatex: replace \printbibliography with .bbl content
-    const printBibRegex = /\\printbibliography(\[[^\]]*\])?/g;
+    // Only replace the FIRST occurrence to avoid duplicating bibliography
+    // (some documents have multiple \printbibliography for different sections)
+    const printBibRegex = /\\printbibliography(\[[^\]]*\])?/;
 
     if (printBibRegex.test(result)) {
       result = result.replace(printBibRegex, () => {
         replaced = true;
         return bblContent;
       });
+
+      // Comment out any remaining \printbibliography commands
+      result = result.replace(
+        /\\printbibliography(\[[^\]]*\])?/g,
+        '% \\printbibliography$1  % Removed - bibliography already inlined above'
+      );
     } else {
       warnings.push('No \\printbibliography command found in biblatex document');
     }

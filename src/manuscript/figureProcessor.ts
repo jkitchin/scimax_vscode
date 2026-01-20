@@ -29,7 +29,9 @@ async function fileExists(filePath: string): Promise<boolean> {
 /**
  * Resolve the actual path to a figure file
  *
- * LaTeX can omit the extension in \includegraphics, so we need to search
+ * LaTeX can omit the extension in \includegraphics, so we need to search.
+ * Also handles paths that may have been relative to included files by
+ * trying multiple base directories.
  */
 async function resolveFigurePath(
   figurePath: string,
@@ -40,20 +42,43 @@ async function resolveFigurePath(
     figurePath.toLowerCase().endsWith(ext)
   );
 
-  if (hasExtension) {
-    const fullPath = path.resolve(rootDir, figurePath);
-    if (await fileExists(fullPath)) {
-      const ext = path.extname(figurePath).toLowerCase();
-      return { resolvedPath: fullPath, extension: ext };
+  // Normalize the path - handle ../ by trying to resolve it
+  // Also try common figure directories if direct path fails
+  const pathsToTry: string[] = [
+    figurePath,
+  ];
+
+  // If path has ../, also try without it (in case it was from a subdirectory)
+  if (figurePath.includes('../')) {
+    // Extract just the filename and try common locations
+    const basename = path.basename(figurePath);
+    pathsToTry.push(basename);
+    pathsToTry.push(`figures/${basename}`);
+    pathsToTry.push(`images/${basename}`);
+    pathsToTry.push(`fig/${basename}`);
+
+    // Also try resolving the ../ from the root
+    const normalized = path.normalize(figurePath);
+    if (normalized !== figurePath) {
+      pathsToTry.push(normalized);
     }
-    return null;
   }
 
-  // No extension - search in order of preference
-  for (const ext of FIGURE_EXTENSIONS) {
-    const fullPath = path.resolve(rootDir, `${figurePath}${ext}`);
-    if (await fileExists(fullPath)) {
-      return { resolvedPath: fullPath, extension: ext };
+  for (const tryPath of pathsToTry) {
+    if (hasExtension) {
+      const fullPath = path.resolve(rootDir, tryPath);
+      if (await fileExists(fullPath)) {
+        const ext = path.extname(tryPath).toLowerCase();
+        return { resolvedPath: fullPath, extension: ext };
+      }
+    } else {
+      // No extension - search in order of preference
+      for (const ext of FIGURE_EXTENSIONS) {
+        const fullPath = path.resolve(rootDir, `${tryPath}${ext}`);
+        if (await fileExists(fullPath)) {
+          return { resolvedPath: fullPath, extension: ext };
+        }
+      }
     }
   }
 

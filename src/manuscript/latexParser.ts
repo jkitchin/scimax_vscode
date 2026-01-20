@@ -87,8 +87,8 @@ function findVerbatimRanges(content: string): Array<{ start: number; end: number
     }
   }
 
-  // Also handle \verb|...|
-  const verbRegex = /\\verb(.)(.*?)\1/g;
+  // Also handle \verb|...| and \verb*|...|
+  const verbRegex = /\\verb\*?(.)(.*?)\1/g;
   let verbMatch;
   while ((verbMatch = verbRegex.exec(content)) !== null) {
     ranges.push({ start: verbMatch.index, end: verbMatch.index + verbMatch[0].length });
