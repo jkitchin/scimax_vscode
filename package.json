@@ -1321,6 +1321,11 @@
         "title": "Scimax: Insert Subheading"
       },
       {
+        "command": "scimax.openFolder",
+        "title": "Scimax: Open Folder",
+        "icon": "$(folder-opened)"
+      },
+      {
         "command": "scimax.projectile.switch",
         "title": "Scimax: Switch Project"
       },
@@ -2640,6 +2645,11 @@
         "mac": "ctrl+x o"
       },
       {
+        "command": "scimax.openFolder",
+        "key": "ctrl+x d",
+        "mac": "ctrl+x d"
+      },
+      {
         "command": "workbench.action.navigateBack",
         "key": "ctrl+x ctrl+left",
         "mac": "ctrl+x ctrl+left"
@@ -2827,6 +2837,12 @@
         "command": "scimax.org.cycleGlobalFold",
         "key": "shift+tab",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && !scimax.inTable"
+      },
+      {
+        "command": "-",
+        "key": "ctrl+c ctrl+c",
+        "mac": "ctrl+c ctrl+c",
+        "when": "terminalFocus"
       },
       {
         "command": "scimax.org.executeBlock",
@@ -4467,6 +4483,17 @@
           "type": "boolean",
           "default": false,
           "description": "Automatically index workspace files on activation. Disable for large workspaces to prevent memory issues."
+        },
+        "scimax.db.autoCheckStale": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically check for externally modified files (git pull, Dropbox sync, etc.) when database is first accessed. Runs in background without blocking."
+        },
+        "scimax.db.staleCheckDelayMs": {
+          "type": "number",
+          "default": 5000,
+          "minimum": 1000,
+          "description": "Delay in milliseconds before starting the background stale file check. Allows VS Code to finish loading first."
         },
         "scimax.db.embeddingProvider": {
           "type": "string",
