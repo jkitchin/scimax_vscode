@@ -10,6 +10,7 @@ When submitting papers to journals, you often need:
 - A single =.tex= file (no =\input= or =\include= commands)
 - Bibliography inlined from the =.bbl= file
 - All figures in the same directory with simple names
+- Local style files (=.sty=, =.cls=, =.bst=) included
 
 This module automates that process while preserving your original files.
 
@@ -26,7 +27,8 @@ This is the main command that:
 2. Flattens all =\input{}= and =\include{}= commands
 3. Inlines the bibliography (=.bbl= content)
 4. Renames figures sequentially (=1.pdf=, =2.png=, etc.)
-5. Creates a timestamped submission directory
+5. Detects and copies local support files (=.sty=, =.cls=, =.bst=, data files)
+6. Creates a timestamped submission directory
 
 ** Preview Flattening
 
@@ -37,6 +39,7 @@ Opens from Command Palette: "Scimax: Preview Manuscript Flattening"
 Shows what would happen without making changes:
 - Number of included files
 - Number of figures to rename
+- Support files to copy (=.sty=, =.cls=, =.bst=, data files)
 - Whether compilation is needed
 - Any warnings
 
@@ -87,6 +90,31 @@ Figures are renamed sequentially with smart padding based on the total count:
 | 100-999       | =001.pdf=, =002.png=, ... |
 
 This ensures correct sorting in file managers.
+
+* Support Files
+
+The module automatically detects and copies local support files that your document needs:
+
+** Style Files (.sty)
+
+Custom LaTeX packages in your project directory. Detected from =\usepackage{...}= commands.
+
+** Class Files (.cls)
+
+Custom document classes. Detected from =\documentclass{...}=.
+
+** Bibliography Style Files (.bst)
+
+Custom bibliography styles. Detected from =\bibliographystyle{...}=.
+
+Standard styles (plain, unsrt, alpha, IEEEtran, etc.) are not copied since they're available on most LaTeX installations.
+
+** Data Files
+
+Files used by packages like pgfplots:
+- =\pgfplotstableread{data.csv}=
+- =\DTLloaddb{name}{data.csv}=
+- =\input{data.dat}=
 
 * Bibliography Handling
 

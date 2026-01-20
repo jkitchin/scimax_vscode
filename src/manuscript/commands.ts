@@ -100,6 +100,9 @@ async function flattenManuscriptCommand(): Promise<void> {
         const summary: string[] = [];
         summary.push(`Output: ${path.basename(result.outputDir)}/`);
         summary.push(`Figures: ${result.figuresCopied.length}`);
+        if (result.supportFilesCopied.length > 0) {
+          summary.push(`Support files: ${result.supportFilesCopied.length}`);
+        }
         summary.push(`Bibliography: ${result.bblInlined ? 'inlined' : 'not inlined'}`);
 
         if (result.warnings.length > 0) {
@@ -160,9 +163,15 @@ async function previewFlattenCommand(): Promise<void> {
           `Will process:`,
           `  - ${preview.includesCount} included file(s)`,
           `  - ${preview.figuresCount} figure(s) to rename`,
+          `  - ${preview.supportFilesCount} support file(s) to copy`,
           `  - Bibliography: ${preview.hasBibliography ? 'Yes' : 'No'}`,
           `  - Needs compilation: ${preview.needsCompilation ? 'Yes' : 'No'}`,
         ];
+
+        if (preview.supportFilesList.length > 0) {
+          lines.push('', `Support files (.sty, .cls, .bst, data):`,
+            ...preview.supportFilesList.map(f => `  - ${f}`));
+        }
 
         if (preview.warnings.length > 0) {
           lines.push('', `Warnings:`, ...preview.warnings.map(w => `  - ${w}`));

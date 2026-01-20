@@ -14,5 +14,6 @@ export * from './latexCompiler';
 export * from './fileFlattener';
 export * from './bibliographyHandler';
 export * from './figureProcessor';
+export * from './supportFiles';
 export * from './manuscriptManager';
 export { registerManuscriptCommands } from './commands';

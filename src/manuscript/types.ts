@@ -153,6 +153,8 @@ export interface FlattenResult {
   outputTexPath: string;
   /** Figure mappings that were applied */
   figuresCopied: FigureMapping[];
+  /** Support files copied (.sty, .cls, .bst, etc.) */
+  supportFilesCopied: string[];
   /** Whether .bbl was successfully inlined */
   bblInlined: boolean;
   /** Warning messages */

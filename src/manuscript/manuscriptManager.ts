@@ -16,6 +16,7 @@ import { compileForBbl, checkIfCompilationNeeded } from './latexCompiler';
 import { flattenIncludes } from './fileFlattener';
 import { processBibliography } from './bibliographyHandler';
 import { processFigures, copyFigures } from './figureProcessor';
+import { detectSupportFiles, copySupportFiles } from './supportFiles';
 
 /**
  * Check if a file exists
@@ -157,10 +158,24 @@ export async function flattenManuscript(
     }
   }
 
+  // Step 8: Detect and copy support files (.sty, .cls, .bst, data files)
+  const supportFilesResult = await detectSupportFiles(content, rootDir);
+  warnings.push(...supportFilesResult.warnings);
+
+  let supportFilesCopied: string[] = [];
+  if (supportFilesResult.files.length > 0) {
+    const supportCopyResult = await copySupportFiles(supportFilesResult.files, submissionDir);
+    supportFilesCopied = supportCopyResult.copied;
+    if (supportCopyResult.errors.length > 0) {
+      warnings.push(...supportCopyResult.errors);
+    }
+  }
+
   return {
     outputDir: submissionDir,
     outputTexPath,
     figuresCopied: figureResult.mappings,
+    supportFilesCopied,
     bblInlined: bibResult.bblInlined,
     warnings,
     compilationRun,
@@ -175,6 +190,8 @@ export async function flattenManuscript(
 export async function previewFlatten(mainTexPath: string): Promise<{
   includesCount: number;
   figuresCount: number;
+  supportFilesCount: number;
+  supportFilesList: string[];
   hasBibliography: boolean;
   needsCompilation: boolean;
   warnings: string[];
@@ -206,9 +223,15 @@ export async function previewFlatten(mainTexPath: string): Promise<{
   const figureResult = await processFigures(flattenResult.content, rootDir);
   warnings.push(...figureResult.warnings);
 
+  // Detect support files
+  const supportFilesResult = await detectSupportFiles(flattenResult.content, rootDir);
+  warnings.push(...supportFilesResult.warnings);
+
   return {
     includesCount: flattenResult.includedFiles.length,
     figuresCount: figureResult.mappings.length,
+    supportFilesCount: supportFilesResult.files.length,
+    supportFilesList: supportFilesResult.files.map(f => f.name),
     hasBibliography: parsed.bibliographyCommands.length > 0,
     needsCompilation,
     warnings,
