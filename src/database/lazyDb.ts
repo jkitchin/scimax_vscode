@@ -14,6 +14,8 @@ import { initSecretStorage, migrateApiKeyFromSettings } from './secretStorage';
 let scimaxDb: ScimaxDb | null = null;
 let dbInitPromise: Promise<ScimaxDb> | null = null;
 let extensionContext: vscode.ExtensionContext | null = null;
+let staleCheckCancellation: { cancelled: boolean } | null = null;
+let staleCheckStatusBar: vscode.StatusBarItem | null = null;
 
 /**
  * Set the extension context for database initialization
@@ -86,7 +88,143 @@ async function initializeDatabase(context: vscode.ExtensionContext): Promise<Sci
     }
 
     console.log('ScimaxDb: Ready');
+
+    // Schedule background stale file check after a delay
+    scheduleStaleFileCheck(db);
+
     return db;
+}
+
+/**
+ * Schedule a background check for stale files and directory scanning.
+ * Runs after a delay to not interfere with startup.
+ *
+ * Phase 1: Check already-indexed files for staleness (modified/deleted externally)
+ * Phase 2: Scan configured directories for new files
+ */
+function scheduleStaleFileCheck(db: ScimaxDb): void {
+    const config = vscode.workspace.getConfiguration('scimax.db');
+    const autoCheckStale = config.get<boolean>('autoCheckStale', true);
+
+    if (!autoCheckStale) {
+        console.log('ScimaxDb: Auto stale check disabled');
+        return;
+    }
+
+    const delayMs = config.get<number>('staleCheckDelayMs', 5000);
+
+    setTimeout(async () => {
+        // Don't run if database was closed
+        if (!scimaxDb) return;
+
+        // Create cancellation token
+        staleCheckCancellation = { cancelled: false };
+
+        // Create subtle status bar item
+        staleCheckStatusBar = vscode.window.createStatusBarItem(
+            vscode.StatusBarAlignment.Right,
+            0
+        );
+        staleCheckStatusBar.text = '$(sync~spin) Checking files...';
+        staleCheckStatusBar.tooltip = 'Scimax: Checking for externally modified files';
+        staleCheckStatusBar.show();
+
+        let totalReindexed = 0;
+        let totalNew = 0;
+        let totalDeleted = 0;
+
+        try {
+            // Phase 1: Check stale files (already indexed)
+            const staleResult = await db.checkStaleFiles({
+                batchSize: 5,
+                yieldMs: 100,
+                cancellationToken: staleCheckCancellation,
+                onProgress: ({ checked, total, reindexed }) => {
+                    if (staleCheckStatusBar) {
+                        staleCheckStatusBar.text = `$(sync~spin) Checking indexed files (${checked}/${total})`;
+                        if (reindexed > 0) {
+                            staleCheckStatusBar.tooltip = `Scimax: Reindexed ${reindexed} modified files`;
+                        }
+                    }
+                }
+            });
+
+            totalReindexed += staleResult.reindexed;
+            totalDeleted = staleResult.deleted;
+
+            // Phase 2: Scan configured directories for new files
+            if (!staleCheckCancellation?.cancelled) {
+                const directories = config.get<string[]>('directories') || [];
+
+                if (directories.length > 0) {
+                    if (staleCheckStatusBar) {
+                        staleCheckStatusBar.text = '$(sync~spin) Scanning directories...';
+                        staleCheckStatusBar.tooltip = 'Scimax: Scanning for new files in configured directories';
+                    }
+
+                    const scanResult = await db.scanDirectoriesInBackground(directories, {
+                        batchSize: 5,
+                        yieldMs: 100,
+                        cancellationToken: staleCheckCancellation,
+                        onProgress: ({ scanned, total, indexed, currentDir }) => {
+                            if (staleCheckStatusBar) {
+                                if (currentDir) {
+                                    staleCheckStatusBar.text = `$(sync~spin) Scanning: ${currentDir.split('/').pop()}`;
+                                } else {
+                                    staleCheckStatusBar.text = `$(sync~spin) Scanning files (${scanned}/${total})`;
+                                }
+                                if (indexed > 0) {
+                                    staleCheckStatusBar.tooltip = `Scimax: Found ${indexed} new/changed files`;
+                                }
+                            }
+                        }
+                    });
+
+                    totalReindexed += scanResult.changed;
+                    totalNew = scanResult.newFiles;
+                }
+            }
+
+            // Show result briefly if anything changed
+            const totalChanges = totalReindexed + totalNew + totalDeleted;
+            if (totalChanges > 0) {
+                if (staleCheckStatusBar) {
+                    const parts: string[] = [];
+                    if (totalNew > 0) parts.push(`${totalNew} new`);
+                    if (totalReindexed > 0) parts.push(`${totalReindexed} updated`);
+                    if (totalDeleted > 0) parts.push(`${totalDeleted} removed`);
+                    staleCheckStatusBar.text = `$(check) ${parts.join(', ')}`;
+                    staleCheckStatusBar.tooltip = 'Scimax: Background sync complete';
+                    setTimeout(() => {
+                        staleCheckStatusBar?.dispose();
+                        staleCheckStatusBar = null;
+                    }, 3000);
+                }
+            } else {
+                staleCheckStatusBar?.dispose();
+                staleCheckStatusBar = null;
+            }
+        } catch (error) {
+            console.error('ScimaxDb: Background sync failed:', error);
+            staleCheckStatusBar?.dispose();
+            staleCheckStatusBar = null;
+        }
+
+        staleCheckCancellation = null;
+    }, delayMs);
+}
+
+/**
+ * Cancel any running stale file check
+ */
+export function cancelStaleFileCheck(): void {
+    if (staleCheckCancellation) {
+        staleCheckCancellation.cancelled = true;
+    }
+    if (staleCheckStatusBar) {
+        staleCheckStatusBar.dispose();
+        staleCheckStatusBar = null;
+    }
 }
 
 /**
@@ -94,6 +232,9 @@ async function initializeDatabase(context: vscode.ExtensionContext): Promise<Sci
  * Should be called during extension deactivation
  */
 export async function closeDatabase(): Promise<void> {
+    // Cancel any running stale check
+    cancelStaleFileCheck();
+
     if (scimaxDb) {
         await scimaxDb.close();
         scimaxDb = null;
