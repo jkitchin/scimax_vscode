@@ -2591,6 +2591,62 @@
       {
         "command": "scimax.bibtex.applyToAllEntries",
         "title": "Scimax BibTeX: Apply Operation to All Entries"
+      },
+      {
+        "command": "scimax.templates.insert",
+        "title": "Scimax: Insert Template"
+      },
+      {
+        "command": "scimax.templates.insertOrg",
+        "title": "Scimax: Insert Org Template"
+      },
+      {
+        "command": "scimax.templates.insertMarkdown",
+        "title": "Scimax: Insert Markdown Template"
+      },
+      {
+        "command": "scimax.templates.insertLatex",
+        "title": "Scimax: Insert LaTeX Template"
+      },
+      {
+        "command": "scimax.templates.newFile",
+        "title": "Scimax: New File from Template"
+      },
+      {
+        "command": "scimax.templates.newOrgFile",
+        "title": "Scimax: New Org File from Template"
+      },
+      {
+        "command": "scimax.templates.newMarkdownFile",
+        "title": "Scimax: New Markdown File from Template"
+      },
+      {
+        "command": "scimax.templates.newLatexFile",
+        "title": "Scimax: New LaTeX File from Template"
+      },
+      {
+        "command": "scimax.templates.createFromSelection",
+        "title": "Scimax: Create Template from Selection"
+      },
+      {
+        "command": "scimax.templates.openDirectory",
+        "title": "Scimax: Open Templates Directory"
+      },
+      {
+        "command": "scimax.templates.editTemplates",
+        "title": "Scimax: Edit User Templates"
+      },
+      {
+        "command": "scimax.templates.list",
+        "title": "Scimax: List Templates"
+      },
+      {
+        "command": "scimax.templates.quickInsert",
+        "title": "Scimax: Quick Insert Template"
+      },
+      {
+        "command": "scimax.templates.reload",
+        "title": "Scimax: Reload Templates"
       }
     ],
     "keybindings": [
@@ -4391,6 +4447,30 @@
         "key": "ctrl+shift+.",
         "mac": "cmd+shift+.",
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
+      },
+      {
+        "command": "scimax.templates.quickInsert",
+        "key": "ctrl+c ctrl+t i",
+        "mac": "ctrl+c ctrl+t i",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/"
+      },
+      {
+        "command": "scimax.templates.newFile",
+        "key": "ctrl+c ctrl+t n",
+        "mac": "ctrl+c ctrl+t n",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.templates.list",
+        "key": "ctrl+c ctrl+t l",
+        "mac": "ctrl+c ctrl+t l",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.templates.createFromSelection",
+        "key": "ctrl+c ctrl+t s",
+        "mac": "ctrl+c ctrl+t s",
+        "when": "editorTextFocus && editorHasSelection"
       }
     ],
     "configuration": {
@@ -4983,6 +5063,36 @@
           },
           "default": [],
           "description": "List of org-lint checker IDs to disable. Available checkers: duplicate-custom-id, duplicate-name, missing-language-in-src-block, invalid-block, incomplete-drawer, broken-link, undefined-footnote-reference, unreferenced-footnote-definition, timestamp-syntax, clock-issues, orphaned-affiliated-keywords, wrong-header-argument, planning-inactive, heading-level-skip"
+        },
+        "scimax.templates.directory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory for user document templates. If empty, uses ~/.scimax-templates"
+        },
+        "scimax.templates.defaultFormat": {
+          "type": "string",
+          "enum": [
+            "org",
+            "markdown",
+            "latex"
+          ],
+          "default": "org",
+          "description": "Default format for new templates"
+        },
+        "scimax.templates.dateFormat": {
+          "type": "string",
+          "default": "yyyy-MM-dd",
+          "description": "Date format for {{date}} variable in templates (date-fns format)"
+        },
+        "scimax.templates.timeFormat": {
+          "type": "string",
+          "default": "HH:mm",
+          "description": "Time format for {{time}} variable in templates (date-fns format)"
+        },
+        "scimax.templates.author": {
+          "type": "string",
+          "default": "",
+          "description": "Author name for {{author}} variable in templates. If empty, uses system user name"
         }
       }
     },
