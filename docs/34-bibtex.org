@@ -1,0 +1,401 @@
+#+TITLE: BibTeX File Editing
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-20
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+* ⚠️ Overview
+
+Scimax VS Code provides comprehensive BibTeX file editing support with speed commands, batch operations, and intelligent author name handling. This complements the citation management features in [[file:19-references.org][References and Citations]].
+
+** Features
+
+- *Speed Commands* - Single-key commands when cursor is at the start of an entry
+- *Entry Operations* - Clean, format, and transform individual entries
+- *File Operations* - Sort entries, apply batch transformations, validate files
+- *Smart Author Parsing* - Proper handling of particles (von, van der), suffixes (Jr., III), and corporate authors
+
+** When to Use This
+
+This document covers editing =.bib= files directly. For inserting and managing citations in org/markdown/LaTeX documents, see [[file:19-references.org][References and Citations]].
+
+* ⚠️ Speed Commands
+
+BibTeX speed commands are single-key shortcuts available when your cursor is at column 0 of a line starting with =@= (an entry definition line like =@article{=).
+
+** Enabling Speed Commands
+
+Speed commands are enabled by default for BibTeX files. The context =scimax.atBibtexEntryStart= is automatically set when appropriate.
+
+** Available Speed Commands
+
+*** Navigation
+
+| Key | Command                      | Description                    |
+|-----+------------------------------+--------------------------------|
+| n   | scimax.bibtex.nextEntry      | Jump to next entry             |
+| p   | scimax.bibtex.previousEntry  | Jump to previous entry         |
+| j   | scimax.bibtex.jumpToEntry    | Jump to entry by key (fuzzy)   |
+| ?   | scimax.bibtex.help           | Show speed command help        |
+
+*** Entry Formatting
+
+| Key | Command                    | Description                          |
+|-----+----------------------------+--------------------------------------|
+| s   | scimax.bibtex.sortFields   | Sort fields in standard order        |
+| d   | scimax.bibtex.downcaseEntry| Lowercase entry type and field names |
+| T   | scimax.bibtex.titleCase    | Convert title to Title Case          |
+| t   | scimax.bibtex.sentenceCase | Convert title to sentence case       |
+| c   | scimax.bibtex.cleanEntry   | Clean entry (normalize, sort, trim)  |
+| g   | scimax.bibtex.generateKey  | Generate standardized citation key   |
+| b   | scimax.bibtex.wrapBraces   | Wrap selection in braces (for case protection) |
+
+*** External Resources
+
+| Key | Command                      | Description                      |
+|-----+------------------------------+----------------------------------|
+| o   | scimax.bibtex.openPdf        | Open associated PDF file         |
+| u   | scimax.bibtex.openUrl        | Open URL field in browser        |
+| O   | scimax.bibtex.openNotes      | Open/create notes file for entry |
+| G   | scimax.bibtex.googleScholar  | Search entry on Google Scholar   |
+| C   | scimax.bibtex.crossref       | Search entry on CrossRef         |
+| w   | scimax.bibtex.webOfScience   | Search entry on Web of Science   |
+
+*** OpenAlex Integration
+
+| Key | Command                       | Description                     |
+|-----+-------------------------------+---------------------------------|
+| a   | scimax.bibtex.showOpenAlex    | View entry in OpenAlex          |
+| i   | scimax.bibtex.showCitingWorks | Show papers citing this work    |
+| r   | scimax.bibtex.showRelatedWorks| Show related works              |
+| R   | scimax.bibtex.showReferences  | Show references cited by this work |
+
+*** Clipboard Operations
+
+| Key | Command                  | Description                    |
+|-----+--------------------------+--------------------------------|
+| k   | scimax.bibtex.copyKey    | Copy citation key to clipboard |
+| y   | scimax.bibtex.copyBibtex | Copy full BibTeX entry         |
+| K   | scimax.bibtex.killEntry  | Delete entire entry            |
+
+** Using Speed Commands
+
+1. Open a =.bib= file
+2. Move cursor to column 0 of an =@entry{= line
+3. Press a single key from the tables above
+4. Press =?= to see available commands
+
+Example:
+#+BEGIN_EXAMPLE
+@article{smith2020machine,    <-- cursor at column 0 here
+  author = {John Smith},
+  title = {Machine Learning},
+  year = {2020}
+}
+#+END_EXAMPLE
+
+* ⚠️ Entry Operations
+
+These commands operate on the entry at the cursor position.
+
+** Clean Entry
+
+Command: =scimax.bibtex.cleanEntry= (speed key: =c=)
+
+Cleans the current entry by:
+- Normalizing whitespace (single spaces, trimmed)
+- Lowercasing field names
+- Sorting fields in standard BibTeX order
+- Removing duplicate outer braces (={{Title}}= → ={Title}=)
+- Preserving inner braces for case protection (={DNA}= stays as-is)
+
+Before:
+#+BEGIN_SRC bibtex
+@Article{Smith2020,
+  AUTHOR = {  John   Smith  },
+  TITLE = {{A Machine Learning Approach}},
+  Year = {2020},
+  Journal = {Nature}
+}
+#+END_SRC
+
+After:
+#+BEGIN_SRC bibtex
+@article{Smith2020,
+  author = {John Smith},
+  title = {A Machine Learning Approach},
+  journal = {Nature},
+  year = {2020},
+}
+#+END_SRC
+
+** Title Case
+
+Command: =scimax.bibtex.titleCase= (speed key: =T=)
+
+Converts the title field to Title Case while preserving:
+- Braced content (={DNA}=, ={NASA}=)
+- Small words (a, an, the, and, but, or, for, in, of, on, to, etc.)
+
+Example:
+- "the effects of machine learning on dna analysis" → "The Effects of Machine Learning on {DNA} Analysis"
+
+** Sentence Case
+
+Command: =scimax.bibtex.sentenceCase= (speed key: =t=)
+
+Converts the title field to sentence case (only first word capitalized) while preserving braced content.
+
+Example:
+- "The Effects Of Machine Learning" → "The effects of machine learning"
+- "Analysis of {DNA} Sequences" → "Analysis of {DNA} sequences"
+
+** Generate Key
+
+Command: =scimax.bibtex.generateKey= (speed key: =g=)
+
+Generates a standardized citation key in the format: =authoryearfirstword=
+
+- *author*: First author's last name (lowercase, ASCII only)
+- *year*: Publication year
+- *firstword*: First significant word from title (>3 chars, not a stop word)
+
+Examples:
+| Author          | Year | Title                           | Generated Key          |
+|-----------------+------+---------------------------------+------------------------|
+| Smith, John     | 2024 | Machine Learning for Science    | smith2024machine       |
+| van der Berg    | 2023 | Deep Neural Networks            | berg2023deep           |
+| {NASA}          | 2022 | Space Exploration Report        | nasa2022space          |
+
+** Sort Fields
+
+Command: =scimax.bibtex.sortFields= (speed key: =s=)
+
+Reorders fields in standard BibTeX order:
+1. author, title, journaltitle/journal, booktitle
+2. editor, edition, volume, number, issue, pages
+3. publisher, location/address, year, date, month
+4. doi, url, urldate, isbn, issn
+5. eprint, eprinttype, archiveprefix, primaryclass
+6. note, annote, abstract, keywords, file
+7. Any remaining fields
+
+** Downcase Entry
+
+Command: =scimax.bibtex.downcaseEntry= (speed key: =d=)
+
+Lowercases the entry type and all field names:
+- =@Article= → =@article=
+- =Author = = → =author ==
+- =JOURNAL = = → =journal ==
+
+** Wrap in Braces
+
+Command: =scimax.bibtex.wrapBraces= (speed key: =b=)
+
+Wraps the current selection or word in curly braces for case protection.
+
+Use this to protect:
+- Acronyms: DNA → {DNA}
+- Proper nouns: Python → {Python}
+- Chemical formulas: H2O → {H2O}
+
+* ⚠️ File Operations
+
+These commands operate on the entire BibTeX file.
+
+** Sort Entries
+
+Command: =scimax.bibtex.sortEntries=
+
+Sorts all entries in the file. Shows a menu to choose sort order:
+
+| Option    | Description                                  |
+|-----------+----------------------------------------------|
+| By Key    | Alphabetically by citation key               |
+| By Year   | Oldest to newest (secondary: key)            |
+| By Author | Alphabetically by first author last name     |
+|           | (secondary: year, then key)                  |
+
+The command preserves any preamble content (comments, =@string= definitions) at the top of the file.
+
+** Apply Operation to All Entries
+
+Command: =scimax.bibtex.applyToAllEntries=
+
+Applies a transformation to every entry in the file. Shows a menu of operations:
+
+| Operation           | Description                                           |
+|---------------------+-------------------------------------------------------|
+| Clean Entries       | Normalize whitespace, sort fields, lowercase names    |
+| Title Case Titles   | Convert all titles to Title Case                      |
+| Sentence Case Titles| Convert all titles to sentence case                   |
+| Standardize Keys    | Regenerate all keys as author-year-word format        |
+| Sort Fields         | Reorder fields in standard BibTeX order               |
+| Downcase Entries    | Lowercase all entry types and field names             |
+
+*** Standardize Keys Warning
+
+The "Standardize Keys" option shows a confirmation dialog because it can break existing citations in your documents. It also:
+- Handles duplicate keys by adding suffixes (a, b, c, ...)
+- Reports how many duplicates were resolved
+
+** Validate File
+
+Command: =scimax.bibtex.validateFile=
+
+Validates the BibTeX file and reports:
+- Total number of entries
+- Entry types and counts
+- Syntax style (BibTeX vs BibLaTeX vs mixed)
+- Duplicate keys
+- Missing required fields
+- Syntax errors
+
+Results are shown in an output channel with severity indicators:
+- ❌ Errors (must fix)
+- ⚠️ Warnings (should fix)
+
+** Show Statistics
+
+Command: =scimax.bibtex.showStatistics=
+
+Shows a quick overview of the BibTeX file:
+- Total entries
+- Entries by type (article, book, etc.)
+- Syntax style detection
+- Field usage statistics
+
+* ⚠️ Author Name Handling
+
+Scimax uses the citation-js library for proper BibTeX author name parsing, handling complex cases that simple parsers miss.
+
+** Supported Formats
+
+*** Standard Formats
+
+| Input                  | Parsed As                              |
+|------------------------+----------------------------------------|
+| Smith, John            | Family: Smith, Given: John             |
+| John Smith             | Family: Smith, Given: John             |
+| Smith, John and Doe, Jane | Two authors                         |
+
+*** Particles (von, van der, de la)
+
+| Input                  | Display Last Name   | Key Last Name |
+|------------------------+---------------------+---------------|
+| van der Berg, Hans     | van der Berg        | berg          |
+| Hans van der Berg      | van der Berg        | berg          |
+| de la Cruz, Maria      | de la Cruz          | cruz          |
+| Ludwig van Beethoven   | van Beethoven       | beethoven     |
+
+*** Suffixes (Jr., III)
+
+| Input                  | Parsed Components                      |
+|------------------------+----------------------------------------|
+| Smith, Jr., John       | Family: Smith, Given: John, Suffix: Jr.|
+| King, III, Martin Luther | Family: King, Given: Martin Luther, Suffix: III |
+
+*** Corporate Authors
+
+Corporate or institutional authors should be wrapped in braces:
+
+| Input                           | Parsed As                     |
+|---------------------------------+-------------------------------|
+| {NASA}                          | Literal name: NASA            |
+| {National Academy of Sciences}  | Literal name: National Academy of Sciences |
+| {World Health Organization}     | Literal name: World Health Organization |
+
+** Key Generation with Authors
+
+When generating citation keys, the first author's last name is used:
+- Particles are stripped for the key (van der Berg → berg)
+- Corporate names are cleaned (NASA → nasa)
+- Accents are normalized (Müller → muller)
+
+* ⚠️ Best Practices
+
+** Entry Formatting
+
+1. *Use consistent case* - Run "Downcase Entries" on your file
+2. *Sort fields consistently* - Use "Clean Entries" or "Sort Fields"
+3. *Protect case-sensitive text* - Wrap in braces: ={DNA}=, ={Python}=, ={NASA}=
+4. *Include DOIs* - Enables OpenAlex integration and hover previews
+
+** Key Naming
+
+Recommended format: =author-year-keyword= or =authoryearkeyword=
+
+Good keys:
+- =smith-2024-machine= or =smith2024machine=
+- =vandenberg-2023-neural= (note: particle stripped)
+- =nasa-2022-report=
+
+Bad keys:
+- =ref1=, =paper2= (not memorable)
+- =ML_Paper_2024= (inconsistent format)
+
+** File Organization
+
+- One bibliography file per project or topic
+- Use =@string= definitions for common journals
+- Keep entries in consistent order (by key or year)
+- Regularly validate files for errors
+
+** Before Sharing
+
+1. Run =scimax.bibtex.validateFile= to check for errors
+2. Run "Clean Entries" via =scimax.bibtex.applyToAllEntries=
+3. Optionally sort entries by key or year
+
+* ⚠️ Command Reference
+
+** Entry Commands (require cursor in entry)
+
+| Command                      | Speed Key | Description                    |
+|------------------------------+-----------+--------------------------------|
+| scimax.bibtex.nextEntry      | n         | Navigate to next entry         |
+| scimax.bibtex.previousEntry  | p         | Navigate to previous entry     |
+| scimax.bibtex.jumpToEntry    | j         | Jump to entry by key           |
+| scimax.bibtex.sortFields     | s         | Sort fields in entry           |
+| scimax.bibtex.downcaseEntry  | d         | Lowercase entry type/fields    |
+| scimax.bibtex.titleCase      | T         | Title case the title field     |
+| scimax.bibtex.sentenceCase   | t         | Sentence case the title field  |
+| scimax.bibtex.cleanEntry     | c         | Clean and normalize entry      |
+| scimax.bibtex.generateKey    | g         | Generate standardized key      |
+| scimax.bibtex.wrapBraces     | b         | Wrap selection in braces       |
+| scimax.bibtex.openPdf        | o         | Open associated PDF            |
+| scimax.bibtex.openUrl        | u         | Open URL in browser            |
+| scimax.bibtex.openNotes      | O         | Open/create notes file         |
+| scimax.bibtex.copyKey        | k         | Copy citation key              |
+| scimax.bibtex.copyBibtex     | y         | Copy full BibTeX entry         |
+| scimax.bibtex.killEntry      | K         | Delete entry                   |
+| scimax.bibtex.googleScholar  | G         | Search on Google Scholar       |
+| scimax.bibtex.crossref       | C         | Search on CrossRef             |
+| scimax.bibtex.webOfScience   | w         | Search on Web of Science       |
+| scimax.bibtex.showOpenAlex   | a         | View in OpenAlex               |
+| scimax.bibtex.showCitingWorks| i         | Show citing works              |
+| scimax.bibtex.showRelatedWorks| r        | Show related works             |
+| scimax.bibtex.showReferences | R         | Show references                |
+| scimax.bibtex.help           | ?         | Show speed command help        |
+
+** File Commands (operate on entire file)
+
+| Command                          | Description                          |
+|----------------------------------+--------------------------------------|
+| scimax.bibtex.sortEntries        | Sort all entries (by key/year/author)|
+| scimax.bibtex.applyToAllEntries  | Apply operation to all entries       |
+| scimax.bibtex.validateFile       | Validate file and show report        |
+| scimax.bibtex.showStatistics     | Show file statistics                 |
+
+* ⚠️ Related Topics
+
+- [[file:19-references.org][References and Citations]] - Citation insertion and management in documents
+- [[file:23-speed-commands.org][Speed Commands]] - Speed commands for org-mode headings
+- [[file:33-latex-navigation.org][LaTeX Navigation]] - Similar speed commands for LaTeX files
+
+* ⚠️ Navigation
+
+- Previous: [[file:33-latex-navigation.org][LaTeX Navigation]]
+- Index: [[file:00-index.org][Documentation Index]]

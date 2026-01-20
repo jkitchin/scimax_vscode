@@ -2386,6 +2386,307 @@ export async function sortEntries(): Promise<void> {
 }
 
 /**
+ * Operation types for batch processing
+ */
+type BatchOperation = 'clean' | 'titleCase' | 'sentenceCase' | 'standardizeKey' | 'sortFields' | 'downcase';
+
+/**
+ * Apply a transformation to a single entry and return the new entry text
+ */
+function transformEntry(entry: BibEntry, entryText: string, operation: BatchOperation): string {
+    switch (operation) {
+        case 'clean': {
+            // Clean entry: normalize whitespace, sort fields, lowercase field names
+            const rawFields = extractRawFields(entryText);
+            const cleanedFields: Record<string, string> = {};
+
+            for (const [field, value] of Object.entries(rawFields)) {
+                const normalizedField = field.toLowerCase();
+                let cleanedValue = value.replace(/\s+/g, ' ').trim();
+
+                // Remove duplicate outer braces
+                while (cleanedValue.startsWith('{') && cleanedValue.endsWith('}')) {
+                    let depth = 0;
+                    let isOuterBrace = true;
+                    for (let i = 0; i < cleanedValue.length - 1; i++) {
+                        if (cleanedValue[i] === '{') depth++;
+                        else if (cleanedValue[i] === '}') depth--;
+                        if (depth === 0 && i < cleanedValue.length - 1) {
+                            isOuterBrace = false;
+                            break;
+                        }
+                    }
+                    if (isOuterBrace && cleanedValue.startsWith('{{')) {
+                        cleanedValue = cleanedValue.slice(1, -1);
+                    } else {
+                        break;
+                    }
+                }
+                cleanedFields[normalizedField] = cleanedValue;
+            }
+
+            // Sort fields
+            const sortedFields: [string, string][] = [];
+            for (const field of BIBTEX_FIELD_ORDER) {
+                if (cleanedFields[field] !== undefined) {
+                    sortedFields.push([field, cleanedFields[field]]);
+                    delete cleanedFields[field];
+                }
+            }
+            for (const [field, value] of Object.entries(cleanedFields)) {
+                sortedFields.push([field, value]);
+            }
+
+            let newEntry = `@${entry.type.toLowerCase()}{${entry.key},\n`;
+            for (const [field, value] of sortedFields) {
+                newEntry += `  ${field} = {${value}},\n`;
+            }
+            newEntry += '}';
+            return newEntry;
+        }
+
+        case 'titleCase': {
+            // Convert title to Title Case
+            return entryText.replace(
+                /(\btitle\s*=\s*\{)([^}]+)(\})/gi,
+                (_, prefix, title, suffix) => `${prefix}${toTitleCase(title)}${suffix}`
+            );
+        }
+
+        case 'sentenceCase': {
+            // Convert title to sentence case
+            return entryText.replace(
+                /(\btitle\s*=\s*\{)([^}]+)(\})/gi,
+                (_, prefix, title, suffix) => `${prefix}${toSentenceCase(title)}${suffix}`
+            );
+        }
+
+        case 'standardizeKey': {
+            // Generate a new standardized key
+            const newKey = getFirstAuthorKeyName(entry.author || entry.fields.editor || '');
+            const year = entry.year || '';
+            const titleWords = (entry.title || '')
+                .toLowerCase()
+                .replace(/[^a-z\s]/g, '')
+                .split(/\s+/)
+                .filter(w => w.length > 3 && !['the', 'and', 'for', 'with', 'from'].includes(w));
+            const titleWord = titleWords[0] || 'untitled';
+            const standardKey = `${newKey}${year}${titleWord}`;
+
+            // Replace the key in the entry text
+            return entryText.replace(
+                /^(@\w+\s*\{)\s*[^,\s]+/,
+                `$1${standardKey}`
+            );
+        }
+
+        case 'sortFields': {
+            // Sort fields in standard order
+            const rawFields = extractRawFields(entryText);
+            const sortedFields: [string, string][] = [];
+            const seenFields = new Set<string>();
+
+            for (const field of BIBTEX_FIELD_ORDER) {
+                const value = rawFields[field.toLowerCase()] || rawFields[field];
+                if (value !== undefined) {
+                    sortedFields.push([field.toLowerCase(), value]);
+                    seenFields.add(field.toLowerCase());
+                }
+            }
+
+            for (const [field, value] of Object.entries(rawFields)) {
+                if (!seenFields.has(field.toLowerCase())) {
+                    sortedFields.push([field.toLowerCase(), value]);
+                }
+            }
+
+            let newEntry = `@${entry.type.toLowerCase()}{${entry.key},\n`;
+            for (const [field, value] of sortedFields) {
+                newEntry += `  ${field} = {${value}},\n`;
+            }
+            newEntry += '}';
+            return newEntry;
+        }
+
+        case 'downcase': {
+            // Lowercase entry type and field names
+            return entryText
+                .replace(/^@(\w+)/i, (_, type) => `@${type.toLowerCase()}`)
+                .replace(/^\s*(\w+)\s*=/gm, (_, field) => `  ${field.toLowerCase()} =`);
+        }
+
+        default:
+            return entryText;
+    }
+}
+
+/**
+ * Apply an operation to all entries in the BibTeX file
+ * User selects the operation from a menu
+ */
+export async function applyToAllEntries(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'bibtex') {
+        vscode.window.showWarningMessage('Not a BibTeX file');
+        return;
+    }
+
+    // Show operation menu
+    const operations: Array<{ label: string; description: string; operation: BatchOperation }> = [
+        { label: '$(tools) Clean Entries', description: 'Normalize whitespace, sort fields, lowercase field names', operation: 'clean' },
+        { label: '$(text-size) Title Case Titles', description: 'Convert titles to Title Case', operation: 'titleCase' },
+        { label: '$(whole-word) Sentence Case Titles', description: 'Convert titles to sentence case', operation: 'sentenceCase' },
+        { label: '$(key) Standardize Keys', description: 'Regenerate keys as author-year-word format', operation: 'standardizeKey' },
+        { label: '$(list-ordered) Sort Fields', description: 'Reorder fields in standard BibTeX order', operation: 'sortFields' },
+        { label: '$(case-sensitive) Downcase Entries', description: 'Lowercase entry types and field names', operation: 'downcase' },
+    ];
+
+    const selected = await vscode.window.showQuickPick(operations, {
+        placeHolder: 'Select operation to apply to all entries',
+        matchOnDescription: true,
+    });
+
+    if (!selected) {
+        return; // User cancelled
+    }
+
+    const document = editor.document;
+    const text = document.getText();
+    const result = parseBibTeX(text);
+
+    if (result.entries.length === 0) {
+        vscode.window.showInformationMessage('No BibTeX entries found');
+        return;
+    }
+
+    // Confirm with user for destructive operations
+    if (selected.operation === 'standardizeKey') {
+        const confirm = await vscode.window.showWarningMessage(
+            `This will regenerate keys for ${result.entries.length} entries. This may break existing citations. Continue?`,
+            { modal: true },
+            'Yes', 'No'
+        );
+        if (confirm !== 'Yes') {
+            return;
+        }
+    }
+
+    // Find all entry ranges and transform them
+    // We need to work with the raw text to preserve formatting
+    const entryPattern = /@(\w+)\s*\{([^,\s]+)\s*,/g;
+    const entryStarts: { index: number; type: string; key: string }[] = [];
+    let match;
+
+    while ((match = entryPattern.exec(text)) !== null) {
+        const type = match[1].toLowerCase();
+        // Skip @string, @preamble, @comment
+        if (!['string', 'preamble', 'comment'].includes(type)) {
+            entryStarts.push({
+                index: match.index,
+                type: match[1],
+                key: match[2]
+            });
+        }
+    }
+
+    // Find end of each entry by matching braces
+    const entryRanges: { start: number; end: number; text: string }[] = [];
+    for (const start of entryStarts) {
+        let braceCount = 0;
+        let foundStart = false;
+        let endIndex = start.index;
+
+        for (let i = start.index; i < text.length; i++) {
+            if (text[i] === '{') {
+                braceCount++;
+                foundStart = true;
+            } else if (text[i] === '}') {
+                braceCount--;
+            }
+
+            if (foundStart && braceCount === 0) {
+                endIndex = i + 1;
+                break;
+            }
+        }
+
+        entryRanges.push({
+            start: start.index,
+            end: endIndex,
+            text: text.substring(start.index, endIndex)
+        });
+    }
+
+    // Track keys to detect duplicates when standardizing
+    const usedKeys = new Set<string>();
+    let duplicateCount = 0;
+
+    // Transform each entry
+    const transformedEntries: string[] = [];
+    for (let i = 0; i < entryRanges.length; i++) {
+        const range = entryRanges[i];
+        const entry = result.entries[i];
+
+        if (!entry) {
+            transformedEntries.push(range.text);
+            continue;
+        }
+
+        let transformed = transformEntry(entry, range.text, selected.operation);
+
+        // Handle duplicate keys when standardizing
+        if (selected.operation === 'standardizeKey') {
+            const keyMatch = transformed.match(/^@\w+\s*\{\s*([^,\s]+)/);
+            if (keyMatch) {
+                let newKey = keyMatch[1];
+                let suffix = '';
+                let counter = 0;
+
+                while (usedKeys.has(newKey + suffix)) {
+                    counter++;
+                    suffix = String.fromCharCode(96 + counter); // a, b, c, ...
+                    duplicateCount++;
+                }
+
+                if (suffix) {
+                    transformed = transformed.replace(
+                        /^(@\w+\s*\{)\s*[^,\s]+/,
+                        `$1${newKey}${suffix}`
+                    );
+                }
+                usedKeys.add(newKey + suffix);
+            }
+        }
+
+        transformedEntries.push(transformed);
+    }
+
+    // Find content before first entry (preambles, comments)
+    const firstEntryStart = entryRanges.length > 0 ? entryRanges[0].start : text.length;
+    const preamble = text.substring(0, firstEntryStart).trim();
+
+    // Rebuild the file
+    let newContent = preamble ? preamble + '\n\n' : '';
+    newContent += transformedEntries.join('\n\n');
+
+    // Replace entire document
+    const fullRange = new vscode.Range(
+        document.positionAt(0),
+        document.positionAt(text.length)
+    );
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(fullRange, newContent);
+    });
+
+    let message = `Applied "${selected.label.replace(/\$\([^)]+\)\s*/g, '')}" to ${result.entries.length} entries`;
+    if (duplicateCount > 0) {
+        message += ` (${duplicateCount} duplicate keys resolved with suffixes)`;
+    }
+    vscode.window.showInformationMessage(message);
+}
+
+/**
  * Show BibTeX speed commands help
  */
 export async function showBibtexHelp(): Promise<void> {
@@ -2550,7 +2851,8 @@ export function registerBibtexSpeedCommands(context: vscode.ExtensionContext): v
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.bibtex.validateFile', validateFile),
         vscode.commands.registerCommand('scimax.bibtex.showStatistics', showStatistics),
-        vscode.commands.registerCommand('scimax.bibtex.sortEntries', sortEntries)
+        vscode.commands.registerCommand('scimax.bibtex.sortEntries', sortEntries),
+        vscode.commands.registerCommand('scimax.bibtex.applyToAllEntries', applyToAllEntries)
     );
 
     // Register code lens provider for file-wide actions

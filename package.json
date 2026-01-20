@@ -2582,6 +2582,10 @@
       {
         "command": "scimax.bibtex.sortEntries",
         "title": "Scimax BibTeX: Sort Entries"
+      },
+      {
+        "command": "scimax.bibtex.applyToAllEntries",
+        "title": "Scimax BibTeX: Apply Operation to All Entries"
       }
     ],
     "keybindings": [

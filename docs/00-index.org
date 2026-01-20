@@ -220,6 +220,15 @@ This documentation is organized into several sections:
 | [[file:29-unsupported-features.org][Unsupported Features]]   | Emacs features not in VS Code  |
 | [[file:30-cli.org][Command Line Interface]]                 | CLI for batch ops and scripts  |
 
+*** Specialized File Support (31-34)
+
+| Document                                               | Description                      |
+|--------------------------------------------------------+----------------------------------|
+| [[file:31-publishing.org][Publishing]]               | Project publishing system        |
+| [[file:32-excalidraw.org][Excalidraw]]               | Diagram editing integration      |
+| [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX file editing and commands  |
+| [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX file editing and commands |
+
 ** Quick Start
 
 1. *Install the extension* from the VS Code marketplace or from a VSIX file
@@ -336,6 +345,13 @@ This section provides a comprehensive index of all documentation topics with lin
 | [[file:18-database-search.org][Database and Search]] | Full-text search, semantic search, embeddings |
 | [[file:19-references.org][References]]               | Citations, bibliography, DOI lookup           |
 
+** Specialized File Editing
+
+| Document                                             | Topics Covered                                         |
+|------------------------------------------------------+--------------------------------------------------------|
+| [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX speed commands, structure navigation             |
+| [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX speed commands, entry/file operations, sorting  |
+
 ** Configuration
 
 | Document                                     | Topics Covered                      |
@@ -352,7 +368,9 @@ Quick reference to find specific features across documentation.
 | Avy-style navigation  | [[file:21-navigation.org][Navigation]]                       | [[file:24-keybindings.org][Keybindings]]                                                                                   |
 | Babel execution       | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:09-jupyter.org][Jupyter]]                                 |
 | Basic syntax          | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]], [[file:10-export.org][Export]]                                   |
-| Bibliography          | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]]                                                               |
+| Bibliography          | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]], [[file:34-bibtex.org][BibTeX Editing]]                                   |
+| BibTeX editing        | [[file:34-bibtex.org][BibTeX Editing]]                       | [[file:19-references.org][References]], [[file:23-speed-commands.org][Speed Commands]]                                         |
+| BibTeX speed commands | [[file:34-bibtex.org][BibTeX Editing]]                       | [[file:23-speed-commands.org][Speed Commands]], [[file:33-latex-navigation.org][LaTeX Navigation]]                             |
 | Block elements        | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:07-source-blocks.org][Source Code Blocks]], [[file:10-export.org][Export]]                                       |
 | Bold text             | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]]                                                                              |
 | Capture templates     | [[file:15-capture.org][Capture]]                             | [[file:14-journal.org][Journal]], [[file:26-configuration.org][Configuration]]                                             |
