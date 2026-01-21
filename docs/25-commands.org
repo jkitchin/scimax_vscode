@@ -473,14 +473,16 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  |
 | [[cmd:scimax.ref.configureOpenAlex]]| Configure OpenAlex API        | -                  |
 
-** ⚠️ BibTeX Speed Commands
+** ✅ BibTeX Speed Commands
+CLOSED: [2026-01-21 Wed 08:03]
 :PROPERTIES:
 :CUSTOM_ID: bibtex-speed-commands
 :END:
 
 Speed commands for BibTeX files, active at column 0 of @entry lines.
 
-*** ⚠️ Navigation
+*** ✅ Navigation
+CLOSED: [2026-01-21 Wed 08:03]
 
 | Command ID                         | Description      | Speed Key |
 |------------------------------------+------------------+-----------|
@@ -488,31 +490,34 @@ Speed commands for BibTeX files, active at column 0 of @entry lines.
 | [[cmd:scimax.bibtex.previousEntry]]| Previous Entry   | p         |
 | [[cmd:scimax.bibtex.jumpToEntry]]  | Jump to Entry    | j         |
 
-*** ⚠️ Formatting
+*** ✅ Formatting
+CLOSED: [2026-01-21 Wed 08:03]
 
-| Command ID                         | Description          | Speed Key |
-|------------------------------------+----------------------+-----------|
-| [[cmd:scimax.bibtex.sortFields]]   | Sort Fields          | s         |
-| [[cmd:scimax.bibtex.downcaseEntry]]| Downcase Entry       | d         |
-| [[cmd:scimax.bibtex.titleCase]]    | Title Case Title     | t         |
-| [[cmd:scimax.bibtex.sentenceCase]] | Sentence Case Title  | S         |
-| [[cmd:scimax.bibtex.cleanEntry]]   | Clean/Format Entry   | c         |
-| [[cmd:scimax.bibtex.wrapBraces]]   | Wrap in Braces       | Cmd+Shift+] |
+| Command ID                          | Description         | Speed Key   |
+|-------------------------------------+---------------------+-------------|
+| [[cmd:scimax.bibtex.sortFields]]    | Sort Fields         | s           |
+| [[cmd:scimax.bibtex.downcaseEntry]] | Downcase Entry      | d           |
+| [[cmd:scimax.bibtex.titleCase]]     | Title Case Title    | t           |
+| [[cmd:scimax.bibtex.sentenceCase]]  | Sentence Case Title | S           |
+| [[cmd:scimax.bibtex.cleanEntry]]    | Clean/Format Entry  | c           |
+| [[cmd:scimax.bibtex.wrapBraces]]    | Wrap in Braces      | Cmd+Shift+] |
 
 The =wrapBraces= command wraps the selected text or word at cursor in curly braces ={}= for case protection (e.g., ={NASA}=, ={Python}=).
 
-*** ⚠️ Access
+*** ✅ Access
+CLOSED: [2026-01-21 Wed 11:31]
 
-| Command ID                         | Description          | Speed Key |
-|------------------------------------+----------------------+-----------|
-| [[cmd:scimax.bibtex.openPdf]]      | Open PDF             | o         |
-| [[cmd:scimax.bibtex.openUrl]]      | Open URL/DOI         | u         |
-| [[cmd:scimax.bibtex.openNotes]]    | Open Notes           | N         |
-| [[cmd:scimax.bibtex.googleScholar]]| Google Scholar       | g         |
-| [[cmd:scimax.bibtex.crossref]]     | Open in CrossRef     | x         |
-| [[cmd:scimax.bibtex.webOfScience]] | Open in Web of Science | w       |
+| Command ID                          | Description            | Speed Key |
+|-------------------------------------+------------------------+-----------|
+| [[cmd:scimax.bibtex.openPdf]]       | Open PDF               | o         |
+| [[cmd:scimax.bibtex.openUrl]]       | Open URL/DOI           | u         |
+| [[cmd:scimax.bibtex.openNotes]]     | Open Notes             | N         |
+| [[cmd:scimax.bibtex.googleScholar]] | Google Scholar         | g         |
+| [[cmd:scimax.bibtex.crossref]]      | Open in CrossRef       | x         |
+| [[cmd:scimax.bibtex.webOfScience]]  | Open in Web of Science | w         |
 
-*** ⚠️ OpenAlex Integration
+*** ✅ OpenAlex Integration
+CLOSED: [2026-01-21 Wed 11:31]
 
 | Command ID                             | Description           | Speed Key |
 |----------------------------------------+-----------------------+-----------|
@@ -520,7 +525,8 @@ The =wrapBraces= command wraps the selected text or word at cursor in curly brac
 | [[cmd:scimax.bibtex.showRelatedWorks]] | Show Related Works    | R         |
 | [[cmd:scimax.bibtex.showReferences]]   | Show References       | r         |
 
-*** ⚠️ Actions
+*** ✅ Actions
+CLOSED: [2026-01-21 Wed 11:31]
 
 | Command ID                         | Description          | Speed Key |
 |------------------------------------+----------------------+-----------|
@@ -531,18 +537,20 @@ The =wrapBraces= command wraps the selected text or word at cursor in curly brac
 | [[cmd:scimax.bibtex.updateFromWeb]]| Update from Web      | U         |
 | [[cmd:scimax.bibtex.help]]         | Show Help            | ?         |
 
-*** ⚠️ File-Wide Commands
+*** ✅ File-Wide Commands
+CLOSED: [2026-01-21 Wed 11:31]
 
 These commands operate on the entire file. They appear as code lens buttons at the top of .bib files.
 
-| Command ID                          | Description          | Code Lens |
-|-------------------------------------+----------------------+-----------|
-| [[cmd:scimax.bibtex.validateFile]]  | Validate File        | ✓ Validate|
-| [[cmd:scimax.bibtex.showStatistics]]| Show File Statistics | N entries |
-| [[cmd:scimax.bibtex.sortEntries]]   | Sort Entries         | -         |
-| [[cmd:scimax.bibtex.applyToAllEntries]]| Apply to All Entries | -      |
+| Command ID                              | Description          | Code Lens   |
+|-----------------------------------------+----------------------+-------------|
+| [[cmd:scimax.bibtex.validateFile]]      | Validate File        | ✓ Validate |
+| [[cmd:scimax.bibtex.showStatistics]]    | Show File Statistics | N entries   |
+| [[cmd:scimax.bibtex.sortEntries]]       | Sort Entries         | -           |
+| [[cmd:scimax.bibtex.applyToAllEntries]] | Apply to All Entries | -           |
 
-*** ⚠️ Journal Abbreviations
+*** ✅ Journal Abbreviations
+CLOSED: [2026-01-21 Wed 11:32]
 
 Commands for managing journal name abbreviations in BibTeX entries.
 
@@ -677,7 +685,7 @@ CLOSED: [2026-01-17 Sat 12:48]
 | [[cmd:scimax.markup.latexDisplayMath]] | LaTeX Display Math (Markup) | -                  |
 | [[cmd:scimax.markup.command]]          | Command (Emacs-style)       | C-c '              |
 
-* ⚠️ Word Case & Navigation
+* ✅ Word Case & Navigation
 
 | Command ID                        | Description                   | Default Keybinding |
 |-----------------------------------+-------------------------------+--------------------|
@@ -686,6 +694,8 @@ CLOSED: [2026-01-17 Sat 12:48]
 | [[cmd:scimax.uppercaseWord]]      | Uppercase Word and Move Next  | M-u                |
 | [[cmd:scimax.beginningOfBuffer]]  | Beginning of Buffer           | M-<                |
 | [[cmd:scimax.endOfBuffer]]        | End of Buffer                 | M->                |
+
+@@>note that M-u does not work on a Mac because it is intercepted to make an accented character.<@@
 
 * ✅ Speed Commands
 CLOSED: [2026-01-17 Sat 12:48]
@@ -790,34 +800,38 @@ CLOSED: [2026-01-17 Sat 12:49]
 | [[cmd:scimax.speed.help]]   | Speed Commands Help   | ? (S-/)   |
 | [[cmd:scimax.speed.toggle]] | Toggle Speed Commands | C-c C-x s |
 
-* ⚠️ LaTeX
+* ✅ LaTeX
+CLOSED: [2026-01-21 Wed 11:33]
 
 Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.
 
-** ⚠️ Section Navigation
+** ✅ Section Navigation
+CLOSED: [2026-01-21 Wed 11:33]
 
-| Command ID                                 | Description              | Default Keybinding |
-|--------------------------------------------+--------------------------+--------------------|
-| [[cmd:scimax.latex.nextSection]]           | Next Section             | C-c C-n            |
-| [[cmd:scimax.latex.previousSection]]       | Previous Section         | C-c C-p            |
-| [[cmd:scimax.latex.parentSection]]         | Parent Section           | C-c C-u            |
-| [[cmd:scimax.latex.nextSiblingSection]]    | Next Sibling Section     | C-c C-f            |
-| [[cmd:scimax.latex.previousSiblingSection]]| Previous Sibling Section | C-c C-b            |
-| [[cmd:scimax.latex.firstSection]]          | First Section            | -                  |
-| [[cmd:scimax.latex.lastSection]]           | Last Section             | -                  |
-| [[cmd:scimax.latex.jumpToSection]]         | Jump to Section          | C-c j / C-c C-j    |
+| Command ID                                  | Description              | Default Keybinding |
+|---------------------------------------------+--------------------------+--------------------|
+| [[cmd:scimax.latex.nextSection]]            | Next Section             | C-c C-n            |
+| [[cmd:scimax.latex.previousSection]]        | Previous Section         | C-c C-p            |
+| [[cmd:scimax.latex.parentSection]]          | Parent Section           | C-c C-u            |
+| [[cmd:scimax.latex.nextSiblingSection]]     | Next Sibling Section     | C-c C-f            |
+| [[cmd:scimax.latex.previousSiblingSection]] | Previous Sibling Section | C-c C-b            |
+| [[cmd:scimax.latex.firstSection]]           | First Section            | -                  |
+| [[cmd:scimax.latex.lastSection]]            | Last Section             | -                  |
+| [[cmd:scimax.latex.jumpToSection]]          | Jump to Section          | C-c j / C-c C-j    |
 
-** ⚠️ Environment Navigation
+** ✅ Environment Navigation
+CLOSED: [2026-01-21 Wed 11:33]
 
-| Command ID                                    | Description                 | Default Keybinding |
-|-----------------------------------------------+-----------------------------+--------------------|
-| [[cmd:scimax.latex.nextEnvironment]]          | Next Environment            | -                  |
-| [[cmd:scimax.latex.previousEnvironment]]      | Previous Environment        | -                  |
-| [[cmd:scimax.latex.jumpToEnvironment]]        | Jump to Environment         | -                  |
-| [[cmd:scimax.latex.jumpToLabel]]              | Jump to Label               | C-c l              |
-| [[cmd:scimax.latex.jumpToMatchingEnvironment]]| Jump to Matching Begin/End  | C-c %              |
+| Command ID                                     | Description                | Default Keybinding |
+|------------------------------------------------+----------------------------+--------------------|
+| [[cmd:scimax.latex.nextEnvironment]]           | Next Environment           | -                  |
+| [[cmd:scimax.latex.previousEnvironment]]       | Previous Environment       | -                  |
+| [[cmd:scimax.latex.jumpToEnvironment]]         | Jump to Environment        | -                  |
+| [[cmd:scimax.latex.jumpToLabel]]               | Jump to Label              | C-c l              |
+| [[cmd:scimax.latex.jumpToMatchingEnvironment]] | Jump to Matching Begin/End | C-c %              |
 
-** ⚠️ Structure Editing
+** ✅ Structure Editing
+CLOSED: [2026-01-21 Wed 11:33]
 
 | Command ID                              | Description        | Default Keybinding |
 |-----------------------------------------+--------------------+--------------------|
@@ -835,22 +849,24 @@ Comprehensive LaTeX editing support with structural navigation, environment mani
 | [[cmd:scimax.latex.narrowToSection]]    | Narrow to Section  | -                  |
 | [[cmd:scimax.latex.widen]]              | Widen (Unfold All) | -                  |
 
-** ⚠️ Environment Manipulation
+** ✅ Environment Manipulation
+CLOSED: [2026-01-21 Wed 11:33]
 
-| Command ID                                  | Description                 | Default Keybinding |
-|---------------------------------------------+-----------------------------+--------------------|
-| [[cmd:scimax.latex.selectEnvironment]]      | Select Environment          | C-c C-e            |
-| [[cmd:scimax.latex.selectEnvironmentContent]]| Select Environment Content  | -                  |
-| [[cmd:scimax.latex.changeEnvironment]]      | Change Environment          | C-c e              |
-| [[cmd:scimax.latex.wrapInEnvironment]]      | Wrap in Environment         | C-c w              |
-| [[cmd:scimax.latex.unwrapEnvironment]]      | Unwrap Environment          | -                  |
-| [[cmd:scimax.latex.deleteEnvironment]]      | Delete Environment          | -                  |
-| [[cmd:scimax.latex.toggleEnvironmentStar]]  | Toggle Environment Star     | C-c *              |
-| [[cmd:scimax.latex.addLabel]]               | Add Label to Environment    | C-c C-l            |
-| [[cmd:scimax.latex.addCaption]]             | Add Caption to Environment  | -                  |
-| [[cmd:scimax.latex.environmentInfo]]        | Show Environment Info       | -                  |
+| Command ID                                    | Description                | Default Keybinding |
+|-----------------------------------------------+----------------------------+--------------------|
+| [[cmd:scimax.latex.selectEnvironment]]        | Select Environment         | C-c C-e            |
+| [[cmd:scimax.latex.selectEnvironmentContent]] | Select Environment Content | -                  |
+| [[cmd:scimax.latex.changeEnvironment]]        | Change Environment         | C-c e              |
+| [[cmd:scimax.latex.wrapInEnvironment]]        | Wrap in Environment        | C-c w              |
+| [[cmd:scimax.latex.unwrapEnvironment]]        | Unwrap Environment         | -                  |
+| [[cmd:scimax.latex.deleteEnvironment]]        | Delete Environment         | -                  |
+| [[cmd:scimax.latex.toggleEnvironmentStar]]    | Toggle Environment Star    | C-c *              |
+| [[cmd:scimax.latex.addLabel]]                 | Add Label to Environment   | C-c C-l            |
+| [[cmd:scimax.latex.addCaption]]               | Add Caption to Environment | -                  |
+| [[cmd:scimax.latex.environmentInfo]]          | Show Environment Info      | -                  |
 
-** ⚠️ Compilation and PDF Viewing
+** ✅ Compilation and PDF Viewing
+CLOSED: [2026-01-21 Wed 11:33]
 
 | Command ID                               | Description                        | Default Keybinding |
 |------------------------------------------+------------------------------------+--------------------|
@@ -868,38 +884,42 @@ Comprehensive LaTeX editing support with structural navigation, environment mani
 | [[cmd:scimax.latex.showOutput]]          | Show LaTeX Build Output            | -                  |
 | [[cmd:scimax.latex.jumpToPdf]]           | Jump to PDF (compile if needed)    | -                  |
 
-** ⚠️ Error Navigation
+** ✅ Error Navigation
+CLOSED: [2026-01-21 Wed 11:33]
 
-| Command ID                        | Description           | Default Keybinding |
-|-----------------------------------+-----------------------+--------------------|
-| [[cmd:scimax.latex.nextError]]    | Go to Next Error      | C-c `              |
-| [[cmd:scimax.latex.previousError]]| Go to Previous Error  | C-c S-`            |
-| [[cmd:scimax.latex.showErrors]]   | Show All Errors       | C-c !              |
+| Command ID                         | Description          | Default Keybinding |
+|------------------------------------+----------------------+--------------------|
+| [[cmd:scimax.latex.nextError]]     | Go to Next Error     | C-c `              |
+| [[cmd:scimax.latex.previousError]] | Go to Previous Error | C-c S-`            |
+| [[cmd:scimax.latex.showErrors]]    | Show All Errors      | C-c !              |
 
-** ⚠️ Insertion Commands
+** ✅ Insertion Commands
+CLOSED: [2026-01-21 Wed 11:34]
 
-| Command ID                        | Description      | Default Keybinding |
-|-----------------------------------+------------------+--------------------|
-| [[cmd:scimax.latex.insertFigure]] | Insert Figure    | -                  |
-| [[cmd:scimax.latex.insertTable]]  | Insert Table     | -                  |
-| [[cmd:scimax.latex.insertEquation]]| Insert Equation | -                  |
+| Command ID                          | Description     | Default Keybinding |
+|-------------------------------------+-----------------+--------------------|
+| [[cmd:scimax.latex.insertFigure]]   | Insert Figure   | -                  |
+| [[cmd:scimax.latex.insertTable]]    | Insert Table    | -                  |
+| [[cmd:scimax.latex.insertEquation]] | Insert Equation | -                  |
 
-** ⚠️ Utilities
+** ✅ Utilities
+CLOSED: [2026-01-21 Wed 11:34]
 
-| Command ID                                | Description                    | Default Keybinding |
-|-------------------------------------------+--------------------------------+--------------------|
-| [[cmd:scimax.latex.format]]               | Format Document                | C-c C-q            |
-| [[cmd:scimax.latex.wordCount]]            | Word Count                     | -                  |
-| [[cmd:scimax.latex.addToDictionary]]      | Add Word to Dictionary         | -                  |
-| [[cmd:scimax.latex.showInverseSyncTeXCommand]]| Show Inverse SyncTeX Command | -                  |
+| Command ID                                     | Description                  | Default Keybinding |
+|------------------------------------------------+------------------------------+--------------------|
+| [[cmd:scimax.latex.format]]                    | Format Document              | C-c C-q            |
+| [[cmd:scimax.latex.wordCount]]                 | Word Count                   | -                  |
+| [[cmd:scimax.latex.addToDictionary]]           | Add Word to Dictionary       | -                  |
+| [[cmd:scimax.latex.showInverseSyncTeXCommand]] | Show Inverse SyncTeX Command | -                  |
 
-** ⚠️ Speed Commands
+** ✅ Speed Commands
+CLOSED: [2026-01-21 Wed 11:34]
 
 Speed commands are available when cursor is at the beginning of a section line.
 
-| Command ID                          | Description               | Speed Key |
-|-------------------------------------+---------------------------+-----------|
-| [[cmd:scimax.latex.speedCommandHelp]]| Speed Command Help        | ?         |
+| Command ID                            | Description        | Speed Key |
+|---------------------------------------+--------------------+-----------|
+| [[cmd:scimax.latex.speedCommandHelp]] | Speed Command Help | ?         |
 
 Section speed commands (at \section, \subsection, etc.):
 - n :: Next section
@@ -918,14 +938,15 @@ Section speed commands (at \section, \subsection, etc.):
 - i :: Insert section
 - Tab :: Toggle fold
 
-** ⚠️ Environment Speed Commands
+** ✅ Environment Speed Commands
+CLOSED: [2026-01-21 Wed 11:36]
 
 Environment speed commands available at \begin{...} lines.
 
-| Command ID                             | Description                  | Speed Key |
-|----------------------------------------+------------------------------+-----------|
-| [[cmd:scimax.latex.envSpeedCommand]]   | Environment Speed Command    | -         |
-| [[cmd:scimax.latex.envSpeedCommandHelp]]| Environment Speed Help       | ?         |
+| Command ID                               | Description               | Speed Key |
+|------------------------------------------+---------------------------+-----------|
+| [[cmd:scimax.latex.envSpeedCommand]]     | Environment Speed Command | -         |
+| [[cmd:scimax.latex.envSpeedCommandHelp]] | Environment Speed Help    | ?         |
 
 Environment speed command keys:
 - n :: Next environment
@@ -941,7 +962,8 @@ Environment speed command keys:
 - C :: Add caption
 - i :: Environment info
 
-** ⚠️ LaTeX Cache Management
+** ✅ LaTeX Cache Management
+CLOSED: [2026-01-21 Wed 11:36]
 
 | Command ID                     | Description                     | Default Keybinding |
 |--------------------------------+---------------------------------+--------------------|
@@ -962,14 +984,16 @@ CLOSED: [2026-01-17 Sat 12:50]
 | [[cmd:scimax.capture.listTemplates]]  | List Capture Templates      | -                  |
 | [[cmd:scimax.capture.configure]]      | Configure Capture Templates | -                  |
 
-* ⚠️ Templates
+* ✅ Templates
+CLOSED: [2026-01-21 Wed 11:36]
 :PROPERTIES:
 :CUSTOM_ID: templates
 :END:
 
 Insert and manage file templates for org, markdown, and LaTeX files.
 
-** ⚠️ Insert Templates
+** ✅ Insert Templates
+CLOSED: [2026-01-21 Wed 11:36]
 
 | Command ID                               | Description               | Default Keybinding |
 |------------------------------------------+---------------------------+--------------------|
@@ -979,7 +1003,8 @@ Insert and manage file templates for org, markdown, and LaTeX files.
 | [[cmd:scimax.templates.insertLatex]]     | Insert LaTeX Template     | -                  |
 | [[cmd:scimax.templates.quickInsert]]     | Quick Insert Template     | C-S-.              |
 
-** ⚠️ New Files from Templates
+** ✅ New Files from Templates
+CLOSED: [2026-01-21 Wed 11:36]
 
 | Command ID                               | Description                  | Default Keybinding |
 |------------------------------------------+------------------------------+--------------------|
@@ -988,7 +1013,8 @@ Insert and manage file templates for org, markdown, and LaTeX files.
 | [[cmd:scimax.templates.newMarkdownFile]] | New Markdown from Template   | -                  |
 | [[cmd:scimax.templates.newLatexFile]]    | New LaTeX from Template      | -                  |
 
-** ⚠️ Template Management
+** ✅ Template Management
+CLOSED: [2026-01-21 Wed 11:36]
 
 | Command ID                                  | Description                    | Default Keybinding |
 |---------------------------------------------+--------------------------------+--------------------|
@@ -998,7 +1024,8 @@ Insert and manage file templates for org, markdown, and LaTeX files.
 | [[cmd:scimax.templates.list]]               | List Templates                 | -                  |
 | [[cmd:scimax.templates.reload]]             | Reload Templates               | -                  |
 
-* ⚠️ Manuscript
+* ✅ Manuscript
+CLOSED: [2026-01-21 Wed 11:36]
 :PROPERTIES:
 :CUSTOM_ID: manuscript
 :END:
@@ -1282,7 +1309,8 @@ Interactive search and replace.
 
 Provides Emacs-style interactive query-replace with confirmation for each replacement.
 
-* ⚠️ Utilities
+* ✅ Utilities
+CLOSED: [2026-01-21 Wed 13:21]
 :PROPERTIES:
 :CUSTOM_ID: utilities
 :END:

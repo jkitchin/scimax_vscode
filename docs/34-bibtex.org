@@ -146,7 +146,8 @@ After:
 }
 #+END_SRC
 
-** ⚠️ Title Case
+** ✅ Title Case
+CLOSED: [2026-01-21 Wed 13:22]
 
 Command: =scimax.bibtex.titleCase= (speed key: =T=)
 
@@ -157,7 +158,7 @@ Converts the title field to Title Case while preserving:
 Example:
 - "the effects of machine learning on {DNA} analysis" → "The Effects of Machine Learning on {DNA} Analysis"
 
-** 👀 Sentence Case
+** Sentence Case
 
 Command: =scimax.bibtex.sentenceCase= (speed key: =t=)
 
@@ -269,7 +270,8 @@ After:
 
 Note: This removes ALL internal braces. If you need to preserve specific braces (like ={DNA}=), you'll need to re-add them after running this command.
 
-* ⚠️ File Operations
+* ✅ File Operations
+CLOSED: [2026-01-21 Wed 12:56]
 
 These commands operate on the entire BibTeX file.
 

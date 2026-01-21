@@ -2,6 +2,8 @@
 
 [![Tests](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml/badge.svg)](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml)
 
+<img src="./media/scimax-logo.png" width="200" />
+
 A scientific computing environment for VS Code inspired by [Scimax](https://github.com/jkitchin/scimax), the Emacs-based starter kit for scientists and engineers. This project is 100% vibe-engineered with Claude Code. I have endeavored to make sure it is well tested, and used Claude Code to audit it for security and performance issues. I personally use this almost daily.
 
 ## Roadmap

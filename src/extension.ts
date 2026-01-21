@@ -53,7 +53,7 @@ import { registerCaptureCommands } from './org/captureProvider';
 import { OrgLintProvider, registerOrgLintCommands } from './org/orgLintProvider';
 // Jupyter commands imported dynamically to handle zeromq errors gracefully
 // import { registerJupyterCommands } from './jupyter/commands';
-import { ProjectileManager } from './projectile/projectileManager';
+import { ProjectileManager, Project } from './projectile/projectileManager';
 import { registerProjectileCommands } from './projectile/commands';
 import { ProjectTreeProvider } from './projectile/projectTreeProvider';
 import { registerFuzzySearchCommands } from './fuzzySearch/commands';
@@ -599,20 +599,132 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh()),
         // Filter and sort commands for Projects view
         vscode.commands.registerCommand('scimax.projectile.filterProjects', async () => {
-            const currentFilter = projectTreeProvider.getFilter();
-            const input = await vscode.window.showInputBox({
-                prompt: 'Filter projects by name or path',
-                value: currentFilter,
-                placeHolder: 'Type to filter projects...'
-            });
-            if (input !== undefined) {
-                projectTreeProvider.setFilter(input);
-                if (input) {
-                    projectTreeView.message = `Filter: "${input}"`;
-                } else {
-                    projectTreeView.message = undefined;
-                }
+            const projects = projectileManager.getProjects();
+            const currentFolders = vscode.workspace.workspaceFolders || [];
+            const currentPaths = new Set(currentFolders.map(f => f.uri.fsPath));
+
+            interface ProjectQuickPickItem extends vscode.QuickPickItem {
+                project?: Project;
+                action?: 'filter' | 'clear';
             }
+
+            const quickPick = vscode.window.createQuickPick<ProjectQuickPickItem>();
+            quickPick.placeholder = 'Search projects (Enter to open, Esc to filter tree)';
+            quickPick.matchOnDescription = true;
+            quickPick.matchOnDetail = true;
+
+            const updateItems = () => {
+                const filterText = quickPick.value.toLowerCase();
+                let filteredProjects = projects;
+
+                if (filterText) {
+                    filteredProjects = projects.filter(p =>
+                        p.name.toLowerCase().includes(filterText) ||
+                        p.path.toLowerCase().includes(filterText)
+                    );
+                }
+
+                // Sort by recent first
+                filteredProjects = [...filteredProjects].sort((a, b) =>
+                    (b.lastOpened || 0) - (a.lastOpened || 0)
+                );
+
+                const items: ProjectQuickPickItem[] = filteredProjects.map(p => {
+                    const isCurrent = currentPaths.has(p.path);
+                    const typeIcon = p.type === 'git' ? '$(git-branch)' :
+                                     p.type === 'projectile' ? '$(file)' : '$(folder)';
+                    return {
+                        label: `${isCurrent ? '$(folder-opened) ' : ''}${p.name}`,
+                        description: p.path,
+                        detail: `${typeIcon} ${p.type}${p.lastOpened ? ' - ' + formatProjectTime(p.lastOpened) : ''}`,
+                        project: p
+                    };
+                });
+
+                // Add action items at the end
+                if (quickPick.value) {
+                    items.push({
+                        label: '$(filter) Apply filter to tree view',
+                        description: `Filter: "${quickPick.value}"`,
+                        action: 'filter'
+                    });
+                }
+                if (projectTreeProvider.getFilter()) {
+                    items.push({
+                        label: '$(close) Clear current filter',
+                        description: `Current: "${projectTreeProvider.getFilter()}"`,
+                        action: 'clear'
+                    });
+                }
+
+                quickPick.items = items;
+            };
+
+            const formatProjectTime = (timestamp: number): string => {
+                const diff = Date.now() - timestamp;
+                const minutes = Math.floor(diff / 60000);
+                const hours = Math.floor(diff / 3600000);
+                const days = Math.floor(diff / 86400000);
+                if (minutes < 1) return 'just now';
+                if (minutes < 60) return `${minutes}m ago`;
+                if (hours < 24) return `${hours}h ago`;
+                if (days < 30) return `${days}d ago`;
+                return new Date(timestamp).toLocaleDateString();
+            };
+
+            updateItems();
+            quickPick.onDidChangeValue(() => updateItems());
+
+            quickPick.onDidAccept(async () => {
+                const selected = quickPick.selectedItems[0];
+                if (!selected) {
+                    quickPick.hide();
+                    return;
+                }
+
+                if (selected.action === 'filter') {
+                    projectTreeProvider.setFilter(quickPick.value);
+                    projectTreeView.message = `Filter: "${quickPick.value}"`;
+                    quickPick.hide();
+                } else if (selected.action === 'clear') {
+                    projectTreeProvider.setFilter('');
+                    projectTreeView.message = undefined;
+                    quickPick.hide();
+                } else if (selected.project) {
+                    quickPick.hide();
+                    // Open the project
+                    await projectileManager.touchProject(selected.project.path);
+                    const openIn = await vscode.window.showQuickPick([
+                        { label: '$(window) New Window', value: 'new' },
+                        { label: '$(folder-opened) Current Window', value: 'current' },
+                        { label: '$(add) Add to Workspace', value: 'add' }
+                    ], {
+                        placeHolder: `Open ${selected.project.name}`
+                    });
+
+                    if (openIn) {
+                        const uri = vscode.Uri.file(selected.project.path);
+                        switch (openIn.value) {
+                            case 'new':
+                                await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+                                break;
+                            case 'current':
+                                await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
+                                break;
+                            case 'add':
+                                vscode.workspace.updateWorkspaceFolders(
+                                    vscode.workspace.workspaceFolders?.length || 0,
+                                    0,
+                                    { uri }
+                                );
+                                break;
+                        }
+                    }
+                }
+            });
+
+            quickPick.onDidHide(() => quickPick.dispose());
+            quickPick.show();
         }),
         vscode.commands.registerCommand('scimax.projectile.clearFilter', () => {
             projectTreeProvider.setFilter('');

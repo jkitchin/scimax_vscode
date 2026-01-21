@@ -46,7 +46,8 @@ All Scimax settings use JSON format in `settings.json':
 }
 #+end_src
 
-* ⚠️ General Settings
+* ✅ General Settings
+CLOSED: [2026-01-21 Wed 08:00]
 
 General settings that apply across Scimax features.
 
@@ -197,9 +198,11 @@ Configure the full-text search database and semantic search capabilities.
 
 | Setting                     | Type    | Default                   | Description                            |
 |-----------------------------+---------+---------------------------+----------------------------------------|
-| scimax.db.directories       | array   | [ ]                       | Additional directories to index        |
-| scimax.db.excludePatterns   | array   | See below                 | Glob patterns to exclude               |
-| scimax.db.ignorePatterns    | array   | See below                 | Files to ignore during indexing        |
+| scimax.db.includeJournal    | boolean | true                      | Include journal directory              |
+| scimax.db.includeWorkspace  | boolean | true                      | Include workspace folders              |
+| scimax.db.includeProjects   | boolean | true                      | Include scimax projects                |
+| scimax.db.include           | array   | [ ]                       | Additional directories/files           |
+| scimax.db.exclude           | array   | See below                 | Patterns/paths to exclude              |
 | scimax.db.autoIndex         | boolean | false                     | Auto-index workspace on activation     |
 | scimax.db.embeddingProvider | string  | "none"                    | Embedding provider for semantic search |
 | scimax.db.localModel        | string  | "Xenova/all-MiniLM-L6-v2" | Local embedding model                  |
@@ -209,16 +212,34 @@ Configure the full-text search database and semantic search capabilities.
 
 ** Detailed Configuration
 
-*** scimax.db.directories
+*** scimax.db.includeJournal
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Include the journal directory in database indexing
+
+*** scimax.db.includeWorkspace
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Include workspace folders in database indexing
+
+*** scimax.db.includeProjects
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Include all scimax projects in database indexing
+
+*** scimax.db.include
 
 - *Type*: array of strings
-- *Default*: `[ ]'
-- *Description*: Additional directories to index for search beyond the current workspace
+- *Default*: =[ ]=
+- *Description*: Additional directories or files to index (supports ~ for home directory)
 
 *Example*:
 #+begin_src json
 {
-  "scimax.db.directories": [
+  "scimax.db.include": [
     "~/Documents/notes",
     "~/research",
     "~/teaching/courses"
@@ -226,42 +247,22 @@ Configure the full-text search database and semantic search capabilities.
 }
 #+end_src
 
-*** scimax.db.excludePatterns
+*** scimax.db.exclude
 
 - *Type*: array of strings
-- *Default*: `["**/node_modules/**", "**/.git/**", "**/dist/**"]'
-- *Description*: Glob patterns to exclude from indexing
+- *Default*: =["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"]=
+- *Description*: Patterns or paths to exclude from indexing (globs and absolute paths)
 
 *Example*:
 #+begin_src json
 {
-  "scimax.db.excludePatterns": [
+  "scimax.db.exclude": [
     "**/node_modules/**",
     "**/.git/**",
     "**/dist/**",
     "**/build/**",
-    "**/*.min.js",
-    "**/archive/**"
-  ]
-}
-#+end_src
-
-*** scimax.db.ignorePatterns
-
-- *Type*: array of strings
-- *Default*: `["**/node_modules/**", "**/.git/**", "**/dist/**", "**/build/**"]'
-- *Description*: Patterns for files to ignore during indexing
-
-*Example*:
-#+begin_src json
-{
-  "scimax.db.ignorePatterns": [
-    "**/node_modules/**",
-    "**/.git/**",
-    "**/dist/**",
-    "**/build/**",
-    "**/.cache/**",
-    "**/temp/**"
+    "**/archive/**",
+    "~/notes/scratch.org"
   ]
 }
 #+end_src
@@ -927,49 +928,73 @@ Configure the agenda view and TODO tracking.
 
 ** Settings Overview
 
-| Setting                       | Type    | Default                     | Description                  |
-|-------------------------------+---------+-----------------------------+------------------------------|
-| scimax.agenda.files           | array   | [ ]                         | Directories/files for agenda |
-| scimax.agenda.excludePatterns | array   | See below                   | Patterns to exclude          |
-| scimax.agenda.defaultSpan     | number  | 7                           | Days to show in agenda       |
-| scimax.agenda.showDone        | boolean | false                       | Show completed items         |
-| scimax.agenda.showHabits      | boolean | true                        | Show habit-tagged items      |
-| scimax.agenda.todoStates      | array   | ["TODO", "NEXT", "WAITING"] | Active TODO states           |
-| scimax.agenda.doneStates      | array   | ["DONE", "CANCELLED"]       | Completed states             |
+| Setting                        | Type    | Default                     | Description                    |
+|--------------------------------+---------+-----------------------------+--------------------------------|
+| scimax.agenda.includeJournal   | boolean | true                        | Include journal in agenda      |
+| scimax.agenda.includeWorkspace | boolean | true                        | Include workspace folders      |
+| scimax.agenda.includeProjects  | boolean | true                        | Include scimax projects        |
+| scimax.agenda.include          | array   | [ ]                         | Additional dirs/files          |
+| scimax.agenda.exclude          | array   | See below                   | Patterns/paths to exclude      |
+| scimax.agenda.defaultSpan      | number  | 7                           | Days to show in agenda         |
+| scimax.agenda.showDone         | boolean | false                       | Show completed items           |
+| scimax.agenda.showHabits       | boolean | true                        | Show habit-tagged items        |
+| scimax.agenda.todoStates       | array   | ["TODO", "NEXT", "WAITING"] | Active TODO states             |
+| scimax.agenda.doneStates       | array   | ["DONE", "CANCELLED"]       | Completed states               |
 
 ** Detailed Configuration
 
-*** scimax.agenda.files
+*** scimax.agenda.includeJournal
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Include the journal directory in agenda scanning
+
+When enabled, the journal directory (from =scimax.journal.directory=) is automatically included in agenda scanning. Disable this if you don't want journal entries in your agenda.
+
+*** scimax.agenda.includeWorkspace
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Include workspace folders in agenda scanning
+
+*** scimax.agenda.includeProjects
+
+- *Type*: boolean
+- *Default*: =true=
+- *Description*: Include all scimax projects in agenda scanning
+
+When enabled, all projects registered with scimax projectile are included in agenda scanning. This is useful because projects often contain TODO items and tasks.
+
+*** scimax.agenda.include
 
 - *Type*: array of strings
-- *Default*: `[ ]' (scans all org files in workspace)
-- *Description*: Directories or files to include in the agenda
+- *Default*: =[ ]= (empty)
+- *Description*: Additional directories or files to include in the agenda (supports ~ for home directory)
 
 *Example*:
 #+begin_src json
 {
-  "scimax.agenda.files": [
+  "scimax.agenda.include": [
     "~/Documents/org",
     "~/work/projects"
   ]
 }
 #+end_src
 
-*** scimax.agenda.excludePatterns
+*** scimax.agenda.exclude
 
 - *Type*: array of strings
-- *Default*: `["**/node_modules/**", "**/.git/**", "**/archive/**"]'
-- *Description*: Glob patterns to exclude from agenda scanning
+- *Default*: =["**/node_modules/**", "**/.git/**", "**/archive/**"]=
+- *Description*: Patterns or paths to exclude from agenda scanning. Supports both glob patterns (containing =*=) and absolute paths.
 
 *Example*:
 #+begin_src json
 {
-  "scimax.agenda.excludePatterns": [
+  "scimax.agenda.exclude": [
     "**/node_modules/**",
     "**/.git/**",
     "**/archive/**",
-    "**/old/**",
-    "**/trash/**"
+    "~/org/scratch.org"
   ]
 }
 #+end_src
@@ -1329,7 +1354,7 @@ Perfect for researchers, graduate students, and academic writers:
   "scimax.ref.defaultCiteStyle": "citep",
 
   // Database and search
-  "scimax.db.directories": [
+  "scimax.db.include": [
     "~/research",
     "~/teaching"
   ],
@@ -1345,7 +1370,7 @@ Perfect for researchers, graduate students, and academic writers:
   "scimax.latexLivePreview.useLatexmk": true,
 
   // Agenda for deadlines and tasks
-  "scimax.agenda.files": [
+  "scimax.agenda.include": [
     "~/research/projects",
     "~/teaching"
   ],
@@ -1391,11 +1416,11 @@ Optimized for software developers and programmers:
   "scimax.literate.jupyterPath": "~/.pyenv/shims/jupyter",
 
   // Database - index project documentation
-  "scimax.db.directories": [
+  "scimax.db.include": [
     "~/projects",
     "~/docs"
   ],
-  "scimax.db.excludePatterns": [
+  "scimax.db.exclude": [
     "**/node_modules/**",
     "**/.git/**",
     "**/dist/**",
@@ -1414,7 +1439,7 @@ Optimized for software developers and programmers:
   "scimax.notebook.autoDetect": true,
 
   // Agenda for issue tracking
-  "scimax.agenda.files": [
+  "scimax.agenda.include": [
     "~/projects"
   ],
   "scimax.agenda.defaultSpan": 7,
@@ -1458,12 +1483,12 @@ For personal knowledge management and note-taking:
   "scimax.journal.autoTimestamp": true,
 
   // Database with semantic search
-  "scimax.db.directories": [
+  "scimax.db.include": [
     "~/notes",
     "~/books",
     "~/articles"
   ],
-  "scimax.db.excludePatterns": [
+  "scimax.db.exclude": [
     "**/archive/**",
     "**/temp/**"
   ],
@@ -1479,7 +1504,7 @@ For personal knowledge management and note-taking:
   "scimax.ref.notesDirectory": "~/notes/reading-notes",
 
   // Agenda for personal tasks
-  "scimax.agenda.files": [
+  "scimax.agenda.include": [
     "~/notes"
   ],
   "scimax.agenda.defaultSpan": 7,
@@ -1544,7 +1569,7 @@ Bare-bones setup with just the essentials:
 {
   "scimax.journal.directory": "~/journal",
   "scimax.db.autoIndex": false,
-  "scimax.agenda.files": ["~/notes"]
+  "scimax.agenda.include": ["~/notes"]
 }
 #+end_src
 
@@ -1557,7 +1582,7 @@ If database indexing is slow or uses too much memory:
 #+begin_src json
 {
   "scimax.db.autoIndex": false,
-  "scimax.db.excludePatterns": [
+  "scimax.db.exclude": [
     "**/node_modules/**",
     "**/.git/**",
     "**/dist/**",

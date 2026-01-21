@@ -610,7 +610,7 @@ export async function updateDynamicBlockAtCursor(): Promise<void> {
         agendaDocuments = await loadAgendaDocuments();
         if (agendaDocuments.length === 0) {
             vscode.window.showWarningMessage(
-                'No agenda files configured. Set scimax.agenda.files in settings.'
+                'No agenda files found. Check scimax.agenda settings (includeJournal, includeWorkspace, include).'
             );
         }
     }

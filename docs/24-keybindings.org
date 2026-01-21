@@ -332,7 +332,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | U   | Move subtree up      |
 | D   | Move subtree down    |
 
-** TODO & Content Speed Commands
+** "TODO" & Content Speed Commands
 
 | Key | Action              |
 |-----+---------------------|
@@ -381,10 +381,11 @@ CLOSED: [2026-01-19 Mon 18:18]
 | S   | Sentence case title |
 | c   | Clean/format entry  |
 
-**** 👀 Wrap in Braces (Case Protection)
+**** ✅ Wrap in Braces (Case Protection)
+CLOSED: [2026-01-21 Wed 08:02]
 
-| Key         | Action                                      |
-|-------------+---------------------------------------------|
+| Key         | Action                                     |
+|-------------+--------------------------------------------|
 | Cmd+Shift+] | Wrap selection or word at cursor in braces |
 
 Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.

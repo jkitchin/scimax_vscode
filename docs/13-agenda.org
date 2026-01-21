@@ -587,18 +587,24 @@ CLOSED: [2026-01-17 Sat 13:26]
 
 Configure agenda behavior through VS Code settings.
 
-** ✅ Agenda Files
+** 👀 Agenda Sources
 CLOSED: [2026-01-17 Sat 13:26]
 
-Specify which files to include in the agenda.
+The agenda automatically includes files from these sources:
 
-| Setting                  | Default      | Description                    |
-|--------------------------|--------------|--------------------------------|
-| scimax.agenda.files     | [] (empty)  | Files/directories for agenda   |
+| Setting                        | Default | Description                        |
+|--------------------------------+---------+------------------------------------|
+| scimax.agenda.includeJournal   | true    | Include journal directory          |
+| scimax.agenda.includeWorkspace | true    | Include workspace folders          |
+| scimax.agenda.includeProjects  | true    | Include all scimax projects        |
+| scimax.agenda.include          | []      | Additional directories/files       |
 
-When empty, scans all org files in workspace.
+By default, the agenda includes:
+1. Your journal directory (from =scimax.journal.directory=)
+2. All org files in your workspace folders
+3. All scimax projects (registered via projectile)
 
-To add files or directories:
+To add additional files or directories:
 
 #+BEGIN_SRC text
 Command: scimax.agenda.configure
@@ -610,7 +616,7 @@ Or manually in settings:
 
 #+BEGIN_SRC json
 {
-  "scimax.agenda.files": [
+  "scimax.agenda.include": [
     "/home/user/org/work.org",
     "/home/user/org/personal.org",
     "/home/user/projects"
@@ -618,25 +624,41 @@ Or manually in settings:
 }
 #+END_SRC
 
-** ✅ Exclude Patterns
-CLOSED: [2026-01-17 Sat 13:25]
-
-Exclude certain files from agenda:
-
-| Setting                       | Default                        |
-|-------------------------------+--------------------------------|
-| scimax.agenda.excludePatterns | **/node_modules/**, **/.git/** |
+To disable journal or projects in agenda:
 
 #+BEGIN_SRC json
 {
-  "scimax.agenda.excludePatterns": [
+  "scimax.agenda.includeJournal": false,
+  "scimax.agenda.includeProjects": false
+}
+#+END_SRC
+
+** 👀 Exclude Patterns
+CLOSED: [2026-01-17 Sat 13:25]
+
+Exclude files from agenda using glob patterns or absolute paths:
+
+| Setting               | Default                                              |
+|-----------------------+------------------------------------------------------|
+| scimax.agenda.exclude | =["**/node_modules/**", "**/.git/**", "**/archive/**"]= |
+
+The exclude list supports:
+- Glob patterns (containing =*=): =**/archive/**=
+- Absolute paths: =~/org/scratch.org=
+
+#+BEGIN_SRC json
+{
+  "scimax.agenda.exclude": [
     "**/node_modules/**",
     "**/.git/**",
     "**/archive/**",
-    "**/drafts/**"
+    "**/drafts/**",
+    "~/org/scratch.org"
   ]
 }
 #+END_SRC
+
+Use =Scimax: Exclude File from Agenda= command to quickly exclude the current file.
 
 ** ✅ Default Time Span
 CLOSED: [2026-01-17 Sat 13:25]
@@ -1126,7 +1148,7 @@ CLOSED: [2026-01-18 Sun 12:50]
 
 5. *Check exclude patterns*:
    - Ensure files aren't excluded
-   - Review scimax.agenda.excludePatterns
+   - Review scimax.agenda.exclude
 
 ** ✅ Items Not Updating
 CLOSED: [2026-01-18 Sun 12:50]
@@ -1190,7 +1212,7 @@ CLOSED: [2026-01-18 Sun 12:50]
 3. *Exclude large directories*:
    #+BEGIN_SRC json
    {
-     "scimax.agenda.excludePatterns": [
+     "scimax.agenda.exclude": [
        "**/node_modules/**",
        "**/vendor/**",
        "**/build/**"
@@ -1272,18 +1294,21 @@ CLOSED: [2026-01-18 Sun 12:49]
 | [[cmd:scimax.agenda.groupByPriority]]      | Group by priority              |
 | [[cmd:scimax.agenda.gotoItem]]             | Go to item in file             |
 
-** ✅ Configuration Settings
+** 👀 Configuration Settings
 CLOSED: [2026-01-18 Sun 12:49]
 
-| Setting                       | Default      | Description          |
-|-------------------------------+--------------+----------------------|
-| scimax.agenda.files           | [] (empty)   | Agenda file list     |
-| scimax.agenda.excludePatterns | node_modules | Files to exclude     |
-| scimax.agenda.defaultSpan     | 7            | Default days to show |
-| scimax.agenda.showDone        | false        | Show DONE items      |
-| scimax.agenda.showHabits      | true         | Show habit items     |
-| scimax.agenda.todoStates      | [TODO, ...]  | TODO keyword list    |
-| scimax.agenda.doneStates      | [DONE, ...]  | DONE keyword list    |
+| Setting                        | Default      | Description               |
+|--------------------------------+--------------+---------------------------|
+| scimax.agenda.includeJournal   | true         | Include journal           |
+| scimax.agenda.includeWorkspace | true         | Include workspace         |
+| scimax.agenda.includeProjects  | true         | Include scimax projects   |
+| scimax.agenda.include          | [] (empty)   | Additional paths          |
+| scimax.agenda.exclude          | node_modules | Patterns/paths to exclude |
+| scimax.agenda.defaultSpan      | 7            | Default days to show      |
+| scimax.agenda.showDone         | false        | Show DONE items           |
+| scimax.agenda.showHabits       | true         | Show habit items          |
+| scimax.agenda.todoStates       | [TODO, ...]  | TODO keyword list         |
+| scimax.agenda.doneStates       | [DONE, ...]  | DONE keyword list         |
 
 ** ✅ Agenda Item Properties
 CLOSED: [2026-01-18 Sun 12:49]
