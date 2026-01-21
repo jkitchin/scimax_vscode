@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-20T12:44:45.602Z",
-  "count": 2976,
+  "buildDate": "2026-01-20T17:48:50.174Z",
+  "count": 3005,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -710,7 +710,7 @@
       ]
     },
     {
-      "heading": "Specialized File Support (31-34)",
+      "heading": "Specialized File Support (31-35)",
       "level": 3,
       "file": "00-index.org",
       "line": 223,
@@ -724,7 +724,7 @@
       "keywords": [
         "specialized",
         "support",
-        "31-34",
+        "31-35",
         "document",
         "description",
         "------------------------------------------------------------------------------------------",
@@ -748,7 +748,7 @@
       "heading": "Quick Start",
       "level": 2,
       "file": "00-index.org",
-      "line": 232,
+      "line": 233,
       "content": "1. *Install the extension* from the VS Code marketplace or from a VSIX file 2. *Open or create an org file* with the `.org' extension 3. *Create a heading* by typing `* My First Heading' 4. *Add a source block* and execute it: #+BEGIN_SRC org ,#+BEGIN_SRC python :results output print(\"Hello, Scimax VS Code!\") ,#+END_SRC #+END_SRC Press `C-<return>' or `C-c C-c' to execute. 5. *Explore the menus* with `C-c m' (main menu) or `C-c C-m' (context menu) See [[file:01-getting-started.org][Getting Start",
       "path": [
         "Scimax VS Code"
@@ -786,7 +786,7 @@
       "heading": "Getting Help",
       "level": 2,
       "file": "00-index.org",
-      "line": 252,
+      "line": 253,
       "content": "",
       "path": [
         "Scimax VS Code"
@@ -802,7 +802,7 @@
       "heading": "Within VS Code",
       "level": 3,
       "file": "00-index.org",
-      "line": 254,
+      "line": 255,
       "content": "- Press `C-c m' to open the main Hydra menu - Press `C-c C-m' for context-sensitive menus - Use `C-S-P' and search for \"Scimax\" commands - Hover over elements for tooltips and information",
       "path": [
         "Scimax VS Code",
@@ -841,7 +841,7 @@
       "heading": "Online Resources",
       "level": 3,
       "file": "00-index.org",
-      "line": 261,
+      "line": 262,
       "content": "- GitHub Issues: Report bugs and request features - Documentation: This documentation set",
       "path": [
         "Scimax VS Code",
@@ -866,7 +866,7 @@
       "heading": "Keybinding Help",
       "level": 3,
       "file": "00-index.org",
-      "line": 266,
+      "line": 267,
       "content": "Press `? ' at the beginning of a heading (with speed commands enabled) to see available speed commands. See [[file:24-keybindings.org][Keybindings]] for the complete reference.",
       "path": [
         "Scimax VS Code",
@@ -894,7 +894,7 @@
       "heading": "Acknowledgments",
       "level": 2,
       "file": "00-index.org",
-      "line": 273,
+      "line": 274,
       "content": "Scimax VS Code is inspired by: - [[https://github.com/jkitchin/scimax][Scimax]] - The original Emacs package by John Kitchin - [[https://orgmode.org][Org-mode]] - The powerful Emacs major mode for notes and planning - [[https://orgmode.org/worg/org-contrib/babel/][Org Babel]] - Literate programming in Org-mode",
       "path": [
         "Scimax VS Code"
@@ -928,7 +928,7 @@
       "heading": "License",
       "level": 2,
       "file": "00-index.org",
-      "line": 281,
+      "line": 282,
       "content": "Scimax VS Code is open source software. See the LICENSE file for details.",
       "path": [
         "Scimax VS Code"
@@ -949,7 +949,7 @@
       "heading": "Complete Documentation Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 285,
+      "line": 286,
       "content": "This section provides a comprehensive index of all documentation topics with links for quick navigation.",
       "path": [],
       "commands": [],
@@ -971,7 +971,7 @@
       "heading": "Navigation Guides",
       "level": 2,
       "file": "00-index.org",
-      "line": 289,
+      "line": 290,
       "content": "| Document                                         | Topics Covered                                   | |--------------------------------------------------+--------------------------------------------------| | [[file:01-getting-started.org][Getting Started]] | Installation, first steps, basic usage           | | [[file:01.5-basic-syntax.org][Basic Syntax]]    | Text markup, lists, equations, blocks            | | [[file:21-navigation.org][Navigation]]           | Fuzzy search, avy-style jump, ou",
       "path": [
         "Complete Documentation Index"
@@ -1005,7 +1005,7 @@
       "heading": "Document Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 301,
+      "line": 302,
       "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    | | [[file:03-todo-items.org][TODO Items]]            ",
       "path": [
         "Complete Documentation Index"
@@ -1038,7 +1038,7 @@
       "heading": "Code Execution",
       "level": 2,
       "file": "00-index.org",
-      "line": 313,
+      "line": 314,
       "content": "| Document                                                 | Topics Covered                               | |----------------------------------------------------------+----------------------------------------------| | [[file:07-source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments            | | [[file:08-supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more            | | [[file:09-jupyter.org][Jupyter Integration]]             | Kernel ",
       "path": [
         "Complete Documentation Index"
@@ -1072,7 +1072,7 @@
       "heading": "Export and Preview",
       "level": 2,
       "file": "00-index.org",
-      "line": 322,
+      "line": 323,
       "content": "| Document                                       | Topics Covered                    | |------------------------------------------------+-----------------------------------| | [[file:10-export.org][Export]]                 | HTML, LaTeX, PDF, Markdown export | | [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  | | [[file:12-image-overlays.org][Image Overlays]] | Inline image display              | | [[file:32-excalidraw.org][Excalidraw]]         | Diagram creati",
       "path": [
         "Complete Documentation Index"
@@ -1106,7 +1106,7 @@
       "heading": "Organization and Planning",
       "level": 2,
       "file": "00-index.org",
-      "line": 331,
+      "line": 332,
       "content": "| Document                               | Topics Covered                        | |----------------------------------------+---------------------------------------| | [[file:13-agenda.org][Agenda]]         | Agenda views, task filtering          | | [[file:14-journal.org][Journal]]       | Daily journaling, calendar navigation | | [[file:15-capture.org][Capture]]       | Quick note capture, templates         | | [[file:16-notebook.org][Notebook]]     | Project-based organization            | | ",
       "path": [
         "Complete Documentation Index"
@@ -1140,7 +1140,7 @@
       "heading": "Search and Database",
       "level": 2,
       "file": "00-index.org",
-      "line": 341,
+      "line": 342,
       "content": "| Document                                             | Topics Covered                                | |------------------------------------------------------+-----------------------------------------------| | [[file:18-database-search.org][Database and Search]] | Full-text search, semantic search, embeddings | | [[file:19-references.org][References]]               | Citations, bibliography, DOI lookup           |",
       "path": [
         "Complete Documentation Index"
@@ -1170,7 +1170,7 @@
       "heading": "Specialized File Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 348,
+      "line": 349,
       "content": "| Document                                             | Topics Covered                                         | |------------------------------------------------------+--------------------------------------------------------| | [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX speed commands, structure navigation             | | [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX speed commands, entry/file operations, sorting  |",
       "path": [
         "Complete Documentation Index"
@@ -1201,7 +1201,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "00-index.org",
-      "line": 355,
+      "line": 356,
       "content": "| Document                                     | Topics Covered                      | |----------------------------------------------+-------------------------------------| | [[file:26-configuration.org][Configuration]] | All settings, customization options |",
       "path": [
         "Complete Documentation Index"
@@ -1224,7 +1224,7 @@
       "heading": "Topic Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 361,
+      "line": 362,
       "content": "Quick reference to find specific features across documentation. | Topic                 | Primary Documentation                                        | Related Documentation                                                                                                      | |-----------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------| | Agenda",
       "path": [],
       "commands": [],
@@ -1249,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 438,
+      "line": 440,
       "content": "",
       "path": [],
       "commands": [],
@@ -1264,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 440,
+      "line": 442,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1279,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 442,
+      "line": 444,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1314,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 449,
+      "line": 451,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1348,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 455,
+      "line": 457,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1381,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 461,
+      "line": 463,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1407,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 466,
+      "line": 468,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 472,
+      "line": 474,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1474,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 479,
+      "line": 481,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1505,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 485,
+      "line": 487,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -87110,6 +87110,835 @@
         "index",
         "file00-indexorg",
         "documentation"
+      ]
+    },
+    {
+      "heading": "Overview",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 5,
+      "content": "The document template system provides yasnippet/skeleton-like functionality for quickly creating new documents or inserting pre-defined content. Templates support: - Multiple formats: Org-mode, Markdown, and LaTeX - Tab stops for quick navigation between placeholders - Auto-fill variables for dates, author, filenames, etc. - User-defined templates stored in a configurable directory - Built-in templates for common document types",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "overview",
+        "document",
+        "template",
+        "system",
+        "provides",
+        "yasnippetskeleton-like",
+        "functionality",
+        "quickly",
+        "creating",
+        "new",
+        "documents",
+        "inserting",
+        "pre-defined",
+        "content",
+        "templates",
+        "support",
+        "multiple",
+        "formats",
+        "org-mode",
+        "markdown"
+      ]
+    },
+    {
+      "heading": "Quick Start",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 15,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "quick",
+        "start"
+      ]
+    },
+    {
+      "heading": "Insert a Template",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 17,
+      "content": "1. Open a file (org, markdown, or latex) 2. Press =C-c C-t i= or run =Scimax: Quick Insert Template= 3. Select a template from the list 4. Tab through placeholders to fill in values",
+      "path": [
+        "Quick Start"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "insert",
+        "template",
+        "open",
+        "org",
+        "markdown",
+        "latex",
+        "press",
+        "c-c",
+        "c-t",
+        "run",
+        "scimax",
+        "quick",
+        "select",
+        "list",
+        "tab",
+        "through",
+        "placeholders",
+        "fill",
+        "values"
+      ]
+    },
+    {
+      "heading": "Create a New File from Template",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 24,
+      "content": "1. Press =C-c C-t n= or run =Scimax: New File from Template= 2. Select a template 3. Enter the filename 4. The file is created and opened with the template content",
+      "path": [
+        "Quick Start"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "create",
+        "new",
+        "template",
+        "press",
+        "c-c",
+        "c-t",
+        "run",
+        "scimax",
+        "select",
+        "enter",
+        "filename",
+        "created",
+        "opened",
+        "content"
+      ]
+    },
+    {
+      "heading": "Access via Hydra Menu",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 31,
+      "content": "Press =C-c C-m= (Hydra menu), then =t= for Templates submenu.",
+      "path": [
+        "Quick Start"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-m"
+      ],
+      "keywords": [
+        "access",
+        "via",
+        "hydra",
+        "menu",
+        "press",
+        "c-c",
+        "c-m",
+        "templates",
+        "submenu"
+      ]
+    },
+    {
+      "heading": "Built-in Templates",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 35,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "built-in",
+        "templates"
+      ]
+    },
+    {
+      "heading": "Org-mode Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 37,
+      "content": "| Template         | Description                                    | |------------------+------------------------------------------------| | Article          | Basic article with title, author, and sections | | Research Notes   | Problem, approach, experiments, results        | | Meeting Notes    | Attendees, agenda, discussion, action items    | | Project Plan     | Goals, milestones, tasks, risks                | | Literature Review| Paper review with key contributions, methods   | | Source B",
+      "path": [
+        "Built-in Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "org-mode",
+        "templates",
+        "template",
+        "description",
+        "------------------------------------------------------------------",
+        "article",
+        "basic",
+        "title",
+        "author",
+        "sections",
+        "research",
+        "notes",
+        "problem",
+        "approach",
+        "experiments",
+        "results",
+        "meeting",
+        "attendees",
+        "agenda",
+        "discussion"
+      ]
+    },
+    {
+      "heading": "Markdown Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 48,
+      "content": "| Template              | Description                          | |-----------------------+--------------------------------------| | README                | Standard project README              | | Blog Post             | Blog post with frontmatter           | | Technical Documentation| Step-by-step technical documentation |",
+      "path": [
+        "Built-in Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "markdown",
+        "templates",
+        "template",
+        "description",
+        "-------------------------------------------------------------",
+        "readme",
+        "standard",
+        "project",
+        "blog",
+        "post",
+        "frontmatter",
+        "technical",
+        "documentation",
+        "step-by-step"
+      ]
+    },
+    {
+      "heading": "LaTeX Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 56,
+      "content": "| Template            | Description                           | |---------------------+---------------------------------------| | Article             | LaTeX article with standard preamble  | | Beamer Presentation | Beamer slide deck                     | | Letter              | Formal letter template                | | Equation            | Numbered equation environment         | | Figure              | Figure environment with caption       | | Table               | Table environment with capti",
+      "path": [
+        "Built-in Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "latex",
+        "templates",
+        "template",
+        "description",
+        "------------------------------------------------------------",
+        "article",
+        "standard",
+        "preamble",
+        "beamer",
+        "presentation",
+        "slide",
+        "deck",
+        "letter",
+        "formal",
+        "equation",
+        "numbered",
+        "environment",
+        "figure",
+        "caption",
+        "table"
+      ]
+    },
+    {
+      "heading": "Template Syntax",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 67,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "syntax"
+      ]
+    },
+    {
+      "heading": "Tab Stops",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 69,
+      "content": "Tab stops mark positions where the cursor should stop when pressing Tab: #+BEGIN_EXAMPLE ${1:First placeholder} ${2:Second placeholder} $0  # Final cursor position #+END_EXAMPLE After inserting, press Tab to move between placeholders.",
+      "path": [
+        "Template Syntax"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tab",
+        "stops",
+        "mark",
+        "positions",
+        "cursor",
+        "stop",
+        "pressing",
+        "beginexample",
+        "1first",
+        "placeholder",
+        "2second",
+        "final",
+        "position",
+        "endexample",
+        "after",
+        "inserting",
+        "press",
+        "move",
+        "between",
+        "placeholders"
+      ]
+    },
+    {
+      "heading": "Auto-fill Variables",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 81,
+      "content": "These variables are automatically replaced when the template is inserted: | Variable         | Description                                | |------------------+--------------------------------------------| | ={{date}}=         | Current date (configurable format)         | | ={{time}}=         | Current time (configurable format)         | | ={{datetime}}=     | Date and time combined                     | | ={{year}}=         | Current year (yyyy)                        | | ={{month}}=        |",
+      "path": [
+        "Template Syntax"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "auto-fill",
+        "variables",
+        "automatically",
+        "replaced",
+        "template",
+        "inserted",
+        "variable",
+        "description",
+        "--------------------------------------------------------------",
+        "date",
+        "current",
+        "configurable",
+        "format",
+        "time",
+        "datetime",
+        "combined",
+        "year",
+        "yyyy",
+        "month"
+      ]
+    },
+    {
+      "heading": "Named Variables",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 104,
+      "content": "Named variables prompt the user for input: #+BEGIN_EXAMPLE ${title}           # Prompts for \"title\" ${title:Default}   # Prompts with default value #+END_EXAMPLE",
+      "path": [
+        "Template Syntax"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "named",
+        "variables",
+        "prompt",
+        "user",
+        "input",
+        "beginexample",
+        "title",
+        "prompts",
+        "titledefault",
+        "default",
+        "value",
+        "endexample"
+      ]
+    },
+    {
+      "heading": "Creating User Templates",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 113,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "creating",
+        "user",
+        "templates"
+      ]
+    },
+    {
+      "heading": "Template Directory Structure",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 115,
+      "content": "User templates are stored in =~/.scimax-templates= (configurable): #+BEGIN_EXAMPLE ~/.scimax-templates/ ├── org/ │   ├── my-article.org │   └── weekly-report.org ├── markdown/ │   └── project-proposal.md └── latex/ └── thesis-chapter.tex #+END_EXAMPLE",
+      "path": [
+        "Creating User Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "directory",
+        "structure",
+        "user",
+        "templates",
+        "stored",
+        "scimax-templates",
+        "configurable",
+        "beginexample",
+        "org",
+        "my-articleorg",
+        "weekly-reportorg",
+        "markdown",
+        "project-proposalmd",
+        "latex",
+        "thesis-chaptertex",
+        "endexample"
+      ]
+    },
+    {
+      "heading": "Template File Format",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 130,
+      "content": "Templates can include metadata in header comments:",
+      "path": [
+        "Creating User Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "format",
+        "templates",
+        "include",
+        "metadata",
+        "header",
+        "comments"
+      ]
+    },
+    {
+      "heading": "Org-mode Template",
+      "level": 3,
+      "file": "35-templates.org",
+      "line": 134,
+      "content": "#+BEGIN_SRC org #+NAME: Weekly Report #+DESCRIPTION: Weekly status report template #+CATEGORY: Work ,* Week of {{date}} ,** Accomplishments - ${1:Accomplishment 1} ,** Next Week - ${2:Plan 1} ,** Blockers ${3:None} $0 #+END_SRC",
+      "path": [
+        "Creating User Templates",
+        "Template File Format"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "org-mode",
+        "template",
+        "beginsrc",
+        "org",
+        "name",
+        "weekly",
+        "report",
+        "description",
+        "status",
+        "category",
+        "work",
+        "week",
+        "date",
+        "accomplishments",
+        "1accomplishment",
+        "next",
+        "2plan",
+        "blockers",
+        "3none",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Markdown Template",
+      "level": 3,
+      "file": "35-templates.org",
+      "line": 153,
+      "content": "#+BEGIN_SRC markdown <!-- NAME: Project Proposal --> <!-- DESCRIPTION: Proposal for new projects --> <!-- CATEGORY: Work --> # ${1:Project Name} ## Overview ${2:Brief description} ## Goals - ${3:Goal 1} $0 #+END_SRC",
+      "path": [
+        "Creating User Templates",
+        "Template File Format"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "markdown",
+        "template",
+        "beginsrc",
+        "name",
+        "project",
+        "proposal",
+        "description",
+        "new",
+        "projects",
+        "category",
+        "work",
+        "1project",
+        "overview",
+        "2brief",
+        "goals",
+        "3goal",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "LaTeX Template",
+      "level": 3,
+      "file": "35-templates.org",
+      "line": 171,
+      "content": "#+BEGIN_SRC latex % NAME: Thesis Chapter % DESCRIPTION: Chapter template for thesis % CATEGORY: Academic \\chapter{${1:Chapter Title}} \\label{chap:${2:label}} ${3:Introduction paragraph} \\section{${4:Section Title}} $0 #+END_SRC",
+      "path": [
+        "Creating User Templates",
+        "Template File Format"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "latex",
+        "template",
+        "beginsrc",
+        "name",
+        "thesis",
+        "chapter",
+        "description",
+        "category",
+        "academic",
+        "1chapter",
+        "title",
+        "label",
+        "chap",
+        "2label",
+        "3introduction",
+        "paragraph",
+        "section",
+        "4section",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Create Template from Selection",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 187,
+      "content": "1. Select text in the editor 2. Press =C-c C-t s= or run =Scimax: Create Template from Selection= 3. Enter a name for the template 4. Optionally add a description 5. The template is saved to your templates directory",
+      "path": [
+        "Creating User Templates"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "create",
+        "template",
+        "selection",
+        "select",
+        "text",
+        "editor",
+        "press",
+        "c-c",
+        "c-t",
+        "run",
+        "scimax",
+        "enter",
+        "name",
+        "optionally",
+        "add",
+        "description",
+        "saved",
+        "templates",
+        "directory"
+      ]
+    },
+    {
+      "heading": "Commands",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 195,
+      "content": "| Command                              | Keybinding    | Description                        | |--------------------------------------+---------------+------------------------------------| | =scimax.templates.quickInsert=       | =C-c C-t i=   | Insert template (auto-detect format) | | =scimax.templates.insert=            |               | Insert any template                | | =scimax.templates.insertOrg=         |               | Insert org-mode template           | | =scimax.templates.insertMa",
+      "path": [],
+      "commands": [
+        "scimax.templates.quickInsert",
+        "scimax.templates.insert",
+        "scimax.templates.insertOrg",
+        "scimax.templates.insertMa"
+      ],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "commands",
+        "command",
+        "keybinding",
+        "description",
+        "-----------------------------------------------------------------------------------------",
+        "c-c",
+        "c-t",
+        "insert",
+        "template",
+        "auto-detect",
+        "format",
+        "any",
+        "org-mode"
+      ]
+    },
+    {
+      "heading": "Configuration",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 214,
+      "content": "| Setting                         | Default            | Description                          | |---------------------------------+--------------------+--------------------------------------| | =scimax.templates.directory=    | =~/.scimax-templates= | Directory for user templates         | | =scimax.templates.defaultFormat=| =org=              | Default format for new templates     | | =scimax.templates.dateFormat=   | =yyyy-MM-dd=       | Date format (date-fns)               | | =scimax.templat",
+      "path": [],
+      "commands": [
+        "scimax.templates.directory",
+        "scimax.templates.defaultFormat",
+        "scimax.templates.dateFormat",
+        "scimax.templat"
+      ],
+      "keybindings": [
+        "M-dd"
+      ],
+      "keywords": [
+        "configuration",
+        "setting",
+        "default",
+        "description",
+        "-------------------------------------------------------------------------------------------",
+        "scimax-templates",
+        "directory",
+        "user",
+        "templates",
+        "org",
+        "format",
+        "new",
+        "yyyy-mm-dd",
+        "date",
+        "date-fns"
+      ]
+    },
+    {
+      "heading": "Date Format Reference",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 224,
+      "content": "The date and time formats use [[https://date-fns.org/docs/format][date-fns format strings]]: | Pattern | Description          | Example   | |---------+----------------------+-----------| | =yyyy=  | Full year            | 2024      | | =yy=    | 2-digit year         | 24        | | =MM=    | Month (2 digits)     | 01-12     | | =MMM=   | Month abbreviation   | Jan       | | =MMMM=  | Full month name      | January   | | =dd=    | Day (2 digits)       | 01-31     | | =EEEE=  | Full day name      ",
+      "path": [
+        "Configuration"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "date",
+        "format",
+        "reference",
+        "time",
+        "formats",
+        "httpsdate-fnsorgdocsformat",
+        "date-fns",
+        "strings",
+        "pattern",
+        "description",
+        "example",
+        "------------------------------------------",
+        "yyyy",
+        "full",
+        "year",
+        "2024",
+        "2-digit",
+        "month",
+        "digits",
+        "01-12"
+      ]
+    },
+    {
+      "heading": "Hydra Menu",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 243,
+      "content": "The template system has a dedicated Hydra submenu accessible from the main menu (=C-c C-m t=): | Key | Action              | |-----+---------------------| | =i= | Insert template     | | =o= | Insert org template | | =m= | Insert markdown     | | =x= | Insert LaTeX        | | =n= | New file            | | =O= | New org file        | | =M= | New markdown file   | | =X= | New LaTeX file      | | =l= | List all templates  | | =s= | Save selection      | | =e= | Edit templates      | | =d= | Open di",
+      "path": [],
+      "commands": [],
+      "keybindings": [
+        "C-c C-m"
+      ],
+      "keywords": [
+        "hydra",
+        "menu",
+        "template",
+        "system",
+        "dedicated",
+        "submenu",
+        "accessible",
+        "main",
+        "c-c",
+        "c-m",
+        "key",
+        "action",
+        "--------------------------",
+        "insert",
+        "org",
+        "markdown",
+        "latex",
+        "new",
+        "list",
+        "templates"
+      ]
+    },
+    {
+      "heading": "Tips and Workflows",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 263,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tips",
+        "workflows"
+      ]
+    },
+    {
+      "heading": "Project-Specific Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 265,
+      "content": "Create a =.scimax-templates= directory in your project for project-specific templates: #+BEGIN_EXAMPLE my-project/ ├── .scimax-templates/ │   └── org/ │       └── experiment-notes.org ├── src/ └── docs/ #+END_EXAMPLE Then configure =scimax.templates.directory= in your workspace settings.",
+      "path": [
+        "Tips and Workflows"
+      ],
+      "commands": [
+        "scimax.templates.directory"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "project-specific",
+        "templates",
+        "create",
+        "scimax-templates",
+        "directory",
+        "project",
+        "beginexample",
+        "my-project",
+        "org",
+        "experiment-notesorg",
+        "src",
+        "docs",
+        "endexample",
+        "configure",
+        "workspace",
+        "settings"
+      ]
+    },
+    {
+      "heading": "Template Libraries",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 280,
+      "content": "Share templates across projects by: 1. Creating a Git repository for your templates 2. Cloning it to =~/.scimax-templates= 3. Pulling updates when templates change",
+      "path": [
+        "Tips and Workflows"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "libraries",
+        "share",
+        "templates",
+        "across",
+        "projects",
+        "creating",
+        "git",
+        "repository",
+        "cloning",
+        "scimax-templates",
+        "pulling",
+        "updates",
+        "change"
+      ]
+    },
+    {
+      "heading": "Combining with Capture",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 288,
+      "content": "Templates and capture serve different purposes: - *Templates*: Create complete documents or insert large content blocks - *Capture*: Quick notes appended to existing files Use templates for new documents, capture for quick additions.",
+      "path": [
+        "Tips and Workflows"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "combining",
+        "capture",
+        "templates",
+        "serve",
+        "different",
+        "purposes",
+        "create",
+        "complete",
+        "documents",
+        "insert",
+        "large",
+        "content",
+        "blocks",
+        "quick",
+        "notes",
+        "appended",
+        "existing",
+        "new",
+        "additions"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 297,
+      "content": "- [[file:15-capture.org][Capture]] - Quick note capture system - [[file:14-journal.org][Journal]] - Date-based journaling (uses templates) - [[file:07-source-blocks.org][Source Blocks]] - Code execution in org-mode - [[file:22-hydra-menus.org][Hydra Menus]] - Menu system navigation",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "related",
+        "topics",
+        "file15-captureorg",
+        "capture",
+        "quick",
+        "note",
+        "system",
+        "file14-journalorg",
+        "journal",
+        "date-based",
+        "journaling",
+        "uses",
+        "templates",
+        "file07-source-blocksorg",
+        "source",
+        "blocks",
+        "code",
+        "execution",
+        "org-mode",
+        "file22-hydra-menusorg"
       ]
     },
     {
