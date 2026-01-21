@@ -40,10 +40,14 @@ export interface AgendaFile {
 }
 
 export interface AgendaConfig {
-    /** Directories to scan for org files */
+    /** Directories or files to scan for org files */
     agendaFiles: string[];
+    /** Also scan org files in workspace folders */
+    includeWorkspace: boolean;
     /** Patterns to exclude */
     excludePatterns: string[];
+    /** Specific files to ignore (absolute paths) */
+    ignoreFiles: string[];
     /** Default view span in days */
     defaultSpan: number;
     /** Show done items */
@@ -79,10 +83,26 @@ export class AgendaManager {
     readonly onDidRefresh = this.refreshEmitter.event;
     private verbose: boolean = false;
 
+    // Debouncing for file watcher
+    private refreshDebounceTimer: NodeJS.Timeout | null = null;
+    private pendingInvalidations: Set<string> = new Set();
+    private static readonly REFRESH_DEBOUNCE_MS = 500;
+
+    // Regex to quickly check if file has agenda-relevant content
+    // Matches: SCHEDULED:, DEADLINE:, timestamps like <2024-01-15>, diary sexps %%()
+    private static readonly AGENDA_CONTENT_REGEX = /SCHEDULED:|DEADLINE:|<\d{4}-\d{2}-\d{2}|%%\(/;
+
+    // Cache persistence key
+    private static readonly CACHE_KEY = 'scimax.agenda.fileCache';
+    private static readonly CACHE_VERSION = 1;
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.config = this.loadConfig();
         this.outputChannel = vscode.window.createOutputChannel('Org Agenda');
+
+        // Load persisted cache
+        this.loadPersistedCache();
 
         // Watch for file changes
         this.setupFileWatcher();
@@ -96,22 +116,150 @@ export class AgendaManager {
                 }
             })
         );
+
+        // Persist cache on deactivation
+        this.disposables.push({
+            dispose: () => this.persistCache()
+        });
     }
 
     private loadConfig(): AgendaConfig {
         const config = vscode.workspace.getConfiguration('scimax.agenda');
         return {
             agendaFiles: config.get<string[]>('files', []),
-            excludePatterns: config.get<string[]>('excludePatterns', ['**/node_modules/**', '**/.git/**']),
+            includeWorkspace: config.get<boolean>('includeWorkspace', true),
+            excludePatterns: config.get<string[]>('excludePatterns', ['**/node_modules/**', '**/.git/**', '**/archive/**']),
+            ignoreFiles: config.get<string[]>('ignoreFiles', []),
             defaultSpan: config.get<number>('defaultSpan', 7),
             showDone: config.get<boolean>('showDone', false),
             showHabits: config.get<boolean>('showHabits', true),
             todoStates: config.get<string[]>('todoStates', ['TODO', 'NEXT', 'WAITING']),
             doneStates: config.get<string[]>('doneStates', ['DONE', 'CANCELLED']),
-            maxFiles: config.get<number>('maxFiles', 50), // Reduced default to prevent OOM
-            batchSize: config.get<number>('batchSize', 5),
-            batchDelayMs: config.get<number>('batchDelayMs', 10),
+            maxFiles: config.get<number>('maxFiles', 0), // 0 = unlimited
+            batchSize: config.get<number>('batchSize', 10),
+            batchDelayMs: config.get<number>('batchDelayMs', 5),
         };
+    }
+
+    /**
+     * Check if a file is in the ignore list
+     */
+    private isFileIgnored(filePath: string): boolean {
+        return this.config.ignoreFiles.includes(filePath);
+    }
+
+    /**
+     * Add a file to the ignore list and remove from cache
+     */
+    async ignoreFile(filePath: string): Promise<void> {
+        const config = vscode.workspace.getConfiguration('scimax.agenda');
+        const current = config.get<string[]>('ignoreFiles', []);
+
+        if (!current.includes(filePath)) {
+            await config.update('ignoreFiles', [...current, filePath], vscode.ConfigurationTarget.Global);
+            // Remove from cache
+            this.fileCache.delete(filePath);
+            this.log(`Agenda: Added ${filePath} to ignore list`);
+        }
+    }
+
+    /**
+     * Remove a file from the ignore list
+     */
+    async unignoreFile(filePath: string): Promise<void> {
+        const config = vscode.workspace.getConfiguration('scimax.agenda');
+        const current = config.get<string[]>('ignoreFiles', []);
+
+        const index = current.indexOf(filePath);
+        if (index !== -1) {
+            const updated = [...current];
+            updated.splice(index, 1);
+            await config.update('ignoreFiles', updated, vscode.ConfigurationTarget.Global);
+            // Remove from cache so it gets re-scanned
+            this.fileCache.delete(filePath);
+            this.log(`Agenda: Removed ${filePath} from ignore list`);
+        }
+    }
+
+    /**
+     * Load persisted cache from globalState
+     * Only loads entries where the file still exists and mtime matches
+     */
+    private loadPersistedCache(): void {
+        try {
+            const cached = this.context.globalState.get<{
+                version: number;
+                entries: Array<{
+                    path: string;
+                    mtime: number;
+                    headlines: HeadlineElement[];
+                    diarySexps: DiarySexpEntry[];
+                }>;
+            }>(AgendaManager.CACHE_KEY);
+
+            if (!cached || cached.version !== AgendaManager.CACHE_VERSION) {
+                this.log('Agenda: No valid persisted cache found');
+                return;
+            }
+
+            let loaded = 0;
+            let skipped = 0;
+            for (const entry of cached.entries) {
+                try {
+                    // Check if file still exists and mtime matches
+                    const stat = fs.statSync(entry.path);
+                    if (stat.mtimeMs === entry.mtime) {
+                        this.fileCache.set(entry.path, {
+                            path: entry.path,
+                            headlines: entry.headlines,
+                            diarySexps: entry.diarySexps,
+                            mtime: entry.mtime,
+                        });
+                        loaded++;
+                    } else {
+                        skipped++;
+                    }
+                } catch {
+                    // File doesn't exist anymore
+                    skipped++;
+                }
+            }
+            this.log(`Agenda: Loaded ${loaded} cached files, skipped ${skipped} stale entries`);
+        } catch (error) {
+            this.log(`Agenda: Failed to load persisted cache: ${error}`);
+        }
+    }
+
+    /**
+     * Persist cache to globalState for faster startup next time
+     */
+    private persistCache(): void {
+        try {
+            const entries: Array<{
+                path: string;
+                mtime: number;
+                headlines: HeadlineElement[];
+                diarySexps: DiarySexpEntry[];
+            }> = [];
+
+            for (const [path, file] of this.fileCache) {
+                entries.push({
+                    path,
+                    mtime: file.mtime,
+                    headlines: file.headlines,
+                    diarySexps: file.diarySexps,
+                });
+            }
+
+            this.context.globalState.update(AgendaManager.CACHE_KEY, {
+                version: AgendaManager.CACHE_VERSION,
+                entries,
+            });
+
+            this.log(`Agenda: Persisted ${entries.length} cached files`);
+        } catch (error) {
+            this.log(`Agenda: Failed to persist cache: ${error}`);
+        }
     }
 
     /**
@@ -150,23 +298,42 @@ export class AgendaManager {
 
         watcher.onDidChange((uri) => {
             this.invalidateFile(uri.fsPath);
-            this.refreshEmitter.fire();
+            this.debouncedRefresh();
         });
 
         watcher.onDidCreate((uri) => {
-            this.refreshEmitter.fire();
+            this.debouncedRefresh();
         });
 
         watcher.onDidDelete((uri) => {
             this.fileCache.delete(uri.fsPath);
-            this.refreshEmitter.fire();
+            this.debouncedRefresh();
         });
 
         this.disposables.push(watcher);
     }
 
+    /**
+     * Debounced refresh - batches multiple file changes into a single refresh
+     */
+    private debouncedRefresh(): void {
+        if (this.refreshDebounceTimer) {
+            clearTimeout(this.refreshDebounceTimer);
+        }
+        this.refreshDebounceTimer = setTimeout(() => {
+            this.refreshDebounceTimer = null;
+            // Process any pending invalidations
+            for (const filePath of this.pendingInvalidations) {
+                this.fileCache.delete(filePath);
+            }
+            this.pendingInvalidations.clear();
+            this.refreshEmitter.fire();
+        }, AgendaManager.REFRESH_DEBOUNCE_MS);
+    }
+
     private invalidateFile(filePath: string): void {
-        this.fileCache.delete(filePath);
+        // Queue for batch invalidation
+        this.pendingInvalidations.add(filePath);
     }
 
     // Cancellation support for long-running scans
@@ -215,15 +382,15 @@ export class AgendaManager {
     ): AsyncGenerator<string[], void, unknown> {
         const allFiles: string[] = [];
 
-        // Collect file paths first (this is fast - just file listing)
+        // Collect files from configured agenda files/directories
         for (const pattern of this.config.agendaFiles) {
             if (token?.isCancellationRequested) return;
             const expanded = await this.expandPattern(pattern);
             allFiles.push(...expanded);
         }
 
-        // If no specific files configured, scan workspace
-        if (allFiles.length === 0) {
+        // Also scan workspace folders if enabled
+        if (this.config.includeWorkspace) {
             const workspaceFolders = vscode.workspace.workspaceFolders || [];
             for (const folder of workspaceFolders) {
                 if (token?.isCancellationRequested) return;
@@ -284,14 +451,14 @@ export class AgendaManager {
     async getAgendaFiles(): Promise<string[]> {
         const files: string[] = [];
 
-        // Add configured agenda files
+        // Add configured agenda files/directories
         for (const pattern of this.config.agendaFiles) {
             const expanded = await this.expandPattern(pattern);
             files.push(...expanded);
         }
 
-        // If no specific files configured, scan workspace
-        if (files.length === 0) {
+        // Also scan workspace folders if enabled
+        if (this.config.includeWorkspace) {
             const workspaceFolders = vscode.workspace.workspaceFolders || [];
             for (const folder of workspaceFolders) {
                 const orgFiles = await vscode.workspace.findFiles(
@@ -338,6 +505,13 @@ export class AgendaManager {
     async parseFile(filePath: string): Promise<AgendaFile | null> {
         const basename = path.basename(filePath);
         const startTime = Date.now();
+
+        // Check if file is in ignore list
+        if (this.isFileIgnored(filePath)) {
+            this.log(`  ${basename}: ignored`);
+            return null;
+        }
+
         try {
             const stat = await fs.promises.stat(filePath);
             const sizeKB = Math.round(stat.size / 1024);
@@ -359,6 +533,22 @@ export class AgendaManager {
             this.log(`  ${basename} (${sizeKB}KB): reading...`);
             const content = await fs.promises.readFile(filePath, 'utf-8');
             const readTime = Date.now();
+
+            // Fast pre-filter: skip full parse if file has no agenda-relevant content
+            // This dramatically reduces work for journal/note files without timestamps
+            if (!AgendaManager.AGENDA_CONTENT_REGEX.test(content)) {
+                this.log(`  ${basename}: no agenda content, skipping parse`);
+                // Cache empty result to avoid re-reading
+                const emptyFile: AgendaFile = {
+                    path: filePath,
+                    headlines: [],
+                    diarySexps: [],
+                    mtime: stat.mtimeMs,
+                };
+                this.fileCache.set(filePath, emptyFile);
+                return emptyFile;
+            }
+
             this.log(`  ${basename}: read ${readTime - startTime}ms, parsing...`);
 
             const document = parseOrg(content, {
@@ -697,6 +887,7 @@ export class AgendaManager {
      * Refresh agenda (clear cache and re-scan)
      */
     async refresh(): Promise<void> {
+        this.config = this.loadConfig();
         this.fileCache.clear();
         this.refreshEmitter.fire();
     }
@@ -819,9 +1010,22 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
     private viewMode: 'agenda' | 'todo' = 'agenda';
     private groupBy: 'date' | 'category' | 'priority' | 'todo' = 'date';
     private refreshInProgress: Promise<void> | null = null;
+    private refreshDebounceTimer: NodeJS.Timeout | null = null;
+    private static readonly REFRESH_DEBOUNCE_MS = 300;
 
     constructor(private manager: AgendaManager) {
-        manager.onDidRefresh(() => this.refresh());
+        // Debounce refresh requests from manager to avoid cascading updates
+        manager.onDidRefresh(() => this.debouncedRefresh());
+    }
+
+    private debouncedRefresh(): void {
+        if (this.refreshDebounceTimer) {
+            clearTimeout(this.refreshDebounceTimer);
+        }
+        this.refreshDebounceTimer = setTimeout(() => {
+            this.refreshDebounceTimer = null;
+            this.refresh();
+        }, AgendaTreeProvider.REFRESH_DEBOUNCE_MS);
     }
 
     setViewMode(mode: 'agenda' | 'todo'): void {
@@ -956,6 +1160,49 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
         // Toggle verbose logging
         vscode.commands.registerCommand('scimax.agenda.toggleVerbose', () => {
             manager.toggleVerbose();
+        }),
+
+        // Ignore/unignore file commands
+        vscode.commands.registerCommand('scimax.agenda.ignoreFile', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showWarningMessage('No active file to ignore');
+                return;
+            }
+            const filePath = editor.document.uri.fsPath;
+            if (!filePath.endsWith('.org')) {
+                vscode.window.showWarningMessage('Current file is not an org file');
+                return;
+            }
+            await manager.ignoreFile(filePath);
+            vscode.window.showInformationMessage(`Added to agenda ignore list: ${path.basename(filePath)}`);
+            treeProvider.refresh();
+        }),
+
+        vscode.commands.registerCommand('scimax.agenda.unignoreFile', async () => {
+            const config = vscode.workspace.getConfiguration('scimax.agenda');
+            const ignoreFiles = config.get<string[]>('ignoreFiles', []);
+
+            if (ignoreFiles.length === 0) {
+                vscode.window.showInformationMessage('No files in ignore list');
+                return;
+            }
+
+            const items = ignoreFiles.map(f => ({
+                label: path.basename(f),
+                description: f,
+                filePath: f,
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Select file to remove from ignore list',
+            });
+
+            if (selected) {
+                await manager.unignoreFile(selected.filePath);
+                vscode.window.showInformationMessage(`Removed from agenda ignore list: ${selected.label}`);
+                treeProvider.refresh();
+            }
         }),
 
         // View modes
