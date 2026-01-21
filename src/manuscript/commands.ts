@@ -104,21 +104,33 @@ async function flattenManuscriptCommand(): Promise<void> {
           summary.push(`Support files: ${result.supportFilesCopied.length}`);
         }
         summary.push(`Bibliography: ${result.bblInlined ? 'inlined' : 'not inlined'}`);
+        summary.push(`PDF: ${result.pdfCompiled ? 'compiled' : 'not compiled'}`);
 
         if (result.warnings.length > 0) {
           summary.push(`Warnings: ${result.warnings.length}`);
         }
 
-        // Show success message with option to open folder
+        // Determine available actions based on results
+        const actions: string[] = ['Open Folder'];
+        if (result.pdfCompiled && result.outputPdfPath) {
+          actions.push('Open PDF');
+        }
+        if (result.warnings.length > 0) {
+          actions.push('Show Warnings');
+        }
+
+        // Show success message with option to open folder or PDF
         const action = await vscode.window.showInformationMessage(
           `Manuscript flattened successfully! ${summary.join(' | ')}`,
-          'Open Folder',
-          'Show Warnings'
+          ...actions
         );
 
         if (action === 'Open Folder') {
           const uri = vscode.Uri.file(result.outputDir);
           await vscode.commands.executeCommand('revealFileInOS', uri);
+        } else if (action === 'Open PDF' && result.outputPdfPath) {
+          const uri = vscode.Uri.file(result.outputPdfPath);
+          await vscode.commands.executeCommand('vscode.open', uri);
         } else if (action === 'Show Warnings' && result.warnings.length > 0) {
           const doc = await vscode.workspace.openTextDocument({
             content: result.warnings.join('\n'),

@@ -141,6 +141,8 @@ export interface FlattenOptions {
   maxDepth?: number;
   /** Timeout for compilation in milliseconds */
   compileTimeout?: number;
+  /** Whether to compile the flattened tex to PDF (default: true) */
+  compileFinalPdf?: boolean;
 }
 
 /**
@@ -151,6 +153,8 @@ export interface FlattenResult {
   outputDir: string;
   /** Path to the flattened .tex file */
   outputTexPath: string;
+  /** Path to the compiled PDF (if compilation was run) */
+  outputPdfPath?: string;
   /** Figure mappings that were applied */
   figuresCopied: FigureMapping[];
   /** Support files copied (.sty, .cls, .bst, etc.) */
@@ -159,8 +163,10 @@ export interface FlattenResult {
   bblInlined: boolean;
   /** Warning messages */
   warnings: string[];
-  /** Whether compilation was run */
+  /** Whether compilation was run to generate .bbl */
   compilationRun: boolean;
+  /** Whether final PDF was compiled */
+  pdfCompiled: boolean;
 }
 
 /**

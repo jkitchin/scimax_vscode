@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-20T17:48:50.174Z",
-  "count": 3005,
+  "buildDate": "2026-01-21T00:38:19.312Z",
+  "count": 3059,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -748,7 +748,7 @@
       "heading": "Quick Start",
       "level": 2,
       "file": "00-index.org",
-      "line": 233,
+      "line": 234,
       "content": "1. *Install the extension* from the VS Code marketplace or from a VSIX file 2. *Open or create an org file* with the `.org' extension 3. *Create a heading* by typing `* My First Heading' 4. *Add a source block* and execute it: #+BEGIN_SRC org ,#+BEGIN_SRC python :results output print(\"Hello, Scimax VS Code!\") ,#+END_SRC #+END_SRC Press `C-<return>' or `C-c C-c' to execute. 5. *Explore the menus* with `C-c m' (main menu) or `C-c C-m' (context menu) See [[file:01-getting-started.org][Getting Start",
       "path": [
         "Scimax VS Code"
@@ -786,7 +786,7 @@
       "heading": "Getting Help",
       "level": 2,
       "file": "00-index.org",
-      "line": 253,
+      "line": 254,
       "content": "",
       "path": [
         "Scimax VS Code"
@@ -802,7 +802,7 @@
       "heading": "Within VS Code",
       "level": 3,
       "file": "00-index.org",
-      "line": 255,
+      "line": 256,
       "content": "- Press `C-c m' to open the main Hydra menu - Press `C-c C-m' for context-sensitive menus - Use `C-S-P' and search for \"Scimax\" commands - Hover over elements for tooltips and information",
       "path": [
         "Scimax VS Code",
@@ -841,7 +841,7 @@
       "heading": "Online Resources",
       "level": 3,
       "file": "00-index.org",
-      "line": 262,
+      "line": 263,
       "content": "- GitHub Issues: Report bugs and request features - Documentation: This documentation set",
       "path": [
         "Scimax VS Code",
@@ -866,7 +866,7 @@
       "heading": "Keybinding Help",
       "level": 3,
       "file": "00-index.org",
-      "line": 267,
+      "line": 268,
       "content": "Press `? ' at the beginning of a heading (with speed commands enabled) to see available speed commands. See [[file:24-keybindings.org][Keybindings]] for the complete reference.",
       "path": [
         "Scimax VS Code",
@@ -894,7 +894,7 @@
       "heading": "Acknowledgments",
       "level": 2,
       "file": "00-index.org",
-      "line": 274,
+      "line": 275,
       "content": "Scimax VS Code is inspired by: - [[https://github.com/jkitchin/scimax][Scimax]] - The original Emacs package by John Kitchin - [[https://orgmode.org][Org-mode]] - The powerful Emacs major mode for notes and planning - [[https://orgmode.org/worg/org-contrib/babel/][Org Babel]] - Literate programming in Org-mode",
       "path": [
         "Scimax VS Code"
@@ -928,7 +928,7 @@
       "heading": "License",
       "level": 2,
       "file": "00-index.org",
-      "line": 282,
+      "line": 283,
       "content": "Scimax VS Code is open source software. See the LICENSE file for details.",
       "path": [
         "Scimax VS Code"
@@ -949,7 +949,7 @@
       "heading": "Complete Documentation Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 286,
+      "line": 287,
       "content": "This section provides a comprehensive index of all documentation topics with links for quick navigation.",
       "path": [],
       "commands": [],
@@ -971,7 +971,7 @@
       "heading": "Navigation Guides",
       "level": 2,
       "file": "00-index.org",
-      "line": 290,
+      "line": 291,
       "content": "| Document                                         | Topics Covered                                   | |--------------------------------------------------+--------------------------------------------------| | [[file:01-getting-started.org][Getting Started]] | Installation, first steps, basic usage           | | [[file:01.5-basic-syntax.org][Basic Syntax]]    | Text markup, lists, equations, blocks            | | [[file:21-navigation.org][Navigation]]           | Fuzzy search, avy-style jump, ou",
       "path": [
         "Complete Documentation Index"
@@ -1005,7 +1005,7 @@
       "heading": "Document Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 302,
+      "line": 303,
       "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    | | [[file:03-todo-items.org][TODO Items]]            ",
       "path": [
         "Complete Documentation Index"
@@ -1038,7 +1038,7 @@
       "heading": "Code Execution",
       "level": 2,
       "file": "00-index.org",
-      "line": 314,
+      "line": 315,
       "content": "| Document                                                 | Topics Covered                               | |----------------------------------------------------------+----------------------------------------------| | [[file:07-source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments            | | [[file:08-supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more            | | [[file:09-jupyter.org][Jupyter Integration]]             | Kernel ",
       "path": [
         "Complete Documentation Index"
@@ -1072,7 +1072,7 @@
       "heading": "Export and Preview",
       "level": 2,
       "file": "00-index.org",
-      "line": 323,
+      "line": 324,
       "content": "| Document                                       | Topics Covered                    | |------------------------------------------------+-----------------------------------| | [[file:10-export.org][Export]]                 | HTML, LaTeX, PDF, Markdown export | | [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  | | [[file:12-image-overlays.org][Image Overlays]] | Inline image display              | | [[file:32-excalidraw.org][Excalidraw]]         | Diagram creati",
       "path": [
         "Complete Documentation Index"
@@ -1106,7 +1106,7 @@
       "heading": "Organization and Planning",
       "level": 2,
       "file": "00-index.org",
-      "line": 332,
+      "line": 333,
       "content": "| Document                               | Topics Covered                        | |----------------------------------------+---------------------------------------| | [[file:13-agenda.org][Agenda]]         | Agenda views, task filtering          | | [[file:14-journal.org][Journal]]       | Daily journaling, calendar navigation | | [[file:15-capture.org][Capture]]       | Quick note capture, templates         | | [[file:16-notebook.org][Notebook]]     | Project-based organization            | | ",
       "path": [
         "Complete Documentation Index"
@@ -1140,7 +1140,7 @@
       "heading": "Search and Database",
       "level": 2,
       "file": "00-index.org",
-      "line": 342,
+      "line": 343,
       "content": "| Document                                             | Topics Covered                                | |------------------------------------------------------+-----------------------------------------------| | [[file:18-database-search.org][Database and Search]] | Full-text search, semantic search, embeddings | | [[file:19-references.org][References]]               | Citations, bibliography, DOI lookup           |",
       "path": [
         "Complete Documentation Index"
@@ -1170,7 +1170,7 @@
       "heading": "Specialized File Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 349,
+      "line": 350,
       "content": "| Document                                             | Topics Covered                                         | |------------------------------------------------------+--------------------------------------------------------| | [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX speed commands, structure navigation             | | [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX speed commands, entry/file operations, sorting  |",
       "path": [
         "Complete Documentation Index"
@@ -1201,7 +1201,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "00-index.org",
-      "line": 356,
+      "line": 357,
       "content": "| Document                                     | Topics Covered                      | |----------------------------------------------+-------------------------------------| | [[file:26-configuration.org][Configuration]] | All settings, customization options |",
       "path": [
         "Complete Documentation Index"
@@ -1224,7 +1224,7 @@
       "heading": "Topic Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 362,
+      "line": 363,
       "content": "Quick reference to find specific features across documentation. | Topic                 | Primary Documentation                                        | Related Documentation                                                                                                      | |-----------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------| | Agenda",
       "path": [],
       "commands": [],
@@ -1249,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 440,
+      "line": 441,
       "content": "",
       "path": [],
       "commands": [],
@@ -1264,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 442,
+      "line": 443,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1279,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 444,
+      "line": 445,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1314,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 451,
+      "line": 452,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1348,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 457,
+      "line": 458,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1381,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 463,
+      "line": 464,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1407,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 468,
+      "line": 469,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 474,
+      "line": 475,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1474,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 481,
+      "line": 482,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1505,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 487,
+      "line": 488,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -69092,14 +69092,15 @@
       "level": 2,
       "file": "25-commands.org",
       "line": 258,
-      "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                        | Description             | Default Keybinding | |-----------------------------------+-------------------------+--------------------| | [[cmd:scimax.org.exportLatex]]    | Export to LaTeX         | C-c C-e l l        | | [[cmd:scimax.org.exportPdf]]      | Export to PDF           | C-c C-e l p        | | [[cmd:scimax.org.exportLatexOpen]]| Export to PDF and Open  | C-c C-e l o        |",
+      "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                        | Description             | Default Keybinding | |-----------------------------------+-------------------------+--------------------| | [[cmd:scimax.org.exportLatex]]    | Export to LaTeX         | C-c C-e l l        | | [[cmd:scimax.org.exportPdf]]      | Export to PDF           | C-c C-e l p        | | [[cmd:scimax.org.exportLatexOpen]]| Export to PDF and Open  | C-c C-e l o        | | [[cmd:scimax.org.viewPdfPanel]]   | View P",
       "path": [
         "Export"
       ],
       "commands": [
         "scimax.org.exportLatex",
         "scimax.org.exportPdf",
-        "scimax.org.exportLatexOpen"
+        "scimax.org.exportLatexOpen",
+        "scimax.org.viewPdfPanel"
       ],
       "keybindings": [
         "C-c C-e"
@@ -69121,14 +69122,15 @@
         "c-c",
         "c-e",
         "pdf",
-        "open"
+        "open",
+        "view"
       ]
     },
     {
       "heading": "Other Export Formats",
       "level": 2,
       "file": "25-commands.org",
-      "line": 267,
+      "line": 269,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                        | Description         | Default Keybinding | |-----------------------------------+---------------------+--------------------| | [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |",
       "path": [
         "Export"
@@ -69161,7 +69163,7 @@
       "heading": "Links",
       "level": 1,
       "file": "25-commands.org",
-      "line": 274,
+      "line": 276,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                       | Description                            | Default Keybinding      | |----------------------------------+----------------------------------------+-------------------------| | [[cmd:scimax.org.insertLink]]    | Insert Link                            | C-c C-l                 | | [[cmd:scimax.org.openLink]]      | Open Link at Point                     | C-c C-o / RET (on link) | | [[cmd:scimax.org.storeLink]]     | Store Link (for ",
       "path": [],
       "commands": [
@@ -69200,7 +69202,7 @@
       "heading": "Timestamps",
       "level": 1,
       "file": "25-commands.org",
-      "line": 285,
+      "line": 287,
       "content": "CLOSED: [2026-01-17 Sat 12:27] | Command ID                             | Description                      | Default Keybinding | |----------------------------------------+----------------------------------+--------------------| | [[cmd:scimax.org.insertTimestamp]]     | Insert Timestamp                 | C-c .              | | [[cmd:scimax.org.insertActiveTimestamp]]| Insert Active Timestamp          | -                  | | [[cmd:scimax.org.insertInactiveTimestamp]]| Insert Inactive Timestamp ",
       "path": [],
       "commands": [
@@ -69234,7 +69236,7 @@
       "heading": "Clocking",
       "level": 2,
       "file": "25-commands.org",
-      "line": 299,
+      "line": 301,
       "content": "CLOSED: [2026-01-18 Sun 09:58] Time tracking commands for measuring effort on tasks. | Command ID                     | Description           | Default Keybinding | |--------------------------------+-----------------------+--------------------| | [[cmd:scimax.speed.clockIn]]        | Clock In                   | I (speed cmd) | | [[cmd:scimax.speed.clockOut]]       | Clock Out                  | O (speed cmd) | | [[cmd:scimax.org.clockReport]]      | Generate Clock Report      | -             | ",
       "path": [
         "Timestamps"
@@ -69272,7 +69274,7 @@
       "heading": "Agenda",
       "level": 1,
       "file": "25-commands.org",
-      "line": 316,
+      "line": 318,
       "content": "CLOSED: [2026-01-17 Sat 12:28]",
       "path": [],
       "commands": [],
@@ -69289,7 +69291,7 @@
       "heading": "Agenda Views",
       "level": 2,
       "file": "25-commands.org",
-      "line": 319,
+      "line": 321,
       "content": "CLOSED: [2026-01-17 Sat 12:28] | Command ID                   | Description             | Default Keybinding | |------------------------------+-------------------------+--------------------| | [[cmd:scimax.db.agenda]]     | Show Agenda             | -                  | | [[cmd:scimax.db.showTodos]]  | Show TODO Items         | -                  | | [[cmd:scimax.db.deadlines]]  | Show Upcoming Deadlines | -                  |",
       "path": [
         "Agenda"
@@ -69324,7 +69326,7 @@
       "heading": "Advanced Agenda",
       "level": 2,
       "file": "25-commands.org",
-      "line": 328,
+      "line": 330,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Command ID                            | Description              | Default Keybinding | |---------------------------------------+--------------------------+--------------------| | [[cmd:scimax.agenda.menu]]            | Open Agenda Menu         | -                  | | [[cmd:scimax.agenda.day]]             | Day Agenda               | -                  | | [[cmd:scimax.agenda.week]]            | Week Agenda              | -                  | | [[cmd:scimax.agen",
       "path": [
         "Agenda"
@@ -69359,7 +69361,7 @@
       "heading": "Journal",
       "level": 1,
       "file": "25-commands.org",
-      "line": 355,
+      "line": 357,
       "content": "CLOSED: [2026-01-17 Sat 12:51]",
       "path": [],
       "commands": [],
@@ -69376,7 +69378,7 @@
       "heading": "Basic Journal Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 358,
+      "line": 360,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Command ID                      | Description            | Default Keybinding | |---------------------------------+------------------------+--------------------| | [[cmd:scimax.journal.today]]    | Open Today's Journal   | C-S-j              | | [[cmd:scimax.journal.new]]      | New Journal Entry      | -                  | | [[cmd:scimax.journal.prev]]     | Previous Journal Entry | M-[ (in journal)   | | [[cmd:scimax.journal.next]]     | Next Journal Entry     ",
       "path": [
         "Journal"
@@ -69417,7 +69419,7 @@
       "heading": "Journal Utilities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 371,
+      "line": 373,
       "content": "| Command ID                             | Description             | Default Keybinding | |----------------------------------------+-------------------------+--------------------| | [[cmd:scimax.journal.refresh]]         | Refresh Journal View    | -                  | | [[cmd:scimax.journal.openDirectory]]   | Open Journal Directory  | -                  | | [[cmd:scimax.journal.insertTimestamp]] | Insert Timestamp        | -                  | | [[cmd:scimax.journal.quickLog]]        | Quick L",
       "path": [
         "Journal"
@@ -69451,7 +69453,7 @@
       "heading": "Database and Search",
       "level": 1,
       "file": "25-commands.org",
-      "line": 382,
+      "line": 384,
       "content": "CLOSED: [2026-01-17 Sat 12:45]",
       "path": [],
       "commands": [],
@@ -69469,7 +69471,7 @@
       "heading": "Basic Database Operations",
       "level": 2,
       "file": "25-commands.org",
-      "line": 385,
+      "line": 387,
       "content": "CLOSED: [2026-01-17 Sat 12:45] | Command ID                       | Description          | Default Keybinding | |----------------------------------+----------------------+--------------------| | [[cmd:scimax.db.reindex]]        | Reindex Files        | -                  | | [[cmd:scimax.db.search]]         | Search All Files     | -                  | | [[cmd:scimax.db.searchHeadings]] | Search Headings      | -                  | | [[cmd:scimax.db.browseFiles]]    | Browse Indexed Files | -   ",
       "path": [
         "Database and Search"
@@ -69506,7 +69508,7 @@
       "heading": "Advanced Search",
       "level": 2,
       "file": "25-commands.org",
-      "line": 397,
+      "line": 399,
       "content": "CLOSED: [2026-01-17 Sat 12:45] | Command ID                       | Description                 | Default Keybinding | |----------------------------------+-----------------------------+--------------------| | [[cmd:scimax.db.searchBlocks]]   | Search Code Blocks          | -                  | | [[cmd:scimax.db.searchHashtags]] | Search by Hashtag           | -                  | | [[cmd:scimax.db.searchByTag]]    | Search by Tag               | -                  | | [[cmd:scimax.db.searchByPro",
       "path": [
         "Database and Search"
@@ -69541,7 +69543,7 @@
       "heading": "Semantic Search (AI)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 407,
+      "line": 409,
       "content": "CLOSED: [2026-01-17 Sat 12:45] | Command ID                            | Description                   | Default Keybinding | |---------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.db.searchSemantic]]      | Semantic Search (AI)          | -                  | | [[cmd:scimax.db.searchHybrid]]        | Hybrid Search (Keywords + AI) | -                  | | [[cmd:scimax.db.configureEmbeddings]] | Configure Embedding Service   | -              ",
       "path": [
         "Database and Search"
@@ -69576,7 +69578,7 @@
       "heading": "Database Maintenance",
       "level": 2,
       "file": "25-commands.org",
-      "line": 416,
+      "line": 418,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                 | Description         | Default Keybinding | |----------------------------+---------------------+--------------------| | [[cmd:scimax.db.optimize]] | Optimize Database   | -                  | | [[cmd:scimax.db.clear]]    | Clear Database      | -                  | | [[cmd:scimax.db.stats]]    | Show Database Stats | -                  |",
       "path": [
         "Database and Search"
@@ -69610,7 +69612,7 @@
       "heading": "References (org-ref)",
       "level": 1,
       "file": "25-commands.org",
-      "line": 425,
+      "line": 427,
       "content": "CLOSED: [2026-01-17 Sat 12:46]",
       "path": [],
       "commands": [],
@@ -69628,7 +69630,7 @@
       "heading": "Citation Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 428,
+      "line": 430,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                             | Description                 | Default Keybinding   | |----------------------------------------+-----------------------------+----------------------| | [[cmd:scimax.ref.insertCitation]]      | Insert Citation             | C-c ] (org/md/latex) | | [[cmd:scimax.zotero.insertCitation]]   | Insert Citation from Zotero | C-c z (org/md/latex) | | [[cmd:scimax.ref.insertRef]]           | Insert Reference Link       | C-u C-c ]   ",
       "path": [
         "References (org-ref)"
@@ -69668,7 +69670,7 @@
       "heading": "Citation Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 440,
+      "line": 442,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                                     | Description                   | Default Keybinding    | |------------------------------------------------+-------------------------------+-----------------------| | [[cmd:scimax.ref.transposeCitationLeft]]       | Transpose Citation Left       | S-LEFT (on citation)  | | [[cmd:scimax.ref.transposeCitationRight]]      | Transpose Citation Right      | S-RIGHT (on citation) | | [[cmd:scimax.ref.sortCitations]]       ",
       "path": [
         "References (org-ref)"
@@ -69703,7 +69705,7 @@
       "heading": "Bibliography Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 452,
+      "line": 454,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.ref.openBibliography]]    | Open Bibliography              | -                  | | [[cmd:scimax.ref.fetchFromDOI]]        | Fetch BibTeX from DOI          | -                  | | [[cmd:scimax.ref.searchReferences]]    | Search References              | -    ",
       "path": [
         "References (org-ref)"
@@ -69739,7 +69741,7 @@
       "heading": "OpenAlex Integration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 464,
+      "line": 466,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                          | Description                   | Default Keybinding | |-------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.ref.showCitingWorks]]  | Show Citing Works (OpenAlex)  | -                  | | [[cmd:scimax.ref.showRelatedWorks]] | Show Related Works (OpenAlex) | -                  | | [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  | | [[",
       "path": [
         "References (org-ref)"
@@ -69774,7 +69776,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 474,
+      "line": 476,
       "content": ":PROPERTIES: :CUSTOM_ID: bibtex-speed-commands :END: Speed commands for BibTeX files, active at column 0 of @entry lines.",
       "path": [
         "References (org-ref)"
@@ -69799,7 +69801,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 481,
+      "line": 483,
       "content": "| Command ID                         | Description      | Speed Key | |------------------------------------+------------------+-----------| | [[cmd:scimax.bibtex.nextEntry]]    | Next Entry       | n         | | [[cmd:scimax.bibtex.previousEntry]]| Previous Entry   | p         | | [[cmd:scimax.bibtex.jumpToEntry]]  | Jump to Entry    | j         |",
       "path": [
         "References (org-ref)",
@@ -69829,7 +69831,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "25-commands.org",
-      "line": 489,
+      "line": 491,
       "content": "| Command ID                         | Description          | Speed Key | |------------------------------------+----------------------+-----------| | [[cmd:scimax.bibtex.sortFields]]   | Sort Fields          | s         | | [[cmd:scimax.bibtex.downcaseEntry]]| Downcase Entry       | d         | | [[cmd:scimax.bibtex.titleCase]]    | Title Case Title     | t         | | [[cmd:scimax.bibtex.sentenceCase]] | Sentence Case Title  | S         | | [[cmd:scimax.bibtex.cleanEntry]]   | Clean/Format Entr",
       "path": [
         "References (org-ref)",
@@ -69866,7 +69868,7 @@
       "heading": "Access",
       "level": 3,
       "file": "25-commands.org",
-      "line": 502,
+      "line": 504,
       "content": "| Command ID                         | Description          | Speed Key | |------------------------------------+----------------------+-----------| | [[cmd:scimax.bibtex.openPdf]]      | Open PDF             | o         | | [[cmd:scimax.bibtex.openUrl]]      | Open URL/DOI         | u         | | [[cmd:scimax.bibtex.openNotes]]    | Open Notes           | N         | | [[cmd:scimax.bibtex.googleScholar]]| Google Scholar       | g         | | [[cmd:scimax.bibtex.crossref]]     | Open in CrossRef ",
       "path": [
         "References (org-ref)",
@@ -69901,7 +69903,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "25-commands.org",
-      "line": 513,
+      "line": 515,
       "content": "| Command ID                             | Description           | Speed Key | |----------------------------------------+-----------------------+-----------| | [[cmd:scimax.bibtex.showCitingWorks]]  | Show Citing Works     | C         | | [[cmd:scimax.bibtex.showRelatedWorks]] | Show Related Works    | R         | | [[cmd:scimax.bibtex.showReferences]]   | Show References       | r         |",
       "path": [
         "References (org-ref)",
@@ -69933,7 +69935,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 521,
+      "line": 523,
       "content": "| Command ID                         | Description          | Speed Key | |------------------------------------+----------------------+-----------| | [[cmd:scimax.bibtex.copyKey]]      | Copy Citation Key    | y         | | [[cmd:scimax.bibtex.copyBibtex]]   | Copy BibTeX Entry    | b         | | [[cmd:scimax.bibtex.killEntry]]    | Delete Entry         | k         | | [[cmd:scimax.bibtex.generateKey]]  | Generate Citation Key| K         | | [[cmd:scimax.bibtex.updateFromWeb]]| Update from Web  ",
       "path": [
         "References (org-ref)",
@@ -69969,15 +69971,17 @@
       "heading": "File-Wide Commands",
       "level": 3,
       "file": "25-commands.org",
-      "line": 532,
-      "content": "These commands operate on the entire file. They appear as code lens buttons at the top of .bib files. | Command ID                          | Description          | Code Lens | |-------------------------------------+----------------------+-----------| | [[cmd:scimax.bibtex.validateFile]]  | Validate File        | ✓ Validate| | [[cmd:scimax.bibtex.showStatistics]]| Show File Statistics | N entries |",
+      "line": 534,
+      "content": "These commands operate on the entire file. They appear as code lens buttons at the top of .bib files. | Command ID                          | Description          | Code Lens | |-------------------------------------+----------------------+-----------| | [[cmd:scimax.bibtex.validateFile]]  | Validate File        | ✓ Validate| | [[cmd:scimax.bibtex.showStatistics]]| Show File Statistics | N entries | | [[cmd:scimax.bibtex.sortEntries]]   | Sort Entries         | -         | | [[cmd:scimax.bibtex.a",
       "path": [
         "References (org-ref)",
         "BibTeX Speed Commands"
       ],
       "commands": [
         "scimax.bibtex.validateFile",
-        "scimax.bibtex.showStatistics"
+        "scimax.bibtex.showStatistics",
+        "scimax.bibtex.sortEntries",
+        "scimax.bibtex.a"
       ],
       "keybindings": [],
       "keywords": [
@@ -69998,14 +70002,50 @@
         "validate",
         "show",
         "statistics",
-        "entries"
+        "entries",
+        "sort"
+      ]
+    },
+    {
+      "heading": "Journal Abbreviations",
+      "level": 3,
+      "file": "25-commands.org",
+      "line": 545,
+      "content": "Commands for managing journal name abbreviations in BibTeX entries. | Command ID                                      | Description                          | Default Keybinding | |-------------------------------------------------+--------------------------------------+--------------------| | [[cmd:scimax.bibtex.toggleJournalAbbreviation]] | Toggle Journal Abbreviation          | -                  | | [[cmd:scimax.bibtex.abbreviateAllJournals]]     | Abbreviate All Journals              | -    ",
+      "path": [
+        "References (org-ref)",
+        "BibTeX Speed Commands"
+      ],
+      "commands": [
+        "scimax.bibtex.toggleJournalAbbreviation",
+        "scimax.bibtex.abbreviateAllJournals"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "journal",
+        "abbreviations",
+        "commands",
+        "managing",
+        "name",
+        "bibtex",
+        "entries",
+        "command",
+        "description",
+        "default",
+        "keybinding",
+        "-----------------------------------------------------------------------------------------------------------",
+        "cmd",
+        "toggle",
+        "abbreviation",
+        "abbreviate",
+        "journals"
       ]
     },
     {
       "heading": "Notebook",
       "level": 1,
       "file": "25-commands.org",
-      "line": 541,
+      "line": 560,
       "content": "CLOSED: [2026-01-17 Sat 12:46] | Command ID                              | Description                   | Default Keybinding | |-----------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.notebook.new]]             | New Notebook                  | -                  | | [[cmd:scimax.notebook.open]]            | Open Notebook                 | -                  | | [[cmd:scimax.notebook.openMasterFile]]  | Open Notebook Master File     | -    ",
       "path": [],
       "commands": [
@@ -70035,7 +70075,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 559,
+      "line": 578,
       "content": "CLOSED: [2026-01-17 Sat 12:47]",
       "path": [],
       "commands": [],
@@ -70052,7 +70092,7 @@
       "heading": "Fuzzy Search (Swiper)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 562,
+      "line": 581,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                          | Description                 | Default Keybinding | |-------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.fuzzySearch]]          | Fuzzy Search (Current File) | C-c s              | | [[cmd:scimax.fuzzySearchOpenFiles]] | Fuzzy Search (Open Files)   | C-c S-s            | | [[cmd:scimax.fuzzySearchOutline]]   | Fuzzy Search (Outline)      | C-c M-s            |",
       "path": [
         "Navigation"
@@ -70092,7 +70132,7 @@
       "heading": "Jump (Avy)",
       "level": 2,
       "file": "25-commands.org",
-      "line": 571,
+      "line": 590,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                      | Description                  | Default Keybinding | |---------------------------------+------------------------------+--------------------| | [[cmd:scimax.jump.gotoChar]]    | Jump to Character            | C-c j c            | | [[cmd:scimax.jump.gotoChar2]]   | Jump to 2-Character Sequence | C-c j j            | | [[cmd:scimax.jump.gotoWord]]    | Jump to Word                 | C-c j w            | | [[cmd:scimax.jump.gotoLine]",
       "path": [
         "Navigation"
@@ -70130,7 +70170,7 @@
       "heading": "Projectile",
       "level": 1,
       "file": "25-commands.org",
-      "line": 585,
+      "line": 604,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                            | Description                   | Default Keybinding | |---------------------------------------+-------------------------------+--------------------| | [[cmd:scimax.projectile.switch]]      | Switch Project                | C-c p p            | | [[cmd:scimax.projectile.findFile]]    | Find File in Project          | C-c p f            | | [[cmd:scimax.projectile.search]]      | Search in Project             | C-c p s        ",
       "path": [],
       "commands": [
@@ -70164,7 +70204,7 @@
       "heading": "Editmarks",
       "level": 1,
       "file": "25-commands.org",
-      "line": 606,
+      "line": 625,
       "content": "CLOSED: [2026-01-17 Sat 12:47]",
       "path": [],
       "commands": [],
@@ -70181,7 +70221,7 @@
       "heading": "Mark Edits",
       "level": 2,
       "file": "25-commands.org",
-      "line": 609,
+      "line": 628,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                         | Description          | Default Keybinding | |------------------------------------+----------------------+--------------------| | [[cmd:scimax.editmarks.insertion]] | Mark Insertion       | C-c e i            | | [[cmd:scimax.editmarks.deletion]]  | Mark Deletion        | C-c e d            | | [[cmd:scimax.editmarks.comment]]   | Insert Edit Comment  | C-c e c            | | [[cmd:scimax.editmarks.typo]]      | Mark Typo Corre",
       "path": [
         "Editmarks"
@@ -70222,7 +70262,7 @@
       "heading": "Review Edits",
       "level": 2,
       "file": "25-commands.org",
-      "line": 619,
+      "line": 638,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                         | Description             | Default Keybinding | |------------------------------------+-------------------------+--------------------| | [[cmd:scimax.editmarks.accept]]    | Accept Edit Mark        | C-c e a            | | [[cmd:scimax.editmarks.reject]]    | Reject Edit Mark        | C-c e r            | | [[cmd:scimax.editmarks.acceptAll]] | Accept All Edit Marks   | -                  | | [[cmd:scimax.editmarks.rejectAll]] | ",
       "path": [
         "Editmarks"
@@ -70261,7 +70301,7 @@
       "heading": "Hydra",
       "level": 1,
       "file": "25-commands.org",
-      "line": 632,
+      "line": 651,
       "content": "CLOSED: [2026-01-17 Sat 12:47] | Command ID                      | Description      | Default Keybinding | |---------------------------------+------------------+--------------------| | [[cmd:scimax.hydra.show]]       | Show Hydra Menu  | -                  | | [[cmd:scimax.hydra.hide]]       | Hide Hydra Menu  | -                  | | [[cmd:scimax.hydra.back]]       | Hydra Menu Back  | -                  | | [[cmd:scimax.hydra.main]]       | Main Menu        | C-c m              | | [[cmd:scima",
       "path": [],
       "commands": [
@@ -70298,7 +70338,7 @@
       "heading": "Markup",
       "level": 1,
       "file": "25-commands.org",
-      "line": 644,
+      "line": 663,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                             | Description                 | Default Keybinding | |----------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.markup.bold]]             | Bold (Markup)               | C-c b              | | [[cmd:scimax.markup.italic]]           | Italic (Markup)             | C-c i              | | [[cmd:scimax.markup.underline]]        | Underline (Markup)          | C-c _              |",
       "path": [],
       "commands": [
@@ -70331,7 +70371,7 @@
       "heading": "Word Case & Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 661,
+      "line": 680,
       "content": "| Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.capitalizeWord]]     | Capitalize Word and Move Next | M-c                | | [[cmd:scimax.lowercaseWord]]      | Lowercase Word and Move Next  | M-l                | | [[cmd:scimax.uppercaseWord]]      | Uppercase Word and Move Next  | M-u                | | [[cmd:scimax.beginningOfBuffer]]  | Beginni",
       "path": [],
       "commands": [
@@ -70370,7 +70410,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "25-commands.org",
-      "line": 671,
+      "line": 690,
       "content": "CLOSED: [2026-01-17 Sat 12:48] Speed commands are single-key commands available when cursor is at the beginning of a heading line (with scimax.speedCommandsEnabled).",
       "path": [],
       "commands": [
@@ -70396,7 +70436,7 @@
       "heading": "Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 676,
+      "line": 695,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                           | Description          | Speed Key | |--------------------------------------+----------------------+-----------| | [[cmd:scimax.speed.nextSibling]]     | Next Sibling Heading | f         | | [[cmd:scimax.speed.previousSibling]] | Previous Sibling     | b         | | [[cmd:scimax.org.nextHeading]]       | Next Heading         | n         | | [[cmd:scimax.org.previousHeading]]   | Previous Heading     | p         | | [[cmd:scima",
       "path": [
         "Speed Commands"
@@ -70431,7 +70471,7 @@
       "heading": "Visibility",
       "level": 2,
       "file": "25-commands.org",
-      "line": 691,
+      "line": 710,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                         | Description         | Speed Key | |------------------------------------+---------------------+-----------| | [[cmd:scimax.org.cycleGlobalFold]] | Cycle Global Fold   | c         | | [[cmd:scimax.speed.showChildren]]  | Show All Children   | C (S-c)   | | [[cmd:scimax.speed.overview]]      | Overview (Fold All) | o         |",
       "path": [
         "Speed Commands"
@@ -70467,7 +70507,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 700,
+      "line": 719,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description          | Speed Key | |---------------------------------------+----------------------+-----------| | [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   | | [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   | | [[cmd:scimax.heading.demoteSubtree]]  | Demote Subtree       | r         | | [[cmd:scimax.heading.promoteSubtree]] | Promote Subtree      | l         | | [[cmd",
       "path": [
         "Speed Commands"
@@ -70506,7 +70546,7 @@
       "heading": "TODO and Tags",
       "level": 2,
       "file": "25-commands.org",
-      "line": 715,
+      "line": 734,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                        | Description      | Speed Key | |-----------------------------------+------------------+-----------| | [[cmd:scimax.org.cycleTodo]]      | Cycle TODO State | t         | | [[cmd:scimax.speed.setTags]]      | Set Tags         | : (S-;)   | | [[cmd:scimax.speed.priorityA]]    | Set Priority A   | 1         | | [[cmd:scimax.speed.priorityB]]    | Set Priority B   | 2         | | [[cmd:scimax.speed.priorityC]]    | Set Priority C   ",
       "path": [
         "Speed Commands"
@@ -70542,7 +70582,7 @@
       "heading": "Scheduling and Timestamps",
       "level": 2,
       "file": "25-commands.org",
-      "line": 727,
+      "line": 746,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                          | Description        | Speed Key | |-------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.schedule]]       | Add/Edit SCHEDULED | s         | | [[cmd:scimax.speed.deadline]]       | Add/Edit DEADLINE  | d         | | [[cmd:scimax.org.insertTimestamp]]  | Insert Timestamp   | .         | | [[cmd:scimax.org.shiftTimestampUp]] | Shift Timestamp Up | ,         |",
       "path": [
         "Speed Commands"
@@ -70579,7 +70619,7 @@
       "heading": "Properties and Clocking",
       "level": 2,
       "file": "25-commands.org",
-      "line": 737,
+      "line": 756,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                       | Description  | Speed Key | |----------------------------------+--------------+-----------| | [[cmd:scimax.speed.setProperty]] | Set Property | P (S-p)   | | [[cmd:scimax.speed.setEffort]]   | Set Effort   | e         | | [[cmd:scimax.speed.clockIn]]     | Clock In     | I (S-i)   | | [[cmd:scimax.speed.clockOut]]    | Clock Out    | O (S-o)   |",
       "path": [
         "Speed Commands"
@@ -70618,7 +70658,7 @@
       "heading": "Archiving",
       "level": 2,
       "file": "25-commands.org",
-      "line": 747,
+      "line": 766,
       "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description        | Speed Key | |---------------------------------------+--------------------+-----------| | [[cmd:scimax.speed.archiveSubtree]]   | Archive Subtree    | a         | | [[cmd:scimax.speed.toggleArchiveTag]] | Toggle Archive Tag | A (S-a)   | | [[cmd:scimax.speed.archiveToSibling]] | Archive to Sibling | $ (S-4)   |",
       "path": [
         "Speed Commands"
@@ -70654,7 +70694,7 @@
       "heading": "Narrowing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 756,
+      "line": 775,
       "content": "CLOSED: [2026-01-17 Sat 12:50] Note this is not the same as narrowing in Emacs which restricts the visible portion of the window. | Command ID                           | Description       | Speed Key | |--------------------------------------+-------------------+-----------| | [[cmd:scimax.speed.narrowToSubtree]] | Narrow to Subtree | N (S-n)   | | [[cmd:scimax.speed.widen]]           | Widen             | S (S-s)   |",
       "path": [
         "Speed Commands"
@@ -70691,7 +70731,7 @@
       "heading": "Help",
       "level": 2,
       "file": "25-commands.org",
-      "line": 766,
+      "line": 785,
       "content": "CLOSED: [2026-01-17 Sat 12:49] | Command ID                  | Description           | Speed Key | |-----------------------------+-----------------------+-----------| | [[cmd:scimax.speed.help]]   | Speed Commands Help   | ? (S-/)   | | [[cmd:scimax.speed.toggle]] | Toggle Speed Commands | C-c C-x s |",
       "path": [
         "Speed Commands"
@@ -70725,7 +70765,7 @@
       "heading": "LaTeX",
       "level": 1,
       "file": "25-commands.org",
-      "line": 774,
+      "line": 793,
       "content": "Comprehensive LaTeX editing support with structural navigation, environment manipulation, and compilation.",
       "path": [],
       "commands": [],
@@ -70746,7 +70786,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 778,
+      "line": 797,
       "content": "| Command ID                                 | Description              | Default Keybinding | |--------------------------------------------+--------------------------+--------------------| | [[cmd:scimax.latex.nextSection]]           | Next Section             | C-c C-n            | | [[cmd:scimax.latex.previousSection]]       | Previous Section         | C-c C-p            | | [[cmd:scimax.latex.parentSection]]         | Parent Section           | C-c C-u            | | [[cmd:scimax.latex.next",
       "path": [
         "LaTeX"
@@ -70784,7 +70824,7 @@
       "heading": "Environment Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 791,
+      "line": 810,
       "content": "| Command ID                                    | Description                 | Default Keybinding | |-----------------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.latex.nextEnvironment]]          | Next Environment            | -                  | | [[cmd:scimax.latex.previousEnvironment]]      | Previous Environment        | -                  | | [[cmd:scimax.latex.jumpToEnvironment]]        | Jump to Environment         | -               ",
       "path": [
         "LaTeX"
@@ -70813,7 +70853,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 801,
+      "line": 820,
       "content": "| Command ID                              | Description        | Default Keybinding | |-----------------------------------------+--------------------+--------------------| | [[cmd:scimax.latex.promoteSection]]     | Promote Section    | M-LEFT             | | [[cmd:scimax.latex.demoteSection]]      | Demote Section     | M-RIGHT            | | [[cmd:scimax.latex.promoteSubtree]]     | Promote Subtree    | M-S-LEFT           | | [[cmd:scimax.latex.demoteSubtree]]      | Demote Subtree     | M-S-R",
       "path": [
         "LaTeX"
@@ -70853,7 +70893,7 @@
       "heading": "Environment Manipulation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 819,
+      "line": 838,
       "content": "| Command ID                                  | Description                 | Default Keybinding | |---------------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.latex.selectEnvironment]]      | Select Environment          | C-c C-e            | | [[cmd:scimax.latex.selectEnvironmentContent]]| Select Environment Content  | -                  | | [[cmd:scimax.latex.changeEnvironment]]      | Change Environment          | C-c e              | | [[",
       "path": [
         "LaTeX"
@@ -70887,7 +70927,7 @@
       "heading": "Compilation and PDF Viewing",
       "level": 2,
       "file": "25-commands.org",
-      "line": 834,
+      "line": 853,
       "content": "| Command ID                               | Description                        | Default Keybinding | |------------------------------------------+------------------------------------+--------------------| | [[cmd:scimax.latex.compile]]             | Compile Document                   | C-c C-c            | | [[cmd:scimax.latex.viewPdf]]             | View PDF (External)                | C-c C-v            | | [[cmd:scimax.latex.viewPdfPanel]]        | View PDF (Built-in Panel)          | C-c v ",
       "path": [
         "LaTeX"
@@ -70926,7 +70966,7 @@
       "heading": "Error Navigation",
       "level": 2,
       "file": "25-commands.org",
-      "line": 851,
+      "line": 871,
       "content": "| Command ID                        | Description           | Default Keybinding | |-----------------------------------+-----------------------+--------------------| | [[cmd:scimax.latex.nextError]]    | Go to Next Error      | C-c `              | | [[cmd:scimax.latex.previousError]]| Go to Previous Error  | C-c S-`            | | [[cmd:scimax.latex.showErrors]]   | Show All Errors       | C-c !              |",
       "path": [
         "LaTeX"
@@ -70959,7 +70999,7 @@
       "heading": "Insertion Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 859,
+      "line": 879,
       "content": "| Command ID                        | Description      | Default Keybinding | |-----------------------------------+------------------+--------------------| | [[cmd:scimax.latex.insertFigure]] | Insert Figure    | -                  | | [[cmd:scimax.latex.insertTable]]  | Insert Table     | -                  | | [[cmd:scimax.latex.insertEquation]]| Insert Equation | -                  |",
       "path": [
         "LaTeX"
@@ -70989,7 +71029,7 @@
       "heading": "Utilities",
       "level": 2,
       "file": "25-commands.org",
-      "line": 867,
+      "line": 887,
       "content": "| Command ID                                | Description                    | Default Keybinding | |-------------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.latex.format]]               | Format Document                | C-c C-q            | | [[cmd:scimax.latex.wordCount]]            | Word Count                     | -                  | | [[cmd:scimax.latex.addToDictionary]]      | Add Word to Dictionary         | -                  | ",
       "path": [
         "LaTeX"
@@ -71024,7 +71064,7 @@
       "heading": "Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 876,
+      "line": 896,
       "content": "Speed commands are available when cursor is at the beginning of a section line. | Command ID                          | Description               | Speed Key | |-------------------------------------+---------------------------+-----------| | [[cmd:scimax.latex.speedCommandHelp]]| Speed Command Help        | ?         | Section speed commands (at \\section, \\subsection, etc.): - n :: Next section - p :: Previous section - f :: Next sibling - b :: Previous sibling - u :: Parent section - j :: Jump ",
       "path": [
         "LaTeX"
@@ -71060,7 +71100,7 @@
       "heading": "Environment Speed Commands",
       "level": 2,
       "file": "25-commands.org",
-      "line": 901,
+      "line": 921,
       "content": "Environment speed commands available at \\begin{...} lines. | Command ID                             | Description                  | Speed Key | |----------------------------------------+------------------------------+-----------| | [[cmd:scimax.latex.envSpeedCommand]]   | Environment Speed Command    | -         | | [[cmd:scimax.latex.envSpeedCommandHelp]]| Environment Speed Help       | ?         | Environment speed command keys: - n :: Next environment - p :: Previous environment - j :: Jump ",
       "path": [
         "LaTeX"
@@ -71093,7 +71133,7 @@
       "heading": "LaTeX Cache Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 924,
+      "line": 944,
       "content": "| Command ID                     | Description                     | Default Keybinding | |--------------------------------+---------------------------------+--------------------| | [[cmd:scimax.clearLatexCache]] | Clear LaTeX Preview Cache       | -                  | | [[cmd:scimax.checkLatexTools]] | Check LaTeX Tools Availability  | -                  | | [[cmd:scimax.latexCacheStats]] | Show LaTeX Cache Statistics     | -                  |",
       "path": [
         "LaTeX"
@@ -71127,7 +71167,7 @@
       "heading": "Capture",
       "level": 1,
       "file": "25-commands.org",
-      "line": 932,
+      "line": 952,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                            | Description                 | Default Keybinding | |---------------------------------------+-----------------------------+--------------------| | [[cmd:scimax.capture]]                | Capture                     | C-c c              | | [[cmd:scimax.captureByKey]]           | Capture by Key              | -                  | | [[cmd:scimax.capture.todo]]           | Quick Capture TODO          | C-c t              | | [[",
       "path": [],
       "commands": [
@@ -71157,10 +71197,163 @@
       ]
     },
     {
+      "heading": "Templates",
+      "level": 1,
+      "file": "25-commands.org",
+      "line": 965,
+      "content": ":PROPERTIES: :CUSTOM_ID: templates :END: Insert and manage file templates for org, markdown, and LaTeX files.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "templates",
+        "properties",
+        "customid",
+        "end",
+        "insert",
+        "manage",
+        "org",
+        "markdown",
+        "latex"
+      ]
+    },
+    {
+      "heading": "Insert Templates",
+      "level": 2,
+      "file": "25-commands.org",
+      "line": 972,
+      "content": "| Command ID                               | Description               | Default Keybinding | |------------------------------------------+---------------------------+--------------------| | [[cmd:scimax.templates.insert]]          | Insert Template           | -                  | | [[cmd:scimax.templates.insertOrg]]       | Insert Org Template       | -                  | | [[cmd:scimax.templates.insertMarkdown]]  | Insert Markdown Template  | -                  | | [[cmd:scimax.templates.inser",
+      "path": [
+        "Templates"
+      ],
+      "commands": [
+        "scimax.templates.insert",
+        "scimax.templates.insertOrg",
+        "scimax.templates.insertMarkdown",
+        "scimax.templates.inser"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "insert",
+        "templates",
+        "command",
+        "description",
+        "default",
+        "keybinding",
+        "-----------------------------------------------------------------------------------------",
+        "cmd",
+        "template",
+        "org",
+        "markdown"
+      ]
+    },
+    {
+      "heading": "New Files from Templates",
+      "level": 2,
+      "file": "25-commands.org",
+      "line": 982,
+      "content": "| Command ID                               | Description                  | Default Keybinding | |------------------------------------------+------------------------------+--------------------| | [[cmd:scimax.templates.newFile]]         | New File from Template       | C-c C-t i          | | [[cmd:scimax.templates.newOrgFile]]      | New Org File from Template   | -                  | | [[cmd:scimax.templates.newMarkdownFile]] | New Markdown from Template   | -                  | | [[cmd:scimax.",
+      "path": [
+        "Templates"
+      ],
+      "commands": [
+        "scimax.templates.newFile",
+        "scimax.templates.newOrgFile",
+        "scimax.templates.newMarkdownFile"
+      ],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "new",
+        "templates",
+        "command",
+        "description",
+        "default",
+        "keybinding",
+        "--------------------------------------------------------------------------------------------",
+        "cmd",
+        "template",
+        "c-c",
+        "c-t",
+        "org",
+        "markdown",
+        "cmdscimax"
+      ]
+    },
+    {
+      "heading": "Template Management",
+      "level": 2,
+      "file": "25-commands.org",
+      "line": 991,
+      "content": "| Command ID                                  | Description                    | Default Keybinding | |---------------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.templates.createFromSelection]]| Create Template from Selection | -                  | | [[cmd:scimax.templates.openDirectory]]      | Open Templates Directory       | -                  | | [[cmd:scimax.templates.editTemplates]]      | Edit User Templates            | -          ",
+      "path": [
+        "Templates"
+      ],
+      "commands": [
+        "scimax.templates.createFromSelection",
+        "scimax.templates.openDirectory",
+        "scimax.templates.editTemplates"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "management",
+        "command",
+        "description",
+        "default",
+        "keybinding",
+        "-------------------------------------------------------------------------------------------------",
+        "cmd",
+        "create",
+        "selection",
+        "open",
+        "templates",
+        "directory",
+        "edit",
+        "user"
+      ]
+    },
+    {
+      "heading": "Manuscript",
+      "level": 1,
+      "file": "25-commands.org",
+      "line": 1001,
+      "content": ":PROPERTIES: :CUSTOM_ID: manuscript :END: Commands for preparing LaTeX manuscripts for journal submission by flattening includes. | Command ID                                | Description                       | Default Keybinding | |-------------------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.manuscript.flatten]]         | Flatten Manuscript for Submission | -                  | | [[cmd:scimax.manuscript.preview]]         | Preview Manuscr",
+      "path": [],
+      "commands": [
+        "scimax.manuscript.flatten",
+        "scimax.manuscript.preview"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "manuscript",
+        "properties",
+        "customid",
+        "end",
+        "commands",
+        "preparing",
+        "latex",
+        "manuscripts",
+        "journal",
+        "submission",
+        "flattening",
+        "includes",
+        "command",
+        "description",
+        "default",
+        "keybinding",
+        "--------------------------------------------------------------------------------------------------",
+        "cmd",
+        "flatten",
+        "preview"
+      ]
+    },
+    {
       "heading": "Image Overlays",
       "level": 1,
       "file": "25-commands.org",
-      "line": 945,
+      "line": 1019,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                                     | Description                            | Default Keybinding | |------------------------------------------------+----------------------------------------+--------------------| | [[cmd:scimax.imageOverlays.toggle]]            | Toggle Image Overlays                  | -                  | | [[cmd:scimax.imageOverlays.toggleCurrentFile]] | Toggle Image Overlays for Current File | -                  | | [[cmd:scimax.im",
       "path": [],
       "commands": [
@@ -71190,7 +71383,7 @@
       "heading": "Jupyter",
       "level": 1,
       "file": "25-commands.org",
-      "line": 956,
+      "line": 1030,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -71207,7 +71400,7 @@
       "heading": "Kernel Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 959,
+      "line": 1033,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.jupyter.showKernels]]     | Show Available Jupyter Kernels | -                  | | [[cmd:scimax.jupyter.showRunning]]     | Show Running Kernels           | -                  | | [[cmd:scimax.jupyter.startKernel]]     | Start Jupyter Kernel           | -    ",
       "path": [
         "Jupyter"
@@ -71243,7 +71436,7 @@
       "heading": "Appendix: Keybinding Quick Reference",
       "level": 1,
       "file": "25-commands.org",
-      "line": 973,
+      "line": 1047,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -71263,7 +71456,7 @@
       "heading": "Most Common Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 976,
+      "line": 1050,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding   | Command                             | |--------------+-------------------------------------| | C-RET        | Execute code block / Insert heading | | C-c C-e      | Export dispatcher                   | | C-c C-j      | Jump to heading                     | | C-c C-t      | Cycle TODO state                    | | C-c C-l      | Insert link                         | | C-c C-o      | Open link                           | | C-c ]        | Insert citat",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -71305,7 +71498,7 @@
       "heading": "Export Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 998,
+      "line": 1072,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding  | Export Target      | |-------------+--------------------| | C-c C-e h h | HTML               | | C-c C-e h o | HTML and open      | | C-c C-e l l | LaTeX              | | C-c C-e l p | PDF                | | C-c C-e l o | PDF and open       | | C-c C-e l v | LaTeX live preview | | C-c C-e m m | Markdown           |",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -71339,7 +71532,7 @@
       "heading": "Babel/Source Block Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1011,
+      "line": 1085,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                 | |------------+------------------------| | C-RET      | Execute block          | | C-c C-c    | Execute block (in src) | | S-RET      | Execute and next       | | C-c C-v t  | Tangle                 | | C-c C-v p  | Execute to point       | | C-c C-v i  | Execute inline         | | C-c C-v q  | Queue block            | | C-DOWN     | Next source block      | | C-UP       | Previous source block  | | C-c C-n    | Insert block b",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -71380,7 +71573,7 @@
       "heading": "Project and Navigation Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1028,
+      "line": 1102,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                    | |------------+---------------------------| | C-c p p    | Switch project            | | C-c p f    | Find file in project      | | C-c p s    | Search in project         | | C-c p d    | Open project root         | | C-c p a    | Add project               | | C-c s      | Fuzzy search (current)    | | C-c S-s    | Fuzzy search (open files) | | C-c M-s    | Fuzzy search (outline)    | | C-c j c    | Jump to character       ",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -71417,7 +71610,7 @@
       "heading": "Help System",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1045,
+      "line": 1119,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: help-system :END: Commands for discovering keybindings and command functionality. | Command ID                           | Description            | Default Keybinding | |--------------------------------------+------------------------+--------------------| | [[cmd:scimax.help.describeCommand]]  | Describe Command       | C-h f              | | [[cmd:scimax.help.describeKey]]      | Describe Key           | C-h k              | | [[cmd:scimax",
       "path": [],
       "commands": [
@@ -71454,7 +71647,7 @@
       "heading": "scimax.help.describeCommand",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1061,
+      "line": 1135,
       "content": "Shows the keybindings for a specific command. Useful for learning keyboard shortcuts.",
       "path": [
         "Help System"
@@ -71478,7 +71671,7 @@
       "heading": "scimax.help.describeKey",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1065,
+      "line": 1139,
       "content": "Describes what a specific key combination does. Enter the key sequence to see its bound command.",
       "path": [
         "Help System"
@@ -71502,7 +71695,7 @@
       "heading": "scimax.help.listKeybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1069,
+      "line": 1143,
       "content": "Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.",
       "path": [
         "Help System"
@@ -71528,7 +71721,7 @@
       "heading": "scimax.help.describeVariable",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1073,
+      "line": 1147,
       "content": "Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Select a setting to open VS Code Settings.",
       "path": [
         "Help System"
@@ -71558,7 +71751,7 @@
       "heading": "scimax.help.apropos",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1077,
+      "line": 1151,
       "content": "Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.",
       "path": [
         "Help System"
@@ -71594,7 +71787,7 @@
       "heading": "Linting",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1081,
+      "line": 1155,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: linting :END: Commands for checking org-mode document quality. | Command ID                     | Description        | Default Keybinding | |--------------------------------+--------------------+--------------------| | [[cmd:scimax.org.lint]]        | Run Linter         | -                  | | [[cmd:scimax.org.lintCheckers]]| Show Lint Checkers | -                  |",
       "path": [],
       "commands": [
@@ -71629,7 +71822,7 @@
       "heading": "scimax.org.lint",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1094,
+      "line": 1168,
       "content": "Runs the org-mode linter on the current document. The linter checks for: - Duplicate IDs - Broken internal links - Missing TODO keywords in sequences - Unbalanced brackets and quotes - Invalid timestamps - Missing required properties - And more Results appear in the Problems panel.",
       "path": [
         "Linting"
@@ -71665,7 +71858,7 @@
       "heading": "scimax.org.lintCheckers",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1107,
+      "line": 1181,
       "content": "Shows available lint checkers and allows enabling/disabling specific checks.",
       "path": [
         "Linting"
@@ -71689,7 +71882,7 @@
       "heading": "Mark Ring",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1111,
+      "line": 1185,
       "content": ":PROPERTIES: :CUSTOM_ID: mark-ring :END: Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there's a global mark ring that tracks positions across all documents. | Command ID                       | Description               | Default Keybinding | |----------------------------------+---------------------------+--------------------| | [[cmd:scimax.mark.set]]          | Set Mark (for selection)  | C",
       "path": [],
       "commands": [
@@ -71723,7 +71916,7 @@
       "heading": "Mark Ring Concepts",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1131,
+      "line": 1205,
       "content": "- **Mark**: A saved cursor position that you can return to - **Point**: The current cursor position - **Mark Ring**: A stack of marks (per-document), most recent first (default size: 16) - **Global Mark Ring**: A cross-file stack of marks for navigating between documents - **Selection Mode**: When mark is set, cursor movement extends the selection from the mark",
       "path": [
         "Mark Ring"
@@ -71757,7 +71950,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1139,
+      "line": 1213,
       "content": "",
       "path": [
         "Mark Ring"
@@ -71773,7 +71966,7 @@
       "heading": "Setting a Mark for Selection",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1141,
+      "line": 1215,
       "content": "1. Press =C-SPC= to set mark at current position (line flashes briefly as feedback) 2. Move cursor to end of desired selection - the region automatically expands 3. Press =C-SPC= again to deactivate selection mode (toggle behavior) 4. Press =C-g= to cancel selection and collapse to cursor position",
       "path": [
         "Mark Ring",
@@ -71811,7 +72004,7 @@
       "heading": "Returning to Previous Positions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1147,
+      "line": 1221,
       "content": "1. Press =C-SPC C-SPC= to push mark without activating selection mode 2. Navigate elsewhere in the file 3. Press =C-u C-SPC= to pop the most recent mark and jump to it 4. Current position is saved before jumping, so you can return with another pop",
       "path": [
         "Mark Ring",
@@ -71849,7 +72042,7 @@
       "heading": "Cross-file Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1153,
+      "line": 1227,
       "content": "1. Marks are automatically pushed to the global ring when set 2. Press =C-x C-SPC= to pop from global mark ring and jump (can cross files) 3. Use =C-x C-x= to exchange point and mark (swap current position with last mark)",
       "path": [
         "Mark Ring",
@@ -71887,7 +72080,7 @@
       "heading": "Viewing the Mark Ring",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1158,
+      "line": 1232,
       "content": "1. Run =scimax.mark.show= from command palette 2. Quick pick shows local marks and global marks with line previews 3. Select an entry to jump to that position 4. Timestamps show how long ago each mark was set",
       "path": [
         "Mark Ring",
@@ -71924,7 +72117,7 @@
       "heading": "Publishing",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1164,
+      "line": 1238,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: publishing :END: Commands for publishing org files to HTML, creating static sites similar to Emacs org-publish. | Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.publish.init]]       | Initialize Publishing Project | -                  | | [[cmd:scimax.publish.project]]    | Publish Project      ",
       "path": [],
       "commands": [
@@ -71959,7 +72152,7 @@
       "heading": "Setting Up a Publishing Project",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1181,
+      "line": 1255,
       "content": "1. Run =scimax.publish.init= to create a publishing configuration 2. Configure the project in the generated =.org-publish.json= file 3. Use =scimax.publish.project= to publish the configured project",
       "path": [
         "Publishing"
@@ -71987,7 +72180,7 @@
       "heading": "Publishing Configuration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1187,
+      "line": 1261,
       "content": "The =.org-publish.json= file configures: - Source directory for org files - Output directory for HTML - Include/exclude patterns - HTML template settings - Asset handling (CSS, images)",
       "path": [
         "Publishing"
@@ -72018,7 +72211,7 @@
       "heading": "Query Replace",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1196,
+      "line": 1270,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: query-replace :END: Interactive search and replace. | Command ID                  | Description   | Default Keybinding | |-----------------------------+---------------+--------------------| | [[cmd:scimax.queryReplace]] | Query Replace | M-%                | Provides Emacs-style interactive query-replace with confirmation for each replacement.",
       "path": [],
       "commands": [
@@ -72049,10 +72242,110 @@
       ]
     },
     {
+      "heading": "Utilities",
+      "level": 1,
+      "file": "25-commands.org",
+      "line": 1285,
+      "content": ":PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                       | Description                       | Default Keybinding | |----------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.openFolder]]        | Open Folder                       | -                  | | [[cmd:scimax.replaceNonAscii]]   | Replace Non-ASCII Characters      | -                  | | [[cmd:scimax.showDebugInfo]]     | Show Debug/Dia",
+      "path": [],
+      "commands": [
+        "scimax.openFolder",
+        "scimax.replaceNonAscii",
+        "scimax.showDebugInfo"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "utilities",
+        "properties",
+        "customid",
+        "end",
+        "miscellaneous",
+        "utility",
+        "commands",
+        "command",
+        "description",
+        "default",
+        "keybinding",
+        "-----------------------------------------------------------------------------------------",
+        "cmd",
+        "open",
+        "folder",
+        "replace",
+        "non-ascii",
+        "characters",
+        "show",
+        "debugdia"
+      ]
+    },
+    {
+      "heading": "scimax.replaceNonAscii",
+      "level": 2,
+      "file": "25-commands.org",
+      "line": 1298,
+      "content": "Replaces common non-ASCII characters (smart quotes, em-dashes, etc.) with their ASCII equivalents. Useful for preparing documents for systems that don't handle Unicode well.",
+      "path": [
+        "Utilities"
+      ],
+      "commands": [
+        "scimax.replaceNonAscii"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "replaces",
+        "common",
+        "non-ascii",
+        "characters",
+        "smart",
+        "quotes",
+        "em-dashes",
+        "etc",
+        "ascii",
+        "equivalents",
+        "useful",
+        "preparing",
+        "documents",
+        "systems",
+        "don",
+        "handle",
+        "unicode",
+        "well"
+      ]
+    },
+    {
+      "heading": "scimax.showDebugInfo",
+      "level": 2,
+      "file": "25-commands.org",
+      "line": 1302,
+      "content": "Displays diagnostic information about the scimax extension, including version, enabled features, and configuration state. Useful for troubleshooting.",
+      "path": [
+        "Utilities"
+      ],
+      "commands": [
+        "scimax.showDebugInfo"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "displays",
+        "diagnostic",
+        "information",
+        "about",
+        "scimax",
+        "extension",
+        "including",
+        "version",
+        "enabled",
+        "features",
+        "configuration",
+        "state",
+        "useful",
+        "troubleshooting"
+      ]
+    },
+    {
       "heading": "Index",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1211,
+      "line": 1306,
       "content": "CLOSED: [2026-01-17 Sat 12:51] This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions. For configuration options, see the VS Code settings under scimax.*. For more information about the Scimax VS Code extension, visit the project repository.",
       "path": [],
       "commands": [],
@@ -72084,7 +72377,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1220,
+      "line": 1315,
       "content": "- Previous: [[file:24-keybindings.org][Keybindings]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:26-configuration.org][Configuration]]",
       "path": [],
       "commands": [],
@@ -85845,7 +86138,7 @@
       "level": 2,
       "file": "34-bibtex.org",
       "line": 12,
-      "content": "- *Speed Commands* - Single-key commands when cursor is at the start of an entry - *Entry Operations* - Clean, format, and transform individual entries - *File Operations* - Sort entries, apply batch transformations, validate files - *Smart Author Parsing* - Proper handling of particles (von, van der), suffixes (Jr., III), and corporate authors",
+      "content": "- *Speed Commands* - Single-key commands when cursor is at the start of an entry - *Entry Operations* - Clean, format, and transform individual entries - *File Operations* - Sort entries, apply batch transformations, validate files - *Smart Author Parsing* - Proper handling of particles (von, van der), suffixes (Jr., III), and corporate authors - *Journal Abbreviations* - Toggle journal names between full and abbreviated forms using 50,000+ abbreviation database",
       "path": [
         "Overview"
       ],
@@ -85878,7 +86171,7 @@
       "heading": "When to Use This",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 19,
+      "line": 20,
       "content": "This document covers editing =.bib= files directly. For inserting and managing citations in org/markdown/LaTeX documents, see [[file:19-references.org][References and Citations]].",
       "path": [
         "Overview"
@@ -85904,7 +86197,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 23,
+      "line": 24,
       "content": "BibTeX speed commands are single-key shortcuts available when your cursor is at column 0 of a line starting with =@= (an entry definition line like =@article{=).",
       "path": [],
       "commands": [],
@@ -85930,7 +86223,7 @@
       "heading": "Enabling Speed Commands",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 27,
+      "line": 28,
       "content": "Speed commands are enabled by default for BibTeX files. The context =scimax.atBibtexEntryStart= is automatically set when appropriate.",
       "path": [
         "Speed Commands"
@@ -85956,7 +86249,7 @@
       "heading": "Available Speed Commands",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 31,
+      "line": 32,
       "content": "",
       "path": [
         "Speed Commands"
@@ -85973,7 +86266,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 33,
+      "line": 34,
       "content": "| Key | Command                      | Description                    | |-----+------------------------------+--------------------------------| | n   | scimax.bibtex.nextEntry      | Jump to next entry             | | p   | scimax.bibtex.previousEntry  | Jump to previous entry         | | j   | scimax.bibtex.jumpToEntry    | Jump to entry by key (fuzzy)   | | ?   | scimax.bibtex.help           | Show speed command help        |",
       "path": [
         "Speed Commands",
@@ -86006,7 +86299,7 @@
       "heading": "Entry Formatting",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 42,
+      "line": 43,
       "content": "| Key | Command                    | Description                          | |-----+----------------------------+--------------------------------------| | s   | scimax.bibtex.sortFields   | Sort fields in standard order        | | d   | scimax.bibtex.downcaseEntry| Lowercase entry type and field names | | T   | scimax.bibtex.titleCase    | Convert title to Title Case          | | t   | scimax.bibtex.sentenceCase | Convert title to sentence case       | | c   | scimax.bibtex.cleanEntry   | Clean e",
       "path": [
         "Speed Commands",
@@ -86046,7 +86339,7 @@
       "heading": "External Resources",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 54,
+      "line": 55,
       "content": "| Key | Command                      | Description                      | |-----+------------------------------+----------------------------------| | o   | scimax.bibtex.openPdf        | Open associated PDF file         | | u   | scimax.bibtex.openUrl        | Open URL field in browser        | | O   | scimax.bibtex.openNotes      | Open/create notes file for entry | | G   | scimax.bibtex.googleScholar  | Search entry on Google Scholar   | | C   | scimax.bibtex.crossref       | Search entry on C",
       "path": [
         "Speed Commands",
@@ -86085,7 +86378,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 65,
+      "line": 66,
       "content": "| Key | Command                       | Description                     | |-----+-------------------------------+---------------------------------| | a   | scimax.bibtex.showOpenAlex    | View entry in OpenAlex          | | i   | scimax.bibtex.showCitingWorks | Show papers citing this work    | | r   | scimax.bibtex.showRelatedWorks| Show related works              | | R   | scimax.bibtex.showReferences  | Show references cited by this work |",
       "path": [
         "Speed Commands",
@@ -86121,7 +86414,7 @@
       "heading": "Clipboard Operations",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 74,
+      "line": 75,
       "content": "| Key | Command                  | Description                    | |-----+--------------------------+--------------------------------| | k   | scimax.bibtex.copyKey    | Copy citation key to clipboard | | y   | scimax.bibtex.copyBibtex | Copy full BibTeX entry         | | K   | scimax.bibtex.killEntry  | Delete entire entry            |",
       "path": [
         "Speed Commands",
@@ -86153,7 +86446,7 @@
       "heading": "Using Speed Commands",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 82,
+      "line": 83,
       "content": "1. Open a =.bib= file 2. Move cursor to column 0 of an =@entry{= line 3. Press a single key from the tables above 4. Press =?= to see available commands Example: #+BEGIN_EXAMPLE @article{smith2020machine,    <-- cursor at column 0 here author = {John Smith}, title = {Machine Learning}, year = {2020} } #+END_EXAMPLE",
       "path": [
         "Speed Commands"
@@ -86187,7 +86480,7 @@
       "heading": "Entry Operations",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 98,
+      "line": 99,
       "content": "These commands operate on the entry at the cursor position.",
       "path": [],
       "commands": [],
@@ -86205,7 +86498,7 @@
       "heading": "Clean Entry",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 102,
+      "line": 103,
       "content": "Command: =scimax.bibtex.cleanEntry= (speed key: =c=) Cleans the current entry by: - Normalizing whitespace (single spaces, trimmed) - Lowercasing field names - Sorting fields in standard BibTeX order - Removing duplicate outer braces (={{Title}}= → ={Title}=) - Preserving inner braces for case protection (={DNA}= stays as-is) Before: #+BEGIN_SRC bibtex @Article{Smith2020, AUTHOR = {  John   Smith  }, TITLE = {{A Machine Learning Approach}}, Year = {2020}, Journal = {Nature} } #+END_SRC After: #+",
       "path": [
         "Entry Operations"
@@ -86241,7 +86534,7 @@
       "heading": "Title Case",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 133,
+      "line": 134,
       "content": "Command: =scimax.bibtex.titleCase= (speed key: =T=) Converts the title field to Title Case while preserving: - Braced content (={DNA}=, ={NASA}=) - Small words (a, an, the, and, but, or, for, in, of, on, to, etc.) Example: - \"the effects of machine learning on dna analysis\" → \"The Effects of Machine Learning on {DNA} Analysis\"",
       "path": [
         "Entry Operations"
@@ -86277,7 +86570,7 @@
       "heading": "Sentence Case",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 144,
+      "line": 145,
       "content": "Command: =scimax.bibtex.sentenceCase= (speed key: =t=) Converts the title field to sentence case (only first word capitalized) while preserving braced content. Example: - \"The Effects Of Machine Learning\" → \"The effects of machine learning\" - \"Analysis of {DNA} Sequences\" → \"Analysis of {DNA} sequences\"",
       "path": [
         "Entry Operations"
@@ -86313,7 +86606,7 @@
       "heading": "Generate Key",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 154,
+      "line": 155,
       "content": "Command: =scimax.bibtex.generateKey= (speed key: =g=) Generates a standardized citation key in the format: =authoryearfirstword= - *author*: First author's last name (lowercase, ASCII only) - *year*: Publication year - *firstword*: First significant word from title (>3 chars, not a stop word) Examples: | Author          | Year | Title                           | Generated Key          | |-----------------+------+---------------------------------+------------------------| | Smith, John     | 2024",
       "path": [
         "Entry Operations"
@@ -86349,7 +86642,7 @@
       "heading": "Sort Fields",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 171,
+      "line": 172,
       "content": "Command: =scimax.bibtex.sortFields= (speed key: =s=) Reorders fields in standard BibTeX order: 1. author, title, journaltitle/journal, booktitle 2. editor, edition, volume, number, issue, pages 3. publisher, location/address, year, date, month 4. doi, url, urldate, isbn, issn 5. eprint, eprinttype, archiveprefix, primaryclass 6. note, annote, abstract, keywords, file 7. Any remaining fields",
       "path": [
         "Entry Operations"
@@ -86385,7 +86678,7 @@
       "heading": "Downcase Entry",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 184,
+      "line": 185,
       "content": "Command: =scimax.bibtex.downcaseEntry= (speed key: =d=) Lowercases the entry type and all field names: - =@Article= → =@article= - =Author = = → =author == - =JOURNAL = = → =journal ==",
       "path": [
         "Entry Operations"
@@ -86413,7 +86706,7 @@
       "heading": "Wrap in Braces",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 193,
+      "line": 194,
       "content": "Command: =scimax.bibtex.wrapBraces= (speed key: =b=) Wraps the current selection or word in curly braces for case protection. Use this to protect: - Acronyms: DNA → {DNA} - Proper nouns: Python → {Python} - Chemical formulas: H2O → {H2O}",
       "path": [
         "Entry Operations"
@@ -86449,7 +86742,7 @@
       "heading": "File Operations",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 204,
+      "line": 205,
       "content": "These commands operate on the entire BibTeX file.",
       "path": [],
       "commands": [],
@@ -86466,7 +86759,7 @@
       "heading": "Sort Entries",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 208,
+      "line": 209,
       "content": "Command: =scimax.bibtex.sortEntries= Sorts all entries in the file. Shows a menu to choose sort order: | Option    | Description                                  | |-----------+----------------------------------------------| | By Key    | Alphabetically by citation key               | | By Year   | Oldest to newest (secondary: key)            | | By Author | Alphabetically by first author last name     | |           | (secondary: year, then key)                  | The command preserves any pream",
       "path": [
         "File Operations"
@@ -86502,7 +86795,7 @@
       "heading": "Apply Operation to All Entries",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 223,
+      "line": 224,
       "content": "Command: =scimax.bibtex.applyToAllEntries= Applies a transformation to every entry in the file. Shows a menu of operations: | Operation           | Description                                           | |---------------------+-------------------------------------------------------| | Clean Entries       | Normalize whitespace, sort fields, lowercase names    | | Title Case Titles   | Convert all titles to Title Case                      | | Sentence Case Titles| Convert all titles to sentence c",
       "path": [
         "File Operations"
@@ -86538,7 +86831,7 @@
       "heading": "Standardize Keys Warning",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 238,
+      "line": 239,
       "content": "The \"Standardize Keys\" option shows a confirmation dialog because it can break existing citations in your documents. It also: - Handles duplicate keys by adding suffixes (a, b, c, ...) - Reports how many duplicates were resolved",
       "path": [
         "File Operations",
@@ -86573,7 +86866,7 @@
       "heading": "Validate File",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 244,
+      "line": 245,
       "content": "Command: =scimax.bibtex.validateFile= Validates the BibTeX file and reports: - Total number of entries - Entry types and counts - Syntax style (BibTeX vs BibLaTeX vs mixed) - Duplicate keys - Missing required fields - Syntax errors Results are shown in an output channel with severity indicators: - ❌ Errors (must fix) - ⚠️ Warnings (should fix)",
       "path": [
         "File Operations"
@@ -86609,7 +86902,7 @@
       "heading": "Show Statistics",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 260,
+      "line": 261,
       "content": "Command: =scimax.bibtex.showStatistics= Shows a quick overview of the BibTeX file: - Total entries - Entries by type (article, book, etc.) - Syntax style detection - Field usage statistics",
       "path": [
         "File Operations"
@@ -86643,7 +86936,7 @@
       "heading": "Author Name Handling",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 270,
+      "line": 271,
       "content": "Scimax uses the citation-js library for proper BibTeX author name parsing, handling complex cases that simple parsers miss.",
       "path": [],
       "commands": [],
@@ -86670,7 +86963,7 @@
       "heading": "Supported Formats",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 274,
+      "line": 275,
       "content": "",
       "path": [
         "Author Name Handling"
@@ -86686,7 +86979,7 @@
       "heading": "Standard Formats",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 276,
+      "line": 277,
       "content": "| Input                  | Parsed As                              | |------------------------+----------------------------------------| | Smith, John            | Family: Smith, Given: John             | | John Smith             | Family: Smith, Given: John             | | Smith, John and Doe, Jane | Two authors                         |",
       "path": [
         "Author Name Handling",
@@ -86714,7 +87007,7 @@
       "heading": "Particles (von, van der, de la)",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 284,
+      "line": 285,
       "content": "| Input                  | Display Last Name   | Key Last Name | |------------------------+---------------------+---------------| | van der Berg, Hans     | van der Berg        | berg          | | Hans van der Berg      | van der Berg        | berg          | | de la Cruz, Maria      | de la Cruz          | cruz          | | Ludwig van Beethoven   | van Beethoven       | beethoven     |",
       "path": [
         "Author Name Handling",
@@ -86745,7 +87038,7 @@
       "heading": "Suffixes (Jr., III)",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 293,
+      "line": 294,
       "content": "| Input                  | Parsed Components                      | |------------------------+----------------------------------------| | Smith, Jr., John       | Family: Smith, Given: John, Suffix: Jr.| | King, III, Martin Luther | Family: King, Given: Martin Luther, Suffix: III |",
       "path": [
         "Author Name Handling",
@@ -86774,7 +87067,7 @@
       "heading": "Corporate Authors",
       "level": 3,
       "file": "34-bibtex.org",
-      "line": 300,
+      "line": 301,
       "content": "Corporate or institutional authors should be wrapped in braces: | Input                           | Parsed As                     | |---------------------------------+-------------------------------| | {NASA}                          | Literal name: NASA            | | {National Academy of Sciences}  | Literal name: National Academy of Sciences | | {World Health Organization}     | Literal name: World Health Organization |",
       "path": [
         "Author Name Handling",
@@ -86806,7 +87099,7 @@
       "heading": "Key Generation with Authors",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 310,
+      "line": 311,
       "content": "When generating citation keys, the first author's last name is used: - Particles are stripped for the key (van der Berg → berg) - Corporate names are cleaned (NASA → nasa) - Accents are normalized (Müller → muller)",
       "path": [
         "Author Name Handling"
@@ -86840,7 +87133,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 317,
+      "line": 318,
       "content": "",
       "path": [],
       "commands": [],
@@ -86854,7 +87147,7 @@
       "heading": "Entry Formatting",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 319,
+      "line": 320,
       "content": "1. *Use consistent case* - Run \"Downcase Entries\" on your file 2. *Sort fields consistently* - Use \"Clean Entries\" or \"Sort Fields\" 3. *Protect case-sensitive text* - Wrap in braces: ={DNA}=, ={Python}=, ={NASA}= 4. *Include DOIs* - Enables OpenAlex integration and hover previews",
       "path": [
         "Best Practices"
@@ -86888,7 +87181,7 @@
       "heading": "Key Naming",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 326,
+      "line": 327,
       "content": "Recommended format: =author-year-keyword= or =authoryearkeyword= Good keys: - =smith-2024-machine= or =smith2024machine= - =vandenberg-2023-neural= (note: particle stripped) - =nasa-2022-report= Bad keys: - =ref1=, =paper2= (not memorable) - =ML_Paper_2024= (inconsistent format)",
       "path": [
         "Best Practices"
@@ -86922,7 +87215,7 @@
       "heading": "File Organization",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 339,
+      "line": 340,
       "content": "- One bibliography file per project or topic - Use =@string= definitions for common journals - Keep entries in consistent order (by key or year) - Regularly validate files for errors",
       "path": [
         "Best Practices"
@@ -86955,7 +87248,7 @@
       "heading": "Before Sharing",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 346,
+      "line": 347,
       "content": "1. Run =scimax.bibtex.validateFile= to check for errors 2. Run \"Clean Entries\" via =scimax.bibtex.applyToAllEntries= 3. Optionally sort entries by key or year",
       "path": [
         "Best Practices"
@@ -86981,10 +87274,466 @@
       ]
     },
     {
+      "heading": "Journal Abbreviations",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 353,
+      "content": "Scimax includes a comprehensive journal abbreviation database that allows you to toggle between full journal names and their standardized ISO 4 abbreviations.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "journal",
+        "abbreviations",
+        "scimax",
+        "includes",
+        "comprehensive",
+        "abbreviation",
+        "database",
+        "allows",
+        "toggle",
+        "between",
+        "full",
+        "names",
+        "standardized",
+        "iso"
+      ]
+    },
+    {
+      "heading": "Data Sources",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 357,
+      "content": "The abbreviation database is sourced from the [[https://github.com/JabRef/abbrv.jabref.org][JabRef Abbreviation Repository]], which aggregates abbreviations from multiple authoritative sources: | Source              | Description                                    | Entries | |---------------------+------------------------------------------------+---------| | General             | Cross-discipline abbreviations                 | ~1,900  | | ACS (Chemistry)     | American Chemical Society journal",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "data",
+        "sources",
+        "abbreviation",
+        "database",
+        "sourced",
+        "httpsgithubcomjabrefabbrvjabreforg",
+        "jabref",
+        "repository",
+        "aggregates",
+        "abbreviations",
+        "multiple",
+        "authoritative",
+        "source",
+        "description",
+        "entries",
+        "------------------------------------------------------------------------------",
+        "general",
+        "cross-discipline",
+        "1900",
+        "acs"
+      ]
+    },
+    {
+      "heading": "Important: Use Version Control",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 380,
+      "content": "Before making batch changes to your bibliography files, ensure your files are under version control (git). This allows you to: - Review changes with =git diff= - Undo changes with =git checkout= if something goes wrong - Track the history of modifications #+BEGIN_QUOTE *Tip*: Commit your .bib file before running batch abbreviation operations. If anything goes wrong, you can always revert. #+END_QUOTE",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "important",
+        "version",
+        "control",
+        "before",
+        "making",
+        "batch",
+        "changes",
+        "bibliography",
+        "ensure",
+        "under",
+        "git",
+        "allows",
+        "review",
+        "diff",
+        "undo",
+        "checkout",
+        "something",
+        "goes",
+        "wrong",
+        "track"
+      ]
+    },
+    {
+      "heading": "Toggling Journal Names",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 391,
+      "content": "",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "toggling",
+        "journal",
+        "names"
+      ]
+    },
+    {
+      "heading": "Single Entry (Speed Key: A)",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 393,
+      "content": "Command: =scimax.bibtex.toggleJournalAbbreviation= (speed key: =A=) Toggles the journal field between full name and abbreviation: Before: #+BEGIN_SRC bibtex @article{smith2024, author = {John Smith}, title = {A Great Paper}, journal = {Journal of the American Chemical Society}, year = {2024} } #+END_SRC After pressing =A=: #+BEGIN_SRC bibtex @article{smith2024, author = {John Smith}, title = {A Great Paper}, journal = {J. Am. Chem. Soc.}, year = {2024} } #+END_SRC Press =A= again to toggle back ",
+      "path": [
+        "Journal Abbreviations",
+        "Toggling Journal Names"
+      ],
+      "commands": [
+        "scimax.bibtex.toggleJournalAbbreviation"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "single",
+        "entry",
+        "speed",
+        "key",
+        "command",
+        "toggles",
+        "journal",
+        "field",
+        "between",
+        "full",
+        "name",
+        "abbreviation",
+        "before",
+        "beginsrc",
+        "bibtex",
+        "article",
+        "smith2024",
+        "author",
+        "john",
+        "smith"
+      ]
+    },
+    {
+      "heading": "All Entries",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 421,
+      "content": "| Command                                | Description                            | |----------------------------------------+----------------------------------------| | scimax.bibtex.abbreviateAllJournals    | Abbreviate all journals in the file    | | scimax.bibtex.expandAllJournals        | Expand all journals to full names      | These commands: 1. *Validate syntax* before starting - warns if parse errors exist 2. Process every entry in the file 3. *Validate results* - checks that entry coun",
+      "path": [
+        "Journal Abbreviations",
+        "Toggling Journal Names"
+      ],
+      "commands": [
+        "scimax.bibtex.abbreviateAllJournals",
+        "scimax.bibtex.expandAllJournals"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "entries",
+        "command",
+        "description",
+        "--------------------------------------------------------------------------------",
+        "abbreviate",
+        "journals",
+        "expand",
+        "full",
+        "names",
+        "commands",
+        "validate",
+        "syntax",
+        "before",
+        "starting",
+        "warns",
+        "parse",
+        "errors",
+        "exist",
+        "process",
+        "entry"
+      ]
+    },
+    {
+      "heading": "Undo Behavior",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 436,
+      "content": "All batch changes are applied as a *single edit operation*, so: - Press =Ctrl+Z= (=Cmd+Z= on Mac) *once* to undo all changes at once - You cannot undo individual journal changes within a batch operation - For more granular control, use the single-entry toggle (=A= speed key) instead For single-entry toggles (speed key =A=), each toggle is a separate undo operation.",
+      "path": [
+        "Journal Abbreviations",
+        "Toggling Journal Names"
+      ],
+      "commands": [],
+      "keybindings": [
+        "Ctrl+Z"
+      ],
+      "keywords": [
+        "undo",
+        "behavior",
+        "batch",
+        "changes",
+        "applied",
+        "single",
+        "edit",
+        "operation",
+        "press",
+        "ctrlz",
+        "cmdz",
+        "mac",
+        "once",
+        "cannot",
+        "individual",
+        "journal",
+        "within",
+        "granular",
+        "control",
+        "single-entry"
+      ]
+    },
+    {
+      "heading": "Searching Abbreviations",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 445,
+      "content": "Command: =scimax.bibtex.searchJournalAbbreviations= Search the abbreviation database by full name or abbreviation: 1. Enter search query (e.g., \"chemistry\", \"J. Am.\") 2. Browse matching results 3. Select an entry to copy the abbreviation to clipboard",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [
+        "scimax.bibtex.searchJournalAbbreviations"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "searching",
+        "abbreviations",
+        "command",
+        "search",
+        "abbreviation",
+        "database",
+        "full",
+        "name",
+        "enter",
+        "query",
+        "chemistry",
+        "browse",
+        "matching",
+        "results",
+        "select",
+        "entry",
+        "copy",
+        "clipboard"
+      ]
+    },
+    {
+      "heading": "Custom Abbreviations",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 455,
+      "content": "You can add your own journal abbreviations that override the built-in database.",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "custom",
+        "abbreviations",
+        "add",
+        "own",
+        "journal",
+        "override",
+        "built-in",
+        "database"
+      ]
+    },
+    {
+      "heading": "Adding Custom Abbreviations",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 459,
+      "content": "Command: =scimax.bibtex.addJournalAbbreviation= 1. Enter the full journal name 2. Enter the abbreviation 3. The mapping is saved to your VS Code user storage Custom abbreviations take priority over the bundled database, so you can correct or override any entry.",
+      "path": [
+        "Journal Abbreviations",
+        "Custom Abbreviations"
+      ],
+      "commands": [
+        "scimax.bibtex.addJournalAbbreviation"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "adding",
+        "custom",
+        "abbreviations",
+        "command",
+        "enter",
+        "full",
+        "journal",
+        "name",
+        "abbreviation",
+        "mapping",
+        "saved",
+        "code",
+        "user",
+        "storage",
+        "take",
+        "priority",
+        "over",
+        "bundled",
+        "database",
+        "correct"
+      ]
+    },
+    {
+      "heading": "Managing Custom Abbreviations",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 469,
+      "content": "Command: =scimax.bibtex.manageJournalAbbreviations= View and remove your custom abbreviations.",
+      "path": [
+        "Journal Abbreviations",
+        "Custom Abbreviations"
+      ],
+      "commands": [
+        "scimax.bibtex.manageJournalAbbreviations"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "managing",
+        "custom",
+        "abbreviations",
+        "command",
+        "view",
+        "remove"
+      ]
+    },
+    {
+      "heading": "Updating the Database",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 475,
+      "content": "Command: =scimax.bibtex.updateJournalAbbreviations= Downloads the latest abbreviation lists from the JabRef repository: 1. Select which sources to download (multi-select) 2. Wait for downloads to complete 3. Abbreviations are immediately available Use this to get the latest additions and corrections.",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [
+        "scimax.bibtex.updateJournalAbbreviations"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "updating",
+        "database",
+        "command",
+        "downloads",
+        "latest",
+        "abbreviation",
+        "lists",
+        "jabref",
+        "repository",
+        "select",
+        "sources",
+        "download",
+        "multi-select",
+        "wait",
+        "complete",
+        "abbreviations",
+        "immediately",
+        "available",
+        "get",
+        "additions"
+      ]
+    },
+    {
+      "heading": "Statistics",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 487,
+      "content": "Command: =scimax.bibtex.journalAbbreviationStats= Shows the number of abbreviations loaded from each source.",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [
+        "scimax.bibtex.journalAbbreviationStats"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "statistics",
+        "command",
+        "shows",
+        "number",
+        "abbreviations",
+        "loaded",
+        "source"
+      ]
+    },
+    {
+      "heading": "Speed Command",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 493,
+      "content": "| Key | Command                                  | Description                    | |-----+------------------------------------------+--------------------------------| | A   | scimax.bibtex.toggleJournalAbbreviation  | Toggle journal abbreviation    |",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [
+        "scimax.bibtex.toggleJournalAbbreviation"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "speed",
+        "command",
+        "key",
+        "description",
+        "-------------------------------------------------------------------------------",
+        "toggle",
+        "journal",
+        "abbreviation"
+      ]
+    },
+    {
+      "heading": "Related Standards",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 499,
+      "content": "- *ISO 4* - International standard for abbreviating serial titles - *ISSN LTWA* - List of Title Word Abbreviations (56,000+ words in 65 languages) - *CASSI* - Chemical Abstracts Service Source Index (chemistry-specific)",
+      "path": [
+        "Journal Abbreviations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "related",
+        "standards",
+        "iso",
+        "international",
+        "standard",
+        "abbreviating",
+        "serial",
+        "titles",
+        "issn",
+        "ltwa",
+        "list",
+        "title",
+        "word",
+        "abbreviations",
+        "56000",
+        "words",
+        "languages",
+        "cassi",
+        "chemical",
+        "abstracts"
+      ]
+    },
+    {
       "heading": "Command Reference",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 352,
+      "line": 505,
       "content": "",
       "path": [],
       "commands": [],
@@ -86998,7 +87747,7 @@
       "heading": "Entry Commands (require cursor in entry)",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 354,
+      "line": 507,
       "content": "| Command                      | Speed Key | Description                    | |------------------------------+-----------+--------------------------------| | scimax.bibtex.nextEntry      | n         | Navigate to next entry         | | scimax.bibtex.previousEntry  | p         | Navigate to previous entry     | | scimax.bibtex.jumpToEntry    | j         | Jump to entry by key           | | scimax.bibtex.sortFields     | s         | Sort fields in entry           | | scimax.bibtex.downcaseEntry  |",
       "path": [
         "Command Reference"
@@ -87033,8 +87782,8 @@
       "heading": "File Commands (operate on entire file)",
       "level": 2,
       "file": "34-bibtex.org",
-      "line": 383,
-      "content": "| Command                          | Description                          | |----------------------------------+--------------------------------------| | scimax.bibtex.sortEntries        | Sort all entries (by key/year/author)| | scimax.bibtex.applyToAllEntries  | Apply operation to all entries       | | scimax.bibtex.validateFile       | Validate file and show report        | | scimax.bibtex.showStatistics     | Show file statistics                 |",
+      "line": 537,
+      "content": "| Command                                  | Description                           | |------------------------------------------+---------------------------------------| | scimax.bibtex.sortEntries                | Sort all entries (by key/year/author) | | scimax.bibtex.applyToAllEntries          | Apply operation to all entries        | | scimax.bibtex.validateFile               | Validate file and show report         | | scimax.bibtex.showStatistics             | Show file statistics          ",
       "path": [
         "Command Reference"
       ],
@@ -87051,7 +87800,7 @@
         "entire",
         "command",
         "description",
-        "------------------------------------------------------------------------",
+        "---------------------------------------------------------------------------------",
         "sort",
         "entries",
         "keyyearauthor",
@@ -87067,7 +87816,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 392,
+      "line": 553,
       "content": "- [[file:19-references.org][References and Citations]] - Citation insertion and management in documents - [[file:23-speed-commands.org][Speed Commands]] - Speed commands for org-mode headings - [[file:33-latex-navigation.org][LaTeX Navigation]] - Similar speed commands for LaTeX files",
       "path": [],
       "commands": [],
@@ -87097,7 +87846,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "34-bibtex.org",
-      "line": 398,
+      "line": 559,
       "content": "- Previous: [[file:33-latex-navigation.org][LaTeX Navigation]] - Index: [[file:00-index.org][Documentation Index]]",
       "path": [],
       "commands": [],
@@ -87939,6 +88688,822 @@
         "execution",
         "org-mode",
         "file22-hydra-menusorg"
+      ]
+    },
+    {
+      "heading": "Overview",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 5,
+      "content": "The manuscript module helps prepare LaTeX documents for journal submission by creating a self-contained, flattened version of your manuscript. When submitting papers to journals, you often need: - A single =.tex= file (no =\\input= or =\\include= commands) - Bibliography inlined from the =.bbl= file - All figures in the same directory with simple names - Local style files (=.sty=, =.cls=, =.bst=) included This module automates that process while preserving your original files.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "overview",
+        "manuscript",
+        "module",
+        "helps",
+        "prepare",
+        "latex",
+        "documents",
+        "journal",
+        "submission",
+        "creating",
+        "self-contained",
+        "flattened",
+        "version",
+        "submitting",
+        "papers",
+        "journals",
+        "often",
+        "need",
+        "single",
+        "tex"
+      ]
+    },
+    {
+      "heading": "Commands",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 17,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "commands"
+      ]
+    },
+    {
+      "heading": "Flatten Manuscript",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 19,
+      "content": "Command: =scimax.manuscript.flatten= Opens from Command Palette: \"Scimax: Flatten Manuscript for Submission\" This is the main command that: 1. Optionally compiles your document to generate/update the =.bbl= file 2. Flattens all =\\input{}= and =\\include{}= commands 3. Inlines the bibliography (=.bbl= content) 4. Renames figures sequentially (=1.pdf=, =2.png=, etc.) 5. Detects and copies local support files (=.sty=, =.cls=, =.bst=, data files) 6. Creates a timestamped submission directory",
+      "path": [
+        "Commands"
+      ],
+      "commands": [
+        "scimax.manuscript.flatten"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "flatten",
+        "manuscript",
+        "command",
+        "opens",
+        "palette",
+        "scimax",
+        "submission",
+        "main",
+        "optionally",
+        "compiles",
+        "document",
+        "generateupdate",
+        "bbl",
+        "flattens",
+        "input",
+        "include",
+        "commands",
+        "inlines",
+        "bibliography",
+        "content"
+      ]
+    },
+    {
+      "heading": "Preview Flattening",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 33,
+      "content": "Command: =scimax.manuscript.preview= Opens from Command Palette: \"Scimax: Preview Manuscript Flattening\" Shows what would happen without making changes: - Number of included files - Number of figures to rename - Support files to copy (=.sty=, =.cls=, =.bst=, data files) - Whether compilation is needed - Any warnings",
+      "path": [
+        "Commands"
+      ],
+      "commands": [
+        "scimax.manuscript.preview"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "preview",
+        "flattening",
+        "command",
+        "opens",
+        "palette",
+        "scimax",
+        "manuscript",
+        "shows",
+        "happen",
+        "without",
+        "making",
+        "changes",
+        "number",
+        "included",
+        "figures",
+        "rename",
+        "support",
+        "copy",
+        "sty",
+        "cls"
+      ]
+    },
+    {
+      "heading": "Flatten to Directory",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 46,
+      "content": "Command: =scimax.manuscript.flattenToDirectory= Opens from Command Palette: \"Scimax: Flatten Manuscript to Directory\" Same as flatten, but lets you choose the output directory.",
+      "path": [
+        "Commands"
+      ],
+      "commands": [
+        "scimax.manuscript.flattenToDirectory"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "flatten",
+        "directory",
+        "command",
+        "opens",
+        "palette",
+        "scimax",
+        "manuscript",
+        "lets",
+        "choose",
+        "output"
+      ]
+    },
+    {
+      "heading": "Output Structure",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 54,
+      "content": "Given a project structure like: #+begin_example paper/ ├── main.tex ├── sections/ │   ├── intro.tex │   └── methods.tex ├── figures/ │   ├── plot1.pdf │   └── results.png ├── refs.bib └── main.bbl #+end_example After flattening, you get: #+begin_example paper/ ├── submission-2026-01-20/ │   ├── main.tex      # Flattened, all paths updated │   ├── 1.pdf         # was figures/plot1.pdf │   └── 2.png         # was figures/results.png └── (original files unchanged) #+end_example",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "output",
+        "structure",
+        "given",
+        "project",
+        "like",
+        "beginexample",
+        "paper",
+        "maintex",
+        "sections",
+        "introtex",
+        "methodstex",
+        "figures",
+        "plot1pdf",
+        "resultspng",
+        "refsbib",
+        "mainbbl",
+        "endexample",
+        "after",
+        "flattening",
+        "get"
+      ]
+    },
+    {
+      "heading": "Figure Naming",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 82,
+      "content": "Figures are renamed sequentially with smart padding based on the total count: | Total Figures | Naming Pattern | |---------------+----------------| | 1-9           | =1.pdf=, =2.png=, ... | | 10-99         | =01.pdf=, =02.png=, ... | | 100-999       | =001.pdf=, =002.png=, ... | This ensures correct sorting in file managers.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "figure",
+        "naming",
+        "figures",
+        "renamed",
+        "sequentially",
+        "smart",
+        "padding",
+        "based",
+        "total",
+        "count",
+        "pattern",
+        "-------------------------------",
+        "1-9",
+        "1pdf",
+        "2png",
+        "10-99",
+        "01pdf",
+        "02png",
+        "100-999",
+        "001pdf"
+      ]
+    },
+    {
+      "heading": "Support Files",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 94,
+      "content": "The module automatically detects and copies local support files that your document needs:",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "support",
+        "module",
+        "automatically",
+        "detects",
+        "copies",
+        "local",
+        "document",
+        "needs"
+      ]
+    },
+    {
+      "heading": "Style Files (.sty)",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 98,
+      "content": "Custom LaTeX packages in your project directory. Detected from =\\usepackage{...}= commands.",
+      "path": [
+        "Support Files"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "style",
+        "sty",
+        "custom",
+        "latex",
+        "packages",
+        "project",
+        "directory",
+        "detected",
+        "usepackage",
+        "commands"
+      ]
+    },
+    {
+      "heading": "Class Files (.cls)",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 102,
+      "content": "Custom document classes. Detected from =\\documentclass{...}=.",
+      "path": [
+        "Support Files"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "class",
+        "cls",
+        "custom",
+        "document",
+        "classes",
+        "detected",
+        "documentclass"
+      ]
+    },
+    {
+      "heading": "Bibliography Style Files (.bst)",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 106,
+      "content": "Custom bibliography styles. Detected from =\\bibliographystyle{...}=. Standard styles (plain, unsrt, alpha, IEEEtran, etc.) are not copied since they're available on most LaTeX installations.",
+      "path": [
+        "Support Files"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "bibliography",
+        "style",
+        "bst",
+        "custom",
+        "styles",
+        "detected",
+        "bibliographystyle",
+        "standard",
+        "plain",
+        "unsrt",
+        "alpha",
+        "ieeetran",
+        "etc",
+        "copied",
+        "since",
+        "available",
+        "latex",
+        "installations"
+      ]
+    },
+    {
+      "heading": "Data Files",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 112,
+      "content": "Files used by packages like pgfplots: - =\\pgfplotstableread{data.csv}= - =\\DTLloaddb{name}{data.csv}= - =\\input{data.dat}=",
+      "path": [
+        "Support Files"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "data",
+        "packages",
+        "like",
+        "pgfplots",
+        "pgfplotstableread",
+        "datacsv",
+        "dtlloaddb",
+        "name",
+        "input",
+        "datadat"
+      ]
+    },
+    {
+      "heading": "Bibliography Handling",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 119,
+      "content": "The module supports both traditional BibTeX and biblatex:",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "bibliography",
+        "handling",
+        "module",
+        "supports",
+        "traditional",
+        "bibtex",
+        "biblatex"
+      ]
+    },
+    {
+      "heading": "BibTeX",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 123,
+      "content": "- Replaces =\\bibliography{refs}= with the contents of =main.bbl= - Keeps =\\bibliographystyle{...}= in place",
+      "path": [
+        "Bibliography Handling"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "bibtex",
+        "replaces",
+        "bibliography",
+        "refs",
+        "contents",
+        "mainbbl",
+        "keeps",
+        "bibliographystyle",
+        "place"
+      ]
+    },
+    {
+      "heading": "Biblatex",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 128,
+      "content": "- Replaces =\\printbibliography= with the contents of =main.bbl= - Comments out =\\addbibresource{...}= lines",
+      "path": [
+        "Bibliography Handling"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "biblatex",
+        "replaces",
+        "printbibliography",
+        "contents",
+        "mainbbl",
+        "comments",
+        "out",
+        "addbibresource",
+        "lines"
+      ]
+    },
+    {
+      "heading": "Compilation",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 133,
+      "content": "Before flattening, the module checks if your =.bbl= file is up-to-date by comparing modification times of: - The =.tex= file - The =.bib= file(s) - The existing =.bbl= file If compilation is needed, you'll be prompted: - **Compile first** - Runs =pdflatex= + =bibtex=/=biber= to update the =.bbl= - **Use existing .bbl** - Uses the current =.bbl= as-is The module auto-detects whether to use =bibtex= or =biber= based on your document's packages.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "compilation",
+        "before",
+        "flattening",
+        "module",
+        "checks",
+        "bbl",
+        "up-to-date",
+        "comparing",
+        "modification",
+        "times",
+        "tex",
+        "bib",
+        "existing",
+        "needed",
+        "prompted",
+        "compile",
+        "first",
+        "runs",
+        "pdflatex",
+        "bibtex"
+      ]
+    },
+    {
+      "heading": "Configuration",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 146,
+      "content": "| Setting | Default | Description | |---------+---------+-------------| | =scimax.manuscript.autoCompile= | =\"ask\"= | When to compile: =always=, =if-needed=, =never=, =ask= | | =scimax.manuscript.pdflatexPath= | =\"pdflatex\"= | Path to pdflatex executable | | =scimax.manuscript.bibtexPath= | =\"bibtex\"= | Path to bibtex executable | | =scimax.manuscript.biberPath= | =\"biber\"= | Path to biber executable |",
+      "path": [],
+      "commands": [
+        "scimax.manuscript.autoCompile",
+        "scimax.manuscript.pdflatexPath",
+        "scimax.manuscript.bibtexPath",
+        "scimax.manuscript.biberPath"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "configuration",
+        "setting",
+        "default",
+        "description",
+        "-------------------------------",
+        "ask",
+        "compile",
+        "always",
+        "if-needed",
+        "never",
+        "pdflatex",
+        "path",
+        "executable",
+        "bibtex",
+        "biber"
+      ]
+    },
+    {
+      "heading": "Workflow Example",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 155,
+      "content": "1. Open your main =.tex= file 2. Run \"Scimax: Flatten Manuscript for Submission\" from Command Palette 3. Choose whether to compile first (recommended if you've made recent changes) 4. Wait for processing 5. Find your submission-ready files in =submission-YYYY-MM-DD/=",
+      "path": [],
+      "commands": [],
+      "keybindings": [
+        "M-DD"
+      ],
+      "keywords": [
+        "workflow",
+        "example",
+        "open",
+        "main",
+        "tex",
+        "run",
+        "scimax",
+        "flatten",
+        "manuscript",
+        "submission",
+        "command",
+        "palette",
+        "choose",
+        "whether",
+        "compile",
+        "first",
+        "recommended",
+        "made",
+        "recent",
+        "changes"
+      ]
+    },
+    {
+      "heading": "What Gets Flattened",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 163,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "gets",
+        "flattened"
+      ]
+    },
+    {
+      "heading": "Included",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 165,
+      "content": "- =\\input{file}= - Content inserted directly - =\\include{file}= - Content inserted with =\\clearpage= before and after - =\\includegraphics[opts]{path}= - Figures renamed and paths updated - =\\bibliography{refs}= - Replaced with =.bbl= content - =\\printbibliography= - Replaced with =.bbl= content (biblatex)",
+      "path": [
+        "What Gets Flattened"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "included",
+        "input",
+        "content",
+        "inserted",
+        "directly",
+        "include",
+        "clearpage",
+        "before",
+        "after",
+        "includegraphics",
+        "opts",
+        "path",
+        "figures",
+        "renamed",
+        "paths",
+        "updated",
+        "bibliography",
+        "refs",
+        "replaced",
+        "bbl"
+      ]
+    },
+    {
+      "heading": "Ignored (Not Processed)",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 173,
+      "content": "- Commands inside =% comments= - Commands inside verbatim environments (=verbatim=, =lstlisting=, =minted=) - =\\input= commands that can't be resolved (warning issued)",
+      "path": [
+        "What Gets Flattened"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "ignored",
+        "processed",
+        "commands",
+        "inside",
+        "comments",
+        "verbatim",
+        "environments",
+        "lstlisting",
+        "minted",
+        "input",
+        "resolved",
+        "warning",
+        "issued"
+      ]
+    },
+    {
+      "heading": "Warnings",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 179,
+      "content": "The module issues warnings for: - Missing included files - Missing figure files - Missing =.bbl= file - Circular includes (A includes B, B includes A) - Maximum include depth exceeded (default: 20 levels) Warnings are shown after flattening completes. You can review them by clicking \"Show Warnings\" in the success notification.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "warnings",
+        "module",
+        "issues",
+        "missing",
+        "included",
+        "figure",
+        "bbl",
+        "circular",
+        "includes",
+        "maximum",
+        "include",
+        "depth",
+        "exceeded",
+        "default",
+        "levels",
+        "shown",
+        "after",
+        "flattening",
+        "completes",
+        "review"
+      ]
+    },
+    {
+      "heading": "Limitations",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 190,
+      "content": "The module handles most common manuscript scenarios but has some limitations:",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "limitations",
+        "module",
+        "handles",
+        "common",
+        "manuscript",
+        "scenarios"
+      ]
+    },
+    {
+      "heading": "Not Supported",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 194,
+      "content": "| Feature | Description | Workaround | |---------+-------------+------------| | =\\graphicspath= | Custom figure search paths are not parsed | Use relative paths in =\\includegraphics= | | Custom fonts | Font files (=.ttf=, =.otf=) are not copied | Manually copy font files to submission directory | | TikZ externalize | Externalized TikZ figures (=.pdf= cache) not handled | Disable externalize or manually copy | | Index files | =.ind= files from =makeindex= not copied | Manually copy if using index",
+      "path": [
+        "Limitations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "supported",
+        "feature",
+        "description",
+        "workaround",
+        "----------------------------------",
+        "graphicspath",
+        "custom",
+        "figure",
+        "search",
+        "paths",
+        "parsed",
+        "relative",
+        "includegraphics",
+        "fonts",
+        "font",
+        "ttf",
+        "otf",
+        "copied",
+        "manually",
+        "copy"
+      ]
+    },
+    {
+      "heading": "Encoding",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 206,
+      "content": "The module assumes UTF-8 encoding for all files. Non-UTF-8 files may cause errors or produce garbled output.",
+      "path": [
+        "Limitations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "encoding",
+        "module",
+        "assumes",
+        "utf-8",
+        "non-utf-8",
+        "cause",
+        "errors",
+        "produce",
+        "garbled",
+        "output"
+      ]
+    },
+    {
+      "heading": "Figure Detection",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 210,
+      "content": "Only =\\includegraphics= commands are detected. Other figure inclusion methods are not handled: - =\\pgfimage= - =\\pdfximage= - Raw PDF includes via =\\pdfpages=",
+      "path": [
+        "Limitations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "figure",
+        "detection",
+        "includegraphics",
+        "commands",
+        "detected",
+        "inclusion",
+        "methods",
+        "handled",
+        "pgfimage",
+        "pdfximage",
+        "raw",
+        "pdf",
+        "includes",
+        "via",
+        "pdfpages"
+      ]
+    },
+    {
+      "heading": "Path Resolution",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 217,
+      "content": "- Paths are resolved relative to the directory of the file containing the command - Absolute paths are not modified - Paths with special characters may not resolve correctly",
+      "path": [
+        "Limitations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "path",
+        "resolution",
+        "paths",
+        "resolved",
+        "relative",
+        "directory",
+        "containing",
+        "command",
+        "absolute",
+        "modified",
+        "special",
+        "characters",
+        "resolve",
+        "correctly"
+      ]
+    },
+    {
+      "heading": "Bibliography Edge Cases",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 223,
+      "content": "- Multiple =\\printbibliography= commands: only the first is replaced with content; others are commented out - =refsection= environments (biblatex): not handled, may produce incomplete bibliographies - Custom =.bbl= locations: the module looks for =.bbl= alongside the main =.tex= file",
+      "path": [
+        "Limitations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "bibliography",
+        "edge",
+        "cases",
+        "multiple",
+        "printbibliography",
+        "commands",
+        "first",
+        "replaced",
+        "content",
+        "others",
+        "commented",
+        "out",
+        "refsection",
+        "environments",
+        "biblatex",
+        "handled",
+        "produce",
+        "incomplete",
+        "bibliographies",
+        "custom"
+      ]
+    },
+    {
+      "heading": "Support Files",
+      "level": 2,
+      "file": "36-manuscript.org",
+      "line": 229,
+      "content": "Standard LaTeX packages from TeX distributions are not copied (they're assumed to be available). The module only copies files that exist in your project directory.",
+      "path": [
+        "Limitations"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "support",
+        "standard",
+        "latex",
+        "packages",
+        "tex",
+        "distributions",
+        "copied",
+        "assumed",
+        "available",
+        "module",
+        "copies",
+        "exist",
+        "project",
+        "directory"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 1,
+      "file": "36-manuscript.org",
+      "line": 233,
+      "content": "- [[file:10-export.org][Export]] - Exporting org documents to LaTeX - [[file:11-latex-preview.org][LaTeX Preview]] - Live preview of LaTeX documents",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "related",
+        "topics",
+        "file10-exportorg",
+        "export",
+        "exporting",
+        "org",
+        "documents",
+        "latex",
+        "file11-latex-previeworg",
+        "preview",
+        "live"
       ]
     },
     {

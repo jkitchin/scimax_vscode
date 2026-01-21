@@ -12,7 +12,7 @@
 import * as path from 'path';
 import * as fs from 'fs/promises';
 import { FlattenOptions, FlattenResult } from './types';
-import { compileForBbl, checkIfCompilationNeeded } from './latexCompiler';
+import { compileForBbl, checkIfCompilationNeeded, compileFinalPdf } from './latexCompiler';
 import { flattenIncludes } from './fileFlattener';
 import { processBibliography } from './bibliographyHandler';
 import { processFigures, copyFigures } from './figureProcessor';
@@ -31,11 +31,15 @@ async function fileExists(filePath: string): Promise<boolean> {
 }
 
 /**
- * Generate a submission directory name with datestamp
+ * Generate a submission directory name with datestamp (local time)
  */
 function generateSubmissionDirName(): string {
   const now = new Date();
-  const datestamp = now.toISOString().split('T')[0]; // "2026-01-20"
+  // Use local date components to avoid timezone issues
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const datestamp = `${year}-${month}-${day}`;
   return `submission-${datestamp}`;
 }
 
@@ -83,6 +87,7 @@ export async function flattenManuscript(
     bibtexBackend = 'auto',
     maxDepth = 20,
     compileTimeout = 60000,
+    compileFinalPdf: shouldCompilePdf = true,
   } = options;
 
   const warnings: string[] = [];
@@ -171,14 +176,35 @@ export async function flattenManuscript(
     }
   }
 
+  // Step 9: Compile the flattened tex to PDF
+  let pdfCompiled = false;
+  let outputPdfPath: string | undefined;
+
+  if (shouldCompilePdf) {
+    const pdfResult = await compileFinalPdf({
+      workingDir: submissionDir,
+      texFile: texBasename,
+      timeout: compileTimeout,
+    });
+
+    pdfCompiled = pdfResult.success;
+    outputPdfPath = pdfResult.pdfPath;
+
+    if (!pdfResult.success) {
+      warnings.push(...pdfResult.errors);
+    }
+  }
+
   return {
     outputDir: submissionDir,
     outputTexPath,
+    outputPdfPath,
     figuresCopied: figureResult.mappings,
     supportFilesCopied,
     bblInlined: bibResult.bblInlined,
     warnings,
     compilationRun,
+    pdfCompiled,
   };
 }
 

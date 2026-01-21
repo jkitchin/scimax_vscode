@@ -263,6 +263,8 @@ CLOSED: [2026-01-17 Sat 12:27]
 | [[cmd:scimax.org.exportLatex]]    | Export to LaTeX         | C-c C-e l l        |
 | [[cmd:scimax.org.exportPdf]]      | Export to PDF           | C-c C-e l p        |
 | [[cmd:scimax.org.exportLatexOpen]]| Export to PDF and Open  | C-c C-e l o        |
+| [[cmd:scimax.org.viewPdfPanel]]   | View PDF in Panel       | -                  |
+| [[cmd:scimax.org.jumpToPdf]]      | Jump to PDF (forward sync) | -               |
 
 ** ✅ Other Export Formats
 CLOSED: [2026-01-17 Sat 12:27]
@@ -537,6 +539,23 @@ These commands operate on the entire file. They appear as code lens buttons at t
 |-------------------------------------+----------------------+-----------|
 | [[cmd:scimax.bibtex.validateFile]]  | Validate File        | ✓ Validate|
 | [[cmd:scimax.bibtex.showStatistics]]| Show File Statistics | N entries |
+| [[cmd:scimax.bibtex.sortEntries]]   | Sort Entries         | -         |
+| [[cmd:scimax.bibtex.applyToAllEntries]]| Apply to All Entries | -      |
+
+*** ⚠️ Journal Abbreviations
+
+Commands for managing journal name abbreviations in BibTeX entries.
+
+| Command ID                                      | Description                          | Default Keybinding |
+|-------------------------------------------------+--------------------------------------+--------------------|
+| [[cmd:scimax.bibtex.toggleJournalAbbreviation]] | Toggle Journal Abbreviation          | -                  |
+| [[cmd:scimax.bibtex.abbreviateAllJournals]]     | Abbreviate All Journals              | -                  |
+| [[cmd:scimax.bibtex.expandAllJournals]]         | Expand All Journals                  | -                  |
+| [[cmd:scimax.bibtex.searchJournalAbbreviations]]| Search Journal Abbreviations         | -                  |
+| [[cmd:scimax.bibtex.updateJournalAbbreviations]]| Update Abbreviations from Online     | -                  |
+| [[cmd:scimax.bibtex.addJournalAbbreviation]]    | Add Custom Journal Abbreviation      | -                  |
+| [[cmd:scimax.bibtex.manageJournalAbbreviations]]| Manage Custom Journal Abbreviations  | -                  |
+| [[cmd:scimax.bibtex.journalAbbreviationStats]]  | Journal Abbreviation Statistics      | -                  |
 
 * ✅ Notebook
 CLOSED: [2026-01-17 Sat 12:46]
@@ -847,6 +866,7 @@ Comprehensive LaTeX editing support with structural navigation, environment mani
 | [[cmd:scimax.latex.forwardSync]]         | Sync PDF to Cursor Position        | C-c C-e l s        |
 | [[cmd:scimax.latex.rebuild]]             | Rebuild PDF                        | -                  |
 | [[cmd:scimax.latex.showOutput]]          | Show LaTeX Build Output            | -                  |
+| [[cmd:scimax.latex.jumpToPdf]]           | Jump to PDF (compile if needed)    | -                  |
 
 ** ⚠️ Error Navigation
 
@@ -941,6 +961,60 @@ CLOSED: [2026-01-17 Sat 12:50]
 | [[cmd:scimax.capture.createTemplate]] | Create Capture Template     | -                  |
 | [[cmd:scimax.capture.listTemplates]]  | List Capture Templates      | -                  |
 | [[cmd:scimax.capture.configure]]      | Configure Capture Templates | -                  |
+
+* ⚠️ Templates
+:PROPERTIES:
+:CUSTOM_ID: templates
+:END:
+
+Insert and manage file templates for org, markdown, and LaTeX files.
+
+** ⚠️ Insert Templates
+
+| Command ID                               | Description               | Default Keybinding |
+|------------------------------------------+---------------------------+--------------------|
+| [[cmd:scimax.templates.insert]]          | Insert Template           | -                  |
+| [[cmd:scimax.templates.insertOrg]]       | Insert Org Template       | -                  |
+| [[cmd:scimax.templates.insertMarkdown]]  | Insert Markdown Template  | -                  |
+| [[cmd:scimax.templates.insertLatex]]     | Insert LaTeX Template     | -                  |
+| [[cmd:scimax.templates.quickInsert]]     | Quick Insert Template     | C-S-.              |
+
+** ⚠️ New Files from Templates
+
+| Command ID                               | Description                  | Default Keybinding |
+|------------------------------------------+------------------------------+--------------------|
+| [[cmd:scimax.templates.newFile]]         | New File from Template       | C-c C-t i          |
+| [[cmd:scimax.templates.newOrgFile]]      | New Org File from Template   | -                  |
+| [[cmd:scimax.templates.newMarkdownFile]] | New Markdown from Template   | -                  |
+| [[cmd:scimax.templates.newLatexFile]]    | New LaTeX from Template      | -                  |
+
+** ⚠️ Template Management
+
+| Command ID                                  | Description                    | Default Keybinding |
+|---------------------------------------------+--------------------------------+--------------------|
+| [[cmd:scimax.templates.createFromSelection]]| Create Template from Selection | -                  |
+| [[cmd:scimax.templates.openDirectory]]      | Open Templates Directory       | -                  |
+| [[cmd:scimax.templates.editTemplates]]      | Edit User Templates            | -                  |
+| [[cmd:scimax.templates.list]]               | List Templates                 | -                  |
+| [[cmd:scimax.templates.reload]]             | Reload Templates               | -                  |
+
+* ⚠️ Manuscript
+:PROPERTIES:
+:CUSTOM_ID: manuscript
+:END:
+
+Commands for preparing LaTeX manuscripts for journal submission by flattening includes.
+
+| Command ID                                | Description                       | Default Keybinding |
+|-------------------------------------------+-----------------------------------+--------------------|
+| [[cmd:scimax.manuscript.flatten]]         | Flatten Manuscript for Submission | -                  |
+| [[cmd:scimax.manuscript.preview]]         | Preview Manuscript Flattening     | -                  |
+| [[cmd:scimax.manuscript.flattenToDirectory]]| Flatten Manuscript to Directory | -                  |
+
+These commands help prepare LaTeX manuscripts for submission by:
+- Expanding all =\input{}= and =\include{}= commands
+- Copying referenced figures and assets
+- Creating a self-contained submission directory
 
 * ✅ Image Overlays
 CLOSED: [2026-01-17 Sat 12:50]
@@ -1207,6 +1281,27 @@ Interactive search and replace.
 
 
 Provides Emacs-style interactive query-replace with confirmation for each replacement.
+
+* ⚠️ Utilities
+:PROPERTIES:
+:CUSTOM_ID: utilities
+:END:
+
+Miscellaneous utility commands.
+
+| Command ID                       | Description                       | Default Keybinding |
+|----------------------------------+-----------------------------------+--------------------|
+| [[cmd:scimax.openFolder]]        | Open Folder                       | -                  |
+| [[cmd:scimax.replaceNonAscii]]   | Replace Non-ASCII Characters      | -                  |
+| [[cmd:scimax.showDebugInfo]]     | Show Debug/Diagnostic Info        | -                  |
+
+** scimax.replaceNonAscii
+
+Replaces common non-ASCII characters (smart quotes, em-dashes, etc.) with their ASCII equivalents. Useful for preparing documents for systems that don't handle Unicode well.
+
+** scimax.showDebugInfo
+
+Displays diagnostic information about the scimax extension, including version, enabled features, and configuration state. Useful for troubleshooting.
 
 * ✅ Index
 CLOSED: [2026-01-17 Sat 12:51]

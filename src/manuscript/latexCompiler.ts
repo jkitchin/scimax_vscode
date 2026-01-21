@@ -243,6 +243,92 @@ export async function compileForBbl(options: CompileOptions): Promise<CompileRes
 }
 
 /**
+ * Compile a flattened LaTeX document to PDF
+ *
+ * Runs pdflatex multiple times to resolve references (no bibtex needed
+ * since .bbl content is already inlined in flattened documents)
+ */
+export async function compileFinalPdf(options: {
+  workingDir: string;
+  texFile: string;
+  timeout?: number;
+}): Promise<{
+  success: boolean;
+  pdfPath?: string;
+  log: string;
+  errors: string[];
+}> {
+  const { workingDir, texFile, timeout = 120000 } = options;
+  const errors: string[] = [];
+  let log = '';
+
+  // Ensure the .tex file exists
+  const texPath = path.join(workingDir, texFile);
+  if (!(await fileExists(texPath))) {
+    return {
+      success: false,
+      log: '',
+      errors: [`File not found: ${texPath}`],
+    };
+  }
+
+  // Run pdflatex twice to resolve references
+  // First pass: generate aux files
+  const pass1 = await runPdflatex(texFile, workingDir, timeout);
+  log += '=== pdflatex pass 1 ===\n' + pass1.log + '\n';
+
+  if (!pass1.success) {
+    errors.push(...pass1.errors);
+    // Continue to second pass anyway - some warnings are non-fatal
+  }
+
+  // Second pass: resolve references
+  const pass2 = await runPdflatex(texFile, workingDir, timeout);
+  log += '=== pdflatex pass 2 ===\n' + pass2.log + '\n';
+
+  if (!pass2.success) {
+    // Only add errors if different from first pass
+    const newErrors = pass2.errors.filter(e => !errors.includes(e));
+    errors.push(...newErrors);
+  }
+
+  // Check if PDF was generated
+  const basename = texFile.replace(/\.tex$/i, '');
+  const pdfPath = path.join(workingDir, `${basename}.pdf`);
+  const pdfGenerated = await fileExists(pdfPath);
+
+  if (!pdfGenerated) {
+    errors.push('PDF file was not generated');
+  }
+
+  // Clean up auxiliary files if PDF was successfully generated
+  if (pdfGenerated) {
+    const auxExtensions = [
+      '.aux', '.log', '.out', '.spl', '.toc', '.lof', '.lot',
+      '.bbl', '.blg', '.fls', '.fdb_latexmk', '.synctex.gz',
+      '.nav', '.snm', '.vrb', // beamer files
+      '.run.xml', '-blx.bib', // biblatex files
+    ];
+
+    for (const ext of auxExtensions) {
+      const auxFile = path.join(workingDir, `${basename}${ext}`);
+      try {
+        await fs.unlink(auxFile);
+      } catch {
+        // File doesn't exist or can't be deleted - ignore
+      }
+    }
+  }
+
+  return {
+    success: pdfGenerated,
+    pdfPath: pdfGenerated ? pdfPath : undefined,
+    log,
+    errors,
+  };
+}
+
+/**
  * Check if compilation is needed based on file modification times
  */
 export async function checkIfCompilationNeeded(texPath: string): Promise<boolean> {
