@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
-import { BibEntry, formatCitation, formatCitationLink, formatAuthors, entryToBibTeX } from './bibtexParser';
+import { BibEntry, formatCitation, formatCitationLink, formatAuthors, entryToBibTeX, OrgCitationSyntax } from './bibtexParser';
 import {
     fetchOpenAlexWork,
     fetchCitingWorks,
@@ -169,8 +169,15 @@ export function registerReferenceCommands(
             const langId = document.languageId;
             const format = langId === 'org' ? 'org' : langId === 'latex' ? 'latex' : 'markdown';
 
-            // Insert citation
-            const citation = formatCitationLink(selected.entry.key, styleSelection.value, format);
+            // Insert citation with configured syntax
+            const citation = formatCitationLink(
+                selected.entry.key,
+                styleSelection.value,
+                format,
+                undefined, // prenote
+                undefined, // postnote
+                config.citationSyntax
+            );
             await editor.edit(editBuilder => {
                 editBuilder.insert(editor.selection.active, citation);
             });
@@ -914,8 +921,8 @@ export function registerReferenceCommands(
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.configureOpenAlex', async () => {
             const hasKey = await hasOpenAlexApiKey();
-            const config = vscode.workspace.getConfiguration('scimax.references');
-            const mailto = config.get<string>('openalexMailto') || '';
+            const config = vscode.workspace.getConfiguration('scimax');
+            const mailto = config.get<string>('email') || '';
 
             const items = [
                 {
@@ -958,16 +965,16 @@ export function registerReferenceCommands(
                 }
             } else if (selected.action === 'setEmail') {
                 const email = await vscode.window.showInputBox({
-                    prompt: 'Enter your email for OpenAlex polite pool access (faster rate limits)',
+                    prompt: 'Enter your email for Scimax API integrations (e.g., OpenAlex polite pool)',
                     value: mailto,
                     placeHolder: 'user@example.com',
                     ignoreFocusOut: true
                 });
 
                 if (email !== undefined) {
-                    await config.update('openalexMailto', email, vscode.ConfigurationTarget.Global);
+                    await config.update('email', email, vscode.ConfigurationTarget.Global);
                     vscode.window.showInformationMessage(
-                        email ? `OpenAlex email set to ${email}` : 'OpenAlex email cleared'
+                        email ? `Scimax email set to ${email}` : 'Scimax email cleared'
                     );
                 }
             } else if (selected.action === 'removeKey') {
@@ -1300,8 +1307,16 @@ async function showEntryActions(manager: ReferenceManager, entry: BibEntry): Pro
         case 'cite':
             const editor = vscode.window.activeTextEditor;
             if (editor) {
+                const config = manager.getConfig();
                 const format = editor.document.languageId === 'org' ? 'org' : 'markdown';
-                const citation = formatCitationLink(entry.key, manager.getConfig().defaultCiteStyle, format);
+                const citation = formatCitationLink(
+                    entry.key,
+                    config.defaultCiteStyle,
+                    format,
+                    undefined,
+                    undefined,
+                    config.citationSyntax
+                );
                 await editor.edit(editBuilder => {
                     editBuilder.insert(editor.selection.active, citation);
                 });

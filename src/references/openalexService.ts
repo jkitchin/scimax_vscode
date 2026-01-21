@@ -10,19 +10,19 @@ let mailtoWarningShown = false;
  * Builds the User-Agent with mailto and adds api_key if available
  */
 async function getOpenAlexConfig(): Promise<{ userAgent: string; apiKey?: string }> {
-    const config = vscode.workspace.getConfiguration('scimax.references');
-    const mailto = config.get<string>('openalexMailto');
+    const config = vscode.workspace.getConfiguration('scimax');
+    const mailto = config.get<string>('email');
     const apiKey = await getOpenAlexApiKey();
 
     // Warn if mailto is not configured (only once per session)
     if (!mailto && !mailtoWarningShown) {
         mailtoWarningShown = true;
         vscode.window.showWarningMessage(
-            'OpenAlex mailto not configured. Set scimax.references.openalexMailto to your email for faster API access (polite pool).',
+            'Email not configured. Set scimax.email to your email for faster OpenAlex API access (polite pool).',
             'Configure'
         ).then(selection => {
             if (selection === 'Configure') {
-                vscode.commands.executeCommand('workbench.action.openSettings', 'scimax.references.openalexMailto');
+                vscode.commands.executeCommand('workbench.action.openSettings', 'scimax.email');
             }
         });
     }

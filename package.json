@@ -2124,6 +2124,14 @@
         "title": "Scimax: Toggle Agenda Verbose Logging"
       },
       {
+        "command": "scimax.agenda.ignoreFile",
+        "title": "Scimax: Ignore File in Agenda"
+      },
+      {
+        "command": "scimax.agenda.unignoreFile",
+        "title": "Scimax: Unignore File in Agenda"
+      },
+      {
         "command": "scimax.agenda.showAgenda",
         "title": "Scimax: Show Agenda View"
       },
@@ -4563,6 +4571,11 @@
           "default": "monday",
           "description": "First day of the week in calendar view"
         },
+        "scimax.email": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Your email address for Scimax. Used for API integrations that benefit from identification (e.g., [OpenAlex polite pool](https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool) for faster rate limits). Example: `user@example.com`"
+        },
         "scimax.clock.showInlineTime": {
           "type": "boolean",
           "default": true,
@@ -4660,11 +4673,6 @@
           "default": "",
           "markdownDescription": "**Deprecated**: OpenAI API key is now stored securely. Use 'Scimax: Configure Embeddings' command instead.",
           "deprecationMessage": "This setting is deprecated. API keys are now stored securely in your OS credential manager. Use the 'Scimax: Configure Embeddings' command to set your API key."
-        },
-        "scimax.references.openalexMailto": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "Your email address for OpenAlex API requests. Setting this gives you access to the [polite pool](https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool) with faster rate limits. Example: `user@example.com`"
         },
         "scimax.literate.pythonPath": {
           "type": "string",
@@ -4954,7 +4962,12 @@
             "type": "string"
           },
           "default": [],
-          "description": "Directories or files to include in the agenda. If empty, scans all org files in workspace."
+          "description": "Directories or files to always include in the agenda (supports ~ for home directory)"
+        },
+        "scimax.agenda.includeWorkspace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also scan org files in the current workspace folders (in addition to scimax.agenda.files)"
         },
         "scimax.agenda.excludePatterns": {
           "type": "array",
@@ -4967,6 +4980,14 @@
             "**/archive/**"
           ],
           "description": "Glob patterns to exclude from agenda scanning"
+        },
+        "scimax.agenda.ignoreFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Specific files to ignore in agenda scanning (absolute paths). Use 'Scimax: Ignore File in Agenda' command to add files."
         },
         "scimax.agenda.defaultSpan": {
           "type": "number",
@@ -5008,9 +5029,9 @@
         },
         "scimax.agenda.maxFiles": {
           "type": "number",
-          "default": 500,
+          "default": 0,
           "minimum": 0,
-          "description": "Maximum number of files to scan for agenda items (0 = unlimited). Helps prevent memory issues in large workspaces."
+          "description": "Maximum number of files to scan for agenda items (0 = unlimited)"
         },
         "scimax.agenda.batchSize": {
           "type": "number",

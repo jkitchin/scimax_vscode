@@ -46,6 +46,37 @@ All Scimax settings use JSON format in `settings.json':
 }
 #+end_src
 
+* ⚠️ General Settings
+
+General settings that apply across Scimax features.
+
+** Settings Overview
+
+| Setting       | Type   | Default | Description                            |
+|---------------+--------+---------+----------------------------------------|
+| scimax.email  | string | ""      | Email for API integrations (OpenAlex)  |
+
+** Detailed Configuration
+
+*** scimax.email
+
+- *Type*: string
+- *Default*: `""' (empty)
+- *Description*: Your email address for Scimax API integrations
+
+This email is used for services that offer better access to identified users. Currently used for:
+
+- *OpenAlex*: Setting your email gives you access to the [[https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication#the-polite-pool][polite pool]] with faster rate limits
+
+*Example*:
+#+begin_src json
+{
+  "scimax.email": "user@example.com"
+}
+#+end_src
+
+You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
+
 * ✅ Journal Settings
 CLOSED: [2026-01-17 Sat 17:36]
 
