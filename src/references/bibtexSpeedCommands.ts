@@ -86,6 +86,7 @@ export const BIBTEX_SPEED_COMMANDS: BibtexSpeedCommandDefinition[] = [
     { key: 't', command: 'scimax.bibtex.titleCase', description: 'Title case article title' },
     { key: 'S', command: 'scimax.bibtex.sentenceCase', description: 'Sentence case article title' },
     { key: 'c', command: 'scimax.bibtex.cleanEntry', description: 'Clean/format entry' },
+    { key: 'B', command: 'scimax.bibtex.stripBraces', description: 'Strip internal braces from entry' },
 
     // Entry access
     { key: 'o', command: 'scimax.bibtex.openPdf', description: 'Open PDF' },
@@ -293,28 +294,32 @@ export async function sortFields(): Promise<void> {
         return;
     }
 
+    // Extract raw fields to preserve internal braces like {DNA}
+    const entryText = document.getText(range);
+    const rawFields = extractRawFields(entryText);
+
     // Sort fields according to standard order
     const sortedFields: [string, string][] = [];
     const seenFields = new Set<string>();
 
     // Add fields in standard order
     for (const field of BIBTEX_FIELD_ORDER) {
-        const value = entry.fields[field];
+        const value = rawFields[field] || rawFields[field.toLowerCase()];
         if (value !== undefined) {
-            sortedFields.push([field, value]);
-            seenFields.add(field);
+            sortedFields.push([field.toLowerCase(), value]);
+            seenFields.add(field.toLowerCase());
         }
     }
 
     // Add remaining fields not in standard order
-    for (const [field, value] of Object.entries(entry.fields)) {
-        if (!seenFields.has(field)) {
-            sortedFields.push([field, value]);
+    for (const [field, value] of Object.entries(rawFields)) {
+        if (!seenFields.has(field.toLowerCase())) {
+            sortedFields.push([field.toLowerCase(), value]);
         }
     }
 
     // Build new entry
-    let newEntry = `@${entry.type}{${entry.key},\n`;
+    let newEntry = `@${entry.type.toLowerCase()}{${entry.key},\n`;
     for (const [field, value] of sortedFields) {
         newEntry += `  ${field} = {${value}},\n`;
     }
@@ -357,6 +362,56 @@ export async function downcaseEntry(): Promise<void> {
 }
 
 /**
+ * Extract and transform a BibTeX field value with proper brace matching.
+ * Returns the transformed entry text, or null if field not found.
+ */
+function transformBibtexField(
+    entryText: string,
+    fieldName: string,
+    transformer: (value: string) => string
+): string | null {
+    // Find the field (case-insensitive)
+    const fieldPattern = new RegExp(`(\\b${fieldName}\\s*=\\s*)\\{`, 'i');
+    const match = fieldPattern.exec(entryText);
+
+    if (!match) {
+        return null;
+    }
+
+    const prefix = match[1];
+    const startIndex = match.index + prefix.length;
+
+    // Find the matching closing brace
+    let braceCount = 1;
+    let i = startIndex + 1; // Start after the opening brace
+
+    while (i < entryText.length && braceCount > 0) {
+        if (entryText[i] === '{') braceCount++;
+        else if (entryText[i] === '}') braceCount--;
+        i++;
+    }
+
+    if (braceCount !== 0) {
+        // Unmatched braces - can't safely transform
+        return null;
+    }
+
+    // Extract the field value (without outer braces)
+    const fieldValue = entryText.slice(startIndex + 1, i - 1);
+    const transformedValue = transformer(fieldValue);
+
+    // Reconstruct the entry
+    return (
+        entryText.slice(0, match.index) +
+        prefix +
+        '{' +
+        transformedValue +
+        '}' +
+        entryText.slice(i)
+    );
+}
+
+/**
  * Convert article title to Title Case
  */
 export async function titleCaseTitle(): Promise<void> {
@@ -371,17 +426,9 @@ export async function titleCaseTitle(): Promise<void> {
     }
 
     const entryText = document.getText(range);
+    const newText = transformBibtexField(entryText, 'title', toTitleCase);
 
-    // Find and transform title field
-    const newText = entryText.replace(
-        /(\btitle\s*=\s*\{)([^}]+)(\})/gi,
-        (_, prefix, title, suffix) => {
-            const titleCased = toTitleCase(title);
-            return `${prefix}${titleCased}${suffix}`;
-        }
-    );
-
-    if (newText === entryText) {
+    if (!newText || newText === entryText) {
         vscode.window.showInformationMessage('No title field found');
         return;
     }
@@ -408,17 +455,9 @@ export async function sentenceCaseTitle(): Promise<void> {
     }
 
     const entryText = document.getText(range);
+    const newText = transformBibtexField(entryText, 'title', toSentenceCase);
 
-    // Find and transform title field
-    const newText = entryText.replace(
-        /(\btitle\s*=\s*\{)([^}]+)(\})/gi,
-        (_, prefix, title, suffix) => {
-            const sentenceCased = toSentenceCase(title);
-            return `${prefix}${sentenceCased}${suffix}`;
-        }
-    );
-
-    if (newText === entryText) {
+    if (!newText || newText === entryText) {
         vscode.window.showInformationMessage('No title field found');
         return;
     }
@@ -458,6 +497,84 @@ export async function wrapBraces(): Promise<void> {
             vscode.window.showWarningMessage('No word at cursor to wrap');
         }
     }
+}
+
+/**
+ * Strip all internal braces from field values in the current entry
+ * Useful when students over-use braces for case protection
+ */
+export async function stripBraces(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'bibtex') return;
+
+    const document = editor.document;
+    const range = getEntryRange(document, editor.selection.active);
+    if (!range) {
+        vscode.window.showWarningMessage('Not in a BibTeX entry');
+        return;
+    }
+
+    const entry = getEntryAtPosition(document, editor.selection.active);
+    if (!entry) {
+        vscode.window.showWarningMessage('Could not parse entry');
+        return;
+    }
+
+    // Extract raw fields
+    const entryText = document.getText(range);
+    const rawFields = extractRawFields(entryText);
+
+    // Strip internal braces from all field values
+    const strippedFields: Record<string, string> = {};
+    for (const [field, value] of Object.entries(rawFields)) {
+        // Remove all internal braces (but keep content)
+        strippedFields[field.toLowerCase()] = stripInternalBraces(value);
+    }
+
+    // Build new entry with sorted fields
+    const sortedFields: [string, string][] = [];
+    const seenFields = new Set<string>();
+
+    for (const field of BIBTEX_FIELD_ORDER) {
+        const value = strippedFields[field.toLowerCase()];
+        if (value !== undefined) {
+            sortedFields.push([field.toLowerCase(), value]);
+            seenFields.add(field.toLowerCase());
+        }
+    }
+
+    for (const [field, value] of Object.entries(strippedFields)) {
+        if (!seenFields.has(field)) {
+            sortedFields.push([field, value]);
+        }
+    }
+
+    let newEntry = `@${entry.type.toLowerCase()}{${entry.key},\n`;
+    for (const [field, value] of sortedFields) {
+        newEntry += `  ${field} = {${value}},\n`;
+    }
+    newEntry += '}';
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(range, newEntry);
+    });
+
+    vscode.window.showInformationMessage('Internal braces stripped from entry');
+}
+
+/**
+ * Strip internal braces from a string, preserving content
+ * e.g., "A Study of {DNA} and {RNA}" -> "A Study of DNA and RNA"
+ */
+function stripInternalBraces(str: string): string {
+    // Repeatedly remove innermost braces until none remain
+    let result = str;
+    let prev = '';
+    while (result !== prev) {
+        prev = result;
+        result = result.replace(/\{([^{}]*)\}/g, '$1');
+    }
+    return result;
 }
 
 /**
@@ -1275,7 +1392,66 @@ function extractTitleWords(title: string | undefined, count: number = 2): string
 }
 
 /**
- * Generate a unique citation key for the current entry
+ * Apply a key pattern to generate a citation key from entry metadata.
+ *
+ * Supported placeholders:
+ * - {lastname} - First author's last name (lowercase)
+ * - {Lastname} - First author's last name (capitalized)
+ * - {year} - Publication year
+ * - {title} - First significant word from title
+ * - {title:N} - First N significant words (hyphenated)
+ * - {journal} - Journal name/abbreviation (cleaned)
+ * - {keywords} - First keyword
+ * - {type} - Entry type
+ */
+function applyKeyPattern(entry: BibEntry, pattern: string): string {
+    const authorStr = entry.author || entry.fields.editor || '';
+    const lastName = getFirstAuthorKeyName(authorStr);
+    const year = entry.year || '';
+    const titleWords = extractTitleWords(entry.title);
+
+    // Extract first keyword if available
+    const keywordsStr = entry.keywords || entry.fields.keywords || '';
+    const firstKeyword = keywordsStr
+        .split(/[,;]/)
+        .map(k => k.trim().toLowerCase().replace(/[^a-z0-9]/g, ''))
+        .filter(k => k.length > 0)[0] || '';
+
+    // Clean journal name for use in key
+    const journalStr = entry.journal || entry.fields.journaltitle || '';
+    const journalClean = journalStr
+        .replace(/[{}]/g, '')
+        .split(/\s+/)
+        .map(w => w.charAt(0).toUpperCase())
+        .join('')
+        .toLowerCase() || '';
+
+    let result = pattern;
+
+    // Replace placeholders
+    result = result.replace(/\{lastname\}/g, lastName);
+    result = result.replace(/\{Lastname\}/g, lastName.charAt(0).toUpperCase() + lastName.slice(1));
+    result = result.replace(/\{year\}/g, year);
+    result = result.replace(/\{title\}/g, titleWords[0] || '');
+    result = result.replace(/\{title:(\d+)\}/g, (_match, n) => {
+        const count = parseInt(n, 10);
+        return titleWords.slice(0, count).join('-');
+    });
+    result = result.replace(/\{journal\}/g, journalClean);
+    result = result.replace(/\{keywords\}/g, firstKeyword);
+    result = result.replace(/\{type\}/g, entry.type.toLowerCase());
+
+    // Clean up any empty placeholders that weren't replaced
+    result = result.replace(/\{[^}]+\}/g, '');
+
+    // Clean up multiple consecutive hyphens and trailing/leading hyphens
+    result = result.replace(/-+/g, '-').replace(/^-|-$/g, '');
+
+    return result;
+}
+
+/**
+ * Generate a unique citation key for the current entry using the configured pattern
  */
 export async function generateKey(): Promise<void> {
     const editor = vscode.window.activeTextEditor;
@@ -1294,9 +1470,15 @@ export async function generateKey(): Promise<void> {
         return;
     }
 
-    // Extract components for key using citation-js for proper BibTeX name parsing
-    const lastName = getFirstAuthorKeyName(entry.author || entry.fields.editor || '');
+    // Get configured pattern
+    const config = vscode.workspace.getConfiguration('scimax.bibtex');
+    const pattern = config.get<string>('keyPattern', '{lastname}-{year}-{title}');
 
+    // Generate key from pattern
+    const patternKey = applyKeyPattern(entry, pattern);
+
+    // Also generate some alternative formats
+    const lastName = getFirstAuthorKeyName(entry.author || entry.fields.editor || '');
     const year = entry.year || '';
     const titleWords = extractTitleWords(entry.title);
 
@@ -1304,8 +1486,9 @@ export async function generateKey(): Promise<void> {
     const existingKeys = getAllKeysInDocument(document);
     existingKeys.delete(entry.key);
 
-    // Offer key format options
+    // Build key options: pattern-based first, then alternatives
     const baseKeys = [
+        patternKey,
         `${lastName}-${year}`,
         titleWords.length > 0 ? `${lastName}-${titleWords.join('-')}-${year}` : null,
         titleWords.length > 0 ? `${lastName}-${titleWords[0]}-${year}` : null,
@@ -1314,7 +1497,8 @@ export async function generateKey(): Promise<void> {
     // Generate unique versions of each option
     const keyOptions: { label: string; description: string; key: string }[] = [];
 
-    for (const baseKey of baseKeys) {
+    for (let i = 0; i < baseKeys.length; i++) {
+        const baseKey = baseKeys[i];
         let uniqueKey = baseKey;
         let suffix = '';
         let suffixNum = 0;
@@ -1326,9 +1510,14 @@ export async function generateKey(): Promise<void> {
             uniqueKey = `${baseKey}${suffix}`;
         }
 
-        const description = suffix
+        let description = suffix
             ? `(${suffix} added for uniqueness)`
             : existingKeys.size > 0 ? '(unique)' : '';
+
+        // Mark the first option as the pattern-based one
+        if (i === 0) {
+            description = `from pattern: ${pattern}` + (description ? ` ${description}` : '');
+        }
 
         keyOptions.push({
             label: uniqueKey,
@@ -2718,7 +2907,51 @@ export async function showBibtexHelp(): Promise<void> {
 }
 
 /**
- * Convert string to Title Case
+ * Parse a string into segments, separating braced content from regular text.
+ * Braced content (including nested braces) is preserved exactly.
+ * Returns an array of {text, braced} objects.
+ */
+function parseWithBraces(str: string): Array<{ text: string; braced: boolean }> {
+    const segments: Array<{ text: string; braced: boolean }> = [];
+    let i = 0;
+    let current = '';
+
+    while (i < str.length) {
+        if (str[i] === '{') {
+            // Push any accumulated non-braced text
+            if (current) {
+                segments.push({ text: current, braced: false });
+                current = '';
+            }
+
+            // Find matching closing brace
+            let braceCount = 1;
+            let j = i + 1;
+            while (j < str.length && braceCount > 0) {
+                if (str[j] === '{') braceCount++;
+                else if (str[j] === '}') braceCount--;
+                j++;
+            }
+
+            // Extract braced content (including braces)
+            segments.push({ text: str.slice(i, j), braced: true });
+            i = j;
+        } else {
+            current += str[i];
+            i++;
+        }
+    }
+
+    // Push any remaining non-braced text
+    if (current) {
+        segments.push({ text: current, braced: false });
+    }
+
+    return segments;
+}
+
+/**
+ * Convert string to Title Case, preserving braced content exactly
  */
 function toTitleCase(str: string): string {
     // Words to keep lowercase (unless first word)
@@ -2727,57 +2960,77 @@ function toTitleCase(str: string): string {
         'as', 'at', 'by', 'for', 'in', 'of', 'on', 'to', 'up', 'via', 'with'
     ]);
 
-    return str.split(' ').map((word, index) => {
-        // Preserve braced content (like {DNA})
-        if (word.startsWith('{') && word.endsWith('}')) {
-            return word;
+    const segments = parseWithBraces(str);
+    let isFirstWord = true;
+
+    return segments.map(segment => {
+        if (segment.braced) {
+            // Preserve braced content exactly, but note it counts as a "word" for first-word logic
+            // Check if this braced segment starts at word boundary
+            isFirstWord = false;
+            return segment.text;
         }
 
-        // Preserve words with braces inside
-        if (word.includes('{')) {
-            return word;
-        }
+        // Process non-braced text word by word
+        return segment.text.split(' ').map(word => {
+            if (!word) return word; // preserve multiple spaces
 
-        const lower = word.toLowerCase();
+            const lower = word.toLowerCase();
+            let result: string;
 
-        // First word always capitalized
-        if (index === 0) {
-            return word.charAt(0).toUpperCase() + lower.slice(1);
-        }
+            if (isFirstWord) {
+                // First word always capitalized
+                result = word.charAt(0).toUpperCase() + lower.slice(1);
+                isFirstWord = false;
+            } else if (lowercaseWords.has(lower)) {
+                // Keep small words lowercase
+                result = lower;
+            } else {
+                // Capitalize first letter
+                result = word.charAt(0).toUpperCase() + lower.slice(1);
+            }
 
-        // Keep small words lowercase
-        if (lowercaseWords.has(lower)) {
-            return lower;
-        }
-
-        // Capitalize first letter
-        return word.charAt(0).toUpperCase() + lower.slice(1);
-    }).join(' ');
+            return result;
+        }).join(' ');
+    }).join('');
 }
 
 /**
- * Convert string to Sentence case
+ * Convert string to Sentence case, preserving braced content exactly
  */
 function toSentenceCase(str: string): string {
-    return str.split(' ').map((word, index) => {
-        // Preserve braced content (like {DNA})
-        if (word.startsWith('{') && word.endsWith('}')) {
-            return word;
+    const segments = parseWithBraces(str);
+    let isFirstWord = true;
+
+    return segments.map(segment => {
+        if (segment.braced) {
+            // Preserve braced content exactly
+            // Don't reset isFirstWord - braced content doesn't count as the first word
+            // unless it's at the very start
+            if (isFirstWord && segment.text.length > 0) {
+                isFirstWord = false;
+            }
+            return segment.text;
         }
 
-        // Preserve words with braces inside
-        if (word.includes('{')) {
-            return word;
-        }
+        // Process non-braced text word by word
+        return segment.text.split(' ').map(word => {
+            if (!word) return word; // preserve multiple spaces
 
-        // First word capitalized
-        if (index === 0) {
-            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-        }
+            let result: string;
 
-        // Everything else lowercase
-        return word.toLowerCase();
-    }).join(' ');
+            if (isFirstWord) {
+                // First word capitalized
+                result = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                isFirstWord = false;
+            } else {
+                // Everything else lowercase
+                result = word.toLowerCase();
+            }
+
+            return result;
+        }).join(' ');
+    }).join('');
 }
 
 // ============================================================================
@@ -3264,7 +3517,8 @@ export function registerBibtexSpeedCommands(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand('scimax.bibtex.titleCase', titleCaseTitle),
         vscode.commands.registerCommand('scimax.bibtex.sentenceCase', sentenceCaseTitle),
         vscode.commands.registerCommand('scimax.bibtex.cleanEntry', cleanEntry),
-        vscode.commands.registerCommand('scimax.bibtex.wrapBraces', wrapBraces)
+        vscode.commands.registerCommand('scimax.bibtex.wrapBraces', wrapBraces),
+        vscode.commands.registerCommand('scimax.bibtex.stripBraces', stripBraces)
     );
 
     // Access commands

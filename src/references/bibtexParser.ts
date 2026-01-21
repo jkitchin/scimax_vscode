@@ -188,10 +188,10 @@ function cleanBibValue(value: string): string {
         .replace(/\\%/g, '%')
         .replace(/\\\$/g, '$')
         .replace(/\\#/g, '#')
-        // Remove accent commands (simplified)
-        .replace(/\{?\\[`'^"~=.uvHtcdb]\{?(\w)\}?\}?/g, '$1')
-        // Remove remaining braces (but keep content)
-        .replace(/\{([^{}]*)\}/g, '$1')
+        // Remove accent commands (simplified) - but preserve the braces around protected content
+        .replace(/\\[`'^"~=.uvHtcdb]\{(\w)\}/g, '$1')
+        .replace(/\\[`'^"~=.uvHtcdb](\w)/g, '$1')
+        // NOTE: Internal braces like {DNA} are preserved for BibTeX case protection
         .trim();
 }
 
@@ -255,6 +255,11 @@ export function formatCitation(entry: BibEntry, style: 'full' | 'short' | 'inlin
 }
 
 /**
+ * Citation syntax options for org-mode
+ */
+export type OrgCitationSyntax = 'org-ref-v3' | 'org-ref-v2' | 'org-cite';
+
+/**
  * Format citation for insertion based on style
  */
 export function formatCitationLink(
@@ -262,19 +267,11 @@ export function formatCitationLink(
     style: 'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear',
     format: 'org' | 'markdown' | 'latex',
     prenote?: string,
-    postnote?: string
+    postnote?: string,
+    orgSyntax: OrgCitationSyntax = 'org-ref-v3'
 ): string {
     if (format === 'org') {
-        // Use org-ref v3 syntax: style:&key (with & prefix and ; separator)
-        if (prenote && postnote) {
-            // With notes: style:prenote;&key postnote
-            return `${style}:${prenote};&${key} ${postnote}`;
-        } else if (prenote) {
-            return `${style}:${prenote};&${key}`;
-        } else if (postnote) {
-            return `${style}:&${key} ${postnote}`;
-        }
-        return `${style}:&${key}`;
+        return formatOrgCitation(key, style, orgSyntax, prenote, postnote);
     } else if (format === 'latex') {
         // LaTeX style: \cite{key}, \citet{key}, \citep{key}, etc.
         // Map styles to LaTeX commands
@@ -297,6 +294,54 @@ export function formatCitationLink(
             citation = `${prenote} ${citation}`;
         }
         return `[${citation}]`;
+    }
+}
+
+/**
+ * Format org-mode citation based on syntax preference
+ */
+function formatOrgCitation(
+    key: string,
+    style: 'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear',
+    syntax: OrgCitationSyntax,
+    prenote?: string,
+    postnote?: string
+): string {
+    switch (syntax) {
+        case 'org-ref-v3':
+            // org-ref v3 syntax: style:&key (with & prefix and ; separator)
+            if (prenote && postnote) {
+                return `${style}:${prenote};&${key} ${postnote}`;
+            } else if (prenote) {
+                return `${style}:${prenote};&${key}`;
+            } else if (postnote) {
+                return `${style}:&${key} ${postnote}`;
+            }
+            return `${style}:&${key}`;
+
+        case 'org-ref-v2':
+            // org-ref v2 (legacy) syntax: style:key1,key2
+            // Note: v2 doesn't support pre/post notes in the same way
+            if (postnote) {
+                return `${style}:${key} ${postnote}`;
+            }
+            return `${style}:${key}`;
+
+        case 'org-cite':
+            // org-mode 9.5+ native syntax: [cite:@key] or [cite/style:@key]
+            // Map cite styles to org-cite variants
+            const orgCiteStyle = style === 'cite' ? '' : `/${style}`;
+            if (prenote && postnote) {
+                return `[cite${orgCiteStyle}:${prenote};@${key} ${postnote}]`;
+            } else if (prenote) {
+                return `[cite${orgCiteStyle}:${prenote};@${key}]`;
+            } else if (postnote) {
+                return `[cite${orgCiteStyle}:@${key} ${postnote}]`;
+            }
+            return `[cite${orgCiteStyle}:@${key}]`;
+
+        default:
+            return `${style}:&${key}`;
     }
 }
 

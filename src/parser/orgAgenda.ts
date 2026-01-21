@@ -241,7 +241,10 @@ function extractAgendaItems(
     };
 
     // Check planning element
-    if (headline.planning) {
+    // Only include items that have a TODO state - skip informational timestamps
+    const hasTodoState = !!headline.properties.todoKeyword;
+
+    if (headline.planning && hasTodoState) {
         // Scheduled
         if (headline.planning.properties.scheduled) {
             const date = timestampToDate(headline.planning.properties.scheduled);

@@ -10,7 +10,8 @@ import {
     formatAuthors,
     searchEntries,
     entryToBibTeX,
-    generateKey
+    generateKey,
+    OrgCitationSyntax
 } from './bibtexParser';
 
 export interface ReferenceConfig {
@@ -18,6 +19,7 @@ export interface ReferenceConfig {
     pdfDirectory: string;
     notesDirectory: string;
     defaultCiteStyle: 'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear';
+    citationSyntax: OrgCitationSyntax;
     autoDownloadPdf: boolean;
 }
 
@@ -56,6 +58,7 @@ export class ReferenceManager {
             pdfDirectory: (config.get<string>('pdfDirectory') || '').replace('~', homeDir),
             notesDirectory: (config.get<string>('notesDirectory') || '').replace('~', homeDir),
             defaultCiteStyle: config.get<'cite' | 'citet' | 'citep' | 'citeauthor' | 'citeyear'>('defaultCiteStyle') || 'cite',
+            citationSyntax: config.get<OrgCitationSyntax>('citationSyntax') || 'org-ref-v3',
             autoDownloadPdf: config.get<boolean>('autoDownloadPdf') || false
         };
     }
