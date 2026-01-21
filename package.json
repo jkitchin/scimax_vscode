@@ -2593,6 +2593,38 @@
         "title": "Scimax BibTeX: Apply Operation to All Entries"
       },
       {
+        "command": "scimax.bibtex.toggleJournalAbbreviation",
+        "title": "Scimax BibTeX: Toggle Journal Abbreviation"
+      },
+      {
+        "command": "scimax.bibtex.abbreviateAllJournals",
+        "title": "Scimax BibTeX: Abbreviate All Journals"
+      },
+      {
+        "command": "scimax.bibtex.expandAllJournals",
+        "title": "Scimax BibTeX: Expand All Journals"
+      },
+      {
+        "command": "scimax.bibtex.searchJournalAbbreviations",
+        "title": "Scimax BibTeX: Search Journal Abbreviations"
+      },
+      {
+        "command": "scimax.bibtex.updateJournalAbbreviations",
+        "title": "Scimax BibTeX: Update Journal Abbreviations from Online"
+      },
+      {
+        "command": "scimax.bibtex.addJournalAbbreviation",
+        "title": "Scimax BibTeX: Add Custom Journal Abbreviation"
+      },
+      {
+        "command": "scimax.bibtex.manageJournalAbbreviations",
+        "title": "Scimax BibTeX: Manage Custom Journal Abbreviations"
+      },
+      {
+        "command": "scimax.bibtex.journalAbbreviationStats",
+        "title": "Scimax BibTeX: Journal Abbreviation Statistics"
+      },
+      {
         "command": "scimax.templates.insert",
         "title": "Scimax: Insert Template"
       },
@@ -4208,6 +4240,11 @@
       {
         "command": "scimax.bibtex.help",
         "key": "shift+/",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.toggleJournalAbbreviation",
+        "key": "shift+a",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {
