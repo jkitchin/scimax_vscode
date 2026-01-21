@@ -1,0 +1,302 @@
+#+TITLE: Document Templates
+#+AUTHOR: Scimax VS Code
+#+OPTIONS: toc:2 num:t
+
+* Overview
+
+The document template system provides yasnippet/skeleton-like functionality for quickly creating new documents or inserting pre-defined content. Templates support:
+
+- Multiple formats: Org-mode, Markdown, and LaTeX
+- Tab stops for quick navigation between placeholders
+- Auto-fill variables for dates, author, filenames, etc.
+- User-defined templates stored in a configurable directory
+- Built-in templates for common document types
+
+* Quick Start
+
+** Insert a Template
+
+1. Open a file (org, markdown, or latex)
+2. Press =C-c C-t i= or run =Scimax: Quick Insert Template=
+3. Select a template from the list
+4. Tab through placeholders to fill in values
+
+** Create a New File from Template
+
+1. Press =C-c C-t n= or run =Scimax: New File from Template=
+2. Select a template
+3. Enter the filename
+4. The file is created and opened with the template content
+
+** Access via Hydra Menu
+
+Press =C-c C-m= (Hydra menu), then =t= for Templates submenu.
+
+* Built-in Templates
+
+** Org-mode Templates
+
+| Template         | Description                                    |
+|------------------+------------------------------------------------|
+| Article          | Basic article with title, author, and sections |
+| Research Notes   | Problem, approach, experiments, results        |
+| Meeting Notes    | Attendees, agenda, discussion, action items    |
+| Project Plan     | Goals, milestones, tasks, risks                |
+| Literature Review| Paper review with key contributions, methods   |
+| Source Block     | Code block with language selection             |
+
+** Markdown Templates
+
+| Template              | Description                          |
+|-----------------------+--------------------------------------|
+| README                | Standard project README              |
+| Blog Post             | Blog post with frontmatter           |
+| Technical Documentation| Step-by-step technical documentation |
+
+** LaTeX Templates
+
+| Template            | Description                           |
+|---------------------+---------------------------------------|
+| Article             | LaTeX article with standard preamble  |
+| Beamer Presentation | Beamer slide deck                     |
+| Letter              | Formal letter template                |
+| Equation            | Numbered equation environment         |
+| Figure              | Figure environment with caption       |
+| Table               | Table environment with caption        |
+
+* Template Syntax
+
+** Tab Stops
+
+Tab stops mark positions where the cursor should stop when pressing Tab:
+
+#+BEGIN_EXAMPLE
+${1:First placeholder}
+${2:Second placeholder}
+$0  # Final cursor position
+#+END_EXAMPLE
+
+After inserting, press Tab to move between placeholders.
+
+** Auto-fill Variables
+
+These variables are automatically replaced when the template is inserted:
+
+| Variable         | Description                                |
+|------------------+--------------------------------------------|
+| ={{date}}=         | Current date (configurable format)         |
+| ={{time}}=         | Current time (configurable format)         |
+| ={{datetime}}=     | Date and time combined                     |
+| ={{year}}=         | Current year (yyyy)                        |
+| ={{month}}=        | Current month (MM)                         |
+| ={{day}}=          | Current day (dd)                           |
+| ={{weekday}}=      | Full day name (e.g., "Monday")             |
+| ={{timestamp}}=    | ISO 8601 timestamp                         |
+| ={{author}}=       | Configured author name                     |
+| ={{user}}=         | System username                            |
+| ={{filename}}=     | Current file name (without extension)      |
+| ={{filepath}}=     | Full path to current file                  |
+| ={{directory}}=    | Directory containing current file          |
+| ={{workspace}}=    | Workspace folder name                      |
+| ={{workspacePath}}=| Full workspace path                        |
+| ={{uuid}}=         | Random UUID                                |
+
+** Named Variables
+
+Named variables prompt the user for input:
+
+#+BEGIN_EXAMPLE
+${title}           # Prompts for "title"
+${title:Default}   # Prompts with default value
+#+END_EXAMPLE
+
+* Creating User Templates
+
+** Template Directory Structure
+
+User templates are stored in =~/.scimax-templates= (configurable):
+
+#+BEGIN_EXAMPLE
+~/.scimax-templates/
+├── org/
+│   ├── my-article.org
+│   └── weekly-report.org
+├── markdown/
+│   └── project-proposal.md
+└── latex/
+    └── thesis-chapter.tex
+#+END_EXAMPLE
+
+** Template File Format
+
+Templates can include metadata in header comments:
+
+*** Org-mode Template
+
+#+BEGIN_SRC org
+#+NAME: Weekly Report
+#+DESCRIPTION: Weekly status report template
+#+CATEGORY: Work
+
+,* Week of {{date}}
+,** Accomplishments
+- ${1:Accomplishment 1}
+
+,** Next Week
+- ${2:Plan 1}
+
+,** Blockers
+${3:None}
+$0
+#+END_SRC
+
+*** Markdown Template
+
+#+BEGIN_SRC markdown
+<!-- NAME: Project Proposal -->
+<!-- DESCRIPTION: Proposal for new projects -->
+<!-- CATEGORY: Work -->
+
+# ${1:Project Name}
+
+## Overview
+${2:Brief description}
+
+## Goals
+- ${3:Goal 1}
+
+$0
+#+END_SRC
+
+*** LaTeX Template
+
+#+BEGIN_SRC latex
+% NAME: Thesis Chapter
+% DESCRIPTION: Chapter template for thesis
+% CATEGORY: Academic
+
+\chapter{${1:Chapter Title}}
+\label{chap:${2:label}}
+
+${3:Introduction paragraph}
+
+\section{${4:Section Title}}
+$0
+#+END_SRC
+
+** Create Template from Selection
+
+1. Select text in the editor
+2. Press =C-c C-t s= or run =Scimax: Create Template from Selection=
+3. Enter a name for the template
+4. Optionally add a description
+5. The template is saved to your templates directory
+
+* Commands
+
+| Command                              | Keybinding    | Description                        |
+|--------------------------------------+---------------+------------------------------------|
+| =scimax.templates.quickInsert=       | =C-c C-t i=   | Insert template (auto-detect format) |
+| =scimax.templates.insert=            |               | Insert any template                |
+| =scimax.templates.insertOrg=         |               | Insert org-mode template           |
+| =scimax.templates.insertMarkdown=    |               | Insert markdown template           |
+| =scimax.templates.insertLatex=       |               | Insert LaTeX template              |
+| =scimax.templates.newFile=           | =C-c C-t n=   | Create new file from template      |
+| =scimax.templates.newOrgFile=        |               | Create new org file from template  |
+| =scimax.templates.newMarkdownFile=   |               | Create new markdown file           |
+| =scimax.templates.newLatexFile=      |               | Create new LaTeX file              |
+| =scimax.templates.list=              | =C-c C-t l=   | List all templates                 |
+| =scimax.templates.createFromSelection= | =C-c C-t s= | Create template from selection     |
+| =scimax.templates.editTemplates=     |               | Open templates in VS Code          |
+| =scimax.templates.openDirectory=     |               | Open templates dir in file explorer |
+| =scimax.templates.reload=            |               | Reload templates from disk         |
+
+* Configuration
+
+| Setting                         | Default            | Description                          |
+|---------------------------------+--------------------+--------------------------------------|
+| =scimax.templates.directory=    | =~/.scimax-templates= | Directory for user templates         |
+| =scimax.templates.defaultFormat=| =org=              | Default format for new templates     |
+| =scimax.templates.dateFormat=   | =yyyy-MM-dd=       | Date format (date-fns)               |
+| =scimax.templates.timeFormat=   | =HH:mm=            | Time format (date-fns)               |
+| =scimax.templates.author=       | (system user)      | Author name for ={{author}}= variable |
+
+** Date Format Reference
+
+The date and time formats use [[https://date-fns.org/docs/format][date-fns format strings]]:
+
+| Pattern | Description          | Example   |
+|---------+----------------------+-----------|
+| =yyyy=  | Full year            | 2024      |
+| =yy=    | 2-digit year         | 24        |
+| =MM=    | Month (2 digits)     | 01-12     |
+| =MMM=   | Month abbreviation   | Jan       |
+| =MMMM=  | Full month name      | January   |
+| =dd=    | Day (2 digits)       | 01-31     |
+| =EEEE=  | Full day name        | Monday    |
+| =EEE=   | Day abbreviation     | Mon       |
+| =HH=    | Hour (24h)           | 00-23     |
+| =hh=    | Hour (12h)           | 01-12     |
+| =mm=    | Minutes              | 00-59     |
+| =ss=    | Seconds              | 00-59     |
+
+* Hydra Menu
+
+The template system has a dedicated Hydra submenu accessible from the main menu (=C-c C-m t=):
+
+| Key | Action              |
+|-----+---------------------|
+| =i= | Insert template     |
+| =o= | Insert org template |
+| =m= | Insert markdown     |
+| =x= | Insert LaTeX        |
+| =n= | New file            |
+| =O= | New org file        |
+| =M= | New markdown file   |
+| =X= | New LaTeX file      |
+| =l= | List all templates  |
+| =s= | Save selection      |
+| =e= | Edit templates      |
+| =d= | Open directory      |
+| =r= | Reload templates    |
+
+* Tips and Workflows
+
+** Project-Specific Templates
+
+Create a =.scimax-templates= directory in your project for project-specific templates:
+
+#+BEGIN_EXAMPLE
+my-project/
+├── .scimax-templates/
+│   └── org/
+│       └── experiment-notes.org
+├── src/
+└── docs/
+#+END_EXAMPLE
+
+Then configure =scimax.templates.directory= in your workspace settings.
+
+** Template Libraries
+
+Share templates across projects by:
+
+1. Creating a Git repository for your templates
+2. Cloning it to =~/.scimax-templates=
+3. Pulling updates when templates change
+
+** Combining with Capture
+
+Templates and capture serve different purposes:
+
+- *Templates*: Create complete documents or insert large content blocks
+- *Capture*: Quick notes appended to existing files
+
+Use templates for new documents, capture for quick additions.
+
+* Related Topics
+
+- [[file:15-capture.org][Capture]] - Quick note capture system
+- [[file:14-journal.org][Journal]] - Date-based journaling (uses templates)
+- [[file:07-source-blocks.org][Source Blocks]] - Code execution in org-mode
+- [[file:22-hydra-menus.org][Hydra Menus]] - Menu system navigation

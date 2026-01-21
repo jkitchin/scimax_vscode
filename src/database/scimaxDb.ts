@@ -1381,6 +1381,179 @@ export class ScimaxDb {
     }
 
     /**
+     * Check for stale files and reindex them in the background.
+     * Designed to run at startup without blocking user interaction.
+     *
+     * @param options Configuration options
+     * @param options.batchSize Number of files to process before yielding (default: 5)
+     * @param options.yieldMs Milliseconds to yield between batches (default: 100)
+     * @param options.onProgress Optional callback for progress updates
+     * @returns Object with counts of checked, stale, deleted, and reindexed files
+     */
+    public async checkStaleFiles(options: {
+        batchSize?: number;
+        yieldMs?: number;
+        onProgress?: (status: { checked: number; total: number; reindexed: number }) => void;
+        cancellationToken?: { cancelled: boolean };
+    } = {}): Promise<{ checked: number; stale: number; deleted: number; reindexed: number }> {
+        const {
+            batchSize = 5,
+            yieldMs = 100,
+            onProgress,
+            cancellationToken
+        } = options;
+
+        const result = { checked: 0, stale: 0, deleted: 0, reindexed: 0 };
+
+        if (!this.db) return result;
+
+        // Get all indexed files
+        const files = await this.getFiles();
+        const total = files.length;
+
+        if (total === 0) return result;
+
+        console.log(`ScimaxDb: Checking ${total} files for staleness...`);
+
+        for (let i = 0; i < files.length; i++) {
+            // Check for cancellation
+            if (cancellationToken?.cancelled) {
+                console.log('ScimaxDb: Stale check cancelled');
+                break;
+            }
+
+            const file = files[i];
+            result.checked++;
+
+            try {
+                // Check if file still exists
+                if (!fs.existsSync(file.path)) {
+                    await this.removeFileData(file.path);
+                    result.deleted++;
+                    continue;
+                }
+
+                // Check if file has been modified
+                const stats = fs.statSync(file.path);
+                if (stats.mtimeMs > file.mtime) {
+                    result.stale++;
+                    await this.indexFile(file.path);
+                    result.reindexed++;
+                }
+            } catch (error) {
+                console.error(`ScimaxDb: Error checking ${file.path}:`, error);
+            }
+
+            // Report progress
+            if (onProgress) {
+                onProgress({ checked: result.checked, total, reindexed: result.reindexed });
+            }
+
+            // Yield to event loop after each batch
+            if (i > 0 && i % batchSize === 0) {
+                await new Promise(resolve => setTimeout(resolve, yieldMs));
+            }
+        }
+
+        console.log(`ScimaxDb: Stale check complete - ${result.stale} stale, ${result.deleted} deleted, ${result.reindexed} reindexed`);
+        return result;
+    }
+
+    /**
+     * Scan directories for new/changed files in the background.
+     * Designed to run at startup without blocking user interaction.
+     *
+     * @param directories List of directory paths to scan
+     * @param options Configuration options
+     * @returns Object with counts of found, new, changed, and indexed files
+     */
+    public async scanDirectoriesInBackground(
+        directories: string[],
+        options: {
+            batchSize?: number;
+            yieldMs?: number;
+            onProgress?: (status: { scanned: number; total: number; indexed: number; currentDir?: string }) => void;
+            cancellationToken?: { cancelled: boolean };
+        } = {}
+    ): Promise<{ scanned: number; newFiles: number; changed: number; indexed: number }> {
+        const {
+            batchSize = 5,
+            yieldMs = 100,
+            onProgress,
+            cancellationToken
+        } = options;
+
+        const result = { scanned: 0, newFiles: 0, changed: 0, indexed: 0 };
+
+        if (!this.db || directories.length === 0) return result;
+
+        // Collect all files from all directories
+        const allFiles: string[] = [];
+        for (const dir of directories) {
+            if (cancellationToken?.cancelled) break;
+
+            try {
+                if (!fs.existsSync(dir)) {
+                    console.warn(`ScimaxDb: Directory does not exist: ${dir}`);
+                    continue;
+                }
+
+                onProgress?.({ scanned: 0, total: 0, indexed: 0, currentDir: dir });
+                const files = await this.findFiles(dir);
+                allFiles.push(...files);
+            } catch (error) {
+                console.error(`ScimaxDb: Error scanning directory ${dir}:`, error);
+            }
+        }
+
+        const total = allFiles.length;
+        if (total === 0) return result;
+
+        console.log(`ScimaxDb: Scanning ${total} files from ${directories.length} directories...`);
+
+        // Get all currently indexed file paths for quick lookup
+        const indexedFiles = new Set((await this.getFiles()).map(f => f.path));
+
+        for (let i = 0; i < allFiles.length; i++) {
+            if (cancellationToken?.cancelled) {
+                console.log('ScimaxDb: Directory scan cancelled');
+                break;
+            }
+
+            const filePath = allFiles[i];
+            result.scanned++;
+
+            try {
+                const isNew = !indexedFiles.has(filePath);
+                const needsIndex = await this.needsReindex(filePath);
+
+                if (needsIndex) {
+                    if (isNew) {
+                        result.newFiles++;
+                    } else {
+                        result.changed++;
+                    }
+                    await this.indexFile(filePath);
+                    result.indexed++;
+                }
+            } catch (error) {
+                console.error(`ScimaxDb: Error processing ${filePath}:`, error);
+            }
+
+            // Report progress
+            onProgress?.({ scanned: result.scanned, total, indexed: result.indexed });
+
+            // Yield to event loop after each batch
+            if (i > 0 && i % batchSize === 0) {
+                await new Promise(resolve => setTimeout(resolve, yieldMs));
+            }
+        }
+
+        console.log(`ScimaxDb: Directory scan complete - ${result.newFiles} new, ${result.changed} changed, ${result.indexed} indexed`);
+        return result;
+    }
+
+    /**
      * Close database
      */
     public async close(): Promise<void> {

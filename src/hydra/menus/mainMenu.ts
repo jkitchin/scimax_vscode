@@ -44,6 +44,14 @@ export const mainMenu: HydraMenuDefinition = {
                     exit: 'submenu',
                     action: 'scimax.projectile',
                 },
+                {
+                    key: 't',
+                    label: 'Templates',
+                    description: 'Document templates',
+                    icon: 'file-code',
+                    exit: 'submenu',
+                    action: 'scimax.templates',
+                },
             ],
         },
         {

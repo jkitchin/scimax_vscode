@@ -11,6 +11,7 @@ import { projectileMenu } from './projectileMenu';
 import { searchMenu } from './searchMenu';
 import { jumpMenu } from './jumpMenu';
 import { databaseMenu } from './databaseMenu';
+import { templateMenu } from './templateMenu';
 import {
     exportMenu,
     htmlExportMenu,
@@ -34,6 +35,7 @@ export const scimaxMenus: HydraMenuDefinition[] = [
     searchMenu,
     jumpMenu,
     databaseMenu,
+    templateMenu,
     ...exportMenus,
 ];
 
@@ -46,6 +48,7 @@ export {
     searchMenu,
     jumpMenu,
     databaseMenu,
+    templateMenu,
     exportMenu,
     htmlExportMenu,
     latexExportMenu,

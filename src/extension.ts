@@ -65,6 +65,8 @@ import { registerPublishCommands } from './publishing';
 import { registerHelpCommands } from './help';
 import { activateLatexFeatures } from './latex/commands';
 import { registerDiagnosticCommands } from './diagnostic';
+import { TemplateManager, registerTemplateCommands } from './templates';
+import { registerManuscriptCommands } from './manuscript';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -72,6 +74,7 @@ let journalStatusBar: JournalStatusBar;
 let referenceManager: ReferenceManager;
 let notebookManager: NotebookManager;
 let projectileManager: ProjectileManager;
+let templateManager: TemplateManager;
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log('Scimax VS Code extension activating...');
@@ -343,6 +346,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     registerExportCommands(context);
 
+    // Register Manuscript commands (flatten LaTeX for journal submission)
+    registerManuscriptCommands(context);
+
     // Register Publishing commands (for multi-file project publishing)
     registerPublishCommands(context);
 
@@ -369,6 +375,54 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Diagnostic Commands (show debug/system info)
     registerDiagnosticCommands(context);
+
+    // Register Open Folder command (C-x d, like Emacs dired)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.openFolder', async () => {
+            const result = await vscode.window.showOpenDialog({
+                canSelectFolders: true,
+                canSelectFiles: false,
+                canSelectMany: false,
+                openLabel: 'Open Folder'
+            });
+
+            if (result && result[0]) {
+                const uri = result[0];
+
+                // Check if already open
+                const currentFolders = vscode.workspace.workspaceFolders || [];
+                if (currentFolders.some(f => f.uri.fsPath === uri.fsPath)) {
+                    vscode.window.showInformationMessage(`Folder ${uri.fsPath} is already open`);
+                    return;
+                }
+
+                // Ask how to open
+                const openIn = await vscode.window.showQuickPick([
+                    { label: '$(folder-opened) Current Window (Recommended)', value: 'current' },
+                    { label: '$(window) New Window', value: 'new' },
+                    { label: '$(add) Add to Workspace', value: 'add' }
+                ], {
+                    placeHolder: 'How to open folder?'
+                });
+
+                if (!openIn) return;
+
+                switch (openIn.value) {
+                    case 'new':
+                        await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
+                        break;
+                    case 'current':
+                        await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
+                        break;
+                    case 'add':
+                        vscode.workspace.updateWorkspaceFolders(
+                            vscode.workspace.workspaceFolders?.length || 0, 0, { uri }
+                        );
+                        break;
+                }
+            }
+        })
+    );
 
     // Register Image Overlay Commands (inline image thumbnails)
     registerImageOverlayCommands(context);
@@ -473,6 +527,12 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Notebook Commands (uses lazy database loading internally)
     registerNotebookCommands(context, notebookManager);
 
+    // Initialize Template Manager
+    templateManager = new TemplateManager(context);
+    context.subscriptions.push({ dispose: () => templateManager.dispose() });
+
+    // Register Template Commands
+    registerTemplateCommands(context, templateManager);
 
     // Initialize Projectile Manager (deferred to avoid blocking activation)
     projectileManager = new ProjectileManager(context);

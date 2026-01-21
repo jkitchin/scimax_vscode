@@ -1,0 +1,236 @@
+#+TITLE: LaTeX Manuscript Flattening
+#+AUTHOR: Scimax VS Code
+#+OPTIONS: toc:2 num:t
+
+* Overview
+
+The manuscript module helps prepare LaTeX documents for journal submission by creating a self-contained, flattened version of your manuscript.
+
+When submitting papers to journals, you often need:
+- A single =.tex= file (no =\input= or =\include= commands)
+- Bibliography inlined from the =.bbl= file
+- All figures in the same directory with simple names
+- Local style files (=.sty=, =.cls=, =.bst=) included
+
+This module automates that process while preserving your original files.
+
+* Commands
+
+** Flatten Manuscript
+
+Command: =scimax.manuscript.flatten=
+
+Opens from Command Palette: "Scimax: Flatten Manuscript for Submission"
+
+This is the main command that:
+1. Optionally compiles your document to generate/update the =.bbl= file
+2. Flattens all =\input{}= and =\include{}= commands
+3. Inlines the bibliography (=.bbl= content)
+4. Renames figures sequentially (=1.pdf=, =2.png=, etc.)
+5. Detects and copies local support files (=.sty=, =.cls=, =.bst=, data files)
+6. Creates a timestamped submission directory
+
+** Preview Flattening
+
+Command: =scimax.manuscript.preview=
+
+Opens from Command Palette: "Scimax: Preview Manuscript Flattening"
+
+Shows what would happen without making changes:
+- Number of included files
+- Number of figures to rename
+- Support files to copy (=.sty=, =.cls=, =.bst=, data files)
+- Whether compilation is needed
+- Any warnings
+
+** Flatten to Directory
+
+Command: =scimax.manuscript.flattenToDirectory=
+
+Opens from Command Palette: "Scimax: Flatten Manuscript to Directory"
+
+Same as flatten, but lets you choose the output directory.
+
+* Output Structure
+
+Given a project structure like:
+
+#+begin_example
+paper/
+├── main.tex
+├── sections/
+│   ├── intro.tex
+│   └── methods.tex
+├── figures/
+│   ├── plot1.pdf
+│   └── results.png
+├── refs.bib
+└── main.bbl
+#+end_example
+
+After flattening, you get:
+
+#+begin_example
+paper/
+├── submission-2026-01-20/
+│   ├── main.tex      # Flattened, all paths updated
+│   ├── 1.pdf         # was figures/plot1.pdf
+│   └── 2.png         # was figures/results.png
+└── (original files unchanged)
+#+end_example
+
+* Figure Naming
+
+Figures are renamed sequentially with smart padding based on the total count:
+
+| Total Figures | Naming Pattern |
+|---------------+----------------|
+| 1-9           | =1.pdf=, =2.png=, ... |
+| 10-99         | =01.pdf=, =02.png=, ... |
+| 100-999       | =001.pdf=, =002.png=, ... |
+
+This ensures correct sorting in file managers.
+
+* Support Files
+
+The module automatically detects and copies local support files that your document needs:
+
+** Style Files (.sty)
+
+Custom LaTeX packages in your project directory. Detected from =\usepackage{...}= commands.
+
+** Class Files (.cls)
+
+Custom document classes. Detected from =\documentclass{...}=.
+
+** Bibliography Style Files (.bst)
+
+Custom bibliography styles. Detected from =\bibliographystyle{...}=.
+
+Standard styles (plain, unsrt, alpha, IEEEtran, etc.) are not copied since they're available on most LaTeX installations.
+
+** Data Files
+
+Files used by packages like pgfplots:
+- =\pgfplotstableread{data.csv}=
+- =\DTLloaddb{name}{data.csv}=
+- =\input{data.dat}=
+
+* Bibliography Handling
+
+The module supports both traditional BibTeX and biblatex:
+
+** BibTeX
+
+- Replaces =\bibliography{refs}= with the contents of =main.bbl=
+- Keeps =\bibliographystyle{...}= in place
+
+** Biblatex
+
+- Replaces =\printbibliography= with the contents of =main.bbl=
+- Comments out =\addbibresource{...}= lines
+
+* Compilation
+
+Before flattening, the module checks if your =.bbl= file is up-to-date by comparing modification times of:
+- The =.tex= file
+- The =.bib= file(s)
+- The existing =.bbl= file
+
+If compilation is needed, you'll be prompted:
+- **Compile first** - Runs =pdflatex= + =bibtex=/=biber= to update the =.bbl=
+- **Use existing .bbl** - Uses the current =.bbl= as-is
+
+The module auto-detects whether to use =bibtex= or =biber= based on your document's packages.
+
+* Configuration
+
+| Setting | Default | Description |
+|---------+---------+-------------|
+| =scimax.manuscript.autoCompile= | ="ask"= | When to compile: =always=, =if-needed=, =never=, =ask= |
+| =scimax.manuscript.pdflatexPath= | ="pdflatex"= | Path to pdflatex executable |
+| =scimax.manuscript.bibtexPath= | ="bibtex"= | Path to bibtex executable |
+| =scimax.manuscript.biberPath= | ="biber"= | Path to biber executable |
+
+* Workflow Example
+
+1. Open your main =.tex= file
+2. Run "Scimax: Flatten Manuscript for Submission" from Command Palette
+3. Choose whether to compile first (recommended if you've made recent changes)
+4. Wait for processing
+5. Find your submission-ready files in =submission-YYYY-MM-DD/=
+
+* What Gets Flattened
+
+** Included
+
+- =\input{file}= - Content inserted directly
+- =\include{file}= - Content inserted with =\clearpage= before and after
+- =\includegraphics[opts]{path}= - Figures renamed and paths updated
+- =\bibliography{refs}= - Replaced with =.bbl= content
+- =\printbibliography= - Replaced with =.bbl= content (biblatex)
+
+** Ignored (Not Processed)
+
+- Commands inside =% comments=
+- Commands inside verbatim environments (=verbatim=, =lstlisting=, =minted=)
+- =\input= commands that can't be resolved (warning issued)
+
+* Warnings
+
+The module issues warnings for:
+- Missing included files
+- Missing figure files
+- Missing =.bbl= file
+- Circular includes (A includes B, B includes A)
+- Maximum include depth exceeded (default: 20 levels)
+
+Warnings are shown after flattening completes. You can review them by clicking "Show Warnings" in the success notification.
+
+* Limitations
+
+The module handles most common manuscript scenarios but has some limitations:
+
+** Not Supported
+
+| Feature | Description | Workaround |
+|---------+-------------+------------|
+| =\graphicspath= | Custom figure search paths are not parsed | Use relative paths in =\includegraphics= |
+| Custom fonts | Font files (=.ttf=, =.otf=) are not copied | Manually copy font files to submission directory |
+| TikZ externalize | Externalized TikZ figures (=.pdf= cache) not handled | Disable externalize or manually copy |
+| Index files | =.ind= files from =makeindex= not copied | Manually copy if using index |
+| Glossary files | =.gls= files from =makeglossaries= not copied | Manually copy if using glossaries |
+| Multiple bibliographies | Only one =.bbl= file supported | Combine bibliographies before flattening |
+| Subfiles package | =\subfile= commands not processed | Use =\input= instead |
+
+** Encoding
+
+The module assumes UTF-8 encoding for all files. Non-UTF-8 files may cause errors or produce garbled output.
+
+** Figure Detection
+
+Only =\includegraphics= commands are detected. Other figure inclusion methods are not handled:
+- =\pgfimage=
+- =\pdfximage=
+- Raw PDF includes via =\pdfpages=
+
+** Path Resolution
+
+- Paths are resolved relative to the directory of the file containing the command
+- Absolute paths are not modified
+- Paths with special characters may not resolve correctly
+
+** Bibliography Edge Cases
+
+- Multiple =\printbibliography= commands: only the first is replaced with content; others are commented out
+- =refsection= environments (biblatex): not handled, may produce incomplete bibliographies
+- Custom =.bbl= locations: the module looks for =.bbl= alongside the main =.tex= file
+
+** Support Files
+
+Standard LaTeX packages from TeX distributions are not copied (they're assumed to be available). The module only copies files that exist in your project directory.
+
+* Related Topics
+
+- [[file:10-export.org][Export]] - Exporting org documents to LaTeX
+- [[file:11-latex-preview.org][LaTeX Preview]] - Live preview of LaTeX documents

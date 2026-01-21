@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-20T02:01:16.890Z",
-  "count": 2931,
+  "buildDate": "2026-01-20T17:48:50.174Z",
+  "count": 3005,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -710,10 +710,45 @@
       ]
     },
     {
+      "heading": "Specialized File Support (31-35)",
+      "level": 3,
+      "file": "00-index.org",
+      "line": 223,
+      "content": "| Document                                               | Description                      | |--------------------------------------------------------+----------------------------------| | [[file:31-publishing.org][Publishing]]               | Project publishing system        | | [[file:32-excalidraw.org][Excalidraw]]               | Diagram editing integration      | | [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX file editing and commands  | | [[file:34-bibtex.org][BibTeX Editi",
+      "path": [
+        "Scimax VS Code",
+        "How This Documentation is Organized"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "specialized",
+        "support",
+        "31-35",
+        "document",
+        "description",
+        "------------------------------------------------------------------------------------------",
+        "file31-publishingorg",
+        "publishing",
+        "project",
+        "system",
+        "file32-excalidraworg",
+        "excalidraw",
+        "diagram",
+        "editing",
+        "integration",
+        "file33-latex-navigationorg",
+        "latex",
+        "navigation",
+        "commands",
+        "file34-bibtexorg"
+      ]
+    },
+    {
       "heading": "Quick Start",
       "level": 2,
       "file": "00-index.org",
-      "line": 223,
+      "line": 233,
       "content": "1. *Install the extension* from the VS Code marketplace or from a VSIX file 2. *Open or create an org file* with the `.org' extension 3. *Create a heading* by typing `* My First Heading' 4. *Add a source block* and execute it: #+BEGIN_SRC org ,#+BEGIN_SRC python :results output print(\"Hello, Scimax VS Code!\") ,#+END_SRC #+END_SRC Press `C-<return>' or `C-c C-c' to execute. 5. *Explore the menus* with `C-c m' (main menu) or `C-c C-m' (context menu) See [[file:01-getting-started.org][Getting Start",
       "path": [
         "Scimax VS Code"
@@ -751,7 +786,7 @@
       "heading": "Getting Help",
       "level": 2,
       "file": "00-index.org",
-      "line": 243,
+      "line": 253,
       "content": "",
       "path": [
         "Scimax VS Code"
@@ -767,7 +802,7 @@
       "heading": "Within VS Code",
       "level": 3,
       "file": "00-index.org",
-      "line": 245,
+      "line": 255,
       "content": "- Press `C-c m' to open the main Hydra menu - Press `C-c C-m' for context-sensitive menus - Use `C-S-P' and search for \"Scimax\" commands - Hover over elements for tooltips and information",
       "path": [
         "Scimax VS Code",
@@ -806,7 +841,7 @@
       "heading": "Online Resources",
       "level": 3,
       "file": "00-index.org",
-      "line": 252,
+      "line": 262,
       "content": "- GitHub Issues: Report bugs and request features - Documentation: This documentation set",
       "path": [
         "Scimax VS Code",
@@ -831,7 +866,7 @@
       "heading": "Keybinding Help",
       "level": 3,
       "file": "00-index.org",
-      "line": 257,
+      "line": 267,
       "content": "Press `? ' at the beginning of a heading (with speed commands enabled) to see available speed commands. See [[file:24-keybindings.org][Keybindings]] for the complete reference.",
       "path": [
         "Scimax VS Code",
@@ -859,7 +894,7 @@
       "heading": "Acknowledgments",
       "level": 2,
       "file": "00-index.org",
-      "line": 264,
+      "line": 274,
       "content": "Scimax VS Code is inspired by: - [[https://github.com/jkitchin/scimax][Scimax]] - The original Emacs package by John Kitchin - [[https://orgmode.org][Org-mode]] - The powerful Emacs major mode for notes and planning - [[https://orgmode.org/worg/org-contrib/babel/][Org Babel]] - Literate programming in Org-mode",
       "path": [
         "Scimax VS Code"
@@ -893,7 +928,7 @@
       "heading": "License",
       "level": 2,
       "file": "00-index.org",
-      "line": 272,
+      "line": 282,
       "content": "Scimax VS Code is open source software. See the LICENSE file for details.",
       "path": [
         "Scimax VS Code"
@@ -914,7 +949,7 @@
       "heading": "Complete Documentation Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 276,
+      "line": 286,
       "content": "This section provides a comprehensive index of all documentation topics with links for quick navigation.",
       "path": [],
       "commands": [],
@@ -936,7 +971,7 @@
       "heading": "Navigation Guides",
       "level": 2,
       "file": "00-index.org",
-      "line": 280,
+      "line": 290,
       "content": "| Document                                         | Topics Covered                                   | |--------------------------------------------------+--------------------------------------------------| | [[file:01-getting-started.org][Getting Started]] | Installation, first steps, basic usage           | | [[file:01.5-basic-syntax.org][Basic Syntax]]    | Text markup, lists, equations, blocks            | | [[file:21-navigation.org][Navigation]]           | Fuzzy search, avy-style jump, ou",
       "path": [
         "Complete Documentation Index"
@@ -970,7 +1005,7 @@
       "heading": "Document Editing",
       "level": 2,
       "file": "00-index.org",
-      "line": 292,
+      "line": 302,
       "content": "| Document                                                       | Topics Covered                             | |----------------------------------------------------------------+--------------------------------------------| | [[file:02-document-structure.org][Document Structure]]         | Headings, folding, properties, drawers     | | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | Markdown structural editing, navigation    | | [[file:03-todo-items.org][TODO Items]]            ",
       "path": [
         "Complete Documentation Index"
@@ -1003,7 +1038,7 @@
       "heading": "Code Execution",
       "level": 2,
       "file": "00-index.org",
-      "line": 304,
+      "line": 314,
       "content": "| Document                                                 | Topics Covered                               | |----------------------------------------------------------+----------------------------------------------| | [[file:07-source-blocks.org][Source Code Blocks]]        | Babel execution, header arguments            | | [[file:08-supported-languages.org][Supported Languages]] | Python, R, Julia, Shell, and more            | | [[file:09-jupyter.org][Jupyter Integration]]             | Kernel ",
       "path": [
         "Complete Documentation Index"
@@ -1037,7 +1072,7 @@
       "heading": "Export and Preview",
       "level": 2,
       "file": "00-index.org",
-      "line": 313,
+      "line": 323,
       "content": "| Document                                       | Topics Covered                    | |------------------------------------------------+-----------------------------------| | [[file:10-export.org][Export]]                 | HTML, LaTeX, PDF, Markdown export | | [[file:11-latex-preview.org][LaTeX Preview]]   | Math rendering, equation preview  | | [[file:12-image-overlays.org][Image Overlays]] | Inline image display              | | [[file:32-excalidraw.org][Excalidraw]]         | Diagram creati",
       "path": [
         "Complete Documentation Index"
@@ -1071,7 +1106,7 @@
       "heading": "Organization and Planning",
       "level": 2,
       "file": "00-index.org",
-      "line": 322,
+      "line": 332,
       "content": "| Document                               | Topics Covered                        | |----------------------------------------+---------------------------------------| | [[file:13-agenda.org][Agenda]]         | Agenda views, task filtering          | | [[file:14-journal.org][Journal]]       | Daily journaling, calendar navigation | | [[file:15-capture.org][Capture]]       | Quick note capture, templates         | | [[file:16-notebook.org][Notebook]]     | Project-based organization            | | ",
       "path": [
         "Complete Documentation Index"
@@ -1105,7 +1140,7 @@
       "heading": "Search and Database",
       "level": 2,
       "file": "00-index.org",
-      "line": 332,
+      "line": 342,
       "content": "| Document                                             | Topics Covered                                | |------------------------------------------------------+-----------------------------------------------| | [[file:18-database-search.org][Database and Search]] | Full-text search, semantic search, embeddings | | [[file:19-references.org][References]]               | Citations, bibliography, DOI lookup           |",
       "path": [
         "Complete Documentation Index"
@@ -1132,10 +1167,41 @@
       ]
     },
     {
+      "heading": "Specialized File Editing",
+      "level": 2,
+      "file": "00-index.org",
+      "line": 349,
+      "content": "| Document                                             | Topics Covered                                         | |------------------------------------------------------+--------------------------------------------------------| | [[file:33-latex-navigation.org][LaTeX Navigation]]   | LaTeX speed commands, structure navigation             | | [[file:34-bibtex.org][BibTeX Editing]]               | BibTeX speed commands, entry/file operations, sorting  |",
+      "path": [
+        "Complete Documentation Index"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "specialized",
+        "editing",
+        "document",
+        "topics",
+        "covered",
+        "--------------------------------------------------------------------------------------------------------------",
+        "file33-latex-navigationorg",
+        "latex",
+        "navigation",
+        "speed",
+        "commands",
+        "structure",
+        "file34-bibtexorg",
+        "bibtex",
+        "entryfile",
+        "operations",
+        "sorting"
+      ]
+    },
+    {
       "heading": "Configuration",
       "level": 2,
       "file": "00-index.org",
-      "line": 339,
+      "line": 356,
       "content": "| Document                                     | Topics Covered                      | |----------------------------------------------+-------------------------------------| | [[file:26-configuration.org][Configuration]] | All settings, customization options |",
       "path": [
         "Complete Documentation Index"
@@ -1158,7 +1224,7 @@
       "heading": "Topic Index",
       "level": 1,
       "file": "00-index.org",
-      "line": 345,
+      "line": 362,
       "content": "Quick reference to find specific features across documentation. | Topic                 | Primary Documentation                                        | Related Documentation                                                                                                      | |-----------------------+--------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------| | Agenda",
       "path": [],
       "commands": [],
@@ -1183,7 +1249,7 @@
       "heading": "Quick Start by Use Case",
       "level": 1,
       "file": "00-index.org",
-      "line": 420,
+      "line": 440,
       "content": "",
       "path": [],
       "commands": [],
@@ -1198,7 +1264,7 @@
       "heading": "I want to...",
       "level": 2,
       "file": "00-index.org",
-      "line": 422,
+      "line": 442,
       "content": "",
       "path": [
         "Quick Start by Use Case"
@@ -1213,7 +1279,7 @@
       "heading": "Take notes and organize information",
       "level": 3,
       "file": "00-index.org",
-      "line": 424,
+      "line": 444,
       "content": "- Start with [[file:01-getting-started.org][Getting Started]] - Learn [[file:01.5-basic-syntax.org][Basic Syntax]] for formatting text - Learn [[file:02-document-structure.org][Document Structure]] for headings and organization - Use [[file:15-capture.org][Capture]] for quick note-taking - Search with [[file:18-database-search.org][Database and Search]]",
       "path": [
         "Quick Start by Use Case",
@@ -1248,7 +1314,7 @@
       "heading": "Manage tasks and projects",
       "level": 3,
       "file": "00-index.org",
-      "line": 431,
+      "line": 451,
       "content": "- Set up tasks with [[file:03-todo-items.org][TODO Items]] - Add dates with [[file:06-timestamps.org][Timestamps]] - View agenda with [[file:13-agenda.org][Agenda]] - Organize projects with [[file:17-projectile.org][Projectile]] or [[file:16-notebook.org][Notebook]]",
       "path": [
         "Quick Start by Use Case",
@@ -1282,7 +1348,7 @@
       "heading": "Write scientific documents",
       "level": 3,
       "file": "00-index.org",
-      "line": 437,
+      "line": 457,
       "content": "- Execute code with [[file:07-source-blocks.org][Source Code Blocks]] - Preview math with [[file:11-latex-preview.org][LaTeX Preview]] - Manage citations with [[file:19-references.org][References]] - Export with [[file:10-export.org][Export]]",
       "path": [
         "Quick Start by Use Case",
@@ -1315,7 +1381,7 @@
       "heading": "Keep a journal",
       "level": 3,
       "file": "00-index.org",
-      "line": 443,
+      "line": 463,
       "content": "- Set up with [[file:14-journal.org][Journal]] - Use templates from [[file:15-capture.org][Capture]] - Navigate entries with [[file:21-navigation.org][Navigation]]",
       "path": [
         "Quick Start by Use Case",
@@ -1341,7 +1407,7 @@
       "heading": "Navigate efficiently",
       "level": 3,
       "file": "00-index.org",
-      "line": 448,
+      "line": 468,
       "content": "- Learn [[file:21-navigation.org][Navigation]] techniques - Master [[file:23-speed-commands.org][Speed Commands]] - Use [[file:22-hydra-menus.org][Hydra Menus]] for discovery - Reference [[file:24-keybindings.org][Keybindings]]",
       "path": [
         "Quick Start by Use Case",
@@ -1373,7 +1439,7 @@
       "heading": "Programmatically modify org files",
       "level": 3,
       "file": "00-index.org",
-      "line": 454,
+      "line": 474,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - Use the [[file:27-org-api.org][Org API]] in TypeScript source blocks - Bulk update TODO states, properties, and tags - Extract and transform table data - Automate repetitive org file operations",
       "path": [
         "Quick Start by Use Case",
@@ -1408,7 +1474,7 @@
       "heading": "Configure the extension",
       "level": 3,
       "file": "00-index.org",
-      "line": 461,
+      "line": 481,
       "content": "CLOSED: [2026-01-16 Fri 20:04] - See all options in [[file:26-configuration.org][Configuration]] - Set up keybindings with [[file:24-keybindings.org][Keybindings]] - Customize menus with [[file:22-hydra-menus.org][Hydra Menus]]",
       "path": [
         "Quick Start by Use Case",
@@ -1439,7 +1505,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "00-index.org",
-      "line": 467,
+      "line": 487,
       "content": "- Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01-getting-started.org][Getting Started]]",
       "path": [],
       "commands": [],
@@ -85740,6 +85806,2139 @@
         "bibtex",
         "bibliography",
         "management"
+      ]
+    },
+    {
+      "heading": "Overview",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 8,
+      "content": "Scimax VS Code provides comprehensive BibTeX file editing support with speed commands, batch operations, and intelligent author name handling. This complements the citation management features in [[file:19-references.org][References and Citations]].",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "overview",
+        "scimax",
+        "code",
+        "provides",
+        "comprehensive",
+        "bibtex",
+        "editing",
+        "support",
+        "speed",
+        "commands",
+        "batch",
+        "operations",
+        "intelligent",
+        "author",
+        "name",
+        "handling",
+        "complements",
+        "citation",
+        "management",
+        "features"
+      ]
+    },
+    {
+      "heading": "Features",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 12,
+      "content": "- *Speed Commands* - Single-key commands when cursor is at the start of an entry - *Entry Operations* - Clean, format, and transform individual entries - *File Operations* - Sort entries, apply batch transformations, validate files - *Smart Author Parsing* - Proper handling of particles (von, van der), suffixes (Jr., III), and corporate authors",
+      "path": [
+        "Overview"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "features",
+        "speed",
+        "commands",
+        "single-key",
+        "cursor",
+        "start",
+        "entry",
+        "operations",
+        "clean",
+        "format",
+        "transform",
+        "individual",
+        "entries",
+        "sort",
+        "apply",
+        "batch",
+        "transformations",
+        "validate",
+        "smart",
+        "author"
+      ]
+    },
+    {
+      "heading": "When to Use This",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 19,
+      "content": "This document covers editing =.bib= files directly. For inserting and managing citations in org/markdown/LaTeX documents, see [[file:19-references.org][References and Citations]].",
+      "path": [
+        "Overview"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "document",
+        "covers",
+        "editing",
+        "bib",
+        "directly",
+        "inserting",
+        "managing",
+        "citations",
+        "orgmarkdownlatex",
+        "documents",
+        "file19-referencesorg",
+        "references"
+      ]
+    },
+    {
+      "heading": "Speed Commands",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 23,
+      "content": "BibTeX speed commands are single-key shortcuts available when your cursor is at column 0 of a line starting with =@= (an entry definition line like =@article{=).",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "speed",
+        "commands",
+        "bibtex",
+        "single-key",
+        "shortcuts",
+        "available",
+        "cursor",
+        "column",
+        "line",
+        "starting",
+        "entry",
+        "definition",
+        "like",
+        "article"
+      ]
+    },
+    {
+      "heading": "Enabling Speed Commands",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 27,
+      "content": "Speed commands are enabled by default for BibTeX files. The context =scimax.atBibtexEntryStart= is automatically set when appropriate.",
+      "path": [
+        "Speed Commands"
+      ],
+      "commands": [
+        "scimax.atBibtexEntryStart"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "enabling",
+        "speed",
+        "commands",
+        "enabled",
+        "default",
+        "bibtex",
+        "context",
+        "automatically",
+        "set",
+        "appropriate"
+      ]
+    },
+    {
+      "heading": "Available Speed Commands",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 31,
+      "content": "",
+      "path": [
+        "Speed Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "available",
+        "speed",
+        "commands"
+      ]
+    },
+    {
+      "heading": "Navigation",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 33,
+      "content": "| Key | Command                      | Description                    | |-----+------------------------------+--------------------------------| | n   | scimax.bibtex.nextEntry      | Jump to next entry             | | p   | scimax.bibtex.previousEntry  | Jump to previous entry         | | j   | scimax.bibtex.jumpToEntry    | Jump to entry by key (fuzzy)   | | ?   | scimax.bibtex.help           | Show speed command help        |",
+      "path": [
+        "Speed Commands",
+        "Available Speed Commands"
+      ],
+      "commands": [
+        "scimax.bibtex.nextEntry",
+        "scimax.bibtex.previousEntry",
+        "scimax.bibtex.jumpToEntry",
+        "scimax.bibtex.help"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "navigation",
+        "key",
+        "command",
+        "description",
+        "-------------------------------------------------------------------",
+        "jump",
+        "next",
+        "entry",
+        "previous",
+        "fuzzy",
+        "show",
+        "speed",
+        "help"
+      ]
+    },
+    {
+      "heading": "Entry Formatting",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 42,
+      "content": "| Key | Command                    | Description                          | |-----+----------------------------+--------------------------------------| | s   | scimax.bibtex.sortFields   | Sort fields in standard order        | | d   | scimax.bibtex.downcaseEntry| Lowercase entry type and field names | | T   | scimax.bibtex.titleCase    | Convert title to Title Case          | | t   | scimax.bibtex.sentenceCase | Convert title to sentence case       | | c   | scimax.bibtex.cleanEntry   | Clean e",
+      "path": [
+        "Speed Commands",
+        "Available Speed Commands"
+      ],
+      "commands": [
+        "scimax.bibtex.sortFields",
+        "scimax.bibtex.downcaseEntry",
+        "scimax.bibtex.titleCase",
+        "scimax.bibtex.sentenceCase",
+        "scimax.bibtex.cleanEntry"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "entry",
+        "formatting",
+        "key",
+        "command",
+        "description",
+        "-----------------------------------------------------------------------",
+        "sort",
+        "fields",
+        "standard",
+        "order",
+        "lowercase",
+        "type",
+        "field",
+        "names",
+        "convert",
+        "title",
+        "case",
+        "sentence",
+        "clean"
+      ]
+    },
+    {
+      "heading": "External Resources",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 54,
+      "content": "| Key | Command                      | Description                      | |-----+------------------------------+----------------------------------| | o   | scimax.bibtex.openPdf        | Open associated PDF file         | | u   | scimax.bibtex.openUrl        | Open URL field in browser        | | O   | scimax.bibtex.openNotes      | Open/create notes file for entry | | G   | scimax.bibtex.googleScholar  | Search entry on Google Scholar   | | C   | scimax.bibtex.crossref       | Search entry on C",
+      "path": [
+        "Speed Commands",
+        "Available Speed Commands"
+      ],
+      "commands": [
+        "scimax.bibtex.openPdf",
+        "scimax.bibtex.openUrl",
+        "scimax.bibtex.openNotes",
+        "scimax.bibtex.googleScholar",
+        "scimax.bibtex.crossref"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "external",
+        "resources",
+        "key",
+        "command",
+        "description",
+        "---------------------------------------------------------------------",
+        "open",
+        "associated",
+        "pdf",
+        "url",
+        "field",
+        "browser",
+        "opencreate",
+        "notes",
+        "entry",
+        "search",
+        "google",
+        "scholar"
+      ]
+    },
+    {
+      "heading": "OpenAlex Integration",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 65,
+      "content": "| Key | Command                       | Description                     | |-----+-------------------------------+---------------------------------| | a   | scimax.bibtex.showOpenAlex    | View entry in OpenAlex          | | i   | scimax.bibtex.showCitingWorks | Show papers citing this work    | | r   | scimax.bibtex.showRelatedWorks| Show related works              | | R   | scimax.bibtex.showReferences  | Show references cited by this work |",
+      "path": [
+        "Speed Commands",
+        "Available Speed Commands"
+      ],
+      "commands": [
+        "scimax.bibtex.showOpenAlex",
+        "scimax.bibtex.showCitingWorks",
+        "scimax.bibtex.showRelatedWorks",
+        "scimax.bibtex.showReferences"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "openalex",
+        "integration",
+        "key",
+        "command",
+        "description",
+        "---------------------------------------------------------------------",
+        "view",
+        "entry",
+        "show",
+        "papers",
+        "citing",
+        "work",
+        "related",
+        "works",
+        "references",
+        "cited"
+      ]
+    },
+    {
+      "heading": "Clipboard Operations",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 74,
+      "content": "| Key | Command                  | Description                    | |-----+--------------------------+--------------------------------| | k   | scimax.bibtex.copyKey    | Copy citation key to clipboard | | y   | scimax.bibtex.copyBibtex | Copy full BibTeX entry         | | K   | scimax.bibtex.killEntry  | Delete entire entry            |",
+      "path": [
+        "Speed Commands",
+        "Available Speed Commands"
+      ],
+      "commands": [
+        "scimax.bibtex.copyKey",
+        "scimax.bibtex.copyBibtex",
+        "scimax.bibtex.killEntry"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "clipboard",
+        "operations",
+        "key",
+        "command",
+        "description",
+        "---------------------------------------------------------------",
+        "copy",
+        "citation",
+        "full",
+        "bibtex",
+        "entry",
+        "delete",
+        "entire"
+      ]
+    },
+    {
+      "heading": "Using Speed Commands",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 82,
+      "content": "1. Open a =.bib= file 2. Move cursor to column 0 of an =@entry{= line 3. Press a single key from the tables above 4. Press =?= to see available commands Example: #+BEGIN_EXAMPLE @article{smith2020machine,    <-- cursor at column 0 here author = {John Smith}, title = {Machine Learning}, year = {2020} } #+END_EXAMPLE",
+      "path": [
+        "Speed Commands"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "speed",
+        "commands",
+        "open",
+        "bib",
+        "move",
+        "cursor",
+        "column",
+        "entry",
+        "line",
+        "press",
+        "single",
+        "key",
+        "tables",
+        "above",
+        "available",
+        "example",
+        "beginexample",
+        "article",
+        "smith2020machine",
+        "here"
+      ]
+    },
+    {
+      "heading": "Entry Operations",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 98,
+      "content": "These commands operate on the entry at the cursor position.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "entry",
+        "operations",
+        "commands",
+        "operate",
+        "cursor",
+        "position"
+      ]
+    },
+    {
+      "heading": "Clean Entry",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 102,
+      "content": "Command: =scimax.bibtex.cleanEntry= (speed key: =c=) Cleans the current entry by: - Normalizing whitespace (single spaces, trimmed) - Lowercasing field names - Sorting fields in standard BibTeX order - Removing duplicate outer braces (={{Title}}= → ={Title}=) - Preserving inner braces for case protection (={DNA}= stays as-is) Before: #+BEGIN_SRC bibtex @Article{Smith2020, AUTHOR = {  John   Smith  }, TITLE = {{A Machine Learning Approach}}, Year = {2020}, Journal = {Nature} } #+END_SRC After: #+",
+      "path": [
+        "Entry Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.cleanEntry"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "clean",
+        "entry",
+        "command",
+        "speed",
+        "key",
+        "cleans",
+        "current",
+        "normalizing",
+        "whitespace",
+        "single",
+        "spaces",
+        "trimmed",
+        "lowercasing",
+        "field",
+        "names",
+        "sorting",
+        "fields",
+        "standard",
+        "bibtex",
+        "order"
+      ]
+    },
+    {
+      "heading": "Title Case",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 133,
+      "content": "Command: =scimax.bibtex.titleCase= (speed key: =T=) Converts the title field to Title Case while preserving: - Braced content (={DNA}=, ={NASA}=) - Small words (a, an, the, and, but, or, for, in, of, on, to, etc.) Example: - \"the effects of machine learning on dna analysis\" → \"The Effects of Machine Learning on {DNA} Analysis\"",
+      "path": [
+        "Entry Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.titleCase"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "title",
+        "case",
+        "command",
+        "speed",
+        "key",
+        "converts",
+        "field",
+        "while",
+        "preserving",
+        "braced",
+        "content",
+        "dna",
+        "nasa",
+        "small",
+        "words",
+        "etc",
+        "example",
+        "effects",
+        "machine",
+        "learning"
+      ]
+    },
+    {
+      "heading": "Sentence Case",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 144,
+      "content": "Command: =scimax.bibtex.sentenceCase= (speed key: =t=) Converts the title field to sentence case (only first word capitalized) while preserving braced content. Example: - \"The Effects Of Machine Learning\" → \"The effects of machine learning\" - \"Analysis of {DNA} Sequences\" → \"Analysis of {DNA} sequences\"",
+      "path": [
+        "Entry Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.sentenceCase"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "sentence",
+        "case",
+        "command",
+        "speed",
+        "key",
+        "converts",
+        "title",
+        "field",
+        "first",
+        "word",
+        "capitalized",
+        "while",
+        "preserving",
+        "braced",
+        "content",
+        "example",
+        "effects",
+        "machine",
+        "learning",
+        "analysis"
+      ]
+    },
+    {
+      "heading": "Generate Key",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 154,
+      "content": "Command: =scimax.bibtex.generateKey= (speed key: =g=) Generates a standardized citation key in the format: =authoryearfirstword= - *author*: First author's last name (lowercase, ASCII only) - *year*: Publication year - *firstword*: First significant word from title (>3 chars, not a stop word) Examples: | Author          | Year | Title                           | Generated Key          | |-----------------+------+---------------------------------+------------------------| | Smith, John     | 2024",
+      "path": [
+        "Entry Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.generateKey"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "generate",
+        "key",
+        "command",
+        "speed",
+        "generates",
+        "standardized",
+        "citation",
+        "format",
+        "authoryearfirstword",
+        "author",
+        "first",
+        "last",
+        "name",
+        "lowercase",
+        "ascii",
+        "year",
+        "publication",
+        "firstword",
+        "significant",
+        "word"
+      ]
+    },
+    {
+      "heading": "Sort Fields",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 171,
+      "content": "Command: =scimax.bibtex.sortFields= (speed key: =s=) Reorders fields in standard BibTeX order: 1. author, title, journaltitle/journal, booktitle 2. editor, edition, volume, number, issue, pages 3. publisher, location/address, year, date, month 4. doi, url, urldate, isbn, issn 5. eprint, eprinttype, archiveprefix, primaryclass 6. note, annote, abstract, keywords, file 7. Any remaining fields",
+      "path": [
+        "Entry Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.sortFields"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "sort",
+        "fields",
+        "command",
+        "speed",
+        "key",
+        "reorders",
+        "standard",
+        "bibtex",
+        "order",
+        "author",
+        "title",
+        "journaltitlejournal",
+        "booktitle",
+        "editor",
+        "edition",
+        "volume",
+        "number",
+        "issue",
+        "pages",
+        "publisher"
+      ]
+    },
+    {
+      "heading": "Downcase Entry",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 184,
+      "content": "Command: =scimax.bibtex.downcaseEntry= (speed key: =d=) Lowercases the entry type and all field names: - =@Article= → =@article= - =Author = = → =author == - =JOURNAL = = → =journal ==",
+      "path": [
+        "Entry Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.downcaseEntry"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "downcase",
+        "entry",
+        "command",
+        "speed",
+        "key",
+        "lowercases",
+        "type",
+        "field",
+        "names",
+        "article",
+        "author",
+        "journal"
+      ]
+    },
+    {
+      "heading": "Wrap in Braces",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 193,
+      "content": "Command: =scimax.bibtex.wrapBraces= (speed key: =b=) Wraps the current selection or word in curly braces for case protection. Use this to protect: - Acronyms: DNA → {DNA} - Proper nouns: Python → {Python} - Chemical formulas: H2O → {H2O}",
+      "path": [
+        "Entry Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.wrapBraces"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "wrap",
+        "braces",
+        "command",
+        "speed",
+        "key",
+        "wraps",
+        "current",
+        "selection",
+        "word",
+        "curly",
+        "case",
+        "protection",
+        "protect",
+        "acronyms",
+        "dna",
+        "proper",
+        "nouns",
+        "python",
+        "chemical",
+        "formulas"
+      ]
+    },
+    {
+      "heading": "File Operations",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 204,
+      "content": "These commands operate on the entire BibTeX file.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "operations",
+        "commands",
+        "operate",
+        "entire",
+        "bibtex"
+      ]
+    },
+    {
+      "heading": "Sort Entries",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 208,
+      "content": "Command: =scimax.bibtex.sortEntries= Sorts all entries in the file. Shows a menu to choose sort order: | Option    | Description                                  | |-----------+----------------------------------------------| | By Key    | Alphabetically by citation key               | | By Year   | Oldest to newest (secondary: key)            | | By Author | Alphabetically by first author last name     | |           | (secondary: year, then key)                  | The command preserves any pream",
+      "path": [
+        "File Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.sortEntries"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "sort",
+        "entries",
+        "command",
+        "sorts",
+        "shows",
+        "menu",
+        "choose",
+        "order",
+        "option",
+        "description",
+        "---------------------------------------------------------",
+        "key",
+        "alphabetically",
+        "citation",
+        "year",
+        "oldest",
+        "newest",
+        "secondary",
+        "author",
+        "first"
+      ]
+    },
+    {
+      "heading": "Apply Operation to All Entries",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 223,
+      "content": "Command: =scimax.bibtex.applyToAllEntries= Applies a transformation to every entry in the file. Shows a menu of operations: | Operation           | Description                                           | |---------------------+-------------------------------------------------------| | Clean Entries       | Normalize whitespace, sort fields, lowercase names    | | Title Case Titles   | Convert all titles to Title Case                      | | Sentence Case Titles| Convert all titles to sentence c",
+      "path": [
+        "File Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.applyToAllEntries"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "apply",
+        "operation",
+        "entries",
+        "command",
+        "applies",
+        "transformation",
+        "entry",
+        "shows",
+        "menu",
+        "operations",
+        "description",
+        "----------------------------------------------------------------------------",
+        "clean",
+        "normalize",
+        "whitespace",
+        "sort",
+        "fields",
+        "lowercase",
+        "names",
+        "title"
+      ]
+    },
+    {
+      "heading": "Standardize Keys Warning",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 238,
+      "content": "The \"Standardize Keys\" option shows a confirmation dialog because it can break existing citations in your documents. It also: - Handles duplicate keys by adding suffixes (a, b, c, ...) - Reports how many duplicates were resolved",
+      "path": [
+        "File Operations",
+        "Apply Operation to All Entries"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "standardize",
+        "keys",
+        "warning",
+        "option",
+        "shows",
+        "confirmation",
+        "dialog",
+        "because",
+        "break",
+        "existing",
+        "citations",
+        "documents",
+        "handles",
+        "duplicate",
+        "adding",
+        "suffixes",
+        "reports",
+        "many",
+        "duplicates",
+        "resolved"
+      ]
+    },
+    {
+      "heading": "Validate File",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 244,
+      "content": "Command: =scimax.bibtex.validateFile= Validates the BibTeX file and reports: - Total number of entries - Entry types and counts - Syntax style (BibTeX vs BibLaTeX vs mixed) - Duplicate keys - Missing required fields - Syntax errors Results are shown in an output channel with severity indicators: - ❌ Errors (must fix) - ⚠️ Warnings (should fix)",
+      "path": [
+        "File Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.validateFile"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "validate",
+        "command",
+        "validates",
+        "bibtex",
+        "reports",
+        "total",
+        "number",
+        "entries",
+        "entry",
+        "types",
+        "counts",
+        "syntax",
+        "style",
+        "biblatex",
+        "mixed",
+        "duplicate",
+        "keys",
+        "missing",
+        "required",
+        "fields"
+      ]
+    },
+    {
+      "heading": "Show Statistics",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 260,
+      "content": "Command: =scimax.bibtex.showStatistics= Shows a quick overview of the BibTeX file: - Total entries - Entries by type (article, book, etc.) - Syntax style detection - Field usage statistics",
+      "path": [
+        "File Operations"
+      ],
+      "commands": [
+        "scimax.bibtex.showStatistics"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "show",
+        "statistics",
+        "command",
+        "shows",
+        "quick",
+        "overview",
+        "bibtex",
+        "total",
+        "entries",
+        "type",
+        "article",
+        "book",
+        "etc",
+        "syntax",
+        "style",
+        "detection",
+        "field",
+        "usage"
+      ]
+    },
+    {
+      "heading": "Author Name Handling",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 270,
+      "content": "Scimax uses the citation-js library for proper BibTeX author name parsing, handling complex cases that simple parsers miss.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "author",
+        "name",
+        "handling",
+        "scimax",
+        "uses",
+        "citation-js",
+        "library",
+        "proper",
+        "bibtex",
+        "parsing",
+        "complex",
+        "cases",
+        "simple",
+        "parsers",
+        "miss"
+      ]
+    },
+    {
+      "heading": "Supported Formats",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 274,
+      "content": "",
+      "path": [
+        "Author Name Handling"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "supported",
+        "formats"
+      ]
+    },
+    {
+      "heading": "Standard Formats",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 276,
+      "content": "| Input                  | Parsed As                              | |------------------------+----------------------------------------| | Smith, John            | Family: Smith, Given: John             | | John Smith             | Family: Smith, Given: John             | | Smith, John and Doe, Jane | Two authors                         |",
+      "path": [
+        "Author Name Handling",
+        "Supported Formats"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "standard",
+        "formats",
+        "input",
+        "parsed",
+        "----------------------------------------------------------------",
+        "smith",
+        "john",
+        "family",
+        "given",
+        "doe",
+        "jane",
+        "two",
+        "authors"
+      ]
+    },
+    {
+      "heading": "Particles (von, van der, de la)",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 284,
+      "content": "| Input                  | Display Last Name   | Key Last Name | |------------------------+---------------------+---------------| | van der Berg, Hans     | van der Berg        | berg          | | Hans van der Berg      | van der Berg        | berg          | | de la Cruz, Maria      | de la Cruz          | cruz          | | Ludwig van Beethoven   | van Beethoven       | beethoven     |",
+      "path": [
+        "Author Name Handling",
+        "Supported Formats"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "particles",
+        "von",
+        "van",
+        "der",
+        "input",
+        "display",
+        "last",
+        "name",
+        "key",
+        "------------------------------------------------------------",
+        "berg",
+        "hans",
+        "cruz",
+        "maria",
+        "ludwig",
+        "beethoven"
+      ]
+    },
+    {
+      "heading": "Suffixes (Jr., III)",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 293,
+      "content": "| Input                  | Parsed Components                      | |------------------------+----------------------------------------| | Smith, Jr., John       | Family: Smith, Given: John, Suffix: Jr.| | King, III, Martin Luther | Family: King, Given: Martin Luther, Suffix: III |",
+      "path": [
+        "Author Name Handling",
+        "Supported Formats"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "suffixes",
+        "iii",
+        "input",
+        "parsed",
+        "components",
+        "----------------------------------------------------------------",
+        "smith",
+        "john",
+        "family",
+        "given",
+        "suffix",
+        "king",
+        "martin",
+        "luther"
+      ]
+    },
+    {
+      "heading": "Corporate Authors",
+      "level": 3,
+      "file": "34-bibtex.org",
+      "line": 300,
+      "content": "Corporate or institutional authors should be wrapped in braces: | Input                           | Parsed As                     | |---------------------------------+-------------------------------| | {NASA}                          | Literal name: NASA            | | {National Academy of Sciences}  | Literal name: National Academy of Sciences | | {World Health Organization}     | Literal name: World Health Organization |",
+      "path": [
+        "Author Name Handling",
+        "Supported Formats"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "corporate",
+        "authors",
+        "institutional",
+        "wrapped",
+        "braces",
+        "input",
+        "parsed",
+        "----------------------------------------------------------------",
+        "nasa",
+        "literal",
+        "name",
+        "national",
+        "academy",
+        "sciences",
+        "world",
+        "health",
+        "organization"
+      ]
+    },
+    {
+      "heading": "Key Generation with Authors",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 310,
+      "content": "When generating citation keys, the first author's last name is used: - Particles are stripped for the key (van der Berg → berg) - Corporate names are cleaned (NASA → nasa) - Accents are normalized (Müller → muller)",
+      "path": [
+        "Author Name Handling"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "key",
+        "generation",
+        "authors",
+        "generating",
+        "citation",
+        "keys",
+        "first",
+        "author",
+        "last",
+        "name",
+        "particles",
+        "stripped",
+        "van",
+        "der",
+        "berg",
+        "corporate",
+        "names",
+        "cleaned",
+        "nasa",
+        "accents"
+      ]
+    },
+    {
+      "heading": "Best Practices",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 317,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "best",
+        "practices"
+      ]
+    },
+    {
+      "heading": "Entry Formatting",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 319,
+      "content": "1. *Use consistent case* - Run \"Downcase Entries\" on your file 2. *Sort fields consistently* - Use \"Clean Entries\" or \"Sort Fields\" 3. *Protect case-sensitive text* - Wrap in braces: ={DNA}=, ={Python}=, ={NASA}= 4. *Include DOIs* - Enables OpenAlex integration and hover previews",
+      "path": [
+        "Best Practices"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "entry",
+        "formatting",
+        "consistent",
+        "case",
+        "run",
+        "downcase",
+        "entries",
+        "sort",
+        "fields",
+        "consistently",
+        "clean",
+        "protect",
+        "case-sensitive",
+        "text",
+        "wrap",
+        "braces",
+        "dna",
+        "python",
+        "nasa",
+        "include"
+      ]
+    },
+    {
+      "heading": "Key Naming",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 326,
+      "content": "Recommended format: =author-year-keyword= or =authoryearkeyword= Good keys: - =smith-2024-machine= or =smith2024machine= - =vandenberg-2023-neural= (note: particle stripped) - =nasa-2022-report= Bad keys: - =ref1=, =paper2= (not memorable) - =ML_Paper_2024= (inconsistent format)",
+      "path": [
+        "Best Practices"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "key",
+        "naming",
+        "recommended",
+        "format",
+        "author-year-keyword",
+        "authoryearkeyword",
+        "good",
+        "keys",
+        "smith-2024-machine",
+        "smith2024machine",
+        "vandenberg-2023-neural",
+        "note",
+        "particle",
+        "stripped",
+        "nasa-2022-report",
+        "bad",
+        "ref1",
+        "paper2",
+        "memorable",
+        "mlpaper2024"
+      ]
+    },
+    {
+      "heading": "File Organization",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 339,
+      "content": "- One bibliography file per project or topic - Use =@string= definitions for common journals - Keep entries in consistent order (by key or year) - Regularly validate files for errors",
+      "path": [
+        "Best Practices"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "organization",
+        "one",
+        "bibliography",
+        "per",
+        "project",
+        "topic",
+        "string",
+        "definitions",
+        "common",
+        "journals",
+        "keep",
+        "entries",
+        "consistent",
+        "order",
+        "key",
+        "year",
+        "regularly",
+        "validate",
+        "errors"
+      ]
+    },
+    {
+      "heading": "Before Sharing",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 346,
+      "content": "1. Run =scimax.bibtex.validateFile= to check for errors 2. Run \"Clean Entries\" via =scimax.bibtex.applyToAllEntries= 3. Optionally sort entries by key or year",
+      "path": [
+        "Best Practices"
+      ],
+      "commands": [
+        "scimax.bibtex.validateFile",
+        "scimax.bibtex.applyToAllEntries"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "before",
+        "sharing",
+        "run",
+        "check",
+        "errors",
+        "clean",
+        "entries",
+        "via",
+        "optionally",
+        "sort",
+        "key",
+        "year"
+      ]
+    },
+    {
+      "heading": "Command Reference",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 352,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "command",
+        "reference"
+      ]
+    },
+    {
+      "heading": "Entry Commands (require cursor in entry)",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 354,
+      "content": "| Command                      | Speed Key | Description                    | |------------------------------+-----------+--------------------------------| | scimax.bibtex.nextEntry      | n         | Navigate to next entry         | | scimax.bibtex.previousEntry  | p         | Navigate to previous entry     | | scimax.bibtex.jumpToEntry    | j         | Jump to entry by key           | | scimax.bibtex.sortFields     | s         | Sort fields in entry           | | scimax.bibtex.downcaseEntry  |",
+      "path": [
+        "Command Reference"
+      ],
+      "commands": [
+        "scimax.bibtex.nextEntry",
+        "scimax.bibtex.previousEntry",
+        "scimax.bibtex.jumpToEntry",
+        "scimax.bibtex.sortFields",
+        "scimax.bibtex.downcaseEntry"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "entry",
+        "commands",
+        "require",
+        "cursor",
+        "command",
+        "speed",
+        "key",
+        "description",
+        "-------------------------------------------------------------------------",
+        "navigate",
+        "next",
+        "previous",
+        "jump",
+        "sort",
+        "fields"
+      ]
+    },
+    {
+      "heading": "File Commands (operate on entire file)",
+      "level": 2,
+      "file": "34-bibtex.org",
+      "line": 383,
+      "content": "| Command                          | Description                          | |----------------------------------+--------------------------------------| | scimax.bibtex.sortEntries        | Sort all entries (by key/year/author)| | scimax.bibtex.applyToAllEntries  | Apply operation to all entries       | | scimax.bibtex.validateFile       | Validate file and show report        | | scimax.bibtex.showStatistics     | Show file statistics                 |",
+      "path": [
+        "Command Reference"
+      ],
+      "commands": [
+        "scimax.bibtex.sortEntries",
+        "scimax.bibtex.applyToAllEntries",
+        "scimax.bibtex.validateFile",
+        "scimax.bibtex.showStatistics"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "commands",
+        "operate",
+        "entire",
+        "command",
+        "description",
+        "------------------------------------------------------------------------",
+        "sort",
+        "entries",
+        "keyyearauthor",
+        "apply",
+        "operation",
+        "validate",
+        "show",
+        "report",
+        "statistics"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 392,
+      "content": "- [[file:19-references.org][References and Citations]] - Citation insertion and management in documents - [[file:23-speed-commands.org][Speed Commands]] - Speed commands for org-mode headings - [[file:33-latex-navigation.org][LaTeX Navigation]] - Similar speed commands for LaTeX files",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "related",
+        "topics",
+        "file19-referencesorg",
+        "references",
+        "citations",
+        "citation",
+        "insertion",
+        "management",
+        "documents",
+        "file23-speed-commandsorg",
+        "speed",
+        "commands",
+        "org-mode",
+        "headings",
+        "file33-latex-navigationorg",
+        "latex",
+        "navigation",
+        "similar"
+      ]
+    },
+    {
+      "heading": "Navigation",
+      "level": 1,
+      "file": "34-bibtex.org",
+      "line": 398,
+      "content": "- Previous: [[file:33-latex-navigation.org][LaTeX Navigation]] - Index: [[file:00-index.org][Documentation Index]]",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "navigation",
+        "previous",
+        "file33-latex-navigationorg",
+        "latex",
+        "index",
+        "file00-indexorg",
+        "documentation"
+      ]
+    },
+    {
+      "heading": "Overview",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 5,
+      "content": "The document template system provides yasnippet/skeleton-like functionality for quickly creating new documents or inserting pre-defined content. Templates support: - Multiple formats: Org-mode, Markdown, and LaTeX - Tab stops for quick navigation between placeholders - Auto-fill variables for dates, author, filenames, etc. - User-defined templates stored in a configurable directory - Built-in templates for common document types",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "overview",
+        "document",
+        "template",
+        "system",
+        "provides",
+        "yasnippetskeleton-like",
+        "functionality",
+        "quickly",
+        "creating",
+        "new",
+        "documents",
+        "inserting",
+        "pre-defined",
+        "content",
+        "templates",
+        "support",
+        "multiple",
+        "formats",
+        "org-mode",
+        "markdown"
+      ]
+    },
+    {
+      "heading": "Quick Start",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 15,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "quick",
+        "start"
+      ]
+    },
+    {
+      "heading": "Insert a Template",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 17,
+      "content": "1. Open a file (org, markdown, or latex) 2. Press =C-c C-t i= or run =Scimax: Quick Insert Template= 3. Select a template from the list 4. Tab through placeholders to fill in values",
+      "path": [
+        "Quick Start"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "insert",
+        "template",
+        "open",
+        "org",
+        "markdown",
+        "latex",
+        "press",
+        "c-c",
+        "c-t",
+        "run",
+        "scimax",
+        "quick",
+        "select",
+        "list",
+        "tab",
+        "through",
+        "placeholders",
+        "fill",
+        "values"
+      ]
+    },
+    {
+      "heading": "Create a New File from Template",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 24,
+      "content": "1. Press =C-c C-t n= or run =Scimax: New File from Template= 2. Select a template 3. Enter the filename 4. The file is created and opened with the template content",
+      "path": [
+        "Quick Start"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "create",
+        "new",
+        "template",
+        "press",
+        "c-c",
+        "c-t",
+        "run",
+        "scimax",
+        "select",
+        "enter",
+        "filename",
+        "created",
+        "opened",
+        "content"
+      ]
+    },
+    {
+      "heading": "Access via Hydra Menu",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 31,
+      "content": "Press =C-c C-m= (Hydra menu), then =t= for Templates submenu.",
+      "path": [
+        "Quick Start"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-m"
+      ],
+      "keywords": [
+        "access",
+        "via",
+        "hydra",
+        "menu",
+        "press",
+        "c-c",
+        "c-m",
+        "templates",
+        "submenu"
+      ]
+    },
+    {
+      "heading": "Built-in Templates",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 35,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "built-in",
+        "templates"
+      ]
+    },
+    {
+      "heading": "Org-mode Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 37,
+      "content": "| Template         | Description                                    | |------------------+------------------------------------------------| | Article          | Basic article with title, author, and sections | | Research Notes   | Problem, approach, experiments, results        | | Meeting Notes    | Attendees, agenda, discussion, action items    | | Project Plan     | Goals, milestones, tasks, risks                | | Literature Review| Paper review with key contributions, methods   | | Source B",
+      "path": [
+        "Built-in Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "org-mode",
+        "templates",
+        "template",
+        "description",
+        "------------------------------------------------------------------",
+        "article",
+        "basic",
+        "title",
+        "author",
+        "sections",
+        "research",
+        "notes",
+        "problem",
+        "approach",
+        "experiments",
+        "results",
+        "meeting",
+        "attendees",
+        "agenda",
+        "discussion"
+      ]
+    },
+    {
+      "heading": "Markdown Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 48,
+      "content": "| Template              | Description                          | |-----------------------+--------------------------------------| | README                | Standard project README              | | Blog Post             | Blog post with frontmatter           | | Technical Documentation| Step-by-step technical documentation |",
+      "path": [
+        "Built-in Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "markdown",
+        "templates",
+        "template",
+        "description",
+        "-------------------------------------------------------------",
+        "readme",
+        "standard",
+        "project",
+        "blog",
+        "post",
+        "frontmatter",
+        "technical",
+        "documentation",
+        "step-by-step"
+      ]
+    },
+    {
+      "heading": "LaTeX Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 56,
+      "content": "| Template            | Description                           | |---------------------+---------------------------------------| | Article             | LaTeX article with standard preamble  | | Beamer Presentation | Beamer slide deck                     | | Letter              | Formal letter template                | | Equation            | Numbered equation environment         | | Figure              | Figure environment with caption       | | Table               | Table environment with capti",
+      "path": [
+        "Built-in Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "latex",
+        "templates",
+        "template",
+        "description",
+        "------------------------------------------------------------",
+        "article",
+        "standard",
+        "preamble",
+        "beamer",
+        "presentation",
+        "slide",
+        "deck",
+        "letter",
+        "formal",
+        "equation",
+        "numbered",
+        "environment",
+        "figure",
+        "caption",
+        "table"
+      ]
+    },
+    {
+      "heading": "Template Syntax",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 67,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "syntax"
+      ]
+    },
+    {
+      "heading": "Tab Stops",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 69,
+      "content": "Tab stops mark positions where the cursor should stop when pressing Tab: #+BEGIN_EXAMPLE ${1:First placeholder} ${2:Second placeholder} $0  # Final cursor position #+END_EXAMPLE After inserting, press Tab to move between placeholders.",
+      "path": [
+        "Template Syntax"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tab",
+        "stops",
+        "mark",
+        "positions",
+        "cursor",
+        "stop",
+        "pressing",
+        "beginexample",
+        "1first",
+        "placeholder",
+        "2second",
+        "final",
+        "position",
+        "endexample",
+        "after",
+        "inserting",
+        "press",
+        "move",
+        "between",
+        "placeholders"
+      ]
+    },
+    {
+      "heading": "Auto-fill Variables",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 81,
+      "content": "These variables are automatically replaced when the template is inserted: | Variable         | Description                                | |------------------+--------------------------------------------| | ={{date}}=         | Current date (configurable format)         | | ={{time}}=         | Current time (configurable format)         | | ={{datetime}}=     | Date and time combined                     | | ={{year}}=         | Current year (yyyy)                        | | ={{month}}=        |",
+      "path": [
+        "Template Syntax"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "auto-fill",
+        "variables",
+        "automatically",
+        "replaced",
+        "template",
+        "inserted",
+        "variable",
+        "description",
+        "--------------------------------------------------------------",
+        "date",
+        "current",
+        "configurable",
+        "format",
+        "time",
+        "datetime",
+        "combined",
+        "year",
+        "yyyy",
+        "month"
+      ]
+    },
+    {
+      "heading": "Named Variables",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 104,
+      "content": "Named variables prompt the user for input: #+BEGIN_EXAMPLE ${title}           # Prompts for \"title\" ${title:Default}   # Prompts with default value #+END_EXAMPLE",
+      "path": [
+        "Template Syntax"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "named",
+        "variables",
+        "prompt",
+        "user",
+        "input",
+        "beginexample",
+        "title",
+        "prompts",
+        "titledefault",
+        "default",
+        "value",
+        "endexample"
+      ]
+    },
+    {
+      "heading": "Creating User Templates",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 113,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "creating",
+        "user",
+        "templates"
+      ]
+    },
+    {
+      "heading": "Template Directory Structure",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 115,
+      "content": "User templates are stored in =~/.scimax-templates= (configurable): #+BEGIN_EXAMPLE ~/.scimax-templates/ ├── org/ │   ├── my-article.org │   └── weekly-report.org ├── markdown/ │   └── project-proposal.md └── latex/ └── thesis-chapter.tex #+END_EXAMPLE",
+      "path": [
+        "Creating User Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "directory",
+        "structure",
+        "user",
+        "templates",
+        "stored",
+        "scimax-templates",
+        "configurable",
+        "beginexample",
+        "org",
+        "my-articleorg",
+        "weekly-reportorg",
+        "markdown",
+        "project-proposalmd",
+        "latex",
+        "thesis-chaptertex",
+        "endexample"
+      ]
+    },
+    {
+      "heading": "Template File Format",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 130,
+      "content": "Templates can include metadata in header comments:",
+      "path": [
+        "Creating User Templates"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "format",
+        "templates",
+        "include",
+        "metadata",
+        "header",
+        "comments"
+      ]
+    },
+    {
+      "heading": "Org-mode Template",
+      "level": 3,
+      "file": "35-templates.org",
+      "line": 134,
+      "content": "#+BEGIN_SRC org #+NAME: Weekly Report #+DESCRIPTION: Weekly status report template #+CATEGORY: Work ,* Week of {{date}} ,** Accomplishments - ${1:Accomplishment 1} ,** Next Week - ${2:Plan 1} ,** Blockers ${3:None} $0 #+END_SRC",
+      "path": [
+        "Creating User Templates",
+        "Template File Format"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "org-mode",
+        "template",
+        "beginsrc",
+        "org",
+        "name",
+        "weekly",
+        "report",
+        "description",
+        "status",
+        "category",
+        "work",
+        "week",
+        "date",
+        "accomplishments",
+        "1accomplishment",
+        "next",
+        "2plan",
+        "blockers",
+        "3none",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Markdown Template",
+      "level": 3,
+      "file": "35-templates.org",
+      "line": 153,
+      "content": "#+BEGIN_SRC markdown <!-- NAME: Project Proposal --> <!-- DESCRIPTION: Proposal for new projects --> <!-- CATEGORY: Work --> # ${1:Project Name} ## Overview ${2:Brief description} ## Goals - ${3:Goal 1} $0 #+END_SRC",
+      "path": [
+        "Creating User Templates",
+        "Template File Format"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "markdown",
+        "template",
+        "beginsrc",
+        "name",
+        "project",
+        "proposal",
+        "description",
+        "new",
+        "projects",
+        "category",
+        "work",
+        "1project",
+        "overview",
+        "2brief",
+        "goals",
+        "3goal",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "LaTeX Template",
+      "level": 3,
+      "file": "35-templates.org",
+      "line": 171,
+      "content": "#+BEGIN_SRC latex % NAME: Thesis Chapter % DESCRIPTION: Chapter template for thesis % CATEGORY: Academic \\chapter{${1:Chapter Title}} \\label{chap:${2:label}} ${3:Introduction paragraph} \\section{${4:Section Title}} $0 #+END_SRC",
+      "path": [
+        "Creating User Templates",
+        "Template File Format"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "latex",
+        "template",
+        "beginsrc",
+        "name",
+        "thesis",
+        "chapter",
+        "description",
+        "category",
+        "academic",
+        "1chapter",
+        "title",
+        "label",
+        "chap",
+        "2label",
+        "3introduction",
+        "paragraph",
+        "section",
+        "4section",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Create Template from Selection",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 187,
+      "content": "1. Select text in the editor 2. Press =C-c C-t s= or run =Scimax: Create Template from Selection= 3. Enter a name for the template 4. Optionally add a description 5. The template is saved to your templates directory",
+      "path": [
+        "Creating User Templates"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "create",
+        "template",
+        "selection",
+        "select",
+        "text",
+        "editor",
+        "press",
+        "c-c",
+        "c-t",
+        "run",
+        "scimax",
+        "enter",
+        "name",
+        "optionally",
+        "add",
+        "description",
+        "saved",
+        "templates",
+        "directory"
+      ]
+    },
+    {
+      "heading": "Commands",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 195,
+      "content": "| Command                              | Keybinding    | Description                        | |--------------------------------------+---------------+------------------------------------| | =scimax.templates.quickInsert=       | =C-c C-t i=   | Insert template (auto-detect format) | | =scimax.templates.insert=            |               | Insert any template                | | =scimax.templates.insertOrg=         |               | Insert org-mode template           | | =scimax.templates.insertMa",
+      "path": [],
+      "commands": [
+        "scimax.templates.quickInsert",
+        "scimax.templates.insert",
+        "scimax.templates.insertOrg",
+        "scimax.templates.insertMa"
+      ],
+      "keybindings": [
+        "C-c C-t"
+      ],
+      "keywords": [
+        "commands",
+        "command",
+        "keybinding",
+        "description",
+        "-----------------------------------------------------------------------------------------",
+        "c-c",
+        "c-t",
+        "insert",
+        "template",
+        "auto-detect",
+        "format",
+        "any",
+        "org-mode"
+      ]
+    },
+    {
+      "heading": "Configuration",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 214,
+      "content": "| Setting                         | Default            | Description                          | |---------------------------------+--------------------+--------------------------------------| | =scimax.templates.directory=    | =~/.scimax-templates= | Directory for user templates         | | =scimax.templates.defaultFormat=| =org=              | Default format for new templates     | | =scimax.templates.dateFormat=   | =yyyy-MM-dd=       | Date format (date-fns)               | | =scimax.templat",
+      "path": [],
+      "commands": [
+        "scimax.templates.directory",
+        "scimax.templates.defaultFormat",
+        "scimax.templates.dateFormat",
+        "scimax.templat"
+      ],
+      "keybindings": [
+        "M-dd"
+      ],
+      "keywords": [
+        "configuration",
+        "setting",
+        "default",
+        "description",
+        "-------------------------------------------------------------------------------------------",
+        "scimax-templates",
+        "directory",
+        "user",
+        "templates",
+        "org",
+        "format",
+        "new",
+        "yyyy-mm-dd",
+        "date",
+        "date-fns"
+      ]
+    },
+    {
+      "heading": "Date Format Reference",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 224,
+      "content": "The date and time formats use [[https://date-fns.org/docs/format][date-fns format strings]]: | Pattern | Description          | Example   | |---------+----------------------+-----------| | =yyyy=  | Full year            | 2024      | | =yy=    | 2-digit year         | 24        | | =MM=    | Month (2 digits)     | 01-12     | | =MMM=   | Month abbreviation   | Jan       | | =MMMM=  | Full month name      | January   | | =dd=    | Day (2 digits)       | 01-31     | | =EEEE=  | Full day name      ",
+      "path": [
+        "Configuration"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "date",
+        "format",
+        "reference",
+        "time",
+        "formats",
+        "httpsdate-fnsorgdocsformat",
+        "date-fns",
+        "strings",
+        "pattern",
+        "description",
+        "example",
+        "------------------------------------------",
+        "yyyy",
+        "full",
+        "year",
+        "2024",
+        "2-digit",
+        "month",
+        "digits",
+        "01-12"
+      ]
+    },
+    {
+      "heading": "Hydra Menu",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 243,
+      "content": "The template system has a dedicated Hydra submenu accessible from the main menu (=C-c C-m t=): | Key | Action              | |-----+---------------------| | =i= | Insert template     | | =o= | Insert org template | | =m= | Insert markdown     | | =x= | Insert LaTeX        | | =n= | New file            | | =O= | New org file        | | =M= | New markdown file   | | =X= | New LaTeX file      | | =l= | List all templates  | | =s= | Save selection      | | =e= | Edit templates      | | =d= | Open di",
+      "path": [],
+      "commands": [],
+      "keybindings": [
+        "C-c C-m"
+      ],
+      "keywords": [
+        "hydra",
+        "menu",
+        "template",
+        "system",
+        "dedicated",
+        "submenu",
+        "accessible",
+        "main",
+        "c-c",
+        "c-m",
+        "key",
+        "action",
+        "--------------------------",
+        "insert",
+        "org",
+        "markdown",
+        "latex",
+        "new",
+        "list",
+        "templates"
+      ]
+    },
+    {
+      "heading": "Tips and Workflows",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 263,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "tips",
+        "workflows"
+      ]
+    },
+    {
+      "heading": "Project-Specific Templates",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 265,
+      "content": "Create a =.scimax-templates= directory in your project for project-specific templates: #+BEGIN_EXAMPLE my-project/ ├── .scimax-templates/ │   └── org/ │       └── experiment-notes.org ├── src/ └── docs/ #+END_EXAMPLE Then configure =scimax.templates.directory= in your workspace settings.",
+      "path": [
+        "Tips and Workflows"
+      ],
+      "commands": [
+        "scimax.templates.directory"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "project-specific",
+        "templates",
+        "create",
+        "scimax-templates",
+        "directory",
+        "project",
+        "beginexample",
+        "my-project",
+        "org",
+        "experiment-notesorg",
+        "src",
+        "docs",
+        "endexample",
+        "configure",
+        "workspace",
+        "settings"
+      ]
+    },
+    {
+      "heading": "Template Libraries",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 280,
+      "content": "Share templates across projects by: 1. Creating a Git repository for your templates 2. Cloning it to =~/.scimax-templates= 3. Pulling updates when templates change",
+      "path": [
+        "Tips and Workflows"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "template",
+        "libraries",
+        "share",
+        "templates",
+        "across",
+        "projects",
+        "creating",
+        "git",
+        "repository",
+        "cloning",
+        "scimax-templates",
+        "pulling",
+        "updates",
+        "change"
+      ]
+    },
+    {
+      "heading": "Combining with Capture",
+      "level": 2,
+      "file": "35-templates.org",
+      "line": 288,
+      "content": "Templates and capture serve different purposes: - *Templates*: Create complete documents or insert large content blocks - *Capture*: Quick notes appended to existing files Use templates for new documents, capture for quick additions.",
+      "path": [
+        "Tips and Workflows"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "combining",
+        "capture",
+        "templates",
+        "serve",
+        "different",
+        "purposes",
+        "create",
+        "complete",
+        "documents",
+        "insert",
+        "large",
+        "content",
+        "blocks",
+        "quick",
+        "notes",
+        "appended",
+        "existing",
+        "new",
+        "additions"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 1,
+      "file": "35-templates.org",
+      "line": 297,
+      "content": "- [[file:15-capture.org][Capture]] - Quick note capture system - [[file:14-journal.org][Journal]] - Date-based journaling (uses templates) - [[file:07-source-blocks.org][Source Blocks]] - Code execution in org-mode - [[file:22-hydra-menus.org][Hydra Menus]] - Menu system navigation",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "related",
+        "topics",
+        "file15-captureorg",
+        "capture",
+        "quick",
+        "note",
+        "system",
+        "file14-journalorg",
+        "journal",
+        "date-based",
+        "journaling",
+        "uses",
+        "templates",
+        "file07-source-blocksorg",
+        "source",
+        "blocks",
+        "code",
+        "execution",
+        "org-mode",
+        "file22-hydra-menusorg"
       ]
     },
     {
