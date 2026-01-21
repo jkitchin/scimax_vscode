@@ -6,6 +6,8 @@ import { registerJournalCommands } from './journal/commands';
 // Database uses lazy loading to avoid blocking extension activation
 import { setExtensionContext, closeDatabase } from './database/lazyDb';
 import { registerDbCommands } from './database/commands';
+import { registerDatabaseView } from './database/databaseViewProvider';
+import { registerContextHelp } from './help/contextHelp';
 import { ReferenceManager } from './references/referenceManager';
 import { registerReferenceCommands } from './references/commands';
 import { registerZoteroCommands } from './zotero/commands';
@@ -113,6 +115,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Database Commands (uses lazy loading - db initializes on first command use)
     registerDbCommands(context);
+
+    // Register Database View
+    registerDatabaseView(context);
+
+    // Register Context Help
+    registerContextHelp(context);
 
     // Watch for configuration changes
     context.subscriptions.push(

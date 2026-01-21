@@ -126,6 +126,8 @@ export interface AgendaView {
     groups: AgendaGroup[];
     /** Total item count */
     totalItems: number;
+    /** Total files scanned */
+    totalFiles: number;
     /** Date range covered */
     dateRange: { start: Date; end: Date };
 }
@@ -169,7 +171,8 @@ export function generateAgendaView(
     headlines: HeadlineElement[],
     files: Map<string, string>, // headline -> file path
     config: Partial<AgendaViewConfig> = {},
-    diarySexps: DiarySexpEntry[] = []
+    diarySexps: DiarySexpEntry[] = [],
+    totalFiles: number = 0
 ): AgendaView {
     const fullConfig: AgendaViewConfig = {
         type: 'week',
@@ -214,6 +217,7 @@ export function generateAgendaView(
         config: fullConfig,
         groups,
         totalItems: sortedItems.length,
+        totalFiles,
         dateRange: { start: startDate, end: endDate },
     };
 }

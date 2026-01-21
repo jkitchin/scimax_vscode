@@ -25,6 +25,8 @@ import {
     formatTimeReport,
     formatDuration,
 } from '../parser/orgClocking';
+import { resolveScimaxPath } from '../utils/pathResolver';
+import { minimatch } from 'minimatch';
 
 // =============================================================================
 // Types
@@ -40,14 +42,16 @@ export interface AgendaFile {
 }
 
 export interface AgendaConfig {
-    /** Directories or files to scan for org files */
-    agendaFiles: string[];
+    /** Include journal directory in agenda scanning */
+    includeJournal: boolean;
     /** Also scan org files in workspace folders */
     includeWorkspace: boolean;
-    /** Patterns to exclude */
-    excludePatterns: string[];
-    /** Specific files to ignore (absolute paths) */
-    ignoreFiles: string[];
+    /** Include all scimax projects in agenda scanning */
+    includeProjects: boolean;
+    /** Additional directories or files to include */
+    include: string[];
+    /** Patterns or absolute paths to exclude (globs and paths) */
+    exclude: string[];
     /** Default view span in days */
     defaultSpan: number;
     /** Show done items */
@@ -126,10 +130,11 @@ export class AgendaManager {
     private loadConfig(): AgendaConfig {
         const config = vscode.workspace.getConfiguration('scimax.agenda');
         return {
-            agendaFiles: config.get<string[]>('files', []),
+            includeJournal: config.get<boolean>('includeJournal', true),
             includeWorkspace: config.get<boolean>('includeWorkspace', true),
-            excludePatterns: config.get<string[]>('excludePatterns', ['**/node_modules/**', '**/.git/**', '**/archive/**']),
-            ignoreFiles: config.get<string[]>('ignoreFiles', []),
+            includeProjects: config.get<boolean>('includeProjects', true),
+            include: config.get<string[]>('include', []),
+            exclude: config.get<string[]>('exclude', ['**/node_modules/**', '**/.git/**', '**/archive/**']),
             defaultSpan: config.get<number>('defaultSpan', 7),
             showDone: config.get<boolean>('showDone', false),
             showHabits: config.get<boolean>('showHabits', true),
@@ -142,42 +147,72 @@ export class AgendaManager {
     }
 
     /**
-     * Check if a file is in the ignore list
+     * Check if a file should be excluded (by absolute path or glob pattern)
      */
-    private isFileIgnored(filePath: string): boolean {
-        return this.config.ignoreFiles.includes(filePath);
+    private isFileExcluded(filePath: string): boolean {
+        for (const pattern of this.config.exclude) {
+            // Expand ~ in pattern
+            let expandedPattern = pattern;
+            if (pattern.startsWith('~')) {
+                expandedPattern = pattern.replace(/^~/, process.env.HOME || '');
+            }
+
+            if (pattern.includes('*')) {
+                // It's a glob pattern
+                if (minimatch(filePath, expandedPattern, { matchBase: true })) {
+                    return true;
+                }
+            } else {
+                // It's an absolute path
+                if (filePath === expandedPattern) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
-     * Add a file to the ignore list and remove from cache
+     * Get project paths from global state (shared with ProjectileManager)
      */
-    async ignoreFile(filePath: string): Promise<void> {
+    private getProjectPaths(): string[] {
+        interface Project {
+            path: string;
+        }
+        const projects = this.context.globalState.get<Project[]>('scimax.projects', []);
+        return projects.map(p => p.path).filter(p => fs.existsSync(p));
+    }
+
+    /**
+     * Add a file to the exclude list and remove from cache
+     */
+    async excludeFile(filePath: string): Promise<void> {
         const config = vscode.workspace.getConfiguration('scimax.agenda');
-        const current = config.get<string[]>('ignoreFiles', []);
+        const current = config.get<string[]>('exclude', []);
 
         if (!current.includes(filePath)) {
-            await config.update('ignoreFiles', [...current, filePath], vscode.ConfigurationTarget.Global);
+            await config.update('exclude', [...current, filePath], vscode.ConfigurationTarget.Global);
             // Remove from cache
             this.fileCache.delete(filePath);
-            this.log(`Agenda: Added ${filePath} to ignore list`);
+            this.log(`Agenda: Added ${filePath} to exclude list`);
         }
     }
 
     /**
-     * Remove a file from the ignore list
+     * Remove a file from the exclude list
      */
-    async unignoreFile(filePath: string): Promise<void> {
+    async unexcludeFile(filePath: string): Promise<void> {
         const config = vscode.workspace.getConfiguration('scimax.agenda');
-        const current = config.get<string[]>('ignoreFiles', []);
+        const current = config.get<string[]>('exclude', []);
 
         const index = current.indexOf(filePath);
         if (index !== -1) {
             const updated = [...current];
             updated.splice(index, 1);
-            await config.update('ignoreFiles', updated, vscode.ConfigurationTarget.Global);
+            await config.update('exclude', updated, vscode.ConfigurationTarget.Global);
             // Remove from cache so it gets re-scanned
             this.fileCache.delete(filePath);
-            this.log(`Agenda: Removed ${filePath} from ignore list`);
+            this.log(`Agenda: Removed ${filePath} from exclude list`);
         }
     }
 
@@ -374,6 +409,13 @@ export class AgendaManager {
     }
 
     /**
+     * Get glob patterns from the exclude list (patterns containing *)
+     */
+    private getExcludeGlobPatterns(): string[] {
+        return this.config.exclude.filter(p => p.includes('*'));
+    }
+
+    /**
      * Async generator that lazily yields agenda files in batches
      * Supports cancellation and rate limiting
      */
@@ -381,25 +423,47 @@ export class AgendaManager {
         token?: vscode.CancellationToken
     ): AsyncGenerator<string[], void, unknown> {
         const allFiles: string[] = [];
+        const excludeGlobs = this.getExcludeGlobPatterns();
+        const excludePattern = excludeGlobs.length > 0 ? `{${excludeGlobs.join(',')}}` : undefined;
 
-        // Collect files from configured agenda files/directories
-        for (const pattern of this.config.agendaFiles) {
+        // Include journal directory if enabled
+        if (this.config.includeJournal) {
             if (token?.isCancellationRequested) return;
-            const expanded = await this.expandPattern(pattern);
-            allFiles.push(...expanded);
+            const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
+            if (journalDir && fs.existsSync(journalDir)) {
+                const expanded = await this.expandPattern(journalDir);
+                allFiles.push(...expanded);
+            }
         }
 
-        // Also scan workspace folders if enabled
+        // Include workspace folders if enabled
         if (this.config.includeWorkspace) {
             const workspaceFolders = vscode.workspace.workspaceFolders || [];
             for (const folder of workspaceFolders) {
                 if (token?.isCancellationRequested) return;
                 const orgFiles = await vscode.workspace.findFiles(
                     new vscode.RelativePattern(folder, '**/*.org'),
-                    `{${this.config.excludePatterns.join(',')}}`
+                    excludePattern
                 );
                 allFiles.push(...orgFiles.map(uri => uri.fsPath));
             }
+        }
+
+        // Include all scimax projects if enabled
+        if (this.config.includeProjects) {
+            const projectPaths = this.getProjectPaths();
+            for (const projectPath of projectPaths) {
+                if (token?.isCancellationRequested) return;
+                const expanded = await this.expandPattern(projectPath);
+                allFiles.push(...expanded);
+            }
+        }
+
+        // Add additional include paths
+        for (const pattern of this.config.include) {
+            if (token?.isCancellationRequested) return;
+            const expanded = await this.expandPattern(pattern);
+            allFiles.push(...expanded);
         }
 
         // Deduplicate
@@ -407,7 +471,7 @@ export class AgendaManager {
 
         // Log what we're about to scan
         this.log(`Agenda: Found ${uniqueFiles.length} org files to scan`);
-        this.log(`Agenda: Config: agendaFiles=${JSON.stringify(this.config.agendaFiles)}`);
+        this.log(`Agenda: Config: includeJournal=${this.config.includeJournal}, includeWorkspace=${this.config.includeWorkspace}, includeProjects=${this.config.includeProjects}, include=${JSON.stringify(this.config.include)}`);
         this.log(`Agenda: Workspace folders: ${vscode.workspace.workspaceFolders?.map(f => f.uri.fsPath).join(', ') || 'none'}`);
         // Only show output channel in verbose mode to avoid popup on every save
         if (this.verbose) {
@@ -421,7 +485,7 @@ export class AgendaManager {
         if (filesToProcess.length < uniqueFiles.length) {
             this.log(
                 `Agenda: Limited scan to ${maxFiles} files (${uniqueFiles.length} total found). ` +
-                `Configure 'scimax.agenda.files' to specify directories or increase 'scimax.agenda.maxFiles'.`
+                `Configure 'scimax.agenda.include' to specify directories or increase 'scimax.agenda.maxFiles'.`
             );
         }
 
@@ -450,23 +514,43 @@ export class AgendaManager {
      */
     async getAgendaFiles(): Promise<string[]> {
         const files: string[] = [];
+        const excludeGlobs = this.getExcludeGlobPatterns();
+        const excludePattern = excludeGlobs.length > 0 ? `{${excludeGlobs.join(',')}}` : undefined;
 
-        // Add configured agenda files/directories
-        for (const pattern of this.config.agendaFiles) {
-            const expanded = await this.expandPattern(pattern);
-            files.push(...expanded);
+        // Include journal directory if enabled
+        if (this.config.includeJournal) {
+            const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
+            if (journalDir && fs.existsSync(journalDir)) {
+                const expanded = await this.expandPattern(journalDir);
+                files.push(...expanded);
+            }
         }
 
-        // Also scan workspace folders if enabled
+        // Include workspace folders if enabled
         if (this.config.includeWorkspace) {
             const workspaceFolders = vscode.workspace.workspaceFolders || [];
             for (const folder of workspaceFolders) {
                 const orgFiles = await vscode.workspace.findFiles(
                     new vscode.RelativePattern(folder, '**/*.org'),
-                    `{${this.config.excludePatterns.join(',')}}`
+                    excludePattern
                 );
                 files.push(...orgFiles.map(uri => uri.fsPath));
             }
+        }
+
+        // Include all scimax projects if enabled
+        if (this.config.includeProjects) {
+            const projectPaths = this.getProjectPaths();
+            for (const projectPath of projectPaths) {
+                const expanded = await this.expandPattern(projectPath);
+                files.push(...expanded);
+            }
+        }
+
+        // Add additional include paths
+        for (const pattern of this.config.include) {
+            const expanded = await this.expandPattern(pattern);
+            files.push(...expanded);
         }
 
         return [...new Set(files)]; // Deduplicate
@@ -478,13 +562,16 @@ export class AgendaManager {
             pattern = pattern.replace(/^~/, process.env.HOME || '');
         }
 
+        const excludeGlobs = this.getExcludeGlobPatterns();
+        const excludePattern = excludeGlobs.length > 0 ? `{${excludeGlobs.join(',')}}` : undefined;
+
         // If it's a directory, find all org files in it
         try {
             const stat = fs.statSync(pattern);
             if (stat.isDirectory()) {
                 const files = await vscode.workspace.findFiles(
                     new vscode.RelativePattern(pattern, '**/*.org'),
-                    `{${this.config.excludePatterns.join(',')}}`
+                    excludePattern
                 );
                 return files.map(uri => uri.fsPath);
             } else if (stat.isFile() && pattern.endsWith('.org')) {
@@ -506,9 +593,9 @@ export class AgendaManager {
         const basename = path.basename(filePath);
         const startTime = Date.now();
 
-        // Check if file is in ignore list
-        if (this.isFileIgnored(filePath)) {
-            this.log(`  ${basename}: ignored`);
+        // Check if file is excluded
+        if (this.isFileExcluded(filePath)) {
+            this.log(`  ${basename}: excluded`);
             return null;
         }
 
@@ -813,7 +900,7 @@ export class AgendaManager {
             showHabits: this.config.showHabits,
             days: this.config.defaultSpan,
             ...config,
-        }, allDiarySexps);
+        }, allDiarySexps, filesProcessed);
     }
 
     private collectHeadlinesWithFile(
@@ -899,6 +986,45 @@ export class AgendaManager {
         return this.fileCache;
     }
 
+    /**
+     * Get a description of the agenda sources for display in tooltips
+     */
+    getSourcesDescription(): string {
+        const parts: string[] = [];
+
+        if (this.config.includeJournal) {
+            const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
+            if (journalDir) {
+                parts.push(`Journal: ${journalDir}`);
+            }
+        }
+
+        if (this.config.includeWorkspace) {
+            const workspaceFolders = vscode.workspace.workspaceFolders || [];
+            if (workspaceFolders.length > 0) {
+                parts.push(`Workspace: ${workspaceFolders.map(f => f.name).join(', ')}`);
+            }
+        }
+
+        if (this.config.includeProjects) {
+            const projectPaths = this.getProjectPaths();
+            if (projectPaths.length > 0) {
+                parts.push(`Projects: ${projectPaths.length} registered`);
+            }
+        }
+
+        if (this.config.include.length > 0) {
+            parts.push(`Include: ${this.config.include.join(', ')}`);
+        }
+
+        if (this.config.exclude.length > 0) {
+            const excludeCount = this.config.exclude.length;
+            parts.push(`Exclude: ${excludeCount} patterns`);
+        }
+
+        return parts.join('\n');
+    }
+
     dispose(): void {
         // Cancel any ongoing scan
         this.cancelScan();
@@ -915,7 +1041,29 @@ export class AgendaManager {
 // Tree View Provider
 // =============================================================================
 
-type AgendaTreeItem = AgendaGroupItem | AgendaItemNode;
+type AgendaTreeItem = AgendaInfoItem | AgendaGroupItem | AgendaItemNode;
+
+/**
+ * Info item showing agenda sources (displayed at top of tree)
+ */
+class AgendaInfoItem extends vscode.TreeItem {
+    constructor(
+        public readonly fileCount: number,
+        public readonly sourcesDescription: string
+    ) {
+        super(`Scanning ${fileCount} files`, vscode.TreeItemCollapsibleState.None);
+        this.description = '';
+        this.tooltip = new vscode.MarkdownString(
+            `**Agenda Sources**\n\n${sourcesDescription.split('\n').map(line => `- ${line}`).join('\n')}\n\n*Click to configure*`
+        );
+        this.iconPath = new vscode.ThemeIcon('info');
+        this.contextValue = 'agendaInfo';
+        this.command = {
+            command: 'scimax.agenda.configure',
+            title: 'Configure Agenda',
+        };
+    }
+}
 
 class AgendaGroupItem extends vscode.TreeItem {
     constructor(
@@ -1012,10 +1160,18 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
     private refreshInProgress: Promise<void> | null = null;
     private refreshDebounceTimer: NodeJS.Timeout | null = null;
     private static readonly REFRESH_DEBOUNCE_MS = 300;
+    private treeView: vscode.TreeView<AgendaTreeItem> | null = null;
 
     constructor(private manager: AgendaManager) {
         // Debounce refresh requests from manager to avoid cascading updates
         manager.onDidRefresh(() => this.debouncedRefresh());
+    }
+
+    /**
+     * Set the tree view reference for updating description/tooltip
+     */
+    setTreeView(treeView: vscode.TreeView<AgendaTreeItem>): void {
+        this.treeView = treeView;
     }
 
     private debouncedRefresh(): void {
@@ -1058,6 +1214,15 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
         } else {
             this.todoList = await this.manager.getTodoList({ excludeDone: true });
         }
+
+        // Update tree view description with file count
+        if (this.treeView) {
+            const fileCount = this.agendaView?.totalFiles || 0;
+            this.treeView.description = `${fileCount} files`;
+            // Tooltip shows the sources being scanned
+            this.treeView.message = undefined; // Clear any loading message
+        }
+
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -1072,25 +1237,35 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
                 await this.refreshInProgress;
             }
 
-            // Root level - return groups
+            // Root level - return info item + groups
+            const result: AgendaTreeItem[] = [];
+
+            // Add info item showing file count and sources
+            const fileCount = this.agendaView?.totalFiles || 0;
+            const sourcesDescription = this.manager.getSourcesDescription();
+            if (fileCount > 0 || sourcesDescription) {
+                result.push(new AgendaInfoItem(fileCount, sourcesDescription));
+            }
+
             if (this.viewMode === 'agenda') {
                 if (!this.agendaView) {
                     // No data yet - trigger a refresh and wait for it
                     await this.refresh();
                 }
                 if (!this.agendaView) {
-                    return []; // Still no data after refresh (scan may have been cancelled)
+                    return result; // Still no data after refresh (scan may have been cancelled)
                 }
-                return this.agendaView.groups
+                const groups = this.agendaView.groups
                     .filter(g => g.items.length > 0)
                     .map(g => new AgendaGroupItem(g, 'agenda'));
+                result.push(...groups);
             } else {
                 if (!this.todoList) {
                     // No data yet - trigger a refresh and wait for it
                     await this.refresh();
                 }
                 if (!this.todoList) {
-                    return []; // Still no data after refresh
+                    return result; // Still no data after refresh
                 }
                 // Convert TODO list to groups
                 const groups: AgendaGroup[] = [];
@@ -1099,14 +1274,17 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
                         groups.push({ label: state, key: state, items });
                     }
                 }
-                return groups.map(g => new AgendaGroupItem(g, 'todo'));
+                result.push(...groups.map(g => new AgendaGroupItem(g, 'todo')));
             }
+
+            return result;
         }
 
         if (element instanceof AgendaGroupItem) {
             return element.group.items.map(item => new AgendaItemNode(item));
         }
 
+        // AgendaInfoItem has no children
         return [];
     }
 }
@@ -1124,6 +1302,9 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
         treeDataProvider: treeProvider,
         showCollapseAll: true,
     });
+
+    // Connect tree view to provider for description/tooltip updates
+    treeProvider.setTreeView(treeView);
 
     context.subscriptions.push(treeView);
     context.subscriptions.push({ dispose: () => manager.dispose() });
@@ -1162,11 +1343,11 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             manager.toggleVerbose();
         }),
 
-        // Ignore/unignore file commands
+        // Exclude/unexclude file commands
         vscode.commands.registerCommand('scimax.agenda.ignoreFile', async () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
-                vscode.window.showWarningMessage('No active file to ignore');
+                vscode.window.showWarningMessage('No active file to exclude');
                 return;
             }
             const filePath = editor.document.uri.fsPath;
@@ -1174,33 +1355,36 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
                 vscode.window.showWarningMessage('Current file is not an org file');
                 return;
             }
-            await manager.ignoreFile(filePath);
-            vscode.window.showInformationMessage(`Added to agenda ignore list: ${path.basename(filePath)}`);
+            await manager.excludeFile(filePath);
+            vscode.window.showInformationMessage(`Added to agenda exclude list: ${path.basename(filePath)}`);
             treeProvider.refresh();
         }),
 
         vscode.commands.registerCommand('scimax.agenda.unignoreFile', async () => {
             const config = vscode.workspace.getConfiguration('scimax.agenda');
-            const ignoreFiles = config.get<string[]>('ignoreFiles', []);
+            const excludeList = config.get<string[]>('exclude', []);
 
-            if (ignoreFiles.length === 0) {
-                vscode.window.showInformationMessage('No files in ignore list');
+            // Filter to show only absolute paths (not glob patterns)
+            const absolutePaths = excludeList.filter(f => !f.includes('*'));
+
+            if (absolutePaths.length === 0) {
+                vscode.window.showInformationMessage('No files in exclude list');
                 return;
             }
 
-            const items = ignoreFiles.map(f => ({
+            const items = absolutePaths.map(f => ({
                 label: path.basename(f),
                 description: f,
                 filePath: f,
             }));
 
             const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: 'Select file to remove from ignore list',
+                placeHolder: 'Select file to remove from exclude list',
             });
 
             if (selected) {
-                await manager.unignoreFile(selected.filePath);
-                vscode.window.showInformationMessage(`Removed from agenda ignore list: ${selected.label}`);
+                await manager.unexcludeFile(selected.filePath);
+                vscode.window.showInformationMessage(`Removed from agenda exclude list: ${selected.label}`);
                 treeProvider.refresh();
             }
         }),

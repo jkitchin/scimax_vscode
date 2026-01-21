@@ -96,7 +96,7 @@
         {
           "id": "scimax",
           "title": "Scimax",
-          "icon": "$(beaker)"
+          "icon": "media/scimax-icon.svg"
         }
       ]
     },
@@ -106,6 +106,11 @@
           "id": "scimax.agenda",
           "name": "Agenda",
           "icon": "$(calendar)"
+        },
+        {
+          "id": "scimax.database",
+          "name": "Database",
+          "icon": "$(database)"
         },
         {
           "id": "scimax.projects",
@@ -957,6 +962,11 @@
       {
         "command": "scimax.db.stats",
         "title": "Scimax: Show Database Stats"
+      },
+      {
+        "command": "scimax.database.refresh",
+        "title": "Scimax: Refresh Database View",
+        "icon": "$(refresh)"
       },
       {
         "command": "scimax.db.searchSemantic",
@@ -1982,6 +1992,11 @@
         "title": "Scimax: Apropos (Search Documentation)"
       },
       {
+        "command": "scimax.contextHelp",
+        "title": "Scimax: Context Help",
+        "icon": "$(question)"
+      },
+      {
         "command": "scimax.showDebugInfo",
         "title": "Scimax: Show Debug/Diagnostic Info",
         "icon": "$(info)"
@@ -2125,11 +2140,11 @@
       },
       {
         "command": "scimax.agenda.ignoreFile",
-        "title": "Scimax: Ignore File in Agenda"
+        "title": "Scimax: Exclude File from Agenda"
       },
       {
         "command": "scimax.agenda.unignoreFile",
-        "title": "Scimax: Unignore File in Agenda"
+        "title": "Scimax: Remove File from Agenda Exclude List"
       },
       {
         "command": "scimax.agenda.showAgenda",
@@ -2860,6 +2875,12 @@
         "mac": "ctrl+h a"
       },
       {
+        "command": "scimax.contextHelp",
+        "key": "ctrl+c shift+/",
+        "mac": "ctrl+c shift+/",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex|tex/"
+      },
+      {
         "command": "scimax.agenda.menu",
         "key": "ctrl+c a a",
         "mac": "ctrl+c a a"
@@ -2900,7 +2921,7 @@
         "command": "scimax.org.executeBlock",
         "key": "ctrl+enter",
         "mac": "cmd+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock && !notebookEditorFocused"
       },
       {
         "command": "scimax.ref.insertCitation",
@@ -3234,7 +3255,7 @@
         "command": "scimax.heading.insert",
         "key": "ctrl+enter",
         "mac": "ctrl+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inSourceBlock && !scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.inSourceBlock && !scimax.onHeading && !notebookEditorFocused"
       },
       {
         "command": "scimax.projectile.switch",
@@ -3568,7 +3589,7 @@
         "command": "scimax.org.insertHeading",
         "key": "ctrl+enter",
         "mac": "ctrl+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onHeading && !notebookEditorFocused"
       },
       {
         "command": "scimax.org.openLink",
@@ -3640,13 +3661,13 @@
         "command": "scimax.ob.executeAndNext",
         "key": "shift+enter",
         "mac": "shift+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock && !notebookEditorFocused"
       },
       {
         "command": "scimax.ob.executeAndNew",
         "key": "alt+shift+enter",
         "mac": "alt+shift+enter",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inSourceBlock && !notebookEditorFocused"
       },
       {
         "command": "scimax.ob.splitBlock",
@@ -4608,27 +4629,30 @@
           "maximum": 100,
           "description": "Maximum number of marks to store in the mark ring"
         },
-        "scimax.db.directories": {
+        "scimax.db.includeJournal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include journal directory in database indexing"
+        },
+        "scimax.db.includeWorkspace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include workspace folders in database indexing"
+        },
+        "scimax.db.includeProjects": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include all scimax projects in database indexing"
+        },
+        "scimax.db.include": {
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [],
-          "description": "Additional directories to index for search"
+          "description": "Additional directories or files to index (supports ~ for home directory)"
         },
-        "scimax.db.excludePatterns": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [
-            "**/node_modules/**",
-            "**/.git/**",
-            "**/dist/**"
-          ],
-          "description": "Glob patterns to exclude from indexing"
-        },
-        "scimax.db.ignorePatterns": {
+        "scimax.db.exclude": {
           "type": "array",
           "items": {
             "type": "string"
@@ -4639,7 +4663,7 @@
             "**/dist/**",
             "**/build/**"
           ],
-          "description": "Patterns for files to ignore during indexing"
+          "description": "Patterns or paths to exclude from indexing (globs like **/archive/** and absolute paths)"
         },
         "scimax.db.autoIndex": {
           "type": "boolean",
@@ -4657,16 +4681,30 @@
           "minimum": 1000,
           "description": "Delay in milliseconds before starting the background stale file check. Allows VS Code to finish loading first."
         },
+        "scimax.db.maxReindexPerSync": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 500,
+          "description": "Maximum number of modified files to reindex per background sync. Limits memory usage. Use 'Reindex Files' command for full reindex."
+        },
+        "scimax.db.maxNewFilesPerSync": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 500,
+          "description": "Maximum number of new files to index per background sync. Limits memory usage. Use 'Reindex Files' command for full reindex."
+        },
         "scimax.db.embeddingProvider": {
           "type": "string",
           "enum": [
-            "none",
             "local",
             "ollama",
-            "openai"
+            "openai",
+            "none"
           ],
-          "default": "none",
-          "description": "Embedding provider for semantic search. 'local' uses Transformers.js (~100MB memory), 'ollama' uses local Ollama server, 'openai' uses OpenAI API. Set to 'none' to disable semantic search and reduce memory usage."
+          "default": "local",
+          "description": "Embedding provider for semantic search. 'local' (default) uses Transformers.js running entirely on your machine (~30MB model download, ~100MB memory). 'ollama' uses local Ollama server. 'openai' uses OpenAI API. Set to 'none' to disable semantic search."
         },
         "scimax.db.localModel": {
           "type": "string",
@@ -4981,20 +5019,30 @@
           "default": true,
           "description": "Enable org-mode speed commands (single-key shortcuts at beginning of headings)"
         },
-        "scimax.agenda.files": {
+        "scimax.agenda.includeJournal": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include journal directory in agenda scanning (uses scimax.journal.directory)"
+        },
+        "scimax.agenda.includeWorkspace": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include workspace folders in agenda scanning"
+        },
+        "scimax.agenda.includeProjects": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include all scimax projects in agenda scanning"
+        },
+        "scimax.agenda.include": {
           "type": "array",
           "items": {
             "type": "string"
           },
           "default": [],
-          "description": "Directories or files to always include in the agenda (supports ~ for home directory)"
+          "description": "Additional directories or files to include in agenda (supports ~ for home directory)"
         },
-        "scimax.agenda.includeWorkspace": {
-          "type": "boolean",
-          "default": true,
-          "description": "Also scan org files in the current workspace folders (in addition to scimax.agenda.files)"
-        },
-        "scimax.agenda.excludePatterns": {
+        "scimax.agenda.exclude": {
           "type": "array",
           "items": {
             "type": "string"
@@ -5004,15 +5052,7 @@
             "**/.git/**",
             "**/archive/**"
           ],
-          "description": "Glob patterns to exclude from agenda scanning"
-        },
-        "scimax.agenda.ignoreFiles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "default": [],
-          "description": "Specific files to ignore in agenda scanning (absolute paths). Use 'Scimax: Ignore File in Agenda' command to add files."
+          "description": "Patterns or paths to exclude from agenda (globs like **/archive/** and absolute paths like ~/file.org)"
         },
         "scimax.agenda.defaultSpan": {
           "type": "number",
@@ -5280,6 +5320,26 @@
           "command": "scimax.agenda.configure",
           "when": "view == scimax.agenda",
           "group": "3_config"
+        },
+        {
+          "command": "scimax.database.refresh",
+          "when": "view == scimax.database",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.db.search",
+          "when": "view == scimax.database",
+          "group": "navigation"
+        },
+        {
+          "command": "scimax.db.reindex",
+          "when": "view == scimax.database",
+          "group": "1_actions"
+        },
+        {
+          "command": "scimax.db.configureEmbeddings",
+          "when": "view == scimax.database",
+          "group": "2_config"
         },
         {
           "command": "scimax.projectile.filterProjects",
