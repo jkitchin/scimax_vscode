@@ -66,6 +66,7 @@ import { registerHelpCommands } from './help';
 import { activateLatexFeatures } from './latex/commands';
 import { registerDiagnosticCommands } from './diagnostic';
 import { TemplateManager, registerTemplateCommands } from './templates';
+import { registerManuscriptCommands } from './manuscript';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -344,6 +345,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     registerExportCommands(context);
+
+    // Register Manuscript commands (flatten LaTeX for journal submission)
+    registerManuscriptCommands(context);
 
     // Register Publishing commands (for multi-file project publishing)
     registerPublishCommands(context);

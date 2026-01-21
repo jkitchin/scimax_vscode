@@ -2647,6 +2647,18 @@
       {
         "command": "scimax.templates.reload",
         "title": "Scimax: Reload Templates"
+      },
+      {
+        "command": "scimax.manuscript.flatten",
+        "title": "Scimax: Flatten Manuscript for Submission"
+      },
+      {
+        "command": "scimax.manuscript.preview",
+        "title": "Scimax: Preview Manuscript Flattening"
+      },
+      {
+        "command": "scimax.manuscript.flattenToDirectory",
+        "title": "Scimax: Flatten Manuscript to Directory"
       }
     ],
     "keybindings": [
@@ -5093,6 +5105,27 @@
           "type": "string",
           "default": "",
           "description": "Author name for {{author}} variable in templates. If empty, uses system user name"
+        },
+        "scimax.manuscript.autoCompile": {
+          "type": "string",
+          "enum": ["always", "if-needed", "never", "ask"],
+          "default": "ask",
+          "description": "When to run LaTeX compilation before flattening manuscript"
+        },
+        "scimax.manuscript.pdflatexPath": {
+          "type": "string",
+          "default": "pdflatex",
+          "description": "Path to pdflatex executable"
+        },
+        "scimax.manuscript.bibtexPath": {
+          "type": "string",
+          "default": "bibtex",
+          "description": "Path to bibtex executable"
+        },
+        "scimax.manuscript.biberPath": {
+          "type": "string",
+          "default": "biber",
+          "description": "Path to biber executable"
         }
       }
     },
