@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as os from 'os';
+import { resolveScimaxPath } from '../utils/pathResolver';
 
 export interface JournalConfig {
     directory: string;
@@ -85,13 +85,7 @@ export class JournalManager {
 
     private loadConfig(): JournalConfig {
         const vsConfig = vscode.workspace.getConfiguration('scimax.journal');
-        let directory = vsConfig.get<string>('directory') || '';
-
-        if (!directory) {
-            directory = path.join(os.homedir(), 'scimax-journal');
-        } else if (directory.startsWith('~')) {
-            directory = path.join(os.homedir(), directory.slice(1));
-        }
+        const directory = resolveScimaxPath('scimax.journal.directory', 'journal');
 
         return {
             directory,

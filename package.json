@@ -2525,6 +2525,10 @@
         "title": "Scimax BibTeX: Wrap Selection/Word in Braces (Case Protection)"
       },
       {
+        "command": "scimax.bibtex.stripBraces",
+        "title": "Scimax BibTeX: Strip Internal Braces from Entry"
+      },
+      {
         "command": "scimax.bibtex.openPdf",
         "title": "Scimax BibTeX: Open PDF"
       },
@@ -4176,6 +4180,12 @@
         "when": "editorTextFocus && editorLangId == 'bibtex'"
       },
       {
+        "command": "scimax.bibtex.stripBraces",
+        "key": "ctrl+shift+[",
+        "mac": "cmd+shift+[",
+        "when": "editorTextFocus && editorLangId == 'bibtex'"
+      },
+      {
         "command": "scimax.bibtex.openPdf",
         "key": "o",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
@@ -4253,6 +4263,11 @@
       {
         "command": "scimax.bibtex.toggleJournalAbbreviation",
         "key": "shift+a",
+        "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.bibtex.stripBraces",
+        "key": "shift+b",
         "when": "editorTextFocus && editorLangId == 'bibtex' && scimax.atBibtexEntryStart && scimax.speedCommandsEnabled"
       },
       {
@@ -4533,10 +4548,15 @@
     "configuration": {
       "title": "Scimax",
       "properties": {
+        "scimax.directory": {
+          "type": "string",
+          "default": "~/scimax",
+          "description": "Root directory for Scimax files. Subdirectories include journal/, templates/, and notes.org. Individual directory settings (scimax.journal.directory, scimax.templates.directory) override this when explicitly set."
+        },
         "scimax.journal.directory": {
           "type": "string",
           "default": "",
-          "description": "Directory for journal files. If empty, uses ~/scimax-journal"
+          "description": "Directory for journal files. If empty, uses {scimax.directory}/journal"
         },
         "scimax.journal.format": {
           "type": "string",
@@ -4723,6 +4743,11 @@
           ],
           "default": "org-ref-v3",
           "markdownDescription": "Citation syntax for inserting new citations:\n- **org-ref-v3** (recommended): `cite:&key1;&key2` with pre/post notes\n- **org-ref-v2** (legacy): `cite:key1,key2` comma-separated\n- **org-cite**: `[cite:@key1;@key2]` org-mode 9.5+ native syntax"
+        },
+        "scimax.bibtex.keyPattern": {
+          "type": "string",
+          "default": "{lastname}-{year}-{title}",
+          "markdownDescription": "Pattern for generating BibTeX citation keys. Available placeholders:\n- `{lastname}` - First author's last name (lowercase)\n- `{Lastname}` - First author's last name (capitalized)\n- `{year}` - Publication year\n- `{title}` - First significant word from title\n- `{title:N}` - First N significant words (hyphenated, e.g., `{title:2}`)\n- `{journal}` - Journal abbreviation or name\n- `{keywords}` - First keyword\n- `{type}` - Entry type (article, book, etc.)\n\nExamples:\n- `{lastname}-{year}-{title}` → `kitchin-2015-examples`\n- `{Lastname}{year}` → `Kitchin2015`\n- `{lastname}-{title:2}-{year}` → `kitchin-machine-learning-2015`"
         },
         "scimax.export.latex.customHeader": {
           "type": "string",
@@ -5108,8 +5133,8 @@
         },
         "scimax.capture.defaultFile": {
           "type": "string",
-          "default": "~/org/notes.org",
-          "description": "Default file for captures when no target file is specified"
+          "default": "",
+          "description": "Default file for captures when no target file is specified. If empty, uses {scimax.directory}/notes.org"
         },
         "scimax.capture.datetreeFormat": {
           "type": "string",
@@ -5137,7 +5162,7 @@
         "scimax.templates.directory": {
           "type": "string",
           "default": "",
-          "description": "Directory for user document templates. If empty, uses ~/.scimax-templates"
+          "description": "Directory for user document templates. If empty, uses {scimax.directory}/templates"
         },
         "scimax.templates.defaultFormat": {
           "type": "string",

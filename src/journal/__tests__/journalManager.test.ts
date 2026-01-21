@@ -778,7 +778,10 @@ describe('JournalManager Configuration', () => {
         const manager = new JournalManager(mockContext as unknown as import('vscode').ExtensionContext);
         const config = manager.getConfig();
 
-        expect(config.directory).toContain('scimax-journal');
+        // Default directory is now {scimax.directory}/journal (~/scimax/journal)
+        expect(config.directory).toContain('scimax');
+        expect(config.directory).toContain('journal');
+        expect(config.directory).toMatch(/scimax[/\\]journal/);
         manager.dispose();
     });
 

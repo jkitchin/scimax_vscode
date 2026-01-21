@@ -20,6 +20,7 @@ import {
 } from '../parser/orgCapture';
 import { parseOrg } from '../parser/orgParserUnified';
 import type { HeadlineElement, OrgDocumentNode } from '../parser/orgElementTypes';
+import { expandTilde, getDefaultCaptureFile, resolveFilePath as sharedResolveFilePath } from '../utils/pathResolver';
 
 // =============================================================================
 // Configuration
@@ -89,30 +90,16 @@ function loadUserTemplates(): void {
 
 /**
  * Resolve file path with default directory
+ * Uses shared utilities for consistent path resolution across Scimax
  */
 function resolveFilePath(filePath: string, defaultDir: string): string {
-    if (path.isAbsolute(filePath)) {
-        return filePath;
+    // If no file path provided, use the default capture file
+    if (!filePath) {
+        return getDefaultCaptureFile();
     }
 
-    if (filePath.startsWith('~')) {
-        return filePath.replace(/^~/, process.env.HOME || '');
-    }
-
-    if (defaultDir) {
-        const resolvedDefault = defaultDir.startsWith('~')
-            ? defaultDir.replace(/^~/, process.env.HOME || '')
-            : defaultDir;
-        return path.join(resolvedDefault, filePath);
-    }
-
-    // Use workspace folder
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-    if (workspaceFolder) {
-        return path.join(workspaceFolder, filePath);
-    }
-
-    return filePath;
+    // Use shared path resolution utility
+    return sharedResolveFilePath(filePath, defaultDir || getDefaultCaptureFile());
 }
 
 // =============================================================================

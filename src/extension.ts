@@ -117,8 +117,13 @@ export async function activate(context: vscode.ExtensionContext) {
     // Watch for configuration changes
     context.subscriptions.push(
         vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('scimax.journal')) {
+            // Reload journal manager when journal or root directory changes
+            if (e.affectsConfiguration('scimax.journal') || e.affectsConfiguration('scimax.directory')) {
                 journalManager.reloadConfig();
+            }
+            // Reload template manager when templates or root directory changes
+            if (e.affectsConfiguration('scimax.templates') || e.affectsConfiguration('scimax.directory')) {
+                templateManager?.reloadConfig();
             }
         })
     );

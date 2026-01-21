@@ -13,6 +13,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { format } from 'date-fns';
+import { resolveScimaxPath, expandTilde } from '../utils/pathResolver';
 
 export type TemplateFormat = 'org' | 'markdown' | 'latex';
 
@@ -71,10 +72,9 @@ export class TemplateManager {
 
     private loadConfig(): TemplateConfig {
         const vsConfig = vscode.workspace.getConfiguration('scimax.templates');
-        const homeDir = process.env.HOME || process.env.USERPROFILE || '';
 
         return {
-            directory: vsConfig.get<string>('directory') || path.join(homeDir, '.scimax-templates'),
+            directory: resolveScimaxPath('scimax.templates.directory', 'templates'),
             defaultFormat: vsConfig.get<TemplateFormat>('defaultFormat') || 'org',
             dateFormat: vsConfig.get<string>('dateFormat') || 'yyyy-MM-dd',
             timeFormat: vsConfig.get<string>('timeFormat') || 'HH:mm',
