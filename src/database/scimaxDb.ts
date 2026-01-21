@@ -133,6 +133,12 @@ export class ScimaxDb {
     // Embedding dimensions (384 for all-MiniLM-L6-v2, 1536 for OpenAI)
     private embeddingDimensions: number = 384;
 
+    // Async embedding queue for rate-limited processing
+    private embeddingQueue: string[] = [];
+    private isProcessingEmbeddings: boolean = false;
+    private embeddingStatusBar: vscode.StatusBarItem | null = null;
+    private embeddingCancelled: boolean = false;
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.parser = new UnifiedParserAdapter();
@@ -336,11 +342,11 @@ export class ScimaxDb {
     }
 
     /**
-     * Load ignore patterns from config
+     * Load exclude patterns from config
      */
     private loadIgnorePatterns(): void {
         const config = vscode.workspace.getConfiguration('scimax.db');
-        this.ignorePatterns = config.get<string[]>('ignorePatterns') || [
+        this.ignorePatterns = config.get<string[]>('exclude') || [
             '**/node_modules/**',
             '**/.git/**',
             '**/dist/**',
@@ -350,11 +356,30 @@ export class ScimaxDb {
     }
 
     /**
-     * Check if file should be ignored
+     * Check if file should be excluded (by absolute path or glob pattern)
      */
     private shouldIgnore(filePath: string): boolean {
         const { minimatch } = require('minimatch');
-        return this.ignorePatterns.some(pattern => minimatch(filePath, pattern));
+        for (const pattern of this.ignorePatterns) {
+            // Expand ~ in pattern
+            let expandedPattern = pattern;
+            if (pattern.startsWith('~')) {
+                expandedPattern = pattern.replace(/^~/, process.env.HOME || '');
+            }
+
+            if (pattern.includes('*')) {
+                // It's a glob pattern
+                if (minimatch(filePath, expandedPattern, { matchBase: true })) {
+                    return true;
+                }
+            } else {
+                // It's an absolute path
+                if (filePath === expandedPattern) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -496,8 +521,10 @@ export class ScimaxDb {
 
     /**
      * Index a single file
+     * @param filePath Path to the file to index
+     * @param options.queueEmbeddings If true, queue embedding generation for async processing (for background sync)
      */
-    public async indexFile(filePath: string): Promise<void> {
+    public async indexFile(filePath: string, options?: { queueEmbeddings?: boolean }): Promise<void> {
         if (!this.db) return;
 
         try {
@@ -546,9 +573,15 @@ export class ScimaxDb {
                 args: [filePath, path.basename(filePath), fullText]
             });
 
-            // Create chunks for semantic search
+            // Handle embeddings for semantic search
             if (this.embeddingService) {
-                await this.createChunks(fileId, filePath, fullText);
+                if (options?.queueEmbeddings) {
+                    // Queue for async processing to avoid OOM during background sync
+                    this.queueEmbeddings(filePath);
+                } else {
+                    // Generate immediately (manual reindex)
+                    await this.createChunks(fileId, filePath, fullText);
+                }
             }
 
         } catch (error) {
@@ -836,6 +869,140 @@ export class ScimaxDb {
             console.error('ScimaxDb: Failed to create embeddings for', filePath, error);
             // Don't fail the whole indexing, just skip embeddings
         }
+    }
+
+    /**
+     * Queue a file for async embedding generation.
+     * Embeddings are processed in the background with rate limiting to avoid OOM.
+     */
+    public queueEmbeddings(filePath: string): void {
+        if (!this.embeddingService || !this.vectorSearchSupported) return;
+
+        // Avoid duplicates
+        if (!this.embeddingQueue.includes(filePath)) {
+            this.embeddingQueue.push(filePath);
+        }
+
+        // Start processing if not already running
+        if (!this.isProcessingEmbeddings) {
+            this.processEmbeddingQueue();
+        }
+    }
+
+    /**
+     * Process the embedding queue with rate limiting.
+     * Processes one file at a time with delays between files.
+     */
+    private async processEmbeddingQueue(): Promise<void> {
+        if (this.isProcessingEmbeddings || !this.embeddingService || !this.db) return;
+        if (this.embeddingQueue.length === 0) return;
+
+        this.isProcessingEmbeddings = true;
+        this.embeddingCancelled = false;  // Reset cancellation flag
+        const total = this.embeddingQueue.length;
+        let processed = 0;
+
+        // Create status bar item with click-to-cancel
+        this.embeddingStatusBar = vscode.window.createStatusBarItem(
+            vscode.StatusBarAlignment.Right,
+            -10  // Lower priority than stale check
+        );
+        this.embeddingStatusBar.text = `$(sparkle) Embeddings: 0/${total}`;
+        this.embeddingStatusBar.tooltip = 'Scimax: Generating embeddings for semantic search (click to cancel)';
+        this.embeddingStatusBar.command = 'scimax.db.cancelEmbeddings';
+        this.embeddingStatusBar.show();
+
+        try {
+            while (this.embeddingQueue.length > 0 && !this.embeddingCancelled) {
+                const filePath = this.embeddingQueue.shift()!;
+                processed++;
+
+                try {
+                    // Check if file still exists and is indexed
+                    if (!fs.existsSync(filePath)) continue;
+
+                    const fileRecord = await this.getFileByPath(filePath);
+                    if (!fileRecord) continue;
+
+                    // Read content and generate embeddings
+                    const content = fs.readFileSync(filePath, 'utf8');
+
+                    // Remove old chunks for this file
+                    await this.db.execute({
+                        sql: 'DELETE FROM chunks WHERE file_path = ?',
+                        args: [filePath]
+                    });
+
+                    // Create new chunks with embeddings
+                    await this.createChunks(fileRecord.id, filePath, content);
+
+                    // Update status
+                    if (this.embeddingStatusBar) {
+                        const remaining = this.embeddingQueue.length;
+                        this.embeddingStatusBar.text = `$(sparkle) Embeddings: ${processed}/${total}`;
+                        if (remaining > 0) {
+                            this.embeddingStatusBar.tooltip = `Scimax: ${remaining} files remaining`;
+                        }
+                    }
+
+                } catch (error) {
+                    console.error(`ScimaxDb: Failed to generate embeddings for ${filePath}:`, error);
+                }
+
+                // Rate limit: wait between files to allow GC and reduce memory pressure
+                // Longer delay for more remaining files
+                const delayMs = this.embeddingQueue.length > 100 ? 500 : 200;
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+            }
+
+            // Show completion briefly
+            if (this.embeddingStatusBar) {
+                this.embeddingStatusBar.text = `$(check) Embeddings complete`;
+                setTimeout(() => {
+                    this.embeddingStatusBar?.dispose();
+                    this.embeddingStatusBar = null;
+                }, 2000);
+            }
+
+        } catch (error) {
+            console.error('ScimaxDb: Embedding queue processing failed:', error);
+            this.embeddingStatusBar?.dispose();
+            this.embeddingStatusBar = null;
+        } finally {
+            this.isProcessingEmbeddings = false;
+        }
+    }
+
+    /**
+     * Get file record by path
+     */
+    private async getFileByPath(filePath: string): Promise<FileRecord | null> {
+        if (!this.db) return null;
+        const result = await this.db.execute({
+            sql: 'SELECT * FROM files WHERE path = ?',
+            args: [filePath]
+        });
+        return result.rows[0] as unknown as FileRecord | null;
+    }
+
+    /**
+     * Get the embedding queue length (for status display)
+     */
+    public getEmbeddingQueueLength(): number {
+        return this.embeddingQueue.length;
+    }
+
+    /**
+     * Cancel the embedding queue processing
+     */
+    public cancelEmbeddingQueue(): void {
+        this.embeddingCancelled = true;
+        this.embeddingQueue = [];
+        if (this.embeddingStatusBar) {
+            this.embeddingStatusBar.dispose();
+            this.embeddingStatusBar = null;
+        }
+        console.log('ScimaxDb: Embedding queue cancelled');
     }
 
     /**
@@ -1383,22 +1550,26 @@ export class ScimaxDb {
     /**
      * Check for stale files and reindex them in the background.
      * Designed to run at startup without blocking user interaction.
+     * Uses pagination to avoid loading all files into memory at once.
      *
      * @param options Configuration options
-     * @param options.batchSize Number of files to process before yielding (default: 5)
-     * @param options.yieldMs Milliseconds to yield between batches (default: 100)
+     * @param options.batchSize Number of files to check before yielding (default: 50)
+     * @param options.yieldMs Milliseconds to yield between batches (default: 50)
+     * @param options.maxReindex Maximum files to reindex per session (default: 50)
      * @param options.onProgress Optional callback for progress updates
      * @returns Object with counts of checked, stale, deleted, and reindexed files
      */
     public async checkStaleFiles(options: {
         batchSize?: number;
         yieldMs?: number;
+        maxReindex?: number;
         onProgress?: (status: { checked: number; total: number; reindexed: number }) => void;
         cancellationToken?: { cancelled: boolean };
     } = {}): Promise<{ checked: number; stale: number; deleted: number; reindexed: number }> {
         const {
-            batchSize = 5,
-            yieldMs = 100,
+            batchSize = 50,
+            yieldMs = 50,
+            maxReindex = 50,  // Limit reindexing to avoid OOM
             onProgress,
             cancellationToken
         } = options;
@@ -1407,52 +1578,89 @@ export class ScimaxDb {
 
         if (!this.db) return result;
 
-        // Get all indexed files
-        const files = await this.getFiles();
-        const total = files.length;
+        // Get total count first (lightweight query)
+        const countResult = await this.db.execute('SELECT COUNT(*) as count FROM files');
+        const total = Number((countResult.rows[0] as any).count);
 
         if (total === 0) return result;
 
-        console.log(`ScimaxDb: Checking ${total} files for staleness...`);
+        console.log(`ScimaxDb: Checking ${total} files for staleness (max ${maxReindex} reindex)...`);
 
-        for (let i = 0; i < files.length; i++) {
+        // Process files in pages to avoid loading all into memory
+        const pageSize = 100;
+        let offset = 0;
+
+        while (offset < total) {
             // Check for cancellation
             if (cancellationToken?.cancelled) {
                 console.log('ScimaxDb: Stale check cancelled');
                 break;
             }
 
-            const file = files[i];
-            result.checked++;
-
-            try {
-                // Check if file still exists
-                if (!fs.existsSync(file.path)) {
-                    await this.removeFileData(file.path);
-                    result.deleted++;
-                    continue;
-                }
-
-                // Check if file has been modified
-                const stats = fs.statSync(file.path);
-                if (stats.mtimeMs > file.mtime) {
-                    result.stale++;
-                    await this.indexFile(file.path);
-                    result.reindexed++;
-                }
-            } catch (error) {
-                console.error(`ScimaxDb: Error checking ${file.path}:`, error);
+            // Check if we've hit the reindex limit
+            if (result.reindexed >= maxReindex) {
+                console.log(`ScimaxDb: Reached max reindex limit (${maxReindex}), stopping`);
+                break;
             }
 
-            // Report progress
+            // Fetch a page of files
+            const pageResult = await this.db.execute({
+                sql: 'SELECT * FROM files ORDER BY path LIMIT ? OFFSET ?',
+                args: [pageSize, offset]
+            });
+            const files = pageResult.rows as unknown as FileRecord[];
+
+            if (files.length === 0) break;
+
+            for (let i = 0; i < files.length; i++) {
+                // Check for cancellation
+                if (cancellationToken?.cancelled) break;
+
+                // Check reindex limit
+                if (result.reindexed >= maxReindex) break;
+
+                const file = files[i];
+                result.checked++;
+
+                try {
+                    // Check if file still exists
+                    if (!fs.existsSync(file.path)) {
+                        await this.removeFileData(file.path);
+                        result.deleted++;
+                        continue;
+                    }
+
+                    // Check if file has been modified
+                    const stats = fs.statSync(file.path);
+                    if (stats.mtimeMs > file.mtime) {
+                        result.stale++;
+                        // Queue embeddings for async processing to avoid OOM
+                        await this.indexFile(file.path, { queueEmbeddings: true });
+                        result.reindexed++;
+
+                        // Longer pause after reindexing to allow GC
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                } catch (error) {
+                    console.error(`ScimaxDb: Error checking ${file.path}:`, error);
+                }
+
+                // Yield every batchSize files
+                if (i > 0 && i % batchSize === 0) {
+                    await new Promise(resolve => setTimeout(resolve, yieldMs));
+                }
+            }
+
+            // Report progress after each page
             if (onProgress) {
                 onProgress({ checked: result.checked, total, reindexed: result.reindexed });
             }
 
-            // Yield to event loop after each batch
-            if (i > 0 && i % batchSize === 0) {
-                await new Promise(resolve => setTimeout(resolve, yieldMs));
-            }
+            // Move to next page
+            offset += pageSize;
+
+            // Yield between pages
+            await new Promise(resolve => setTimeout(resolve, yieldMs));
         }
 
         console.log(`ScimaxDb: Stale check complete - ${result.stale} stale, ${result.deleted} deleted, ${result.reindexed} reindexed`);
@@ -1462,6 +1670,7 @@ export class ScimaxDb {
     /**
      * Scan directories for new/changed files in the background.
      * Designed to run at startup without blocking user interaction.
+     * Limits indexing to avoid OOM.
      *
      * @param directories List of directory paths to scan
      * @param options Configuration options
@@ -1472,13 +1681,15 @@ export class ScimaxDb {
         options: {
             batchSize?: number;
             yieldMs?: number;
+            maxIndex?: number;
             onProgress?: (status: { scanned: number; total: number; indexed: number; currentDir?: string }) => void;
             cancellationToken?: { cancelled: boolean };
         } = {}
     ): Promise<{ scanned: number; newFiles: number; changed: number; indexed: number }> {
         const {
-            batchSize = 5,
-            yieldMs = 100,
+            batchSize = 50,
+            yieldMs = 50,
+            maxIndex = 50,  // Limit new files indexed to avoid OOM
             onProgress,
             cancellationToken
         } = options;
@@ -1487,10 +1698,15 @@ export class ScimaxDb {
 
         if (!this.db || directories.length === 0) return result;
 
-        // Collect all files from all directories
-        const allFiles: string[] = [];
+        console.log(`ScimaxDb: Scanning ${directories.length} directories (max ${maxIndex} new files)...`);
+
+        // Process directories one at a time to avoid loading all files into memory
         for (const dir of directories) {
             if (cancellationToken?.cancelled) break;
+            if (result.indexed >= maxIndex) {
+                console.log(`ScimaxDb: Reached max index limit (${maxIndex}), stopping`);
+                break;
+            }
 
             try {
                 if (!fs.existsSync(dir)) {
@@ -1498,55 +1714,51 @@ export class ScimaxDb {
                     continue;
                 }
 
-                onProgress?.({ scanned: 0, total: 0, indexed: 0, currentDir: dir });
+                onProgress?.({ scanned: result.scanned, total: 0, indexed: result.indexed, currentDir: dir });
                 const files = await this.findFiles(dir);
-                allFiles.push(...files);
+
+                for (let i = 0; i < files.length; i++) {
+                    if (cancellationToken?.cancelled) break;
+                    if (result.indexed >= maxIndex) break;
+
+                    const filePath = files[i];
+                    result.scanned++;
+
+                    try {
+                        const needsIndex = await this.needsReindex(filePath);
+
+                        if (needsIndex) {
+                            // Check if it's a new file
+                            const existing = await this.getFileByPath(filePath);
+                            if (!existing) {
+                                result.newFiles++;
+                            } else {
+                                result.changed++;
+                            }
+
+                            // Queue embeddings for async processing to avoid OOM
+                            await this.indexFile(filePath, { queueEmbeddings: true });
+                            result.indexed++;
+
+                            // Longer pause after indexing to allow GC
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                        }
+                    } catch (error) {
+                        console.error(`ScimaxDb: Error processing ${filePath}:`, error);
+                    }
+
+                    // Yield every batchSize files
+                    if (i > 0 && i % batchSize === 0) {
+                        onProgress?.({ scanned: result.scanned, total: files.length, indexed: result.indexed, currentDir: dir });
+                        await new Promise(resolve => setTimeout(resolve, yieldMs));
+                    }
+                }
             } catch (error) {
                 console.error(`ScimaxDb: Error scanning directory ${dir}:`, error);
             }
-        }
 
-        const total = allFiles.length;
-        if (total === 0) return result;
-
-        console.log(`ScimaxDb: Scanning ${total} files from ${directories.length} directories...`);
-
-        // Get all currently indexed file paths for quick lookup
-        const indexedFiles = new Set((await this.getFiles()).map(f => f.path));
-
-        for (let i = 0; i < allFiles.length; i++) {
-            if (cancellationToken?.cancelled) {
-                console.log('ScimaxDb: Directory scan cancelled');
-                break;
-            }
-
-            const filePath = allFiles[i];
-            result.scanned++;
-
-            try {
-                const isNew = !indexedFiles.has(filePath);
-                const needsIndex = await this.needsReindex(filePath);
-
-                if (needsIndex) {
-                    if (isNew) {
-                        result.newFiles++;
-                    } else {
-                        result.changed++;
-                    }
-                    await this.indexFile(filePath);
-                    result.indexed++;
-                }
-            } catch (error) {
-                console.error(`ScimaxDb: Error processing ${filePath}:`, error);
-            }
-
-            // Report progress
-            onProgress?.({ scanned: result.scanned, total, indexed: result.indexed });
-
-            // Yield to event loop after each batch
-            if (i > 0 && i % batchSize === 0) {
-                await new Promise(resolve => setTimeout(resolve, yieldMs));
-            }
+            // Yield between directories
+            await new Promise(resolve => setTimeout(resolve, yieldMs));
         }
 
         console.log(`ScimaxDb: Directory scan complete - ${result.newFiles} new, ${result.changed} changed, ${result.indexed} indexed`);

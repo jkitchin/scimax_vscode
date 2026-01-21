@@ -7,9 +7,11 @@
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { ScimaxDb } from './scimaxDb';
 import { createEmbeddingServiceAsync } from './embeddingService';
 import { initSecretStorage, migrateApiKeyFromSettings } from './secretStorage';
+import { resolveScimaxPath } from '../utils/pathResolver';
 
 let scimaxDb: ScimaxDb | null = null;
 let dbInitPromise: Promise<ScimaxDb> | null = null;
@@ -25,6 +27,13 @@ export function setExtensionContext(context: vscode.ExtensionContext): void {
     extensionContext = context;
     // Initialize SecretStorage for secure credential management
     initSecretStorage(context);
+}
+
+/**
+ * Get the extension context (for accessing globalState, etc.)
+ */
+export function getExtensionContext(): vscode.ExtensionContext | null {
+    return extensionContext;
 }
 
 /**
@@ -120,13 +129,14 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
         // Create cancellation token
         staleCheckCancellation = { cancelled: false };
 
-        // Create subtle status bar item
+        // Create subtle status bar item with click-to-cancel
         staleCheckStatusBar = vscode.window.createStatusBarItem(
             vscode.StatusBarAlignment.Right,
             0
         );
         staleCheckStatusBar.text = '$(sync~spin) Checking files...';
-        staleCheckStatusBar.tooltip = 'Scimax: Checking for externally modified files';
+        staleCheckStatusBar.tooltip = 'Scimax: Checking for externally modified files (click to cancel)';
+        staleCheckStatusBar.command = 'scimax.db.cancelSync';
         staleCheckStatusBar.show();
 
         let totalReindexed = 0;
@@ -134,14 +144,19 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
         let totalDeleted = 0;
 
         try {
+            // Get limits from config (with sensible defaults to avoid OOM)
+            const maxReindex = config.get<number>('maxReindexPerSync', 50);
+            const maxNewFiles = config.get<number>('maxNewFilesPerSync', 50);
+
             // Phase 1: Check stale files (already indexed)
             const staleResult = await db.checkStaleFiles({
-                batchSize: 5,
-                yieldMs: 100,
+                batchSize: 50,
+                yieldMs: 50,
+                maxReindex,
                 cancellationToken: staleCheckCancellation,
                 onProgress: ({ checked, total, reindexed }) => {
                     if (staleCheckStatusBar) {
-                        staleCheckStatusBar.text = `$(sync~spin) Checking indexed files (${checked}/${total})`;
+                        staleCheckStatusBar.text = `$(sync~spin) Checking files (${checked}/${total})`;
                         if (reindexed > 0) {
                             staleCheckStatusBar.tooltip = `Scimax: Reindexed ${reindexed} modified files`;
                         }
@@ -154,17 +169,60 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
 
             // Phase 2: Scan configured directories for new files
             if (!staleCheckCancellation?.cancelled) {
-                const directories = config.get<string[]>('directories') || [];
+                const directories: string[] = [];
 
-                if (directories.length > 0) {
+                // Include journal directory if enabled
+                if (config.get<boolean>('includeJournal', true)) {
+                    const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
+                    if (journalDir && fs.existsSync(journalDir)) {
+                        directories.push(journalDir);
+                    }
+                }
+
+                // Include workspace folders if enabled
+                if (config.get<boolean>('includeWorkspace', true)) {
+                    const workspaceFolders = vscode.workspace.workspaceFolders || [];
+                    for (const folder of workspaceFolders) {
+                        directories.push(folder.uri.fsPath);
+                    }
+                }
+
+                // Include scimax projects if enabled
+                if (config.get<boolean>('includeProjects', true) && extensionContext) {
+                    interface Project { path: string; }
+                    const projects = extensionContext.globalState.get<Project[]>('scimax.projects', []);
+                    for (const project of projects) {
+                        if (fs.existsSync(project.path)) {
+                            directories.push(project.path);
+                        }
+                    }
+                }
+
+                // Include additional directories from config
+                const additionalDirs = config.get<string[]>('include') || [];
+                for (let dir of additionalDirs) {
+                    // Expand ~ for home directory
+                    if (dir.startsWith('~')) {
+                        dir = dir.replace(/^~/, process.env.HOME || '');
+                    }
+                    if (fs.existsSync(dir)) {
+                        directories.push(dir);
+                    }
+                }
+
+                // Deduplicate
+                const uniqueDirs = [...new Set(directories)];
+
+                if (uniqueDirs.length > 0) {
                     if (staleCheckStatusBar) {
                         staleCheckStatusBar.text = '$(sync~spin) Scanning directories...';
                         staleCheckStatusBar.tooltip = 'Scimax: Scanning for new files in configured directories';
                     }
 
-                    const scanResult = await db.scanDirectoriesInBackground(directories, {
-                        batchSize: 5,
-                        yieldMs: 100,
+                    const scanResult = await db.scanDirectoriesInBackground(uniqueDirs, {
+                        batchSize: 50,
+                        yieldMs: 50,
+                        maxIndex: maxNewFiles,
                         cancellationToken: staleCheckCancellation,
                         onProgress: ({ scanned, total, indexed, currentDir }) => {
                             if (staleCheckStatusBar) {

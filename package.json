@@ -964,6 +964,14 @@
         "title": "Scimax: Show Database Stats"
       },
       {
+        "command": "scimax.db.cancelSync",
+        "title": "Scimax: Cancel Background Sync"
+      },
+      {
+        "command": "scimax.db.cancelEmbeddings",
+        "title": "Scimax: Cancel Embedding Generation"
+      },
+      {
         "command": "scimax.database.refresh",
         "title": "Scimax: Refresh Database View",
         "icon": "$(refresh)"

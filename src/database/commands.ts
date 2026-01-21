@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import {
     ScimaxDb,
     HeadingRecord,
@@ -15,8 +16,77 @@ import {
     OllamaEmbeddingService,
     OpenAIEmbeddingService
 } from './embeddingService';
-import { getDatabase } from './lazyDb';
+import { getDatabase, getExtensionContext, cancelStaleFileCheck } from './lazyDb';
 import { storeOpenAIApiKey, deleteOpenAIApiKey } from './secretStorage';
+import { resolveScimaxPath } from '../utils/pathResolver';
+
+/**
+ * Debounce function for dynamic QuickPick updates
+ */
+function debounce<T extends (...args: any[]) => void>(
+    fn: T,
+    delay: number
+): (...args: Parameters<T>) => void {
+    let timeoutId: NodeJS.Timeout | undefined;
+    return (...args: Parameters<T>) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+}
+
+/**
+ * Create an ivy-like QuickPick with dynamic re-querying on each keystroke.
+ * Results are fetched from the database as the user types.
+ */
+async function createDynamicQuickPick<T>(options: {
+    placeholder: string;
+    searchFn: (query: string) => Promise<T[]>;
+    formatItem: (item: T) => vscode.QuickPickItem & { data: T };
+    onSelect: (item: T) => Promise<void>;
+    debounceMs?: number;
+    minQueryLength?: number;
+}): Promise<void> {
+    const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { data: T }>();
+    quickPick.placeholder = options.placeholder;
+    quickPick.matchOnDescription = true;
+    quickPick.matchOnDetail = true;
+
+    const debounceMs = options.debounceMs ?? 150;
+    const minQueryLength = options.minQueryLength ?? 1;
+
+    const updateResults = debounce(async (query: string) => {
+        if (query.length < minQueryLength) {
+            quickPick.items = [];
+            return;
+        }
+
+        quickPick.busy = true;
+        try {
+            const results = await options.searchFn(query);
+            quickPick.items = results.map(options.formatItem);
+        } catch (err) {
+            console.error('Search error:', err);
+            quickPick.items = [];
+        } finally {
+            quickPick.busy = false;
+        }
+    }, debounceMs);
+
+    quickPick.onDidChangeValue(updateResults);
+
+    quickPick.onDidAccept(async () => {
+        const selected = quickPick.selectedItems[0];
+        if (selected) {
+            quickPick.hide();
+            await options.onSelect(selected.data);
+        }
+    });
+
+    quickPick.onDidHide(() => quickPick.dispose());
+    quickPick.show();
+}
 
 /**
  * Helper to get database with user notification on failure
@@ -34,17 +104,34 @@ async function requireDatabase(): Promise<ScimaxDb | null> {
 export function registerDbCommands(
     context: vscode.ExtensionContext
 ): void {
+    // Cancel background sync (click on status bar)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.cancelSync', async () => {
+            cancelStaleFileCheck();
+            const db = await getDatabase();
+            if (db) {
+                db.cancelEmbeddingQueue();
+            }
+            vscode.window.showInformationMessage('Background sync cancelled');
+        })
+    );
+
+    // Cancel embedding queue only
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.cancelEmbeddings', async () => {
+            const db = await getDatabase();
+            if (db) {
+                db.cancelEmbeddingQueue();
+                vscode.window.showInformationMessage('Embedding queue cancelled');
+            }
+        })
+    );
+
     // Reindex all files
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.reindex', async () => {
             const db = await requireDatabase();
             if (!db) return;
-
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (!workspaceFolders || workspaceFolders.length === 0) {
-                vscode.window.showWarningMessage('No workspace folder open');
-                return;
-            }
 
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
@@ -52,17 +139,61 @@ export function registerDbCommands(
                 cancellable: false
             }, async (progress) => {
                 let totalIndexed = 0;
+                const config = vscode.workspace.getConfiguration('scimax.db');
+                const directoriesToIndex: string[] = [];
 
-                for (const folder of workspaceFolders) {
-                    const indexed = await db.indexDirectory(folder.uri.fsPath, progress);
-                    totalIndexed += indexed;
+                // Include journal directory if enabled
+                if (config.get<boolean>('includeJournal', true)) {
+                    const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
+                    if (journalDir && fs.existsSync(journalDir)) {
+                        directoriesToIndex.push(journalDir);
+                    }
                 }
 
-                // Also index additional directories from config
-                const config = vscode.workspace.getConfiguration('scimax.db');
-                const additionalDirs = config.get<string[]>('directories') || [];
+                // Include workspace folders if enabled
+                if (config.get<boolean>('includeWorkspace', true)) {
+                    const workspaceFolders = vscode.workspace.workspaceFolders || [];
+                    for (const folder of workspaceFolders) {
+                        directoriesToIndex.push(folder.uri.fsPath);
+                    }
+                }
 
-                for (const dir of additionalDirs) {
+                // Include scimax projects if enabled
+                if (config.get<boolean>('includeProjects', true)) {
+                    const ctx = getExtensionContext();
+                    if (ctx) {
+                        interface Project { path: string; }
+                        const projects = ctx.globalState.get<Project[]>('scimax.projects', []);
+                        for (const project of projects) {
+                            if (fs.existsSync(project.path)) {
+                                directoriesToIndex.push(project.path);
+                            }
+                        }
+                    }
+                }
+
+                // Include additional directories from config
+                const additionalDirs = config.get<string[]>('include') || [];
+                for (let dir of additionalDirs) {
+                    // Expand ~ for home directory
+                    if (dir.startsWith('~')) {
+                        dir = dir.replace(/^~/, process.env.HOME || '');
+                    }
+                    if (fs.existsSync(dir)) {
+                        directoriesToIndex.push(dir);
+                    }
+                }
+
+                // Deduplicate directories
+                const uniqueDirs = [...new Set(directoriesToIndex)];
+
+                if (uniqueDirs.length === 0) {
+                    vscode.window.showWarningMessage('No directories to index. Check scimax.db settings.');
+                    return;
+                }
+
+                // Index all directories
+                for (const dir of uniqueDirs) {
                     const indexed = await db.indexDirectory(dir, progress);
                     totalIndexed += indexed;
                 }
@@ -75,46 +206,31 @@ export function registerDbCommands(
         })
     );
 
-    // Full-text search (FTS5)
+    // Full-text search (FTS5) - ivy-style dynamic collection
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.search', async () => {
-            const query = await vscode.window.showInputBox({
-                prompt: 'Search all org/markdown files (FTS5)',
-                placeHolder: 'Enter search term...'
-            });
-
-            if (!query) return;
-
             const db = await requireDatabase();
             if (!db) return;
 
-            const results = await db.searchFullText(query, { limit: 100 });
-
-            if (results.length === 0) {
-                vscode.window.showInformationMessage(`No results found for "${query}"`);
-                return;
-            }
-
-            const items = results.map(result => ({
-                label: `$(file) ${path.basename(result.file_path)}`,
-                description: result.preview.replace(/<\/?mark>/g, ''),
-                detail: result.file_path,
-                result
-            }));
-
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${results.length} results for "${query}"`,
-                matchOnDescription: true,
-                matchOnDetail: true
+            await createDynamicQuickPick<SearchResult>({
+                placeholder: 'Type to search (FTS5)...',
+                debounceMs: 150,
+                minQueryLength: 2,
+                searchFn: async (query) => db.searchFullText(query, { limit: 100 }),
+                formatItem: (result) => ({
+                    label: `$(file) ${path.basename(result.file_path)}:${result.line_number}`,
+                    description: result.preview.replace(/<\/?mark>/g, ''),
+                    detail: result.file_path,
+                    data: result
+                }),
+                onSelect: async (result) => {
+                    await openFileAtLine(result.file_path, result.line_number);
+                }
             });
-
-            if (selected) {
-                await openFileAtLine(selected.result.file_path, selected.result.line_number);
-            }
         })
     );
 
-    // Semantic search (vector)
+    // Semantic search (vector) - ivy-style dynamic collection
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchSemantic', async () => {
             const db = await requireDatabase();
@@ -143,83 +259,43 @@ export function registerDbCommands(
                 return;
             }
 
-            const query = await vscode.window.showInputBox({
-                prompt: 'Semantic search (find by meaning)',
-                placeHolder: 'Describe what you\'re looking for...'
-            });
-
-            if (!query) return;
-
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: 'Searching...',
-                cancellable: false
-            }, async () => {
-                const results = await db.searchSemantic(query, { limit: 20 });
-
-                if (results.length === 0) {
-                    vscode.window.showInformationMessage(`No semantic matches for "${query}"`);
-                    return;
-                }
-
-                const items = results.map(result => ({
+            await createDynamicQuickPick<SearchResult>({
+                placeholder: 'Type to search by meaning (semantic)...',
+                debounceMs: 300,  // Slower debounce for embedding API calls
+                minQueryLength: 3,
+                searchFn: async (query) => db.searchSemantic(query, { limit: 20 }),
+                formatItem: (result) => ({
                     label: `$(file) ${path.basename(result.file_path)}:${result.line_number}`,
                     description: `Score: ${(result.score * 100).toFixed(1)}%`,
                     detail: result.preview,
-                    result
-                }));
-
-                const selected = await vscode.window.showQuickPick(items, {
-                    placeHolder: `${results.length} semantic matches for "${query}"`,
-                    matchOnDetail: true
-                });
-
-                if (selected) {
-                    await openFileAtLine(selected.result.file_path, selected.result.line_number);
+                    data: result
+                }),
+                onSelect: async (result) => {
+                    await openFileAtLine(result.file_path, result.line_number);
                 }
             });
         })
     );
 
-    // Hybrid search (FTS5 + vector)
+    // Hybrid search (FTS5 + vector) - ivy-style dynamic collection
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchHybrid', async () => {
-            const query = await vscode.window.showInputBox({
-                prompt: 'Hybrid search (keywords + semantic)',
-                placeHolder: 'Enter search query...'
-            });
-
-            if (!query) return;
-
             const db = await requireDatabase();
             if (!db) return;
 
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: 'Searching...',
-                cancellable: false
-            }, async () => {
-                const results = await db.searchHybrid(query, { limit: 20 });
-
-                if (results.length === 0) {
-                    vscode.window.showInformationMessage(`No results for "${query}"`);
-                    return;
-                }
-
-                const items = results.map(result => ({
+            await createDynamicQuickPick<SearchResult>({
+                placeholder: 'Type to search (keywords + semantic)...',
+                debounceMs: 250,
+                minQueryLength: 2,
+                searchFn: async (query) => db.searchHybrid(query, { limit: 20 }),
+                formatItem: (result) => ({
                     label: `$(file) ${path.basename(result.file_path)}:${result.line_number}`,
                     description: result.type === 'semantic' ? '$(sparkle) AI' : '$(search) Keywords',
                     detail: result.preview,
-                    result
-                }));
-
-                const selected = await vscode.window.showQuickPick(items, {
-                    placeHolder: `${results.length} hybrid results for "${query}"`,
-                    matchOnDetail: true
-                });
-
-                if (selected) {
-                    await openFileAtLine(selected.result.file_path, selected.result.line_number);
+                    data: result
+                }),
+                onSelect: async (result) => {
+                    await openFileAtLine(result.file_path, result.line_number);
                 }
             });
         })
@@ -373,42 +449,40 @@ export function registerDbCommands(
         })
     );
 
-    // Search headings
+    // Search headings (ivy-style: load all, filter locally)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchHeadings', async () => {
-            const query = await vscode.window.showInputBox({
-                prompt: 'Search headings',
-                placeHolder: 'Enter heading text...'
-            });
-
-            if (!query) return;
-
             const db = await requireDatabase();
             if (!db) return;
 
-            const results = await db.searchHeadings(query);
+            // Load all headings upfront for ivy-style filtering
+            const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { heading: HeadingRecord }>();
+            quickPick.placeholder = 'Type to filter headings...';
+            quickPick.matchOnDescription = true;
+            quickPick.matchOnDetail = true;
+            quickPick.busy = true;
 
-            if (results.length === 0) {
-                vscode.window.showInformationMessage(`No headings found matching "${query}"`);
-                return;
-            }
-
-            const items = results.slice(0, 100).map(heading => ({
-                label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
-                description: formatHeadingDescription(heading),
-                detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
-                heading
-            }));
-
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${results.length} headings matching "${query}"`,
-                matchOnDescription: true,
-                matchOnDetail: true
+            // Load headings in background
+            db.searchHeadings('', { limit: 5000 }).then(headings => {
+                quickPick.items = headings.map(heading => ({
+                    label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
+                    description: formatHeadingDescription(heading),
+                    detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
+                    heading
+                }));
+                quickPick.busy = false;
             });
 
-            if (selected) {
-                await openFileAtLine(selected.heading.file_path, selected.heading.line_number);
-            }
+            quickPick.onDidAccept(async () => {
+                const selected = quickPick.selectedItems[0];
+                if (selected) {
+                    quickPick.hide();
+                    await openFileAtLine(selected.heading.file_path, selected.heading.line_number);
+                }
+            });
+
+            quickPick.onDidHide(() => quickPick.dispose());
+            quickPick.show();
         })
     );
 

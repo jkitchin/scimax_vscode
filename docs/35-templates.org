@@ -1,8 +1,10 @@
 #+TITLE: Document Templates
 #+AUTHOR: Scimax VS Code
 #+OPTIONS: toc:2 num:t
+#+TODO: ⚠️ 👀 | ✅
 
-* Overview
+* ✅ Overview
+CLOSED: [2026-01-21 Wed 07:10]
 
 The document template system provides yasnippet/skeleton-like functionality for quickly creating new documents or inserting pre-defined content. Templates support:
 
@@ -12,29 +14,35 @@ The document template system provides yasnippet/skeleton-like functionality for 
 - User-defined templates stored in a configurable directory
 - Built-in templates for common document types
 
-* Quick Start
+* ✅ Quick Start
+CLOSED: [2026-01-21 Wed 07:10]
 
-** Insert a Template
+** ✅ Insert a Template
+CLOSED: [2026-01-21 Wed 07:10]
 
 1. Open a file (org, markdown, or latex)
 2. Press =C-c C-t i= or run =Scimax: Quick Insert Template=
 3. Select a template from the list
 4. Tab through placeholders to fill in values
 
-** Create a New File from Template
+** ✅ Create a New File from Template
+CLOSED: [2026-01-21 Wed 07:10]
 
 1. Press =C-c C-t n= or run =Scimax: New File from Template=
 2. Select a template
 3. Enter the filename
 4. The file is created and opened with the template content
 
-** Access via Hydra Menu
+** ✅ Access via Hydra Menu
+CLOSED: [2026-01-21 Wed 07:10]
 
 Press =C-c C-m= (Hydra menu), then =t= for Templates submenu.
 
-* Built-in Templates
+* ✅ Built-in Templates
+CLOSED: [2026-01-21 Wed 07:14]
 
-** Org-mode Templates
+** ✅ Org-mode Templates
+CLOSED: [2026-01-21 Wed 07:14]
 
 | Template         | Description                                    |
 |------------------+------------------------------------------------|
@@ -45,7 +53,8 @@ Press =C-c C-m= (Hydra menu), then =t= for Templates submenu.
 | Literature Review| Paper review with key contributions, methods   |
 | Source Block     | Code block with language selection             |
 
-** Markdown Templates
+** ✅ Markdown Templates
+CLOSED: [2026-01-21 Wed 07:14]
 
 | Template              | Description                          |
 |-----------------------+--------------------------------------|
@@ -53,7 +62,8 @@ Press =C-c C-m= (Hydra menu), then =t= for Templates submenu.
 | Blog Post             | Blog post with frontmatter           |
 | Technical Documentation| Step-by-step technical documentation |
 
-** LaTeX Templates
+** ✅ LaTeX Templates
+CLOSED: [2026-01-21 Wed 07:14]
 
 | Template            | Description                           |
 |---------------------+---------------------------------------|
@@ -64,9 +74,11 @@ Press =C-c C-m= (Hydra menu), then =t= for Templates submenu.
 | Figure              | Figure environment with caption       |
 | Table               | Table environment with caption        |
 
-* Template Syntax
+* ✅ Template Syntax
+CLOSED: [2026-01-21 Wed 07:14]
 
-** Tab Stops
+** ✅ Tab Stops
+CLOSED: [2026-01-21 Wed 07:14]
 
 Tab stops mark positions where the cursor should stop when pressing Tab:
 
@@ -78,30 +90,32 @@ $0  # Final cursor position
 
 After inserting, press Tab to move between placeholders.
 
-** Auto-fill Variables
+** ✅ Auto-fill Variables
+CLOSED: [2026-01-21 Wed 07:14]
 
 These variables are automatically replaced when the template is inserted:
 
-| Variable         | Description                                |
-|------------------+--------------------------------------------|
-| ={{date}}=         | Current date (configurable format)         |
-| ={{time}}=         | Current time (configurable format)         |
-| ={{datetime}}=     | Date and time combined                     |
-| ={{year}}=         | Current year (yyyy)                        |
-| ={{month}}=        | Current month (MM)                         |
-| ={{day}}=          | Current day (dd)                           |
-| ={{weekday}}=      | Full day name (e.g., "Monday")             |
-| ={{timestamp}}=    | ISO 8601 timestamp                         |
-| ={{author}}=       | Configured author name                     |
-| ={{user}}=         | System username                            |
-| ={{filename}}=     | Current file name (without extension)      |
-| ={{filepath}}=     | Full path to current file                  |
-| ={{directory}}=    | Directory containing current file          |
-| ={{workspace}}=    | Workspace folder name                      |
-| ={{workspacePath}}=| Full workspace path                        |
-| ={{uuid}}=         | Random UUID                                |
+| Variable            | Description                           |
+|---------------------+---------------------------------------|
+| ={{date}}=          | Current date (configurable format)    |
+| ={{time}}=          | Current time (configurable format)    |
+| ={{datetime}}=      | Date and time combined                |
+| ={{year}}=          | Current year (yyyy)                   |
+| ={{month}}=         | Current month (MM)                    |
+| ={{day}}=           | Current day (dd)                      |
+| ={{weekday}}=       | Full day name (e.g., "Monday")        |
+| ={{timestamp}}=     | ISO 8601 timestamp                    |
+| ={{author}}=        | Configured author name                |
+| ={{user}}=          | System username                       |
+| ={{filename}}=      | Current file name (without extension) |
+| ={{filepath}}=      | Full path to current file             |
+| ={{directory}}=     | Directory containing current file     |
+| ={{workspace}}=     | Workspace folder name                 |
+| ={{workspacePath}}= | Full workspace path                   |
+| ={{uuid}}=          | Random UUID                           |
 
-** Named Variables
+** ✅ Named Variables
+CLOSED: [2026-01-21 Wed 07:14]
 
 Named variables prompt the user for input:
 
@@ -110,14 +124,16 @@ ${title}           # Prompts for "title"
 ${title:Default}   # Prompts with default value
 #+END_EXAMPLE
 
-* Creating User Templates
+* ✅ Creating User Templates
+CLOSED: [2026-01-21 Wed 07:14]
 
-** Template Directory Structure
+** ✅ Template Directory Structure
+CLOSED: [2026-01-21 Tue 11:30]
 
-User templates are stored in =~/.scimax-templates= (configurable):
+User templates are stored in =~/scimax/templates= by default (under =scimax.directory=). You can override this with =scimax.templates.directory=:
 
 #+BEGIN_EXAMPLE
-~/.scimax-templates/
+~/scimax/templates/
 ├── org/
 │   ├── my-article.org
 │   └── weekly-report.org
@@ -127,11 +143,13 @@ User templates are stored in =~/.scimax-templates= (configurable):
     └── thesis-chapter.tex
 #+END_EXAMPLE
 
-** Template File Format
+** ✅ Template File Format
+CLOSED: [2026-01-21 Wed 07:16]
 
 Templates can include metadata in header comments:
 
-*** Org-mode Template
+*** ✅ Org-mode Template
+CLOSED: [2026-01-21 Wed 07:16]
 
 #+BEGIN_SRC org
 #+NAME: Weekly Report
@@ -150,7 +168,8 @@ ${3:None}
 $0
 #+END_SRC
 
-*** Markdown Template
+*** ✅ Markdown Template
+CLOSED: [2026-01-21 Wed 07:16]
 
 #+BEGIN_SRC markdown
 <!-- NAME: Project Proposal -->
@@ -168,7 +187,8 @@ ${2:Brief description}
 $0
 #+END_SRC
 
-*** LaTeX Template
+*** ✅ LaTeX Template
+CLOSED: [2026-01-21 Wed 07:16]
 
 #+BEGIN_SRC latex
 % NAME: Thesis Chapter
@@ -184,7 +204,8 @@ ${3:Introduction paragraph}
 $0
 #+END_SRC
 
-** Create Template from Selection
+** ✅ Create Template from Selection
+CLOSED: [2026-01-21 Wed 07:17]
 
 1. Select text in the editor
 2. Press =C-c C-t s= or run =Scimax: Create Template from Selection=
@@ -192,36 +213,39 @@ $0
 4. Optionally add a description
 5. The template is saved to your templates directory
 
-* Commands
+* ✅ Commands
+CLOSED: [2026-01-21 Wed 07:17]
 
-| Command                              | Keybinding    | Description                        |
-|--------------------------------------+---------------+------------------------------------|
-| =scimax.templates.quickInsert=       | =C-c C-t i=   | Insert template (auto-detect format) |
-| =scimax.templates.insert=            |               | Insert any template                |
-| =scimax.templates.insertOrg=         |               | Insert org-mode template           |
-| =scimax.templates.insertMarkdown=    |               | Insert markdown template           |
-| =scimax.templates.insertLatex=       |               | Insert LaTeX template              |
-| =scimax.templates.newFile=           | =C-c C-t n=   | Create new file from template      |
-| =scimax.templates.newOrgFile=        |               | Create new org file from template  |
-| =scimax.templates.newMarkdownFile=   |               | Create new markdown file           |
-| =scimax.templates.newLatexFile=      |               | Create new LaTeX file              |
-| =scimax.templates.list=              | =C-c C-t l=   | List all templates                 |
-| =scimax.templates.createFromSelection= | =C-c C-t s= | Create template from selection     |
-| =scimax.templates.editTemplates=     |               | Open templates in VS Code          |
-| =scimax.templates.openDirectory=     |               | Open templates dir in file explorer |
-| =scimax.templates.reload=            |               | Reload templates from disk         |
+| Command                                | Keybinding  | Description                          |
+|----------------------------------------+-------------+--------------------------------------|
+| =scimax.templates.quickInsert=         | =C-c C-t i= | Insert template (auto-detect format) |
+| =scimax.templates.insert=              |             | Insert any template                  |
+| =scimax.templates.insertOrg=           |             | Insert org-mode template             |
+| =scimax.templates.insertMarkdown=      |             | Insert markdown template             |
+| =scimax.templates.insertLatex=         |             | Insert LaTeX template                |
+| =scimax.templates.newFile=             | =C-c C-t n= | Create new file from template        |
+| =scimax.templates.newOrgFile=          |             | Create new org file from template    |
+| =scimax.templates.newMarkdownFile=     |             | Create new markdown file             |
+| =scimax.templates.newLatexFile=        |             | Create new LaTeX file                |
+| =scimax.templates.list=                | =C-c C-t l= | List all templates                   |
+| =scimax.templates.createFromSelection= | =C-c C-t s= | Create template from selection       |
+| =scimax.templates.editTemplates=       |             | Open templates in VS Code            |
+| =scimax.templates.openDirectory=       |             | Open templates dir in file explorer  |
+| =scimax.templates.reload=              |             | Reload templates from disk           |
 
-* Configuration
+* ✅ Configuration
+CLOSED: [2026-01-21 Wed 07:17]
 
-| Setting                         | Default            | Description                          |
-|---------------------------------+--------------------+--------------------------------------|
-| =scimax.templates.directory=    | =~/.scimax-templates= | Directory for user templates         |
-| =scimax.templates.defaultFormat=| =org=              | Default format for new templates     |
-| =scimax.templates.dateFormat=   | =yyyy-MM-dd=       | Date format (date-fns)               |
-| =scimax.templates.timeFormat=   | =HH:mm=            | Time format (date-fns)               |
-| =scimax.templates.author=       | (system user)      | Author name for ={{author}}= variable |
+| Setting                          | Default                    | Description                           |
+|----------------------------------+----------------------------+---------------------------------------|
+| =scimax.templates.directory=     | ={scimax.directory}/templates= | Directory for user templates      |
+| =scimax.templates.defaultFormat= | =org=                      | Default format for new templates      |
+| =scimax.templates.dateFormat=    | =yyyy-MM-dd=               | Date format (date-fns)                |
+| =scimax.templates.timeFormat=    | =HH:mm=                    | Time format (date-fns)                |
+| =scimax.templates.author=        | (system user)              | Author name for ={{author}}= variable |
 
-** Date Format Reference
+** ✅ Date Format Reference
+CLOSED: [2026-01-21 Wed 07:17]
 
 The date and time formats use [[https://date-fns.org/docs/format][date-fns format strings]]:
 
@@ -240,7 +264,8 @@ The date and time formats use [[https://date-fns.org/docs/format][date-fns forma
 | =mm=    | Minutes              | 00-59     |
 | =ss=    | Seconds              | 00-59     |
 
-* Hydra Menu
+* ✅ Hydra Menu
+CLOSED: [2026-01-21 Wed 07:17]
 
 The template system has a dedicated Hydra submenu accessible from the main menu (=C-c C-m t=):
 
@@ -260,9 +285,11 @@ The template system has a dedicated Hydra submenu accessible from the main menu 
 | =d= | Open directory      |
 | =r= | Reload templates    |
 
-* Tips and Workflows
+* ✅ Tips and Workflows
+CLOSED: [2026-01-21 Wed 07:17]
 
-** Project-Specific Templates
+** ✅ Project-Specific Templates
+CLOSED: [2026-01-21 Wed 07:18]
 
 Create a =.scimax-templates= directory in your project for project-specific templates:
 
@@ -277,15 +304,17 @@ my-project/
 
 Then configure =scimax.templates.directory= in your workspace settings.
 
-** Template Libraries
+** ✅ Template Libraries
+CLOSED: [2026-01-21 Wed 07:18]
 
 Share templates across projects by:
 
 1. Creating a Git repository for your templates
-2. Cloning it to =~/.scimax-templates=
+2. Cloning it to =~/scimax/templates= (or your configured templates directory)
 3. Pulling updates when templates change
 
-** Combining with Capture
+** ✅ Combining with Capture
+CLOSED: [2026-01-21 Wed 07:18]
 
 Templates and capture serve different purposes:
 
@@ -294,7 +323,8 @@ Templates and capture serve different purposes:
 
 Use templates for new documents, capture for quick additions.
 
-* Related Topics
+* ✅ Related Topics
+CLOSED: [2026-01-21 Wed 07:18]
 
 - [[file:15-capture.org][Capture]] - Quick note capture system
 - [[file:14-journal.org][Journal]] - Date-based journaling (uses templates)
