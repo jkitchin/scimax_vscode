@@ -198,12 +198,22 @@ export class ProjectileManager {
 
     /**
      * Scan a directory for projects (git repos)
+     * @param scanPath The directory to scan
+     * @param maxDepth Maximum depth to scan (undefined = unlimited, uses config setting)
      */
-    async scanDirectory(scanPath: string, maxDepth: number = 2): Promise<number> {
+    async scanDirectory(scanPath: string, maxDepth?: number): Promise<number> {
+        // Get maxDepth from config if not provided
+        if (maxDepth === undefined) {
+            const configDepth = vscode.workspace.getConfiguration('scimax.projectile')
+                .get<number>('scanMaxDepth');
+            // undefined or 0 means unlimited
+            maxDepth = configDepth === undefined || configDepth === 0 ? Infinity : configDepth;
+        }
+
         let found = 0;
 
         const scan = async (dir: string, depth: number) => {
-            if (depth > maxDepth) return;
+            if (depth > maxDepth!) return;
 
             try {
                 const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -215,7 +225,7 @@ export class ProjectileManager {
                 if (isGit || isProjectile) {
                     await this.addProject(dir);
                     found++;
-                    return; // Don't scan inside projects
+                    // Continue scanning inside projects (nested projects are common)
                 }
 
                 // Scan subdirectories

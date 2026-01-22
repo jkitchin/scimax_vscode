@@ -4928,6 +4928,12 @@
           "markdownDescription": "**Deprecated**: OpenAI API key is now stored securely. Use 'Scimax: Configure Embeddings' command instead.",
           "deprecationMessage": "This setting is deprecated. API keys are now stored securely in your OS credential manager. Use the 'Scimax: Configure Embeddings' command to set your API key."
         },
+        "scimax.projectile.scanMaxDepth": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "description": "Maximum directory depth when scanning for projects. 0 means unlimited (default). Set to a positive number to limit recursion depth."
+        },
         "scimax.literate.pythonPath": {
           "type": "string",
           "default": "",
