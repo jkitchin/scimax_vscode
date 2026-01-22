@@ -173,14 +173,17 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
             totalDeleted = staleResult.deleted;
 
             // Phase 2: Scan configured directories for new files
+            // Uses incremental scanning: only scan a batch of directories per session
+            // to avoid OOM on systems with many projects. Progress is saved and
+            // scanning resumes from where it left off on next startup.
             if (!staleCheckCancellation?.cancelled) {
-                const directories: string[] = [];
+                const allDirectories: string[] = [];
 
                 // Include journal directory if enabled
                 if (config.get<boolean>('includeJournal', true)) {
                     const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
                     if (journalDir && fs.existsSync(journalDir)) {
-                        directories.push(journalDir);
+                        allDirectories.push(journalDir);
                     }
                 }
 
@@ -188,7 +191,7 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                 if (config.get<boolean>('includeWorkspace', true)) {
                     const workspaceFolders = vscode.workspace.workspaceFolders || [];
                     for (const folder of workspaceFolders) {
-                        directories.push(folder.uri.fsPath);
+                        allDirectories.push(folder.uri.fsPath);
                     }
                 }
 
@@ -198,7 +201,7 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                     const projects = extensionContext.globalState.get<Project[]>('scimax.projects', []);
                     for (const project of projects) {
                         if (fs.existsSync(project.path)) {
-                            directories.push(project.path);
+                            allDirectories.push(project.path);
                         }
                     }
                 }
@@ -211,37 +214,86 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                         dir = dir.replace(/^~/, process.env.HOME || '');
                     }
                     if (fs.existsSync(dir)) {
-                        directories.push(dir);
+                        allDirectories.push(dir);
                     }
                 }
 
-                // Deduplicate
-                const uniqueDirs = [...new Set(directories)];
+                // Deduplicate and sort for consistent ordering
+                const uniqueDirs = [...new Set(allDirectories)].sort();
 
-                if (uniqueDirs.length > 0) {
-                    if (staleCheckStatusBar) {
-                        staleCheckStatusBar.text = '$(sync~spin) Scanning $(close)';
-                        staleCheckStatusBar.tooltip = 'Scimax: Scanning for new files\nClick to STOP';
+                if (uniqueDirs.length > 0 && extensionContext) {
+                    // Incremental scanning: process a batch of directories per session
+                    // Track progress in globalState so we resume where we left off
+                    const dirsPerSession = config.get<number>('dirsPerSession', 10);
+                    const scanState = extensionContext.globalState.get<{
+                        index: number;
+                        hash: string;
+                        lastScan: number;
+                    }>('scimax.db.scanProgress', { index: 0, hash: '', lastScan: 0 });
+
+                    // Create a hash of directory list to detect changes
+                    const dirHash = uniqueDirs.join('\n').slice(0, 1000);
+
+                    // Reset if directory list changed significantly
+                    if (scanState.hash !== dirHash) {
+                        log.info('Directory list changed, resetting scan progress');
+                        scanState.index = 0;
+                        scanState.hash = dirHash;
                     }
 
-                    const scanResult = await db.scanDirectoriesInBackground(uniqueDirs, {
-                        batchSize: 25,
-                        yieldMs: 10,
-                        maxIndex: maxNewFiles,
-                        cancellationToken: staleCheckCancellation,
-                        onProgress: ({ scanned, total, indexed, currentDir }) => {
-                            if (staleCheckStatusBar) {
-                                // Show progress with stop button
-                                staleCheckStatusBar.text = `$(sync~spin) Scanning (${indexed}) $(close)`;
-                                // Show detailed progress in tooltip on hover
-                                const dirName = currentDir ? currentDir.split('/').pop() : '';
-                                staleCheckStatusBar.tooltip = `Scimax: Scanning ${dirName}\nIndexed: ${indexed} files\nClick to STOP`;
-                            }
-                        }
-                    });
+                    // Get the batch of directories to scan this session
+                    const startIndex = scanState.index;
+                    const endIndex = Math.min(startIndex + dirsPerSession, uniqueDirs.length);
+                    const batchDirs = uniqueDirs.slice(startIndex, endIndex);
 
-                    totalReindexed += scanResult.changed;
-                    totalNew = scanResult.newFiles;
+                    if (batchDirs.length > 0) {
+                        log.info('Incremental directory scan', {
+                            batch: `${startIndex + 1}-${endIndex}`,
+                            total: uniqueDirs.length,
+                            dirs: batchDirs.length
+                        });
+
+                        if (staleCheckStatusBar) {
+                            staleCheckStatusBar.text = '$(sync~spin) Scanning $(close)';
+                            staleCheckStatusBar.tooltip = `Scimax: Scanning directories ${startIndex + 1}-${endIndex} of ${uniqueDirs.length}\nClick to STOP`;
+                        }
+
+                        const scanResult = await db.scanDirectoriesInBackground(batchDirs, {
+                            batchSize: 25,
+                            yieldMs: 10,
+                            maxIndex: maxNewFiles,
+                            cancellationToken: staleCheckCancellation,
+                            onProgress: ({ scanned, total, indexed, currentDir }) => {
+                                if (staleCheckStatusBar) {
+                                    staleCheckStatusBar.text = `$(sync~spin) Scanning (${indexed}) $(close)`;
+                                    const dirName = currentDir ? currentDir.split('/').pop() : '';
+                                    staleCheckStatusBar.tooltip = `Scimax: Scanning ${dirName}\nBatch ${startIndex + 1}-${endIndex} of ${uniqueDirs.length}\nIndexed: ${indexed} files\nClick to STOP`;
+                                }
+                            }
+                        });
+
+                        totalReindexed += scanResult.changed;
+                        totalNew = scanResult.newFiles;
+
+                        // Update progress for next session
+                        const nextIndex = endIndex >= uniqueDirs.length ? 0 : endIndex;
+                        await extensionContext.globalState.update('scimax.db.scanProgress', {
+                            index: nextIndex,
+                            hash: dirHash,
+                            lastScan: Date.now()
+                        });
+
+                        if (nextIndex === 0) {
+                            log.info('Completed full directory scan cycle');
+                        }
+                    } else {
+                        // All directories scanned, reset for next cycle
+                        await extensionContext.globalState.update('scimax.db.scanProgress', {
+                            index: 0,
+                            hash: dirHash,
+                            lastScan: Date.now()
+                        });
+                    }
                 }
             }
 
