@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-21T22:33:45.758Z",
-  "count": 3075,
+  "buildDate": "2026-01-22T14:35:57.289Z",
+  "count": 3088,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -45591,7 +45591,7 @@
       "level": 2,
       "file": "17-projectile.org",
       "line": 31,
-      "content": "CLOSED: [2026-01-15 Thu 19:55] - *Automatic Detection*: Discovers git repos and projectile-marked directories - *Quick Switching*: Fast navigation between known projects with `C-c p p' - *Project History*: Shows when each project was last opened - *Batch Scanning*: Scan directories to discover multiple projects at once - *File Finding*: Project-scoped file search with `C-c p f' - *Text Search*: Search within project files with `C-c p s' - *Tree View*: Sidebar showing all known projects with visu",
+      "content": "CLOSED: [2026-01-15 Thu 19:55] - *Automatic Detection*: Discovers git repos and projectile-marked directories - *Quick Switching*: Fast navigation between known projects with =C-c p p= - *Project History*: Shows when each project was last opened - *Batch Scanning*: Scan directories to discover multiple projects at once - *File Finding*: Project-scoped file search with =C-c p f= - *Cross-Project File Finding*: Find files across all known projects with =C-c p F= - *Text Search*: Search within proj",
       "path": [
         "Overview"
       ],
@@ -45626,7 +45626,7 @@
       "heading": "Project Detection",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 44,
+      "line": 46,
       "content": "CLOSED: [2026-01-15 Thu 19:55]",
       "path": [],
       "commands": [],
@@ -45644,7 +45644,7 @@
       "heading": "Detection Methods",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 47,
+      "line": 49,
       "content": "Scimax uses three methods to detect projects, in this priority order: 1. *Git Repositories*: Any directory containing a .git/ subdirectory 2. *Projectile Markers*: Directories with a .projectile file 3. *Manual Registration*: Projects you explicitly add via commands",
       "path": [
         "Project Detection"
@@ -45678,7 +45678,7 @@
       "heading": "Automatic Detection",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 55,
+      "line": 57,
       "content": "When you open a workspace folder, Scimax automatically registers it as a project: #+begin_example # Opening a folder registers it automatically $ code /home/user/my-project/ # The folder is now in your project list # Type: git (if it has .git) or manual (otherwise) #+end_example",
       "path": [
         "Project Detection"
@@ -45712,7 +45712,7 @@
       "heading": "Creating a Projectile Marker",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 67,
+      "line": 69,
       "content": "To mark a directory as a projectile project, create an empty `.projectile' file in the root: #+begin_src sh # Create marker file touch .projectile # Now Scimax recognizes this as a project #+end_src The `.projectile' file can be empty or contain patterns for ignoring files (reserved for future use).",
       "path": [
         "Project Detection"
@@ -45746,7 +45746,7 @@
       "heading": "Project Types",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 80,
+      "line": 82,
       "content": "CLOSED: [2026-01-18 Sun 10:25] Projects are classified into three types: | Type         | Marker        | Icon         | Description                         | |--------------+---------------+--------------+-------------------------------------| | =git=        | =.git/=       | Git branch   | Git repository                      | | =projectile= | =.projectile= | File icon    | Marked with .projectile file        | | =manual=     | (none)        | Folder icon  | Manually added directory           ",
       "path": [
         "Project Detection"
@@ -45780,7 +45780,7 @@
       "heading": "Managing Projects",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 93,
+      "line": 95,
       "content": "CLOSED: [2026-01-16 Fri 21:11]",
       "path": [],
       "commands": [],
@@ -45798,7 +45798,7 @@
       "heading": "Switching Between Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 96,
+      "line": 98,
       "content": "CLOSED: [2026-01-16 Fri 21:11] The primary projectile command is *Switch Project* (`C-c p p'): #+begin_src Command: Scimax: Switch Project Keybinding: C-c p p Hydra: Projects → p (Switch Project) #+end_src This opens a quick pick menu showing: - Project name - Full path - Project type (git, projectile, or manual) - Last opened time (e.g., \"2h ago\", \"3d ago\") Select a project to choose how to open it: | Option                 | Result                                      | |----------------------",
       "path": [
         "Managing Projects"
@@ -45834,7 +45834,7 @@
       "heading": "Adding Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 133,
+      "line": 135,
       "content": "CLOSED: [2026-01-16 Fri 21:11]",
       "path": [
         "Managing Projects"
@@ -45854,7 +45854,7 @@
       "heading": "Manually Adding a Project",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 136,
+      "line": 138,
       "content": "CLOSED: [2026-01-16 Fri 21:11] Use `Scimax: Add Project' (`C-c p a'): #+begin_src Command: Scimax: Add Project Keybinding: C-c p a Hydra: Projects → a (Add Project) #+end_src This opens a folder picker. Select any directory to add it to your project list. #+begin_example 1. Press C-c p a 2. Navigate to /home/user/projects/my-app/ 3. Select folder → \"Added project: my-app\" → Project appears in the list #+end_example",
       "path": [
         "Managing Projects",
@@ -45891,7 +45891,7 @@
       "heading": "Scanning for Projects",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 157,
+      "line": 159,
       "content": "CLOSED: [2026-01-16 Fri 21:11] To discover multiple projects at once, use `Scimax: Scan Directory for Projects': #+begin_src Command: Scimax: Scan Directory for Projects Keybinding: (none) Hydra: Projects → s (Scan for Projects) #+end_src Scanning process: 1. Select a parent directory to scan 2. Enter maximum depth (default: 2 levels deep) 3. Scimax searches for git repos and .projectile markers 4. Found projects are added automatically Example: #+begin_example Scan directory: /home/user/project",
       "path": [
         "Managing Projects",
@@ -45926,7 +45926,7 @@
       "heading": "Removing Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 196,
+      "line": 198,
       "content": "CLOSED: [2026-01-16 Fri 21:12] Remove projects from the list with `Scimax: Remove Project': #+begin_src Command: Scimax: Remove Project Keybinding: (none) Hydra: Projects → r (Remove Project) #+end_src Notes: - This removes the project from the *known projects list only* - It does *not* delete any files from disk - The project can be re-added at any time",
       "path": [
         "Managing Projects"
@@ -45960,7 +45960,7 @@
       "heading": "Cleaning Up Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 212,
+      "line": 214,
       "content": "CLOSED: [2026-01-16 Fri 21:12] Over time, projects may be moved or deleted. Use `Scimax: Cleanup Non-existent Projects': #+begin_src Command: Scimax: Cleanup Non-existent Projects Keybinding: (none) #+end_src This scans all known projects and removes entries for directories that no longer exist on disk. #+begin_example Known projects: 15 Checking each path... Removed: /home/user/old-project (not found) Removed: /tmp/temp-project (not found) Result: \"Cleaned up 2 non-existent projects\" #+end_exam",
       "path": [
         "Managing Projects"
@@ -45994,7 +45994,7 @@
       "heading": "Project Operations",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 234,
+      "line": 236,
       "content": "CLOSED: [2026-01-16 Fri 21:12]",
       "path": [],
       "commands": [],
@@ -46012,7 +46012,7 @@
       "heading": "Finding Files in Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 237,
+      "line": 239,
       "content": "CLOSED: [2026-01-16 Fri 21:12] Find files within the current project using `Scimax: Find File in Project' (`C-c p f'): #+begin_src Command: Scimax: Find File in Project Keybinding: C-c p f Hydra: Projects → f (Find File) #+end_src This delegates to VS Code's built-in quick open (`C-p'), which automatically scopes to workspace folders. Features: - Fuzzy matching (e.g., \"orgpar\" matches \"orgParser.ts\") - Recent files appear first - Respects .gitignore and VS Code ignore patterns - Fast indexing wi",
       "path": [
         "Project Operations"
@@ -46049,7 +46049,7 @@
       "heading": "Searching in Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 265,
+      "line": 267,
       "content": "CLOSED: [2026-01-16 Fri 21:12] Search for text within project files using `Scimax: Search in Project' (`C-c p s'): #+begin_src Command: Scimax: Search in Project Keybinding: C-c p s Hydra: Projects → g (Search in Project) #+end_src This opens VS Code's search panel pre-scoped to the current workspace. Search features: - Regular expression support - Case sensitivity toggle - Whole word matching - Include/exclude file patterns - Replace across all matches Example workflow: #+begin_example 1. Press",
       "path": [
         "Project Operations"
@@ -46085,7 +46085,7 @@
       "heading": "Opening Project Root",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 295,
+      "line": 297,
       "content": "CLOSED: [2026-01-16 Fri 21:12] Navigate to the project root in the file explorer with `Scimax: Open Project Root' (`C-c p d'): #+begin_src Command: Scimax: Open Project Root Keybinding: C-c p d Hydra: (none) #+end_src For multi-root workspaces, you'll be asked to select which project root to reveal.",
       "path": [
         "Project Operations"
@@ -46121,7 +46121,7 @@
       "heading": "Project Information",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 308,
+      "line": 310,
       "content": "CLOSED: [2026-01-16 Fri 21:12] View details about the current project with `Scimax: Project Info': #+begin_src Command: Scimax: Project Info Keybinding: (none) #+end_src Displays: - Project name - Full path - Project type (git, projectile, manual) - Last opened timestamp - Whether it's tracked by projectile Example output: #+begin_example Name: scimax_vscode Path: /home/user/scimax_vscode Type: git Last opened: 2026-01-13 14:32:15 #+end_example",
       "path": [
         "Project Operations"
@@ -46155,7 +46155,7 @@
       "heading": "Projects Tree View",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 334,
+      "line": 336,
       "content": "CLOSED: [2026-01-16 Fri 21:12]",
       "path": [],
       "commands": [],
@@ -46174,7 +46174,7 @@
       "heading": "Sidebar Panel",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 337,
+      "line": 339,
       "content": "CLOSED: [2026-01-16 Fri 21:13] The Projects tree view appears in the Scimax sidebar, showing all known projects. To open the sidebar: #+begin_src View → Open View... → Scimax Projects #+end_src",
       "path": [
         "Projects Tree View"
@@ -46204,7 +46204,7 @@
       "heading": "Tree View Elements",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 348,
+      "line": 350,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Each project in the tree shows: - *Icon*: - 🟢 Open folder icon (green) = currently open project - Git branch icon = git repository - File icon = projectile-marked project - Folder icon = manual project - *Name*: Project directory name - *Description*: - \"● current\" for the active project - Relative time (e.g., \"2h ago\", \"3d ago\") for recent projects - Empty for never-opened projects",
       "path": [
         "Projects Tree View"
@@ -46238,7 +46238,7 @@
       "heading": "Tree Interactions",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 366,
+      "line": 368,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Click a project to open it: - Same behavior as `C-c p p' (Switch Project) - Choose New Window, Current Window, or Add to Workspace Right-click (context menu) actions: - Refresh tree view - Remove project - Show project info",
       "path": [
         "Projects Tree View"
@@ -46274,7 +46274,7 @@
       "heading": "Refreshing the Tree",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 378,
+      "line": 380,
       "content": "CLOSED: [2026-01-16 Fri 21:13] The tree auto-refreshes when: - Projects are added or removed - Workspace folders change - Projects are accessed (last opened time updates) Manual refresh: #+begin_src Command: Scimax: Refresh Projects Icon: Refresh button in tree view toolbar #+end_src",
       "path": [
         "Projects Tree View"
@@ -46308,7 +46308,7 @@
       "heading": "Recent Projects",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 393,
+      "line": 395,
       "content": "CLOSED: [2026-01-16 Fri 21:13]",
       "path": [],
       "commands": [],
@@ -46326,7 +46326,7 @@
       "heading": "Sorting by Last Access",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 396,
+      "line": 398,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Projects are sorted by last opened time, with the most recently accessed appearing first: #+begin_example Project List: 1. scimax_vscode        (just now)     # ← Currently open 2. my-research          (2h ago)       # ← Recently used 3. client-website       (3d ago) 4. old-notes            (2024-11-15)   # ← Long time ago #+end_example This ordering makes it quick to switch back to recently used projects.",
       "path": [
         "Recent Projects"
@@ -46360,7 +46360,7 @@
       "heading": "Automatic Time Tracking",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 411,
+      "line": 413,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Last opened time is updated automatically when: - Opening a project via `C-c p p' (Switch Project) - Clicking a project in the tree view - Opening a workspace folder that's a known project The timestamp is stored in VS Code's global state, persisting across sessions.",
       "path": [
         "Recent Projects"
@@ -46396,7 +46396,7 @@
       "heading": "Time Format",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 422,
+      "line": 424,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Relative times are shown for recent access: | Time Difference | Format         | Example    | |-----------------+----------------+------------| | < 1 minute      | \"just now\"     | just now   | | < 60 minutes    | minutes ago    | 23m ago    | | < 24 hours      | hours ago      | 5h ago     | | < 30 days       | days ago       | 12d ago    | | ≥ 30 days       | date           | 11/23/2024 |",
       "path": [
         "Recent Projects"
@@ -46430,7 +46430,7 @@
       "heading": "Commands Reference",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 435,
+      "line": 437,
       "content": "CLOSED: [2026-01-16 Fri 21:13]",
       "path": [],
       "commands": [],
@@ -46448,8 +46448,8 @@
       "heading": "All Projectile Commands",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 438,
-      "content": "CLOSED: [2026-01-16 Fri 21:13] | Command                                    | Keybinding | Hydra Key | Description                      | |--------------------------------------------+------------+-----------+----------------------------------| | =Scimax: Switch Project=                   | =C-c p p=  | p         | Switch to another project        | | =Scimax: Find File in Project=             | =C-c p f=  | f         | Find file in current project     | | =Scimax: Search in Project=            ",
+      "line": 440,
+      "content": "CLOSED: [2026-01-16 Fri 21:13] | Command                                    | Keybinding  | Hydra Key | Description                        | |--------------------------------------------+-------------+-----------+------------------------------------| | =Scimax: Switch Project=                   | =C-c p p=   | p         | Switch to another project          | | =Scimax: Find File in Project=             | =C-c p f=   | f         | Find file in current project       | | =Scimax: Find File in Known",
       "path": [
         "Commands Reference"
       ],
@@ -46469,7 +46469,7 @@
         "hydra",
         "key",
         "description",
-        "-----------------------------------------------------------------------------------------------------",
+        "--------------------------------------------------------------------------------------------------------",
         "scimax",
         "switch",
         "project",
@@ -46477,21 +46477,20 @@
         "another",
         "find",
         "current",
-        "search"
+        "known"
       ]
     },
     {
       "heading": "Keybindings",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 454,
-      "content": "CLOSED: [2026-01-16 Fri 21:13] All projectile keybindings use the `C-c C-p' prefix, matching Emacs Projectile conventions: #+begin_src C-c p p    Switch project C-c p f    Find file C-c p s    Search in project C-c p d    Open project root (directory) C-c p a    Add project #+end_src These bindings work in all editors, regardless of file type.",
+      "line": 457,
+      "content": "CLOSED: [2026-01-16 Fri 21:13] All projectile keybindings use the =C-c p= prefix, matching Emacs Projectile conventions: #+begin_src C-c p p    Switch project C-c p f    Find file in current project C-c p F    Find file in all known projects C-c p s    Search in project C-c p d    Open project root (directory) C-c p a    Add project #+end_src These bindings work in all editors, regardless of file type.",
       "path": [
         "Commands Reference"
       ],
       "commands": [],
       "keybindings": [
-        "C-c C-p",
         "C-c"
       ],
       "keywords": [
@@ -46502,7 +46501,6 @@
         "2113",
         "projectile",
         "c-c",
-        "c-p",
         "prefix",
         "matching",
         "emacs",
@@ -46511,17 +46509,18 @@
         "switch",
         "project",
         "find",
+        "current",
+        "known",
+        "projects",
         "search",
-        "open",
-        "root",
-        "directory"
+        "open"
       ]
     },
     {
       "heading": "Hydra Menu Access",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 469,
+      "line": 473,
       "content": "CLOSED: [2026-01-16 Fri 21:13] Open the Projects hydra menu: #+begin_src 1. Open main hydra: C-c m (or Command Palette → Scimax: Hydra Menu) 2. Press 'p' for Projects #+end_src The hydra shows all projectile commands with single-key access: #+begin_example ┌─────────────────────────────────────┐ │ Projects (Projectile)               │ ├─────────────────────────────────────┤ │ Switch                              │ │  p  Switch Project                  │ │                                     │ │ M",
       "path": [
         "Commands Reference"
@@ -46557,7 +46556,7 @@
       "heading": "Integration with Notebook System",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 499,
+      "line": 503,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [],
       "commands": [],
@@ -46576,7 +46575,7 @@
       "heading": "Notebook-Projectile Relationship",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 502,
+      "line": 506,
       "content": "CLOSED: [2026-01-16 Fri 21:14] The notebook and projectile systems work together: - *Notebooks are projects*: Creating a notebook automatically creates a `.projectile' marker - *Projects can be notebooks*: Any project can have a `.scimax/' directory to become a notebook - *Shared markers*: Both systems recognize `.projectile' files - *Unified workflow*: Switch projects with projectile, manage research structure with notebooks",
       "path": [
         "Integration with Notebook System"
@@ -46610,7 +46609,7 @@
       "heading": "Creating Projectile-Enabled Notebooks",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 512,
+      "line": 516,
       "content": "CLOSED: [2026-01-16 Fri 21:14] When you create a notebook with `Scimax: New Notebook': #+begin_src org my-notebook/ ├── .scimax/ │   └── config.json        # Notebook metadata ├── .projectile            # ← Projectile marker (auto-created) ├── .git/                  # Optional: if \"Initialize Git\" was checked └── README.org #+end_src The notebook is automatically: 1. Added to the projectile projects list 2. Detected as type \"projectile\" (or \"git\" if git was initialized) 3. Available via `C-c p p",
       "path": [
         "Integration with Notebook System"
@@ -46646,7 +46645,7 @@
       "heading": "Converting Projects to Notebooks",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 531,
+      "line": 535,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Convert any existing project into a notebook: #+begin_src 1. Open the project 2. Run: Scimax: New Notebook 3. Choose the project directory as the location → Adds .scimax/ configuration → Project becomes a full notebook with metadata #+end_src The project remains in your projectile list and gains notebook features: - Master file tracking - Collaborator management - Notebook-scoped agenda - Archive capabilities",
       "path": [
         "Integration with Notebook System"
@@ -46680,7 +46679,7 @@
       "heading": "Notebook Metadata in Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 550,
+      "line": 554,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Notebooks store additional metadata in `.scimax/config.json': #+begin_src json { \"name\": \"Research Project\", \"description\": \"My research on topic X\", \"masterFile\": \"README.org\", \"collaborators\": [ { \"name\": \"Jane Doe\", \"email\": \"jane@example.com\", \"role\": \"lead\" } ], \"keywords\": [\"research\", \"machine-learning\"], \"custom\": { \"grant\": \"NSF-12345\" } } #+end_src This metadata is available to both systems: - Projectile shows the project in its list",
       "path": [
         "Integration with Notebook System"
@@ -46714,7 +46713,7 @@
       "heading": "Workflow Example: Research Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 578,
+      "line": 582,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Typical workflow for managing multiple research projects: #+begin_example # Create notebooks for each research topic Scimax: New Notebook → \"ml-experiments\" Scimax: New Notebook → \"paper-writing\" Scimax: New Notebook → \"data-analysis\" # Each is now in projectile list C-c p p → Shows all three projects # Quick switching between research C-c p p → ml-experiments → open README.org (run experiments, update notes) C-c p p → paper-writing → edit paper.org (write, cite re",
       "path": [
         "Integration with Notebook System"
@@ -46750,7 +46749,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 610,
+      "line": 614,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [],
       "commands": [],
@@ -46768,7 +46767,7 @@
       "heading": "Project Organization",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 613,
+      "line": 617,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [
         "Best Practices"
@@ -46788,7 +46787,7 @@
       "heading": "Use Consistent Markers",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 616,
+      "line": 620,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Choose one marker style per project: - Git projects: Let `.git/' serve as the marker - Non-git projects: Add `.projectile' explicitly - Notebooks: Use notebook creation (adds both `.projectile' and `.scimax/')",
       "path": [
         "Best Practices",
@@ -46823,7 +46822,7 @@
       "heading": "Project Naming",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 625,
+      "line": 629,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Use descriptive, scannable directory names: #+begin_example Good: my-research-project/ client-website-2024/ ml-experiments/ Less good: proj1/ tmp/ stuff/ #+end_example Project names appear in the quick pick list, so clarity helps with quick selection.",
       "path": [
         "Best Practices",
@@ -46858,7 +46857,7 @@
       "heading": "Directory Structure",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 644,
+      "line": 648,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Organize related projects together: #+begin_example ~/projects/ ├── research/ │   ├── ml-experiments/ │   ├── data-analysis/ │   └── paper-writing/ ├── work/ │   ├── client-a/ │   └── client-b/ └── personal/ ├── blog/ └── dotfiles/ #+end_example Use `Scimax: Scan Directory for Projects' on parent directories to bulk-add.",
       "path": [
         "Best Practices",
@@ -46893,7 +46892,7 @@
       "heading": "Efficient Workflows",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 665,
+      "line": 669,
       "content": "CLOSED: [2026-01-16 Fri 21:14]",
       "path": [
         "Best Practices"
@@ -46913,7 +46912,7 @@
       "heading": "Quick Switching Pattern",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 668,
+      "line": 672,
       "content": "CLOSED: [2026-01-16 Fri 21:14] Develop muscle memory for `C-c p p': #+begin_example C-c p p → type few chars → Enter → choose window option # Takes ~2 seconds to switch projects #+end_example This is faster than: - File → Open Folder → navigate → select - Clicking through GUI menus",
       "path": [
         "Best Practices",
@@ -46950,7 +46949,7 @@
       "heading": "Recent Project Access",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 682,
+      "line": 686,
       "content": "The most recent 3-5 projects appear at the top of the list. Use this for: #+begin_example Morning: Open project A (becomes #1) Afternoon: Switch to project B (becomes #1, A becomes #2) Evening: Back to A (already #2, quick to select) #+end_example",
       "path": [
         "Best Practices",
@@ -46985,7 +46984,7 @@
       "heading": "Search Before Switching",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 692,
+      "line": 696,
       "content": "If you know what file you need: #+begin_example 1. C-c p p → select project 2. C-c p f → find file 3. Start working # Faster than navigating manually #+end_example",
       "path": [
         "Best Practices",
@@ -47018,7 +47017,7 @@
       "heading": "Maintenance",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 704,
+      "line": 708,
       "content": "",
       "path": [
         "Best Practices"
@@ -47033,7 +47032,7 @@
       "heading": "Regular Cleanup",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 706,
+      "line": 710,
       "content": "Run cleanup monthly: #+begin_src Scimax: Cleanup Non-existent Projects #+end_src This prevents clutter from: - Deleted temporary projects - Moved directories - External drive projects (when unmounted)",
       "path": [
         "Best Practices",
@@ -47066,7 +47065,7 @@
       "heading": "Curate Your List",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 719,
+      "line": 723,
       "content": "Remove projects you no longer use: - Old experiments - Completed client work - Temporary test projects A smaller project list means faster selection in `C-c p p'.",
       "path": [
         "Best Practices",
@@ -47101,7 +47100,7 @@
       "heading": "Backup Project List",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 729,
+      "line": 733,
       "content": "The project list is stored in VS Code's global state. To backup: #+begin_src sh # Find VS Code's storage location # Linux: ~/.config/Code/User/globalStorage/ # macOS: ~/Library/Application Support/Code/User/globalStorage/ # Windows: %APPDATA%\\Code\\User\\globalStorage\\ # Project list is in state.vscdb # Backup this file to preserve project list #+end_src",
       "path": [
         "Best Practices",
@@ -47136,7 +47135,7 @@
       "heading": "Multi-Root Workspaces",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 743,
+      "line": 747,
       "content": "",
       "path": [
         "Best Practices"
@@ -47152,7 +47151,7 @@
       "heading": "When to Use Multi-Root",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 745,
+      "line": 749,
       "content": "Use multi-root workspaces for: - Related projects that share context - Monorepo management - Cross-project refactoring Example: #+begin_example Workspace: \"Full Stack App\" Folders: - frontend/  (React app) - backend/   (Node API) - shared/    (TypeScript types) Benefits: - Search across all three - Shared settings - Unified git operations #+end_example",
       "path": [
         "Best Practices",
@@ -47187,7 +47186,7 @@
       "heading": "When to Use Separate Windows",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 768,
+      "line": 772,
       "content": "Use separate windows for: - Unrelated projects - Context switching between different work modes - Performance with large projects Example: #+begin_example Window 1: Research project (Jupyter, org files) Window 2: Client website (HTML, CSS, JS) Window 3: Personal blog (Markdown, static site) Benefits: - Mental separation - Independent configurations - Clearer taskbar #+end_example",
       "path": [
         "Best Practices",
@@ -47222,7 +47221,7 @@
       "heading": "Advanced Usage",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 789,
+      "line": 793,
       "content": "",
       "path": [],
       "commands": [],
@@ -47236,7 +47235,7 @@
       "heading": "Custom Project Markers",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 791,
+      "line": 795,
       "content": "While `.projectile' is the standard marker, you can manually add any directory: #+begin_src Scimax: Add Project → select any folder #+end_src Use this for: - Projects without version control - Shared network directories - Temporary project workspaces",
       "path": [
         "Advanced Usage"
@@ -47270,7 +47269,7 @@
       "heading": "Scanning Large Directories",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 804,
+      "line": 808,
       "content": "When scanning directories with many subdirectories: #+begin_example Directory: ~/dev/ (contains 100+ repos) Max depth: 1 # Only scans immediate children # Fast, finds top-level projects #+end_example #+begin_example Directory: ~/dev/ Max depth: 3 # Scans deeper # Slower, finds nested projects # Useful for monorepos or organized hierarchies #+end_example Balance depth vs. speed based on your directory structure.",
       "path": [
         "Advanced Usage"
@@ -47304,7 +47303,7 @@
       "heading": "Project Type Prioritization",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 827,
+      "line": 831,
       "content": "If a directory has multiple markers: #+begin_example my-project/ ├── .git/          # Git marker └── .projectile    # Projectile marker Type: git (git takes priority) #+end_example Priority order: 1. `.git/' → type \"git\" 2. `.projectile' → type \"projectile\" 3. Manual add → type \"manual\" This ensures git projects are recognized as such, even if they also have `.projectile' markers.",
       "path": [
         "Advanced Usage"
@@ -47338,7 +47337,7 @@
       "heading": "Programmatic Access",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 846,
+      "line": 850,
       "content": "Other extensions can access the projectile manager: #+begin_src typescript // Get the projectile manager from extension context const scimaxExt = vscode.extensions.getExtension('scimax.scimax-vscode'); if (scimaxExt?.isActive) { const api = scimaxExt.exports; const projects = api.projectileManager.getProjects(); // Use project list... } #+end_src This enables: - Custom project selection UIs - Integration with external tools - Automated project management",
       "path": [
         "Advanced Usage"
@@ -47374,7 +47373,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 865,
+      "line": 869,
       "content": "",
       "path": [],
       "commands": [],
@@ -47387,7 +47386,7 @@
       "heading": "Projects Not Appearing",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 867,
+      "line": 871,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -47403,7 +47402,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 869,
+      "line": 873,
       "content": "Project doesn't appear in `C-c p p' list.",
       "path": [
         "Troubleshooting",
@@ -47426,7 +47425,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 872,
+      "line": 876,
       "content": "1. Check if directory exists: #+begin_src sh ls -la /path/to/project #+end_src 2. Manually add the project: #+begin_src Scimax: Add Project → select directory #+end_src 3. Check for markers: #+begin_src sh cd /path/to/project ls -la | grep -E '\\.git|\\.projectile' #+end_src 4. Run cleanup to remove stale entries: #+begin_src Scimax: Cleanup Non-existent Projects #+end_src",
       "path": [
         "Troubleshooting",
@@ -47461,7 +47460,7 @@
       "heading": "Project List Too Long",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 895,
+      "line": 899,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -47478,7 +47477,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 897,
+      "line": 901,
       "content": "`C-c p p' shows dozens of old projects.",
       "path": [
         "Troubleshooting",
@@ -47501,7 +47500,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 900,
+      "line": 904,
       "content": "1. Remove unused projects individually: #+begin_src Scimax: Remove Project → select each #+end_src 2. Clean up non-existent projects: #+begin_src Scimax: Cleanup Non-existent Projects #+end_src 3. Start fresh: #+begin_src # Clear global state (requires extension reload) # Open VS Code settings JSON # Remove scimax.projects entry #+end_src",
       "path": [
         "Troubleshooting",
@@ -47538,7 +47537,7 @@
       "heading": "Tree View Not Updating",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 919,
+      "line": 923,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -47555,7 +47554,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 921,
+      "line": 925,
       "content": "Projects tree shows outdated information.",
       "path": [
         "Troubleshooting",
@@ -47576,7 +47575,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 924,
+      "line": 928,
       "content": "1. Manual refresh: #+begin_src Scimax: Refresh Projects # Or click refresh icon in tree view toolbar #+end_src 2. Close and reopen sidebar: #+begin_src View → Close Sidebar View → Open View → Scimax Projects #+end_src 3. Reload window: #+begin_src Developer: Reload Window #+end_src",
       "path": [
         "Troubleshooting",
@@ -47610,7 +47609,7 @@
       "heading": "Scanning Not Finding Projects",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 943,
+      "line": 947,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -47627,7 +47626,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 945,
+      "line": 949,
       "content": "`Scimax: Scan Directory for Projects' reports \"Found 0 projects\".",
       "path": [
         "Troubleshooting",
@@ -47649,7 +47648,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 948,
+      "line": 952,
       "content": "1. Increase scan depth: #+begin_example Try depth 2, 3, or 4 #+end_example 2. Check directory structure: #+begin_src sh # Find git repos manually find /path/to/scan -name .git -type d #+end_src 3. Manually add projects: #+begin_src Scimax: Add Project #+end_src 4. Verify permissions: #+begin_src sh # Ensure you have read access to directories ls -la /path/to/scan #+end_src",
       "path": [
         "Troubleshooting",
@@ -47684,7 +47683,7 @@
       "heading": "Slow Project Operations",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 972,
+      "line": 976,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -47701,7 +47700,7 @@
       "heading": "Symptom",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 974,
+      "line": 978,
       "content": "`C-c p p' or tree view is slow to load.",
       "path": [
         "Troubleshooting",
@@ -47724,7 +47723,7 @@
       "heading": "Causes & Solutions",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 977,
+      "line": 981,
       "content": "1. *Too many projects*: - Remove unused projects - Run cleanup command 2. *Network drives*: - Projects on network shares are slower - Consider removing or using local copies 3. *Deep scanning*: - Reduce max depth when scanning - Use depth 1-2 for most use cases 4. *Large project count*: - Keep project list under 50-100 entries - Archive old projects",
       "path": [
         "Troubleshooting",
@@ -47759,7 +47758,7 @@
       "heading": "Comparison with Emacs Projectile",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 995,
+      "line": 999,
       "content": "For users familiar with Emacs Projectile:",
       "path": [],
       "commands": [],
@@ -47776,7 +47775,7 @@
       "heading": "Similarities",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 999,
+      "line": 1003,
       "content": "| Emacs Projectile           | Scimax VS Code          | Notes                           | |----------------------------+-------------------------+---------------------------------| | =C-c p p= switch           | =C-c p p= switch        | Same keybinding                 | | =C-c p f= find file        | =C-c p f= find file     | Delegates to VS Code picker     | | =C-c p s= search           | =C-c p s= search        | Opens VS Code search panel      | | =.projectile= marker       | =.projectile= ",
       "path": [
         "Comparison with Emacs Projectile"
@@ -47809,7 +47808,7 @@
       "heading": "Differences",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1011,
+      "line": 1015,
       "content": "",
       "path": [
         "Comparison with Emacs Projectile"
@@ -47824,7 +47823,7 @@
       "heading": "File Finding",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1013,
+      "line": 1017,
       "content": "- *Emacs*: Custom projectile completion - *VS Code*: Uses built-in Quick Open (`C-p') - *Advantage*: VS Code's picker is faster and more familiar",
       "path": [
         "Comparison with Emacs Projectile",
@@ -47856,7 +47855,7 @@
       "heading": "Search",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1018,
+      "line": 1022,
       "content": "- *Emacs*: helm-projectile or ivy integration - *VS Code*: Uses built-in Search panel - *Advantage*: VS Code's search is more visual with inline results",
       "path": [
         "Comparison with Emacs Projectile",
@@ -47884,7 +47883,7 @@
       "heading": "Project Caching",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1023,
+      "line": 1027,
       "content": "- *Emacs*: Caches project file lists - *VS Code*: Uses VS Code's file indexing - *Advantage*: Automatic, no manual cache management",
       "path": [
         "Comparison with Emacs Projectile",
@@ -47912,7 +47911,7 @@
       "heading": "Buffer Management",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1028,
+      "line": 1032,
       "content": "- *Emacs*: `C-c C-p b' switch buffer within project - *VS Code*: Not needed (tabs and Quick Open serve this role)",
       "path": [
         "Comparison with Emacs Projectile",
@@ -47944,7 +47943,7 @@
       "heading": "Project Commands",
       "level": 3,
       "file": "17-projectile.org",
-      "line": 1032,
+      "line": 1036,
       "content": "- *Emacs*: Many specialized commands (`C-c C-p c' compile, `C-c C-p t' test) - *VS Code*: Fewer commands, uses VS Code's task system instead",
       "path": [
         "Comparison with Emacs Projectile",
@@ -47976,7 +47975,7 @@
       "heading": "Migration Tips",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1036,
+      "line": 1040,
       "content": "If migrating from Emacs Projectile: 1. *Muscle memory*: Core keybindings (`C-c p p', `C-c p f', `C-c p s') are the same 2. *Markers*: Your `.projectile' files work without changes 3. *Workflows*: File finding and search feel similar but use VS Code UI 4. *Project list*: Use `Scimax: Scan Directory for Projects' to import existing projects 5. *Customization*: VS Code settings replace most projectile variables",
       "path": [
         "Comparison with Emacs Projectile"
@@ -48012,7 +48011,7 @@
       "heading": "Configuration",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 1046,
+      "line": 1050,
       "content": "Projectile settings in VS Code settings (`settings.json'):",
       "path": [],
       "commands": [],
@@ -48029,7 +48028,7 @@
       "heading": "No Configuration Required",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1050,
+      "line": 1054,
       "content": "Projectile works out-of-the-box with no configuration. The extension: - Automatically detects current workspace folders - Persists project list in global state - Uses sensible defaults for all operations",
       "path": [
         "Configuration"
@@ -48063,7 +48062,7 @@
       "heading": "Future Configuration Options",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1058,
+      "line": 1062,
       "content": "Potential future settings (not currently implemented): #+begin_src json { // Default depth for scanning directories \"scimax.projectile.scanDepth\": 2, // Auto-scan directories on startup \"scimax.projectile.autoScan\": false, // Paths to scan for projects \"scimax.projectile.scanPaths\": [ \"~/projects/\", \"~/dev/\" ], // Max number of recent projects to show \"scimax.projectile.maxRecentProjects\": 50 } #+end_src Note: These settings are planned but not yet available. Check extension documentation for cu",
       "path": [
         "Configuration"
@@ -48102,7 +48101,7 @@
       "heading": "Conclusion",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 1083,
+      "line": 1087,
       "content": "The Scimax projectile system brings Emacs-style project management to VS Code, enabling: - Fast switching between projects with familiar keybindings - Intelligent automatic detection of git repos and marked directories - Project-scoped file finding and text search - Integration with the notebook system for research workflows - Visual project management through the tree view sidebar Whether you're managing multiple research projects, client work, or personal repositories, projectile streamlines y",
       "path": [],
       "commands": [],
@@ -48134,7 +48133,7 @@
       "heading": "Next Steps",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1095,
+      "line": 1099,
       "content": "- Create a `.projectile' marker in your important projects - Use `C-c p p' to build muscle memory for project switching - Scan your development directory to populate the project list - Explore integration with notebooks for research projects - Set up keybindings for your most-used projectile commands",
       "path": [
         "Conclusion"
@@ -48170,7 +48169,7 @@
       "heading": "Related Documentation",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1103,
+      "line": 1107,
       "content": "- [[file:16-notebook.org][Notebook (Project Organization)]] - Research project structure with notebooks - [[file:24-keybindings.org][Keybindings]] - Complete keybinding reference - [[file:26-configuration.org][Configuration]] - Extension settings and customization",
       "path": [
         "Conclusion"
@@ -48203,7 +48202,7 @@
       "heading": "Feedback",
       "level": 2,
       "file": "17-projectile.org",
-      "line": 1109,
+      "line": 1113,
       "content": "If you encounter issues or have feature requests for projectile: - GitHub Issues: [[https://github.com/your-repo/scimax-vscode/issues]] - Discussion: [[https://github.com/your-repo/scimax-vscode/discussions]]",
       "path": [
         "Conclusion"
@@ -48227,7 +48226,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "17-projectile.org",
-      "line": 1116,
+      "line": 1120,
       "content": "- Previous: [[file:16-notebook.org][Notebook]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:18-database-search.org][Database and Search]]",
       "path": [],
       "commands": [],
@@ -52457,10 +52456,391 @@
       ]
     },
     {
+      "heading": "Database Maintenance",
+      "level": 1,
+      "file": "18-database-search.org",
+      "line": 1090,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "database",
+        "maintenance"
+      ]
+    },
+    {
+      "heading": "Backup and Restore",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 1092,
+      "content": "The database can be backed up and restored to prevent data loss and enable migration between machines.",
+      "path": [
+        "Database Maintenance"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "backup",
+        "restore",
+        "database",
+        "backed",
+        "restored",
+        "prevent",
+        "data",
+        "loss",
+        "enable",
+        "migration",
+        "between",
+        "machines"
+      ]
+    },
+    {
+      "heading": "Backup",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1096,
+      "content": "Command: =Scimax: Backup Database= (=scimax.db.backup=) Creates a portable backup file containing: - All indexed file paths (not file contents) - Project information - Database metadata Backup is stored in JSON format for portability. #+BEGIN_SRC org # Example backup location ~/.scimax/backup-2026-01-22.json #+END_SRC",
+      "path": [
+        "Database Maintenance",
+        "Backup and Restore"
+      ],
+      "commands": [
+        "scimax.db.backup"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "backup",
+        "command",
+        "scimax",
+        "database",
+        "creates",
+        "portable",
+        "containing",
+        "indexed",
+        "paths",
+        "contents",
+        "project",
+        "information",
+        "metadata",
+        "stored",
+        "json",
+        "format",
+        "portability",
+        "beginsrc",
+        "org",
+        "example"
+      ]
+    },
+    {
+      "heading": "Restore",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1112,
+      "content": "Command: =Scimax: Restore Database= (=scimax.db.restore=) Restores database from a backup file: - Imports project list - Queues files for reindexing - Preserves original creation timestamps Note: Actual file content must still be reindexed after restore.",
+      "path": [
+        "Database Maintenance",
+        "Backup and Restore"
+      ],
+      "commands": [
+        "scimax.db.restore"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "restore",
+        "command",
+        "scimax",
+        "database",
+        "restores",
+        "backup",
+        "imports",
+        "project",
+        "list",
+        "queues",
+        "reindexing",
+        "preserves",
+        "original",
+        "creation",
+        "timestamps",
+        "note",
+        "actual",
+        "content",
+        "must",
+        "still"
+      ]
+    },
+    {
+      "heading": "Database Rebuild",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 1123,
+      "content": "Command: =Scimax: Rebuild Database= (=scimax.db.rebuild=) Completely rebuilds the database from scratch: - Drops and recreates all tables - Re-scans all configured directories - Regenerates all indexes - Regenerates embeddings (if configured) Use when: - Database appears corrupted - Major schema changes after update - Switching embedding providers - Performance issues after many incremental updates",
+      "path": [
+        "Database Maintenance"
+      ],
+      "commands": [
+        "scimax.db.rebuild"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "database",
+        "rebuild",
+        "command",
+        "scimax",
+        "completely",
+        "rebuilds",
+        "scratch",
+        "drops",
+        "recreates",
+        "tables",
+        "re-scans",
+        "configured",
+        "directories",
+        "regenerates",
+        "indexes",
+        "embeddings",
+        "appears",
+        "corrupted",
+        "major",
+        "schema"
+      ]
+    },
+    {
+      "heading": "Options",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1139,
+      "content": "| Option        | Description                          | |---------------+--------------------------------------| | Full rebuild  | Complete reindex of all files        | | Projects only | Only rebuild project table           |",
+      "path": [
+        "Database Maintenance",
+        "Database Rebuild"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "options",
+        "option",
+        "description",
+        "-----------------------------------------------------",
+        "full",
+        "rebuild",
+        "complete",
+        "reindex",
+        "projects",
+        "project",
+        "table"
+      ]
+    },
+    {
+      "heading": "Database Verification",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 1146,
+      "content": "Command: =Scimax: Verify Database= (=scimax.db.verify=) Checks database integrity and freshness:",
+      "path": [
+        "Database Maintenance"
+      ],
+      "commands": [
+        "scimax.db.verify"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "database",
+        "verification",
+        "command",
+        "scimax",
+        "verify",
+        "checks",
+        "integrity",
+        "freshness"
+      ]
+    },
+    {
+      "heading": "Checks Performed",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1152,
+      "content": "1. *File existence* - Verifies indexed files still exist on disk 2. *Modification time* - Detects files modified since indexing 3. *Index integrity* - Validates FTS5 and vector indexes 4. *Project validity* - Checks project directories exist",
+      "path": [
+        "Database Maintenance",
+        "Database Verification"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "checks",
+        "performed",
+        "existence",
+        "verifies",
+        "indexed",
+        "still",
+        "exist",
+        "disk",
+        "modification",
+        "time",
+        "detects",
+        "modified",
+        "since",
+        "indexing",
+        "index",
+        "integrity",
+        "validates",
+        "fts5",
+        "vector",
+        "indexes"
+      ]
+    },
+    {
+      "heading": "Result Format",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1159,
+      "content": "#+BEGIN_SRC org Database Verification Results: - Total files: 127 - Missing files: 2 - Stale files: 5 - Projects: 8 (7 valid, 1 missing) - Status: NEEDS_REINDEX #+END_SRC",
+      "path": [
+        "Database Maintenance",
+        "Database Verification"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "result",
+        "format",
+        "beginsrc",
+        "org",
+        "database",
+        "verification",
+        "results",
+        "total",
+        "127",
+        "missing",
+        "stale",
+        "projects",
+        "valid",
+        "status",
+        "needsreindex",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Status Values",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1170,
+      "content": "| Status       | Meaning                          | |--------------+----------------------------------| | OK           | Database is current and valid    | | NEEDS_REINDEX| Some files are stale or missing | | CORRUPTED    | Index integrity check failed     |",
+      "path": [
+        "Database Maintenance",
+        "Database Verification"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "status",
+        "values",
+        "meaning",
+        "------------------------------------------------",
+        "database",
+        "current",
+        "valid",
+        "needsreindex",
+        "stale",
+        "missing",
+        "corrupted",
+        "index",
+        "integrity",
+        "check",
+        "failed"
+      ]
+    },
+    {
+      "heading": "Project Integration",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 1178,
+      "content": "The database now stores project information, integrated with the Projectile project manager:",
+      "path": [
+        "Database Maintenance"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "project",
+        "integration",
+        "database",
+        "now",
+        "stores",
+        "information",
+        "integrated",
+        "projectile",
+        "manager"
+      ]
+    },
+    {
+      "heading": "Benefits",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1182,
+      "content": "- Projects persist across VS Code restarts - Shared project list between Projectile and Database - Fast project switching using indexed data - Projects can be associated with indexed files",
+      "path": [
+        "Database Maintenance",
+        "Project Integration"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "benefits",
+        "projects",
+        "persist",
+        "across",
+        "code",
+        "restarts",
+        "shared",
+        "project",
+        "list",
+        "between",
+        "projectile",
+        "database",
+        "fast",
+        "switching",
+        "indexed",
+        "data",
+        "associated"
+      ]
+    },
+    {
+      "heading": "Project Commands",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 1189,
+      "content": "Projects are managed through Projectile commands (=C-c p=), but the database provides the persistence layer. See [[file:17-projectile.org][Projectile]] for project management commands.",
+      "path": [
+        "Database Maintenance",
+        "Project Integration"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-c"
+      ],
+      "keywords": [
+        "project",
+        "commands",
+        "projects",
+        "managed",
+        "through",
+        "projectile",
+        "c-c",
+        "database",
+        "provides",
+        "persistence",
+        "layer",
+        "file17-projectileorg",
+        "management"
+      ]
+    },
+    {
       "heading": "Troubleshooting",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1086,
+      "line": 1195,
       "content": "",
       "path": [],
       "commands": [],
@@ -52473,7 +52853,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1088,
+      "line": 1197,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52490,7 +52870,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1090,
+      "line": 1199,
       "content": "Semantic search returns no results, shows \"unavailable\", or displays an error.",
       "path": [
         "Troubleshooting",
@@ -52514,7 +52894,7 @@
       "heading": "First: Check Vector Search Support",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1093,
+      "line": 1202,
       "content": "Run `Scimax: Show Database Stats' (`scimax.db.stats') to see the semantic search status: | Status Message                         | Meaning                                 | |----------------------------------------+-----------------------------------------| | Semantic search: Enabled (N chunks)    | Working, N chunks with embeddings       | | Semantic search: Ready (no embeddings) | Supported, but no provider configured   | | Semantic search: Unavailable (error)   | Vector search not supported ",
       "path": [
         "Troubleshooting",
@@ -52551,7 +52931,7 @@
       "heading": "Vector Search Unavailable",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1103,
+      "line": 1212,
       "content": "If you see \"Semantic search: Unavailable\", the libsql database doesn't support vector operations. This can happen if: - The libsql version doesn't include vector support - The vector index failed to create *Workaround*: Use full-text search (`scimax.db.search') instead. FTS5 is always available and fast.",
       "path": [
         "Troubleshooting",
@@ -52588,7 +52968,7 @@
       "heading": "Embedding Provider Issues",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1112,
+      "line": 1221,
       "content": "If vector search is supported but not working: 1. Check embedding provider is configured: `scimax.db.embeddingProvider' 2. Test connection: Run `Scimax: Configure Embedding Service' 3. Ensure files are reindexed after configuring embeddings 4. Check console for errors (`Help: Toggle Developer Tools')",
       "path": [
         "Troubleshooting",
@@ -52625,7 +53005,7 @@
       "heading": "Local Provider Issues",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1121,
+      "line": 1230,
       "content": "- First use downloads model (~30MB), wait for completion - Check extension cache directory has write permissions - Try different model if one fails",
       "path": [
         "Troubleshooting",
@@ -52659,7 +53039,7 @@
       "heading": "Ollama Issues",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1126,
+      "line": 1235,
       "content": "- Ensure Ollama is running: `ollama serve' - Pull model: `ollama pull nomic-embed-text' - Check URL is correct in settings - Test connection: `curl http://localhost:11434/api/embeddings'",
       "path": [
         "Troubleshooting",
@@ -52690,7 +53070,7 @@
       "heading": "OpenAI Issues",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1132,
+      "line": 1241,
       "content": "- Verify API key is valid - Check API quota and billing - Ensure internet connection is stable",
       "path": [
         "Troubleshooting",
@@ -52718,7 +53098,7 @@
       "heading": "Search Returns No Results",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1137,
+      "line": 1246,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52735,7 +53115,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1139,
+      "line": 1248,
       "content": "Searches return empty results despite having files.",
       "path": [
         "Troubleshooting",
@@ -52757,7 +53137,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1142,
+      "line": 1251,
       "content": "1. Run `Scimax: Show Database Stats' to check file count 2. If files ` 0, run 'Scimax: Reindex Files 3. Check file extensions (.org, .md, .ipynb) 4. Verify files aren't in ignored directories 5. Check search scope is set to \"All files\"",
       "path": [
         "Troubleshooting",
@@ -52791,7 +53171,7 @@
       "heading": "Slow Indexing",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1149,
+      "line": 1258,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52807,7 +53187,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1151,
+      "line": 1260,
       "content": "Indexing takes very long or appears stuck.",
       "path": [
         "Troubleshooting",
@@ -52828,7 +53208,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1154,
+      "line": 1263,
       "content": "1. Check workspace size (number of files) 2. Add ignore patterns for large non-content directories 3. Disable embedding generation if not needed 4. Index directories incrementally 5. Check disk I/O and available memory",
       "path": [
         "Troubleshooting",
@@ -52863,7 +53243,7 @@
       "heading": "Database Corruption",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1161,
+      "line": 1270,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52879,7 +53259,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1163,
+      "line": 1272,
       "content": "Errors mentioning \"database is locked\" or \"disk I/O error\".",
       "path": [
         "Troubleshooting",
@@ -52901,7 +53281,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1166,
+      "line": 1275,
       "content": "1. Close other VS Code windows accessing same workspace 2. Restart VS Code 3. Run `Scimax: Clear Database' and reindex 4. Check disk space is available 5. Verify database file permissions",
       "path": [
         "Troubleshooting",
@@ -52934,7 +53314,7 @@
       "heading": "High Memory Usage",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1173,
+      "line": 1282,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -52951,7 +53331,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1175,
+      "line": 1284,
       "content": "VS Code uses excessive memory during indexing or searching.",
       "path": [
         "Troubleshooting",
@@ -52974,7 +53354,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1178,
+      "line": 1287,
       "content": "1. Disable auto-indexing 2. Reduce number of indexed directories 3. Use more aggressive ignore patterns 4. Clear and reindex database 5. Restart VS Code between large indexing operations",
       "path": [
         "Troubleshooting",
@@ -53008,7 +53388,7 @@
       "heading": "Examples and Workflows",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1185,
+      "line": 1294,
       "content": "",
       "path": [],
       "commands": [],
@@ -53022,7 +53402,7 @@
       "heading": "Research Paper Management",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1187,
+      "line": 1296,
       "content": "#+BEGIN_SRC org # Organize papers with properties ,* TODO Read: Attention Is All You Need :PROPERTIES: :CUSTOM_ID: vaswani2017attention :AUTHOR: Vaswani et al. :YEAR: 2017 :CATEGORY: research :END: #transformers #attention #nlp SCHEDULED: <2026-01-15 Wed> # Search by property Property: CATEGORY Value: research # Search by hashtag #nlp # Semantic search transformer architecture papers #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -53056,7 +53436,7 @@
       "heading": "Project Todo Management",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1214,
+      "line": 1323,
       "content": "#+BEGIN_SRC org # Use tags for organization ,* TODO Implement login feature :work:backend: DEADLINE: <2026-01-20 Mon> ,* TODO Write API documentation :work:docs: SCHEDULED: <2026-01-18 Sat> # Search by tag :work: -> shows all work items :backend: -> shows backend tasks # View agenda Next 2 weeks -> prioritized by deadline # Search TODOs Filter by: TODO (in progress) #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -53090,7 +53470,7 @@
       "heading": "Code Snippet Library",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1235,
+      "line": 1344,
       "content": "#+BEGIN_SRC org # Store reusable code blocks ,* Data Processing Utils ,#+BEGIN_SRC python def normalize_data(df): \"\"\"Normalize numeric columns\"\"\" return (df - df.mean()) / df.std() ,#+END_SRC # Search code blocks Language: python Query: normalize # Or semantic search how to standardize dataframe columns #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -53124,7 +53504,7 @@
       "heading": "Personal Knowledge Base",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1255,
+      "line": 1364,
       "content": "#+BEGIN_SRC org # Use hybrid search for discovery Query: \"improve code performance\" Results will include: - Exact matches: \"code performance\" articles - Related concepts: optimization, profiling, caching - Similar topics: algorithm efficiency, memory management # Use properties for metadata :PROPERTIES: :CREATED: [2026-01-13 Mon 10:00] :MODIFIED: [2026-01-13 Mon 15:30] :CATEGORY: programming :END: #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -53158,7 +53538,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1274,
+      "line": 1383,
       "content": "",
       "path": [],
       "commands": [],
@@ -53172,7 +53552,7 @@
       "heading": "Indexing Strategy",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1276,
+      "line": 1385,
       "content": "1. *Start selective* - Index specific directories first 2. *Use ignore patterns* - Exclude build artifacts and dependencies 3. *Index incrementally* - Don't reindex everything on changes 4. *Schedule optimization* - Run monthly for large databases 5. *Monitor statistics* - Check file counts and sizes regularly",
       "path": [
         "Best Practices"
@@ -53206,7 +53586,7 @@
       "heading": "Search Strategy",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1284,
+      "line": 1393,
       "content": "1. *Start broad* - Use semantic or hybrid search for exploration 2. *Refine with keywords* - Switch to FTS for specific terms 3. *Use structured queries* - Filter by tags/properties when possible 4. *Set scope appropriately* - Narrow to directories for focused work 5. *Combine approaches* - Use multiple search types for thorough research",
       "path": [
         "Best Practices"
@@ -53240,7 +53620,7 @@
       "heading": "Organization Tips",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1292,
+      "line": 1401,
       "content": "1. *Use consistent tags* - Establish tag naming conventions 2. *Add properties* - Include metadata for filtering 3. *Set schedules* - Use SCHEDULED/DEADLINE for time management 4. *Include hashtags* - Quick inline categorization 5. *Write descriptive headings* - Better search results",
       "path": [
         "Best Practices"
@@ -53274,7 +53654,7 @@
       "heading": "Performance Tips",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1300,
+      "line": 1409,
       "content": "1. *Disable auto-indexing* - For large workspaces (manual trigger) 2. *Choose appropriate embeddings* - Balance quality vs. speed 3. *Limit result counts* - Don't request thousands of results 4. *Use search scope* - Narrow searches to relevant directories 5. *Cache frequent queries* - Database has 15-minute result cache",
       "path": [
         "Best Practices"
@@ -53308,7 +53688,7 @@
       "heading": "Technical Architecture",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1308,
+      "line": 1417,
       "content": "",
       "path": [],
       "commands": [],
@@ -53322,7 +53702,7 @@
       "heading": "Database Schema",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1310,
+      "line": 1419,
       "content": "",
       "path": [
         "Technical Architecture"
@@ -53338,7 +53718,7 @@
       "heading": "Files Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1312,
+      "line": 1421,
       "content": "Tracks indexed files with modification tracking: - `path', `file_type', `mtime', `hash', `size', `indexed_at'",
       "path": [
         "Technical Architecture",
@@ -53364,7 +53744,7 @@
       "heading": "Headings Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1316,
+      "line": 1425,
       "content": "Org/markdown headings with full metadata: - `level', `title', `todo_state', `priority' - `tags', `inherited_tags', `properties' - `scheduled', `deadline', `closed' - `line_number', `begin_pos'",
       "path": [
         "Technical Architecture",
@@ -53396,7 +53776,7 @@
       "heading": "Source Blocks Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1323,
+      "line": 1432,
       "content": "Code blocks with language and content: - `language', `content', `headers' - `line_number', `cell_index'",
       "path": [
         "Technical Architecture",
@@ -53420,7 +53800,7 @@
       "heading": "Links Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1328,
+      "line": 1437,
       "content": "All link types (file, http, id, etc.): - `link_type', `target', `description' - `line_number'",
       "path": [
         "Technical Architecture",
@@ -53445,7 +53825,7 @@
       "heading": "Hashtags Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1333,
+      "line": 1442,
       "content": "Inline hashtags: - `tag', `file_path'",
       "path": [
         "Technical Architecture",
@@ -53465,7 +53845,7 @@
       "heading": "Chunks Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1337,
+      "line": 1446,
       "content": "Text chunks for semantic search: - `content', `line_start', `line_end' - `embedding' (F32_BLOB vector)",
       "path": [
         "Technical Architecture",
@@ -53491,7 +53871,7 @@
       "heading": "FTS Content (Virtual Table)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1342,
+      "line": 1451,
       "content": "Full-text search index: - `file_path', `title', `content' - Porter stemming, Unicode normalization - BM25 ranking support",
       "path": [
         "Technical Architecture",
@@ -53522,7 +53902,7 @@
       "heading": "Indexes",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1348,
+      "line": 1457,
       "content": "Performance indexes on: - `headings.file_id', `headings.todo_state' - `headings.deadline', `headings.scheduled' - `source_blocks.language' - `hashtags.tag' - `chunks.embedding' (vector index with cosine metric) - `files.file_type'",
       "path": [
         "Technical Architecture"
@@ -53550,7 +53930,7 @@
       "heading": "Vector Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1358,
+      "line": 1467,
       "content": "Using libsql's vector extension: - Cosine similarity metric - F32_BLOB storage format - HNSW-like index structure - Efficient nearest neighbor queries",
       "path": [
         "Technical Architecture"
@@ -53581,7 +53961,7 @@
       "heading": "Parsers",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1366,
+      "line": 1475,
       "content": "",
       "path": [
         "Technical Architecture"
@@ -53596,7 +53976,7 @@
       "heading": "Org Mode",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1368,
+      "line": 1477,
       "content": "`UnifiedParserAdapter' - Full AST parser compatible with org-element: - Recursive heading parsing with inheritance - Property drawer extraction - Timestamp parsing (scheduled, deadline, closed) - Source block with headers - Link extraction",
       "path": [
         "Technical Architecture",
@@ -53631,7 +54011,7 @@
       "heading": "Markdown",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1376,
+      "line": 1485,
       "content": "Simplified parser: - ATX heading syntax (`#') - Fenced code blocks - Inline links",
       "path": [
         "Technical Architecture",
@@ -53657,7 +54037,7 @@
       "heading": "Jupyter Notebooks",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1382,
+      "line": 1491,
       "content": "`ipynbParser' - Notebook-specific parser: - Markdown cells → headings and links - Code cells → source blocks - Cell indices tracked for navigation - Hashtags from markdown cells",
       "path": [
         "Technical Architecture",
@@ -53689,7 +54069,7 @@
       "heading": "See Also",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1389,
+      "line": 1498,
       "content": "- [[file:01-getting-started.org][Getting Started]] - Initial setup and first steps - [[file:07-source-blocks.org][Source Blocks]] - Code execution and literate programming - [[file:03-todo-items.org][TODO Items]] - Task management features - [[file:05-links.org][Links]] - Link types and navigation - [[file:26-configuration.org][Configuration]] - Full settings reference",
       "path": [],
       "commands": [],
@@ -53721,7 +54101,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1397,
+      "line": 1506,
       "content": "- Previous: [[file:17-projectile.org][Projectile]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:19-references.org][References]]",
       "path": [],
       "commands": [],
