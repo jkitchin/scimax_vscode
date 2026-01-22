@@ -415,6 +415,78 @@ export function registerNotebookCommands(
             }
         })
     );
+
+    // Open notebook link (nb:project::file::target)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.notebook.openLink', async (linkPath: string) => {
+            await openNotebookLink(linkPath, notebookManager);
+        })
+    );
+
+    // Insert notebook link
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.notebook.insertLink', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            // Select project
+            const notebooks = notebookManager.getNotebooks();
+            if (notebooks.length === 0) {
+                vscode.window.showWarningMessage('No notebooks found. Create one first.');
+                return;
+            }
+
+            const projectItems = notebooks.map(nb => ({
+                label: nb.name,
+                description: nb.description || '',
+                detail: nb.path,
+                notebook: nb
+            }));
+
+            const selectedProject = await vscode.window.showQuickPick(projectItems, {
+                placeHolder: 'Select project for notebook link'
+            });
+
+            if (!selectedProject) return;
+
+            // Select file in project
+            const files = await notebookManager.listNotebookFiles(selectedProject.notebook);
+            if (files.length === 0) {
+                vscode.window.showWarningMessage('No org/md files found in project');
+                return;
+            }
+
+            const fileItems = files.map(f => ({
+                label: path.basename(f),
+                description: path.relative(selectedProject.notebook.path, path.dirname(f)),
+                detail: f,
+                relativePath: path.relative(selectedProject.notebook.path, f).replace(/\\/g, '/')
+            }));
+
+            const selectedFile = await vscode.window.showQuickPick(fileItems, {
+                placeHolder: 'Select file to link'
+            });
+
+            if (!selectedFile) return;
+
+            // Optional: add target
+            const target = await vscode.window.showInputBox({
+                prompt: 'Target (optional): line number, c<offset>, *Heading, or #custom-id',
+                placeHolder: 'e.g., 10, c453, *Methods, #intro'
+            });
+
+            // Build and insert the link
+            let link = `nb:${selectedProject.notebook.name}::${selectedFile.relativePath}`;
+            if (target) {
+                link += `::${target}`;
+            }
+
+            const linkText = `[[${link}]]`;
+            await editor.edit(editBuilder => {
+                editBuilder.insert(editor.selection.active, linkText);
+            });
+        })
+    );
 }
 
 async function getCurrentOrSelectNotebook(
@@ -485,4 +557,182 @@ function formatAgendaDescription(item: {
     if (item.heading.priority) parts.push(`[#${item.heading.priority}]`);
 
     return parts.join(' ');
+}
+
+/**
+ * Parse notebook link path into components
+ * Format: project-name::file-path::target
+ */
+function parseNotebookLinkPath(linkPath: string): {
+    projectName: string;
+    filePath: string;
+    target?: string;
+} | null {
+    const firstSep = linkPath.indexOf('::');
+    if (firstSep === -1) {
+        return null;
+    }
+
+    const projectName = linkPath.slice(0, firstSep);
+    const rest = linkPath.slice(firstSep + 2);
+
+    if (!projectName || !rest) {
+        return null;
+    }
+
+    const secondSep = rest.indexOf('::');
+    if (secondSep === -1) {
+        return { projectName, filePath: rest };
+    }
+
+    const filePath = rest.slice(0, secondSep);
+    const target = rest.slice(secondSep + 2);
+
+    if (!filePath) {
+        return null;
+    }
+
+    return { projectName, filePath, target: target || undefined };
+}
+
+/**
+ * Open a notebook link
+ * Format: project-name::file-path::target
+ *
+ * Examples:
+ *   my-project::README.org
+ *   my-project::data/notes.org::10
+ *   my-project::paper.org::*Methods
+ */
+async function openNotebookLink(
+    linkPath: string,
+    notebookManager: NotebookManager
+): Promise<void> {
+    const parsed = parseNotebookLinkPath(linkPath);
+    if (!parsed) {
+        vscode.window.showErrorMessage(`Invalid notebook link format: ${linkPath}`);
+        return;
+    }
+
+    const { projectName, filePath, target } = parsed;
+
+    // Find matching notebooks
+    const notebooks = notebookManager.getNotebooks();
+    const matchingNotebooks = notebooks.filter(nb =>
+        nb.name === projectName ||
+        nb.name.toLowerCase() === projectName.toLowerCase() ||
+        nb.path.endsWith(`/${projectName}`) ||
+        nb.path.endsWith(`\\${projectName}`)
+    );
+
+    if (matchingNotebooks.length === 0) {
+        vscode.window.showErrorMessage(`Project not found: ${projectName}`);
+        return;
+    }
+
+    let notebook: Notebook;
+    if (matchingNotebooks.length > 1) {
+        // Show picker for ambiguous matches
+        const items = matchingNotebooks.map(nb => ({
+            label: nb.name,
+            description: nb.path,
+            notebook: nb
+        }));
+
+        const selected = await vscode.window.showQuickPick(items, {
+            placeHolder: `Multiple projects match "${projectName}". Select one:`
+        });
+
+        if (!selected) return;
+        notebook = selected.notebook;
+    } else {
+        notebook = matchingNotebooks[0];
+    }
+
+    // Build full path
+    const fullPath = path.join(notebook.path, filePath);
+
+    // Check if file exists
+    const fs = require('fs');
+    if (!fs.existsSync(fullPath)) {
+        vscode.window.showErrorMessage(`File not found: ${fullPath}`);
+        return;
+    }
+
+    // Open the file
+    const doc = await vscode.workspace.openTextDocument(fullPath);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    // Navigate to target if specified
+    if (target) {
+        await navigateToTarget(editor, doc, target);
+    }
+}
+
+/**
+ * Navigate to a target within a document
+ * Supports: line numbers, character offsets (c123), headings (*Heading), custom IDs (#id)
+ */
+async function navigateToTarget(
+    editor: vscode.TextEditor,
+    doc: vscode.TextDocument,
+    target: string
+): Promise<void> {
+    let position: vscode.Position | undefined;
+
+    if (/^c\d+$/.test(target)) {
+        // Character offset: c1234
+        const charOffset = parseInt(target.slice(1), 10);
+        position = doc.positionAt(charOffset);
+    } else if (/^\d+$/.test(target)) {
+        // Line number: 123
+        const lineNum = parseInt(target, 10) - 1; // 1-indexed to 0-indexed
+        if (lineNum >= 0 && lineNum < doc.lineCount) {
+            position = new vscode.Position(lineNum, 0);
+        }
+    } else if (target.startsWith('*')) {
+        // Heading search: *Heading Title
+        const headingTitle = target.slice(1).toLowerCase();
+        for (let i = 0; i < doc.lineCount; i++) {
+            const line = doc.lineAt(i).text;
+            const match = line.match(/^(\*+|#{1,6})\s+(.+?)(?:\s+:[\w:]+:\s*)?$/);
+            if (match) {
+                let title = match[2].trim();
+                // Strip TODO keyword and priority
+                title = title.replace(/^[A-Z]+\s+/, '').replace(/^\[#[A-Z]\]\s*/, '').trim().toLowerCase();
+                if (title === headingTitle || title.includes(headingTitle)) {
+                    position = new vscode.Position(i, 0);
+                    break;
+                }
+            }
+        }
+    } else if (target.startsWith('#')) {
+        // Custom ID: #custom-id
+        const customId = target.slice(1);
+        for (let i = 0; i < doc.lineCount; i++) {
+            const line = doc.lineAt(i).text;
+            if (line.match(new RegExp(`^\\s*:CUSTOM_ID:\\s*${customId}\\s*$`, 'i'))) {
+                // Find the heading above this property
+                for (let j = i - 1; j >= 0; j--) {
+                    if (/^(\*+|#{1,6})\s/.test(doc.lineAt(j).text)) {
+                        position = new vscode.Position(j, 0);
+                        break;
+                    }
+                }
+                if (!position) {
+                    position = new vscode.Position(i, 0);
+                }
+                break;
+            }
+        }
+    }
+
+    if (position) {
+        editor.selection = new vscode.Selection(position, position);
+        // Unfold at target so content is visible
+        await vscode.commands.executeCommand('editor.unfold', { selectionLines: [position.line] });
+        editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
+    } else {
+        vscode.window.showWarningMessage(`Target not found: ${target}`);
+    }
 }
