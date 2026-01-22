@@ -523,21 +523,19 @@ export class ScimaxDb {
             if (await this.needsReindex(filePath)) {
                 await this.indexFile(filePath);
                 indexed++;
+
+                // Yield after each file indexed to stay responsive
+                // indexFile does a lot of work (parsing, multiple DB writes)
+                await new Promise(resolve => setTimeout(resolve, 0));
             }
 
             processed++;
 
-            if (progress) {
-                // Can't show exact progress without knowing total, but increment anyway
+            // Update progress every 5 files to avoid too many UI updates
+            if (progress && processed % 5 === 0) {
                 progress.report({
                     message: `Indexed ${indexed} files...`
                 });
-            }
-
-            // Yield to event loop every 3 files to keep extension responsive
-            // This prevents VS Code from killing the extension host
-            if (processed % 3 === 0) {
-                await new Promise(resolve => setTimeout(resolve, 0));
             }
         }
 
@@ -606,6 +604,7 @@ export class ScimaxDb {
     private async *findFilesGenerator(directory: string): AsyncGenerator<string, void, undefined> {
         const stack: string[] = [directory];
         let directoriesProcessed = 0;
+        let itemsProcessed = 0;
 
         log.debug('findFilesGenerator starting', { directory });
 
@@ -617,6 +616,14 @@ export class ScimaxDb {
 
                 for (const item of items) {
                     const fullPath = path.join(dir, item.name);
+
+                    // Yield every 50 items within a directory to stay responsive
+                    // This handles directories with thousands of files
+                    itemsProcessed++;
+                    if (itemsProcessed % 50 === 0) {
+                        await new Promise(resolve => setTimeout(resolve, 0));
+                    }
+
                     if (this.shouldIgnore(fullPath)) {
                         continue;
                     }
@@ -631,8 +638,7 @@ export class ScimaxDb {
                     }
                 }
 
-                // Yield control every 5 directories to keep UI responsive
-                // This prevents VS Code from detecting the extension as unresponsive
+                // Also yield between directories
                 directoriesProcessed++;
                 if (directoriesProcessed % 5 === 0) {
                     await new Promise(resolve => setTimeout(resolve, 0));
@@ -662,7 +668,8 @@ export class ScimaxDb {
         if (result.rows.length === 0) return true;
 
         try {
-            const stats = fs.statSync(filePath);
+            // Use async stat to not block event loop
+            const stats = await fs.promises.stat(filePath);
             return stats.mtimeMs > (result.rows[0].mtime as number);
         } catch {
             return true;
