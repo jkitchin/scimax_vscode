@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import { createClient, Client } from '@libsql/client';
+import { parse as parseDate } from 'date-fns';
 import {
     parseMarkdownCodeBlocks,
     extractHashtags,
@@ -350,7 +351,7 @@ export class ScimaxDb {
      * Setup file watcher for auto-indexing
      */
     private setupFileWatcher(): void {
-        // Watch org, md, and ipynb files
+        // Watch org, md, and ipynb files in workspace
         this.fileWatcher = vscode.workspace.createFileSystemWatcher(
             '**/*.{org,md,ipynb}',
             false, false, false
@@ -361,6 +362,18 @@ export class ScimaxDb {
         this.fileWatcher.onDidDelete(uri => this.removeFile(uri.fsPath));
 
         this.context.subscriptions.push(this.fileWatcher);
+
+        // Also watch for document saves - this catches files outside workspace
+        // FileSystemWatcher only watches workspace folders, but onDidSaveTextDocument
+        // fires for ANY file saved in VS Code
+        const saveHandler = vscode.workspace.onDidSaveTextDocument(doc => {
+            const filePath = doc.uri.fsPath;
+            const ext = path.extname(filePath).toLowerCase();
+            if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
+                this.queueIndex(filePath);
+            }
+        });
+        this.context.subscriptions.push(saveHandler);
     }
 
     /**
@@ -478,7 +491,6 @@ export class ScimaxDb {
 
             if (progress) {
                 progress.report({
-                    message: `Indexing: ${path.basename(filePath)}`,
                     increment: 100 / files.length
                 });
             }
@@ -606,7 +618,11 @@ export class ScimaxDb {
             const content = fs.readFileSync(filePath, 'utf8');
 
             // Detect binary content (null bytes or high non-printable ratio)
-            if (this.isBinaryContent(content)) {
+            // Skip check for known text extensions - they may contain embedded binary-like content
+            // (e.g., org files with Emacs Lisp results containing control characters)
+            const knownTextExt = ['.org', '.md', '.txt', '.ipynb'];
+            const ext = path.extname(filePath).toLowerCase();
+            if (!knownTextExt.includes(ext) && this.isBinaryContent(content)) {
                 log.warn('Skipping binary file', { path: filePath });
                 return;
             }
@@ -965,7 +981,9 @@ export class ScimaxDb {
 
         // Start processing if not already running
         if (!this.isProcessingEmbeddings) {
-            this.processEmbeddingQueue();
+            this.processEmbeddingQueue().catch(error => {
+                log.error('Embedding queue processing failed', error as Error);
+            });
         }
     }
 
@@ -1098,15 +1116,23 @@ export class ScimaxDb {
     private async removeFileData(filePath: string): Promise<void> {
         if (!this.db) return;
 
-        await this.db.batch([
-            { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
-            { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
-            { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
-            { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
-            { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
-            { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
-            { sql: 'DELETE FROM files WHERE path = ?', args: [filePath] }
-        ]);
+        await withRetry(
+            () => this.db!.batch([
+                { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
+                { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
+                { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
+                { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
+                { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
+                { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
+                { sql: 'DELETE FROM files WHERE path = ?', args: [filePath] }
+            ]),
+            {
+                maxAttempts: 5,
+                baseDelayMs: 100,
+                operationName: 'removeFileData',
+                isRetryable: isTransientError
+            }
+        );
     }
 
     /**
@@ -1316,6 +1342,7 @@ export class ScimaxDb {
     public async getAgenda(options?: {
         before?: string;
         includeUnscheduled?: boolean;
+        requireTodoState?: boolean;
     }): Promise<AgendaItem[]> {
         if (!this.db) return [];
 
@@ -1330,18 +1357,25 @@ export class ScimaxDb {
 
         const scope = this.getScopeClause();
 
+        // Build TODO state condition based on requireTodoState option
+        const requireTodo = options?.requireTodoState ?? true;
+        const todoStateCondition = requireTodo
+            ? `AND todo_state IS NOT NULL AND todo_state NOT IN ('DONE', 'CANCELLED')`
+            : `AND (todo_state IS NULL OR todo_state NOT IN ('DONE', 'CANCELLED'))`;
+
         // Get items with deadlines
         const deadlines = await this.db.execute({
             sql: `SELECT * FROM headings
                   WHERE deadline IS NOT NULL
-                  AND (todo_state IS NULL OR todo_state NOT IN ('DONE', 'CANCELLED'))
+                  ${todoStateCondition}
                   ${scope.sql}`,
             args: scope.args
         });
 
         for (const row of deadlines.rows) {
             const heading = row as unknown as HeadingRecord;
-            const deadlineDate = new Date(heading.deadline!.split(' ')[0]);
+            // Use parseDate to create a LOCAL date (new Date('2024-01-27') creates UTC midnight)
+            const deadlineDate = parseDate(heading.deadline!.split(' ')[0], 'yyyy-MM-dd', new Date());
             const daysUntil = Math.floor((deadlineDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
             if (!beforeDate || deadlineDate <= beforeDate) {
@@ -1359,14 +1393,15 @@ export class ScimaxDb {
         const scheduled = await this.db.execute({
             sql: `SELECT * FROM headings
                   WHERE scheduled IS NOT NULL
-                  AND (todo_state IS NULL OR todo_state NOT IN ('DONE', 'CANCELLED'))
+                  ${todoStateCondition}
                   ${scope.sql}`,
             args: scope.args
         });
 
         for (const row of scheduled.rows) {
             const heading = row as unknown as HeadingRecord;
-            const scheduledDate = new Date(heading.scheduled!.split(' ')[0]);
+            // Use parseDate to create a LOCAL date
+            const scheduledDate = parseDate(heading.scheduled!.split(' ')[0], 'yyyy-MM-dd', new Date());
             const daysUntil = Math.floor((scheduledDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
             if (!beforeDate || scheduledDate <= beforeDate) {
@@ -1679,7 +1714,7 @@ export class ScimaxDb {
         const {
             batchSize = 50,
             yieldMs = 50,
-            maxReindex = 50,  // Limit reindexing to avoid OOM
+            maxReindex = 0,  // 0 = unlimited (no limit on reindexing)
             onProgress,
             cancellationToken
         } = options;
@@ -1694,7 +1729,7 @@ export class ScimaxDb {
 
         if (total === 0) return result;
 
-        log.info('Checking files for staleness', { total, maxReindex });
+        log.info('Checking files for staleness', { total, maxReindex: maxReindex || 'unlimited' });
 
         // Process files in pages to avoid loading all into memory
         const pageSize = 100;
@@ -1707,8 +1742,8 @@ export class ScimaxDb {
                 break;
             }
 
-            // Check if we've hit the reindex limit
-            if (result.reindexed >= maxReindex) {
+            // Check if we've hit the reindex limit (0 = unlimited)
+            if (maxReindex > 0 && result.reindexed >= maxReindex) {
                 log.info('Reached max reindex limit', { maxReindex });
                 break;
             }
@@ -1726,8 +1761,8 @@ export class ScimaxDb {
                 // Check for cancellation
                 if (cancellationToken?.cancelled) break;
 
-                // Check reindex limit
-                if (result.reindexed >= maxReindex) break;
+                // Check reindex limit (0 = unlimited)
+                if (maxReindex > 0 && result.reindexed >= maxReindex) break;
 
                 const file = files[i];
                 result.checked++;
@@ -1799,7 +1834,7 @@ export class ScimaxDb {
         const {
             batchSize = 50,
             yieldMs = 50,
-            maxIndex = 50,  // Limit new files indexed to avoid OOM
+            maxIndex = 0,  // 0 = unlimited (no limit on files indexed)
             onProgress,
             cancellationToken
         } = options;
@@ -1808,12 +1843,12 @@ export class ScimaxDb {
 
         if (!this.db || directories.length === 0) return result;
 
-        log.info('Scanning directories', { directories: directories.length, maxIndex });
+        log.info('Scanning directories', { directories: directories.length, maxIndex: maxIndex || 'unlimited' });
 
         // Process directories one at a time to avoid loading all files into memory
         for (const dir of directories) {
             if (cancellationToken?.cancelled) break;
-            if (result.indexed >= maxIndex) {
+            if (maxIndex > 0 && result.indexed >= maxIndex) {
                 log.info('Reached max index limit', { maxIndex });
                 break;
             }
@@ -1829,7 +1864,7 @@ export class ScimaxDb {
 
                 for (let i = 0; i < files.length; i++) {
                     if (cancellationToken?.cancelled) break;
-                    if (result.indexed >= maxIndex) break;
+                    if (maxIndex > 0 && result.indexed >= maxIndex) break;
 
                     const filePath = files[i];
                     result.scanned++;
@@ -2508,6 +2543,20 @@ export class ScimaxDb {
      * Close database
      */
     public async close(): Promise<void> {
+        // Cancel any in-progress embedding processing
+        this.cancelEmbeddingQueue();
+
+        // Clean up status bar
+        if (this.embeddingStatusBar) {
+            this.embeddingStatusBar.dispose();
+            this.embeddingStatusBar = null;
+        }
+
+        // Clear the queue
+        this.embeddingQueue = [];
+        this.isProcessingEmbeddings = false;
+
+        // Close database
         if (this.db) {
             this.db.close();
             this.db = null;

@@ -74,13 +74,30 @@ export class ProjectTreeProvider implements vscode.TreeDataProvider<ProjectItem>
 
     private filterText: string = '';
     private sortBy: ProjectSortBy = 'recent';
+    private treeView: vscode.TreeView<ProjectItem> | null = null;
 
     constructor(private manager: ProjectileManager) {
         // Refresh when projects change
         manager.onProjectsChanged(() => this.refresh());
     }
 
+    /**
+     * Set the tree view reference for updating description
+     */
+    setTreeView(treeView: vscode.TreeView<ProjectItem>): void {
+        this.treeView = treeView;
+        this.updateDescription();
+    }
+
+    private updateDescription(): void {
+        if (this.treeView) {
+            const count = this.manager.getProjects().length;
+            this.treeView.description = `${count} projects`;
+        }
+    }
+
     refresh(): void {
+        this.updateDescription();
         this._onDidChangeTreeData.fire();
     }
 

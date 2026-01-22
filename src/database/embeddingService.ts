@@ -66,6 +66,8 @@ export class TransformersJsEmbeddingService implements EmbeddingService {
                 console.log(`TransformersJs: Model ${this.modelName} loaded`);
             } catch (error) {
                 console.error('TransformersJs: Failed to load pipeline', error);
+                // Clear loadPromise so subsequent calls can retry
+                this.loadPromise = null;
                 throw error;
             } finally {
                 this.isLoading = false;
@@ -142,13 +144,22 @@ export class OllamaEmbeddingService implements EmbeddingService {
     }
 
     async embedBatch(texts: string[]): Promise<number[][]> {
-        // Ollama doesn't support batch, so we do sequential
-        const embeddings: number[][] = [];
-        for (const text of texts) {
-            const embedding = await this.embed(text);
-            embeddings.push(embedding);
+        // Ollama doesn't support batch API, so we parallelize with concurrency limit
+        const concurrencyLimit = 5;
+        const results: number[][] = new Array(texts.length);
+
+        // Process in chunks with concurrency limit
+        for (let i = 0; i < texts.length; i += concurrencyLimit) {
+            const chunk = texts.slice(i, i + concurrencyLimit);
+            const promises = chunk.map((text, idx) =>
+                this.embed(text).then(embedding => {
+                    results[i + idx] = embedding;
+                })
+            );
+            await Promise.all(promises);
         }
-        return embeddings;
+
+        return results;
     }
 
     private async request(endpoint: string, body: any): Promise<any> {
@@ -171,12 +182,23 @@ export class OllamaEmbeddingService implements EmbeddingService {
                 let data = '';
                 res.on('data', chunk => data += chunk);
                 res.on('end', () => {
+                    // Check HTTP status code
+                    if (res.statusCode && res.statusCode >= 400) {
+                        reject(new Error(`Ollama API error (${res.statusCode}): ${data}`));
+                        return;
+                    }
                     try {
                         resolve(JSON.parse(data));
                     } catch (e) {
                         reject(new Error(`Failed to parse response: ${data}`));
                     }
                 });
+            });
+
+            // Add timeout (30 seconds)
+            req.setTimeout(30000, () => {
+                req.destroy();
+                reject(new Error('Ollama embedding request timeout (30s)'));
             });
 
             req.on('error', reject);
@@ -245,6 +267,11 @@ export class OpenAIEmbeddingService implements EmbeddingService {
                 let data = '';
                 res.on('data', chunk => data += chunk);
                 res.on('end', () => {
+                    // Check HTTP status code
+                    if (res.statusCode && res.statusCode >= 400) {
+                        reject(new Error(`OpenAI API error (${res.statusCode}): ${data}`));
+                        return;
+                    }
                     try {
                         const parsed = JSON.parse(data);
                         if (parsed.error) {
@@ -256,6 +283,12 @@ export class OpenAIEmbeddingService implements EmbeddingService {
                         reject(new Error(`Failed to parse response: ${data}`));
                     }
                 });
+            });
+
+            // Add timeout (30 seconds)
+            req.setTimeout(30000, () => {
+                req.destroy();
+                reject(new Error('OpenAI embedding request timeout (30s)'));
             });
 
             req.on('error', reject);

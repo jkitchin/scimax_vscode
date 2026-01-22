@@ -69,6 +69,9 @@ export class ProjectileManager {
         vscode.workspace.onDidChangeWorkspaceFolders(async () => {
             await this.registerCurrentWorkspace();
         });
+
+        // Notify listeners that projects have been loaded
+        this._onProjectsChanged.fire();
     }
 
     /**

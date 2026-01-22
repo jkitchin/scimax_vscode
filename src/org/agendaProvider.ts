@@ -29,7 +29,8 @@ import {
 import { resolveScimaxPath } from '../utils/pathResolver';
 import { minimatch } from 'minimatch';
 import { getDatabase } from '../database/lazyDb';
-import type { ScimaxDb } from '../database/scimaxDb';
+import type { ScimaxDb, AgendaItem as DbAgendaItem, HeadingRecord } from '../database/scimaxDb';
+import { format, addDays, startOfDay, isSameDay, differenceInDays, parse } from 'date-fns';
 
 // =============================================================================
 // Types
@@ -61,6 +62,8 @@ export interface AgendaConfig {
     showDone: boolean;
     /** Show habits */
     showHabits: boolean;
+    /** Require TODO state for scheduled/deadline items to appear */
+    requireTodoState: boolean;
     /** TODO states to include */
     todoStates: string[];
     /** Done states */
@@ -150,6 +153,7 @@ export class AgendaManager {
             defaultSpan: config.get<number>('defaultSpan', 7),
             showDone: config.get<boolean>('showDone', false),
             showHabits: config.get<boolean>('showHabits', true),
+            requireTodoState: config.get<boolean>('requireTodoState', true),
             todoStates: config.get<string[]>('todoStates', ['TODO', 'NEXT', 'WAITING']),
             doneStates: config.get<string[]>('doneStates', ['DONE', 'CANCELLED']),
             maxFiles: config.get<number>('maxFiles', 0), // 0 = unlimited
@@ -942,6 +946,203 @@ export class AgendaManager {
         }, allDiarySexps, filesProcessed);
     }
 
+    /**
+     * Generate agenda view from database (faster than file scanning)
+     * Returns null if database is not available
+     */
+    async getAgendaViewFromDb(config?: Partial<AgendaViewConfig>): Promise<AgendaView | null> {
+        const db = this.db || await getDatabase();
+        if (!db) {
+            return null;
+        }
+
+        try {
+            const fullConfig: AgendaViewConfig = {
+                type: 'week',
+                startDate: startOfDay(new Date()),
+                days: this.config.defaultSpan,
+                showDone: this.config.showDone,
+                showHabits: this.config.showHabits,
+                sortBy: 'time',
+                groupBy: 'date',
+                ...config,
+            };
+
+            const startDate = startOfDay(fullConfig.startDate);
+            const endDate = addDays(startDate, fullConfig.days);
+
+            // Get agenda items from database
+            const dbItems = await db.getAgenda({
+                before: format(endDate, 'yyyy-MM-dd'),
+                includeUnscheduled: false,
+                requireTodoState: this.config.requireTodoState,
+            });
+
+            // Convert database items to AgendaItem format, filtering excluded files
+            const items: AgendaItem[] = [];
+            for (const dbItem of dbItems) {
+                // Check if file is excluded
+                if (this.isFileExcluded(dbItem.heading.file_path)) {
+                    continue;
+                }
+                const agendaItem = this.convertDbItemToAgendaItem(dbItem, startDate);
+                if (agendaItem) {
+                    items.push(agendaItem);
+                }
+            }
+
+            // Group items by date
+            const groups = this.groupItemsByDate(items, startDate, fullConfig.days);
+
+            return {
+                config: fullConfig,
+                groups,
+                totalItems: items.length,
+                totalFiles: 0, // Not applicable for database view
+                dateRange: { start: startDate, end: endDate },
+            };
+        } catch (error) {
+            this.log(`Error getting agenda from database: ${error}`);
+            return null;
+        }
+    }
+
+    /**
+     * Convert a database AgendaItem to the parser's AgendaItem format
+     */
+    private convertDbItemToAgendaItem(dbItem: DbAgendaItem, startDate: Date): AgendaItem | null {
+        const heading = dbItem.heading;
+
+        // Parse the date string to a Date object
+        // Use date-fns parse() to create a LOCAL date, not UTC
+        // new Date('2024-01-27') creates UTC midnight which is the previous evening in local time!
+        let itemDate: Date | undefined;
+        if (dbItem.date) {
+            // Date format from DB: "2024-01-15" or "2024-01-15 Mon 10:00"
+            const dateMatch = dbItem.date.match(/(\d{4}-\d{2}-\d{2})/);
+            if (dateMatch) {
+                // parse() creates a date in local timezone
+                itemDate = parse(dateMatch[1], 'yyyy-MM-dd', new Date());
+            }
+        }
+
+        // Extract time if present
+        let time: string | undefined;
+        if (dbItem.date) {
+            const timeMatch = dbItem.date.match(/(\d{1,2}:\d{2})/);
+            if (timeMatch) {
+                time = timeMatch[1];
+            }
+        }
+
+        // Parse tags from comma-separated string
+        const tags = heading.tags ? heading.tags.split(',').map(t => t.trim()).filter(t => t) : [];
+
+        // Determine agenda type
+        const agendaType: AgendaItem['agendaType'] = dbItem.type === 'deadline' ? 'deadline' :
+            dbItem.type === 'scheduled' ? 'scheduled' : 'todo';
+
+        // Create a minimal HeadlineElement for compatibility
+        const minimalHeadline: HeadlineElement = {
+            type: 'headline',
+            range: { start: heading.begin_pos, end: heading.begin_pos + heading.title.length },
+            postBlank: 0,
+            properties: {
+                level: heading.level,
+                rawValue: heading.title,
+                todoKeyword: heading.todo_state || undefined,
+                priority: heading.priority || undefined,
+                tags,
+                archivedp: false,
+                commentedp: false,
+                footnoteSection: false,
+                lineNumber: heading.line_number,
+            },
+            children: [],
+        };
+
+        return {
+            title: heading.title,
+            todoState: heading.todo_state || undefined,
+            priority: heading.priority || undefined,
+            tags,
+            file: heading.file_path,
+            line: heading.line_number,
+            scheduled: agendaType === 'scheduled' ? itemDate : undefined,
+            deadline: agendaType === 'deadline' ? itemDate : undefined,
+            daysUntil: dbItem.days_until,
+            overdue: dbItem.overdue,
+            category: heading.file_path.split('/').pop()?.replace('.org', ''),
+            headline: minimalHeadline,
+            agendaType,
+            time,
+        };
+    }
+
+    /**
+     * Group agenda items by date
+     */
+    private groupItemsByDate(items: AgendaItem[], startDate: Date, days: number): AgendaGroup[] {
+        const groups: AgendaGroup[] = [];
+
+        for (let i = 0; i < days; i++) {
+            const date = addDays(startDate, i);
+            const dateKey = format(date, 'yyyy-MM-dd');
+            const dateLabel = this.formatDateLabel(date);
+
+            const dayItems = items.filter(item => {
+                const itemDate = item.scheduled || item.deadline || item.timestamp;
+                return itemDate && isSameDay(itemDate, date);
+            });
+
+            groups.push({
+                label: dateLabel,
+                key: dateKey,
+                items: dayItems,
+            });
+        }
+
+        // Add overdue items to today's group
+        const overdueItems = items.filter(item => item.overdue);
+        if (overdueItems.length > 0) {
+            const todayKey = format(new Date(), 'yyyy-MM-dd');
+            const todayGroup = groups.find(g => g.key === todayKey);
+            if (todayGroup) {
+                for (const item of overdueItems) {
+                    if (!todayGroup.items.includes(item)) {
+                        todayGroup.items.unshift(item);
+                    }
+                }
+            }
+        }
+
+        return groups;
+    }
+
+    /**
+     * Format a date for display in agenda groups
+     */
+    private formatDateLabel(date: Date): string {
+        const today = startOfDay(new Date());
+        const diff = differenceInDays(date, today);
+
+        if (diff === 0) return 'Today';
+        if (diff === 1) return 'Tomorrow';
+        if (diff === -1) return 'Yesterday';
+
+        const dayName = format(date, 'EEEE');
+        const dateStr = format(date, 'MMM d');
+        return `${dayName} ${dateStr}`;
+    }
+
+    /**
+     * Check if database is available for agenda queries
+     */
+    async isDatabaseAvailable(): Promise<boolean> {
+        const db = this.db || await getDatabase();
+        return db !== null;
+    }
+
     private collectHeadlinesWithFile(
         headline: HeadlineElement,
         filePath: string,
@@ -1087,15 +1288,21 @@ type AgendaTreeItem = AgendaInfoItem | AgendaGroupItem | AgendaItemNode;
  */
 class AgendaInfoItem extends vscode.TreeItem {
     constructor(
-        public readonly fileCount: number,
-        public readonly sourcesDescription: string
+        public readonly itemCount: number,
+        public readonly sourcesDescription: string,
+        public readonly isFromDatabase: boolean = false
     ) {
-        super(`Scanning ${fileCount} files`, vscode.TreeItemCollapsibleState.None);
-        this.description = '';
+        const label = isFromDatabase
+            ? `${itemCount} items`
+            : `Scanning ${itemCount} files`;
+        super(label, vscode.TreeItemCollapsibleState.None);
+        this.description = isFromDatabase ? 'from database' : '';
         this.tooltip = new vscode.MarkdownString(
-            `**Agenda Sources**\n\n${sourcesDescription.split('\n').map(line => `- ${line}`).join('\n')}\n\n*Click to configure*`
+            isFromDatabase
+                ? `**Agenda from Database**\n\n${itemCount} items indexed\n\n*Click to configure*`
+                : `**Agenda Sources**\n\n${sourcesDescription.split('\n').map(line => `- ${line}`).join('\n')}\n\n*Click to configure*`
         );
-        this.iconPath = new vscode.ThemeIcon('info');
+        this.iconPath = new vscode.ThemeIcon(isFromDatabase ? 'database' : 'info');
         this.contextValue = 'agendaInfo';
         this.command = {
             command: 'scimax.agenda.configure',
@@ -1247,18 +1454,34 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
         }
     }
 
+    private isFromDatabase: boolean = false;
+
     private async doRefresh(): Promise<void> {
         if (this.viewMode === 'agenda') {
-            this.agendaView = await this.manager.getAgendaView({ groupBy: this.groupBy });
+            // Try database first (faster)
+            const dbView = await this.manager.getAgendaViewFromDb({ groupBy: this.groupBy });
+            if (dbView) {
+                this.agendaView = dbView;
+                this.isFromDatabase = true;
+            } else {
+                // Fall back to file scanning
+                this.agendaView = await this.manager.getAgendaView({ groupBy: this.groupBy });
+                this.isFromDatabase = false;
+            }
         } else {
             this.todoList = await this.manager.getTodoList({ excludeDone: true });
+            this.isFromDatabase = false;
         }
 
-        // Update tree view description with file count
+        // Update tree view description
         if (this.treeView) {
-            const fileCount = this.agendaView?.totalFiles || 0;
-            this.treeView.description = `${fileCount} files`;
-            // Tooltip shows the sources being scanned
+            if (this.isFromDatabase) {
+                const itemCount = this.agendaView?.totalItems || 0;
+                this.treeView.description = `${itemCount} items`;
+            } else {
+                const fileCount = this.agendaView?.totalFiles || 0;
+                this.treeView.description = `${fileCount} files`;
+            }
             this.treeView.message = undefined; // Clear any loading message
         }
 
@@ -1279,11 +1502,16 @@ export class AgendaTreeProvider implements vscode.TreeDataProvider<AgendaTreeIte
             // Root level - return info item + groups
             const result: AgendaTreeItem[] = [];
 
-            // Add info item showing file count and sources
-            const fileCount = this.agendaView?.totalFiles || 0;
+            // Add info item showing count and sources
             const sourcesDescription = this.manager.getSourcesDescription();
-            if (fileCount > 0 || sourcesDescription) {
-                result.push(new AgendaInfoItem(fileCount, sourcesDescription));
+            if (this.isFromDatabase) {
+                const itemCount = this.agendaView?.totalItems || 0;
+                result.push(new AgendaInfoItem(itemCount, sourcesDescription, true));
+            } else {
+                const fileCount = this.agendaView?.totalFiles || 0;
+                if (fileCount > 0 || sourcesDescription) {
+                    result.push(new AgendaInfoItem(fileCount, sourcesDescription, false));
+                }
             }
 
             if (this.viewMode === 'agenda') {

@@ -779,7 +779,8 @@
       },
       {
         "command": "scimax.db.search",
-        "title": "Scimax: Search All Files"
+        "title": "Scimax: Search All Files",
+        "icon": "$(search)"
       },
       {
         "command": "scimax.db.searchHeadings",
@@ -4858,17 +4859,15 @@
         },
         "scimax.db.maxReindexPerSync": {
           "type": "number",
-          "default": 50,
-          "minimum": 1,
-          "maximum": 500,
-          "description": "Maximum number of modified files to reindex per background sync. Limits memory usage. Use 'Reindex Files' command for full reindex."
+          "default": 0,
+          "minimum": 0,
+          "description": "Maximum number of modified files to reindex per background sync. Set to 0 for unlimited."
         },
         "scimax.db.maxNewFilesPerSync": {
           "type": "number",
-          "default": 50,
-          "minimum": 1,
-          "maximum": 500,
-          "description": "Maximum number of new files to index per background sync. Limits memory usage. Use 'Reindex Files' command for full reindex."
+          "default": 0,
+          "minimum": 0,
+          "description": "Maximum number of new files to index per background sync. Set to 0 for unlimited."
         },
         "scimax.db.queryTimeoutMs": {
           "type": "number",
@@ -5270,6 +5269,11 @@
           "type": "boolean",
           "default": true,
           "description": "Show items tagged with :HABIT:"
+        },
+        "scimax.agenda.requireTodoState": {
+          "type": "boolean",
+          "default": true,
+          "description": "Only show scheduled/deadline items that have a TODO state. When false, plain headings with timestamps will also appear."
         },
         "scimax.agenda.todoStates": {
           "type": "array",

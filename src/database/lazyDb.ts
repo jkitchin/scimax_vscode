@@ -145,9 +145,9 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
         let totalDeleted = 0;
 
         try {
-            // Get limits from config (with sensible defaults to avoid OOM)
-            const maxReindex = config.get<number>('maxReindexPerSync', 50);
-            const maxNewFiles = config.get<number>('maxNewFilesPerSync', 50);
+            // Get limits from config (0 = unlimited by default)
+            const maxReindex = config.get<number>('maxReindexPerSync', 0);
+            const maxNewFiles = config.get<number>('maxNewFilesPerSync', 0);
 
             // Phase 1: Check stale files (already indexed)
             const staleResult = await db.checkStaleFiles({

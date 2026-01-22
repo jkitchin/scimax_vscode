@@ -563,6 +563,7 @@ export async function activate(context: vscode.ExtensionContext) {
         treeDataProvider: projectTreeProvider,
         showCollapseAll: false
     });
+    projectTreeProvider.setTreeView(projectTreeView);
     context.subscriptions.push(projectTreeView);
 
     // Command to open project from tree view
