@@ -2780,6 +2780,21 @@
         "mac": "ctrl+x o"
       },
       {
+        "command": "workbench.action.quickOpenPreviousRecentlyUsedEditor",
+        "key": "ctrl+x b",
+        "mac": "ctrl+x b"
+      },
+      {
+        "command": "workbench.action.previousEditor",
+        "key": "ctrl+x left",
+        "mac": "ctrl+x left"
+      },
+      {
+        "command": "workbench.action.nextEditor",
+        "key": "ctrl+x right",
+        "mac": "ctrl+x right"
+      },
+      {
         "command": "scimax.openFolder",
         "key": "ctrl+x d",
         "mac": "ctrl+x d"
@@ -3479,6 +3494,31 @@
         "command": "scimax.hydra.database",
         "key": "ctrl+c d",
         "mac": "ctrl+c d"
+      },
+      {
+        "command": "scimax.db.browseFiles",
+        "key": "ctrl+c d f",
+        "mac": "ctrl+c d f"
+      },
+      {
+        "command": "scimax.db.search",
+        "key": "ctrl+c d s",
+        "mac": "ctrl+c d s"
+      },
+      {
+        "command": "scimax.db.searchHeadings",
+        "key": "ctrl+c d h",
+        "mac": "ctrl+c d h"
+      },
+      {
+        "command": "scimax.db.showTodos",
+        "key": "ctrl+c d t",
+        "mac": "ctrl+c d t"
+      },
+      {
+        "command": "scimax.db.agenda",
+        "key": "ctrl+c d a",
+        "mac": "ctrl+c d a"
       },
       {
         "command": "scimax.hydra.contextMenu",
