@@ -209,6 +209,18 @@ const LATEX_COMMANDS: { [key: string]: string } = {
     'cite': 'Citation to bibliography entry',
     'citep': 'Parenthetical citation (natbib)',
     'citet': 'Textual citation (natbib)',
+    'citenum': 'Citation number only, no brackets (natbib)',
+    'citealp': 'Citation without parentheses (natbib)',
+    'citealt': 'Citation without parentheses, no "and" (natbib)',
+    'citeauthor': 'Author name only (natbib)',
+    'citeyear': 'Year only (natbib)',
+    'citeyearpar': 'Year in parentheses (natbib)',
+    'nocite': 'Add to bibliography without citing',
+    'textcite': 'Textual citation (biblatex)',
+    'parencite': 'Parenthetical citation (biblatex)',
+    'footcite': 'Footnote citation (biblatex)',
+    'autocite': 'Automatic citation style (biblatex)',
+    'fullcite': 'Full citation in text (biblatex)',
     'label': 'Create a label for cross-referencing',
 
     // Floats
@@ -1759,16 +1771,21 @@ export class LaTeXHoverProvider implements vscode.HoverProvider {
                 if (fullPath) {
                     const ext = path.extname(fullPath).toLowerCase();
 
+                    // Get configured max preview width (default 300px ~ 3 inches at 96dpi)
+                    const config = vscode.workspace.getConfiguration('scimax');
+                    const maxPreviewWidth = config.get<number>('latex.imagePreviewMaxWidth', 300);
+
                     // Check if it's a displayable image format
                     if (['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'].includes(ext)) {
                         const imageUri = vscode.Uri.file(fullPath);
-                        md.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 400px; max-height: 300px;" />\n\n`);
+                        // Use HTML width attribute for reliable sizing in VS Code hovers
+                        md.appendMarkdown(`<img src="${imageUri.toString()}" width="${maxPreviewWidth}" />\n\n`);
                     } else if (ext === '.pdf' || ext === '.eps') {
                         // Try to convert PDF/EPS to PNG for preview
                         const pngPath = await convertPdfToPng(fullPath);
                         if (pngPath) {
                             const imageUri = vscode.Uri.file(pngPath);
-                            md.appendMarkdown(`<img src="${imageUri.toString()}" style="max-width: 400px; max-height: 300px;" />\n\n`);
+                            md.appendMarkdown(`<img src="${imageUri.toString()}" width="${maxPreviewWidth}" />\n\n`);
                             md.appendMarkdown(`*(${ext.toUpperCase().slice(1)} converted to PNG for preview)*\n\n`);
                         } else {
                             md.appendMarkdown(`*${ext.toUpperCase().slice(1)} preview requires pdftoppm, ImageMagick, or Ghostscript*\n\n`);

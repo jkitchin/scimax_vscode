@@ -82,6 +82,11 @@
           "meta.embedded.block.xml": "xml",
           "meta.embedded.block.markdown": "markdown"
         }
+      },
+      {
+        "scopeName": "scimax.latex.citations",
+        "path": "./syntaxes/latex-citations.tmLanguage.json",
+        "injectTo": ["text.tex.latex"]
       }
     ],
     "themes": [
@@ -2549,6 +2554,14 @@
         "title": "Scimax LaTeX: Add Word to Dictionary"
       },
       {
+        "command": "scimax.spelling.previousError",
+        "title": "Scimax: Go to Previous Spelling Error"
+      },
+      {
+        "command": "scimax.spelling.nextError",
+        "title": "Scimax: Go to Next Spelling Error"
+      },
+      {
         "command": "scimax.latex.showInverseSyncTeXCommand",
         "title": "Scimax LaTeX: Show Inverse SyncTeX Command"
       },
@@ -2774,6 +2787,18 @@
         "command": "workbench.action.showCommands",
         "key": "alt+x",
         "mac": "alt+x"
+      },
+      {
+        "command": "scimax.spelling.previousError",
+        "key": "ctrl+c ;",
+        "mac": "ctrl+c ;",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.spelling.nextError",
+        "key": "ctrl+c shift+;",
+        "mac": "ctrl+c shift+;",
+        "when": "editorTextFocus"
       },
       {
         "command": "workbench.action.quickOpen",
@@ -3029,6 +3054,11 @@
         "command": "scimax.org.toggleFold",
         "key": "tab",
         "when": "editorTextFocus && editorLangId == 'org' && scimax.onDrawer && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
+        "command": "scimax.org.toggleFold",
+        "key": "tab",
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.onLatexBegin && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
@@ -4734,6 +4764,12 @@
         "key": "ctrl+c ctrl+t s",
         "mac": "ctrl+c ctrl+t s",
         "when": "editorTextFocus && editorHasSelection"
+      },
+      {
+        "command": "deleteWordLeft",
+        "key": "ctrl+delete",
+        "mac": "ctrl+delete",
+        "when": "editorTextFocus && !editorReadonly"
       }
     ],
     "configuration": {
@@ -5173,6 +5209,13 @@
           "type": "boolean",
           "default": false,
           "description": "Show debug popup with SyncTeX coordinates when syncing between LaTeX source and PDF"
+        },
+        "scimax.latex.imagePreviewMaxWidth": {
+          "type": "number",
+          "default": 300,
+          "minimum": 100,
+          "maximum": 1000,
+          "description": "Maximum width in pixels for image previews in LaTeX hover tooltips (default 300px, approximately 3 inches)"
         },
         "scimax.notebook.directory": {
           "type": "string",

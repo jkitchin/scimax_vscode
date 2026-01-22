@@ -248,55 +248,174 @@ async function getJupyterKernels(): Promise<JupyterKernelInfo[]> {
 }
 
 /**
+ * All scimax configuration keys (from package.json contributes.configuration)
+ */
+const SCIMAX_CONFIG_KEYS = [
+    // Core
+    'directory',
+    'email',
+    'logLevel',
+    // Journal
+    'journal.directory',
+    'journal.format',
+    'journal.template',
+    'journal.dateFormat',
+    'journal.autoTimestamp',
+    'journal.weekStartsOn',
+    // Clock
+    'clock.showInlineTime',
+    // Mark ring
+    'mark.ringSize',
+    // Database
+    'db.includeJournal',
+    'db.includeWorkspace',
+    'db.includeProjects',
+    'db.include',
+    'db.exclude',
+    'db.autoIndex',
+    'db.autoCheckStale',
+    'db.staleCheckDelayMs',
+    'db.maxReindexPerSync',
+    'db.maxNewFilesPerSync',
+    'db.queryTimeoutMs',
+    'db.maxRetryAttempts',
+    'db.maxFileSizeMB',
+    'db.embeddingProvider',
+    'db.localModel',
+    'db.ollamaUrl',
+    'db.ollamaModel',
+    'db.openaiApiKey',
+    // Projectile
+    'projectile.scanMaxDepth',
+    // Literate programming
+    'literate.pythonPath',
+    'literate.jupyterPath',
+    // References
+    'ref.bibliographyFiles',
+    'ref.pdfDirectory',
+    'ref.notesDirectory',
+    'ref.defaultCiteStyle',
+    'ref.citationSyntax',
+    // BibTeX
+    'bibtex.keyPattern',
+    // Export - LaTeX
+    'export.latex.customHeader',
+    'export.latex.documentClass',
+    'export.latex.classOptions',
+    'export.latex.defaultPreamble',
+    // Export - PDF
+    'export.pdf.compiler',
+    'export.pdf.bibtexCommand',
+    'export.pdf.extraArgs',
+    'export.pdf.openLogOnError',
+    'export.pdf.cleanAuxFiles',
+    'export.pdf.shellEscape',
+    // Export - Editmarks
+    'export.editmarkMode',
+    // LaTeX preview
+    'latexPreview.enabled',
+    'latexPreview.cacheEnabled',
+    'latexPreview.darkModeAware',
+    // LaTeX live preview
+    'latexLivePreview.buildOnSave',
+    'latexLivePreview.buildOnIdle',
+    'latexLivePreview.idleDelay',
+    'latexLivePreview.compiler',
+    'latexLivePreview.useLatexmk',
+    // LaTeX compilation
+    'latex.compiler',
+    'latex.pdfViewer',
+    'latex.enableChktex',
+    'latex.latexmkEngine',
+    'latex.validateReferences',
+    'latex.formatOnSave',
+    'latex.autoCompileOnSave',
+    'latex.latexindentPath',
+    'latex.showSyncDebugPopup',
+    'latex.imagePreviewMaxWidth',
+    // Notebook
+    'notebook.directory',
+    'notebook.defaultTemplate',
+    'notebook.autoDetect',
+    // Hydra
+    'hydra.showKeyHints',
+    'hydra.singleKeySelection',
+    'hydra.dimNonMatching',
+    'hydra.sortByKey',
+    // Speed commands
+    'speedCommands.enabled',
+    // Agenda
+    'agenda.includeJournal',
+    'agenda.includeWorkspace',
+    'agenda.includeProjects',
+    'agenda.include',
+    'agenda.exclude',
+    'agenda.defaultSpan',
+    'agenda.showDone',
+    'agenda.showHabits',
+    'agenda.requireTodoState',
+    'agenda.todoStates',
+    'agenda.doneStates',
+    'agenda.maxFiles',
+    'agenda.batchSize',
+    'agenda.batchDelayMs',
+    // Image overlays
+    'imageOverlays.enabled',
+    'imageOverlays.maxWidth',
+    'imageOverlays.maxHeight',
+    'imageOverlays.renderMode',
+];
+
+/**
  * Get scimax configuration settings
  */
 function getScimaxConfig(): Record<string, unknown> {
     const config = vscode.workspace.getConfiguration('scimax');
     const result: Record<string, unknown> = {};
 
-    // Get all scimax settings that are defined
-    const configInspect = config.inspect('');
-    if (configInspect) {
-        const allSettings = {
-            ...configInspect.defaultValue as Record<string, unknown> || {},
-            ...configInspect.globalValue as Record<string, unknown> || {},
-            ...configInspect.workspaceValue as Record<string, unknown> || {},
-        };
+    for (const key of SCIMAX_CONFIG_KEYS) {
+        const inspection = config.inspect(key);
+        if (inspection) {
+            // Only include if not at default value, or if it's a commonly checked setting
+            const isDefault = inspection.globalValue === undefined &&
+                              inspection.workspaceValue === undefined &&
+                              inspection.workspaceFolderValue === undefined;
 
-        for (const key of Object.keys(allSettings)) {
             const value = config.get(key);
-            if (value !== undefined) {
-                // Mask potentially sensitive values
-                if (key.toLowerCase().includes('apikey') || key.toLowerCase().includes('secret') || key.toLowerCase().includes('token')) {
-                    result[key] = value ? '***' : '(not set)';
-                } else {
-                    result[key] = value;
-                }
-            }
-        }
-    }
 
-    // Also get known important settings explicitly
-    const importantSettings = [
-        'literate.pythonPath',
-        'literate.jupyterPath',
-        'export.pdf.compiler',
-        'export.pdf.shellEscape',
-        'journal.directory',
-        'database.embeddingProvider',
-        'references.bibliographyFiles',
-    ];
-
-    for (const key of importantSettings) {
-        if (!(key in result)) {
-            const value = config.get(key);
-            if (value !== undefined) {
+            // Mask sensitive values
+            if (key.toLowerCase().includes('apikey') ||
+                key.toLowerCase().includes('secret') ||
+                key.toLowerCase().includes('token')) {
+                result[key] = value ? '***' : '(not set)';
+            } else if (!isDefault || isImportantSetting(key)) {
+                // Include non-default values and important settings
                 result[key] = value;
             }
         }
     }
 
     return result;
+}
+
+/**
+ * Check if a setting is important enough to always show
+ */
+function isImportantSetting(key: string): boolean {
+    const importantKeys = [
+        'directory',
+        'journal.directory',
+        'db.embeddingProvider',
+        'literate.pythonPath',
+        'literate.jupyterPath',
+        'export.pdf.compiler',
+        'ref.bibliographyFiles',
+        'latex.compiler',
+        'latex.pdfViewer',
+        'speedCommands.enabled',
+        'logLevel',
+    ];
+    return importantKeys.includes(key);
 }
 
 /**
@@ -500,19 +619,63 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
     }
     lines.push('');
 
-    // Scimax Configuration
+    // Scimax Configuration - grouped by category
     lines.push('## Scimax Configuration');
     lines.push('');
     const configEntries = Object.entries(info.scimaxConfig);
     if (configEntries.length > 0) {
-        lines.push('| Setting | Value |');
-        lines.push('|---------|-------|');
-        for (const [key, value] of configEntries.sort(([a], [b]) => a.localeCompare(b))) {
-            const displayValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
-            lines.push(`| \`scimax.${key}\` | ${displayValue} |`);
+        // Group settings by category (first part of key)
+        const categories: Record<string, Array<[string, unknown]>> = {
+            'Core': [],
+            'Journal': [],
+            'Database': [],
+            'References': [],
+            'Export': [],
+            'LaTeX': [],
+            'Agenda': [],
+            'Other': [],
+        };
+
+        for (const [key, value] of configEntries) {
+            if (key.startsWith('journal.') || key === 'clock.showInlineTime') {
+                categories['Journal'].push([key, value]);
+            } else if (key.startsWith('db.')) {
+                categories['Database'].push([key, value]);
+            } else if (key.startsWith('ref.') || key.startsWith('bibtex.')) {
+                categories['References'].push([key, value]);
+            } else if (key.startsWith('export.')) {
+                categories['Export'].push([key, value]);
+            } else if (key.startsWith('latex') || key.startsWith('latexPreview') || key.startsWith('latexLivePreview')) {
+                categories['LaTeX'].push([key, value]);
+            } else if (key.startsWith('agenda.')) {
+                categories['Agenda'].push([key, value]);
+            } else if (['directory', 'email', 'logLevel'].includes(key)) {
+                categories['Core'].push([key, value]);
+            } else {
+                categories['Other'].push([key, value]);
+            }
+        }
+
+        // Output each category
+        for (const [category, entries] of Object.entries(categories)) {
+            if (entries.length === 0) continue;
+
+            lines.push(`### ${category}`);
+            lines.push('');
+            lines.push('| Setting | Value |');
+            lines.push('|---------|-------|');
+            for (const [key, value] of entries.sort(([a], [b]) => a.localeCompare(b))) {
+                let displayValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+                // Truncate very long values
+                if (displayValue.length > 80) {
+                    displayValue = displayValue.substring(0, 77) + '...';
+                }
+                lines.push(`| \`scimax.${key}\` | ${displayValue} |`);
+            }
+            lines.push('');
         }
     } else {
-        lines.push('Using default configuration.');
+        lines.push('All settings at default values.');
     }
     lines.push('');
 
