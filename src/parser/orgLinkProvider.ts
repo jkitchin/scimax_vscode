@@ -14,6 +14,42 @@ function isExcalidrawFile(filePath: string): boolean {
 }
 
 /**
+ * Document link provider for markdown heading markers
+ * Makes # symbols clickable to toggle fold
+ */
+export class MarkdownHeadingLinkProvider implements vscode.DocumentLinkProvider {
+    provideDocumentLinks(
+        document: vscode.TextDocument,
+        token: vscode.CancellationToken
+    ): vscode.DocumentLink[] {
+        const links: vscode.DocumentLink[] = [];
+        const text = document.getText();
+
+        // Match markdown headings: # Heading, ## Subheading, etc.
+        const headingRegex = /^(#{1,6})\s/gm;
+        let match;
+
+        while ((match = headingRegex.exec(text)) !== null) {
+            const hashes = match[1];
+            const startPos = document.positionAt(match.index);
+            const endPos = document.positionAt(match.index + hashes.length);
+            const range = new vscode.Range(startPos, endPos);
+
+            const link = new vscode.DocumentLink(range);
+            link.target = vscode.Uri.parse(
+                `command:scimax.org.toggleFoldAtLine?${encodeURIComponent(JSON.stringify({
+                    line: startPos.line
+                }))}`
+            );
+            link.tooltip = 'Click to toggle fold';
+            links.push(link);
+        }
+
+        return links;
+    }
+}
+
+/**
  * Document link provider for org-mode links
  * Makes [[link][description]] clickable
  */
@@ -166,6 +202,25 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
                 link.tooltip = 'Anonymous footnote';
             }
 
+            links.push(link);
+        }
+
+        // Make heading stars clickable to toggle fold
+        // Match org headings: * Heading, ** Subheading, etc.
+        const headingRegex = /^(\*+)\s/gm;
+        while ((match = headingRegex.exec(text)) !== null) {
+            const stars = match[1];
+            const startPos = document.positionAt(match.index);
+            const endPos = document.positionAt(match.index + stars.length);
+            const range = new vscode.Range(startPos, endPos);
+
+            const link = new vscode.DocumentLink(range);
+            link.target = vscode.Uri.parse(
+                `command:scimax.org.toggleFoldAtLine?${encodeURIComponent(JSON.stringify({
+                    line: startPos.line
+                }))}`
+            );
+            link.tooltip = 'Click to toggle fold';
             links.push(link);
         }
 
@@ -845,6 +900,21 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open Excalidraw file: ${file}`);
             }
+        })
+    );
+
+    // Toggle fold at a specific line (for clickable heading markers)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.toggleFoldAtLine', async (args: { line: number }) => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            const { line } = args;
+
+            // Toggle fold at the specified line
+            await vscode.commands.executeCommand('editor.toggleFold', {
+                selectionLines: [line]
+            });
         })
     );
 }

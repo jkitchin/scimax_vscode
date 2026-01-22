@@ -25,7 +25,7 @@ import {
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
 import { registerNotebookCommands } from './notebook/commands';
-import { OrgLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
+import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
 import { registerBlockDecorations } from './highlighting/blockDecorations';
@@ -239,11 +239,19 @@ export async function activate(context: vscode.ExtensionContext) {
         )
     );
 
-    // Register Org Link Provider (for [[link]] syntax)
+    // Register Org Link Provider (for [[link]] syntax and clickable heading stars)
     context.subscriptions.push(
         vscode.languages.registerDocumentLinkProvider(
             { language: 'org', scheme: 'file' },
             new OrgLinkProvider()
+        )
+    );
+
+    // Register Markdown Heading Link Provider (for clickable # symbols to toggle fold)
+    context.subscriptions.push(
+        vscode.languages.registerDocumentLinkProvider(
+            { language: 'markdown', scheme: 'file' },
+            new MarkdownHeadingLinkProvider()
         )
     );
 
