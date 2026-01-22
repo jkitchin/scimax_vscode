@@ -209,6 +209,9 @@ Configure the full-text search database and semantic search capabilities.
 | scimax.db.ollamaUrl         | string  | "http://localhost:11434"  | Ollama API URL                         |
 | scimax.db.ollamaModel       | string  | "nomic-embed-text"        | Ollama embedding model                 |
 | scimax.db.openaiApiKey      | string  | ""                        | OpenAI API key                         |
+| scimax.db.queryTimeoutMs    | number  | 30000                     | Query timeout in milliseconds          |
+| scimax.db.maxRetryAttempts  | number  | 3                         | Max retries for transient failures     |
+| scimax.db.maxFileSizeMB     | number  | 10                        | Max file size to index (MB)            |
 
 ** Detailed Configuration
 
@@ -355,6 +358,89 @@ Configure the full-text search database and semantic search capabilities.
 {
   "scimax.db.embeddingProvider": "openai",
   "scimax.db.openaiApiKey": "sk-..."
+}
+#+end_src
+
+*** ⚠️ scimax.db.queryTimeoutMs
+
+- *Type*: number
+- *Default*: =30000= (30 seconds)
+- *Range*: 5000 - 300000
+- *Description*: Maximum time in milliseconds for database queries. Prevents hung operations.
+
+Increase this value if you have a very large database or slow disk:
+
+*Example*:
+#+begin_src json
+{
+  "scimax.db.queryTimeoutMs": 60000
+}
+#+end_src
+
+*** ⚠️ scimax.db.maxRetryAttempts
+
+- *Type*: number
+- *Default*: =3=
+- *Range*: 1 - 10
+- *Description*: Maximum retry attempts for transient database failures (e.g., database locked, I/O errors).
+
+Uses exponential backoff between retries.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.db.maxRetryAttempts": 5
+}
+#+end_src
+
+*** ⚠️ scimax.db.maxFileSizeMB
+
+- *Type*: number
+- *Default*: =10=
+- *Range*: 1 - 100
+- *Description*: Maximum file size in MB to index. Files larger than this are skipped.
+
+Useful when working with external repositories or collaborator files that may contain large generated files:
+
+*Example*:
+#+begin_src json
+{
+  "scimax.db.maxFileSizeMB": 20
+}
+#+end_src
+
+* ⚠️ Logging Settings
+
+Configure logging and diagnostics.
+
+** Settings Overview
+
+| Setting         | Type   | Default | Description                    |
+|-----------------+--------+---------+--------------------------------|
+| scimax.logLevel | string | "info"  | Log level for Scimax output    |
+
+** Detailed Configuration
+
+*** scimax.logLevel
+
+- *Type*: string
+- *Default*: ="info"=
+- *Enum*: ="debug"=, ="info"=, ="warn"=, ="error"=
+- *Description*: Controls the verbosity of logging to the Scimax output channel.
+
+| Level   | Shows                                         |
+|---------+-----------------------------------------------|
+| debug   | All messages including detailed debug info    |
+| info    | Normal operation messages                     |
+| warn    | Warnings and errors only                      |
+| error   | Errors only                                   |
+
+Note: Errors are always logged to the error log regardless of this setting, and a status bar indicator appears when errors occur.
+
+*Example*:
+#+begin_src json
+{
+  "scimax.logLevel": "debug"
 }
 #+end_src
 

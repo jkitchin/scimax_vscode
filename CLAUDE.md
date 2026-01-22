@@ -48,7 +48,15 @@ src/
 │   └── kernelSpec.ts         # Kernel discovery
 ├── database/
 │   ├── scimaxDb.ts           # SQLite database with FTS5 + vector search
-│   └── embeddingService.ts   # Ollama/OpenAI/local embeddings
+│   ├── embeddingService.ts   # Ollama/OpenAI/local embeddings
+│   ├── migrations.ts         # Schema versioning and migrations
+│   └── lazyDb.ts             # Lazy database initialization
+├── utils/
+│   ├── logger.ts             # Centralized logging with VS Code output channel
+│   └── resilience.ts         # Retry logic and timeouts for async operations
+├── cli/
+│   ├── index.ts              # CLI entry point
+│   └── commands/             # CLI subcommands (db, search, export, etc.)
 ├── journal/                  # Date-based journaling system
 ├── references/               # BibTeX bibliography management (org-ref)
 ├── notebook/                 # Project-based organization (scimax-notebook)
@@ -371,3 +379,109 @@ The parser has built-in limits to prevent crashes or unresponsiveness from malfo
 - Spaces, colons (standard org-mode restriction)
 - Most punctuation: `!`, `$`, `^`, `&`, `*`, etc.
 - If you need exotic tag characters, the old pattern was `[^:]` - but this caused exponential backtracking on malformed input like `:::::::::::::`
+
+## Reliability Practices
+
+### Logging
+
+Use the centralized logging system (`src/utils/logger.ts`) for all logging:
+
+```typescript
+import { databaseLogger as log } from '../utils/logger';
+
+// Log levels
+log.debug('Detailed info for debugging', { data });
+log.info('Normal operation info');
+log.warn('Warning condition');
+log.error('Error occurred', error, { context });
+```
+
+**Guidelines:**
+- Use module-specific loggers: `databaseLogger`, `parserLogger`, `extensionLogger`
+- Errors are always logged regardless of log level setting
+- Errors trigger a status bar indicator so users know something went wrong
+- Never log sensitive data (API keys, file contents, etc.)
+
+### Database Resilience
+
+Database operations use retry logic and timeouts (`src/utils/resilience.ts`):
+
+```typescript
+import { withRetry, withTimeout, isTransientError } from '../utils/resilience';
+
+// Retry transient failures (database locked, busy, I/O errors)
+const result = await withRetry(() => db.execute(query), {
+    maxAttempts: 3,
+    operationName: 'fetchHeadings'
+});
+
+// Prevent hung operations
+const result = await withTimeout(() => longOperation(), {
+    timeoutMs: 30000,
+    operationName: 'bulkIndex'
+});
+```
+
+**Configuration settings:**
+- `scimax.db.queryTimeoutMs` - Query timeout (default: 30000ms)
+- `scimax.db.maxRetryAttempts` - Retry attempts (default: 3)
+- `scimax.db.maxFileSizeMB` - Max file size to index (default: 10MB)
+
+### Input Validation
+
+When indexing files from external sources (git repos, collaborators):
+
+```typescript
+// File size check (prevents memory issues)
+const stats = await fs.promises.stat(filePath);
+if (stats.size > maxFileSizeBytes) {
+    log.warn(`Skipping oversized file: ${filePath}`);
+    return;
+}
+
+// Binary content detection (prevents garbage in DB)
+if (this.isBinaryContent(content)) {
+    log.debug(`Skipping binary file: ${filePath}`);
+    return;
+}
+```
+
+### Database Migrations
+
+Schema changes use the migration system (`src/database/migrations.ts`):
+
+```typescript
+// Migrations are versioned and run automatically on startup
+// Each migration has an up() function
+const migrations: Migration[] = [
+    { version: 1, description: 'Initial schema', up: async (db) => { ... } },
+    { version: 2, description: 'Add FTS5', up: async (db) => { ... } },
+];
+```
+
+**Guidelines:**
+- Never modify existing migrations after they've been deployed
+- Always add new migrations with incrementing version numbers
+- Test migrations on a copy of a real database before deploying
+
+## CLI
+
+The extension includes a command-line interface for batch operations and scripting:
+
+```bash
+# If linked globally
+scimax db scan ~/org-files      # Scan directory and index
+scimax db rebuild               # Full database rebuild
+scimax db stats                 # Show database statistics
+scimax search "query"           # Full-text search
+scimax agenda today             # Show today's agenda
+scimax export file.org --format html  # Export to HTML
+```
+
+The CLI is useful for:
+- Cron-based database updates
+- CI/CD pipelines
+- Batch exports
+- Quick lookups from terminal
+
+See `docs/30-cli.org` for full documentation.
