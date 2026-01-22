@@ -89,7 +89,9 @@ export function loadIgnorePatterns(
  * @param patterns Array of ignore patterns
  */
 export function shouldIgnore(relativePath: string, patterns: string[]): boolean {
-    const parts = relativePath.split(path.sep);
+    // Normalize path separators to handle both forward and backward slashes
+    const normalizedPath = relativePath.replace(/[\\/]/g, path.sep);
+    const parts = normalizedPath.split(path.sep);
 
     for (const pattern of patterns) {
         // Clean up pattern - remove leading/trailing slashes
