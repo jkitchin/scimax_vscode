@@ -113,7 +113,10 @@ describe('withRetry', () => {
 
         const promise = withRetry(fn, { maxAttempts: 3, operationName: 'test' });
 
+        // Catch the rejection to prevent unhandled rejection
+        const catchPromise = promise.catch(() => {});
         await vi.runAllTimersAsync();
+        await catchPromise;
 
         await expect(promise).rejects.toThrow(RetryExhaustedError);
         expect(fn).toHaveBeenCalledTimes(3);
@@ -128,7 +131,10 @@ describe('withRetry', () => {
             operationName: 'test'
         });
 
+        // Catch the rejection to prevent unhandled rejection
+        const catchPromise = promise.catch(() => {});
         await vi.runAllTimersAsync();
+        await catchPromise;
 
         await expect(promise).rejects.toThrow(RetryExhaustedError);
         expect(fn).toHaveBeenCalledTimes(2);
