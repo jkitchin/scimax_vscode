@@ -509,34 +509,42 @@ export class ScimaxDb {
 
     /**
      * Index a directory recursively
+     * Two-pass approach: first collect files, then index with n/total progress
      */
     public async indexDirectory(
         directory: string,
         progress?: vscode.Progress<{ message?: string; increment?: number }>
     ): Promise<number> {
-        let indexed = 0;
-        let processed = 0;
+        // Phase 1: Collect all files to index (for accurate progress)
+        progress?.report({ message: 'Scanning...' });
+        const filesToIndex: string[] = [];
 
-        // Use generator to stream files instead of loading all at once
-        // This prevents blocking the event loop while discovering files
         for await (const filePath of this.findFilesGenerator(directory)) {
             if (await this.needsReindex(filePath)) {
-                await this.indexFile(filePath);
-                indexed++;
-
-                // Yield after each file indexed to stay responsive
-                // indexFile does a lot of work (parsing, multiple DB writes)
-                await new Promise(resolve => setTimeout(resolve, 0));
+                filesToIndex.push(filePath);
             }
+        }
 
-            processed++;
+        const total = filesToIndex.length;
+        if (total === 0) {
+            return 0;
+        }
 
-            // Update progress every 5 files to avoid too many UI updates
-            if (progress && processed % 5 === 0) {
+        // Phase 2: Index files with n/total progress
+        let indexed = 0;
+        for (const filePath of filesToIndex) {
+            await this.indexFile(filePath);
+            indexed++;
+
+            // Update progress with n/total format
+            if (progress) {
                 progress.report({
-                    message: `Indexed ${indexed} files...`
+                    message: `${indexed}/${total}`
                 });
             }
+
+            // Yield after each file indexed to stay responsive
+            await new Promise(resolve => setTimeout(resolve, 0));
         }
 
         return indexed;

@@ -214,9 +214,6 @@ export function registerDbCommands(
                 // Index all directories
                 for (let i = 0; i < uniqueDirs.length; i++) {
                     const dir = uniqueDirs[i];
-                    progress.report({
-                        message: `Scanning ${path.basename(dir)} (${i + 1}/${uniqueDirs.length})...`
-                    });
                     const indexed = await db.indexDirectory(dir, progress);
                     totalIndexed += indexed;
 
