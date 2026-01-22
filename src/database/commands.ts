@@ -153,8 +153,8 @@ export function registerDbCommands(
             if (!db) return;
 
             await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: 'Indexing files...',
+                location: vscode.ProgressLocation.Window,
+                title: 'Indexing',
                 cancellable: false
             }, async (progress) => {
                 let totalIndexed = 0;
@@ -969,7 +969,7 @@ export function registerDbCommands(
             }
 
             const fileTypes = stats.by_type
-                ? `(${stats.by_type.org} org, ${stats.by_type.md} md, ${stats.by_type.ipynb} ipynb)`
+                ? `(${stats.by_type.org} org, ${stats.by_type.md} md)`
                 : '';
 
             vscode.window.showInformationMessage(

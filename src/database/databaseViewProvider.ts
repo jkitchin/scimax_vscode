@@ -191,7 +191,7 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
         items.push(new DatabaseStatItem(
             'Files',
             `${this.stats.files} total`,
-            `Org: ${this.stats.by_type.org}, Markdown: ${this.stats.by_type.md}, Jupyter: ${this.stats.by_type.ipynb}`,
+            `Org: ${this.stats.by_type.org}, Markdown: ${this.stats.by_type.md}`,
             'file'
         ));
 
@@ -201,9 +201,6 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
         }
         if (this.stats.by_type.md > 0) {
             items.push(new DatabaseStatItem('  Markdown files', `${this.stats.by_type.md}`, undefined, 'markdown'));
-        }
-        if (this.stats.by_type.ipynb > 0) {
-            items.push(new DatabaseStatItem('  Jupyter notebooks', `${this.stats.by_type.ipynb}`, undefined, 'notebook'));
         }
 
         // Content statistics

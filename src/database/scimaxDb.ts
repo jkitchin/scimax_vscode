@@ -14,11 +14,7 @@ import {
     UnifiedParserAdapter,
     LegacyDocument,
 } from '../parser/orgParserAdapter';
-import {
-    parseNotebook,
-    getNotebookFullText,
-    NotebookDocument
-} from '../parser/ipynbParser';
+// ipynb indexing removed - notebooks are typically large and cause performance issues
 import type { EmbeddingService } from './embeddingService';
 import { MigrationRunner, getLatestVersion } from './migrations';
 import { databaseLogger as log } from '../utils/logger';
@@ -30,7 +26,7 @@ import { withRetry, withTimeout, isTransientError } from '../utils/resilience';
 export interface FileRecord {
     id: number;
     path: string;
-    file_type: string;  // 'org' | 'md' | 'ipynb'
+    file_type: string;  // 'org' | 'md'
     mtime: number;
     hash: string;
     size: number;
@@ -111,7 +107,7 @@ export interface DbStats {
     vector_search_supported: boolean;
     vector_search_error: string | null;
     last_indexed?: number;
-    by_type: { org: number; md: number; ipynb: number };
+    by_type: { org: number; md: number };
 }
 
 /**
@@ -389,9 +385,9 @@ export class ScimaxDb {
      * Setup file watcher for auto-indexing
      */
     private setupFileWatcher(): void {
-        // Watch org, md, and ipynb files in workspace
+        // Watch org and md files in workspace
         this.fileWatcher = vscode.workspace.createFileSystemWatcher(
-            '**/*.{org,md,ipynb}',
+            '**/*.{org,md}',
             false, false, false
         );
 
@@ -407,7 +403,7 @@ export class ScimaxDb {
         const saveHandler = vscode.workspace.onDidSaveTextDocument(doc => {
             const filePath = doc.uri.fsPath;
             const ext = path.extname(filePath).toLowerCase();
-            if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
+            if (ext === '.org' || ext === '.md') {
                 this.queueIndex(filePath);
             }
         });
@@ -573,7 +569,7 @@ export class ScimaxDb {
                         await walk(fullPath, depth + 1);
                     } else if (item.isFile()) {
                         const ext = path.extname(item.name).toLowerCase();
-                        if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
+                        if (ext === '.org' || ext === '.md') {
                             files.push(fullPath);
                         }
                     }
@@ -629,7 +625,7 @@ export class ScimaxDb {
                         stack.push(fullPath);
                     } else if (item.isFile()) {
                         const ext = path.extname(item.name).toLowerCase();
-                        if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
+                        if (ext === '.org' || ext === '.md') {
                             yield fullPath;
                         }
                     }
@@ -704,11 +700,9 @@ export class ScimaxDb {
     /**
      * Get file type from extension
      */
-    private getFileType(filePath: string): 'org' | 'md' | 'ipynb' {
+    private getFileType(filePath: string): 'org' | 'md' {
         const ext = path.extname(filePath).toLowerCase();
-        if (ext === '.org') return 'org';
         if (ext === '.md') return 'md';
-        if (ext === '.ipynb') return 'ipynb';
         return 'org';  // default
     }
 
@@ -742,7 +736,7 @@ export class ScimaxDb {
             // Detect binary content (null bytes or high non-printable ratio)
             // Skip check for known text extensions - they may contain embedded binary-like content
             // (e.g., org files with Emacs Lisp results containing control characters)
-            const knownTextExt = ['.org', '.md', '.txt', '.ipynb'];
+            const knownTextExt = ['.org', '.md', '.txt'];
             const ext = path.extname(filePath).toLowerCase();
             if (!knownTextExt.includes(ext) && this.isBinaryContent(content)) {
                 log.warn('Skipping binary file', { path: filePath });
@@ -753,21 +747,14 @@ export class ScimaxDb {
 
             // Parse content outside the lock (CPU-intensive, not DB-related)
             let parsedDoc: LegacyDocument | null = null;
-            let notebookDoc: NotebookDocument | null = null;
-            let fullText = content;
 
             if (fileType === 'org') {
                 parsedDoc = this.parser.parse(content);
                 // Yield after parsing to prevent blocking event loop
                 await new Promise(resolve => setTimeout(resolve, 0));
-            } else if (fileType === 'ipynb') {
-                notebookDoc = parseNotebook(content);
-                fullText = getNotebookFullText(notebookDoc);
-                // Yield after parsing to prevent blocking event loop
-                await new Promise(resolve => setTimeout(resolve, 0));
             }
 
-            const hashtags = extractHashtags(fullText);
+            const hashtags = extractHashtags(content);
 
             // All database writes happen inside the write lock to prevent SQLITE_BUSY
             await this.withWriteLock(async () => {
@@ -804,8 +791,6 @@ export class ScimaxDb {
                     await this.indexOrgDocument(fileId, filePath, parsedDoc, content);
                 } else if (fileType === 'md') {
                     await this.indexMarkdownDocument(fileId, filePath, content);
-                } else if (fileType === 'ipynb' && notebookDoc) {
-                    await this.indexNotebookDocument(fileId, filePath, notebookDoc);
                 }
 
                 // Index hashtags and FTS5 in a batch for efficiency
@@ -821,7 +806,7 @@ export class ScimaxDb {
                 // Index for FTS5
                 finalStatements.push({
                     sql: 'INSERT INTO fts_content (file_path, title, content) VALUES (?, ?, ?)',
-                    args: [filePath, path.basename(filePath), fullText]
+                    args: [filePath, path.basename(filePath), content]
                 });
 
                 if (finalStatements.length > 0) {
@@ -835,7 +820,7 @@ export class ScimaxDb {
                         this.queueEmbeddings(filePath);
                     } else {
                         // Generate immediately (manual reindex)
-                        await this.createChunks(fileId, filePath, fullText);
+                        await this.createChunks(fileId, filePath, content);
                     }
                 }
             });
@@ -1015,67 +1000,6 @@ export class ScimaxDb {
                       VALUES (?, ?, ?, ?, ?, ?, NULL)`,
                 args: [fileId, filePath, block.language, block.content,
                        block.lineNumber, JSON.stringify(block.headers)]
-            });
-        }
-
-        // Execute all statements in a single batch
-        if (statements.length > 0) {
-            await this.db.batch(statements);
-        }
-    }
-
-    /**
-     * Index Jupyter notebook document
-     * Uses batched inserts for performance
-     */
-    private async indexNotebookDocument(
-        fileId: number,
-        filePath: string,
-        doc: NotebookDocument
-    ): Promise<void> {
-        if (!this.db) return;
-
-        const statements: { sql: string; args: (string | number | null)[] }[] = [];
-
-        // Index headings from markdown cells
-        for (const heading of doc.headings) {
-            statements.push({
-                sql: `INSERT INTO headings
-                      (file_id, file_path, level, title, line_number, begin_pos,
-                       todo_state, tags, inherited_tags, properties, cell_index)
-                      VALUES (?, ?, ?, ?, ?, 0, NULL, '[]', '[]', '{}', ?)`,
-                args: [fileId, filePath, heading.level, heading.title,
-                       heading.lineNumber, heading.cellIndex]
-            });
-        }
-
-        // Index code cells as source blocks
-        for (const block of doc.codeBlocks) {
-            statements.push({
-                sql: `INSERT INTO source_blocks
-                      (file_id, file_path, language, content, line_number, headers, cell_index)
-                      VALUES (?, ?, ?, ?, ?, '{}', ?)`,
-                args: [fileId, filePath, block.language, block.content,
-                       block.lineNumber, block.cellIndex]
-            });
-        }
-
-        // Index links
-        for (const link of doc.links) {
-            statements.push({
-                sql: `INSERT INTO links
-                      (file_id, file_path, link_type, target, description, line_number)
-                      VALUES (?, ?, ?, ?, ?, ?)`,
-                args: [fileId, filePath, link.type, link.target,
-                       link.description || null, link.lineNumber]
-            });
-        }
-
-        // Index hashtags
-        for (const tag of doc.hashtags) {
-            statements.push({
-                sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
-                args: [tag.toLowerCase(), filePath]
             });
         }
 
@@ -1785,10 +1709,10 @@ export class ScimaxDb {
         if (!this.db) return {
             files: 0, headings: 0, blocks: 0, links: 0, chunks: 0,
             has_embeddings: false, vector_search_supported: false,
-            vector_search_error: null, by_type: { org: 0, md: 0, ipynb: 0 }
+            vector_search_error: null, by_type: { org: 0, md: 0 }
         };
 
-        const [files, headings, blocks, links, chunks, embeddings, orgFiles, mdFiles, ipynbFiles] = await this.executeResilient(
+        const [files, headings, blocks, links, chunks, embeddings, orgFiles, mdFiles] = await this.executeResilient(
             () => Promise.all([
                 this.db!.execute('SELECT COUNT(*) as count FROM files'),
                 this.db!.execute('SELECT COUNT(*) as count FROM headings'),
@@ -1797,8 +1721,7 @@ export class ScimaxDb {
                 this.db!.execute('SELECT COUNT(*) as count FROM chunks'),
                 this.db!.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'),
                 this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'org'"),
-                this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'md'"),
-                this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'ipynb'")
+                this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'md'")
             ]),
             'getStats'
         );
@@ -1821,8 +1744,7 @@ export class ScimaxDb {
             last_indexed: lastFile.rows[0].last as number | undefined,
             by_type: {
                 org: orgFiles.rows[0].count as number,
-                md: mdFiles.rows[0].count as number,
-                ipynb: ipynbFiles.rows[0].count as number
+                md: mdFiles.rows[0].count as number
             }
         };
     }

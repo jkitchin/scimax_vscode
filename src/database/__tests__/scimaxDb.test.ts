@@ -43,7 +43,7 @@ describe('DbStats Interface', () => {
             has_embeddings: false,
             vector_search_supported: true,
             vector_search_error: null,
-            by_type: { org: 8, md: 1, ipynb: 1 }
+            by_type: { org: 8, md: 2 }
         };
 
         expect(stats.files).toBe(10);
@@ -55,8 +55,7 @@ describe('DbStats Interface', () => {
         expect(stats.vector_search_supported).toBe(true);
         expect(stats.vector_search_error).toBeNull();
         expect(stats.by_type.org).toBe(8);
-        expect(stats.by_type.md).toBe(1);
-        expect(stats.by_type.ipynb).toBe(1);
+        expect(stats.by_type.md).toBe(2);
     });
 
     it('should handle vector search error', () => {
@@ -69,7 +68,7 @@ describe('DbStats Interface', () => {
             has_embeddings: false,
             vector_search_supported: false,
             vector_search_error: 'libsql_vector_idx not available',
-            by_type: { org: 0, md: 0, ipynb: 0 }
+            by_type: { org: 0, md: 0 }
         };
 
         expect(stats.vector_search_supported).toBe(false);
@@ -145,13 +144,14 @@ describe('HeadingRecord Interface', () => {
         expect(JSON.parse(heading.inherited_tags)).toContain('project');
     });
 
-    it('should support notebook cell heading', () => {
+    it('should support cell_index field for potential notebook integration', () => {
+        // The cell_index field exists in the schema for future use
         const heading = {
             id: 1,
             file_id: 1,
-            file_path: '/path/to/notebook.ipynb',
+            file_path: '/path/to/file.org',
             level: 1,
-            title: 'Notebook Section',
+            title: 'Section',
             line_number: 1,
             begin_pos: 0,
             todo_state: null,
@@ -162,11 +162,11 @@ describe('HeadingRecord Interface', () => {
             scheduled: null,
             deadline: null,
             closed: null,
-            cell_index: 3  // This heading is in cell 3
+            cell_index: null  // Usually null for org files
         };
 
-        expect(heading.cell_index).toBe(3);
-        expect(heading.file_path).toContain('.ipynb');
+        expect(heading.cell_index).toBeNull();
+        expect(heading.file_path).toContain('.org');
     });
 });
 
@@ -299,11 +299,9 @@ describe('SearchScope Interface', () => {
 // =============================================================================
 
 describe('File Type Detection', () => {
-    const getFileType = (filePath: string): 'org' | 'md' | 'ipynb' => {
+    const getFileType = (filePath: string): 'org' | 'md' => {
         const ext = filePath.toLowerCase().split('.').pop() || '';
-        if (ext === 'org') return 'org';
         if (ext === 'md') return 'md';
-        if (ext === 'ipynb') return 'ipynb';
         return 'org';  // default
     };
 
@@ -315,11 +313,6 @@ describe('File Type Detection', () => {
     it('should detect markdown files', () => {
         expect(getFileType('/path/to/file.md')).toBe('md');
         expect(getFileType('/path/to/README.MD')).toBe('md');
-    });
-
-    it('should detect Jupyter notebooks', () => {
-        expect(getFileType('/path/to/notebook.ipynb')).toBe('ipynb');
-        expect(getFileType('/path/to/Analysis.IPYNB')).toBe('ipynb');
     });
 
     it('should default to org for unknown extensions', () => {

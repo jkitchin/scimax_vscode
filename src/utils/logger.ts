@@ -374,7 +374,7 @@ class LoggingService {
                 lines.push(
                     '## Database',
                     `- Schema Version: ${schemaInfo.currentVersion}/${schemaInfo.latestVersion}`,
-                    `- Files Indexed: ${stats.files} (org: ${stats.by_type.org}, md: ${stats.by_type.md}, ipynb: ${stats.by_type.ipynb})`,
+                    `- Files Indexed: ${stats.files} (org: ${stats.by_type.org}, md: ${stats.by_type.md})`,
                     `- Headings: ${stats.headings}`,
                     `- Source Blocks: ${stats.blocks}`,
                     `- Links: ${stats.links}`,

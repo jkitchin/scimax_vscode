@@ -418,7 +418,9 @@ export function registerNotebookCommands(
 
     // Open notebook link (nb:project::file::target)
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.notebook.openLink', async (linkPath: string) => {
+        vscode.commands.registerCommand('scimax.notebook.openLink', async (arg: string | { path: string }) => {
+            // Handle both string and object argument formats
+            const linkPath = typeof arg === 'string' ? arg : arg.path;
             await openNotebookLink(linkPath, notebookManager);
         })
     );

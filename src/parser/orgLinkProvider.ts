@@ -255,6 +255,16 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             );
         }
 
+        // Notebook link: nb:project::file.org or nb:project::file.org::target
+        if (target.startsWith('nb:')) {
+            const nbPath = target.slice(3); // Remove 'nb:' prefix
+            return vscode.Uri.parse(
+                `command:scimax.notebook.openLink?${encodeURIComponent(JSON.stringify({
+                    path: nbPath
+                }))}`
+            );
+        }
+
         // Bare file path (no file: prefix) - common in org-mode
         if (target.includes('/') || target.includes('\\') ||
             target.endsWith('.org') || target.endsWith('.md') ||
