@@ -518,11 +518,12 @@ export class ScimaxDb {
         directory: string,
         progress?: vscode.Progress<{ message?: string; increment?: number }>
     ): Promise<number> {
-        const files = await this.findFiles(directory);
         let indexed = 0;
         let processed = 0;
 
-        for (const filePath of files) {
+        // Use generator to stream files instead of loading all at once
+        // This prevents blocking the event loop while discovering files
+        for await (const filePath of this.findFilesGenerator(directory)) {
             if (await this.needsReindex(filePath)) {
                 await this.indexFile(filePath);
                 indexed++;
@@ -531,14 +532,15 @@ export class ScimaxDb {
             processed++;
 
             if (progress) {
+                // Can't show exact progress without knowing total, but increment anyway
                 progress.report({
-                    increment: 100 / files.length
+                    message: `Indexed ${indexed} files...`
                 });
             }
 
-            // Yield to event loop every 5 files to keep extension responsive
+            // Yield to event loop every 3 files to keep extension responsive
             // This prevents VS Code from killing the extension host
-            if (processed % 5 === 0) {
+            if (processed % 3 === 0) {
                 await new Promise(resolve => setTimeout(resolve, 0));
             }
         }
@@ -633,9 +635,10 @@ export class ScimaxDb {
                     }
                 }
 
-                // Yield control every 20 directories to keep UI responsive
+                // Yield control every 5 directories to keep UI responsive
+                // This prevents VS Code from detecting the extension as unresponsive
                 directoriesProcessed++;
-                if (directoriesProcessed % 20 === 0) {
+                if (directoriesProcessed % 5 === 0) {
                     await new Promise(resolve => setTimeout(resolve, 0));
                 }
             } catch (error: any) {
@@ -755,9 +758,13 @@ export class ScimaxDb {
 
             if (fileType === 'org') {
                 parsedDoc = this.parser.parse(content);
+                // Yield after parsing to prevent blocking event loop
+                await new Promise(resolve => setTimeout(resolve, 0));
             } else if (fileType === 'ipynb') {
                 notebookDoc = parseNotebook(content);
                 fullText = getNotebookFullText(notebookDoc);
+                // Yield after parsing to prevent blocking event loop
+                await new Promise(resolve => setTimeout(resolve, 0));
             }
 
             const hashtags = extractHashtags(fullText);
@@ -801,19 +808,25 @@ export class ScimaxDb {
                     await this.indexNotebookDocument(fileId, filePath, notebookDoc);
                 }
 
-                // Index hashtags
+                // Index hashtags and FTS5 in a batch for efficiency
+                const finalStatements: { sql: string; args: (string | number | null)[] }[] = [];
+
                 for (const tag of hashtags) {
-                    await this.db!.execute({
+                    finalStatements.push({
                         sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
                         args: [tag.toLowerCase(), filePath]
                     });
                 }
 
                 // Index for FTS5
-                await this.db!.execute({
+                finalStatements.push({
                     sql: 'INSERT INTO fts_content (file_path, title, content) VALUES (?, ?, ?)',
                     args: [filePath, path.basename(filePath), fullText]
                 });
+
+                if (finalStatements.length > 0) {
+                    await this.db!.batch(finalStatements);
+                }
 
                 // Handle embeddings for semantic search
                 if (this.embeddingService) {
@@ -929,22 +942,22 @@ export class ScimaxDb {
             });
         }
 
-        // Execute in batches of 100 to avoid overwhelming the database
+        // Execute in batches of 50 to avoid overwhelming the database
         // and yield between batches to keep extension responsive
-        const BATCH_SIZE = 100;
+        const BATCH_SIZE = 50;
         for (let i = 0; i < statements.length; i += BATCH_SIZE) {
             const batch = statements.slice(i, i + BATCH_SIZE);
             await this.db.batch(batch);
 
             // Yield to event loop between batches to prevent extension host from being killed
-            if (i + BATCH_SIZE < statements.length) {
-                await new Promise(resolve => setTimeout(resolve, 0));
-            }
+            // Always yield after each batch, not just between batches
+            await new Promise(resolve => setTimeout(resolve, 0));
         }
     }
 
     /**
      * Index markdown document
+     * Uses batched inserts for performance
      */
     private async indexMarkdownDocument(
         fileId: number,
@@ -953,6 +966,7 @@ export class ScimaxDb {
     ): Promise<void> {
         if (!this.db) return;
 
+        const statements: { sql: string; args: (string | number | null)[] }[] = [];
         const lines = content.split('\n');
         let charPos = 0;
 
@@ -979,7 +993,7 @@ export class ScimaxDb {
                     title = title.slice(todoMatch[0].length);
                 }
 
-                await this.db.execute({
+                statements.push({
                     sql: `INSERT INTO headings
                           (file_id, file_path, level, title, line_number, begin_pos,
                            todo_state, tags, inherited_tags, properties, cell_index)
@@ -995,7 +1009,7 @@ export class ScimaxDb {
         // Index code blocks
         const blocks = parseMarkdownCodeBlocks(content);
         for (const block of blocks) {
-            await this.db.execute({
+            statements.push({
                 sql: `INSERT INTO source_blocks
                       (file_id, file_path, language, content, line_number, headers, cell_index)
                       VALUES (?, ?, ?, ?, ?, ?, NULL)`,
@@ -1003,10 +1017,16 @@ export class ScimaxDb {
                        block.lineNumber, JSON.stringify(block.headers)]
             });
         }
+
+        // Execute all statements in a single batch
+        if (statements.length > 0) {
+            await this.db.batch(statements);
+        }
     }
 
     /**
      * Index Jupyter notebook document
+     * Uses batched inserts for performance
      */
     private async indexNotebookDocument(
         fileId: number,
@@ -1015,9 +1035,11 @@ export class ScimaxDb {
     ): Promise<void> {
         if (!this.db) return;
 
+        const statements: { sql: string; args: (string | number | null)[] }[] = [];
+
         // Index headings from markdown cells
         for (const heading of doc.headings) {
-            await this.db.execute({
+            statements.push({
                 sql: `INSERT INTO headings
                       (file_id, file_path, level, title, line_number, begin_pos,
                        todo_state, tags, inherited_tags, properties, cell_index)
@@ -1029,7 +1051,7 @@ export class ScimaxDb {
 
         // Index code cells as source blocks
         for (const block of doc.codeBlocks) {
-            await this.db.execute({
+            statements.push({
                 sql: `INSERT INTO source_blocks
                       (file_id, file_path, language, content, line_number, headers, cell_index)
                       VALUES (?, ?, ?, ?, ?, '{}', ?)`,
@@ -1040,7 +1062,7 @@ export class ScimaxDb {
 
         // Index links
         for (const link of doc.links) {
-            await this.db.execute({
+            statements.push({
                 sql: `INSERT INTO links
                       (file_id, file_path, link_type, target, description, line_number)
                       VALUES (?, ?, ?, ?, ?, ?)`,
@@ -1051,10 +1073,15 @@ export class ScimaxDb {
 
         // Index hashtags
         for (const tag of doc.hashtags) {
-            await this.db.execute({
+            statements.push({
                 sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
                 args: [tag.toLowerCase(), filePath]
             });
+        }
+
+        // Execute all statements in a single batch
+        if (statements.length > 0) {
+            await this.db.batch(statements);
         }
     }
 

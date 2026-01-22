@@ -212,9 +212,16 @@ export function registerDbCommands(
                 }
 
                 // Index all directories
-                for (const dir of uniqueDirs) {
+                for (let i = 0; i < uniqueDirs.length; i++) {
+                    const dir = uniqueDirs[i];
+                    progress.report({
+                        message: `Scanning ${path.basename(dir)} (${i + 1}/${uniqueDirs.length})...`
+                    });
                     const indexed = await db.indexDirectory(dir, progress);
                     totalIndexed += indexed;
+
+                    // Yield between directories
+                    await new Promise(resolve => setTimeout(resolve, 10));
                 }
 
                 const stats = await db.getStats();
