@@ -1352,6 +1352,10 @@
         "title": "Scimax: Find File in Project"
       },
       {
+        "command": "scimax.projectile.findFileInKnownProjects",
+        "title": "Scimax: Find File in Known Projects"
+      },
+      {
         "command": "scimax.projectile.search",
         "title": "Scimax: Search in Project"
       },
@@ -3289,6 +3293,11 @@
         "command": "scimax.projectile.findFile",
         "key": "ctrl+c p f",
         "mac": "ctrl+c p f"
+      },
+      {
+        "command": "scimax.projectile.findFileInKnownProjects",
+        "key": "ctrl+c p shift+f",
+        "mac": "ctrl+c p shift+f"
       },
       {
         "command": "scimax.projectile.search",
