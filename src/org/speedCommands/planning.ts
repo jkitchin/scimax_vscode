@@ -194,10 +194,17 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
         }
     } else {
         // Insert new planning line right after the heading
-        const newLine = `${indent}${keyword}: ${timestamp}\n`;
-
         await editor.edit(editBuilder => {
-            editBuilder.insert(new vscode.Position(headingLine + 1, 0), newLine);
+            // Check if there's a line after the heading
+            if (headingLine + 1 < document.lineCount) {
+                // Normal case: insert at the beginning of the next line
+                const newLine = `${indent}${keyword}: ${timestamp}\n`;
+                editBuilder.insert(new vscode.Position(headingLine + 1, 0), newLine);
+            } else {
+                // Heading is the last line of the file - insert at end with preceding newline
+                const headingLineObj = document.lineAt(headingLine);
+                editBuilder.insert(headingLineObj.range.end, `\n${indent}${keyword}: ${timestamp}`);
+            }
         });
     }
 }

@@ -328,9 +328,6 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
             );
         });
 
-        vscode.window.showInformationMessage(
-            `Repeating task: ${keyword} shifted to ${newYear}-${newMonth}-${newDay}`
-        );
         // No CLOSED timestamp for repeating tasks - they reset to active state
     } else {
         // Normal TODO cycling

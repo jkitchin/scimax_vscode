@@ -132,6 +132,25 @@ export class AgendaManager {
         this.disposables.push({
             dispose: () => this.persistCache()
         });
+
+        // Subscribe to database index events to refresh agenda when files are indexed
+        this.setupDatabaseSubscription();
+    }
+
+    /**
+     * Subscribe to database file index events
+     * When a file is indexed, refresh the agenda
+     */
+    private async setupDatabaseSubscription(): Promise<void> {
+        const db = await getDatabase();
+        if (db) {
+            this.db = db;
+            this.disposables.push(
+                db.onDidIndexFile(() => {
+                    this.debouncedRefresh();
+                })
+            );
+        }
     }
 
     /**

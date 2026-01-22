@@ -163,6 +163,10 @@ export class ScimaxDb {
     // Write mutex to prevent concurrent database writes
     private writeLock: Promise<void> = Promise.resolve();
 
+    // Event emitter for file index completion
+    private _onDidIndexFile = new vscode.EventEmitter<string>();
+    readonly onDidIndexFile = this._onDidIndexFile.event;
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.parser = new UnifiedParserAdapter();
@@ -496,6 +500,7 @@ export class ScimaxDb {
                 for (const filePath of files) {
                     try {
                         await this.indexFile(filePath);
+                        this._onDidIndexFile.fire(filePath);
                     } catch (error) {
                         log.error('Failed to index file', error as Error, { path: filePath });
                     }
@@ -2698,6 +2703,9 @@ export class ScimaxDb {
         // Clear the queue
         this.embeddingQueue = [];
         this.isProcessingEmbeddings = false;
+
+        // Dispose event emitter
+        this._onDidIndexFile.dispose();
 
         // Close database
         if (this.db) {
