@@ -175,6 +175,9 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
             // Phase 2: Scan configured directories for new files
             if (!staleCheckCancellation?.cancelled) {
                 const directories: string[] = [];
+                // Limit directories to prevent OOM on systems with many projects
+                // Default to 20 directories max for background scanning
+                const maxDirectories = config.get<number>('maxDirectoriesPerSync', 20);
 
                 // Include journal directory if enabled
                 if (config.get<boolean>('includeJournal', true)) {
@@ -193,7 +196,8 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                 }
 
                 // Include scimax projects if enabled
-                if (config.get<boolean>('includeProjects', true) && extensionContext) {
+                // Default to FALSE for background scan - scanning 500+ projects causes OOM
+                if (config.get<boolean>('includeProjects', false) && extensionContext) {
                     interface Project { path: string; }
                     const projects = extensionContext.globalState.get<Project[]>('scimax.projects', []);
                     for (const project of projects) {
@@ -215,8 +219,15 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                     }
                 }
 
-                // Deduplicate
-                const uniqueDirs = [...new Set(directories)];
+                // Deduplicate and limit to prevent OOM
+                let uniqueDirs = [...new Set(directories)];
+                if (maxDirectories > 0 && uniqueDirs.length > maxDirectories) {
+                    log.warn('Limiting directories for background scan', {
+                        total: uniqueDirs.length,
+                        limit: maxDirectories
+                    });
+                    uniqueDirs = uniqueDirs.slice(0, maxDirectories);
+                }
 
                 if (uniqueDirs.length > 0) {
                     if (staleCheckStatusBar) {
