@@ -84,7 +84,15 @@ export class TransformersJsEmbeddingService implements EmbeddingService {
         });
 
         // Convert to regular array
-        return Array.from(output.data);
+        const embedding = Array.from(output.data) as number[];
+
+        // CRITICAL: Dispose tensor to free native ONNX memory
+        // Without this, each embedding leaks memory until OOM
+        if (output.dispose) {
+            output.dispose();
+        }
+
+        return embedding;
     }
 
     async embedBatch(texts: string[]): Promise<number[][]> {

@@ -30,8 +30,15 @@ node_modules/**
 !node_modules/webidl-conversions/**
 !node_modules/js-base64/**
 !node_modules/promise-limit/**
-# transformers.js
+# transformers.js and onnxruntime
 !node_modules/@xenova/**
+!node_modules/onnxruntime-node/**
+!node_modules/onnxruntime-web/**
+!node_modules/onnxruntime-common/**
+!node_modules/flatbuffers/**
+!node_modules/long/**
+!node_modules/sharp/**
+!node_modules/guid-typescript/**
 # citation-js and dependencies
 !node_modules/@citation-js/**
 !node_modules/citeproc/**
