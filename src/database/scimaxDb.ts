@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as crypto from 'crypto';
 import { createClient, Client } from '@libsql/client';
 import { parse as parseDate } from 'date-fns';
+import { minimatch } from 'minimatch';
 import {
     parseMarkdownCodeBlocks,
     extractHashtags,
@@ -159,10 +160,36 @@ export class ScimaxDb {
     private queryTimeoutMs: number = 30000;  // 30 seconds default
     private maxRetryAttempts: number = 3;
 
+    // Write mutex to prevent concurrent database writes
+    private writeLock: Promise<void> = Promise.resolve();
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.parser = new UnifiedParserAdapter();
         this.dbPath = path.join(context.globalStorageUri.fsPath, 'scimax-db.sqlite');
+    }
+
+    /**
+     * Execute a function with write lock to prevent concurrent database writes.
+     * This serializes all write operations to avoid SQLITE_BUSY errors.
+     */
+    private async withWriteLock<T>(fn: () => Promise<T>): Promise<T> {
+        // Chain onto the existing lock
+        const previousLock = this.writeLock;
+        let releaseLock: () => void;
+        this.writeLock = new Promise<void>(resolve => {
+            releaseLock = resolve;
+        });
+
+        try {
+            // Wait for previous operation to complete
+            await previousLock;
+            // Execute our operation
+            return await fn();
+        } finally {
+            // Release the lock for the next operation
+            releaseLock!();
+        }
     }
 
     /**
@@ -217,6 +244,13 @@ export class ScimaxDb {
         this.db = createClient({
             url: `file:${this.dbPath}`
         });
+
+        // Configure SQLite for better multi-process access:
+        // - WAL mode allows concurrent readers while writing
+        // - busy_timeout waits up to 30s instead of returning SQLITE_BUSY immediately
+        // This helps when multiple VS Code windows access the same database
+        await this.db.execute('PRAGMA journal_mode = WAL');
+        await this.db.execute('PRAGMA busy_timeout = 30000');
 
         await this.createSchema();
         this.loadIgnorePatterns();
@@ -403,7 +437,6 @@ export class ScimaxDb {
      * Check if file should be excluded (by absolute path or glob pattern)
      */
     private shouldIgnore(filePath: string): boolean {
-        const { minimatch } = require('minimatch');
         for (const pattern of this.ignorePatterns) {
             // Expand ~ in pattern
             let expandedPattern = pattern;
@@ -501,24 +534,27 @@ export class ScimaxDb {
 
     /**
      * Find all indexable files in directory
+     * Uses async operations with yielding to avoid blocking the event loop
      */
     private async findFiles(directory: string): Promise<string[]> {
         const files: string[] = [];
+        let directoriesProcessed = 0;
 
         log.debug('findFiles starting', { directory });
 
-        const walk = (dir: string, depth: number = 0) => {
+        const walk = async (dir: string, depth: number = 0): Promise<void> => {
             try {
-                const items = fs.readdirSync(dir, { withFileTypes: true });
+                // Use async readdir to not block event loop
+                const items = await fs.promises.readdir(dir, { withFileTypes: true });
+
                 for (const item of items) {
                     const fullPath = path.join(dir, item.name);
                     if (this.shouldIgnore(fullPath)) {
-                        log.debug('Ignoring path', { fullPath });
                         continue;
                     }
 
                     if (item.isDirectory() && !item.name.startsWith('.')) {
-                        walk(fullPath, depth + 1);
+                        await walk(fullPath, depth + 1);
                     } else if (item.isFile()) {
                         const ext = path.extname(item.name).toLowerCase();
                         if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
@@ -526,14 +562,77 @@ export class ScimaxDb {
                         }
                     }
                 }
-            } catch (error) {
-                log.error('Error walking directory', error as Error, { dir, depth });
+
+                // Yield every 20 directories to keep UI responsive
+                directoriesProcessed++;
+                if (directoriesProcessed % 20 === 0) {
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            } catch (error: any) {
+                // Silently ignore permission errors
+                if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
+                    log.error('Error walking directory', error as Error, {
+                        dir,
+                        depth,
+                        message: error?.message,
+                        code: error?.code
+                    });
+                }
             }
         };
 
-        walk(directory, 0);
+        await walk(directory, 0);
         log.debug('findFiles complete', { directory, fileCount: files.length });
         return files;
+    }
+
+    /**
+     * Find files as an async generator to avoid accumulating all paths in memory.
+     * Uses iterative traversal with a stack instead of recursion.
+     * This is critical for large directories to prevent OOM during startup scans.
+     */
+    private async *findFilesGenerator(directory: string): AsyncGenerator<string, void, undefined> {
+        const stack: string[] = [directory];
+        let directoriesProcessed = 0;
+
+        log.debug('findFilesGenerator starting', { directory });
+
+        while (stack.length > 0) {
+            const dir = stack.pop()!;
+
+            try {
+                const items = await fs.promises.readdir(dir, { withFileTypes: true });
+
+                for (const item of items) {
+                    const fullPath = path.join(dir, item.name);
+                    if (this.shouldIgnore(fullPath)) {
+                        continue;
+                    }
+
+                    if (item.isDirectory() && !item.name.startsWith('.')) {
+                        stack.push(fullPath);
+                    } else if (item.isFile()) {
+                        const ext = path.extname(item.name).toLowerCase();
+                        if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
+                            yield fullPath;
+                        }
+                    }
+                }
+
+                // Yield control every 20 directories to keep UI responsive
+                directoriesProcessed++;
+                if (directoriesProcessed % 20 === 0) {
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+            } catch (error: any) {
+                // Silently ignore permission errors
+                if (error?.code !== 'EACCES' && error?.code !== 'ENOENT') {
+                    log.error('Error walking directory', error as Error, { dir });
+                }
+            }
+        }
+
+        log.debug('findFilesGenerator complete', { directory, directoriesProcessed });
     }
 
     /**
@@ -635,56 +734,84 @@ export class ScimaxDb {
             const fileType = this.getFileType(filePath);
             const hash = crypto.createHash('md5').update(content).digest('hex');
 
-            // Remove old data for this file
-            await this.removeFileData(filePath);
-
-            // Insert file record
-            const fileResult = await this.db.execute({
-                sql: `INSERT INTO files (path, file_type, mtime, hash, size, indexed_at, keywords)
-                      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                args: [filePath, fileType, stats.mtimeMs, hash, stats.size, Date.now(), '{}']
-            });
-
-            const fileId = Number(fileResult.lastInsertRowid);
-
-            // Parse and index content based on type
+            // Parse content outside the lock (CPU-intensive, not DB-related)
+            let parsedDoc: LegacyDocument | null = null;
+            let notebookDoc: NotebookDocument | null = null;
             let fullText = content;
+
             if (fileType === 'org') {
-                const doc = this.parser.parse(content);
-                await this.indexOrgDocument(fileId, filePath, doc, content);
-            } else if (fileType === 'md') {
-                await this.indexMarkdownDocument(fileId, filePath, content);
+                parsedDoc = this.parser.parse(content);
             } else if (fileType === 'ipynb') {
-                const doc = parseNotebook(content);
-                await this.indexNotebookDocument(fileId, filePath, doc);
-                fullText = getNotebookFullText(doc);
+                notebookDoc = parseNotebook(content);
+                fullText = getNotebookFullText(notebookDoc);
             }
 
-            // Extract and index hashtags
             const hashtags = extractHashtags(fullText);
-            for (const tag of hashtags) {
-                await this.db.execute({
-                    sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
-                    args: [tag.toLowerCase(), filePath]
+
+            // All database writes happen inside the write lock to prevent SQLITE_BUSY
+            await this.withWriteLock(async () => {
+                // Remove old data for this file (already has internal retry logic)
+                await withRetry(
+                    () => this.db!.batch([
+                        { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
+                        { sql: 'DELETE FROM files WHERE path = ?', args: [filePath] }
+                    ]),
+                    {
+                        maxAttempts: 5,
+                        baseDelayMs: 100,
+                        operationName: 'indexFile-removeOld',
+                        isRetryable: isTransientError
+                    }
+                );
+
+                // Insert file record
+                const fileResult = await this.db!.execute({
+                    sql: `INSERT INTO files (path, file_type, mtime, hash, size, indexed_at, keywords)
+                          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                    args: [filePath, fileType, stats.mtimeMs, hash, stats.size, Date.now(), '{}']
                 });
-            }
 
-            // Index for FTS5
-            await this.db.execute({
-                sql: 'INSERT INTO fts_content (file_path, title, content) VALUES (?, ?, ?)',
-                args: [filePath, path.basename(filePath), fullText]
-            });
+                const fileId = Number(fileResult.lastInsertRowid);
 
-            // Handle embeddings for semantic search
-            if (this.embeddingService) {
-                if (options?.queueEmbeddings) {
-                    // Queue for async processing to avoid OOM during background sync
-                    this.queueEmbeddings(filePath);
-                } else {
-                    // Generate immediately (manual reindex)
-                    await this.createChunks(fileId, filePath, fullText);
+                // Index content based on type
+                if (fileType === 'org' && parsedDoc) {
+                    await this.indexOrgDocument(fileId, filePath, parsedDoc, content);
+                } else if (fileType === 'md') {
+                    await this.indexMarkdownDocument(fileId, filePath, content);
+                } else if (fileType === 'ipynb' && notebookDoc) {
+                    await this.indexNotebookDocument(fileId, filePath, notebookDoc);
                 }
-            }
+
+                // Index hashtags
+                for (const tag of hashtags) {
+                    await this.db!.execute({
+                        sql: 'INSERT OR IGNORE INTO hashtags (tag, file_path) VALUES (?, ?)',
+                        args: [tag.toLowerCase(), filePath]
+                    });
+                }
+
+                // Index for FTS5
+                await this.db!.execute({
+                    sql: 'INSERT INTO fts_content (file_path, title, content) VALUES (?, ?, ?)',
+                    args: [filePath, path.basename(filePath), fullText]
+                });
+
+                // Handle embeddings for semantic search
+                if (this.embeddingService) {
+                    if (options?.queueEmbeddings) {
+                        // Queue for async processing to avoid OOM during background sync
+                        this.queueEmbeddings(filePath);
+                    } else {
+                        // Generate immediately (manual reindex)
+                        await this.createChunks(fileId, filePath, fullText);
+                    }
+                }
+            });
 
         } catch (error) {
             log.error('Failed to index file', error as Error, { path: filePath });
@@ -1122,23 +1249,25 @@ export class ScimaxDb {
     private async removeFileData(filePath: string): Promise<void> {
         if (!this.db) return;
 
-        await withRetry(
-            () => this.db!.batch([
-                { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
-                { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
-                { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
-                { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
-                { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
-                { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
-                { sql: 'DELETE FROM files WHERE path = ?', args: [filePath] }
-            ]),
-            {
-                maxAttempts: 5,
-                baseDelayMs: 100,
-                operationName: 'removeFileData',
-                isRetryable: isTransientError
-            }
-        );
+        await this.withWriteLock(async () => {
+            await withRetry(
+                () => this.db!.batch([
+                    { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM source_blocks WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM links WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM hashtags WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM chunks WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM fts_content WHERE file_path = ?', args: [filePath] },
+                    { sql: 'DELETE FROM files WHERE path = ?', args: [filePath] }
+                ]),
+                {
+                    maxAttempts: 5,
+                    baseDelayMs: 100,
+                    operationName: 'removeFileData',
+                    isRetryable: isTransientError
+                }
+            );
+        });
     }
 
     /**
@@ -1671,15 +1800,17 @@ export class ScimaxDb {
     public async clear(): Promise<void> {
         if (!this.db) return;
 
-        await this.db.batch([
-            'DELETE FROM chunks',
-            'DELETE FROM fts_content',
-            'DELETE FROM hashtags',
-            'DELETE FROM links',
-            'DELETE FROM source_blocks',
-            'DELETE FROM headings',
-            'DELETE FROM files'
-        ]);
+        await this.withWriteLock(async () => {
+            await this.db!.batch([
+                'DELETE FROM chunks',
+                'DELETE FROM fts_content',
+                'DELETE FROM hashtags',
+                'DELETE FROM links',
+                'DELETE FROM source_blocks',
+                'DELETE FROM headings',
+                'DELETE FROM files'
+            ]);
+        });
     }
 
     /**
@@ -1866,14 +1997,16 @@ export class ScimaxDb {
                 }
 
                 onProgress?.({ scanned: result.scanned, total: 0, indexed: result.indexed, currentDir: dir });
-                const files = await this.findFiles(dir);
 
-                for (let i = 0; i < files.length; i++) {
+                // Use generator to stream files without accumulating all paths in memory
+                // This prevents OOM when scanning directories with thousands of files
+                let filesInDir = 0;
+                for await (const filePath of this.findFilesGenerator(dir)) {
                     if (cancellationToken?.cancelled) break;
                     if (maxIndex > 0 && result.indexed >= maxIndex) break;
 
-                    const filePath = files[i];
                     result.scanned++;
+                    filesInDir++;
 
                     try {
                         const needsIndex = await this.needsReindex(filePath);
@@ -1899,8 +2032,8 @@ export class ScimaxDb {
                     }
 
                     // Yield every batchSize files
-                    if (i > 0 && i % batchSize === 0) {
-                        onProgress?.({ scanned: result.scanned, total: files.length, indexed: result.indexed, currentDir: dir });
+                    if (filesInDir % batchSize === 0) {
+                        onProgress?.({ scanned: result.scanned, total: 0, indexed: result.indexed, currentDir: dir });
                         await new Promise(resolve => setTimeout(resolve, yieldMs));
                     }
                 }
@@ -2067,39 +2200,41 @@ export class ScimaxDb {
 
         if (cancellationToken?.cancelled) return result;
 
-        // Phase 3: Index all directories
-        const allFiles: string[] = [];
+        // Phase 3: Index all directories using streaming to avoid OOM
+        // Use a Set for deduplication without accumulating all file paths first
+        const indexedPaths = new Set<string>();
+
+        onProgress?.({ phase: 'Indexing files', current: 0, total: 0 });
+
         for (const dir of directories) {
-            const files = await this.findFiles(dir);
-            allFiles.push(...files);
-        }
-
-        // Deduplicate
-        const uniqueFiles = [...new Set(allFiles)];
-
-        onProgress?.({ phase: 'Indexing files', current: 0, total: uniqueFiles.length });
-
-        for (let i = 0; i < uniqueFiles.length; i++) {
             if (cancellationToken?.cancelled) break;
 
-            const filePath = uniqueFiles[i];
-            try {
-                await this.indexFile(filePath, { queueEmbeddings: true });
-                result.filesIndexed++;
-            } catch (error) {
-                log.error('Error indexing file', error as Error, { path: filePath });
-                result.errors++;
-            }
+            // Stream files from each directory
+            for await (const filePath of this.findFilesGenerator(dir)) {
+                if (cancellationToken?.cancelled) break;
 
-            // Report progress every 10 files
-            if (i % 10 === 0) {
-                onProgress?.({ phase: 'Indexing files', current: i + 1, total: uniqueFiles.length });
-                // Yield to prevent blocking
-                await new Promise(resolve => setTimeout(resolve, 10));
+                // Skip already-indexed files (deduplication)
+                if (indexedPaths.has(filePath)) continue;
+                indexedPaths.add(filePath);
+
+                try {
+                    await this.indexFile(filePath, { queueEmbeddings: true });
+                    result.filesIndexed++;
+                } catch (error) {
+                    log.error('Error indexing file', error as Error, { path: filePath });
+                    result.errors++;
+                }
+
+                // Report progress every 10 files
+                if (result.filesIndexed % 10 === 0) {
+                    onProgress?.({ phase: 'Indexing files', current: result.filesIndexed, total: 0 });
+                    // Yield to prevent blocking
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
             }
         }
 
-        onProgress?.({ phase: 'Complete', current: uniqueFiles.length, total: uniqueFiles.length });
+        onProgress?.({ phase: 'Complete', current: result.filesIndexed, total: result.filesIndexed });
 
         return result;
     }
@@ -2367,16 +2502,18 @@ export class ScimaxDb {
         const normalizedPath = path.resolve(projectPath);
 
         // Also clear project_id from any files in this project
-        await this.db.batch([
-            {
-                sql: 'UPDATE files SET project_id = NULL WHERE project_id = (SELECT id FROM projects WHERE path = ?)',
-                args: [normalizedPath]
-            },
-            {
-                sql: 'DELETE FROM projects WHERE path = ?',
-                args: [normalizedPath]
-            }
-        ]);
+        await this.withWriteLock(async () => {
+            await this.db!.batch([
+                {
+                    sql: 'UPDATE files SET project_id = NULL WHERE project_id = (SELECT id FROM projects WHERE path = ?)',
+                    args: [normalizedPath]
+                },
+                {
+                    sql: 'DELETE FROM projects WHERE path = ?',
+                    args: [normalizedPath]
+                }
+            ]);
+        });
     }
 
     /**

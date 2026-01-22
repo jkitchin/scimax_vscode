@@ -3439,8 +3439,8 @@ function isOnHeading(document: vscode.TextDocument, position: vscode.Position): 
         // Markdown heading: starts with one or more hashes followed by space
         return /^#+\s/.test(line);
     } else if (document.languageId === 'latex') {
-        // LaTeX section commands
-        return /^\\(section|subsection|subsubsection|chapter|part)\{/.test(line);
+        // LaTeX section commands (including starred variants)
+        return /^\s*\\(part|chapter|section|subsection|subsubsection|paragraph|subparagraph)\*?\s*[\[{]/.test(line);
     }
 
     return false;
@@ -3461,6 +3461,7 @@ export function setupHeadingContext(context: vscode.ExtensionContext): void {
                 vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
                 vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
                 vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
+                vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
                 return;
             }
 
@@ -3481,6 +3482,10 @@ export function setupHeadingContext(context: vscode.ExtensionContext): void {
             // Check if on heading with statistics cookie [n/m] or [n%]
             const onStatisticsCookie = /^(\*+)\s+/.test(line) && /\[(\d+)\/(\d+)\]|\[(\d+)%\]/.test(line);
             vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', onStatisticsCookie);
+
+            // Check if on LaTeX \begin{...} line
+            const onLatexBegin = document.languageId === 'latex' && /^\s*\\begin\{/.test(line);
+            vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', onLatexBegin);
         })
     );
 }

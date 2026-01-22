@@ -73,6 +73,8 @@ export function isTransientError(error: unknown): boolean {
     // SQLite transient errors
     if (message.includes('database is locked') ||
         message.includes('database is busy') ||
+        message.includes('sqlite_busy') ||
+        message.includes('cannot commit transaction') ||
         message.includes('disk i/o error') ||
         message.includes('unable to open database')) {
         return true;

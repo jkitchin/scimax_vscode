@@ -114,10 +114,12 @@ async function initializeDatabase(context: vscode.ExtensionContext): Promise<Sci
  */
 function scheduleStaleFileCheck(db: ScimaxDb): void {
     const config = vscode.workspace.getConfiguration('scimax.db');
-    const autoCheckStale = config.get<boolean>('autoCheckStale', true);
+    // Default to false to prevent OOM on startup with large project counts
+    // Users can enable with scimax.db.autoCheckStale: true
+    const autoCheckStale = config.get<boolean>('autoCheckStale', false);
 
     if (!autoCheckStale) {
-        log.debug('Auto stale check disabled');
+        log.debug('Auto stale check disabled (set scimax.db.autoCheckStale to true to enable)');
         return;
     }
 
@@ -130,14 +132,15 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
         // Create cancellation token
         staleCheckCancellation = { cancelled: false };
 
-        // Create subtle status bar item with click-to-cancel
+        // Create status bar item with click-to-cancel (make it obvious)
         staleCheckStatusBar = vscode.window.createStatusBarItem(
             vscode.StatusBarAlignment.Right,
             0
         );
-        staleCheckStatusBar.text = '$(sync~spin) Checking files...';
-        staleCheckStatusBar.tooltip = 'Scimax: Checking for externally modified files (click to cancel)';
+        staleCheckStatusBar.text = '$(sync~spin) Indexing $(close)';
+        staleCheckStatusBar.tooltip = 'Scimax: Background file indexing in progress\nClick to STOP';
         staleCheckStatusBar.command = 'scimax.db.cancelSync';
+        staleCheckStatusBar.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
         staleCheckStatusBar.show();
 
         let totalReindexed = 0;
@@ -145,22 +148,23 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
         let totalDeleted = 0;
 
         try {
-            // Get limits from config (0 = unlimited by default)
-            const maxReindex = config.get<number>('maxReindexPerSync', 0);
-            const maxNewFiles = config.get<number>('maxNewFilesPerSync', 0);
+            // Get limits from config
+            // Default to 100 files per sync to avoid blocking the UI during background operations
+            // Users can set to 0 for unlimited if they want full sync on startup
+            const maxReindex = config.get<number>('maxReindexPerSync', 100);
+            const maxNewFiles = config.get<number>('maxNewFilesPerSync', 100);
 
             // Phase 1: Check stale files (already indexed)
+            // Use smaller batches and longer yields to keep UI responsive
             const staleResult = await db.checkStaleFiles({
-                batchSize: 50,
-                yieldMs: 50,
+                batchSize: 25,
+                yieldMs: 10,
                 maxReindex,
                 cancellationToken: staleCheckCancellation,
                 onProgress: ({ checked, total, reindexed }) => {
                     if (staleCheckStatusBar) {
-                        staleCheckStatusBar.text = `$(sync~spin) Checking files (${checked}/${total})`;
-                        if (reindexed > 0) {
-                            staleCheckStatusBar.tooltip = `Scimax: Reindexed ${reindexed} modified files`;
-                        }
+                        staleCheckStatusBar.text = `$(sync~spin) Checking (${checked}/${total}) $(close)`;
+                        staleCheckStatusBar.tooltip = `Scimax: Checking files for changes\n${reindexed > 0 ? `Reindexed: ${reindexed}\n` : ''}Click to STOP`;
                     }
                 }
             });
@@ -216,25 +220,22 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
 
                 if (uniqueDirs.length > 0) {
                     if (staleCheckStatusBar) {
-                        staleCheckStatusBar.text = '$(sync~spin) Scanning directories...';
-                        staleCheckStatusBar.tooltip = 'Scimax: Scanning for new files in configured directories';
+                        staleCheckStatusBar.text = '$(sync~spin) Scanning $(close)';
+                        staleCheckStatusBar.tooltip = 'Scimax: Scanning for new files\nClick to STOP';
                     }
 
                     const scanResult = await db.scanDirectoriesInBackground(uniqueDirs, {
-                        batchSize: 50,
-                        yieldMs: 50,
+                        batchSize: 25,
+                        yieldMs: 10,
                         maxIndex: maxNewFiles,
                         cancellationToken: staleCheckCancellation,
                         onProgress: ({ scanned, total, indexed, currentDir }) => {
                             if (staleCheckStatusBar) {
-                                if (currentDir) {
-                                    staleCheckStatusBar.text = `$(sync~spin) Scanning: ${currentDir.split('/').pop()}`;
-                                } else {
-                                    staleCheckStatusBar.text = `$(sync~spin) Scanning files (${scanned}/${total})`;
-                                }
-                                if (indexed > 0) {
-                                    staleCheckStatusBar.tooltip = `Scimax: Found ${indexed} new/changed files`;
-                                }
+                                // Show progress with stop button
+                                staleCheckStatusBar.text = `$(sync~spin) Scanning (${indexed}) $(close)`;
+                                // Show detailed progress in tooltip on hover
+                                const dirName = currentDir ? currentDir.split('/').pop() : '';
+                                staleCheckStatusBar.tooltip = `Scimax: Scanning ${dirName}\nIndexed: ${indexed} files\nClick to STOP`;
                             }
                         }
                     });

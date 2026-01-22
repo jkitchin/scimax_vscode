@@ -127,6 +127,25 @@ export function registerDbCommands(
         })
     );
 
+    // Toggle auto-scanning on/off
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.toggleAutoScan', async () => {
+            const config = vscode.workspace.getConfiguration('scimax.db');
+            const currentValue = config.get<boolean>('autoCheckStale', true);
+            const newValue = !currentValue;
+
+            await config.update('autoCheckStale', newValue, vscode.ConfigurationTarget.Global);
+
+            if (newValue) {
+                vscode.window.showInformationMessage('Auto-scanning enabled. Files will be checked on startup.');
+            } else {
+                // Also cancel any running scan
+                cancelStaleFileCheck();
+                vscode.window.showInformationMessage('Auto-scanning disabled. Use "Scimax: Rebuild Database Index" to manually index files.');
+            }
+        })
+    );
+
     // Reindex all files
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.reindex', async () => {
