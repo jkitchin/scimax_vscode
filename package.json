@@ -86,7 +86,7 @@
       {
         "scopeName": "scimax.latex.citations",
         "path": "./syntaxes/latex-citations.tmLanguage.json",
-        "injectTo": ["text.tex.latex"]
+        "injectTo": ["text.tex.latex", "text.tex", "source.latex"]
       }
     ],
     "themes": [
@@ -1012,6 +1012,10 @@
       {
         "command": "scimax.db.cancelEmbeddings",
         "title": "Scimax: Cancel Embedding Generation"
+      },
+      {
+        "command": "scimax.db.toggleAutoScan",
+        "title": "Scimax: Toggle Auto-Scanning (Enable/Disable)"
       },
       {
         "command": "scimax.database.refresh",
@@ -4232,7 +4236,7 @@
           "key": "Tab"
         },
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !suggestWidgetVisible && !inSnippetMode"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4649,13 +4653,13 @@
         "command": "scimax.org.toggleFold",
         "key": "tab",
         "mac": "tab",
-        "when": "editorTextFocus && editorLangId == 'latex' && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.onHeading && !suggestWidgetVisible && !inSnippetMode && !editorHasSelection"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
         "key": "shift+tab",
         "mac": "shift+tab",
-        "when": "editorTextFocus && editorLangId == 'latex' && !suggestWidgetVisible"
+        "when": "editorTextFocus && editorLangId == 'latex' && !suggestWidgetVisible && !inSnippetMode"
       },
       {
         "command": "scimax.latex.compile",
@@ -4895,15 +4899,15 @@
         },
         "scimax.db.maxReindexPerSync": {
           "type": "number",
-          "default": 0,
+          "default": 100,
           "minimum": 0,
-          "description": "Maximum number of modified files to reindex per background sync. Set to 0 for unlimited."
+          "description": "Maximum number of modified files to reindex per background sync. Set to 0 for unlimited (may cause memory issues with large codebases)."
         },
         "scimax.db.maxNewFilesPerSync": {
           "type": "number",
-          "default": 0,
+          "default": 100,
           "minimum": 0,
-          "description": "Maximum number of new files to index per background sync. Set to 0 for unlimited."
+          "description": "Maximum number of new files to index per background sync. Set to 0 for unlimited (may cause memory issues with large codebases)."
         },
         "scimax.db.queryTimeoutMs": {
           "type": "number",
