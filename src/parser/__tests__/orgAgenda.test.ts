@@ -434,12 +434,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Work task',
+                todoKeyword: 'TODO',
                 tags: ['work'],
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Home task',
+                todoKeyword: 'TODO',
                 tags: ['home'],
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -461,12 +463,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Regular task',
+                todoKeyword: 'TODO',
                 tags: [],
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Hold task',
+                todoKeyword: 'TODO',
                 tags: ['hold'],
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -488,12 +492,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'High priority',
+                todoKeyword: 'TODO',
                 priority: 'A',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Low priority',
+                todoKeyword: 'TODO',
                 priority: 'C',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -515,12 +521,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Work task',
+                todoKeyword: 'TODO',
                 category: 'work',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Personal task',
+                todoKeyword: 'TODO',
                 category: 'personal',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -542,12 +550,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Exercise',
+                todoKeyword: 'TODO',
                 tags: ['HABIT'],
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Meeting',
+                todoKeyword: 'TODO',
                 tags: [],
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -597,11 +607,13 @@ describe('orgAgenda', () => {
             const scheduled2 = createTimestamp(2024, 6, 3, 9, 0);
             const headline1 = createHeadline({
                 title: 'Afternoon task',
+                todoKeyword: 'TODO',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled: scheduled1 }),
             });
             const headline2 = createHeadline({
                 title: 'Morning task',
+                todoKeyword: 'TODO',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled: scheduled2 }),
             });
@@ -622,12 +634,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Low priority',
+                todoKeyword: 'TODO',
                 priority: 'C',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'High priority',
+                todoKeyword: 'TODO',
                 priority: 'A',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -649,12 +663,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Work task',
+                todoKeyword: 'TODO',
                 category: 'work',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Home task',
+                todoKeyword: 'TODO',
                 category: 'home',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -705,11 +721,13 @@ describe('orgAgenda', () => {
             const scheduled2 = createTimestamp(2024, 6, 5);
             const headline1 = createHeadline({
                 title: 'Task 1',
+                todoKeyword: 'TODO',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled: scheduled1 }),
             });
             const headline2 = createHeadline({
                 title: 'Task 2',
+                todoKeyword: 'TODO',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled: scheduled2 }),
             });
@@ -735,12 +753,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Work task',
+                todoKeyword: 'TODO',
                 category: 'work',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Home task',
+                todoKeyword: 'TODO',
                 category: 'home',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -788,12 +808,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'High priority',
+                todoKeyword: 'TODO',
                 priority: 'A',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'No priority',
+                todoKeyword: 'TODO',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
             });
@@ -815,12 +837,14 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline1 = createHeadline({
                 title: 'Tagged task',
+                todoKeyword: 'TODO',
                 tags: ['important'],
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
             const headline2 = createHeadline({
                 title: 'Untagged task',
+                todoKeyword: 'TODO',
                 tags: [],
                 lineNumber: 2,
                 planning: createPlanning({ scheduled }),
@@ -871,6 +895,7 @@ describe('orgAgenda', () => {
             });
             const headline = createHeadline({
                 title: 'Weekly meeting',
+                todoKeyword: 'TODO',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
@@ -1124,6 +1149,7 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3, 10, 0);
             const headline = createHeadline({
                 title: 'Task',
+                todoKeyword: 'TODO',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
@@ -1237,6 +1263,7 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3); // No time
             const headline = createHeadline({
                 title: 'All day event',
+                todoKeyword: 'TODO',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
             });
@@ -1255,6 +1282,7 @@ describe('orgAgenda', () => {
             const scheduled = createTimestamp(2024, 6, 3);
             const headline = createHeadline({
                 title: 'Task',
+                todoKeyword: 'TODO',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled }),
                 // No category property
@@ -1277,16 +1305,19 @@ describe('orgAgenda', () => {
 
             const headline1 = createHeadline({
                 title: 'Morning meeting',
+                todoKeyword: 'TODO',
                 lineNumber: 1,
                 planning: createPlanning({ scheduled: scheduled1 }),
             });
             const headline2 = createHeadline({
                 title: 'Afternoon task',
+                todoKeyword: 'TODO',
                 lineNumber: 2,
                 planning: createPlanning({ scheduled: scheduled2 }),
             });
             const headline3 = createHeadline({
                 title: 'Evening event',
+                todoKeyword: 'TODO',
                 lineNumber: 3,
                 planning: createPlanning({ scheduled: scheduled3 }),
             });
