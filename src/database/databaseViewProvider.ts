@@ -121,8 +121,10 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
                 }
 
                 if (showMessage) {
-                    vscode.window.showInformationMessage(
-                        `Database: ${this.stats.files} files, ${this.stats.headings} headings, ${this.stats.blocks} blocks`
+                    // Show brief status bar message instead of popup
+                    vscode.window.setStatusBarMessage(
+                        `Database: ${this.stats.files} files, ${this.stats.headings} headings`,
+                        3000
                     );
                 }
             } else {
