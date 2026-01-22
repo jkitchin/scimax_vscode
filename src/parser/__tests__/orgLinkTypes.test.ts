@@ -40,78 +40,78 @@ describe('orgLinkTypes', () => {
         });
 
         describe('resolve', () => {
-            it('should resolve valid notebook link', () => {
-                const result = notebookHandler.resolve('my-research::README.org', createContext());
+            it('should resolve valid notebook link', async () => {
+                const result = await notebookHandler.resolve('my-research::README.org', createContext());
                 expect(result.exists).toBe(true);
                 expect(result.displayText).toBe('my-research::README.org');
                 expect(result.url).toContain('/home/user/projects/my-research/README.org');
             });
 
-            it('should resolve link with nested file path', () => {
-                const result = notebookHandler.resolve('my-research::data/results.org', createContext());
+            it('should resolve link with nested file path', async () => {
+                const result = await notebookHandler.resolve('my-research::data/results.org', createContext());
                 expect(result.exists).toBe(true);
                 expect(result.url).toContain('/home/user/projects/my-research/data/results.org');
             });
 
-            it('should resolve link with line number target', () => {
-                const result = notebookHandler.resolve('my-research::notes.org::42', createContext());
+            it('should resolve link with line number target', async () => {
+                const result = await notebookHandler.resolve('my-research::notes.org::42', createContext());
                 expect(result.exists).toBe(true);
                 expect(result.metadata?.target).toBe('42');
                 expect(result.tooltip).toContain('42');
             });
 
-            it('should resolve link with character offset target', () => {
-                const result = notebookHandler.resolve('my-research::notes.org::c1234', createContext());
+            it('should resolve link with character offset target', async () => {
+                const result = await notebookHandler.resolve('my-research::notes.org::c1234', createContext());
                 expect(result.exists).toBe(true);
                 expect(result.metadata?.target).toBe('c1234');
             });
 
-            it('should resolve link with heading target', () => {
-                const result = notebookHandler.resolve('my-research::paper.org::*Methods', createContext());
+            it('should resolve link with heading target', async () => {
+                const result = await notebookHandler.resolve('my-research::paper.org::*Methods', createContext());
                 expect(result.exists).toBe(true);
                 expect(result.metadata?.target).toBe('*Methods');
             });
 
-            it('should resolve link with custom ID target', () => {
-                const result = notebookHandler.resolve('my-research::paper.org::#intro', createContext());
+            it('should resolve link with custom ID target', async () => {
+                const result = await notebookHandler.resolve('my-research::paper.org::#intro', createContext());
                 expect(result.exists).toBe(true);
                 expect(result.metadata?.target).toBe('#intro');
             });
 
-            it('should handle case-insensitive project name matching', () => {
-                const result = notebookHandler.resolve('MY-RESEARCH::README.org', createContext());
+            it('should handle case-insensitive project name matching', async () => {
+                const result = await notebookHandler.resolve('MY-RESEARCH::README.org', createContext());
                 expect(result.exists).toBe(true);
             });
 
-            it('should report project not found', () => {
-                const result = notebookHandler.resolve('unknown-project::file.org', createContext());
+            it('should report project not found', async () => {
+                const result = await notebookHandler.resolve('unknown-project::file.org', createContext());
                 expect(result.exists).toBe(false);
                 expect(result.tooltip).toContain('not found');
             });
 
-            it('should report invalid link format (missing file)', () => {
-                const result = notebookHandler.resolve('my-research', createContext());
+            it('should report invalid link format (missing file)', async () => {
+                const result = await notebookHandler.resolve('my-research', createContext());
                 expect(result.exists).toBe(false);
                 expect(result.tooltip).toContain('Invalid');
             });
 
-            it('should handle ambiguous project matches', () => {
+            it('should handle ambiguous project matches', async () => {
                 const duplicateNotebooks: NotebookInfo[] = [
                     { id: 'nb-1', name: 'project', path: '/path/a/project' },
                     { id: 'nb-2', name: 'project', path: '/path/b/project' },
                 ];
-                const result = notebookHandler.resolve('project::file.org', createContext(duplicateNotebooks));
+                const result = await notebookHandler.resolve('project::file.org', createContext(duplicateNotebooks));
                 expect(result.metadata?.ambiguous).toBe(true);
                 expect(result.metadata?.candidates).toHaveLength(2);
             });
 
-            it('should work with empty notebooks list', () => {
-                const result = notebookHandler.resolve('project::file.org', createContext([]));
+            it('should work with empty notebooks list', async () => {
+                const result = await notebookHandler.resolve('project::file.org', createContext([]));
                 expect(result.exists).toBe(false);
             });
 
-            it('should work without getNotebooks callback', () => {
-                const result = notebookHandler.resolve('project::file.org', {});
+            it('should work without getNotebooks callback', async () => {
+                const result = await notebookHandler.resolve('project::file.org', {});
                 expect(result.exists).toBe(false);
             });
         });
@@ -192,34 +192,34 @@ describe('orgLinkTypes', () => {
             ],
         };
 
-        it('should handle empty project name', () => {
-            const result = notebookHandler.resolve('::file.org', mockContext);
+        it('should handle empty project name', async () => {
+            const result = await notebookHandler.resolve('::file.org', mockContext);
             expect(result.exists).toBe(false);
         });
 
-        it('should handle empty file path', () => {
-            const result = notebookHandler.resolve('test::', mockContext);
+        it('should handle empty file path', async () => {
+            const result = await notebookHandler.resolve('test::', mockContext);
             expect(result.exists).toBe(false);
         });
 
-        it('should handle multiple :: separators', () => {
-            const result = notebookHandler.resolve('test::file.org::123::extra', mockContext);
+        it('should handle multiple :: separators', async () => {
+            const result = await notebookHandler.resolve('test::file.org::123::extra', mockContext);
             // Should parse: project=test, file=file.org, target=123::extra
             expect(result.metadata?.projectName).toBe('test');
             expect(result.metadata?.filePath).toBe('file.org');
             expect(result.metadata?.target).toBe('123::extra');
         });
 
-        it('should handle paths with spaces (URL encoded)', () => {
-            const result = notebookHandler.resolve('test::my file.org', mockContext);
+        it('should handle paths with spaces (URL encoded)', async () => {
+            const result = await notebookHandler.resolve('test::my file.org', mockContext);
             expect(result.metadata?.filePath).toBe('my file.org');
         });
 
-        it('should handle Windows-style backslashes in path', () => {
+        it('should handle Windows-style backslashes in path', async () => {
             const windowsNotebooks: NotebookInfo[] = [
                 { id: 'nb-1', name: 'project', path: 'C:\\Users\\test\\project' },
             ];
-            const result = notebookHandler.resolve('project::file.org', {
+            const result = await notebookHandler.resolve('project::file.org', {
                 getNotebooks: () => windowsNotebooks,
             });
             expect(result.exists).toBe(true);
