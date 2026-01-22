@@ -505,15 +505,20 @@ export class ScimaxDb {
     private async findFiles(directory: string): Promise<string[]> {
         const files: string[] = [];
 
-        const walk = (dir: string) => {
+        log.debug('findFiles starting', { directory });
+
+        const walk = (dir: string, depth: number = 0) => {
             try {
                 const items = fs.readdirSync(dir, { withFileTypes: true });
                 for (const item of items) {
                     const fullPath = path.join(dir, item.name);
-                    if (this.shouldIgnore(fullPath)) continue;
+                    if (this.shouldIgnore(fullPath)) {
+                        log.debug('Ignoring path', { fullPath });
+                        continue;
+                    }
 
                     if (item.isDirectory() && !item.name.startsWith('.')) {
-                        walk(fullPath);
+                        walk(fullPath, depth + 1);
                     } else if (item.isFile()) {
                         const ext = path.extname(item.name).toLowerCase();
                         if (ext === '.org' || ext === '.md' || ext === '.ipynb') {
@@ -522,11 +527,12 @@ export class ScimaxDb {
                     }
                 }
             } catch (error) {
-                log.error('Error walking directory', error as Error, { dir });
+                log.error('Error walking directory', error as Error, { dir, depth });
             }
         };
 
-        walk(directory);
+        walk(directory, 0);
+        log.debug('findFiles complete', { directory, fileCount: files.length });
         return files;
     }
 

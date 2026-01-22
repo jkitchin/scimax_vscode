@@ -200,8 +200,6 @@ async function addPlanningTimestamp(keyword: 'SCHEDULED' | 'DEADLINE'): Promise<
             editBuilder.insert(new vscode.Position(headingLine + 1, 0), newLine);
         });
     }
-
-    vscode.window.showInformationMessage(`${keyword}: ${timestamp}`);
 }
 
 /**
