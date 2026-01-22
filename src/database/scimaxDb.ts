@@ -540,6 +540,34 @@ export class ScimaxDb {
     }
 
     /**
+     * Detect if content is likely binary (not text)
+     * Checks for null bytes and high ratio of non-printable characters
+     */
+    private isBinaryContent(content: string): boolean {
+        // Check first 8KB for efficiency
+        const sample = content.slice(0, 8192);
+
+        // Null bytes are a strong indicator of binary content
+        if (sample.includes('\0')) {
+            return true;
+        }
+
+        // Count non-printable characters (excluding common whitespace)
+        let nonPrintable = 0;
+        for (let i = 0; i < sample.length; i++) {
+            const code = sample.charCodeAt(i);
+            // Non-printable: < 32 (except tab, newline, carriage return) or DEL (127)
+            if ((code < 32 && code !== 9 && code !== 10 && code !== 13) || code === 127) {
+                nonPrintable++;
+            }
+        }
+
+        // If more than 10% non-printable, likely binary
+        const ratio = nonPrintable / sample.length;
+        return ratio > 0.1;
+    }
+
+    /**
      * Get file type from extension
      */
     private getFileType(filePath: string): 'org' | 'md' | 'ipynb' {
@@ -559,8 +587,29 @@ export class ScimaxDb {
         if (!this.db) return;
 
         try {
-            const content = fs.readFileSync(filePath, 'utf8');
+            // Validate file before reading
             const stats = fs.statSync(filePath);
+
+            // Check file size limit (default 10MB)
+            const maxSizeBytes = vscode.workspace.getConfiguration('scimax.db')
+                .get<number>('maxFileSizeMB', 10) * 1024 * 1024;
+            if (stats.size > maxSizeBytes) {
+                log.warn('Skipping large file', {
+                    path: filePath,
+                    sizeMB: (stats.size / 1024 / 1024).toFixed(2),
+                    limitMB: maxSizeBytes / 1024 / 1024
+                });
+                return;
+            }
+
+            // Read file content
+            const content = fs.readFileSync(filePath, 'utf8');
+
+            // Detect binary content (null bytes or high non-printable ratio)
+            if (this.isBinaryContent(content)) {
+                log.warn('Skipping binary file', { path: filePath });
+                return;
+            }
             const fileType = this.getFileType(filePath);
             const hash = crypto.createHash('md5').update(content).digest('hex');
 

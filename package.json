@@ -4884,6 +4884,13 @@
           "maximum": 10,
           "description": "Maximum retry attempts for transient database failures (e.g., locked database)."
         },
+        "scimax.db.maxFileSizeMB": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Maximum file size in MB to index. Larger files are skipped to prevent memory issues. Useful when working with external repositories."
+        },
         "scimax.db.embeddingProvider": {
           "type": "string",
           "enum": [
