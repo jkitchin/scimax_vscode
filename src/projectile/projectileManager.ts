@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import type { ScimaxDb, ProjectRecord } from '../database/scimaxDb';
 
 export interface Project {
     name: string;
@@ -10,12 +11,26 @@ export interface Project {
 }
 
 /**
+ * Convert ProjectRecord from database to Project interface
+ */
+function projectRecordToProject(record: ProjectRecord): Project {
+    return {
+        name: record.name,
+        path: record.path,
+        type: record.type,
+        lastOpened: record.last_opened || undefined
+    };
+}
+
+/**
  * Projectile-style project manager
  * Tracks known projects and allows quick switching between them
+ * Now uses ScimaxDb for persistence (with globalState fallback)
  */
 export class ProjectileManager {
     private projects: Map<string, Project> = new Map();
     private context: vscode.ExtensionContext;
+    private db: ScimaxDb | null = null;
     private _onProjectsChanged = new vscode.EventEmitter<void>();
     readonly onProjectsChanged = this._onProjectsChanged.event;
 
@@ -23,11 +38,28 @@ export class ProjectileManager {
         this.context = context;
     }
 
+    /**
+     * Set database reference for persistence
+     * Must be called before initialize() for database-backed storage
+     */
+    setDatabase(db: ScimaxDb): void {
+        this.db = db;
+    }
+
     async initialize(): Promise<void> {
-        // Load saved projects
-        const savedProjects = this.context.globalState.get<Project[]>('scimax.projects', []);
-        for (const project of savedProjects) {
-            this.projects.set(project.path, project);
+        // Load saved projects (prefer database if available)
+        if (this.db) {
+            const dbProjects = await this.db.getProjects();
+            for (const record of dbProjects) {
+                const project = projectRecordToProject(record);
+                this.projects.set(project.path, project);
+            }
+        } else {
+            // Fallback to globalState (for backward compatibility)
+            const savedProjects = this.context.globalState.get<Project[]>('scimax.projects', []);
+            for (const project of savedProjects) {
+                this.projects.set(project.path, project);
+            }
         }
 
         // Register current workspace as a project
@@ -73,6 +105,11 @@ export class ProjectileManager {
             lastOpened: Date.now()
         };
 
+        // Save to database if available
+        if (this.db) {
+            await this.db.addProject(projectPath, project.name, type);
+        }
+
         this.projects.set(projectPath, project);
         await this.saveProjects();
         this._onProjectsChanged.fire();
@@ -104,6 +141,12 @@ export class ProjectileManager {
      */
     async removeProject(projectPath: string): Promise<void> {
         projectPath = path.resolve(projectPath);
+
+        // Remove from database if available
+        if (this.db) {
+            await this.db.removeProject(projectPath);
+        }
+
         this.projects.delete(projectPath);
         await this.saveProjects();
         this._onProjectsChanged.fire();
@@ -132,14 +175,23 @@ export class ProjectileManager {
         const project = this.projects.get(projectPath);
         if (project) {
             project.lastOpened = Date.now();
+
+            // Update in database if available
+            if (this.db) {
+                await this.db.touchProject(projectPath);
+            }
+
             await this.saveProjects();
         }
     }
 
     /**
-     * Save projects to global state
+     * Save projects to global state (for backward compatibility)
+     * Note: Database is the primary source of truth when available
      */
     private async saveProjects(): Promise<void> {
+        // Always save to globalState for backward compatibility
+        // (useful if user opens older version of extension)
         const projectsArray = Array.from(this.projects.values());
         await this.context.globalState.update('scimax.projects', projectsArray);
     }
@@ -185,6 +237,24 @@ export class ProjectileManager {
      * Clear all projects that no longer exist
      */
     async cleanupProjects(): Promise<number> {
+        // Use database cleanup if available
+        if (this.db) {
+            const removed = await this.db.cleanupProjects();
+
+            // Sync local cache with database
+            this.projects.clear();
+            const dbProjects = await this.db.getProjects();
+            for (const record of dbProjects) {
+                const project = projectRecordToProject(record);
+                this.projects.set(project.path, project);
+            }
+
+            await this.saveProjects();
+            this._onProjectsChanged.fire();
+            return removed;
+        }
+
+        // Fallback to local cleanup
         let removed = 0;
         const toRemove: string[] = [];
 

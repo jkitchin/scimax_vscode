@@ -26,6 +26,9 @@ export async function dbCommand(config: CliConfig, args: ParsedArgs): Promise<vo
         case 'rebuild':
             await rebuildDatabase(config, args);
             break;
+        case 'scan':
+            await scanDirectory(config, args);
+            break;
         case 'stats':
             await showStats(config);
             break;
@@ -37,12 +40,13 @@ export async function dbCommand(config: CliConfig, args: ParsedArgs): Promise<vo
 scimax db - Database operations
 
 USAGE:
-    scimax db stats         Show database statistics
-    scimax db rebuild       Rebuild database from org files
-    scimax db check         Check for stale/missing entries
+    scimax db stats             Show database statistics
+    scimax db rebuild           Rebuild database from org files
+    scimax db scan <dir>        Scan a specific directory and add to database
+    scimax db check             Check for stale/missing entries
 
 OPTIONS:
-    --path <dir>    Directory to scan (default: current)
+    --path <dir>    Directory to scan (default: current) [for rebuild]
     --force         Force full rebuild
 `);
     }
@@ -73,6 +77,99 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
         : config.rootDir;
 
     console.log(`Rebuilding database from: ${scanDir}`);
+    console.log(`Database path: ${config.dbPath}`);
+    console.log();
+
+    // Find all org files
+    const orgFiles = findOrgFiles(scanDir);
+    console.log(`Found ${orgFiles.length} org file(s) to index.`);
+    console.log();
+
+    if (orgFiles.length === 0) {
+        console.log('No org files found.');
+        return;
+    }
+
+    const db = await createCliDatabase(config.dbPath);
+
+    try {
+        let indexed = 0;
+        let errors = 0;
+
+        for (const filePath of orgFiles) {
+            const relativePath = path.relative(scanDir, filePath);
+            process.stdout.write(`  Indexing: ${relativePath}...`);
+
+            try {
+                const content = fs.readFileSync(filePath, 'utf-8');
+                const legacyDoc = parseToLegacyFormat(content);
+
+                // Convert LegacyDocument to CliDocument format
+                const cliDoc: CliDocument = {
+                    headings: flattenHeadings(legacyDoc.headings).map(h => ({
+                        level: h.level,
+                        title: h.title,
+                        lineNumber: h.lineNumber,
+                        todoState: h.todoState,
+                        priority: h.priority,
+                        tags: h.tags,
+                        properties: h.properties,
+                    })),
+                    sourceBlocks: legacyDoc.sourceBlocks.map(b => ({
+                        language: b.language,
+                        content: b.content,
+                        lineNumber: b.lineNumber,
+                        headers: b.headers,
+                    })),
+                    links: legacyDoc.links.map(l => ({
+                        type: l.type,
+                        target: l.target,
+                        description: l.description,
+                        lineNumber: l.lineNumber,
+                    })),
+                };
+
+                await db.indexFile(filePath, cliDoc);
+                indexed++;
+                console.log(' OK');
+            } catch (err) {
+                errors++;
+                console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
+            }
+        }
+
+        console.log();
+        console.log(`Indexed: ${indexed} file(s)`);
+        if (errors > 0) {
+            console.log(`Errors: ${errors} file(s)`);
+        }
+    } finally {
+        await db.close();
+    }
+}
+
+async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void> {
+    const dirArg = args.args[0];
+
+    if (!dirArg) {
+        console.error('Error: scan requires a directory argument');
+        console.log('Usage: scimax db scan <directory>');
+        process.exit(1);
+    }
+
+    const scanDir = path.resolve(dirArg);
+
+    if (!fs.existsSync(scanDir)) {
+        console.error(`Error: directory does not exist: ${scanDir}`);
+        process.exit(1);
+    }
+
+    if (!fs.statSync(scanDir).isDirectory()) {
+        console.error(`Error: not a directory: ${scanDir}`);
+        process.exit(1);
+    }
+
+    console.log(`Scanning directory: ${scanDir}`);
     console.log(`Database path: ${config.dbPath}`);
     console.log();
 

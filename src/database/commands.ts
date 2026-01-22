@@ -953,6 +953,195 @@ export function registerDbCommands(
             );
         })
     );
+
+    // Backup database
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.backup', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            // Ask user for backup location
+            const defaultPath = path.join(
+                process.env.HOME || '',
+                `scimax-backup-${new Date().toISOString().split('T')[0]}.json`
+            );
+
+            const uri = await vscode.window.showSaveDialog({
+                defaultUri: vscode.Uri.file(defaultPath),
+                filters: { 'JSON files': ['json'] },
+                title: 'Save Database Backup'
+            });
+
+            if (!uri) return;
+
+            try {
+                const result = await db.exportBackup(uri.fsPath);
+                vscode.window.showInformationMessage(
+                    `Backup saved: ${result.projects} projects, ${result.files} indexed files recorded. ` +
+                    `File: ${path.basename(uri.fsPath)}`
+                );
+            } catch (error: any) {
+                vscode.window.showErrorMessage(`Backup failed: ${error.message}`);
+            }
+        })
+    );
+
+    // Restore database from backup
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.restore', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            // Ask user to select backup file
+            const uris = await vscode.window.showOpenDialog({
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+                filters: { 'JSON files': ['json'] },
+                title: 'Select Database Backup to Restore'
+            });
+
+            if (!uris || uris.length === 0) return;
+
+            const confirm = await vscode.window.showWarningMessage(
+                'Restoring from backup will overwrite current projects list and agenda settings. Continue?',
+                { modal: true },
+                'Yes, restore'
+            );
+
+            if (confirm !== 'Yes, restore') return;
+
+            try {
+                const result = await db.importBackup(uris[0].fsPath);
+
+                const reindex = await vscode.window.showInformationMessage(
+                    `Restored ${result.projects} projects. ${result.filesToIndex} files can be re-indexed. ` +
+                    `Would you like to rebuild the database now?`,
+                    'Rebuild Now',
+                    'Later'
+                );
+
+                if (reindex === 'Rebuild Now') {
+                    vscode.commands.executeCommand('scimax.db.rebuild');
+                }
+            } catch (error: any) {
+                vscode.window.showErrorMessage(`Restore failed: ${error.message}`);
+            }
+        })
+    );
+
+    // Rebuild database from scratch
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.rebuild', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            const confirm = await vscode.window.showWarningMessage(
+                'Rebuilding will clear all indexed data and re-index from source files. ' +
+                'This may take several minutes for large collections. Continue?',
+                { modal: true },
+                'Yes, rebuild'
+            );
+
+            if (confirm !== 'Yes, rebuild') return;
+
+            const cancellationToken = { cancelled: false };
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Rebuilding database',
+                cancellable: true
+            }, async (progress, token) => {
+                token.onCancellationRequested(() => {
+                    cancellationToken.cancelled = true;
+                });
+
+                try {
+                    const result = await db.rebuild({
+                        onProgress: (status) => {
+                            progress.report({
+                                message: `${status.phase}: ${status.current}/${status.total}`,
+                                increment: status.total > 0 ? (100 / status.total) : 0
+                            });
+                        },
+                        cancellationToken
+                    });
+
+                    if (cancellationToken.cancelled) {
+                        vscode.window.showInformationMessage('Database rebuild cancelled');
+                    } else {
+                        vscode.window.showInformationMessage(
+                            `Database rebuilt: ${result.filesIndexed} files indexed, ${result.errors} errors`
+                        );
+                    }
+                } catch (error: any) {
+                    vscode.window.showErrorMessage(`Rebuild failed: ${error.message}`);
+                }
+            });
+        })
+    );
+
+    // Verify database integrity
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.verify', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Verifying database integrity...',
+                cancellable: false
+            }, async () => {
+                try {
+                    const result = await db.verify();
+
+                    if (result.ok) {
+                        vscode.window.showInformationMessage(
+                            `Database OK: ${result.stats.files} files, no issues found`
+                        );
+                    } else {
+                        // Show issues in output channel
+                        const outputChannel = vscode.window.createOutputChannel('Scimax DB Verify');
+                        outputChannel.clear();
+                        outputChannel.appendLine('Database Verification Report');
+                        outputChannel.appendLine('============================');
+                        outputChannel.appendLine('');
+                        outputChannel.appendLine(`Files in database: ${result.stats.files}`);
+                        outputChannel.appendLine(`Missing files: ${result.stats.missingFiles}`);
+                        outputChannel.appendLine(`Stale files: ${result.stats.staleFiles}`);
+                        outputChannel.appendLine(`Orphaned headings: ${result.stats.orphanedHeadings}`);
+                        outputChannel.appendLine(`Orphaned blocks: ${result.stats.orphanedBlocks}`);
+                        outputChannel.appendLine('');
+                        outputChannel.appendLine('Issues:');
+                        for (const issue of result.issues.slice(0, 100)) {
+                            outputChannel.appendLine(`  - ${issue}`);
+                        }
+                        if (result.issues.length > 100) {
+                            outputChannel.appendLine(`  ... and ${result.issues.length - 100} more`);
+                        }
+                        outputChannel.show();
+
+                        const action = await vscode.window.showWarningMessage(
+                            `Database has ${result.issues.length} issues. ` +
+                            `${result.stats.missingFiles} missing files, ${result.stats.staleFiles} stale files. ` +
+                            `See output for details.`,
+                            'Rebuild Database',
+                            'Optimize (remove missing)',
+                            'Ignore'
+                        );
+
+                        if (action === 'Rebuild Database') {
+                            vscode.commands.executeCommand('scimax.db.rebuild');
+                        } else if (action === 'Optimize (remove missing)') {
+                            vscode.commands.executeCommand('scimax.db.optimize');
+                        }
+                    }
+                } catch (error: any) {
+                    vscode.window.showErrorMessage(`Verify failed: ${error.message}`);
+                }
+            });
+        })
+    );
 }
 
 function getHeadingIcon(heading: HeadingRecord): string {

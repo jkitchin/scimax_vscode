@@ -32,14 +32,16 @@ Projects can be:
 CLOSED: [2026-01-15 Thu 19:55]
 
 - *Automatic Detection*: Discovers git repos and projectile-marked directories
-- *Quick Switching*: Fast navigation between known projects with `C-c p p'
+- *Quick Switching*: Fast navigation between known projects with =C-c p p=
 - *Project History*: Shows when each project was last opened
 - *Batch Scanning*: Scan directories to discover multiple projects at once
-- *File Finding*: Project-scoped file search with `C-c p f'
-- *Text Search*: Search within project files with `C-c p s'
+- *File Finding*: Project-scoped file search with =C-c p f=
+- *Cross-Project File Finding*: Find files across all known projects with =C-c p F=
+- *Text Search*: Search within project files with =C-c p s=
 - *Tree View*: Sidebar showing all known projects with visual indicators
 - *Cleanup Tools*: Remove non-existent projects from the list
 - *Notebook Integration*: Works seamlessly with scimax-notebook for research projects
+- *Database Integration*: Projects are persisted in the scimax database for reliability
 
 * ✅ Project Detection
 CLOSED: [2026-01-15 Thu 19:55]
@@ -438,27 +440,29 @@ CLOSED: [2026-01-16 Fri 21:13]
 ** ✅ All Projectile Commands
 CLOSED: [2026-01-16 Fri 21:13]
 
-| Command                                    | Keybinding | Hydra Key | Description                      |
-|--------------------------------------------+------------+-----------+----------------------------------|
-| =Scimax: Switch Project=                   | =C-c p p=  | p         | Switch to another project        |
-| =Scimax: Find File in Project=             | =C-c p f=  | f         | Find file in current project     |
-| =Scimax: Search in Project=                | =C-c p s=  | g         | Search text in project           |
-| =Scimax: Open Project Root=                | =C-c p d=  |           | Reveal project root in explorer  |
-| =Scimax: Add Project=                      | =C-c p a=  | a         | Add folder to project list       |
-| =Scimax: Remove Project=                   |            | r         | Remove project from list         |
-| =Scimax: Scan Directory for Projects=      |            | s         | Find projects in directory       |
-| =Scimax: Project Info=                     |            |           | Show current project details     |
-| =Scimax: Cleanup Non-existent Projects=    |            |           | Remove invalid project entries   |
-| =Scimax: Refresh Projects=                 |            |           | Refresh tree view                |
+| Command                                    | Keybinding  | Hydra Key | Description                        |
+|--------------------------------------------+-------------+-----------+------------------------------------|
+| =Scimax: Switch Project=                   | =C-c p p=   | p         | Switch to another project          |
+| =Scimax: Find File in Project=             | =C-c p f=   | f         | Find file in current project       |
+| =Scimax: Find File in Known Projects=      | =C-c p F=   |           | Find file across all projects      |
+| =Scimax: Search in Project=                | =C-c p s=   | g         | Search text in project             |
+| =Scimax: Open Project Root=                | =C-c p d=   |           | Reveal project root in explorer    |
+| =Scimax: Add Project=                      | =C-c p a=   | a         | Add folder to project list         |
+| =Scimax: Remove Project=                   |             | r         | Remove project from list           |
+| =Scimax: Scan Directory for Projects=      |             | s         | Find projects in directory         |
+| =Scimax: Project Info=                     |             |           | Show current project details       |
+| =Scimax: Cleanup Non-existent Projects=    |             |           | Remove invalid project entries     |
+| =Scimax: Refresh Projects=                 |             |           | Refresh tree view                  |
 
 ** ✅ Keybindings
 CLOSED: [2026-01-16 Fri 21:13]
 
-All projectile keybindings use the `C-c C-p' prefix, matching Emacs Projectile conventions:
+All projectile keybindings use the =C-c p= prefix, matching Emacs Projectile conventions:
 
 #+begin_src
 C-c p p    Switch project
-C-c p f    Find file
+C-c p f    Find file in current project
+C-c p F    Find file in all known projects
 C-c p s    Search in project
 C-c p d    Open project root (directory)
 C-c p a    Add project

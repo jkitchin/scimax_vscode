@@ -353,6 +353,8 @@ CLOSED: [2026-01-17 Sat 12:51]
 | [[cmd:scimax.agenda.gotoItem]]        | Go to Agenda Item        | -                  |
 | [[cmd:scimax.agenda.search]]          | Search Agenda Items      | -                  |
 | [[cmd:scimax.agenda.toggleVerbose]]   | Toggle Verbose Mode      | -                  |
+| [[cmd:scimax.agenda.ignoreFile]]      | Ignore File in Agenda    | -                  |
+| [[cmd:scimax.agenda.unignoreFile]]    | Unignore File in Agenda  | -                  |
 
 * ✅ Journal
 CLOSED: [2026-01-17 Sat 12:51]
@@ -418,11 +420,31 @@ CLOSED: [2026-01-17 Sat 12:45]
 ** ✅ Database Maintenance
 CLOSED: [2026-01-17 Sat 12:46]
 
-| Command ID                 | Description         | Default Keybinding |
-|----------------------------+---------------------+--------------------|
-| [[cmd:scimax.db.optimize]] | Optimize Database   | -                  |
-| [[cmd:scimax.db.clear]]    | Clear Database      | -                  |
-| [[cmd:scimax.db.stats]]    | Show Database Stats | -                  |
+| Command ID                    | Description           | Default Keybinding |
+|-------------------------------+-----------------------+--------------------|
+| [[cmd:scimax.db.optimize]]    | Optimize Database     | -                  |
+| [[cmd:scimax.db.clear]]       | Clear Database        | -                  |
+| [[cmd:scimax.db.stats]]       | Show Database Stats   | -                  |
+| [[cmd:scimax.db.rebuild]]     | Rebuild Database      | -                  |
+| [[cmd:scimax.db.backup]]      | Backup Database       | -                  |
+| [[cmd:scimax.db.restore]]     | Restore Database      | -                  |
+| [[cmd:scimax.db.verify]]      | Verify Database       | -                  |
+| [[cmd:scimax.db.cancelSync]]       | Cancel Database Sync       | -                  |
+| [[cmd:scimax.db.cancelEmbeddings]] | Cancel Embedding Generation | -                  |
+| [[cmd:scimax.database.refresh]]    | Refresh Database           | -                  |
+
+** ⚠️ Troubleshooting and Diagnostics
+
+Commands for debugging issues and reporting problems.
+
+| Command ID                    | Description                | Default Keybinding |
+|-------------------------------+----------------------------+--------------------|
+| [[cmd:scimax.showErrorLog]]   | Show Error Log             | -                  |
+| [[cmd:scimax.clearErrors]]    | Clear Error Log            | -                  |
+| [[cmd:scimax.showDiagnostics]] | Show Diagnostic Report    | -                  |
+| [[cmd:scimax.copyDiagnostics]] | Copy Diagnostic Report    | -                  |
+| [[cmd:scimax.reportIssue]]    | Report Issue on GitHub     | -                  |
+| [[cmd:scimax.contextHelp]]    | Context-Sensitive Help     | -                  |
 
 * ✅ References (org-ref)
 CLOSED: [2026-01-17 Sat 12:46]
@@ -500,9 +522,10 @@ CLOSED: [2026-01-21 Wed 08:03]
 | [[cmd:scimax.bibtex.titleCase]]     | Title Case Title    | t           |
 | [[cmd:scimax.bibtex.sentenceCase]]  | Sentence Case Title | S           |
 | [[cmd:scimax.bibtex.cleanEntry]]    | Clean/Format Entry  | c           |
-| [[cmd:scimax.bibtex.wrapBraces]]    | Wrap in Braces      | Cmd+Shift+] |
+| [[cmd:scimax.bibtex.wrapBraces]]    | Wrap in Braces       | Cmd+Shift+] |
+| [[cmd:scimax.bibtex.stripBraces]]   | Strip Braces         | -           |
 
-The =wrapBraces= command wraps the selected text or word at cursor in curly braces ={}= for case protection (e.g., ={NASA}=, ={Python}=).
+The =wrapBraces= command wraps the selected text or word at cursor in curly braces ={}= for case protection (e.g., ={NASA}=, ={Python}=). The =stripBraces= command removes braces from the selection.
 
 *** ✅ Access
 CLOSED: [2026-01-21 Wed 11:31]
@@ -616,6 +639,7 @@ CLOSED: [2026-01-17 Sat 12:47]
 |---------------------------------------+-------------------------------+--------------------|
 | [[cmd:scimax.projectile.switch]]      | Switch Project                | C-c p p            |
 | [[cmd:scimax.projectile.findFile]]    | Find File in Project          | C-c p f            |
+| [[cmd:scimax.projectile.findFileInKnownProjects]] | Find File in Known Projects | -        |
 | [[cmd:scimax.projectile.search]]      | Search in Project             | C-c p s            |
 | [[cmd:scimax.projectile.root]]        | Open Project Root             | C-c p d            |
 | [[cmd:scimax.projectile.add]]         | Add Project                   | C-c p a            |

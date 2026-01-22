@@ -12,6 +12,7 @@ import { ScimaxDb } from './scimaxDb';
 import { createEmbeddingServiceAsync } from './embeddingService';
 import { initSecretStorage, migrateApiKeyFromSettings } from './secretStorage';
 import { resolveScimaxPath } from '../utils/pathResolver';
+import { databaseLogger as log } from '../utils/logger';
 
 let scimaxDb: ScimaxDb | null = null;
 let dbInitPromise: Promise<ScimaxDb> | null = null;
@@ -53,7 +54,7 @@ export async function getDatabase(): Promise<ScimaxDb | null> {
 
     // No context set
     if (!extensionContext) {
-        console.warn('ScimaxDb: Cannot initialize - extension context not set');
+        log.warn('Cannot initialize - extension context not set');
         return null;
     }
 
@@ -64,7 +65,7 @@ export async function getDatabase(): Promise<ScimaxDb | null> {
         scimaxDb = await dbInitPromise;
         return scimaxDb;
     } catch (error) {
-        console.error('ScimaxDb: Initialization failed:', error);
+        log.error('Initialization failed', error as Error);
         dbInitPromise = null;
         return null;
     }
@@ -81,7 +82,7 @@ export function isDatabaseInitialized(): boolean {
  * Initialize the database (internal function)
  */
 async function initializeDatabase(context: vscode.ExtensionContext): Promise<ScimaxDb> {
-    console.log('ScimaxDb: Initializing lazily...');
+    log.info('Initializing lazily...');
 
     // Migrate API keys from settings to SecretStorage (one-time migration)
     await migrateApiKeyFromSettings();
@@ -93,10 +94,10 @@ async function initializeDatabase(context: vscode.ExtensionContext): Promise<Sci
     const embeddingService = await createEmbeddingServiceAsync();
     if (embeddingService) {
         db.setEmbeddingService(embeddingService);
-        console.log('ScimaxDb: Semantic search enabled');
+        log.info('Semantic search enabled');
     }
 
-    console.log('ScimaxDb: Ready');
+    log.info('Ready');
 
     // Schedule background stale file check after a delay
     scheduleStaleFileCheck(db);
@@ -116,7 +117,7 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
     const autoCheckStale = config.get<boolean>('autoCheckStale', true);
 
     if (!autoCheckStale) {
-        console.log('ScimaxDb: Auto stale check disabled');
+        log.debug('Auto stale check disabled');
         return;
     }
 
@@ -263,7 +264,7 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                 staleCheckStatusBar = null;
             }
         } catch (error) {
-            console.error('ScimaxDb: Background sync failed:', error);
+            log.error('Background sync failed', error as Error);
             staleCheckStatusBar?.dispose();
             staleCheckStatusBar = null;
         }
@@ -297,7 +298,7 @@ export async function closeDatabase(): Promise<void> {
         await scimaxDb.close();
         scimaxDb = null;
         dbInitPromise = null;
-        console.log('ScimaxDb: Closed');
+        log.info('Closed');
     }
 }
 

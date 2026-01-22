@@ -4,7 +4,7 @@ import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
 // Database uses lazy loading to avoid blocking extension activation
-import { setExtensionContext, closeDatabase } from './database/lazyDb';
+import { setExtensionContext, closeDatabase, getDatabase } from './database/lazyDb';
 import { registerDbCommands } from './database/commands';
 import { registerDatabaseView } from './database/databaseViewProvider';
 import { registerContextHelp } from './help/contextHelp';
@@ -69,6 +69,7 @@ import { activateLatexFeatures } from './latex/commands';
 import { registerDiagnosticCommands } from './diagnostic';
 import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
+import { initializeLogging, extensionLogger } from './utils/logger';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -79,7 +80,9 @@ let projectileManager: ProjectileManager;
 let templateManager: TemplateManager;
 
 export async function activate(context: vscode.ExtensionContext) {
-    console.log('Scimax VS Code extension activating...');
+    // Initialize logging first - errors will be visible in status bar
+    initializeLogging(context);
+    extensionLogger.info('Extension activating...');
 
     // Set Leuven as default theme on first activation
     const hasSetDefaultTheme = context.globalState.get<boolean>('scimax.hasSetDefaultTheme');
@@ -747,6 +750,11 @@ export async function activate(context: vscode.ExtensionContext) {
     // Defer projectile initialization to avoid blocking
     setImmediate(async () => {
         try {
+            // Connect ProjectileManager to database for persistence
+            const db = await getDatabase();
+            if (db) {
+                projectileManager.setDatabase(db);
+            }
             await projectileManager.initialize();
         } catch (error) {
             console.error('Scimax: Failed to initialize Projectile manager:', error);
@@ -774,7 +782,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerHydraCommands(context, hydraManager);
     context.subscriptions.push({ dispose: () => hydraManager.dispose() });
 
-    console.log('Scimax: Extension activated');
+    extensionLogger.info('Extension activated');
 }
 
 export async function deactivate() {

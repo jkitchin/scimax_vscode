@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import { ProjectileManager, Project } from './projectileManager';
+import { walkDirectory } from '../shared';
 
 /**
  * Switch to a project (C-c p p)
@@ -202,6 +204,75 @@ async function findFileInProject(): Promise<void> {
 }
 
 /**
+ * Find file in all known projects (C-c p F)
+ * Similar to Emacs projectile-find-file-in-known-projects
+ */
+async function findFileInKnownProjects(manager: ProjectileManager): Promise<void> {
+    const projects = manager.getProjects();
+
+    if (projects.length === 0) {
+        vscode.window.showInformationMessage('No known projects. Use "Add Project" or "Scan Directory" first.');
+        return;
+    }
+
+    // Create QuickPick for better UX with many items
+    const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { filePath: string }>();
+    quickPick.placeholder = 'Find file in known projects (C-c p F) - type to search...';
+    quickPick.matchOnDescription = true;
+    quickPick.matchOnDetail = true;
+    quickPick.busy = true;
+    quickPick.show();
+
+    // Collect files from all projects
+    const items: (vscode.QuickPickItem & { filePath: string })[] = [];
+
+    for (const project of projects) {
+        if (!fs.existsSync(project.path)) {
+            continue;
+        }
+
+        try {
+            // Use shared walkDirectory utility
+            const result = await walkDirectory(project.path, {
+                maxFiles: 5000,
+                includeHidden: false
+            });
+
+            for (const file of result.files) {
+                const relativePath = path.relative(project.path, file);
+                items.push({
+                    label: path.basename(file),
+                    description: relativePath,
+                    detail: `$(folder) ${project.name}`,
+                    filePath: file
+                });
+            }
+        } catch (err) {
+            // Skip projects that can't be read
+            console.error(`Error scanning project ${project.name}:`, err);
+        }
+    }
+
+    quickPick.busy = false;
+    quickPick.items = items;
+
+    if (items.length === 0) {
+        quickPick.placeholder = 'No files found in known projects';
+    }
+
+    quickPick.onDidAccept(async () => {
+        const selected = quickPick.selectedItems[0];
+        if (selected) {
+            quickPick.hide();
+            const doc = await vscode.workspace.openTextDocument(selected.filePath);
+            await vscode.window.showTextDocument(doc);
+        }
+    });
+
+    quickPick.onDidHide(() => quickPick.dispose());
+}
+
+/**
  * Search in project (C-c p s)
  */
 async function searchInProject(): Promise<void> {
@@ -287,6 +358,9 @@ export function registerProjectileCommands(
 
         // Find file in project (C-c p f)
         vscode.commands.registerCommand('scimax.projectile.findFile', findFileInProject),
+
+        // Find file in known projects (C-c p F)
+        vscode.commands.registerCommand('scimax.projectile.findFileInKnownProjects', () => findFileInKnownProjects(manager)),
 
         // Search in project (C-c p s)
         vscode.commands.registerCommand('scimax.projectile.search', searchInProject),
