@@ -6,6 +6,7 @@
  */
 
 import type { Client } from '@libsql/client';
+import { databaseLogger as log } from '../utils/logger';
 
 /**
  * Migration interface - defines a schema migration
@@ -262,7 +263,7 @@ export class MigrationRunner {
         if (currentVersion === 0 && !(await this.isFreshDatabase())) {
             currentVersion = await this.detectLegacyVersion();
             if (currentVersion > 0) {
-                console.log(`ScimaxDb: Detected legacy schema version ${currentVersion}`);
+                log.info('Detected legacy schema version', { version: currentVersion });
                 // Record all versions up to detected version
                 for (const migration of migrations.filter(m => m.version <= currentVersion)) {
                     await this.recordMigration(migration);
@@ -274,15 +275,15 @@ export class MigrationRunner {
         const pending = getPendingMigrations(currentVersion);
 
         if (pending.length === 0) {
-            console.log(`ScimaxDb: Schema is up to date (version ${currentVersion})`);
+            log.info('Schema is up to date', { version: currentVersion });
             return { applied: 0, currentVersion };
         }
 
-        console.log(`ScimaxDb: Applying ${pending.length} migration(s) from v${currentVersion} to v${getLatestVersion()}`);
+        log.info('Applying migrations', { count: pending.length, from: currentVersion, to: getLatestVersion() });
 
         // Apply each migration in order
         for (const migration of pending) {
-            console.log(`ScimaxDb: Applying migration v${migration.version}: ${migration.description}`);
+            log.info('Applying migration', { version: migration.version, description: migration.description });
 
             try {
                 // Execute all SQL statements in the migration
@@ -294,7 +295,7 @@ export class MigrationRunner {
                         // This is expected for ALTER TABLE when column exists
                         if (e.message?.includes('duplicate column name') ||
                             e.message?.includes('already exists')) {
-                            console.log(`ScimaxDb: Skipping (already exists): ${sql.slice(0, 50)}...`);
+                            log.debug('Skipping migration (already exists)', { sql: sql.slice(0, 50) });
                             continue;
                         }
                         throw e;
@@ -305,9 +306,9 @@ export class MigrationRunner {
                 await this.recordMigration(migration);
                 currentVersion = migration.version;
 
-                console.log(`ScimaxDb: Migration v${migration.version} complete`);
+                log.info('Migration complete', { version: migration.version });
             } catch (e) {
-                console.error(`ScimaxDb: Migration v${migration.version} failed:`, e);
+                log.error('Migration failed', e as Error, { version: migration.version });
                 throw new Error(`Migration v${migration.version} failed: ${e}`);
             }
         }

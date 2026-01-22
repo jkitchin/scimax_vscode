@@ -964,6 +964,26 @@
         "title": "Scimax: Show Database Stats"
       },
       {
+        "command": "scimax.showErrorLog",
+        "title": "Scimax: Show Error Log"
+      },
+      {
+        "command": "scimax.clearErrors",
+        "title": "Scimax: Clear Error Log"
+      },
+      {
+        "command": "scimax.showDiagnostics",
+        "title": "Scimax: Show Diagnostic Report"
+      },
+      {
+        "command": "scimax.copyDiagnostics",
+        "title": "Scimax: Copy Diagnostic Report"
+      },
+      {
+        "command": "scimax.reportIssue",
+        "title": "Scimax: Report Issue on GitHub"
+      },
+      {
         "command": "scimax.db.backup",
         "title": "Scimax: Backup Database"
       },
@@ -4777,6 +4797,12 @@
           "minimum": 1,
           "maximum": 100,
           "description": "Maximum number of marks to store in the mark ring"
+        },
+        "scimax.logLevel": {
+          "type": "string",
+          "enum": ["debug", "info", "warn", "error"],
+          "default": "info",
+          "description": "Log level for Scimax output. 'debug' shows all messages, 'error' shows only errors. Errors are always logged regardless of this setting."
         },
         "scimax.db.includeJournal": {
           "type": "boolean",

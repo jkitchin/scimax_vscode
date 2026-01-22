@@ -69,6 +69,7 @@ import { activateLatexFeatures } from './latex/commands';
 import { registerDiagnosticCommands } from './diagnostic';
 import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
+import { initializeLogging, extensionLogger } from './utils/logger';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -79,7 +80,9 @@ let projectileManager: ProjectileManager;
 let templateManager: TemplateManager;
 
 export async function activate(context: vscode.ExtensionContext) {
-    console.log('Scimax VS Code extension activating...');
+    // Initialize logging first - errors will be visible in status bar
+    initializeLogging(context);
+    extensionLogger.info('Extension activating...');
 
     // Set Leuven as default theme on first activation
     const hasSetDefaultTheme = context.globalState.get<boolean>('scimax.hasSetDefaultTheme');
@@ -779,7 +782,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerHydraCommands(context, hydraManager);
     context.subscriptions.push({ dispose: () => hydraManager.dispose() });
 
-    console.log('Scimax: Extension activated');
+    extensionLogger.info('Extension activated');
 }
 
 export async function deactivate() {

@@ -3,6 +3,17 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+
+// Mock the logger module before importing migrations
+vi.mock('../../utils/logger', () => ({
+    databaseLogger: {
+        debug: vi.fn(),
+        info: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn()
+    }
+}));
+
 import {
     migrations,
     getLatestVersion,

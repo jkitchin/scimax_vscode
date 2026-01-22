@@ -19,6 +19,7 @@ import {
 } from '../parser/ipynbParser';
 import type { EmbeddingService } from './embeddingService';
 import { MigrationRunner, getLatestVersion } from './migrations';
+import { databaseLogger as log } from '../utils/logger';
 
 /**
  * Database record types
@@ -176,7 +177,7 @@ export class ScimaxDb {
         this.loadIgnorePatterns();
         this.setupFileWatcher();
 
-        console.log('ScimaxDb: Initialized');
+        log.info('Initialized');
     }
 
     /**
@@ -191,7 +192,7 @@ export class ScimaxDb {
         const result = await runner.runMigrations();
 
         if (result.applied > 0) {
-            console.log(`ScimaxDb: Applied ${result.applied} migration(s), now at version ${result.currentVersion}`);
+            log.info('Migrations applied', { applied: result.applied, version: result.currentVersion });
         }
 
         // Create chunks table with dynamic embedding dimensions
@@ -234,7 +235,7 @@ export class ScimaxDb {
             return;
         }
 
-        console.log(`ScimaxDb: Migrating ${projects.length} projects from globalState to database`);
+        log.info('Migrating projects from globalState', { count: projects.length });
 
         for (const project of projects) {
             try {
@@ -243,13 +244,13 @@ export class ScimaxDb {
                     args: [project.path, project.name, project.type || 'manual', project.lastOpened || Date.now()]
                 });
             } catch (e) {
-                console.error(`ScimaxDb: Error migrating project ${project.path}:`, e);
+                log.error('Error migrating project', e as Error, { path: project.path });
             }
         }
 
         // Mark migration as complete (but keep globalState for backward compatibility during transition)
         await this.context.globalState.update('scimax.projects.migratedToDb', true);
-        console.log('ScimaxDb: Project migration complete');
+        log.info('Project migration complete');
     }
 
     /**
@@ -265,12 +266,12 @@ export class ScimaxDb {
                 ON chunks(libsql_vector_idx(embedding, 'metric=cosine'))
             `);
             this.vectorSearchSupported = true;
-            console.log('ScimaxDb: Vector search is supported');
+            log.info('Vector search is supported');
         } catch (e: any) {
             this.vectorSearchSupported = false;
             this.vectorSearchError = e?.message || 'Vector search not available';
-            console.log('ScimaxDb: Vector search not available - using FTS5 only');
-            console.log('ScimaxDb: Vector error:', this.vectorSearchError);
+            log.info('Vector search not available - using FTS5 only');
+            log.debug('Vector search error', { error: this.vectorSearchError });
         }
     }
 
@@ -396,7 +397,7 @@ export class ScimaxDb {
                     try {
                         await this.indexFile(filePath);
                     } catch (error) {
-                        console.error(`ScimaxDb: Failed to index ${filePath}`, error);
+                        log.error('Failed to index file', error as Error, { path: filePath });
                     }
                 }
             }
@@ -455,7 +456,7 @@ export class ScimaxDb {
                     }
                 }
             } catch (error) {
-                console.error(`ScimaxDb: Error walking ${dir}`, error);
+                log.error('Error walking directory', error as Error, { dir });
             }
         };
 
@@ -561,7 +562,7 @@ export class ScimaxDb {
             }
 
         } catch (error) {
-            console.error(`ScimaxDb: Failed to index ${filePath}`, error);
+            log.error('Failed to index file', error as Error, { path: filePath });
         }
     }
 
@@ -842,7 +843,7 @@ export class ScimaxDb {
                 });
             }
         } catch (error: any) {
-            console.error('ScimaxDb: Failed to create embeddings for', filePath, error);
+            log.error('Failed to create embeddings', error as Error, { path: filePath });
             // Don't fail the whole indexing, just skip embeddings
         }
     }
@@ -922,7 +923,7 @@ export class ScimaxDb {
                     }
 
                 } catch (error) {
-                    console.error(`ScimaxDb: Failed to generate embeddings for ${filePath}:`, error);
+                    log.error('Failed to generate embeddings', error as Error, { path: filePath });
                 }
 
                 // Rate limit: wait between files to allow GC and reduce memory pressure
@@ -941,7 +942,7 @@ export class ScimaxDb {
             }
 
         } catch (error) {
-            console.error('ScimaxDb: Embedding queue processing failed:', error);
+            log.error('Embedding queue processing failed', error as Error);
             this.embeddingStatusBar?.dispose();
             this.embeddingStatusBar = null;
         } finally {
@@ -978,7 +979,7 @@ export class ScimaxDb {
             this.embeddingStatusBar.dispose();
             this.embeddingStatusBar = null;
         }
-        console.log('ScimaxDb: Embedding queue cancelled');
+        log.info('Embedding queue cancelled');
     }
 
     /**
@@ -1073,7 +1074,7 @@ export class ScimaxDb {
 
         // Check if vector search is available
         if (!this.vectorSearchSupported) {
-            console.log('ScimaxDb: Semantic search unavailable - vector search not supported');
+            log.debug('Semantic search unavailable - vector search not supported');
             return [];
         }
 
@@ -1104,7 +1105,7 @@ export class ScimaxDb {
                 distance: row.distance as number
             }));
         } catch (error: any) {
-            console.error('ScimaxDb: Semantic search failed', error);
+            log.error('Semantic search failed', error as Error);
             return [];
         }
     }
@@ -1585,7 +1586,7 @@ export class ScimaxDb {
 
         if (total === 0) return result;
 
-        console.log(`ScimaxDb: Checking ${total} files for staleness (max ${maxReindex} reindex)...`);
+        log.info('Checking files for staleness', { total, maxReindex });
 
         // Process files in pages to avoid loading all into memory
         const pageSize = 100;
@@ -1594,13 +1595,13 @@ export class ScimaxDb {
         while (offset < total) {
             // Check for cancellation
             if (cancellationToken?.cancelled) {
-                console.log('ScimaxDb: Stale check cancelled');
+                log.info('Stale check cancelled');
                 break;
             }
 
             // Check if we've hit the reindex limit
             if (result.reindexed >= maxReindex) {
-                console.log(`ScimaxDb: Reached max reindex limit (${maxReindex}), stopping`);
+                log.info('Reached max reindex limit', { maxReindex });
                 break;
             }
 
@@ -1643,7 +1644,7 @@ export class ScimaxDb {
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
                 } catch (error) {
-                    console.error(`ScimaxDb: Error checking ${file.path}:`, error);
+                    log.error('Error checking file staleness', error as Error, { path: file.path });
                 }
 
                 // Yield every batchSize files
@@ -1664,7 +1665,7 @@ export class ScimaxDb {
             await new Promise(resolve => setTimeout(resolve, yieldMs));
         }
 
-        console.log(`ScimaxDb: Stale check complete - ${result.stale} stale, ${result.deleted} deleted, ${result.reindexed} reindexed`);
+        log.info('Stale check complete', { stale: result.stale, deleted: result.deleted, reindexed: result.reindexed });
         return result;
     }
 
@@ -1699,19 +1700,19 @@ export class ScimaxDb {
 
         if (!this.db || directories.length === 0) return result;
 
-        console.log(`ScimaxDb: Scanning ${directories.length} directories (max ${maxIndex} new files)...`);
+        log.info('Scanning directories', { directories: directories.length, maxIndex });
 
         // Process directories one at a time to avoid loading all files into memory
         for (const dir of directories) {
             if (cancellationToken?.cancelled) break;
             if (result.indexed >= maxIndex) {
-                console.log(`ScimaxDb: Reached max index limit (${maxIndex}), stopping`);
+                log.info('Reached max index limit', { maxIndex });
                 break;
             }
 
             try {
                 if (!fs.existsSync(dir)) {
-                    console.warn(`ScimaxDb: Directory does not exist: ${dir}`);
+                    log.warn('Directory does not exist', { dir });
                     continue;
                 }
 
@@ -1745,7 +1746,7 @@ export class ScimaxDb {
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }
                     } catch (error) {
-                        console.error(`ScimaxDb: Error processing ${filePath}:`, error);
+                        log.error('Error processing file', error as Error, { path: filePath });
                     }
 
                     // Yield every batchSize files
@@ -1755,14 +1756,14 @@ export class ScimaxDb {
                     }
                 }
             } catch (error) {
-                console.error(`ScimaxDb: Error scanning directory ${dir}:`, error);
+                log.error('Error scanning directory', error as Error, { dir });
             }
 
             // Yield between directories
             await new Promise(resolve => setTimeout(resolve, yieldMs));
         }
 
-        console.log(`ScimaxDb: Directory scan complete - ${result.newFiles} new, ${result.changed} changed, ${result.indexed} indexed`);
+        log.info('Directory scan complete', { newFiles: result.newFiles, changed: result.changed, indexed: result.indexed });
         return result;
     }
 
@@ -1937,7 +1938,7 @@ export class ScimaxDb {
                 await this.indexFile(filePath, { queueEmbeddings: true });
                 result.filesIndexed++;
             } catch (error) {
-                console.error(`ScimaxDb: Error indexing ${filePath}:`, error);
+                log.error('Error indexing file', error as Error, { path: filePath });
                 result.errors++;
             }
 
@@ -2123,7 +2124,7 @@ export class ScimaxDb {
                     await this.removeFileData(filePath);
                 }
             } catch (error) {
-                console.error(`ScimaxDb: Error reindexing ${filePath}:`, error);
+                log.error('Error reindexing file', error as Error, { path: filePath });
             }
 
             options?.onProgress?.(i + 1, filePaths.length);
@@ -2175,7 +2176,7 @@ export class ScimaxDb {
             // Return the inserted/updated project
             return await this.getProjectByPath(normalizedPath);
         } catch (error) {
-            console.error(`ScimaxDb: Failed to add project ${projectPath}:`, error);
+            log.error('Failed to add project', error as Error, { path: projectPath });
             return null;
         }
     }
