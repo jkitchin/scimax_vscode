@@ -4,7 +4,7 @@ import { JournalCalendarProvider } from './journal/calendarView';
 import { JournalStatusBar } from './journal/statusBar';
 import { registerJournalCommands } from './journal/commands';
 // Database uses lazy loading to avoid blocking extension activation
-import { setExtensionContext, closeDatabase } from './database/lazyDb';
+import { setExtensionContext, closeDatabase, getDatabase } from './database/lazyDb';
 import { registerDbCommands } from './database/commands';
 import { registerDatabaseView } from './database/databaseViewProvider';
 import { registerContextHelp } from './help/contextHelp';
@@ -747,6 +747,11 @@ export async function activate(context: vscode.ExtensionContext) {
     // Defer projectile initialization to avoid blocking
     setImmediate(async () => {
         try {
+            // Connect ProjectileManager to database for persistence
+            const db = await getDatabase();
+            if (db) {
+                projectileManager.setDatabase(db);
+            }
             await projectileManager.initialize();
         } catch (error) {
             console.error('Scimax: Failed to initialize Projectile manager:', error);

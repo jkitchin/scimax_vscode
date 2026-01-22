@@ -1082,6 +1082,115 @@ Scimax: Configure Embedding Service (`scimax.db.configureEmbeddings')
 | scimax.db.stats               | Show database statistics    |
 | scimax.db.setScope            | Set search scope            |
 | scimax.db.configureEmbeddings | Configure embedding service |
+| scimax.db.backup              | Backup database to file     |
+| scimax.db.restore             | Restore database from file  |
+| scimax.db.rebuild             | Rebuild database completely |
+| scimax.db.verify              | Verify database integrity   |
+
+* ⚠️ Database Maintenance
+
+** ⚠️ Backup and Restore
+
+The database can be backed up and restored to prevent data loss and enable migration between machines.
+
+*** ⚠️ Backup
+
+Command: =Scimax: Backup Database= (=scimax.db.backup=)
+
+Creates a portable backup file containing:
+- All indexed file paths (not file contents)
+- Project information
+- Database metadata
+
+Backup is stored in JSON format for portability.
+
+#+BEGIN_SRC org
+# Example backup location
+~/.scimax/backup-2026-01-22.json
+#+END_SRC
+
+*** ⚠️ Restore
+
+Command: =Scimax: Restore Database= (=scimax.db.restore=)
+
+Restores database from a backup file:
+- Imports project list
+- Queues files for reindexing
+- Preserves original creation timestamps
+
+Note: Actual file content must still be reindexed after restore.
+
+** ⚠️ Database Rebuild
+
+Command: =Scimax: Rebuild Database= (=scimax.db.rebuild=)
+
+Completely rebuilds the database from scratch:
+- Drops and recreates all tables
+- Re-scans all configured directories
+- Regenerates all indexes
+- Regenerates embeddings (if configured)
+
+Use when:
+- Database appears corrupted
+- Major schema changes after update
+- Switching embedding providers
+- Performance issues after many incremental updates
+
+*** Options
+
+| Option        | Description                          |
+|---------------+--------------------------------------|
+| Full rebuild  | Complete reindex of all files        |
+| Projects only | Only rebuild project table           |
+
+** ⚠️ Database Verification
+
+Command: =Scimax: Verify Database= (=scimax.db.verify=)
+
+Checks database integrity and freshness:
+
+*** Checks Performed
+
+1. *File existence* - Verifies indexed files still exist on disk
+2. *Modification time* - Detects files modified since indexing
+3. *Index integrity* - Validates FTS5 and vector indexes
+4. *Project validity* - Checks project directories exist
+
+*** Result Format
+
+#+BEGIN_SRC org
+Database Verification Results:
+- Total files: 127
+- Missing files: 2
+- Stale files: 5
+- Projects: 8 (7 valid, 1 missing)
+- Status: NEEDS_REINDEX
+#+END_SRC
+
+*** Status Values
+
+| Status       | Meaning                          |
+|--------------+----------------------------------|
+| OK           | Database is current and valid    |
+| NEEDS_REINDEX| Some files are stale or missing |
+| CORRUPTED    | Index integrity check failed     |
+
+** ⚠️ Project Integration
+
+The database now stores project information, integrated with the Projectile project manager:
+
+*** Benefits
+
+- Projects persist across VS Code restarts
+- Shared project list between Projectile and Database
+- Fast project switching using indexed data
+- Projects can be associated with indexed files
+
+*** Project Commands
+
+Projects are managed through Projectile commands (=C-c p=), but the database provides the persistence layer.
+
+See [[file:17-projectile.org][Projectile]] for project management commands.
 
 * Troubleshooting
 

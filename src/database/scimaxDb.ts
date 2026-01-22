@@ -110,6 +110,18 @@ export interface DbStats {
 }
 
 /**
+ * Project record from database
+ */
+export interface ProjectRecord {
+    id: number;
+    path: string;
+    name: string;
+    type: 'git' | 'projectile' | 'manual';
+    last_opened: number | null;
+    created_at: number;
+}
+
+/**
  * ScimaxDb - SQLite database with FTS5 and Vector Search
  * Indexes org, markdown, and Jupyter notebook files
  */
@@ -173,7 +185,17 @@ export class ScimaxDb {
         if (!this.db) return;
 
         await this.db.batch([
-            // Files table - now with file_type
+            // Projects table - stores known projects
+            `CREATE TABLE IF NOT EXISTS projects (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                path TEXT UNIQUE NOT NULL,
+                name TEXT NOT NULL,
+                type TEXT NOT NULL DEFAULT 'manual',
+                last_opened INTEGER,
+                created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
+            )`,
+
+            // Files table - now with file_type and project_id
             `CREATE TABLE IF NOT EXISTS files (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 path TEXT UNIQUE NOT NULL,
@@ -182,7 +204,9 @@ export class ScimaxDb {
                 hash TEXT NOT NULL,
                 size INTEGER NOT NULL,
                 indexed_at INTEGER NOT NULL,
-                keywords TEXT DEFAULT '{}'
+                keywords TEXT DEFAULT '{}',
+                project_id INTEGER,
+                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
             )`,
 
             // Headings table - now with cell_index for notebooks
@@ -269,11 +293,83 @@ export class ScimaxDb {
             `CREATE INDEX IF NOT EXISTS idx_links_file ON links(file_id)`,
             `CREATE INDEX IF NOT EXISTS idx_hashtags_tag ON hashtags(tag)`,
             `CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)`,
-            `CREATE INDEX IF NOT EXISTS idx_files_type ON files(file_type)`
+            `CREATE INDEX IF NOT EXISTS idx_files_type ON files(file_type)`,
+            `CREATE INDEX IF NOT EXISTS idx_files_project ON files(project_id)`,
+            `CREATE INDEX IF NOT EXISTS idx_projects_path ON projects(path)`
         ]);
+
+        // Run migrations for existing databases
+        await this.runMigrations();
 
         // Test and create vector index if libsql supports it
         await this.testVectorSupport();
+    }
+
+    /**
+     * Run database migrations for schema updates
+     */
+    private async runMigrations(): Promise<void> {
+        if (!this.db) return;
+
+        // Check if projects table exists (migration from older versions)
+        try {
+            await this.db.execute('SELECT 1 FROM projects LIMIT 1');
+        } catch {
+            // Projects table doesn't exist in older schema, already created above
+            console.log('ScimaxDb: Projects table created');
+        }
+
+        // Check if project_id column exists in files table
+        try {
+            await this.db.execute('SELECT project_id FROM files LIMIT 1');
+        } catch {
+            // Add project_id column to existing files table
+            try {
+                await this.db.execute('ALTER TABLE files ADD COLUMN project_id INTEGER');
+                console.log('ScimaxDb: Added project_id column to files table');
+            } catch (e) {
+                // Column might already exist or table might be new
+                console.log('ScimaxDb: project_id column already exists or table is new');
+            }
+        }
+
+        // Migrate projects from globalState to database (one-time migration)
+        await this.migrateProjectsFromGlobalState();
+    }
+
+    /**
+     * Migrate projects from VS Code globalState to the database
+     */
+    private async migrateProjectsFromGlobalState(): Promise<void> {
+        if (!this.db) return;
+
+        // Check if we've already migrated
+        const migrated = this.context.globalState.get<boolean>('scimax.projects.migratedToDb', false);
+        if (migrated) return;
+
+        // Get projects from globalState
+        const projects = this.context.globalState.get<any[]>('scimax.projects', []);
+        if (projects.length === 0) {
+            await this.context.globalState.update('scimax.projects.migratedToDb', true);
+            return;
+        }
+
+        console.log(`ScimaxDb: Migrating ${projects.length} projects from globalState to database`);
+
+        for (const project of projects) {
+            try {
+                await this.db.execute({
+                    sql: `INSERT OR IGNORE INTO projects (path, name, type, last_opened) VALUES (?, ?, ?, ?)`,
+                    args: [project.path, project.name, project.type || 'manual', project.lastOpened || Date.now()]
+                });
+            } catch (e) {
+                console.error(`ScimaxDb: Error migrating project ${project.path}:`, e);
+            }
+        }
+
+        // Mark migration as complete (but keep globalState for backward compatibility during transition)
+        await this.context.globalState.update('scimax.projects.migratedToDb', true);
+        console.log('ScimaxDb: Project migration complete');
     }
 
     /**
@@ -1763,6 +1859,635 @@ export class ScimaxDb {
 
         console.log(`ScimaxDb: Directory scan complete - ${result.newFiles} new, ${result.changed} changed, ${result.indexed} indexed`);
         return result;
+    }
+
+    // =========================================================================
+    // Backup / Restore / Rebuild / Verify
+    // =========================================================================
+
+    /**
+     * Backup format version
+     */
+    private static readonly BACKUP_VERSION = 1;
+
+    /**
+     * Export database metadata to JSON backup file.
+     * Note: File content is NOT backed up - it can be re-indexed from source files.
+     * What IS backed up: projects list, config that would be lost on rebuild.
+     */
+    public async exportBackup(outputPath: string): Promise<{ projects: number; files: number }> {
+        if (!this.db) throw new Error('Database not initialized');
+
+        // Get projects from globalState (we'll migrate this later)
+        const projects = this.context.globalState.get<any[]>('scimax.projects', []);
+
+        // Get agenda config (exclude list, include list)
+        const agendaConfig = vscode.workspace.getConfiguration('scimax.agenda');
+        const agendaExclude = agendaConfig.get<string[]>('exclude', []);
+        const agendaInclude = agendaConfig.get<string[]>('include', []);
+
+        // Get list of indexed files (for reference, not for restore)
+        const filesResult = await this.db.execute('SELECT path, file_type, mtime FROM files ORDER BY path');
+        const indexedFiles = filesResult.rows.map(r => ({
+            path: r.path as string,
+            file_type: r.file_type as string,
+            mtime: r.mtime as number
+        }));
+
+        const backup = {
+            version: ScimaxDb.BACKUP_VERSION,
+            exportedAt: Date.now(),
+            exportedAtHuman: new Date().toISOString(),
+            projects,
+            agendaConfig: {
+                exclude: agendaExclude,
+                include: agendaInclude
+            },
+            // Include indexed files list for reference (helps user know what will be re-indexed)
+            indexedFilesCount: indexedFiles.length,
+            indexedFiles
+        };
+
+        await fs.promises.writeFile(outputPath, JSON.stringify(backup, null, 2), 'utf-8');
+
+        return { projects: projects.length, files: indexedFiles.length };
+    }
+
+    /**
+     * Import database metadata from JSON backup file.
+     * Restores projects list and triggers re-indexing.
+     */
+    public async importBackup(inputPath: string): Promise<{ projects: number; filesToIndex: number }> {
+        const content = await fs.promises.readFile(inputPath, 'utf-8');
+        const backup = JSON.parse(content);
+
+        if (!backup.version || backup.version > ScimaxDb.BACKUP_VERSION) {
+            throw new Error(`Unsupported backup version: ${backup.version}`);
+        }
+
+        // Restore projects to globalState
+        if (backup.projects && Array.isArray(backup.projects)) {
+            await this.context.globalState.update('scimax.projects', backup.projects);
+        }
+
+        // Restore agenda config
+        if (backup.agendaConfig) {
+            const agendaConfig = vscode.workspace.getConfiguration('scimax.agenda');
+            if (backup.agendaConfig.exclude) {
+                await agendaConfig.update('exclude', backup.agendaConfig.exclude, vscode.ConfigurationTarget.Global);
+            }
+            if (backup.agendaConfig.include) {
+                await agendaConfig.update('include', backup.agendaConfig.include, vscode.ConfigurationTarget.Global);
+            }
+        }
+
+        // Count files that need re-indexing (files in backup that exist on disk)
+        let filesToIndex = 0;
+        if (backup.indexedFiles && Array.isArray(backup.indexedFiles)) {
+            for (const file of backup.indexedFiles) {
+                if (fs.existsSync(file.path)) {
+                    filesToIndex++;
+                }
+            }
+        }
+
+        return { projects: backup.projects?.length || 0, filesToIndex };
+    }
+
+    /**
+     * Rebuild database from scratch.
+     * Clears all indexed data and re-indexes from projects and configured directories.
+     */
+    public async rebuild(options: {
+        onProgress?: (status: { phase: string; current: number; total: number }) => void;
+        cancellationToken?: { cancelled: boolean };
+    } = {}): Promise<{ filesIndexed: number; errors: number }> {
+        const { onProgress, cancellationToken } = options;
+
+        if (!this.db) throw new Error('Database not initialized');
+
+        const result = { filesIndexed: 0, errors: 0 };
+
+        // Phase 1: Clear all data
+        onProgress?.({ phase: 'Clearing database', current: 0, total: 1 });
+        await this.clear();
+
+        if (cancellationToken?.cancelled) return result;
+
+        // Phase 2: Collect directories to index
+        onProgress?.({ phase: 'Collecting directories', current: 0, total: 1 });
+        const directories: string[] = [];
+
+        // Get projects from globalState
+        const projects = this.context.globalState.get<any[]>('scimax.projects', []);
+        for (const project of projects) {
+            if (project.path && fs.existsSync(project.path)) {
+                directories.push(project.path);
+            }
+        }
+
+        // Get workspace folders
+        const workspaceFolders = vscode.workspace.workspaceFolders || [];
+        for (const folder of workspaceFolders) {
+            if (!directories.includes(folder.uri.fsPath)) {
+                directories.push(folder.uri.fsPath);
+            }
+        }
+
+        // Get journal directory
+        const journalDir = this.resolveScimaxPath('scimax.journal.directory', 'journal');
+        if (journalDir && fs.existsSync(journalDir) && !directories.includes(journalDir)) {
+            directories.push(journalDir);
+        }
+
+        // Get agenda include directories
+        const agendaConfig = vscode.workspace.getConfiguration('scimax.agenda');
+        const agendaInclude = agendaConfig.get<string[]>('include', []);
+        for (const dir of agendaInclude) {
+            const expanded = dir.startsWith('~') ? dir.replace(/^~/, process.env.HOME || '') : dir;
+            if (fs.existsSync(expanded) && !directories.includes(expanded)) {
+                directories.push(expanded);
+            }
+        }
+
+        if (cancellationToken?.cancelled) return result;
+
+        // Phase 3: Index all directories
+        const allFiles: string[] = [];
+        for (const dir of directories) {
+            const files = await this.findFiles(dir);
+            allFiles.push(...files);
+        }
+
+        // Deduplicate
+        const uniqueFiles = [...new Set(allFiles)];
+
+        onProgress?.({ phase: 'Indexing files', current: 0, total: uniqueFiles.length });
+
+        for (let i = 0; i < uniqueFiles.length; i++) {
+            if (cancellationToken?.cancelled) break;
+
+            const filePath = uniqueFiles[i];
+            try {
+                await this.indexFile(filePath, { queueEmbeddings: true });
+                result.filesIndexed++;
+            } catch (error) {
+                console.error(`ScimaxDb: Error indexing ${filePath}:`, error);
+                result.errors++;
+            }
+
+            // Report progress every 10 files
+            if (i % 10 === 0) {
+                onProgress?.({ phase: 'Indexing files', current: i + 1, total: uniqueFiles.length });
+                // Yield to prevent blocking
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+        }
+
+        onProgress?.({ phase: 'Complete', current: uniqueFiles.length, total: uniqueFiles.length });
+
+        return result;
+    }
+
+    /**
+     * Helper to resolve scimax paths (duplicated from pathResolver to avoid circular deps)
+     */
+    private resolveScimaxPath(configKey: string, defaultSubdir: string): string | null {
+        const config = vscode.workspace.getConfiguration();
+        const configuredPath = config.get<string>(configKey);
+
+        if (configuredPath) {
+            if (configuredPath.startsWith('~')) {
+                return configuredPath.replace(/^~/, process.env.HOME || '');
+            }
+            return configuredPath;
+        }
+
+        // Default to ~/scimax/{defaultSubdir}
+        const home = process.env.HOME;
+        if (home) {
+            return path.join(home, 'scimax', defaultSubdir);
+        }
+
+        return null;
+    }
+
+    /**
+     * Verify database integrity and return a report.
+     */
+    public async verify(): Promise<{
+        ok: boolean;
+        issues: string[];
+        stats: {
+            files: number;
+            missingFiles: number;
+            staleFiles: number;
+            orphanedHeadings: number;
+            orphanedBlocks: number;
+        };
+    }> {
+        if (!this.db) throw new Error('Database not initialized');
+
+        const issues: string[] = [];
+        const stats = {
+            files: 0,
+            missingFiles: 0,
+            staleFiles: 0,
+            orphanedHeadings: 0,
+            orphanedBlocks: 0
+        };
+
+        // Check files table
+        const filesResult = await this.db.execute('SELECT * FROM files');
+        stats.files = filesResult.rows.length;
+
+        for (const row of filesResult.rows) {
+            const filePath = row.path as string;
+            const mtime = row.mtime as number;
+
+            if (!fs.existsSync(filePath)) {
+                stats.missingFiles++;
+                issues.push(`Missing file: ${filePath}`);
+            } else {
+                try {
+                    const stat = fs.statSync(filePath);
+                    if (stat.mtimeMs > mtime) {
+                        stats.staleFiles++;
+                        issues.push(`Stale file (needs reindex): ${filePath}`);
+                    }
+                } catch (e) {
+                    issues.push(`Cannot stat file: ${filePath}`);
+                }
+            }
+        }
+
+        // Check for orphaned headings (headings without valid file_id)
+        const orphanedHeadingsResult = await this.db.execute(`
+            SELECT COUNT(*) as count FROM headings h
+            LEFT JOIN files f ON h.file_id = f.id
+            WHERE f.id IS NULL
+        `);
+        stats.orphanedHeadings = orphanedHeadingsResult.rows[0].count as number;
+        if (stats.orphanedHeadings > 0) {
+            issues.push(`${stats.orphanedHeadings} orphaned heading records`);
+        }
+
+        // Check for orphaned source blocks
+        const orphanedBlocksResult = await this.db.execute(`
+            SELECT COUNT(*) as count FROM source_blocks sb
+            LEFT JOIN files f ON sb.file_id = f.id
+            WHERE f.id IS NULL
+        `);
+        stats.orphanedBlocks = orphanedBlocksResult.rows[0].count as number;
+        if (stats.orphanedBlocks > 0) {
+            issues.push(`${stats.orphanedBlocks} orphaned source block records`);
+        }
+
+        return {
+            ok: issues.length === 0,
+            issues,
+            stats
+        };
+    }
+
+    /**
+     * Validate freshness of specified files and return list of stale paths.
+     * This is a fast operation - only checks mtimes, doesn't parse files.
+     */
+    public async validateFreshness(filePaths: string[]): Promise<string[]> {
+        if (!this.db || filePaths.length === 0) return [];
+
+        const stale: string[] = [];
+
+        // Get mtimes from database in one query
+        const placeholders = filePaths.map(() => '?').join(',');
+        const result = await this.db.execute({
+            sql: `SELECT path, mtime FROM files WHERE path IN (${placeholders})`,
+            args: filePaths
+        });
+
+        const dbMtimes = new Map<string, number>();
+        for (const row of result.rows) {
+            dbMtimes.set(row.path as string, row.mtime as number);
+        }
+
+        // Check each file
+        for (const filePath of filePaths) {
+            try {
+                if (!fs.existsSync(filePath)) {
+                    // File deleted
+                    stale.push(filePath);
+                    continue;
+                }
+
+                const stat = fs.statSync(filePath);
+                const dbMtime = dbMtimes.get(filePath);
+
+                if (dbMtime === undefined) {
+                    // File not in database
+                    stale.push(filePath);
+                } else if (stat.mtimeMs > dbMtime) {
+                    // File modified since last index
+                    stale.push(filePath);
+                }
+            } catch (error) {
+                // Error checking file - consider it stale
+                stale.push(filePath);
+            }
+        }
+
+        return stale;
+    }
+
+    /**
+     * Re-index a list of files (used after validateFreshness)
+     */
+    public async reindexFiles(filePaths: string[], options?: {
+        onProgress?: (current: number, total: number) => void;
+    }): Promise<number> {
+        let indexed = 0;
+
+        for (let i = 0; i < filePaths.length; i++) {
+            const filePath = filePaths[i];
+            try {
+                if (fs.existsSync(filePath)) {
+                    await this.indexFile(filePath, { queueEmbeddings: true });
+                    indexed++;
+                } else {
+                    // File was deleted - remove from database
+                    await this.removeFileData(filePath);
+                }
+            } catch (error) {
+                console.error(`ScimaxDb: Error reindexing ${filePath}:`, error);
+            }
+
+            options?.onProgress?.(i + 1, filePaths.length);
+        }
+
+        return indexed;
+    }
+
+    // =========================================================================
+    // Project Management
+    // =========================================================================
+
+    /**
+     * Add a project to the database
+     */
+    public async addProject(
+        projectPath: string,
+        name?: string,
+        type: 'git' | 'projectile' | 'manual' = 'manual'
+    ): Promise<ProjectRecord | null> {
+        if (!this.db) return null;
+
+        // Normalize path
+        const normalizedPath = path.resolve(projectPath);
+
+        // Auto-detect name if not provided
+        const projectName = name || path.basename(normalizedPath);
+
+        // Auto-detect type if not specified
+        let projectType = type;
+        if (type === 'manual') {
+            if (fs.existsSync(path.join(normalizedPath, '.git'))) {
+                projectType = 'git';
+            } else if (fs.existsSync(path.join(normalizedPath, '.projectile'))) {
+                projectType = 'projectile';
+            }
+        }
+
+        try {
+            const result = await this.db.execute({
+                sql: `INSERT OR REPLACE INTO projects (path, name, type, last_opened, created_at)
+                      VALUES (?, ?, ?, ?, COALESCE(
+                          (SELECT created_at FROM projects WHERE path = ?),
+                          strftime('%s', 'now') * 1000
+                      ))`,
+                args: [normalizedPath, projectName, projectType, Date.now(), normalizedPath]
+            });
+
+            // Return the inserted/updated project
+            return await this.getProjectByPath(normalizedPath);
+        } catch (error) {
+            console.error(`ScimaxDb: Failed to add project ${projectPath}:`, error);
+            return null;
+        }
+    }
+
+    /**
+     * Get all projects, sorted by last opened
+     */
+    public async getProjects(): Promise<ProjectRecord[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute(
+            'SELECT * FROM projects ORDER BY last_opened DESC NULLS LAST, created_at DESC'
+        );
+
+        return result.rows as unknown as ProjectRecord[];
+    }
+
+    /**
+     * Get a project by path
+     */
+    public async getProjectByPath(projectPath: string): Promise<ProjectRecord | null> {
+        if (!this.db) return null;
+
+        const normalizedPath = path.resolve(projectPath);
+        const result = await this.db.execute({
+            sql: 'SELECT * FROM projects WHERE path = ?',
+            args: [normalizedPath]
+        });
+
+        return result.rows[0] as unknown as ProjectRecord | null;
+    }
+
+    /**
+     * Remove a project from the database
+     */
+    public async removeProject(projectPath: string): Promise<void> {
+        if (!this.db) return;
+
+        const normalizedPath = path.resolve(projectPath);
+
+        // Also clear project_id from any files in this project
+        await this.db.batch([
+            {
+                sql: 'UPDATE files SET project_id = NULL WHERE project_id = (SELECT id FROM projects WHERE path = ?)',
+                args: [normalizedPath]
+            },
+            {
+                sql: 'DELETE FROM projects WHERE path = ?',
+                args: [normalizedPath]
+            }
+        ]);
+    }
+
+    /**
+     * Update project's last_opened timestamp
+     */
+    public async touchProject(projectPath: string): Promise<void> {
+        if (!this.db) return;
+
+        const normalizedPath = path.resolve(projectPath);
+        await this.db.execute({
+            sql: 'UPDATE projects SET last_opened = ? WHERE path = ?',
+            args: [Date.now(), normalizedPath]
+        });
+    }
+
+    /**
+     * Find which project a file belongs to (by path containment)
+     */
+    public async getProjectForFile(filePath: string): Promise<ProjectRecord | null> {
+        if (!this.db) return null;
+
+        const normalizedFilePath = path.resolve(filePath);
+        const projects = await this.getProjects();
+
+        // Find the project with the longest matching path prefix
+        let bestMatch: ProjectRecord | null = null;
+        let bestMatchLength = 0;
+
+        for (const project of projects) {
+            if (normalizedFilePath.startsWith(project.path + path.sep)) {
+                if (project.path.length > bestMatchLength) {
+                    bestMatch = project;
+                    bestMatchLength = project.path.length;
+                }
+            }
+        }
+
+        return bestMatch;
+    }
+
+    /**
+     * Scan a directory for projects (git repos, .projectile markers)
+     */
+    public async scanForProjects(
+        directory: string,
+        maxDepth: number = 2
+    ): Promise<number> {
+        if (!this.db) return 0;
+
+        let found = 0;
+        const scannedDirs = new Set<string>();
+
+        const scan = async (dir: string, depth: number): Promise<void> => {
+            if (depth > maxDepth || scannedDirs.has(dir)) return;
+            scannedDirs.add(dir);
+
+            try {
+                const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+                // Check if this directory is a project
+                const hasGit = entries.some(e => e.isDirectory() && e.name === '.git');
+                const hasProjectile = entries.some(e => e.isFile() && e.name === '.projectile');
+
+                if (hasGit || hasProjectile) {
+                    const type = hasGit ? 'git' : 'projectile';
+                    const project = await this.addProject(dir, undefined, type);
+                    if (project) {
+                        found++;
+                        // Don't scan subdirectories of a project
+                        return;
+                    }
+                }
+
+                // Scan subdirectories
+                for (const entry of entries) {
+                    if (!entry.isDirectory()) continue;
+                    if (entry.name.startsWith('.')) continue;
+                    if (['node_modules', 'dist', 'build', 'out', '__pycache__'].includes(entry.name)) continue;
+
+                    await scan(path.join(dir, entry.name), depth + 1);
+                }
+            } catch (error) {
+                // Ignore permission errors
+            }
+        };
+
+        await scan(directory, 0);
+        return found;
+    }
+
+    /**
+     * Cleanup projects that no longer exist on disk
+     */
+    public async cleanupProjects(): Promise<number> {
+        if (!this.db) return 0;
+
+        const projects = await this.getProjects();
+        let removed = 0;
+
+        for (const project of projects) {
+            if (!fs.existsSync(project.path)) {
+                await this.removeProject(project.path);
+                removed++;
+            }
+        }
+
+        return removed;
+    }
+
+    /**
+     * Associate a file with a project
+     */
+    public async setFileProject(filePath: string, projectId: number | null): Promise<void> {
+        if (!this.db) return;
+
+        await this.db.execute({
+            sql: 'UPDATE files SET project_id = ? WHERE path = ?',
+            args: [projectId, filePath]
+        });
+    }
+
+    /**
+     * Associate files with their containing projects automatically
+     */
+    public async autoAssociateFilesWithProjects(): Promise<number> {
+        if (!this.db) return 0;
+
+        const files = await this.getFiles();
+        const projects = await this.getProjects();
+        let updated = 0;
+
+        for (const file of files) {
+            // Find the project for this file
+            let bestMatch: ProjectRecord | null = null;
+            let bestMatchLength = 0;
+
+            for (const project of projects) {
+                if (file.path.startsWith(project.path + path.sep)) {
+                    if (project.path.length > bestMatchLength) {
+                        bestMatch = project;
+                        bestMatchLength = project.path.length;
+                    }
+                }
+            }
+
+            if (bestMatch) {
+                await this.setFileProject(file.path, bestMatch.id);
+                updated++;
+            }
+        }
+
+        return updated;
+    }
+
+    /**
+     * Get files in a specific project
+     */
+    public async getFilesInProject(projectId: number): Promise<FileRecord[]> {
+        if (!this.db) return [];
+
+        const result = await this.db.execute({
+            sql: 'SELECT * FROM files WHERE project_id = ? ORDER BY path',
+            args: [projectId]
+        });
+
+        return result.rows as unknown as FileRecord[];
     }
 
     /**

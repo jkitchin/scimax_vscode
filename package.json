@@ -964,6 +964,22 @@
         "title": "Scimax: Show Database Stats"
       },
       {
+        "command": "scimax.db.backup",
+        "title": "Scimax: Backup Database"
+      },
+      {
+        "command": "scimax.db.restore",
+        "title": "Scimax: Restore Database from Backup"
+      },
+      {
+        "command": "scimax.db.rebuild",
+        "title": "Scimax: Rebuild Database"
+      },
+      {
+        "command": "scimax.db.verify",
+        "title": "Scimax: Verify Database Integrity"
+      },
+      {
         "command": "scimax.db.cancelSync",
         "title": "Scimax: Cancel Background Sync"
       },
@@ -3985,229 +4001,305 @@
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "n" },
+        "args": {
+          "key": "n"
+        },
         "key": "n",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "p" },
+        "args": {
+          "key": "p"
+        },
         "key": "p",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "f" },
+        "args": {
+          "key": "f"
+        },
         "key": "f",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "b" },
+        "args": {
+          "key": "b"
+        },
         "key": "b",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "u" },
+        "args": {
+          "key": "u"
+        },
         "key": "u",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "j" },
+        "args": {
+          "key": "j"
+        },
         "key": "j",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "J" },
+        "args": {
+          "key": "J"
+        },
         "key": "shift+j",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "g" },
+        "args": {
+          "key": "g"
+        },
         "key": "g",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "G" },
+        "args": {
+          "key": "G"
+        },
         "key": "shift+g",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "<" },
+        "args": {
+          "key": "<"
+        },
         "key": "shift+,",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": ">" },
+        "args": {
+          "key": ">"
+        },
         "key": "shift+.",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "L" },
+        "args": {
+          "key": "L"
+        },
         "key": "shift+l",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "R" },
+        "args": {
+          "key": "R"
+        },
         "key": "shift+r",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "U" },
+        "args": {
+          "key": "U"
+        },
         "key": "shift+u",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "D" },
+        "args": {
+          "key": "D"
+        },
         "key": "shift+d",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "m" },
+        "args": {
+          "key": "m"
+        },
         "key": "m",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "k" },
+        "args": {
+          "key": "k"
+        },
         "key": "k",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "c" },
+        "args": {
+          "key": "c"
+        },
         "key": "c",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "i" },
+        "args": {
+          "key": "i"
+        },
         "key": "i",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "I" },
+        "args": {
+          "key": "I"
+        },
         "key": "shift+i",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "N" },
+        "args": {
+          "key": "N"
+        },
         "key": "shift+n",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "W" },
+        "args": {
+          "key": "W"
+        },
         "key": "shift+w",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "Tab" },
+        "args": {
+          "key": "Tab"
+        },
         "key": "tab",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.speedCommand",
-        "args": { "key": "?" },
+        "args": {
+          "key": "?"
+        },
         "key": "shift+/",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "n" },
+        "args": {
+          "key": "n"
+        },
         "key": "n",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "p" },
+        "args": {
+          "key": "p"
+        },
         "key": "p",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "j" },
+        "args": {
+          "key": "j"
+        },
         "key": "j",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "J" },
+        "args": {
+          "key": "J"
+        },
         "key": "shift+j",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "s" },
+        "args": {
+          "key": "s"
+        },
         "key": "s",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "c" },
+        "args": {
+          "key": "c"
+        },
         "key": "c",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "k" },
+        "args": {
+          "key": "k"
+        },
         "key": "k",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "w" },
+        "args": {
+          "key": "w"
+        },
         "key": "w",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "u" },
+        "args": {
+          "key": "u"
+        },
         "key": "u",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "*" },
+        "args": {
+          "key": "*"
+        },
         "key": "shift+8",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "l" },
+        "args": {
+          "key": "l"
+        },
         "key": "l",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "C" },
+        "args": {
+          "key": "C"
+        },
         "key": "shift+c",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "i" },
+        "args": {
+          "key": "i"
+        },
         "key": "i",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.latex.envSpeedCommand",
-        "args": { "key": "?" },
+        "args": {
+          "key": "?"
+        },
         "key": "shift+/",
         "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexEnvironmentStart && scimax.speedCommandsEnabled"
       },
@@ -5288,7 +5380,12 @@
         },
         "scimax.manuscript.autoCompile": {
           "type": "string",
-          "enum": ["always", "if-needed", "never", "ask"],
+          "enum": [
+            "always",
+            "if-needed",
+            "never",
+            "ask"
+          ],
           "default": "ask",
           "description": "When to run LaTeX compilation before flattening manuscript"
         },
@@ -5467,7 +5564,7 @@
   },
   "devDependencies": {
     "@electron/rebuild": "^4.0.2",
-    "@types/node": "^20.10.0",
+    "@types/node": "^20.19.30",
     "@types/uuid": "^10.0.0",
     "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^6.13.0",

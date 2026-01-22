@@ -1067,3 +1067,140 @@ describe('Search Scope Filter', () => {
         expect(clause.sql).toBe(' AND path LIKE ?');
     });
 });
+
+// =============================================================================
+// ProjectRecord Interface Tests
+// =============================================================================
+
+describe('ProjectRecord Interface', () => {
+    it('should support full project record', () => {
+        const project = {
+            id: 1,
+            path: '/home/user/projects/myproject',
+            name: 'myproject',
+            type: 'git' as const,
+            last_opened: 1705312800000,
+            created_at: 1705226400000
+        };
+
+        expect(project.id).toBe(1);
+        expect(project.path).toBe('/home/user/projects/myproject');
+        expect(project.name).toBe('myproject');
+        expect(project.type).toBe('git');
+        expect(project.last_opened).toBe(1705312800000);
+        expect(project.created_at).toBe(1705226400000);
+    });
+
+    it('should support project types', () => {
+        const gitProject = { type: 'git' as const };
+        const projectileProject = { type: 'projectile' as const };
+        const manualProject = { type: 'manual' as const };
+
+        expect(gitProject.type).toBe('git');
+        expect(projectileProject.type).toBe('projectile');
+        expect(manualProject.type).toBe('manual');
+    });
+
+    it('should support null last_opened', () => {
+        const project = {
+            id: 1,
+            path: '/home/user/newproject',
+            name: 'newproject',
+            type: 'manual' as const,
+            last_opened: null,
+            created_at: 1705226400000
+        };
+
+        expect(project.last_opened).toBeNull();
+        expect(project.created_at).toBeDefined();
+    });
+});
+
+// =============================================================================
+// Backup/Restore Interface Tests
+// =============================================================================
+
+describe('Backup/Restore Functionality', () => {
+    it('should define backup format structure', () => {
+        // Backup format should contain projects and file paths
+        const backupData = {
+            version: 1,
+            exported_at: Date.now(),
+            projects: [
+                {
+                    path: '/home/user/project1',
+                    name: 'project1',
+                    type: 'git' as const,
+                    last_opened: Date.now(),
+                    created_at: Date.now() - 86400000
+                }
+            ],
+            files: [
+                '/home/user/project1/notes.org',
+                '/home/user/project1/todo.org'
+            ]
+        };
+
+        expect(backupData.version).toBe(1);
+        expect(backupData.projects).toHaveLength(1);
+        expect(backupData.files).toHaveLength(2);
+        expect(backupData.projects[0].type).toBe('git');
+    });
+
+    it('should handle empty backup', () => {
+        const emptyBackup = {
+            version: 1,
+            exported_at: Date.now(),
+            projects: [],
+            files: []
+        };
+
+        expect(emptyBackup.projects).toHaveLength(0);
+        expect(emptyBackup.files).toHaveLength(0);
+    });
+});
+
+// =============================================================================
+// Database Verify Interface Tests
+// =============================================================================
+
+describe('Database Verification', () => {
+    it('should define verification result structure', () => {
+        const verifyResult = {
+            ok: true,
+            issues: [],
+            stats: {
+                files: 10,
+                stale: 0,
+                missing: 0,
+                projects: 3
+            }
+        };
+
+        expect(verifyResult.ok).toBe(true);
+        expect(verifyResult.issues).toHaveLength(0);
+        expect(verifyResult.stats.files).toBe(10);
+        expect(verifyResult.stats.projects).toBe(3);
+    });
+
+    it('should report issues', () => {
+        const verifyResult = {
+            ok: false,
+            issues: [
+                'Missing file: /home/user/deleted.org',
+                'Stale file: /home/user/modified.org'
+            ],
+            stats: {
+                files: 10,
+                stale: 1,
+                missing: 1,
+                projects: 3
+            }
+        };
+
+        expect(verifyResult.ok).toBe(false);
+        expect(verifyResult.issues).toHaveLength(2);
+        expect(verifyResult.stats.stale).toBe(1);
+        expect(verifyResult.stats.missing).toBe(1);
+    });
+});

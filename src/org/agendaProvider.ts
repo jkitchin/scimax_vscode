@@ -1,6 +1,7 @@
 /**
  * Native Org-mode Agenda Provider
- * Provides agenda views by scanning org files directly (no database required)
+ * Provides agenda views by scanning org files directly
+ * Can optionally use ScimaxDb for project paths (if available)
  */
 
 import * as vscode from 'vscode';
@@ -27,6 +28,8 @@ import {
 } from '../parser/orgClocking';
 import { resolveScimaxPath } from '../utils/pathResolver';
 import { minimatch } from 'minimatch';
+import { getDatabase } from '../database/lazyDb';
+import type { ScimaxDb } from '../database/scimaxDb';
 
 // =============================================================================
 // Types
@@ -86,6 +89,7 @@ export class AgendaManager {
     private refreshEmitter = new vscode.EventEmitter<void>();
     readonly onDidRefresh = this.refreshEmitter.event;
     private verbose: boolean = false;
+    private db: ScimaxDb | null = null;
 
     // Debouncing for file watcher
     private refreshDebounceTimer: NodeJS.Timeout | null = null;
@@ -125,6 +129,14 @@ export class AgendaManager {
         this.disposables.push({
             dispose: () => this.persistCache()
         });
+    }
+
+    /**
+     * Set database reference for retrieving project paths
+     * If set, uses database for project list instead of globalState
+     */
+    setDatabase(db: ScimaxDb): void {
+        this.db = db;
     }
 
     private loadConfig(): AgendaConfig {
@@ -173,7 +185,34 @@ export class AgendaManager {
     }
 
     /**
-     * Get project paths from global state (shared with ProjectileManager)
+     * Get project paths from database (if available) or global state
+     */
+    private async getProjectPathsAsync(): Promise<string[]> {
+        // Try to get database lazily if not already set
+        const db = this.db || await getDatabase();
+
+        // Try database first (source of truth)
+        if (db) {
+            try {
+                const projects = await db.getProjects();
+                return projects.map(p => p.path).filter(p => fs.existsSync(p));
+            } catch (e) {
+                this.log(`Agenda: Error getting projects from database: ${e}`);
+                // Fall through to globalState
+            }
+        }
+
+        // Fallback to globalState
+        interface Project {
+            path: string;
+        }
+        const projects = this.context.globalState.get<Project[]>('scimax.projects', []);
+        return projects.map(p => p.path).filter(p => fs.existsSync(p));
+    }
+
+    /**
+     * Get project paths (sync version for compatibility)
+     * @deprecated Use getProjectPathsAsync instead
      */
     private getProjectPaths(): string[] {
         interface Project {
@@ -451,7 +490,7 @@ export class AgendaManager {
 
         // Include all scimax projects if enabled
         if (this.config.includeProjects) {
-            const projectPaths = this.getProjectPaths();
+            const projectPaths = await this.getProjectPathsAsync();
             for (const projectPath of projectPaths) {
                 if (token?.isCancellationRequested) return;
                 const expanded = await this.expandPattern(projectPath);
@@ -540,7 +579,7 @@ export class AgendaManager {
 
         // Include all scimax projects if enabled
         if (this.config.includeProjects) {
-            const projectPaths = this.getProjectPaths();
+            const projectPaths = await this.getProjectPathsAsync();
             for (const projectPath of projectPaths) {
                 const expanded = await this.expandPattern(projectPath);
                 files.push(...expanded);

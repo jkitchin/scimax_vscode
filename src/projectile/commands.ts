@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ProjectileManager, Project } from './projectileManager';
+import { walkDirectory } from '../shared';
 
 /**
  * Switch to a project (C-c p p)
@@ -231,8 +232,13 @@ async function findFileInKnownProjects(manager: ProjectileManager): Promise<void
         }
 
         try {
-            const files = await findFilesInDirectory(project.path);
-            for (const file of files) {
+            // Use shared walkDirectory utility
+            const result = await walkDirectory(project.path, {
+                maxFiles: 5000,
+                includeHidden: false
+            });
+
+            for (const file of result.files) {
                 const relativePath = path.relative(project.path, file);
                 items.push({
                     label: path.basename(file),
@@ -264,131 +270,6 @@ async function findFileInKnownProjects(manager: ProjectileManager): Promise<void
     });
 
     quickPick.onDidHide(() => quickPick.dispose());
-}
-
-/**
- * Find files in a directory, respecting .gitignore patterns
- */
-async function findFilesInDirectory(dirPath: string, maxFiles: number = 5000): Promise<string[]> {
-    const files: string[] = [];
-    const ignorePatterns = await loadIgnorePatterns(dirPath);
-
-    const walk = async (dir: string, depth: number = 0): Promise<void> => {
-        if (depth > 20 || files.length >= maxFiles) return;
-
-        try {
-            const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-            for (const entry of entries) {
-                if (files.length >= maxFiles) break;
-
-                const fullPath = path.join(dir, entry.name);
-                const relativePath = path.relative(dirPath, fullPath);
-
-                // Skip hidden files/dirs and common non-project directories
-                if (entry.name.startsWith('.') ||
-                    shouldIgnore(relativePath, ignorePatterns)) {
-                    continue;
-                }
-
-                if (entry.isDirectory()) {
-                    await walk(fullPath, depth + 1);
-                } else if (entry.isFile()) {
-                    files.push(fullPath);
-                }
-            }
-        } catch (err) {
-            // Ignore permission errors
-        }
-    };
-
-    await walk(dirPath);
-    return files;
-}
-
-/**
- * Load ignore patterns from .gitignore
- */
-async function loadIgnorePatterns(projectPath: string): Promise<string[]> {
-    const defaultIgnore = [
-        'node_modules',
-        '__pycache__',
-        '.git',
-        '.svn',
-        '.hg',
-        'dist',
-        'build',
-        'out',
-        '.vscode',
-        '.idea',
-        '*.pyc',
-        '*.pyo',
-        '*.class',
-        '*.o',
-        '*.so',
-        '*.dylib',
-        '.DS_Store',
-        'Thumbs.db',
-        'coverage',
-        '.nyc_output',
-        '.pytest_cache',
-        '.tox',
-        'venv',
-        '.venv',
-        'env',
-        '.env',
-        '*.egg-info',
-        '.eggs'
-    ];
-
-    const gitignorePath = path.join(projectPath, '.gitignore');
-    if (fs.existsSync(gitignorePath)) {
-        try {
-            const content = fs.readFileSync(gitignorePath, 'utf-8');
-            const patterns = content.split('\n')
-                .map((line: string) => line.trim())
-                .filter((line: string) => line && !line.startsWith('#'));
-            return [...defaultIgnore, ...patterns];
-        } catch {
-            // Fall through to default
-        }
-    }
-
-    return defaultIgnore;
-}
-
-/**
- * Check if a path should be ignored based on patterns
- */
-function shouldIgnore(relativePath: string, patterns: string[]): boolean {
-    const parts = relativePath.split(path.sep);
-
-    for (const pattern of patterns) {
-        // Simple pattern matching (not full glob)
-        const cleanPattern = pattern.replace(/^\//, '').replace(/\/$/, '');
-
-        // Check if any path component matches
-        if (parts.some(part => {
-            if (cleanPattern.includes('*')) {
-                // Simple wildcard matching
-                const regex = new RegExp('^' + cleanPattern.replace(/\*/g, '.*') + '$');
-                return regex.test(part);
-            }
-            return part === cleanPattern;
-        })) {
-            return true;
-        }
-
-        // Check full path match
-        if (cleanPattern.includes('*')) {
-            const regex = new RegExp('^' + cleanPattern.replace(/\*/g, '.*') + '$');
-            if (regex.test(relativePath)) {
-                return true;
-            }
-        }
-    }
-
-    return false;
 }
 
 /**
