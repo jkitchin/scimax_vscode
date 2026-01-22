@@ -18,6 +18,7 @@ import {
     NotebookDocument
 } from '../parser/ipynbParser';
 import type { EmbeddingService } from './embeddingService';
+import { MigrationRunner, getLatestVersion } from './migrations';
 
 /**
  * Database record types
@@ -180,91 +181,23 @@ export class ScimaxDb {
 
     /**
      * Create database schema with FTS5 and vector support
+     * Uses the migration system to apply schema changes
      */
     private async createSchema(): Promise<void> {
         if (!this.db) return;
 
-        await this.db.batch([
-            // Projects table - stores known projects
-            `CREATE TABLE IF NOT EXISTS projects (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                path TEXT UNIQUE NOT NULL,
-                name TEXT NOT NULL,
-                type TEXT NOT NULL DEFAULT 'manual',
-                last_opened INTEGER,
-                created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
-            )`,
+        // Run versioned migrations
+        const runner = new MigrationRunner(this.db);
+        const result = await runner.runMigrations();
 
-            // Files table - now with file_type and project_id
-            `CREATE TABLE IF NOT EXISTS files (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                path TEXT UNIQUE NOT NULL,
-                file_type TEXT NOT NULL DEFAULT 'org',
-                mtime REAL NOT NULL,
-                hash TEXT NOT NULL,
-                size INTEGER NOT NULL,
-                indexed_at INTEGER NOT NULL,
-                keywords TEXT DEFAULT '{}',
-                project_id INTEGER,
-                FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
-            )`,
+        if (result.applied > 0) {
+            console.log(`ScimaxDb: Applied ${result.applied} migration(s), now at version ${result.currentVersion}`);
+        }
 
-            // Headings table - now with cell_index for notebooks
-            `CREATE TABLE IF NOT EXISTS headings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                file_id INTEGER NOT NULL,
-                file_path TEXT NOT NULL,
-                level INTEGER NOT NULL,
-                title TEXT NOT NULL,
-                line_number INTEGER NOT NULL,
-                begin_pos INTEGER NOT NULL,
-                todo_state TEXT,
-                priority TEXT,
-                tags TEXT DEFAULT '[]',
-                inherited_tags TEXT DEFAULT '[]',
-                properties TEXT DEFAULT '{}',
-                scheduled TEXT,
-                deadline TEXT,
-                closed TEXT,
-                cell_index INTEGER,
-                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
-            )`,
-
-            // Source blocks table - now with cell_index for notebooks
-            `CREATE TABLE IF NOT EXISTS source_blocks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                file_id INTEGER NOT NULL,
-                file_path TEXT NOT NULL,
-                language TEXT NOT NULL,
-                content TEXT NOT NULL,
-                line_number INTEGER NOT NULL,
-                headers TEXT DEFAULT '{}',
-                cell_index INTEGER,
-                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
-            )`,
-
-            // Links table
-            `CREATE TABLE IF NOT EXISTS links (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                file_id INTEGER NOT NULL,
-                file_path TEXT NOT NULL,
-                link_type TEXT NOT NULL,
-                target TEXT NOT NULL,
-                description TEXT,
-                line_number INTEGER NOT NULL,
-                FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
-            )`,
-
-            // Hashtags table
-            `CREATE TABLE IF NOT EXISTS hashtags (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                tag TEXT NOT NULL,
-                file_path TEXT NOT NULL,
-                UNIQUE(tag, file_path)
-            )`,
-
-            // Text chunks for semantic search (with vector column)
-            `CREATE TABLE IF NOT EXISTS chunks (
+        // Create chunks table with dynamic embedding dimensions
+        // This is separate from migrations because dimensions are runtime-configurable
+        await this.db.execute(`
+            CREATE TABLE IF NOT EXISTS chunks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 file_id INTEGER NOT NULL,
                 file_path TEXT NOT NULL,
@@ -273,68 +206,15 @@ export class ScimaxDb {
                 line_end INTEGER NOT NULL,
                 embedding F32_BLOB(${this.embeddingDimensions}),
                 FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE CASCADE
-            )`,
+            )
+        `);
+        await this.db.execute('CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)');
 
-            // FTS5 virtual table for full-text search
-            `CREATE VIRTUAL TABLE IF NOT EXISTS fts_content USING fts5(
-                file_path,
-                title,
-                content,
-                tokenize='porter unicode61'
-            )`,
-
-            // Indexes for performance
-            `CREATE INDEX IF NOT EXISTS idx_headings_file ON headings(file_id)`,
-            `CREATE INDEX IF NOT EXISTS idx_headings_todo ON headings(todo_state)`,
-            `CREATE INDEX IF NOT EXISTS idx_headings_deadline ON headings(deadline)`,
-            `CREATE INDEX IF NOT EXISTS idx_headings_scheduled ON headings(scheduled)`,
-            `CREATE INDEX IF NOT EXISTS idx_blocks_file ON source_blocks(file_id)`,
-            `CREATE INDEX IF NOT EXISTS idx_blocks_language ON source_blocks(language)`,
-            `CREATE INDEX IF NOT EXISTS idx_links_file ON links(file_id)`,
-            `CREATE INDEX IF NOT EXISTS idx_hashtags_tag ON hashtags(tag)`,
-            `CREATE INDEX IF NOT EXISTS idx_chunks_file ON chunks(file_id)`,
-            `CREATE INDEX IF NOT EXISTS idx_files_type ON files(file_type)`,
-            `CREATE INDEX IF NOT EXISTS idx_files_project ON files(project_id)`,
-            `CREATE INDEX IF NOT EXISTS idx_projects_path ON projects(path)`
-        ]);
-
-        // Run migrations for existing databases
-        await this.runMigrations();
+        // Migrate projects from globalState (one-time migration)
+        await this.migrateProjectsFromGlobalState();
 
         // Test and create vector index if libsql supports it
         await this.testVectorSupport();
-    }
-
-    /**
-     * Run database migrations for schema updates
-     */
-    private async runMigrations(): Promise<void> {
-        if (!this.db) return;
-
-        // Check if projects table exists (migration from older versions)
-        try {
-            await this.db.execute('SELECT 1 FROM projects LIMIT 1');
-        } catch {
-            // Projects table doesn't exist in older schema, already created above
-            console.log('ScimaxDb: Projects table created');
-        }
-
-        // Check if project_id column exists in files table
-        try {
-            await this.db.execute('SELECT project_id FROM files LIMIT 1');
-        } catch {
-            // Add project_id column to existing files table
-            try {
-                await this.db.execute('ALTER TABLE files ADD COLUMN project_id INTEGER');
-                console.log('ScimaxDb: Added project_id column to files table');
-            } catch (e) {
-                // Column might already exist or table might be new
-                console.log('ScimaxDb: project_id column already exists or table is new');
-            }
-        }
-
-        // Migrate projects from globalState to database (one-time migration)
-        await this.migrateProjectsFromGlobalState();
     }
 
     /**
@@ -1607,6 +1487,31 @@ export class ScimaxDb {
                 md: mdFiles.rows[0].count as number,
                 ipynb: ipynbFiles.rows[0].count as number
             }
+        };
+    }
+
+    /**
+     * Get schema version and migration history
+     */
+    public async getSchemaInfo(): Promise<{
+        currentVersion: number;
+        latestVersion: number;
+        history: Array<{ version: number; applied_at: number; description: string }>;
+    }> {
+        if (!this.db) {
+            return { currentVersion: 0, latestVersion: getLatestVersion(), history: [] };
+        }
+
+        const runner = new MigrationRunner(this.db);
+        const [currentVersion, history] = await Promise.all([
+            runner.getCurrentVersion(),
+            runner.getMigrationHistory()
+        ]);
+
+        return {
+            currentVersion,
+            latestVersion: getLatestVersion(),
+            history
         };
     }
 
