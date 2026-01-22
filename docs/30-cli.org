@@ -321,6 +321,62 @@ Indexed: 42 file(s)
 
 Note: While the CLI can rebuild the database, VS Code provides additional features like auto-indexing on save and embedded file watching. For best results, use VS Code for day-to-day editing and the CLI for batch operations or CI/CD.
 
+*** ⚠️ Scan Directory
+
+Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts.
+
+#+begin_src bash
+# Scan a specific directory
+scimax db scan /path/to/org-files
+
+# Scan multiple directories (run sequentially)
+scimax db scan ~/work/org-files
+scimax db scan ~/personal/notes
+#+end_src
+
+Output:
+#+begin_example
+Scanning directory: /path/to/org-files
+Database path: .scimax/org.db
+
+Found 15 org file(s) to index.
+
+  Indexing: meeting-notes.org... OK
+  Indexing: project/tasks.org... OK
+  Indexing: archive/2024.org... OK
+  ...
+
+Indexed: 15 file(s)
+#+end_example
+
+**** Cron Job Examples
+
+Schedule automatic database updates:
+
+#+begin_src bash
+# Edit crontab
+crontab -e
+
+# Scan every hour
+0 * * * * cd /path/to/project && scimax db scan ~/org-files
+
+# Scan daily at 6am
+0 6 * * * cd /path/to/project && scimax db scan ~/org-files >> /var/log/scimax-scan.log 2>&1
+
+# Scan multiple directories every 30 minutes
+*/30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org
+#+end_src
+
+**** Difference from Rebuild
+
+| Command                        | Use Case                                    |
+|--------------------------------+---------------------------------------------|
+| =scimax db scan <dir>=         | Quick scan of a specific directory          |
+| =scimax db rebuild=            | Full rebuild of the project root            |
+| =scimax db rebuild --path <d>= | Rebuild with additional options (--force)   |
+
+The =scan= command is simpler and takes the directory as a direct argument, while =rebuild= offers more options via flags.
+
 * Scripting Examples
 
 ** Export All Org Files to HTML
