@@ -3026,6 +3026,9 @@ export async function openLinkAtPoint(): Promise<void> {
     // Handle different link types
     if (url.startsWith('http://') || url.startsWith('https://')) {
         vscode.env.openExternal(vscode.Uri.parse(url));
+    } else if (url.startsWith('nb:')) {
+        // Notebook link - delegate to notebook module command
+        await vscode.commands.executeCommand('scimax.notebook.openLink', url.slice(3));
     } else if (url.startsWith('file:')) {
         await openFileLink(url, document);
     } else if (url.startsWith('cite:') || url.startsWith('citep:') || url.startsWith('citet:')) {

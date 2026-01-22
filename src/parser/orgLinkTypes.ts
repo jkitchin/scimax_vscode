@@ -26,6 +26,20 @@ export interface LinkResolution {
 }
 
 /**
+ * Notebook/project information for nb: links
+ */
+export interface NotebookInfo {
+    /** Unique notebook ID */
+    id: string;
+    /** Notebook name (typically directory name or config name) */
+    name: string;
+    /** Absolute path to notebook root */
+    path: string;
+    /** Optional description */
+    description?: string;
+}
+
+/**
  * Context for link resolution
  */
 export interface LinkContext {
@@ -44,6 +58,16 @@ export interface LinkContext {
      * Returns entries matching the query (searches key, author, title, year).
      */
     searchBibliography?: (query: string) => Promise<BibliographyEntry[]>;
+    /**
+     * Callback to get all registered notebooks.
+     * Used by nb: link handler for project resolution.
+     */
+    getNotebooks?: () => NotebookInfo[];
+    /**
+     * Callback to list files in a notebook.
+     * Used by nb: link handler for completion.
+     */
+    listNotebookFiles?: (notebookPath: string, pattern?: string) => Promise<string[]>;
 }
 
 /**
@@ -642,6 +666,241 @@ export const cmdHandler: LinkTypeHandler = {
     },
 };
 
+/**
+ * Notebook link handler (scimax-notebook style)
+ * Format: nb:project-name::relative-file-path::target
+ *
+ * Examples:
+ *   nb:my-project::README.org           - Open README.org in my-project
+ *   nb:my-project::data/notes.org::10   - Jump to line 10
+ *   nb:my-project::paper.org::c453      - Jump to character offset 453
+ *   nb:my-project::doc.org::*Methods    - Jump to "Methods" heading
+ *   nb:my-project::doc.org::#intro      - Jump to custom ID "intro"
+ */
+export const notebookHandler: LinkTypeHandler = {
+    type: 'nb',
+    description: 'Notebook/project links',
+
+    resolve(path: string, context: LinkContext): LinkResolution {
+        const parsed = parseNotebookLinkPath(path);
+        if (!parsed) {
+            return {
+                displayText: `nb:${path}`,
+                tooltip: 'Invalid notebook link format',
+                exists: false,
+            };
+        }
+
+        const { projectName, filePath, target } = parsed;
+
+        // Try to resolve the project
+        const notebooks = context.getNotebooks?.() || [];
+        const matchingNotebooks = notebooks.filter(
+            nb => nb.name === projectName ||
+                  nb.name.toLowerCase() === projectName.toLowerCase() ||
+                  nb.path.endsWith(`/${projectName}`) ||
+                  nb.path.endsWith(`\\${projectName}`)
+        );
+
+        if (matchingNotebooks.length === 0) {
+            return {
+                displayText: `${projectName}::${filePath}`,
+                tooltip: `Project not found: ${projectName}`,
+                exists: false,
+                metadata: { projectName, filePath, target },
+            };
+        }
+
+        if (matchingNotebooks.length > 1) {
+            return {
+                displayText: `${projectName}::${filePath}`,
+                tooltip: `Multiple projects match: ${projectName}`,
+                exists: true,
+                metadata: { projectName, filePath, target, ambiguous: true, candidates: matchingNotebooks },
+            };
+        }
+
+        const notebook = matchingNotebooks[0];
+        const fullPath = `${notebook.path}/${filePath}`.replace(/\\/g, '/');
+
+        return {
+            displayText: `${projectName}::${filePath}`,
+            url: `file://${fullPath}`,
+            tooltip: fullPath + (target ? ` → ${target}` : ''),
+            exists: true,
+            metadata: { projectName, filePath, target, resolvedPath: fullPath, notebook },
+        };
+    },
+
+    export(
+        path: string,
+        description: string | undefined,
+        backend: 'html' | 'latex' | 'text',
+        context: LinkContext
+    ): string {
+        const parsed = parseNotebookLinkPath(path);
+        const text = description || (parsed ? `${parsed.projectName}::${parsed.filePath}` : path);
+
+        switch (backend) {
+            case 'html':
+                // For HTML export, try to resolve to a file link
+                if (parsed) {
+                    const notebooks = context.getNotebooks?.() || [];
+                    const notebook = notebooks.find(
+                        nb => nb.name === parsed.projectName ||
+                              nb.name.toLowerCase() === parsed.projectName.toLowerCase()
+                    );
+                    if (notebook) {
+                        const htmlPath = parsed.filePath.replace(/\.org$/, '.html');
+                        return `<a href="${escapeHtml(htmlPath)}">${escapeHtml(text)}</a>`;
+                    }
+                }
+                return `<span class="nb-link">${escapeHtml(text)}</span>`;
+            case 'latex':
+                return `\\texttt{${escapeLatex(text)}}`;
+            case 'text':
+            default:
+                return text;
+        }
+    },
+
+    async complete(prefix: string, context: LinkContext): Promise<LinkCompletion[]> {
+        const notebooks = context.getNotebooks?.() || [];
+        const completions: LinkCompletion[] = [];
+
+        // Parse what's been typed so far
+        const parts = prefix.split('::');
+
+        if (parts.length === 1) {
+            // Completing project name
+            const projectPrefix = parts[0].toLowerCase();
+            for (const nb of notebooks) {
+                if (nb.name.toLowerCase().startsWith(projectPrefix)) {
+                    completions.push({
+                        text: `${nb.name}::`,
+                        label: nb.name,
+                        detail: nb.description || nb.path,
+                        sortPriority: 0,
+                    });
+                }
+            }
+        } else if (parts.length >= 2) {
+            // Completing file path within project
+            const projectName = parts[0];
+            const filePrefix = parts[1].toLowerCase();
+
+            const notebook = notebooks.find(
+                nb => nb.name === projectName ||
+                      nb.name.toLowerCase() === projectName.toLowerCase()
+            );
+
+            if (notebook && context.listNotebookFiles) {
+                const files = await context.listNotebookFiles(notebook.path);
+                for (const file of files) {
+                    // Get path relative to notebook
+                    const relativePath = file.replace(notebook.path, '').replace(/^[/\\]/, '');
+                    if (relativePath.toLowerCase().includes(filePrefix)) {
+                        completions.push({
+                            text: `${projectName}::${relativePath}`,
+                            label: relativePath,
+                            detail: `in ${notebook.name}`,
+                            sortPriority: 0,
+                        });
+                    }
+                }
+            }
+        }
+
+        return completions;
+    },
+
+    async follow(path: string, context: LinkContext): Promise<void> {
+        const vscode = await import('vscode');
+
+        const parsed = parseNotebookLinkPath(path);
+        if (!parsed) {
+            vscode.window.showErrorMessage('Invalid notebook link format');
+            return;
+        }
+
+        const { projectName, filePath, target } = parsed;
+        const notebooks = context.getNotebooks?.() || [];
+
+        // Find matching notebooks
+        const matchingNotebooks = notebooks.filter(
+            nb => nb.name === projectName ||
+                  nb.name.toLowerCase() === projectName.toLowerCase() ||
+                  nb.path.endsWith(`/${projectName}`) ||
+                  nb.path.endsWith(`\\${projectName}`)
+        );
+
+        if (matchingNotebooks.length === 0) {
+            vscode.window.showErrorMessage(`Project not found: ${projectName}`);
+            return;
+        }
+
+        let notebook: NotebookInfo;
+        if (matchingNotebooks.length > 1) {
+            // Show picker for ambiguous matches
+            const items = matchingNotebooks.map(nb => ({
+                label: nb.name,
+                description: nb.path,
+                notebook: nb,
+            }));
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `Multiple projects match "${projectName}". Select one:`,
+            });
+            if (!selected) return;
+            notebook = selected.notebook;
+        } else {
+            notebook = matchingNotebooks[0];
+        }
+
+        // Build full path
+        const fullPath = `${notebook.path}/${filePath}`.replace(/\\/g, '/');
+
+        // Open via command with target handling (reuses existing file link logic)
+        // Construct a file: link to leverage existing openFileLink
+        const fileLink = target ? `file:${fullPath}::${target}` : `file:${fullPath}`;
+        await vscode.commands.executeCommand('scimax.org.openLink', fileLink);
+    },
+};
+
+/**
+ * Parse a notebook link path into its components
+ * Format: project-name::file-path::target
+ */
+function parseNotebookLinkPath(path: string): { projectName: string; filePath: string; target?: string } | null {
+    // Split on :: but only for the first two occurrences
+    const firstSep = path.indexOf('::');
+    if (firstSep === -1) {
+        // No separator - invalid format (need at least project::file)
+        return null;
+    }
+
+    const projectName = path.slice(0, firstSep);
+    const rest = path.slice(firstSep + 2);
+
+    if (!projectName || !rest) {
+        return null;
+    }
+
+    // Check for second separator (target)
+    const secondSep = rest.indexOf('::');
+    if (secondSep === -1) {
+        return { projectName, filePath: rest };
+    }
+
+    const filePath = rest.slice(0, secondSep);
+    const target = rest.slice(secondSep + 2);
+
+    if (!filePath) {
+        return null;
+    }
+
+    return { projectName, filePath, target: target || undefined };
+}
+
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -683,6 +942,7 @@ export function registerBuiltinHandlers(): void {
     linkTypeRegistry.register(infoHandler);
     linkTypeRegistry.register(roamHandler);
     linkTypeRegistry.register(cmdHandler);
+    linkTypeRegistry.register(notebookHandler);
 }
 
 // Auto-register built-in handlers

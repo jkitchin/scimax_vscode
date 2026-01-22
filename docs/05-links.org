@@ -149,13 +149,14 @@ CLOSED: [2026-01-15 Thu 19:40]
 
 | Link Type    | Behavior                              |
 |--------------+---------------------------------------|
-| https://    | Opens in default browser              |
-| http://     | Opens in default browser              |
-| file:       | Opens in VS Code or associated app    |
-| mailto:     | Opens default email client            |
-| #custom-id  | Jumps to heading with CUSTOM_ID       |
-| *Heading    | Jumps to heading with that title      |
-| id:         | Jumps to entry with that ID property  |
+| https://     | Opens in default browser              |
+| http://      | Opens in default browser              |
+| file:        | Opens in VS Code or associated app    |
+| mailto:      | Opens default email client            |
+| #custom-id   | Jumps to heading with CUSTOM_ID       |
+| *Heading     | Jumps to heading with that title      |
+| id:          | Jumps to entry with that ID property  |
+| nb:          | Opens file in a notebook project      |
 
 * ✅ Link Targets and Anchors
 CLOSED: [2026-01-14 Wed 20:53]
@@ -359,6 +360,80 @@ Universal identifiers for cross-file linking:
 [[id:550e8400-e29b-41d4-a716-446655440000][Section in another file]]
 
 
+** ⚠️ Notebook Links
+
+Notebook links provide cross-project navigation using the =nb:= link type. Inspired
+by scimax-notebook in Emacs, they allow you to link to files within registered
+notebook projects.
+
+*** Link Format
+
+#+BEGIN_SRC org
+[[nb:project-name::relative-file-path::target][description]]
+#+END_SRC
+
+| Component       | Description                                       |
+|-----------------+---------------------------------------------------|
+| project-name    | Name of the notebook/project                      |
+| relative-path   | Path to file relative to project root             |
+| target          | Optional: line number, char offset, heading or ID |
+
+*** Examples
+
+| Link                                 | Description                        |
+|--------------------------------------+------------------------------------|
+| [[nb:my-research::README.org]]       | Open README.org in my-research     |
+| [[nb:my-research::data/notes.org]]   | Open notes.org in data/ subfolder  |
+| [[nb:my-research::paper.org::10]]    | Jump to line 10                    |
+| [[nb:my-research::paper.org::c453]]  | Jump to character offset 453       |
+| [[nb:my-research::paper.org::*Methods]] | Jump to "Methods" heading       |
+| [[nb:my-research::doc.org::#intro]]  | Jump to custom ID "intro"          |
+
+*** Target Syntax
+
+The target component (after the second =::=) supports:
+
+| Syntax     | Description             |
+|------------+-------------------------|
+| =123=      | Jump to line 123        |
+| =c456=     | Jump to character 456   |
+| =*Heading= | Jump to heading by name |
+| =#id=      | Jump to custom ID       |
+
+*** Commands
+
+| Key       | Command                       | Description                |
+|-----------+-------------------------------+----------------------------|
+| C-c C-o   | scimax.org.openLink           | Open notebook link         |
+| (none)    | scimax.notebook.insertLink    | Insert a notebook link     |
+
+*** Inserting Notebook Links
+
+Use the command =Scimax: Insert Notebook Link= to interactively create links:
+
+1. Select a project from registered notebooks
+2. Select a file within that project
+3. Optionally specify a target (line, heading, ID)
+
+The link is inserted at the cursor position.
+
+*** Project Resolution
+
+The =project-name= is matched against registered notebooks by:
+
+1. Exact name match (from =.scimax/config.json= or directory name)
+2. Case-insensitive name match
+3. Directory name at the end of the path
+
+If multiple projects match, you'll be prompted to select one.
+
+*** Related Commands
+
+See also [[file:15-notebook.org][Notebooks]] for:
+- Creating and managing notebooks
+- Registering existing projects
+- Notebook search and navigation
+
 * ✅ Link Descriptions
 CLOSED: [2026-01-15 Thu 19:42]
 
@@ -532,18 +607,19 @@ CLOSED: [2026-01-15 Thu 19:53]
 ** ✅ Link Syntax Summary
 CLOSED: [2026-01-15 Thu 19:53]
 
-| Format               | Example             |
-|----------------------+---------------------|
-| URL with description | [[url][desc]]       |
-| URL only             | [[url]]             |
-| Angle brackets       | <url>               |
-| Heading link         | [[*Heading]]        |
-| Custom ID link       | [[#id]]             |
-| ID link              | [[id:uuid]]         |
-| File link            | [[file:path]]       |
-| File with line       | [[file:path::123]]  |
-| File with search     | [[file:path::text]] |
-| Target               | [[target-name]]     |
+| Format               | Example                      |
+|----------------------+------------------------------|
+| URL with description | [[url][desc]]                |
+| URL only             | [[url]]                      |
+| Angle brackets       | <url>                        |
+| Heading link         | [[*Heading]]                 |
+| Custom ID link       | [[#id]]                      |
+| ID link              | [[id:uuid]]                  |
+| File link            | [[file:path]]                |
+| File with line       | [[file:path::123]]           |
+| File with search     | [[file:path::text]]          |
+| Target               | [[target-name]]              |
+| Notebook link        | [[nb:project::file::target]] |
 
 * ✅ Related Topics
 

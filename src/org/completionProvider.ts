@@ -54,7 +54,7 @@ const DOC_KEYWORDS = [
 const LINK_TYPES = [
     'file', 'http', 'https', 'ftp', 'mailto', 'doi', 'cite', 'id',
     'shell', 'elisp', 'info', 'help', 'news', 'bbdb', 'irc', 'rmail',
-    'mhe', 'gnus', 'attachment', 'docview',
+    'mhe', 'gnus', 'attachment', 'docview', 'nb',
 ];
 
 /**
