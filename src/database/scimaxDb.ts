@@ -20,6 +20,7 @@ import {
 import type { EmbeddingService } from './embeddingService';
 import { MigrationRunner, getLatestVersion } from './migrations';
 import { databaseLogger as log } from '../utils/logger';
+import { withRetry, withTimeout, isTransientError } from '../utils/resilience';
 
 /**
  * Database record types
@@ -153,10 +154,53 @@ export class ScimaxDb {
     private embeddingStatusBar: vscode.StatusBarItem | null = null;
     private embeddingCancelled: boolean = false;
 
+    // Resilience configuration
+    private queryTimeoutMs: number = 30000;  // 30 seconds default
+    private maxRetryAttempts: number = 3;
+
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this.parser = new UnifiedParserAdapter();
         this.dbPath = path.join(context.globalStorageUri.fsPath, 'scimax-db.sqlite');
+    }
+
+    /**
+     * Execute a query with retry and timeout protection
+     * Use this for critical queries that should be resilient to transient failures
+     */
+    private async executeResilient<T>(
+        queryFn: () => Promise<T>,
+        operationName: string
+    ): Promise<T> {
+        if (!this.db) {
+            throw new Error('Database not initialized');
+        }
+
+        return withRetry(
+            () => withTimeout(queryFn, {
+                timeoutMs: this.queryTimeoutMs,
+                operationName
+            }),
+            {
+                maxAttempts: this.maxRetryAttempts,
+                operationName,
+                isRetryable: isTransientError
+            }
+        );
+    }
+
+    /**
+     * Execute a simple SQL query with resilience
+     */
+    private async queryResilient(
+        sql: string,
+        args: any[] = [],
+        operationName?: string
+    ): Promise<any> {
+        return this.executeResilient(
+            () => this.db!.execute({ sql, args }),
+            operationName || sql.slice(0, 50)
+        );
     }
 
     /**
@@ -175,6 +219,7 @@ export class ScimaxDb {
 
         await this.createSchema();
         this.loadIgnorePatterns();
+        this.loadResilienceConfig();
         this.setupFileWatcher();
 
         log.info('Initialized');
@@ -330,6 +375,15 @@ export class ScimaxDb {
             '**/build/**',
             '**/.ipynb_checkpoints/**'
         ];
+    }
+
+    /**
+     * Load resilience configuration (timeouts, retries)
+     */
+    private loadResilienceConfig(): void {
+        const config = vscode.workspace.getConfiguration('scimax.db');
+        this.queryTimeoutMs = config.get<number>('queryTimeoutMs', 30000);
+        this.maxRetryAttempts = config.get<number>('maxRetryAttempts', 3);
     }
 
     /**
@@ -1457,20 +1511,25 @@ export class ScimaxDb {
             vector_search_error: null, by_type: { org: 0, md: 0, ipynb: 0 }
         };
 
-        const [files, headings, blocks, links, chunks, embeddings, orgFiles, mdFiles, ipynbFiles] = await Promise.all([
-            this.db.execute('SELECT COUNT(*) as count FROM files'),
-            this.db.execute('SELECT COUNT(*) as count FROM headings'),
-            this.db.execute('SELECT COUNT(*) as count FROM source_blocks'),
-            this.db.execute('SELECT COUNT(*) as count FROM links'),
-            this.db.execute('SELECT COUNT(*) as count FROM chunks'),
-            this.db.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'),
-            this.db.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'org'"),
-            this.db.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'md'"),
-            this.db.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'ipynb'")
-        ]);
+        const [files, headings, blocks, links, chunks, embeddings, orgFiles, mdFiles, ipynbFiles] = await this.executeResilient(
+            () => Promise.all([
+                this.db!.execute('SELECT COUNT(*) as count FROM files'),
+                this.db!.execute('SELECT COUNT(*) as count FROM headings'),
+                this.db!.execute('SELECT COUNT(*) as count FROM source_blocks'),
+                this.db!.execute('SELECT COUNT(*) as count FROM links'),
+                this.db!.execute('SELECT COUNT(*) as count FROM chunks'),
+                this.db!.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'),
+                this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'org'"),
+                this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'md'"),
+                this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'ipynb'")
+            ]),
+            'getStats'
+        );
 
-        const lastFile = await this.db.execute(
-            'SELECT MAX(indexed_at) as last FROM files'
+        const lastFile = await this.queryResilient(
+            'SELECT MAX(indexed_at) as last FROM files',
+            [],
+            'getStats:lastFile'
         );
 
         return {
