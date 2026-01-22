@@ -1527,7 +1527,8 @@ export async function getCitationHover(
     line: string
 ): Promise<vscode.Hover | null> {
     // Include all common citation commands from natbib, biblatex, and custom packages
-    const citePattern = /\\(cite|citep|citet|citealp|citealt|citeauthor|citeyear|citenum|citeyearpar|citetext|Cite|Citep|Citet|Citealp|Citealt|Citeauthor|nocite|textcite|parencite|footcite|autocite|fullcite)\{([^}]+)\}/g;
+    // Pattern handles optional arguments [..] and whitespace before {
+    const citePattern = /\\(cite|citep|citet|citealp|citealt|citeauthor|citeyear|citenum|citeyearpar|citetext|Cite|Citep|Citet|Citealp|Citealt|Citeauthor|nocite|textcite|parencite|footcite|autocite|fullcite|smartcite|supercite|Textcite|Parencite|Footcite|Autocite|Smartcite|Supercite|Citeyear|Citetitle)\s*(?:\[[^\]]*\])?\s*\{([^}]+)\}/g;
     let match;
 
     while ((match = citePattern.exec(line)) !== null) {

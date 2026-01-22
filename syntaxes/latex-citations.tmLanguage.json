@@ -1,21 +1,13 @@
 {
   "scopeName": "scimax.latex.citations",
-  "injectionSelector": "L:text.tex.latex",
+  "injectionSelector": "L:text.tex.latex -comment -string",
   "patterns": [
     {
-      "comment": "Extended citation commands (natbib, biblatex) - command name",
-      "match": "(\\\\)(citenum|citealp|citealt|citeyearpar|citetext|textcite|parencite|footcite|autocite|fullcite|smartcite|supercite|Textcite|Parencite|Footcite|Autocite|Smartcite|Supercite|Citeauthor|Citeyear|Citetitle)(?=\\s*[\\[\\{])",
-      "captures": {
-        "1": { "name": "punctuation.definition.function.latex" },
-        "2": { "name": "support.function.citation.latex" }
-      }
-    },
-    {
       "comment": "Citation command with braces - highlight keys",
-      "begin": "(\\\\)(citenum|citealp|citealt|citeyearpar|citetext|textcite|parencite|footcite|autocite|fullcite|smartcite|supercite|Textcite|Parencite|Footcite|Autocite|Smartcite|Supercite|Citeauthor|Citeyear|Citetitle)(\\{)",
+      "begin": "(\\\\)(citenum|citealp|citealt|citeyearpar|citetext|textcite|parencite|footcite|autocite|fullcite|smartcite|supercite|Textcite|Parencite|Footcite|Autocite|Smartcite|Supercite|Citeauthor|Citeyear|Citetitle)\\s*(\\{)",
       "beginCaptures": {
         "1": { "name": "punctuation.definition.function.latex" },
-        "2": { "name": "support.function.citation.latex" },
+        "2": { "name": "keyword.control.cite.latex" },
         "3": { "name": "punctuation.definition.arguments.begin.latex" }
       },
       "end": "(\\})",
@@ -26,8 +18,8 @@
       "patterns": [
         {
           "comment": "Citation key",
-          "match": "[^,\\}]+",
-          "name": "constant.other.citation.latex"
+          "match": "[^,\\}\\s]+",
+          "name": "constant.other.reference.citation.latex"
         },
         {
           "match": ",",
@@ -37,17 +29,42 @@
     },
     {
       "comment": "Citation command with optional args then braces",
-      "begin": "(\\\\)(citenum|citealp|citealt|citeyearpar|citetext|textcite|parencite|footcite|autocite|fullcite|smartcite|supercite|Textcite|Parencite|Footcite|Autocite|Smartcite|Supercite|Citeauthor|Citeyear|Citetitle)(\\[)",
+      "begin": "(\\\\)(citenum|citealp|citealt|citeyearpar|citetext|textcite|parencite|footcite|autocite|fullcite|smartcite|supercite|Textcite|Parencite|Footcite|Autocite|Smartcite|Supercite|Citeauthor|Citeyear|Citetitle)\\s*(\\[)",
       "beginCaptures": {
         "1": { "name": "punctuation.definition.function.latex" },
-        "2": { "name": "support.function.citation.latex" },
+        "2": { "name": "keyword.control.cite.latex" },
         "3": { "name": "punctuation.definition.arguments.optional.begin.latex" }
       },
-      "end": "(\\])",
+      "end": "(\\])\\s*(\\{)",
       "endCaptures": {
-        "1": { "name": "punctuation.definition.arguments.optional.end.latex" }
+        "1": { "name": "punctuation.definition.arguments.optional.end.latex" },
+        "2": { "name": "punctuation.definition.arguments.begin.latex" }
       },
-      "contentName": "meta.citation.optional.latex"
+      "contentName": "meta.citation.optional.latex",
+      "patterns": [
+        {
+          "comment": "After optional arg, match the main braces",
+          "begin": "\\{",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.arguments.begin.latex" }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.arguments.end.latex" }
+          },
+          "contentName": "meta.citation.latex",
+          "patterns": [
+            {
+              "match": "[^,\\}\\s]+",
+              "name": "constant.other.reference.citation.latex"
+            },
+            {
+              "match": ",",
+              "name": "punctuation.separator.citation.latex"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

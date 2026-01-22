@@ -36,6 +36,7 @@ import {
     addToUserDictionary,
     disposeSpellCheckDiagnostics,
 } from './latexLanguageProvider';
+import { LaTeXSemanticTokenProvider, legend as semanticTokenLegend } from './latexSemanticTokenProvider';
 import { openPdfInPanel, PdfViewerPanel } from './pdfViewerPanel';
 import { runSyncTeXForward, isSyncTeXAvailable, getSyncTeXFilePath } from './synctexUtils';
 
@@ -162,6 +163,15 @@ export function registerLatexProviders(context: vscode.ExtensionContext): void {
         vscode.languages.registerDocumentRangeFormattingEditProvider(
             latexSelector,
             new LaTeXRangeFormattingProvider()
+        )
+    );
+
+    // Semantic Token Provider (for citation commands like \citenum that aren't in base grammar)
+    context.subscriptions.push(
+        vscode.languages.registerDocumentSemanticTokensProvider(
+            latexSelector,
+            new LaTeXSemanticTokenProvider(),
+            semanticTokenLegend
         )
     );
 
@@ -909,6 +919,123 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             if (word) {
                 addToUserDictionary(word);
                 vscode.window.showInformationMessage(`Added "${word}" to LaTeX dictionary`);
+            }
+        }),
+
+        // Jump to previous spelling error and show quick fix (like Emacs flyspell C-;)
+        vscode.commands.registerCommand('scimax.spelling.previousError', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            const document = editor.document;
+            const cursorPos = editor.selection.active;
+
+            // Get all diagnostics for this document
+            const allDiagnostics = vscode.languages.getDiagnostics(document.uri);
+
+            // Filter to spelling-related diagnostics
+            // LTeX uses source "ltex", Code Spell Checker uses "cSpell"
+            // Also check for common spelling error patterns in the message
+            const spellingDiagnostics = allDiagnostics.filter(d => {
+                const source = (d.source || '').toLowerCase();
+                const message = d.message.toLowerCase();
+                return source === 'ltex' ||
+                       source === 'cspell' ||
+                       source === 'spell' ||
+                       source === 'spellright' ||
+                       message.includes('spell') ||
+                       message.includes('unknown word') ||
+                       message.includes('misspell');
+            });
+
+            if (spellingDiagnostics.length === 0) {
+                vscode.window.showInformationMessage('No spelling errors found');
+                return;
+            }
+
+            // Find the nearest spelling error before the cursor
+            // Sort by position (descending) to find ones before cursor first
+            const beforeCursor = spellingDiagnostics
+                .filter(d => d.range.start.isBefore(cursorPos))
+                .sort((a, b) => b.range.start.compareTo(a.range.start));
+
+            let target: vscode.Diagnostic | undefined;
+            if (beforeCursor.length > 0) {
+                target = beforeCursor[0];
+            } else {
+                // Wrap around to the last error in the document
+                const sorted = spellingDiagnostics
+                    .sort((a, b) => b.range.start.compareTo(a.range.start));
+                target = sorted[0];
+            }
+
+            if (target) {
+                // Move cursor to the error
+                const pos = target.range.start;
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(target.range, vscode.TextEditorRevealType.InCenter);
+
+                // Open quick fix menu after a short delay to ensure cursor is positioned
+                setTimeout(() => {
+                    vscode.commands.executeCommand('editor.action.quickFix');
+                }, 50);
+            }
+        }),
+
+        // Jump to next spelling error and show quick fix
+        vscode.commands.registerCommand('scimax.spelling.nextError', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) return;
+
+            const document = editor.document;
+            const cursorPos = editor.selection.active;
+
+            // Get all diagnostics for this document
+            const allDiagnostics = vscode.languages.getDiagnostics(document.uri);
+
+            // Filter to spelling-related diagnostics
+            const spellingDiagnostics = allDiagnostics.filter(d => {
+                const source = (d.source || '').toLowerCase();
+                const message = d.message.toLowerCase();
+                return source === 'ltex' ||
+                       source === 'cspell' ||
+                       source === 'spell' ||
+                       source === 'spellright' ||
+                       message.includes('spell') ||
+                       message.includes('unknown word') ||
+                       message.includes('misspell');
+            });
+
+            if (spellingDiagnostics.length === 0) {
+                vscode.window.showInformationMessage('No spelling errors found');
+                return;
+            }
+
+            // Find the nearest spelling error after the cursor
+            const afterCursor = spellingDiagnostics
+                .filter(d => d.range.start.isAfter(cursorPos))
+                .sort((a, b) => a.range.start.compareTo(b.range.start));
+
+            let target: vscode.Diagnostic | undefined;
+            if (afterCursor.length > 0) {
+                target = afterCursor[0];
+            } else {
+                // Wrap around to the first error in the document
+                const sorted = spellingDiagnostics
+                    .sort((a, b) => a.range.start.compareTo(b.range.start));
+                target = sorted[0];
+            }
+
+            if (target) {
+                // Move cursor to the error
+                const pos = target.range.start;
+                editor.selection = new vscode.Selection(pos, pos);
+                editor.revealRange(target.range, vscode.TextEditorRevealType.InCenter);
+
+                // Open quick fix menu after a short delay
+                setTimeout(() => {
+                    vscode.commands.executeCommand('editor.action.quickFix');
+                }, 50);
             }
         }),
 
