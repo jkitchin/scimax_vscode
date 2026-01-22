@@ -520,6 +520,7 @@ export class ScimaxDb {
     ): Promise<number> {
         const files = await this.findFiles(directory);
         let indexed = 0;
+        let processed = 0;
 
         for (const filePath of files) {
             if (await this.needsReindex(filePath)) {
@@ -527,10 +528,18 @@ export class ScimaxDb {
                 indexed++;
             }
 
+            processed++;
+
             if (progress) {
                 progress.report({
                     increment: 100 / files.length
                 });
+            }
+
+            // Yield to event loop every 5 files to keep extension responsive
+            // This prevents VS Code from killing the extension host
+            if (processed % 5 === 0) {
+                await new Promise(resolve => setTimeout(resolve, 0));
             }
         }
 
@@ -709,8 +718,8 @@ export class ScimaxDb {
         if (!this.db) return;
 
         try {
-            // Validate file before reading
-            const stats = fs.statSync(filePath);
+            // Validate file before reading (use async to not block event loop)
+            const stats = await fs.promises.stat(filePath);
 
             // Check file size limit (default 10MB)
             const maxSizeBytes = vscode.workspace.getConfiguration('scimax.db')
@@ -724,8 +733,8 @@ export class ScimaxDb {
                 return;
             }
 
-            // Read file content
-            const content = fs.readFileSync(filePath, 'utf8');
+            // Read file content (use async to not block event loop)
+            const content = await fs.promises.readFile(filePath, 'utf8');
 
             // Detect binary content (null bytes or high non-printable ratio)
             // Skip check for known text extensions - they may contain embedded binary-like content
@@ -825,6 +834,7 @@ export class ScimaxDb {
 
     /**
      * Index org document
+     * Uses batched inserts for performance and yields to event loop to prevent blocking
      */
     private async indexOrgDocument(
         fileId: number,
@@ -841,6 +851,9 @@ export class ScimaxDb {
             linePositions.push(charPos);
             charPos += line.length + 1;
         }
+
+        // Collect all statements for batched execution
+        const statements: { sql: string; args: (string | number | null)[] }[] = [];
 
         // Index headings with tag inheritance
         const flatHeadings = this.parser.flattenHeadings(doc);
@@ -873,7 +886,7 @@ export class ScimaxDb {
                 if (closedMatch) closed = closedMatch[1];
             }
 
-            await this.db.execute({
+            statements.push({
                 sql: `INSERT INTO headings
                       (file_id, file_path, level, title, line_number, begin_pos,
                        todo_state, priority, tags, inherited_tags, properties,
@@ -892,7 +905,7 @@ export class ScimaxDb {
 
         // Index source blocks
         for (const block of doc.sourceBlocks) {
-            await this.db.execute({
+            statements.push({
                 sql: `INSERT INTO source_blocks
                       (file_id, file_path, language, content, line_number, headers, cell_index)
                       VALUES (?, ?, ?, ?, ?, ?, NULL)`,
@@ -905,7 +918,7 @@ export class ScimaxDb {
 
         // Index links
         for (const link of doc.links) {
-            await this.db.execute({
+            statements.push({
                 sql: `INSERT INTO links
                       (file_id, file_path, link_type, target, description, line_number)
                       VALUES (?, ?, ?, ?, ?, ?)`,
@@ -914,6 +927,19 @@ export class ScimaxDb {
                     link.description || null, link.lineNumber
                 ]
             });
+        }
+
+        // Execute in batches of 100 to avoid overwhelming the database
+        // and yield between batches to keep extension responsive
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < statements.length; i += BATCH_SIZE) {
+            const batch = statements.slice(i, i + BATCH_SIZE);
+            await this.db.batch(batch);
+
+            // Yield to event loop between batches to prevent extension host from being killed
+            if (i + BATCH_SIZE < statements.length) {
+                await new Promise(resolve => setTimeout(resolve, 0));
+            }
         }
     }
 

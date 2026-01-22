@@ -104,7 +104,7 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
     /**
      * Refresh the view with latest stats
      */
-    async refresh(): Promise<void> {
+    async refresh(showMessage: boolean = false): Promise<void> {
         if (this.refreshInProgress) {
             return;
         }
@@ -119,10 +119,19 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
                 if (this.treeView) {
                     this.treeView.description = `${this.stats.files} files indexed`;
                 }
+
+                if (showMessage) {
+                    vscode.window.showInformationMessage(
+                        `Database: ${this.stats.files} files, ${this.stats.headings} headings, ${this.stats.blocks} blocks`
+                    );
+                }
             } else {
                 this.stats = null;
                 if (this.treeView) {
                     this.treeView.description = 'Not initialized';
+                }
+                if (showMessage) {
+                    vscode.window.showWarningMessage('Database not initialized');
                 }
             }
         } finally {
@@ -389,7 +398,7 @@ export function registerDatabaseView(context: vscode.ExtensionContext): Database
     // Refresh command
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.database.refresh', () => {
-            provider.refresh();
+            provider.refresh(true);
         })
     );
 

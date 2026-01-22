@@ -600,7 +600,7 @@ export async function activate(context: vscode.ExtensionContext) {
                     break;
             }
         }),
-        vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh()),
+        vscode.commands.registerCommand('scimax.projectile.refreshTree', () => projectTreeProvider.refresh(true)),
         // Filter and sort commands for Projects view
         vscode.commands.registerCommand('scimax.projectile.filterProjects', async () => {
             const projects = projectileManager.getProjects();

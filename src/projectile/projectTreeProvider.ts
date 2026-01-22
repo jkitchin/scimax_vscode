@@ -96,9 +96,13 @@ export class ProjectTreeProvider implements vscode.TreeDataProvider<ProjectItem>
         }
     }
 
-    refresh(): void {
+    refresh(showMessage: boolean = false): void {
         this.updateDescription();
         this._onDidChangeTreeData.fire();
+        if (showMessage) {
+            const count = this.manager.getProjects().length;
+            vscode.window.showInformationMessage(`Projects: ${count} projects`);
+        }
     }
 
     /**
