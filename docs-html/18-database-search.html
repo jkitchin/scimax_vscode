@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Database and Search</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Database and Search</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<li><a href="#org-what-gets-indexed">✅ What Gets Indexed</a></li>
+<ul>
+<li><a href="#org-file-types">✅ File Types</a></li>
+<li><a href="#org-indexed-content">✅ Indexed Content</a></li>
+<ul>
+<li><a href="#org-headings">✅ Headings</a></li>
+<li><a href="#org-source-blocks">✅ Source Blocks</a></li>
+<li><a href="#org-links">✅ Links</a></li>
+<li><a href="#org-hashtags">✅ Hashtags</a></li>
+<li><a href="#org-full-text">✅ Full Text</a></li>
+<li><a href="#org-text-chunks-for-semantic-search">✅ Text Chunks (for Semantic Search)</a></li>
+</ul>
+<li><a href="#org-file-watching">✅ File Watching</a></li>
+<li><a href="#org-ignore-patterns">✅ Ignore Patterns</a></li>
+</ul>
+<li><a href="#org-full-text-search">✅ Full-Text Search</a></li>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<li><a href="#org-usage">✅ Usage</a></li>
+<ul>
+<li><a href="#org-command">✅ Command</a></li>
+<li><a href="#org-query-syntax">✅ Query Syntax</a></li>
+</ul>
+<li><a href="#org-results">Results</a></li>
+<li><a href="#org-example-searches">Example Searches</a></li>
+</ul>
+<li><a href="#org-semantic-search">✅ Semantic Search</a></li>
+<ul>
+<li><a href="#org-overview">✅ Overview</a></li>
+<li><a href="#org-requirements">✅ Requirements</a></li>
+<ul>
+<li><a href="#org-checking-availability">Checking Availability</a></li>
+<li><a href="#org-fallback-to-full-text-search">Fallback to Full-Text Search</a></li>
+</ul>
+<li><a href="#org-embedding-providers">Embedding Providers</a></li>
+<ul>
+<li><a href="#org-local-transformers-js-recommended">Local (Transformers.js) - Recommended</a></li>
+<li><a href="#org-ollama">Ollama</a></li>
+<li><a href="#org-openai">✅ OpenAI</a></li>
+</ul>
+<li><a href="#org-configuration">✅ Configuration</a></li>
+<ul>
+<li><a href="#org-interactive-setup">✅ Interactive Setup</a></li>
+<li><a href="#org-manual-configuration">✅ Manual Configuration</a></li>
+</ul>
+<li><a href="#org-usage">✅ Usage</a></li>
+<ul>
+<li><a href="#org-command">✅ Command</a></li>
+<li><a href="#org-query-examples">✅ Query Examples</a></li>
+</ul>
+<li><a href="#org-results">Results</a></li>
+<li><a href="#org-reindexing-for-semantic-search">Reindexing for Semantic Search</a></li>
+</ul>
+<li><a href="#org-hybrid-search">Hybrid Search</a></li>
+<ul>
+<li><a href="#org-overview">Overview</a></li>
+<li><a href="#org-usage">Usage</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-how-it-works">How It Works</a></li>
+<li><a href="#org-weights">Weights</a></li>
+<li><a href="#org-when-to-use-hybrid">When to Use Hybrid</a></li>
+</ul>
+<li><a href="#org-results">Results</a></li>
+</ul>
+<li><a href="#org-structured-queries">Structured Queries</a></li>
+<ul>
+<li><a href="#org-heading-search">Heading Search</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-features">Features</a></li>
+<li><a href="#org-example-use-cases">Example Use Cases</a></li>
+</ul>
+<li><a href="#org-tag-search">Tag Search</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-features">Features</a></li>
+</ul>
+<li><a href="#org-property-search">Property Search</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-common-properties">Common Properties</a></li>
+<li><a href="#org-examples">Examples</a></li>
+</ul>
+<li><a href="#org-search">Search</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-features">Features</a></li>
+<li><a href="#org-common-todo-states">Common TODO States</a></li>
+</ul>
+<li><a href="#org-source-block-search">✅ Source Block Search</a></li>
+<ul>
+<li><a href="#org-command">✅ Command</a></li>
+<li><a href="#org-features">✅ Features</a></li>
+<li><a href="#org-example-workflow">✅ Example Workflow</a></li>
+</ul>
+<li><a href="#org-hashtag-search">✅ Hashtag Search</a></li>
+<ul>
+<li><a href="#org-command">✅ Command</a></li>
+<li><a href="#org-features">✅ Features</a></li>
+<li><a href="#org-hashtag-format">✅ Hashtag Format</a></li>
+</ul>
+<li><a href="#org-file-browser">✅ File Browser</a></li>
+<ul>
+<li><a href="#org-command">✅ Command</a></li>
+<li><a href="#org-features">✅ Features</a></li>
+</ul>
+</ul>
+<li><a href="#org-agenda-and-time-management">✅ Agenda and Time Management</a></li>
+<ul>
+<li><a href="#org-agenda-view">✅ Agenda View</a></li>
+<ul>
+<li><a href="#org-command">✅ Command</a></li>
+<li><a href="#org-time-periods">✅ Time Periods</a></li>
+<li><a href="#org-options">✅ Options</a></li>
+<li><a href="#org-item-types">✅ Item Types</a></li>
+</ul>
+<li><a href="#org-deadline-view">✅ Deadline View</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-features">✅ Features</a></li>
+<li><a href="#org-display-format">Display Format  </a></li>
+</ul>
+<li><a href="#org-date-formats">Date Formats</a></li>
+<ul>
+<li><a href="#org-scheduling-in-org-files">Scheduling in Org Files</a></li>
+<li><a href="#org-relative-dates">Relative Dates</a></li>
+</ul>
+</ul>
+<li><a href="#org-search-scope">Search Scope</a></li>
+<ul>
+<li><a href="#org-commands">Commands</a></li>
+<li><a href="#org-scope-types">Scope Types</a></li>
+<ul>
+<li><a href="#org-all-files-default">All Files (Default)</a></li>
+<li><a href="#org-current-directory">Current Directory</a></li>
+</ul>
+<li><a href="#org-current-scope-indicator">Current Scope Indicator</a></li>
+</ul>
+<li><a href="#org-database-management">Database Management</a></li>
+<ul>
+<li><a href="#org-reindexing">Reindexing</a></li>
+<ul>
+<li><a href="#org-full-reindex">Full Reindex</a></li>
+<li><a href="#org-auto-indexing">✅ Auto-Indexing</a></li>
+<li><a href="#org-additional-directories">✅ Additional Directories</a></li>
+</ul>
+<li><a href="#org-optimization">Optimization</a></li>
+<ul>
+<li><a href="#org-command">✅ Command</a></li>
+<li><a href="#org-operations">Operations</a></li>
+</ul>
+<li><a href="#org-clearing-database">Clearing Database</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-warning">Warning</a></li>
+<li><a href="#org-when-to-clear">When to Clear</a></li>
+</ul>
+<li><a href="#org-statistics">Statistics</a></li>
+<ul>
+<li><a href="#org-command">Command</a></li>
+<li><a href="#org-information-displayed">Information Displayed</a></li>
+<li><a href="#org-stats-include">Stats Include</a></li>
+</ul>
+</ul>
+<li><a href="#org-performance-considerations">Performance Considerations</a></li>
+<ul>
+<li><a href="#org-indexing-performance">Indexing Performance</a></li>
+<ul>
+<li><a href="#org-file-size">File Size</a></li>
+<li><a href="#org-batch-indexing">Batch Indexing</a></li>
+<li><a href="#org-optimization-tips">Optimization Tips</a></li>
+</ul>
+<li><a href="#org-search-performance">Search Performance</a></li>
+<ul>
+<li><a href="#org-full-text-search-fts5">Full-Text Search (FTS5)</a></li>
+<li><a href="#org-semantic-search">Semantic Search</a></li>
+<li><a href="#org-hybrid-search">Hybrid Search</a></li>
+</ul>
+<li><a href="#org-database-size">Database Size</a></li>
+<ul>
+<li><a href="#org-typical-sizes">Typical Sizes</a></li>
+<li><a href="#org-with-embeddings">With Embeddings</a></li>
+</ul>
+<li><a href="#org-memory-usage">Memory Usage</a></li>
+<ul>
+<li><a href="#org-indexing">Indexing</a></li>
+<li><a href="#org-searching">Searching</a></li>
+</ul>
+<li><a href="#org-scaling-guidelines">Scaling Guidelines</a></li>
+<ul>
+<li><a href="#org-small-workspace-100-files">Small Workspace (&lt;100 files)</a></li>
+<li><a href="#org-medium-workspace-100-1-000-files">Medium Workspace (100-1,000 files)</a></li>
+<li><a href="#org-large-workspace-1-000-10-000-files">Large Workspace (1,000-10,000 files)</a></li>
+<li><a href="#org-very-large-workspace-10-000-files">Very Large Workspace (&gt;10,000 files)</a></li>
+</ul>
+</ul>
+<li><a href="#org-configuration-reference">Configuration Reference</a></li>
+<ul>
+<li><a href="#org-database-settings">Database Settings</a></li>
+<ul>
+<li><a href="#org-scimax-db-directories">`scimax.db.directories&#39;</a></li>
+<li><a href="#org-scimax-db-ignorepatterns">`scimax.db.ignorePatterns&#39;</a></li>
+<li><a href="#org-scimax-db-autoindex">`scimax.db.autoIndex&#39;</a></li>
+</ul>
+<li><a href="#org-embedding-settings">Embedding Settings</a></li>
+<ul>
+<li><a href="#org-scimax-db-embeddingprovider">`scimax.db.embeddingProvider&#39;</a></li>
+<li><a href="#org-scimax-db-localmodel">`scimax.db.localModel&#39;</a></li>
+<li><a href="#org-scimax-db-ollamaurl">`scimax.db.ollamaUrl&#39;</a></li>
+<li><a href="#org-scimax-db-ollamamodel">`scimax.db.ollamaModel&#39;</a></li>
+<li><a href="#org-openai-api-key-secure-storage">OpenAI API Key (Secure Storage)</a></li>
+</ul>
+</ul>
+<li><a href="#org-command-reference">Command Reference</a></li>
+<ul>
+<li><a href="#org-search-commands">Search Commands</a></li>
+<li><a href="#org-view-commands">View Commands</a></li>
+<li><a href="#org-management-commands">Management Commands</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-semantic-search-not-working">Semantic Search Not Working</a></li>
+<ul>
+<li><a href="#org-problem">Problem</a></li>
+<li><a href="#org-first-check-vector-search-support">First: Check Vector Search Support</a></li>
+<li><a href="#org-vector-search-unavailable">Vector Search Unavailable</a></li>
+<li><a href="#org-embedding-provider-issues">Embedding Provider Issues</a></li>
+<li><a href="#org-local-provider-issues">Local Provider Issues</a></li>
+<li><a href="#org-ollama-issues">Ollama Issues</a></li>
+<li><a href="#org-openai-issues">OpenAI Issues</a></li>
+</ul>
+<li><a href="#org-search-returns-no-results">Search Returns No Results</a></li>
+<ul>
+<li><a href="#org-problem">Problem</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+<li><a href="#org-slow-indexing">Slow Indexing</a></li>
+<ul>
+<li><a href="#org-problem">Problem</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+<li><a href="#org-database-corruption">Database Corruption</a></li>
+<ul>
+<li><a href="#org-problem">Problem</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+<li><a href="#org-high-memory-usage">High Memory Usage</a></li>
+<ul>
+<li><a href="#org-problem">Problem</a></li>
+<li><a href="#org-solutions">Solutions</a></li>
+</ul>
+</ul>
+<li><a href="#org-examples-and-workflows">Examples and Workflows</a></li>
+<ul>
+<li><a href="#org-research-paper-management">Research Paper Management</a></li>
+<li><a href="#org-project-todo-management">Project Todo Management</a></li>
+<li><a href="#org-code-snippet-library">Code Snippet Library</a></li>
+<li><a href="#org-personal-knowledge-base">Personal Knowledge Base</a></li>
+</ul>
+<li><a href="#org-best-practices">Best Practices</a></li>
+<ul>
+<li><a href="#org-indexing-strategy">Indexing Strategy</a></li>
+<li><a href="#org-search-strategy">Search Strategy</a></li>
+<li><a href="#org-organization-tips">Organization Tips</a></li>
+<li><a href="#org-performance-tips">Performance Tips</a></li>
+</ul>
+<li><a href="#org-technical-architecture">Technical Architecture</a></li>
+<ul>
+<li><a href="#org-database-schema">Database Schema</a></li>
+<ul>
+<li><a href="#org-files-table">Files Table</a></li>
+<li><a href="#org-headings-table">Headings Table</a></li>
+<li><a href="#org-source-blocks-table">Source Blocks Table</a></li>
+<li><a href="#org-links-table">Links Table</a></li>
+<li><a href="#org-hashtags-table">Hashtags Table</a></li>
+<li><a href="#org-chunks-table">Chunks Table</a></li>
+<li><a href="#org-fts-content-virtual-table">FTS Content (Virtual Table)</a></li>
+</ul>
+<li><a href="#org-indexes">Indexes</a></li>
+<li><a href="#org-vector-search">Vector Search</a></li>
+<li><a href="#org-parsers">Parsers</a></li>
+<ul>
+<li><a href="#org-org-mode">Org Mode</a></li>
+<li><a href="#org-markdown">Markdown</a></li>
+<li><a href="#org-jupyter-notebooks">Jupyter Notebooks</a></li>
+</ul>
+</ul>
+<li><a href="#org-see-also">See Also</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-overview" class="org-section org-level-1">
+<h1>✅ Overview</h1>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<p>Scimax VS Code includes a powerful database and search system that indexes your org, markdown, and Jupyter notebook files. The database provides:</p>
+
+<ul>
+<li><p><strong>Full-text search</strong> with FTS5 (SQLite&#39;s Full-Text Search) and BM25 ranking</p>
+</li>
+<li><p><strong>Semantic search</strong> using vector embeddings for meaning-based queries</p>
+</li>
+<li><p><strong>Hybrid search</strong> combining keyword and semantic approaches</p>
+</li>
+<li><p><strong>Structured queries</strong> for headings, TODOs, tags, properties, and links</p>
+</li>
+<li><p><strong>Agenda views</strong> for scheduled items and deadlines</p>
+</li>
+<li><p><strong>Code block search</strong> filtered by programming language</p>
+</li>
+</ul>
+
+<p>The database is built on SQLite (via <kbd>@libsql/client</kbd>) with support for vector similarity search, making it both fast and capable of sophisticated semantic queries.</p>
+
+</div>
+<div id="org-what-gets-indexed" class="org-section org-level-1">
+<h1>✅ What Gets Indexed</h1>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<div id="org-file-types" class="org-section org-level-2">
+<h2>✅ File Types</h2>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<p>The database automatically indexes three types of files:</p>
+
+<ul>
+<li><p>`.org&#39; files - Org-mode documents</p>
+</li>
+<li><p>`.md&#39; files - Markdown documents</p>
+</li>
+<li><p>`.ipynb&#39; files - Jupyter notebooks</p>
+</li>
+</ul>
+
+</div>
+<div id="org-indexed-content" class="org-section org-level-2">
+<h2>✅ Indexed Content</h2>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<p>For each file, the database extracts and indexes:</p>
+
+<div id="org-headings" class="org-section org-level-3">
+<h3>✅ Headings</h3>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<ul>
+<li><p>Heading text and level (*, **, ***, etc.)</p>
+</li>
+<li><p>TODO states (TODO, DONE, IN-PROGRESS, etc.)</p>
+</li>
+<li><p>Priority markers ([#A], [#B], [#C])</p>
+</li>
+<li><p>Tags (both direct and inherited)</p>
+</li>
+<li><p>Properties (CUSTOM_ID, CATEGORY, etc.)</p>
+</li>
+<li><p>Scheduling information (SCHEDULED, DEADLINE, CLOSED)</p>
+</li>
+<li><p>Line numbers for navigation</p>
+</li>
+</ul>
+
+</div>
+<div id="org-source-blocks" class="org-section org-level-3">
+<h3>✅ Source Blocks</h3>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<ul>
+<li><p>Programming language</p>
+</li>
+<li><p>Complete code content</p>
+</li>
+<li><p>Header arguments (<kbd>:results</kbd>, <kbd>:exports</kbd>, etc.)</p>
+</li>
+<li><p>Line numbers</p>
+</li>
+<li><p>For notebooks: cell indices</p>
+</li>
+</ul>
+
+</div>
+<div id="org-links" class="org-section org-level-3">
+<h3>✅ Links</h3>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<ul>
+<li><p>Link type (file, http, https, id, etc.)</p>
+</li>
+<li><p>Target path or URL</p>
+</li>
+<li><p>Optional description text</p>
+</li>
+<li><p>Line number</p>
+</li>
+</ul>
+
+</div>
+<div id="org-hashtags" class="org-section org-level-3">
+<h3>✅ Hashtags</h3>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<ul>
+<li><p>Inline hashtags (e.g., #research, #todo)</p>
+</li>
+<li><p>Associated file paths</p>
+</li>
+</ul>
+
+</div>
+<div id="org-full-text" class="org-section org-level-3">
+<h3>✅ Full Text</h3>
+<p>CLOSED: [2026-01-17 Sat 11:45]</p>
+
+<ul>
+<li><p>Complete document content for full-text search</p>
+</li>
+<li><p>Indexed with FTS5 virtual tables</p>
+</li>
+<li><p>Porter stemming and Unicode normalization</p>
+</li>
+</ul>
+
+<p>Here is a hashtag #FullTextSearch</p>
+
+</div>
+<div id="org-text-chunks-for-semantic-search" class="org-section org-level-3">
+<h3>✅ Text Chunks (for Semantic Search)</h3>
+<p>CLOSED: [2026-01-17 Sat 11:46]</p>
+
+<ul>
+<li><p>Document divided into ~2000 character chunks</p>
+</li>
+<li><p>3-line overlap between chunks for context</p>
+</li>
+<li><p>Vector embeddings (if embedding service configured)</p>
+</li>
+<li><p>Line ranges for each chunk</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-file-watching" class="org-section org-level-2">
+<h2>✅ File Watching</h2>
+<p>CLOSED: [2026-01-18 Sun 11:43]</p>
+
+<p>The database automatically watches for file changes:</p>
+
+<ul>
+<li><p>New files are indexed when created</p>
+</li>
+<li><p>Modified files are re-indexed (debounced with 500ms delay)</p>
+</li>
+<li><p>Deleted files are removed from the index</p>
+</li>
+<li><p>Changes are queued and processed sequentially</p>
+</li>
+</ul>
+
+</div>
+<div id="org-ignore-patterns" class="org-section org-level-2">
+<h2>✅ Ignore Patterns</h2>
+<p>CLOSED: [2026-01-17 Sat 11:46]</p>
+
+<p>By default, the following patterns are ignored:</p>
+
+<ul>
+<li><p><kbd>**/node_modules/**</kbd></p>
+</li>
+<li><p><kbd>**/.git/**</kbd></p>
+</li>
+<li><p><kbd>**/dist/**</kbd></p>
+</li>
+<li><p><kbd>**/build/**</kbd></p>
+</li>
+<li><p><kbd>**/.ipynb_checkpoints/**</kbd></p>
+</li>
+</ul>
+
+<p>Configure additional patterns in settings: <kbd>scimax.db.ignorePatterns</kbd></p>
+
+<p><a href="#org-cmd-workbench-action-opensettings2">[[cmd:workbench.action.openSettings2]]</a></p>
+
+<p><a href="#org-cmd-workbench-action-opensettings2-scimax">Open Scimax Settings</a>        </p>
+
+</div>
+</div>
+<div id="org-full-text-search" class="org-section org-level-1">
+<h1>✅ Full-Text Search</h1>
+<p>CLOSED: [2026-01-17 Sat 11:46]</p>
+
+<div id="org-overview" class="org-section org-level-2">
+<h2>✅ Overview</h2>
+<p>CLOSED: [2026-01-17 Sat 11:46]</p>
+
+<p>Full-text search uses SQLite&#39;s FTS5 (Full-Text Search version 5) with:</p>
+
+<ul>
+<li><p><strong>BM25 ranking</strong> - Industry-standard relevance scoring</p>
+</li>
+<li><p><strong>Porter stemming</strong> - Matches word variations (e.g., &quot;run&quot; matches &quot;running&quot;)</p>
+</li>
+<li><p><strong>Unicode normalization</strong> - Handles accented characters correctly</p>
+</li>
+<li><p><strong>Snippet generation</strong> - Shows matching context with highlighting</p>
+</li>
+</ul>
+
+</div>
+<div id="org-usage" class="org-section org-level-2">
+<h2>✅ Usage</h2>
+<p>CLOSED: [2026-01-17 Sat 11:49]</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>✅ Command</h3>
+<p>CLOSED: [2026-01-17 Sat 11:49]
+Run <kbd>Scimax: Search All Files (FTS5)</kbd> or use command <kbd>scimax.db.search</kbd></p>
+
+<p><a href="#org-cmd-scimax-db-search">[[cmd:scimax.db.search]]</a></p>
+
+</div>
+<div id="org-query-syntax" class="org-section org-level-3">
+<h3>✅ Query Syntax</h3>
+<p>CLOSED: [2026-01-17 Sat 11:49]</p>
+
+<p>FTS5 supports rich query syntax:</p>
+
+<div id="org-basic-queries" class="org-section org-level-4">
+<h4>✅ Basic Queries</h4>
+<p>CLOSED: [2026-01-17 Sat 11:49]</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">machine learning          # Match both words (in any order)
+&quot;machine learning&quot;        # Match exact phrase
+neural OR artificial      # Match either word</code></pre>
+</div>
+
+</div>
+<div id="org-boolean-operators" class="org-section org-level-4">
+<h4>Boolean Operators</h4>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">python AND jupyter        # Must contain both
+python NOT tensorflow     # Contains python but not tensorflow
+deep OR machine learning  # Contains &quot;deep&quot; or the phrase &quot;machine learning&quot;</code></pre>
+</div>
+
+</div>
+<div id="org-prefix-matching" class="org-section org-level-4">
+<h4>Prefix Matching</h4>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">comput*                   # Matches: computer, computing, computation
+data*                     # Matches: data, database, dataset</code></pre>
+</div>
+
+</div>
+<div id="org-column-queries" class="org-section org-level-4">
+<h4>Column Queries</h4>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">title: introduction       # Search only in titles
+content: python           # Search only in content</code></pre>
+</div>
+
+</div>
+<div id="org-proximity-queries" class="org-section org-level-4">
+<h4>Proximity Queries</h4>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">NEAR(neural network, 5)   # Words within 5 tokens of each other</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-results" class="org-section org-level-2">
+<h2>Results</h2>
+<p>Search results include:</p>
+
+<ul>
+<li><p>File path and basename</p>
+</li>
+<li><p>Line number</p>
+</li>
+<li><p>Preview snippet with `<mark>&#39; tags highlighting matches</p>
+</li>
+<li><p>BM25 relevance score</p>
+</li>
+<li><p>Up to 100 results (configurable)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-example-searches" class="org-section org-level-2">
+<h2>Example Searches</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Find all references to &quot;gradient descent&quot;
+gradient descent
+
+# Find Python-related TODO items
+TODO python
+
+# Find documents about data science or machine learning
+&quot;data science&quot; OR &quot;machine learning&quot;
+
+# Find recent mentions of TensorFlow (excluding Keras)
+tensorflow NOT keras
+
+# Find all documents with &quot;introduction&quot; in title
+title: introduction</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-semantic-search" class="org-section org-level-1">
+<h1>✅ Semantic Search</h1>
+<p>CLOSED: [2026-01-17 Sat 11:55]</p>
+
+<div id="org-overview" class="org-section org-level-2">
+<h2>✅ Overview</h2>
+<p>CLOSED: [2026-01-17 Sat 11:55]</p>
+
+<p>Semantic search finds content by <strong>meaning</strong> rather than exact words. It uses vector embeddings to represent text in a high-dimensional space where semantically similar content is close together.</p>
+
+<p>Benefits:</p>
+
+<ul>
+<li><p>Find content even when using different words</p>
+</li>
+<li><p>Discover related concepts</p>
+</li>
+<li><p>More natural query language</p>
+</li>
+</ul>
+
+<p>Example: Searching for &quot;machine learning algorithms&quot; will also find documents about &quot;neural networks&quot;, &quot;deep learning models&quot;, and &quot;classification methods&quot; even if they don&#39;t contain those exact words.</p>
+
+</div>
+<div id="org-requirements" class="org-section org-level-2">
+<h2>✅ Requirements</h2>
+<p>CLOSED: [2026-01-17 Sat 11:58]</p>
+
+<p>Semantic search requires:</p>
+
+<ol>
+<li><p><strong>Vector search support in libsql</strong> - The database must support vector operations</p>
+</li>
+<li><p><strong>Embedding provider configured</strong> - One of: local (Transformers.js), Ollama, or OpenAI</p>
+</li>
+<li><p><strong>Files indexed with embeddings</strong> - Run <kbd>scimax.db.reindex</kbd> after configuring</p>
+</li>
+</ol>
+
+<div id="org-checking-availability" class="org-section org-level-3">
+<h3>Checking Availability</h3>
+<p>Run <kbd>Scimax: Show Database Stats</kbd> (<kbd>scimax.db.stats</kbd>) to see:</p>
+
+<ul>
+<li><p>Whether vector search is supported</p>
+</li>
+<li><p>Number of embeddings stored</p>
+</li>
+<li><p>Any error messages</p>
+</li>
+</ul>
+
+<p>If vector search is unavailable, the stats will show:</p>
+
+<pre class="example">Semantic search: Unavailable (vector search not supported)</pre>
+
+</div>
+<div id="org-fallback-to-full-text-search" class="org-section org-level-3">
+<h3>Fallback to Full-Text Search</h3>
+<p>If semantic search is unavailable, use full-text search (`scimax.db.search&#39;) instead. FTS5 is always available and very fast for keyword-based queries.</p>
+
+</div>
+</div>
+<div id="org-embedding-providers" class="org-section org-level-2">
+<h2>Embedding Providers</h2>
+<p>Scimax supports three embedding providers:</p>
+
+<div id="org-local-transformers-js-recommended" class="org-section org-level-3">
+<h3>Local (Transformers.js) - Recommended</h3>
+<ul>
+<li><p><strong>Pros</strong>: Free, private, no external services needed</p>
+</li>
+<li><p><strong>Cons</strong>: Slower initial model download (~30MB)</p>
+</li>
+<li><p><strong>Models</strong>:</p>
+</li>
+</ul>
+
+</div>
+<div id="org-ollama" class="org-section org-level-3">
+<h3>Ollama</h3>
+<ul>
+<li><p><strong>Pros</strong>: Free, private, local control</p>
+</li>
+<li><p><strong>Cons</strong>: Requires Ollama installed and running</p>
+</li>
+<li><p><strong>Models</strong>:</p>
+</li>
+<li><p><strong>Setup</strong>: Install Ollama, then <kbd>ollama pull nomic-embed-text</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-openai" class="org-section org-level-3">
+<h3>✅ OpenAI</h3>
+<p>CLOSED: [2026-01-17 Sat 11:59]</p>
+
+<ul>
+<li><p><strong>Pros</strong>: High quality, fast, maintained, supports batch embedding</p>
+</li>
+<li><p><strong>Cons</strong>: Requires API key, costs money, sends data to cloud</p>
+</li>
+<li><p><strong>Security</strong>: API key stored securely in OS credential manager (Keychain/Credential Manager/libsecret)</p>
+</li>
+<li><p><strong>Model</strong>: <kbd>text-embedding-3-small</kbd> (1536 dims) - currently the only model used</p>
+</li>
+<li><p><strong>Note</strong>: Model selection is not yet configurable; text-embedding-3-small is used automatically</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-configuration" class="org-section org-level-2">
+<h2>✅ Configuration</h2>
+<p>CLOSED: [2026-01-17 Sat 11:59]</p>
+
+<div id="org-interactive-setup" class="org-section org-level-3">
+<h3>✅ Interactive Setup</h3>
+<p>CLOSED: [2026-01-17 Sat 11:59]</p>
+
+<p>Run <kbd>Scimax: Configure Embedding Service</kbd> (<kbd>scimax.db.configureEmbeddings</kbd>)</p>
+
+<p>This wizard will:</p>
+
+<ol>
+<li><p>Let you choose a provider</p>
+</li>
+<li><p>Select a model</p>
+</li>
+<li><p>Test the connection</p>
+</li>
+<li><p>Update your settings</p>
+</li>
+<li><p>Prompt you to reindex files</p>
+</li>
+</ol>
+
+</div>
+<div id="org-manual-configuration" class="org-section org-level-3">
+<h3>✅ Manual Configuration</h3>
+<p>CLOSED: [2026-01-17 Sat 11:59]</p>
+
+<p>Add to your VS Code settings (<kbd>settings.json</kbd>):</p>
+
+<div id="org-local-transformers-js" class="org-section org-level-4">
+<h4>✅ Local (Transformers.js)</h4>
+<p>CLOSED: [2026-01-17 Sat 11:59]</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;local&quot;,
+  &quot;scimax.db.localModel&quot;: &quot;Xenova/all-MiniLM-L6-v2&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-ollama" class="org-section org-level-4">
+<h4>✅ Ollama</h4>
+<p>CLOSED: [2026-01-17 Sat 12:00]</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;ollama&quot;,
+  &quot;scimax.db.ollamaUrl&quot;: &quot;http://localhost:11434&quot;,
+  &quot;scimax.db.ollamaModel&quot;: &quot;nomic-embed-text&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-openai" class="org-section org-level-4">
+<h4>✅ OpenAI</h4>
+<p>CLOSED: [2026-01-18 Sat 12:00]</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;openai&quot;
+}</code></pre>
+</div>
+
+<p>Note: The API key is stored securely in your OS credential manager, not in settings.json.
+Use the interactive setup (<kbd>Scimax: Configure Embedding Service</kbd>) to enter your API key.
+Uses <kbd>text-embedding-3-small</kbd> model (1536 dimensions).</p>
+
+</div>
+</div>
+</div>
+<div id="org-usage" class="org-section org-level-2">
+<h2>✅ Usage</h2>
+<p>CLOSED: [2026-01-17 Sat 12:01]</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>✅ Command</h3>
+<p>CLOSED: [2026-01-17 Sat 12:01]
+Run <kbd>Scimax: Semantic Search</kbd> or use command <kbd>scimax.db.searchSemantic</kbd></p>
+
+</div>
+<div id="org-query-examples" class="org-section org-level-3">
+<h3>✅ Query Examples</h3>
+<p>CLOSED: [2026-01-17 Sat 12:01]</p>
+
+<p>Semantic search uses natural language:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Conceptual searches
+explain neural network architecture
+how to optimize database queries
+project management best practices
+
+# Related concept discovery
+clustering algorithms    # Finds: k-means, hierarchical, DBSCAN
+data visualization       # Finds: matplotlib, charts, plots, graphs
+
+# Question answering
+what is gradient descent
+how does attention mechanism work</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-results" class="org-section org-level-2">
+<h2>Results</h2>
+<p>Results include:</p>
+
+<ul>
+<li><p>File path and line number</p>
+</li>
+<li><p>Preview (first 200 characters of chunk)</p>
+</li>
+<li><p>Similarity score (0-100%, higher is more relevant)</p>
+</li>
+<li><p>Cosine distance (lower is more similar)</p>
+</li>
+<li><p>Up to 20 results by default</p>
+</li>
+</ul>
+
+</div>
+<div id="org-reindexing-for-semantic-search" class="org-section org-level-2">
+<h2>Reindexing for Semantic Search</h2>
+<p>After configuring an embedding provider, you <strong>must reindex</strong> your files:</p>
+
+<ol>
+<li><p>Run <kbd>Scimax: Reindex Files</kbd> (<kbd>scimax.db.reindex</kbd>)</p>
+</li>
+<li><p>Wait for indexing to complete</p>
+</li>
+<li><p>The database will generate embeddings for all text chunks</p>
+</li>
+<li><p>Semantic search will now be available</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-hybrid-search" class="org-section org-level-1">
+<h1>Hybrid Search</h1>
+<div id="org-overview" class="org-section org-level-2">
+<h2>Overview</h2>
+<p>Hybrid search combines full-text (keyword) and semantic (vector) search using <strong>Reciprocal Rank Fusion</strong> (RRF). This approach:</p>
+
+<ul>
+<li><p>Gets the best of both worlds</p>
+</li>
+<li><p>Balances exact matches with conceptual similarity</p>
+</li>
+<li><p>Provides more robust results</p>
+</li>
+</ul>
+
+</div>
+<div id="org-usage" class="org-section org-level-2">
+<h2>Usage</h2>
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p>Run <kbd>Scimax: Hybrid Search</kbd> or use command <kbd>scimax.db.searchHybrid</kbd></p>
+
+</div>
+<div id="org-how-it-works" class="org-section org-level-3">
+<h3>How It Works</h3>
+<ol>
+<li><p>Query runs through both FTS5 and vector search</p>
+</li>
+<li><p>Results from each are ranked</p>
+</li>
+<li><p>RRF algorithm combines rankings:</p>
+</li>
+<li><p>Final results sorted by combined score</p>
+</li>
+</ol>
+
+</div>
+<div id="org-weights" class="org-section org-level-3">
+<h3>Weights</h3>
+<p>Default weights are 50/50, but can be adjusted:</p>
+
+<div class="org-src-container">
+<pre class="src src-typescript"><code class="language-typescript">// Internal API (for extension developers)
+db.searchHybrid(query, {
+  limit: 20,
+  ftsWeight: 0.5,      // 50% weight on keywords
+  vectorWeight: 0.5    // 50% weight on semantics
+});</code></pre>
+</div>
+
+</div>
+<div id="org-when-to-use-hybrid" class="org-section org-level-3">
+<h3>When to Use Hybrid</h3>
+<ul>
+<li><p>Default choice for general searches</p>
+</li>
+<li><p>When you want both exact matches and related concepts</p>
+</li>
+<li><p>When query has both specific terms and broad concepts</p>
+</li>
+<li><p>Example: &quot;python sklearn classification accuracy&quot; - finds both sklearn-specific code and general ML accuracy discussions</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-results" class="org-section org-level-2">
+<h2>Results</h2>
+<p>Results include:</p>
+
+<ul>
+<li><p>Combined ranking score</p>
+</li>
+<li><p>Source indicator (Keywords, AI, or both)</p>
+</li>
+<li><p>File location and preview</p>
+</li>
+<li><p>Up to 20 results</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-structured-queries" class="org-section org-level-1">
+<h1>Structured Queries</h1>
+<p>Beyond free-text search, the database supports structured queries for specific content types.</p>
+
+<div id="org-heading-search" class="org-section org-level-2">
+<h2>Heading Search</h2>
+<p>Search specifically in headings, with optional filtering:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p><kbd>Scimax: Search Headings</kbd> (<kbd>scimax.db.searchHeadings</kbd>)</p>
+
+</div>
+<div id="org-features" class="org-section org-level-3">
+<h3>Features</h3>
+<ul>
+<li><p>Search by heading text</p>
+</li>
+<li><p>Filter by TODO state</p>
+</li>
+<li><p>Filter by tag</p>
+</li>
+<li><p>Shows heading level, tags, TODO state</p>
+</li>
+<li><p>Displays deadlines and scheduled dates</p>
+</li>
+</ul>
+
+</div>
+<div id="org-example-use-cases" class="org-section org-level-3">
+<h3>Example Use Cases</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Find all headings about Python
+python
+
+# Find TODOs with specific tag (use Tag Search)
+:work:
+
+# Browse document structure
+&lt;empty query&gt;</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-tag-search" class="org-section org-level-2">
+<h2>Tag Search</h2>
+<p>Search headings by org-mode tags:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p><kbd>Scimax: Search By Tag</kbd> (<kbd>scimax.db.searchByTag</kbd>)</p>
+
+</div>
+<div id="org-features" class="org-section org-level-3">
+<h3>Features</h3>
+<ul>
+<li><p>Lists all tags found in indexed files</p>
+</li>
+<li><p>Shows heading count per tag</p>
+</li>
+<li><p>Supports both direct and inherited tags</p>
+</li>
+<li><p>Tags displayed as <kbd>:tagname:</kbd></p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-property-search" class="org-section org-level-2">
+<h2>Property Search</h2>
+<p>Search headings by property drawer values:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p><kbd>Scimax: Search By Property</kbd> (<kbd>scimax.db.searchByProperty</kbd>)</p>
+
+</div>
+<div id="org-common-properties" class="org-section org-level-3">
+<h3>Common Properties</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">CUSTOM_ID    # Unique identifiers for linking
+ID           # Auto-generated UUIDs
+CATEGORY     # Classification
+CREATED      # Creation timestamp
+MODIFIED     # Last modification time</code></pre>
+</div>
+
+</div>
+<div id="org-examples" class="org-section org-level-3">
+<h3>Examples</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Find all entries with CATEGORY property
+Property: CATEGORY
+Value: &lt;empty&gt;
+
+# Find entries with specific CATEGORY
+Property: CATEGORY
+Value: research
+
+# Find entries with CUSTOM_ID
+Property: CUSTOM_ID
+Value: &lt;empty or specific&gt;</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-search" class="org-section org-level-2">
+<h2><span class="org-todo-keyword org-todo-todo org-kw-todo">TODO</span> Search</h2>
+<p>Browse and filter TODO items:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p><kbd>Scimax: Show TODOs</kbd> (<kbd>scimax.db.showTodos</kbd>)</p>
+
+</div>
+<div id="org-features" class="org-section org-level-3">
+<h3>Features</h3>
+<ul>
+<li><p>Lists all TODO items across workspace</p>
+</li>
+<li><p>Filter by state (TODO, DONE, IN-PROGRESS, etc.)</p>
+</li>
+<li><p>Shows priority, tags, scheduling</p>
+</li>
+<li><p>Excludes DONE and CANCELLED by default in other views</p>
+</li>
+</ul>
+
+</div>
+<div id="org-common-todo-states" class="org-section org-level-3">
+<h3>Common TODO States</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">TODO          # Not started
+IN-PROGRESS   # Currently working on
+NEXT          # Up next
+WAIT          # Waiting on something
+DONE          # Completed
+CANCELLED     # Abandoned</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-source-block-search" class="org-section org-level-2">
+<h2>✅ Source Block Search</h2>
+<p>CLOSED: [2026-01-17 Sat 12:03]</p>
+
+<p>Search code blocks by language:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>✅ Command</h3>
+<p>CLOSED: [2026-01-17 Sat 12:03]</p>
+
+<p>  <kbd>Scimax: Search Code Blocks</kbd> (<kbd>scimax.db.searchBlocks</kbd>). <a href="#org-cmd-scimax-db-searchblocks">[[cmd:scimax.db.searchBlocks]]</a></p>
+
+</div>
+<div id="org-features" class="org-section org-level-3">
+<h3>✅ Features</h3>
+<p>CLOSED: [2026-01-17 Sat 12:03]</p>
+
+<ul>
+<li><p>Filter by programming language</p>
+</li>
+<li><p>Optional text search within code</p>
+</li>
+<li><p>Shows first line of code as preview</p>
+</li>
+<li><p>Includes both org files and notebook cells</p>
+</li>
+</ul>
+
+</div>
+<div id="org-example-workflow" class="org-section org-level-3">
+<h3>✅ Example Workflow</h3>
+<p>CLOSED: [2026-01-17 Sat 12:03]</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">1. Select language (or &quot;All languages&quot;)
+2. Optionally enter search text
+3. Browse matching code blocks
+4. Jump to file location</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-hashtag-search" class="org-section org-level-2">
+<h2>✅ Hashtag Search</h2>
+<p>CLOSED: [2026-01-17 Sat 12:03]</p>
+
+<p>Find files by inline hashtags:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>✅ Command</h3>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<p>  <kbd>Scimax: Search Hashtags</kbd> (<kbd>scimax.db.searchHashtags</kbd>). <a href="#org-cmd-scimax-db-searchhashtags">[[cmd:scimax.db.searchHashtags]]</a></p>
+
+</div>
+<div id="org-features" class="org-section org-level-3">
+<h3>✅ Features</h3>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<ul>
+<li><p>Lists all hashtags found (`#tagname&#39;)</p>
+</li>
+<li><p>Shows file count per hashtag</p>
+</li>
+<li><p>Displays files containing selected hashtag</p>
+</li>
+<li><p>Case-insensitive matching</p>
+</li>
+</ul>
+
+</div>
+<div id="org-hashtag-format" class="org-section org-level-3">
+<h3>✅ Hashtag Format</h3>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># In your documents
+This is a #research note about #machinelearning
+
+# Database indexes as
+research
+machinelearning</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-file-browser" class="org-section org-level-2">
+<h2>✅ File Browser</h2>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<p>Browse all indexed files:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>✅ Command</h3>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<p><kbd>Scimax: Browse Indexed Files</kbd> (<kbd>scimax.db.browseFiles</kbd>). <a href="#org-cmd-scimax-db-browsefiles">[[cmd:scimax.db.browseFiles]]</a></p>
+
+</div>
+<div id="org-features" class="org-section org-level-3">
+<h3>✅ Features</h3>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<ul>
+<li><p>Lists all files in database</p>
+</li>
+<li><p>Shows last indexed date</p>
+</li>
+<li><p>Sorted by most recently indexed</p>
+</li>
+<li><p>Displays file type (org, md, ipynb)</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div id="org-agenda-and-time-management" class="org-section org-level-1">
+<h1>✅ Agenda and Time Management</h1>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<div id="org-agenda-view" class="org-section org-level-2">
+<h2>✅ Agenda View</h2>
+<p>CLOSED: [2026-01-17 Sat 12:04]</p>
+
+<p>The agenda shows scheduled items and deadlines:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>✅ Command</h3>
+<p>CLOSED: [2026-01-17 Sat 12:05]</p>
+
+<p><kbd>Scimax: Show Agenda</kbd> (<kbd>scimax.db.agenda</kbd>). <a href="#org-cmd-scimax-db-agenda">[[cmd:scimax.db.agenda]]</a></p>
+
+</div>
+<div id="org-time-periods" class="org-section org-level-3">
+<h3>✅ Time Periods</h3>
+<p>CLOSED: [2026-01-17 Sat 12:05]</p>
+
+<ul>
+<li><p>Next 2 weeks (default)</p>
+</li>
+<li><p>Next month</p>
+</li>
+<li><p>Next 3 months</p>
+</li>
+<li><p>All items (no time limit)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-options" class="org-section org-level-3">
+<h3>✅ Options</h3>
+<p>CLOSED: [2026-01-17 Sat 12:05]</p>
+
+<ul>
+<li><p>Include unscheduled TODOs</p>
+</li>
+<li><p>Filter by time range</p>
+</li>
+<li><p>Sorted by urgency (overdue first)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-item-types" class="org-section org-level-3">
+<h3>✅ Item Types</h3>
+<p>CLOSED: [2026-01-17 Sat 12:05]</p>
+
+<div id="org-deadline" class="org-section org-level-4">
+<h4>✅ Deadline</h4>
+<p>CLOSED: [2026-01-17 Sat 12:05]
+Items with DEADLINE timestamps:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Submit report
+DEADLINE: &lt;2026-01-20 Mon&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-scheduled" class="org-section org-level-4">
+<h4>✅ Scheduled</h4>
+<p>CLOSED: [2026-01-17 Sat 12:05]</p>
+
+<p>Items with SCHEDULED timestamps:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Team meeting
+SCHEDULED: &lt;2026-01-15 Wed 14:00&gt;</code></pre>
+</div>
+
+</div>
+<div id="org-unscheduled-todos" class="org-section org-level-4">
+<h4>✅ Unscheduled TODOs</h4>
+<p>CLOSED: [2026-01-17 Sat 12:06]</p>
+
+<p>  Items with TODO state but no scheduling</p>
+
+</div>
+</div>
+</div>
+<div id="org-deadline-view" class="org-section org-level-2">
+<h2>✅ Deadline View</h2>
+<p>CLOSED: [2026-01-17 Sat 12:06]</p>
+
+<p>Show only upcoming deadlines:</p>
+
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p><kbd>Scimax: Show Deadlines</kbd> (<kbd>scimax.db.deadlines</kbd>). <a href="#org-cmd-scimax-db-deadlines">[[cmd:scimax.db.deadlines]]</a></p>
+
+</div>
+<div id="org-features" class="org-section org-level-3">
+<h3>✅ Features</h3>
+<p>CLOSED: [2026-01-17 Sat 12:06]</p>
+
+<ul>
+<li><p>Next 2 weeks of deadlines</p>
+</li>
+<li><p>Overdue items highlighted</p>
+</li>
+<li><p>Shows days until deadline</p>
+</li>
+<li><p>Excludes DONE and CANCELLED</p>
+</li>
+</ul>
+
+</div>
+<div id="org-display-format" class="org-section org-level-3">
+<h3>Display Format  </h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">⚠️  Overdue: Submit TPS Report (3 days ago)
+🔔 Today: Code Review
+🔔 Tomorrow: Documentation Update
+🔔 In 5 days: Project Demo</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-date-formats" class="org-section org-level-2">
+<h2>Date Formats</h2>
+<div id="org-scheduling-in-org-files" class="org-section org-level-3">
+<h3>Scheduling in Org Files</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Simple date
+SCHEDULED: &lt;2026-01-20&gt;
+
+# Date with time
+SCHEDULED: &lt;2026-01-20 Mon 14:00&gt;
+
+# Date with time range
+SCHEDULED: &lt;2026-01-20 Mon 14:00-16:00&gt;
+
+# Deadline with warning period
+DEADLINE: &lt;2026-01-20 Mon -3d&gt;
+
+# Closed timestamp
+CLOSED: [2026-01-13 Mon 10:30]</code></pre>
+</div>
+
+</div>
+<div id="org-relative-dates" class="org-section org-level-3">
+<h3>Relative Dates</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">+2w    # 2 weeks from now
++1m    # 1 month from now
++3d    # 3 days from now
++1y    # 1 year from now</code></pre>
+</div>
+
+</div>
+</div>
+</div>
+<div id="org-search-scope" class="org-section org-level-1">
+<h1>Search Scope</h1>
+<p>Limit searches to specific directories:</p>
+
+<div id="org-commands" class="org-section org-level-2">
+<h2>Commands</h2>
+<p><kbd>Scimax: Set Search Scope</kbd> (<kbd>scimax.db.setScope</kbd>)</p>
+
+</div>
+<div id="org-scope-types" class="org-section org-level-2">
+<h2>Scope Types</h2>
+<div id="org-all-files-default" class="org-section org-level-3">
+<h3>All Files (Default)</h3>
+<ul>
+<li><p>Searches entire indexed database</p>
+</li>
+<li><p>Includes all workspace folders</p>
+</li>
+<li><p>Includes additional configured directories</p>
+</li>
+</ul>
+
+</div>
+<div id="org-current-directory" class="org-section org-level-3">
+<h3>Current Directory</h3>
+<ul>
+<li><p>Limits to active file&#39;s directory</p>
+</li>
+<li><p>Includes subdirectories</p>
+</li>
+<li><p>Useful for project-focused searches</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-current-scope-indicator" class="org-section org-level-2">
+<h2>Current Scope Indicator</h2>
+<p>The current scope is shown when setting scope:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">Search scope: all
+Search scope: directory (my-project)</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-database-management" class="org-section org-level-1">
+<h1>Database Management</h1>
+<div id="org-reindexing" class="org-section org-level-2">
+<h2>Reindexing</h2>
+<div id="org-full-reindex" class="org-section org-level-3">
+<h3>Full Reindex</h3>
+<p>Command: <kbd>Scimax: Reindex Files</kbd> (<kbd>scimax.db.reindex</kbd>). <a href="#org-cmd-scimax-db-reindex">[[cmd:scimax.db.reindex]]</a></p>
+
+<ul>
+<li><p>Scans all workspace folders</p>
+</li>
+<li><p>Checks file modification times</p>
+</li>
+<li><p>Only reindexes changed files</p>
+</li>
+<li><p>Shows progress notification</p>
+</li>
+<li><p>Reports statistics on completion</p>
+</li>
+</ul>
+
+</div>
+<div id="org-auto-indexing" class="org-section org-level-3">
+<h3>✅ Auto-Indexing</h3>
+<p>CLOSED: [2026-01-17 Sat 12:08]</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.autoIndex&quot;: true
+}</code></pre>
+</div>
+
+<p>Warning: Disable for very large workspaces (&gt;10,000 files) to prevent memory issues.</p>
+
+</div>
+<div id="org-additional-directories" class="org-section org-level-3">
+<h3>✅ Additional Directories</h3>
+<p>CLOSED: [2026-01-17 Sat 12:08]</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.directories&quot;: [
+    &quot;/home/user/research&quot;,
+    &quot;/home/user/notes&quot;,
+    &quot;~/Documents/org&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-optimization" class="org-section org-level-2">
+<h2>Optimization</h2>
+<div id="org-command" class="org-section org-level-3">
+<h3>✅ Command</h3>
+<p>CLOSED: [2026-01-17 Sat 12:08]</p>
+
+<p><kbd>Scimax: Optimize Database</kbd> (<kbd>scimax.db.optimize</kbd>). <a href="#org-cmd-scimax-db-optimize">[[cmd:scimax.db.optimize]]</a></p>
+
+</div>
+<div id="org-operations" class="org-section org-level-3">
+<h3>Operations</h3>
+<ul>
+<li><p>Removes entries for deleted files</p>
+</li>
+<li><p>Runs VACUUM to reclaim space</p>
+</li>
+<li><p>Rebuilds indexes for performance</p>
+</li>
+<li><p>Should be run periodically (monthly)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-clearing-database" class="org-section org-level-2">
+<h2>Clearing Database</h2>
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p><kbd>Scimax: Clear Database</kbd> (<kbd>scimax.db.clear</kbd>)</p>
+
+</div>
+<div id="org-warning" class="org-section org-level-3">
+<h3>Warning</h3>
+<p>This is destructive and requires confirmation:</p>
+
+<ul>
+<li><p>Removes all indexed data</p>
+</li>
+<li><p>Clears embeddings</p>
+</li>
+<li><p>Resets statistics</p>
+</li>
+<li><p>Requires full reindex to restore</p>
+</li>
+</ul>
+
+</div>
+<div id="org-when-to-clear" class="org-section org-level-3">
+<h3>When to Clear</h3>
+<ul>
+<li><p>Database corruption</p>
+</li>
+<li><p>Major schema changes</p>
+</li>
+<li><p>Troubleshooting issues</p>
+</li>
+<li><p>Fresh start needed</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-statistics" class="org-section org-level-2">
+<h2>Statistics</h2>
+<div id="org-command" class="org-section org-level-3">
+<h3>Command</h3>
+<p><kbd>Scimax: Show Database Stats</kbd> (<kbd>scimax.db.stats</kbd>)</p>
+
+</div>
+<div id="org-information-displayed" class="org-section org-level-3">
+<h3>Information Displayed</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">Scimax DB: 127 files (98 org, 23 md, 6 ipynb),
+1,234 headings, 456 code blocks, 789 links.
+Semantic search: Enabled (243 chunks).
+Last indexed: 2026-01-13 14:30:00</code></pre>
+</div>
+
+</div>
+<div id="org-stats-include" class="org-section org-level-3">
+<h3>Stats Include</h3>
+<ul>
+<li><p>File count by type</p>
+</li>
+<li><p>Heading count</p>
+</li>
+<li><p>Code block count</p>
+</li>
+<li><p>Link count</p>
+</li>
+<li><p>Chunk count (for semantic search)</p>
+</li>
+<li><p>Embedding status</p>
+</li>
+<li><p>Last index timestamp</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div id="org-performance-considerations" class="org-section org-level-1">
+<h1>Performance Considerations</h1>
+<div id="org-indexing-performance" class="org-section org-level-2">
+<h2>Indexing Performance</h2>
+<div id="org-file-size" class="org-section org-level-3">
+<h3>File Size</h3>
+<ul>
+<li><p>Small files (&lt;100KB): ~10-50ms</p>
+</li>
+<li><p>Medium files (100KB-1MB): ~50-200ms</p>
+</li>
+<li><p>Large files (&gt;1MB): ~200ms-1s</p>
+</li>
+</ul>
+
+</div>
+<div id="org-batch-indexing" class="org-section org-level-3">
+<h3>Batch Indexing</h3>
+<ul>
+<li><p>100 small files: ~2-5 seconds</p>
+</li>
+<li><p>1,000 small files: ~20-60 seconds</p>
+</li>
+<li><p>With embeddings: 2-5x slower</p>
+</li>
+</ul>
+
+</div>
+<div id="org-optimization-tips" class="org-section org-level-3">
+<h3>Optimization Tips</h3>
+<ol>
+<li><p>Use ignore patterns for large non-content directories</p>
+</li>
+<li><p>Disable auto-indexing for huge workspaces</p>
+</li>
+<li><p>Index incrementally (only changed files)</p>
+</li>
+<li><p>Run optimization monthly</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-search-performance" class="org-section org-level-2">
+<h2>Search Performance</h2>
+<div id="org-full-text-search-fts5" class="org-section org-level-3">
+<h3>Full-Text Search (FTS5)</h3>
+<ul>
+<li><p>Query time: 10-50ms (typical)</p>
+</li>
+<li><p>Scales well to 10,000+ files</p>
+</li>
+<li><p>BM25 scoring is highly optimized</p>
+</li>
+<li><p>Results returned in rank order</p>
+</li>
+</ul>
+
+</div>
+<div id="org-semantic-search" class="org-section org-level-3">
+<h3>Semantic Search</h3>
+<ul>
+<li><p>Query time: 50-500ms depending on provider</p>
+</li>
+<li><p>Local embeddings: slower but private</p>
+</li>
+<li><p>Ollama: moderate speed</p>
+</li>
+<li><p>OpenAI: fastest but requires network</p>
+</li>
+</ul>
+
+</div>
+<div id="org-hybrid-search" class="org-section org-level-3">
+<h3>Hybrid Search</h3>
+<ul>
+<li><p>Query time: Combined FTS + vector time</p>
+</li>
+<li><p>Typically 100-600ms</p>
+</li>
+<li><p>Runs searches in parallel</p>
+</li>
+<li><p>RRF fusion adds ~10ms</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-database-size" class="org-section org-level-2">
+<h2>Database Size</h2>
+<div id="org-typical-sizes" class="org-section org-level-3">
+<h3>Typical Sizes</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">100 files:      ~5-10 MB
+1,000 files:    ~50-100 MB
+10,000 files:   ~500 MB-1 GB</code></pre>
+</div>
+
+</div>
+<div id="org-with-embeddings" class="org-section org-level-3">
+<h3>With Embeddings</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">+50-100% size increase for chunks and vectors
+384-dim embeddings: ~1.5 KB per chunk
+768-dim embeddings: ~3 KB per chunk
+1536-dim embeddings: ~6 KB per chunk</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-memory-usage" class="org-section org-level-2">
+<h2>Memory Usage</h2>
+<div id="org-indexing" class="org-section org-level-3">
+<h3>Indexing</h3>
+<ul>
+<li><p>Base: ~50-100 MB</p>
+</li>
+<li><p>Peak during large batch: ~200-500 MB</p>
+</li>
+<li><p>Embedding generation: +100-300 MB</p>
+</li>
+</ul>
+
+</div>
+<div id="org-searching" class="org-section org-level-3">
+<h3>Searching</h3>
+<ul>
+<li><p>FTS5: ~10-50 MB</p>
+</li>
+<li><p>Vector search: ~50-200 MB (loads embeddings)</p>
+</li>
+<li><p>Minimal memory footprint when idle</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-scaling-guidelines" class="org-section org-level-2">
+<h2>Scaling Guidelines</h2>
+<div id="org-small-workspace-100-files" class="org-section org-level-3">
+<h3>Small Workspace (&lt;100 files)</h3>
+<ul>
+<li><p>Enable auto-indexing</p>
+</li>
+<li><p>Use any embedding provider</p>
+</li>
+<li><p>Full reindex in seconds</p>
+</li>
+</ul>
+
+</div>
+<div id="org-medium-workspace-100-1-000-files" class="org-section org-level-3">
+<h3>Medium Workspace (100-1,000 files)</h3>
+<ul>
+<li><p>Enable auto-indexing</p>
+</li>
+<li><p>Local or Ollama embeddings recommended</p>
+</li>
+<li><p>Full reindex in under a minute</p>
+</li>
+</ul>
+
+</div>
+<div id="org-large-workspace-1-000-10-000-files" class="org-section org-level-3">
+<h3>Large Workspace (1,000-10,000 files)</h3>
+<ul>
+<li><p>Consider disabling auto-indexing</p>
+</li>
+<li><p>Local embeddings may be slow</p>
+</li>
+<li><p>Use Ollama or OpenAI for better performance</p>
+</li>
+<li><p>Reindex incrementally</p>
+</li>
+</ul>
+
+</div>
+<div id="org-very-large-workspace-10-000-files" class="org-section org-level-3">
+<h3>Very Large Workspace (&gt;10,000 files)</h3>
+<ul>
+<li><p>Disable auto-indexing (manual reindex)</p>
+</li>
+<li><p>Use selective directory indexing</p>
+</li>
+<li><p>Consider multiple smaller databases</p>
+</li>
+<li><p>OpenAI embeddings recommended for speed</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div id="org-configuration-reference" class="org-section org-level-1">
+<h1>Configuration Reference</h1>
+<div id="org-database-settings" class="org-section org-level-2">
+<h2>Database Settings</h2>
+<div id="org-scimax-db-directories" class="org-section org-level-3">
+<h3>`scimax.db.directories&#39;</h3>
+<p>Type: <kbd>string[]</kbd>
+Default: <kbd>[]</kbd></p>
+
+<p>Additional directories to index beyond workspace folders.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.directories&quot;: [
+    &quot;/home/user/notes&quot;,
+    &quot;~/Documents/research&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-ignorepatterns" class="org-section org-level-3">
+<h3>`scimax.db.ignorePatterns&#39;</h3>
+<p>Type: <kbd>string[]</kbd>
+Default: <kbd>[&quot;**/node_modules/**&quot;, &quot;**/.git/**&quot;, &quot;**/dist/**&quot;, &quot;**/build/**&quot;, &quot;**/.ipynb_checkpoints/**&quot;]</kbd></p>
+
+<p>Glob patterns for files to exclude from indexing.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.ignorePatterns&quot;: [
+    &quot;**/node_modules/**&quot;,
+    &quot;**/.git/**&quot;,
+    &quot;**/dist/**&quot;,
+    &quot;**/temp/**&quot;,
+    &quot;**/*.backup.org&quot;
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-autoindex" class="org-section org-level-3">
+<h3>`scimax.db.autoIndex&#39;</h3>
+<p>Type: <kbd>boolean</kbd>
+Default: <kbd>false</kbd></p>
+
+<p>Automatically index workspace on activation. Disable for large workspaces.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.autoIndex&quot;: true
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-embedding-settings" class="org-section org-level-2">
+<h2>Embedding Settings</h2>
+<div id="org-scimax-db-embeddingprovider" class="org-section org-level-3">
+<h3>`scimax.db.embeddingProvider&#39;</h3>
+<p>Type: <kbd>enum</kbd>
+Values: &quot;none&quot; | &quot;local&quot; | &quot;ollama&quot; | &quot;openai&quot;
+Default: <kbd>&quot;none&quot;</kbd></p>
+
+<p>Embedding provider for semantic search.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.embeddingProvider&quot;: &quot;local&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-localmodel" class="org-section org-level-3">
+<h3>`scimax.db.localModel&#39;</h3>
+<p>Type: <kbd>enum</kbd>
+Values: &quot;Xenova/all-MiniLM-L6-v2&quot; | &quot;Xenova/bge-small-en-v1.5&quot; | &quot;Xenova/gte-small&quot;
+Default: <kbd>&quot;Xenova/all-MiniLM-L6-v2&quot;</kbd></p>
+
+<p>Local embedding model (Transformers.js).</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.localModel&quot;: &quot;Xenova/all-MiniLM-L6-v2&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-ollamaurl" class="org-section org-level-3">
+<h3>`scimax.db.ollamaUrl&#39;</h3>
+<p>Type: <kbd>string</kbd>
+Default: <kbd>&quot;http://localhost:11434&quot;</kbd></p>
+
+<p>Ollama server URL.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.ollamaUrl&quot;: &quot;http://localhost:11434&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-db-ollamamodel" class="org-section org-level-3">
+<h3>`scimax.db.ollamaModel&#39;</h3>
+<p>Type: <kbd>string</kbd>
+Default: <kbd>&quot;nomic-embed-text&quot;</kbd></p>
+
+<p>Ollama embedding model name.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.db.ollamaModel&quot;: &quot;nomic-embed-text&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-openai-api-key-secure-storage" class="org-section org-level-3">
+<h3>OpenAI API Key (Secure Storage)</h3>
+<p>The OpenAI API key is stored securely using VS Code&#39;s SecretStorage API, which uses your operating system&#39;s credential manager:</p>
+
+<ul>
+<li><p><strong>macOS</strong>: Keychain</p>
+</li>
+<li><p><strong>Windows</strong>: Credential Manager</p>
+</li>
+<li><p><strong>Linux</strong>: libsecret (GNOME Keyring, KWallet)</p>
+</li>
+</ul>
+
+<p>To set or update your API key, use the interactive setup:
+Scimax: Configure Embedding Service (<kbd>scimax.db.configureEmbeddings</kbd>)</p>
+
+</div>
+</div>
+</div>
+<div id="org-command-reference" class="org-section org-level-1">
+<h1>Command Reference</h1>
+<div id="org-search-commands" class="org-section org-level-2">
+<h2>Search Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.db.search</td><td>Full-text search (FTS5)</td></tr>
+<tr><td>scimax.db.searchSemantic</td><td>Semantic search (vector)</td></tr>
+<tr><td>scimax.db.searchHybrid</td><td>Hybrid search (FTS + vector)</td></tr>
+<tr><td>scimax.db.searchHeadings</td><td>Search headings</td></tr>
+<tr><td>scimax.db.searchByTag</td><td>Search by org tag</td></tr>
+<tr><td>scimax.db.searchByProperty</td><td>Search by property value</td></tr>
+<tr><td>scimax.db.searchBlocks</td><td>Search code blocks</td></tr>
+<tr><td>scimax.db.searchHashtags</td><td>Search by hashtag</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-view-commands" class="org-section org-level-2">
+<h2>View Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.db.showTodos</td><td>Show TODO items</td></tr>
+<tr><td>scimax.db.agenda</td><td>Show agenda</td></tr>
+<tr><td>scimax.db.deadlines</td><td>Show upcoming deadlines</td></tr>
+<tr><td>scimax.db.browseFiles</td><td>Browse indexed files</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-management-commands" class="org-section org-level-2">
+<h2>Management Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.db.reindex</td><td>Reindex all files</td></tr>
+<tr><td>scimax.db.optimize</td><td>Optimize database</td></tr>
+<tr><td>scimax.db.clear</td><td>Clear database</td></tr>
+<tr><td>scimax.db.stats</td><td>Show database statistics</td></tr>
+<tr><td>scimax.db.setScope</td><td>Set search scope</td></tr>
+<tr><td>scimax.db.configureEmbeddings</td><td>Configure embedding service</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>Troubleshooting</h1>
+<div id="org-semantic-search-not-working" class="org-section org-level-2">
+<h2>Semantic Search Not Working</h2>
+<div id="org-problem" class="org-section org-level-3">
+<h3>Problem</h3>
+<p>Semantic search returns no results, shows &quot;unavailable&quot;, or displays an error.</p>
+
+</div>
+<div id="org-first-check-vector-search-support" class="org-section org-level-3">
+<h3>First: Check Vector Search Support</h3>
+<p>Run <kbd>Scimax: Show Database Stats</kbd> (<kbd>scimax.db.stats</kbd>) to see the semantic search status:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Status Message</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>Semantic search: Enabled (N chunks)</td><td>Working, N chunks with embeddings</td></tr>
+<tr><td>Semantic search: Ready (no embeddings)</td><td>Supported, but no provider configured</td></tr>
+<tr><td>Semantic search: Unavailable (error)</td><td>Vector search not supported by database</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-vector-search-unavailable" class="org-section org-level-3">
+<h3>Vector Search Unavailable</h3>
+<p>If you see &quot;Semantic search: Unavailable&quot;, the libsql database doesn&#39;t support vector operations. This can happen if:</p>
+
+<ul>
+<li><p>The libsql version doesn&#39;t include vector support</p>
+</li>
+<li><p>The vector index failed to create</p>
+</li>
+</ul>
+
+</div>
+<div id="org-embedding-provider-issues" class="org-section org-level-3">
+<h3>Embedding Provider Issues</h3>
+<p>If vector search is supported but not working:</p>
+
+<ol>
+<li><p>Check embedding provider is configured: <kbd>scimax.db.embeddingProvider</kbd></p>
+</li>
+<li><p>Test connection: Run <kbd>Scimax: Configure Embedding Service</kbd></p>
+</li>
+<li><p>Ensure files are reindexed after configuring embeddings</p>
+</li>
+<li><p>Check console for errors (<kbd>Help: Toggle Developer Tools</kbd>)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-local-provider-issues" class="org-section org-level-3">
+<h3>Local Provider Issues</h3>
+<ul>
+<li><p>First use downloads model (~30MB), wait for completion</p>
+</li>
+<li><p>Check extension cache directory has write permissions</p>
+</li>
+<li><p>Try different model if one fails</p>
+</li>
+</ul>
+
+</div>
+<div id="org-ollama-issues" class="org-section org-level-3">
+<h3>Ollama Issues</h3>
+<ul>
+<li><p>Ensure Ollama is running: <kbd>ollama serve</kbd></p>
+</li>
+<li><p>Pull model: <kbd>ollama pull nomic-embed-text</kbd></p>
+</li>
+<li><p>Check URL is correct in settings</p>
+</li>
+<li><p>Test connection: <kbd>curl http://localhost:11434/api/embeddings</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-openai-issues" class="org-section org-level-3">
+<h3>OpenAI Issues</h3>
+<ul>
+<li><p>Verify API key is valid</p>
+</li>
+<li><p>Check API quota and billing</p>
+</li>
+<li><p>Ensure internet connection is stable</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-search-returns-no-results" class="org-section org-level-2">
+<h2>Search Returns No Results</h2>
+<div id="org-problem" class="org-section org-level-3">
+<h3>Problem</h3>
+<p>Searches return empty results despite having files.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Run <kbd>Scimax: Show Database Stats</kbd> to check file count</p>
+</li>
+<li><p>If files <kbd> 0, run </kbd>Scimax: Reindex Files</p>
+</li>
+<li><p>Check file extensions (.org, .md, .ipynb)</p>
+</li>
+<li><p>Verify files aren&#39;t in ignored directories</p>
+</li>
+<li><p>Check search scope is set to &quot;All files&quot;</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-slow-indexing" class="org-section org-level-2">
+<h2>Slow Indexing</h2>
+<div id="org-problem" class="org-section org-level-3">
+<h3>Problem</h3>
+<p>Indexing takes very long or appears stuck.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Check workspace size (number of files)</p>
+</li>
+<li><p>Add ignore patterns for large non-content directories</p>
+</li>
+<li><p>Disable embedding generation if not needed</p>
+</li>
+<li><p>Index directories incrementally</p>
+</li>
+<li><p>Check disk I/O and available memory</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-database-corruption" class="org-section org-level-2">
+<h2>Database Corruption</h2>
+<div id="org-problem" class="org-section org-level-3">
+<h3>Problem</h3>
+<p>Errors mentioning &quot;database is locked&quot; or &quot;disk I/O error&quot;.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Close other VS Code windows accessing same workspace</p>
+</li>
+<li><p>Restart VS Code</p>
+</li>
+<li><p>Run <kbd>Scimax: Clear Database</kbd> and reindex</p>
+</li>
+<li><p>Check disk space is available</p>
+</li>
+<li><p>Verify database file permissions</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-high-memory-usage" class="org-section org-level-2">
+<h2>High Memory Usage</h2>
+<div id="org-problem" class="org-section org-level-3">
+<h3>Problem</h3>
+<p>VS Code uses excessive memory during indexing or searching.</p>
+
+</div>
+<div id="org-solutions" class="org-section org-level-3">
+<h3>Solutions</h3>
+<ol>
+<li><p>Disable auto-indexing</p>
+</li>
+<li><p>Reduce number of indexed directories</p>
+</li>
+<li><p>Use more aggressive ignore patterns</p>
+</li>
+<li><p>Clear and reindex database</p>
+</li>
+<li><p>Restart VS Code between large indexing operations</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div id="org-examples-and-workflows" class="org-section org-level-1">
+<h1>Examples and Workflows</h1>
+<div id="org-research-paper-management" class="org-section org-level-2">
+<h2>Research Paper Management</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Organize papers with properties
+,* TODO Read: Attention Is All You Need
+:PROPERTIES:
+:CUSTOM_ID: vaswani2017attention
+:AUTHOR: Vaswani et al.
+:YEAR: 2017
+:CATEGORY: research
+:END:
+
+#transformers #attention #nlp
+
+SCHEDULED: &lt;2026-01-15 Wed&gt;
+
+# Search by property
+Property: CATEGORY
+Value: research
+
+# Search by hashtag
+#nlp
+
+# Semantic search
+transformer architecture papers</code></pre>
+</div>
+
+</div>
+<div id="org-project-todo-management" class="org-section org-level-2">
+<h2>Project Todo Management</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Use tags for organization
+,* TODO Implement login feature :work:backend:
+DEADLINE: &lt;2026-01-20 Mon&gt;
+
+,* TODO Write API documentation :work:docs:
+SCHEDULED: &lt;2026-01-18 Sat&gt;
+
+# Search by tag
+:work: -&gt; shows all work items
+:backend: -&gt; shows backend tasks
+
+# View agenda
+Next 2 weeks -&gt; prioritized by deadline
+
+# Search TODOs
+Filter by: TODO (in progress)</code></pre>
+</div>
+
+</div>
+<div id="org-code-snippet-library" class="org-section org-level-2">
+<h2>Code Snippet Library</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Store reusable code blocks
+,* Data Processing Utils
+
+,#+BEGIN_SRC python
+def normalize_data(df):
+    &quot;&quot;&quot;Normalize numeric columns&quot;&quot;&quot;
+    return (df - df.mean()) / df.std()
+,#+END_SRC
+
+# Search code blocks
+Language: python
+Query: normalize
+
+# Or semantic search
+how to standardize dataframe columns</code></pre>
+</div>
+
+</div>
+<div id="org-personal-knowledge-base" class="org-section org-level-2">
+<h2>Personal Knowledge Base</h2>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Use hybrid search for discovery
+Query: &quot;improve code performance&quot;
+
+Results will include:
+- Exact matches: &quot;code performance&quot; articles
+- Related concepts: optimization, profiling, caching
+- Similar topics: algorithm efficiency, memory management
+
+# Use properties for metadata
+:PROPERTIES:
+:CREATED: [2026-01-13 Mon 10:00]
+:MODIFIED: [2026-01-13 Mon 15:30]
+:CATEGORY: programming
+:END:</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>Best Practices</h1>
+<div id="org-indexing-strategy" class="org-section org-level-2">
+<h2>Indexing Strategy</h2>
+<ol>
+<li><p><strong>Start selective</strong> - Index specific directories first</p>
+</li>
+<li><p><strong>Use ignore patterns</strong> - Exclude build artifacts and dependencies</p>
+</li>
+<li><p><strong>Index incrementally</strong> - Don&#39;t reindex everything on changes</p>
+</li>
+<li><p><strong>Schedule optimization</strong> - Run monthly for large databases</p>
+</li>
+<li><p><strong>Monitor statistics</strong> - Check file counts and sizes regularly</p>
+</li>
+</ol>
+
+</div>
+<div id="org-search-strategy" class="org-section org-level-2">
+<h2>Search Strategy</h2>
+<ol>
+<li><p><strong>Start broad</strong> - Use semantic or hybrid search for exploration</p>
+</li>
+<li><p><strong>Refine with keywords</strong> - Switch to FTS for specific terms</p>
+</li>
+<li><p><strong>Use structured queries</strong> - Filter by tags/properties when possible</p>
+</li>
+<li><p><strong>Set scope appropriately</strong> - Narrow to directories for focused work</p>
+</li>
+<li><p><strong>Combine approaches</strong> - Use multiple search types for thorough research</p>
+</li>
+</ol>
+
+</div>
+<div id="org-organization-tips" class="org-section org-level-2">
+<h2>Organization Tips</h2>
+<ol>
+<li><p><strong>Use consistent tags</strong> - Establish tag naming conventions</p>
+</li>
+<li><p><strong>Add properties</strong> - Include metadata for filtering</p>
+</li>
+<li><p><strong>Set schedules</strong> - Use SCHEDULED/DEADLINE for time management</p>
+</li>
+<li><p><strong>Include hashtags</strong> - Quick inline categorization</p>
+</li>
+<li><p><strong>Write descriptive headings</strong> - Better search results</p>
+</li>
+</ol>
+
+</div>
+<div id="org-performance-tips" class="org-section org-level-2">
+<h2>Performance Tips</h2>
+<ol>
+<li><p><strong>Disable auto-indexing</strong> - For large workspaces (manual trigger)</p>
+</li>
+<li><p><strong>Choose appropriate embeddings</strong> - Balance quality vs. speed</p>
+</li>
+<li><p><strong>Limit result counts</strong> - Don&#39;t request thousands of results</p>
+</li>
+<li><p><strong>Use search scope</strong> - Narrow searches to relevant directories</p>
+</li>
+<li><p><strong>Cache frequent queries</strong> - Database has 15-minute result cache</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-technical-architecture" class="org-section org-level-1">
+<h1>Technical Architecture</h1>
+<div id="org-database-schema" class="org-section org-level-2">
+<h2>Database Schema</h2>
+<div id="org-files-table" class="org-section org-level-3">
+<h3>Files Table</h3>
+<p>Tracks indexed files with modification tracking:</p>
+
+<ul>
+<li><p><kbd>path</kbd>, <kbd>file_type</kbd>, <kbd>mtime</kbd>, <kbd>hash</kbd>, <kbd>size</kbd>, <kbd>indexed_at</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-headings-table" class="org-section org-level-3">
+<h3>Headings Table</h3>
+<p>Org/markdown headings with full metadata:</p>
+
+<ul>
+<li><p><kbd>level</kbd>, <kbd>title</kbd>, <kbd>todo_state</kbd>, <kbd>priority</kbd></p>
+</li>
+<li><p><kbd>tags</kbd>, <kbd>inherited_tags</kbd>, <kbd>properties</kbd></p>
+</li>
+<li><p>`scheduled&#39;, `deadline&#39;, `closed&#39;</p>
+</li>
+<li><p><kbd>line_number</kbd>, <kbd>begin_pos</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-source-blocks-table" class="org-section org-level-3">
+<h3>Source Blocks Table</h3>
+<p>Code blocks with language and content:</p>
+
+<ul>
+<li><p>`language&#39;, `content&#39;, `headers&#39;</p>
+</li>
+<li><p><kbd>line_number</kbd>, <kbd>cell_index</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-links-table" class="org-section org-level-3">
+<h3>Links Table</h3>
+<p>All link types (file, http, id, etc.):</p>
+
+<ul>
+<li><p><kbd>link_type</kbd>, <kbd>target</kbd>, <kbd>description</kbd></p>
+</li>
+<li><p><kbd>line_number</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-hashtags-table" class="org-section org-level-3">
+<h3>Hashtags Table</h3>
+<p>Inline hashtags:</p>
+
+<ul>
+<li><p><kbd>tag</kbd>, <kbd>file_path</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-chunks-table" class="org-section org-level-3">
+<h3>Chunks Table</h3>
+<p>Text chunks for semantic search:</p>
+
+<ul>
+<li><p><kbd>content</kbd>, <kbd>line_start</kbd>, <kbd>line_end</kbd></p>
+</li>
+<li><p><kbd>embedding</kbd> (F32_BLOB vector)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-fts-content-virtual-table" class="org-section org-level-3">
+<h3>FTS Content (Virtual Table)</h3>
+<p>Full-text search index:</p>
+
+<ul>
+<li><p><kbd>file_path</kbd>, <kbd>title</kbd>, <kbd>content</kbd></p>
+</li>
+<li><p>Porter stemming, Unicode normalization</p>
+</li>
+<li><p>BM25 ranking support</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-indexes" class="org-section org-level-2">
+<h2>Indexes</h2>
+<p>Performance indexes on:</p>
+
+<ul>
+<li><p><kbd>headings.file_id</kbd>, <kbd>headings.todo_state</kbd></p>
+</li>
+<li><p>`headings.deadline&#39;, `headings.scheduled&#39;</p>
+</li>
+<li><p><kbd>source_blocks.language</kbd></p>
+</li>
+<li><p>`hashtags.tag&#39;</p>
+</li>
+<li><p>`chunks.embedding&#39; (vector index with cosine metric)</p>
+</li>
+<li><p><kbd>files.file_type</kbd></p>
+</li>
+</ul>
+
+</div>
+<div id="org-vector-search" class="org-section org-level-2">
+<h2>Vector Search</h2>
+<p>Using libsql&#39;s vector extension:</p>
+
+<ul>
+<li><p>Cosine similarity metric</p>
+</li>
+<li><p>F32_BLOB storage format</p>
+</li>
+<li><p>HNSW-like index structure</p>
+</li>
+<li><p>Efficient nearest neighbor queries</p>
+</li>
+</ul>
+
+</div>
+<div id="org-parsers" class="org-section org-level-2">
+<h2>Parsers</h2>
+<div id="org-org-mode" class="org-section org-level-3">
+<h3>Org Mode</h3>
+<p><kbd>UnifiedParserAdapter</kbd> - Full AST parser compatible with org-element:</p>
+
+<ul>
+<li><p>Recursive heading parsing with inheritance</p>
+</li>
+<li><p>Property drawer extraction</p>
+</li>
+<li><p>Timestamp parsing (scheduled, deadline, closed)</p>
+</li>
+<li><p>Source block with headers</p>
+</li>
+<li><p>Link extraction</p>
+</li>
+</ul>
+
+</div>
+<div id="org-markdown" class="org-section org-level-3">
+<h3>Markdown</h3>
+<p>Simplified parser:</p>
+
+<ul>
+<li><p>ATX heading syntax (`#&#39;)</p>
+</li>
+<li><p>Fenced code blocks</p>
+</li>
+<li><p>Inline links</p>
+</li>
+</ul>
+
+</div>
+<div id="org-jupyter-notebooks" class="org-section org-level-3">
+<h3>Jupyter Notebooks</h3>
+<p><kbd>ipynbParser</kbd> - Notebook-specific parser:</p>
+
+<ul>
+<li><p>Markdown cells → headings and links</p>
+</li>
+<li><p>Code cells → source blocks</p>
+</li>
+<li><p>Cell indices tracked for navigation</p>
+</li>
+<li><p>Hashtags from markdown cells</p>
+</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div id="org-see-also" class="org-section org-level-1">
+<h1>See Also</h1>
+<ul>
+<li><p><a href="01-getting-started.html">Getting Started</a> - Initial setup and first steps</p>
+</li>
+<li><p><a href="07-source-blocks.html">Source Blocks</a> - Code execution and literate programming</p>
+</li>
+<li><p><a href="03-todo-items.html">TODO Items</a> - Task management features</p>
+</li>
+<li><p><a href="05-links.html">Links</a> - Link types and navigation</p>
+</li>
+<li><p><a href="26-configuration.html">Configuration</a> - Full settings reference</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="17-projectile.html">Projectile</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="19-references.html">References</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

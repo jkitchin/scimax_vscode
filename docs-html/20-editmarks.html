@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Editmarks (Track Changes)</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Editmarks (Track Changes)</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+<li><a href="#org-use-cases">✅ Use Cases</a></li>
+</ul>
+<li><a href="#org-markup-syntax">✅ Markup Syntax</a></li>
+<ul>
+<li><a href="#org-universal-format-recommended">✅ Universal Format (Recommended)</a></li>
+<li><a href="#org-criticmarkup-format-alternative">✅ CriticMarkup Format (Alternative)</a></li>
+</ul>
+<li><a href="#org-types-of-editmarks">✅ Types of Editmarks</a></li>
+<ul>
+<li><a href="#org-insertion">✅ Insertion</a></li>
+<li><a href="#org-deletion">✅ Deletion</a></li>
+<li><a href="#org-comment">✅ Comment</a></li>
+<li><a href="#org-typo-correction">✅ Typo Correction</a></li>
+</ul>
+<li><a href="#org-creating-editmarks">✅ Creating Editmarks</a></li>
+<ul>
+<li><a href="#org-mark-insertion">✅ Mark Insertion</a></li>
+<li><a href="#org-mark-deletion">✅ Mark Deletion</a></li>
+<li><a href="#org-insert-comment">✅ Insert Comment</a></li>
+<li><a href="#org-mark-typo-correction">✅ Mark Typo Correction</a></li>
+</ul>
+<li><a href="#org-reviewing-and-processing-editmarks">✅ Reviewing and Processing Editmarks</a></li>
+<ul>
+<li><a href="#org-accept-edit-mark">✅ Accept Edit Mark</a></li>
+<li><a href="#org-reject-edit-mark">✅ Reject Edit Mark</a></li>
+<li><a href="#org-accept-all-edit-marks">✅ Accept All Edit Marks</a></li>
+<li><a href="#org-reject-all-edit-marks">✅ Reject All Edit Marks</a></li>
+<li><a href="#org-hover-actions">✅ Hover Actions</a></li>
+</ul>
+<li><a href="#org-navigation">✅ Navigation</a></li>
+<ul>
+<li><a href="#org-next-edit-mark">✅ Next Edit Mark</a></li>
+<li><a href="#org-previous-edit-mark">✅ Previous Edit Mark</a></li>
+<li><a href="#org-keyboard-navigation-pattern">✅ Keyboard Navigation Pattern</a></li>
+</ul>
+<li><a href="#org-summary-view">✅ Summary View</a></li>
+<li><a href="#org-visual-appearance">✅ Visual Appearance</a></li>
+<li><a href="#org-complete-command-reference">Complete Command Reference</a></li>
+<ul>
+<li><a href="#org-insertion-commands">Insertion Commands</a></li>
+<li><a href="#org-deletion-commands">Deletion Commands</a></li>
+<li><a href="#org-comment-commands">Comment Commands</a></li>
+<li><a href="#org-typo-correction-commands">Typo Correction Commands</a></li>
+<li><a href="#org-review-commands">Review Commands</a></li>
+<li><a href="#org-navigation-commands">Navigation Commands</a></li>
+<li><a href="#org-utility-commands">Utility Commands</a></li>
+</ul>
+<li><a href="#org-keybinding-pattern">Keybinding Pattern</a></li>
+<li><a href="#org-typical-workflows">Typical Workflows</a></li>
+<ul>
+<li><a href="#org-workflow-1-peer-review">Workflow 1: Peer Review</a></li>
+<li><a href="#org-workflow-2-self-editing">Workflow 2: Self-Editing</a></li>
+<li><a href="#org-workflow-3-collaborative-writing">Workflow 3: Collaborative Writing</a></li>
+<li><a href="#org-workflow-4-student-feedback">Workflow 4: Student Feedback</a></li>
+<li><a href="#org-workflow-5-document-review-cycle">Workflow 5: Document Review Cycle</a></li>
+</ul>
+<li><a href="#org-best-practices">✅ Best Practices</a></li>
+<ul>
+<li><a href="#org-do-s">✅ Do&#39;s</a></li>
+<li><a href="#org-don-ts">✅ Don&#39;ts</a></li>
+<li><a href="#org-tips">✅ Tips</a></li>
+</ul>
+<li><a href="#org-integration-with-other-features">✅ Integration with Other Features</a></li>
+<ul>
+<li><a href="#org-source-blocks">✅ Source Blocks</a></li>
+<li><a href="#org-tables">✅ Tables</a></li>
+<li><a href="#org-export-compatibility">✅ Export Compatibility</a></li>
+<ul>
+<li><a href="#org-export-modes">Export Modes</a></li>
+<li><a href="#org-html-export">HTML Export</a></li>
+<li><a href="#org-latex-pdf-export">LaTeX/PDF Export</a></li>
+<li><a href="#org-configuration">Configuration</a></li>
+<li><a href="#org-workflow-recommendations">Workflow Recommendations</a></li>
+</ul>
+<li><a href="#org-version-control">✅ Version Control</a></li>
+</ul>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+<ul>
+<li><a href="#org-editmarks-not-showing">✅ Editmarks Not Showing</a></li>
+<li><a href="#org-navigation-not-working">✅ Navigation Not Working</a></li>
+<li><a href="#org-accept-reject-not-working">Accept/Reject Not Working</a></li>
+<li><a href="#org-nested-marks-issue">✅ Nested Marks Issue</a></li>
+<li><a href="#org-performance-with-many-marks">✅ Performance with Many Marks</a></li>
+</ul>
+<li><a href="#org-faq">✅ FAQ</a></li>
+<ul>
+<li><a href="#org-q-can-i-customize-the-colors">Q: Can I customize the colors?</a></li>
+<li><a href="#org-q-do-editmarks-work-in-any-file-type">Q: Do editmarks work in any file type?</a></li>
+<li><a href="#org-q-can-i-export-documents-with-editmarks">Q: Can I export documents with editmarks?</a></li>
+<li><a href="#org-q-how-do-i-see-who-made-which-mark">Q: How do I see who made which mark?</a></li>
+<li><a href="#org-q-can-i-use-editmarks-with-word-documents">Q: Can I use editmarks with Word documents?</a></li>
+<li><a href="#org-q-do-editmarks-interfere-with-syntax-highlighting">Q: Do editmarks interfere with syntax highlighting?</a></li>
+<li><a href="#org-q-can-i-undo-an-accept-reject-action">Q: Can I undo an accept/reject action?</a></li>
+<li><a href="#org-q-are-editmarks-saved-with-the-file">Q: Are editmarks saved with the file?</a></li>
+<li><a href="#org-q-can-i-search-for-editmarks">Q: Can I search for editmarks?</a></li>
+</ul>
+<li><a href="#org-related-features">✅ Related Features</a></li>
+<li><a href="#org-conclusion">✅ Conclusion</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<p>Editmarks is a track changes system for scientific writing and collaborative editing in VS Code. Inspired by `scimax-editmarks&#39; from Emacs Scimax, it provides a lightweight markup syntax for tracking insertions, deletions, comments, and typo corrections directly in your documents.</p>
+
+<p>Unlike traditional track changes systems that rely on binary formats or external tools, editmarks uses plain text markup that works seamlessly across org-mode, Markdown, and LaTeX files. Changes remain visible and editable as plain text, making them perfect for version control systems like Git.</p>
+
+<div id="org-key-features" class="org-section org-level-2">
+<h2>✅ Key Features</h2>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<ul>
+<li><p><strong>Plain text markup</strong>: Changes are visible in any text editor</p>
+</li>
+<li><p><strong>Language-agnostic</strong>: Works in org-mode, Markdown, LaTeX, and plain text</p>
+</li>
+<li><p><strong>Four mark types</strong>: Insertions, deletions, comments, and typo corrections</p>
+</li>
+<li><p><strong>Visual highlighting</strong>: Color-coded decorations for easy identification</p>
+</li>
+<li><p><strong>Quick navigation</strong>: Jump between marks with keyboard shortcuts</p>
+</li>
+<li><p><strong>Batch operations</strong>: Accept or reject all changes at once</p>
+</li>
+<li><p><strong>Hover actions</strong>: Quick accept/reject from hover tooltips</p>
+</li>
+<li><p><strong>Summary view</strong>: Overview of all changes in the document</p>
+</li>
+</ul>
+
+</div>
+<div id="org-use-cases" class="org-section org-level-2">
+<h2>✅ Use Cases</h2>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<ol>
+<li><p><strong>Document review</strong>: Mark suggested changes when reviewing a colleague&#39;s work</p>
+</li>
+<li><p><strong>Collaborative editing</strong>: Track your edits when working on shared documents</p>
+</li>
+<li><p><strong>Self-revision</strong>: Keep track of your own changes during editing sessions</p>
+</li>
+<li><p><strong>Teaching and feedback</strong>: Provide inline suggestions to students or mentees</p>
+</li>
+<li><p><strong>Version control</strong>: Complement Git commits with inline change tracking</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-markup-syntax" class="org-section org-level-1">
+<h1>✅ Markup Syntax</h1>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<p>Editmarks supports two markup formats to maximize compatibility:</p>
+
+<div id="org-universal-format-recommended" class="org-section org-level-2">
+<h2>✅ Universal Format (Recommended)</h2>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<p>The universal format works in all document types:</p>
+
+<pre class="example">@@+inserted text+@@       # Insertion
+@@-deleted text-@@        # Deletion
+@@&gt;comment text&lt;@@        # Comment
+@@~old text|new text~@@   # Typo correction</pre>
+
+</div>
+<div id="org-criticmarkup-format-alternative" class="org-section org-level-2">
+<h2>✅ CriticMarkup Format (Alternative)</h2>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<p>An alternative format inspired by CriticMarkup:</p>
+
+<pre class="example">{++inserted text++}       # Insertion
+{--deleted text--}        # Deletion
+{&gt;&gt;comment text&lt;&lt;}        # Comment
+{~~old text~&gt;new text~~}  # Typo correction</pre>
+
+<p>Both formats are recognized and rendered identically. Choose whichever you prefer or is required by your workflow.</p>
+
+</div>
+</div>
+<div id="org-types-of-editmarks" class="org-section org-level-1">
+<h1>✅ Types of Editmarks</h1>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<div id="org-insertion" class="org-section org-level-2">
+<h2>✅ Insertion</h2>
+<p>CLOSED: [2026-01-15 Thu 14:10]</p>
+
+<pre class="example">The quick brown fox @@+gracefully+@@ jumps over the lazy dog.</pre>
+
+<ul>
+<li><p>Suggesting new content</p>
+</li>
+<li><p>Adding missing words or phrases</p>
+</li>
+<li><p>Inserting clarifications or examples</p>
+</li>
+</ul>
+
+</div>
+<div id="org-deletion" class="org-section org-level-2">
+<h2>✅ Deletion</h2>
+<p>CLOSED: [2026-01-15 Thu 14:11]</p>
+
+<pre class="example">The quick brown @@-very-@@ fox jumps over the lazy dog.</pre>
+
+<ul>
+<li><p>Removing redundant text</p>
+</li>
+<li><p>Deleting incorrect information</p>
+</li>
+<li><p>Suggesting text removal during review</p>
+</li>
+</ul>
+
+</div>
+<div id="org-comment" class="org-section org-level-2">
+<h2>✅ Comment</h2>
+<p>CLOSED: [2026-01-15 Thu 14:11]</p>
+
+<pre class="example">The results were statistically significant @@&gt;verify p-value&lt;@@.</pre>
+
+<ul>
+<li><p>Asking questions about the text</p>
+</li>
+<li><p>Leaving notes for the author</p>
+</li>
+<li><p>Marking sections that need attention</p>
+</li>
+<li><p>Providing context for other changes</p>
+</li>
+</ul>
+
+</div>
+<div id="org-typo-correction" class="org-section org-level-2">
+<h2>✅ Typo Correction</h2>
+<p>CLOSED: [2026-01-15 Thu 14:11]</p>
+
+<pre class="example">The experment @@~experment|experiment~@@ was successful.</pre>
+
+<ul>
+<li><p>Correcting spelling mistakes</p>
+</li>
+<li><p>Fixing grammatical errors</p>
+</li>
+<li><p>Suggesting better word choices</p>
+</li>
+<li><p>Standardizing terminology</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-creating-editmarks" class="org-section org-level-1">
+<h1>✅ Creating Editmarks</h1>
+<p>CLOSED: [2026-01-15 Thu 14:11]</p>
+
+<div id="org-mark-insertion" class="org-section org-level-2">
+<h2>✅ Mark Insertion</h2>
+<p>CLOSED: [2026-01-15 Thu 14:11]</p>
+
+<ol>
+<li><p><strong>With text selected</strong>: Wraps selection with insertion markup</p>
+</li>
+<li><p><strong>Without selection</strong>: Prompts for text to insert</p>
+</li>
+</ol>
+
+<ol>
+<li><p>Select &quot;quickly&quot; in your text (or place cursor where text should be inserted)</p>
+</li>
+<li><p>Press `C-c e i&#39;</p>
+</li>
+<li><p>If no selection, type the text to insert</p>
+</li>
+<li><p>Result: <kbd>@@+quickly+@@</kbd></p>
+</li>
+</ol>
+
+</div>
+<div id="org-mark-deletion" class="org-section org-level-2">
+<h2>✅ Mark Deletion</h2>
+<p>CLOSED: [2026-01-15 Thu 14:11]</p>
+
+<ul>
+<li><p>Requires text selection</p>
+</li>
+<li><p>Wraps selected text with deletion markup</p>
+</li>
+</ul>
+
+<ol>
+<li><p>Select &quot;very&quot; in your text</p>
+</li>
+<li><p>Press `C-c e d&#39;</p>
+</li>
+<li><p>Result: <kbd>@@-very-@@</kbd></p>
+</li>
+</ol>
+
+</div>
+<div id="org-insert-comment" class="org-section org-level-2">
+<h2>✅ Insert Comment</h2>
+<p>CLOSED: [2026-01-15 Thu 14:12]</p>
+
+<ol>
+<li><p><strong>With text selected</strong>: Uses selection as comment text</p>
+</li>
+<li><p><strong>Without selection</strong>: Prompts for comment</p>
+</li>
+</ol>
+
+<ol>
+<li><p>Place cursor at the relevant location</p>
+</li>
+<li><p>Press `C-c e c&#39;</p>
+</li>
+<li><p>Type: &quot;Check this citation&quot;</p>
+</li>
+<li><p>Result: <kbd>@@&gt;Check this citation&lt;@@</kbd></p>
+</li>
+</ol>
+
+</div>
+<div id="org-mark-typo-correction" class="org-section org-level-2">
+<h2>✅ Mark Typo Correction</h2>
+<p>CLOSED: [2026-01-17 Sat 15:39]</p>
+
+<ul>
+<li><p>Requires text selection (the incorrect text)</p>
+</li>
+<li><p>Prompts for the correct text</p>
+</li>
+<li><p>Creates a typo mark showing old→new</p>
+</li>
+</ul>
+
+<ol>
+<li><p>Select &quot;teh&quot; in your text</p>
+</li>
+<li><p>Press `C-c e t&#39;</p>
+</li>
+<li><p>Type: &quot;the&quot;</p>
+</li>
+<li><p>Result: <code class="verbatim">@@`teh|the&#39;@@</code></p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-reviewing-and-processing-editmarks" class="org-section org-level-1">
+<h1>✅ Reviewing and Processing Editmarks</h1>
+<p>CLOSED: [2026-01-15 Thu 14:13]</p>
+
+<div id="org-accept-edit-mark" class="org-section org-level-2">
+<h2>✅ Accept Edit Mark</h2>
+<p>CLOSED: [2026-01-15 Thu 14:13]</p>
+
+<p>Accepts the editmark at the cursor position:</p>
+
+<ul>
+<li><p><strong>Insertion</strong>: Keeps the inserted text, removes markup (<kbd>@@+text+@@</kbd> → <kbd>text</kbd>)</p>
+</li>
+<li><p><strong>Deletion</strong>: Removes the deleted text entirely (<kbd>@@-text-@@</kbd> → empty)</p>
+</li>
+<li><p><strong>Comment</strong>: Removes the comment (<kbd>@@&gt;text&lt;@@</kbd> → empty)</p>
+</li>
+<li><p><strong>Typo</strong>: Applies the correction (<code class="verbatim">@@`old|new&#39;@@` → &#39;new</code>)</p>
+</li>
+</ul>
+
+<pre class="example">Before: The quick @@+brown+@@ fox
+After:  The quick brown fox</pre>
+
+</div>
+<div id="org-reject-edit-mark" class="org-section org-level-2">
+<h2>✅ Reject Edit Mark</h2>
+<p>CLOSED: [2026-01-15 Thu 14:14]</p>
+
+<p>Rejects the editmark at the cursor position:</p>
+
+<ul>
+<li><p><strong>Insertion</strong>: Removes the inserted text (<kbd>@@+text+@@</kbd> → empty)</p>
+</li>
+<li><p><strong>Deletion</strong>: Keeps the original text (<kbd>@@-text-@@</kbd> → <kbd>text</kbd>)</p>
+</li>
+<li><p><strong>Comment</strong>: Removes the comment (<kbd>@@&gt;text&lt;@@</kbd> → empty)</p>
+</li>
+<li><p><strong>Typo</strong>: Keeps the original text (<code class="verbatim">@@`old|new&#39;@@` → &#39;old</code>)</p>
+</li>
+</ul>
+
+<pre class="example">Before: The quick @@+brown+@@ fox
+After:  The quick fox</pre>
+
+</div>
+<div id="org-accept-all-edit-marks" class="org-section org-level-2">
+<h2>✅ Accept All Edit Marks</h2>
+<p>CLOSED: [2026-01-15 Thu 14:14]</p>
+
+<p>Accepts all editmarks in the current document:</p>
+
+<ol>
+<li><p>Shows confirmation dialog with count</p>
+</li>
+<li><p>Processes all marks from bottom to top</p>
+</li>
+<li><p>Displays success message</p>
+</li>
+</ol>
+
+</div>
+<div id="org-reject-all-edit-marks" class="org-section org-level-2">
+<h2>✅ Reject All Edit Marks</h2>
+<p>CLOSED: [2026-01-15 Thu 14:14]</p>
+
+<p>Rejects all editmarks in the current document:</p>
+
+<ol>
+<li><p>Shows confirmation dialog with count</p>
+</li>
+<li><p>Processes all marks from bottom to top</p>
+</li>
+<li><p>Displays success message</p>
+</li>
+</ol>
+
+</div>
+<div id="org-hover-actions" class="org-section org-level-2">
+<h2>✅ Hover Actions</h2>
+<p>CLOSED: [2026-01-15 Thu 14:14]</p>
+
+<p>Position your cursor over any editmark to see a hover tooltip with:</p>
+
+<ul>
+<li><p>Mark type and content</p>
+</li>
+<li><p>Quick action links to accept or reject</p>
+</li>
+<li><p>For typos: Shows old → new transformation</p>
+</li>
+</ul>
+
+<p>This provides a quick way to review and act on individual changes without remembering keybindings.</p>
+
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>✅ Navigation</h1>
+<p>CLOSED: [2026-01-15 Thu 14:14]</p>
+
+<div id="org-next-edit-mark" class="org-section org-level-2">
+<h2>✅ Next Edit Mark</h2>
+<p>CLOSED: [2026-01-15 Thu 14:15]</p>
+
+<p>Moves the cursor to the next editmark in the document:</p>
+
+<ul>
+<li><p>Wraps around to the first mark if at the end</p>
+</li>
+<li><p>Centers the mark in the viewport</p>
+</li>
+<li><p>Useful for systematic review</p>
+</li>
+</ul>
+
+</div>
+<div id="org-previous-edit-mark" class="org-section org-level-2">
+<h2>✅ Previous Edit Mark</h2>
+<p>CLOSED: [2026-01-15 Thu 14:15]</p>
+
+<p>Moves the cursor to the previous editmark:</p>
+
+<ul>
+<li><p>Wraps around to the last mark if at the beginning</p>
+</li>
+<li><p>Centers the mark in the viewport</p>
+</li>
+</ul>
+
+</div>
+<div id="org-keyboard-navigation-pattern" class="org-section org-level-2">
+<h2>✅ Keyboard Navigation Pattern</h2>
+<p>CLOSED: [2026-01-15 Thu 14:15]</p>
+
+<p>The bracket keys (<kbd>[</kbd> and <kbd>]</kbd>) create an intuitive navigation pattern:</p>
+
+<ul>
+<li><p><kbd>C-c e ]</kbd> → next (forward, like closing bracket points right)</p>
+</li>
+<li><p><kbd>C-c e [</kbd> → previous (backward, like opening bracket points left)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-summary-view" class="org-section org-level-1">
+<h1>✅ Summary View</h1>
+<p>CLOSED: [2026-01-15 Thu 14:15]</p>
+
+<p>Opens a quick pick menu showing:</p>
+
+<ol>
+<li><p><strong>Summary statistics</strong>: Total count and breakdown by type</p>
+</li>
+<li><p><strong>Individual marks</strong>: List of all editmarks with:</p>
+</li>
+</ol>
+
+<ul>
+<li><p>Searchable: Type to filter marks</p>
+</li>
+<li><p>Click to navigate: Select a mark to jump to it</p>
+</li>
+<li><p>Color-coded: Visual distinction between mark types</p>
+</li>
+</ul>
+
+<pre class="example">Summary
+├── Insertions: 3 (Green)
+├── Deletions: 2 (Red)
+├── Comments: 1 (Yellow)
+└── Typos: 2 (Orange)
+
+📝 gracefully                    Line 12
+❌ very                          Line 15
+💬 Check this citation           Line 23
+✏️  teh → the                    Line 34
+...</pre>
+
+</div>
+<div id="org-visual-appearance" class="org-section org-level-1">
+<h1>✅ Visual Appearance</h1>
+<p>CLOSED: [2026-01-15 Thu 14:15]</p>
+
+<p>Editmarks are rendered with distinctive decorations (The icons are similar to what is shown in the summary view):</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Type</th><th>Background Color</th><th>Border</th><th>Text Style</th><th>Icon</th></tr>
+</thead>
+<tbody>
+<tr><td>Insertion</td><td>Light green</td><td>Green</td><td>Normal</td><td>📝</td></tr>
+<tr><td>Deletion</td><td>Light red</td><td>Red</td><td>Strikethrough</td><td>❌</td></tr>
+<tr><td>Comment</td><td>Light yellow</td><td>Yellow</td><td>Italic</td><td>💬</td></tr>
+<tr><td>Typo</td><td>Light orange</td><td>Orange</td><td>Normal</td><td>✏️</td></tr>
+</tbody>
+</table>
+
+<p>All decorations include:</p>
+
+<ul>
+<li><p>Semi-transparent background (20% opacity)</p>
+</li>
+<li><p>Solid border for clear delimitation</p>
+</li>
+<li><p>2px border radius for rounded corners</p>
+</li>
+</ul>
+
+</div>
+<div id="org-complete-command-reference" class="org-section org-level-1">
+<h1>Complete Command Reference</h1>
+<div id="org-insertion-commands" class="org-section org-level-2">
+<h2>Insertion Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.editmarks.insertion</code></td><td>C-c e i</td><td>Mark text as insertion</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-deletion-commands" class="org-section org-level-2">
+<h2>Deletion Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.editmarks.deletion</code></td><td>C-c e d</td><td>Mark text for deletion</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-comment-commands" class="org-section org-level-2">
+<h2>Comment Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.editmarks.comment</code></td><td>C-c e c</td><td>Insert edit comment</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-typo-correction-commands" class="org-section org-level-2">
+<h2>Typo Correction Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.editmarks.typo</code></td><td>C-c e t</td><td>Mark typo correction</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-review-commands" class="org-section org-level-2">
+<h2>Review Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.editmarks.accept</code></td><td>C-c e a</td><td>Accept mark at cursor</td></tr>
+<tr><td><code class="verbatim">scimax.editmarks.reject</code></td><td>C-c e r</td><td>Reject mark at cursor</td></tr>
+<tr><td><code class="verbatim">scimax.editmarks.acceptAll</code></td><td>(none)</td><td>Accept all marks</td></tr>
+<tr><td><code class="verbatim">scimax.editmarks.rejectAll</code></td><td>(none)</td><td>Reject all marks</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-navigation-commands" class="org-section org-level-2">
+<h2>Navigation Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.editmarks.next</code></td><td>C-c e ]</td><td>Jump to next mark</td></tr>
+<tr><td><code class="verbatim">scimax.editmarks.prev</code></td><td>C-c e [</td><td>Jump to previous mark</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-utility-commands" class="org-section org-level-2">
+<h2>Utility Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.editmarks.summary</code></td><td>C-c e s</td><td>Show all marks summary</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-keybinding-pattern" class="org-section org-level-1">
+<h1>Keybinding Pattern</h1>
+<p>All editmarks keybindings follow the pattern <kbd>C-c e &lt;letter&gt;</kbd>:</p>
+
+<ul>
+<li><p>`C-c e&#39; → Editmarks prefix</p>
+</li>
+<li><p>`i&#39; → Insertion</p>
+</li>
+<li><p>`d&#39; → Deletion</p>
+</li>
+<li><p>`c&#39; → Comment</p>
+</li>
+<li><p>`t&#39; → Typo</p>
+</li>
+<li><p>`a&#39; → Accept</p>
+</li>
+<li><p>`r&#39; → Reject</p>
+</li>
+<li><p>`s&#39; → Summary</p>
+</li>
+<li><p><kbd>[</kbd> → Previous</p>
+</li>
+<li><p><kbd>]</kbd> → Next</p>
+</li>
+</ul>
+
+<p>This consistent pattern makes the commands easy to remember and discover.</p>
+
+</div>
+<div id="org-typical-workflows" class="org-section org-level-1">
+<h1>Typical Workflows</h1>
+<div id="org-workflow-1-peer-review" class="org-section org-level-2">
+<h2>Workflow 1: Peer Review</h2>
+<ol>
+<li><p><strong>Open the document</strong> in VS Code</p>
+</li>
+<li><p><strong>Read through</strong> and identify areas needing changes</p>
+</li>
+<li><p><strong>Mark suggestions</strong>:</p>
+</li>
+<li><p><strong>Add typo corrections</strong>:</p>
+</li>
+<li><p><strong>Save the document</strong> and send back to colleague</p>
+</li>
+<li><p><strong>Colleague reviews</strong> using <kbd>C-c e ]</kbd> to navigate between marks</p>
+</li>
+<li><p><strong>Colleague processes</strong> each mark:</p>
+</li>
+<li><p><strong>Save final version</strong> with all changes resolved</p>
+</li>
+</ol>
+
+</div>
+<div id="org-workflow-2-self-editing" class="org-section org-level-2">
+<h2>Workflow 2: Self-Editing</h2>
+<ol>
+<li><p><strong>Enable editmarks mode</strong> (always on - no toggle needed)</p>
+</li>
+<li><p><strong>As you edit</strong>, use editmarks instead of direct changes:</p>
+</li>
+<li><p><strong>Take a break</strong> - changes are preserved in plain text</p>
+</li>
+<li><p><strong>Review later</strong>:</p>
+</li>
+<li><p><strong>Process systematically</strong>:</p>
+</li>
+<li><p><strong>Commit to version control</strong> with clear change history</p>
+</li>
+</ol>
+
+</div>
+<div id="org-workflow-3-collaborative-writing" class="org-section org-level-2">
+<h2>Workflow 3: Collaborative Writing</h2>
+<ol>
+<li><p><strong>Author A</strong> makes initial draft</p>
+</li>
+<li><p><strong>Author B</strong> checks out the branch and adds suggestions:</p>
+</li>
+<li><p><strong>Author C</strong> adds more changes:</p>
+</li>
+<li><p><strong>Authors meet</strong> to review:</p>
+</li>
+<li><p><strong>Accept/reject collaboratively</strong></p>
+</li>
+<li><p><strong>Commit final version</strong> to Git with all changes incorporated</p>
+</li>
+</ol>
+
+</div>
+<div id="org-workflow-4-student-feedback" class="org-section org-level-2">
+<h2>Workflow 4: Student Feedback</h2>
+<ol>
+<li><p><strong>Open student&#39;s submission</strong></p>
+</li>
+<li><p><strong>Read through once</strong> without marking</p>
+</li>
+<li><p><strong>Second pass - mark issues</strong>:</p>
+</li>
+<li><p><strong>Add pedagogical comments</strong>:</p>
+</li>
+<li><p><strong>Generate summary report</strong>:</p>
+</li>
+<li><p><strong>Student processes feedback</strong>:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-workflow-5-document-review-cycle" class="org-section org-level-2">
+<h2>Workflow 5: Document Review Cycle</h2>
+<pre class="example">The project will @@+likely+@@ be completed @@-on time-@@ @@+ahead of schedule+@@.
+@@&gt;Reviewer: Source for this claim?&lt;@@</pre>
+
+<pre class="example">The project will @@+likely+@@ be completed @@+ahead of schedule+@@.
+@@&gt;Author: Added reference below. See Smith et al. 2025&lt;@@
+[ref added here]</pre>
+
+<ol>
+<li><p>Reviewer opens document</p>
+</li>
+<li><p>Presses `C-c e s&#39; to see all outstanding marks</p>
+</li>
+<li><p>Navigates with <kbd>C-c e ]</kbd> through each change</p>
+</li>
+<li><p>Presses `C-c e a&#39; to accept all approved changes</p>
+</li>
+<li><p>Final document is clean and ready for publication</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>✅ Best Practices</h1>
+<p>CLOSED: [2026-01-15 Thu 14:17]</p>
+
+<div id="org-do-s" class="org-section org-level-2">
+<h2>✅ Do&#39;s</h2>
+<p>CLOSED: [2026-01-15 Thu 14:17]</p>
+
+<ol>
+<li><p><strong>Use descriptive comments</strong>: Instead of <kbd>@@&gt;fix this&lt;@@</kbd>, write <kbd>@@&gt;fix grammar: subject-verb agreement&lt;@@</kbd></p>
+</li>
+<li><p><strong>Be specific with insertions</strong>: Show exactly what you&#39;re suggesting</p>
+</li>
+<li><p><strong>One change per mark</strong>: Don&#39;t combine multiple edits in one mark</p>
+</li>
+<li><p><strong>Review systematically</strong>: Use navigation commands to ensure you don&#39;t miss any marks</p>
+</li>
+<li><p><strong>Preserve marks in Git</strong>: Commit documents with editmarks to track review history</p>
+</li>
+<li><p><strong>Use hover tooltips</strong>: Quick way to remind yourself what each mark does</p>
+</li>
+</ol>
+
+</div>
+<div id="org-don-ts" class="org-section org-level-2">
+<h2>✅ Don&#39;ts</h2>
+<p>CLOSED: [2026-01-15 Thu 14:17]</p>
+
+<ol>
+<li><p><strong>Don&#39;t nest editmarks</strong>: Avoid <kbd>@@+text @@-with-@@ nesting+@@</kbd> - it&#39;s confusing</p>
+</li>
+<li><p><strong>Don&#39;t mix formats randomly</strong>: Pick either universal or CriticMarkup and stick with it</p>
+</li>
+<li><p><strong>Don&#39;t leave marks indefinitely</strong>: Process them regularly to keep documents clean</p>
+</li>
+<li><p><strong>Don&#39;t delete marks manually</strong>: Use accept/reject commands to ensure proper processing</p>
+</li>
+<li><p><strong>Don&#39;t use for version control</strong>: Editmarks complement Git but don&#39;t replace it</p>
+</li>
+</ol>
+
+</div>
+<div id="org-tips" class="org-section org-level-2">
+<h2>✅ Tips</h2>
+<p>CLOSED: [2026-01-15 Thu 14:17]</p>
+
+<ul>
+<li><p><strong>Quick review</strong>: Use <kbd>C-c e s</kbd> at the start of each editing session to see pending changes</p>
+</li>
+<li><p><strong>Batch processing</strong>: For documents with many trivial changes, use &quot;Accept All&quot; after review</p>
+</li>
+<li><p><strong>Comments as TODO</strong>: Use comment marks as inline TODO items during writing</p>
+</li>
+<li><p><strong>Color awareness</strong>: Learn to recognize mark types by color for faster visual scanning</p>
+</li>
+<li><p><strong>Git integration</strong>: Create commits after processing editmarks with descriptive messages</p>
+</li>
+<li><p><strong>Keyboard efficiency</strong>: The navigation keys (<kbd>[</kbd> and <kbd>]</kbd>) combined with <kbd>a</kbd>/<kbd>r</kbd> enable fast review</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-integration-with-other-features" class="org-section org-level-1">
+<h1>✅ Integration with Other Features</h1>
+<p>CLOSED: [2026-01-15 Thu 14:18]</p>
+
+<div id="org-source-blocks" class="org-section org-level-2">
+<h2>✅ Source Blocks</h2>
+<p>CLOSED: [2026-01-15 Thu 14:18]</p>
+
+<p>Editmarks work inside source blocks (although they likely break the code unless you use them in comments.):</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><code class="language-python">def calculate(x):
+    return x * @@+2+@@ @@-3-@@  @@&gt;why change the multiplier?&lt;@@</code></pre>
+</div>
+
+<p>This is useful when reviewing code snippets in documentation or educational materials.</p>
+
+</div>
+<div id="org-tables" class="org-section org-level-2">
+<h2>✅ Tables</h2>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<p>Use editmarks in table cells:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Item</th><th>Original</th><th>Revised</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td>Budget</td><td><del class="editmark-del">$100K</del></td><td>@@<del>$120K</del>@@</td><td><mark class="editmark-comment">approved by CFO</mark></td></tr>
+<tr><td>Time</td><td>6 months</td><td>@@<del>8 months</del>@@</td><td><mark class="editmark-comment">realistic estimate</mark></td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-export-compatibility" class="org-section org-level-2">
+<h2>✅ Export Compatibility</h2>
+<p>CLOSED: [2026-01-18 Sun 11:19]</p>
+
+<p>Editmarks are fully supported in HTML, LaTeX, and PDF exports. The export behavior is controlled by the <code class="verbatim">scimax.export.editmarkMode</code> setting.</p>
+
+<div id="org-export-modes" class="org-section org-level-3">
+<h3>Export Modes</h3>
+<table class="org-table">
+<thead>
+<tr><th>Mode</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">show</code></td><td>Render with visual markup (colored insertions/deletions)</td></tr>
+<tr><td><code class="verbatim">accept</code></td><td>Apply all changes (keep insertions, remove deletions)</td></tr>
+<tr><td><code class="verbatim">reject</code></td><td>Revert all changes (remove insertions, keep deletions)</td></tr>
+<tr><td><code class="verbatim">hide</code></td><td>Remove all editmarks without any replacement</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-html-export" class="org-section org-level-3">
+<h3>HTML Export</h3>
+<p>In HTML, editmarks are rendered using semantic HTML elements with CSS styling:</p>
+
+<ul>
+<li><p><strong>Insertions</strong>: <code class="verbatim">&lt;ins class</code>&quot;editmark-ins&quot;&gt;text</ins>= (green background)</p>
+</li>
+<li><p><strong>Deletions</strong>: <code class="verbatim">&lt;del class</code>&quot;editmark-del&quot;&gt;text</del>= (red background, strikethrough)</p>
+</li>
+<li><p><strong>Comments</strong>: <code class="verbatim">&lt;mark class</code>&quot;editmark-comment&quot;&gt;text</mark>= (yellow background, italic)</p>
+</li>
+<li><p><strong>Typos</strong>: <code class="verbatim">&lt;span class</code>&quot;editmark-typo&quot;&gt;<del>old</del><ins>new</ins></span>=</p>
+</li>
+</ul>
+
+</div>
+<div id="org-latex-pdf-export" class="org-section org-level-3">
+<h3>LaTeX/PDF Export</h3>
+<p>In LaTeX, editmarks use custom commands defined in the preamble:</p>
+
+<pre class="example">\editins{inserted text}           % Green underlined text
+\editdel{deleted text}            % Red strikethrough text
+\editcomment{comment text}        % Orange italic text in brackets
+\edittypo{old text}{new text}     % Old crossed out, new inserted</pre>
+
+<p>The required packages (<code class="verbatim">xcolor</code>, <code class="verbatim">ulem</code>) and command definitions are automatically added to the preamble when editmarks are detected.</p>
+
+</div>
+<div id="org-configuration" class="org-section org-level-3">
+<h3>Configuration</h3>
+<p>Set the export mode in VS Code settings:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.export.editmarkMode&quot;: &quot;show&quot;
+}</code></pre>
+</div>
+
+<p>Or use the Settings UI: Search for &quot;editmark&quot; and select the desired mode.</p>
+
+</div>
+<div id="org-workflow-recommendations" class="org-section org-level-3">
+<h3>Workflow Recommendations</h3>
+<ul>
+<li><p><strong>Draft review</strong>: Use <code class="verbatim">show</code> mode to see all changes visually in the export</p>
+</li>
+<li><p><strong>Final publication</strong>: Use <code class="verbatim">accept</code> or <code class="verbatim">reject</code> mode, or process marks manually before export</p>
+</li>
+<li><p><strong>Clean copy</strong>: Use <code class="verbatim">hide</code> to remove all editmarks without deciding on them</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-version-control" class="org-section org-level-2">
+<h2>✅ Version Control</h2>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<p>Editmarks are perfect for version control workflows:</p>
+
+<div class="org-src-container">
+<pre class="src src-bash"><code class="language-bash"># Add document with editmarks
+git add manuscript.org
+
+# Commit with descriptive message
+git commit -m &quot;Add reviewer feedback as editmarks&quot;
+
+# Later, after processing
+git add manuscript.org
+git commit -m &quot;Incorporate reviewer suggestions&quot;</code></pre>
+</div>
+
+<p>The diff shows both the markup and the final changes, providing complete review history.</p>
+
+</div>
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>✅ Troubleshooting</h1>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<div id="org-editmarks-not-showing" class="org-section org-level-2">
+<h2>✅ Editmarks Not Showing</h2>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<ol>
+<li><p>Check that you&#39;re in a supported file (any text file works)</p>
+</li>
+<li><p>Reload window: <kbd>C-S-P</kbd> → &quot;Developer: Reload Window&quot;</p>
+</li>
+<li><p>Verify syntax: Ensure markup is exactly correct (e.g., <kbd>@@+text+@@</kbd> not <kbd>@@+ text +@@</kbd>)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-navigation-not-working" class="org-section org-level-2">
+<h2>✅ Navigation Not Working</h2>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<ol>
+<li><p>Verify editmarks exist: Press <kbd>C-c e s</kbd> to see summary</p>
+</li>
+<li><p>Ensure cursor is in the editor window</p>
+</li>
+<li><p>Check keybinding conflicts: File → Preferences → Keyboard Shortcuts</p>
+</li>
+</ol>
+
+</div>
+<div id="org-accept-reject-not-working" class="org-section org-level-2">
+<h2>Accept/Reject Not Working</h2>
+<ol>
+<li><p>Position cursor <strong>inside</strong> the editmark (between the markup symbols)</p>
+</li>
+<li><p>Hover over the mark to see the tooltip - if visible, cursor is positioned correctly</p>
+</li>
+<li><p>Check that the editmark syntax is valid</p>
+</li>
+</ol>
+
+</div>
+<div id="org-nested-marks-issue" class="org-section org-level-2">
+<h2>✅ Nested Marks Issue</h2>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+</div>
+<div id="org-performance-with-many-marks" class="org-section org-level-2">
+<h2>✅ Performance with Many Marks</h2>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<ol>
+<li><p>Process marks in batches (accept/reject groups of related changes)</p>
+</li>
+<li><p>Use &quot;Accept All&quot; or &quot;Reject All&quot; for bulk processing</p>
+</li>
+<li><p>Split large documents into smaller files</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-faq" class="org-section org-level-1">
+<h1>✅ FAQ</h1>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<div id="org-q-can-i-customize-the-colors" class="org-section org-level-2">
+<h2>Q: Can I customize the colors?</h2>
+<p>A: Currently, colors are fixed (green for insertion, red for deletion, yellow for comments, orange for typos). Custom theme support may be added in future versions.</p>
+
+</div>
+<div id="org-q-do-editmarks-work-in-any-file-type" class="org-section org-level-2">
+<h2>Q: Do editmarks work in any file type?</h2>
+<p>A: Yes! Editmarks work in any text file: .org, .md, .tex, .txt, .py, etc. The markup is plain text.</p>
+
+</div>
+<div id="org-q-can-i-export-documents-with-editmarks" class="org-section org-level-2">
+<h2>Q: Can I export documents with editmarks?</h2>
+<p>A: Yes! Editmarks are fully supported in HTML, LaTeX, and PDF exports. Use the <code class="verbatim">scimax.export.editmarkMode</code> setting to control how they appear:</p>
+
+<ul>
+<li><p><code class="verbatim">show</code>: Visual markup with colors (default)</p>
+</li>
+<li><p><code class="verbatim">accept</code>: Apply all changes automatically</p>
+</li>
+<li><p><code class="verbatim">reject</code>: Revert all changes</p>
+</li>
+<li><p><code class="verbatim">hide</code>: Remove editmarks silently</p>
+</li>
+</ul>
+
+</div>
+<div id="org-q-how-do-i-see-who-made-which-mark" class="org-section org-level-2">
+<h2>Q: How do I see who made which mark?</h2>
+<p>A: Editmarks don&#39;t automatically track authors. Add author names manually in comments:</p>
+
+<pre class="example">@@&gt;(Author: John Doe) This needs clarification&lt;@@</pre>
+
+</div>
+<div id="org-q-can-i-use-editmarks-with-word-documents" class="org-section org-level-2">
+<h2>Q: Can I use editmarks with Word documents?</h2>
+<p>A: No, editmarks require plain text files. Convert Word documents to Markdown or use Word&#39;s built-in track changes.</p>
+
+</div>
+<div id="org-q-do-editmarks-interfere-with-syntax-highlighting" class="org-section org-level-2">
+<h2>Q: Do editmarks interfere with syntax highlighting?</h2>
+<p>A: No, they&#39;re implemented as decorations that overlay the text without modifying syntax highlighting.</p>
+
+</div>
+<div id="org-q-can-i-undo-an-accept-reject-action" class="org-section org-level-2">
+<h2>Q: Can I undo an accept/reject action?</h2>
+<p>A: Yes, use VS Code&#39;s regular undo (<kbd>C-z</kbd>) immediately after accepting or rejecting a mark.</p>
+
+</div>
+<div id="org-q-are-editmarks-saved-with-the-file" class="org-section org-level-2">
+<h2>Q: Are editmarks saved with the file?</h2>
+<p>A: Yes! Editmarks are plain text markup, so they&#39;re saved as part of the document content.</p>
+
+</div>
+<div id="org-q-can-i-search-for-editmarks" class="org-section org-level-2">
+<h2>Q: Can I search for editmarks?</h2>
+<p>A: Yes, use regular search (<kbd>C-f</kbd>) for <kbd>@@+</kbd> or <kbd>{++</kbd> to find all insertions, etc. Or use <kbd>C-c e s</kbd> for the summary view.</p>
+
+</div>
+</div>
+<div id="org-related-features" class="org-section org-level-1">
+<h1>✅ Related Features</h1>
+<p>CLOSED: [2026-01-15 Thu 14:19]</p>
+
+<ul>
+<li><p><strong>Source Blocks</strong>: See <a href="07-source-blocks.html">Source Blocks documentation</a> for code execution</p>
+</li>
+<li><p><strong>Export</strong>: See <a href="10-export.html">Export documentation</a> for converting documents with editmarks</p>
+</li>
+<li><p><strong>Document Structure</strong>: See <a href="02-document-structure.html">Document Structure documentation</a> for heading navigation</p>
+</li>
+<li><p><strong>Tables</strong>: See <a href="04-tables.html">Tables documentation</a> for working with tables containing editmarks</p>
+</li>
+</ul>
+
+</div>
+<div id="org-conclusion" class="org-section org-level-1">
+<h1>✅ Conclusion</h1>
+<p>CLOSED: [2026-01-15 Thu 14:20]</p>
+
+<p>Editmarks provide a powerful, plain-text approach to track changes that integrates seamlessly with modern developer workflows. By using simple markup instead of complex binary formats, editmarks offer:</p>
+
+<ul>
+<li><p><strong>Transparency</strong>: Changes are always visible and readable</p>
+</li>
+<li><p><strong>Portability</strong>: Works across editors and platforms</p>
+</li>
+<li><p><strong>Version control</strong>: Perfect for Git-based collaboration</p>
+</li>
+<li><p><strong>Flexibility</strong>: Use as much or as little as you need</p>
+</li>
+</ul>
+
+<p>Whether you&#39;re reviewing papers, collaborating on documentation, or tracking your own revisions, editmarks offer a lightweight yet powerful solution for managing document changes.</p>
+
+<p>Start using editmarks today:</p>
+
+<ol>
+<li><p>Open any document</p>
+</li>
+<li><p>Press `C-c e i&#39; to insert your first mark</p>
+</li>
+<li><p>Press `C-c e s&#39; to see the summary</p>
+</li>
+<li><p>Navigate with <kbd>C-c e ]</kbd> and <kbd>C-c e [</kbd></p>
+</li>
+<li><p>Accept or reject with `C-c e a&#39; and `C-c e r&#39;</p>
+</li>
+</ol>
+
+<p>Happy editing!</p>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="19-references.html">References</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="21-navigation.html">Navigation</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

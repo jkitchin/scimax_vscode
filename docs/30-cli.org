@@ -1,0 +1,443 @@
+#+TITLE: Command Line Interface (CLI)
+#+AUTHOR: Scimax VS Code
+#+OPTIONS: toc:2 num:t
+#+TODO: ⚠️ 👀 | ✅
+
+* Introduction
+
+Scimax VS Code includes a command-line interface (CLI) that provides access to many features without needing to open VS Code. This is useful for:
+
+- Batch operations (exporting multiple files)
+- Integration with other tools and scripts
+- Quick lookups from the terminal
+- CI/CD pipelines for documentation
+
+The CLI reads from the same SQLite database that the VS Code extension builds, so you get consistent results between the editor and command line.
+
+* Installation
+
+** From the Extension
+
+If you have the extension installed, the CLI is included. After building the extension:
+
+#+begin_src bash
+# From the extension directory
+npm run compile
+
+# Run directly
+node out/cli/index.js --help
+
+# Or use npx (if in the extension directory)
+npx scimax --help
+#+end_src
+
+** Global Installation
+
+To use ~scimax~ from anywhere:
+
+#+begin_src bash
+# From the extension directory
+npm link
+
+# Now available globally
+scimax --help
+#+end_src
+
+To unlink later:
+#+begin_src bash
+npm unlink scimax-vscode
+#+end_src
+
+* Configuration
+
+The CLI looks for configuration in the following order:
+
+1. =.scimax/config.json= in the current directory or parent directories
+2. =.scimax/= directory (uses =org.db= inside it)
+3. Falls back to =.scimax/org.db= in the current directory
+
+The database is created and maintained by VS Code when you open a folder with org files. The CLI primarily reads from this database.
+
+** Example config.json
+
+#+begin_src json
+{
+  "dbPath": ".scimax/org.db",
+  "rootDir": "."
+}
+#+end_src
+
+* Commands
+
+** Help
+
+#+begin_src bash
+scimax --help
+scimax <command> --help
+#+end_src
+
+** Agenda
+
+View scheduled items, deadlines, and TODO items.
+
+#+begin_src bash
+# Today's agenda
+scimax agenda today
+
+# Week view
+scimax agenda week
+
+# All TODO items
+scimax agenda todos
+
+# Filter by state
+scimax agenda todos --state NEXT
+
+# Overdue items
+scimax agenda overdue
+#+end_src
+
+*** Output Example
+
+#+begin_example
+=== Today's Agenda ===
+
+  TODO     Today    Review paper draft
+           docs/paper.org:42
+  NEXT     Today    Submit grant proposal
+           projects/grant.org:15
+#+end_example
+
+** Search
+
+Full-text search across all indexed org files.
+
+#+begin_src bash
+# Basic search
+scimax search "machine learning"
+
+# Limit results
+scimax search "catalyst" --limit 10
+
+# JSON output for scripting
+scimax search "python" --format json
+#+end_src
+
+*** Output Example
+
+#+begin_example
+Searching for: "machine learning"
+
+Found 5 result(s):
+
+Neural Network Architecture (score: 12.34)
+  projects/ml-notes.org:156
+  "...using machine learning techniques to..."
+
+Deep Learning Overview (score: 10.21)
+  docs/tutorials/deep-learning.org:23
+  "...introduction to machine learning and..."
+#+end_example
+
+** Export
+
+Export org files to HTML, LaTeX, or PDF.
+
+#+begin_src bash
+# Export to HTML
+scimax export paper.org --format html
+
+# Export to LaTeX
+scimax export paper.org --format latex
+
+# Export to PDF (requires pdflatex/latexmk)
+scimax export paper.org --format pdf
+
+# Specify output file
+scimax export paper.org --format html --output build/paper.html
+
+# With bibliography
+scimax export paper.org --format html --bib references.bib
+
+# With specific CSL style
+scimax export paper.org --format html --bib refs.bib --csl ieee
+#+end_src
+
+The export command automatically looks for bibliography files in the same directory (=refs.bib=, =references.bib=, or =<filename>.bib=).
+
+** Citations
+
+Citation-related operations.
+
+*** Extract Citations
+
+List all citation keys used in a document:
+
+#+begin_src bash
+scimax cite extract paper.org
+
+# JSON output
+scimax cite extract paper.org --format json
+#+end_src
+
+Output:
+#+begin_example
+Found 12 citation(s) with 8 unique key(s):
+
+  doe-2020
+  jones-2021
+  smith-2019
+  ...
+#+end_example
+
+*** Check Citations
+
+Validate citations against a bibliography file:
+
+#+begin_src bash
+scimax cite check paper.org --bib references.bib
+#+end_src
+
+Output:
+#+begin_example
+Citation Check: paper.org
+
+  Citations found: 12
+  Bibliography entries: 15
+
+MISSING (2 cited but not in .bib):
+  - nonexistent-2020
+  - typo-key
+
+UNUSED (5 in .bib but not cited):
+  - old-reference-2010
+  - unused-entry
+  ...
+#+end_example
+
+This is useful in CI pipelines to catch citation errors before publishing.
+
+*** Convert Citation Syntax
+
+Convert between org-ref v2, v3, and org-cite syntax:
+
+#+begin_src bash
+# Convert v2 to v3
+scimax cite convert paper.org --from v2 --to v3
+
+# Convert to org-cite
+scimax cite convert paper.org --from v3 --to org-cite
+
+# Modify file in place
+scimax cite convert paper.org --from v2 --to v3 --inplace
+
+# Output to new file
+scimax cite convert paper.org --from v2 --to v3 --output paper-v3.org
+#+end_src
+
+*** List Bibliography
+
+List entries in a BibTeX file:
+
+#+begin_src bash
+scimax cite list references.bib
+
+# JSON output
+scimax cite list references.bib --format json
+#+end_src
+
+** Database
+
+Database maintenance operations.
+
+*** Statistics
+
+Show database statistics:
+
+#+begin_src bash
+scimax db stats
+#+end_src
+
+Output:
+#+begin_example
+=== Database Statistics ===
+
+  Database: .scimax/org.db
+  Root: /home/user/project
+
+  Files indexed: 42
+  Headings: 1,234
+  TODO items: 89
+  Has embeddings: No
+#+end_example
+
+*** Check Integrity
+
+Check for missing or stale files:
+
+#+begin_src bash
+scimax db check
+#+end_src
+
+Output:
+#+begin_example
+Checking database integrity...
+
+MISSING: old-file.org
+MISSING: deleted-folder/notes.org
+
+Total files in database: 42
+Missing files: 2
+
+Open VS Code to rebuild the index.
+#+end_example
+
+*** Rebuild
+
+Rebuild the database from org files. This parses all org files in the specified directory and indexes headings, source blocks, and links.
+
+#+begin_src bash
+# Rebuild from current directory
+scimax db rebuild
+
+# Rebuild from a specific path
+scimax db rebuild --path ./docs
+#+end_src
+
+Output:
+#+begin_example
+Rebuilding database from: /home/user/project
+Database path: .scimax/org.db
+
+Found 42 org file(s) to index.
+
+  Indexing: notes/meeting.org... OK
+  Indexing: docs/guide.org... OK
+  Indexing: projects/paper.org... OK
+  ...
+
+Indexed: 42 file(s)
+#+end_example
+
+Note: While the CLI can rebuild the database, VS Code provides additional features like auto-indexing on save and embedded file watching. For best results, use VS Code for day-to-day editing and the CLI for batch operations or CI/CD.
+
+*** ✅ Scan Directory
+CLOSED: [2026-01-22 Thu 20:57]
+
+Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts.
+
+#+begin_src bash
+# Scan a specific directory
+scimax db scan /path/to/org-files
+
+# Scan multiple directories (run sequentially)
+scimax db scan ~/work/org-files
+scimax db scan ~/personal/notes
+#+end_src
+
+Output:
+#+begin_example
+Scanning directory: /path/to/org-files
+Database path: .scimax/org.db
+
+Found 15 org file(s) to index.
+
+  Indexing: meeting-notes.org... OK
+  Indexing: project/tasks.org... OK
+  Indexing: archive/2024.org... OK
+  ...
+
+Indexed: 15 file(s)
+#+end_example
+
+**** Cron Job Examples
+
+Schedule automatic database updates:
+
+#+begin_src bash
+# Edit crontab
+crontab -e
+
+# Scan every hour
+0 * * * * cd /path/to/project && scimax db scan ~/org-files
+
+# Scan daily at 6am
+0 6 * * * cd /path/to/project && scimax db scan ~/org-files >> /var/log/scimax-scan.log 2>&1
+
+# Scan multiple directories every 30 minutes
+*/30 * * * * cd /path/to/project && scimax db scan ~/work/notes && scimax db scan ~/personal/org
+#+end_src
+
+**** Difference from Rebuild
+
+| Command                        | Use Case                                    |
+|--------------------------------+---------------------------------------------|
+| =scimax db scan <dir>=         | Quick scan of a specific directory          |
+| =scimax db rebuild=            | Full rebuild of the project root            |
+| =scimax db rebuild --path <d>= | Rebuild with additional options (--force)   |
+
+The =scan= command is simpler and takes the directory as a direct argument, while =rebuild= offers more options via flags.
+
+* Scripting Examples
+
+** Export All Org Files to HTML
+
+#+begin_src bash
+#!/bin/bash
+for f in docs/*.org; do
+    scimax export "$f" --format html --output "build/$(basename "$f" .org).html"
+done
+#+end_src
+
+** Check Citations in CI
+
+#+begin_src yaml
+# .github/workflows/check-citations.yml
+name: Check Citations
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm run compile
+      - run: node out/cli/index.js cite check paper.org --bib refs.bib
+#+end_src
+
+** Daily Agenda Email
+
+#+begin_src bash
+#!/bin/bash
+# Send daily agenda via email
+scimax agenda today | mail -s "Today's Agenda" user@example.com
+#+end_src
+
+** Find Files with Specific Tags
+
+#+begin_src bash
+# Using search (if tag is in heading)
+scimax search ":research:" --limit 50
+#+end_src
+
+* Limitations
+
+The CLI has some limitations compared to the VS Code extension:
+
+1. *Semantic Search*: Requires embeddings which need the embedding service configured in VS Code.
+
+2. *Live Updates*: The CLI reads a snapshot of the database. Changes made to org files won't be reflected until you run =scimax db rebuild= or VS Code re-indexes them.
+
+3. *Interactive Features*: No support for interactive features like completion or live preview.
+
+4. *FTS Index*: The CLI rebuild populates the main tables but doesn't rebuild the FTS5 full-text index triggers. For full FTS support, use VS Code to create the initial database.
+
+* Related Topics
+
+- [[file:18-database-search.org][Database & Search]] - How the database indexing works
+- [[file:10-export.org][Export]] - Export options and configuration
+- [[file:19-references.org][References & Citations]] - Citation syntax and bibliography management
+- [[file:13-agenda.org][Agenda]] - Agenda views in VS Code

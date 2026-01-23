@@ -1,0 +1,80 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+!out/**/*.js
+!out/**/assets/**
+node_modules/**
+# libsql and all its dependencies
+!node_modules/@libsql/**
+!node_modules/libsql/**
+!node_modules/@neon-rs/**
+!node_modules/detect-libc/**
+!node_modules/ws/**
+!node_modules/@types/ws/**
+!node_modules/cross-fetch/**
+!node_modules/node-fetch/**
+!node_modules/data-uri-to-buffer/**
+!node_modules/fetch-blob/**
+!node_modules/formdata-polyfill/**
+!node_modules/web-streams-polyfill/**
+!node_modules/node-domexception/**
+!node_modules/whatwg-url/**
+!node_modules/tr46/**
+!node_modules/webidl-conversions/**
+!node_modules/js-base64/**
+!node_modules/promise-limit/**
+# transformers.js and onnxruntime
+!node_modules/@xenova/**
+!node_modules/@huggingface/**
+!node_modules/onnxruntime-node/**
+!node_modules/onnxruntime-web/**
+!node_modules/onnxruntime-common/**
+!node_modules/flatbuffers/**
+!node_modules/long/**
+!node_modules/sharp/**
+!node_modules/guid-typescript/**
+# citation-js and dependencies
+!node_modules/@citation-js/**
+!node_modules/citeproc/**
+!node_modules/moo/**
+!node_modules/sync-fetch/**
+!node_modules/fetch-ponyfill/**
+# other runtime deps
+!node_modules/@babel/**
+# date-fns: include all (selective inclusion is too fragile)
+!node_modules/date-fns/**
+!node_modules/minimatch/**
+!node_modules/brace-expansion/**
+!node_modules/balanced-match/**
+!node_modules/uuid/**
+!node_modules/zeromq/**
+!node_modules/cmake-ts/**
+# Exclude test/doc files from included packages
+**/node_modules/**/test/**
+**/node_modules/**/tests/**
+**/node_modules/**/*.md
+**/node_modules/**/docs/**
+**/node_modules/**/*.d.ts
+**/node_modules/**/.history/**
+
+# zeromq: exclude source files (only need compiled)
+node_modules/zeromq/src/**
+
+# cmake-ts: exclude source files
+node_modules/cmake-ts/src/**
+
+*.vsix
+.claude/**
+!syntaxes/**
+!language-configuration.json
+PLAN.md
+package-lock.json
+Makefile
+scripts/**

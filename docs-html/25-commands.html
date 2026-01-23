@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scimax VS Code Command Reference</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Scimax VS Code Command Reference</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-14</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<li><a href="#org-document-structure">✅ Document Structure</a></li>
+<ul>
+<li><a href="#org-folding-and-visibility">✅ Folding and Visibility</a></li>
+<li><a href="#org-headings">✅ Headings</a></li>
+<li><a href="#org-org-mode-heading-navigation">✅ Org-Mode Heading Navigation</a></li>
+<li><a href="#org-dwim-commands">✅ DWIM Commands</a></li>
+<li><a href="#org-org-utility-commands">✅ Org Utility Commands</a></li>
+</ul>
+<li><a href="#org-todo-and-tasks">✅ TODO and Tasks</a></li>
+<ul>
+<li><a href="#org-todo-keywords">✅ TODO Keywords</a></li>
+<li><a href="#org-checkboxes">✅ Checkboxes</a></li>
+<li><a href="#org-markdown-tasks">✅ Markdown Tasks</a></li>
+</ul>
+<li><a href="#org-tables">✅ Tables</a></li>
+<ul>
+<li><a href="#org-basic-table-operations">✅ Basic Table Operations</a></li>
+<li><a href="#org-row-and-column-operations">✅ Row and Column Operations</a></li>
+<li><a href="#org-advanced-table-operations">✅ Advanced Table Operations</a></li>
+<li><a href="#org-table-formulas">✅ Table Formulas</a></li>
+</ul>
+<li><a href="#org-source-blocks">✅ Source Blocks</a></li>
+<ul>
+<li><a href="#org-basic-babel-operations">✅ Basic Babel Operations</a></li>
+<li><a href="#org-advanced-babel-operations-scimax-ob">✅ Advanced Babel Operations (scimax-ob)</a></li>
+<li><a href="#org-extended-babel-features">✅ Extended Babel Features</a></li>
+</ul>
+<li><a href="#org-export">✅ Export</a></li>
+<ul>
+<li><a href="#org-export-dispatcher">✅ Export Dispatcher</a></li>
+<li><a href="#org-html-export">✅ HTML Export</a></li>
+<li><a href="#org-latex-pdf-export">✅ LaTeX/PDF Export</a></li>
+<li><a href="#org-other-export-formats">✅ Other Export Formats</a></li>
+</ul>
+<li><a href="#org-links">✅ Links</a></li>
+<li><a href="#org-timestamps">✅ Timestamps</a></li>
+<ul>
+<li><a href="#org-clocking">✅ Clocking</a></li>
+</ul>
+<li><a href="#org-agenda">✅ Agenda</a></li>
+<ul>
+<li><a href="#org-agenda-views">✅ Agenda Views</a></li>
+<li><a href="#org-advanced-agenda">✅ Advanced Agenda</a></li>
+</ul>
+<li><a href="#org-journal">✅ Journal</a></li>
+<ul>
+<li><a href="#org-basic-journal-operations">✅ Basic Journal Operations</a></li>
+<li><a href="#org-journal-utilities">✅ Journal Utilities</a></li>
+</ul>
+<li><a href="#org-database-and-search">✅ Database and Search</a></li>
+<ul>
+<li><a href="#org-basic-database-operations">✅ Basic Database Operations</a></li>
+<li><a href="#org-advanced-search">✅ Advanced Search</a></li>
+<li><a href="#org-semantic-search-ai">✅ Semantic Search (AI)</a></li>
+<li><a href="#org-database-maintenance">✅ Database Maintenance</a></li>
+</ul>
+<li><a href="#org-references-org-ref">✅ References (org-ref)</a></li>
+<ul>
+<li><a href="#org-citation-management">✅ Citation Management</a></li>
+<li><a href="#org-citation-editing">✅ Citation Editing</a></li>
+<li><a href="#org-bibliography-management">✅ Bibliography Management</a></li>
+<li><a href="#org-openalex-integration">✅ OpenAlex Integration</a></li>
+</ul>
+<li><a href="#org-notebook">✅ Notebook</a></li>
+<li><a href="#org-navigation">✅ Navigation</a></li>
+<ul>
+<li><a href="#org-fuzzy-search-swiper">✅ Fuzzy Search (Swiper)</a></li>
+<li><a href="#org-jump-avy">✅ Jump (Avy)</a></li>
+</ul>
+<li><a href="#org-projectile">✅ Projectile</a></li>
+<li><a href="#org-editmarks">✅ Editmarks</a></li>
+<ul>
+<li><a href="#org-mark-edits">✅ Mark Edits</a></li>
+<li><a href="#org-review-edits">✅ Review Edits</a></li>
+</ul>
+<li><a href="#org-hydra">✅ Hydra</a></li>
+<li><a href="#org-markup">✅ Markup</a></li>
+<li><a href="#org-speed-commands">✅ Speed Commands</a></li>
+<ul>
+<li><a href="#org-navigation">✅ Navigation</a></li>
+<li><a href="#org-visibility">✅ Visibility</a></li>
+<li><a href="#org-structure-editing">✅ Structure Editing</a></li>
+<li><a href="#org-todo-and-tags">✅ TODO and Tags</a></li>
+<li><a href="#org-scheduling-and-timestamps">✅ Scheduling and Timestamps</a></li>
+<li><a href="#org-properties-and-clocking">✅ Properties and Clocking</a></li>
+<li><a href="#org-archiving">✅ Archiving</a></li>
+<li><a href="#org-narrowing">✅ Narrowing</a></li>
+<li><a href="#org-help">✅ Help</a></li>
+</ul>
+<li><a href="#org-latex">✅ LaTeX</a></li>
+<ul>
+<li><a href="#org-latex-preview-and-compilation">✅ LaTeX Preview and Compilation</a></li>
+<li><a href="#org-latex-cache-management">✅ LaTeX Cache Management</a></li>
+</ul>
+<li><a href="#org-capture">✅ Capture</a></li>
+<li><a href="#org-image-overlays">✅ Image Overlays</a></li>
+<li><a href="#org-jupyter">✅ Jupyter</a></li>
+<ul>
+<li><a href="#org-kernel-management">✅ Kernel Management</a></li>
+</ul>
+<li><a href="#org-appendix-keybinding-quick-reference">✅ Appendix: Keybinding Quick Reference</a></li>
+<ul>
+<li><a href="#org-most-common-keybindings">✅ Most Common Keybindings</a></li>
+<li><a href="#org-export-keybindings">✅ Export Keybindings</a></li>
+<li><a href="#org-babel-source-block-keybindings">✅ Babel/Source Block Keybindings</a></li>
+<li><a href="#org-project-and-navigation-keybindings">✅ Project and Navigation Keybindings</a></li>
+</ul>
+<li><a href="#org-help-system">✅ Help System</a></li>
+<ul>
+<li><a href="#org-scimax-help-describecommand">scimax.help.describeCommand</a></li>
+<li><a href="#org-scimax-help-describekey">scimax.help.describeKey</a></li>
+<li><a href="#org-scimax-help-listkeybindings">scimax.help.listKeybindings</a></li>
+<li><a href="#org-scimax-help-describevariable">scimax.help.describeVariable</a></li>
+<li><a href="#org-scimax-help-apropos">scimax.help.apropos</a></li>
+</ul>
+<li><a href="#org-linting">✅ Linting</a></li>
+<ul>
+<li><a href="#org-scimax-org-lint">scimax.org.lint</a></li>
+<li><a href="#org-scimax-org-lintcheckers">scimax.org.lintCheckers</a></li>
+</ul>
+<li><a href="#org-mark-ring">✅ Mark Ring</a></li>
+<ul>
+<li><a href="#org-mark-ring-concepts">✅ Mark Ring Concepts</a></li>
+<li><a href="#org-common-workflows">✅ Common Workflows</a></li>
+<ul>
+<li><a href="#org-setting-a-mark-for-selection">Setting a Mark for Selection</a></li>
+<li><a href="#org-returning-to-previous-positions">Returning to Previous Positions</a></li>
+<li><a href="#org-cross-file-navigation">Cross-file Navigation</a></li>
+<li><a href="#org-viewing-the-mark-ring">Viewing the Mark Ring</a></li>
+</ul>
+</ul>
+<li><a href="#org-publishing">✅ Publishing</a></li>
+<ul>
+<li><a href="#org-setting-up-a-publishing-project">Setting Up a Publishing Project</a></li>
+<li><a href="#org-publishing-configuration">Publishing Configuration</a></li>
+</ul>
+<li><a href="#org-query-replace">✅ Query Replace</a></li>
+<li><a href="#org-index">✅ Index</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-17 Sat 12:23]</p>
+
+<p>This document provides a comprehensive reference of all commands available in the Scimax VS Code extension. Commands are organized by feature area for easy lookup.</p>
+
+</div>
+<div id="org-document-structure" class="org-section org-level-1">
+<h1>✅ Document Structure</h1>
+<p>CLOSED: [2026-01-17 Sat 12:23]</p>
+
+<div id="org-folding-and-visibility" class="org-section org-level-2">
+<h2>✅ Folding and Visibility</h2>
+<p>CLOSED: [2026-01-17 Sat 12:23]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-togglefold">[[cmd:scimax.org.toggleFold]]</a></td><td>Toggle Fold at Cursor</td><td>TAB (on heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-cycleglobalfold">[[cmd:scimax.org.cycleGlobalFold]]</a></td><td>Cycle Global Folding</td><td>S-TAB</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-headings" class="org-section org-level-2">
+<h2>✅ Headings</h2>
+<p>CLOSED: [2026-01-17 Sat 12:24]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-heading-insert">[[cmd:scimax.heading.insert]]</a></td><td>Insert Heading</td><td>C-RET / M-RET</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-insertsub">[[cmd:scimax.heading.insertSub]]</a></td><td>Insert Subheading</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-promote">[[cmd:scimax.heading.promote]]</a></td><td>Promote Heading</td><td>M-LEFT (on heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-demote">[[cmd:scimax.heading.demote]]</a></td><td>Demote Heading</td><td>M-RIGHT (on heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-promotesubtree">[[cmd:scimax.heading.promoteSubtree]]</a></td><td>Promote Subtree</td><td>M-S-LEFT (not in table)</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-demotesubtree">[[cmd:scimax.heading.demoteSubtree]]</a></td><td>Demote Subtree</td><td>M-S-RIGHT (not in table)</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-moveup">[[cmd:scimax.heading.moveUp]]</a></td><td>Move Heading Up</td><td>M-UP</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-movedown">[[cmd:scimax.heading.moveDown]]</a></td><td>Move Heading Down</td><td>M-DOWN</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-org-mode-heading-navigation" class="org-section org-level-2">
+<h2>✅ Org-Mode Heading Navigation</h2>
+<p>CLOSED: [2026-01-17 Sat 12:24]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-jumptoheading">[[cmd:scimax.org.jumpToHeading]]</a></td><td>Jump to Heading</td><td>C-c C-j</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-nextheading">[[cmd:scimax.org.nextHeading]]</a></td><td>Next Heading</td><td>C-c C-n</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-previousheading">[[cmd:scimax.org.previousHeading]]</a></td><td>Previous Heading</td><td>C-c C-p</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-parentheading">[[cmd:scimax.org.parentHeading]]</a></td><td>Parent Heading</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-promoteheading">[[cmd:scimax.org.promoteHeading]]</a></td><td>Promote Heading</td><td>M-LEFT (heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-demoteheading">[[cmd:scimax.org.demoteHeading]]</a></td><td>Demote Heading</td><td>M-RIGHT (heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-promotesubtree">[[cmd:scimax.org.promoteSubtree]]</a></td><td>Promote Subtree</td><td>M-S-LEFT</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-demotesubtree">[[cmd:scimax.org.demoteSubtree]]</a></td><td>Demote Subtree</td><td>M-S-RIGHT</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-movesubtreeup">[[cmd:scimax.org.moveSubtreeUp]]</a></td><td>Move Subtree Up</td><td>M-UP (heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-movesubtreedown">[[cmd:scimax.org.moveSubtreeDown]]</a></td><td>Move Subtree Down</td><td>M-DOWN (heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-insertheading">[[cmd:scimax.org.insertHeading]]</a></td><td>Insert Heading</td><td>C-RET (heading)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-insertsubheading">[[cmd:scimax.org.insertSubheading]]</a></td><td>Insert Subheading</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-insertinlinetask">[[cmd:scimax.org.insertInlineTask]]</a></td><td>Insert Inline Task</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-killsubtree">[[cmd:scimax.org.killSubtree]]</a></td><td>Kill Subtree</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-clonesubtree">[[cmd:scimax.org.cloneSubtree]]</a></td><td>Clone Subtree</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-marksubtree">[[cmd:scimax.org.markSubtree]]</a></td><td>Mark (Select) Subtree</td><td>C-c @ (org)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-addidtoheading">[[cmd:scimax.org.addIdToHeading]]</a></td><td>Add ID to Heading</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-dwim-commands" class="org-section org-level-2">
+<h2>✅ DWIM Commands</h2>
+<p>CLOSED: [2026-01-17 Sat 15:21]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-dwimreturn">[[cmd:scimax.org.dwimReturn]]</a></td><td>DWIM Return</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-insertnewline">[[cmd:scimax.insertNewline]]</a></td><td>Insert Newline</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-org-utility-commands" class="org-section org-level-2">
+<h2>✅ Org Utility Commands</h2>
+<p>CLOSED: [2026-01-18 Sun 09:57]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-updatestatistics">[[cmd:scimax.org.updateStatistics]]</a></td><td>Update Statistics Cookie</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-renumberlist">[[cmd:scimax.org.renumberList]]</a></td><td>Renumber Ordered List</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-updatedynamicblock">[[cmd:scimax.org.updateDynamicBlock]]</a></td><td>Update Dynamic Block</td><td>C-c C-x C-u (org)</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-todo-and-tasks" class="org-section org-level-1">
+<h1>✅ TODO and Tasks</h1>
+<p>CLOSED: [2026-01-17 Sat 12:24]</p>
+
+<div id="org-todo-keywords" class="org-section org-level-2">
+<h2>✅ TODO Keywords</h2>
+<p>CLOSED: [2026-01-17 Sat 12:24]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-cycletodo">[[cmd:scimax.org.cycleTodo]]</a></td><td>Cycle TODO State</td><td>C-c C-t</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-checkboxes" class="org-section org-level-2">
+<h2>✅ Checkboxes</h2>
+<p>CLOSED: [2026-01-17 Sat 12:24]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-togglecheckbox">[[cmd:scimax.org.toggleCheckbox]]</a></td><td>Toggle Checkbox</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-insertcheckbox">[[cmd:scimax.org.insertCheckbox]]</a></td><td>Insert Checkbox</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-markdown-tasks" class="org-section org-level-2">
+<h2>✅ Markdown Tasks</h2>
+<p>CLOSED: [2026-01-17 Sat 12:24]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-markdown-togglecheckbox">[[cmd:scimax.markdown.toggleCheckbox]]</a></td><td>Toggle Checkbox</td><td>C-c C-c</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-inserttask">[[cmd:scimax.markdown.insertTask]]</a></td><td>Insert Task</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-insertduedate">[[cmd:scimax.markdown.insertDueDate]]</a></td><td>Insert Due Date</td><td>C-c C-d</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-insertscheduleddate">[[cmd:scimax.markdown.insertScheduledDate]]</a></td><td>Insert Scheduled Date</td><td>C-c C-s</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-insertpriority">[[cmd:scimax.markdown.insertPriority]]</a></td><td>Insert Priority</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-showagenda">[[cmd:scimax.markdown.showAgenda]]</a></td><td>Show Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-showtodaystasks">[[cmd:scimax.markdown.showTodaysTasks]]</a></td><td>Show Today&#39;s Tasks</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-showtasksbyproject">[[cmd:scimax.markdown.showTasksByProject]]</a></td><td>Show Tasks by Project</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markdown-showtasksbytag">[[cmd:scimax.markdown.showTasksByTag]]</a></td><td>Show Tasks by Tag</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-tables" class="org-section org-level-1">
+<h1>✅ Tables</h1>
+<p>CLOSED: [2026-01-17 Sat 12:25]</p>
+
+<div id="org-basic-table-operations" class="org-section org-level-2">
+<h2>✅ Basic Table Operations</h2>
+<p>CLOSED: [2026-01-17 Sat 12:25]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-table-create">[[cmd:scimax.table.create]]</a></td><td>Create Table</td><td>C-c \vert</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-align">[[cmd:scimax.table.align]]</a></td><td>Align Table</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-nextcell">[[cmd:scimax.table.nextCell]]</a></td><td>Next Table Cell</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-prevcell">[[cmd:scimax.table.prevCell]]</a></td><td>Previous Table Cell</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-insertseparator">[[cmd:scimax.table.insertSeparator]]</a></td><td>Insert Table Separator</td><td>C-c -</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-row-and-column-operations" class="org-section org-level-2">
+<h2>✅ Row and Column Operations</h2>
+<p>CLOSED: [2026-01-17 Sat 12:25]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-table-insertrowbelow">[[cmd:scimax.table.insertRowBelow]]</a></td><td>Insert Table Row Below</td><td>M-RET</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-insertrowabove">[[cmd:scimax.table.insertRowAbove]]</a></td><td>Insert Table Row Above</td><td>M-S-RET</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-deleterow">[[cmd:scimax.table.deleteRow]]</a></td><td>Delete Table Row</td><td>M-S-BACKSPACE</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-insertcolumnleft">[[cmd:scimax.table.insertColumnLeft]]</a></td><td>Insert Table Column Left</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-insertcolumnright">[[cmd:scimax.table.insertColumnRight]]</a></td><td>Insert Table Column Right</td><td>M-S-RIGHT (in table)</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-deletecolumn">[[cmd:scimax.table.deleteColumn]]</a></td><td>Delete Table Column</td><td>M-S-LEFT (in table)</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-moverowup">[[cmd:scimax.table.moveRowUp]]</a></td><td>Move Table Row Up</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-moverowdown">[[cmd:scimax.table.moveRowDown]]</a></td><td>Move Table Row Down</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-movecolumnleft">[[cmd:scimax.table.moveColumnLeft]]</a></td><td>Move Table Column Left</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-movecolumnright">[[cmd:scimax.table.moveColumnRight]]</a></td><td>Move Table Column Right</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-advanced-table-operations" class="org-section org-level-2">
+<h2>✅ Advanced Table Operations</h2>
+<p>CLOSED: [2026-01-17 Sat 12:25]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-table-gotonamed">[[cmd:scimax.table.gotoNamed]]</a></td><td>Go to Named Table</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-export">[[cmd:scimax.table.export]]</a></td><td>Export Table</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-import">[[cmd:scimax.table.import]]</a></td><td>Import Table from Clipboard</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-sumcolumn">[[cmd:scimax.table.sumColumn]]</a></td><td>Sum Column</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-averagecolumn">[[cmd:scimax.table.averageColumn]]</a></td><td>Average Column</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-sortbycolumn">[[cmd:scimax.table.sortByColumn]]</a></td><td>Sort by Column</td><td>C-c ^</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-table-formulas" class="org-section org-level-2">
+<h2>✅ Table Formulas</h2>
+<p>CLOSED: [2026-01-17 Sat 12:26]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-table-recalculate">[[cmd:scimax.table.recalculate]]</a></td><td>Recalculate Table Formulas</td><td>C-c C-c (tblfm)</td></tr>
+<tr><td></td><td></td><td>C-c * (org)</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-insertcolumnformula">[[cmd:scimax.table.insertColumnFormula]]</a></td><td>Insert Column Formula</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-insertfieldformula">[[cmd:scimax.table.insertFieldFormula]]</a></td><td>Insert Field Formula</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-table-formulahelp">[[cmd:scimax.table.formulaHelp]]</a></td><td>Table Formula Help</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-source-blocks" class="org-section org-level-1">
+<h1>✅ Source Blocks</h1>
+<p>CLOSED: [2026-01-17 Sat 12:26]</p>
+
+<div id="org-basic-babel-operations" class="org-section org-level-2">
+<h2>✅ Basic Babel Operations</h2>
+<p>CLOSED: [2026-01-17 Sat 12:26]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-executeblock">[[cmd:scimax.org.executeBlock]]</a></td><td>Execute Code Block</td><td>C-RET</td></tr>
+<tr><td></td><td></td><td>C-c C-c (in src)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-executeallblocks">[[cmd:scimax.org.executeAllBlocks]]</a></td><td>Execute All Code Blocks</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-insertblock">[[cmd:scimax.org.insertBlock]]</a></td><td>Insert Code Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-nextblock">[[cmd:scimax.org.nextBlock]]</a></td><td>Go to Next Code Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-prevblock">[[cmd:scimax.org.prevBlock]]</a></td><td>Go to Previous Code Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-clearresults">[[cmd:scimax.org.clearResults]]</a></td><td>Clear Block Results</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-clearallresults">[[cmd:scimax.org.clearAllResults]]</a></td><td>Clear All Results</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-showbabeloutput">[[cmd:scimax.org.showBabelOutput]]</a></td><td>Show Babel Output</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-checkexecutors">[[cmd:scimax.org.checkExecutors]]</a></td><td>Check Available Executors</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-interruptblockkernel">[[cmd:scimax.org.interruptBlockKernel]]</a></td><td>Interrupt Jupyter Kernel for Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-restartblockkernel">[[cmd:scimax.org.restartBlockKernel]]</a></td><td>Restart Jupyter Kernel for Block</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-advanced-babel-operations-scimax-ob" class="org-section org-level-2">
+<h2>✅ Advanced Babel Operations (scimax-ob)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:26]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-ob-insertblockabove">[[cmd:scimax.ob.insertBlockAbove]]</a></td><td>Insert Block Above</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-insertblockbelow">[[cmd:scimax.ob.insertBlockBelow]]</a></td><td>Insert Block Below</td><td>C-c C-,</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-insertblockbelowsame">[[cmd:scimax.ob.insertBlockBelowSame]]</a></td><td>Insert Block Below (Same Lang)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-splitblock">[[cmd:scimax.ob.splitBlock]]</a></td><td>Split Block</td><td>C-c - (src)</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-cloneblock">[[cmd:scimax.ob.cloneBlock]]</a></td><td>Clone Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-killblock">[[cmd:scimax.ob.killBlock]]</a></td><td>Kill Block and Results</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-copyblock">[[cmd:scimax.ob.copyBlock]]</a></td><td>Copy Block and Results</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-moveblockup">[[cmd:scimax.ob.moveBlockUp]]</a></td><td>Move Block Up</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-moveblockdown">[[cmd:scimax.ob.moveBlockDown]]</a></td><td>Move Block Down</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-mergewithprevious">[[cmd:scimax.ob.mergeWithPrevious]]</a></td><td>Merge with Previous Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-mergewithnext">[[cmd:scimax.ob.mergeWithNext]]</a></td><td>Merge with Next Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-nextblock">[[cmd:scimax.ob.nextBlock]]</a></td><td>Next Source Block</td><td>C-DOWN</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-previousblock">[[cmd:scimax.ob.previousBlock]]</a></td><td>Previous Source Block</td><td>C-UP</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-jumptoblock">[[cmd:scimax.ob.jumpToBlock]]</a></td><td>Jump to Source Block</td><td>C-c C-b</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-jumptoresults">[[cmd:scimax.ob.jumpToResults]]</a></td><td>Jump to Results</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-executeandnext">[[cmd:scimax.ob.executeAndNext]]</a></td><td>Execute and Next</td><td>S-RET</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-executeandnew">[[cmd:scimax.ob.executeAndNew]]</a></td><td>Execute and New Block</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-executetopoint">[[cmd:scimax.ob.executeToPoint]]</a></td><td>Execute to Point</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-executeall">[[cmd:scimax.ob.executeAll]]</a></td><td>Execute All Blocks</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-clearresults">[[cmd:scimax.ob.clearResults]]</a></td><td>Clear Results</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-clearallresults">[[cmd:scimax.ob.clearAllResults]]</a></td><td>Clear All Results</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-toggleresults">[[cmd:scimax.ob.toggleResults]]</a></td><td>Toggle Results Visibility</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ob-editheader">[[cmd:scimax.ob.editHeader]]</a></td><td>Edit Block Header</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-extended-babel-features" class="org-section org-level-2">
+<h2>✅ Extended Babel Features</h2>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-babel-tangle">[[cmd:scimax.babel.tangle]]</a></td><td>Tangle Source Blocks</td><td>C-c C-v t</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-executetopoint">[[cmd:scimax.babel.executeToPoint]]</a></td><td>Execute Blocks to Point</td><td>C-c C-v p</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-executeinline">[[cmd:scimax.babel.executeInline]]</a></td><td>Execute Inline Source at Cursor</td><td>C-c C-v i</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-executeinlinebabelcall">[[cmd:scimax.babel.executeInlineBabelCall]]</a></td><td>Execute Inline Babel Call at Cursor</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-clearcache">[[cmd:scimax.babel.clearCache]]</a></td><td>Clear Babel Result Cache</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-cachestats">[[cmd:scimax.babel.cacheStats]]</a></td><td>Show Babel Cache Statistics</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-showqueue">[[cmd:scimax.babel.showQueue]]</a></td><td>Show Execution Queue</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-clearqueue">[[cmd:scimax.babel.clearQueue]]</a></td><td>Clear Execution Queue</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-queueblock">[[cmd:scimax.babel.queueBlock]]</a></td><td>Queue Block for Async Execution</td><td>C-c C-v q</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-pausequeue">[[cmd:scimax.babel.pauseQueue]]</a></td><td>Pause Execution Queue</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-resumequeue">[[cmd:scimax.babel.resumeQueue]]</a></td><td>Resume Execution Queue</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-babel-showoutput">[[cmd:scimax.babel.showOutput]]</a></td><td>Show Babel Output</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-export" class="org-section org-level-1">
+<h1>✅ Export</h1>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<div id="org-export-dispatcher" class="org-section org-level-2">
+<h2>✅ Export Dispatcher</h2>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-export">[[cmd:scimax.org.export]]</a></td><td>Export Org Document</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-exportdispatcher">[[cmd:scimax.org.exportDispatcher]]</a></td><td>Export Dispatcher</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-exportmenu">[[cmd:scimax.org.exportMenu]]</a></td><td>Export Menu (C-c C-e)</td><td>C-c C-e</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-previewhtml">[[cmd:scimax.org.previewHtml]]</a></td><td>Preview HTML</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-html-export" class="org-section org-level-2">
+<h2>✅ HTML Export</h2>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-exporthtml">[[cmd:scimax.org.exportHtml]]</a></td><td>Export to HTML</td><td>C-c C-e h h</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-exporthtmlopen">[[cmd:scimax.org.exportHtmlOpen]]</a></td><td>Export to HTML and Open</td><td>C-c C-e h o</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-latex-pdf-export" class="org-section org-level-2">
+<h2>✅ LaTeX/PDF Export</h2>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-exportlatex">[[cmd:scimax.org.exportLatex]]</a></td><td>Export to LaTeX</td><td>C-c C-e l l</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-exportpdf">[[cmd:scimax.org.exportPdf]]</a></td><td>Export to PDF</td><td>C-c C-e l p</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-exportlatexopen">[[cmd:scimax.org.exportLatexOpen]]</a></td><td>Export to PDF and Open</td><td>C-c C-e l o</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-other-export-formats" class="org-section org-level-2">
+<h2>✅ Other Export Formats</h2>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-exportmarkdown">[[cmd:scimax.org.exportMarkdown]]</a></td><td>Export to Markdown</td><td>C-c C-e m m</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-links" class="org-section org-level-1">
+<h1>✅ Links</h1>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-insertlink">[[cmd:scimax.org.insertLink]]</a></td><td>Insert Link</td><td>C-c C-l</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-openlink">[[cmd:scimax.org.openLink]]</a></td><td>Open Link at Point</td><td>C-c C-o / RET (on link)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-storelink">[[cmd:scimax.org.storeLink]]</a></td><td>Store Link (for later insertion)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-deletefilelink">[[cmd:scimax.org.deleteFileLink]]</a></td><td>Delete File Link (and optionally file)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-openexcalidraw">[[cmd:scimax.org.openExcalidraw]]</a></td><td>Open Excalidraw Drawing</td><td>(via link click)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-timestamps" class="org-section org-level-1">
+<h1>✅ Timestamps</h1>
+<p>CLOSED: [2026-01-17 Sat 12:27]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-inserttimestamp">[[cmd:scimax.org.insertTimestamp]]</a></td><td>Insert Timestamp</td><td>C-c .</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-insertactivetimestamp">[[cmd:scimax.org.insertActiveTimestamp]]</a></td><td>Insert Active Timestamp</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-insertinactivetimestamp">[[cmd:scimax.org.insertInactiveTimestamp]]</a></td><td>Insert Inactive Timestamp</td><td>C-c !</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-shifttimestampup">[[cmd:scimax.org.shiftTimestampUp]]</a></td><td>Shift Timestamp Up</td><td>S-UP</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-shifttimestampdown">[[cmd:scimax.org.shiftTimestampDown]]</a></td><td>Shift Timestamp Down</td><td>S-DOWN</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-shifttimestampleft">[[cmd:scimax.org.shiftTimestampLeft]]</a></td><td>Shift Timestamp Left (Prev Day)</td><td>S-LEFT</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-shifttimestampright">[[cmd:scimax.org.shiftTimestampRight]]</a></td><td>Shift Timestamp Right (Next Day)</td><td>S-RIGHT</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-addrepeater">[[cmd:scimax.org.addRepeater]]</a></td><td>Add/Change Repeater on Timestamp</td><td>C-c C-r</td></tr>
+</tbody>
+</table>
+
+<div id="org-clocking" class="org-section org-level-2">
+<h2>✅ Clocking</h2>
+<p>CLOSED: [2026-01-18 Sun 09:58]</p>
+
+<p>Time tracking commands for measuring effort on tasks.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-speed-clockin">[[cmd:scimax.speed.clockIn]]</a></td><td>Clock In</td><td>I (speed cmd)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-clockout">[[cmd:scimax.speed.clockOut]]</a></td><td>Clock Out</td><td>O (speed cmd)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-clockreport">[[cmd:scimax.org.clockReport]]</a></td><td>Generate Clock Report</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-clocktable">[[cmd:scimax.org.clockTable]]</a></td><td>Insert Clock Table</td><td>-</td></tr>
+</tbody>
+</table>
+
+<p>Clock entries are stored in a :LOGBOOK: drawer under the heading. Use <code class="verbatim">scimax.org.clockReport</code> to generate a summary of time spent.</p>
+
+</div>
+</div>
+<div id="org-agenda" class="org-section org-level-1">
+<h1>✅ Agenda</h1>
+<p>CLOSED: [2026-01-17 Sat 12:28]</p>
+
+<div id="org-agenda-views" class="org-section org-level-2">
+<h2>✅ Agenda Views</h2>
+<p>CLOSED: [2026-01-17 Sat 12:28]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-db-agenda">[[cmd:scimax.db.agenda]]</a></td><td>Show Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-showtodos">[[cmd:scimax.db.showTodos]]</a></td><td>Show TODO Items</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-deadlines">[[cmd:scimax.db.deadlines]]</a></td><td>Show Upcoming Deadlines</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-advanced-agenda" class="org-section org-level-2">
+<h2>✅ Advanced Agenda</h2>
+<p>CLOSED: [2026-01-17 Sat 12:51]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-agenda-menu">[[cmd:scimax.agenda.menu]]</a></td><td>Open Agenda Menu</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-day">[[cmd:scimax.agenda.day]]</a></td><td>Day Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-week">[[cmd:scimax.agenda.week]]</a></td><td>Week Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-fortnight">[[cmd:scimax.agenda.fortnight]]</a></td><td>Fortnight Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-month">[[cmd:scimax.agenda.month]]</a></td><td>Month Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-todolist">[[cmd:scimax.agenda.todoList]]</a></td><td>TODO List</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-deadlines">[[cmd:scimax.agenda.deadlines]]</a></td><td>Upcoming Deadlines</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-scheduled">[[cmd:scimax.agenda.scheduled]]</a></td><td>Scheduled Items</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-filterbytag">[[cmd:scimax.agenda.filterByTag]]</a></td><td>Agenda Filter by Tag</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-clockreport">[[cmd:scimax.agenda.clockReport]]</a></td><td>Agenda Clock Report</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-refresh">[[cmd:scimax.agenda.refresh]]</a></td><td>Refresh Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-cancelscan">[[cmd:scimax.agenda.cancelScan]]</a></td><td>Cancel Agenda Scan</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-showagenda">[[cmd:scimax.agenda.showAgenda]]</a></td><td>Show Agenda View</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-showtodos">[[cmd:scimax.agenda.showTodos]]</a></td><td>Show TODO List View</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-groupbydate">[[cmd:scimax.agenda.groupByDate]]</a></td><td>Group Agenda by Date</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-groupbycategory">[[cmd:scimax.agenda.groupByCategory]]</a></td><td>Group Agenda by Category</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-groupbypriority">[[cmd:scimax.agenda.groupByPriority]]</a></td><td>Group Agenda by Priority</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-configure">[[cmd:scimax.agenda.configure]]</a></td><td>Configure Agenda Files</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-agenda-gotoitem">[[cmd:scimax.agenda.gotoItem]]</a></td><td>Go to Agenda Item</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-journal" class="org-section org-level-1">
+<h1>✅ Journal</h1>
+<p>CLOSED: [2026-01-17 Sat 12:51]</p>
+
+<div id="org-basic-journal-operations" class="org-section org-level-2">
+<h2>✅ Basic Journal Operations</h2>
+<p>CLOSED: [2026-01-17 Sat 12:51]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-journal-today">[[cmd:scimax.journal.today]]</a></td><td>Open Today&#39;s Journal</td><td>C-S-j</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-new">[[cmd:scimax.journal.new]]</a></td><td>New Journal Entry</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-prev">[[cmd:scimax.journal.prev]]</a></td><td>Previous Journal Entry</td><td>M-[ (in journal)</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-next">[[cmd:scimax.journal.next]]</a></td><td>Next Journal Entry</td><td>M-] (in journal)</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-goto">[[cmd:scimax.journal.goto]]</a></td><td>Go to Journal Date</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-search">[[cmd:scimax.journal.search]]</a></td><td>Search Journal</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-calendar">[[cmd:scimax.journal.calendar]]</a></td><td>Show Journal Calendar</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-journal-utilities" class="org-section org-level-2">
+<h2>✅ Journal Utilities</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-journal-refresh">[[cmd:scimax.journal.refresh]]</a></td><td>Refresh Journal View</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-opendirectory">[[cmd:scimax.journal.openDirectory]]</a></td><td>Open Journal Directory</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-inserttimestamp">[[cmd:scimax.journal.insertTimestamp]]</a></td><td>Insert Timestamp</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-quicklog">[[cmd:scimax.journal.quickLog]]</a></td><td>Quick Log Entry</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-stats">[[cmd:scimax.journal.stats]]</a></td><td>Show Journal Statistics</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-journal-weekview">[[cmd:scimax.journal.weekView]]</a></td><td>This Week&#39;s Entries</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-database-and-search" class="org-section org-level-1">
+<h1>✅ Database and Search</h1>
+<p>CLOSED: [2026-01-17 Sat 12:45]</p>
+
+<div id="org-basic-database-operations" class="org-section org-level-2">
+<h2>✅ Basic Database Operations</h2>
+<p>CLOSED: [2026-01-17 Sat 12:45]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-db-reindex">[[cmd:scimax.db.reindex]]</a></td><td>Reindex Files</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-search">[[cmd:scimax.db.search]]</a></td><td>Search All Files</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-searchheadings">[[cmd:scimax.db.searchHeadings]]</a></td><td>Search Headings</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-browsefiles">[[cmd:scimax.db.browseFiles]]</a></td><td>Browse Indexed Files</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-setscope">[[cmd:scimax.db.setScope]]</a></td><td>Set Search Scope</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-showdbmenu">[[cmd:scimax.showDbMenu]]</a></td><td>Database Menu</td><td>C-M-v</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-advanced-search" class="org-section org-level-2">
+<h2>✅ Advanced Search</h2>
+<p>CLOSED: [2026-01-17 Sat 12:45]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-db-searchblocks">[[cmd:scimax.db.searchBlocks]]</a></td><td>Search Code Blocks</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-searchhashtags">[[cmd:scimax.db.searchHashtags]]</a></td><td>Search by Hashtag</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-searchbytag">[[cmd:scimax.db.searchByTag]]</a></td><td>Search by Tag</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-searchbyproperty">[[cmd:scimax.db.searchByProperty]]</a></td><td>Search by Property</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-semantic-search-ai" class="org-section org-level-2">
+<h2>✅ Semantic Search (AI)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:45]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-db-searchsemantic">[[cmd:scimax.db.searchSemantic]]</a></td><td>Semantic Search (AI)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-searchhybrid">[[cmd:scimax.db.searchHybrid]]</a></td><td>Hybrid Search (Keywords + AI)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-configureembeddings">[[cmd:scimax.db.configureEmbeddings]]</a></td><td>Configure Embedding Service</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-database-maintenance" class="org-section org-level-2">
+<h2>✅ Database Maintenance</h2>
+<p>CLOSED: [2026-01-17 Sat 12:46]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-db-optimize">[[cmd:scimax.db.optimize]]</a></td><td>Optimize Database</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-clear">[[cmd:scimax.db.clear]]</a></td><td>Clear Database</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-db-stats">[[cmd:scimax.db.stats]]</a></td><td>Show Database Stats</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-references-org-ref" class="org-section org-level-1">
+<h1>✅ References (org-ref)</h1>
+<p>CLOSED: [2026-01-17 Sat 12:46]</p>
+
+<div id="org-citation-management" class="org-section org-level-2">
+<h2>✅ Citation Management</h2>
+<p>CLOSED: [2026-01-17 Sat 12:46]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-ref-insertcitation">[[cmd:scimax.ref.insertCitation]]</a></td><td>Insert Citation</td><td>C-c ] (org/md/latex)</td></tr>
+<tr><td><a href="#org-cmd-scimax-zotero-insertcitation">[[cmd:scimax.zotero.insertCitation]]</a></td><td>Insert Citation from Zotero</td><td>C-c z (org/md/latex)</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-insertref">[[cmd:scimax.ref.insertRef]]</a></td><td>Insert Reference Link</td><td>C-u C-c ]</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-insertbibliography">[[cmd:scimax.ref.insertBibliography]]</a></td><td>Insert Bibliography Link</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-copybibtex">[[cmd:scimax.ref.copyBibTeX]]</a></td><td>Copy BibTeX Entry</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-citation-editing" class="org-section org-level-2">
+<h2>✅ Citation Editing</h2>
+<p>CLOSED: [2026-01-17 Sat 12:46]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-ref-transposecitationleft">[[cmd:scimax.ref.transposeCitationLeft]]</a></td><td>Transpose Citation Left</td><td>S-LEFT (on citation)</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-transposecitationright">[[cmd:scimax.ref.transposeCitationRight]]</a></td><td>Transpose Citation Right</td><td>S-RIGHT (on citation)</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-sortcitations">[[cmd:scimax.ref.sortCitations]]</a></td><td>Sort Citations (Oldest First)</td><td>S-UP (on citation)</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-sortcitationsbyyear">[[cmd:scimax.ref.sortCitationsByYear]]</a></td><td>Sort Citations (Newest First)</td><td>S-DOWN (on citation)</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-sortcitationsalphabetically">[[cmd:scimax.ref.sortCitationsAlphabetically]]</a></td><td>Sort Citations Alphabetically</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-deletecitation">[[cmd:scimax.ref.deleteCitation]]</a></td><td>Delete Citation at Cursor</td><td>C-S-k (on citation)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-bibliography-management" class="org-section org-level-2">
+<h2>✅ Bibliography Management</h2>
+<p>CLOSED: [2026-01-17 Sat 12:46]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-ref-openbibliography">[[cmd:scimax.ref.openBibliography]]</a></td><td>Open Bibliography</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-fetchfromdoi">[[cmd:scimax.ref.fetchFromDOI]]</a></td><td>Fetch BibTeX from DOI</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-searchreferences">[[cmd:scimax.ref.searchReferences]]</a></td><td>Search References</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-findcitations">[[cmd:scimax.ref.findCitations]]</a></td><td>Find Citations of Reference</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-refresh">[[cmd:scimax.ref.refresh]]</a></td><td>Refresh References</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-extractbibliography">[[cmd:scimax.ref.extractBibliography]]</a></td><td>Extract Bibliography from File</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-openalex-integration" class="org-section org-level-2">
+<h2>✅ OpenAlex Integration</h2>
+<p>CLOSED: [2026-01-17 Sat 12:46]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-ref-showcitingworks">[[cmd:scimax.ref.showCitingWorks]]</a></td><td>Show Citing Works (OpenAlex)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-showrelatedworks">[[cmd:scimax.ref.showRelatedWorks]]</a></td><td>Show Related Works (OpenAlex)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-searchopenalex">[[cmd:scimax.ref.searchOpenAlex]]</a></td><td>Search OpenAlex</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-ref-configureopenalex">[[cmd:scimax.ref.configureOpenAlex]]</a></td><td>Configure OpenAlex API</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-notebook" class="org-section org-level-1">
+<h1>✅ Notebook</h1>
+<p>CLOSED: [2026-01-17 Sat 12:46]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-notebook-new">[[cmd:scimax.notebook.new]]</a></td><td>New Notebook</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-open">[[cmd:scimax.notebook.open]]</a></td><td>Open Notebook</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-openmasterfile">[[cmd:scimax.notebook.openMasterFile]]</a></td><td>Open Notebook Master File</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-recentfiles">[[cmd:scimax.notebook.recentFiles]]</a></td><td>Recent Files in Notebook</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-search">[[cmd:scimax.notebook.search]]</a></td><td>Search in Notebook</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-agenda">[[cmd:scimax.notebook.agenda]]</a></td><td>Notebook Agenda</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-addcollaborator">[[cmd:scimax.notebook.addCollaborator]]</a></td><td>Add Collaborator</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-archive">[[cmd:scimax.notebook.archive]]</a></td><td>Archive Notebook</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-settings">[[cmd:scimax.notebook.settings]]</a></td><td>Notebook Settings</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-index">[[cmd:scimax.notebook.index]]</a></td><td>Index Notebook</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-info">[[cmd:scimax.notebook.info]]</a></td><td>Notebook Info</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-notebook-remove">[[cmd:scimax.notebook.remove]]</a></td><td>Remove Notebook from Tracking</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>✅ Navigation</h1>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<div id="org-fuzzy-search-swiper" class="org-section org-level-2">
+<h2>✅ Fuzzy Search (Swiper)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-fuzzysearch">[[cmd:scimax.fuzzySearch]]</a></td><td>Fuzzy Search (Current File)</td><td>C-c s</td></tr>
+<tr><td><a href="#org-cmd-scimax-fuzzysearchopenfiles">[[cmd:scimax.fuzzySearchOpenFiles]]</a></td><td>Fuzzy Search (Open Files)</td><td>C-c S-s</td></tr>
+<tr><td><a href="#org-cmd-scimax-fuzzysearchoutline">[[cmd:scimax.fuzzySearchOutline]]</a></td><td>Fuzzy Search (Outline)</td><td>C-c M-s</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-jump-avy" class="org-section org-level-2">
+<h2>✅ Jump (Avy)</h2>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-jump-gotochar">[[cmd:scimax.jump.gotoChar]]</a></td><td>Jump to Character</td><td>C-c j c</td></tr>
+<tr><td><a href="#org-cmd-scimax-jump-gotochar2">[[cmd:scimax.jump.gotoChar2]]</a></td><td>Jump to 2-Character Sequence</td><td>C-c j j</td></tr>
+<tr><td><a href="#org-cmd-scimax-jump-gotoword">[[cmd:scimax.jump.gotoWord]]</a></td><td>Jump to Word</td><td>C-c j w</td></tr>
+<tr><td><a href="#org-cmd-scimax-jump-gotoline">[[cmd:scimax.jump.gotoLine]]</a></td><td>Jump to Line</td><td>C-c j l</td></tr>
+<tr><td><a href="#org-cmd-scimax-jump-gotosymbol">[[cmd:scimax.jump.gotoSymbol]]</a></td><td>Jump to Symbol</td><td>C-c j o</td></tr>
+<tr><td><a href="#org-cmd-scimax-jump-gotosubword">[[cmd:scimax.jump.gotoSubword]]</a></td><td>Jump to Subword</td><td>C-c j s</td></tr>
+<tr><td><a href="#org-cmd-scimax-jump-copyline">[[cmd:scimax.jump.copyLine]]</a></td><td>Jump Copy Line</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jump-killline">[[cmd:scimax.jump.killLine]]</a></td><td>Jump Kill Line</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-projectile" class="org-section org-level-1">
+<h1>✅ Projectile</h1>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-projectile-switch">[[cmd:scimax.projectile.switch]]</a></td><td>Switch Project</td><td>C-c p p</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-findfile">[[cmd:scimax.projectile.findFile]]</a></td><td>Find File in Project</td><td>C-c p f</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-search">[[cmd:scimax.projectile.search]]</a></td><td>Search in Project</td><td>C-c p s</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-root">[[cmd:scimax.projectile.root]]</a></td><td>Open Project Root</td><td>C-c p d</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-add">[[cmd:scimax.projectile.add]]</a></td><td>Add Project</td><td>C-c p a</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-remove">[[cmd:scimax.projectile.remove]]</a></td><td>Remove Project</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-scan">[[cmd:scimax.projectile.scan]]</a></td><td>Scan Directory for Projects</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-info">[[cmd:scimax.projectile.info]]</a></td><td>Project Info</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-cleanup">[[cmd:scimax.projectile.cleanup]]</a></td><td>Cleanup Non-existent Projects</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-projectile-refreshtree">[[cmd:scimax.projectile.refreshTree]]</a></td><td>Refresh Projects</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-editmarks" class="org-section org-level-1">
+<h1>✅ Editmarks</h1>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<div id="org-mark-edits" class="org-section org-level-2">
+<h2>✅ Mark Edits</h2>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-editmarks-insertion">[[cmd:scimax.editmarks.insertion]]</a></td><td>Mark Insertion</td><td>C-c e i</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-deletion">[[cmd:scimax.editmarks.deletion]]</a></td><td>Mark Deletion</td><td>C-c e d</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-comment">[[cmd:scimax.editmarks.comment]]</a></td><td>Insert Edit Comment</td><td>C-c e c</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-typo">[[cmd:scimax.editmarks.typo]]</a></td><td>Mark Typo Correction</td><td>C-c e t</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-review-edits" class="org-section org-level-2">
+<h2>✅ Review Edits</h2>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-editmarks-accept">[[cmd:scimax.editmarks.accept]]</a></td><td>Accept Edit Mark</td><td>C-c e a</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-reject">[[cmd:scimax.editmarks.reject]]</a></td><td>Reject Edit Mark</td><td>C-c e r</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-acceptall">[[cmd:scimax.editmarks.acceptAll]]</a></td><td>Accept All Edit Marks</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-rejectall">[[cmd:scimax.editmarks.rejectAll]]</a></td><td>Reject All Edit Marks</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-next">[[cmd:scimax.editmarks.next]]</a></td><td>Next Edit Mark</td><td>C-c e ]</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-prev">[[cmd:scimax.editmarks.prev]]</a></td><td>Previous Edit Mark</td><td>C-c e [</td></tr>
+<tr><td><a href="#org-cmd-scimax-editmarks-summary">[[cmd:scimax.editmarks.summary]]</a></td><td>Show Edit Marks Summary</td><td>C-c e s</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-hydra" class="org-section org-level-1">
+<h1>✅ Hydra</h1>
+<p>CLOSED: [2026-01-17 Sat 12:47]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-hydra-show">[[cmd:scimax.hydra.show]]</a></td><td>Show Hydra Menu</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-hydra-hide">[[cmd:scimax.hydra.hide]]</a></td><td>Hide Hydra Menu</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-hydra-back">[[cmd:scimax.hydra.back]]</a></td><td>Hydra Menu Back</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-hydra-main">[[cmd:scimax.hydra.main]]</a></td><td>Main Menu</td><td>C-c m</td></tr>
+<tr><td><a href="#org-cmd-scimax-hydra-database">[[cmd:scimax.hydra.database]]</a></td><td>Database Menu</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-hydra-contextmenu">[[cmd:scimax.hydra.contextMenu]]</a></td><td>Context Menu</td><td>C-c C-m</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-markup" class="org-section org-level-1">
+<h1>✅ Markup</h1>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-markup-bold">[[cmd:scimax.markup.bold]]</a></td><td>Bold (Markup)</td><td>C-c b</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-italic">[[cmd:scimax.markup.italic]]</a></td><td>Italic (Markup)</td><td>C-c i</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-underline">[[cmd:scimax.markup.underline]]</a></td><td>Underline (Markup)</td><td>C-c u</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-code">[[cmd:scimax.markup.code]]</a></td><td>Code (Markup)</td><td>C-c `</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-verbatim">[[cmd:scimax.markup.verbatim]]</a></td><td>Verbatim (Markup)</td><td>C-c =</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-strikethrough">[[cmd:scimax.markup.strikethrough]]</a></td><td>Strikethrough (Markup)</td><td>C-c +</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-subscript">[[cmd:scimax.markup.subscript]]</a></td><td>Subscript (Markup)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-superscript">[[cmd:scimax.markup.superscript]]</a></td><td>Superscript (Markup)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-latexmath">[[cmd:scimax.markup.latexMath]]</a></td><td>LaTeX Math (Markup)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-latexdisplaymath">[[cmd:scimax.markup.latexDisplayMath]]</a></td><td>LaTeX Display Math (Markup)</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-markup-command">[[cmd:scimax.markup.command]]</a></td><td>Command (Emacs-style)</td><td>C-c &#39;</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-speed-commands" class="org-section org-level-1">
+<h1>✅ Speed Commands</h1>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<p>Speed commands are single-key commands available when cursor is at the beginning of a heading line (with scimax.speedCommandsEnabled).</p>
+
+<div id="org-navigation" class="org-section org-level-2">
+<h2>✅ Navigation</h2>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-speed-nextsibling">[[cmd:scimax.speed.nextSibling]]</a></td><td>Next Sibling Heading</td><td>f</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-previoussibling">[[cmd:scimax.speed.previousSibling]]</a></td><td>Previous Sibling</td><td>b</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-nextheading">[[cmd:scimax.org.nextHeading]]</a></td><td>Next Heading</td><td>n</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-previousheading">[[cmd:scimax.org.previousHeading]]</a></td><td>Previous Heading</td><td>p</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-parentheading">[[cmd:scimax.org.parentHeading]]</a></td><td>Parent Heading</td><td>u</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-jumptoheading">[[cmd:scimax.org.jumpToHeading]]</a></td><td>Jump to Heading</td><td>j</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-gotomenu">[[cmd:scimax.speed.gotoMenu]]</a></td><td>Go To Menu</td><td>g</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-firstheading">[[cmd:scimax.speed.firstHeading]]</a></td><td>First Heading</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-lastheading">[[cmd:scimax.speed.lastHeading]]</a></td><td>Last Heading</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-visibility" class="org-section org-level-2">
+<h2>✅ Visibility</h2>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-cycleglobalfold">[[cmd:scimax.org.cycleGlobalFold]]</a></td><td>Cycle Global Fold</td><td>c</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-showchildren">[[cmd:scimax.speed.showChildren]]</a></td><td>Show All Children</td><td>C (S-c)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-overview">[[cmd:scimax.speed.overview]]</a></td><td>Overview (Fold All)</td><td>o</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-structure-editing" class="org-section org-level-2">
+<h2>✅ Structure Editing</h2>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-heading-moveup">[[cmd:scimax.heading.moveUp]]</a></td><td>Move Heading Up</td><td>U (S-u)</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-movedown">[[cmd:scimax.heading.moveDown]]</a></td><td>Move Heading Down</td><td>D (S-d)</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-demotesubtree">[[cmd:scimax.heading.demoteSubtree]]</a></td><td>Demote Subtree</td><td>r</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-promotesubtree">[[cmd:scimax.heading.promoteSubtree]]</a></td><td>Promote Subtree</td><td>l</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-demote">[[cmd:scimax.heading.demote]]</a></td><td>Demote Heading</td><td>R (S-r)</td></tr>
+<tr><td><a href="#org-cmd-scimax-heading-promote">[[cmd:scimax.heading.promote]]</a></td><td>Promote Heading</td><td>L (S-l)</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-killsubtree">[[cmd:scimax.org.killSubtree]]</a></td><td>Kill Subtree</td><td>w</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-yanksubtree">[[cmd:scimax.speed.yankSubtree]]</a></td><td>Yank (Paste) Subtree</td><td>y</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-clonesubtree">[[cmd:scimax.org.cloneSubtree]]</a></td><td>Clone Subtree</td><td>W (S-w)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-todo-and-tags" class="org-section org-level-2">
+<h2>✅ TODO and Tags</h2>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-cycletodo">[[cmd:scimax.org.cycleTodo]]</a></td><td>Cycle TODO State</td><td>t</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-settags">[[cmd:scimax.speed.setTags]]</a></td><td>Set Tags</td><td>: (S-;)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-prioritya">[[cmd:scimax.speed.priorityA]]</a></td><td>Set Priority A</td><td>1</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-priorityb">[[cmd:scimax.speed.priorityB]]</a></td><td>Set Priority B</td><td>2</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-priorityc">[[cmd:scimax.speed.priorityC]]</a></td><td>Set Priority C</td><td>3</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-prioritynone">[[cmd:scimax.speed.priorityNone]]</a></td><td>Remove Priority</td><td>0</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-scheduling-and-timestamps" class="org-section org-level-2">
+<h2>✅ Scheduling and Timestamps</h2>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-speed-schedule">[[cmd:scimax.speed.schedule]]</a></td><td>Add/Edit SCHEDULED</td><td>s</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-deadline">[[cmd:scimax.speed.deadline]]</a></td><td>Add/Edit DEADLINE</td><td>d</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-inserttimestamp">[[cmd:scimax.org.insertTimestamp]]</a></td><td>Insert Timestamp</td><td>.</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-shifttimestampup">[[cmd:scimax.org.shiftTimestampUp]]</a></td><td>Shift Timestamp Up</td><td>,</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-properties-and-clocking" class="org-section org-level-2">
+<h2>✅ Properties and Clocking</h2>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-speed-setproperty">[[cmd:scimax.speed.setProperty]]</a></td><td>Set Property</td><td>P (S-p)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-seteffort">[[cmd:scimax.speed.setEffort]]</a></td><td>Set Effort</td><td>e</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-clockin">[[cmd:scimax.speed.clockIn]]</a></td><td>Clock In</td><td>I (S-i)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-clockout">[[cmd:scimax.speed.clockOut]]</a></td><td>Clock Out</td><td>O (S-o)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-archiving" class="org-section org-level-2">
+<h2>✅ Archiving</h2>
+<p>CLOSED: [2026-01-17 Sat 12:48]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-speed-archivesubtree">[[cmd:scimax.speed.archiveSubtree]]</a></td><td>Archive Subtree</td><td>a</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-togglearchivetag">[[cmd:scimax.speed.toggleArchiveTag]]</a></td><td>Toggle Archive Tag</td><td>A (S-a)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-archivetosibling">[[cmd:scimax.speed.archiveToSibling]]</a></td><td>Archive to Sibling</td><td>$ (S-4)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-narrowing" class="org-section org-level-2">
+<h2>✅ Narrowing</h2>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<p>Note this is not the same as narrowing in Emacs which restricts the visible portion of the window.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-speed-narrowtosubtree">[[cmd:scimax.speed.narrowToSubtree]]</a></td><td>Narrow to Subtree</td><td>N (S-n)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-widen">[[cmd:scimax.speed.widen]]</a></td><td>Widen</td><td>S (S-s)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-help" class="org-section org-level-2">
+<h2>✅ Help</h2>
+<p>CLOSED: [2026-01-17 Sat 12:49]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Speed Key</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-speed-help">[[cmd:scimax.speed.help]]</a></td><td>Speed Commands Help</td><td>? (S-/)</td></tr>
+<tr><td><a href="#org-cmd-scimax-speed-toggle">[[cmd:scimax.speed.toggle]]</a></td><td>Toggle Speed Commands</td><td>C-c C-x s</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-latex" class="org-section org-level-1">
+<h1>✅ LaTeX</h1>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<div id="org-latex-preview-and-compilation" class="org-section org-level-2">
+<h2>✅ LaTeX Preview and Compilation</h2>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-latex-openpreview">[[cmd:scimax.latex.openPreview]]</a></td><td>Open LaTeX Live Preview</td><td>C-c C-e l v</td></tr>
+<tr><td><a href="#org-cmd-scimax-latex-forwardsync">[[cmd:scimax.latex.forwardSync]]</a></td><td>Sync PDF to Cursor Position</td><td>C-c C-e l s</td></tr>
+<tr><td><a href="#org-cmd-scimax-latex-rebuild">[[cmd:scimax.latex.rebuild]]</a></td><td>Rebuild PDF</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-latex-showoutput">[[cmd:scimax.latex.showOutput]]</a></td><td>Show LaTeX Build Output</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-latex-cache-management" class="org-section org-level-2">
+<h2>✅ LaTeX Cache Management</h2>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-clearlatexcache">[[cmd:scimax.clearLatexCache]]</a></td><td>Clear LaTeX Preview Cache</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-checklatextools">[[cmd:scimax.checkLatexTools]]</a></td><td>Check LaTeX Tools Availability</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-latexcachestats">[[cmd:scimax.latexCacheStats]]</a></td><td>Show LaTeX Cache Statistics</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-capture" class="org-section org-level-1">
+<h1>✅ Capture</h1>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-capture">[[cmd:scimax.capture]]</a></td><td>Capture</td><td>C-c c</td></tr>
+<tr><td><a href="#org-cmd-scimax-capturebykey">[[cmd:scimax.captureByKey]]</a></td><td>Capture by Key</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-capture-todo">[[cmd:scimax.capture.todo]]</a></td><td>Quick Capture TODO</td><td>C-c t</td></tr>
+<tr><td><a href="#org-cmd-scimax-capture-note">[[cmd:scimax.capture.note]]</a></td><td>Quick Capture Note</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-capture-createtemplate">[[cmd:scimax.capture.createTemplate]]</a></td><td>Create Capture Template</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-capture-listtemplates">[[cmd:scimax.capture.listTemplates]]</a></td><td>List Capture Templates</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-capture-configure">[[cmd:scimax.capture.configure]]</a></td><td>Configure Capture Templates</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-image-overlays" class="org-section org-level-1">
+<h1>✅ Image Overlays</h1>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-imageoverlays-toggle">[[cmd:scimax.imageOverlays.toggle]]</a></td><td>Toggle Image Overlays</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-imageoverlays-togglecurrentfile">[[cmd:scimax.imageOverlays.toggleCurrentFile]]</a></td><td>Toggle Image Overlays for Current File</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-imageoverlays-refresh">[[cmd:scimax.imageOverlays.refresh]]</a></td><td>Refresh Image Overlays</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-imageoverlays-clearcache">[[cmd:scimax.imageOverlays.clearCache]]</a></td><td>Clear Image Overlay Cache</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-imageoverlays-showstats">[[cmd:scimax.imageOverlays.showStats]]</a></td><td>Show Image Overlay Cache Statistics</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-jupyter" class="org-section org-level-1">
+<h1>✅ Jupyter</h1>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<div id="org-kernel-management" class="org-section org-level-2">
+<h2>✅ Kernel Management</h2>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-jupyter-showkernels">[[cmd:scimax.jupyter.showKernels]]</a></td><td>Show Available Jupyter Kernels</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jupyter-showrunning">[[cmd:scimax.jupyter.showRunning]]</a></td><td>Show Running Kernels</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jupyter-startkernel">[[cmd:scimax.jupyter.startKernel]]</a></td><td>Start Jupyter Kernel</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jupyter-changekernel">[[cmd:scimax.jupyter.changeKernel]]</a></td><td>Change Jupyter Kernel</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jupyter-restartkernel">[[cmd:scimax.jupyter.restartKernel]]</a></td><td>Restart Jupyter Kernel</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jupyter-interruptkernel">[[cmd:scimax.jupyter.interruptKernel]]</a></td><td>Interrupt Jupyter Kernel</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jupyter-shutdownkernel">[[cmd:scimax.jupyter.shutdownKernel]]</a></td><td>Shutdown Jupyter Kernel</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-jupyter-shutdownall">[[cmd:scimax.jupyter.shutdownAll]]</a></td><td>Shutdown All Jupyter Kernels</td><td>-</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-appendix-keybinding-quick-reference" class="org-section org-level-1">
+<h1>✅ Appendix: Keybinding Quick Reference</h1>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<div id="org-most-common-keybindings" class="org-section org-level-2">
+<h2>✅ Most Common Keybindings</h2>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keybinding</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td>C-RET</td><td>Execute code block / Insert heading</td></tr>
+<tr><td>C-c C-e</td><td>Export dispatcher</td></tr>
+<tr><td>C-c C-j</td><td>Jump to heading</td></tr>
+<tr><td>C-c C-t</td><td>Cycle TODO state</td></tr>
+<tr><td>C-c C-l</td><td>Insert link</td></tr>
+<tr><td>C-c C-o</td><td>Open link</td></tr>
+<tr><td>C-c ]</td><td>Insert citation</td></tr>
+<tr><td>C-c .</td><td>Insert timestamp</td></tr>
+<tr><td>C-c m</td><td>Main hydra menu</td></tr>
+<tr><td>C-c s</td><td>Fuzzy search</td></tr>
+<tr><td>C-c p p</td><td>Switch project</td></tr>
+<tr><td>C-S-j</td><td>Open today&#39;s journal</td></tr>
+<tr><td>TAB</td><td>Cycle folding (on heading)</td></tr>
+<tr><td>S-TAB</td><td>Global cycle folding</td></tr>
+<tr><td>M-LEFT/RIGHT</td><td>Promote/demote heading</td></tr>
+<tr><td>M-UP/DOWN</td><td>Move heading/subtree</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-export-keybindings" class="org-section org-level-2">
+<h2>✅ Export Keybindings</h2>
+<p>CLOSED: [2026-01-17 Sat 12:50]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keybinding</th><th>Export Target</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-e h h</td><td>HTML</td></tr>
+<tr><td>C-c C-e h o</td><td>HTML and open</td></tr>
+<tr><td>C-c C-e l l</td><td>LaTeX</td></tr>
+<tr><td>C-c C-e l p</td><td>PDF</td></tr>
+<tr><td>C-c C-e l o</td><td>PDF and open</td></tr>
+<tr><td>C-c C-e l v</td><td>LaTeX live preview</td></tr>
+<tr><td>C-c C-e m m</td><td>Markdown</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-babel-source-block-keybindings" class="org-section org-level-2">
+<h2>✅ Babel/Source Block Keybindings</h2>
+<p>CLOSED: [2026-01-17 Sat 12:51]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keybinding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-RET</td><td>Execute block</td></tr>
+<tr><td>C-c C-c</td><td>Execute block (in src)</td></tr>
+<tr><td>S-RET</td><td>Execute and next</td></tr>
+<tr><td>C-c C-v t</td><td>Tangle</td></tr>
+<tr><td>C-c C-v p</td><td>Execute to point</td></tr>
+<tr><td>C-c C-v i</td><td>Execute inline</td></tr>
+<tr><td>C-c C-v q</td><td>Queue block</td></tr>
+<tr><td>C-DOWN</td><td>Next source block</td></tr>
+<tr><td>C-UP</td><td>Previous source block</td></tr>
+<tr><td>C-c C-n</td><td>Insert block below</td></tr>
+<tr><td>C-c C-b</td><td>Jump to block</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-project-and-navigation-keybindings" class="org-section org-level-2">
+<h2>✅ Project and Navigation Keybindings</h2>
+<p>CLOSED: [2026-01-17 Sat 12:51]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Keybinding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c p p</td><td>Switch project</td></tr>
+<tr><td>C-c p f</td><td>Find file in project</td></tr>
+<tr><td>C-c p s</td><td>Search in project</td></tr>
+<tr><td>C-c p d</td><td>Open project root</td></tr>
+<tr><td>C-c p a</td><td>Add project</td></tr>
+<tr><td>C-c s</td><td>Fuzzy search (current)</td></tr>
+<tr><td>C-c S-s</td><td>Fuzzy search (open files)</td></tr>
+<tr><td>C-c M-s</td><td>Fuzzy search (outline)</td></tr>
+<tr><td>C-c j c</td><td>Jump to character</td></tr>
+<tr><td>C-c j j</td><td>Jump to 2-char sequence</td></tr>
+<tr><td>C-c j w</td><td>Jump to word</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-help-system" class="org-section org-level-1">
+<h1>✅ Help System</h1>
+<p>CLOSED: [2026-01-18 Sun 09:59]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Commands for discovering keybindings and command functionality.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-help-describecommand">[[cmd:scimax.help.describeCommand]]</a></td><td>Describe Command</td><td>C-h f</td></tr>
+<tr><td><a href="#org-cmd-scimax-help-describekey">[[cmd:scimax.help.describeKey]]</a></td><td>Describe Key</td><td>C-h k</td></tr>
+<tr><td><a href="#org-cmd-scimax-help-listkeybindings">[[cmd:scimax.help.listKeybindings]]</a></td><td>List All Keybindings</td><td>C-h b</td></tr>
+<tr><td><a href="#org-cmd-scimax-help-describevariable">[[cmd:scimax.help.describeVariable]]</a></td><td>Describe Setting</td><td>C-h v</td></tr>
+<tr><td><a href="#org-cmd-scimax-help-apropos">[[cmd:scimax.help.apropos]]</a></td><td>Search Documentation</td><td>C-h a</td></tr>
+</tbody>
+</table>
+
+<div id="org-scimax-help-describecommand" class="org-section org-level-2">
+<h2>scimax.help.describeCommand</h2>
+<p>Shows the keybindings for a specific command. Useful for learning keyboard shortcuts.</p>
+
+</div>
+<div id="org-scimax-help-describekey" class="org-section org-level-2">
+<h2>scimax.help.describeKey</h2>
+<p>Describes what a specific key combination does. Enter the key sequence to see its bound command.</p>
+
+</div>
+<div id="org-scimax-help-listkeybindings" class="org-section org-level-2">
+<h2>scimax.help.listKeybindings</h2>
+<p>Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.</p>
+
+</div>
+<div id="org-scimax-help-describevariable" class="org-section org-level-2">
+<h2>scimax.help.describeVariable</h2>
+<p>Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Select a setting to open VS Code Settings.</p>
+
+</div>
+<div id="org-scimax-help-apropos" class="org-section org-level-2">
+<h2>scimax.help.apropos</h2>
+<p>Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.</p>
+
+</div>
+</div>
+<div id="org-linting" class="org-section org-level-1">
+<h1>✅ Linting</h1>
+<p>CLOSED: [2026-01-18 Sun 09:59]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Commands for checking org-mode document quality.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-org-lint">[[cmd:scimax.org.lint]]</a></td><td>Run Linter</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-org-lintcheckers">[[cmd:scimax.org.lintCheckers]]</a></td><td>Show Lint Checkers</td><td>-</td></tr>
+</tbody>
+</table>
+
+<div id="org-scimax-org-lint" class="org-section org-level-2">
+<h2>scimax.org.lint</h2>
+<p>Runs the org-mode linter on the current document. The linter checks for:</p>
+
+<ul>
+<li><p>Duplicate IDs</p>
+</li>
+<li><p>Broken internal links</p>
+</li>
+<li><p>Missing TODO keywords in sequences</p>
+</li>
+<li><p>Unbalanced brackets and quotes</p>
+</li>
+<li><p>Invalid timestamps</p>
+</li>
+<li><p>Missing required properties</p>
+</li>
+<li><p>And more</p>
+</li>
+</ul>
+
+<p>Results appear in the Problems panel.</p>
+
+</div>
+<div id="org-scimax-org-lintcheckers" class="org-section org-level-2">
+<h2>scimax.org.lintCheckers</h2>
+<p>Shows available lint checkers and allows enabling/disabling specific checks.</p>
+
+</div>
+</div>
+<div id="org-mark-ring" class="org-section org-level-1">
+<h1>✅ Mark Ring</h1>
+<!-- Unknown element type: property-drawer -->
+<p>Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there&#39;s a global mark ring that tracks positions across all documents.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-mark-set">[[cmd:scimax.mark.set]]</a></td><td>Set Mark (for selection)</td><td>C-SPC</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-cancel">[[cmd:scimax.mark.cancel]]</a></td><td>Cancel Selection</td><td>C-g</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-push">[[cmd:scimax.mark.push]]</a></td><td>Push Mark</td><td>C-SPC C-SPC</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-pop">[[cmd:scimax.mark.pop]]</a></td><td>Pop Mark</td><td>C-u C-SPC</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-popglobal">[[cmd:scimax.mark.popGlobal]]</a></td><td>Pop Global Mark</td><td>C-x C-SPC</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-exchange">[[cmd:scimax.mark.exchange]]</a></td><td>Exchange Point and Mark</td><td>C-x C-x</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-selecttomark">[[cmd:scimax.mark.selectToMark]]</a></td><td>Select to Mark</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-show">[[cmd:scimax.mark.show]]</a></td><td>Show Mark Ring</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-clear">[[cmd:scimax.mark.clear]]</a></td><td>Clear Mark Ring</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-mark-clearall">[[cmd:scimax.mark.clearAll]]</a></td><td>Clear All Mark Rings</td><td>-</td></tr>
+</tbody>
+</table>
+
+<div id="org-mark-ring-concepts" class="org-section org-level-2">
+<h2>✅ Mark Ring Concepts</h2>
+<ul>
+<li><p>*<strong>Mark</strong>*: A saved cursor position that you can return to</p>
+</li>
+<li><p>*<strong>Point</strong>*: The current cursor position</p>
+</li>
+<li><p>*<strong>Mark Ring</strong>*: A stack of marks (per-document), most recent first (default size: 16)</p>
+</li>
+<li><p>*<strong>Global Mark Ring</strong>*: A cross-file stack of marks for navigating between documents</p>
+</li>
+<li><p>*<strong>Selection Mode</strong>*: When mark is set, cursor movement extends the selection from the mark</p>
+</li>
+</ul>
+
+</div>
+<div id="org-common-workflows" class="org-section org-level-2">
+<h2>✅ Common Workflows</h2>
+<div id="org-setting-a-mark-for-selection" class="org-section org-level-3">
+<h3>Setting a Mark for Selection</h3>
+<ol>
+<li><p>Press <code class="verbatim">C-SPC</code> to set mark at current position (line flashes briefly as feedback)</p>
+</li>
+<li><p>Move cursor to end of desired selection - the region automatically expands</p>
+</li>
+<li><p>Press <code class="verbatim">C-SPC</code> again to deactivate selection mode (toggle behavior)</p>
+</li>
+<li><p>Press <code class="verbatim">C-g</code> to cancel selection and collapse to cursor position</p>
+</li>
+</ol>
+
+</div>
+<div id="org-returning-to-previous-positions" class="org-section org-level-3">
+<h3>Returning to Previous Positions</h3>
+<ol>
+<li><p>Press <code class="verbatim">C-SPC C-SPC</code> to push mark without activating selection mode</p>
+</li>
+<li><p>Navigate elsewhere in the file</p>
+</li>
+<li><p>Press <code class="verbatim">C-u C-SPC</code> to pop the most recent mark and jump to it</p>
+</li>
+<li><p>Current position is saved before jumping, so you can return with another pop</p>
+</li>
+</ol>
+
+</div>
+<div id="org-cross-file-navigation" class="org-section org-level-3">
+<h3>Cross-file Navigation</h3>
+<ol>
+<li><p>Marks are automatically pushed to the global ring when set</p>
+</li>
+<li><p>Press <code class="verbatim">C-x C-SPC</code> to pop from global mark ring and jump (can cross files)</p>
+</li>
+<li><p>Use <code class="verbatim">C-x C-x</code> to exchange point and mark (swap current position with last mark)</p>
+</li>
+</ol>
+
+</div>
+<div id="org-viewing-the-mark-ring" class="org-section org-level-3">
+<h3>Viewing the Mark Ring</h3>
+<ol>
+<li><p>Run <code class="verbatim">scimax.mark.show</code> from command palette</p>
+</li>
+<li><p>Quick pick shows local marks and global marks with line previews</p>
+</li>
+<li><p>Select an entry to jump to that position</p>
+</li>
+<li><p>Timestamps show how long ago each mark was set</p>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div id="org-publishing" class="org-section org-level-1">
+<h1>✅ Publishing</h1>
+<p>CLOSED: [2026-01-18 Sun 10:02]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Commands for publishing org files to HTML, creating static sites similar to Emacs org-publish.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-publish-init">[[cmd:scimax.publish.init]]</a></td><td>Initialize Publishing Project</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-publish-project">[[cmd:scimax.publish.project]]</a></td><td>Publish Project</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-publish-all">[[cmd:scimax.publish.all]]</a></td><td>Publish All Projects</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-publish-file">[[cmd:scimax.publish.file]]</a></td><td>Publish Current File</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-publish-preview">[[cmd:scimax.publish.preview]]</a></td><td>Preview Published Site</td><td>-</td></tr>
+<tr><td><a href="#org-cmd-scimax-publish-openconfig">[[cmd:scimax.publish.openConfig]]</a></td><td>Open Publishing Config</td><td>-</td></tr>
+</tbody>
+</table>
+
+<div id="org-setting-up-a-publishing-project" class="org-section org-level-2">
+<h2>Setting Up a Publishing Project</h2>
+<ol>
+<li><p>Run <code class="verbatim">scimax.publish.init</code> to create a publishing configuration</p>
+</li>
+<li><p>Configure the project in the generated <code class="verbatim">.org-publish.json</code> file</p>
+</li>
+<li><p>Use <code class="verbatim">scimax.publish.project</code> to publish the configured project</p>
+</li>
+</ol>
+
+</div>
+<div id="org-publishing-configuration" class="org-section org-level-2">
+<h2>Publishing Configuration</h2>
+<p>The <code class="verbatim">.org-publish.json</code> file configures:</p>
+
+<ul>
+<li><p>Source directory for org files</p>
+</li>
+<li><p>Output directory for HTML</p>
+</li>
+<li><p>Include/exclude patterns</p>
+</li>
+<li><p>HTML template settings</p>
+</li>
+<li><p>Asset handling (CSS, images)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-query-replace" class="org-section org-level-1">
+<h1>✅ Query Replace</h1>
+<p>CLOSED: [2026-01-18 Sun 10:02]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Interactive search and replace.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command ID</th><th>Description</th><th>Default Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#org-cmd-scimax-queryreplace">[[cmd:scimax.queryReplace]]</a></td><td>Query Replace</td><td>M-%</td></tr>
+</tbody>
+</table>
+
+<p>Provides Emacs-style interactive query-replace with confirmation for each replacement.</p>
+
+</div>
+<div id="org-index" class="org-section org-level-1">
+<h1>✅ Index</h1>
+<p>CLOSED: [2026-01-17 Sat 12:51]</p>
+
+<p>This document contains <a href="#org-introduction">310+ commands</a> organized into <a href="#org-document-structure">27 categories</a> with their keybindings and descriptions.</p>
+
+<p>For configuration options, see the VS Code settings under scimax.*.</p>
+
+<p>For more information about the Scimax VS Code extension, visit the project repository.</p>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="24-keybindings.html">Keybindings</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="26-configuration.html">Configuration</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

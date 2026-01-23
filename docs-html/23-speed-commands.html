@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Speed Commands</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Speed Commands</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-what-are-speed-commands">✅ What are Speed Commands?</a></li>
+<li><a href="#org-why-use-speed-commands">✅ Why Use Speed Commands?</a></li>
+</ul>
+<li><a href="#org-configuration">✅ Configuration</a></li>
+<ul>
+<li><a href="#org-enabling-speed-commands">✅ Enabling Speed Commands</a></li>
+<ul>
+<li><a href="#org-via-settings-ui">✅ Via Settings UI</a></li>
+<li><a href="#org-via-settings-json">✅ Via settings.json</a></li>
+<li><a href="#org-via-command-palette">✅ Via Command Palette</a></li>
+</ul>
+<li><a href="#org-supported-file-types">✅ Supported File Types</a></li>
+</ul>
+<li><a href="#org-when-speed-commands-are-active">✅ When Speed Commands are Active</a></li>
+<ul>
+<li><a href="#org-visual-indicator">✅ Visual Indicator</a></li>
+</ul>
+<li><a href="#org-speed-command-reference">✅ Speed Command Reference</a></li>
+<ul>
+<li><a href="#org-navigation-commands">✅ Navigation Commands</a></li>
+<ul>
+<li><a href="#org-go-to-submenu-options">✅ Go To Submenu Options</a></li>
+</ul>
+<li><a href="#org-visibility-folding-commands">✅ Visibility/Folding Commands</a></li>
+<li><a href="#org-structure-editing-commands">✅ Structure Editing Commands</a></li>
+<ul>
+<li><a href="#org-structure-editing-notes">✅ Structure Editing Notes</a></li>
+</ul>
+<li><a href="#org-todo-and-priority-commands">✅ TODO and Priority Commands</a></li>
+<ul>
+<li><a href="#org-priority-system">✅ Priority System</a></li>
+</ul>
+<li><a href="#org-planning-timestamp-commands">✅ Planning/Timestamp Commands</a></li>
+<ul>
+<li><a href="#org-timestamp-types">✅ Timestamp Types</a></li>
+</ul>
+<li><a href="#org-metadata-commands">✅ Metadata Commands</a></li>
+<ul>
+<li><a href="#org-tags">✅ Tags</a></li>
+<li><a href="#org-effort-estimates">✅ Effort Estimates</a></li>
+<li><a href="#org-properties">✅ Properties</a></li>
+</ul>
+<li><a href="#org-clocking-commands">✅ Clocking Commands</a></li>
+<ul>
+<li><a href="#org-clocking-workflow">✅ Clocking Workflow</a></li>
+<li><a href="#org-clocking-notes">✅ Clocking Notes</a></li>
+</ul>
+<li><a href="#org-archive-commands">✅ Archive Commands</a></li>
+<ul>
+<li><a href="#org-archive-file">✅ Archive File</a></li>
+</ul>
+</ul>
+<li><a href="#org-tips-for-effective-use">✅ Tips for Effective Use</a></li>
+<ul>
+<li><a href="#org-learning-the-commands">✅ Learning the Commands</a></li>
+<li><a href="#org-common-workflows">✅ Common Workflows</a></li>
+<ul>
+<li><a href="#org-quick-task-management">✅ Quick Task Management</a></li>
+<li><a href="#org-organizing-content">✅ Organizing Content</a></li>
+<li><a href="#org-reviewing-documents">✅ Reviewing Documents</a></li>
+</ul>
+<li><a href="#org-combining-with-regular-keybindings">✅ Combining with Regular Keybindings</a></li>
+<li><a href="#org-cursor-position-matters">✅ Cursor Position Matters</a></li>
+<li><a href="#org-customization">✅ Customization</a></li>
+</ul>
+<li><a href="#org-reference-all-speed-commands">✅ Reference: All Speed Commands</a></li>
+<li><a href="#org-troubleshooting">✅ Troubleshooting</a></li>
+<ul>
+<li><a href="#org-speed-commands-not-working">✅ Speed Commands Not Working</a></li>
+<li><a href="#org-wrong-command-executes">✅ Wrong Command Executes</a></li>
+<li><a href="#org-help-menu-shows-wrong-commands">✅ Help Menu Shows Wrong Commands</a></li>
+</ul>
+<li><a href="#org-related-documentation">✅ Related Documentation</a></li>
+<li><a href="#org-see-also">✅ See Also</a></li>
+<ul>
+<li><a href="#org-external-resources">✅ External Resources</a></li>
+<li><a href="#org-implementation-details">✅ Implementation Details</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-15 Thu 14:44]</p>
+
+<p>Speed commands are single-letter keyboard shortcuts that work when the cursor is positioned at the very beginning (column 0) of a heading line. This feature, borrowed from Emacs org-mode, provides lightning-fast navigation and editing without the need for complex key chords.</p>
+
+<div id="org-what-are-speed-commands" class="org-section org-level-2">
+<h2>✅ What are Speed Commands?</h2>
+<p>CLOSED: [2026-01-15 Thu 14:44]</p>
+
+<p>Speed commands transform the beginning of each heading into a powerful command interface. When your cursor is at column 0 of a heading (the first star <kbd>*</kbd> in org-mode or the first hash <kbd>#</kbd> in markdown), you can press a single key to execute common operations:</p>
+
+<ul>
+<li><p>Navigation: jump between headings, siblings, parent</p>
+</li>
+<li><p>Visibility: fold/unfold sections</p>
+</li>
+<li><p>Structure editing: move, promote, demote, cut, paste</p>
+</li>
+<li><p>TODO management: cycle states, set priorities</p>
+</li>
+<li><p>Planning: add schedules and deadlines</p>
+</li>
+<li><p>Metadata: set tags, properties, effort estimates</p>
+</li>
+<li><p>Time tracking: clock in and out</p>
+</li>
+<li><p>Archiving: archive completed tasks</p>
+</li>
+</ul>
+
+<p>This approach is significantly faster than using traditional keybindings or menu commands for frequent operations.</p>
+
+</div>
+<div id="org-why-use-speed-commands" class="org-section org-level-2">
+<h2>✅ Why Use Speed Commands?</h2>
+<p>CLOSED: [2026-01-15 Thu 14:44]</p>
+
+<ul>
+<li><p><strong>Efficiency</strong>: Single keystrokes instead of multi-key combinations</p>
+</li>
+<li><p><strong>Contextual</strong>: Only active at heading starts, so no conflicts with normal typing</p>
+</li>
+<li><p><strong>Discoverable</strong>: Press <kbd>?</kbd> at a heading start to see all available commands</p>
+</li>
+<li><p><strong>Emacs-compatible</strong>: Familiar workflow for Emacs org-mode users</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-configuration" class="org-section org-level-1">
+<h1>✅ Configuration</h1>
+<p>CLOSED: [2026-01-15 Thu 14:44]</p>
+
+<div id="org-enabling-speed-commands" class="org-section org-level-2">
+<h2>✅ Enabling Speed Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:44]</p>
+
+<p>Speed commands are enabled by default in Scimax VS Code. To toggle them on or off:</p>
+
+<div id="org-via-settings-ui" class="org-section org-level-3">
+<h3>✅ Via Settings UI</h3>
+<p>CLOSED: [2026-01-15 Thu 14:44]</p>
+
+<ol>
+<li><p>Open VS Code Settings (C-, or s-, on Mac)</p>
+</li>
+<li><p>Search for &quot;speed commands&quot;</p>
+</li>
+<li><p>Toggle the checkbox for <strong>Scimax: Speed Commands &gt; Enabled</strong></p>
+</li>
+</ol>
+
+</div>
+<div id="org-via-settings-json" class="org-section org-level-3">
+<h3>✅ Via settings.json</h3>
+<p>CLOSED: [2026-01-15 Thu 14:45]</p>
+
+<p>Add or modify this setting in your <kbd>settings.json</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.speedCommands.enabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-via-command-palette" class="org-section org-level-3">
+<h3>✅ Via Command Palette</h3>
+<p>CLOSED: [2026-01-15 Thu 14:45]</p>
+
+<ol>
+<li><p>Open Command Palette (C-S-P or s-S-P on Mac)</p>
+</li>
+<li><p>Type &quot;speed&quot; and select <strong>Scimax: Toggle Speed Commands</strong></p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-supported-file-types" class="org-section org-level-2">
+<h2>✅ Supported File Types</h2>
+<p>CLOSED: [2026-01-15 Thu 14:45]</p>
+
+<p>Speed commands work in:</p>
+
+<ul>
+<li><p>Org-mode files (`.org&#39;)</p>
+</li>
+<li><p>Markdown files (`.md&#39;, `.markdown&#39;)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-when-speed-commands-are-active" class="org-section org-level-1">
+<h1>✅ When Speed Commands are Active</h1>
+<p>CLOSED: [2026-01-15 Thu 14:45]</p>
+
+<p>Speed commands are only active when <strong>all</strong> of the following conditions are met:</p>
+
+<ol>
+<li><p><strong>Speed commands are enabled</strong> in settings (<kbd>scimax.speedCommands.enabled: true</kbd>)</p>
+</li>
+<li><p><strong>Cursor is at column 0</strong> (the very beginning of the line)</p>
+</li>
+<li><p><strong>Line is a heading</strong> (starts with <kbd>*</kbd> for org-mode or <kbd>#</kbd> for markdown)</p>
+</li>
+<li><p><strong>No text is selected</strong> (cursor position only, not a selection)</p>
+</li>
+</ol>
+
+<div id="org-visual-indicator" class="org-section org-level-2">
+<h2>✅ Visual Indicator</h2>
+<p>CLOSED: [2026-01-15 Thu 14:45]</p>
+
+<p>When speed commands are active, you&#39;ll notice that single key presses trigger actions immediately. If speed commands aren&#39;t working:</p>
+
+<ol>
+<li><p>Check that your cursor is at position 0 (before the first <kbd>*</kbd> or <kbd>#</kbd>)</p>
+</li>
+<li><p>Ensure no text is selected</p>
+</li>
+<li><p>Verify the file type is org or markdown</p>
+</li>
+<li><p>Check settings to confirm speed commands are enabled</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-speed-command-reference" class="org-section org-level-1">
+<h1>✅ Speed Command Reference</h1>
+<p>CLOSED: [2026-01-15 Thu 14:45]</p>
+
+<p>This section provides a complete listing of all available speed commands, organized by functional category.</p>
+
+<div id="org-navigation-commands" class="org-section org-level-2">
+<h2>✅ Navigation Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:45]</p>
+
+<p>Move efficiently through your document structure.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>n</td><td>Next heading</td><td>Move to the next visible heading at any level</td></tr>
+<tr><td>p</td><td>Previous heading</td><td>Move to the previous visible heading at any level</td></tr>
+<tr><td>f</td><td>Next sibling</td><td>Move to next heading at the same level</td></tr>
+<tr><td>b</td><td>Previous sibling</td><td>Move to previous heading at the same level</td></tr>
+<tr><td>u</td><td>Parent heading</td><td>Move up to the parent heading</td></tr>
+<tr><td>j</td><td>Jump to heading</td><td>Quick picker to jump to any heading in file</td></tr>
+<tr><td>g</td><td>Go to... (submenu)</td><td>Show navigation submenu with more options</td></tr>
+</tbody>
+</table>
+
+<div id="org-go-to-submenu-options" class="org-section org-level-3">
+<h3>✅ Go To Submenu Options</h3>
+<p>CLOSED: [2026-01-15 Thu 14:46]</p>
+
+<p>The <kbd>g</kbd> key opens a submenu with additional navigation choices:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>n</td><td>Next heading</td><td>Next visible heading</td></tr>
+<tr><td>p</td><td>Previous heading</td><td>Previous visible heading</td></tr>
+<tr><td>f</td><td>Next sibling</td><td>Next heading at same level</td></tr>
+<tr><td>b</td><td>Previous sibling</td><td>Previous heading at same level</td></tr>
+<tr><td>u</td><td>Parent heading</td><td>Parent heading</td></tr>
+<tr><td>j</td><td>Jump to any heading</td><td>Quick picker for any heading</td></tr>
+<tr><td>1</td><td>First heading</td><td>Jump to first heading in document</td></tr>
+<tr><td>$</td><td>Last heading</td><td>Jump to last heading in document</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-visibility-folding-commands" class="org-section org-level-2">
+<h2>✅ Visibility/Folding Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:46]</p>
+
+<p>Control how much content is visible in your document.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>c</td><td>Cycle global visibility</td><td>Cycle through: overview → contents → show all</td></tr>
+<tr><td>C</td><td>Show all children</td><td>Unfold all children of current subtree</td></tr>
+<tr><td>o</td><td>Overview</td><td>Fold all headings (show only top-level)</td></tr>
+<tr><td><tab></td><td>Cycle fold at point</td><td>Toggle folding of current heading</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-structure-editing-commands" class="org-section org-level-2">
+<h2>✅ Structure Editing Commands</h2>
+<p>CLOSED: [2026-01-17 Sat 15:38]</p>
+
+<p>Reorganize and modify your document structure.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>U</td><td>Move subtree up</td><td>Move entire subtree (and children) up</td></tr>
+<tr><td>D</td><td>Move subtree down</td><td>Move entire subtree (and children) down</td></tr>
+<tr><td>r</td><td>Demote subtree</td><td>Decrease level of subtree (shift right)</td></tr>
+<tr><td>l</td><td>Promote subtree</td><td>Increase level of subtree (shift left)</td></tr>
+<tr><td>R</td><td>Demote heading</td><td>Decrease level of heading only (not children)</td></tr>
+<tr><td>L</td><td>Promote heading</td><td>Increase level of heading only (not children)</td></tr>
+<tr><td>w</td><td>Kill (cut) subtree</td><td>Cut subtree to clipboard</td></tr>
+<tr><td>y</td><td>Yank (paste) subtree</td><td>Paste subtree from clipboard with level adjust</td></tr>
+<tr><td>W</td><td>Clone subtree</td><td>Duplicate the current subtree</td></tr>
+</tbody>
+</table>
+
+<div id="org-structure-editing-notes" class="org-section org-level-3">
+<h3>✅ Structure Editing Notes</h3>
+<p>CLOSED: [2026-01-15 Thu 14:47]</p>
+
+<ul>
+<li><p><strong>Promote</strong> (left) decreases the heading level (fewer stars/hashes)</p>
+</li>
+<li><p><strong>Demote</strong> (right) increases the heading level (more stars/hashes)</p>
+</li>
+<li><p>Uppercase <kbd>L</kbd>/<kbd>R</kbd> affect only the heading line</p>
+</li>
+<li><p>Lowercase <kbd>l</kbd>/<kbd>r</kbd> affect the entire subtree</p>
+</li>
+<li><p>`y&#39; (yank) intelligently adjusts heading levels to match context</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-todo-and-priority-commands" class="org-section org-level-2">
+<h2>✅ TODO and Priority Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:47]</p>
+
+<p>Manage task states and priorities.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>t</td><td>Cycle TODO state</td><td>Cycle through: (none) → TODO → DONE → (none)</td></tr>
+<tr><td>,</td><td>Cycle priority up</td><td>Increase priority: C → B → A</td></tr>
+<tr><td>1</td><td>Priority [#A]</td><td>Set priority to A (highest)</td></tr>
+<tr><td>2</td><td>Priority [#B]</td><td>Set priority to B (medium)</td></tr>
+<tr><td>3</td><td>Priority [#C]</td><td>Set priority to C (lowest)</td></tr>
+<tr><td>0</td><td>Remove priority</td><td>Remove priority marker entirely</td></tr>
+</tbody>
+</table>
+
+<div id="org-priority-system" class="org-section org-level-3">
+<h3>✅ Priority System</h3>
+<p>CLOSED: [2026-01-15 Thu 14:47]</p>
+
+<p>Org-mode uses a three-level priority system:</p>
+
+<ul>
+<li><p><strong>[#A]</strong> - High priority (critical, urgent)</p>
+</li>
+<li><p><strong>[#B]</strong> - Medium priority (normal importance)</p>
+</li>
+<li><p><strong>[#C]</strong> - Low priority (nice to have)</p>
+</li>
+</ul>
+
+<p>Priorities appear after the TODO keyword: <kbd>** TODO [#A] Important task</kbd></p>
+
+</div>
+</div>
+<div id="org-planning-timestamp-commands" class="org-section org-level-2">
+<h2>✅ Planning/Timestamp Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:47]</p>
+
+<p>Add scheduling and deadline information to tasks.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>s</td><td>Add/edit SCHEDULED</td><td>Set when you plan to work on this task</td></tr>
+<tr><td>d</td><td>Add/edit DEADLINE</td><td>Set when this task must be completed</td></tr>
+<tr><td>.</td><td>Insert timestamp</td><td>Insert an inactive timestamp at point</td></tr>
+</tbody>
+</table>
+
+<div id="org-timestamp-types" class="org-section org-level-3">
+<h3>✅ Timestamp Types</h3>
+<p>CLOSED: [2026-01-17 Sat 15:38]</p>
+
+<ul>
+<li><p><strong>SCHEDULED</strong>: When you plan to start working on the task</p>
+</li>
+<li><p><strong>DEADLINE</strong>: When the task must be completed</p>
+</li>
+<li><p><strong>Plain timestamp</strong>: Reference dates, events, notes</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-metadata-commands" class="org-section org-level-2">
+<h2>✅ Metadata Commands</h2>
+<p>CLOSED: [2026-01-17 Sat 15:38]</p>
+
+<!-- Unknown element type: property-drawer -->
+<p>Add tags, properties, and effort estimates to headings.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>:</td><td>Set tags</td><td>Add or modify tags (colon-separated)</td></tr>
+<tr><td>e</td><td>Set effort</td><td>Set estimated effort/duration for task</td></tr>
+<tr><td>P</td><td>Set property</td><td>Set a custom property in the properties drawer</td></tr>
+</tbody>
+</table>
+
+<div id="org-tags" class="org-section org-level-3">
+<h3>✅ Tags</h3>
+<p>CLOSED: [2026-01-15 Thu 14:48]</p>
+
+<p>Tags are keywords attached to headings for categorization and filtering:</p>
+
+<pre class="example">** TODO Complete documentation :work:urgent:docs:</pre>
+
+<p>Tags are:</p>
+
+<ul>
+<li><p>Separated by colons (<kbd>:</kbd>)</p>
+</li>
+<li><p>Can contain letters, numbers, and special chars (<kbd>_@#%</kbd>)</p>
+</li>
+<li><p>Inherited by child headings</p>
+</li>
+<li><p>Used for agenda filtering and searches</p>
+</li>
+<li><p>Automatically aligned to column 77 (Emacs-style)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-effort-estimates" class="org-section org-level-3">
+<h3>✅ Effort Estimates</h3>
+<p>CLOSED: [2026-01-15 Thu 14:48]</p>
+
+<p>Effort is stored as a property in <kbd>H:MM</kbd> format:</p>
+
+<pre class="example">** TODO Write documentation
+:PROPERTIES:
+:Effort: 2:00
+:END:</pre>
+
+<p>Common effort values:</p>
+
+<ul>
+<li><p><kbd>0:15</kbd> - 15 minutes</p>
+</li>
+<li><p><kbd>0:30</kbd> - 30 minutes</p>
+</li>
+<li><p><kbd>1:00</kbd> - 1 hour</p>
+</li>
+<li><p><kbd>2:00</kbd> - 2 hours</p>
+</li>
+<li><p><kbd>4:00</kbd> - Half day</p>
+</li>
+<li><p><kbd>8:00</kbd> - Full day</p>
+</li>
+</ul>
+
+</div>
+<div id="org-properties" class="org-section org-level-3">
+<h3>✅ Properties</h3>
+<p>CLOSED: [2026-01-15 Thu 14:48]</p>
+
+<p>Properties are key-value pairs stored in a properties drawer:</p>
+
+<pre class="example">** Research Project
+:PROPERTIES:
+:CUSTOM_ID: research-2026
+:CATEGORY: Research
+:Effort: 8:00
+:ASSIGNED: John Doe
+:END:</pre>
+
+<p>Common property names:</p>
+
+<ul>
+<li><p>`ID&#39; - Unique identifier</p>
+</li>
+<li><p><kbd>CUSTOM_ID</kbd> - User-defined ID for linking</p>
+</li>
+<li><p>`CATEGORY&#39; - Category for agenda display</p>
+</li>
+<li><p>`Effort&#39; - Estimated effort</p>
+</li>
+<li><p>`LOGGING&#39; - Log state changes</p>
+</li>
+<li><p>`COLUMNS&#39; - Column view format</p>
+</li>
+</ul>
+
+</div>
+<div id="org-clocking-commands" class="org-section org-level-2">
+<h2>✅ Clocking Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:48]</p>
+
+<p>Track time spent on tasks.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>I</td><td>Clock in</td><td>Start time tracking for current task</td></tr>
+<tr><td>O</td><td>Clock out</td><td>Stop time tracking</td></tr>
+</tbody>
+</table>
+
+<div id="org-clocking-workflow" class="org-section org-level-3">
+<h3>✅ Clocking Workflow</h3>
+<p>CLOSED: [2026-01-15 Thu 14:48]</p>
+
+<ol>
+<li><p>Position cursor at column 0 of a task heading</p>
+</li>
+<li><p>Press `I&#39; to clock in - starts timer</p>
+</li>
+<li><p>Work on the task</p>
+</li>
+<li><p>Press `O&#39; to clock out - stops timer and records duration</p>
+</li>
+</ol>
+
+<p>Clock entries are stored in a <kbd>:LOGBOOK:</kbd> drawer:</p>
+
+<pre class="example">** TODO Write documentation
+:LOGBOOK:
+CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 11:30] =&gt;  2:30
+CLOCK: [2026-01-12 Fri 14:00]--[2026-01-12 Fri 15:45] =&gt;  1:45
+:END:</pre>
+
+</div>
+</div>
+<div id="org-clocking-notes" class="org-section org-level-3">
+<h3>✅ Clocking Notes</h3>
+<p>CLOSED: [2026-01-17 Sat 15:37]</p>
+
+<ul>
+<li><p>Only one task can be clocked in at a time</p>
+</li>
+<li><p>Clocking in a new task automatically clocks out the previous one</p>
+</li>
+<li><p>Clock duration is automatically calculated</p>
+</li>
+<li><p>Clock data is used for time reports and agenda views</p>
+</li>
+</ul>
+
+</div>
+<div id="org-archive-commands" class="org-section org-level-2">
+<h2>✅ Archive Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<p>Move completed tasks to archive storage.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>a</td><td>Archive subtree</td><td>Move subtree to archive file</td></tr>
+<tr><td>A</td><td>Toggle :ARCHIVE: tag</td><td>Add/remove ARCHIVE tag (marks for archiving)</td></tr>
+<tr><td>$</td><td>Archive to sibling</td><td>Move subtree under an &quot;Archive&quot; sibling heading</td></tr>
+</tbody>
+</table>
+
+<div id="org-archive-file" class="org-section org-level-3">
+<h3>✅ Archive File</h3>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<p>By default, <kbd>a</kbd> moves the subtree to a file named <kbd>{basename}_archive.org</kbd>:</p>
+
+<ul>
+<li><p><kbd>notes.org</kbd> → <kbd>notes_archive.org</kbd></p>
+</li>
+<li><p><kbd>projects.org</kbd> → <kbd>projects_archive.org</kbd></p>
+</li>
+</ul>
+
+<p>The archived subtree is tagged with <kbd>:ARCHIVE:</kbd> and includes metadata:</p>
+
+<pre class="example">* DONE Completed project :ARCHIVE:
+:PROPERTIES:
+:ARCHIVE_TIME: [2026-01-13 Mon 15:30]
+:ARCHIVE_FILE: ~/org/projects.org
+:END:</pre>
+
+</div>
+</div>
+</div>
+<div id="org-tips-for-effective-use" class="org-section org-level-1">
+<h1>✅ Tips for Effective Use</h1>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<div id="org-learning-the-commands" class="org-section org-level-2">
+<h2>✅ Learning the Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<ol>
+<li><p><strong>Start with navigation</strong>: <kbd>n</kbd>, <kbd>p</kbd>, <kbd>f</kbd>, <kbd>b</kbd>, <kbd>u</kbd> are the most frequently used</p>
+</li>
+<li><p><strong>Use the help</strong>: Press <kbd>?</kbd> at any heading start to see all commands</p>
+</li>
+<li><p><strong>Muscle memory</strong>: The keys are mnemonic:</p>
+</li>
+</ol>
+
+</div>
+<div id="org-common-workflows" class="org-section org-level-2">
+<h2>✅ Common Workflows</h2>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<div id="org-quick-task-management" class="org-section org-level-3">
+<h3>✅ Quick Task Management</h3>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<ol>
+<li><p>Create heading with `C-<return>&#39;</p>
+</li>
+<li><p>Move to beginning of line (`Home&#39; or `C-a&#39;)</p>
+</li>
+<li><p>Press `t&#39; to add TODO state</p>
+</li>
+<li><p>Press `1&#39; to set high priority</p>
+</li>
+<li><p>Press `s&#39; to schedule it</p>
+</li>
+<li><p>Press <kbd>:</kbd> to add tags</p>
+</li>
+</ol>
+
+</div>
+<div id="org-organizing-content" class="org-section org-level-3">
+<h3>✅ Organizing Content</h3>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<ol>
+<li><p>Navigate to a heading</p>
+</li>
+<li><p>Use <kbd>U</kbd>/<kbd>D</kbd> to reorder siblings</p>
+</li>
+<li><p>Use <kbd>l</kbd>/<kbd>r</kbd> to adjust hierarchy</p>
+</li>
+<li><p>Use `w&#39; to cut and `y&#39; to paste sections</p>
+</li>
+<li><p>Use `a&#39; to archive completed work</p>
+</li>
+</ol>
+
+</div>
+<div id="org-reviewing-documents" class="org-section org-level-3">
+<h3>✅ Reviewing Documents</h3>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<ol>
+<li><p>Press `o&#39; to see overview (all headings folded)</p>
+</li>
+<li><p>Use <kbd>n</kbd>/<kbd>p</kbd> to navigate between sections</p>
+</li>
+<li><p>Press `Tab&#39; to expand interesting sections</p>
+</li>
+<li><p>Press `c&#39; to cycle through visibility levels</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-combining-with-regular-keybindings" class="org-section org-level-2">
+<h2>✅ Combining with Regular Keybindings</h2>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<p>Speed commands complement (don&#39;t replace) regular keybindings:</p>
+
+<ul>
+<li><p>Use speed commands for quick operations when cursor is at heading start</p>
+</li>
+<li><p>Use regular keybindings (`C-c C-t&#39;, etc.) when cursor is elsewhere</p>
+</li>
+<li><p>Use `C-a&#39; or `Home&#39; to quickly jump to column 0 to activate speed commands</p>
+</li>
+</ul>
+
+</div>
+<div id="org-cursor-position-matters" class="org-section org-level-2">
+<h2>✅ Cursor Position Matters</h2>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<p>Remember: speed commands <strong>only</strong> work at column 0. If a speed command doesn&#39;t trigger:</p>
+
+<ol>
+<li><p>Press `Home&#39; or `C-a&#39; to move to beginning of line</p>
+</li>
+<li><p>Verify you&#39;re on a heading line (starts with <kbd>*</kbd> or <kbd>#</kbd>)</p>
+</li>
+<li><p>Check that no text is selected</p>
+</li>
+</ol>
+
+</div>
+<div id="org-customization" class="org-section org-level-2">
+<h2>✅ Customization</h2>
+<p>CLOSED: [2026-01-15 Thu 14:50]</p>
+
+<p>Currently, speed command keys are pre-defined and cannot be customized. The key mappings follow standard Emacs org-mode conventions for consistency and muscle memory compatibility.</p>
+
+<p>If you need custom keybindings, use VS Code&#39;s keybinding system to bind the underlying commands (e.g., `scimax.org.nextHeading&#39;, `scimax.org.cycleTodo&#39;) to your preferred key combinations.</p>
+
+</div>
+</div>
+<div id="org-reference-all-speed-commands" class="org-section org-level-1">
+<h1>✅ Reference: All Speed Commands</h1>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<p>Complete alphabetical reference of all speed commands.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Category</th><th>Command</th></tr>
+</thead>
+<tbody>
+<tr><td>,</td><td>TODO</td><td>Cycle priority up</td></tr>
+<tr><td>.</td><td>Planning</td><td>Insert timestamp</td></tr>
+<tr><td>0</td><td>TODO</td><td>Remove priority</td></tr>
+<tr><td>1</td><td>TODO</td><td>Set priority [#A]</td></tr>
+<tr><td>2</td><td>TODO</td><td>Set priority [#B]</td></tr>
+<tr><td>3</td><td>TODO</td><td>Set priority [#C]</td></tr>
+<tr><td>:</td><td>Metadata</td><td>Set tags</td></tr>
+<tr><td>?</td><td>Special</td><td>Speed commands help</td></tr>
+<tr><td>$</td><td>Special</td><td>Archive to sibling</td></tr>
+<tr><td>a</td><td>Special</td><td>Archive subtree</td></tr>
+<tr><td>A</td><td>Special</td><td>Toggle :ARCHIVE: tag</td></tr>
+<tr><td>b</td><td>Navigation</td><td>Previous sibling</td></tr>
+<tr><td>c</td><td>Visibility</td><td>Cycle global visibility</td></tr>
+<tr><td>C</td><td>Visibility</td><td>Show all children</td></tr>
+<tr><td>d</td><td>Planning</td><td>Add/edit DEADLINE</td></tr>
+<tr><td>D</td><td>Structure</td><td>Move subtree down</td></tr>
+<tr><td>e</td><td>Metadata</td><td>Set effort</td></tr>
+<tr><td>f</td><td>Navigation</td><td>Next sibling</td></tr>
+<tr><td>g</td><td>Navigation</td><td>Go to... (submenu)</td></tr>
+<tr><td>I</td><td>Clocking</td><td>Clock in</td></tr>
+<tr><td>j</td><td>Navigation</td><td>Jump to heading</td></tr>
+<tr><td>l</td><td>Structure</td><td>Promote subtree</td></tr>
+<tr><td>L</td><td>Structure</td><td>Promote heading</td></tr>
+<tr><td>n</td><td>Navigation</td><td>Next heading</td></tr>
+<tr><td>N</td><td>Special</td><td>Narrow to subtree</td></tr>
+<tr><td>o</td><td>Visibility</td><td>Overview (fold all)</td></tr>
+<tr><td>O</td><td>Clocking</td><td>Clock out</td></tr>
+<tr><td>p</td><td>Navigation</td><td>Previous heading</td></tr>
+<tr><td>P</td><td>Metadata</td><td>Set property</td></tr>
+<tr><td>r</td><td>Structure</td><td>Demote subtree</td></tr>
+<tr><td>R</td><td>Structure</td><td>Demote heading</td></tr>
+<tr><td>s</td><td>Planning</td><td>Add/edit SCHEDULED</td></tr>
+<tr><td>S</td><td>Special</td><td>Widen (show all)</td></tr>
+<tr><td>t</td><td>TODO</td><td>Cycle TODO state</td></tr>
+<tr><td><tab></td><td>Visibility</td><td>Cycle fold at point</td></tr>
+<tr><td>u</td><td>Navigation</td><td>Parent heading</td></tr>
+<tr><td>U</td><td>Structure</td><td>Move subtree up</td></tr>
+<tr><td>w</td><td>Structure</td><td>Kill (cut) subtree</td></tr>
+<tr><td>W</td><td>Structure</td><td>Clone subtree</td></tr>
+<tr><td>y</td><td>Structure</td><td>Yank (paste) subtree</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>✅ Troubleshooting</h1>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<div id="org-speed-commands-not-working" class="org-section org-level-2">
+<h2>✅ Speed Commands Not Working</h2>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<ol>
+<li><p>Verify cursor is at column 0 (before the <kbd>*</kbd> or <kbd>#</kbd>)</p>
+</li>
+<li><p>Check file type is `.org&#39; or `.md&#39;</p>
+</li>
+<li><p>Ensure no text is selected</p>
+</li>
+<li><p>Verify speed commands are enabled: <kbd>scimax.speedCommands.enabled: true</kbd></p>
+</li>
+<li><p>Restart VS Code after changing settings</p>
+</li>
+</ol>
+
+</div>
+<div id="org-wrong-command-executes" class="org-section org-level-2">
+<h2>✅ Wrong Command Executes</h2>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<ol>
+<li><p>Press `?&#39; to see command list and verify key mapping</p>
+</li>
+<li><p>Check for conflicting VS Code keybindings</p>
+</li>
+<li><p>Ensure you&#39;re in an org or markdown file</p>
+</li>
+<li><p>Update extension to latest version</p>
+</li>
+</ol>
+
+</div>
+<div id="org-help-menu-shows-wrong-commands" class="org-section org-level-2">
+<h2>✅ Help Menu Shows Wrong Commands</h2>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+</div>
+</div>
+<div id="org-related-documentation" class="org-section org-level-1">
+<h1>✅ Related Documentation</h1>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<ul>
+<li><p><a href="24-keybindings.html">Keybindings Reference</a> - Regular keybindings for all features</p>
+</li>
+<li><p><a href="02-document-structure.html">Document Structure</a> - Headings, folding, and outline management</p>
+</li>
+<li><p><a href="03-todo-items.html">TODO Items</a> - Task management and workflow</p>
+</li>
+<li><p><a href="06-timestamps.html">Timestamps</a> - Date and time handling</p>
+</li>
+<li><p><a href="13-agenda.html">Agenda</a> - Task planning and scheduling views</p>
+</li>
+</ul>
+
+</div>
+<div id="org-see-also" class="org-section org-level-1">
+<h1>✅ See Also</h1>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<div id="org-external-resources" class="org-section org-level-2">
+<h2>✅ External Resources</h2>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<ul>
+<li><p><a href="https://orgmode.org/manual/Speed-Keys.html">Org-mode Manual: Speed Keys</a></p>
+</li>
+<li><p><a href="https://orgmode.org/worg/org-tutorials/org-speed-keys.html">Org-mode Speed Keys Tutorial</a></p>
+</li>
+</ul>
+
+</div>
+<div id="org-implementation-details" class="org-section org-level-2">
+<h2>✅ Implementation Details</h2>
+<p>CLOSED: [2026-01-15 Thu 14:52]</p>
+
+<p>Speed commands are implemented in:</p>
+
+<ul>
+<li><p><kbd>/src/org/speedCommands/</kbd> - Core implementation</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="22-hydra-menus.html">Hydra Menus</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="24-keybindings.html">Keybindings</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

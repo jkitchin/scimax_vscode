@@ -1,0 +1,457 @@
+#+TITLE: Basic Org Syntax
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-17
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
+
+* ✅ Introduction
+CLOSED: [2026-01-17 Sat 17:42]
+
+Org-mode uses a lightweight markup syntax that stays readable as plain text while providing rich formatting when rendered. This document covers the fundamental syntax elements you'll use in everyday writing.
+
+The philosophy is simple: markup should be intuitive and unobtrusive. When you read an org file as plain text, the meaning is clear. When exported or rendered, the formatting appears polished.
+
+* ✅ Text Markup
+CLOSED: [2026-01-17 Sat 17:42]
+
+Text markup in org-mode uses paired delimiters around words or phrases. The key rule: markup delimiters must be adjacent to the text they format, with whitespace or punctuation on the outside.
+
+** ✅ Emphasis Styles
+CLOSED: [2026-01-17 Sat 17:42]
+
+Here's how to emphasize text in your writing:
+
+When you want to make a point *strongly*, use asterisks for *bold text*. This draws the reader's attention to key concepts or important warnings.
+
+For a gentler emphasis, /italic text/ works well for /introducing new terms/, book titles like /The Art of Computer Programming/, or adding subtle stress to a phrase.
+
+Sometimes you need to mark text as _underlined_ to indicate _titles_ or _special significance_. Underlines appear less frequently in modern writing but remain useful.
+
+To indicate that something has been removed or is no longer valid, use +strikethrough+. This is handy for todo lists: +buy milk+ done!
+
+** ✅ Literal Text
+CLOSED: [2026-01-17 Sat 17:42]
+
+When writing about code or technical content, you need text that renders exactly as typed:
+
+Use =verbatim= for file paths like =/usr/local/bin=, environment variables like =PATH=, or any text that should appear in a monospace font without interpretation.
+
+The ~code~ markup is similar but semantically indicates program code: ~print("hello")~, variable names like ~myVariable~, or command names like ~grep~.
+
+The difference is subtle—both render similarly, but =verbatim= suggests literal text while ~code~ suggests executable code.
+
+** ✅ Markup Rules
+CLOSED: [2026-01-17 Sat 17:42]
+
+Markup only works when the delimiters are properly placed:
+
+- The opening delimiter must follow whitespace or punctuation: start of line, space, or characters like =(=, =[=, ={=
+- The closing delimiter must precede whitespace or punctuation: end of line, space, period, comma, etc.
+- No whitespace immediately inside the delimiters
+
+These work: *bold*, /italic/, text with *bold* inside, (*bold in parens*)
+
+These don't: * bold * (spaces inside), *bold * (trailing space), word*bold* (no preceding space)
+
+** ✅ Combining Markup
+CLOSED: [2026-01-17 Sat 17:42]
+
+You can nest markup for combined effects, though keep it readable:
+
+This is */bold and italic/*. Or try _/underlined italic/_ for something different.
+
+The outer delimiter is processed first, so */bold italic/* has bold as the primary emphasis containing italic text.
+
+* ✅ Lists
+CLOSED: [2026-01-17 Sat 17:43]
+
+Lists are fundamental to organized writing. Org-mode supports three types: unordered (bullet), ordered (numbered), and definition lists.
+
+** ✅ Unordered Lists
+CLOSED: [2026-01-17 Sat 17:43]
+
+Start a line with a dash, plus, or asterisk followed by a space:
+
+- First item in the list
+- Second item continues the thought
+- Third item wraps up
+
+You can also use =+= or =*= as bullets (though =*= can conflict with headlines at the start of a line):
+
++ Alternative bullet style
++ Some prefer this look
++ It's a matter of taste
+
+** ✅ Ordered Lists
+CLOSED: [2026-01-17 Sat 17:43]
+
+For sequences where order matters, use numbers followed by a period or parenthesis:
+
+1. First, gather your materials
+2. Next, prepare the workspace
+3. Then, begin the actual work
+4. Finally, clean up when done
+
+The numbers auto-increment conceptually, and you can use letters too:
+
+a. Option A: the simple approach
+b. Option B: more complex but powerful
+c. Option C: advanced users only
+
+** ✅ Nested Lists
+CLOSED: [2026-01-17 Sat 17:43]
+
+Indent items to create hierarchy. Use consistent indentation (typically 2-3 spaces):
+
+- Main topic
+  - Subtopic one
+    - Detail about subtopic one
+    - Another detail
+  - Subtopic two
+- Another main topic
+  - With its own subtopics
+
+You can mix ordered and unordered:
+
+1. First major step
+   - Consider this aspect
+   - And this one too
+2. Second major step
+   - More considerations
+   - Final thoughts
+
+** ✅ Definition Lists
+CLOSED: [2026-01-17 Sat 17:43]
+
+When you need to define terms, use the =::= separator:
+
+- term :: The word or phrase being defined
+- definition :: An explanation of what something means
+- org-mode :: A major mode for Emacs that provides outlining, task management, and literate programming
+
+Definition lists are perfect for:
+
+- glossaries :: Collections of term definitions
+- parameter docs :: Explaining function arguments
+- feature lists :: Describing capabilities with explanations
+
+The term appears before =::= and the definition follows. Long definitions wrap naturally to subsequent lines.
+
+** ✅ Checkboxes
+CLOSED: [2026-01-17 Sat 19:35]
+
+Add checkboxes to list items for task tracking:
+
+- [ ] Task not yet started
+- [-] Task in progress (partially complete)
+- [X] Task completed
+
+Toggle checkboxes with =C-c C-c= when the cursor is on the line.
+
+Parent items can show progress:
+
+- Project tasks [2/3]
+  - [x] Design the interface
+  - [X] Implement the backend
+  - [ ] Write documentation
+
+The =[1/3]= updates automatically as you check off subtasks. You can also use percentage format =[33%]=.
+
+You can use an attribute to create radio button style checkboxes where only one item can be selected:
+
+#+attr_org: :radio t                
+ - [ ] Option A                        
+ - [ ] Option B  
+ - [X] Option C   
+
+* ✅ Paragraphs and Line Breaks
+CLOSED: [2026-01-17 Sat 19:36]
+
+Paragraphs are simply blocks of text separated by blank lines:
+
+This is the first paragraph. It can contain multiple sentences that flow together naturally. The text wraps based on your editor settings.
+
+This is the second paragraph. The blank line above separates it from the first. Each paragraph represents a distinct thought or topic.
+
+** ✅ Preserving Line Breaks
+CLOSED: [2026-01-17 Sat 19:36]
+
+Normally, single line breaks within a paragraph are treated as spaces when exported. To force a line break, end the line with =\\=:
+
+| Line one of the address\\
+| Line two\\
+| City, State ZIP
+
+Or use verse blocks for poetry and formatted text:
+
+#+BEGIN_VERSE
+Roses are red,
+Violets are blue,
+Org-mode is lovely,
+And so are you.
+#+END_VERSE
+
+* ✅ Horizontal Rules
+CLOSED: [2026-01-17 Sat 17:45]
+
+Create a horizontal divider with five or more dashes on a line by themselves:
+
+Some content above the rule.
+
+-----
+
+Content continues below the rule.
+
+Horizontal rules help separate major sections or indicate a scene break in narrative writing.
+
+* ✅ Equations and Mathematics
+CLOSED: [2026-01-17 Sat 17:45]
+
+Org-mode supports LaTeX math notation for scientific and technical writing.
+
+** ✅ Inline Math
+CLOSED: [2026-01-17 Sat 17:45]
+
+For mathematics within a sentence, use =$...$= or =\(...\)=:
+
+The famous equation $E = mc^2$ changed physics forever. Einstein showed that energy and mass are equivalent, with the speed of light $c$ as the conversion factor.
+
+In statistics, the mean $\mu = \frac{1}{n}\sum_{i=1}^{n} x_i$ summarizes a dataset. The standard deviation $\sigma$ measures spread around that mean.
+
+The quadratic formula \(x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}\) solves any quadratic equation.
+
+** ✅ Display Math
+CLOSED: [2026-01-17 Sat 17:45]
+
+For equations that deserve their own line, use =$$...$$= or =\[...\]=:
+
+The Gaussian integral is remarkably elegant:
+
+$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+
+Maxwell's equations in differential form:
+
+\[\nabla \cdot \mathbf{E} = \frac{\rho}{\epsilon_0}\]
+
+\[\nabla \cdot \mathbf{B} = 0\]
+
+** ✅ Equation Environments
+CLOSED: [2026-01-17 Sat 17:45]
+
+For numbered equations or aligned systems, use LaTeX environments:
+
+#+BEGIN_EXPORT latex
+\begin{equation}
+  f(x) = \int_{-\infty}^{x} e^{-t^2} dt
+\end{equation}
+#+END_EXPORT
+
+Or for aligned equations:
+
+\begin{align}
+  a &= b + c \\
+  d &= e + f + g
+\end{align}
+
+** ✅ Math Preview
+CLOSED: [2026-01-17 Sat 17:45]
+
+In Scimax VS Code, hover over math expressions to see a rendered preview. See [[file:11-latex-preview.org][LaTeX Preview]] for full details.
+
+* ✅ Footnotes
+CLOSED: [2026-01-17 Sat 17:45]
+
+Add footnotes for supplementary information that would interrupt the main flow:
+
+Org-mode[fn:1] provides excellent support for academic writing. You can place footnotes anywhere in the document[fn:2], and they render appropriately on export.
+
+[fn:1] Originally developed by Carsten Dominik starting in 2003.
+
+[fn:2] Footnote definitions can appear anywhere, but placing them near their reference aids readability.
+
+** ✅ Inline Footnotes
+CLOSED: [2026-01-17 Sat 19:36]
+
+For quick notes, use inline footnotes that combine reference and definition:
+
+The algorithm runs in O(n log n) time[fn:: This assumes a comparison-based sort; radix sort can achieve O(n) for integers.], making it practical for large datasets.
+
+** ✅ Named Footnotes
+CLOSED: [2026-01-17 Sat 19:36]
+
+Use descriptive names for footnotes you reference multiple times:
+
+As noted in the original paper[fn:smith2020], the results were reproducible[fn:smith2020].
+
+[fn:smith2020] Smith et al., "Reproducibility in Science," Journal of Methods, 2020.
+
+* ✅ Block Elements
+CLOSED: [2026-01-17 Sat 17:49]
+
+Org-mode uses =#+BEGIN_...= and =#+END_...= pairs for special block content.
+
+** ✅ Quote Blocks
+CLOSED: [2026-01-17 Sat 17:49]
+
+For quotations:
+
+#+BEGIN_QUOTE
+The only way to do great work is to love what you do.
+— Steve Jobs
+#+END_QUOTE
+
+** ✅ Example Blocks
+CLOSED: [2026-01-17 Sat 17:49]
+
+For preformatted text that should render literally:
+
+#+BEGIN_EXAMPLE
+This text appears exactly as typed.
+  Indentation is preserved.
+    *Markup* is not processed.
+#+END_EXAMPLE
+
+** ✅ Center Blocks
+CLOSED: [2026-01-17 Sat 17:49]
+
+For centered text:
+
+#+BEGIN_CENTER
+This text will be centered when exported.
+
+Multiple paragraphs can be centered together.
+#+END_CENTER
+
+** ✅ Source Blocks
+CLOSED: [2026-01-17 Sat 17:49]
+
+For code with syntax highlighting (covered in detail in [[file:07-source-blocks.org][Source Blocks]]):
+
+#+BEGIN_SRC python
+def hello(name):
+    """Greet someone by name."""
+    return f"Hello, {name}!"
+#+END_SRC
+
+** ✅ Comment Blocks
+CLOSED: [2026-01-17 Sat 17:49]
+
+For content that should not appear in exports:
+
+#+BEGIN_COMMENT
+TODO: Add more examples here before publishing.
+This entire block is hidden from exported output.
+#+END_COMMENT
+
+* ✅ Comments
+CLOSED: [2026-01-17 Sat 17:49]
+
+Individual lines can be commented out:
+
+# This line is a comment and won't export
+Regular text continues here.
+
+Everything after =# = at the start of a line is hidden from export but visible in the source.
+
+For inline comments that span part of a line, there's no direct syntax—use comment blocks or restructure your content.
+
+* ✅ Special Characters
+CLOSED: [2026-01-17 Sat 17:49]
+
+** ✅ Entities
+CLOSED: [2026-01-17 Sat 17:49]
+
+Org-mode supports named entities for special characters:
+
+- =\alpha= → α, =\beta= → β, =\gamma= → γ (Greek letters)
+- =\rarr= → →, =\larr= → ←, =\harr= → ↔ (arrows)
+- =\deg= → °, =\pm= → ±, =\times= → × (symbols)
+- =\copy= → ©, =\reg= → ®, =\trade= → ™ (legal)
+
+@@>VS Code does not render the entities like Emacs does.<@@
+
+** ✅ Escaping Markup
+CLOSED: [2026-01-17 Sat 17:49]
+
+To show literal markup characters without triggering formatting:
+
+- Use a zero-width space (not practical)
+- Use =verbatim= or =code= markup: the asterisk =*= creates bold
+- Use an example block for longer passages
+
+In source blocks and example blocks, all markup is automatically literal.
+
+* ✅ Putting It All Together
+CLOSED: [2026-01-17 Sat 17:49]
+
+Here's a sample document fragment showing these elements working together:
+
+#+BEGIN_EXAMPLE
+,* Project Status Update
+
+The /alpha release/ is *complete*. Key achievements:
+
+1. Core functionality implemented
+   - Parser: 100% of syntax supported
+   - Exporter: HTML and PDF working
+2. Documentation written
+3. Tests passing
+
+,** Metrics
+
+| Metric        | Value   |
+|---------------+---------|
+| Code coverage | 85%     |
+| Open issues   | 12      |
+
+The velocity $v = \frac{\Delta x}{\Delta t}$ of development has been steady.
+
+,** Next Steps
+
+- [X] Finalize API
+- [ ] Performance optimization
+- [ ] User testing
+
+#+END_EXAMPLE
+
+This combines headlines, markup, lists, tables, math, and checkboxes into a cohesive document.
+
+* ✅ Quick Reference
+CLOSED: [2026-01-17 Sat 17:49]
+
+| Element        | Syntax                    | Example                    |
+|----------------+---------------------------+----------------------------|
+| Bold           | =*text*=                  | *important*                |
+| Italic         | =/text/=                  | /emphasis/                 |
+| Underline      | =_text_=                  | _underlined_               |
+| Strikethrough  | =+text+=                  | +removed+                  |
+| Verbatim       | ===text==                 | =/path/to/file=            |
+| Code           | =~text~=                  | ~variable~                 |
+| Unordered list | =- item=                  | - bullet point             |
+| Ordered list   | =1. item=                 | 1. numbered                |
+| Definition     | =- term :: def=           | - word :: meaning          |
+| Checkbox       | =- [ ] task=              | - [ ] todo item            |
+| Inline math    | =$equation$=              | $x^2$                      |
+| Display math   | =$$equation$$=            | (centered equation)        |
+| Footnote       | =[fn:1]=                  | reference[fn:1]            |
+| Horizontal rule| =-----=                   | (divider line)             |
+| Comment        | =# text=                  | (hidden from export)       |
+
+* ✅ Related Topics
+CLOSED: [2026-01-17 Sat 17:50]
+
+- [[file:02-document-structure.org][Document Structure]] - Headlines, folding, and outline navigation
+- [[file:04-tables.org][Tables]] - Creating and formatting tables
+- [[file:05-links.org][Links]] - Hyperlinks and cross-references
+- [[file:07-source-blocks.org][Source Blocks]] - Code execution and literate programming
+- [[file:11-latex-preview.org][LaTeX Preview]] - Previewing mathematical notation
+- [[file:10-export.org][Export]] - Converting to HTML, PDF, and other formats
+
+* Navigation
+
+- Previous: [[file:01-getting-started.org][Getting Started]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:02-document-structure.org][Document Structure]]

@@ -1,0 +1,540 @@
+#+TITLE: Supported Languages in Scimax VS Code
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-17
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ✅ Overview
+
+Scimax VS Code supports code execution in source blocks through two mechanisms:
+
+1. *Native Execution* - Direct language interpreters (Python, JavaScript, Shell)
+2. *Jupyter Kernels* - Any language with a Jupyter kernel installed
+
+This document covers the primary supported languages. For Jupyter, any language with a kernel can theoretically be used, but these are the ones with tested support.
+
+* ✅ Execution Modes
+
+** ✅ Native Execution
+
+Native executors run code directly using command-line interpreters:
+- Fast and lightweight
+- No additional setup beyond language installation
+- Limited session support (state doesn't persist between blocks)
+
+Supported natively: *Python, JavaScript/Node.js, Shell/Bash*
+
+** ✅ Jupyter Execution
+
+Jupyter executors use Jupyter kernels for code execution:
+- Full session support (variables persist between blocks)
+- Rich output (images, plots, formatted data)
+- Interactive features
+
+To use Jupyter for any language:
+1. *Explicit syntax*: Use =jupyter-<language>= (e.g., =jupyter-python=)
+2. Jupyter must be installed with the appropriate kernel
+
+** ✅ Choosing an Executor
+
+
+# Native Python (direct python3 command)
+#+BEGIN_SRC python
+print("Hello from native Python")
+#+END_SRC
+
+#+RESULTS:
+: Hello from native Python
+
+# Jupyter Python (uses IPython kernel)
+#+BEGIN_SRC jupyter-python
+print("Hello from Jupyter Python")
+#+END_SRC
+
+#+RESULTS:
+: Hello from Jupyter Python
+
+
+* ✅ Python
+:PROPERTIES:
+:ID: lang-python
+:END:
+
+** ✅ Language Identifiers
+- =python=, =python3=, =py=, =ipython=
+
+** ✅ Execution Modes
+- *Native*: Direct execution via =python3= command
+- *Jupyter*: Use =jupyter-python= or =jupyter-ipython=
+
+** ✅ Session Support
+- Native: No (each block runs in isolation)
+- Jupyter: Yes (full state persistence)
+
+** ✅ Dependencies
+- *Native*: Python 3.x installed and in PATH
+- *Jupyter*: Jupyter and IPython kernel installed
+
+** ✅ Basic Example (Native)
+
+#+BEGIN_SRC python
+# Native Python execution
+import math
+
+radius = 5
+area = math.pi * radius ** 2
+
+print(f"Circle area: {area:.2f}")
+#+END_SRC
+
+#+RESULTS:
+: Circle area: 78.54
+
+** ✅ Session Example (Jupyter)
+
+
+#+BEGIN_SRC jupyter-python :session *py-session*
+# First block - define variables
+data = [1, 2, 3, 4, 5]
+print(f"Data initialized: {data}")
+#+END_SRC
+
+#+RESULTS:
+: Data initialized: [1, 2, 3, 4, 5]
+
+#+BEGIN_SRC jupyter-python :session *py-session*
+# Second block - uses variables from first block
+import statistics
+mean = statistics.mean(data)
+print(f"Mean: {mean}")
+#+END_SRC
+
+#+RESULTS:
+: Mean: 3.0
+
+** ✅ Plotting Example
+
+#+BEGIN_SRC jupyter-python
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.title('Sine Wave')
+plt.xlabel('x')
+plt.ylabel('sin(x)')
+plt.grid(True)
+#+END_SRC
+
+#+RESULTS:
+[[file:.ob-jupyter/output-1768510006544-2.png]]
+
+** ✅ Installing IPython Kernel
+
+#+BEGIN_SRC bash
+pip install ipykernel
+python -m ipykernel install --user --name=python3
+#+END_SRC
+
+* ✅ Bash/Shell
+:PROPERTIES:
+:ID: lang-bash
+:END:
+
+** ✅ Language Identifiers
+- =sh=, =bash=, =shell=
+
+** ✅ Execution Modes
+- *Native*: Direct shell execution (default on Unix)
+- *Jupyter*: Use =jupyter-bash= (requires Bash kernel)
+
+** ✅ Session Support
+- Native: No
+- Jupyter: Yes
+
+** ✅ Dependencies
+- *Native*: Bash shell (standard on Unix/Linux/macOS)
+- *Jupyter*: Bash kernel (optional)
+
+** ✅ Basic Example
+
+#+BEGIN_SRC bash
+# List files in current directory
+ls -la | head -n 5
+#+END_SRC
+
+#+RESULTS:
+: total 1728
+: drwxr-xr-x@ 42 jkitchin  staff   1344 Jan 16 20:01 .
+: drwxr-xr-x@ 53 jkitchin  staff   1696 Jan 16 19:58 ..
+: drwxr-xr-x@  9 jkitchin  staff    288 Jan 15 15:46 .ob-jupyter
+: -rw-r--r--@  1 jkitchin  staff  28933 Jan 16 20:04 00-index.org
+
+** ✅ Command Pipeline
+
+#+BEGIN_SRC bash
+# Find large files
+find . -type f -size +1k 2>/dev/null | \
+  xargs ls -lh 2>/dev/null | \
+  awk '{print $5, $9}' | \
+  sort -hr | \
+  head -5
+#+END_SRC
+
+** ✅ Working Directory
+
+#+BEGIN_SRC bash :dir /tmp
+# Working directory can be set with :dir
+pwd
+#+END_SRC
+
+#+RESULTS:
+: /private/tmp
+
+* ✅ Julia
+:PROPERTIES:
+:ID: lang-julia
+:END:
+
+** ✅ Language Identifiers
+- =julia=, =jl=
+
+** ✅ Execution Modes
+- *Jupyter*: Use =jupyter-julia= (requires IJulia)
+
+** ✅ Session Support
+- Yes (full state persistence)
+
+** ✅ Dependencies
+- Julia installed
+- IJulia: Install from Julia REPL with =using Pkg; Pkg.add("IJulia")=
+
+** ✅ Basic Example
+
+#+BEGIN_SRC jupyter-julia
+# Julia execution
+function fibonacci(n)
+    if n <= 2
+        return 1
+    else
+        return fibonacci(n-1) + fibonacci(n-2)
+    end
+end
+
+println("First 10 Fibonacci numbers:")
+for i in 1:10
+    println("F($i) = $(fibonacci(i))")
+end
+#+END_SRC
+
+** ✅ Array Operations
+
+#+BEGIN_SRC jupyter-julia
+# Efficient array operations
+A = [1 2 3; 4 5 6; 7 8 9]
+println("Matrix A:")
+println(A)
+
+# Element-wise operations
+B = A .^ 2
+println("\nA squared:")
+println(B)
+#+END_SRC
+
+** ✅ Installing IJulia Kernel
+
+From Julia REPL:
+#+BEGIN_SRC julia
+using Pkg
+Pkg.add("IJulia")
+#+END_SRC
+
+* ✅ R
+:PROPERTIES:
+:ID: lang-r
+:END:
+
+** ✅ Language Identifiers
+- =r=, =R=
+
+** ✅ Execution Modes
+- *Jupyter*: Use =jupyter-r= (requires IRkernel)
+
+** ✅ Session Support
+- Yes (full state persistence)
+
+** ✅ Dependencies
+- R installed
+- IRkernel: Install from R with =install.packages('IRkernel'); IRkernel::installspec()=
+
+** ✅ Basic Example
+
+#+BEGIN_SRC jupyter-r
+# R execution
+x <- c(1, 2, 3, 4, 5)
+y <- x^2
+print(y)
+#+END_SRC
+
+** ✅ Data Frame Example
+
+#+BEGIN_SRC jupyter-r
+# Working with data frames
+df <- data.frame(
+  name = c("Alice", "Bob", "Charlie"),
+  age = c(25, 30, 35),
+  score = c(85, 92, 78)
+)
+
+print(df)
+summary(df)
+#+END_SRC
+
+** ✅ Plotting Example
+
+#+BEGIN_SRC jupyter-r :results file :file rplot.png
+# Create a plot
+x <- seq(0, 2*pi, length.out=100)
+y <- sin(x)
+
+png("rplot.png")
+plot(x, y, type="l", col="blue",
+     main="Sine Wave", xlab="x", ylab="sin(x)")
+grid()
+dev.off()
+#+END_SRC
+
+** ✅ Installing IRkernel
+
+From R:
+#+BEGIN_SRC r
+install.packages('IRkernel')
+IRkernel::installspec()
+#+END_SRC
+
+* ✅ JavaScript/Node.js
+:PROPERTIES:
+:ID: lang-javascript
+:END:
+
+** ✅ Language Identifiers
+- =javascript=, =js=, =node=, =nodejs=
+
+** ✅ Execution Modes
+- *Native*: Direct execution via =node= command
+- *Jupyter*: Use =jupyter-javascript= (requires IJavascript kernel)
+
+** ✅ Session Support
+- Native: No
+- Jupyter: Yes (with IJavascript kernel)
+
+** ✅ Dependencies
+- *Native*: Node.js installed and in PATH
+- *Jupyter*: IJavascript kernel (=npm install -g ijavascript=)
+
+** ✅ Basic Example
+
+#+BEGIN_SRC javascript
+// JavaScript execution
+const numbers = [1, 2, 3, 4, 5, 6];
+const sum = numbers.reduce((a, b) => a + b, 0);
+console.log(`Sum: ${sum}`);
+#+END_SRC
+
+#+RESULTS:
+: Sum: 21
+
+** ✅ Working with JSON
+
+#+BEGIN_SRC javascript
+const data = {
+  name: "Scimax",
+  version: "1.0",
+  features: ["org-mode", "jupyter", "references"]
+};
+
+console.log(JSON.stringify(data, null, 2));
+#+END_SRC
+
+#+RESULTS:
+: {
+:   "name": "Scimax",
+:   "version": "1.0",
+:   "features": [
+:     "org-mode",
+:     "jupyter",
+:     "references"
+:   ]
+: }
+
+* ✅ Other Languages via Jupyter
+
+Scimax VS Code can execute any language that has a Jupyter kernel installed. The general pattern is:
+
+#+BEGIN_SRC org
+,#+BEGIN_SRC jupyter-<language>
+code here
+,#+END_SRC
+#+END_SRC
+
+** ✅ Popular Jupyter Kernels
+
+| Language   | Kernel         | Install Command                                    |
+|------------+----------------+----------------------------------------------------|
+| TypeScript | TSLab          | =npm install -g tslab && tslab install=            |
+| Ruby       | IRuby          | =gem install iruby && iruby register=              |
+| Rust       | evcxr          | =cargo install evcxr_jupyter && evcxr_jupyter --install= |
+| Go         | gophernotes    | =go install github.com/gopherdata/gophernotes@latest= |
+| C++        | xeus-cling     | =conda install xeus-cling -c conda-forge=          |
+| Haskell    | IHaskell       | =stack install ihaskell && ihaskell install=       |
+| Scala      | Almond         | =coursier launch almond -- --install=              |
+
+** ✅ Checking Available Kernels
+
+#+BEGIN_SRC bash
+jupyter kernelspec list
+#+END_SRC
+
+* ✅ Header Arguments Reference
+
+** ✅ Common Header Arguments
+
+| Argument   | Values              | Description                          |
+|------------+---------------------+--------------------------------------|
+| :session   | name or none        | Session name for persistent state    |
+| :results   | output/value/silent | How to handle results                |
+| :exports   | code/results/both   | What to export                       |
+| :file      | filename            | Save output to file                  |
+| :dir       | path                | Working directory                    |
+| :var       | name=value          | Pass variables                       |
+| :cache     | yes/no              | Cache results                        |
+| :eval      | yes/no/query        | Evaluation policy                    |
+
+** ✅ Session Example
+
+#+BEGIN_SRC org
+# Define variable in first block
+,#+BEGIN_SRC jupyter-python :session *analysis*
+data = [1, 2, 3, 4, 5]
+,#+END_SRC
+
+# Use variable in second block
+,#+BEGIN_SRC jupyter-python :session *analysis*
+import statistics
+print(f"Mean: {statistics.mean(data)}")
+,#+END_SRC
+#+END_SRC
+
+** ✅ File Output Example
+
+#+BEGIN_SRC org
+,#+BEGIN_SRC jupyter-python :results file :file output.png
+import matplotlib.pyplot as plt
+plt.plot([1,2,3], [1,4,9])
+plt.savefig('output.png')
+,#+END_SRC
+#+END_SRC
+
+* ✅ Troubleshooting
+
+** ✅ Common Issues
+
+*** ✅ "No executor available for language: X"
+
+*Cause:* The language interpreter or Jupyter kernel is not installed.
+
+*Solution:*
+1. For native languages: Install the language (python3, node, etc.)
+2. For Jupyter languages: Install the appropriate kernel
+3. Verify: =jupyter kernelspec list=
+
+*** ✅ "Jupyter kernel not found"
+
+*Cause:* Jupyter is not installed or kernel is not registered.
+
+*Solution:*
+#+BEGIN_SRC bash
+# Install Jupyter
+pip install jupyter
+
+# Install specific kernel (example for Python)
+python -m ipykernel install --user
+
+# Verify kernels
+jupyter kernelspec list
+#+END_SRC
+
+*** ✅ Session state not persisting
+
+*Cause:* Using native executor instead of Jupyter, or session name not specified.
+
+*Solution:*
+- Use =jupyter-<language>= syntax
+- Add =:session <name>= header argument
+- Ensure all blocks use the same session name
+
+*** ✅ Code executes but no output appears
+
+*Cause:* Results handling or silent mode.
+
+*Solution:*
+- Check =:results= header (use =:results output=)
+- Ensure =:eval= is not set to =no=
+- Add explicit print statements
+
+** ✅ Getting Help
+
+- View Babel output: =Scimax: Show Babel Output=
+- Check executor status: =Scimax: Check Available Executors=
+- View Jupyter kernel list: =jupyter kernelspec list= in terminal
+
+* ✅ Best Practices
+
+** ✅ Language Selection
+- Use native executors for simple, stateless scripts
+- Use Jupyter for interactive work requiring sessions
+- Use explicit =jupyter-<language>= when you need Jupyter features
+
+** ✅ Session Management
+- Name sessions descriptively (=:session *data-analysis*=)
+- Use separate sessions for independent workflows
+- Clear sessions when starting fresh work
+
+** ✅ Code Organization
+- One concept per block for clarity
+- Use named blocks (=#+NAME:=) for reusable code
+- Document complex blocks with comments
+
+** ✅ Performance
+- Cache expensive computations (=:cache yes=)
+- Use appropriate result types (=:results output= vs =value=)
+- Close unused Jupyter sessions
+
+* ✅ Quick Reference
+
+** ✅ Execute Commands
+- =C-<return>= / =s-<return>=: Execute current block
+- =S-<return>=: Execute and move to next
+- =C-c C-c=: Execute (Emacs style)
+
+** ✅ Session Control
+- =:session <name>=: Use named session
+- =:session none=: Disable session
+- Sessions persist until VS Code restart or manual close
+
+** ✅ Result Handling
+- =:results output=: Capture stdout
+- =:results value=: Return last value
+- =:results silent=: No results
+- =:results file=: Save to file
+
+* Navigation
+
+- Previous: [[file:07-source-blocks.org][Source Blocks]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:09-jupyter.org][Jupyter]]

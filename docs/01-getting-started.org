@@ -1,0 +1,379 @@
+#+TITLE: Getting Started with Scimax VS Code
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-13
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+* Getting Started
+
+This guide will help you install Scimax VS Code and get started with its core
+features. By the end, you'll be able to create structured documents, execute
+code, and navigate efficiently.
+
+* System Requirements
+
+** VS Code Version
+
+Scimax VS Code requires Visual Studio Code version *1.85 or later*.
+
+** Optional Dependencies
+
+While Scimax VS Code works out of the box, some features require additional
+software:
+
+*** For Code Execution
+
+| Language   | Requirement                                    |
+|------------+------------------------------------------------|
+| Python     | Python 3.x installed and in PATH               |
+| JavaScript | Node.js installed                              |
+| Shell      | Bash or compatible shell                       |
+| R          | R installed with Rscript in PATH               |
+| Julia      | Julia installed and in PATH                    |
+
+*** For Jupyter Integration
+
+- Jupyter installed (`pip install jupyter')
+- Jupyter kernels for desired languages
+
+*** For LaTeX/PDF Export
+
+- TeX distribution (TeX Live, MiKTeX, or MacTeX)
+- pdflatex, xelatex, or lualatex compiler
+
+*** For LaTeX Equation Preview
+
+- LaTeX distribution with dvipng or dvisvgm
+
+* Installation
+
+** From VS Code Marketplace
+
+1. Open VS Code
+2. Press `C-S-X' to open the Extensions view
+3. Search for "Scimax"
+4. Click *Install*
+
+** From VSIX File
+
+1. Download the `.vsix' file from the [[https://github.com/jkitchin/scimax_vscode/releases][GitHub Releases page]]
+2. Open VS Code
+3. Press `C-S-X' to open the Extensions view
+4. Click the `...' menu (top right)
+5. Select "Install from VSIX..."
+6. Choose the downloaded file
+
+** From Source (GitHub)
+
+The source code is available at [[https://github.com/jkitchin/scimax_vscode]].
+
+To build and install from source:
+
+1. Clone the repository:
+   #+BEGIN_SRC shell
+   git clone https://github.com/jkitchin/scimax_vscode.git
+   cd scimax_vscode
+   #+END_SRC
+
+2. Install dependencies and build:
+   #+BEGIN_SRC shell
+   npm install
+   make
+   #+END_SRC
+
+3. Install the generated VSIX:
+   #+BEGIN_SRC shell
+   code --install-extension scimax-vscode-*.vsix
+   #+END_SRC
+
+** Verify Installation
+
+After installation:
+
+1. Open the Command Palette (`C-S-P')
+2. Type "Scimax"
+3. You should see Scimax commands listed
+
+* First Steps
+
+** Opening an Org File
+
+Org files use the `.org' extension. To create your first file:
+
+1. Press `C-n' to create a new file (note s-n on Mac)
+2. Save it with `C-s' and give it a `.org' extension (e.g., `notes.org')
+3. The file will automatically use org-mode syntax highlighting
+
+** Creating Your First Document
+
+Type the following to create a basic document structure:
+
+#+BEGIN_SRC org
+,#+TITLE: My First Document
+,#+AUTHOR: Your Name
+,#+DATE: 2026-01-13
+
+,* Introduction
+
+This is my first Scimax VS Code document.
+
+,** A Subsection
+
+Content under the subsection.
+
+,* Tasks
+
+,** TODO Learn Scimax VS Code
+DEADLINE: <2026-01-20 Mon>
+
+,** DONE Install the extension
+CLOSED: [2026-01-13 Mon]
+
+,* Code Example
+
+,#+BEGIN_SRC python :results output
+print("Hello from Scimax VS Code!")
+,#+END_SRC
+#+END_SRC
+
+** Basic Navigation
+
+*** Folding
+
+- Press `Tab' on a heading to cycle its visibility (folded/children/subtree)
+- Press `S-<tab>' anywhere to cycle global visibility
+
+*bold* /italics/
+
+*** Moving Between Headings
+
+| Key         | Action                   |
+|-------------+--------------------------|
+| `C-c C-j'   | Jump to any heading      |
+| `M-<up>'    | Move heading up          |
+| `M-<down>'  | Move heading down        |
+| `M-<left>'  | Promote heading (←level) |
+| `M-<right>' | Demote heading (→level)  |
+*** Executing Code
+
+1. Place your cursor inside a source block
+2. Press `C-<return>' or `C-c C-c'
+3. Results appear below the block
+
+* Understanding the Interface
+
+** Outline View
+
+The Outline view in VS Code's sidebar shows your document structure:
+
+1. Click the Outline icon in the sidebar (or press `C-S-O')
+2. See all headings hierarchically
+3. Click a heading to jump to it
+
+** Tree Views
+
+Scimax VS Code adds several tree views to the Explorer sidebar:
+
+*** Journal Tree
+
+Shows your journal entries organized by date. Access today's entry with
+`C-S-J' (or `s-S-J' on Mac).
+
+*** Projects Tree
+
+Shows your registered projects for quick navigation.
+
+*** Agenda Tree
+
+Shows TODO items, deadlines, and scheduled tasks across your files.
+
+** Status Bar
+
+The status bar shows:
+
+- Current journal date (when in journal files)
+- Kernel status (when using Jupyter)
+
+** Hydra Menus
+
+Hydra menus provide discoverable access to commands:
+
+- `C-c m' - Open main menu
+- `C-c C-m' - Open context-sensitive menu
+- `C-M-V' - Open database/search menu
+
+Menus show available commands with their keybindings. Press a key to execute
+a command or `Escape' to close the menu.
+
+* Essential Commands
+
+** Document Commands
+
+| Key        | Command                         |
+|------------+---------------------------------|
+| Tab        | Cycle fold at heading           |
+| S-<tab>    | Cycle global fold               |
+| C-c C-j    | Jump to heading                 |
+| C-<return> | Insert new heading (at heading) |
+| C-c C-t    | Cycle TODO state                |
+| C-c C-c    | Context action (execute/toggle) |
+
+** Source Block Commands
+
+| Key        | Command                        |
+|------------+--------------------------------|
+| C-<return> | Execute current block          |
+| S-<return> | Execute block and move to next |
+| C-<up>     | Go to previous block           |
+| C-<down>   | Go to next block               |
+
+** Export Commands
+
+| Key         | Command                |
+|-------------+------------------------|
+| C-c C-e     | Open export dispatcher |
+| C-c C-e h h | Export to HTML         |
+| C-c C-e l l | Export to LaTeX        |
+| C-c C-e l p | Export to PDF          |
+
+** Navigation Commands
+
+| Key     | Command                       |
+|---------+-------------------------------|
+| C-c s   | Fuzzy search current file     |
+| C-c j c | Jump to character (Avy-style) |
+| C-c j w | Jump to word                  |
+| C-c j l | Jump to line                  |
+
+** Help Commands
+
+| Key   | Command                                      |
+|-------+----------------------------------------------|
+| C-h k | Describe key (type a key to see its command) |
+| C-h b | List all keybindings                         |
+| C-h f | Describe command (find command by name)      |
+| C-h v | Describe variable (view setting details)     |
+| C-h a | Apropos (search documentation for keywords)  |
+
+* Recommended Settings
+
+Open VS Code settings (`C-,') and search for "scimax" to see all options.
+
+** Essential Settings
+
+#+BEGIN_SRC json
+{
+  // Enable speed commands (single-key at heading start)
+  "scimax.speedCommands.enabled": true,
+
+  // Set your journal directory
+  "scimax.journal.directory": "~/Documents/journal",
+
+  // Configure bibliography files for citations
+  "scimax.ref.bibliographyFiles": ["~/references.bib"],
+
+  // Enable image overlays
+  "scimax.imageOverlays.enabled": true,
+
+  // Auto-index files for search
+  "scimax.db.autoIndex": true
+}
+#+END_SRC
+
+** Python Configuration
+
+If Python isn't automatically detected:
+
+#+BEGIN_SRC json
+{
+  "scimax.literate.pythonPath": "/usr/bin/python3"
+}
+#+END_SRC
+
+** LaTeX Configuration
+
+For PDF export:
+
+#+BEGIN_SRC json
+{
+  "scimax.latexLivePreview.compiler": "pdflatex",
+  "scimax.latexLivePreview.useLatexmk": true
+}
+#+END_SRC
+
+* Migrating from Emacs
+
+If you're coming from Emacs Org-mode or Scimax, here are key differences:
+
+** Similar Features
+
+| Emacs          | VS Code                  |
+|----------------+--------------------------|
+| C-c C-c        | C-c C-c                  |
+| C-c C-t        | C-c C-t                  |
+| C-c C-e        | C-c C-e                  |
+| TAB on heading | Tab on heading           |
+| S-TAB          | S-<tab>                  |
+| M-RET          | C-<return> (at heading)  |
+| M-left/right   | M-<left>/Right           |
+| M-up/down      | M-<up>/Down              |
+| Speed commands | Same keys (when enabled) |
+
+** Different Behaviors
+
+- *Completion*: Uses VS Code's completion system, triggered automatically
+- *Folding*: Uses VS Code's native folding with org-specific ranges
+- *Buffer management*: VS Code tabs instead of Emacs buffers
+- *Customization*: JSON settings instead of Emacs Lisp
+
+** Missing Features
+
+Some advanced Emacs features may not be available:
+
+- Org-mode's full capture/refile system (simplified version available)
+- Column view
+- Some specialized agenda views
+- Custom link types (limited set supported)
+
+* Next Steps
+
+Now that you're set up, explore these topics:
+
+1. [[file:02-document-structure.org][Document Structure]] - Master headings, folding, and navigation
+2. [[file:03-todo-items.org][TODO Items]] - Learn task management
+3. [[file:07-source-blocks.org][Source Code Blocks]] - Execute code in your documents
+4. [[file:24-keybindings.org][Keybindings]] - Learn all keyboard shortcuts
+
+* Troubleshooting
+
+** Code Blocks Not Executing
+
+1. Check that the language is installed (e.g., Python, Node.js)
+2. Verify the language is in your PATH
+3. Check the Output panel (`C-S-U') for errors
+4. Run `scimax.org.checkExecutors' to verify available executors
+
+** LaTeX Preview Not Working
+
+1. Ensure LaTeX is installed (`latex --version' in terminal)
+2. Check that dvipng or dvisvgm is available
+3. Run `scimax.checkLatexTools' to verify installation
+
+** Search Not Finding Results
+
+1. Run `scimax.db.reindex' to rebuild the search index
+2. Check that files aren't in excluded patterns
+3. Verify the search scope (`scimax.db.setScope')
+
+** Journal Not Opening
+
+1. Check that `scimax.journal.directory' is set correctly
+2. Ensure the directory exists and is writable
+3. Try creating the directory manually if needed
+
+* Navigation
+
+- Previous: [[file:00-index.org][Documentation Index]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:01.5-basic-syntax.org][Basic Syntax]]

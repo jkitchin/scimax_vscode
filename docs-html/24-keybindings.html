@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scimax VS Code - Keybinding Reference</title>
+<meta name="author" content="Scimax Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Scimax VS Code - Keybinding Reference</h1>
+<p class="author">Scimax Team</p>
+<p class="date">2026-01-14</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">Introduction</a></li>
+<li><a href="#org-global-commands">Global Commands</a></li>
+<li><a href="#org-help-commands">✅ Help Commands</a></li>
+<ul>
+<li><a href="#org-c-h-k-describe-key">C-h k (Describe Key)</a></li>
+<li><a href="#org-c-h-b-list-keybindings">C-h b (List Keybindings)</a></li>
+<li><a href="#org-c-h-f-describe-command">C-h f (Describe Command)</a></li>
+<li><a href="#org-c-h-v-describe-variable-setting">C-h v (Describe Variable/Setting)</a></li>
+<li><a href="#org-c-h-a-apropos">C-h a (Apropos)</a></li>
+</ul>
+<li><a href="#org-emacs-style-editor-keybindings">Emacs-Style Editor Keybindings</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+<li><a href="#org-headings">Headings</a></li>
+<li><a href="#org-items">Items</a></li>
+<li><a href="#org-timestamps">Timestamps</a></li>
+<li><a href="#org-tables">Tables</a></li>
+<li><a href="#org-source-blocks-babel">Source Blocks (Babel)</a></li>
+<ul>
+<li><a href="#org-execution">Execution</a></li>
+<li><a href="#org-navigation-manipulation">Navigation &amp; Manipulation</a></li>
+<li><a href="#org-advanced-babel-operations">Advanced Babel Operations</a></li>
+</ul>
+<li><a href="#org-export">Export</a></li>
+<li><a href="#org-links">Links</a></li>
+<li><a href="#org-citations-references">Citations &amp; References</a></li>
+<li><a href="#org-text-markup">Text Markup</a></li>
+<li><a href="#org-search-navigation">Search &amp; Navigation</a></li>
+<ul>
+<li><a href="#org-fuzzy-search-swiper-style">Fuzzy Search (Swiper-style)</a></li>
+<li><a href="#org-jump-avy-style">Jump (Avy-style)</a></li>
+<li><a href="#org-projectile">Projectile</a></li>
+</ul>
+<li><a href="#org-edit-marks-track-changes">Edit Marks (Track Changes)</a></li>
+<li><a href="#org-speed-commands">Speed Commands</a></li>
+<ul>
+<li><a href="#org-navigation-speed-commands">Navigation Speed Commands</a></li>
+<li><a href="#org-visibility-speed-commands">Visibility Speed Commands</a></li>
+<li><a href="#org-structure-editing-speed-commands">Structure Editing Speed Commands</a></li>
+<li><a href="#org-content-speed-commands">&amp; Content Speed Commands</a></li>
+<li><a href="#org-editing-speed-commands">Editing Speed Commands</a></li>
+<li><a href="#org-other-speed-commands">Other Speed Commands</a></li>
+</ul>
+<li><a href="#org-toggle-speed-commands">Toggle Speed Commands</a></li>
+<li><a href="#org-additional-notes">Additional Notes</a></li>
+<ul>
+<li><a href="#org-context-dependent-keybindings">Context-Dependent Keybindings</a></li>
+<li><a href="#org-when-conditions">When Conditions</a></li>
+<li><a href="#org-mac-vs-windows-linux">Mac vs Windows/Linux</a></li>
+</ul>
+<li><a href="#org-quick-reference-card">Quick Reference Card</a></li>
+<ul>
+<li><a href="#org-most-common-commands">Most Common Commands</a></li>
+<li><a href="#org-most-common-speed-commands">Most Common Speed Commands</a></li>
+</ul>
+<li><a href="#org-further-help">Further Help</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-introduction" class="org-section org-level-1">
+<h1>Introduction</h1>
+<p>This document provides a comprehensive reference for all keybindings in Scimax VS Code. The extension brings Emacs-style org-mode functionality to Visual Studio Code, with keybindings designed to match the familiar Emacs Scimax experience.</p>
+
+</div>
+<div id="org-global-commands" class="org-section org-level-1">
+<h1>Global Commands</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-S-j</td><td>Open today&#39;s journal entry</td></tr>
+<tr><td>s-S-j</td><td>(Mac) Open today&#39;s journal entry</td></tr>
+<tr><td>C-c m</td><td>Show Hydra main menu</td></tr>
+<tr><td>C-c C-m</td><td>Show Hydra context menu</td></tr>
+<tr><td>C-c c</td><td>Quick capture</td></tr>
+<tr><td>C-c t</td><td>Quick capture TODO</td></tr>
+<tr><td>C-M-v</td><td>Show database menu</td></tr>
+<tr><td>C-s-v</td><td>(Mac) Show database menu</td></tr>
+<tr><td>C-S-r</td><td>Reload window</td></tr>
+<tr><td>s-S-r</td><td>(Mac) Reload window</td></tr>
+<tr><td>M-[</td><td>Previous journal entry (in journal)</td></tr>
+<tr><td>M-]</td><td>Next journal entry (in journal)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-help-commands" class="org-section org-level-1">
+<h1>✅ Help Commands</h1>
+<p>CLOSED: [2026-01-17 Sat 13:38]</p>
+
+<p>Emacs-style help commands for discovering keybindings and commands.</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-h k</td><td>Describe key - type a key sequence to see its command</td></tr>
+<tr><td>C-h b</td><td>List keybindings - browse all keybindings</td></tr>
+<tr><td>C-h f</td><td>Describe command - select a command to see its keys</td></tr>
+<tr><td>C-h v</td><td>Describe variable - view setting details</td></tr>
+<tr><td>C-h a</td><td>Apropos - search documentation for keywords</td></tr>
+</tbody>
+</table>
+
+<div id="org-c-h-k-describe-key" class="org-section org-level-2">
+<h2>C-h k (Describe Key)</h2>
+<p>Type a key sequence using either Emacs notation (<kbd>C-c C-c</kbd>, <kbd>M-x</kbd>) or VS Code notation (<kbd>ctrl+c ctrl+c</kbd>, <kbd>alt+x</kbd>) to see what command it is bound to. Shows the command ID, title, and any context conditions (<kbd>when</kbd> clause).</p>
+
+</div>
+<div id="org-c-h-b-list-keybindings" class="org-section org-level-2">
+<h2>C-h b (List Keybindings)</h2>
+<p>Browse all scimax keybindings in a searchable list. Filter by typing to find keybindings. Select an entry to see full details or execute the command.</p>
+
+</div>
+<div id="org-c-h-f-describe-command" class="org-section org-level-2">
+<h2>C-h f (Describe Command)</h2>
+<p>Search for a command by name and see its keybindings. Useful when you know what you want to do but not the keybinding.</p>
+
+</div>
+<div id="org-c-h-v-describe-variable-setting" class="org-section org-level-2">
+<h2>C-h v (Describe Variable/Setting)</h2>
+<p>Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Actions include opening VS Code Settings to modify the value.</p>
+
+</div>
+<div id="org-c-h-a-apropos" class="org-section org-level-2">
+<h2>C-h a (Apropos)</h2>
+<p>Search the documentation for keywords. Enter one or more search terms to find relevant documentation sections. Results are ranked by relevance:</p>
+
+<ul>
+<li><p>Heading matches score highest</p>
+</li>
+<li><p>Command and keybinding mentions score high</p>
+</li>
+<li><p>Keyword and content matches score lower</p>
+</li>
+</ul>
+
+<p>Select a result to see details or open the documentation file at that location.</p>
+
+</div>
+</div>
+<div id="org-emacs-style-editor-keybindings" class="org-section org-level-1">
+<h1>Emacs-Style Editor Keybindings</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>M-x</td><td>Show command palette</td></tr>
+<tr><td>C-x C-f</td><td>Quick open file</td></tr>
+<tr><td>C-x C-s</td><td>Save file</td></tr>
+<tr><td>C-x s</td><td>Save all files</td></tr>
+<tr><td>C-x k</td><td>Close active editor</td></tr>
+<tr><td>C-x 3</td><td>Split editor right</td></tr>
+<tr><td>C-x 2</td><td>Split editor down</td></tr>
+<tr><td>C-x 1</td><td>Close other editors in group</td></tr>
+<tr><td>C-x 0</td><td>Close all editors</td></tr>
+<tr><td>C-x o</td><td>Focus next editor group</td></tr>
+<tr><td>C-x C-<left></td><td>Navigate back</td></tr>
+<tr><td>C-x C-<right></td><td>Navigate forward</td></tr>
+<tr><td>C-/</td><td>Undo</td></tr>
+<tr><td>C-y</td><td>Paste</td></tr>
+<tr><td>C-w</td><td>Cut (with selection)</td></tr>
+<tr><td>M-w</td><td>Copy (with selection)</td></tr>
+<tr><td>C-;</td><td>Toggle comment</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><tab></td><td>Toggle fold (on heading)</td></tr>
+<tr><td>S-<tab></td><td>Cycle global fold</td></tr>
+<tr><td>C-c C-j</td><td>Jump to heading</td></tr>
+<tr><td>C-c C-n</td><td>Next heading</td></tr>
+<tr><td>C-c C-p</td><td>Previous heading</td></tr>
+<tr><td>C-<up></td><td>Previous source block</td></tr>
+<tr><td>C-<down></td><td>Next source block</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-headings" class="org-section org-level-1">
+<h1>Headings</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>M-<left></td><td>Promote heading/subtree</td></tr>
+<tr><td>M-<right></td><td>Demote heading/subtree</td></tr>
+<tr><td>M-S-<left></td><td>Promote subtree (not in table)</td></tr>
+<tr><td>M-S-<right></td><td>Demote subtree (not in table)</td></tr>
+<tr><td>M-<up></td><td>Move heading/subtree up</td></tr>
+<tr><td>M-<down></td><td>Move heading/subtree down</td></tr>
+<tr><td>C-<return></td><td>Insert new heading</td></tr>
+<tr><td>s-<return></td><td>(Mac) Insert new heading</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-items" class="org-section org-level-1">
+<h1>Items</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-t</td><td>Cycle TODO state</td></tr>
+<tr><td>C-c C-c</td><td>Toggle checkbox (not in src block)</td></tr>
+<tr><td>C-c C-d</td><td>Insert due date (DEADLINE)</td></tr>
+<tr><td>C-c C-s</td><td>Insert scheduled date (SCHEDULED)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-timestamps" class="org-section org-level-1">
+<h1>Timestamps</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c .</td><td>Insert timestamp</td></tr>
+<tr><td>C-c C-r</td><td>Add repeater to timestamp</td></tr>
+<tr><td>S-<up></td><td>Shift timestamp up</td></tr>
+<tr><td>S-<down></td><td>Shift timestamp down</td></tr>
+<tr><td>S-<left></td><td>Shift timestamp left (no selection)</td></tr>
+<tr><td>S-<right></td><td>Shift timestamp right (no selection)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-tables" class="org-section org-level-1">
+<h1>Tables</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c \vert</td><td>Create table</td></tr>
+<tr><td>C-c -</td><td>Insert table separator row</td></tr>
+<tr><td>C-c ^</td><td>Sort table by column</td></tr>
+<tr><td>C-c C-c</td><td>Recalculate table (on TBLFM line)</td></tr>
+<tr><td>C-c *</td><td>Recalculate table (alternative)</td></tr>
+<tr><td>C-c C-e t</td><td>Export table</td></tr>
+<tr><td>M-<return></td><td>Insert row below</td></tr>
+<tr><td>M-S-<return></td><td>Insert row above</td></tr>
+<tr><td>M-S-<backspace></td><td>Delete row</td></tr>
+<tr><td>M-S-<right></td><td>Insert column right (in table)</td></tr>
+<tr><td>M-S-<left></td><td>Delete column (in table)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-source-blocks-babel" class="org-section org-level-1">
+<h1>Source Blocks (Babel)</h1>
+<div id="org-execution" class="org-section org-level-2">
+<h2>Execution</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-<return></td><td>Execute source block</td></tr>
+<tr><td>s-<return></td><td>(Mac) Execute source block</td></tr>
+<tr><td>C-c C-c</td><td>Execute source block (in src block)</td></tr>
+<tr><td>S-<return></td><td>Execute and move to next block</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-navigation-manipulation" class="org-section org-level-2">
+<h2>Navigation &amp; Manipulation</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-<up></td><td>Previous source block</td></tr>
+<tr><td>C-<down></td><td>Next source block</td></tr>
+<tr><td>C-c C-b</td><td>Jump to source block</td></tr>
+<tr><td>C-c C-,</td><td>Insert source block below</td></tr>
+<tr><td>C-c -</td><td>Split source block at cursor</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-advanced-babel-operations" class="org-section org-level-2">
+<h2>Advanced Babel Operations</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-v t</td><td>Tangle source blocks</td></tr>
+<tr><td>C-c C-v p</td><td>Execute all blocks to point</td></tr>
+<tr><td>C-c C-v i</td><td>Execute inline code</td></tr>
+<tr><td>C-c C-v q</td><td>Queue block for execution</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-export" class="org-section org-level-1">
+<h1>Export</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-e</td><td>Export dispatcher (show menu)</td></tr>
+<tr><td>C-c C-e h h</td><td>Export to HTML</td></tr>
+<tr><td>C-c C-e h o</td><td>Export to HTML and open</td></tr>
+<tr><td>C-c C-e l l</td><td>Export to LaTeX</td></tr>
+<tr><td>C-c C-e l o</td><td>Export to LaTeX and open</td></tr>
+<tr><td>C-c C-e l p</td><td>Export to PDF</td></tr>
+<tr><td>C-c C-e l v</td><td>Open LaTeX preview</td></tr>
+<tr><td>C-c C-e l s</td><td>LaTeX forward sync</td></tr>
+<tr><td>C-c C-e m m</td><td>Export to Markdown</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-links" class="org-section org-level-1">
+<h1>Links</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-l</td><td>Insert link</td></tr>
+<tr><td>C-c C-o</td><td>Open link</td></tr>
+<tr><td><return></td><td>Open link (when on link)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-citations-references" class="org-section org-level-1">
+<h1>Citations &amp; References</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c ]</td><td>Insert citation</td></tr>
+<tr><td>C-c z</td><td>Insert citation from Zotero</td></tr>
+<tr><td>C-u C-c ]</td><td>Insert cross-reference</td></tr>
+<tr><td>S-<left></td><td>Transpose citation left (on citation)</td></tr>
+<tr><td>S-<right></td><td>Transpose citation right (on citation)</td></tr>
+<tr><td>S-<up></td><td>Sort citations (on citation)</td></tr>
+<tr><td>S-<down></td><td>Sort citations by year (on citation)</td></tr>
+<tr><td>C-S-k</td><td>Delete citation (on citation)</td></tr>
+<tr><td>s-S-k</td><td>(Mac) Delete citation</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-text-markup" class="org-section org-level-1">
+<h1>Text Markup</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c b</td><td>Bold</td></tr>
+<tr><td>C-c i</td><td>Italic</td></tr>
+<tr><td>C-c u</td><td>Underline</td></tr>
+<tr><td>C-c `</td><td>Code (inline)</td></tr>
+<tr><td>C-c =</td><td>Verbatim</td></tr>
+<tr><td>C-c +</td><td>Strikethrough</td></tr>
+<tr><td>C-c &#39;</td><td>Command (Emacs-style, non-standard)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-search-navigation" class="org-section org-level-1">
+<h1>Search &amp; Navigation</h1>
+<div id="org-fuzzy-search-swiper-style" class="org-section org-level-2">
+<h2>Fuzzy Search (Swiper-style)</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c s</td><td>Fuzzy search in current buffer</td></tr>
+<tr><td>C-c S-s</td><td>Fuzzy search in open files</td></tr>
+<tr><td>C-c M-s</td><td>Fuzzy search outline/headings</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-jump-avy-style" class="org-section org-level-2">
+<h2>Jump (Avy-style)</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c j c</td><td>Jump to character</td></tr>
+<tr><td>C-c j j</td><td>Jump to 2 characters</td></tr>
+<tr><td>C-c j w</td><td>Jump to word</td></tr>
+<tr><td>C-c j l</td><td>Jump to line</td></tr>
+<tr><td>C-c j o</td><td>Jump to symbol/outline</td></tr>
+<tr><td>C-c j s</td><td>Jump to subword</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-projectile" class="org-section org-level-2">
+<h2>Projectile</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c p p</td><td>Switch project</td></tr>
+<tr><td>C-c p f</td><td>Find file in project</td></tr>
+<tr><td>C-c p s</td><td>Search in project</td></tr>
+<tr><td>C-c p d</td><td>Open project root directory</td></tr>
+<tr><td>C-c p a</td><td>Add project</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-edit-marks-track-changes" class="org-section org-level-1">
+<h1>Edit Marks (Track Changes)</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c e i</td><td>Mark insertion</td></tr>
+<tr><td>C-c e d</td><td>Mark deletion</td></tr>
+<tr><td>C-c e c</td><td>Add comment</td></tr>
+<tr><td>C-c e t</td><td>Mark typo</td></tr>
+<tr><td>C-c e a</td><td>Accept edit mark</td></tr>
+<tr><td>C-c e r</td><td>Reject edit mark</td></tr>
+<tr><td>C-c e ]</td><td>Next edit mark</td></tr>
+<tr><td>C-c e [</td><td>Previous edit mark</td></tr>
+<tr><td>C-c e s</td><td>Show edit marks summary</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-speed-commands" class="org-section org-level-1">
+<h1>Speed Commands</h1>
+<p>Speed commands are single-key shortcuts available when the cursor is at the <strong>beginning</strong> of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).</p>
+
+<div id="org-navigation-speed-commands" class="org-section org-level-2">
+<h2>Navigation Speed Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>n</td><td>Next heading (same level)</td></tr>
+<tr><td>p</td><td>Previous heading (same level)</td></tr>
+<tr><td>f</td><td>Next sibling heading</td></tr>
+<tr><td>b</td><td>Previous sibling heading</td></tr>
+<tr><td>u</td><td>Parent heading (up one level)</td></tr>
+<tr><td>j</td><td>Jump to heading (quick picker)</td></tr>
+<tr><td>g</td><td>Goto menu (additional navigation)</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-visibility-speed-commands" class="org-section org-level-2">
+<h2>Visibility Speed Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><tab></td><td>Toggle fold (same as regular tab)</td></tr>
+<tr><td>c</td><td>Cycle global fold</td></tr>
+<tr><td>C</td><td>Show children only</td></tr>
+<tr><td>o</td><td>Overview (collapse all)</td></tr>
+<tr><td>1</td><td>Show level 1 headings</td></tr>
+<tr><td>2</td><td>Show level 2 headings</td></tr>
+<tr><td>3</td><td>Show level 3 headings</td></tr>
+<tr><td>0</td><td>Show all headings</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-structure-editing-speed-commands" class="org-section org-level-2">
+<h2>Structure Editing Speed Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>l</td><td>Promote subtree</td></tr>
+<tr><td>r</td><td>Demote subtree</td></tr>
+<tr><td>L</td><td>Promote heading only</td></tr>
+<tr><td>R</td><td>Demote heading only</td></tr>
+<tr><td>U</td><td>Move subtree up</td></tr>
+<tr><td>D</td><td>Move subtree down</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-content-speed-commands" class="org-section org-level-2">
+<h2><span class="org-todo-keyword org-todo-todo org-kw-todo">TODO</span> &amp; Content Speed Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>t</td><td>Cycle TODO state</td></tr>
+<tr><td>d</td><td>Insert DEADLINE</td></tr>
+<tr><td>s</td><td>Insert SCHEDULED</td></tr>
+<tr><td>e</td><td>Set effort estimate</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-editing-speed-commands" class="org-section org-level-2">
+<h2>Editing Speed Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>w</td><td>Kill (cut) subtree</td></tr>
+<tr><td>y</td><td>Yank (paste) subtree</td></tr>
+<tr><td>W</td><td>Clone subtree</td></tr>
+<tr><td>a</td><td>Archive subtree</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-other-speed-commands" class="org-section org-level-2">
+<h2>Other Speed Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>?</td><td>Show speed commands help</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-toggle-speed-commands" class="org-section org-level-1">
+<h1>Toggle Speed Commands</h1>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-x s</td><td>Toggle speed commands on/off</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-additional-notes" class="org-section org-level-1">
+<h1>Additional Notes</h1>
+<div id="org-context-dependent-keybindings" class="org-section org-level-2">
+<h2>Context-Dependent Keybindings</h2>
+<p>Many keybindings are context-aware and behave differently depending on cursor position:</p>
+
+<ul>
+<li><p>C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, and recalculates tables on TBLFM lines</p>
+</li>
+<li><p>S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation</p>
+</li>
+<li><p>M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table</p>
+</li>
+<li><p><return> opens links when cursor is on a link</p>
+</li>
+</ul>
+
+</div>
+<div id="org-when-conditions" class="org-section org-level-2">
+<h2>When Conditions</h2>
+<p>Some keybindings only work in specific contexts:</p>
+
+<ul>
+<li><p>Org-mode/Markdown files: Most document structure commands</p>
+</li>
+<li><p>On headings: Folding, promotion, demotion</p>
+</li>
+<li><p>In tables: Table-specific commands</p>
+</li>
+<li><p>In source blocks: Block execution</p>
+</li>
+<li><p>At heading start: Speed commands</p>
+</li>
+</ul>
+
+</div>
+<div id="org-mac-vs-windows-linux" class="org-section org-level-2">
+<h2>Mac vs Windows/Linux</h2>
+<p>Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd):</p>
+
+<ul>
+<li><p>s-S-j (journal)</p>
+</li>
+<li><p>s-<return> (execute/insert heading)</p>
+</li>
+<li><p>s-S-k (delete citation)</p>
+</li>
+<li><p>s-S-r (reload window)</p>
+</li>
+<li><p>C-s-v (database menu)</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-quick-reference-card" class="org-section org-level-1">
+<h1>Quick Reference Card</h1>
+<div id="org-most-common-commands" class="org-section org-level-2">
+<h2>Most Common Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td>Open journal</td><td>C-S-j</td></tr>
+<tr><td>Execute code block</td><td>C-<return></td></tr>
+<tr><td>Cycle TODO</td><td>C-c C-t</td></tr>
+<tr><td>Insert timestamp</td><td>C-c .</td></tr>
+<tr><td>Insert link</td><td>C-c C-l</td></tr>
+<tr><td>Insert citation</td><td>C-c ]</td></tr>
+<tr><td>Export dispatcher</td><td>C-c C-e</td></tr>
+<tr><td>Jump to heading</td><td>C-c C-j</td></tr>
+<tr><td>Fuzzy search</td><td>C-c s</td></tr>
+<tr><td>Hydra menu</td><td>C-c m</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-most-common-speed-commands" class="org-section org-level-2">
+<h2>Most Common Speed Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Speed Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>n/p</td><td>Next/Previous heading</td></tr>
+<tr><td>f/b</td><td>Forward/Back sibling</td></tr>
+<tr><td>u</td><td>Up to parent</td></tr>
+<tr><td>j</td><td>Jump to heading</td></tr>
+<tr><td>t</td><td>Cycle TODO</td></tr>
+<tr><td>l/r</td><td>Promote/Demote subtree</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-further-help" class="org-section org-level-1">
+<h1>Further Help</h1>
+<ul>
+<li><p>Use C-c m to open the Hydra menu for guided command discovery</p>
+</li>
+<li><p>Use M-x to search all commands by name</p>
+</li>
+<li><p>Enable speed commands help with ? when at heading start</p>
+</li>
+<li><p>See <a href="00-index.html">Documentation Index</a> for comprehensive guides</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="23-speed-commands.html">Speed Commands</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="25-commands.html">Commands</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

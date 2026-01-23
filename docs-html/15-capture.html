@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Capture</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Capture</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-what-is-capture">✅ What is Capture?</a></li>
+<li><a href="#org-key-features">✅ Key Features</a></li>
+<li><a href="#org-philosophy">✅ Philosophy</a></li>
+</ul>
+<li><a href="#org-getting-started">✅ Getting Started</a></li>
+<ul>
+<li><a href="#org-your-first-capture">✅ Your First Capture</a></li>
+<li><a href="#org-quick-todo-capture">Quick TODO Capture</a></li>
+<li><a href="#org-capturing-with-context">Capturing with Context</a></li>
+</ul>
+<li><a href="#org-capture-templates">Capture Templates</a></li>
+<ul>
+<li><a href="#org-built-in-templates">Built-in Templates</a></li>
+<ul>
+<li><a href="#org-todo-template-t">Todo Template (`t&#39;)</a></li>
+<li><a href="#org-note-template-n">Note Template (`n&#39;)</a></li>
+<li><a href="#org-journal-template-j">Journal Template (`j&#39;)</a></li>
+<li><a href="#org-meeting-template-m">Meeting Template (`m&#39;)</a></li>
+<li><a href="#org-code-snippet-template-s">Code Snippet Template (`s&#39;)</a></li>
+<li><a href="#org-bookmark-template-b">Bookmark Template (`b&#39;)</a></li>
+</ul>
+<li><a href="#org-viewing-all-templates">Viewing All Templates</a></li>
+</ul>
+<li><a href="#org-creating-custom-templates">Creating Custom Templates</a></li>
+<ul>
+<li><a href="#org-using-the-template-creator">Using the Template Creator</a></li>
+<li><a href="#org-manual-template-configuration">Manual Template Configuration</a></li>
+<li><a href="#org-template-structure">Template Structure</a></li>
+</ul>
+<li><a href="#org-template-syntax">Template Syntax</a></li>
+<ul>
+<li><a href="#org-basic-placeholders">Basic Placeholders</a></li>
+<li><a href="#org-interactive-prompts">Interactive Prompts</a></li>
+<li><a href="#org-link-placeholders">Link Placeholders</a></li>
+<li><a href="#org-expression-placeholders">Expression Placeholders</a></li>
+<li><a href="#org-examples">Examples</a></li>
+<ul>
+<li><a href="#org-simple-todo-with-prompt">Simple TODO with prompt</a></li>
+<li><a href="#org-note-with-timestamp-and-link-back-to-source">Note with timestamp and link back to source</a></li>
+<li><a href="#org-meeting-template-with-multiple-prompts">Meeting template with multiple prompts</a></li>
+</ul>
+</ul>
+<li><a href="#org-capture-targets">Capture Targets</a></li>
+<ul>
+<li><a href="#org-file-target-file">File Target (`file&#39;)</a></li>
+<li><a href="#org-headline-target-file-headline">Headline Target (`file+headline&#39;)</a></li>
+<li><a href="#org-date-tree-target-file-datetree">Date Tree Target (`file+datetree&#39;)</a></li>
+<li><a href="#org-default-target">Default Target</a></li>
+</ul>
+<li><a href="#org-running-capture">Running Capture</a></li>
+<ul>
+<li><a href="#org-capture-command">Capture Command</a></li>
+<li><a href="#org-capture-by-key">Capture by Key</a></li>
+<li><a href="#org-quick-capture-commands">Quick Capture Commands</a></li>
+<ul>
+<li><a href="#org-quick-todo">Quick TODO</a></li>
+<li><a href="#org-quick-note">Quick Note</a></li>
+</ul>
+<li><a href="#org-capture-process">Capture Process</a></li>
+</ul>
+<li><a href="#org-advanced-capture-features">Advanced Capture Features</a></li>
+<ul>
+<li><a href="#org-capturing-with-selection">Capturing with Selection</a></li>
+<li><a href="#org-capturing-with-context-links">Capturing with Context Links</a></li>
+<li><a href="#org-capture-preview">Capture Preview</a></li>
+<li><a href="#org-auto-open-after-capture">Auto-open After Capture</a></li>
+</ul>
+<li><a href="#org-capture-to-journal">Capture to Journal</a></li>
+<ul>
+<li><a href="#org-journal-capture-template">Journal Capture Template</a></li>
+<li><a href="#org-custom-journal-captures">Custom Journal Captures</a></li>
+<ul>
+<li><a href="#org-daily-reflection">Daily Reflection</a></li>
+<li><a href="#org-quick-log-entry">Quick Log Entry</a></li>
+</ul>
+<li><a href="#org-integrating-with-journal-directory">Integrating with Journal Directory</a></li>
+</ul>
+<li><a href="#org-capture-to-inbox">Capture to Inbox</a></li>
+<ul>
+<li><a href="#org-inbox-setup">Inbox Setup</a></li>
+<li><a href="#org-inbox-with-categories">Inbox with Categories</a></li>
+</ul>
+<li><a href="#org-configuration">Configuration</a></li>
+<ul>
+<li><a href="#org-settings-overview">Settings Overview</a></li>
+<li><a href="#org-default-directory">Default Directory</a></li>
+<li><a href="#org-file-path-resolution">File Path Resolution</a></li>
+<li><a href="#org-configuring-preview">Configuring Preview</a></li>
+<li><a href="#org-auto-open-behavior">Auto-open Behavior</a></li>
+<li><a href="#org-complete-example-configuration">Complete Example Configuration</a></li>
+</ul>
+<li><a href="#org-common-capture-workflows">Common Capture Workflows</a></li>
+<ul>
+<li><a href="#org-gtd-workflow">GTD Workflow</a></li>
+<ul>
+<li><a href="#org-inbox-processing">Inbox Processing</a></li>
+<li><a href="#org-inbox-template">Inbox Template</a></li>
+</ul>
+<li><a href="#org-research-workflow">Research Workflow</a></li>
+<ul>
+<li><a href="#org-collect-sources">Collect Sources</a></li>
+</ul>
+<li><a href="#org-code-documentation-workflow">Code Documentation Workflow</a></li>
+<ul>
+<li><a href="#org-capture-code-examples">Capture Code Examples</a></li>
+</ul>
+<li><a href="#org-meeting-notes-workflow">Meeting Notes Workflow</a></li>
+<ul>
+<li><a href="#org-before-meeting">Before Meeting</a></li>
+<li><a href="#org-during-meeting">During Meeting</a></li>
+<li><a href="#org-after-meeting">After Meeting</a></li>
+</ul>
+<li><a href="#org-daily-planning-workflow">Daily Planning Workflow</a></li>
+<ul>
+<li><a href="#org-morning-review">Morning Review</a></li>
+<li><a href="#org-evening-review">Evening Review</a></li>
+</ul>
+<li><a href="#org-knowledge-base-building">Knowledge Base Building</a></li>
+<ul>
+<li><a href="#org-capture-learnings">Capture Learnings</a></li>
+<li><a href="#org-capture-questions">Capture Questions</a></li>
+</ul>
+</ul>
+<li><a href="#org-commands-reference">Commands Reference</a></li>
+<ul>
+<li><a href="#org-main-commands">Main Commands</a></li>
+<li><a href="#org-template-management-commands">Template Management Commands</a></li>
+</ul>
+<li><a href="#org-keybindings">Keybindings</a></li>
+<ul>
+<li><a href="#org-default-keybindings">Default Keybindings</a></li>
+<li><a href="#org-custom-keybindings">Custom Keybindings</a></li>
+<ul>
+<li><a href="#org-quick-capture-note">Quick Capture Note</a></li>
+<li><a href="#org-capture-to-inbox">Capture to Inbox</a></li>
+<li><a href="#org-journal-capture">Journal Capture</a></li>
+</ul>
+<li><a href="#org-context-aware-keybindings">Context-aware Keybindings</a></li>
+</ul>
+<li><a href="#org-tips-and-best-practices">Tips and Best Practices</a></li>
+<ul>
+<li><a href="#org-start-simple">Start Simple</a></li>
+<li><a href="#org-use-consistent-file-organization">Use Consistent File Organization</a></li>
+<li><a href="#org-process-inbox-regularly">Process Inbox Regularly</a></li>
+<li><a href="#org-leverage-context-links">Leverage Context Links</a></li>
+<li><a href="#org-use-tags-for-filtering">Use Tags for Filtering</a></li>
+<li><a href="#org-combine-with-agenda">Combine with Agenda</a></li>
+<li><a href="#org-create-domain-specific-templates">Create Domain-Specific Templates</a></li>
+<ul>
+<li><a href="#org-bug-report-template">Bug Report Template</a></li>
+<li><a href="#org-feature-request-template">Feature Request Template</a></li>
+</ul>
+<li><a href="#org-disable-preview-for-speed">Disable Preview for Speed</a></li>
+<li><a href="#org-use-keyboard-driven-workflow">Use Keyboard-driven Workflow</a></li>
+</ul>
+<li><a href="#org-troubleshooting">Troubleshooting</a></li>
+<ul>
+<li><a href="#org-template-not-appearing-in-picker">Template Not Appearing in Picker</a></li>
+<li><a href="#org-capture-file-not-created">Capture File Not Created</a></li>
+<li><a href="#org-template-placeholders-not-expanding">Template Placeholders Not Expanding</a></li>
+<li><a href="#org-cursor-position-not-working">Cursor Position (`%?&#39;) Not Working</a></li>
+<li><a href="#org-date-tree-not-creating-structure">Date Tree Not Creating Structure</a></li>
+</ul>
+<li><a href="#org-related-features">Related Features</a></li>
+<ul>
+<li><a href="#org-journal-integration">Journal Integration</a></li>
+<li><a href="#org-agenda-integration">Agenda Integration</a></li>
+<li><a href="#org-database-search">Database Search</a></li>
+<li><a href="#org-quick-links">Quick Links</a></li>
+</ul>
+<li><a href="#org-advanced-topics">Advanced Topics</a></li>
+<ul>
+<li><a href="#org-template-hooks-future">Template Hooks (Future)</a></li>
+<li><a href="#org-dynamic-template-selection-future">Dynamic Template Selection (Future)</a></li>
+<li><a href="#org-template-inheritance-future">Template Inheritance (Future)</a></li>
+</ul>
+<li><a href="#org-appendix">Appendix</a></li>
+<ul>
+<li><a href="#org-complete-template-reference">Complete Template Reference</a></li>
+<li><a href="#org-placeholder-reference">Placeholder Reference</a></li>
+<li><a href="#org-target-type-reference">Target Type Reference</a></li>
+<li><a href="#org-example-templates-library">Example Templates Library</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
+<p>The Scimax Capture system provides a quick and efficient way to capture notes, tasks, ideas, and snippets without interrupting your workflow. Inspired by Emacs org-capture, it allows you to define templates that automatically format and file your captured content to the right location.</p>
+
+<div id="org-what-is-capture" class="org-section org-level-2">
+<h2>✅ What is Capture?</h2>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
+<p>Capture is a fast note-taking system that:</p>
+
+<ul>
+<li><p>Collects information quickly with minimal keystrokes</p>
+</li>
+<li><p>Uses templates to structure your notes consistently</p>
+</li>
+<li><p>Automatically files content to the appropriate location</p>
+</li>
+<li><p>Supports various capture types (TODOs, notes, journal entries, code snippets, etc.)</p>
+</li>
+<li><p>Includes context from where you initiated the capture (links, selection, clipboard)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-key-features" class="org-section org-level-2">
+<h2>✅ Key Features</h2>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
+<ul>
+<li><p><strong>Template-based capture</strong>: Define reusable templates for different types of content</p>
+</li>
+<li><p><strong>Flexible targeting</strong>: Capture to end of file, under specific headlines, or in date trees</p>
+</li>
+<li><p><strong>Context awareness</strong>: Automatically includes links to source location, timestamps, and selected text</p>
+</li>
+<li><p><strong>Quick capture commands</strong>: Fast shortcuts for common captures (TODO, note)</p>
+</li>
+<li><p><strong>Preview before saving</strong>: Optional preview of captured content before filing</p>
+</li>
+<li><p><strong>Custom variables</strong>: Rich template language with placeholders, timestamps, and prompts</p>
+</li>
+</ul>
+
+</div>
+<div id="org-philosophy" class="org-section org-level-2">
+<h2>✅ Philosophy</h2>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
+<p>The capture system follows the principle of &quot;capture first, organize later.&quot; Instead of interrupting your flow to decide where something belongs or how to format it, you simply invoke a capture template and let the system handle the details. This reduces friction and helps you maintain focus on your primary task.</p>
+
+</div>
+</div>
+<div id="org-getting-started" class="org-section org-level-1">
+<h1>✅ Getting Started</h1>
+<p>CLOSED: [2026-01-16 Fri 21:09]</p>
+
+<div id="org-your-first-capture" class="org-section org-level-2">
+<h2>✅ Your First Capture</h2>
+<p>CLOSED: [2026-01-18 Sun 09:54]</p>
+
+<p>The quickest way to capture a TODO is:</p>
+
+<ol>
+<li><p>Press <kbd>C-c c</kbd> (or run <kbd>Scimax: Capture</kbd>)</p>
+</li>
+<li><p>Select the &quot;Todo&quot; template (or press `t&#39;)</p>
+</li>
+<li><p>Enter your task description</p>
+</li>
+<li><p>Press Enter</p>
+</li>
+</ol>
+
+<p>Your TODO is now filed to `todo.org&#39; without leaving your current context.</p>
+
+</div>
+<div id="org-quick-todo-capture" class="org-section org-level-2">
+<h2>Quick TODO Capture</h2>
+<p>For even faster TODO capture, use the dedicated quick capture command:</p>
+
+<ol>
+<li><p>Press <kbd>C-c t</kbd> (or run <kbd>Scimax: Quick Capture TODO</kbd>)</p>
+</li>
+<li><p>Type your task</p>
+</li>
+<li><p>Press Enter</p>
+</li>
+</ol>
+
+<p>This bypasses the template picker and goes straight to TODO capture.</p>
+
+</div>
+<div id="org-capturing-with-context" class="org-section org-level-2">
+<h2>Capturing with Context</h2>
+<p>When you invoke capture with text selected:</p>
+
+<ol>
+<li><p>Select some text in your editor</p>
+</li>
+<li><p>Press `C-c c&#39;</p>
+</li>
+<li><p>Choose a template (e.g., &quot;Code Snippet&quot;)</p>
+</li>
+<li><p>The selected text is automatically included in your capture</p>
+</li>
+</ol>
+
+<p>The capture system also includes a link back to where you initiated the capture, making it easy to return to context later.</p>
+
+</div>
+</div>
+<div id="org-capture-templates" class="org-section org-level-1">
+<h1>Capture Templates</h1>
+<div id="org-built-in-templates" class="org-section org-level-2">
+<h2>Built-in Templates</h2>
+<p>Scimax comes with several built-in templates:</p>
+
+<div id="org-todo-template-t" class="org-section org-level-3">
+<h3>Todo Template (`t&#39;)</h3>
+<p>Captures a TODO item to <kbd>todo.org</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Task description</code></pre>
+</div>
+
+</div>
+<div id="org-note-template-n" class="org-section org-level-3">
+<h3>Note Template (`n&#39;)</h3>
+<p>Captures a quick note to <kbd>notes.org</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Note title
+[2026-01-13 Mon 14:30]
+
+Note content here...</code></pre>
+</div>
+
+</div>
+<div id="org-journal-template-j" class="org-section org-level-3">
+<h3>Journal Template (`j&#39;)</h3>
+<p>Captures a journal entry to <kbd>journal.org</kbd> in a date tree:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* 2026
+,** 2026-01 January
+,*** 2026-01-13 Monday
+,**** [2026-01-13 Mon 14:30] Entry title
+Entry content...</code></pre>
+</div>
+
+</div>
+<div id="org-meeting-template-m" class="org-section org-level-3">
+<h3>Meeting Template (`m&#39;)</h3>
+<p>Captures structured meeting notes to <kbd>meetings.org</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Meeting: Subject
+&lt;2026-01-13 Mon 14:00&gt;
+,** Attendees
+Names...
+,** Agenda
+
+,** Notes
+
+,** Action Items</code></pre>
+</div>
+
+</div>
+<div id="org-code-snippet-template-s" class="org-section org-level-3">
+<h3>Code Snippet Template (`s&#39;)</h3>
+<p>Captures code snippets to <kbd>snippets.org</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Description
+:PROPERTIES:
+:CREATED: [2026-01-13 Mon 14:30]
+:SOURCE: [[file:/path/to/source.ts::42]]
+:END:
+
+,#+BEGIN_SRC python
+selected code here
+,#+END_SRC</code></pre>
+</div>
+
+</div>
+<div id="org-bookmark-template-b" class="org-section org-level-3">
+<h3>Bookmark Template (`b&#39;)</h3>
+<p>Saves bookmarks to <kbd>bookmarks.org</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* [[https://example.com][Page Title]]
+[2026-01-13 Mon 14:30]
+
+Optional notes about the bookmark...</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-viewing-all-templates" class="org-section org-level-2">
+<h2>Viewing All Templates</h2>
+<p>To see all available templates:</p>
+
+<ul>
+<li><p>Run <kbd>Scimax: List Capture Templates</kbd></p>
+</li>
+<li><p>Or press `C-c c&#39; to see the template picker</p>
+</li>
+</ul>
+
+<p>Each template shows:</p>
+
+<ul>
+<li><p>Its key (single letter shortcut)</p>
+</li>
+<li><p>Template name and description</p>
+</li>
+<li><p>Target file</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-creating-custom-templates" class="org-section org-level-1">
+<h1>Creating Custom Templates</h1>
+<div id="org-using-the-template-creator" class="org-section org-level-2">
+<h2>Using the Template Creator</h2>
+<p>The easiest way to create a template is with the interactive creator:</p>
+
+<ol>
+<li><p>Run <kbd>Scimax: Create Capture Template</kbd></p>
+</li>
+<li><p>Enter a key (e.g., `r&#39; for &quot;Research note&quot;)</p>
+</li>
+<li><p>Enter a name (e.g., &quot;Research Note&quot;)</p>
+</li>
+<li><p>Specify the target file (e.g., `research.org&#39;)</p>
+</li>
+<li><p>Choose where to insert (end of file, under headline, date tree)</p>
+</li>
+<li><p>Enter the template content</p>
+</li>
+</ol>
+
+<p>The template is saved to your VS Code settings and immediately available.</p>
+
+</div>
+<div id="org-manual-template-configuration" class="org-section org-level-2">
+<h2>Manual Template Configuration</h2>
+<p>You can also define templates directly in <kbd>settings.json</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;r&quot;,
+      &quot;name&quot;: &quot;Research Note&quot;,
+      &quot;description&quot;: &quot;Capture research findings&quot;,
+      &quot;file&quot;: &quot;research.org&quot;,
+      &quot;template&quot;: &quot;* %^{Topic}\n%U\n\n%?&quot;,
+      &quot;target&quot;: {
+        &quot;type&quot;: &quot;file+headline&quot;,
+        &quot;headline&quot;: &quot;Research Notes&quot;
+      }
+    }
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-template-structure" class="org-section org-level-2">
+<h2>Template Structure</h2>
+<p>Each template has these properties:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Property</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">key</code></td><td>string</td><td>Yes</td><td>Single character or short key</td></tr>
+<tr><td><code class="verbatim">name</code></td><td>string</td><td>Yes</td><td>Display name</td></tr>
+<tr><td><code class="verbatim">description</code></td><td>string</td><td>No</td><td>Longer description</td></tr>
+<tr><td><code class="verbatim">file</code></td><td>string</td><td>Yes</td><td>Target file path</td></tr>
+<tr><td><code class="verbatim">template</code></td><td>string</td><td>Yes</td><td>Template content with placeholders</td></tr>
+<tr><td><code class="verbatim">target</code></td><td>object</td><td>No</td><td>Where to insert content (see below)</td></tr>
+<tr><td><code class="verbatim">properties</code></td><td>object</td><td>No</td><td>Properties to add to entry</td></tr>
+<tr><td><code class="verbatim">tags</code></td><td>array</td><td>No</td><td>Tags to add to entry</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-template-syntax" class="org-section org-level-1">
+<h1>Template Syntax</h1>
+<p>Templates use a powerful placeholder system to insert dynamic content.</p>
+
+<div id="org-basic-placeholders" class="org-section org-level-2">
+<h2>Basic Placeholders</h2>
+<table class="org-table">
+<thead>
+<tr><th>Placeholder</th><th>Description</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">%?</code></td><td>Final cursor position</td><td><code class="verbatim">* TODO Task%?</code></td></tr>
+<tr><td><code class="verbatim">%i</code></td><td>Initial content (selection or clipboard)</td><td><code class="verbatim">Description: %i</code></td></tr>
+<tr><td><code class="verbatim">%t</code></td><td>Date (inactive timestamp)</td><td><code class="verbatim">[2026-01-13 Mon]</code></td></tr>
+<tr><td><code class="verbatim">%T</code></td><td>Date and time (active timestamp)</td><td><code class="verbatim">&lt;2026-01-13 Mon 14:30&gt;</code></td></tr>
+<tr><td><code class="verbatim">%u</code></td><td>Date (inactive timestamp)</td><td><code class="verbatim">[2026-01-13 Mon]</code></td></tr>
+<tr><td><code class="verbatim">%U</code></td><td>Date and time (inactive timestamp)</td><td><code class="verbatim">[2026-01-13 Mon 14:30]</code></td></tr>
+<tr><td><code class="verbatim">%n</code></td><td>User name</td><td><code class="verbatim">john</code></td></tr>
+<tr><td><code class="verbatim">%f</code></td><td>Source file name</td><td><code class="verbatim">source.ts</code></td></tr>
+<tr><td><code class="verbatim">%F</code></td><td>Source file full path</td><td><code class="verbatim">/path/to/source.ts</code></td></tr>
+<tr><td><code class="verbatim">%%</code></td><td>Literal percent sign</td><td><code class="verbatim">%</code></td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-interactive-prompts" class="org-section org-level-2">
+<h2>Interactive Prompts</h2>
+<table class="org-table">
+<thead>
+<tr><th>Placeholder</th><th>Description</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">%^{prompt}</code></td><td>Prompt for input</td><td><code class="verbatim">%^{Task description}</code></td></tr>
+<tr><td><code class="verbatim">%^{prompt\vert{}default}</code></td><td>Prompt with default value</td><td><code class="verbatim">%^{Priority\vert{}HIGH}</code></td></tr>
+<tr><td><code class="verbatim">%^t</code></td><td>Prompt for date</td><td>Asks for date input</td></tr>
+<tr><td><code class="verbatim">%^T</code></td><td>Prompt for date and time</td><td>Asks for date/time input</td></tr>
+<tr><td><code class="verbatim">%^g</code></td><td>Prompt for tags</td><td>Prompts for comma-separated tags</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-link-placeholders" class="org-section org-level-2">
+<h2>Link Placeholders</h2>
+<table class="org-table">
+<thead>
+<tr><th>Placeholder</th><th>Description</th><th>Result</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">%a</code></td><td>Annotation (link to source)</td><td><code class="verbatim">[[file:/path/to/source.ts::42]]</code></td></tr>
+<tr><td><code class="verbatim">%A</code></td><td>Annotation with description</td><td><code class="verbatim">[[file:/path/to/source.ts::42][source.ts:42]]</code></td></tr>
+<tr><td><code class="verbatim">%l</code></td><td>Literal link</td><td><code class="verbatim">file:/path/to/source.ts::42</code></td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-expression-placeholders" class="org-section org-level-2">
+<h2>Expression Placeholders</h2>
+<table class="org-table">
+<thead>
+<tr><th>Placeholder</th><th>Description</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">%(format-time-string &quot;%Y-%m&quot;)</code></td><td>Custom date format</td><td><code class="verbatim">2026-01</code></td></tr>
+<tr><td><code class="verbatim">%(current-time)</code></td><td>ISO timestamp</td><td><code class="verbatim">2026-01-13T14:30:00.000Z</code></td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-examples" class="org-section org-level-2">
+<h2>Examples</h2>
+<div id="org-simple-todo-with-prompt" class="org-section org-level-3">
+<h3>Simple TODO with prompt</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO %^{Task}</code></pre>
+</div>
+
+<p>When captured, prompts for &quot;Task&quot; and creates:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO Write documentation</code></pre>
+</div>
+
+</div>
+<div id="org-note-with-timestamp-and-link-back-to-source" class="org-section org-level-3">
+<h3>Note with timestamp and link back to source</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* %^{Title}
+%U
+
+%i
+
+Source: %a</code></pre>
+</div>
+
+<p>Creates:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Meeting notes
+[2026-01-13 Mon 14:30]
+
+Discussed project timeline
+
+Source: [[file:/home/user/project.org::25]]</code></pre>
+</div>
+
+</div>
+<div id="org-meeting-template-with-multiple-prompts" class="org-section org-level-3">
+<h3>Meeting template with multiple prompts</h3>
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* %^{Meeting subject}
+%T
+,** Attendees
+%^{Attendees}
+,** Agenda
+%?</code></pre>
+</div>
+
+<p>Prompts for subject and attendees, places cursor under Agenda.</p>
+
+</div>
+</div>
+</div>
+<div id="org-capture-targets" class="org-section org-level-1">
+<h1>Capture Targets</h1>
+<p>Capture targets determine where your captured content is inserted.</p>
+
+<div id="org-file-target-file" class="org-section org-level-2">
+<h2>File Target (`file&#39;)</h2>
+<p>Appends to the end of the file.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file&quot;
+  }
+}</code></pre>
+</div>
+
+<p>With <kbd>prepend: true</kbd>, inserts at the beginning (after file-level keywords):</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file&quot;,
+    &quot;prepend&quot;: true
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-headline-target-file-headline" class="org-section org-level-2">
+<h2>Headline Target (<kbd>file+headline</kbd>)</h2>
+<p>Inserts under a specific headline. If the headline doesn&#39;t exist, it&#39;s created.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+headline&quot;,
+    &quot;headline&quot;: &quot;Inbox&quot;
+  }
+}</code></pre>
+</div>
+
+<p>This finds or creates a headline <kbd>* Inbox</kbd> and appends content as a child.</p>
+
+<p>With <kbd>prepend: true</kbd>, inserts right after the headline:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+headline&quot;,
+    &quot;headline&quot;: &quot;Inbox&quot;,
+    &quot;prepend&quot;: true
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-date-tree-target-file-datetree" class="org-section org-level-2">
+<h2>Date Tree Target (<kbd>file+datetree</kbd>)</h2>
+<p>Creates a hierarchical date tree structure:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* 2026
+,** 2026-01 January
+,*** 2026-01-13 Monday
+,**** Your captured content here</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+datetree&quot;
+  }
+}</code></pre>
+</div>
+
+<p>Perfect for journal entries and time-based organization.</p>
+
+</div>
+<div id="org-default-target" class="org-section org-level-2">
+<h2>Default Target</h2>
+<p>If no target is specified, content is appended to the end of the file:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;file&quot;: &quot;notes.org&quot;,
+  &quot;template&quot;: &quot;* %^{Note}\n%?&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-running-capture" class="org-section org-level-1">
+<h1>Running Capture</h1>
+<div id="org-capture-command" class="org-section org-level-2">
+<h2>Capture Command</h2>
+<p>The main capture command opens the template picker:</p>
+
+<ul>
+<li><p><strong>Command</strong>: <kbd>Scimax: Capture</kbd></p>
+</li>
+<li><p><strong>Keybinding</strong>: <kbd>C-c c</kbd></p>
+</li>
+</ul>
+
+<p>This shows all available templates. Select one to begin capture.</p>
+
+</div>
+<div id="org-capture-by-key" class="org-section org-level-2">
+<h2>Capture by Key</h2>
+<p>If you know the template key, you can capture directly:</p>
+
+<ul>
+<li><p><strong>Command</strong>: <kbd>Scimax: Capture by Key</kbd></p>
+</li>
+<li><p>Enter the template key (e.g., `t&#39; for TODO)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-quick-capture-commands" class="org-section org-level-2">
+<h2>Quick Capture Commands</h2>
+<p>For common captures, use dedicated quick capture commands:</p>
+
+<div id="org-quick-todo" class="org-section org-level-3">
+<h3>Quick TODO</h3>
+<ul>
+<li><p><strong>Command</strong>: <kbd>Scimax: Quick Capture TODO</kbd></p>
+</li>
+<li><p><strong>Keybinding</strong>: <kbd>C-c t</kbd></p>
+</li>
+</ul>
+
+<p>Directly captures a TODO without showing the template picker.</p>
+
+</div>
+<div id="org-quick-note" class="org-section org-level-3">
+<h3>Quick Note</h3>
+<ul>
+<li><p><strong>Command</strong>: <kbd>Scimax: Quick Capture Note</kbd></p>
+</li>
+</ul>
+
+<p>Directly captures a note.</p>
+
+</div>
+</div>
+<div id="org-capture-process" class="org-section org-level-2">
+<h2>Capture Process</h2>
+<ol>
+<li><p><strong>Invoke capture</strong>: Press <kbd>C-c c</kbd> or run a quick capture command</p>
+</li>
+<li><p><strong>Select template</strong>: Choose from the picker (or skip if using quick capture)</p>
+</li>
+<li><p><strong>Fill prompts</strong>: Enter values for any <kbd>%^{prompt}</kbd> placeholders</p>
+</li>
+<li><p><strong>Preview</strong> (optional): Review the captured content</p>
+</li>
+<li><p><strong>Confirm</strong>: Press &quot;Capture&quot; to file the content</p>
+</li>
+</ol>
+
+<p>The captured content is inserted at the target location, and you receive a confirmation message.</p>
+
+</div>
+</div>
+<div id="org-advanced-capture-features" class="org-section org-level-1">
+<h1>Advanced Capture Features</h1>
+<div id="org-capturing-with-selection" class="org-section org-level-2">
+<h2>Capturing with Selection</h2>
+<p>When you have text selected:</p>
+
+<ol>
+<li><p>Select text in the editor</p>
+</li>
+<li><p>Press `C-c c&#39;</p>
+</li>
+<li><p>Choose a template</p>
+</li>
+</ol>
+
+<p>The selected text is available as <kbd>%i</kbd> in your template. Perfect for:</p>
+
+<ul>
+<li><p>Capturing code snippets</p>
+</li>
+<li><p>Quoting text</p>
+</li>
+<li><p>Collecting research excerpts</p>
+</li>
+</ul>
+
+</div>
+<div id="org-capturing-with-context-links" class="org-section org-level-2">
+<h2>Capturing with Context Links</h2>
+<p>Templates can include links back to where you initiated the capture:</p>
+
+<ul>
+<li><p>`%a&#39; creates a link to the source location</p>
+</li>
+<li><p><kbd>%A</kbd> creates a link with description (filename:line)</p>
+</li>
+<li><p>`%l&#39; creates a literal link string</p>
+</li>
+</ul>
+
+<p>Example template:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* %^{Note}
+%U
+
+%i
+
+Source: %A</code></pre>
+</div>
+
+<p>Creates:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Important finding
+[2026-01-13 Mon 14:30]
+
+Selected text here
+
+Source: [[file:/home/user/research.org::42][research.org:42]]</code></pre>
+</div>
+
+</div>
+<div id="org-capture-preview" class="org-section org-level-2">
+<h2>Capture Preview</h2>
+<p>Enable preview to review content before filing:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.showPreview&quot;: true
+}</code></pre>
+</div>
+
+<p>When enabled, you can:</p>
+
+<ul>
+<li><p>See the expanded template content</p>
+</li>
+<li><p>Review formatting and placement</p>
+</li>
+<li><p>Cancel or confirm the capture</p>
+</li>
+</ul>
+
+</div>
+<div id="org-auto-open-after-capture" class="org-section org-level-2">
+<h2>Auto-open After Capture</h2>
+<p>Configure whether to open the target file after capture:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.openAfterCapture&quot;: true
+}</code></pre>
+</div>
+
+<p>When enabled, the target file opens and the cursor jumps to the captured content.</p>
+
+</div>
+</div>
+<div id="org-capture-to-journal" class="org-section org-level-1">
+<h1>Capture to Journal</h1>
+<p>Capture integrates seamlessly with the journal system.</p>
+
+<div id="org-journal-capture-template" class="org-section org-level-2">
+<h2>Journal Capture Template</h2>
+<p>The built-in journal template (<kbd>j</kbd>) uses date tree targeting:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;j&quot;,
+  &quot;name&quot;: &quot;Journal&quot;,
+  &quot;file&quot;: &quot;journal.org&quot;,
+  &quot;template&quot;: &quot;* %U %^{Entry title}\n%?&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+datetree&quot;
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-custom-journal-captures" class="org-section org-level-2">
+<h2>Custom Journal Captures</h2>
+<p>Create specialized journal capture templates:</p>
+
+<div id="org-daily-reflection" class="org-section org-level-3">
+<h3>Daily Reflection</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;d&quot;,
+  &quot;name&quot;: &quot;Daily Reflection&quot;,
+  &quot;file&quot;: &quot;journal.org&quot;,
+  &quot;template&quot;: &quot;* Daily Reflection\n** What went well\n%^{Wins}\n** What to improve\n%^{Improvements}\n** Tomorrow&#39;s focus\n%?&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+datetree&quot;
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-quick-log-entry" class="org-section org-level-3">
+<h3>Quick Log Entry</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;l&quot;,
+  &quot;name&quot;: &quot;Log Entry&quot;,
+  &quot;file&quot;: &quot;journal.org&quot;,
+  &quot;template&quot;: &quot;* %U - %^{What happened?}&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+datetree&quot;
+  }
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-integrating-with-journal-directory" class="org-section org-level-2">
+<h2>Integrating with Journal Directory</h2>
+<p>You can point capture templates to your journal directory:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.defaultDirectory&quot;: &quot;~/scimax-journal&quot;,
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;j&quot;,
+      &quot;name&quot;: &quot;Journal Entry&quot;,
+      &quot;file&quot;: &quot;2026/01/13/2026-01-13.org&quot;,
+      &quot;template&quot;: &quot;* %T %^{Entry}\n%?&quot;
+    }
+  ]
+}</code></pre>
+</div>
+
+<p>Or use the journal&#39;s date structure dynamically with date tree targeting.</p>
+
+</div>
+</div>
+<div id="org-capture-to-inbox" class="org-section org-level-1">
+<h1>Capture to Inbox</h1>
+<p>A common GTD workflow uses an &quot;inbox&quot; for quick captures that are processed later.</p>
+
+<div id="org-inbox-setup" class="org-section org-level-2">
+<h2>Inbox Setup</h2>
+<ol>
+<li><p>Create an inbox file (`inbox.org&#39;)</p>
+</li>
+<li><p>Define a capture template targeting it</p>
+</li>
+</ol>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;i&quot;,
+  &quot;name&quot;: &quot;Inbox&quot;,
+  &quot;file&quot;: &quot;inbox.org&quot;,
+  &quot;template&quot;: &quot;* %^{Quick capture}\n%U\n%?\n\nSource: %a&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-inbox-with-categories" class="org-section org-level-2">
+<h2>Inbox with Categories</h2>
+<p>Use headlines to organize inbox items:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;it&quot;,
+  &quot;name&quot;: &quot;Inbox - Task&quot;,
+  &quot;file&quot;: &quot;inbox.org&quot;,
+  &quot;template&quot;: &quot;* TODO %^{Task}\n%U&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+headline&quot;,
+    &quot;headline&quot;: &quot;Tasks&quot;
+  }
+}</code></pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;ii&quot;,
+  &quot;name&quot;: &quot;Inbox - Idea&quot;,
+  &quot;file&quot;: &quot;inbox.org&quot;,
+  &quot;template&quot;: &quot;* %^{Idea}\n%U\n%?&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+headline&quot;,
+    &quot;headline&quot;: &quot;Ideas&quot;
+  }
+}</code></pre>
+</div>
+
+<p>Creates structure:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* Tasks
+,** TODO Review pull request
+[2026-01-13 Mon 14:30]
+
+,* Ideas
+,** Build automated testing framework
+[2026-01-13 Mon 14:35]</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-configuration" class="org-section org-level-1">
+<h1>Configuration</h1>
+<div id="org-settings-overview" class="org-section org-level-2">
+<h2>Settings Overview</h2>
+<table class="org-table">
+<thead>
+<tr><th>Setting</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">scimax.capture.templates</code></td><td>array</td><td><code class="verbatim">[ ]</code></td><td>Custom capture templates</td></tr>
+<tr><td><code class="verbatim">scimax.capture.defaultDirectory</code></td><td>string</td><td><code class="verbatim">&quot;&quot;</code></td><td>Default directory for capture files</td></tr>
+<tr><td><code class="verbatim">scimax.capture.showPreview</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Show preview before capture</td></tr>
+<tr><td><code class="verbatim">scimax.capture.openAfterCapture</code></td><td>boolean</td><td><code class="verbatim">true</code></td><td>Open file after capture</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-default-directory" class="org-section org-level-2">
+<h2>Default Directory</h2>
+<p>Set a default directory for all capture files:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.defaultDirectory&quot;: &quot;~/org&quot;
+}</code></pre>
+</div>
+
+<p>Template file paths are resolved relative to this directory:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.defaultDirectory&quot;: &quot;~/org&quot;,
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;t&quot;,
+      &quot;name&quot;: &quot;Todo&quot;,
+      &quot;file&quot;: &quot;todo.org&quot;,  // Resolves to ~/org/todo.org
+      &quot;template&quot;: &quot;* TODO %^{Task}\n%?&quot;
+    }
+  ]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-file-path-resolution" class="org-section org-level-2">
+<h2>File Path Resolution</h2>
+<p>Capture resolves file paths in this order:</p>
+
+<ol>
+<li><p><strong>Absolute paths</strong>: <kbd>/home/user/notes/todo.org</kbd> - used as-is</p>
+</li>
+<li><p><strong>Home directory</strong>: `<kbd>/org/todo.org</kbd> - expands `&#39;&#39; to home directory</p>
+</li>
+<li><p><strong>Default directory</strong>: <kbd>todo.org</kbd> - resolves relative to <kbd>defaultDirectory</kbd></p>
+</li>
+<li><p><strong>Workspace</strong>: <kbd>todo.org</kbd> - resolves relative to first workspace folder</p>
+</li>
+</ol>
+
+</div>
+<div id="org-configuring-preview" class="org-section org-level-2">
+<h2>Configuring Preview</h2>
+<p>Control whether to show preview before saving:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.showPreview&quot;: true
+}</code></pre>
+</div>
+
+<p>When enabled:</p>
+
+<ul>
+<li><p>Preview shows the expanded template content</p>
+</li>
+<li><p>You can choose &quot;Capture&quot;, &quot;Preview&quot;, or &quot;Cancel&quot;</p>
+</li>
+<li><p>Preview opens content in a temporary editor</p>
+</li>
+</ul>
+
+<p>When disabled:</p>
+
+<ul>
+<li><p>Content is captured immediately</p>
+</li>
+<li><p>Faster workflow for trusted templates</p>
+</li>
+</ul>
+
+</div>
+<div id="org-auto-open-behavior" class="org-section org-level-2">
+<h2>Auto-open Behavior</h2>
+<p>Control whether the target file opens after capture:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.openAfterCapture&quot;: true
+}</code></pre>
+</div>
+
+<p>When enabled:</p>
+
+<ul>
+<li><p>Target file opens in editor</p>
+</li>
+<li><p>Cursor jumps to captured content</p>
+</li>
+<li><p>Useful for immediately expanding on the capture</p>
+</li>
+</ul>
+
+<p>When disabled:</p>
+
+<ul>
+<li><p>Capture happens in background</p>
+</li>
+<li><p>You stay in your current file</p>
+</li>
+<li><p>Faster workflow for quick captures</p>
+</li>
+</ul>
+
+</div>
+<div id="org-complete-example-configuration" class="org-section org-level-2">
+<h2>Complete Example Configuration</h2>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.defaultDirectory&quot;: &quot;~/org&quot;,
+  &quot;scimax.capture.showPreview&quot;: false,
+  &quot;scimax.capture.openAfterCapture&quot;: false,
+  &quot;scimax.capture.templates&quot;: [
+    {
+      &quot;key&quot;: &quot;t&quot;,
+      &quot;name&quot;: &quot;Todo&quot;,
+      &quot;description&quot;: &quot;Quick TODO capture&quot;,
+      &quot;file&quot;: &quot;todo.org&quot;,
+      &quot;template&quot;: &quot;* TODO %^{Task}\n%U\n%?&quot;
+    },
+    {
+      &quot;key&quot;: &quot;n&quot;,
+      &quot;name&quot;: &quot;Note&quot;,
+      &quot;file&quot;: &quot;notes.org&quot;,
+      &quot;template&quot;: &quot;* %^{Title}\n%U\n\n%?\n\nSource: %a&quot;,
+      &quot;target&quot;: {
+        &quot;type&quot;: &quot;file+headline&quot;,
+        &quot;headline&quot;: &quot;Quick Notes&quot;
+      }
+    },
+    {
+      &quot;key&quot;: &quot;j&quot;,
+      &quot;name&quot;: &quot;Journal&quot;,
+      &quot;file&quot;: &quot;journal.org&quot;,
+      &quot;template&quot;: &quot;* %U %^{Entry}\n%?&quot;,
+      &quot;target&quot;: {
+        &quot;type&quot;: &quot;file+datetree&quot;
+      }
+    },
+    {
+      &quot;key&quot;: &quot;m&quot;,
+      &quot;name&quot;: &quot;Meeting&quot;,
+      &quot;file&quot;: &quot;meetings.org&quot;,
+      &quot;template&quot;: &quot;* %^{Subject}\n%T\n** Attendees\n%^{Attendees}\n** Notes\n%?\n** Action Items\n&quot;,
+      &quot;properties&quot;: {
+        &quot;MEETING_DATE&quot;: &quot;%t&quot;
+      },
+      &quot;tags&quot;: [&quot;meeting&quot;]
+    }
+  ]
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-common-capture-workflows" class="org-section org-level-1">
+<h1>Common Capture Workflows</h1>
+<div id="org-gtd-workflow" class="org-section org-level-2">
+<h2>GTD Workflow</h2>
+<div id="org-inbox-processing" class="org-section org-level-3">
+<h3>Inbox Processing</h3>
+<ol>
+<li><p><strong>Quick capture everything</strong>: Use <kbd>C-c c</kbd> → <kbd>i</kbd> to capture to inbox</p>
+</li>
+<li><p><strong>Process inbox regularly</strong>: Review inbox.org daily</p>
+</li>
+<li><p><strong>Refile to projects</strong>: Move items to appropriate project files</p>
+</li>
+<li><p><strong>Archive processed items</strong>: Keep inbox clean</p>
+</li>
+</ol>
+
+</div>
+<div id="org-inbox-template" class="org-section org-level-3">
+<h3>Inbox Template</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;i&quot;,
+  &quot;name&quot;: &quot;Inbox&quot;,
+  &quot;file&quot;: &quot;inbox.org&quot;,
+  &quot;template&quot;: &quot;* %^{Capture}\n%U\n%?\n\nContext: %a&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-research-workflow" class="org-section org-level-2">
+<h2>Research Workflow</h2>
+<div id="org-collect-sources" class="org-section org-level-3">
+<h3>Collect Sources</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;r&quot;,
+  &quot;name&quot;: &quot;Research Source&quot;,
+  &quot;file&quot;: &quot;research.org&quot;,
+  &quot;template&quot;: &quot;* %^{Source}\n:PROPERTIES:\n:URL: %^{URL}\n:ADDED: %U\n:END:\n\n** Summary\n%?\n\n** Quotes\n%i&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+headline&quot;,
+    &quot;headline&quot;: &quot;Sources&quot;
+  }
+}</code></pre>
+</div>
+
+<p>Usage:</p>
+
+<ol>
+<li><p>Select a quote from a paper/article</p>
+</li>
+<li><p>Press `C-c c&#39; → `r&#39;</p>
+</li>
+<li><p>Enter source name and URL</p>
+</li>
+<li><p>The quote is captured in the &quot;Quotes&quot; section</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-code-documentation-workflow" class="org-section org-level-2">
+<h2>Code Documentation Workflow</h2>
+<div id="org-capture-code-examples" class="org-section org-level-3">
+<h3>Capture Code Examples</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;c&quot;,
+  &quot;name&quot;: &quot;Code Example&quot;,
+  &quot;file&quot;: &quot;code-snippets.org&quot;,
+  &quot;template&quot;: &quot;* %^{Description}\n:PROPERTIES:\n:LANGUAGE: %^{Language|typescript|python|javascript}\n:SOURCE: %a\n:CREATED: %U\n:END:\n\n#+BEGIN_SRC %\\2\n%i\n#+END_SRC\n\n** Notes\n%?&quot;,
+  &quot;tags&quot;: [&quot;code&quot;, &quot;example&quot;]
+}</code></pre>
+</div>
+
+<p>Usage:</p>
+
+<ol>
+<li><p>Select code in editor</p>
+</li>
+<li><p>Press `C-c c&#39; → `c&#39;</p>
+</li>
+<li><p>Describe the code and specify language</p>
+</li>
+<li><p>Creates a documented code snippet with link back to source</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-meeting-notes-workflow" class="org-section org-level-2">
+<h2>Meeting Notes Workflow</h2>
+<div id="org-before-meeting" class="org-section org-level-3">
+<h3>Before Meeting</h3>
+<p>Capture meeting agenda:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;ma&quot;,
+  &quot;name&quot;: &quot;Meeting Agenda&quot;,
+  &quot;file&quot;: &quot;meetings.org&quot;,
+  &quot;template&quot;: &quot;* MEETING %^{Subject}\nSCHEDULED: %^t\n** Attendees\n%^{Attendees}\n** Agenda\n%?\n** Notes\n\n** Action Items\n&quot;,
+  &quot;properties&quot;: {
+    &quot;MEETING_TYPE&quot;: &quot;%^{Type|standup|planning|review|1on1}&quot;
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-during-meeting" class="org-section org-level-3">
+<h3>During Meeting</h3>
+<p>Use quick note capture for rapid notes:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;mn&quot;,
+  &quot;name&quot;: &quot;Meeting Note&quot;,
+  &quot;file&quot;: &quot;meetings.org&quot;,
+  &quot;template&quot;: &quot;* %T - %^{Note}\n%?&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+headline&quot;,
+    &quot;headline&quot;: &quot;Meeting Notes&quot;
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-after-meeting" class="org-section org-level-3">
+<h3>After Meeting</h3>
+<p>Capture action items:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;mt&quot;,
+  &quot;name&quot;: &quot;Meeting Action Item&quot;,
+  &quot;file&quot;: &quot;todo.org&quot;,
+  &quot;template&quot;: &quot;* TODO %^{Action Item}\nDEADLINE: %^t\n:PROPERTIES:\n:MEETING: %^{Meeting}\n:ASSIGNED: %^{Assignee}\n:END:\n%?&quot;,
+  &quot;tags&quot;: [&quot;meeting-action&quot;]
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-daily-planning-workflow" class="org-section org-level-2">
+<h2>Daily Planning Workflow</h2>
+<div id="org-morning-review" class="org-section org-level-3">
+<h3>Morning Review</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;p&quot;,
+  &quot;name&quot;: &quot;Daily Plan&quot;,
+  &quot;file&quot;: &quot;journal.org&quot;,
+  &quot;template&quot;: &quot;* Daily Plan\n** Top 3 Priorities\n1. %^{Priority 1}\n2. %^{Priority 2}\n3. %^{Priority 3}\n** Schedule\n%?\n** Notes\n&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+datetree&quot;
+  }
+}</code></pre>
+</div>
+
+</div>
+<div id="org-evening-review" class="org-section org-level-3">
+<h3>Evening Review</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;dr&quot;,
+  &quot;name&quot;: &quot;Daily Review&quot;,
+  &quot;file&quot;: &quot;journal.org&quot;,
+  &quot;template&quot;: &quot;* Daily Review\n** Completed\n%^{What did you complete?}\n** Wins\n%^{What went well?}\n** Learn\n%^{What did you learn?}\n** Tomorrow\n%?&quot;,
+  &quot;target&quot;: {
+    &quot;type&quot;: &quot;file+datetree&quot;
+  }
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-knowledge-base-building" class="org-section org-level-2">
+<h2>Knowledge Base Building</h2>
+<div id="org-capture-learnings" class="org-section org-level-3">
+<h3>Capture Learnings</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;l&quot;,
+  &quot;name&quot;: &quot;Learning&quot;,
+  &quot;file&quot;: &quot;knowledge.org&quot;,
+  &quot;template&quot;: &quot;* %^{What did you learn?}\n:PROPERTIES:\n:TOPIC: %^{Topic|programming|design|business|other}\n:LEARNED: %U\n:SOURCE: %a\n:END:\n\n%?\n\n** Related\n&quot;,
+  &quot;tags&quot;: [&quot;learning&quot;]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-capture-questions" class="org-section org-level-3">
+<h3>Capture Questions</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;q&quot;,
+  &quot;name&quot;: &quot;Question&quot;,
+  &quot;file&quot;: &quot;questions.org&quot;,
+  &quot;template&quot;: &quot;* QUESTION %^{Question}\n%U\n\n** Context\n%?\n\n** Potential Answers\n\n** Resolution\n&quot;,
+  &quot;tags&quot;: [&quot;question&quot;]
+}</code></pre>
+</div>
+
+<p>When you find the answer, update the &quot;Resolution&quot; section.</p>
+
+</div>
+</div>
+</div>
+<div id="org-commands-reference" class="org-section org-level-1">
+<h1>Commands Reference</h1>
+<div id="org-main-commands" class="org-section org-level-2">
+<h2>Main Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th><th>Keybinding</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Scimax: Capture</code></td><td>Open capture template picker</td><td><code class="verbatim">C-c c</code></td></tr>
+<tr><td><code class="verbatim">Scimax: Capture by Key</code></td><td>Capture using template key</td><td></td></tr>
+<tr><td><code class="verbatim">Scimax: Quick Capture TODO</code></td><td>Fast TODO capture</td><td><code class="verbatim">C-c t</code></td></tr>
+<tr><td><code class="verbatim">Scimax: Quick Capture Note</code></td><td>Fast note capture</td><td></td></tr>
+<tr><td><code class="verbatim">Scimax: Create Capture Template</code></td><td>Create new template interactively</td><td></td></tr>
+<tr><td><code class="verbatim">Scimax: List Capture Templates</code></td><td>View all available templates</td><td></td></tr>
+<tr><td><code class="verbatim">Scimax: Configure Capture Templates</code></td><td>Open capture settings</td><td></td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-template-management-commands" class="org-section org-level-2">
+<h2>Template Management Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">Scimax: Create Capture Template</code></td><td>Interactive template creation</td></tr>
+<tr><td><code class="verbatim">Scimax: List Capture Templates</code></td><td>Show all templates</td></tr>
+<tr><td><code class="verbatim">Scimax: Configure Capture Templates</code></td><td>Open settings.json for capture</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-keybindings" class="org-section org-level-1">
+<h1>Keybindings</h1>
+<div id="org-default-keybindings" class="org-section org-level-2">
+<h2>Default Keybindings</h2>
+<table class="org-table">
+<thead>
+<tr><th>Keybinding</th><th>Action</th><th>Context</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">C-c c</code></td><td>Open capture picker</td><td>Global</td></tr>
+<tr><td><code class="verbatim">C-c t</code></td><td>Quick TODO capture</td><td>Global</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-custom-keybindings" class="org-section org-level-2">
+<h2>Custom Keybindings</h2>
+<p>Add custom keybindings in <kbd>keybindings.json</kbd> (<kbd>C-k C-s</kbd> to open):</p>
+
+<div id="org-quick-capture-note" class="org-section org-level-3">
+<h3>Quick Capture Note</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;ctrl+c n&quot;,
+  &quot;command&quot;: &quot;scimax.capture.note&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-capture-to-inbox" class="org-section org-level-3">
+<h3>Capture to Inbox</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;ctrl+c i&quot;,
+  &quot;command&quot;: &quot;scimax.captureByKey&quot;,
+  &quot;args&quot;: &quot;i&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-journal-capture" class="org-section org-level-3">
+<h3>Journal Capture</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;ctrl+c j&quot;,
+  &quot;command&quot;: &quot;scimax.captureByKey&quot;,
+  &quot;args&quot;: &quot;j&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-context-aware-keybindings" class="org-section org-level-2">
+<h2>Context-aware Keybindings</h2>
+<p>Capture only when editing org files:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;ctrl+c c&quot;,
+  &quot;command&quot;: &quot;scimax.capture&quot;,
+  &quot;when&quot;: &quot;editorLangId == org&quot;
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-tips-and-best-practices" class="org-section org-level-1">
+<h1>Tips and Best Practices</h1>
+<div id="org-start-simple" class="org-section org-level-2">
+<h2>Start Simple</h2>
+<p>Begin with a few basic templates:</p>
+
+<ul>
+<li><p>TODO capture</p>
+</li>
+<li><p>Note capture</p>
+</li>
+<li><p>Journal entry</p>
+</li>
+</ul>
+
+<p>Add specialized templates as needs emerge.</p>
+
+</div>
+<div id="org-use-consistent-file-organization" class="org-section org-level-2">
+<h2>Use Consistent File Organization</h2>
+<p>Keep capture files organized:</p>
+
+<pre class="example">~/org/
+├── inbox.org          # Unprocessed captures
+├── todo.org           # Active tasks
+├── projects/          # Project-specific files
+│   ├── project-a.org
+│   └── project-b.org
+├── journal.org        # Journal entries
+├── notes.org          # General notes
+└── archive.org        # Completed items</pre>
+
+</div>
+<div id="org-process-inbox-regularly" class="org-section org-level-2">
+<h2>Process Inbox Regularly</h2>
+<p>Set a schedule to process inbox.org:</p>
+
+<ul>
+<li><p>Daily: Quick review and refile urgent items</p>
+</li>
+<li><p>Weekly: Deep review, refile everything</p>
+</li>
+</ul>
+
+</div>
+<div id="org-leverage-context-links" class="org-section org-level-2">
+<h2>Leverage Context Links</h2>
+<p>Always include <kbd>%a</kbd> or <kbd>%A</kbd> in templates to link back to source:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">Source: %a</code></pre>
+</div>
+
+<p>This makes it easy to jump back to context when reviewing captures.</p>
+
+</div>
+<div id="org-use-tags-for-filtering" class="org-section org-level-2">
+<h2>Use Tags for Filtering</h2>
+<p>Add tags to templates for easy filtering:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;tags&quot;: [&quot;meeting&quot;, &quot;important&quot;]
+}</code></pre>
+</div>
+
+<p>Later, search for <kbd>:meeting:</kbd> to find all meeting-related captures.</p>
+
+</div>
+<div id="org-combine-with-agenda" class="org-section org-level-2">
+<h2>Combine with Agenda</h2>
+<p>Capture TODO items with timestamps to make them appear in the agenda:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* TODO %^{Task}
+SCHEDULED: %^t
+%?</code></pre>
+</div>
+
+</div>
+<div id="org-create-domain-specific-templates" class="org-section org-level-2">
+<h2>Create Domain-Specific Templates</h2>
+<p>For specialized work, create focused templates:</p>
+
+<div id="org-bug-report-template" class="org-section org-level-3">
+<h3>Bug Report Template</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;bug&quot;,
+  &quot;name&quot;: &quot;Bug Report&quot;,
+  &quot;file&quot;: &quot;bugs.org&quot;,
+  &quot;template&quot;: &quot;* BUG %^{Description}\n:PROPERTIES:\n:REPORTED: %U\n:SEVERITY: %^{Severity|high|medium|low}\n:COMPONENT: %^{Component}\n:END:\n\n** Steps to Reproduce\n%?\n\n** Expected Behavior\n\n** Actual Behavior\n\n** Environment\n&quot;,
+  &quot;tags&quot;: [&quot;bug&quot;]
+}</code></pre>
+</div>
+
+</div>
+<div id="org-feature-request-template" class="org-section org-level-3">
+<h3>Feature Request Template</h3>
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;key&quot;: &quot;feat&quot;,
+  &quot;name&quot;: &quot;Feature Request&quot;,
+  &quot;file&quot;: &quot;features.org&quot;,
+  &quot;template&quot;: &quot;* FEATURE %^{Feature}\n:PROPERTIES:\n:REQUESTED: %U\n:PRIORITY: %^{Priority|high|medium|low}\n:EFFORT: %^{Effort|small|medium|large}\n:END:\n\n** Description\n%?\n\n** Use Case\n\n** Technical Notes\n&quot;,
+  &quot;tags&quot;: [&quot;feature&quot;]
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-disable-preview-for-speed" class="org-section org-level-2">
+<h2>Disable Preview for Speed</h2>
+<p>For templates you trust, disable preview for faster capture:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.capture.showPreview&quot;: false,
+  &quot;scimax.capture.openAfterCapture&quot;: false
+}</code></pre>
+</div>
+
+<p>This makes capture nearly instantaneous.</p>
+
+</div>
+<div id="org-use-keyboard-driven-workflow" class="org-section org-level-2">
+<h2>Use Keyboard-driven Workflow</h2>
+<p>Memorize keys for your most common captures:</p>
+
+<ul>
+<li><p>`C-c c&#39; → `t&#39; → Task description → Enter (TODO)</p>
+</li>
+<li><p>`C-c c&#39; → `j&#39; → Entry title → Enter (Journal)</p>
+</li>
+<li><p>`C-c t&#39; → Task → Enter (Quick TODO)</p>
+</li>
+</ul>
+
+<p>With practice, capture becomes muscle memory.</p>
+
+</div>
+</div>
+<div id="org-troubleshooting" class="org-section org-level-1">
+<h1>Troubleshooting</h1>
+<div id="org-template-not-appearing-in-picker" class="org-section org-level-2">
+<h2>Template Not Appearing in Picker</h2>
+<ul>
+<li><p>Check `settings.json&#39; for syntax errors</p>
+</li>
+<li><p>Ensure template has required fields: <kbd>key</kbd>, <kbd>name</kbd>, <kbd>file</kbd>, <kbd>template</kbd></p>
+</li>
+<li><p>Reload window (`C-S-P&#39; → `Reload Window&#39;)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-capture-file-not-created" class="org-section org-level-2">
+<h2>Capture File Not Created</h2>
+<ul>
+<li><p>Check file path in template configuration</p>
+</li>
+<li><p>Ensure directory exists or use absolute path</p>
+</li>
+<li><p>Check `scimax.capture.defaultDirectory&#39; setting</p>
+</li>
+<li><p>Verify write permissions</p>
+</li>
+</ul>
+
+</div>
+<div id="org-template-placeholders-not-expanding" class="org-section org-level-2">
+<h2>Template Placeholders Not Expanding</h2>
+<ul>
+<li><p>Verify placeholder syntax: <kbd>%^{Prompt}</kbd> not <kbd>$^{Prompt}</kbd></p>
+</li>
+<li><p>Check for typos in placeholder names</p>
+</li>
+<li><p>Some placeholders require context (e.g., `%a&#39; needs source file)</p>
+</li>
+</ul>
+
+</div>
+<div id="org-cursor-position-not-working" class="org-section org-level-2">
+<h2>Cursor Position (`%?&#39;) Not Working</h2>
+<ul>
+<li><p>Ensure `%?&#39; is in template</p>
+</li>
+<li><p>Open file after capture (<kbd>scimax.capture.openAfterCapture: true</kbd>)</p>
+</li>
+<li><p>The cursor jumps to `%?&#39; position when file opens</p>
+</li>
+</ul>
+
+</div>
+<div id="org-date-tree-not-creating-structure" class="org-section org-level-2">
+<h2>Date Tree Not Creating Structure</h2>
+<ul>
+<li><p>Verify target type: <kbd>&quot;type&quot;: &quot;file+datetree&quot;</kbd></p>
+</li>
+<li><p>Ensure template is capturing to correct file</p>
+</li>
+<li><p>Check file for malformed existing date tree structure</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-related-features" class="org-section org-level-1">
+<h1>Related Features</h1>
+<div id="org-journal-integration" class="org-section org-level-2">
+<h2>Journal Integration</h2>
+<p>Capture complements the journal system. Use capture templates with <kbd>file+datetree</kbd> targeting for seamless journal integration.</p>
+
+<p>See <a href="14-journal.html">Journal Documentation</a> for details.</p>
+
+</div>
+<div id="org-agenda-integration" class="org-section org-level-2">
+<h2>Agenda Integration</h2>
+<p>Captured TODO items with timestamps appear in the agenda view.</p>
+
+<p>See <a href="13-agenda.html">Agenda Documentation</a> for details.</p>
+
+</div>
+<div id="org-database-search" class="org-section org-level-2">
+<h2>Database Search</h2>
+<p>All captured content is indexed and searchable via the database.</p>
+
+<p>See <a href="18-database-search.html">Database Search Documentation</a> for details.</p>
+
+</div>
+<div id="org-quick-links" class="org-section org-level-2">
+<h2>Quick Links</h2>
+<ul>
+<li><p><a href="01-getting-started.html">Getting Started Guide</a></p>
+</li>
+<li><p><a href="26-configuration.html">Configuration Reference</a></p>
+</li>
+<li><p><a href="24-keybindings.html">Keybinding Reference</a></p>
+</li>
+<li><p><a href="03-todo-items.html">TODO Items Documentation</a></p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-advanced-topics" class="org-section org-level-1">
+<h1>Advanced Topics</h1>
+<div id="org-template-hooks-future" class="org-section org-level-2">
+<h2>Template Hooks (Future)</h2>
+<p>Future versions may support JavaScript hooks for advanced template behavior:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;beforeCapture&quot;: &quot;return { customData: &#39;value&#39; }&quot;,
+  &quot;afterCapture&quot;: &quot;console.log(&#39;Captured!&#39;)&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-dynamic-template-selection-future" class="org-section org-level-2">
+<h2>Dynamic Template Selection (Future)</h2>
+<p>Future versions may support conditional template selection based on context.</p>
+
+</div>
+<div id="org-template-inheritance-future" class="org-section org-level-2">
+<h2>Template Inheritance (Future)</h2>
+<p>Future versions may support template inheritance for sharing common configuration.</p>
+
+</div>
+</div>
+<div id="org-appendix" class="org-section org-level-1">
+<h1>Appendix</h1>
+<div id="org-complete-template-reference" class="org-section org-level-2">
+<h2>Complete Template Reference</h2>
+<table class="org-table">
+<thead>
+<tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">key</code></td><td>string</td><td>Yes</td><td>Unique template key (1-5 characters)</td></tr>
+<tr><td><code class="verbatim">name</code></td><td>string</td><td>Yes</td><td>Display name</td></tr>
+<tr><td><code class="verbatim">description</code></td><td>string</td><td>No</td><td>Long description</td></tr>
+<tr><td><code class="verbatim">file</code></td><td>string</td><td>Yes</td><td>Target file path</td></tr>
+<tr><td><code class="verbatim">template</code></td><td>string</td><td>Yes</td><td>Template content with placeholders</td></tr>
+<tr><td><code class="verbatim">type</code></td><td>string</td><td>No</td><td>Entry type (entry, item, table-line)</td></tr>
+<tr><td><code class="verbatim">target</code></td><td>object</td><td>No</td><td>Target location configuration</td></tr>
+<tr><td><code class="verbatim">properties</code></td><td>object</td><td>No</td><td>Properties to add to entry</td></tr>
+<tr><td><code class="verbatim">tags</code></td><td>array</td><td>No</td><td>Tags to add to entry</td></tr>
+<tr><td><code class="verbatim">timestamp</code></td><td>boolean</td><td>No</td><td>Whether to add timestamp</td></tr>
+<tr><td><code class="verbatim">immediate</code></td><td>boolean</td><td>No</td><td>Skip confirmation before saving</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-placeholder-reference" class="org-section org-level-2">
+<h2>Placeholder Reference</h2>
+<table class="org-table">
+<thead>
+<tr><th>Placeholder</th><th>Expansion</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">%?</code></td><td>Cursor position</td></tr>
+<tr><td><code class="verbatim">%i</code></td><td>Initial content (selection)</td></tr>
+<tr><td><code class="verbatim">%a</code></td><td>Annotation link</td></tr>
+<tr><td><code class="verbatim">%A</code></td><td>Annotation link with description</td></tr>
+<tr><td><code class="verbatim">%l</code></td><td>Literal link</td></tr>
+<tr><td><code class="verbatim">%c</code></td><td>Clipboard content</td></tr>
+<tr><td><code class="verbatim">%t</code></td><td>Date (inactive)</td></tr>
+<tr><td><code class="verbatim">%T</code></td><td>Date and time (active)</td></tr>
+<tr><td><code class="verbatim">%u</code></td><td>Date (inactive)</td></tr>
+<tr><td><code class="verbatim">%U</code></td><td>Date and time (inactive)</td></tr>
+<tr><td><code class="verbatim">%^t</code></td><td>Prompt for date</td></tr>
+<tr><td><code class="verbatim">%^T</code></td><td>Prompt for date and time</td></tr>
+<tr><td><code class="verbatim">%^g</code></td><td>Prompt for tags</td></tr>
+<tr><td><code class="verbatim">%^{prompt}</code></td><td>Interactive prompt</td></tr>
+<tr><td><code class="verbatim">%^{prompt\vert{}default}</code></td><td>Prompt with default</td></tr>
+<tr><td><code class="verbatim">%k</code></td><td>Template key</td></tr>
+<tr><td><code class="verbatim">%K</code></td><td>Template name</td></tr>
+<tr><td><code class="verbatim">%n</code></td><td>User name</td></tr>
+<tr><td><code class="verbatim">%f</code></td><td>Source file name</td></tr>
+<tr><td><code class="verbatim">%F</code></td><td>Source file path</td></tr>
+<tr><td><code class="verbatim">%%</code></td><td>Literal %</td></tr>
+<tr><td><code class="verbatim">%\n</code></td><td>Newline</td></tr>
+<tr><td><code class="verbatim">%(expression)</code></td><td>Evaluated expression</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-target-type-reference" class="org-section org-level-2">
+<h2>Target Type Reference</h2>
+<table class="org-table">
+<thead>
+<tr><th>Target Type</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="verbatim">file</code></td><td>End or beginning of file</td></tr>
+<tr><td><code class="verbatim">headline</code></td><td>Under specific headline</td></tr>
+<tr><td><code class="verbatim">file+headline</code></td><td>File then headline</td></tr>
+<tr><td><code class="verbatim">file+datetree</code></td><td>Hierarchical date tree</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-example-templates-library" class="org-section org-level-2">
+<h2>Example Templates Library</h2>
+<p>See <kbd>examples/capture-templates.json</kbd> in the Scimax repository for a collection of ready-to-use templates for various workflows.</p>
+
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="14-journal.html">Journal</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="16-notebook.html">Notebook</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

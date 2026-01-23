@@ -1,0 +1,66 @@
+{
+  "version": "1.2.0",
+  "lastUpdated": "2026-01-16",
+  "description": "Performance baseline metrics for org parser. Baselines are set generously for CI environments (shared runners) and varying local environments. Update with: npm run test -- --reporter=verbose src/parser/__tests__/orgParserBenchmark.test.ts",
+  "thresholds": {
+    "regressionThreshold": 2.0,
+    "significantImprovementThreshold": 0.5
+  },
+  "baselines": {
+    "parseOrg": {
+      "smallDoc": {
+        "avgMs": 5.0,
+        "maxMs": 25.0,
+        "description": "Small document (~3.5K chars, 177 lines)"
+      },
+      "mediumDoc": {
+        "avgMs": 10.0,
+        "maxMs": 30.0,
+        "description": "Medium document (~9K chars, 428 lines)"
+      },
+      "largeDoc": {
+        "avgMs": 25.0,
+        "maxMs": 75.0,
+        "description": "Large document (~34K chars, 1571 lines)"
+      }
+    },
+    "parseObjects": {
+      "shortText": {
+        "avgMs": 1.0,
+        "maxMs": 15.0,
+        "description": "Short inline text (~500 chars)"
+      },
+      "mediumText": {
+        "avgMs": 3.0,
+        "maxMs": 20.0,
+        "description": "Medium inline text (~2K chars)"
+      },
+      "longText": {
+        "avgMs": 8.0,
+        "maxMs": 40.0,
+        "description": "Long inline text (~10K chars)"
+      }
+    },
+    "stressTests": {
+      "manyHeadings": {
+        "avgMs": 10.0,
+        "maxMs": 30.0,
+        "description": "500 headings"
+      },
+      "manySrcBlocks": {
+        "avgMs": 6.0,
+        "maxMs": 25.0,
+        "description": "100 source blocks"
+      },
+      "deepNesting": {
+        "avgMs": 4.0,
+        "maxMs": 15.0,
+        "description": "10 levels of nesting"
+      }
+    },
+    "scaling": {
+      "maxTimeRatioForSizeRatio": 3.0,
+      "description": "Time should scale at most 3x for every 10x size increase"
+    }
+  }
+}

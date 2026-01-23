@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tables</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Tables</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-tables">✅ Tables</a></li>
+<li><a href="#org-creating-tables">✅ Creating Tables</a></li>
+<ul>
+<li><a href="#org-manual-creation">✅ Manual Creation</a></li>
+<li><a href="#org-table-creation-command">✅ Table Creation Command</a></li>
+<li><a href="#org-converting-text-to-table">✅ Converting Text to Table</a></li>
+</ul>
+<li><a href="#org-table-navigation">✅ Table Navigation</a></li>
+<ul>
+<li><a href="#org-moving-between-cells">✅ Moving Between Cells</a></li>
+<li><a href="#org-quick-navigation">✅ Quick Navigation</a></li>
+</ul>
+<li><a href="#org-editing-tables">✅ Editing Tables</a></li>
+<ul>
+<li><a href="#org-adding-removing-rows">✅ Adding/Removing Rows</a></li>
+<li><a href="#org-adding-removing-columns">✅ Adding/Removing Columns</a></li>
+<li><a href="#org-moving-rows-columns">✅ Moving Rows/Columns</a></li>
+<li><a href="#org-separator-lines">✅ Separator Lines</a></li>
+</ul>
+<li><a href="#org-table-alignment">✅ Table Alignment</a></li>
+<ul>
+<li><a href="#org-automatic-alignment">✅ Automatic Alignment</a></li>
+<li><a href="#org-column-width-specification">✅ Column Width Specification</a></li>
+<li><a href="#org-horizontal-alignment">✅ Horizontal Alignment</a></li>
+</ul>
+<li><a href="#org-table-formulas">✅ Table Formulas</a></li>
+<ul>
+<li><a href="#org-formula-line">Formula Line</a></li>
+<li><a href="#org-cell-references">Cell References</a></li>
+<ul>
+<li><a href="#org-column-references">Column References</a></li>
+<li><a href="#org-row-references">Row References</a></li>
+<li><a href="#org-combined-references">Combined References</a></li>
+<li><a href="#org-ranges">Ranges</a></li>
+</ul>
+<li><a href="#org-formula-syntax">Formula Syntax</a></li>
+<li><a href="#org-built-in-functions">Built-in Functions</a></li>
+<li><a href="#org-recalculating-formulas">Recalculating Formulas</a></li>
+<li><a href="#org-formula-examples">Formula Examples</a></li>
+<ul>
+<li><a href="#org-row-formula">Row Formula</a></li>
+<li><a href="#org-column-formula">Column Formula</a></li>
+<li><a href="#org-percentage-calculation">✅ Percentage Calculation</a></li>
+</ul>
+</ul>
+<li><a href="#org-table-import-export">✅ Table Import/Export</a></li>
+<ul>
+<li><a href="#org-importing-tables">✅ Importing Tables</a></li>
+<li><a href="#org-exporting-tables">Exporting Tables</a></li>
+</ul>
+<li><a href="#org-column-operations">✅ Column Operations</a></li>
+<ul>
+<li><a href="#org-sorting">✅ Sorting</a></li>
+</ul>
+<li><a href="#org-named-tables">✅ Named Tables</a></li>
+<li><a href="#org-table-appearance-in-export">✅ Table Appearance in Export</a></li>
+<ul>
+<li><a href="#org-html-export">✅ HTML Export</a></li>
+<li><a href="#org-latex-export">✅ LaTeX Export</a></li>
+<li><a href="#org-markdown-export">✅ Markdown Export</a></li>
+</ul>
+<li><a href="#org-best-practices">✅ Best Practices</a></li>
+<ul>
+<li><a href="#org-table-design">✅ Table Design</a></li>
+<li><a href="#org-formula-organization">✅ Formula Organization</a></li>
+<li><a href="#org-large-tables">✅ Large Tables</a></li>
+</ul>
+<li><a href="#org-quick-reference">✅ Quick Reference</a></li>
+<ul>
+<li><a href="#org-keybindings">Keybindings</a></li>
+<li><a href="#org-commands">Commands</a></li>
+</ul>
+<li><a href="#org-related-topics">✅ Related Topics</a></li>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-tables" class="org-section org-level-1">
+<h1>✅ Tables</h1>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<p>Org-mode tables provide spreadsheet-like functionality directly in your text
+documents. Scimax VS Code supports creating, editing, navigating, and
+calculating with tables.</p>
+
+</div>
+<div id="org-creating-tables" class="org-section org-level-1">
+<h1>✅ Creating Tables</h1>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<div id="org-manual-creation" class="org-section org-level-2">
+<h2>✅ Manual Creation</h2>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<p>Type a table using pipe characters (|) as column separators:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Name</th><th>Age</th><th>City</th></tr>
+</thead>
+<tbody>
+<tr><td>Alice</td><td>30</td><td>New York</td></tr>
+<tr><td>Bob</td><td>25</td><td>Boston</td></tr>
+</tbody>
+</table>
+
+<p>When you press Tab after entering content, the table auto-aligns.</p>
+
+</div>
+<div id="org-table-creation-command" class="org-section org-level-2">
+<h2>✅ Table Creation Command</h2>
+<p>CLOSED: [2026-01-15 Thu 15:07]</p>
+
+<p>Press <code class="verbatim">C-c |</code> or use <kbd>scimax.table.create</kbd> to insert a table template.</p>
+
+<p>You&#39;ll be prompted for the number of columns and rows.</p>
+
+</div>
+<div id="org-converting-text-to-table" class="org-section org-level-2">
+<h2>✅ Converting Text to Table</h2>
+<p>CLOSED: [2026-01-15 Thu 15:26]</p>
+
+<p>Select comma-separated or tab-separated text, then use <code class="verbatim">C-c |</code> to convert
+it to a table.</p>
+
+<p>1,2
+3,4</p>
+
+<p>leads to </p>
+
+<table class="org-table">
+<tbody>
+<tr><td>1</td><td>2</td></tr>
+<tr><td>3</td><td>4</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-table-navigation" class="org-section org-level-1">
+<h1>✅ Table Navigation</h1>
+<p>CLOSED: [2026-01-15 Thu 15:26]</p>
+
+<div id="org-moving-between-cells" class="org-section org-level-2">
+<h2>✅ Moving Between Cells</h2>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><tab></td><td>Move to next cell (creates row at end)</td></tr>
+<tr><td>S-<tab></td><td>Move to previous cell</td></tr>
+<tr><td>Arrow keys</td><td>Move in that direction</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-quick-navigation" class="org-section org-level-2">
+<h2>✅ Quick Navigation</h2>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.nextCell</td><td>Go to next cell</td></tr>
+<tr><td>scimax.table.prevCell</td><td>Go to previous cell</td></tr>
+<tr><td>scimax.table.gotoNamed</td><td>Jump to a named table</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-editing-tables" class="org-section org-level-1">
+<h1>✅ Editing Tables</h1>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
+<div id="org-adding-removing-rows" class="org-section org-level-2">
+<h2>✅ Adding/Removing Rows</h2>
+<p>CLOSED: [2026-01-15 Thu 15:41]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Key Binding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.insertRowAbove</td><td>M-S-Up</td><td>Insert row above current</td></tr>
+<tr><td>scimax.table.insertRowBelow</td><td>M-S-Down</td><td>Insert row below current</td></tr>
+<tr><td>scimax.table.deleteRow</td><td>M-S-Backspace</td><td>Delete current row</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-adding-removing-columns" class="org-section org-level-2">
+<h2>✅ Adding/Removing Columns</h2>
+<p>CLOSED: [2026-01-15 Thu 15:41]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Key Binding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.insertColumnRight</td><td>M-S-Right</td><td>Insert column to the right</td></tr>
+<tr><td>scimax.table.insertColumnLeft</td><td>M-S-Left</td><td>Insert column to the left</td></tr>
+<tr><td>scimax.table.deleteColumn</td><td></td><td>Delete current column</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-moving-rows-columns" class="org-section org-level-2">
+<h2>✅ Moving Rows/Columns</h2>
+<p>CLOSED: [2026-01-15 Thu 15:37]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Key Binding</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.moveRowUp</td><td>S-up</td><td>Move row up</td></tr>
+<tr><td>scimax.table.moveRowDown</td><td>S-down</td><td>Move row down</td></tr>
+<tr><td>scimax.table.moveColumnLeft</td><td>S-left</td><td>Move column left</td></tr>
+<tr><td>scimax.table.moveColumnRight</td><td>S-right</td><td>Move column right</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-separator-lines" class="org-section org-level-2">
+<h2>✅ Separator Lines</h2>
+<p>CLOSED: [2026-01-15 Thu 15:36]</p>
+
+<p>Insert horizontal separator lines to divide table sections:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th><th></th><th></th></tr>
+</thead>
+<tbody>
+<tr><td>C-c -</td><td>Insert separator line (</td><td>---+---</td><td>)</td></tr>
+</tbody>
+</table>
+
+<p>Example with separators:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">| Item     | Price |
+|----------+-------|
+| Widget A | 10.00 |
+| Widget B | 15.00 |
+|----------+-------|
+| Total    | 25.00 |</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-table-alignment" class="org-section org-level-1">
+<h1>✅ Table Alignment</h1>
+<p>CLOSED: [2026-01-15 Thu 15:15]</p>
+
+<div id="org-automatic-alignment" class="org-section org-level-2">
+<h2>✅ Automatic Alignment</h2>
+<p>CLOSED: [2026-01-15 Thu 15:15]</p>
+
+<p>Tables auto-align when you press Tab. Column widths adjust to fit content.</p>
+
+</div>
+<div id="org-column-width-specification" class="org-section org-level-2">
+<h2>✅ Column Width Specification</h2>
+<p>CLOSED: [2026-01-17 Sat 19:43]</p>
+
+<p>Specify fixed column widths using <N> in a cell:</p>
+
+<table class="org-table">
+<tbody>
+<tr><td><l></td><td><l></td></tr>
+<tr><td>Long text you don&#39;t want showing all of</td><td>Short</td></tr>
+<tr><td>More long</td><td>More</td></tr>
+</tbody>
+</table>
+
+<table class="org-table">
+<tbody>
+<tr><td><5></td><td><l></td></tr>
+<tr><td>Long text you don&#39;t want showing all of</td><td>Short</td></tr>
+<tr><td>More long</td><td>More</td></tr>
+</tbody>
+</table>
+
+<p>Text exceeding the width is truncated in display (but preserved internally).</p>
+
+</div>
+<div id="org-horizontal-alignment" class="org-section org-level-2">
+<h2>✅ Horizontal Alignment</h2>
+<p>CLOSED: [2026-01-15 Thu 15:32]</p>
+
+<p>Specify alignment using <l>, <c>, or <r>:</p>
+
+<table class="org-table">
+<thead>
+<tr><th><l></th><th><c></th><th><r></th></tr>
+</thead>
+<tbody>
+<tr><td>Left aligned</td><td>Center text</td><td>Right aligned</td></tr>
+<tr><td>More left</td><td>Centered</td><td>More right</td></tr>
+</tbody>
+</table>
+
+<table class="org-table">
+<thead>
+<tr><th>Marker</th><th>Alignment</th></tr>
+</thead>
+<tbody>
+<tr><td><l></td><td>Left</td></tr>
+<tr><td><c></td><td>Center</td></tr>
+<tr><td><r></td><td>Right</td></tr>
+</tbody>
+</table>
+
+<p>Combine with width: <l10> for left-aligned, 10 characters wide.</p>
+
+</div>
+</div>
+<div id="org-table-formulas" class="org-section org-level-1">
+<h1>✅ Table Formulas</h1>
+<p>CLOSED: [2026-01-17 Sat 13:44]</p>
+
+<p>Tables can include formulas for calculations, similar to spreadsheets.</p>
+
+<div id="org-formula-line" class="org-section org-level-2">
+<h2>Formula Line</h2>
+<p>Formulas are defined in a #+TBLFM: line below the table:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+</thead>
+<tbody>
+<tr><td>Apples</td><td>10</td><td>1.50</td><td>15</td></tr>
+<tr><td>Oranges</td><td>5</td><td>2.00</td><td>10</td></tr>
+<tr><td>Sum</td><td></td><td></td><td>25</td></tr>
+</tbody>
+</table>
+
+
+</div>
+<div id="org-cell-references" class="org-section org-level-2">
+<h2>Cell References</h2>
+<div id="org-column-references" class="org-section org-level-3">
+<h3>Column References</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>$1</td><td>First column</td></tr>
+<tr><td>$2</td><td>Second column</td></tr>
+<tr><td>$N</td><td>Nth column</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-row-references" class="org-section org-level-3">
+<h3>Row References</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>@1</td><td>First row</td></tr>
+<tr><td>@2</td><td>Second row</td></tr>
+<tr><td>@N</td><td>Nth row</td></tr>
+<tr><td>@&gt;</td><td>Last row</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-combined-references" class="org-section org-level-3">
+<h3>Combined References</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>@2$3</td><td>Row 2, column 3</td></tr>
+<tr><td>@3$&gt;</td><td>Row 3, last column</td></tr>
+<tr><td>@&gt;$4</td><td>Last row, column 4</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-ranges" class="org-section org-level-3">
+<h3>Ranges</h3>
+<table class="org-table">
+<thead>
+<tr><th>Reference</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>@2\(1..@5\)1</td><td>Column 1, rows 2 through 5</td></tr>
+<tr><td>@2\(1..@2\)4</td><td>Row 2, columns 1 through 4</td></tr>
+<tr><td>@2\(1..@5\)4</td><td>Rectangle from @2\(1 to @5\)4</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-formula-syntax" class="org-section org-level-2">
+<h2>Formula Syntax</h2>
+<p>Formulas use the syntax: <kbd>target</kbd>expression=</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TBLFM: $4=$2*$3</code></pre>
+</div>
+
+<p>This sets column 4 to the product of columns 2 and 3.</p>
+
+<p>Multiple formulas separated by <kbd>::</kbd>:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,#+TBLFM: $4=$2*$3::@&gt;$4=vsum(@2$4..@-1$4)</code></pre>
+</div>
+
+</div>
+<div id="org-built-in-functions" class="org-section org-level-2">
+<h2>Built-in Functions</h2>
+<table class="org-table">
+<thead>
+<tr><th>Function</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>vsum</td><td>Sum of values in range</td></tr>
+<tr><td>vmean</td><td>Average of values</td></tr>
+<tr><td>vmin</td><td>Minimum value</td></tr>
+<tr><td>vmax</td><td>Maximum value</td></tr>
+<tr><td>vcount</td><td>Count of values</td></tr>
+</tbody>
+</table>
+
+<p>Example:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>10</td></tr>
+<tr><td>20</td></tr>
+<tr><td>30</td></tr>
+<tr><td>60</td></tr>
+</tbody>
+</table>
+
+
+<!-- Unknown element type: comment -->
+</div>
+<div id="org-recalculating-formulas" class="org-section org-level-2">
+<h2>Recalculating Formulas</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-c (on TBLFM)</td><td>Recalculate all formulas</td></tr>
+<tr><td>scimax.table.recalculate</td><td>Recalculate table</td></tr>
+</tbody>
+</table>
+
+<p>Place your cursor on the <kbd>#+TBLFM:</kbd> line and press <kbd>C-c C-c</kbd> to apply
+all formulas.</p>
+
+</div>
+<div id="org-formula-examples" class="org-section org-level-2">
+<h2>Formula Examples</h2>
+<div id="org-row-formula" class="org-section org-level-3">
+<h3>Row Formula</h3>
+<p>Calculate total for each row:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Item</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Total</th></tr>
+</thead>
+<tbody>
+<tr><td>Sales</td><td>10</td><td>20</td><td>30</td><td>40</td><td>100</td></tr>
+<tr><td>Costs</td><td>5</td><td>8</td><td>12</td><td>15</td><td>40</td></tr>
+</tbody>
+</table>
+
+
+</div>
+<div id="org-column-formula" class="org-section org-level-3">
+<h3>Column Formula</h3>
+<p>Sum a column:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Month</th><th>Revenue</th></tr>
+</thead>
+<tbody>
+<tr><td>Jan</td><td>10000</td></tr>
+<tr><td>Feb</td><td>12000</td></tr>
+<tr><td>Mar</td><td>15000</td></tr>
+<tr><td>Total</td><td>37000</td></tr>
+</tbody>
+</table>
+
+
+</div>
+<div id="org-percentage-calculation" class="org-section org-level-3">
+<h3>✅ Percentage Calculation</h3>
+<p>CLOSED: [2026-01-17 Sat 20:01]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Category</th><th>Amount</th><th>Percent</th></tr>
+</thead>
+<tbody>
+<tr><td>A</td><td>500</td><td>50%</td></tr>
+<tr><td>B</td><td>300</td><td>30%</td></tr>
+<tr><td>C</td><td>200</td><td>20%</td></tr>
+<tr><td>Total</td><td>1000</td><td>100</td></tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+</div>
+<div id="org-table-import-export" class="org-section org-level-1">
+<h1>✅ Table Import/Export</h1>
+<p>CLOSED: [2026-01-17 Sat 19:44]</p>
+
+<div id="org-importing-tables" class="org-section org-level-2">
+<h2>✅ Importing Tables</h2>
+<p>CLOSED: [2026-01-17 Sat 19:48]</p>
+
+<p>Import data from CSV files:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.import</td><td>Import table from file</td></tr>
+</tbody>
+</table>
+
+<p>The import command will prompt for the file path and delimiter.</p>
+
+</div>
+<div id="org-exporting-tables" class="org-section org-level-2">
+<h2>Exporting Tables</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c C-e t</td><td>Export table</td></tr>
+<tr><td>scimax.table.export</td><td>Export table to file</td></tr>
+</tbody>
+</table>
+
+<p>Export formats:</p>
+
+<ul>
+<li><p>CSV (comma-separated values)</p>
+</li>
+<li><p>TSV (tab-separated values)</p>
+</li>
+<li><p>Other delimited formats</p>
+</li>
+</ul>
+
+</div>
+</div>
+<div id="org-column-operations" class="org-section org-level-1">
+<h1>✅ Column Operations</h1>
+<p>CLOSED: [2026-01-17 Sat 13:43]</p>
+
+<p>Perform quick calculations on columns:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.sumColumn</td><td>Sum values in current column</td></tr>
+<tr><td>scimax.table.averageColumn</td><td>Average of current column</td></tr>
+</tbody>
+</table>
+
+<div id="org-sorting" class="org-section org-level-2">
+<h2>✅ Sorting</h2>
+<p>CLOSED: [2026-01-15 Thu 15:31]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Key/Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c ^</td><td>Sort table by current column</td></tr>
+<tr><td>scimax.table.sortByColumn</td><td>Sort by column</td></tr>
+</tbody>
+</table>
+
+<p>Sorting options:</p>
+
+<ul>
+<li><p>Alphabetic (A-Z or Z-A)</p>
+</li>
+<li><p>Numeric (ascending or descending)</p>
+</li>
+</ul>
+
+<table class="org-table">
+<thead>
+<tr><th>Category</th><th>Amount</th></tr>
+</thead>
+<tbody>
+<tr><td>Supplies</td><td>5000</td></tr>
+<tr><td>Travel</td><td>10000</td></tr>
+<tr><td>Salaries</td><td>50000</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-named-tables" class="org-section org-level-1">
+<h1>✅ Named Tables</h1>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<p>Give tables names for reference:</p>
+
+
+<table class="org-table">
+<thead>
+<tr><th>Category</th><th>Amount</th></tr>
+</thead>
+<tbody>
+<tr><td>Salaries</td><td>50000</td></tr>
+<tr><td>Supplies</td><td>5000</td></tr>
+<tr><td>Travel</td><td>10000</td></tr>
+</tbody>
+</table>
+
+<p>Named tables can be:</p>
+
+<ul>
+<li><p>Referenced in other source blocks</p>
+</li>
+<li><p>Jumped to with `scimax.table.gotoNamed&#39;</p>
+</li>
+<li><p>Used as input for calculations</p>
+</li>
+</ul>
+
+</div>
+<div id="org-table-appearance-in-export" class="org-section org-level-1">
+<h1>✅ Table Appearance in Export</h1>
+<p>CLOSED: [2026-01-17 Sat 13:43]</p>
+
+<div id="org-html-export" class="org-section org-level-2">
+<h2>✅ HTML Export</h2>
+<p>CLOSED: [2026-01-17 Sat 19:55]</p>
+
+<p>Tables export as HTML `<table>&#39; elements with proper styling.</p>
+
+</div>
+<div id="org-latex-export" class="org-section org-level-2">
+<h2>✅ LaTeX Export</h2>
+<p>CLOSED: [2026-01-17 Sat 19:55]</p>
+
+<p>Tables export as LaTeX <kbd>tabular</kbd> environments:</p>
+
+<div class="org-src-container">
+<pre class="src src-latex"><code class="language-latex">\begin{tabular}{llr}
+Name &amp; Age &amp; City \\
+\hline
+Alice &amp; 30 &amp; New York \\
+Bob &amp; 25 &amp; Boston \\
+\end{tabular}</code></pre>
+</div>
+
+</div>
+<div id="org-markdown-export" class="org-section org-level-2">
+<h2>✅ Markdown Export</h2>
+<p>CLOSED: [2026-01-18 Sun 10:08]</p>
+
+<p>Tables export in GitHub-flavored Markdown format:</p>
+
+<div class="org-src-container">
+<pre class="src src-markdown"><code class="language-markdown">| Name  | Age | City     |
+|-------|-----|----------|
+| Alice | 30  | New York |
+| Bob   | 25  | Boston   |</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-best-practices" class="org-section org-level-1">
+<h1>✅ Best Practices</h1>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<div id="org-table-design" class="org-section org-level-2">
+<h2>✅ Table Design</h2>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<ol>
+<li><p><strong>Use headers</strong> - Always include a header row with column names</p>
+</li>
+<li><p><strong>Add separators</strong> - Use <code class="verbatim">|---|</code> lines to separate headers from data</p>
+</li>
+<li><p><strong>Align numbers right</strong> - Numeric columns are easier to read right-aligned</p>
+</li>
+<li><p><strong>Keep columns focused</strong> - One type of data per column</p>
+</li>
+</ol>
+
+</div>
+<div id="org-formula-organization" class="org-section org-level-2">
+<h2>✅ Formula Organization</h2>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<ol>
+<li><p><strong>Comment complex formulas</strong> - Add explanations for non-obvious calculations</p>
+</li>
+<li><p><strong>Build incrementally</strong> - Test formulas one at a time</p>
+</li>
+<li><p><strong>Use named tables</strong> - For tables referenced elsewhere</p>
+</li>
+</ol>
+
+</div>
+<div id="org-large-tables" class="org-section org-level-2">
+<h2>✅ Large Tables</h2>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<p>For large datasets:</p>
+
+<ol>
+<li><p>Consider using source blocks with pandas/R for complex analysis</p>
+</li>
+<li><p>Import data rather than typing manually</p>
+</li>
+<li><p>Export results to tables for presentation</p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-quick-reference" class="org-section org-level-1">
+<h1>✅ Quick Reference</h1>
+<p>CLOSED: [2026-01-15 Thu 15:24]</p>
+
+<div id="org-keybindings" class="org-section org-level-2">
+<h2>Keybindings</h2>
+<table class="org-table">
+<thead>
+<tr><th>Key</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td>C-c \vert{}</td><td>Create table</td></tr>
+<tr><td><tab></td><td>Next cell / align</td></tr>
+<tr><td>S-<tab></td><td>Previous cell</td></tr>
+<tr><td>C-c -</td><td>Insert separator</td></tr>
+<tr><td>M-<return></td><td>Insert row below</td></tr>
+<tr><td>M-S-Right</td><td>Insert column right</td></tr>
+<tr><td>M-S-Backspace</td><td>Delete row</td></tr>
+<tr><td>C-c ^</td><td>Sort by column</td></tr>
+<tr><td>C-c C-c</td><td>Recalculate (on TBLFM)</td></tr>
+<tr><td>C-c C-e t</td><td>Export table</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-commands" class="org-section org-level-2">
+<h2>Commands</h2>
+<table class="org-table">
+<thead>
+<tr><th>Command</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td>scimax.table.create</td><td>Create new table</td></tr>
+<tr><td>scimax.table.insertRowAbove</td><td>Insert row above</td></tr>
+<tr><td>scimax.table.insertRowBelow</td><td>Insert row below</td></tr>
+<tr><td>scimax.table.deleteRow</td><td>Delete current row</td></tr>
+<tr><td>scimax.table.insertColumnRight</td><td>Insert column right</td></tr>
+<tr><td>scimax.table.deleteColumn</td><td>Delete current column</td></tr>
+<tr><td>scimax.table.moveRowUp</td><td>Move row up</td></tr>
+<tr><td>scimax.table.moveRowDown</td><td>Move row down</td></tr>
+<tr><td>scimax.table.moveColumnLeft</td><td>Move column left</td></tr>
+<tr><td>scimax.table.moveColumnRight</td><td>Move column right</td></tr>
+<tr><td>scimax.table.recalculate</td><td>Recalculate formulas</td></tr>
+<tr><td>scimax.table.sumColumn</td><td>Sum current column</td></tr>
+<tr><td>scimax.table.averageColumn</td><td>Average current column</td></tr>
+<tr><td>scimax.table.sortByColumn</td><td>Sort by current column</td></tr>
+<tr><td>scimax.table.export</td><td>Export table</td></tr>
+<tr><td>scimax.table.import</td><td>Import table</td></tr>
+<tr><td>scimax.table.gotoNamed</td><td>Go to named table</td></tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div id="org-related-topics" class="org-section org-level-1">
+<h1>✅ Related Topics</h1>
+<p>CLOSED: [2026-01-15 Thu 15:31]</p>
+
+<ul>
+<li><p><a href="07-source-blocks.html">Source Code Blocks</a> - Process tables with code</p>
+</li>
+<li><p><a href="10-export.html">Export</a> - Table appearance in exports</p>
+</li>
+</ul>
+
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="03-todo-items.html">TODO Items</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="05-links.html">Links</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

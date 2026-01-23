@@ -1,0 +1,195 @@
+#+TITLE: Excalidraw Integration
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-18
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted.
+
+* ✅ Overview
+CLOSED: [2026-01-18 Sun 08:34]
+
+Scimax VS Code integrates with the [[https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor][Excalidraw VS Code extension]] to provide
+seamless support for creating and editing diagrams directly from org-mode
+documents.
+
+** ✅ Prerequisites
+CLOSED: [2026-01-18 Sun 08:34]
+
+Install the Excalidraw extension from the VS Code marketplace:
+
+| Extension ID              | Name               |
+|---------------------------+--------------------|
+| pomdtr.excalidraw-editor  | Excalidraw Editor  |
+
+You can install it via:
+- Command Palette: =Extensions: Install Extensions= → search "Excalidraw"
+- Or run: =code --install-extension pomdtr.excalidraw-editor=
+
+* ✅ Supported File Formats
+CLOSED: [2026-01-18 Sun 08:35]
+
+Excalidraw supports multiple file formats, all of which work with this integration:
+
+| Extension           | Description                              | Hover Preview |
+|---------------------+------------------------------------------+---------------|
+| .excalidraw         | Native Excalidraw format (JSON)          | Via exports   |
+| .excalidraw.json    | Explicit JSON format                     | Via exports   |
+| .excalidraw.svg     | SVG with embedded Excalidraw scene data  | Yes           |
+| .excalidraw.png     | PNG with embedded Excalidraw scene data  | Yes           |
+
+*Recommendation:* Use =.excalidraw.svg= or =.excalidraw.png= for best experience:
+- These formats show hover previews directly
+- They embed the full Excalidraw scene data, so they remain fully editable
+- They can be displayed in exports (HTML, LaTeX, Markdown)
+
+* Creating Excalidraw Links
+
+Use standard org-mode link syntax to reference Excalidraw drawings:
+
+** Basic Links
+
+
+[[_static/drawing.excalidraw]]
+
+
+* ✅ Hover Preview
+
+When you hover over an Excalidraw link, a tooltip appears showing:
+
+1. *Drawing name* - The filename or link description
+2. *Visual preview* - For all Excalidraw file types:
+   - =.excalidraw.svg= and =.excalidraw.png= files show the image directly
+   - =.excalidraw= and =.excalidraw.json= files show a generated SVG preview
+3. *Element count* - Number of shapes in the drawing
+4. *File information* - Size and last modified date
+
+The hover preview for =.excalidraw= files renders a simplified SVG showing:
+- Rectangles, ellipses, and diamonds with their colors
+- Lines and arrows with arrowheads
+- Freedraw paths
+- Text and image placeholders
+
+For best results, the extension first looks for companion export files (same name
+with =.svg= or =.png= extension). If none exist, it generates a preview from the
+JSON data.
+
+* ✅ Click to Edit
+CLOSED: [2026-01-18 Sun 08:36]
+
+Clicking an Excalidraw link opens the drawing in the Excalidraw visual editor.
+
+** ✅ Existing Files
+CLOSED: [2026-01-18 Sun 08:36]
+
+When you click a link to an existing Excalidraw file:
+1. The file opens in the Excalidraw editor
+2. You can edit the drawing visually
+3. Changes are saved automatically
+
+** ✅ New Files (Auto-creation)
+CLOSED: [2026-01-18 Sun 08:36]
+
+When you click a link to a non-existent Excalidraw file:
+1. The file is automatically created with an empty drawing
+2. Parent directories are created if needed
+3. The new drawing opens in the Excalidraw editor
+
+This makes it easy to create new diagrams - just write the link and click it:
+
+#+BEGIN_SRC org
+# This file doesn't exist yet - clicking creates it
+[[new-diagram.excalidraw][My New Diagram]]
+#+END_SRC
+
+** ✅ Fallback Behavior
+CLOSED: [2026-01-18 Sun 08:36]
+
+If the Excalidraw extension is not installed:
+1. The file opens as a text document (showing JSON)
+2. A message suggests installing the Excalidraw extension
+
+* ✅ Commands
+CLOSED: [2026-01-18 Sun 08:39]
+
+| Command                      | Description             | Invocation         |
+|------------------------------+-------------------------+--------------------|
+| scimax.org.openExcalidraw    | Open Excalidraw Drawing | Click on link      |
+
+The command is automatically invoked when clicking Excalidraw links. It can also
+be called programmatically:
+
+#+BEGIN_SRC typescript
+vscode.commands.executeCommand('scimax.org.openExcalidraw', {
+    file: '/path/to/drawing.excalidraw'
+});
+#+END_SRC
+
+* ✅ Workflow Tips
+CLOSED: [2026-01-18 Sun 08:39]
+
+** ✅ Organizing Drawings
+CLOSED: [2026-01-18 Sun 09:56]
+
+Keep drawings organized alongside your org files:
+
+#+BEGIN_EXAMPLE
+project/
+├── notes.org
+├── diagrams/
+│   ├── architecture.excalidraw.svg
+│   ├── dataflow.excalidraw.svg
+│   └── ui-mockup.excalidraw.png
+└── docs/
+    └── design.org
+#+END_EXAMPLE
+
+** ✅ Export for Sharing
+CLOSED: [2026-01-18 Sun 09:56]
+
+Excalidraw's =.excalidraw.svg= and =.excalidraw.png= formats are ideal because:
+- They display correctly in web browsers and image viewers
+- They can be embedded in HTML/PDF exports
+- They retain full editability (scene data is embedded)
+
+** ✅ Version Control
+CLOSED: [2026-01-18 Sun 09:56]
+
+All Excalidraw formats are text-based (JSON or JSON-embedded), making them
+suitable for version control with git. The =.excalidraw.svg= format shows
+meaningful diffs for the SVG portions.
+
+* ✅ Troubleshooting
+CLOSED: [2026-01-18 Sun 08:40]
+
+** ✅ Drawing won't open in visual editor
+CLOSED: [2026-01-18 Sun 09:56]
+
+- Ensure the Excalidraw extension is installed: =pomdtr.excalidraw-editor=
+- Check that the file extension is correct (=.excalidraw=, =.excalidraw.json=,
+  =.excalidraw.svg=, or =.excalidraw.png=)
+- Try reloading VS Code window
+
+** ✅ No hover preview appears
+
+- All Excalidraw file types now show hover previews
+- For =.excalidraw= files, a simplified SVG is generated from the JSON
+- The file must exist on disk for preview to work
+- Empty drawings show "Empty drawing" instead of a preview
+
+** ✅ Link not recognized as Excalidraw
+CLOSED: [2026-01-18 Sun 08:40]
+
+Ensure the file extension is one of:
+- =.excalidraw=
+- =.excalidraw.json=
+- =.excalidraw.svg=
+- =.excalidraw.png=
+
+* ✅ Related Topics
+CLOSED: [2026-01-18 Sun 08:40]
+
+- [[file:05-links.org][Hyperlinks]] - General link syntax and handling
+- [[file:12-image-overlays.org][Image Overlays]] - Inline image display
+- [[file:10-export.org][Export]] - Including drawings in exports

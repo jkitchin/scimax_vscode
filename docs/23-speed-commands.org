@@ -1,0 +1,799 @@
+#+TITLE: Speed Commands
+#+AUTHOR: Scimax VS Code Team
+#+DATE: 2026-01-13
+#+STARTUP: overview
+#+OPTIONS: toc:2 num:t H:4
+#+TODO: ⚠️ 👀 | ✅
+
+*Keybinding Note:* This extension uses Emacs-style keybindings where Ctrl is used on all platforms (not Cmd on Mac), except where explicitly noted. Mac alternatives are shown as Cmd where applicable.
+
+* ✅ Introduction
+CLOSED: [2026-01-15 Thu 14:44]
+
+Speed commands are single-letter keyboard shortcuts that work when the cursor is positioned at the very beginning (column 0) of a heading line. This feature, borrowed from Emacs org-mode, provides lightning-fast navigation and editing without the need for complex key chords.
+
+** ✅ What are Speed Commands?
+CLOSED: [2026-01-15 Thu 14:44]
+
+Speed commands transform the beginning of each heading into a powerful command interface. When your cursor is at column 0 of a heading (the first star `*' in org-mode or the first hash `#' in markdown), you can press a single key to execute common operations:
+
+- Navigation: jump between headings, siblings, parent
+- Visibility: fold/unfold sections
+- Structure editing: move, promote, demote, cut, paste
+- TODO management: cycle states, set priorities
+- Planning: add schedules and deadlines
+- Metadata: set tags, properties, effort estimates
+- Time tracking: clock in and out
+- Archiving: archive completed tasks
+
+This approach is significantly faster than using traditional keybindings or menu commands for frequent operations.
+
+** ✅ Why Use Speed Commands?
+CLOSED: [2026-01-15 Thu 14:44]
+
+- *Efficiency*: Single keystrokes instead of multi-key combinations
+- *Contextual*: Only active at heading starts, so no conflicts with normal typing
+- *Discoverable*: Press `?' at a heading start to see all available commands
+- *Emacs-compatible*: Familiar workflow for Emacs org-mode users
+
+* ✅ Configuration
+CLOSED: [2026-01-15 Thu 14:44]
+
+** ✅ Enabling Speed Commands
+CLOSED: [2026-01-15 Thu 14:44]
+
+Speed commands are enabled by default in Scimax VS Code. To toggle them on or off:
+
+*** ✅ Via Settings UI
+CLOSED: [2026-01-15 Thu 14:44]
+
+1. Open VS Code Settings (C-, or s-, on Mac)
+2. Search for "speed commands"
+3. Toggle the checkbox for *Scimax: Speed Commands > Enabled*
+
+*** ✅ Via settings.json
+CLOSED: [2026-01-15 Thu 14:45]
+
+Add or modify this setting in your `settings.json':
+
+#+BEGIN_SRC json
+{
+  "scimax.speedCommands.enabled": true
+}
+#+END_SRC
+
+*** ✅ Via Command Palette
+CLOSED: [2026-01-15 Thu 14:45]
+
+1. Open Command Palette (C-S-P or s-S-P on Mac)
+2. Type "speed" and select *Scimax: Toggle Speed Commands*
+
+** ✅ Supported File Types
+CLOSED: [2026-01-15 Thu 14:45]
+
+Speed commands work in:
+- Org-mode files (`.org')
+- Markdown files (`.md', `.markdown')
+
+* ✅ When Speed Commands are Active
+CLOSED: [2026-01-15 Thu 14:45]
+
+Speed commands are only active when *all* of the following conditions are met:
+
+1. *Speed commands are enabled* in settings (`scimax.speedCommands.enabled: true')
+2. *Cursor is at column 0* (the very beginning of the line)
+3. *Line is a heading* (starts with `*' for org-mode or `#' for markdown)
+4. *No text is selected* (cursor position only, not a selection)
+
+** ✅ Visual Indicator
+CLOSED: [2026-01-15 Thu 14:45]
+
+When speed commands are active, you'll notice that single key presses trigger actions immediately. If speed commands aren't working:
+
+1. Check that your cursor is at position 0 (before the first `*' or `#')
+2. Ensure no text is selected
+3. Verify the file type is org or markdown
+4. Check settings to confirm speed commands are enabled
+
+* ✅ Speed Command Reference
+CLOSED: [2026-01-15 Thu 14:45]
+
+This section provides a complete listing of all available speed commands, organized by functional category.
+
+** ✅ Navigation Commands
+CLOSED: [2026-01-15 Thu 14:45]
+
+Move efficiently through your document structure.
+
+| Key | Command            | Description                                       |
+|-----+--------------------+---------------------------------------------------|
+| n   | Next heading       | Move to the next visible heading at any level     |
+| p   | Previous heading   | Move to the previous visible heading at any level |
+| f   | Next sibling       | Move to next heading at the same level            |
+| b   | Previous sibling   | Move to previous heading at the same level        |
+| u   | Parent heading     | Move up to the parent heading                     |
+| j   | Jump to heading    | Quick picker to jump to any heading in file       |
+| g   | Go to... (submenu) | Show navigation submenu with more options         |
+
+*** ✅ Go To Submenu Options
+CLOSED: [2026-01-15 Thu 14:46]
+
+The `g' key opens a submenu with additional navigation choices:
+
+| Key | Command             | Description                       |
+|-----+---------------------+-----------------------------------|
+| n   | Next heading        | Next visible heading              |
+| p   | Previous heading    | Previous visible heading          |
+| f   | Next sibling        | Next heading at same level        |
+| b   | Previous sibling    | Previous heading at same level    |
+| u   | Parent heading      | Parent heading                    |
+| j   | Jump to any heading | Quick picker for any heading      |
+| 1   | First heading       | Jump to first heading in document |
+| $   | Last heading        | Jump to last heading in document  |
+
+** ✅ Visibility/Folding Commands
+CLOSED: [2026-01-15 Thu 14:46]
+
+Control how much content is visible in your document.
+
+| Key | Command                 | Description                                   |
+|-----+-------------------------+-----------------------------------------------|
+| c   | Cycle global visibility | Cycle through: overview → contents → show all |
+| C   | Show all children       | Unfold all children of current subtree        |
+| o   | Overview                | Fold all headings (show only top-level)       |
+| <tab> | Cycle fold at point     | Toggle folding of current heading             |
+
+** ✅ Structure Editing Commands
+CLOSED: [2026-01-17 Sat 15:38]
+
+Reorganize and modify your document structure.
+
+| Key | Command              | Description                                    |
+|-----+----------------------+------------------------------------------------|
+| U   | Move subtree up      | Move entire subtree (and children) up          |
+| D   | Move subtree down    | Move entire subtree (and children) down        |
+| r   | Demote subtree       | Decrease level of subtree (shift right)        |
+| l   | Promote subtree      | Increase level of subtree (shift left)         |
+| R   | Demote heading       | Decrease level of heading only (not children)  |
+| L   | Promote heading      | Increase level of heading only (not children)  |
+| w   | Kill (cut) subtree   | Cut subtree to clipboard                       |
+| y   | Yank (paste) subtree | Paste subtree from clipboard with level adjust |
+| W   | Clone subtree        | Duplicate the current subtree                  |
+
+*** ✅ Structure Editing Notes
+CLOSED: [2026-01-15 Thu 14:47]
+
+- *Promote* (left) decreases the heading level (fewer stars/hashes)
+- *Demote* (right) increases the heading level (more stars/hashes)
+- Uppercase `L'/`R' affect only the heading line
+- Lowercase `l'/`r' affect the entire subtree
+- `y' (yank) intelligently adjusts heading levels to match context
+
+** ✅ TODO and Priority Commands
+CLOSED: [2026-01-15 Thu 14:47]
+
+Manage task states and priorities.
+
+| Key | Command           | Description                                  |
+|-----+-------------------+----------------------------------------------|
+| t   | Cycle TODO state  | Cycle through: (none) → TODO → DONE → (none) |
+| ,   | Cycle priority up | Increase priority: C → B → A                 |
+| 1   | Priority [#A]     | Set priority to A (highest)                  |
+| 2   | Priority [#B]     | Set priority to B (medium)                   |
+| 3   | Priority [#C]     | Set priority to C (lowest)                   |
+| 0   | Remove priority   | Remove priority marker entirely              |
+
+*** ✅ Priority System
+CLOSED: [2026-01-15 Thu 14:47]
+
+Org-mode uses a three-level priority system:
+- *[#A]* - High priority (critical, urgent)
+- *[#B]* - Medium priority (normal importance)
+- *[#C]* - Low priority (nice to have)
+
+Priorities appear after the TODO keyword: `** TODO [#A] Important task'
+
+** ✅ Planning/Timestamp Commands
+CLOSED: [2026-01-15 Thu 14:47]
+
+Add scheduling and deadline information to tasks.
+
+| Key | Command            | Description                            |
+|-----+--------------------+----------------------------------------|
+| s   | Add/edit SCHEDULED | Set when you plan to work on this task |
+| d   | Add/edit DEADLINE  | Set when this task must be completed   |
+| .   | Insert timestamp   | Insert an inactive timestamp at point  |
+
+*** ✅ Timestamp Types
+CLOSED: [2026-01-17 Sat 15:38]
+
+- *SCHEDULED*: When you plan to start working on the task
+  - Format: `SCHEDULED: <2026-01-13 Mon>'
+  - Appears in agenda on the scheduled date
+
+- *DEADLINE*: When the task must be completed
+  - Format: `DEADLINE: <2026-01-20 Mon>'
+  - Appears in agenda with warnings before due date
+
+- *Plain timestamp*: Reference dates, events, notes
+  - Format: `[2026-01-13 Mon 14:30]'
+  - For documentation purposes
+
+** ✅ Metadata Commands
+CLOSED: [2026-01-17 Sat 15:38]
+:PROPERTIES:
+:Effort: 0:15
+:END:
+
+Add tags, properties, and effort estimates to headings.
+
+| Key | Command      | Description                                    |
+|-----+--------------+------------------------------------------------|
+| :   | Set tags     | Add or modify tags (colon-separated)           |
+| e   | Set effort   | Set estimated effort/duration for task         |
+| P   | Set property | Set a custom property in the properties drawer |
+
+*** ✅ Tags
+CLOSED: [2026-01-15 Thu 14:48]
+
+Tags are keywords attached to headings for categorization and filtering:
+
+#+BEGIN_EXAMPLE
+** TODO Complete documentation :work:urgent:docs:
+#+END_EXAMPLE
+
+Tags are:
+- Separated by colons (`:')
+- Can contain letters, numbers, and special chars (`_@#%')
+- Inherited by child headings
+- Used for agenda filtering and searches
+- Automatically aligned to column 77 (Emacs-style)
+
+*** ✅ Effort Estimates
+CLOSED: [2026-01-15 Thu 14:48]
+
+Effort is stored as a property in `H:MM' format:
+
+#+BEGIN_EXAMPLE
+** TODO Write documentation
+:PROPERTIES:
+:Effort: 2:00
+:END:
+#+END_EXAMPLE
+
+Common effort values:
+- `0:15' - 15 minutes
+- `0:30' - 30 minutes
+- `1:00' - 1 hour
+- `2:00' - 2 hours
+- `4:00' - Half day
+- `8:00' - Full day
+
+*** ✅ Properties
+CLOSED: [2026-01-15 Thu 14:48]
+
+Properties are key-value pairs stored in a properties drawer:
+
+#+BEGIN_EXAMPLE
+** Research Project
+:PROPERTIES:
+:CUSTOM_ID: research-2026
+:CATEGORY: Research
+:Effort: 8:00
+:ASSIGNED: John Doe
+:END:
+#+END_EXAMPLE
+
+Common property names:
+- `ID' - Unique identifier
+- `CUSTOM_ID' - User-defined ID for linking
+- `CATEGORY' - Category for agenda display
+- `Effort' - Estimated effort
+- `LOGGING' - Log state changes
+- `COLUMNS' - Column view format
+
+** ✅ Clocking Commands
+CLOSED: [2026-01-15 Thu 14:48]
+
+Track time spent on tasks.
+
+| Key | Command   | Description                          |
+|-----+-----------+--------------------------------------|
+| I   | Clock in  | Start time tracking for current task |
+| O   | Clock out | Stop time tracking                   |
+
+*** ✅ Clocking Workflow
+CLOSED: [2026-01-15 Thu 14:48]
+
+1. Position cursor at column 0 of a task heading
+2. Press `I' to clock in - starts timer
+3. Work on the task
+4. Press `O' to clock out - stops timer and records duration
+
+Clock entries are stored in a `:LOGBOOK:' drawer:
+
+#+BEGIN_EXAMPLE
+** TODO Write documentation
+:LOGBOOK:
+CLOCK: [2026-01-13 Mon 09:00]--[2026-01-13 Mon 11:30] =>  2:30
+CLOCK: [2026-01-12 Fri 14:00]--[2026-01-12 Fri 15:45] =>  1:45
+:END:
+#+END_EXAMPLE
+
+*** ✅ Clocking Notes
+CLOSED: [2026-01-17 Sat 15:37]
+
+- Only one task can be clocked in at a time
+- Clocking in a new task automatically clocks out the previous one
+- Clock duration is automatically calculated
+- Clock data is used for time reports and agenda views
+
+** ✅ Archive Commands
+CLOSED: [2026-01-15 Thu 14:50]
+
+Move completed tasks to archive storage.
+
+| Key | Command              | Description                                     |
+|-----+----------------------+-------------------------------------------------|
+| a   | Archive subtree      | Move subtree to archive file                    |
+| A   | Toggle :ARCHIVE: tag | Add/remove ARCHIVE tag (marks for archiving)    |
+| $   | Archive to sibling   | Move subtree under an "Archive" sibling heading |
+
+*** ✅ Archive File
+CLOSED: [2026-01-15 Thu 14:50]
+
+By default, `a' moves the subtree to a file named `{basename}_archive.org':
+- `notes.org' → `notes_archive.org'
+- `projects.org' → `projects_archive.org'
+
+The archived subtree is tagged with `:ARCHIVE:' and includes metadata:
+
+#+BEGIN_EXAMPLE
+* DONE Completed project :ARCHIVE:
+:PROPERTIES:
+:ARCHIVE_TIME: [2026-01-13 Mon 15:30]
+:ARCHIVE_FILE: ~/org/projects.org
+:END:
+#+END_EXAMPLE
+
+* ✅ Tips for Effective Use
+CLOSED: [2026-01-15 Thu 14:50]
+
+** ✅ Learning the Commands
+CLOSED: [2026-01-15 Thu 14:50]
+
+1. *Start with navigation*: `n', `p', `f', `b', `u' are the most frequently used
+2. *Use the help*: Press `?' at any heading start to see all commands
+3. *Muscle memory*: The keys are mnemonic:
+   - `n' ` next, `p' ' previous, `f' ` forward, `b' ' backward
+   - `u' = up (parent)
+   - `t' ` TODO, `s' ' schedule, `d' = deadline
+   - `I'/`O' = In/Out (clocking)
+   - `l'/`r' = left/right (promote/demote)
+
+** ✅ Common Workflows
+CLOSED: [2026-01-15 Thu 14:50]
+
+*** ✅ Quick Task Management
+CLOSED: [2026-01-15 Thu 14:50]
+
+1. Create heading with `C-<return>'
+2. Move to beginning of line (`Home' or `C-a')
+3. Press `t' to add TODO state
+4. Press `1' to set high priority
+5. Press `s' to schedule it
+6. Press `:' to add tags
+
+*** ✅ Organizing Content
+CLOSED: [2026-01-15 Thu 14:50]
+
+1. Navigate to a heading
+2. Use `U'/`D' to reorder siblings
+3. Use `l'/`r' to adjust hierarchy
+4. Use `w' to cut and `y' to paste sections
+5. Use `a' to archive completed work
+
+*** ✅ Reviewing Documents
+CLOSED: [2026-01-15 Thu 14:50]
+
+1. Press `o' to see overview (all headings folded)
+2. Use `n'/`p' to navigate between sections
+3. Press `Tab' to expand interesting sections
+4. Press `c' to cycle through visibility levels
+
+** ✅ Combining with Regular Keybindings
+CLOSED: [2026-01-15 Thu 14:50]
+
+Speed commands complement (don't replace) regular keybindings:
+
+- Use speed commands for quick operations when cursor is at heading start
+- Use regular keybindings (`C-c C-t', etc.) when cursor is elsewhere
+- Use `C-a' or `Home' to quickly jump to column 0 to activate speed commands
+
+** ✅ Cursor Position Matters
+CLOSED: [2026-01-15 Thu 14:50]
+
+Remember: speed commands *only* work at column 0. If a speed command doesn't trigger:
+
+1. Press `Home' or `C-a' to move to beginning of line
+2. Verify you're on a heading line (starts with `*' or `#')
+3. Check that no text is selected
+
+** ✅ Customization
+CLOSED: [2026-01-15 Thu 14:50]
+
+Currently, speed command keys are pre-defined and cannot be customized. The key mappings follow standard Emacs org-mode conventions for consistency and muscle memory compatibility.
+
+If you need custom keybindings, use VS Code's keybinding system to bind the underlying commands (e.g., `scimax.org.nextHeading', `scimax.org.cycleTodo') to your preferred key combinations.
+
+* ✅ Reference: All Speed Commands
+CLOSED: [2026-01-15 Thu 14:52]
+
+Complete alphabetical reference of all speed commands.
+
+| Key | Category   | Command                 |
+|-----+------------+-------------------------|
+| ,   | TODO       | Cycle priority up       |
+| .   | Planning   | Insert timestamp        |
+| 0   | TODO       | Remove priority         |
+| 1   | TODO       | Set priority [#A]       |
+| 2   | TODO       | Set priority [#B]       |
+| 3   | TODO       | Set priority [#C]       |
+| :   | Metadata   | Set tags                |
+| ?   | Special    | Speed commands help     |
+| $   | Special    | Archive to sibling      |
+| a   | Special    | Archive subtree         |
+| A   | Special    | Toggle :ARCHIVE: tag    |
+| b   | Navigation | Previous sibling        |
+| c   | Visibility | Cycle global visibility |
+| C   | Visibility | Show all children       |
+| d   | Planning   | Add/edit DEADLINE       |
+| D   | Structure  | Move subtree down       |
+| e   | Metadata   | Set effort              |
+| f   | Navigation | Next sibling            |
+| g   | Navigation | Go to... (submenu)      |
+| I   | Clocking   | Clock in                |
+| j   | Navigation | Jump to heading         |
+| l   | Structure  | Promote subtree         |
+| L   | Structure  | Promote heading         |
+| n   | Navigation | Next heading            |
+| N   | Special    | Narrow to subtree       |
+| o   | Visibility | Overview (fold all)     |
+| O   | Clocking   | Clock out               |
+| p   | Navigation | Previous heading        |
+| P   | Metadata   | Set property            |
+| r   | Structure  | Demote subtree          |
+| R   | Structure  | Demote heading          |
+| s   | Planning   | Add/edit SCHEDULED      |
+| S   | Special    | Widen (show all)        |
+| t   | TODO       | Cycle TODO state        |
+| <tab> | Visibility | Cycle fold at point     |
+| u   | Navigation | Parent heading          |
+| U   | Structure  | Move subtree up         |
+| w   | Structure  | Kill (cut) subtree      |
+| W   | Structure  | Clone subtree           |
+| y   | Structure  | Yank (paste) subtree    |
+
+* ✅ Troubleshooting
+CLOSED: [2026-01-15 Thu 14:52]
+
+** ✅ Speed Commands Not Working
+CLOSED: [2026-01-15 Thu 14:52]
+
+*Problem*: Pressing keys doesn't trigger speed commands
+
+*Solutions*:
+1. Verify cursor is at column 0 (before the `*' or `#')
+2. Check file type is `.org' or `.md'
+3. Ensure no text is selected
+4. Verify speed commands are enabled: `scimax.speedCommands.enabled: true'
+5. Restart VS Code after changing settings
+
+** ✅ Wrong Command Executes
+CLOSED: [2026-01-15 Thu 14:52]
+
+*Problem*: Different command executes than expected
+
+*Solutions*:
+1. Press `?' to see command list and verify key mapping
+2. Check for conflicting VS Code keybindings
+3. Ensure you're in an org or markdown file
+4. Update extension to latest version
+
+** ✅ Help Menu Shows Wrong Commands
+CLOSED: [2026-01-15 Thu 14:52]
+
+*Problem*: Help menu (`?') shows outdated information
+
+*Solution*: The help is generated from code, so this shouldn't occur. If it does, report as a bug.
+
+* ✅ BibTeX Speed Commands
+CLOSED: [2026-01-19 Mon 18:22]
+:PROPERTIES:
+:CUSTOM_ID: bibtex-speed-commands
+:END:
+
+BibTeX speed commands provide single-key shortcuts for navigating and manipulating BibTeX entries when editing `.bib' files. These commands are active when the cursor is at column 0 of a line starting with `@' (entry definition line).
+
+** ✅ Activation
+CLOSED: [2026-01-19 Mon 18:22]
+
+BibTeX speed commands are active when:
+
+1. You are editing a `.bib' file
+2. Cursor is at column 0
+3. Line starts with `@' (e.g., `@article{', `@book{')
+4. Speed commands are enabled in settings
+
+** ✅ Command Reference
+CLOSED: [2026-01-19 Mon 18:22]
+
+| Key | Category    | Command                  |
+|-----+-------------+--------------------------|
+| n   | Navigation  | Next entry               |
+| p   | Navigation  | Previous entry           |
+| j   | Navigation  | Jump to entry (search)   |
+| s   | Formatting  | Sort fields in entry     |
+| d   | Formatting  | Downcase entry           |
+| t   | Formatting  | Title case article title |
+| S   | Formatting  | Sentence case title      |
+| c   | Formatting  | Clean/format entry       |
+| o   | Access      | Open PDF                 |
+| u   | Access      | Open URL/DOI             |
+| N   | Access      | Open notes               |
+| g   | Access      | Google Scholar search    |
+| x   | Access      | Open in CrossRef         |
+| w   | Access      | Open in Web of Science   |
+| y   | Actions     | Copy citation key        |
+| b   | Actions     | Copy BibTeX entry        |
+| k   | Actions     | Kill (delete) entry      |
+| K   | Actions     | Generate citation key    |
+| ?   | Help        | Show speed commands help |
+
+** ✅ Navigation Commands
+CLOSED: [2026-01-19 Mon 18:23]
+
+*** ✅ Next Entry (n)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Jump to the next BibTeX entry in the file.
+
+#+BEGIN_EXAMPLE
+@article{smith2020,
+  title = {First Article}
+}
+                       <- press n here
+@book{jones2021,       <- cursor moves here
+  title = {Second Book}
+}
+#+END_EXAMPLE
+
+*** ✅ Previous Entry (p)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Jump to the previous BibTeX entry in the file.
+
+*** ✅ Jump to Entry (j)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Opens a quick pick dialog showing all entries in the file. Search by key, author, or title.
+
+** ✅ Formatting Commands
+CLOSED: [2026-01-19 Mon 18:23]
+
+*** ✅ Sort Fields (s)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Reorders fields in the current entry according to the standard BibLaTeX field order:
+
+1. author, title, journaltitle/journal, booktitle
+2. editor, edition, volume, number, pages
+3. publisher, location/address, year, date
+4. doi, url, isbn/issn
+5. note, abstract, keywords
+
+*** ✅ Downcase Entry (d)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Converts entry type and field names to lowercase:
+
+#+BEGIN_EXAMPLE
+Before: @ARTICLE{key, AUTHOR = {Name}}
+After:  @article{key, author = {Name}}
+#+END_EXAMPLE
+
+*** ✅ Title Case (t)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Converts the article title to Title Case, preserving braced content like `{DNA}' or `{LaTeX}'.
+
+*** ✅ Sentence Case (S)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Converts the article title to Sentence case (only first letter capitalized), preserving braced content.
+
+*** ✅ Clean Entry (c)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Applies all cleaning operations:
+- Normalizes whitespace
+- Downcases entry type and field names
+- Sorts fields
+- Removes double braces
+
+** ✅ Access Commands
+CLOSED: [2026-01-19 Mon 18:23]
+
+*** ✅ Open PDF (o)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Attempts to open the PDF associated with the entry:
+1. Checks the `file' field in the entry
+2. Looks in the configured PDF directory
+3. Offers to open DOI in browser if no PDF found
+
+*** ✅ Open URL/DOI (u)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Opens the URL or DOI associated with the entry:
+- Prefers DOI if available
+- Falls back to URL field
+- Supports arXiv eprint field
+
+*** ✅ Open Notes (N)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Opens or creates notes for the entry. Notes are stored as org files in the configured notes directory.
+
+*** ✅ Google Scholar (g)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Searches Google Scholar for the entry using DOI or title.
+
+*** ✅ CrossRef (x)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Opens the entry in CrossRef search using the DOI.
+
+*** ✅ Web of Science (w)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Opens the entry in Web of Science using the DOI.
+
+** ✅ Action Commands
+CLOSED: [2026-01-19 Mon 18:23]
+
+*** ✅ Copy Key (y)
+CLOSED: [2026-01-19 Mon 18:23]
+
+Copies the citation key to the clipboard.
+
+*** ✅ Copy BibTeX (b)
+CLOSED: [2026-01-19 Mon 18:24]
+
+Copies the entire BibTeX entry to the clipboard.
+
+*** ✅ Kill Entry (k)
+CLOSED: [2026-01-19 Mon 18:24]
+
+Deletes the entire entry (with confirmation). The deleted entry is copied to the clipboard for easy recovery.
+
+*** ✅ Generate Citation Key (K)
+CLOSED: [2026-01-19 Mon 18:24]
+
+Generates a standardized citation key from the entry's author and year fields. Offers multiple format options:
+
+- =lastname-year= (e.g., =smith-2020=)
+- =lastname-titleword-year= (e.g., =smith-machine-2020=)
+- =lastname-titlewords-year= (e.g., =smith-machine-learning-2020=)
+
+Features:
+- Extracts first author's last name from various formats ("John Smith", "Smith, John")
+- Removes stop words from title (the, a, an, using, novel, etc.)
+- *Checks for uniqueness* against all other entries in the file
+- Adds suffix (a, b, c) if key already exists
+- Shows quick pick menu to choose format
+
+Example:
+#+BEGIN_EXAMPLE
+Before: @article{ABC123,
+          author = {John Smith and Jane Doe},
+          title = {Machine Learning for Science},
+          year = {2020}
+        }
+
+After:  @article{smith-2020,  (or smith-machine-2020, smith-machine-learning-2020)
+#+END_EXAMPLE
+
+** ✅ Help Command
+CLOSED: [2026-01-19 Mon 18:24]
+
+*** ✅ Show Help (?)
+CLOSED: [2026-01-19 Mon 18:24]
+
+Displays a quick pick menu with all available BibTeX speed commands. Select a command to execute it.
+
+** ✅ Configuration
+CLOSED: [2026-01-19 Mon 18:24]
+
+BibTeX speed commands use the same enable/disable setting as org-mode speed commands:
+
+#+BEGIN_SRC json
+{
+  "scimax.speedCommands.enabled": true
+}
+#+END_SRC
+
+For PDF and notes access, configure:
+
+#+BEGIN_SRC json
+{
+  "scimax.ref.pdfDirectory": "~/Papers",
+  "scimax.ref.notesDirectory": "~/Notes/papers"
+}
+#+END_SRC
+
+** ✅ Comparison with Emacs org-ref
+CLOSED: [2026-01-19 Mon 18:24]
+
+These BibTeX speed commands are inspired by the functions in Emacs `org-ref-bibtex.el':
+
+| Scimax       | Emacs org-ref Function           |
+|--------------+----------------------------------|
+| n            | org-ref-bibtex-next-entry        |
+| p            | org-ref-bibtex-previous-entry    |
+| s            | org-ref-sort-bibtex-entry        |
+| d            | org-ref-downcase-bibtex-entry    |
+| t            | org-ref-title-case-article       |
+| S            | org-ref-sentence-case-article    |
+| c            | org-ref-clean-bibtex-entry       |
+| o            | org-ref-open-bibtex-pdf          |
+| u            | org-ref-open-in-browser          |
+| N            | org-ref-open-bibtex-notes        |
+| g            | org-ref-bibtex-google-scholar    |
+| x            | org-ref-bibtex-crossref          |
+| w            | org-ref-bibtex-wos               |
+
+* ✅ Related Documentation
+CLOSED: [2026-01-15 Thu 14:52]
+
+- [[file:24-keybindings.org][Keybindings Reference]] - Regular keybindings for all features
+- [[file:02-document-structure.org][Document Structure]] - Headings, folding, and outline management
+- [[file:03-todo-items.org][TODO Items]] - Task management and workflow
+- [[file:06-timestamps.org][Timestamps]] - Date and time handling
+- [[file:13-agenda.org][Agenda]] - Task planning and scheduling views
+
+* ✅ See Also
+CLOSED: [2026-01-15 Thu 14:52]
+
+** ✅ External Resources
+CLOSED: [2026-01-15 Thu 14:52]
+
+- [[https://orgmode.org/manual/Speed-Keys.html][Org-mode Manual: Speed Keys]]
+- [[https://orgmode.org/worg/org-tutorials/org-speed-keys.html][Org-mode Speed Keys Tutorial]]
+
+** ✅ Implementation Details
+CLOSED: [2026-01-15 Thu 14:52]
+
+Speed commands are implemented in:
+- `/src/org/speedCommands/' - Core implementation for org/markdown
+  - `config.ts' - Command definitions and mappings
+  - `context.ts' - Context detection and command registration
+  - `navigation.ts' - Navigation commands
+  - `visibility.ts' - Folding/visibility commands
+  - `planning.ts' - Schedule and deadline commands
+  - `metadata.ts' - Tags, properties, and effort
+  - `clocking.ts' - Time tracking
+  - `archive.ts' - Archive operations
+  - `structure.ts' - Structure editing commands
+- `/src/references/bibtexSpeedCommands.ts' - BibTeX speed commands
+  - Entry navigation (next, previous, jump)
+  - Entry formatting (sort, downcase, title case, sentence case, clean)
+  - Entry access (PDF, URL, notes, Google Scholar, CrossRef, Web of Science)
+  - Entry actions (copy key, copy entry, delete)
+
+* Navigation
+
+- Previous: [[file:22-hydra-menus.org][Hydra Menus]]
+- Index: [[file:00-index.org][Documentation Index]]
+- Next: [[file:24-keybindings.org][Keybindings]]

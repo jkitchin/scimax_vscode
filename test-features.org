@@ -1,0 +1,332 @@
+#+TITLE: Scimax VS Code Feature Test
+#+AUTHOR: John Kitchin
+#+DATE: <2026-01-11 Sat>
+#+OPTIONS: toc:2 num:t
+
+* Introduction
+This file tests various org-mode features in the Scimax VS Code extension.
+
+** Text Formatting
+Here are examples of *bold*, /italic/, _underline_, =verbatim=, ~code~, and +strikethrough+ text.
+
+You can also combine them: */bold italic/*, _/underline italic/_.
+
+** Links
+- File link: [[file:package.json][Package JSON]]
+- URL link: [[https://github.com/jkitchin/scimax][Scimax on GitHub]]
+- DOI link: [[doi:10.1021/acs.jpclett.5b00831][A paper DOI]]
+
+* TODO Tasks and Planning [1/3]
+:PROPERTIES:
+:CATEGORY: testing
+:END:
+
+** TODO High priority task [#A]
+DEADLINE: <2026-01-16 Fri>
+:LOGBOOK:
+- State "TODO"       from ""           [2026-01-11 Sat 10:00]
+:END:
+
+This is an important task that needs to be done soon.
+
+** DONE Completed task [#B]
+
+CLOSED: [2026-01-10 Fri 15:30]
+:PROPERTIES:
+:EFFORT: 2h
+:END:
+
+This task has been completed.
+
+** TODO Recurring task [#C]
+SCHEDULED: <2026-01-12 Sun +1w>
+
+This task repeats every week.
+
+* Timestamps to Test :timestamps:
+Try shift-up/down on these timestamps:
+
+- Active timestamp: <2026-01-11 Sat>
+- With time: <2026-01-11 Sat 14:30>
+- Inactive: [2026-01-11 Sat]
+- Daily repeater: <2026-01-11 Sat +1d>
+- Weekly repeater: <2026-01-11 Sat +1w>
+- Monthly repeater: <2026-01-11 Sat +1m>
+- From completion: <2026-01-11 Sat .+1w>
+- Next future: <2026-01-11 Sat ++1w>
+
+Time range: <2026-01-11 Sat 09:00>--<2026-01-11 Sat 17:00>
+
+* Citations and References :citations:
+
+Here are some citation examples:
+- Single citation: cite:schuett-2018-schnet 
+- Multiple citations: cite:schuett-2018-schnet,gastegger-2018-wacsf-weigh
+- Textual citation: citet:schuett-2018-schnet
+- Parenthetical: citep:schuett-2018-schnet
+
+You can also use the newer org-cite syntax:
+- [cite:@schuett-2018-schnet]
+- [cite:@schuett-2018-schnet;@gastegger-2018-wacsf-weigh]
+
+* Code Blocks :code:
+
+
+** Jupyter-python example
+
+#+BEGIN_SRC jupyter-python
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+print(f"Max value: {y.max():.4f}")
+print(f"Min value: {y.min():.4f}")
+
+import matplotlib.pyplot as plt
+plt.plot([1, 2, 4]);
+#+END_SRC
+
+#+RESULTS:
+: Max value: 0.9999
+: Min value: -0.9999
+[[file:.ob-jupyter/output-1768393681840-0.png]]
+
+** Python Example
+
+#+BEGIN_SRC python :results output
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+print(f"Max value: {y.max():.4f}")
+print(f"Min value: {y.min():.4f}")
+#+END_SRC
+
+#+RESULTS:
+: Max value: 0.9999
+: Min value: -0.9999
+
+** Bash Example
+
+#+BEGIN_SRC bash
+echo "Current directory: $(pwd)"
+echo "Files: $(ls -1 | wc -l)"
+#+END_SRC
+
+#+RESULTS:
+: Current directory: /Users/jkitchin/Dropbox/emacs/projects/scimax_vscode
+: Files:       23
+
+** JavaScript Example
+
+#+BEGIN_SRC javascript
+const greeting = (name) => {
+    return `Hello, ${name}!`;
+};
+
+console.log(greeting("World"));
+#+END_SRC
+
+#+RESULTS:
+: Hello, World!
+
+** LaTeX Math
+
+#+BEGIN_SRC latex
+\begin{equation}
+E = mc^2
+\end{equation}
+#+END_SRC
+
+** inline code
+
+The area is src_python{20 * 4 + 5}.
+
+#+NAME: double
+#+BEGIN_SRC python :results value :var n=2 
+return n * 2
+#+END_SRC
+
+#+RESULTS:
+
+Twice the number 4 is call_double(n=5).
+
+#+CALL: double(n=4)
+
+#+CALL: test-features.org:double(6)
+
+* Tables :tables:
+
+#+name: tab-1
+#+caption: sample data table
+| City        | Name    | Age |
+|-------------+---------+-----|
+| Los Angeles | Bob     | 25  |
+| New York    | Alice   | 30  |
+| Chicago     | Charlie | 35  |
+|-------------+---------+-----|
+|             | Average | 30  |
+
+* Lists :lists:
+
+** Unordered List
+
+- First item
+  - Nested item 1
+  - Nested item 2
+- Second item
+- Third item with *bold*
+
+** Ordered List
+
+1. First step
+2. Second step
+   1. Sub-step A
+   2. Sub-step B
+3. Third step
+
+** Checkbox List
+
+- [x] Completed item
+- [ ] Incomplete item
+- [-] Partially complete
+  - [X] Sub-item done
+  - [ ] Sub-item pending
+
+** Definition List
+
+  - Term 1 :: Definition of term 1
+  - Term 2 :: Definition of term 2
+
+* Drawers and Properties
+
+** Item with Properties
+:PROPERTIES:
+:ID: unique-id-12345
+:CUSTOM_ID: custom-section
+:CREATED: [2026-01-11 Sat]
+:END:
+
+This section has custom properties.
+
+** Item with Notes Drawer
+:NOTES:
+These are private notes that can be folded away.
+Multiple lines of notes can go here.
+:END:
+
+The notes drawer contains additional information.
+
+* Math and LaTeX :math:
+
+Inline math: $E = mc^2$ and \(F = ma\).
+
+Display math:
+\begin{equation}
+\label{eq:schrodinger}
+i\hbar\frac{\partial}{\partial t}\Psi = \hat{H}\Psi
+\end{equation}
+
+See Eq. \ref{eq:schrodinger} for the Schrodinger equation.
+
+Another equation:
+\begin{align}
+\nabla \cdot \mathbf{E} &= \frac{\rho}{\epsilon_0} \\
+\nabla \cdot \mathbf{B} &= 0
+\end{align}
+
+* Footnotes
+
+This text has a footnote[fn:1]. Here is another reference[fn:note].
+
+[fn:1] This is the first footnote.
+
+[fn:note] This is a named footnote with more detailed explanation.
+
+* Special Blocks
+
+** Quote Block
+
+#+BEGIN_QUOTE
+The only way to do great work is to love what you do.
+-- Steve Jobs
+#+END_QUOTE
+
+** Example Block
+
+#+BEGIN_EXAMPLE
+This is preformatted text.
+  Whitespace is preserved.
+    Indentation matters.
+#+END_EXAMPLE
+
+** Center Block
+
+#+BEGIN_CENTER
+This text is centered. 
+#+END_CENTER
+
+** Comment Block (hidden in export)
+
+#+BEGIN_COMMENT
+This comment won't appear in exported documents.
+TODO: Remember to update this section.
+#+END_COMMENT
+
+* Cross-References :refs:
+
+See [[*Introduction][the introduction]] for an overview.
+
+For code examples, check [[*Code Blocks]].
+
+Reference to a custom ID: [[#custom-section][Custom Section]]
+
+<<target>>This is a radio target for linking.
+
+Link to target: [[target]]
+
+* Horizontal Rule
+
+Content above the rule.
+
+-----
+
+Content below the rule.
+
+* Macros and Export
+
+#+MACRO: version 0.1.0
+#+MACRO: today {{{date(%Y-%m-%d)}}}
+
+Current version: {{{version}}}
+
+Export snippet for HTML only: @@html:<span style="color:red">Red text</span>@@
+
+* Clock and Time Tracking
+
+** Tracked Task
+:LOGBOOK:
+CLOCK: [2026-01-11 Sat 09:00]--[2026-01-11 Sat 10:30] =>  1:30
+CLOCK: [2026-01-10 Fri 14:00]--[2026-01-10 Fri 16:00] =>  2:00
+:END:
+
+Total time tracked on this task.
+
+* Tags                                                    :tag1:tag2:important:
+
+This heading has multiple tags.
+
+** Inherited Tags                                                      :child:
+This section inherits parent tags.
+
+* Archive                                                           :ARCHIVE:
+:PROPERTIES:
+:ARCHIVE_TIME: 2026-01-01
+:END:
+
+Archived content goes here.
+
+bibstyle:unsrtnat
+bibliography:~/Dropbox/emacs/bibliography/references.bib

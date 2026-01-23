@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Image Overlays</title>
+<meta name="author" content="Scimax VS Code Team" />
+<style>
+.org-content { max-width: 800px; margin: 0 auto; padding: 2rem; font-family: system-ui, sans-serif; line-height: 1.6; }
+.org-section { margin-bottom: 2rem; }
+.org-todo-keyword { font-weight: bold; padding: 0.1em 0.4em; border-radius: 3px; margin-right: 0.3em; }
+.org-todo-todo { color: #c92a2a; }
+.org-todo-done { color: #2f9e44; }
+.org-kw-todo { color: #c92a2a; }
+.org-kw-next { color: #1971c2; }
+.org-kw-waiting { color: #e67700; }
+.org-kw-done { color: #2f9e44; }
+.org-kw-cancelled { color: #868e96; text-decoration: line-through; }
+.org-priority { color: #e67700; font-weight: bold; }
+.org-tags { float: right; font-size: 0.8em; }
+.org-tag { background: #e9ecef; padding: 0.2em 0.5em; border-radius: 3px; margin-left: 0.3em; }
+.org-timestamp { font-family: monospace; background: #f1f3f5; padding: 0.1em 0.3em; border-radius: 3px; }
+.org-src-container { margin: 1rem 0; }
+.src { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+pre.example { background: #fff3bf; padding: 1rem; border-radius: 4px; }
+blockquote { border-left: 4px solid #ced4da; margin: 1rem 0; padding-left: 1rem; color: #495057; }
+.org-center { text-align: center; }
+.verse { white-space: pre-line; font-style: italic; }
+.org-table { border-collapse: collapse; margin: 1rem 0; }
+.org-table th, .org-table td { border: 1px solid #dee2e6; padding: 0.5rem; }
+.org-table th { background: #f8f9fa; }
+.org-footnote-ref { font-size: 0.8em; }
+.org-footnotes { border-top: 1px solid #dee2e6; margin-top: 2rem; padding-top: 1rem; font-size: 0.9em; }
+.org-underline { text-decoration: underline; }
+.org-statistics-cookie { font-family: monospace; }
+.org-toc { background: #f8f9fa; padding: 1rem; border-radius: 4px; margin-bottom: 2rem; }
+.org-toc ul { list-style: none; padding-left: 1rem; }
+.section-number { color: #868e96; margin-right: 0.5em; }
+.admonition { padding: 1rem; margin: 1rem 0; border-radius: 4px; border-left: 4px solid; }
+.admonition.org-warning { background: #fff5f5; border-color: #fa5252; }
+.admonition.org-note { background: #e7f5ff; border-color: #339af0; }
+.admonition.org-tip { background: #ebfbee; border-color: #40c057; }
+.admonition.org-important { background: #fff9db; border-color: #fab005; }
+/* Citation styles */
+.citation { color: inherit; }
+.citation a, .citation-link { color: #1971c2; text-decoration: none; }
+.citation a:hover, .citation-link:hover { text-decoration: underline; }
+.citation-missing { color: #c92a2a; font-style: italic; }
+.citation.textual { }
+.citation.author-only { }
+.citation.year-only { }
+/* Bibliography styles */
+.bibliography { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #dee2e6; }
+.bibliography h2 { font-size: 1.5rem; margin-bottom: 1rem; }
+.bibliography .csl-entry { margin-bottom: 0.75rem; padding-left: 2em; text-indent: -2em; scroll-margin-top: 2rem; }
+.bibliography .csl-entry:target { background-color: #fff3bf; transition: background-color 0.3s; }
+.bibliography .csl-bib-body { font-size: 0.95em; }
+/* Citation back-links */
+.citation-backlinks { font-size: 0.85em; color: #868e96; margin-left: 0.5em; }
+.citation-backlink { color: #1971c2; text-decoration: none; margin: 0 0.1em; }
+.citation-backlink:hover { text-decoration: underline; }
+/* Highlight citation when navigated to */
+.citation { scroll-margin-top: 2rem; }
+.citation:target { background-color: #fff3bf; transition: background-color 0.3s; }
+
+/* Editmark Styles */
+.editmark-ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-comment {
+    background-color: #fff3cd;
+    color: #856404;
+    font-style: italic;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+.editmark-typo {
+    padding: 0 2px;
+}
+.editmark-typo del {
+    background-color: #f8d7da;
+    color: #721c24;
+    text-decoration: line-through;
+    margin-right: 2px;
+}
+.editmark-typo ins {
+    background-color: #d4edda;
+    color: #155724;
+    text-decoration: none;
+}
+
+</style>
+<script>MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"]]}};</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<main class="org-content">
+<header id="title-block">
+<h1 class="title">Image Overlays</h1>
+<p class="author">Scimax VS Code Team</p>
+<p class="date">2026-01-13</p>
+</header>
+<nav id="table-of-contents" class="org-toc">
+<h2>Table of Contents</h2>
+<ul>
+<ul>
+<li><a href="#org-introduction">✅ Introduction</a></li>
+<ul>
+<li><a href="#org-how-image-overlays-work">✅ How Image Overlays Work</a></li>
+</ul>
+<li><a href="#org-supported-image-formats">✅ Supported Image Formats</a></li>
+<li><a href="#org-image-link-syntax">✅ Image Link Syntax</a></li>
+<ul>
+<li><a href="#org-basic-image-links">✅ Basic Image Links</a></li>
+<li><a href="#org-file-protocol-links">✅ File Protocol Links</a></li>
+<li><a href="#org-links-with-descriptions">✅ Links with Descriptions</a></li>
+<li><a href="#org-absolute-vs-relative-paths">✅ Absolute vs Relative Paths</a></li>
+<li><a href="#org-remote-images">✅ Remote Images</a></li>
+</ul>
+<li><a href="#org-image-sizing-and-attributes">✅ Image Sizing and Attributes</a></li>
+<ul>
+<li><a href="#org-attr-org-keyword">✅ ATTR_ORG Keyword</a></li>
+<li><a href="#org-supported-attributes">✅ Supported Attributes</a></li>
+<li><a href="#org-export-specific-attributes">✅ Export-Specific Attributes</a></li>
+<li><a href="#org-adding-captions">✅ Adding Captions</a></li>
+</ul>
+<li><a href="#org-enabling-and-disabling-image-display">✅ Enabling and Disabling Image Display</a></li>
+<ul>
+<li><a href="#org-global-toggle">✅ Global Toggle</a></li>
+<li><a href="#org-per-file-toggle">✅ Per-File Toggle</a></li>
+<li><a href="#org-via-configuration">✅ Via Configuration</a></li>
+</ul>
+<li><a href="#org-configuration-settings">✅ Configuration Settings</a></li>
+<ul>
+<li><a href="#org-scimax-imageoverlays-enabled">✅ scimax.imageOverlays.enabled</a></li>
+<li><a href="#org-scimax-imageoverlays-maxwidth">✅ scimax.imageOverlays.maxWidth</a></li>
+<li><a href="#org-scimax-imageoverlays-maxheight">✅ scimax.imageOverlays.maxHeight</a></li>
+<li><a href="#org-scimax-imageoverlays-rendermode">✅ scimax.imageOverlays.renderMode</a></li>
+<li><a href="#org-scimax-imageoverlays-onlywhencursornotinlink">✅ scimax.imageOverlays.onlyWhenCursorNotInLink</a></li>
+<li><a href="#org-scimax-imageoverlays-excludepatterns">✅ scimax.imageOverlays.excludePatterns</a></li>
+<li><a href="#org-scimax-imageoverlays-maxoverlaysperdocument">✅ scimax.imageOverlays.maxOverlaysPerDocument</a></li>
+<li><a href="#org-scimax-imageoverlays-showdimensions">✅ scimax.imageOverlays.showDimensions</a></li>
+<li><a href="#org-scimax-imageoverlays-cacheenabled">✅ scimax.imageOverlays.cacheEnabled</a></li>
+</ul>
+<li><a href="#org-images-from-source-block-results">✅ Images from Source Block Results</a></li>
+<ul>
+<li><a href="#org-jupyter-kernel-output">✅ Jupyter Kernel Output</a></li>
+</ul>
+<li><a href="#org-available-commands">✅ Available Commands</a></li>
+<ul>
+<li><a href="#org-scimax-toggle-image-overlays">✅ Scimax: Toggle Image Overlays</a></li>
+<li><a href="#org-scimax-toggle-image-overlays-for-current-file">✅ Scimax: Toggle Image Overlays for Current File</a></li>
+<li><a href="#org-scimax-refresh-image-overlays">✅ Scimax: Refresh Image Overlays</a></li>
+<li><a href="#org-scimax-clear-image-overlay-cache">✅ Scimax: Clear Image Overlay Cache</a></li>
+<li><a href="#org-scimax-show-image-overlay-cache-statistics">✅ Scimax: Show Image Overlay Cache Statistics</a></li>
+</ul>
+<li><a href="#org-troubleshooting-image-display">✅ Troubleshooting Image Display</a></li>
+<ul>
+<li><a href="#org-images-not-showing">✅ Images Not Showing</a></li>
+<li><a href="#org-overlays-disappear-when-editing">✅ Overlays Disappear When Editing</a></li>
+<li><a href="#org-performance-issues">✅ Performance Issues</a></li>
+<li><a href="#org-thumbnails-are-blurry-or-corrupted">✅ Thumbnails Are Blurry or Corrupted</a></li>
+<li><a href="#org-relative-paths-not-resolving">✅ Relative Paths Not Resolving</a></li>
+<li><a href="#org-hover-preview-not-working">✅ Hover Preview Not Working</a></li>
+</ul>
+<li><a href="#org-example-configuration">✅ Example Configuration</a></li>
+<ul>
+<li><a href="#org-minimal-configuration">✅ Minimal Configuration</a></li>
+<li><a href="#org-power-user-configuration">✅ Power User Configuration</a></li>
+<li><a href="#org-performance-focused-configuration">✅ Performance-Focused Configuration</a></li>
+</ul>
+<li><a href="#org-complete-example">✅ Complete Example</a></li>
+<li><a href="#org-see-also">✅ See Also</a></li>
+<li><a href="#org-technical-details">✅ Technical Details</a></li>
+<ul>
+<li><a href="#org-thumbnail-generation">✅ Thumbnail Generation</a></li>
+<li><a href="#org-cache-location">✅ Cache Location</a></li>
+<li><a href="#org-performance-considerations">✅ Performance Considerations</a></li>
+<li><a href="#org-vs-code-limitations">✅ VS Code Limitations</a></li>
+</ul>
+<li><a href="#org-navigation">Navigation</a></li>
+</ul>
+</ul>
+</nav>
+
+<div id="org-introduction" class="org-section org-level-1">
+<h1>✅ Introduction</h1>
+<p>CLOSED: [2026-01-15 Thu 14:06]</p>
+
+<p>Image overlays provide inline image display functionality in org-mode files, similar to Emacs org-mode&#39;s image display feature. When enabled, image links are rendered as thumbnails directly in the editor, allowing you to preview images without opening them separately.</p>
+
+<p>This feature enhances the visual experience of working with org documents that contain images, such as:</p>
+
+<ul>
+<li><p>Scientific notebooks with plots and diagrams</p>
+</li>
+<li><p>Documentation with screenshots and illustrations</p>
+</li>
+<li><p>Journal entries with photos</p>
+</li>
+<li><p>Results from source block executions (especially Jupyter)</p>
+</li>
+</ul>
+
+<div id="org-how-image-overlays-work" class="org-section org-level-2">
+<h2>✅ How Image Overlays Work</h2>
+<p>CLOSED: [2026-01-15 Thu 14:07]</p>
+
+<p>Due to VS Code&#39;s limitations compared to Emacs overlays, the extension uses <strong>Hover Previews</strong> - Full-size image preview when hovering over image links</p>
+
+<p>Thumbnails are automatically generated and cached for performance, using ImageMagick or native macOS tools when available.</p>
+
+</div>
+</div>
+<div id="org-supported-image-formats" class="org-section org-level-1">
+<h1>✅ Supported Image Formats</h1>
+<p>CLOSED: [2026-01-15 Thu 14:07]</p>
+
+<p>The image overlay system supports the following image formats:</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Format</th><th>Extension(s)</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td>PNG</td><td>.png</td><td>Fully supported</td></tr>
+<tr><td>JPEG</td><td>.jpg, .jpeg</td><td>Fully supported</td></tr>
+<tr><td>GIF</td><td>.gif</td><td>Fully supported (static frames)</td></tr>
+<tr><td>SVG</td><td>.svg</td><td>Scalable vector graphics</td></tr>
+<tr><td>WebP</td><td>.webp</td><td>Modern web format</td></tr>
+<tr><td>BMP</td><td>.bmp</td><td>Bitmap images</td></tr>
+<tr><td>TIFF</td><td>.tiff, .tif</td><td>Tagged image format</td></tr>
+<tr><td>ICO</td><td>.ico</td><td>Icon files</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-image-link-syntax" class="org-section org-level-1">
+<h1>✅ Image Link Syntax</h1>
+<p>CLOSED: [2026-01-15 Thu 14:07]</p>
+
+<div id="org-basic-image-links" class="org-section org-level-2">
+<h2>✅ Basic Image Links</h2>
+<p>CLOSED: [2026-01-15 Thu 14:07]</p>
+
+<p>The simplest way to include an image is with a basic link:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[./_static/logo.svg]]</code></pre>
+</div>
+
+<p>This displays the image inline and can be clicked to open.</p>
+
+</div>
+<div id="org-file-protocol-links" class="org-section org-level-2">
+<h2>✅ File Protocol Links</h2>
+<p>CLOSED: [2026-01-15 Thu 14:08]</p>
+
+<p>You can explicitly use the file: protocol:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[file:./_static/logo.svg]]</code></pre>
+</div>
+
+<p>Both formats work identically - the file: prefix is optional for local files.</p>
+
+</div>
+<div id="org-links-with-descriptions" class="org-section org-level-2">
+<h2>✅ Links with Descriptions</h2>
+<p>CLOSED: [2026-01-17 Sat 09:33]</p>
+
+<p>Add descriptive text that appears as a clickable link:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">[[./_static/logo.svg][My beautiful diagram]]
+[[file:./_static/logo.svg][Demo Screenshot]]</code></pre>
+</div>
+
+<p>The description text is shown in the editor, while the image overlay appears in the gutter or inline.</p>
+
+</div>
+<div id="org-absolute-vs-relative-paths" class="org-section org-level-2">
+<h2>✅ Absolute vs Relative Paths</h2>
+<p>CLOSED: [2026-01-17 Sat 09:49]</p>
+
+<p>Both absolute and relative paths are supported:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org"># Relative to current file
+[[./_static/logo.svg]]
+
+
+# Absolute paths
+[[file:/Users/jkitchin/Dropbox/projects/scimax_vscode/docs/_static/logo.svg]]
+[[file:~/Dropbox/projects/scimax_vscode/docs/_static/logo.svg]]</code></pre>
+</div>
+
+<p>The ~ (tilde) is expanded to the home directory on Unix-like systems.</p>
+
+</div>
+<div id="org-remote-images" class="org-section org-level-2">
+<h2>✅ Remote Images</h2>
+<p>CLOSED: [2026-01-17 Sat 09:52]</p>
+
+<p>Remote image URLs are <strong>not</strong> displayed as overlays but are still valid links:</p>
+
+<p><img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="" /></p>
+
+<p>These links work for navigation but won&#39;t show thumbnails in the editor.</p>
+
+</div>
+</div>
+<div id="org-image-sizing-and-attributes" class="org-section org-level-1">
+<h1>✅ Image Sizing and Attributes</h1>
+<p>CLOSED: [2026-01-17 Sat 09:39]</p>
+
+<div id="org-attr-org-keyword" class="org-section org-level-2">
+<h2>✅ ATTR_ORG Keyword</h2>
+<p>Control how images are displayed using the #+ATTR_ORG: keyword above the image link:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">#+ATTR_ORG: :width 400
+[[_static/logo.svg]]</code></pre>
+</div>
+
+</div>
+<div id="org-supported-attributes" class="org-section org-level-2">
+<h2>✅ Supported Attributes</h2>
+<p>CLOSED: [2026-01-17 Sat 09:40]</p>
+
+<table class="org-table">
+<thead>
+<tr><th>Attribute</th><th>Purpose</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>:width</td><td>Image width (export)</td><td>:width 400</td></tr>
+<tr><td>:height</td><td>Image height (export)</td><td>:height 300</td></tr>
+<tr><td>:scale</td><td>Scale factor (export)</td><td>:scale 0.5</td></tr>
+<tr><td>:align</td><td>Alignment (export)</td><td>:align center</td></tr>
+<tr><td>:alt</td><td>Alt text (export)</td><td>:alt &quot;Description&quot;</td></tr>
+</tbody>
+</table>
+
+</div>
+<div id="org-export-specific-attributes" class="org-section org-level-2">
+<h2>✅ Export-Specific Attributes</h2>
+<p>CLOSED: [2026-01-17 Sat 09:40]</p>
+
+<p>For LaTeX and HTML export, use backend-specific attributes:</p>
+
+
+
+<p><img src="./_static/logo.svg" alt="" /></p>
+
+<p>See <a href="10-export.html">Export Documentation</a> for more details on export attributes.</p>
+
+</div>
+<div id="org-adding-captions" class="org-section org-level-2">
+<h2>✅ Adding Captions</h2>
+<p>CLOSED: [2026-01-17 Sat 19:52]</p>
+
+<p>Add captions that appear in exports:</p>
+
+
+
+<p><img src="./_static/logo.svg" alt="" /></p>
+
+</div>
+</div>
+<div id="org-enabling-and-disabling-image-display" class="org-section org-level-1">
+<h1>✅ Enabling and Disabling Image Display</h1>
+<p>CLOSED: [2026-01-17 Sat 09:54]</p>
+
+<div id="org-global-toggle" class="org-section org-level-2">
+<h2>✅ Global Toggle</h2>
+<p>CLOSED: [2026-01-17 Sat 09:54]</p>
+
+<p>Toggle image overlays for all org files:</p>
+
+<ul>
+<li><p><strong>Command:</strong> Scimax: Toggle Image Overlays</p>
+</li>
+<li><p><strong>Command ID:</strong> <a href="#org-cmd-scimax-imageoverlays-toggle">[[cmd:scimax.imageOverlays.toggle]]</a></p>
+</li>
+</ul>
+
+</div>
+<div id="org-per-file-toggle" class="org-section org-level-2">
+<h2>✅ Per-File Toggle</h2>
+<p>CLOSED: [2026-01-17 Sat 09:54]</p>
+
+<p>Toggle image overlays for the current file only:</p>
+
+<ul>
+<li><p><strong>Command:</strong> Scimax: Toggle Image Overlays for Current File</p>
+</li>
+<li><p><strong>Command ID:</strong> scimax.imageOverlays.toggleCurrentFile</p>
+</li>
+</ul>
+
+<p>This is useful when you want overlays disabled for one specific large document but enabled globally.</p>
+
+</div>
+<div id="org-via-configuration" class="org-section org-level-2">
+<h2>✅ Via Configuration</h2>
+<p>CLOSED: [2026-01-17 Sat 09:54]</p>
+
+<p>Permanently enable or disable in your settings.json:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.enabled&quot;: true
+}</code></pre>
+</div>
+
+<p>Set to false to disable by default.</p>
+
+</div>
+</div>
+<div id="org-configuration-settings" class="org-section org-level-1">
+<h1>✅ Configuration Settings</h1>
+<p>CLOSED: [2026-01-17 Sat 09:54]</p>
+
+<div id="org-scimax-imageoverlays-enabled" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.enabled</h2>
+<p>CLOSED: [2026-01-17 Sat 09:31]</p>
+
+<p>Enable or disable inline image thumbnails globally.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.enabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-maxwidth" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.maxWidth</h2>
+<p>CLOSED: [2026-01-17 Sat 09:31]</p>
+
+<p>Maximum width in pixels for thumbnail icons. Thumbnails are scaled down to fit within these dimensions while maintaining aspect ratio.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.maxWidth&quot;: 128
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-maxheight" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.maxHeight</h2>
+<p>CLOSED: [2026-01-17 Sat 09:31]</p>
+
+<p>Maximum height in pixels for thumbnail icons.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.maxHeight&quot;: 128
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-rendermode" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.renderMode</h2>
+<p>CLOSED: [2026-01-17 Sat 09:31]</p>
+
+<p>Controls where image thumbnails are displayed:</p>
+
+<ul>
+<li><p>gutter - Show thumbnail in the editor gutter (line margin) - <strong>recommended</strong></p>
+</li>
+<li><p>after - Show emoji and dimensions inline after the link text</p>
+</li>
+<li><p>both - Show both gutter thumbnail and inline decoration</p>
+</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.renderMode&quot;: &quot;gutter&quot;
+}</code></pre>
+</div>
+
+<ul>
+<li><p>Use gutter for a clean, unobtrusive experience</p>
+</li>
+<li><p>Use after if you prefer inline indicators</p>
+</li>
+<li><p>Use both for maximum visibility</p>
+</li>
+</ul>
+
+</div>
+<div id="org-scimax-imageoverlays-onlywhencursornotinlink" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.onlyWhenCursorNotInLink</h2>
+<p>CLOSED: [2026-01-17 Sat 10:01]</p>
+
+<p>Hide the overlay when your cursor is inside the image link. This prevents the thumbnail from obscuring the link text you&#39;re editing.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.onlyWhenCursorNotInLink&quot;: true
+}</code></pre>
+</div>
+
+<p>Set to false to always show overlays, even when editing.</p>
+
+</div>
+<div id="org-scimax-imageoverlays-excludepatterns" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.excludePatterns</h2>
+<p>CLOSED: [2026-01-17 Sat 10:01]</p>
+
+<p>Regex patterns for image paths to exclude from overlay display. Useful for hiding certain directories or file patterns.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.excludePatterns&quot;: [
+    &quot;\\.tmp/&quot;,
+    &quot;/archive/&quot;,
+    &quot;draft-.*\\.png&quot;
+  ]
+}</code></pre>
+</div>
+
+<p>Examples:</p>
+
+<ul>
+<li><p>&quot;\\.tmp/&quot; - Exclude images in .tmp directories</p>
+</li>
+<li><p>&quot;^http&quot; - Exclude remote URLs (already excluded by default)</p>
+</li>
+<li><p>&quot;screenshot-.*&quot; - Exclude files starting with &quot;screenshot-&quot;</p>
+</li>
+</ul>
+
+</div>
+<div id="org-scimax-imageoverlays-maxoverlaysperdocument" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.maxOverlaysPerDocument</h2>
+<p>CLOSED: [2026-01-17 Sat 10:02]</p>
+
+<p>Maximum number of image overlays to display per document. This prevents performance issues in documents with hundreds of images.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.maxOverlaysPerDocument&quot;: 500
+}</code></pre>
+</div>
+
+<p>If your document exceeds this limit, you&#39;ll see a warning message.</p>
+
+</div>
+<div id="org-scimax-imageoverlays-showdimensions" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.showDimensions</h2>
+<p>CLOSED: [2026-01-17 Sat 10:02]</p>
+
+<p>When using after or both render modes, show image dimensions (e.g., &quot;800x600&quot;) in the inline decoration.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.showDimensions&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-scimax-imageoverlays-cacheenabled" class="org-section org-level-2">
+<h2>✅ scimax.imageOverlays.cacheEnabled</h2>
+<p>CLOSED: [2026-01-17 Sat 10:02]</p>
+
+<p>Enable thumbnail caching for faster loading. Thumbnails are stored in the extension&#39;s global storage directory.</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.cacheEnabled&quot;: true
+}</code></pre>
+</div>
+
+<p>Set to false to disable caching (may impact performance).</p>
+
+</div>
+</div>
+<div id="org-images-from-source-block-results" class="org-section org-level-1">
+<h1>✅ Images from Source Block Results</h1>
+<p>CLOSED: [2026-01-17 Sat 10:02]</p>
+
+<div id="org-jupyter-kernel-output" class="org-section org-level-2">
+<h2>✅ Jupyter Kernel Output</h2>
+<p>CLOSED: [2026-01-17 Sat 10:05]</p>
+
+<p>Jupyter kernels automatically save image output to the .ob-jupyter/ directory:</p>
+
+<div class="org-src-container">
+<pre class="src src-jupyter-python"><code class="language-jupyter-python">import matplotlib.pyplot as plt
+import numpy as np
+
+plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
+plt.show()</code></pre>
+</div>
+
+
+<p><img src=".ob-jupyter/output-1768662289804-0.png" alt="" /></p>
+
+<p>These images are automatically displayed as overlays when image overlays are enabled.</p>
+
+<p>See <a href="09-jupyter.html">Jupyter Documentation</a> for more details on Jupyter integration.</p>
+
+</div>
+</div>
+<div id="org-available-commands" class="org-section org-level-1">
+<h1>✅ Available Commands</h1>
+<p>CLOSED: [2026-01-17 Sat 12:42]</p>
+
+<div id="org-scimax-toggle-image-overlays" class="org-section org-level-2">
+<h2>✅ Scimax: Toggle Image Overlays</h2>
+<p>CLOSED: [2026-01-17 Sat 12:42]</p>
+
+<p>Toggle image overlays globally for all org files. When disabled, no thumbnails are shown but links remain functional.</p>
+
+</div>
+<div id="org-scimax-toggle-image-overlays-for-current-file" class="org-section org-level-2">
+<h2>✅ Scimax: Toggle Image Overlays for Current File</h2>
+<p>CLOSED: [2026-01-17 Sat 12:42]</p>
+
+<p>Toggle image overlays for the currently active org file only. Useful for temporarily hiding overlays in specific documents.</p>
+
+</div>
+<div id="org-scimax-refresh-image-overlays" class="org-section org-level-2">
+<h2>✅ Scimax: Refresh Image Overlays</h2>
+<p>CLOSED: [2026-01-17 Sat 09:51]</p>
+
+<p>Manually refresh all image overlays in visible editors. This can be useful if:</p>
+
+<ul>
+<li><p>You&#39;ve modified image files externally</p>
+</li>
+<li><p>Overlays aren&#39;t updating correctly</p>
+</li>
+<li><p>You&#39;ve changed configuration settings</p>
+</li>
+</ul>
+
+</div>
+<div id="org-scimax-clear-image-overlay-cache" class="org-section org-level-2">
+<h2>✅ Scimax: Clear Image Overlay Cache</h2>
+<p>CLOSED: [2026-01-17 Sat 09:51]</p>
+
+<p>Clear the thumbnail cache. This will:</p>
+
+<ul>
+<li><p>Delete all cached thumbnails</p>
+</li>
+<li><p>Free up disk space</p>
+</li>
+<li><p>Force thumbnails to be regenerated on next display</p>
+</li>
+</ul>
+
+<p>Useful if thumbnails are corrupted or you want to reclaim space.</p>
+
+</div>
+<div id="org-scimax-show-image-overlay-cache-statistics" class="org-section org-level-2">
+<h2>✅ Scimax: Show Image Overlay Cache Statistics</h2>
+<p>CLOSED: [2026-01-17 Sat 09:50]</p>
+
+<p>Display information about the thumbnail cache:</p>
+
+<ul>
+<li><p>Number of cached thumbnails</p>
+</li>
+<li><p>Total cache size in KB</p>
+</li>
+</ul>
+
+<p>Useful for monitoring cache usage.</p>
+
+</div>
+</div>
+<div id="org-troubleshooting-image-display" class="org-section org-level-1">
+<h1>✅ Troubleshooting Image Display</h1>
+<p>CLOSED: [2026-01-17 Sat 09:51]</p>
+
+<div id="org-images-not-showing" class="org-section org-level-2">
+<h2>✅ Images Not Showing</h2>
+<p>CLOSED: [2026-01-17 Sat 09:51]</p>
+
+<p>If image overlays aren&#39;t displaying:</p>
+
+<ol>
+<li><p><strong>Check if overlays are enabled:</strong></p>
+</li>
+<li><p><strong>Verify the image file exists:</strong></p>
+</li>
+<li><p><strong>Check the file extension:</strong></p>
+</li>
+<li><p><strong>Try refreshing:</strong></p>
+</li>
+<li><p><strong>Check exclude patterns:</strong></p>
+</li>
+</ol>
+
+</div>
+<div id="org-overlays-disappear-when-editing" class="org-section org-level-2">
+<h2>✅ Overlays Disappear When Editing</h2>
+<p>CLOSED: [2026-01-17 Sat 09:51]</p>
+
+<p>This is <strong>normal behavior</strong> when scimax.imageOverlays.onlyWhenCursorNotInLink is true (default). The overlay hides when your cursor is inside the link to prevent obscuring the text you&#39;re editing.</p>
+
+<p>To always show overlays:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.onlyWhenCursorNotInLink&quot;: false
+}</code></pre>
+</div>
+
+</div>
+<div id="org-performance-issues" class="org-section org-level-2">
+<h2>✅ Performance Issues</h2>
+<p>CLOSED: [2026-01-17 Sat 09:51]</p>
+
+<p>If you experience slow performance:</p>
+
+<ol>
+<li><p><strong>Reduce the overlay limit:</strong></p>
+</li>
+<li><p><strong>Reduce thumbnail size:</strong></p>
+</li>
+<li><p><strong>Use gutter mode only:</strong></p>
+</li>
+<li><p><strong>Disable overlays for specific files:</strong></p>
+</li>
+</ol>
+
+</div>
+<div id="org-thumbnails-are-blurry-or-corrupted" class="org-section org-level-2">
+<h2>✅ Thumbnails Are Blurry or Corrupted</h2>
+<p>CLOSED: [2026-01-17 Sat 09:51]</p>
+
+<ol>
+<li><p><strong>Clear the cache:</strong></p>
+</li>
+<li><p><strong>Check if ImageMagick is installed:</strong></p>
+</li>
+<li><p><strong>Verify the original image isn&#39;t corrupted:</strong></p>
+</li>
+</ol>
+
+</div>
+<div id="org-relative-paths-not-resolving" class="org-section org-level-2">
+<h2>✅ Relative Paths Not Resolving</h2>
+<p>CLOSED: [2026-01-17 Sat 12:43]</p>
+
+<p>If relative paths aren&#39;t working:</p>
+
+<ol>
+<li><p><strong>Use ./ prefix for clarity:</strong></p>
+</li>
+<li><p><strong>Check your working directory:</strong></p>
+</li>
+<li><p><strong>Use absolute paths as a workaround:</strong></p>
+</li>
+</ol>
+
+</div>
+<div id="org-hover-preview-not-working" class="org-section org-level-2">
+<h2>✅ Hover Preview Not Working</h2>
+<p>CLOSED: [2026-01-17 Sat 12:43]</p>
+
+<p>If hover previews aren&#39;t showing:</p>
+
+<ol>
+<li><p><strong>Check hover delay:</strong></p>
+</li>
+<li><p><strong>Verify hover provider is active:</strong></p>
+</li>
+<li><p><strong>Try a different image format:</strong></p>
+</li>
+</ol>
+
+</div>
+</div>
+<div id="org-example-configuration" class="org-section org-level-1">
+<h1>✅ Example Configuration</h1>
+<p>CLOSED: [2026-01-17 Sat 12:43]</p>
+
+<div id="org-minimal-configuration" class="org-section org-level-2">
+<h2>✅ Minimal Configuration</h2>
+<p>CLOSED: [2026-01-17 Sat 12:44]</p>
+
+<p>For basic image overlay functionality:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.enabled&quot;: true,
+  &quot;scimax.imageOverlays.renderMode&quot;: &quot;gutter&quot;
+}</code></pre>
+</div>
+
+</div>
+<div id="org-power-user-configuration" class="org-section org-level-2">
+<h2>✅ Power User Configuration</h2>
+<p>CLOSED: [2026-01-17 Sat 12:44]</p>
+
+<p>For maximum visual feedback:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.enabled&quot;: true,
+  &quot;scimax.imageOverlays.maxWidth&quot;: 128,
+  &quot;scimax.imageOverlays.maxHeight&quot;: 128,
+  &quot;scimax.imageOverlays.renderMode&quot;: &quot;both&quot;,
+  &quot;scimax.imageOverlays.onlyWhenCursorNotInLink&quot;: true,
+  &quot;scimax.imageOverlays.showDimensions&quot;: true,
+  &quot;scimax.imageOverlays.maxOverlaysPerDocument&quot;: 500,
+  &quot;scimax.imageOverlays.cacheEnabled&quot;: true
+}</code></pre>
+</div>
+
+</div>
+<div id="org-performance-focused-configuration" class="org-section org-level-2">
+<h2>✅ Performance-Focused Configuration</h2>
+<p>CLOSED: [2026-01-17 Sat 12:44]</p>
+
+<p>For large documents with many images:</p>
+
+<div class="org-src-container">
+<pre class="src src-json"><code class="language-json">{
+  &quot;scimax.imageOverlays.enabled&quot;: true,
+  &quot;scimax.imageOverlays.maxWidth&quot;: 64,
+  &quot;scimax.imageOverlays.maxHeight&quot;: 64,
+  &quot;scimax.imageOverlays.renderMode&quot;: &quot;gutter&quot;,
+  &quot;scimax.imageOverlays.onlyWhenCursorNotInLink&quot;: true,
+  &quot;scimax.imageOverlays.showDimensions&quot;: false,
+  &quot;scimax.imageOverlays.maxOverlaysPerDocument&quot;: 100,
+  &quot;scimax.imageOverlays.cacheEnabled&quot;: true,
+  &quot;scimax.imageOverlays.excludePatterns&quot;: [&quot;archive/&quot;, &quot;\\.tmp/&quot;]
+}</code></pre>
+</div>
+
+</div>
+</div>
+<div id="org-complete-example" class="org-section org-level-1">
+<h1>✅ Complete Example</h1>
+<p>CLOSED: [2026-01-17 Sat 12:44]</p>
+
+<p>Here&#39;s a complete example showing various image link formats:</p>
+
+<div class="org-src-container">
+<pre class="src src-org"><code class="language-org">,* My Research Notes
+
+,** Experimental Results
+
+The experiment produced the following results:
+
+,#+CAPTION: Sine wave plot
+,#+NAME: fig:sine
+,#+ATTR_ORG: :width 400
+[[file:./plots/sine-wave.png]]
+
+As shown in Figure [[fig:sine]], the sine wave exhibits periodic behavior.
+
+,** Data Visualization
+
+,#+BEGIN_SRC jupyter-python :session analysis
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, y)
+plt.title(&#39;Sine Wave&#39;)
+plt.xlabel(&#39;x&#39;)
+plt.ylabel(&#39;sin(x)&#39;)
+plt.grid(True)
+plt.show()
+,#+END_SRC
+
+,#+RESULTS:
+[[file:.ob-jupyter/output-1705171200000-0.png]]
+
+,** Screenshots
+
+Here are some screenshots from the application:
+
+[[./screenshots/main-window.png][Main Window]]
+[[./screenshots/settings-dialog.png][Settings Dialog]]
+[[./screenshots/export-preview.png][Export Preview]]
+
+,** External Resources
+
+Note: Remote images don&#39;t show overlays but are clickable:
+
+[[https://example.com/logo.png][Company Logo]]</code></pre>
+</div>
+
+</div>
+<div id="org-see-also" class="org-section org-level-1">
+<h1>✅ See Also</h1>
+<ul>
+<li><p><a href="05-links.html">Links</a> - General link syntax and functionality</p>
+</li>
+<li><p><a href="07-source-blocks.html">Source Blocks</a> - Executing code that generates images</p>
+</li>
+<li><p><a href="09-jupyter.html">Jupyter Integration</a> - Working with Jupyter kernels</p>
+</li>
+<li><p><a href="10-export.html">Export</a> - Exporting documents with images</p>
+</li>
+<li><p><a href="26-configuration.html">Configuration</a> - Full configuration reference</p>
+</li>
+</ul>
+
+</div>
+<div id="org-technical-details" class="org-section org-level-1">
+<h1>✅ Technical Details</h1>
+<div id="org-thumbnail-generation" class="org-section org-level-2">
+<h2>✅ Thumbnail Generation</h2>
+<p>Thumbnails are generated using:</p>
+
+<ol>
+<li><p><strong>ImageMagick</strong> (convert command) - Preferred, works on all platforms</p>
+</li>
+<li><p><strong>macOS sips</strong> - Native macOS tool, used as fallback on Mac</p>
+</li>
+<li><p><strong>Direct copy</strong> - If no tools available, original images are used</p>
+</li>
+</ol>
+
+<p>Thumbnails are cached in the extension&#39;s global storage directory with filenames based on:</p>
+
+<ul>
+<li><p>MD5 hash of the original image path</p>
+</li>
+<li><p>Configured thumbnail dimensions</p>
+</li>
+<li><p>Original file extension</p>
+</li>
+</ul>
+
+</div>
+<div id="org-cache-location" class="org-section org-level-2">
+<h2>✅ Cache Location</h2>
+<p>Thumbnails are stored in:</p>
+
+<ul>
+<li><p><strong>Linux:</strong> ~/.config/Code/User/globalStorage/scimax-vscode<em>image-overlay-cache</em></p>
+</li>
+<li><p><strong>macOS:</strong> ~/Library/Application Support/Code/User/globalStorage/scimax-vscode<em>image-overlay-cache</em></p>
+</li>
+<li><p><strong>Windows:</strong> %APPDATA%\Code\User\globalStorage\scimax-vscode\image-overlay-cache\</p>
+</li>
+</ul>
+
+</div>
+<div id="org-performance-considerations" class="org-section org-level-2">
+<h2>✅ Performance Considerations</h2>
+<ul>
+<li><p>Thumbnail generation is asynchronous and doesn&#39;t block the editor</p>
+</li>
+<li><p>The cache prevents regenerating thumbnails on each file open</p>
+</li>
+<li><p>The maxOverlaysPerDocument setting prevents memory issues with large documents</p>
+</li>
+<li><p>Overlays are debounced during typing to avoid excessive updates</p>
+</li>
+<li><p>Gutter mode is more performant than after/both modes</p>
+</li>
+</ul>
+
+</div>
+<div id="org-vs-code-limitations" class="org-section org-level-2">
+<h2>✅ VS Code Limitations</h2>
+<p>Unlike Emacs, VS Code cannot:</p>
+
+<ul>
+<li><p>Display arbitrary-sized inline images in the editor</p>
+</li>
+<li><p>Replace link text with actual image content</p>
+</li>
+<li><p>Provide true &quot;overlay&quot; functionality at the text level</p>
+</li>
+</ul>
+
+<p>The implementation uses VS Code&#39;s decoration API with gutter icons as the closest approximation to Emacs overlays.</p>
+
+</div>
+</div>
+<div id="org-navigation" class="org-section org-level-1">
+<h1>Navigation</h1>
+<ul>
+<li><p>Previous: <a href="11-latex-preview.html">LaTeX Preview</a></p>
+</li>
+<li><p>Index: <a href="00-index.html">Documentation Index</a></p>
+</li>
+<li><p>Next: <a href="13-agenda.html">Agenda</a></p>
+</li>
+</ul>
+
+</div>
+</main>
+</body>
+</html>

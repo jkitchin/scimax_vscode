@@ -1,0 +1,258 @@
+#+TITLE: Unsupported and Limited Features
+#+AUTHOR: Scimax VS Code
+#+STARTUP: showall
+#+TODO: ⚠️ 👀 | ✅
+
+This document lists org-mode and Emacs features that are not supported or have limited functionality in scimax-vscode due to fundamental differences between Emacs and VS Code.
+
+* Display Limitations
+
+** Link Folding (Descriptive Links)
+
+In Emacs org-mode, links with descriptions like =[[https://example.com][Example]]= can be displayed in a "folded" state showing only "Example" with the URL hidden. The full link is revealed on cursor hover or edit.
+
+*VS Code limitation*: VS Code does not support this kind of dynamic text folding. Links are always displayed in their full form: =[[https://example.com][Example]]=.
+
+*Workaround*: None. You can use the hover preview to see a clickable version of the link.
+
+** Inline Image Display
+
+In Emacs org-mode, images can be displayed inline within the buffer using =org-toggle-inline-images= (=C-c C-x C-v=). Images appear directly in the text where the link is.
+
+*VS Code limitation*: VS Code's text editor does not support embedding images within the text buffer.
+
+*Workaround*: Scimax-vscode provides:
+- Hover tooltips that show image previews when you hover over image links
+- Gutter icons for source block output images
+- The Image Overlay panel (=Ctrl+Shift+I=) for viewing all images in the document
+
+** LaTeX Fragment Preview
+
+In Emacs org-mode, LaTeX fragments like =\(E=mc^2\)= or =\begin{equation}...= can be rendered as images inline using =org-latex-preview=.
+
+*VS Code limitation*: No inline LaTeX rendering in the editor.
+
+*Workaround*:
+- Use the LaTeX Live Preview panel (=Ctrl+Shift+L=) to see rendered LaTeX
+- Hover over LaTeX fragments to see a preview
+- Export to PDF/HTML to see rendered math
+
+* Editing Limitations
+
+** Indirect Buffers for Source Blocks
+
+In Emacs, =org-edit-special= (=C-c '=) opens source blocks in a separate "indirect buffer" with the appropriate major mode. This provides full language support (completion, syntax checking, etc.) while maintaining the connection to the original org file.
+
+*VS Code limitation*: VS Code does not have the concept of indirect buffers.
+
+*Workaround*: Scimax-vscode provides:
+- Syntax highlighting for source blocks via embedded language grammars
+- Language-specific completions within source blocks (partial)
+- You can extract code to a separate file using tangling (=:tangle filename=)
+
+** Column View
+
+In Emacs org-mode, =org-columns= provides a spreadsheet-like view of headline properties in a columnar format, useful for project planning and time tracking.
+
+*VS Code limitation*: Not implemented. VS Code's editor model doesn't easily support this overlay-style interface.
+
+*Workaround*: Use the Agenda view or database search to query and view properties.
+
+* Export Limitations
+
+** Visible-Only Export
+
+In Emacs org-mode, you can export only the visible (non-folded) content using =C-c C-e= and selecting the "visible" scope.
+
+*VS Code limitation*: The "visible" export option is defined but not yet implemented. VS Code's folding model is different from Emacs, making it difficult to determine what content is "visible".
+
+*Workaround*: Use subtree export to export specific sections, or manually narrow your document.
+
+** Additional Export Backends
+
+The following org-mode export backends are not implemented:
+
+| Backend     | Description                    | Alternative                    |
+|-------------+--------------------------------+--------------------------------|
+| ODT         | LibreOffice/OpenDocument       | Export to HTML, convert        |
+| ASCII       | Plain text export              | Export to Markdown             |
+| Beamer      | LaTeX presentations            | Use standard LaTeX with Beamer |
+| iCalendar   | Calendar export (.ics)         | Not available                  |
+| Texinfo     | GNU documentation format       | Not available                  |
+| man         | Unix manual pages              | Not available                  |
+
+It is possible to develop new export backends.
+
+* Babel/Code Execution Limitations
+
+** Unsupported Languages
+
+The following org-babel languages are not yet implemented:
+
+- Ruby
+- Perl
+- C/C++
+- Go
+- Rust
+- Gnuplot
+- Ditaa (ASCII diagrams)
+- Dot/Graphviz
+- Octave/MATLAB
+- LaTeX (as executable blocks)
+- Haskell
+- Clojure
+- Scheme/Racket
+
+*Workaround*: Use Jupyter kernels where available (e.g., =jupyter-rust=, =jupyter-go=).
+
+** Emacs Lisp Execution
+
+Emacs Lisp (=elisp=) blocks have only stub support since there's no Emacs Lisp interpreter in VS Code.
+
+*Workaround*: None for elisp-specific code. Consider porting logic to JavaScript/TypeScript.
+
+** Error Line Jumping
+
+In scimax, clicking on error messages in results jumps to the corresponding line in the source block.
+
+*VS Code limitation*: Not implemented.
+
+* Agenda Limitations
+
+** Custom Agenda Views
+
+Emacs org-agenda supports highly customizable agenda views with complex matching criteria, custom sorting, and display options via =org-agenda-custom-commands=.
+
+*VS Code limitation*: Only basic agenda views (day/week/month, TODO list, tag filter) are supported.
+
+*Workaround*: Use database search with custom queries for complex filtering.
+
+** Agenda Follow Mode
+
+In Emacs, =org-agenda-follow-mode= shows the corresponding org file location as you move through agenda items.
+
+*VS Code limitation*: Not implemented as a live-updating side-by-side view.
+
+*Workaround*: Click on agenda items to navigate to their location.
+
+* Other Limitations
+
+** Org-Crypt (Encryption)
+
+Emacs org-mode supports encrypting subtrees with GPG via =org-crypt=.
+
+*VS Code limitation*: Not implemented.
+
+** Org-Attach (Attachments)
+
+The =org-attach= system for managing file attachments to headlines is not implemented.
+
+*Workaround*: Use regular file links and organize attachments manually.
+
+** Radio Targets
+
+Radio targets (=<<<target>>>=) that automatically create links throughout the document are not supported.
+
+** Footnote Renumbering
+
+Automatic footnote renumbering (=org-footnote-renumber-fn:N=) is not implemented.
+
+** Speed Keys Customization
+
+While speed commands are implemented, the set of available commands is fixed and cannot be customized like in Emacs.
+
+** Macros
+
+Org-mode macros (={{{macro(args)}}}=) are parsed but have limited expansion support.
+
+* Platform Differences
+
+These are not bugs but fundamental differences in how VS Code works compared to Emacs:
+
+| Feature              | Emacs                   | VS Code                        |
+|----------------------+-------------------------+--------------------------------|
+| Buffer model         | Indirect buffers        | Single file per editor         |
+| Text properties      | Per-character overlays  | Decorations API (limited)      |
+| Keyboard input       | Full control            | Limited by browser/Electron    |
+| Modal editing        | Native support          | Via extensions only            |
+| Extension language   | Emacs Lisp              | TypeScript/JavaScript          |
+| Customization depth  | Everything customizable | Settings + extension API       |
+
+* ✅ Parser Safety Limits
+CLOSED: [2026-01-19 Mon 09:23]
+
+To prevent crashes or unresponsiveness when opening malformed org files, the parser enforces several safety limits. These limits are set high enough that they should never affect legitimate files.
+
+** ✅ Heading Nesting Depth
+CLOSED: [2026-01-19 Mon 09:23]
+
+*Limit*: 100 levels maximum
+
+*Rationale*: Prevents stack overflow from deeply nested headings. Real org files rarely exceed 10 levels of nesting.
+
+*What happens*: Headings beyond 100 levels deep are not included in search results or the document outline.
+
+** ✅ Block Line Limits
+CLOSED: [2026-01-19 Mon 09:23]
+
+*Limit*: 50,000 lines per block
+
+*Affected blocks*:
+- Source blocks (=#+BEGIN_SRC= ... =#+END_SRC=)
+- Quote blocks (=#+BEGIN_QUOTE= ... =#+END_QUOTE=)
+- Example blocks (=#+BEGIN_EXAMPLE= ... =#+END_EXAMPLE=)
+- Export blocks (=#+BEGIN_EXPORT= ... =#+END_EXPORT=)
+- Special blocks (=#+BEGIN_name= ... =#+END_name=)
+- LaTeX environments (=\begin{env}= ... =\end{env}=)
+- Drawers (=:DRAWER:= ... =:END:=)
+- Dynamic blocks (=#+BEGIN:= ... =#+END:=)
+
+*Rationale*: Prevents unbounded memory consumption if a block is never closed (e.g., =#+BEGIN_SRC= without =#+END_SRC=). No legitimate block approaches this size.
+
+*What happens*: If the closing tag is not found within 50,000 lines, the block is treated as ending at that point.
+
+** ✅ Properties Drawer Limit
+CLOSED: [2026-01-19 Mon 09:23]
+
+*Limit*: 1,000 lines
+
+*Rationale*: Properties drawers are typically small (<50 lines). A tighter limit catches unclosed drawers faster.
+
+** ✅ Tag Restrictions
+CLOSED: [2026-01-19 Mon 09:23]
+
+*Limit*: 50 tags per heading
+
+*Allowed characters*: Letters, numbers, underscore (=_=), at-sign (=@=), hash (=#=), percent (=%=), hyphen (=-=)
+
+*Not allowed*: Spaces, colons, and most punctuation (=!=, =$=, =^=, =&=, =*=, etc.)
+
+*Rationale*: The previous tag parser used a regex pattern that could cause exponential backtracking (ReDoS) on malformed input like =:::::::::::::=. The character restrictions prevent this vulnerability while supporting all common tag formats.
+
+*Example valid tags*:
+#+BEGIN_EXAMPLE
+* My Task :work:urgent:project-alpha:
+* Meeting :@office:2024:Q1_review:
+#+END_EXAMPLE
+
+*If you need exotic characters*: Tags with unsupported characters will not be recognized. Consider using standard alphanumeric tags with hyphens or underscores instead.
+
+** ✅ When Limits Are Hit
+CLOSED: [2026-01-19 Mon 09:23]
+
+When any limit is reached:
+- The parser stops consuming input at the limit boundary
+- No error is thrown to the user
+- Parsing continues with remaining content
+- The file remains usable, just with incomplete parsing of the oversized element
+
+This "graceful degradation" approach ensures that even malformed files can be opened and edited, rather than causing the extension to crash or hang.
+
+* ✅ Related Topics
+CLOSED: [2026-01-19 Mon 09:23]
+
+- [[file:10-export.org][Export System]] - What export features ARE supported
+- [[file:07-source-blocks.org][Source Blocks]] - Supported code execution features
+- [[file:08-supported-languages.org][Supported Languages]] - Languages with full Babel support
+- [[file:13-agenda.org][Agenda]] - Available agenda features
+- [[file:28-non-standard-features.org][Non-Standard Features]] - VS Code-specific features not in Emacs
