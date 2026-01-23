@@ -95,6 +95,19 @@ export const exportMenu: HydraMenuDefinition = {
                 },
             ],
         },
+        {
+            title: 'Custom Exporters',
+            items: [
+                {
+                    key: 'c',
+                    label: 'Custom exports',
+                    description: 'User-defined export templates',
+                    icon: 'extensions',
+                    exit: 'exit',
+                    action: 'scimax.export.custom',
+                },
+            ],
+        },
     ],
 };
 
