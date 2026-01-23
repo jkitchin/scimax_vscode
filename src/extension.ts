@@ -42,6 +42,7 @@ import { registerLatexLivePreviewCommands } from './org/latexLivePreview';
 import { registerBabelCommands, registerBabelCodeLens } from './org/babelProvider';
 import { registerBabelAdvancedCommands } from './parser/orgBabelAdvanced';
 import { registerExportCommands } from './org/exportProvider';
+import { registerCustomExportCommands } from './export/commands';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerSpeedCommands } from './org/speedCommands';
@@ -369,6 +370,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Export commands (for exporting to HTML, LaTeX, PDF, Markdown)
     registerExportCommands(context);
+
+    // Register Custom Export commands (user-defined export templates)
+    registerCustomExportCommands(context);
 
     // Register Manuscript commands (flatten LaTeX for journal submission)
     registerManuscriptCommands(context);
