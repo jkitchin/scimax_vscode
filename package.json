@@ -4998,6 +4998,13 @@
           "maximum": 100,
           "description": "Maximum file size in MB to index. Larger files are skipped to prevent memory issues. Useful when working with external repositories."
         },
+        "scimax.db.maxFileLines": {
+          "type": "number",
+          "default": 10000,
+          "minimum": 1000,
+          "maximum": 100000,
+          "description": "Maximum number of lines in a file to index. Files with more lines are skipped to prevent memory issues during parsing."
+        },
         "scimax.db.embeddingProvider": {
           "type": "string",
           "enum": [

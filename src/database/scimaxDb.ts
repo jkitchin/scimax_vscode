@@ -748,6 +748,20 @@ export class ScimaxDb {
             // Read file content (use async to not block event loop)
             const content = await fs.promises.readFile(filePath, 'utf8');
 
+            // Check line count limit (default 10000) to prevent OOM during parsing
+            // Large files with many lines create excessive objects during AST construction
+            const maxLines = vscode.workspace.getConfiguration('scimax.db')
+                .get<number>('maxFileLines', 10000);
+            const lineCount = content.split('\n').length;
+            if (lineCount > maxLines) {
+                log.warn('Skipping file with too many lines', {
+                    path: filePath,
+                    lines: lineCount,
+                    limit: maxLines
+                });
+                return;
+            }
+
             // Detect binary content (null bytes or high non-printable ratio)
             // Skip check for known text extensions - they may contain embedded binary-like content
             // (e.g., org files with Emacs Lisp results containing control characters)
