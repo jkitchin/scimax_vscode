@@ -48,6 +48,13 @@ node_modules/**
 !node_modules/fetch-ponyfill/**
 # other runtime deps
 !node_modules/@babel/**
+# handlebars for custom exporters
+!node_modules/handlebars/**
+!node_modules/minimist/**
+!node_modules/neo-async/**
+!node_modules/source-map/**
+!node_modules/wordwrap/**
+!node_modules/uglify-js/**
 # date-fns: include all (selective inclusion is too fragile)
 !node_modules/date-fns/**
 !node_modules/minimatch/**
