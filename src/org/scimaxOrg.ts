@@ -21,6 +21,14 @@ import {
     isInDynamicBlock
 } from '../parser/orgDynamicBlocks';
 import { OrgParser } from '../parser/orgParser';
+import {
+    resolveLoggingConfig,
+    combineEditsForRepeatLogging,
+    LoggingConfig
+} from './progressLogging';
+import { createLogger } from '../utils/logger';
+
+const log = createLogger('Org');
 
 // =============================================================================
 // Heading Detection Helpers (org and markdown support)
@@ -1838,9 +1846,11 @@ export async function cycleTodoState(): Promise<void> {
     let repeaterInfo: ReturnType<typeof findRepeaterForHeading> = null;
     if (isNowDone && !wasDone) {
         repeaterInfo = findRepeaterForHeading(document, position.line);
+        log.debug(`Checked for repeater: ${repeaterInfo ? 'found' : 'not found'}`);
     }
 
     if (repeaterInfo) {
+        log.debug(`Processing repeating task with repeater: ${repeaterInfo.match[8]}`);
         // This is a repeating task - advance the timestamp and reset to first active state
         const match = repeaterInfo.match;
         const year = parseInt(match[3]);
@@ -1866,18 +1876,68 @@ export async function cycleTodoState(): Promise<void> {
         const keyword = match[2];
         const newDeadlineLine = `${indent}${keyword}: ${newTimestamp}`;
 
+        // The "done" state that was attempted before we reset
+        const attemptedDoneState = nextState;
+
         // Reset to first active state instead of done state
         nextState = workflow.activeStates[0] || 'TODO';
 
         const newLine = `${stars} ${nextState} ${rest}`;
 
-        // Apply both edits: update heading and timestamp
+        // Check logging configuration
+        const loggingConfig = resolveLoggingConfig(document, position.line);
+        log.debug(`Progress logging config: logRepeat=${loggingConfig.logRepeat}, logIntoDrawer=${loggingConfig.logIntoDrawer}`);
+        let note: string | undefined;
+
+        // If note mode, prompt for note BEFORE making any edits
+        if (loggingConfig.logRepeat === 'note') {
+            note = await vscode.window.showInputBox({
+                prompt: 'Note for state change (optional)',
+                placeHolder: 'Enter a note or press Enter to skip'
+            });
+            // undefined means cancelled, empty string means no note
+            if (note === undefined) {
+                note = undefined; // User cancelled, proceed without note
+            } else if (note === '') {
+                note = undefined; // Empty note, don't include
+            }
+        }
+
+        // Build logging edits BEFORE any document changes (positions are relative to current state)
+        let logEdits: { range: vscode.Range; newText: string }[] = [];
+        if (loggingConfig.logRepeat !== 'false') {
+            log.debug(`Progress logging enabled, building edits for state change: ${currentState} -> ${attemptedDoneState}`);
+            const timestamp = new Date();
+            logEdits = combineEditsForRepeatLogging(
+                document,
+                position.line,
+                attemptedDoneState || 'DONE', // The state we tried to go to
+                currentState,                  // The state we came from
+                loggingConfig,
+                timestamp,
+                note
+            );
+            log.debug(`Generated ${logEdits.length} logging edits`);
+            for (const edit of logEdits) {
+                log.debug(`Edit at line ${edit.range.start.line}: ${edit.newText.substring(0, 80)}`);
+            }
+        } else {
+            log.debug(`Progress logging disabled (logRepeat = ${loggingConfig.logRepeat})`);
+        }
+
+        // Apply ALL edits in a single transaction to maintain correct positions
         await editor.edit(editBuilder => {
+            // Update heading line
             editBuilder.replace(line.range, newLine);
+            // Update timestamp line
             editBuilder.replace(
                 document.lineAt(repeaterInfo!.lineNumber).range,
                 newDeadlineLine
             );
+            // Apply logging edits (positions calculated before any changes)
+            for (const edit of logEdits) {
+                editBuilder.replace(edit.range, edit.newText);
+            }
         });
 
         // Don't add CLOSED for repeating tasks
@@ -2662,16 +2722,97 @@ export function setupListContext(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
         vscode.window.onDidChangeTextEditorSelection(e => {
             const editor = e.textEditor;
-            if (editor.document.languageId !== 'org') {
+            const langId = editor.document.languageId;
+
+            // Only track for org and markdown files
+            if (!['org', 'markdown'].includes(langId)) {
                 vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', false);
+                vscode.commands.executeCommand('setContext', 'scimax.onListItem', false);
                 return;
             }
 
             const position = editor.selection.active;
-            const onOrderedList = isOnOrderedListItem(editor.document, position.line);
-            vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', onOrderedList);
+            const line = editor.document.lineAt(position.line).text;
+
+            // Check if on any list item (unordered: - + * or ordered: 1. 1))
+            // But not on a heading (org: * at start, markdown: # at start)
+            const isOrgHeading = langId === 'org' && /^\*+\s/.test(line);
+            const isMdHeading = langId === 'markdown' && /^#+\s/.test(line);
+            const listMatch = /^(\s*)([-+*]|\d+[.)])\s+/.test(line);
+            const onListItem = listMatch && !isOrgHeading && !isMdHeading;
+            vscode.commands.executeCommand('setContext', 'scimax.onListItem', onListItem);
+
+            // Also track ordered list for org files
+            if (langId === 'org') {
+                const onOrderedList = isOnOrderedListItem(editor.document, position.line);
+                vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', onOrderedList);
+            } else {
+                vscode.commands.executeCommand('setContext', 'scimax.inOrderedList', false);
+            }
         })
     );
+}
+
+/**
+ * Cycle list item indentation (indent with Tab)
+ * Cycles through: no indent -> 2 spaces -> 4 spaces -> 6 spaces -> no indent
+ */
+export async function cycleListIndent(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const position = editor.selection.active;
+    const line = editor.document.lineAt(position.line);
+    const lineText = line.text;
+
+    // Match list item: leading whitespace + bullet/number + space + content
+    const match = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+(.*)$/);
+    if (!match) return;
+
+    const [, indent, bullet, content] = match;
+    const indentSize = 2; // Standard indent step
+    const maxIndent = 6;  // Max 3 levels (0, 2, 4, 6)
+
+    // Calculate new indentation (cycle forward)
+    const currentSpaces = indent.length;
+    const newSpaces = currentSpaces >= maxIndent ? 0 : currentSpaces + indentSize;
+
+    const newLine = ' '.repeat(newSpaces) + bullet + ' ' + content;
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(line.range, newLine);
+    });
+}
+
+/**
+ * Cycle list item outdent (Shift+Tab)
+ * Cycles in reverse: 6 spaces -> 4 spaces -> 2 spaces -> no indent -> 6 spaces
+ */
+export async function cycleListOutdent(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const position = editor.selection.active;
+    const line = editor.document.lineAt(position.line);
+    const lineText = line.text;
+
+    // Match list item: leading whitespace + bullet/number + space + content
+    const match = lineText.match(/^(\s*)([-+*]|\d+[.)])\s+(.*)$/);
+    if (!match) return;
+
+    const [, indent, bullet, content] = match;
+    const indentSize = 2; // Standard indent step
+    const maxIndent = 6;  // Max 3 levels (0, 2, 4, 6)
+
+    // Calculate new indentation (cycle backward)
+    const currentSpaces = indent.length;
+    const newSpaces = currentSpaces <= 0 ? maxIndent : currentSpaces - indentSize;
+
+    const newLine = ' '.repeat(newSpaces) + bullet + ' ' + content;
+
+    await editor.edit(editBuilder => {
+        editBuilder.replace(line.range, newLine);
+    });
 }
 
 /**
@@ -3836,7 +3977,9 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
 
     // List commands
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.org.renumberList', renumberList)
+        vscode.commands.registerCommand('scimax.org.renumberList', renumberList),
+        vscode.commands.registerCommand('scimax.list.cycleIndent', cycleListIndent),
+        vscode.commands.registerCommand('scimax.list.cycleOutdent', cycleListOutdent)
     );
 
     // Setup link context tracking for Enter key

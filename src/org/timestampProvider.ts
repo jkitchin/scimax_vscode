@@ -21,6 +21,7 @@ import {
     formatDuration,
 } from '../parser/orgClocking';
 import { parseOrg } from '../parser/orgParserUnified';
+import { resolveLoggingConfig, combineEditsForRepeatLogging } from './progressLogging';
 
 /**
  * Check if line is an org heading and return match info
@@ -315,17 +316,48 @@ async function cycleTodoState(forward: boolean): Promise<boolean> {
         const keyword = match[2];
         const newDeadlineLine = `${indent}${keyword}: ${newTimestamp}`;
 
+        // The done state we attempted to transition to (before resetting for repeater)
+        const attemptedDoneState = newState;
+        const currentState = headingInfo.todoState;
+
         // Reset to first active state instead of done state
         newState = workflow?.activeStates[0] || 'TODO';
         const newLine = formatHeading(prefix, newState, headingInfo.rest);
 
-        // Apply both edits
+        // Check logging configuration for progress logging
+        const loggingConfig = resolveLoggingConfig(document, position.line);
+
+        // Prompt for note if needed
+        let note: string | undefined;
+        if (loggingConfig.logRepeat === 'note') {
+            note = await vscode.window.showInputBox({
+                prompt: 'Note for this state change (optional)',
+                placeHolder: 'Enter a note or leave empty'
+            }) || undefined;
+        }
+
+        // Build logging edits BEFORE any document changes
+        let logEdits: { range: vscode.Range; newText: string }[] = [];
+        if (loggingConfig.logRepeat !== 'false') {
+            const timestamp = new Date();
+            logEdits = combineEditsForRepeatLogging(
+                document, position.line,
+                attemptedDoneState || 'DONE', currentState,
+                loggingConfig, timestamp, note
+            );
+        }
+
+        // Apply ALL edits in a single transaction
         await editor.edit(editBuilder => {
             editBuilder.replace(line.range, newLine);
             editBuilder.replace(
                 document.lineAt(repeaterInfo!.lineNumber).range,
                 newDeadlineLine
             );
+            // Apply progress logging edits
+            for (const edit of logEdits) {
+                editBuilder.replace(edit.range, edit.newText);
+            }
         });
 
         // No CLOSED timestamp for repeating tasks - they reset to active state

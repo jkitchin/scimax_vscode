@@ -347,6 +347,123 @@ When enabled, each state change adds:
 
 This creates a complete history of task progress.
 
+* ⚠️ Progress Logging for Repeating Tasks
+
+When a repeating task cycles back to TODO (e.g., a task with =DEADLINE: <2026-01-30 Fri +1w>=),
+you can optionally log the completion event with a timestamp and note.
+
+** ⚠️ Enabling Progress Logging
+
+Progress logging is off by default. Enable it with:
+
+*** Global Setting
+
+#+begin_src json
+{
+  "scimax.org.logRepeat": "time"  // or "note" for note prompts
+}
+#+end_src
+
+*** File-Level Override
+
+Add a #+STARTUP keyword at the top of your org file:
+
+#+begin_src org
+,#+STARTUP: logrepeat       ;; Enable with timestamp
+,#+STARTUP: lognoterepeat   ;; Enable with note prompt
+,#+STARTUP: nologrepeat     ;; Disable
+#+end_src
+
+*** Heading-Level Override
+
+Add a =:LOGGING:= property to individual headings:
+
+#+begin_src org
+,* TODO Weekly review
+:PROPERTIES:
+:LOGGING: logrepeat
+:END:
+DEADLINE: <2026-01-30 Fri +1w>
+#+end_src
+
+** ⚠️ Priority Order
+
+Settings are resolved in this priority order (highest to lowest):
+1. Heading =:LOGGING:= property
+2. File =#+STARTUP:= keywords
+3. Global =scimax.org.logRepeat= setting
+
+** ⚠️ Log Output Example
+
+When you mark a repeating task as done with logging enabled:
+
+#+begin_src org
+,* TODO Weekly review
+DEADLINE: <2026-02-06 Fri +1w>
+:PROPERTIES:
+:LAST_REPEAT: [2026-01-23 Fri 07:31]
+:END:
+- State "DONE"       from "TODO"       [2026-01-23 Fri 07:31]
+#+end_src
+
+The log shows:
+- =LAST_REPEAT= property with when the task was last completed
+- State change entry showing the transition from TODO to DONE
+
+** ⚠️ Logging to Drawer
+
+By default, log entries appear in the body text. To log into a drawer:
+
+#+begin_src json
+{
+  "scimax.org.logIntoDrawer": true       // Use :LOGBOOK: drawer
+  // or
+  "scimax.org.logIntoDrawer": "MYLOG"    // Use custom drawer name
+}
+#+end_src
+
+Or use file-level =#+STARTUP: logdrawer= to enable.
+
+With drawer logging, the output becomes:
+
+#+begin_src org
+,* TODO Weekly review
+DEADLINE: <2026-02-06 Fri +1w>
+:PROPERTIES:
+:LAST_REPEAT: [2026-01-23 Fri 07:31]
+:END:
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2026-01-23 Fri 07:31]
+:END:
+#+end_src
+
+** ⚠️ Note Prompts
+
+When =logRepeat= is set to ="note"=, you'll be prompted to enter a note when
+completing a repeating task. The note is included in the log entry:
+
+#+begin_src org
+- State "DONE"       from "TODO"       [2026-01-23 Fri 07:31] \\
+  Completed early because of deadline change.
+#+end_src
+
+If you cancel or leave the note empty, the entry is logged without a note.
+
+** ⚠️ Configuration Summary
+
+| Setting                    | Values                 | Description                         |
+|----------------------------+------------------------+-------------------------------------|
+| scimax.org.logRepeat       | "false"/"time"/"note"  | Enable/disable repeat logging       |
+| scimax.org.logIntoDrawer   | boolean or string      | Where to log (body or drawer)       |
+| #+STARTUP: logrepeat       | -                      | File-level: log with timestamp      |
+| #+STARTUP: lognoterepeat   | -                      | File-level: log with note prompt    |
+| #+STARTUP: nologrepeat     | -                      | File-level: disable logging         |
+| #+STARTUP: logdrawer       | -                      | File-level: use LOGBOOK drawer      |
+| :LOGGING: logrepeat        | -                      | Heading-level: log with timestamp   |
+| :LOGGING: lognoterepeat    | -                      | Heading-level: log with note prompt |
+| :LOGGING: nologrepeat      | -                      | Heading-level: disable logging      |
+| :LOGGING: nil              | -                      | Heading-level: disable logging      |
+
 * ✅ Tags for TODO Items
 CLOSED: [2026-01-15 Thu 14:39]
 

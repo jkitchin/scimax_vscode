@@ -78,6 +78,67 @@ This email is used for services that offer better access to identified users. Cu
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
 
+* ⚠️ Org-mode Settings
+
+Settings for org-mode document behavior including TODO states, progress logging, and more.
+
+** ⚠️ Settings Overview
+
+| Setting                    | Type                 | Default  | Description                     |
+|----------------------------+----------------------+----------+---------------------------------|
+| scimax.org.logRepeat       | string (enum)        | "false"  | Enable progress logging         |
+| scimax.org.logIntoDrawer   | boolean or string    | false    | Where to log state changes      |
+
+** ⚠️ Detailed Configuration
+
+*** ⚠️ scimax.org.logRepeat
+
+- *Type*: string
+- *Values*: ="false"=, ="time"=, ="note"=
+- *Default*: ="false"=
+- *Description*: Controls logging when repeating tasks cycle back to TODO
+
+When a repeating task (one with a repeater like =+1w= in its DEADLINE or SCHEDULED timestamp)
+is marked done, it cycles back to TODO. This setting controls whether to log that completion.
+
+| Value     | Behavior                                |
+|-----------+-----------------------------------------|
+| ="false"= | No logging (default)                    |
+| ="time"=  | Log timestamp and state change          |
+| ="note"=  | Log timestamp, state change, prompt for note |
+
+*Example*:
+#+begin_src json
+{
+  "scimax.org.logRepeat": "time"
+}
+#+end_src
+
+*File-level override*: Use =#+STARTUP: logrepeat=, =#+STARTUP: lognoterepeat=, or =#+STARTUP: nologrepeat=
+
+*Heading-level override*: Add =:LOGGING: logrepeat= property
+
+*** ⚠️ scimax.org.logIntoDrawer
+
+- *Type*: boolean or string
+- *Default*: =false=
+- *Description*: Where to log state changes
+
+| Value           | Behavior                              |
+|-----------------+---------------------------------------|
+| =false=         | Log in body text after properties     |
+| =true=          | Log into =:LOGBOOK:= drawer           |
+| ="CUSTOMNAME"=  | Log into custom-named drawer          |
+
+*Example*:
+#+begin_src json
+{
+  "scimax.org.logIntoDrawer": true
+}
+#+end_src
+
+*File-level override*: Use =#+STARTUP: logdrawer= or =#+STARTUP: nologdrawer=
+
 * ✅ Journal Settings
 CLOSED: [2026-01-17 Sat 17:36]
 
@@ -361,7 +422,8 @@ Configure the full-text search database and semantic search capabilities.
 }
 #+end_src
 
-*** ⚠️ scimax.db.queryTimeoutMs
+*** ✅ scimax.db.queryTimeoutMs
+CLOSED: [2026-01-22 Thu 21:23]
 
 - *Type*: number
 - *Default*: =30000= (30 seconds)
@@ -377,7 +439,8 @@ Increase this value if you have a very large database or slow disk:
 }
 #+end_src
 
-*** ⚠️ scimax.db.maxRetryAttempts
+*** ✅ scimax.db.maxRetryAttempts
+CLOSED: [2026-01-22 Thu 21:23]
 
 - *Type*: number
 - *Default*: =3=
@@ -393,7 +456,8 @@ Uses exponential backoff between retries.
 }
 #+end_src
 
-*** ⚠️ scimax.db.maxFileSizeMB
+*** ✅ scimax.db.maxFileSizeMB
+CLOSED: [2026-01-22 Thu 21:24]
 
 - *Type*: number
 - *Default*: =10=
@@ -409,7 +473,8 @@ Useful when working with external repositories or collaborator files that may co
 }
 #+end_src
 
-* ⚠️ Logging Settings
+* ✅ Logging Settings
+CLOSED: [2026-01-22 Thu 21:23]
 
 Configure logging and diagnostics.
 

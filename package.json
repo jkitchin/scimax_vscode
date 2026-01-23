@@ -1778,6 +1778,16 @@
         "title": "Scimax: Renumber Ordered List"
       },
       {
+        "command": "scimax.list.cycleIndent",
+        "title": "Scimax: Cycle List Item Indent",
+        "category": "Scimax"
+      },
+      {
+        "command": "scimax.list.cycleOutdent",
+        "title": "Scimax: Cycle List Item Outdent",
+        "category": "Scimax"
+      },
+      {
         "command": "scimax.org.updateDynamicBlock",
         "title": "Scimax: Update Dynamic Block"
       },
@@ -3043,6 +3053,16 @@
         "command": "scimax.table.prevCell",
         "key": "shift+tab",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
+        "command": "scimax.list.cycleIndent",
+        "key": "tab",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
+        "command": "scimax.list.cycleOutdent",
+        "key": "shift+tab",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
@@ -4831,6 +4851,20 @@
           "type": "boolean",
           "default": true,
           "description": "Show total clocked time as inline decorations on headlines"
+        },
+        "scimax.org.logRepeat": {
+          "type": "string",
+          "enum": ["false", "time", "note"],
+          "default": "false",
+          "markdownDescription": "Controls logging when repeating tasks cycle back to TODO:\n- `false` (default): No logging\n- `time`: Log timestamp and state change\n- `note`: Log timestamp, state change, and prompt for a note\n\nCan be overridden per-file with `#+STARTUP: logrepeat` or per-heading with `:LOGGING: logrepeat` property."
+        },
+        "scimax.org.logIntoDrawer": {
+          "oneOf": [
+            { "type": "boolean" },
+            { "type": "string" }
+          ],
+          "default": false,
+          "markdownDescription": "Where to log state changes:\n- `false` (default): Log in body text after properties\n- `true`: Log into `:LOGBOOK:` drawer\n- `\"CUSTOM\"`: Log into a custom-named drawer\n\nCan be overridden per-file with `#+STARTUP: logdrawer`."
         },
         "scimax.mark.ringSize": {
           "type": "number",
