@@ -1,0 +1,59 @@
+#+NAME: CMU MS Report
+#+DESCRIPTION: Carnegie Mellon University Master's thesis/report template
+#+CATEGORY: CMU Documents
+#+FILENAME: ms-report
+
+#+TITLE: ${1:Thesis Title}
+#+AUTHOR: ${2:{{author}}}
+#+DATE: ${3:May 2024}
+#+ABSTRACT: ${4:This thesis presents...}
+#+ACKNOWLEDGEMENTS: ${5:I would like to thank...}
+#+ADVISOR: ${6:Advisor Name}
+#+DEPARTMENT: Department of Chemical Engineering
+#+EXPORT_BACKEND: cmu-ms-report
+
+* Introduction
+
+${7:Introduction to your research topic...}
+
+** Background
+
+${8:Relevant background and motivation...}
+
+** Research Objectives
+
+The main objectives of this thesis are:
+
+1. ${9:Objective 1}
+2. ${10:Objective 2}
+3. ${11:Objective 3}
+
+* Literature Review
+
+${12:Review of relevant literature...}
+
+* Methods
+
+${13:Description of methods used...}
+
+* Results
+
+${14:Presentation of results...}
+
+* Discussion
+
+${15:Discussion of findings...}
+
+* Conclusions
+
+${16:Summary and conclusions...}
+
+* References
+
+$0
+
+* Build :noexport:
+
+Click to export: [[cmd:scimax.export.customById?cmu-ms-report][Export to PDF]]
+
+Or use =C-c C-e= and select "CMU MS Report" from the custom exporters.

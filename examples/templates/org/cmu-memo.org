@@ -1,0 +1,38 @@
+#+NAME: CMU Memo
+#+DESCRIPTION: Carnegie Mellon University memorandum template for custom exporter
+#+CATEGORY: CMU Documents
+#+FILENAME: memo-{{date}}
+
+#+TITLE: ${1:Memo Subject}
+#+AUTHOR: {{author}}
+#+DATE: {{date}}
+#+TO: ${2:Recipient Name}
+#+FROM: ${3:{{author}}}
+#+FROMNAME: ${4:{{author}}}
+#+SUBJECT: ${5:Subject Line}
+#+CC: ${6:}
+#+DEPARTMENT: Department of Chemical Engineering
+#+SIGNATURE_LINES: ${7:false}
+#+EXPORT_BACKEND: cmu-memo
+
+* ${8:Summary}
+
+${9:Brief summary of the memo content...}
+
+* ${10:Details}
+
+${11:Detailed content goes here...}
+
+$0
+
+Sincerely,\\\\
+\\\\
+\\\\
+\\\\
+{{author}}
+
+* Build :noexport:
+
+Click to export: [[cmd:scimax.export.customById?cmu-memo][Export to PDF]]
+
+Or use =C-c C-e= and select "CMU Memo" from the custom exporters.

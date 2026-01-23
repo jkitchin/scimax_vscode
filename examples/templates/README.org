@@ -1,0 +1,79 @@
+#+TITLE: Example Templates
+#+AUTHOR: scimax-vscode
+
+* Overview
+
+This directory contains example document templates for scimax-vscode.
+
+* Installation
+
+To use these templates, copy them to your scimax templates directory:
+
+#+begin_src shell
+# The default templates directory is ~/.scimax/templates/
+# Create it if it doesn't exist
+mkdir -p ~/.scimax/templates/org
+
+# Copy the example templates
+cp org/*.org ~/.scimax/templates/org/
+#+end_src
+
+After copying, the templates will appear in the template picker (=Scimax: Insert Template= command or =C-c C-t=).
+
+* Available Templates
+
+** CMU Memo (=cmu-memo.org=)
+
+A Carnegie Mellon University memorandum template designed to work with the =cmu-memo= custom exporter.
+
+Features:
+- Pre-filled keywords for memo metadata (TO, FROM, SUBJECT, etc.)
+- Clickable link to export directly to PDF
+- Signature block at the end
+- Optional approval signature lines
+
+** CMU MS Report (=cmu-ms-report.org=)
+
+A Carnegie Mellon University Master's thesis/report template designed to work with the =cmu-ms-report= custom exporter.
+
+Features:
+- Title page, abstract, and acknowledgements sections
+- Standard thesis structure (Introduction, Methods, Results, etc.)
+- Clickable link to export directly to PDF
+
+* Template Syntax
+
+Templates support:
+
+- *Auto-fill variables*: =={{author}}==, =={{date}}==, =={{time}}==, =={{filename}}==
+- *Tab stops*: =${1:placeholder}=, =${2:text}= - Press Tab to jump between
+- *Final cursor position*: =$0= - Where cursor ends after all tab stops
+
+* Using with Custom Exporters
+
+These templates are designed to work with the custom exporters in =examples/exporters/=. Make sure to install both:
+
+1. Copy exporters to =~/.scimax/exporters/=
+2. Copy templates to =~/.scimax/templates/org/=
+3. Reload VS Code
+
+* Creating Your Own Templates
+
+Create a =.org= file with metadata header comments:
+
+#+begin_src org
+,#+NAME: My Template
+,#+DESCRIPTION: Description shown in picker
+,#+CATEGORY: My Category
+,#+FILENAME: default-filename
+
+,#+TITLE: ${1:Document Title}
+,#+AUTHOR: {{author}}
+,#+DATE: {{date}}
+
+Content here...
+
+$0
+#+end_src
+
+Save to =~/.scimax/templates/org/my-template.org= and it will appear in the template picker.

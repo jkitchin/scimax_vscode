@@ -656,7 +656,30 @@ export const cmdHandler: LinkTypeHandler = {
         // Dynamic import to avoid circular dependencies
         const vscode = await import('vscode');
         try {
-            await vscode.commands.executeCommand(path);
+            // Support command arguments: cmd:command?arg1&arg2 or cmd:command?json={"key":"value"}
+            let command = path;
+            let args: unknown[] = [];
+
+            const queryIndex = path.indexOf('?');
+            if (queryIndex !== -1) {
+                command = path.substring(0, queryIndex);
+                const queryString = path.substring(queryIndex + 1);
+
+                // Check if it's JSON format
+                if (queryString.startsWith('json=')) {
+                    try {
+                        args = [JSON.parse(decodeURIComponent(queryString.substring(5)))];
+                    } catch {
+                        // Fall back to treating as simple string argument
+                        args = [queryString.substring(5)];
+                    }
+                } else {
+                    // Simple format: arg1&arg2&arg3 (each becomes a separate argument)
+                    args = queryString.split('&').map(arg => decodeURIComponent(arg));
+                }
+            }
+
+            await vscode.commands.executeCommand(command, ...args);
         } catch (error) {
             vscode.window.showErrorMessage(`Failed to execute command: ${path}`);
         }
