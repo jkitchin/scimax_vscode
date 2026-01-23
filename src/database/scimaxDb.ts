@@ -1268,6 +1268,61 @@ export class ScimaxDb {
     }
 
     /**
+     * Remove entries for files that no longer exist on disk.
+     * Called during manual reindex to clean up the database.
+     */
+    public async removeDeletedFiles(
+        onProgress?: (status: { checked: number; total: number; deleted: number }) => void
+    ): Promise<{ checked: number; deleted: number }> {
+        const result = { checked: 0, deleted: 0 };
+
+        if (!this.db) return result;
+
+        // Get total count
+        const countResult = await this.db.execute('SELECT COUNT(*) as count FROM files');
+        const total = Number((countResult.rows[0] as any).count);
+
+        if (total === 0) return result;
+
+        log.info('Checking for deleted files', { total });
+
+        // Process in pages to avoid loading all into memory
+        const pageSize = 100;
+        let offset = 0;
+
+        while (offset < total) {
+            const pageResult = await this.db.execute({
+                sql: 'SELECT path FROM files ORDER BY path LIMIT ? OFFSET ?',
+                args: [pageSize, offset]
+            });
+            const files = pageResult.rows as unknown as { path: string }[];
+
+            if (files.length === 0) break;
+
+            for (const file of files) {
+                result.checked++;
+
+                if (!fs.existsSync(file.path)) {
+                    await this.removeFileData(file.path);
+                    result.deleted++;
+                }
+            }
+
+            onProgress?.({ checked: result.checked, total, deleted: result.deleted });
+            offset += pageSize;
+
+            // Yield between pages
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        if (result.deleted > 0) {
+            log.info('Removed deleted files', { deleted: result.deleted });
+        }
+
+        return result;
+    }
+
+    /**
      * Set search scope
      */
     public setSearchScope(scope: SearchScope): void {

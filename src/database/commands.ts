@@ -158,8 +158,18 @@ export function registerDbCommands(
                 cancellable: false
             }, async (progress) => {
                 let totalIndexed = 0;
+                let totalDeleted = 0;
                 const config = vscode.workspace.getConfiguration('scimax.db');
                 const directoriesToIndex: string[] = [];
+
+                // Phase 1: Remove entries for deleted files
+                progress.report({ message: 'Checking for deleted files...' });
+                const deleteResult = await db.removeDeletedFiles((status) => {
+                    progress.report({
+                        message: `Checking files (${status.checked}/${status.total})...`
+                    });
+                });
+                totalDeleted = deleteResult.deleted;
 
                 // Include journal directory if enabled
                 if (config.get<boolean>('includeJournal', true)) {
@@ -211,7 +221,7 @@ export function registerDbCommands(
                     return;
                 }
 
-                // Index all directories
+                // Phase 2: Index all directories (new and changed files)
                 for (let i = 0; i < uniqueDirs.length; i++) {
                     const dir = uniqueDirs[i];
                     const indexed = await db.indexDirectory(dir, progress);
@@ -222,8 +232,9 @@ export function registerDbCommands(
                 }
 
                 const stats = await db.getStats();
+                const deletedMsg = totalDeleted > 0 ? `, removed ${totalDeleted} deleted` : '';
                 vscode.window.showInformationMessage(
-                    `Indexed ${totalIndexed} files. Total: ${stats.files} files, ${stats.headings} headings, ${stats.blocks} code blocks`
+                    `Indexed ${totalIndexed} files${deletedMsg}. Total: ${stats.files} files, ${stats.headings} headings, ${stats.blocks} code blocks`
                 );
             });
         })
