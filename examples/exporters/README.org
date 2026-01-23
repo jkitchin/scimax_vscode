@@ -1,0 +1,126 @@
+#+TITLE: Custom Exporter Examples
+#+AUTHOR: scimax-vscode
+#+DATE: 2024-01-23
+
+* Overview
+
+This directory contains example custom exporters for scimax-vscode, inspired by the CMU templates from [[https://github.com/jkitchin/scimax/tree/master/ox-cmu][scimax ox-cmu]].
+
+* Installation
+
+To use these exporters, copy them to your scimax exporters directory:
+
+#+begin_src shell
+# Create the exporters directory if it doesn't exist
+mkdir -p ~/.scimax/exporters
+
+# Copy the example exporters
+cp -r cmu-memo ~/.scimax/exporters/
+cp -r cmu-ms-report ~/.scimax/exporters/
+#+end_src
+
+Then reload VS Code. The exporters will appear in the export menu (=C-c C-e=).
+
+* Available Exporters
+
+** CMU Memo (=cmu-memo=)
+
+A memorandum format for Carnegie Mellon University correspondence.
+
+*** Keywords
+
+| Keyword         | Required | Description                          |
+|-----------------+----------+--------------------------------------|
+| =TO=            | Yes      | Recipient of the memo                |
+| =FROM=          | Yes      | Sender (e.g., "John Kitchin, Prof")  |
+| =SUBJECT=       | Yes      | Subject line                         |
+| =FROMNAME=      | No       | Name for letterhead                  |
+| =CC=            | No       | Carbon copy recipients               |
+| =DEPARTMENT=    | No       | Department name (default: ChemE)     |
+| =SIGNATURE_LINES= | No     | Include approval signature lines     |
+
+*** Example
+
+See =cmu-memo/example.org= for a complete example.
+
+** CMU MS Report (=cmu-ms-report=)
+
+A Master's thesis/report format for Carnegie Mellon University.
+
+*** Keywords
+
+| Keyword           | Required | Description                        |
+|-------------------+----------+------------------------------------|
+| =ABSTRACT=        | Yes      | Report abstract                    |
+| =ACKNOWLEDGEMENTS= | No      | Acknowledgements section           |
+| =SIGNATURE_PAGE=  | No       | Path to signed signature page PDF  |
+| =ADVISOR=         | No       | Thesis advisor name                |
+| =DEPARTMENT=      | No       | Department name                    |
+
+*** Example
+
+See =cmu-ms-report/example.org= for a complete example.
+
+* Creating Your Own Exporters
+
+Each custom exporter needs:
+
+1. A directory with a unique name (e.g., =my-exporter/=)
+2. A =manifest.json= file defining the exporter
+3. A Handlebars template file (e.g., =template.tex=)
+
+** Manifest Format
+
+#+begin_src json
+{
+  "id": "my-exporter",
+  "name": "My Custom Exporter",
+  "description": "Description of the exporter",
+  "parent": "latex",
+  "outputFormat": "pdf",
+  "template": "template.tex",
+  "keywords": {
+    "CUSTOM_FIELD": {
+      "required": true,
+      "description": "A custom field"
+    }
+  },
+  "latexOptions": {
+    "documentClass": "article",
+    "packages": ["graphicx", "hyperref"]
+  }
+}
+#+end_src
+
+** Template Variables
+
+Templates have access to:
+
+- =title=, =author=, =date= - Standard org metadata
+- =body= - The exported document body (use ={{{body}}}= for raw HTML/LaTeX)
+- Custom keywords defined in manifest (e.g., =TO=, =FROM=, etc.)
+
+** Handlebars Helpers
+
+- ={{#if FIELD}}...{{/if}}= - Conditional blocks
+- ={{#unless FIELD}}...{{/unless}}= - Negative conditionals
+- ={{#each items}}...{{/each}}= - Iteration
+
+* Troubleshooting
+
+** Exporter not showing in menu
+
+1. Check that the exporter is in =~/.scimax/exporters/=
+2. Verify =manifest.json= is valid JSON
+3. Reload VS Code
+
+** LaTeX compilation errors
+
+1. Check that required LaTeX packages are installed
+2. Verify all required keywords are set in the org file
+3. Check the VS Code Output panel for error messages
+
+* See Also
+
+- [[file:../../docs/10-export.org][Export Documentation]]
+- [[https://handlebarsjs.com/guide/][Handlebars Template Guide]]

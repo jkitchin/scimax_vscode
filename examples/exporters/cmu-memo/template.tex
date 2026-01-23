@@ -1,0 +1,74 @@
+% CMU Memo Template
+% Generated: {{date}}
+\documentclass{letter}
+
+\usepackage{graphicx}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue]{hyperref}
+\usepackage{charter}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Page layout
+\oddsidemargin 25pt
+\evensidemargin 25pt
+\textwidth 6in
+\topmargin -6pt
+
+% CMU Logo (comment out if you don't have the logo file)
+% \def\cmulogo{\includegraphics[width=3in]{CMU_logo_horiz_RGB.pdf}}
+\def\cmulogo{{\Large\textbf{Carnegie Mellon University}}}
+
+% Memo header commands
+\newcommand{\memoheading}{%
+  \textbf{To:      } {{TO}} \\
+  \textbf{From:    } {{FROM}} \\
+  \textbf{Subject: } {{SUBJECT}} \\
+  \textbf{Date:    } {{date}} \\
+  {{#if CC}}\textbf{Cc:      } {{CC}} \\{{/if}}
+}
+
+% Section formatting for memos
+\renewcommand{\section}[1]{\par\vspace{1em}\noindent{\bfseries #1:} }
+
+\begin{document}
+\thispagestyle{empty}
+
+% Letterhead
+\begin{minipage}[t]{3in}
+\vspace{-7.5mm}
+\cmulogo
+\end{minipage}
+\hfill
+\begin{minipage}{2.5in}
+\small
+{{#if DEPARTMENT}}{\bf {{DEPARTMENT}}}\\{{/if}}
+{{#if FROMNAME}}{{FROMNAME}}\\{{/if}}
+Pittsburgh, PA USA 15213
+\end{minipage}
+
+\vspace{20pt}
+
+% Memo header
+\memoheading
+\hrule
+\vspace{1em}
+
+% Body content
+{{{body}}}
+
+{{#if SIGNATURE_LINES}}
+\vspace{2em}
+\textbf{Approval Signatures} (Two required for minimal changes, three for significant alterations):
+
+\vspace{0.5cm}
+\textbf{Name}\hspace{1.5in}\textbf{Signature}\hspace{1.2in}\textbf{Date}\hspace{1in}\textbf{Comments}
+\hrule
+\vspace{1cm}
+\hrule
+\vspace{1cm}
+\hrule
+\vspace{1cm}
+\hrule
+{{/if}}
+
+\end{document}

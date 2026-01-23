@@ -1,0 +1,50 @@
+{
+  "id": "cmu-memo",
+  "name": "CMU Memo",
+  "description": "Carnegie Mellon University memorandum format",
+  "parent": "latex",
+  "outputFormat": "pdf",
+  "template": "template.tex",
+  "keywords": {
+    "TO": {
+      "required": true,
+      "description": "Recipient of the memo"
+    },
+    "FROM": {
+      "required": true,
+      "description": "Sender of the memo (e.g., 'John Kitchin, Professor')"
+    },
+    "FROMNAME": {
+      "required": false,
+      "description": "Name to display in letterhead"
+    },
+    "SUBJECT": {
+      "required": true,
+      "description": "Subject line of the memo"
+    },
+    "CC": {
+      "required": false,
+      "default": "",
+      "description": "Carbon copy recipients"
+    },
+    "DEPARTMENT": {
+      "required": false,
+      "default": "Department of Chemical Engineering",
+      "description": "Department name for letterhead"
+    },
+    "SIGNATURE_LINES": {
+      "required": false,
+      "type": "boolean",
+      "default": "false",
+      "description": "Include signature approval lines at the end"
+    }
+  },
+  "latexOptions": {
+    "documentClass": "letter",
+    "packages": [
+      "graphicx",
+      "hyperref",
+      "charter"
+    ]
+  }
+}

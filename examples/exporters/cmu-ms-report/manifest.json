@@ -1,0 +1,41 @@
+{
+  "id": "cmu-ms-report",
+  "name": "CMU MS Report",
+  "description": "Carnegie Mellon University Master's Report format",
+  "parent": "latex",
+  "outputFormat": "pdf",
+  "template": "template.tex",
+  "keywords": {
+    "ABSTRACT": {
+      "required": true,
+      "description": "Abstract of the report"
+    },
+    "ACKNOWLEDGEMENTS": {
+      "required": false,
+      "description": "Acknowledgements section"
+    },
+    "SIGNATURE_PAGE": {
+      "required": false,
+      "description": "Path to scanned signature page PDF"
+    },
+    "ADVISOR": {
+      "required": false,
+      "description": "Name of thesis advisor"
+    },
+    "DEPARTMENT": {
+      "required": false,
+      "default": "Department of Chemical Engineering",
+      "description": "Department name"
+    }
+  },
+  "latexOptions": {
+    "documentClass": "report",
+    "classOptions": ["12pt", "letterpaper"],
+    "packages": [
+      "graphicx",
+      "hyperref",
+      "pdfpages",
+      "geometry"
+    ]
+  }
+}

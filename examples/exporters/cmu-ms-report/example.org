@@ -1,0 +1,75 @@
+#+TITLE: Machine Learning Methods for Catalyst Design
+#+AUTHOR: Jane Smith
+#+DATE: May 2024
+#+ABSTRACT: This thesis presents novel machine learning methods for accelerating the discovery of heterogeneous catalysts. We develop a graph neural network approach that can predict adsorption energies with chemical accuracy (MAE < 0.1 eV) while being 10^6 times faster than density functional theory calculations. The model is applied to screen over 100,000 candidate materials for the oxygen reduction reaction, identifying 15 promising candidates that were subsequently validated experimentally. Our results demonstrate that machine learning can significantly accelerate the catalyst discovery pipeline.
+#+ACKNOWLEDGEMENTS: I would like to thank my advisor, Professor John Kitchin, for his guidance and support throughout this project. I also thank my committee members for their valuable feedback. This work was supported by the Department of Energy under grant DE-SC0019441.
+#+ADVISOR: John R. Kitchin
+#+DEPARTMENT: Department of Chemical Engineering
+#+EXPORT_BACKEND: cmu-ms-report
+
+* Introduction
+
+The discovery of new catalysts is critical for sustainable energy and chemical production. Traditional catalyst development relies on trial-and-error experimentation, which is slow and expensive. Computational methods based on density functional theory (DFT) have accelerated this process, but remain computationally demanding.
+
+Machine learning offers a path to even faster catalyst screening by learning patterns from existing DFT data and generalizing to new materials. This thesis develops and applies machine learning methods for catalyst discovery.
+
+** Research Objectives
+
+The main objectives of this thesis are:
+
+1. Develop accurate machine learning models for predicting catalytic properties
+2. Apply these models to screen large libraries of candidate materials
+3. Validate predictions experimentally
+
+* Background
+
+** Heterogeneous Catalysis
+
+Heterogeneous catalysis plays a central role in the chemical industry...
+
+** Machine Learning in Materials Science
+
+Recent advances in machine learning have enabled...
+
+* Methods
+
+** Graph Neural Network Architecture
+
+We represent catalyst surfaces as graphs where...
+
+** Training Data
+
+Our training dataset consists of...
+
+** Model Training
+
+Models were trained using...
+
+* Results and Discussion
+
+** Model Performance
+
+Our graph neural network achieves...
+
+** Catalyst Screening
+
+Applying the trained model to screen...
+
+** Experimental Validation
+
+Selected candidates were synthesized and tested...
+
+* Conclusions
+
+This thesis demonstrates that machine learning can significantly accelerate catalyst discovery. Key contributions include:
+
+1. A graph neural network architecture achieving state-of-the-art accuracy
+2. Identification of 15 promising catalyst candidates
+3. Experimental validation of model predictions
+
+Future work should focus on extending these methods to more complex reaction systems and incorporating uncertainty quantification.
+
+* References
+
+1. Author, A. Title of Paper. /Journal/ *2023*, 1, 100.
+2. Author, B. Another Paper. /Another Journal/ *2024*, 2, 200.

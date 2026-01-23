@@ -1,0 +1,94 @@
+% CMU MS Report Template
+% Generated: {{date}}
+\documentclass[12pt,letterpaper]{report}
+
+\usepackage{graphicx}
+\usepackage[colorlinks=true,urlcolor=blue,linkcolor=blue]{hyperref}
+\usepackage{pdfpages}
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{setspace}
+\usepackage{tocloft}
+
+% Double spacing for body
+\doublespacing
+
+\begin{document}
+
+% =============================================================================
+% Title Page
+% =============================================================================
+\thispagestyle{empty}
+\begin{titlepage}
+\begin{center}
+\vspace*{1cm}
+
+\LARGE
+\textbf{ {{title}} }
+
+\vspace{2.5cm}
+
+\large
+\textbf{ {{author}} }
+
+\vfill
+
+Submitted in partial fulfillment of the requirements for the degree of\\
+Master of Science
+
+\vspace{0.8cm}
+
+% CMU Seal (comment out if you don't have cmu-seal.pdf)
+% \includegraphics[scale=0.1]{cmu-seal}
+
+{\Large\textbf{Carnegie Mellon University}}
+
+\vspace{0.5cm}
+
+{{#if DEPARTMENT}}{{DEPARTMENT}}{{else}}Department of Chemical Engineering{{/if}}\\
+Carnegie Mellon University\\
+Pittsburgh, PA, USA\\
+{{date}}
+
+\end{center}
+\end{titlepage}
+
+% =============================================================================
+% Signature Page (if provided)
+% =============================================================================
+{{#if SIGNATURE_PAGE}}
+\thispagestyle{empty}
+\includepdf[pages=1]{ {{SIGNATURE_PAGE}} }
+{{/if}}
+
+% =============================================================================
+% Acknowledgements (if provided)
+% =============================================================================
+{{#if ACKNOWLEDGEMENTS}}
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+{{ACKNOWLEDGEMENTS}}
+\newpage
+{{/if}}
+
+% =============================================================================
+% Table of Contents
+% =============================================================================
+\tableofcontents
+\newpage
+
+% =============================================================================
+% Abstract
+% =============================================================================
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+{{ABSTRACT}}
+\newpage
+
+% =============================================================================
+% Main Content
+% =============================================================================
+{{{body}}}
+
+\end{document}
