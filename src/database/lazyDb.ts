@@ -225,7 +225,7 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
                 if (uniqueDirs.length > 0 && extensionContext) {
                     // Incremental scanning: process a batch of directories per session
                     // Track progress in globalState so we resume where we left off
-                    const dirsPerSession = config.get<number>('dirsPerSession', 10);
+                    const dirsPerSession = config.get<number>('dirsPerSession', 5);
                     const scanState = extensionContext.globalState.get<{
                         index: number;
                         hash: string;

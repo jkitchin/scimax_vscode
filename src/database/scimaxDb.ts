@@ -745,12 +745,25 @@ export class ScimaxDb {
                 return;
             }
 
+            // Hard file size limit for parsing (500KB default) - files larger than this
+            // can cause OOM during AST construction even if they have few lines
+            const maxParseSizeKB = vscode.workspace.getConfiguration('scimax.db')
+                .get<number>('maxParseSizeKB', 500);
+            if (stats.size > maxParseSizeKB * 1024) {
+                log.warn('Skipping file too large for parsing', {
+                    path: filePath,
+                    sizeKB: Math.round(stats.size / 1024),
+                    limitKB: maxParseSizeKB
+                });
+                return;
+            }
+
             // Estimate line count from file size before reading (avg ~80 bytes/line for org files)
-            // This prevents loading huge files just to count lines
+            // Use conservative 1.1x multiplier to catch more files before reading content
             const maxLines = vscode.workspace.getConfiguration('scimax.db')
-                .get<number>('maxFileLines', 10000);
+                .get<number>('maxFileLines', 5000);
             const estimatedLines = Math.ceil(stats.size / 80);
-            if (estimatedLines > maxLines * 1.5) {
+            if (estimatedLines > maxLines * 1.1) {
                 log.warn('Skipping file with estimated too many lines', {
                     path: filePath,
                     estimatedLines,
@@ -829,6 +842,8 @@ export class ScimaxDb {
                 // Index content based on type
                 if (fileType === 'org' && parsedDoc) {
                     await this.indexOrgDocument(fileId, filePath, parsedDoc, content);
+                    // Explicitly clear parsedDoc to help GC reclaim memory
+                    parsedDoc = null;
                 } else if (fileType === 'md') {
                     await this.indexMarkdownDocument(fileId, filePath, content);
                 }
