@@ -543,13 +543,20 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
+    // Initialize Projectile Manager first (needed by notebook commands for nb: links)
+    projectileManager = new ProjectileManager(context);
+    context.subscriptions.push({ dispose: () => projectileManager.dispose() });
+
+    // Register Projectile Commands
+    registerProjectileCommands(context, projectileManager);
+
     // Initialize Notebook Manager
     notebookManager = new NotebookManager(context);
     await notebookManager.initialize();
     context.subscriptions.push({ dispose: () => notebookManager.dispose() });
 
-    // Register Notebook Commands (uses lazy database loading internally)
-    registerNotebookCommands(context, notebookManager);
+    // Register Notebook Commands (uses projectileManager for nb: link resolution)
+    registerNotebookCommands(context, notebookManager, projectileManager);
 
     // Initialize Template Manager
     templateManager = new TemplateManager(context);
@@ -557,13 +564,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Template Commands
     registerTemplateCommands(context, templateManager);
-
-    // Initialize Projectile Manager (deferred to avoid blocking activation)
-    projectileManager = new ProjectileManager(context);
-    context.subscriptions.push({ dispose: () => projectileManager.dispose() });
-
-    // Register Projectile Commands
-    registerProjectileCommands(context, projectileManager);
 
     // Register Project Tree View with createTreeView for better control
     const projectTreeProvider = new ProjectTreeProvider(projectileManager);

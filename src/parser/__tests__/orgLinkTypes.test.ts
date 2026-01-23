@@ -7,7 +7,7 @@ import {
     linkTypeRegistry,
     notebookHandler,
     type LinkContext,
-    type NotebookInfo,
+    type ProjectInfo,
 } from '../orgLinkTypes';
 
 describe('orgLinkTypes', () => {
@@ -24,18 +24,18 @@ describe('orgLinkTypes', () => {
     });
 
     describe('notebookHandler', () => {
-        const mockNotebooks: NotebookInfo[] = [
-            { id: 'nb-1', name: 'my-research', path: '/home/user/projects/my-research' },
-            { id: 'nb-2', name: 'scimax', path: '/home/user/projects/scimax' },
-            { id: 'nb-3', name: 'data-analysis', path: '/home/user/projects/data-analysis' },
+        const mockProjects: ProjectInfo[] = [
+            { name: 'my-research', path: '/home/user/projects/my-research' },
+            { name: 'scimax', path: '/home/user/projects/scimax' },
+            { name: 'data-analysis', path: '/home/user/projects/data-analysis' },
         ];
 
-        const createContext = (notebooks: NotebookInfo[] = mockNotebooks): LinkContext => ({
-            getNotebooks: () => notebooks,
-            listNotebookFiles: async (notebookPath: string) => [
-                `${notebookPath}/README.org`,
-                `${notebookPath}/notes.org`,
-                `${notebookPath}/data/results.org`,
+        const createContext = (projects: ProjectInfo[] = mockProjects): LinkContext => ({
+            getProjects: () => projects,
+            listProjectFiles: async (projectPath: string) => [
+                `${projectPath}/README.org`,
+                `${projectPath}/notes.org`,
+                `${projectPath}/data/results.org`,
             ],
         });
 
@@ -96,21 +96,21 @@ describe('orgLinkTypes', () => {
             });
 
             it('should handle ambiguous project matches', async () => {
-                const duplicateNotebooks: NotebookInfo[] = [
-                    { id: 'nb-1', name: 'project', path: '/path/a/project' },
-                    { id: 'nb-2', name: 'project', path: '/path/b/project' },
+                const duplicateProjects: ProjectInfo[] = [
+                    { name: 'project', path: '/path/a/project' },
+                    { name: 'project', path: '/path/b/project' },
                 ];
-                const result = await notebookHandler.resolve('project::file.org', createContext(duplicateNotebooks));
+                const result = await notebookHandler.resolve('project::file.org', createContext(duplicateProjects));
                 expect(result.metadata?.ambiguous).toBe(true);
                 expect(result.metadata?.candidates).toHaveLength(2);
             });
 
-            it('should work with empty notebooks list', async () => {
+            it('should work with empty projects list', async () => {
                 const result = await notebookHandler.resolve('project::file.org', createContext([]));
                 expect(result.exists).toBe(false);
             });
 
-            it('should work without getNotebooks callback', async () => {
+            it('should work without getProjects callback', async () => {
                 const result = await notebookHandler.resolve('project::file.org', {});
                 expect(result.exists).toBe(false);
             });
@@ -187,8 +187,8 @@ describe('orgLinkTypes', () => {
     describe('parseNotebookLinkPath edge cases', () => {
         // Test through resolve since parseNotebookLinkPath is internal
         const mockContext: LinkContext = {
-            getNotebooks: () => [
-                { id: 'nb-1', name: 'test', path: '/test' },
+            getProjects: () => [
+                { name: 'test', path: '/test' },
             ],
         };
 
@@ -216,11 +216,11 @@ describe('orgLinkTypes', () => {
         });
 
         it('should handle Windows-style backslashes in path', async () => {
-            const windowsNotebooks: NotebookInfo[] = [
-                { id: 'nb-1', name: 'project', path: 'C:\\Users\\test\\project' },
+            const windowsProjects: ProjectInfo[] = [
+                { name: 'project', path: 'C:\\Users\\test\\project' },
             ];
             const result = await notebookHandler.resolve('project::file.org', {
-                getNotebooks: () => windowsNotebooks,
+                getProjects: () => windowsProjects,
             });
             expect(result.exists).toBe(true);
             // Path should be normalized to forward slashes

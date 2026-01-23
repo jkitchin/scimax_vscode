@@ -1,11 +1,14 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import { NotebookManager, Notebook, Collaborator } from './notebookManager';
+import { ProjectileManager, Project } from '../projectile/projectileManager';
 import { getDatabase } from '../database/lazyDb';
 
 export function registerNotebookCommands(
     context: vscode.ExtensionContext,
-    notebookManager: NotebookManager
+    notebookManager: NotebookManager,
+    projectileManager: ProjectileManager
 ): void {
     // Create new notebook
     context.subscriptions.push(
@@ -421,7 +424,7 @@ export function registerNotebookCommands(
         vscode.commands.registerCommand('scimax.notebook.openLink', async (arg: string | { path: string }) => {
             // Handle both string and object argument formats
             const linkPath = typeof arg === 'string' ? arg : arg.path;
-            await openNotebookLink(linkPath, notebookManager);
+            await openNotebookLink(linkPath, projectileManager);
         })
     );
 
@@ -432,17 +435,17 @@ export function registerNotebookCommands(
             if (!editor) return;
 
             // Select project
-            const notebooks = notebookManager.getNotebooks();
-            if (notebooks.length === 0) {
-                vscode.window.showWarningMessage('No notebooks found. Create one first.');
+            const projects = projectileManager.getProjects();
+            if (projects.length === 0) {
+                vscode.window.showWarningMessage('No projects found. Add a project first.');
                 return;
             }
 
-            const projectItems = notebooks.map(nb => ({
-                label: nb.name,
-                description: nb.description || '',
-                detail: nb.path,
-                notebook: nb
+            const projectItems = projects.map(proj => ({
+                label: proj.name,
+                description: proj.type,
+                detail: proj.path,
+                project: proj
             }));
 
             const selectedProject = await vscode.window.showQuickPick(projectItems, {
@@ -452,7 +455,7 @@ export function registerNotebookCommands(
             if (!selectedProject) return;
 
             // Select file in project
-            const files = await notebookManager.listNotebookFiles(selectedProject.notebook);
+            const files = await listProjectFiles(selectedProject.project.path);
             if (files.length === 0) {
                 vscode.window.showWarningMessage('No org/md files found in project');
                 return;
@@ -460,9 +463,9 @@ export function registerNotebookCommands(
 
             const fileItems = files.map(f => ({
                 label: path.basename(f),
-                description: path.relative(selectedProject.notebook.path, path.dirname(f)),
+                description: path.relative(selectedProject.project.path, path.dirname(f)),
                 detail: f,
-                relativePath: path.relative(selectedProject.notebook.path, f).replace(/\\/g, '/')
+                relativePath: path.relative(selectedProject.project.path, f).replace(/\\/g, '/')
             }));
 
             const selectedFile = await vscode.window.showQuickPick(fileItems, {
@@ -478,7 +481,7 @@ export function registerNotebookCommands(
             });
 
             // Build and insert the link
-            let link = `nb:${selectedProject.notebook.name}::${selectedFile.relativePath}`;
+            let link = `nb:${selectedProject.project.name}::${selectedFile.relativePath}`;
             if (target) {
                 link += `::${target}`;
             }
@@ -489,6 +492,42 @@ export function registerNotebookCommands(
             });
         })
     );
+}
+
+/**
+ * List org and markdown files in a project directory
+ */
+async function listProjectFiles(projectPath: string): Promise<string[]> {
+    const files: string[] = [];
+    const extensions = ['.org', '.md'];
+
+    const walk = (dir: string) => {
+        try {
+            const items = fs.readdirSync(dir, { withFileTypes: true });
+            for (const item of items) {
+                const fullPath = path.join(dir, item.name);
+
+                // Skip hidden directories
+                if (item.isDirectory() && item.name.startsWith('.')) continue;
+                // Skip common non-content directories
+                if (item.isDirectory() && ['node_modules', 'dist', 'build', '.git'].includes(item.name)) continue;
+
+                if (item.isDirectory()) {
+                    walk(fullPath);
+                } else if (item.isFile()) {
+                    const ext = path.extname(item.name).toLowerCase();
+                    if (extensions.includes(ext)) {
+                        files.push(fullPath);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error(`Error walking ${dir}`, error);
+        }
+    };
+
+    walk(projectPath);
+    return files;
 }
 
 async function getCurrentOrSelectNotebook(
@@ -608,7 +647,7 @@ function parseNotebookLinkPath(linkPath: string): {
  */
 async function openNotebookLink(
     linkPath: string,
-    notebookManager: NotebookManager
+    projectileManager: ProjectileManager
 ): Promise<void> {
     const parsed = parseNotebookLinkPath(linkPath);
     if (!parsed) {
@@ -618,27 +657,27 @@ async function openNotebookLink(
 
     const { projectName, filePath, target } = parsed;
 
-    // Find matching notebooks
-    const notebooks = notebookManager.getNotebooks();
-    const matchingNotebooks = notebooks.filter(nb =>
-        nb.name === projectName ||
-        nb.name.toLowerCase() === projectName.toLowerCase() ||
-        nb.path.endsWith(`/${projectName}`) ||
-        nb.path.endsWith(`\\${projectName}`)
+    // Find matching projects
+    const projects = projectileManager.getProjects();
+    const matchingProjects = projects.filter(proj =>
+        proj.name === projectName ||
+        proj.name.toLowerCase() === projectName.toLowerCase() ||
+        proj.path.endsWith(`/${projectName}`) ||
+        proj.path.endsWith(`\\${projectName}`)
     );
 
-    if (matchingNotebooks.length === 0) {
+    if (matchingProjects.length === 0) {
         vscode.window.showErrorMessage(`Project not found: ${projectName}`);
         return;
     }
 
-    let notebook: Notebook;
-    if (matchingNotebooks.length > 1) {
+    let project: Project;
+    if (matchingProjects.length > 1) {
         // Show picker for ambiguous matches
-        const items = matchingNotebooks.map(nb => ({
-            label: nb.name,
-            description: nb.path,
-            notebook: nb
+        const items = matchingProjects.map(proj => ({
+            label: proj.name,
+            description: proj.path,
+            project: proj
         }));
 
         const selected = await vscode.window.showQuickPick(items, {
@@ -646,13 +685,13 @@ async function openNotebookLink(
         });
 
         if (!selected) return;
-        notebook = selected.notebook;
+        project = selected.project;
     } else {
-        notebook = matchingNotebooks[0];
+        project = matchingProjects[0];
     }
 
     // Build full path
-    const fullPath = path.join(notebook.path, filePath);
+    const fullPath = path.join(project.path, filePath);
 
     // Check if file exists
     const fs = require('fs');

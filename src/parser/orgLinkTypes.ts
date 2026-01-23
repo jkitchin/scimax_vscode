@@ -26,17 +26,14 @@ export interface LinkResolution {
 }
 
 /**
- * Notebook/project information for nb: links
+ * Project information for nb: links
+ * Compatible with both NotebookManager.Notebook and ProjectileManager.Project
  */
-export interface NotebookInfo {
-    /** Unique notebook ID */
-    id: string;
-    /** Notebook name (typically directory name or config name) */
+export interface ProjectInfo {
+    /** Project name (typically directory name) */
     name: string;
-    /** Absolute path to notebook root */
+    /** Absolute path to project root */
     path: string;
-    /** Optional description */
-    description?: string;
 }
 
 /**
@@ -59,15 +56,15 @@ export interface LinkContext {
      */
     searchBibliography?: (query: string) => Promise<BibliographyEntry[]>;
     /**
-     * Callback to get all registered notebooks.
+     * Callback to get all registered projects.
      * Used by nb: link handler for project resolution.
      */
-    getNotebooks?: () => NotebookInfo[];
+    getProjects?: () => ProjectInfo[];
     /**
-     * Callback to list files in a notebook.
+     * Callback to list files in a project.
      * Used by nb: link handler for completion.
      */
-    listNotebookFiles?: (notebookPath: string, pattern?: string) => Promise<string[]>;
+    listProjectFiles?: (projectPath: string, pattern?: string) => Promise<string[]>;
 }
 
 /**
@@ -694,15 +691,15 @@ export const notebookHandler: LinkTypeHandler = {
         const { projectName, filePath, target } = parsed;
 
         // Try to resolve the project
-        const notebooks = context.getNotebooks?.() || [];
-        const matchingNotebooks = notebooks.filter(
-            nb => nb.name === projectName ||
-                  nb.name.toLowerCase() === projectName.toLowerCase() ||
-                  nb.path.endsWith(`/${projectName}`) ||
-                  nb.path.endsWith(`\\${projectName}`)
+        const projects = context.getProjects?.() || [];
+        const matchingProjects = projects.filter(
+            proj => proj.name === projectName ||
+                  proj.name.toLowerCase() === projectName.toLowerCase() ||
+                  proj.path.endsWith(`/${projectName}`) ||
+                  proj.path.endsWith(`\\${projectName}`)
         );
 
-        if (matchingNotebooks.length === 0) {
+        if (matchingProjects.length === 0) {
             return {
                 displayText: `${projectName}::${filePath}`,
                 tooltip: `Project not found: ${projectName}`,
@@ -711,24 +708,24 @@ export const notebookHandler: LinkTypeHandler = {
             };
         }
 
-        if (matchingNotebooks.length > 1) {
+        if (matchingProjects.length > 1) {
             return {
                 displayText: `${projectName}::${filePath}`,
                 tooltip: `Multiple projects match: ${projectName}`,
                 exists: true,
-                metadata: { projectName, filePath, target, ambiguous: true, candidates: matchingNotebooks },
+                metadata: { projectName, filePath, target, ambiguous: true, candidates: matchingProjects },
             };
         }
 
-        const notebook = matchingNotebooks[0];
-        const fullPath = `${notebook.path}/${filePath}`.replace(/\\/g, '/');
+        const project = matchingProjects[0];
+        const fullPath = `${project.path}/${filePath}`.replace(/\\/g, '/');
 
         return {
             displayText: `${projectName}::${filePath}`,
             url: `file://${fullPath}`,
             tooltip: fullPath + (target ? ` → ${target}` : ''),
             exists: true,
-            metadata: { projectName, filePath, target, resolvedPath: fullPath, notebook },
+            metadata: { projectName, filePath, target, resolvedPath: fullPath, project },
         };
     },
 
@@ -745,12 +742,12 @@ export const notebookHandler: LinkTypeHandler = {
             case 'html':
                 // For HTML export, try to resolve to a file link
                 if (parsed) {
-                    const notebooks = context.getNotebooks?.() || [];
-                    const notebook = notebooks.find(
-                        nb => nb.name === parsed.projectName ||
-                              nb.name.toLowerCase() === parsed.projectName.toLowerCase()
+                    const projects = context.getProjects?.() || [];
+                    const project = projects.find(
+                        proj => proj.name === parsed.projectName ||
+                              proj.name.toLowerCase() === parsed.projectName.toLowerCase()
                     );
-                    if (notebook) {
+                    if (project) {
                         const htmlPath = parsed.filePath.replace(/\.org$/, '.html');
                         return `<a href="${escapeHtml(htmlPath)}">${escapeHtml(text)}</a>`;
                     }
@@ -765,7 +762,7 @@ export const notebookHandler: LinkTypeHandler = {
     },
 
     async complete(prefix: string, context: LinkContext): Promise<LinkCompletion[]> {
-        const notebooks = context.getNotebooks?.() || [];
+        const projects = context.getProjects?.() || [];
         const completions: LinkCompletion[] = [];
 
         // Parse what's been typed so far
@@ -774,12 +771,12 @@ export const notebookHandler: LinkTypeHandler = {
         if (parts.length === 1) {
             // Completing project name
             const projectPrefix = parts[0].toLowerCase();
-            for (const nb of notebooks) {
-                if (nb.name.toLowerCase().startsWith(projectPrefix)) {
+            for (const proj of projects) {
+                if (proj.name.toLowerCase().startsWith(projectPrefix)) {
                     completions.push({
-                        text: `${nb.name}::`,
-                        label: nb.name,
-                        detail: nb.description || nb.path,
+                        text: `${proj.name}::`,
+                        label: proj.name,
+                        detail: proj.path,
                         sortPriority: 0,
                     });
                 }
@@ -789,21 +786,21 @@ export const notebookHandler: LinkTypeHandler = {
             const projectName = parts[0];
             const filePrefix = parts[1].toLowerCase();
 
-            const notebook = notebooks.find(
-                nb => nb.name === projectName ||
-                      nb.name.toLowerCase() === projectName.toLowerCase()
+            const project = projects.find(
+                proj => proj.name === projectName ||
+                      proj.name.toLowerCase() === projectName.toLowerCase()
             );
 
-            if (notebook && context.listNotebookFiles) {
-                const files = await context.listNotebookFiles(notebook.path);
+            if (project && context.listProjectFiles) {
+                const files = await context.listProjectFiles(project.path);
                 for (const file of files) {
-                    // Get path relative to notebook
-                    const relativePath = file.replace(notebook.path, '').replace(/^[/\\]/, '');
+                    // Get path relative to project
+                    const relativePath = file.replace(project.path, '').replace(/^[/\\]/, '');
                     if (relativePath.toLowerCase().includes(filePrefix)) {
                         completions.push({
                             text: `${projectName}::${relativePath}`,
                             label: relativePath,
-                            detail: `in ${notebook.name}`,
+                            detail: `in ${project.name}`,
                             sortPriority: 0,
                         });
                     }
@@ -824,40 +821,40 @@ export const notebookHandler: LinkTypeHandler = {
         }
 
         const { projectName, filePath, target } = parsed;
-        const notebooks = context.getNotebooks?.() || [];
+        const projects = context.getProjects?.() || [];
 
-        // Find matching notebooks
-        const matchingNotebooks = notebooks.filter(
-            nb => nb.name === projectName ||
-                  nb.name.toLowerCase() === projectName.toLowerCase() ||
-                  nb.path.endsWith(`/${projectName}`) ||
-                  nb.path.endsWith(`\\${projectName}`)
+        // Find matching projects
+        const matchingProjects = projects.filter(
+            proj => proj.name === projectName ||
+                  proj.name.toLowerCase() === projectName.toLowerCase() ||
+                  proj.path.endsWith(`/${projectName}`) ||
+                  proj.path.endsWith(`\\${projectName}`)
         );
 
-        if (matchingNotebooks.length === 0) {
+        if (matchingProjects.length === 0) {
             vscode.window.showErrorMessage(`Project not found: ${projectName}`);
             return;
         }
 
-        let notebook: NotebookInfo;
-        if (matchingNotebooks.length > 1) {
+        let project: ProjectInfo;
+        if (matchingProjects.length > 1) {
             // Show picker for ambiguous matches
-            const items = matchingNotebooks.map(nb => ({
-                label: nb.name,
-                description: nb.path,
-                notebook: nb,
+            const items = matchingProjects.map(proj => ({
+                label: proj.name,
+                description: proj.path,
+                project: proj,
             }));
             const selected = await vscode.window.showQuickPick(items, {
                 placeHolder: `Multiple projects match "${projectName}". Select one:`,
             });
             if (!selected) return;
-            notebook = selected.notebook;
+            project = selected.project;
         } else {
-            notebook = matchingNotebooks[0];
+            project = matchingProjects[0];
         }
 
         // Build full path
-        const fullPath = `${notebook.path}/${filePath}`.replace(/\\/g, '/');
+        const fullPath = `${project.path}/${filePath}`.replace(/\\/g, '/');
 
         // Open via command with target handling (reuses existing file link logic)
         // Construct a file: link to leverage existing openFileLink
