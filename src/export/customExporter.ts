@@ -2,10 +2,7 @@
  * Custom Exporter System
  *
  * Allows users to define custom export backends via templates and manifests.
- * Uses the same template syntax as the existing template system for consistency:
- * - {{variable}} for simple substitution
- * - {{#if variable}}...{{/if}} for conditionals
- * - {{#each items}}...{{/each}} for iteration
+ * Uses Handlebars for template rendering with custom helpers.
  *
  * Directory structure:
  *   ~/.scimax/exporters/
@@ -14,11 +11,14 @@
  *   │   └── template.tex
  *   └── journal-article/
  *       ├── manifest.json
- *       └── template.tex
+ *       ├── template.tex
+ *       └── partials/
+ *           └── preamble.tex
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as Handlebars from 'handlebars';
 import type { OrgDocumentNode } from '../parser/orgElementTypes';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
@@ -65,6 +65,8 @@ export interface ExporterManifest {
     template: string;
     /** Optional path to preamble file (LaTeX only) */
     preamble?: string;
+    /** Optional directory containing partial templates */
+    partialsDir?: string;
 
     /** LaTeX-specific options */
     latexOptions?: {
@@ -80,14 +82,14 @@ export interface ExporterManifest {
 export interface CustomExporter extends ExporterManifest {
     /** Absolute path to the exporter directory */
     basePath: string;
-    /** Raw template content */
-    templateContent: string;
+    /** Compiled Handlebars template */
+    compiledTemplate: Handlebars.TemplateDelegate;
     /** Preamble content (if any) */
     preambleContent?: string;
 }
 
 /**
- * Template context passed to the template engine
+ * Template context passed to Handlebars
  */
 export interface TemplateContext {
     // Standard org fields
@@ -109,186 +111,120 @@ export interface TemplateContext {
 }
 
 // =============================================================================
-// Template Engine (matches existing {{variable}} syntax)
+// Handlebars Setup
 // =============================================================================
 
 /**
- * Simple template engine matching the existing template system syntax
- *
- * Supported syntax:
- * - {{variable}} - Simple substitution
- * - {{#if variable}}...{{/if}} - Conditional (truthy check)
- * - {{#unless variable}}...{{/unless}} - Inverse conditional
- * - {{#each items}}{{this}}{{/each}} - Iteration over arrays
- * - {{latex variable}} - Escape for LaTeX
- * - {{html variable}} - Escape for HTML
- * - {{default variable "fallback"}} - Default value
+ * Create a new Handlebars instance with custom helpers
+ * Using a factory function allows each exporter to have isolated partials
  */
-export function renderTemplate(template: string, context: TemplateContext): string {
-    let result = template;
+function createHandlebarsInstance(): typeof Handlebars {
+    const hbs = Handlebars.create();
 
-    // Process {{#each items}}...{{/each}} blocks first
-    result = processEachBlocks(result, context);
-
-    // Process {{#if variable}}...{{/if}} blocks
-    result = processIfBlocks(result, context);
-
-    // Process {{#unless variable}}...{{/unless}} blocks
-    result = processUnlessBlocks(result, context);
-
-    // Process {{default variable "fallback"}} helpers
-    result = processDefaultHelpers(result, context);
-
-    // Process {{latex variable}} and {{html variable}} helpers
-    result = processEscapeHelpers(result, context);
-
-    // Process simple {{variable}} substitutions last
-    result = processSimpleSubstitutions(result, context);
-
-    return result;
-}
-
-/**
- * Process {{#each items}}...{{/each}} blocks
- */
-function processEachBlocks(template: string, context: TemplateContext): string {
-    const eachPattern = /\{\{#each\s+(\w+)\}\}([\s\S]*?)\{\{\/each\}\}/g;
-
-    return template.replace(eachPattern, (_, varName, content) => {
-        const value = context[varName];
-        if (!Array.isArray(value) || value.length === 0) {
-            return '';
-        }
-
-        return value
-            .map(item => {
-                // Replace {{this}} with the current item
-                let itemContent = content.replace(/\{\{this\}\}/g, String(item));
-                // Also support {{.}} as alias for {{this}}
-                itemContent = itemContent.replace(/\{\{\.\}\}/g, String(item));
-                return itemContent;
-            })
-            .join('');
-    });
-}
-
-/**
- * Process {{#if variable}}...{{/if}} blocks (with optional {{else}})
- */
-function processIfBlocks(template: string, context: TemplateContext): string {
-    // Pattern with optional else clause
-    const ifElsePattern = /\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{else\}\}([\s\S]*?)\{\{\/if\}\}/g;
-    let result = template.replace(ifElsePattern, (_, varName, ifContent, elseContent) => {
-        const value = context[varName];
-        return isTruthy(value) ? ifContent : elseContent;
+    // Escape for LaTeX: {{latex value}}
+    hbs.registerHelper('latex', (text: unknown) => {
+        if (text === undefined || text === null) return '';
+        return new hbs.SafeString(escapeString(String(text), 'latex'));
     });
 
-    // Pattern without else clause
-    const ifPattern = /\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g;
-    result = result.replace(ifPattern, (_, varName, content) => {
-        const value = context[varName];
-        return isTruthy(value) ? content : '';
+    // Escape for HTML: {{html value}}
+    hbs.registerHelper('html', (text: unknown) => {
+        if (text === undefined || text === null) return '';
+        return new hbs.SafeString(escapeString(String(text), 'html'));
     });
 
-    return result;
-}
-
-/**
- * Process {{#unless variable}}...{{/unless}} blocks
- */
-function processUnlessBlocks(template: string, context: TemplateContext): string {
-    const unlessPattern = /\{\{#unless\s+(\w+)\}\}([\s\S]*?)\{\{\/unless\}\}/g;
-
-    return template.replace(unlessPattern, (_, varName, content) => {
-        const value = context[varName];
-        return isTruthy(value) ? '' : content;
-    });
-}
-
-/**
- * Process {{default variable "fallback"}} helpers
- */
-function processDefaultHelpers(template: string, context: TemplateContext): string {
-    const defaultPattern = /\{\{default\s+(\w+)\s+"([^"]*)"\}\}/g;
-
-    return template.replace(defaultPattern, (_, varName, fallback) => {
-        const value = context[varName];
+    // Default value helper: {{default field "fallback"}}
+    hbs.registerHelper('default', (value: unknown, defaultValue: string) => {
         if (value === undefined || value === null || value === '') {
-            return fallback;
+            return defaultValue;
         }
-        return String(value);
-    });
-}
-
-/**
- * Process {{latex variable}} and {{html variable}} escape helpers
- */
-function processEscapeHelpers(template: string, context: TemplateContext): string {
-    // {{latex variable}} - escape for LaTeX
-    const latexPattern = /\{\{latex\s+(\w+)\}\}/g;
-    let result = template.replace(latexPattern, (_, varName) => {
-        const value = context[varName];
-        if (value === undefined || value === null) {
-            return '';
-        }
-        return escapeString(String(value), 'latex');
-    });
-
-    // {{html variable}} - escape for HTML
-    const htmlPattern = /\{\{html\s+(\w+)\}\}/g;
-    result = result.replace(htmlPattern, (_, varName) => {
-        const value = context[varName];
-        if (value === undefined || value === null) {
-            return '';
-        }
-        return escapeString(String(value), 'html');
-    });
-
-    return result;
-}
-
-/**
- * Process simple {{variable}} substitutions
- */
-function processSimpleSubstitutions(template: string, context: TemplateContext): string {
-    const simplePattern = /\{\{(\w+)\}\}/g;
-
-    return template.replace(simplePattern, (match, varName) => {
-        const value = context[varName];
-        if (value === undefined || value === null) {
-            // Return placeholder for missing values
-            return `[NOT FOUND: ${varName}]`;
-        }
-        if (typeof value === 'boolean') {
-            return value ? 'true' : 'false';
-        }
-        if (Array.isArray(value)) {
-            return value.join(', ');
-        }
-        return String(value);
-    });
-}
-
-/**
- * Check if a value is truthy for template conditionals
- */
-function isTruthy(value: unknown): boolean {
-    if (value === undefined || value === null) {
-        return false;
-    }
-    if (typeof value === 'boolean') {
         return value;
-    }
-    if (typeof value === 'string') {
-        return value.length > 0;
-    }
-    if (typeof value === 'number') {
-        return value !== 0;
-    }
-    if (Array.isArray(value)) {
-        return value.length > 0;
-    }
-    return true;
+    });
+
+    // NOT FOUND placeholder for missing required fields: {{required field "fieldName"}}
+    hbs.registerHelper('required', (value: unknown, fieldName: string) => {
+        if (value === undefined || value === null || value === '') {
+            return `[NOT FOUND: ${fieldName}]`;
+        }
+        return value;
+    });
+
+    // Join array with separator: {{join items ", "}}
+    hbs.registerHelper('join', (array: unknown, separator: string) => {
+        if (!Array.isArray(array)) return '';
+        return array.join(typeof separator === 'string' ? separator : ', ');
+    });
+
+    // Equality comparison: {{#ifeq a b}}...{{/ifeq}}
+    hbs.registerHelper('ifeq', function(this: unknown, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
+        return a === b ? options.fn(this) : options.inverse(this);
+    });
+
+    // Not equal comparison: {{#ifne a b}}...{{/ifne}}
+    hbs.registerHelper('ifne', function(this: unknown, a: unknown, b: unknown, options: Handlebars.HelperOptions) {
+        return a !== b ? options.fn(this) : options.inverse(this);
+    });
+
+    // Current date: {{today}}
+    hbs.registerHelper('today', () => {
+        return new Date().toISOString().split('T')[0];
+    });
+
+    // Current year: {{year}}
+    hbs.registerHelper('year', () => {
+        return new Date().getFullYear();
+    });
+
+    // Uppercase: {{upper text}}
+    hbs.registerHelper('upper', (text: unknown) => {
+        if (text === undefined || text === null) return '';
+        return String(text).toUpperCase();
+    });
+
+    // Lowercase: {{lower text}}
+    hbs.registerHelper('lower', (text: unknown) => {
+        if (text === undefined || text === null) return '';
+        return String(text).toLowerCase();
+    });
+
+    // Raw/unescaped output (for body content): {{{raw body}}}
+    // Note: Triple braces already do this in Handlebars, but this is explicit
+    hbs.registerHelper('raw', (text: unknown) => {
+        if (text === undefined || text === null) return '';
+        return new hbs.SafeString(String(text));
+    });
+
+    return hbs;
+}
+
+// Global Handlebars instance with helpers registered
+const handlebars = createHandlebarsInstance();
+
+/**
+ * Compile a Handlebars template
+ */
+export function compileTemplate(templateSource: string): Handlebars.TemplateDelegate {
+    return handlebars.compile(templateSource, {
+        strict: false, // Don't throw on missing fields
+        noEscape: true, // Don't auto-escape (templates handle their own escaping)
+    });
+}
+
+/**
+ * Register a partial template
+ */
+export function registerPartial(name: string, content: string): void {
+    handlebars.registerPartial(name, content);
+}
+
+/**
+ * Render a template with context
+ */
+export function renderTemplate(
+    template: Handlebars.TemplateDelegate,
+    context: TemplateContext
+): string {
+    return template(context);
 }
 
 // =============================================================================
@@ -428,6 +364,7 @@ class ExporterRegistry {
         // Load template
         const templatePath = path.join(exporterPath, manifest.template);
         const templateContent = await fs.promises.readFile(templatePath, 'utf-8');
+        const compiledTemplate = compileTemplate(templateContent);
 
         // Load preamble if specified
         let preambleContent: string | undefined;
@@ -440,12 +377,40 @@ class ExporterRegistry {
             }
         }
 
+        // Load partials if directory specified
+        if (manifest.partialsDir) {
+            const partialsPath = path.join(exporterPath, manifest.partialsDir);
+            await this.loadPartials(partialsPath, manifest.id);
+        }
+
         return {
             ...manifest,
             basePath: exporterPath,
-            templateContent,
+            compiledTemplate,
             preambleContent,
         };
+    }
+
+    /**
+     * Load partial templates from a directory
+     */
+    private async loadPartials(partialsPath: string, exporterId: string): Promise<void> {
+        try {
+            const entries = await fs.promises.readdir(partialsPath);
+            for (const entry of entries) {
+                const ext = path.extname(entry);
+                if (['.tex', '.html', '.hbs', '.partial'].includes(ext)) {
+                    const partialName = `${exporterId}/${path.basename(entry, ext)}`;
+                    const content = await fs.promises.readFile(
+                        path.join(partialsPath, entry),
+                        'utf-8'
+                    );
+                    registerPartial(partialName, content);
+                }
+            }
+        } catch {
+            // Partials directory doesn't exist - ignore
+        }
     }
 
     /**
@@ -496,7 +461,7 @@ export { ExporterRegistry };
 export async function executeCustomExport(
     exporterId: string,
     content: string,
-    options?: {
+    _options?: {
         bodyOnly?: boolean;
     }
 ): Promise<string> {
@@ -571,7 +536,7 @@ export async function executeCustomExport(
     };
 
     // Render the template
-    return renderTemplate(exporter.templateContent, context);
+    return renderTemplate(exporter.compiledTemplate, context);
 }
 
 // =============================================================================
@@ -618,7 +583,7 @@ export async function initializeExporterRegistry(
 }
 
 // =============================================================================
-// Utility: Create example exporter structure
+// Example Templates
 // =============================================================================
 
 /**
@@ -668,7 +633,7 @@ export const EXAMPLE_CMU_MEMO_MANIFEST: ExporterManifest = {
 };
 
 /**
- * Example template for CMU Memo
+ * Example template for CMU Memo (Handlebars syntax)
  */
 export const EXAMPLE_CMU_MEMO_TEMPLATE = `% CMU Memo Template
 \\documentclass[{{default classOptions "12pt"}}]{letter}
@@ -692,19 +657,19 @@ export const EXAMPLE_CMU_MEMO_TEMPLATE = `% CMU Memo Template
 
 \\begin{letter}{ }
 
-\\memodept{{{department}}}
-\\memoto{{{to}}}
-\\memofrom{{{from}}}
-\\memosubject{{{subject}}}
+\\memodept{ {{department}} }
+\\memoto{ {{to}} }
+\\memofrom{ {{from}} }
+\\memosubject{ {{subject}} }
 {{#if cc}}
-\\memocc{{{cc}}}
+\\memocc{ {{cc}} }
 {{/if}}
 
 \\vspace{1em}
 \\hrule
 \\vspace{1em}
 
-{{body}}
+{{{body}}}
 
 {{#if signatureLines}}
 \\signaturelines
@@ -713,3 +678,51 @@ export const EXAMPLE_CMU_MEMO_TEMPLATE = `% CMU Memo Template
 \\end{letter}
 \\end{document}
 `;
+
+/**
+ * Example manifest for CMU Dissertation exporter
+ */
+export const EXAMPLE_CMU_DISSERTATION_MANIFEST: ExporterManifest = {
+    id: 'cmu-dissertation',
+    name: 'CMU Dissertation',
+    description: 'Carnegie Mellon University PhD dissertation format',
+    parent: 'latex',
+    outputFormat: 'pdf',
+
+    keywords: {
+        degree: {
+            default: 'Doctor of Philosophy',
+            description: 'Degree being awarded',
+        },
+        department: {
+            default: 'Department of Chemical Engineering',
+            description: 'Academic department',
+        },
+        priordegree: {
+            description: 'Prior degrees held',
+        },
+        abstract: {
+            required: true,
+            description: 'Dissertation abstract',
+        },
+        acknowledgements: {
+            description: 'Acknowledgements section',
+        },
+        dedication: {
+            description: 'Dedication text',
+        },
+        committee: {
+            description: 'Committee members (comma-separated)',
+        },
+    },
+
+    template: 'template.tex',
+    preamble: 'preamble.tex',
+    partialsDir: 'partials',
+
+    latexOptions: {
+        documentClass: 'report',
+        classOptions: ['12pt', 'letterpaper'],
+        packages: ['setspace', 'tocloft', 'titlesec'],
+    },
+};

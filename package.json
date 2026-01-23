@@ -86,7 +86,11 @@
       {
         "scopeName": "scimax.latex.citations",
         "path": "./syntaxes/latex-citations.tmLanguage.json",
-        "injectTo": ["text.tex.latex", "text.tex", "source.latex"]
+        "injectTo": [
+          "text.tex.latex",
+          "text.tex",
+          "source.latex"
+        ]
       }
     ],
     "themes": [
@@ -884,6 +888,23 @@
         "command": "scimax.org.previewHtml",
         "title": "Scimax: Preview HTML",
         "icon": "$(open-preview)"
+      },
+      {
+        "command": "scimax.export.custom",
+        "title": "Scimax: Export with Custom Exporter",
+        "icon": "$(export)"
+      },
+      {
+        "command": "scimax.export.reloadCustomExporters",
+        "title": "Scimax: Reload Custom Exporters"
+      },
+      {
+        "command": "scimax.export.openExportersFolder",
+        "title": "Scimax: Open Custom Exporters Folder"
+      },
+      {
+        "command": "scimax.export.createExampleExporter",
+        "title": "Scimax: Create Example Custom Exporter"
       },
       {
         "command": "scimax.jupyter.showKernels",
@@ -4854,14 +4875,22 @@
         },
         "scimax.org.logRepeat": {
           "type": "string",
-          "enum": ["false", "time", "note"],
+          "enum": [
+            "false",
+            "time",
+            "note"
+          ],
           "default": "false",
           "markdownDescription": "Controls logging when repeating tasks cycle back to TODO:\n- `false` (default): No logging\n- `time`: Log timestamp and state change\n- `note`: Log timestamp, state change, and prompt for a note\n\nCan be overridden per-file with `#+STARTUP: logrepeat` or per-heading with `:LOGGING: logrepeat` property."
         },
         "scimax.org.logIntoDrawer": {
           "oneOf": [
-            { "type": "boolean" },
-            { "type": "string" }
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "string"
+            }
           ],
           "default": false,
           "markdownDescription": "Where to log state changes:\n- `false` (default): Log in body text after properties\n- `true`: Log into `:LOGBOOK:` drawer\n- `\"CUSTOM\"`: Log into a custom-named drawer\n\nCan be overridden per-file with `#+STARTUP: logdrawer`."
@@ -4875,7 +4904,12 @@
         },
         "scimax.logLevel": {
           "type": "string",
-          "enum": ["debug", "info", "warn", "error"],
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
           "default": "info",
           "description": "Log level for Scimax output. 'debug' shows all messages, 'error' shows only errors. Errors are always logged regardless of this setting."
         },
@@ -5139,6 +5173,14 @@
           ],
           "default": "show",
           "markdownDescription": "How to handle editmarks during export:\n- `show`: Render with visual markup (insertions, deletions, comments)\n- `accept`: Apply all changes (keep insertions, remove deletions)\n- `reject`: Revert all changes (remove insertions, keep deletions)\n- `hide`: Remove all editmarks without any replacement"
+        },
+        "scimax.export.customExporterPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Additional directories to search for custom exporters. Each exporter should be a subdirectory containing a `manifest.json` and template files. Default locations (`~/.scimax/exporters/` and workspace `.scimax/exporters/`) are always searched.\n\nExample: `[\"/path/to/my/exporters\", \"~/custom-exporters\"]`"
         },
         "scimax.latexPreview.enabled": {
           "type": "boolean",
@@ -5715,6 +5757,7 @@
     "@libsql/client": "^0.17.0",
     "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",
+    "handlebars": "^4.7.8",
     "minimatch": "^9.0.0",
     "uuid": "^9.0.0",
     "zeromq": "^6.0.0-beta.19"
