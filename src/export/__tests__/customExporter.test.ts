@@ -508,7 +508,9 @@ describe('getDefaultExporterPaths', () => {
         delete process.env.XDG_CONFIG_HOME;
 
         const paths = getDefaultExporterPaths();
-        expect(paths).toContain('/home/testuser/.scimax/exporters');
+        // Use path.join for cross-platform compatibility
+        const expectedPath = path.join('/home/testuser', '.scimax', 'exporters');
+        expect(paths).toContain(expectedPath);
     });
 
     it('should include XDG config path when set', () => {
@@ -516,7 +518,9 @@ describe('getDefaultExporterPaths', () => {
         process.env.XDG_CONFIG_HOME = '/home/testuser/.config';
 
         const paths = getDefaultExporterPaths();
-        expect(paths).toContain('/home/testuser/.config/scimax/exporters');
+        // Use path.join for cross-platform compatibility
+        const expectedPath = path.join('/home/testuser/.config', 'scimax', 'exporters');
+        expect(paths).toContain(expectedPath);
     });
 
     it('should use USERPROFILE on Windows', () => {
