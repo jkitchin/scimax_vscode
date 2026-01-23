@@ -149,10 +149,11 @@ function scheduleStaleFileCheck(db: ScimaxDb): void {
 
         try {
             // Get limits from config
-            // Default to 100 files per sync to avoid blocking the UI during background operations
-            // Users can set to 0 for unlimited if they want full sync on startup
-            const maxReindex = config.get<number>('maxReindexPerSync', 100);
-            const maxNewFiles = config.get<number>('maxNewFilesPerSync', 100);
+            // Default to 50 files per sync to avoid OOM on large collections
+            // Keep limits low to prevent memory exhaustion during parsing
+            // Users can increase if they have smaller collections
+            const maxReindex = config.get<number>('maxReindexPerSync', 50);
+            const maxNewFiles = config.get<number>('maxNewFilesPerSync', 50);
 
             // Phase 1: Check stale files (already indexed)
             // Use smaller batches and longer yields to keep UI responsive

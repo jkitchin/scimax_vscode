@@ -745,13 +745,24 @@ export class ScimaxDb {
                 return;
             }
 
+            // Estimate line count from file size before reading (avg ~80 bytes/line for org files)
+            // This prevents loading huge files just to count lines
+            const maxLines = vscode.workspace.getConfiguration('scimax.db')
+                .get<number>('maxFileLines', 10000);
+            const estimatedLines = Math.ceil(stats.size / 80);
+            if (estimatedLines > maxLines * 1.5) {
+                log.warn('Skipping file with estimated too many lines', {
+                    path: filePath,
+                    estimatedLines,
+                    limit: maxLines
+                });
+                return;
+            }
+
             // Read file content (use async to not block event loop)
             const content = await fs.promises.readFile(filePath, 'utf8');
 
-            // Check line count limit (default 10000) to prevent OOM during parsing
-            // Large files with many lines create excessive objects during AST construction
-            const maxLines = vscode.workspace.getConfiguration('scimax.db')
-                .get<number>('maxFileLines', 10000);
+            // Verify actual line count (only for files that passed size estimate)
             const lineCount = content.split('\n').length;
             if (lineCount > maxLines) {
                 log.warn('Skipping file with too many lines', {

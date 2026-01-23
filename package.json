@@ -4967,15 +4967,15 @@
         },
         "scimax.db.maxReindexPerSync": {
           "type": "number",
-          "default": 100,
+          "default": 50,
           "minimum": 0,
-          "description": "Maximum number of modified files to reindex per background sync. Set to 0 for unlimited (may cause memory issues with large codebases)."
+          "description": "Maximum number of modified files to reindex per background sync. Set to 0 for unlimited. Lower values prevent memory issues with large codebases."
         },
         "scimax.db.maxNewFilesPerSync": {
           "type": "number",
-          "default": 100,
+          "default": 50,
           "minimum": 0,
-          "description": "Maximum number of new files to index per background sync. Set to 0 for unlimited (may cause memory issues with large codebases)."
+          "description": "Maximum number of new files to index per background sync. Set to 0 for unlimited. Lower values prevent memory issues with large codebases."
         },
         "scimax.db.queryTimeoutMs": {
           "type": "number",
