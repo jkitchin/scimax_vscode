@@ -731,8 +731,45 @@ async function navigateToTarget(
 
     if (position) {
         editor.selection = new vscode.Selection(position, position);
-        // Unfold at target so content is visible
-        await vscode.commands.executeCommand('editor.unfold', { selectionLines: [position.line] });
+        // Wait for VS Code to restore fold state before unfolding
+        // This is needed because VS Code restores folds asynchronously after opening a file
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // Find all parent headings and unfold them
+        const text = doc.getText();
+        const lines = text.split('\n');
+        const headingLinesToUnfold: number[] = [];
+        let currentLevel = Infinity;
+
+        // Scan backwards from target line to find parent headings
+        for (let i = position.line; i >= 0; i--) {
+            const lineText = lines[i];
+            const headingMatch = lineText.match(/^(\*+|#{1,6})\s/);
+            if (headingMatch) {
+                const level = headingMatch[1].startsWith('#') ? headingMatch[1].length : headingMatch[1].length;
+                if (level < currentLevel) {
+                    headingLinesToUnfold.push(i);
+                    currentLevel = level;
+                    if (level === 1) break;
+                }
+            }
+        }
+
+        // Unfold all parent headings (from top to bottom)
+        headingLinesToUnfold.reverse();
+        for (const headingLine of headingLinesToUnfold) {
+            await vscode.commands.executeCommand('editor.unfold', {
+                selectionLines: [headingLine],
+                levels: 1
+            });
+        }
+
+        // Unfold at target to show children
+        await vscode.commands.executeCommand('editor.unfold', {
+            selectionLines: [position.line],
+            levels: 100
+        });
+
         editor.revealRange(new vscode.Range(position, position), vscode.TextEditorRevealType.InCenter);
     } else {
         vscode.window.showWarningMessage(`Target not found: ${target}`);

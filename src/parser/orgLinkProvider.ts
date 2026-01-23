@@ -400,11 +400,15 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             );
         }
 
-        // If there's a line number search, use VS Code's fragment syntax
+        // If there's a line number search, use our command so we can unfold
         if (search && /^\d+$/.test(search)) {
             const lineNum = parseInt(search);
-            // VS Code supports #L<line> fragment for jumping to lines
-            return vscode.Uri.file(filePath).with({ fragment: `L${lineNum}` });
+            return vscode.Uri.parse(
+                `command:scimax.org.gotoLine?${encodeURIComponent(JSON.stringify({
+                    file: filePath,
+                    line: lineNum
+                }))}`
+            );
         }
 
         // If there's a text search
@@ -426,8 +430,12 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
             );
         }
 
-        // Plain file - open directly
-        return vscode.Uri.file(filePath);
+        // Plain file - open through our command so we can unfold
+        return vscode.Uri.parse(
+            `command:scimax.org.openFile?${encodeURIComponent(JSON.stringify({
+                file: filePath
+            }))}`
+        );
     }
 
     /**
@@ -472,22 +480,80 @@ export class OrgLinkProvider implements vscode.DocumentLinkProvider {
  * Unfold at the given line to ensure content is visible after navigation.
  * This is needed when navigating to a location in a file with folded headings.
  * We unfold both ancestors (so the line becomes visible) and children (so content is shown).
+ *
+ * @param editor - The text editor containing the document
+ * @param line - The line number to unfold at
+ * @param isNewlyOpened - Whether the file was just opened (requires delay for VS Code to restore folds)
  */
-async function unfoldAtLine(editor: vscode.TextEditor, line: number): Promise<void> {
-    // First, unfold ancestors so the target line becomes visible
-    // This handles the case where the target is inside a folded parent heading
+async function unfoldAtLine(editor: vscode.TextEditor, line: number, isNewlyOpened: boolean = false): Promise<void> {
+    // When a file is newly opened, VS Code restores the previous fold state asynchronously.
+    // We need to wait for that restoration to complete before unfolding, otherwise our
+    // unfold gets overwritten by the restored state.
+    if (isNewlyOpened) {
+        // Wait longer to ensure fold state is fully restored
+        await new Promise(resolve => setTimeout(resolve, 300));
+    }
+
+    // Find all parent headings and unfold them
+    // This ensures the target line becomes visible even if nested in folded parents
+    const document = editor.document;
+    const text = document.getText();
+    const lines = text.split('\n');
+
+    // Collect all heading lines from the start to our target that could be parents
+    const headingLinesToUnfold: number[] = [];
+    let currentLevel = Infinity;
+
+    // Scan backwards from target line to find parent headings
+    for (let i = line; i >= 0; i--) {
+        const lineText = lines[i];
+        const headingMatch = lineText.match(/^(\*+)\s/);
+        if (headingMatch) {
+            const level = headingMatch[1].length;
+            if (level < currentLevel) {
+                headingLinesToUnfold.push(i);
+                currentLevel = level;
+                if (level === 1) break; // Found top-level, stop
+            }
+        }
+    }
+
+    // Unfold all parent headings (from top to bottom for proper expansion)
+    headingLinesToUnfold.reverse();
+    for (const headingLine of headingLinesToUnfold) {
+        await vscode.commands.executeCommand('editor.unfold', {
+            selectionLines: [headingLine],
+            levels: 1
+        });
+    }
+
+    // Finally unfold at the target position to show children
     await vscode.commands.executeCommand('editor.unfold', {
         selectionLines: [line],
-        direction: 'up',
         levels: 100
     });
 
-    // Then unfold children at the target position
-    await vscode.commands.executeCommand('editor.unfold', {
-        selectionLines: [line],
-        direction: 'down',
-        levels: 100
-    });
+    // Re-reveal the target in case unfolding shifted the view
+    const position = new vscode.Position(line, 0);
+    editor.revealRange(
+        new vscode.Range(position, position),
+        vscode.TextEditorRevealType.InCenter
+    );
+}
+
+/**
+ * Check if a file is already open in the active editor.
+ * Used to determine if we need to wait for VS Code to restore fold state.
+ */
+function isFileAlreadyOpen(filePath: string): boolean {
+    const activeEditor = vscode.window.activeTextEditor;
+    if (!activeEditor) {
+        return false;
+    }
+    // Normalize paths for comparison
+    const normalizedFilePath = filePath.replace(/\\/g, '/').toLowerCase();
+    const normalizedActivePath = activeEditor.document.uri.fsPath.replace(/\\/g, '/').toLowerCase();
+    return normalizedFilePath === normalizedActivePath;
 }
 
 /**
@@ -498,8 +564,11 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.gotoHeading', async (args: { file: string; heading: string }) => {
             const { file, heading } = args;
+            console.log('[scimax] gotoHeading command called:', { file, heading });
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
+                console.log('[scimax] isNewlyOpened:', isNewlyOpened);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 
@@ -531,7 +600,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                                 new vscode.Range(position, position),
                                 vscode.TextEditorRevealType.InCenter
                             );
-                            await unfoldAtLine(editor, i);
+                            await unfoldAtLine(editor, i, isNewlyOpened);
                             return;
                         }
                     }
@@ -550,6 +619,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const { file, line } = args;
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 
@@ -560,7 +630,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                     new vscode.Range(position, position),
                     vscode.TextEditorRevealType.InCenter
                 );
-                await unfoldAtLine(editor, lineNum);
+                await unfoldAtLine(editor, lineNum, isNewlyOpened);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }
@@ -573,6 +643,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const { file, search } = args;
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 
@@ -587,7 +658,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                         new vscode.Range(position, position),
                         vscode.TextEditorRevealType.InCenter
                     );
-                    await unfoldAtLine(editor, position.line);
+                    await unfoldAtLine(editor, position.line, isNewlyOpened);
                 } else {
                     vscode.window.showWarningMessage(`Search text not found: ${search}`);
                 }
@@ -603,6 +674,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const { file, customId } = args;
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 
@@ -620,7 +692,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
-                        await unfoldAtLine(editor, i);
+                        await unfoldAtLine(editor, i, isNewlyOpened);
                         return;
                     }
                 }
@@ -638,6 +710,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const { file, charOffset } = args;
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 
@@ -647,7 +720,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                     new vscode.Range(position, position),
                     vscode.TextEditorRevealType.InCenter
                 );
-                await unfoldAtLine(editor, position.line);
+                await unfoldAtLine(editor, position.line, isNewlyOpened);
             } catch (error) {
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }
@@ -661,7 +734,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const idLower = id.toLowerCase();
 
             // Helper function to find ID in a document and navigate to it
-            async function findAndNavigateToId(doc: vscode.TextDocument): Promise<boolean> {
+            async function findAndNavigateToId(doc: vscode.TextDocument, isNewlyOpened: boolean): Promise<boolean> {
                 const text = doc.getText();
                 const lines = text.split('\n');
 
@@ -685,7 +758,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
-                        await unfoldAtLine(editor, headingLine);
+                        await unfoldAtLine(editor, headingLine, isNewlyOpened);
                         return true;
                     }
                 }
@@ -696,7 +769,8 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 // First, search in the active document
                 const activeEditor = vscode.window.activeTextEditor;
                 if (activeEditor) {
-                    const found = await findAndNavigateToId(activeEditor.document);
+                    // Active document is already open, no delay needed
+                    const found = await findAndNavigateToId(activeEditor.document, false);
                     if (found) {
                         return;
                     }
@@ -713,7 +787,8 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
 
                     try {
                         const doc = await vscode.workspace.openTextDocument(fileUri);
-                        const found = await findAndNavigateToId(doc);
+                        // These files are newly opened, need delay
+                        const found = await findAndNavigateToId(doc, true);
                         if (found) {
                             return;
                         }
@@ -737,6 +812,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const targetLower = target.toLowerCase();
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
                 const text = doc.getText();
@@ -753,7 +829,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
-                        await unfoldAtLine(editor, i);
+                        await unfoldAtLine(editor, i, isNewlyOpened);
                         return;
                     }
                 }
@@ -770,7 +846,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
-                        await unfoldAtLine(editor, i);
+                        await unfoldAtLine(editor, i, isNewlyOpened);
                         return;
                     }
                 }
@@ -784,7 +860,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                         new vscode.Range(position, position),
                         vscode.TextEditorRevealType.InCenter
                     );
-                    await unfoldAtLine(editor, position.line);
+                    await unfoldAtLine(editor, position.line, isNewlyOpened);
                     return;
                 }
 
@@ -802,6 +878,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const targetLower = target.toLowerCase();
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
                 const text = doc.getText();
@@ -817,7 +894,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
-                        await unfoldAtLine(editor, position.line);
+                        await unfoldAtLine(editor, position.line, isNewlyOpened);
                         return;
                     }
                 }
@@ -836,6 +913,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             const labelLower = label.toLowerCase();
 
             try {
+                const isNewlyOpened = !isFileAlreadyOpen(file);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
                 const text = doc.getText();
@@ -852,13 +930,38 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                             new vscode.Range(position, position),
                             vscode.TextEditorRevealType.InCenter
                         );
-                        await unfoldAtLine(editor, i);
+                        await unfoldAtLine(editor, i, isNewlyOpened);
                         return;
                     }
                 }
 
                 vscode.window.showWarningMessage(`Footnote definition not found: [fn:${label}]`);
             } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            }
+        })
+    );
+
+    // Open a file and unfold everything so content is visible
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.openFile', async (args: { file: string }) => {
+            const { file } = args;
+            console.log('[scimax] openFile command called for:', file);
+
+            try {
+                const doc = await vscode.workspace.openTextDocument(file);
+                const editor = await vscode.window.showTextDocument(doc);
+                console.log('[scimax] File opened, waiting for fold state...');
+
+                // Wait for VS Code to restore fold state
+                await new Promise(resolve => setTimeout(resolve, 300));
+                console.log('[scimax] Unfolding all...');
+
+                // Unfold all to ensure content is visible
+                await vscode.commands.executeCommand('editor.unfoldAll');
+                console.log('[scimax] Unfold complete');
+            } catch (error) {
+                console.error('[scimax] openFile error:', error);
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }
         })
