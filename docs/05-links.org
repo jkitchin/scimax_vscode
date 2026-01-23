@@ -360,13 +360,15 @@ Universal identifiers for cross-file linking:
 [[id:550e8400-e29b-41d4-a716-446655440000][Section in another file]]
 
 
-** ⚠️ Notebook Links
+** ✅ Notebook Links
+CLOSED: [2026-01-22 Thu 21:22]
 
 Notebook links provide cross-project navigation using the =nb:= link type. Inspired
 by scimax-notebook in Emacs, they allow you to link to files within registered
 notebook projects.
 
-*** Link Format
+*** ✅ Link Format
+CLOSED: [2026-01-22 Thu 21:22]
 
 #+BEGIN_SRC org
 [[nb:project-name::relative-file-path::target][description]]
@@ -378,7 +380,8 @@ notebook projects.
 | relative-path   | Path to file relative to project root             |
 | target          | Optional: line number, char offset, heading or ID |
 
-*** Examples
+*** ✅ Examples
+CLOSED: [2026-01-22 Thu 21:22]
 
 | Link                                 | Description                        |
 |--------------------------------------+------------------------------------|
@@ -389,7 +392,8 @@ notebook projects.
 | [[nb:my-research::paper.org::*Methods]] | Jump to "Methods" heading       |
 | [[nb:my-research::doc.org::#intro]]  | Jump to custom ID "intro"          |
 
-*** Target Syntax
+*** ✅ Target Syntax
+CLOSED: [2026-01-22 Thu 21:22]
 
 The target component (after the second =::=) supports:
 
@@ -400,14 +404,16 @@ The target component (after the second =::=) supports:
 | =*Heading= | Jump to heading by name |
 | =#id=      | Jump to custom ID       |
 
-*** Commands
+*** ✅ Commands
+CLOSED: [2026-01-22 Thu 21:22]
 
 | Key       | Command                       | Description                |
 |-----------+-------------------------------+----------------------------|
 | C-c C-o   | scimax.org.openLink           | Open notebook link         |
 | (none)    | scimax.notebook.insertLink    | Insert a notebook link     |
 
-*** Inserting Notebook Links
+*** ✅ Inserting Notebook Links
+CLOSED: [2026-01-22 Thu 21:22]
 
 Use the command =Scimax: Insert Notebook Link= to interactively create links:
 
@@ -417,7 +423,8 @@ Use the command =Scimax: Insert Notebook Link= to interactively create links:
 
 The link is inserted at the cursor position.
 
-*** Project Resolution
+*** ✅ Project Resolution
+CLOSED: [2026-01-22 Thu 21:22]
 
 The =project-name= is matched against registered notebooks by:
 
@@ -427,7 +434,8 @@ The =project-name= is matched against registered notebooks by:
 
 If multiple projects match, you'll be prompted to select one.
 
-*** Related Commands
+*** ✅ Related Commands
+CLOSED: [2026-01-22 Thu 21:22]
 
 See also [[file:15-notebook.org][Notebooks]] for:
 - Creating and managing notebooks

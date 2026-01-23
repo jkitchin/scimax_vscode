@@ -521,7 +521,8 @@ This is ideal for side-by-side editing without leaving VS Code.
 | Built-in panel   | C-c v   | PDF in VS Code panel (Overleaf-like) |
 | External viewer  | C-c C-v | Opens in Skim/Zathura/SumatraPDF     |
 
-*** 👀 Bidirectional Sync
+*** ✅ Bidirectional Sync
+CLOSED: [2026-01-22 Thu 21:24]
 
 The built-in PDF viewer supports precise bidirectional synchronization:
 
@@ -541,7 +542,8 @@ to the corresponding line in your LaTeX source.
 The forward sync uses SyncTeX coordinates combined with text-layer search
 to find the exact word you clicked, even if SyncTeX coordinates are imprecise.
 
-*** 👀 Debug Popup Setting
+*** ✅ Debug Popup Setting
+CLOSED: [2026-01-22 Thu 21:24]
 
 To see SyncTeX coordinates and debug information when syncing:
 
@@ -554,7 +556,8 @@ To see SyncTeX coordinates and debug information when syncing:
 Default is =false=. When enabled, shows a popup with page, coordinates,
 source line/column, and search text for troubleshooting sync issues.
 
-*** 👀 Auto-Compile on Save
+*** ✅ Auto-Compile on Save
+CLOSED: [2026-01-22 Thu 21:25]
 
 When the PDF panel is open, saving a LaTeX file automatically recompiles and refreshes the PDF. This provides an Overleaf-like live preview experience.
 
@@ -683,7 +686,8 @@ Requires =chktex= to be installed:
 - *Linux*: =apt install chktex=
 - *Windows*: Included with MiKTeX/TeX Live
 
-* ⚠️ Error Navigation
+* ✅ Error Navigation
+CLOSED: [2026-01-22 Thu 21:24]
 
 Navigate through compilation errors:
 
@@ -786,7 +790,8 @@ CLOSED: [2026-01-19 Mon 09:17]
 
 Click in PDF to jump back to the corresponding source location.
 
-** 👀 Setup
+** ✅ Setup
+CLOSED: [2026-01-22 Thu 21:25]
 
 Run the command =Scimax LaTeX: Show Inverse SyncTeX Command= to get the
 configuration command for your PDF viewer.

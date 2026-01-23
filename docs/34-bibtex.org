@@ -168,7 +168,8 @@ Example:
 - "The Effects Of Machine Learning" → "The effects of machine learning"
 - "Analysis of {DNA} Sequences" → "Analysis of {DNA} sequences"
 
-** 👀 Generate Key
+** ✅ Generate Key
+CLOSED: [2026-01-22 Thu 21:25]
 
 Command: =scimax.bibtex.generateKey= (speed key: =K=)
 
@@ -242,7 +243,8 @@ Use this to protect:
 - Proper nouns: Python → {Python}
 - Chemical formulas: H2O → {H2O}
 
-** 👀 Strip Braces
+** ✅ Strip Braces
+CLOSED: [2026-01-22 Thu 21:25]
 
 Command: =scimax.bibtex.stripBraces= (speed key: =B=, keybinding: =Cmd+Shift+[=)
 

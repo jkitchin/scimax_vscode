@@ -751,8 +751,8 @@ CLOSED: [2026-01-17 Sat 12:08]
 
 Warning: Disable for very large workspaces (>10,000 files) to prevent memory issues.
 
-*** 👀 Indexing Sources
-CLOSED: [2026-01-17 Sat 12:08]
+*** ✅ Indexing Sources
+CLOSED: [2026-01-22 Thu 21:43]
 
 By default, the database indexes:
 - Journal directory (=scimax.db.includeJournal: true=)
@@ -1087,13 +1087,16 @@ Scimax: Configure Embedding Service (`scimax.db.configureEmbeddings')
 | scimax.db.rebuild             | Rebuild database completely |
 | scimax.db.verify              | Verify database integrity   |
 
-* ⚠️ Database Maintenance
+* ✅ Database Maintenance
+CLOSED: [2026-01-22 Thu 21:17]
 
-** ⚠️ Backup and Restore
+** ✅ Backup and Restore
+CLOSED: [2026-01-22 Thu 21:17]
 
 The database can be backed up and restored to prevent data loss and enable migration between machines.
 
-*** ⚠️ Backup
+*** ✅ Backup
+CLOSED: [2026-01-22 Thu 21:17]
 
 Command: =Scimax: Backup Database= (=scimax.db.backup=)
 
@@ -1109,7 +1112,8 @@ Backup is stored in JSON format for portability.
 ~/.scimax/backup-2026-01-22.json
 #+END_SRC
 
-*** ⚠️ Restore
+*** ✅ Restore
+CLOSED: [2026-01-22 Thu 21:17]
 
 Command: =Scimax: Restore Database= (=scimax.db.restore=)
 
@@ -1120,7 +1124,8 @@ Restores database from a backup file:
 
 Note: Actual file content must still be reindexed after restore.
 
-** ⚠️ Database Rebuild
+** ✅ Database Rebuild
+CLOSED: [2026-01-22 Thu 21:17]
 
 Command: =Scimax: Rebuild Database= (=scimax.db.rebuild=)
 
@@ -1143,7 +1148,8 @@ Use when:
 | Full rebuild  | Complete reindex of all files        |
 | Projects only | Only rebuild project table           |
 
-** ⚠️ Database Verification
+** ✅ Database Verification
+CLOSED: [2026-01-22 Thu 21:18]
 
 Command: =Scimax: Verify Database= (=scimax.db.verify=)
 
@@ -1175,7 +1181,8 @@ Database Verification Results:
 | NEEDS_REINDEX| Some files are stale or missing |
 | CORRUPTED    | Index integrity check failed     |
 
-** ⚠️ Project Integration
+** ✅ Project Integration
+CLOSED: [2026-01-22 Thu 21:44]
 
 The database now stores project information, integrated with the Projectile project manager:
 

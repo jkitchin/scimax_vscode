@@ -321,7 +321,8 @@ Indexed: 42 file(s)
 
 Note: While the CLI can rebuild the database, VS Code provides additional features like auto-indexing on save and embedded file watching. For best results, use VS Code for day-to-day editing and the CLI for batch operations or CI/CD.
 
-*** ⚠️ Scan Directory
+*** ✅ Scan Directory
+CLOSED: [2026-01-22 Thu 20:57]
 
 Scan a specific directory and add its files to the database. This is a simplified command that takes the directory as a direct argument, making it ideal for cron jobs and scripts.
 

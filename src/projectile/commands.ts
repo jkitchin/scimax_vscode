@@ -176,14 +176,20 @@ async function scanForProjects(manager: ProjectileManager): Promise<void> {
     });
 
     if (result && result[0]) {
+        const depthInput = await vscode.window.showInputBox({
+            prompt: 'Max scan depth',
+            value: '2',
+            validateInput: v => /^\d+$/.test(v) ? null : 'Enter a number'
+        });
+
+        const depth = depthInput ? parseInt(depthInput) : 2;
+
         await vscode.window.withProgress({
             location: vscode.ProgressLocation.Notification,
             title: 'Scanning for projects...',
             cancellable: false
         }, async () => {
-            // Pass undefined to let scanDirectory use the config setting
-            // (it already handles 0 as unlimited)
-            const found = await manager.scanDirectory(result[0].fsPath);
+            const found = await manager.scanDirectory(result[0].fsPath, depth);
             vscode.window.showInformationMessage(`Found ${found} projects`);
         });
     }
