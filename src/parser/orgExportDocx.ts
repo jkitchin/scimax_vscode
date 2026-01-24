@@ -104,7 +104,7 @@ import { highlightCode, preloadHighlighter, HighlightOptions } from './orgExport
 
 import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
 import type { BibEntry } from '../references/bibtexParser';
-import { renderLatexForDocx } from './orgExportDocxMath';
+import { latexToUnicode } from './orgExportDocxMath';
 
 // =============================================================================
 // DOCX Export Options
@@ -1247,11 +1247,11 @@ export class DocxExportBackend {
 
     /**
      * Export LaTeX environment (equation, align, etc.)
-     * Renders as Cambria Math font (Word's equation font) for best compatibility
+     * Converts LaTeX to Unicode for readable display in Word
      */
     private async exportLatexEnvironment(
         element: LatexEnvironmentElement,
-        state: DocxExportState
+        _state: DocxExportState
     ): Promise<Paragraph[]> {
         const latex = element.properties.value;
 
@@ -1263,8 +1263,11 @@ export class DocxExportBackend {
             content = latex.slice(beginMatch[0].length, -endMatch[0].length).trim();
         }
 
+        // Convert LaTeX to Unicode
+        const unicodeContent = latexToUnicode(content);
+
         // Split into lines for multi-line equations
-        const lines = content.split('\n').filter(line => line.trim());
+        const lines = unicodeContent.split('\n').filter(line => line.trim());
 
         const runs: TextRun[] = [];
         for (let i = 0; i < lines.length; i++) {
@@ -1737,8 +1740,8 @@ export class DocxExportBackend {
     }
 
     /**
-     * Export inline LaTeX fragment (math) as formatted text
-     * Uses Cambria Math font for best compatibility with Word
+     * Export inline LaTeX fragment (math) as Unicode text
+     * Converts LaTeX to Unicode for readable display in Word
      */
     private exportLatexFragment(obj: LatexFragmentObject, _state: DocxExportState): TextRun[] {
         const latex = obj.properties.value;
@@ -1761,12 +1764,14 @@ export class DocxExportBackend {
             mathContent = latex.slice(2, -2);
         }
 
+        // Convert LaTeX to Unicode
+        const unicodeContent = latexToUnicode(mathContent);
+
         // Render math with Cambria Math font (Word's equation font)
         return [
             new TextRun({
-                text: mathContent,
+                text: unicodeContent,
                 font: 'Cambria Math',
-                italics: true,
             }),
         ];
     }
