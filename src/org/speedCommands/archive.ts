@@ -9,6 +9,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { getHeadingLevel, getSubtreeRange } from './context';
 import { extractTags, hasTag, toggleTag } from './utils';
+import { DAY_NAMES_SHORT } from '../../utils/dateConstants';
 
 /**
  * Get the archive file path for a given org file
@@ -53,7 +54,7 @@ export async function archiveSubtree(): Promise<void> {
 
     // Add archive metadata
     const now = new Date();
-    const timestamp = `[${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.getDay()]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}]`;
+    const timestamp = `[${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${DAY_NAMES_SHORT[now.getDay()]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}]`;
     const archiveFile = document.uri.fsPath;
 
     // Add :ARCHIVE: tag to the heading

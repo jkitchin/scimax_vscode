@@ -12,6 +12,7 @@ import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { processIncludes, hasIncludes } from '../parser/orgInclude';
 import type { OrgDocumentNode } from '../parser/orgElementTypes';
 import { parseNotebook } from '../parser/ipynbParser';
+import { escapeHtml } from '../utils/escapeUtils';
 
 import {
     PublishProject,
@@ -1512,16 +1513,7 @@ ${content}
 </html>`;
 }
 
-/**
- * Escape HTML special characters
- */
-function escapeHtml(text: string): string {
-    return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-}
+// escapeHtml is now imported from '../utils/escapeUtils'
 
 /**
  * Determine which publish function to use based on file extension

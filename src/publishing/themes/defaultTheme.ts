@@ -4,6 +4,7 @@
  */
 
 import type { Theme, PageContext, ProjectContext, PageInfo } from './themeTypes';
+import { escapeHtml } from '../../utils/escapeUtils';
 
 /**
  * Default theme - preserves existing single-column HTML export behavior
@@ -36,7 +37,7 @@ export class DefaultTheme implements Theme {
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${this.escapeHtml(title)}</title>
+<title>${escapeHtml(title)}</title>
 ${customCssLink}
 <style>
 ${this.getDefaultStyles()}
@@ -50,7 +51,7 @@ ${this.getDefaultStyles()}
 <body>
 <main class="org-content">
 <header id="title-block">
-<h1 class="title">${this.escapeHtml(title)}</h1>
+<h1 class="title">${escapeHtml(title)}</h1>
 </header>
 ${content}
 ${navHtml}
@@ -92,16 +93,7 @@ ${navHtml}
         return parts.join('\n');
     }
 
-    /**
-     * Escape HTML special characters
-     */
-    private escapeHtml(text: string): string {
-        return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
-    }
+    // escapeHtml is now imported from '../../utils/escapeUtils'
 
     /**
      * Get default inline styles

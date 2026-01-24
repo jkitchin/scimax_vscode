@@ -4,6 +4,7 @@
  */
 
 import { format } from 'date-fns';
+import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 // =============================================================================
 // Types and Interfaces
@@ -321,10 +322,9 @@ function expandToken(token: TemplateToken, context: CaptureContext): string {
 function formatTimestamp(date: Date, withTime: boolean, inactive: boolean): string {
     const open = inactive ? '[' : '<';
     const close = inactive ? ']' : '>';
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     const dateStr = format(date, 'yyyy-MM-dd');
-    const dayName = dayNames[date.getDay()];
+    const dayName = DAY_NAMES_SHORT[date.getDay()];
 
     if (withTime) {
         const timeStr = format(date, 'HH:mm');

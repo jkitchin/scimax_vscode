@@ -3,6 +3,8 @@
  * No VS Code dependencies - can be used in tests
  */
 
+import { DAY_NAMES_SHORT } from '../utils/dateConstants';
+
 /**
  * Pattern to match DEADLINE or SCHEDULED with repeater timestamp
  * Groups: 1=indent, 2=keyword, 3=year, 4=month, 5=day, 6=hour, 7=minute, 8=repeater
@@ -10,15 +12,10 @@
 export const REPEATER_TIMESTAMP_PATTERN = /^(\s*)(DEADLINE|SCHEDULED):\s*<(\d{4})-(\d{2})-(\d{2})(?:\s+\w{2,3})?(?:\s+(\d{2}):(\d{2}))?(?:\s+([\.\+]+\d+[hdwmy]))\s*>/;
 
 /**
- * Day of week abbreviations
- */
-const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-/**
  * Get day of week abbreviation for a date
  */
 export function getDayOfWeek(date: Date): string {
-    return DAYS_OF_WEEK[date.getDay()];
+    return DAY_NAMES_SHORT[date.getDay()];
 }
 
 /**

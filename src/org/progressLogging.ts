@@ -7,6 +7,7 @@
 
 import * as vscode from 'vscode';
 import { createLogger } from '../utils/logger';
+import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 const log = createLogger('ProgressLogging');
 
@@ -35,12 +36,10 @@ export interface TextEdit {
  * Example: [2026-01-23 Fri 07:31]
  */
 export function formatInactiveTimestamp(date: Date = new Date()): string {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const dayName = days[date.getDay()];
+    const dayName = DAY_NAMES_SHORT[date.getDay()];
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
 

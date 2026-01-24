@@ -12,6 +12,7 @@ import {
     sortTasks
 } from './taskParser';
 import { parseRelativeDate } from '../utils/dateParser';
+import { DAY_NAMES_SHORT, MONTH_NAMES_FULL } from '../utils/dateConstants';
 
 /**
  * Insert a due date at cursor
@@ -387,17 +388,14 @@ async function jumpToTask(task: MarkdownTask): Promise<void> {
  * Get day of week name
  */
 function getDayName(date: Date): string {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    return days[date.getDay()];
+    return DAY_NAMES_SHORT[date.getDay()];
 }
 
 /**
  * Get month name
  */
 function getMonthName(date: Date): string {
-    const months = ['January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[date.getMonth()];
+    return MONTH_NAMES_FULL[date.getMonth()];
 }
 
 /**

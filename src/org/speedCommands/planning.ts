@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
 import { parseRelativeDate, getDateExpressionExamples } from '../../utils/dateParser';
 import { formatOrgTimestamp as formatTimestamp } from '../../parser/orgRepeater';
+import { DAY_NAMES_SHORT } from '../../utils/dateConstants';
 
 /**
  * Format a date as an org-mode timestamp (wrapper for consistency)
@@ -98,8 +99,7 @@ async function promptForDate(title: string): Promise<Date | null> {
     nextMonth.setMonth(nextMonth.getMonth() + 1);
 
     const formatDisplay = (d: Date) => {
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${days[d.getDay()]}`;
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${DAY_NAMES_SHORT[d.getDay()]}`;
     };
 
     const options: (vscode.QuickPickItem & { date?: Date })[] = [

@@ -4,6 +4,7 @@
  */
 
 import type { LinkObject } from './orgElementTypes';
+import { escapeHtml, escapeLatex } from '../utils/escapeUtils';
 
 // =============================================================================
 // Link Type Handler Interface
@@ -925,21 +926,7 @@ function parseNotebookLinkPath(path: string): { projectName: string; filePath: s
 // Helper Functions
 // =============================================================================
 
-function escapeHtml(str: string): string {
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-}
-
-function escapeLatex(str: string): string {
-    return str
-        .replace(/[&%$#_{}]/g, '\\$&')
-        .replace(/\\/g, '\\textbackslash{}')
-        .replace(/\^/g, '\\textasciicircum{}')
-        .replace(/~/g, '\\textasciitilde{}');
-}
+// escapeHtml and escapeLatex are now imported from '../utils/escapeUtils'
 
 // =============================================================================
 // Initialize Built-in Handlers

@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { JournalManager } from './journalManager';
+import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 /**
  * Status bar item showing journal information
@@ -67,8 +68,7 @@ export class JournalStatusBar {
                 const entry = this.manager.getEntry(date);
                 const stats = this.manager.getEntryStats(entry);
 
-                const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-                const weekday = weekdays[date.getDay()];
+                const weekday = DAY_NAMES_SHORT[date.getDay()];
 
                 // Format: "📓 Mon 01/15 | 250 words | 2/5 tasks"
                 const dateStr = `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;

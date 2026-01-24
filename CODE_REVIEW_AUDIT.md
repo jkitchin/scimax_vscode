@@ -253,12 +253,12 @@ Added sections for:
 
 5. ~~Fix O(n²) string concatenation in export/commands.ts~~ **DONE**
 
-### Medium Priority (Code Quality) - TODO
+### Medium Priority (Code Quality) - MOSTLY DONE
 
-6. Extract timestamp formatting to shared utility
-7. Consolidate HTML escaping functions
-8. Create shared constants module for days-of-week, etc.
-9. Migrate all `console.error` to centralized logger
+6. ~~Extract timestamp formatting to shared utility~~ **DONE** - Using `orgRepeater.ts` and `dateConstants.ts`
+7. ~~Consolidate HTML escaping functions~~ **DONE** - Created `src/utils/escapeUtils.ts`
+8. ~~Create shared constants module for days-of-week, etc.~~ **DONE** - Enhanced `src/utils/dateConstants.ts`
+9. Migrate all `console.error` to centralized logger - TODO
 
 ### Low Priority (Consistency) - TODO
 
@@ -286,8 +286,29 @@ Added sections for:
 - `docs/24-keybindings.org` - Added ~60 keybindings, new sections
 - `docs/00-index.org` - Updated topic index
 
+### Redundancy Cleanup
+- `src/utils/escapeUtils.ts` - Consolidated HTML/LaTeX escape functions
+- `src/utils/dateConstants.ts` - Shared day/month name constants (already existed, now used widely)
+- `src/parser/orgRepeater.ts` - Now imports from dateConstants.ts
+- `src/parser/orgExport.ts` - Imports from escapeUtils.ts
+- `src/parser/orgLinkTypes.ts` - Imports from escapeUtils.ts
+- `src/parser/orgClocking.ts` - Imports from dateConstants.ts
+- `src/parser/orgCapture.ts` - Imports from dateConstants.ts
+- `src/org/progressLogging.ts` - Imports from dateConstants.ts
+- `src/org/hoverProvider.ts` - Imports from dateConstants.ts
+- `src/org/tableProvider.ts` - Imports from escapeUtils.ts
+- `src/org/speedCommands/planning.ts` - Imports from dateConstants.ts
+- `src/org/speedCommands/archive.ts` - Imports from dateConstants.ts
+- `src/journal/statusBar.ts` - Imports from dateConstants.ts
+- `src/markdown/taskCommands.ts` - Imports from dateConstants.ts
+- `src/parser/orgInterpreter.ts` - Imports from dateConstants.ts
+- `src/publishing/orgPublish.ts` - Imports from escapeUtils.ts
+- `src/publishing/themes/defaultTheme.ts` - Imports from escapeUtils.ts
+- `src/publishing/themes/bookTheme/layout.ts` - Imports from escapeUtils.ts
+
 ### New Files
 - `scripts/tsconfig.json` - Enable TypeScript audit script
+- `src/utils/escapeUtils.ts` - Shared HTML/LaTeX escape utilities
 - `CODE_REVIEW_AUDIT.md` - This report
 
 ---

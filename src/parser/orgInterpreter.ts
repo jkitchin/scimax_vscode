@@ -59,6 +59,7 @@ import type {
     AffiliatedKeywords,
 } from './orgElementTypes';
 import { serializeAffiliatedKeywords } from './orgAffiliatedKeywords';
+import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 // =============================================================================
 // Interpreter Options
@@ -697,8 +698,7 @@ function interpretTimestamp(ts: TimestampObject, opts: InterpreterOptions): stri
 
     // Get day of week
     const date = new Date(yearStart, monthStart - 1, dayStart);
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const dayName = dayNames[date.getDay()];
+    const dayName = DAY_NAMES_SHORT[date.getDay()];
 
     let result = `${openBracket}${year}-${month}-${day} ${dayName}`;
 
