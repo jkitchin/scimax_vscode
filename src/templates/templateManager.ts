@@ -113,13 +113,13 @@ export class TemplateManager {
      * Ensure templates directory exists
      */
     public async ensureTemplatesDirectory(): Promise<void> {
-        if (!fs.existsSync(this.config.directory)) {
-            await fs.promises.mkdir(this.config.directory, { recursive: true });
-            // Create subdirectories for each format
-            await fs.promises.mkdir(path.join(this.config.directory, 'org'), { recursive: true });
-            await fs.promises.mkdir(path.join(this.config.directory, 'markdown'), { recursive: true });
-            await fs.promises.mkdir(path.join(this.config.directory, 'latex'), { recursive: true });
-        }
+        // Create all directories in parallel (recursive: true handles non-existent parents)
+        await Promise.all([
+            fs.promises.mkdir(this.config.directory, { recursive: true }),
+            fs.promises.mkdir(path.join(this.config.directory, 'org'), { recursive: true }),
+            fs.promises.mkdir(path.join(this.config.directory, 'markdown'), { recursive: true }),
+            fs.promises.mkdir(path.join(this.config.directory, 'latex'), { recursive: true })
+        ]);
     }
 
     /**

@@ -238,15 +238,16 @@ async function compileToPdf(texPath: string, pdfPath: string, cwd: string): Prom
     return new Promise((resolve, reject) => {
         const proc = spawn(command, args, { cwd, env });
 
-        let stdout = '';
-        let stderr = '';
+        // Use arrays to avoid O(n²) string concatenation for large outputs
+        const stdoutChunks: string[] = [];
+        const stderrChunks: string[] = [];
 
         proc.stdout?.on('data', (data: Buffer) => {
-            stdout += data.toString();
+            stdoutChunks.push(data.toString());
         });
 
         proc.stderr?.on('data', (data: Buffer) => {
-            stderr += data.toString();
+            stderrChunks.push(data.toString());
         });
 
         proc.on('close', async (code) => {
@@ -257,6 +258,8 @@ async function compileToPdf(texPath: string, pdfPath: string, cwd: string): Prom
                 }
                 resolve();
             } else {
+                const stderr = stderrChunks.join('');
+                const stdout = stdoutChunks.join('');
                 reject(new Error(`LaTeX compilation failed: ${stderr || stdout}`));
             }
         });

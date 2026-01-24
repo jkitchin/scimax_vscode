@@ -3,6 +3,9 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { resolveScimaxPath } from '../utils/pathResolver';
 
+// Use fs.promises for async operations
+const fsp = fs.promises;
+
 export interface JournalConfig {
     directory: string;
     format: 'markdown' | 'org';
@@ -112,9 +115,8 @@ export class JournalManager {
     }
 
     private ensureDirectoryExists(): void {
-        if (!fs.existsSync(this.config.directory)) {
-            fs.mkdirSync(this.config.directory, { recursive: true });
-        }
+        // recursive: true handles non-existent directories, no need for existsSync check
+        fs.mkdirSync(this.config.directory, { recursive: true });
     }
 
     public getConfig(): JournalConfig {
@@ -213,16 +215,14 @@ export class JournalManager {
         const entryPath = this.getEntryPath(date);
         const entryDir = path.dirname(entryPath);
 
-        // Ensure directory exists
-        if (!fs.existsSync(entryDir)) {
-            fs.mkdirSync(entryDir, { recursive: true });
-        }
+        // Ensure directory exists (recursive: true handles non-existent parents)
+        await fsp.mkdir(entryDir, { recursive: true });
 
         // Get template content
         const content = this.renderTemplate(date);
 
         // Write file
-        fs.writeFileSync(entryPath, content, 'utf8');
+        await fsp.writeFile(entryPath, content, 'utf8');
     }
 
     /**
@@ -680,7 +680,7 @@ export class JournalManager {
             limit?: number;
         }
     ): Promise<{entry: JournalEntry, matches: string[], lineNumbers: number[]}[]> {
-        let entries = this.getAllEntries();
+        let entries = await this.getAllEntriesAsync();
 
         // Apply date range filter
         if (options?.startDate) {
@@ -696,7 +696,7 @@ export class JournalManager {
 
         for (const entry of entries) {
             try {
-                const content = fs.readFileSync(entry.path, 'utf8');
+                const content = await fsp.readFile(entry.path, 'utf8');
                 const lines = content.split('\n');
                 const matches: string[] = [];
                 const lineNumbers: number[] = [];
@@ -788,38 +788,58 @@ export class JournalManager {
     }
 
     /**
-     * Get entry statistics
+     * Get entry statistics (async version - recommended for UI)
+     */
+    public async getEntryStatsAsync(entry: JournalEntry): Promise<{ wordCount: number; lineCount: number; taskCount: number; doneCount: number }> {
+        try {
+            const content = await fsp.readFile(entry.path, 'utf8');
+            return this.computeStats(content);
+        } catch {
+            return { wordCount: 0, lineCount: 0, taskCount: 0, doneCount: 0 };
+        }
+    }
+
+    /**
+     * Get entry statistics (sync version)
+     * @deprecated Use getEntryStatsAsync for better performance in async contexts
      */
     public getEntryStats(entry: JournalEntry): { wordCount: number; lineCount: number; taskCount: number; doneCount: number } {
         try {
             const content = fs.readFileSync(entry.path, 'utf8');
-            const lines = content.split('\n');
-            const words = content.split(/\s+/).filter(w => w.length > 0);
-
-            // Count tasks
-            const taskPattern = this.config.format === 'org'
-                ? /^\s*-\s*\[\s*\]/
-                : /^\s*-\s*\[\s*\]/;
-            const donePattern = this.config.format === 'org'
-                ? /^\s*-\s*\[X\]/i
-                : /^\s*-\s*\[x\]/i;
-
-            let taskCount = 0;
-            let doneCount = 0;
-            for (const line of lines) {
-                if (taskPattern.test(line)) taskCount++;
-                if (donePattern.test(line)) doneCount++;
-            }
-
-            return {
-                wordCount: words.length,
-                lineCount: lines.length,
-                taskCount: taskCount + doneCount,
-                doneCount
-            };
+            return this.computeStats(content);
         } catch {
             return { wordCount: 0, lineCount: 0, taskCount: 0, doneCount: 0 };
         }
+    }
+
+    /**
+     * Compute statistics from content string
+     */
+    private computeStats(content: string): { wordCount: number; lineCount: number; taskCount: number; doneCount: number } {
+        const lines = content.split('\n');
+        const words = content.split(/\s+/).filter(w => w.length > 0);
+
+        // Count tasks
+        const taskPattern = this.config.format === 'org'
+            ? /^\s*-\s*\[\s*\]/
+            : /^\s*-\s*\[\s*\]/;
+        const donePattern = this.config.format === 'org'
+            ? /^\s*-\s*\[X\]/i
+            : /^\s*-\s*\[x\]/i;
+
+        let taskCount = 0;
+        let doneCount = 0;
+        for (const line of lines) {
+            if (taskPattern.test(line)) taskCount++;
+            if (donePattern.test(line)) doneCount++;
+        }
+
+        return {
+            wordCount: words.length,
+            lineCount: lines.length,
+            taskCount: taskCount + doneCount,
+            doneCount
+        };
     }
 
     /**

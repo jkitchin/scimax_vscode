@@ -359,12 +359,17 @@ export async function showMarkRing(): Promise<void> {
                 kind: vscode.QuickPickItemKind.Separator
             });
 
-            for (let i = docRing.length - 1; i >= 0; i--) {
-                const mark = docRing[i];
-                const lineText = await getLinePreview(mark);
+            // Fetch all line previews in parallel for performance
+            const localMarksReversed = [...docRing].reverse();
+            const localPreviews = await Promise.all(
+                localMarksReversed.map(mark => getLinePreview(mark))
+            );
+
+            for (let i = 0; i < localMarksReversed.length; i++) {
+                const mark = localMarksReversed[i];
                 items.push({
                     label: `Line ${mark.position.line + 1}, Col ${mark.position.character + 1}`,
-                    description: lineText,
+                    description: localPreviews[i],
                     detail: `$(clock) ${formatTimestamp(mark.timestamp)}`
                 });
             }
@@ -378,13 +383,18 @@ export async function showMarkRing(): Promise<void> {
             kind: vscode.QuickPickItemKind.Separator
         });
 
-        for (let i = globalMarkRing.length - 1; i >= 0; i--) {
-            const mark = globalMarkRing[i];
+        // Fetch all line previews in parallel for performance
+        const globalMarksReversed = [...globalMarkRing].reverse();
+        const globalPreviews = await Promise.all(
+            globalMarksReversed.map(mark => getLinePreview(mark))
+        );
+
+        for (let i = 0; i < globalMarksReversed.length; i++) {
+            const mark = globalMarksReversed[i];
             const filename = vscode.workspace.asRelativePath(mark.uri);
-            const lineText = await getLinePreview(mark);
             items.push({
                 label: `${filename}:${mark.position.line + 1}`,
-                description: lineText,
+                description: globalPreviews[i],
                 detail: `$(clock) ${formatTimestamp(mark.timestamp)}`
             });
         }
