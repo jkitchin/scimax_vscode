@@ -36,6 +36,7 @@ import type {
     LinkObject,
     PlainTextObject,
     LatexFragmentObject,
+    LatexEnvironmentElement,
     OrgRange,
 } from './orgElementTypes';
 
@@ -73,6 +74,8 @@ const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
 const INLINE_MATH_PATTERN = /(?<!\$)\$([^$\n]+)\$(?!\$)|\\\(([^)]+)\\\)/g;
 // Line break: \\ (two backslashes)
 const LINE_BREAK_PATTERN = /\\\\(?:\s|$)/g;
+// LaTeX command pattern: \command{arg} or \command[opt]{arg} - for \ref, \cite, \eqref, \label, \pageref, \autoref, etc.
+const LATEX_COMMAND_PATTERN = /\\([a-zA-Z]+)(?:\[[^\]]*\])?\{([^}]*)\}/g;
 
 // Macro pattern: {{{macro(args)}}} or {{{macro}}}
 const MACRO_PATTERN = /\{\{\{([a-zA-Z0-9_-]+)(?:\(([^)]*)\))?\}\}\}/g;
@@ -108,7 +111,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
         return [];
     }
 
-    if (text.length < 3 || !/[*/_+=~\[\]:$\\]/.test(text)) {
+    if (text.length < 3 || !/[*/_+=~\[\]:$\\<{@]/.test(text)) {
         return [createPlainText(text, 0, text.length)];
     }
 
@@ -339,6 +342,17 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'line-break' as const,
             range: { start: m.index!, end: m.index! + 2 }, // Only the \\ part, not trailing whitespace
             postBlank: 0,
+        }));
+
+        // LaTeX commands: \ref{}, \cite{}, \eqref{}, \label{}, \pageref{}, \autoref{}, etc.
+        collectMatches(LATEX_COMMAND_PATTERN, (m) => ({
+            type: 'latex-fragment' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: {
+                value: m[0],
+                fragmentType: 'command' as const,
+            },
         }));
     }
 
@@ -760,6 +774,12 @@ function parseElement(state: FastParserState): OrgElement | null {
         return parseExportBlock(state);
     }
 
+    // LaTeX environment: \begin{...}...\end{...}
+    const latexEnvMatch = line.match(/^\\begin\{([a-zA-Z*]+)\}/);
+    if (latexEnvMatch) {
+        return parseLatexEnvironment(state, latexEnvMatch[1]);
+    }
+
     // Table
     if (line.match(/^\s*\|/)) {
         return parseTable(state);
@@ -925,6 +945,32 @@ function parseExportBlock(state: FastParserState): OrgElement | null {
             value: contentLines.join('\n'),
         },
     } as ExportBlockElement;
+}
+
+function parseLatexEnvironment(state: FastParserState, envName: string): LatexEnvironmentElement {
+    const contentLines: string[] = [];
+    const endPattern = new RegExp(`^\\\\end\\{${envName.replace('*', '\\*')}\\}`);
+
+    // Collect all lines including \begin and \end
+    while (state.lineIndex < state.lines.length) {
+        const line = state.lines[state.lineIndex];
+        contentLines.push(line);
+        state.lineIndex++;
+
+        if (endPattern.test(line)) {
+            break;
+        }
+    }
+
+    return {
+        type: 'latex-environment',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        properties: {
+            name: envName,
+            value: contentLines.join('\n'),
+        },
+    };
 }
 
 function parseTable(state: FastParserState): TableElement {
@@ -1299,6 +1345,8 @@ function parseParagraph(state: FastParserState): ParagraphElement | null {
         if (line.trim() === '') break;
         if (line.match(/^[*#:|\-]/)) break;
         if (line.match(/^\s*[-+*]\s+/) || line.match(/^\s*\d+[.)]\s+/)) break;
+        // Stop at LaTeX environments
+        if (line.match(/^\\begin\{/)) break;
 
         lines.push(line);
         state.lineIndex++;

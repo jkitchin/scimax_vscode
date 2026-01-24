@@ -926,7 +926,11 @@ export class LatexExportBackend implements ExportBackend {
                 // Remove leading * and generate a label-safe ID
                 const headlineText = path.startsWith('*') ? path.slice(1) : path;
                 const headlineId = generateId(headlineText);
-                return `\\hyperref[${headlineId}]{${description}}`;
+                // Use headline text as description if no explicit description
+                const headlineDesc = link.children
+                    ? exportObjects(link.children, this, state)
+                    : escapeString(headlineText, 'latex');
+                return `\\hyperref[${headlineId}]{${headlineDesc}}`;
 
             case 'custom-id':
                 // Link to custom ID: [[#custom-id]] -> \hyperref[custom-id]{description}
@@ -935,16 +939,20 @@ export class LatexExportBackend implements ExportBackend {
 
             case 'fuzzy':
                 // Fuzzy link - could be to a target, headline, or other element
+                // Use path as description if no explicit description
+                const fuzzyDesc = link.children
+                    ? exportObjects(link.children, this, state)
+                    : escapeString(path, 'latex');
                 // Try to find in targets first, then customIds
                 if (state.targets.has(path)) {
-                    return `\\hyperref[${path}]{${description}}`;
+                    return `\\hyperref[${state.targets.get(path)}]{${fuzzyDesc}}`;
                 }
                 if (state.customIds.has(path)) {
-                    return `\\hyperref[${path}]{${description}}`;
+                    return `\\hyperref[${state.customIds.get(path)}]{${fuzzyDesc}}`;
                 }
                 // Generate an ID from the path and hope it matches
                 const fuzzyId = generateId(path);
-                return `\\hyperref[${fuzzyId}]{${description}}`;
+                return `\\hyperref[${fuzzyId}]{${fuzzyDesc}}`;
 
             case 'mailto':
                 return `\\href{mailto:${path}}{${description}}`;
@@ -1110,6 +1118,10 @@ export class LatexExportBackend implements ExportBackend {
     }
 
     private exportStatisticsCookie(obj: StatisticsCookieObject, state: ExportState): string {
+        // Statistics cookies are tied to planning info - hide when p:nil
+        if (state.options.includePlanning === false) {
+            return '';
+        }
         return `\\texttt{${escapeString(obj.properties.value, 'latex')}}`;
     }
 

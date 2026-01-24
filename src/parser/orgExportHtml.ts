@@ -1097,6 +1097,10 @@ export class HtmlExportBackend implements ExportBackend {
     }
 
     private exportStatisticsCookie(obj: StatisticsCookieObject, state: ExportState): string {
+        // Statistics cookies are tied to planning info - hide when p:nil
+        if (state.options.includePlanning === false) {
+            return '';
+        }
         return `<span class="org-statistics-cookie">${escapeString(obj.properties.value, 'html')}</span>`;
     }
 
