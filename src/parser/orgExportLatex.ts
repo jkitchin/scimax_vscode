@@ -460,9 +460,10 @@ export class LatexExportBackend implements ExportBackend {
         parts.push(`${sectionCmd}${starred}{${title}}`);
 
         // Add label for cross-references
+        // Must match collectTargets() ID generation for [[*Headline]] links to work
         const label = headline.properties.customId ||
             headline.properties.id ||
-            generateId(headline.properties.rawValue, 'sec');
+            generateId(headline.properties.rawValue);
         parts.push(`\\label{${label}}`);
 
         // Section content
@@ -922,10 +923,11 @@ export class LatexExportBackend implements ExportBackend {
                 return `\\hyperref[${path}]{${description}}`;
 
             case 'headline':
-                // Link to headline: [[*Headline Text]] -> \hyperref[sec:headline-text]{description}
-                // Remove leading * and generate a label-safe ID
+                // Link to headline: [[*Headline Text]] -> \hyperref[label]{description}
+                // Remove leading * to get headline text
                 const headlineText = path.startsWith('*') ? path.slice(1) : path;
-                const headlineId = generateId(headlineText);
+                // Look up the headline's label from state.targets (populated by collectTargets)
+                const headlineId = state.targets.get(headlineText) || generateId(headlineText);
                 // Use headline text as description if no explicit description
                 const headlineDesc = link.children
                     ? exportObjects(link.children, this, state)
