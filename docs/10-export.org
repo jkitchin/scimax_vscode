@@ -8,7 +8,7 @@
 * ✅ Overview
 CLOSED: [2026-01-16 Fri 20:55]
 
-The Scimax VS Code extension provides a comprehensive export system for converting org-mode documents to various formats including HTML, LaTeX, PDF, and Markdown. The export system follows the familiar org-mode export dispatcher interface (`C-c C-e') from Emacs.
+The Scimax VS Code extension provides a comprehensive export system for converting org-mode documents to various formats including HTML, LaTeX, PDF, Markdown, and Microsoft Word (DOCX). The export system follows the familiar org-mode export dispatcher interface (`C-c C-e') from Emacs.
 
 * ✅ Export Dispatcher
 CLOSED: [2026-01-16 Fri 20:55]
@@ -43,6 +43,27 @@ CLOSED: [2026-01-16 Fri 20:55]
 CLOSED: [2026-01-16 Fri 20:55]
 - `[m m]' Markdown file - Export to .md file
 - `[m o]' Markdown and open - Export to .md and open in VS Code
+
+*** ⚠️ Jupyter Notebook Exports
+
+- `[j j]' Jupyter Notebook - Export to .ipynb file
+- `[j o]' Notebook and open - Export and open in VS Code notebook viewer
+- `[j p]' Participant notebook - Export with solutions stripped (for teaching)
+
+*** ⚠️ DOCX (Word) Exports
+
+- `[d d]' Word document - Export to .docx file
+- `[d o]' Word and open - Export and open in Microsoft Word
+
+*** ⚠️ Clipboard Exports (ox-clip style)
+
+Copy formatted content to clipboard for pasting into other applications:
+- `[k h]' HTML (rich) - Copy as formatted rich text (paste into Word, email, etc.)
+- `[k H]' HTML (source) - Copy HTML source code
+- `[k l]' LaTeX - Copy LaTeX source code
+- `[k m]' Markdown - Copy Markdown source code
+
+*Quick keybinding:* =C-c k= copies current subtree as rich HTML.
 
 * ✅ Export Formats
 CLOSED: [2026-01-16 Fri 20:55]
@@ -347,6 +368,319 @@ print("Hello, world!")
 ```
 #+END_SRC
 
+** ⚠️ Jupyter Notebook Export
+
+Export org-mode documents to Jupyter Notebook format (.ipynb), compatible with Jupyter Lab, Jupyter Notebook, VS Code notebook viewer, and ox-ipynb from Emacs.
+
+*** Features
+
+- Full nbformat v4 notebook structure
+- Automatic kernel detection from document content
+- Source blocks become code cells (when language matches kernel)
+- Headlines, paragraphs, lists, tables become markdown cells
+- Participant mode for teaching materials (strips solutions)
+- ox-ipynb compatibility (keywords, slideshow metadata)
+- Base64 image embedding for self-contained notebooks
+
+*** Basic Usage
+
+Export the current org file to Jupyter Notebook:
+
+| Keybinding   | Command                            | Description                          |
+|--------------+------------------------------------+--------------------------------------|
+| C-c C-e j j  | =scimax.org.exportIpynb=           | Export to .ipynb file                |
+| C-c C-e j o  | =scimax.org.exportIpynbOpen=       | Export and open in notebook viewer   |
+| C-c C-e j p  | =scimax.org.exportIpynbParticipant= | Export with solutions stripped       |
+
+*** Kernel Detection
+
+The kernel is determined in this order:
+1. =#+OX_IPYNB_KERNEL_NAME:= keyword in the document
+2. Most common source block language in the document
+3. Default: python3
+
+#+BEGIN_SRC org
+,#+OX_IPYNB_KERNEL_NAME: julia-1.9
+,#+TITLE: Julia Tutorial
+
+Content here will use the Julia kernel.
+#+END_SRC
+
+*** Cell Conversion
+
+| Org Element                  | Jupyter Cell Type | Notes                              |
+|------------------------------+-------------------+------------------------------------|
+| Headlines                    | Markdown          | =#=, =##=, =###= syntax            |
+| Paragraphs                   | Markdown          | Inline markup converted            |
+| Lists                        | Markdown          | Ordered, unordered, checkboxes     |
+| Tables                       | Markdown          | Pipe-delimited format              |
+| Source blocks (kernel lang)  | Code              | With outputs if results exist      |
+| Source blocks (other)        | Markdown          | As code fences                     |
+| LaTeX fragments              | Markdown          | =$...$= or =$$...$$=               |
+
+*** Participant Mode (for Teaching)
+
+Create student versions of notebooks with solutions stripped:
+
+#+BEGIN_SRC org
+,#+BEGIN_SRC python
+# Setup code (kept)
+x = 1
+
+### BEGIN SOLUTION
+# This solution is removed in participant mode
+y = x + 1
+### END SOLUTION
+
+# More code (kept)
+,#+END_SRC
+#+END_SRC
+
+Content between =### BEGIN SOLUTION= / =### END SOLUTION= markers is removed.
+Also supports =### BEGIN HIDDEN= / =### END HIDDEN= markers.
+
+Headlines with the =:remove:= tag are also excluded in participant mode.
+
+*** Settings
+
+Configure notebook export behavior in VS Code settings:
+
+| Setting                              | Default     | Description                         |
+|--------------------------------------+-------------+-------------------------------------|
+| =scimax.export.ipynb.defaultKernel=  | ="python3"= | Default Jupyter kernel name         |
+| =scimax.export.ipynb.embedImages=    | =true=      | Base64 encode images in outputs     |
+| =scimax.export.ipynb.includeResults= | =true=      | Include #+RESULTS as cell outputs   |
+
+*** ox-ipynb Compatibility
+
+The following ox-ipynb keywords are supported:
+
+#+BEGIN_SRC org
+,#+OX_IPYNB_KERNEL_NAME: python3
+,#+OX_IPYNB_LANGUAGE: python
+,#+OX_IPYNB_NOTEBOOK_METADATA: {"custom_key": "value"}
+#+END_SRC
+
+** ⚠️ DOCX Export
+
+DOCX export generates Microsoft Word (.docx) documents with full formatting support, syntax-highlighted code blocks, embedded images, and bibliography generation.
+
+*** Features
+
+- Native Word document format (no external tools required)
+- Syntax highlighting for code blocks using Shiki
+- Embedded images from file links
+- Built-in Word styles for consistent formatting
+- Citation and bibliography support
+- Tables with header row styling
+- Nested lists (ordered, unordered, description)
+- Special blocks (quote, verse, note, warning, tip)
+- Footnotes using Word's native footnote system
+
+*** Basic Usage
+
+Export the current org file to Word:
+
+| Keybinding   | Command                   | Description                   |
+|--------------+---------------------------+-------------------------------|
+| C-c C-e d d  | =scimax.org.exportDocx=     | Export to .docx file          |
+| C-c C-e d o  | =scimax.org.exportDocxOpen= | Export and open in Word       |
+
+*** Code Syntax Highlighting
+
+Source blocks are exported with syntax highlighting using the Shiki library:
+
+#+BEGIN_SRC org
+,#+BEGIN_SRC python
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+,#+END_SRC
+#+END_SRC
+
+The code block appears in Word with proper colors matching popular editor themes (github-light by default).
+
+*Supported languages include:* Python, JavaScript, TypeScript, Java, C, C++, Rust, Go, Ruby, Shell, SQL, R, Julia, and many more.
+
+*** Images
+
+Images from file links are embedded directly into the Word document:
+
+#+BEGIN_SRC org
+[[file:diagram.png]]
+#+END_SRC
+
+Images are automatically scaled to fit within the page margins. Control image width with attributes:
+
+#+BEGIN_SRC org
+#+ATTR_HTML: :width 400
+[[file:large-diagram.png]]
+#+END_SRC
+
+*** Tables
+
+Org tables are converted to Word tables with:
+- Header row with bold text and shaded background
+- Proper cell borders
+- Caption support from =#+CAPTION:=
+
+#+BEGIN_SRC org
+#+CAPTION: Experimental Results
+| Method | Accuracy | Time (s) |
+|--------+----------+----------|
+| A      |     0.95 |     12.3 |
+| B      |     0.97 |     15.6 |
+#+END_SRC
+
+*** Citations and Bibliography
+
+DOCX export integrates with the citation processor for full bibliography support:
+
+#+BEGIN_SRC org
+#+BIBLIOGRAPHY: references.bib
+#+CSL_STYLE: apa
+
+Recent work cite:smith2023 demonstrates...
+
+According to citet:jones2024, the approach...
+#+END_SRC
+
+The bibliography section is automatically generated at the end of the document.
+
+*** Word Styles
+
+The exported document uses standard Word styles:
+- =Heading 1= through =Heading 6= for headlines
+- =Normal= for paragraph text
+- =Code= for inline code
+- =Quote= for quote blocks
+- =Caption= for figure and table captions
+
+These styles can be customized in Word after export to change the document appearance.
+
+*** Special Blocks
+
+Special blocks export with appropriate styling:
+
+#+BEGIN_SRC org
+,#+BEGIN_QUOTE
+This is a block quote with left indent and italic styling.
+,#+END_QUOTE
+
+,#+BEGIN_note
+Important information highlighted in a styled box.
+,#+END_note
+
+,#+BEGIN_warning
+Critical warning with distinct visual treatment.
+,#+END_warning
+#+END_SRC
+
+*** Limitations
+
+- Table of contents requires manual update in Word (Insert → Update Field)
+- Complex nested tables may need adjustment
+- Some advanced LaTeX math may not render (use simple equations)
+- Internal links work within the document but external file links are text-only
+
+** ⚠️ Clipboard Export (ox-clip)
+
+Clipboard export (inspired by [[https://github.com/jkitchin/ox-clip][ox-clip]]) copies formatted org content to the clipboard, enabling pasting into email clients, Word, Google Docs, and other applications that accept rich text.
+
+*** Features
+
+- *Rich HTML clipboard:* Copy HTML as formatted text that pastes with styling
+- *Source clipboard:* Copy HTML, LaTeX, or Markdown source code
+- *Scope selection:* Export full document, current subtree, or selection
+- *Platform support:* macOS, Linux (X11/Wayland), Windows
+
+*** Quick Usage
+
+| Keybinding | Command                        | Description                          |
+|------------+--------------------------------+--------------------------------------|
+| C-c k      | =scimax.org.clipboardHtmlRich= | Copy subtree as rich HTML            |
+| C-c C-e k  | Clipboard menu                 | Open clipboard export submenu        |
+
+*** Clipboard Menu Options
+
+Access via =C-c C-e k=:
+
+| Key | Format           | Description                                  |
+|-----+------------------+----------------------------------------------|
+| h   | HTML (rich)      | Copy as formatted text for email/Word        |
+| H   | HTML (source)    | Copy raw HTML source code                    |
+| l   | LaTeX            | Copy LaTeX source code                       |
+| m   | Markdown         | Copy Markdown source code                    |
+
+*** Export Scope
+
+The export scope determines which content is copied:
+
+| Scope       | Description                                         |
+|-------------+-----------------------------------------------------|
+| =full=      | Entire document                                     |
+| =subtree=   | Current headline and all children (default)         |
+| =selection= | Selected text only                                  |
+
+Configure the default scope in settings:
+
+#+BEGIN_SRC json
+{
+  "scimax.export.clipboard.defaultScope": "subtree"
+}
+#+END_SRC
+
+*** Rich Text Clipboard (Platform-Specific)
+
+Rich HTML clipboard uses platform-specific tools to copy formatted text that pastes with styling preserved:
+
+| Platform | Tool                    | Notes                                           |
+|----------+-------------------------+-------------------------------------------------|
+| macOS    | =textutil + pbcopy=     | Converts HTML to RTF, built-in                  |
+| Linux    | =xclip= or =wl-copy=    | X11: =sudo apt install xclip=; Wayland: =wl-copy= |
+| Windows  | PowerShell              | Uses =System.Windows.Forms.Clipboard=           |
+
+If rich clipboard tools aren't available, falls back to plain text clipboard with a warning.
+
+*** Configuration
+
+#+BEGIN_SRC json
+{
+  // Use rich text clipboard when platform tools available (default: true)
+  "scimax.export.clipboard.preferRichText": true,
+
+  // Default scope: "full", "subtree", or "selection" (default: "subtree")
+  "scimax.export.clipboard.defaultScope": "subtree"
+}
+#+END_SRC
+
+*** Use Cases
+
+**** Sharing in Email
+
+1. Position cursor on a headline
+2. Press =C-c k= to copy as rich HTML
+3. Paste into email - formatting, code blocks, and links are preserved
+
+**** Copying to Word/Google Docs
+
+1. Select the content or position on headline
+2. =C-c C-e k h= to copy as rich HTML
+3. Paste into document - tables, lists, and emphasis are formatted
+
+**** Sharing Source Code
+
+1. Position on headline containing code explanation
+2. =C-c C-e k m= to copy as Markdown
+3. Paste into GitHub issue or PR description
+
+**** LaTeX Snippets
+
+1. Select a portion with equations
+2. =C-c C-e k l= to copy as LaTeX
+3. Paste into LaTeX editor
+
 * Export Keybindings
 
 ** Primary Keybindings
@@ -360,6 +694,13 @@ print("Hello, world!")
 | C-c C-e l p | PDF export           | Export to PDF via LaTeX         |
 | C-c C-e l o | PDF export and open  | Export PDF and open viewer      |
 | C-c C-e m m | Markdown export      | Export to .md file              |
+| C-c C-e d d | DOCX export          | Export to .docx file            |
+| C-c C-e d o | DOCX export and open | Export and open in Word         |
+| C-c k       | Clipboard HTML rich  | Copy subtree as rich HTML       |
+| C-c C-e k h | Clipboard HTML rich  | Copy as rich HTML (menu)        |
+| C-c C-e k H | Clipboard HTML src   | Copy HTML source                |
+| C-c C-e k l | Clipboard LaTeX      | Copy LaTeX source               |
+| C-c C-e k m | Clipboard Markdown   | Copy Markdown source            |
 
 ** Additional LaTeX Keybindings
 
@@ -1817,6 +2158,13 @@ CLOSED: [2026-01-17 Sat 09:29]
 | C-c C-e l s    | Forward sync               | Sync cursor to PDF (SyncTeX)     |
 | C-c C-e m m    | Markdown export            | Export to .md                    |
 | C-c C-e m o    | Markdown export and open   | Export and open in editor        |
+| C-c C-e d d    | DOCX export                | Export to .docx                  |
+| C-c C-e d o    | DOCX export and open       | Export and open in Word          |
+| C-c k          | Clipboard HTML (rich)      | Copy subtree as rich HTML        |
+| C-c C-e k h    | Clipboard HTML (rich)      | Copy as rich HTML (menu)         |
+| C-c C-e k H    | Clipboard HTML (source)    | Copy HTML source code            |
+| C-c C-e k l    | Clipboard LaTeX            | Copy LaTeX source code           |
+| C-c C-e k m    | Clipboard Markdown         | Copy Markdown source code        |
 
 ** ⚠️ Export Options Quick Reference
 

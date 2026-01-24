@@ -93,6 +93,30 @@ export const exportMenu: HydraMenuDefinition = {
                     exit: 'submenu',
                     action: 'scimax.export.markdown',
                 },
+                {
+                    key: 'd',
+                    label: 'Word document',
+                    description: 'Export to Microsoft Word (.docx)',
+                    icon: 'file',
+                    exit: 'submenu',
+                    action: 'scimax.export.docx',
+                },
+                {
+                    key: 'j',
+                    label: 'Jupyter Notebook',
+                    description: 'Export to .ipynb',
+                    icon: 'notebook',
+                    exit: 'submenu',
+                    action: 'scimax.export.jupyter',
+                },
+                {
+                    key: 'k',
+                    label: 'Clipboard exports',
+                    description: 'Copy to clipboard (ox-clip)',
+                    icon: 'clippy',
+                    exit: 'submenu',
+                    action: 'scimax.export.clipboard',
+                },
             ],
         },
         {
@@ -237,6 +261,135 @@ export const markdownExportMenu: HydraMenuDefinition = {
 };
 
 /**
+ * DOCX export submenu
+ * Export to Microsoft Word (.docx) format
+ */
+export const docxExportMenu: HydraMenuDefinition = {
+    id: 'scimax.export.docx',
+    title: 'Word Document Export',
+    hint: 'Export to Microsoft Word format with syntax highlighting',
+    parent: 'scimax.export',
+    groups: [
+        {
+            items: [
+                {
+                    key: 'd',
+                    label: 'Word document',
+                    description: 'Export to .docx file',
+                    icon: 'file',
+                    exit: 'exit',
+                    action: 'scimax.org.exportDocx',
+                },
+                {
+                    key: 'o',
+                    label: 'Word and open',
+                    description: 'Export and open in Word',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.org.exportDocxOpen',
+                },
+            ],
+        },
+    ],
+};
+
+/**
+ * Jupyter Notebook export submenu
+ * Export to Jupyter Notebook (.ipynb) format
+ */
+export const jupyterExportMenu: HydraMenuDefinition = {
+    id: 'scimax.export.jupyter',
+    title: 'Jupyter Notebook Export',
+    hint: 'Export to Jupyter Notebook format (ox-ipynb compatible)',
+    parent: 'scimax.export',
+    groups: [
+        {
+            items: [
+                {
+                    key: 'j',
+                    label: 'Jupyter Notebook',
+                    description: 'Export to .ipynb file',
+                    icon: 'notebook',
+                    exit: 'exit',
+                    action: 'scimax.org.exportIpynb',
+                },
+                {
+                    key: 'o',
+                    label: 'Notebook and open',
+                    description: 'Export and open in notebook viewer',
+                    icon: 'link-external',
+                    exit: 'exit',
+                    action: 'scimax.org.exportIpynbOpen',
+                },
+                {
+                    key: 'p',
+                    label: 'Participant notebook',
+                    description: 'Export with solutions stripped (for teaching)',
+                    icon: 'mortar-board',
+                    exit: 'exit',
+                    action: 'scimax.org.exportIpynbParticipant',
+                },
+            ],
+        },
+    ],
+};
+
+/**
+ * Clipboard export submenu (ox-clip style)
+ * Copy formatted content to clipboard for pasting into email, Word, etc.
+ */
+export const clipboardExportMenu: HydraMenuDefinition = {
+    id: 'scimax.export.clipboard',
+    title: 'Clipboard Export',
+    hint: 'Copy to clipboard for pasting into other apps',
+    parent: 'scimax.export',
+    groups: [
+        {
+            title: 'HTML',
+            items: [
+                {
+                    key: 'h',
+                    label: 'HTML (rich)',
+                    description: 'Copy as formatted rich text',
+                    icon: 'file-code',
+                    exit: 'exit',
+                    action: 'scimax.org.clipboardHtmlRich',
+                },
+                {
+                    key: 'H',
+                    label: 'HTML (source)',
+                    description: 'Copy HTML source code',
+                    icon: 'code',
+                    exit: 'exit',
+                    action: 'scimax.org.clipboardHtmlSource',
+                },
+            ],
+        },
+        {
+            title: 'Other Formats',
+            items: [
+                {
+                    key: 'l',
+                    label: 'LaTeX',
+                    description: 'Copy LaTeX source',
+                    icon: 'file',
+                    exit: 'exit',
+                    action: 'scimax.org.clipboardLatex',
+                },
+                {
+                    key: 'm',
+                    label: 'Markdown',
+                    description: 'Copy Markdown source',
+                    icon: 'markdown',
+                    exit: 'exit',
+                    action: 'scimax.org.clipboardMarkdown',
+                },
+            ],
+        },
+    ],
+};
+
+/**
  * All export menus for registration
  */
 export const exportMenus: HydraMenuDefinition[] = [
@@ -244,4 +397,7 @@ export const exportMenus: HydraMenuDefinition[] = [
     htmlExportMenu,
     latexExportMenu,
     markdownExportMenu,
+    docxExportMenu,
+    jupyterExportMenu,
+    clipboardExportMenu,
 ];

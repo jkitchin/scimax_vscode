@@ -10,6 +10,7 @@ import { spawn } from 'child_process';
 import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
+import { exportToDocx, DocxExportOptions } from '../parser/orgExportDocx';
 import { processIncludes, hasIncludes } from '../parser/orgInclude';
 import { exportOrgToLatexWithMappings, storeSyncData, orgForwardSync, orgInverseSync, hasSyncData, getSyncData } from './orgPdfSync';
 import { PdfViewerPanel } from '../latex/pdfViewerPanel';
@@ -17,8 +18,10 @@ import { getSyncTeXFilePath } from '../latex/synctexUtils';
 import { parseBibTeX } from '../references/bibtexParser';
 import type { BibEntry } from '../references/bibtexParser';
 import { parseOptionsKeyword, type ExportOptions } from '../parser/orgExport';
+import { exportToIpynb, exportToIpynbParticipant, type IpynbExportOptions } from '../parser/orgExportIpynb';
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
 import { isBodyOnlyMode } from '../hydra/menus/exportMenu';
+import { registerClipboardCommands } from './clipboardExport';
 
 /**
  * Execute a command using spawn (no shell, prevents command injection)
@@ -146,6 +149,13 @@ const EXPORT_FORMATS: ExportFormat[] = [
         description: 'Export to Markdown format',
         extension: '.md',
         icon: '$(markdown)',
+    },
+    {
+        id: 'docx',
+        label: 'Word Document',
+        description: 'Export to Microsoft Word (.docx)',
+        extension: '.docx',
+        icon: '$(file)',
     },
 ];
 
@@ -1146,6 +1156,46 @@ async function showExportDispatcher(): Promise<void> {
                         await fs.promises.writeFile(outputPath, result, 'utf-8');
                         break;
 
+                    case 'docx': {
+                        const doc = parseOrgFast(content);
+                        const bibPaths = extractBibPaths(content, inputDir);
+                        const bibEntries = await loadBibEntries(bibPaths);
+                        const docxOptions: DocxExportOptions = {
+                            ...options,
+                            basePath: inputDir,
+                            bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                        };
+                        const buffer = await exportToDocx(doc, docxOptions);
+                        await fs.promises.writeFile(outputPath, buffer);
+                        break;
+                    }
+
+                    case 'ipynb': {
+                        const doc = parseOrgFast(content);
+                        const config = vscode.workspace.getConfiguration('scimax.export.ipynb');
+                        result = exportToIpynb(doc, {
+                            kernel: config.get<string>('defaultKernel', 'python3'),
+                            embedImages: config.get<boolean>('embedImages', true),
+                            includeResults: config.get<boolean>('includeResults', true),
+                            basePath: inputDir,
+                        });
+                        await fs.promises.writeFile(outputPath, result, 'utf-8');
+                        break;
+                    }
+
+                    case 'ipynb-participant': {
+                        const doc = parseOrgFast(content);
+                        const config = vscode.workspace.getConfiguration('scimax.export.ipynb');
+                        result = exportToIpynbParticipant(doc, {
+                            kernel: config.get<string>('defaultKernel', 'python3'),
+                            embedImages: config.get<boolean>('embedImages', true),
+                            includeResults: config.get<boolean>('includeResults', true),
+                            basePath: inputDir,
+                        });
+                        await fs.promises.writeFile(outputPath, result, 'utf-8');
+                        break;
+                    }
+
                     default:
                         throw new Error(`Unknown format: ${selectedFormat.format.id}`);
                 }
@@ -1161,6 +1211,10 @@ async function showExportDispatcher(): Promise<void> {
                     if (selectedFormat.format.id === 'pdf') {
                         // Open PDF externally
                         await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                    } else if (selectedFormat.format.id === 'ipynb' || selectedFormat.format.id === 'ipynb-participant') {
+                        // Open in VS Code notebook viewer
+                        const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(outputPath));
+                        await vscode.window.showNotebookDocument(notebook);
                     } else {
                         // Open in VS Code
                         const doc = await vscode.workspace.openTextDocument(outputPath);
@@ -1337,6 +1391,136 @@ async function quickExportMarkdown(): Promise<void> {
 }
 
 /**
+ * Quick export to Jupyter Notebook
+ */
+async function quickExportIpynb(participantMode: boolean = false): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'org') {
+        vscode.window.showWarningMessage('No org-mode file open');
+        return;
+    }
+
+    const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
+    const content = preprocessContent(editor.document.getText(), inputDir);
+
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    // Get ipynb settings
+    const config = vscode.workspace.getConfiguration('scimax.export.ipynb');
+    const defaultKernel = config.get<string>('defaultKernel', 'python3');
+    const embedImages = config.get<boolean>('embedImages', true);
+    const includeResults = config.get<boolean>('includeResults', true);
+
+    // Build output filename (add _participant suffix for participant mode)
+    const suffix = participantMode ? '_participant' : '';
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName + suffix, 'ipynb');
+    const outputPath = path.join(inputDir, outputFileName);
+
+    try {
+        await deleteExistingOutput(outputPath);
+
+        const ipynbOptions: Partial<IpynbExportOptions> = {
+            ...metadata,
+            kernel: defaultKernel,
+            embedImages,
+            includeResults,
+            basePath: inputDir,
+            mode: participantMode ? 'participant' : 'full',
+        };
+
+        const result = participantMode
+            ? exportToIpynbParticipant(doc, ipynbOptions)
+            : exportToIpynb(doc, ipynbOptions);
+
+        await fs.promises.writeFile(outputPath, result, 'utf-8');
+
+        const modeLabel = participantMode ? ' (participant)' : '';
+        const action = await vscode.window.showInformationMessage(
+            `Exported to ${path.basename(outputPath)}${modeLabel}`,
+            'Open in VS Code',
+            'Open with Jupyter'
+        );
+
+        if (action === 'Open in VS Code') {
+            // Open in VS Code's built-in notebook viewer
+            const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(outputPath));
+            await vscode.window.showNotebookDocument(notebook);
+        } else if (action === 'Open with Jupyter') {
+            // Open with system default (Jupyter Lab/Notebook)
+            await vscode.env.openExternal(vscode.Uri.file(outputPath));
+        }
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        vscode.window.showErrorMessage(`Jupyter Notebook export failed: ${message}`);
+    }
+}
+
+/**
+ * Quick export to DOCX (Word)
+ */
+async function quickExportDocx(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor || editor.document.languageId !== 'org') {
+        vscode.window.showWarningMessage('No org-mode file open');
+        return;
+    }
+
+    const inputPath = editor.document.uri.fsPath;
+    const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
+    const content = preprocessContent(editor.document.getText(), inputDir);
+
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    // Load bibliography entries if basePath is provided
+    const bibPaths = extractBibPaths(content, inputDir);
+    let bibEntries: BibEntry[] = [];
+    if (bibPaths.length > 0) {
+        bibEntries = await loadBibEntries(bibPaths);
+    }
+
+    // Determine output path (respect EXPORT_FILE_NAME if set)
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'docx');
+    const outputPath = path.join(inputDir, outputFileName);
+
+    await vscode.window.withProgress(
+        {
+            location: vscode.ProgressLocation.Notification,
+            title: 'Exporting to Word (.docx)...',
+            cancellable: false,
+        },
+        async () => {
+            try {
+                await deleteExistingOutput(outputPath);
+                const docxOptions: DocxExportOptions = {
+                    ...metadata,
+                    basePath: inputDir,
+                    bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                };
+                const buffer = await exportToDocx(doc, docxOptions);
+                await fs.promises.writeFile(outputPath, buffer);
+                const action = await vscode.window.showInformationMessage(
+                    `Exported to ${path.basename(outputPath)}`,
+                    'Open'
+                );
+                if (action === 'Open') {
+                    await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                }
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(`DOCX export failed: ${message}`);
+            }
+        }
+    );
+}
+
+/**
  * Preview HTML export in a webview panel
  */
 async function previewHtml(): Promise<void> {
@@ -1419,6 +1603,13 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand(
             'scimax.org.exportMarkdown',
             quickExportMarkdown
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportDocx',
+            quickExportDocx
         )
     );
 
@@ -1529,6 +1720,108 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 } catch (error) {
                     const message = error instanceof Error ? error.message : String(error);
                     vscode.window.showErrorMessage(`Markdown export failed: ${message}`);
+                }
+            }
+        )
+    );
+
+    // Export DOCX and open
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportDocxOpen',
+            async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || editor.document.languageId !== 'org') {
+                    vscode.window.showWarningMessage('No org-mode file open');
+                    return;
+                }
+                const inputPath = editor.document.uri.fsPath;
+                const inputDir = path.dirname(inputPath);
+                const content = preprocessContent(editor.document.getText(), inputDir);
+                const outputPath = inputPath.replace(/\.org$/, '.docx');
+
+                // Parse document and load bibliography
+                const doc = parseOrgFast(content);
+                const metadata = extractMetadata(doc);
+                const bibPaths = extractBibPaths(content, inputDir);
+                const bibEntries = await loadBibEntries(bibPaths);
+
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: 'Exporting to Word (.docx)...',
+                        cancellable: false,
+                    },
+                    async () => {
+                        try {
+                            await deleteExistingOutput(outputPath);
+                            const docxOptions: DocxExportOptions = {
+                                ...metadata,
+                                basePath: inputDir,
+                                bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                            };
+                            const buffer = await exportToDocx(doc, docxOptions);
+                            await fs.promises.writeFile(outputPath, buffer);
+                            await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                        } catch (error) {
+                            const message = error instanceof Error ? error.message : String(error);
+                            vscode.window.showErrorMessage(`DOCX export failed: ${message}`);
+                        }
+                    }
+                );
+            }
+        )
+    );
+
+    // Jupyter Notebook exports
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportIpynb',
+            () => quickExportIpynb(false)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportIpynbParticipant',
+            () => quickExportIpynb(true)
+        )
+    );
+
+    context.subscriptions.push(
+        vscode.commands.registerCommand(
+            'scimax.org.exportIpynbOpen',
+            async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || editor.document.languageId !== 'org') {
+                    vscode.window.showWarningMessage('No org-mode file open');
+                    return;
+                }
+                const inputPath = editor.document.uri.fsPath;
+                const inputDir = path.dirname(inputPath);
+                const inputName = path.basename(inputPath, '.org');
+                const content = preprocessContent(editor.document.getText(), inputDir);
+                const doc = parseOrgFast(content);
+
+                const config = vscode.workspace.getConfiguration('scimax.export.ipynb');
+                const ipynbOptions: Partial<IpynbExportOptions> = {
+                    kernel: config.get<string>('defaultKernel', 'python3'),
+                    embedImages: config.get<boolean>('embedImages', true),
+                    includeResults: config.get<boolean>('includeResults', true),
+                    basePath: inputDir,
+                };
+
+                const outputPath = path.join(inputDir, `${inputName}.ipynb`);
+                try {
+                    await deleteExistingOutput(outputPath);
+                    const result = exportToIpynb(doc, ipynbOptions);
+                    await fs.promises.writeFile(outputPath, result, 'utf-8');
+                    // Open in VS Code's notebook viewer
+                    const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(outputPath));
+                    await vscode.window.showNotebookDocument(notebook);
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : String(error);
+                    vscode.window.showErrorMessage(`Jupyter Notebook export failed: ${message}`);
                 }
             }
         )
@@ -1707,6 +2000,9 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
             }
         })
     );
+
+    // Register clipboard export commands (ox-clip style)
+    registerClipboardCommands(context);
 }
 
 /**
@@ -1737,10 +2033,19 @@ async function exportDispatcher(): Promise<void> {
         // Markdown exports
         { label: '$(markdown) [m m] Markdown file', description: 'Export to .md file', value: 'md-file', keys: 'mm' },
         { label: '$(markdown) [m o] Markdown and open', description: 'Export to .md and open', value: 'md-open', keys: 'mo' },
+        { label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' },
+        // DOCX exports
+        { label: '$(file) [d d] Word document', description: 'Export to .docx file', value: 'docx-file', keys: 'dd' },
+        { label: '$(file) [d o] Word and open', description: 'Export to .docx and open', value: 'docx-open', keys: 'do' },
+        { label: '', kind: vscode.QuickPickItemKind.Separator, value: '', keys: '' },
+        // Jupyter Notebook exports
+        { label: '$(notebook) [j j] Jupyter Notebook', description: 'Export to .ipynb file', value: 'ipynb-file', keys: 'jj' },
+        { label: '$(notebook) [j o] Jupyter and open', description: 'Export to .ipynb and open', value: 'ipynb-open', keys: 'jo' },
+        { label: '$(mortar-board) [j p] Participant notebook', description: 'Export with solutions stripped', value: 'ipynb-participant', keys: 'jp' },
     ];
 
     const selected = await vscode.window.showQuickPick(exportOptions.filter(o => o.label !== ''), {
-        placeHolder: 'Select export format (type keys: hh, ho, hb, hp, ll, lb, lp, lo, mm, mo)',
+        placeHolder: 'Select export format (type keys: hh, ho, ll, lp, mm, mo, jj, jo, jp)',
         title: 'Org Export Dispatcher - C-c C-e',
         matchOnDescription: true,
     });
@@ -1854,6 +2159,51 @@ async function exportDispatcher(): Promise<void> {
                 const outputPath = path.join(inputDir, outputFileName);
                 const mdDoc = await vscode.workspace.openTextDocument(outputPath);
                 await vscode.window.showTextDocument(mdDoc);
+                break;
+            }
+            case 'docx-file': {
+                await quickExportDocx();
+                break;
+            }
+            case 'docx-open': {
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'docx');
+                const outputPath = path.join(inputDir, outputFileName);
+                const bibPaths = extractBibPaths(content, inputDir);
+                const bibEntries = await loadBibEntries(bibPaths);
+                await vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: 'Exporting to Word (.docx)...',
+                        cancellable: false,
+                    },
+                    async () => {
+                        await deleteExistingOutput(outputPath);
+                        const docxOptions: DocxExportOptions = {
+                            ...metadata,
+                            basePath: inputDir,
+                            bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                        };
+                        const buffer = await exportToDocx(doc, docxOptions);
+                        await fs.promises.writeFile(outputPath, buffer);
+                        await vscode.env.openExternal(vscode.Uri.file(outputPath));
+                    }
+                );
+                break;
+            }
+            case 'ipynb-file': {
+                await quickExportIpynb(false);
+                break;
+            }
+            case 'ipynb-open': {
+                await quickExportIpynb(false);
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'ipynb');
+                const outputPath = path.join(inputDir, outputFileName);
+                const notebook = await vscode.workspace.openNotebookDocument(vscode.Uri.file(outputPath));
+                await vscode.window.showNotebookDocument(notebook);
+                break;
+            }
+            case 'ipynb-participant': {
+                await quickExportIpynb(true);
                 break;
             }
         }

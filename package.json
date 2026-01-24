@@ -889,6 +889,34 @@
         "title": "Scimax: Export to Markdown"
       },
       {
+        "command": "scimax.org.exportIpynb",
+        "title": "Scimax: Export to Jupyter Notebook"
+      },
+      {
+        "command": "scimax.org.exportIpynbParticipant",
+        "title": "Scimax: Export to Jupyter Notebook (Participant)"
+      },
+      {
+        "command": "scimax.org.exportIpynbOpen",
+        "title": "Scimax: Export to Jupyter Notebook and Open"
+      },
+      {
+        "command": "scimax.org.clipboardHtmlRich",
+        "title": "Scimax: Copy as Rich HTML (Clipboard)"
+      },
+      {
+        "command": "scimax.org.clipboardHtmlSource",
+        "title": "Scimax: Copy HTML Source (Clipboard)"
+      },
+      {
+        "command": "scimax.org.clipboardLatex",
+        "title": "Scimax: Copy LaTeX (Clipboard)"
+      },
+      {
+        "command": "scimax.org.clipboardMarkdown",
+        "title": "Scimax: Copy Markdown (Clipboard)"
+      },
+      {
         "command": "scimax.org.previewHtml",
         "title": "Scimax: Preview HTML",
         "icon": "$(open-preview)"
@@ -1058,6 +1086,10 @@
       {
         "command": "scimax.db.configureEmbeddings",
         "title": "Scimax: Configure Embedding Service"
+      },
+      {
+        "command": "scimax.db.resetEmbeddings",
+        "title": "Scimax: Reset Embeddings (Fix Dimension Mismatch)"
       },
       {
         "command": "scimax.journal.refresh",
@@ -3185,6 +3217,12 @@
         "when": "editorTextFocus && editorLangId == 'org'"
       },
       {
+        "command": "scimax.org.clipboardHtmlRich",
+        "key": "ctrl+c k",
+        "mac": "ctrl+c k",
+        "when": "editorTextFocus && editorLangId == 'org'"
+      },
+      {
         "command": "scimax.org.parentHeading",
         "key": "ctrl+c u",
         "mac": "ctrl+c u",
@@ -4887,6 +4925,21 @@
           "default": true,
           "description": "Show total clocked time as inline decorations on headlines"
         },
+        "scimax.export.clipboard.preferRichText": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use rich text clipboard when platform tools are available. Allows pasting formatted content into email clients, Word, etc."
+        },
+        "scimax.export.clipboard.defaultScope": {
+          "type": "string",
+          "enum": [
+            "full",
+            "subtree",
+            "selection"
+          ],
+          "default": "subtree",
+          "description": "Default scope for clipboard exports: 'full' exports entire document, 'subtree' exports current headline and children, 'selection' exports selected text."
+        },
         "scimax.org.logRepeat": {
           "type": "string",
           "enum": [
@@ -5201,6 +5254,21 @@
           ],
           "default": "show",
           "markdownDescription": "How to handle editmarks during export:\n- `show`: Render with visual markup (insertions, deletions, comments)\n- `accept`: Apply all changes (keep insertions, remove deletions)\n- `reject`: Revert all changes (remove insertions, keep deletions)\n- `hide`: Remove all editmarks without any replacement"
+        },
+        "scimax.export.ipynb.defaultKernel": {
+          "type": "string",
+          "default": "python3",
+          "markdownDescription": "Default Jupyter kernel name for notebook export. Common values:\n- `python3`: Python 3\n- `julia-1.9`: Julia 1.9\n- `ir`: R kernel\n\nCan be overridden per-document with `#+OX-IPYNB-KERNEL-NAME:` keyword."
+        },
+        "scimax.export.ipynb.embedImages": {
+          "type": "boolean",
+          "default": true,
+          "description": "Base64 encode images in notebook outputs. When true, notebooks are self-contained. When false, images reference external files."
+        },
+        "scimax.export.ipynb.includeResults": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include #+RESULTS blocks as cell outputs in the exported notebook."
         },
         "scimax.export.customExporterPaths": {
           "type": "array",
@@ -5704,6 +5772,11 @@
           "group": "2_config"
         },
         {
+          "command": "scimax.db.resetEmbeddings",
+          "when": "view == scimax.database",
+          "group": "2_config"
+        },
+        {
           "command": "scimax.projectile.filterProjects",
           "when": "view == scimax.projects",
           "group": "navigation"
@@ -5785,8 +5858,10 @@
     "@libsql/client": "^0.17.0",
     "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",
+    "docx": "^9.5.1",
     "handlebars": "^4.7.8",
     "minimatch": "^9.0.0",
+    "shiki": "^1.29.2",
     "uuid": "^9.0.0",
     "zeromq": "^6.0.0-beta.19"
   }
