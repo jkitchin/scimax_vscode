@@ -308,14 +308,15 @@ Toggle speed commands on/off with `Ctrl+c Ctrl+x s`.
 Export org documents to multiple formats with full org-mode export option support.
 
 **Commands:**
-| Command                      | Description                     |
-| ---------------------------- | ------------------------------- |
-| `Scimax: Export to HTML`     | Export current file to HTML     |
-| `Scimax: Export to Markdown` | Export to GitHub-flavored MD    |
-| `Scimax: Export to LaTeX`    | Export to LaTeX document        |
-| `Scimax: Export to PDF`      | Export to PDF via LaTeX/Pandoc  |
-| `Scimax: Export to Word`     | Export to DOCX via Pandoc       |
-| `Scimax: Export Dispatch`    | Show export options dialog      |
+| Command                          | Description                        |
+| -------------------------------- | ---------------------------------- |
+| `Scimax: Export to HTML`         | Export current file to HTML        |
+| `Scimax: Export to Markdown`     | Export to GitHub-flavored MD       |
+| `Scimax: Export to LaTeX`        | Export to LaTeX document           |
+| `Scimax: Export to PDF`          | Export to PDF via LaTeX/Pandoc     |
+| `Scimax: Export to Word`         | Export to DOCX via Pandoc          |
+| `Scimax: Export to Jupyter`      | Export to Jupyter Notebook (.ipynb)|
+| `Scimax: Export Dispatch`        | Show export options dialog         |
 
 **Features:**
 - Full org-mode syntax support (headings, lists, tables, blocks)
@@ -328,6 +329,14 @@ The Word export uses [Pandoc](https://pandoc.org/) for high-quality document gen
 - **LaTeX equations** render properly as native Word equations
 - **Bibliography support** via `--citeproc` - citations are resolved and a bibliography is generated
 - **Citation formats**: Both org-ref (`cite:key`) and org-cite (`[cite:@key]`) are supported
+
+**Jupyter Notebook Export (ox-ipynb compatible):**
+Export org files to Jupyter Notebook format for interactive computing:
+- **Source blocks** become code cells with proper kernel metadata
+- **Markdown cells** for prose, headings, and formatted text
+- **Images** are embedded as base64 or linked
+- **Participant mode**: Strip solutions/answers for assignments (`:participant t` header)
+- Compatible with [ox-ipynb](https://github.com/jkitchin/ox-ipynb) from Emacs
 
 **Export Options:**
 Control what appears in exports using `#+OPTIONS:` in your org file:
@@ -871,7 +880,7 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 | Literate Programming | ob-ipython/ob-*    | Full support (Babel + Jupyter)        |
 | Text Markup          | scimax-org         | Full support (bold, italic, etc.)     |
 | Block Manipulation   | scimax-ob          | Full support (split, merge, navigate) |
-| Export               | ox-*               | Full support (HTML, LaTeX, MD, PDF, DOCX) |
+| Export               | ox-*               | Full support (HTML, LaTeX, MD, PDF, DOCX, ipynb) |
 | Tables               | org-table          | Full support + export to CSV/HTML     |
 | Speed Commands       | org-speed-commands | Full support (37 commands)            |
 | Clocking             | org-clock          | Full support (in/out, reports, tables)|
