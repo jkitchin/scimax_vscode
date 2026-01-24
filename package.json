@@ -1088,10 +1088,6 @@
         "title": "Scimax: Configure Embedding Service"
       },
       {
-        "command": "scimax.db.resetEmbeddings",
-        "title": "Scimax: Reset Embeddings (Fix Dimension Mismatch)"
-      },
-      {
         "command": "scimax.journal.refresh",
         "title": "Scimax: Refresh Journal View",
         "icon": "$(refresh)"
@@ -5082,23 +5078,11 @@
         "scimax.db.embeddingProvider": {
           "type": "string",
           "enum": [
-            "local",
             "ollama",
-            "openai",
             "none"
           ],
-          "default": "local",
-          "description": "Embedding provider for semantic search. 'local' (default) uses Transformers.js running entirely on your machine (~30MB model download, ~100MB memory). 'ollama' uses local Ollama server. 'openai' uses OpenAI API. Set to 'none' to disable semantic search."
-        },
-        "scimax.db.localModel": {
-          "type": "string",
-          "enum": [
-            "Xenova/all-MiniLM-L6-v2",
-            "Xenova/bge-small-en-v1.5",
-            "Xenova/gte-small"
-          ],
-          "default": "Xenova/all-MiniLM-L6-v2",
-          "description": "Local embedding model (downloads on first use)"
+          "default": "ollama",
+          "description": "Embedding provider for semantic search. 'ollama' (default) uses local Ollama server for free, private embeddings. Set to 'none' to disable semantic search."
         },
         "scimax.db.ollamaUrl": {
           "type": "string",
@@ -5109,12 +5093,6 @@
           "type": "string",
           "default": "nomic-embed-text",
           "description": "Ollama model for embeddings"
-        },
-        "scimax.db.openaiApiKey": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "**Deprecated**: OpenAI API key is now stored securely. Use 'Scimax: Configure Embeddings' command instead.",
-          "deprecationMessage": "This setting is deprecated. API keys are now stored securely in your OS credential manager. Use the 'Scimax: Configure Embeddings' command to set your API key."
         },
         "scimax.projectile.scanMaxDepth": {
           "type": "number",
@@ -5772,11 +5750,6 @@
           "group": "2_config"
         },
         {
-          "command": "scimax.db.resetEmbeddings",
-          "when": "view == scimax.database",
-          "group": "2_config"
-        },
-        {
           "command": "scimax.projectile.filterProjects",
           "when": "view == scimax.projects",
           "group": "navigation"
@@ -5856,7 +5829,6 @@
     "@citation-js/plugin-bibtex": "^0.7.21",
     "@citation-js/plugin-csl": "^0.7.22",
     "@libsql/client": "^0.17.0",
-    "@xenova/transformers": "^2.17.0",
     "date-fns": "^2.30.0",
     "docx": "^9.5.1",
     "handlebars": "^4.7.8",

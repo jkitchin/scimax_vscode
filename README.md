@@ -632,7 +632,7 @@ SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) wit
 | `Scimax: Show Upcoming Deadlines`     | See deadlines in next 2 weeks           |
 | `Scimax: Browse Indexed Files`        | Browse all indexed files                |
 | `Scimax: Set Search Scope`            | Limit searches to directory/project     |
-| `Scimax: Configure Embedding Service` | Setup Ollama/OpenAI for semantic search |
+| `Scimax: Configure Embedding Service` | Setup Ollama for semantic search |
 | `Scimax: Show Database Stats`         | Display indexing statistics             |
 | `Scimax: Optimize Database`           | Clean up stale entries (VACUUM)         |
 | `Scimax: Clear Database`              | Reset the database                      |
@@ -646,14 +646,12 @@ SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) wit
 - **Agenda view**: Deadlines, scheduled items, and TODOs with overdue detection
 - **Scoped search**: Limit searches to specific directories
 
-**Embedding Providers for Semantic Search:**
-| Provider                   | Model                    | Dimensions | Setup                          |
-| -------------------------- | ------------------------ | ---------- | ------------------------------ |
-| **Local** (TransformersJs) | Xenova/all-MiniLM-L6-v2  | 384        | No setup, runs in Node.js      |
-| **Local** (TransformersJs) | Xenova/all-mpnet-base-v2 | 768        | Config change                  |
-| **Ollama** (local)         | nomic-embed-text         | 768        | `ollama pull nomic-embed-text` |
-| **Ollama** (local)         | all-minilm               | 384        | `ollama pull all-minilm`       |
-| **OpenAI** (cloud)         | text-embedding-3-small   | 1536       | Requires API key               |
+**Embedding Provider for Semantic Search:**
+| Provider           | Model            | Dimensions | Setup                          |
+| ------------------ | ---------------- | ---------- | ------------------------------ |
+| **Ollama** (local) | nomic-embed-text | 768        | `ollama pull nomic-embed-text` |
+| **Ollama** (local) | all-minilm       | 384        | `ollama pull all-minilm`       |
+| **Ollama** (local) | mxbai-embed-large| 1024       | `ollama pull mxbai-embed-large`|
 
 **Configuration:**
 ```json
@@ -663,8 +661,7 @@ SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) wit
   "scimax.db.autoIndex": true,
   "scimax.db.embeddingProvider": "ollama",
   "scimax.db.ollamaUrl": "http://localhost:11434",
-  "scimax.db.ollamaModel": "nomic-embed-text",
-  "scimax.db.openaiApiKey": ""
+  "scimax.db.ollamaModel": "nomic-embed-text"
 }
 ```
 

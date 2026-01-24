@@ -265,11 +265,9 @@ Configure the full-text search database and semantic search capabilities.
 | scimax.db.include           | array   | [ ]                       | Additional directories/files           |
 | scimax.db.exclude           | array   | See below                 | Patterns/paths to exclude              |
 | scimax.db.autoIndex         | boolean | false                     | Auto-index workspace on activation     |
-| scimax.db.embeddingProvider | string  | "none"                    | Embedding provider for semantic search |
-| scimax.db.localModel        | string  | "Xenova/all-MiniLM-L6-v2" | Local embedding model                  |
+| scimax.db.embeddingProvider | string  | "ollama"                  | Embedding provider for semantic search |
 | scimax.db.ollamaUrl         | string  | "http://localhost:11434"  | Ollama API URL                         |
 | scimax.db.ollamaModel       | string  | "nomic-embed-text"        | Ollama embedding model                 |
-| scimax.db.openaiApiKey      | string  | ""                        | OpenAI API key                         |
 | scimax.db.queryTimeoutMs    | number  | 30000                     | Query timeout in milliseconds          |
 | scimax.db.maxRetryAttempts  | number  | 3                         | Max retries for transient failures     |
 | scimax.db.maxFileSizeMB     | number  | 10                        | Max file size to index (MB)            |
@@ -347,36 +345,16 @@ Configure the full-text search database and semantic search capabilities.
 *** scimax.db.embeddingProvider
 
 - *Type*: string (enum)
-- *Default*: `"local"'
-- *Options*: `"none"', `"local"', `"ollama"', `"openai"'
+- *Default*: `"ollama"'
+- *Options*: `"none"', `"ollama"'
 - *Description*: Embedding provider for semantic/AI-powered search
   - `none': No semantic search (text-only)
-  - `local': Use Transformers.js (runs in browser/local)
-  - `ollama': Use local Ollama server
-  - `openai': Use OpenAI API
+  - `ollama': Use local Ollama server (recommended)
 
 *Example*:
 #+begin_src json
 {
-  "scimax.db.embeddingProvider": "local"
-}
-#+end_src
-
-*** scimax.db.localModel
-
-- *Type*: string (enum)
-- *Default*: `"Xenova/all-MiniLM-L6-v2"'
-- *Options*:
-  - `"Xenova/all-MiniLM-L6-v2"' (384 dim, fast, general-purpose)
-  - `"Xenova/bge-small-en-v1.5"' (384 dim, higher quality)
-  - `"Xenova/gte-small"' (384 dim, good balance)
-- *Description*: Local embedding model for semantic search. Downloads automatically on first use.
-
-*Example*:
-#+begin_src json
-{
-  "scimax.db.embeddingProvider": "local",
-  "scimax.db.localModel": "Xenova/bge-small-en-v1.5"
+  "scimax.db.embeddingProvider": "ollama"
 }
 #+end_src
 
@@ -405,20 +383,6 @@ Configure the full-text search database and semantic search capabilities.
 {
   "scimax.db.embeddingProvider": "ollama",
   "scimax.db.ollamaModel": "nomic-embed-text"
-}
-#+end_src
-
-*** scimax.db.openaiApiKey
-
-- *Type*: string
-- *Default*: `""'
-- *Description*: OpenAI API key for embeddings. Required when using OpenAI provider.
-
-*Example*:
-#+begin_src json
-{
-  "scimax.db.embeddingProvider": "openai",
-  "scimax.db.openaiApiKey": "sk-..."
 }
 #+end_src
 
@@ -1510,8 +1474,8 @@ Perfect for researchers, graduate students, and academic writers:
     "~/teaching"
   ],
   "scimax.db.autoIndex": true,
-  "scimax.db.embeddingProvider": "local",
-  "scimax.db.localModel": "Xenova/all-MiniLM-L6-v2",
+  "scimax.db.embeddingProvider": "ollama",
+  "scimax.db.ollamaModel": "nomic-embed-text",
 
   // LaTeX export and preview
   "scimax.latexPreview.enabled": true,
@@ -1644,8 +1608,8 @@ For personal knowledge management and note-taking:
     "**/temp/**"
   ],
   "scimax.db.autoIndex": true,
-  "scimax.db.embeddingProvider": "local",
-  "scimax.db.localModel": "Xenova/bge-small-en-v1.5",
+  "scimax.db.embeddingProvider": "ollama",
+  "scimax.db.ollamaModel": "nomic-embed-text",
 
   // References for reading notes
   "scimax.ref.bibliographyFiles": [
@@ -1771,9 +1735,7 @@ Ensure you have a LaTeX distribution installed (TeX Live, MiKTeX, etc.), then:
 
 ** Semantic Search Not Working
 
-For local embeddings, ensure the model downloads on first use. Check the console (Help → Toggle Developer Tools) for download progress.
-
-For Ollama, ensure the server is running:
+Ensure the Ollama server is running and the embedding model is pulled:
 #+begin_src bash
 curl http://localhost:11434/api/version
 #+end_src

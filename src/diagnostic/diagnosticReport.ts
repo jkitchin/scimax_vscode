@@ -8,6 +8,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 import { spawn } from 'child_process';
+import { getDatabase, isDatabaseInitialized } from '../database/lazyDb';
 
 /**
  * Result of checking an executable
@@ -39,6 +40,31 @@ export interface DatabaseInfo {
     exists: boolean;
     sizeBytes?: number;
     sizeFormatted?: string;
+    // Stats from database
+    stats?: {
+        files: number;
+        headings: number;
+        blocks: number;
+        links: number;
+        chunks: number;
+        hasEmbeddings: boolean;
+        vectorSearchSupported: boolean;
+        vectorSearchError: string | null;
+        lastIndexed?: string;
+        byType: { org: number; md: number };
+    };
+    // Schema info
+    schema?: {
+        currentVersion: number;
+        latestVersion: number;
+    };
+    // Embedding configuration
+    embedding?: {
+        provider: string;
+        model?: string;
+        dimensions?: number;
+        ollamaUrl?: string;
+    };
 }
 
 /**
@@ -281,10 +307,8 @@ const SCIMAX_CONFIG_KEYS = [
     'db.maxRetryAttempts',
     'db.maxFileSizeMB',
     'db.embeddingProvider',
-    'db.localModel',
     'db.ollamaUrl',
     'db.ollamaModel',
-    'db.openaiApiKey',
     // Projectile
     'projectile.scanMaxDepth',
     // Literate programming
@@ -419,25 +443,87 @@ function isImportantSetting(key: string): boolean {
 }
 
 /**
- * Get database information
+ * Get database information including stats and embedding config
  */
-function getDatabaseInfo(context: vscode.ExtensionContext): DatabaseInfo {
+async function getDatabaseInfo(context: vscode.ExtensionContext): Promise<DatabaseInfo> {
     const dbPath = path.join(context.globalStorageUri.fsPath, 'scimax.db');
     const info: DatabaseInfo = {
         location: dbPath,
         exists: false,
     };
 
+    // Get file size
     try {
-        const stats = fs.statSync(dbPath);
+        const fileStats = fs.statSync(dbPath);
         info.exists = true;
-        info.sizeBytes = stats.size;
-        info.sizeFormatted = formatBytes(stats.size);
+        info.sizeBytes = fileStats.size;
+        info.sizeFormatted = formatBytes(fileStats.size);
     } catch {
         // Database doesn't exist yet
     }
 
+    // Get embedding configuration
+    const config = vscode.workspace.getConfiguration('scimax.db');
+    const provider = config.get<string>('embeddingProvider') || 'none';
+    info.embedding = {
+        provider,
+    };
+
+    if (provider === 'ollama') {
+        info.embedding.model = config.get<string>('ollamaModel') || 'nomic-embed-text';
+        info.embedding.ollamaUrl = config.get<string>('ollamaUrl') || 'http://localhost:11434';
+        info.embedding.dimensions = getEmbeddingDimensions(info.embedding.model, provider);
+    }
+
+    // Get database stats if initialized (don't force initialization)
+    if (isDatabaseInitialized()) {
+        try {
+            const db = await getDatabase();
+            if (db) {
+                const dbStats = await db.getStats();
+                info.stats = {
+                    files: dbStats.files,
+                    headings: dbStats.headings,
+                    blocks: dbStats.blocks,
+                    links: dbStats.links,
+                    chunks: dbStats.chunks,
+                    hasEmbeddings: dbStats.has_embeddings,
+                    vectorSearchSupported: dbStats.vector_search_supported,
+                    vectorSearchError: dbStats.vector_search_error,
+                    lastIndexed: dbStats.last_indexed
+                        ? new Date(dbStats.last_indexed).toLocaleString()
+                        : undefined,
+                    byType: dbStats.by_type,
+                };
+
+                const schemaInfo = await db.getSchemaInfo();
+                info.schema = {
+                    currentVersion: schemaInfo.currentVersion,
+                    latestVersion: schemaInfo.latestVersion,
+                };
+            }
+        } catch {
+            // Database not available
+        }
+    }
+
     return info;
+}
+
+/**
+ * Get embedding dimensions for a model
+ */
+function getEmbeddingDimensions(model: string, provider: string): number {
+    if (provider === 'ollama') {
+        const dims: Record<string, number> = {
+            'nomic-embed-text': 768,
+            'all-minilm': 384,
+            'mxbai-embed-large': 1024,
+            'snowflake-arctic-embed': 1024,
+        };
+        return dims[model] || 768;
+    }
+    return 0;
 }
 
 /**
@@ -499,9 +585,10 @@ export async function gatherDiagnosticInfo(context: vscode.ExtensionContext): Pr
         checkExecutable(exec.name, exec.versionArg, exec.displayName, exec.purpose, exec.alternateNames)
     );
 
-    const [executableResults, jupyterKernels] = await Promise.all([
+    const [executableResults, jupyterKernels, databaseInfo] = await Promise.all([
         Promise.all(executablePromises),
         getJupyterKernels(),
+        getDatabaseInfo(context),
     ]);
 
     const available = executableResults.filter((e) => e.found);
@@ -529,7 +616,7 @@ export async function gatherDiagnosticInfo(context: vscode.ExtensionContext): Pr
         },
         jupyterKernels,
         scimaxConfig: getScimaxConfig(),
-        database: getDatabaseInfo(context),
+        database: databaseInfo,
     };
 }
 
@@ -625,10 +712,10 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
     const configEntries = Object.entries(info.scimaxConfig);
     if (configEntries.length > 0) {
         // Group settings by category (first part of key)
+        // Note: Database settings are shown in the consolidated Database section
         const categories: Record<string, Array<[string, unknown]>> = {
             'Core': [],
             'Journal': [],
-            'Database': [],
             'References': [],
             'Export': [],
             'LaTeX': [],
@@ -640,7 +727,8 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
             if (key.startsWith('journal.') || key === 'clock.showInlineTime') {
                 categories['Journal'].push([key, value]);
             } else if (key.startsWith('db.')) {
-                categories['Database'].push([key, value]);
+                // Skip - shown in Database section
+                continue;
             } else if (key.startsWith('ref.') || key.startsWith('bibtex.')) {
                 categories['References'].push([key, value]);
             } else if (key.startsWith('export.')) {
@@ -679,8 +767,12 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
     }
     lines.push('');
 
-    // Database
+    // Database - consolidated section
     lines.push('## Database');
+    lines.push('');
+
+    // Basic info
+    lines.push('### Storage');
     lines.push('');
     lines.push('| Property | Value |');
     lines.push('|----------|-------|');
@@ -688,6 +780,50 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
     lines.push(`| Status | ${info.database.exists ? 'Exists' : 'Not created'} |`);
     if (info.database.exists && info.database.sizeFormatted) {
         lines.push(`| Size | ${info.database.sizeFormatted} |`);
+    }
+    if (info.database.schema) {
+        lines.push(`| Schema Version | ${info.database.schema.currentVersion} / ${info.database.schema.latestVersion} |`);
+    }
+    lines.push('');
+
+    // Stats (only if database is initialized and has data)
+    if (info.database.stats) {
+        lines.push('### Content');
+        lines.push('');
+        lines.push('| Type | Count |');
+        lines.push('|------|-------|');
+        lines.push(`| Files | ${info.database.stats.files} (${info.database.stats.byType.org} org, ${info.database.stats.byType.md} md) |`);
+        lines.push(`| Headings | ${info.database.stats.headings} |`);
+        lines.push(`| Source Blocks | ${info.database.stats.blocks} |`);
+        lines.push(`| Links | ${info.database.stats.links} |`);
+        lines.push(`| Chunks | ${info.database.stats.chunks} |`);
+        if (info.database.stats.lastIndexed) {
+            lines.push(`| Last Indexed | ${info.database.stats.lastIndexed} |`);
+        }
+        lines.push('');
+    }
+
+    // Embeddings
+    lines.push('### Embeddings');
+    lines.push('');
+    lines.push('| Property | Value |');
+    lines.push('|----------|-------|');
+    lines.push(`| Provider | ${info.database.embedding?.provider || 'none'} |`);
+    if (info.database.embedding?.model) {
+        lines.push(`| Model | ${info.database.embedding.model} |`);
+    }
+    if (info.database.embedding?.dimensions) {
+        lines.push(`| Dimensions | ${info.database.embedding.dimensions} |`);
+    }
+    if (info.database.embedding?.ollamaUrl) {
+        lines.push(`| Ollama URL | ${info.database.embedding.ollamaUrl} |`);
+    }
+    if (info.database.stats) {
+        lines.push(`| Has Embeddings | ${info.database.stats.hasEmbeddings ? 'Yes' : 'No'} |`);
+        lines.push(`| Vector Search | ${info.database.stats.vectorSearchSupported ? 'Supported' : 'Not available'} |`);
+        if (info.database.stats.vectorSearchError) {
+            lines.push(`| Vector Search Error | ${info.database.stats.vectorSearchError} |`);
+        }
     }
     lines.push('');
 

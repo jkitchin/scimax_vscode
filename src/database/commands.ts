@@ -4,20 +4,15 @@ import * as fs from 'fs';
 import {
     ScimaxDb,
     HeadingRecord,
-    SourceBlockRecord,
     SearchResult,
     AgendaItem,
     SearchScope
 } from './scimaxDb';
 import {
-    createEmbeddingServiceAsync,
     testEmbeddingService,
-    TransformersJsEmbeddingService,
-    OllamaEmbeddingService,
-    OpenAIEmbeddingService
+    OllamaEmbeddingService
 } from './embeddingService';
 import { getDatabase, getExtensionContext, cancelStaleFileCheck } from './lazyDb';
-import { storeOpenAIApiKey, deleteOpenAIApiKey } from './secretStorage';
 import { resolveScimaxPath } from '../utils/pathResolver';
 
 /**
@@ -49,7 +44,8 @@ async function createDynamicQuickPick<T>(options: {
     minQueryLength?: number;
 }): Promise<void> {
     const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { data: T }>();
-    quickPick.placeholder = options.placeholder;
+    const basePlaceholder = options.placeholder;
+    quickPick.placeholder = basePlaceholder;
     quickPick.matchOnDescription = true;
     quickPick.matchOnDetail = true;
 
@@ -59,16 +55,34 @@ async function createDynamicQuickPick<T>(options: {
     const updateResults = debounce(async (query: string) => {
         if (query.length < minQueryLength) {
             quickPick.items = [];
+            quickPick.placeholder = basePlaceholder;
             return;
         }
 
         quickPick.busy = true;
+        quickPick.placeholder = 'Searching...';
         try {
             const results = await options.searchFn(query);
-            quickPick.items = results.map(options.formatItem);
+            if (results.length === 0) {
+                quickPick.items = [{
+                    label: '$(info) No results found',
+                    description: `for "${query}"`,
+                    data: null as any,
+                    alwaysShow: true
+                }];
+            } else {
+                quickPick.items = results.map(options.formatItem);
+            }
+            quickPick.placeholder = `${results.length} result${results.length !== 1 ? 's' : ''}`;
         } catch (err) {
             console.error('Search error:', err);
-            quickPick.items = [];
+            quickPick.items = [{
+                label: '$(error) Search failed',
+                description: String(err),
+                data: null as any,
+                alwaysShow: true
+            }];
+            quickPick.placeholder = 'Error';
         } finally {
             quickPick.busy = false;
         }
@@ -78,7 +92,7 @@ async function createDynamicQuickPick<T>(options: {
 
     quickPick.onDidAccept(async () => {
         const selected = quickPick.selectedItems[0];
-        if (selected) {
+        if (selected && selected.data) {
             quickPick.hide();
             await options.onSelect(selected.data);
         }
@@ -345,19 +359,9 @@ export function registerDbCommands(
                     provider: 'none'
                 },
                 {
-                    label: '$(chip) Local (Transformers.js)',
-                    description: 'Free, private, runs in VS Code (recommended)',
-                    provider: 'local'
-                },
-                {
-                    label: '$(server) Ollama',
+                    label: '$(server) Ollama (Recommended)',
                     description: 'Free, private, requires Ollama running locally',
                     provider: 'ollama'
-                },
-                {
-                    label: '$(cloud) OpenAI',
-                    description: 'Cloud-based, requires API key',
-                    provider: 'openai'
                 }
             ];
 
@@ -369,47 +373,7 @@ export function registerDbCommands(
 
             const config = vscode.workspace.getConfiguration('scimax.db');
 
-            if (selected.provider === 'local') {
-                const modelItems = [
-                    { label: 'Xenova/all-MiniLM-L6-v2', description: '384 dimensions (recommended, fast)' },
-                    { label: 'Xenova/bge-small-en-v1.5', description: '384 dimensions (high quality)' },
-                    { label: 'Xenova/gte-small', description: '384 dimensions (alternative)' }
-                ];
-
-                const modelChoice = await vscode.window.showQuickPick(modelItems, {
-                    placeHolder: 'Select local embedding model (downloads on first use, ~30MB)'
-                });
-
-                if (!modelChoice) return;
-
-                await vscode.window.withProgress({
-                    location: vscode.ProgressLocation.Notification,
-                    title: 'Testing local embeddings...',
-                    cancellable: false
-                }, async () => {
-                    const testService = new TransformersJsEmbeddingService(modelChoice.label);
-                    const works = await testEmbeddingService(testService);
-
-                    if (!works) {
-                        vscode.window.showErrorMessage(
-                            `Failed to load model ${modelChoice.label}. Check console for errors.`
-                        );
-                        return;
-                    }
-
-                    await config.update('embeddingProvider', 'local', vscode.ConfigurationTarget.Global);
-                    await config.update('localModel', modelChoice.label, vscode.ConfigurationTarget.Global);
-
-                    const db = await getDatabase();
-                    if (db) {
-                        db.setEmbeddingService(testService);
-                    }
-                    vscode.window.showInformationMessage(
-                        `Configured local embeddings with ${modelChoice.label}. Run "Reindex Files" to enable semantic search.`
-                    );
-                });
-
-            } else if (selected.provider === 'ollama') {
+            if (selected.provider === 'ollama') {
                 const url = config.get<string>('ollamaUrl') || 'http://localhost:11434';
                 const modelItems = [
                     { label: 'nomic-embed-text', description: '768 dimensions (recommended)' },
@@ -444,39 +408,8 @@ export function registerDbCommands(
                     `Configured Ollama with ${modelChoice.label}. Run "Reindex Files" to enable semantic search.`
                 );
 
-            } else if (selected.provider === 'openai') {
-                const apiKey = await vscode.window.showInputBox({
-                    prompt: 'Enter your OpenAI API key',
-                    password: true,
-                    placeHolder: 'sk-...',
-                    ignoreFocusOut: true
-                });
-
-                if (!apiKey) return;
-
-                const testService = new OpenAIEmbeddingService(apiKey);
-                const works = await testEmbeddingService(testService);
-
-                if (!works) {
-                    vscode.window.showErrorMessage('Invalid OpenAI API key or connection error');
-                    return;
-                }
-
-                // Store API key securely in OS credential manager
-                await storeOpenAIApiKey(apiKey);
-                await config.update('embeddingProvider', 'openai', vscode.ConfigurationTarget.Global);
-
-                const db = await getDatabase();
-                if (db) {
-                    db.setEmbeddingService(testService);
-                }
-                vscode.window.showInformationMessage(
-                    'Configured OpenAI embeddings (API key stored securely). Run "Reindex Files" to enable semantic search.'
-                );
-
             } else {
-                // Disable - also clean up any stored API key
-                await deleteOpenAIApiKey();
+                // Disable semantic search
                 await config.update('embeddingProvider', 'none', vscode.ConfigurationTarget.Global);
                 vscode.window.showInformationMessage('Semantic search disabled');
             }

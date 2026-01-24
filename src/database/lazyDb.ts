@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { ScimaxDb } from './scimaxDb';
 import { createEmbeddingServiceAsync } from './embeddingService';
-import { initSecretStorage, migrateApiKeyFromSettings } from './secretStorage';
+import { initSecretStorage } from './secretStorage';
 import { resolveScimaxPath } from '../utils/pathResolver';
 import { databaseLogger as log } from '../utils/logger';
 
@@ -84,13 +84,10 @@ export function isDatabaseInitialized(): boolean {
 async function initializeDatabase(context: vscode.ExtensionContext): Promise<ScimaxDb> {
     log.info('Initializing lazily...');
 
-    // Migrate API keys from settings to SecretStorage (one-time migration)
-    await migrateApiKeyFromSettings();
-
     const db = new ScimaxDb(context);
     await db.initialize();
 
-    // Set up embedding service if configured (using async version for SecretStorage support)
+    // Set up embedding service if configured
     const embeddingService = await createEmbeddingServiceAsync();
     if (embeddingService) {
         db.setEmbeddingService(embeddingService);

@@ -1080,7 +1080,9 @@ export class ScimaxDb {
         }
 
         const lines = content.split('\n');
-        const chunkSize = 2000;
+        // Reduced chunk size for better compatibility with embedding model context limits
+        // nomic-embed-text has 8192 token limit; 1000 chars is ~200-300 tokens typically
+        const chunkSize = 1000;
         const chunks: { text: string; lineStart: number; lineEnd: number }[] = [];
         let currentChunk = '';
         let currentLineStart = 1;

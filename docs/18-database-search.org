@@ -223,7 +223,7 @@ CLOSED: [2026-01-17 Sat 11:58]
 Semantic search requires:
 
 1. *Vector search support in libsql* - The database must support vector operations
-2. *Embedding provider configured* - One of: local (Transformers.js), Ollama, or OpenAI
+2. *Embedding provider configured* - Ollama must be running locally
 3. *Files indexed with embeddings* - Run `scimax.db.reindex' after configuring
 
 *** Checking Availability
@@ -242,35 +242,18 @@ Semantic search: Unavailable (vector search not supported)
 
 If semantic search is unavailable, use full-text search (`scimax.db.search') instead. FTS5 is always available and very fast for keyword-based queries.
 
-** Embedding Providers
+** Embedding Provider
 
-Scimax supports three embedding providers:
-
-*** Local (Transformers.js) - Recommended
-- *Pros*: Free, private, no external services needed
-- *Cons*: Slower initial model download (~30MB)
-- *Models*:
-  - `Xenova/all-MiniLM-L6-v2' (384 dims, fast, recommended)
-  - `Xenova/bge-small-en-v1.5' (384 dims, high quality)
-  - `Xenova/gte-small' (384 dims, alternative)
+Scimax uses Ollama for embeddings:
 
 *** Ollama
-- *Pros*: Free, private, local control
+- *Pros*: Free, private, local control, high quality
 - *Cons*: Requires Ollama installed and running
 - *Models*:
   - `nomic-embed-text' (768 dims, recommended)
   - `all-minilm' (384 dims, smaller)
   - `mxbai-embed-large' (1024 dims, larger)
 - *Setup*: Install Ollama, then `ollama pull nomic-embed-text'
-
-*** ✅ OpenAI
-CLOSED: [2026-01-17 Sat 11:59]
-
-- *Pros*: High quality, fast, maintained, supports batch embedding
-- *Cons*: Requires API key, costs money, sends data to cloud
-- *Security*: API key stored securely in OS credential manager (Keychain/Credential Manager/libsecret)
-- *Model*: `text-embedding-3-small' (1536 dims) - currently the only model used
-- *Note*: Model selection is not yet configurable; text-embedding-3-small is used automatically
 
 ** ✅ Configuration
 CLOSED: [2026-01-17 Sat 11:59]
@@ -292,18 +275,7 @@ CLOSED: [2026-01-17 Sat 11:59]
 
 Add to your VS Code settings (`settings.json'):
 
-**** ✅ Local (Transformers.js)
-CLOSED: [2026-01-17 Sat 11:59]
-
-#+BEGIN_SRC json
-{
-  "scimax.db.embeddingProvider": "local",
-  "scimax.db.localModel": "Xenova/all-MiniLM-L6-v2"
-}
-#+END_SRC
-
-**** ✅ Ollama
-CLOSED: [2026-01-17 Sat 12:00]
+**** Ollama Configuration
 
 #+BEGIN_SRC json
 {
@@ -312,19 +284,6 @@ CLOSED: [2026-01-17 Sat 12:00]
   "scimax.db.ollamaModel": "nomic-embed-text"
 }
 #+END_SRC
-
-**** ✅ OpenAI
-CLOSED: [2026-01-18 Sat 12:00]
-
-#+BEGIN_SRC json
-{
-  "scimax.db.embeddingProvider": "openai"
-}
-#+END_SRC
-
-Note: The API key is stored securely in your OS credential manager, not in settings.json.
-Use the interactive setup (`Scimax: Configure Embedding Service') to enter your API key.
-Uses `text-embedding-3-small' model (1536 dimensions).
 
 ** ✅ Usage
 CLOSED: [2026-01-17 Sat 12:01]
@@ -907,15 +866,14 @@ Last indexed: 2026-01-13 14:30:00
 
 *** Large Workspace (1,000-10,000 files)
 - Consider disabling auto-indexing
-- Local embeddings may be slow
-- Use Ollama or OpenAI for better performance
+- Ollama embeddings recommended
 - Reindex incrementally
 
 *** Very Large Workspace (>10,000 files)
 - Disable auto-indexing (manual reindex)
 - Use selective directory indexing
 - Consider multiple smaller databases
-- OpenAI embeddings recommended for speed
+- Ollama with a fast model recommended
 
 * Configuration Reference
 
@@ -989,27 +947,14 @@ Automatically index workspace on activation. Disable for large workspaces.
 
 *** `scimax.db.embeddingProvider'
 Type: `enum'
-Values: "none" | "local" | "ollama" | "openai"
-Default: `"none"'
+Values: "none" | "ollama"
+Default: `"ollama"'
 
 Embedding provider for semantic search.
 
 #+BEGIN_SRC json
 {
-  "scimax.db.embeddingProvider": "local"
-}
-#+END_SRC
-
-*** `scimax.db.localModel'
-Type: `enum'
-Values: "Xenova/all-MiniLM-L6-v2" | "Xenova/bge-small-en-v1.5" | "Xenova/gte-small"
-Default: `"Xenova/all-MiniLM-L6-v2"'
-
-Local embedding model (Transformers.js).
-
-#+BEGIN_SRC json
-{
-  "scimax.db.localModel": "Xenova/all-MiniLM-L6-v2"
+  "scimax.db.embeddingProvider": "ollama"
 }
 #+END_SRC
 
@@ -1036,17 +981,6 @@ Ollama embedding model name.
   "scimax.db.ollamaModel": "nomic-embed-text"
 }
 #+END_SRC
-
-*** OpenAI API Key (Secure Storage)
-
-The OpenAI API key is stored securely using VS Code's SecretStorage API, which uses your operating system's credential manager:
-
-- *macOS*: Keychain
-- *Windows*: Credential Manager
-- *Linux*: libsecret (GNOME Keyring, KWallet)
-
-To set or update your API key, use the interactive setup:
-Scimax: Configure Embedding Service (`scimax.db.configureEmbeddings')
 
 * Command Reference
 
@@ -1244,11 +1178,6 @@ If vector search is supported but not working:
 - Pull model: `ollama pull nomic-embed-text'
 - Check URL is correct in settings
 - Test connection: `curl http://localhost:11434/api/embeddings'
-
-*** OpenAI Issues
-- Verify API key is valid
-- Check API quota and billing
-- Ensure internet connection is stable
 
 ** Search Returns No Results
 

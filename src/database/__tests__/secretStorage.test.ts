@@ -2,7 +2,7 @@
  * Tests for SecretStorage module
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock storage
 const mockSecretStore = new Map<string, string>();
@@ -29,11 +29,10 @@ vi.mock('vscode', () => ({
 // Import after mocking
 import {
     initSecretStorage,
-    storeOpenAIApiKey,
-    getOpenAIApiKey,
-    deleteOpenAIApiKey,
-    hasOpenAIApiKey,
-    migrateApiKeyFromSettings
+    storeOpenAlexApiKey,
+    getOpenAlexApiKey,
+    deleteOpenAlexApiKey,
+    hasOpenAlexApiKey
 } from '../secretStorage';
 
 // Create mock extension context
@@ -65,171 +64,103 @@ describe('SecretStorage', () => {
     });
 
     describe('initialization', () => {
-        it('should throw error if not initialized', async () => {
-            // Reset module state by re-importing (this is tricky in vitest)
-            // For now, we test that after init it works
-        });
-
         it('should initialize with extension context', () => {
             const context = createMockContext();
             expect(() => initSecretStorage(context)).not.toThrow();
         });
     });
 
-    describe('storeOpenAIApiKey', () => {
+    describe('storeOpenAlexApiKey', () => {
         it('should store API key securely', async () => {
             const context = createMockContext();
             initSecretStorage(context);
 
-            await storeOpenAIApiKey('sk-test-key-12345');
+            await storeOpenAlexApiKey('test-openalex-key-12345');
 
             expect(context.secrets.store).toHaveBeenCalledWith(
-                'scimax.openaiApiKey',
-                'sk-test-key-12345'
+                'scimax.openalexApiKey',
+                'test-openalex-key-12345'
             );
-            expect(mockSecretStore.get('scimax.openaiApiKey')).toBe('sk-test-key-12345');
+            expect(mockSecretStore.get('scimax.openalexApiKey')).toBe('test-openalex-key-12345');
         });
     });
 
-    describe('getOpenAIApiKey', () => {
+    describe('getOpenAlexApiKey', () => {
         it('should retrieve stored API key', async () => {
             const context = createMockContext();
             initSecretStorage(context);
 
             // Store a key first
-            await storeOpenAIApiKey('sk-retrieved-key');
+            await storeOpenAlexApiKey('openalex-retrieved-key');
 
-            const key = await getOpenAIApiKey();
-            expect(key).toBe('sk-retrieved-key');
+            const key = await getOpenAlexApiKey();
+            expect(key).toBe('openalex-retrieved-key');
         });
 
         it('should return undefined if no key stored', async () => {
             const context = createMockContext();
             initSecretStorage(context);
 
-            const key = await getOpenAIApiKey();
+            const key = await getOpenAlexApiKey();
             expect(key).toBeUndefined();
         });
     });
 
-    describe('deleteOpenAIApiKey', () => {
+    describe('deleteOpenAlexApiKey', () => {
         it('should delete stored API key', async () => {
             const context = createMockContext();
             initSecretStorage(context);
 
             // Store then delete
-            await storeOpenAIApiKey('sk-to-delete');
-            expect(await hasOpenAIApiKey()).toBe(true);
+            await storeOpenAlexApiKey('openalex-to-delete');
+            expect(await hasOpenAlexApiKey()).toBe(true);
 
-            await deleteOpenAIApiKey();
-            expect(await hasOpenAIApiKey()).toBe(false);
+            await deleteOpenAlexApiKey();
+            expect(await hasOpenAlexApiKey()).toBe(false);
         });
     });
 
-    describe('hasOpenAIApiKey', () => {
+    describe('hasOpenAlexApiKey', () => {
         it('should return true when key exists', async () => {
             const context = createMockContext();
             initSecretStorage(context);
 
-            await storeOpenAIApiKey('sk-exists');
-            expect(await hasOpenAIApiKey()).toBe(true);
+            await storeOpenAlexApiKey('openalex-exists');
+            expect(await hasOpenAlexApiKey()).toBe(true);
         });
 
         it('should return false when no key', async () => {
             const context = createMockContext();
             initSecretStorage(context);
 
-            expect(await hasOpenAIApiKey()).toBe(false);
+            expect(await hasOpenAlexApiKey()).toBe(false);
         });
 
         it('should return false for empty string', async () => {
             const context = createMockContext();
             initSecretStorage(context);
 
-            mockSecretStore.set('scimax.openaiApiKey', '');
-            expect(await hasOpenAIApiKey()).toBe(false);
-        });
-    });
-
-    describe('migrateApiKeyFromSettings', () => {
-        it('should migrate key from settings to SecretStorage', async () => {
-            const context = createMockContext();
-            initSecretStorage(context);
-
-            // Mock settings having an API key
-            const vscode = await import('vscode');
-            const mockConfig = {
-                get: vi.fn().mockReturnValue('sk-from-settings'),
-                update: vi.fn().mockResolvedValue(undefined)
-            };
-            (vscode.workspace.getConfiguration as any).mockReturnValue(mockConfig);
-
-            const migrated = await migrateApiKeyFromSettings();
-
-            expect(migrated).toBe(true);
-            expect(mockSecretStore.get('scimax.openaiApiKey')).toBe('sk-from-settings');
-            expect(mockConfig.update).toHaveBeenCalledWith(
-                'openaiApiKey',
-                undefined,
-                1 // ConfigurationTarget.Global
-            );
-        });
-
-        it('should return false if no key in settings', async () => {
-            const context = createMockContext();
-            initSecretStorage(context);
-
-            // Mock settings having no API key
-            const vscode = await import('vscode');
-            const mockConfig = {
-                get: vi.fn().mockReturnValue(undefined),
-                update: vi.fn().mockResolvedValue(undefined)
-            };
-            (vscode.workspace.getConfiguration as any).mockReturnValue(mockConfig);
-
-            const migrated = await migrateApiKeyFromSettings();
-
-            expect(migrated).toBe(false);
-            expect(mockConfig.update).not.toHaveBeenCalled();
-        });
-
-        it('should return false if key is empty string', async () => {
-            const context = createMockContext();
-            initSecretStorage(context);
-
-            // Mock settings having empty string
-            const vscode = await import('vscode');
-            const mockConfig = {
-                get: vi.fn().mockReturnValue(''),
-                update: vi.fn().mockResolvedValue(undefined)
-            };
-            (vscode.workspace.getConfiguration as any).mockReturnValue(mockConfig);
-
-            const migrated = await migrateApiKeyFromSettings();
-
-            expect(migrated).toBe(false);
+            mockSecretStore.set('scimax.openalexApiKey', '');
+            expect(await hasOpenAlexApiKey()).toBe(false);
         });
     });
 });
 
 describe('SecretStorage Security Properties', () => {
-    it('should not expose API key in settings after migration', async () => {
+    beforeEach(() => {
+        mockSecretStore.clear();
+        vi.clearAllMocks();
+    });
+
+    it('should not expose API key in settings after storing', async () => {
         const context = createMockContext();
         initSecretStorage(context);
 
-        // After storing, key should not be in mock settings
-        await storeOpenAIApiKey('sk-secure-key');
+        // After storing, key should be in SecretStorage only
+        await storeOpenAlexApiKey('secure-openalex-key');
 
-        // The key should only be in SecretStorage, not settings
-        const vscode = await import('vscode');
-        const mockConfig = {
-            get: vi.fn().mockReturnValue(undefined), // No key in settings
-            update: vi.fn()
-        };
-        (vscode.workspace.getConfiguration as any).mockReturnValue(mockConfig);
-
-        // Key should still be retrievable from SecretStorage
-        const key = await getOpenAIApiKey();
-        expect(key).toBe('sk-secure-key');
+        // Key should be retrievable from SecretStorage
+        const key = await getOpenAlexApiKey();
+        expect(key).toBe('secure-openalex-key');
     });
 });
