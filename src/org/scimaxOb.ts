@@ -196,10 +196,11 @@ function findMarkdownBlockAtCursor(lines: string[], position: vscode.Position): 
             const fenceChar = fence[0];
             const fenceLen = fence.length;
 
-            // Look for closing fence
+            // Look for closing fence (create regex once before loop for performance)
+            const closingFencePattern = new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`);
             let closingLine = -1;
             for (let j = i + 1; j < lines.length; j++) {
-                const closeMatch = lines[j].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
+                const closeMatch = lines[j].match(closingFencePattern);
                 if (closeMatch) {
                     closingLine = j;
                     break;
@@ -269,9 +270,11 @@ function findAllBlocks(document: vscode.TextDocument): BlockPosition[] {
                 const fenceLen = fence.length;
 
                 // Check if this could be an opening fence by looking ahead for closing fence
+                // Create regex once before loop for performance
+                const closingFencePattern = new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`);
                 let hasClosing = false;
                 for (let j = i + 1; j < lines.length; j++) {
-                    const closingMatch = lines[j].match(new RegExp(`^${fenceChar}{${fenceLen},}\\s*$`));
+                    const closingMatch = lines[j].match(closingFencePattern);
                     if (closingMatch) {
                         hasClosing = true;
                         break;

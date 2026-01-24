@@ -13,6 +13,7 @@ import {
     invalidateEquationCounterCache,
 } from './latexPreviewProvider';
 import { parseDiarySexp, getDiarySexpDates } from '../parser/orgDiarySexp';
+import { DAY_NAMES_SHORT, MONTH_NAMES_SHORT } from '../utils/dateConstants';
 import {
     parseClockLine,
     formatDuration,
@@ -287,9 +288,9 @@ const LINK_TYPE_DESCRIPTIONS: Record<string, string> = {
     'docview': 'Document viewer link',
 };
 
-// Day name for timestamp display
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// Day name for timestamp display - use shared constants
+const DAY_NAMES = DAY_NAMES_SHORT;
+const MONTH_NAMES = MONTH_NAMES_SHORT;
 
 /**
  * Org-mode hover provider

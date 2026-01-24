@@ -8,17 +8,10 @@ import { renderLeftSidebar } from './leftSidebar';
 import { renderRightSidebar } from './rightSidebar';
 import { renderHeader } from './header';
 import { renderFooter } from './footer';
+import { escapeHtml } from '../../../utils/escapeUtils';
 
-/**
- * Escape HTML special characters
- */
-export function escapeHtml(text: string): string {
-    return text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-}
+// Re-export for backwards compatibility with bookTheme modules
+export { escapeHtml };
 
 /**
  * Compute the relative path from current page to root

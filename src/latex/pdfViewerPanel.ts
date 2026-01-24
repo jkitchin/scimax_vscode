@@ -874,6 +874,17 @@ export class PdfViewerPanel {
                 <script>
                     // Debug popup setting from VS Code configuration
                     const SHOW_DEBUG_POPUP = ${showDebugPopupSetting};
+
+                    // HTML escape function to prevent XSS
+                    function escapeHtml(str) {
+                        if (str === null || str === undefined) return '';
+                        return String(str)
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/"/g, '&quot;')
+                            .replace(/'/g, '&#39;');
+                    }
                 </script>
                 <style>
                     * {
@@ -1148,7 +1159,7 @@ export class PdfViewerPanel {
                         document.getElementById('page-num').max = pdf.numPages;
                         renderAllPages();
                     }).catch(err => {
-                        container.innerHTML = '<p style="color: red; padding: 20px;">Error loading PDF: ' + err.message + '</p>';
+                        container.innerHTML = '<p style="color: red; padding: 20px;">Error loading PDF: ' + escapeHtml(err.message) + '</p>';
                     });
 
                     async function renderAllPages() {
@@ -1468,17 +1479,17 @@ export class PdfViewerPanel {
                         popup.className = 'debug-popup';
                         popup.innerHTML = \`
                             <div class="title">Click Debug Info <span class="close-btn" style="float: right; cursor: pointer; font-size: 18px; line-height: 1;">&times;</span></div>
-                            <div><span class="label">Page:</span> <span class="value">\${info.page}</span></div>
-                            <div><span class="label">PDF coords:</span> <span class="value">(\${info.pdfX.toFixed(1)}, \${info.pdfY.toFixed(1)})</span></div>
+                            <div><span class="label">Page:</span> <span class="value">\${escapeHtml(info.page)}</span></div>
+                            <div><span class="label">PDF coords:</span> <span class="value">(\${escapeHtml(info.pdfX.toFixed(1))}, \${escapeHtml(info.pdfY.toFixed(1))})</span></div>
                             <hr style="border-color: #555; margin: 8px 0;">
                             <div><span class="label">SyncTeX target:</span></div>
                             <div id="synctex-info" class="value" style="color: #ffa726;">Loading...</div>
                             <hr style="border-color: #555; margin: 8px 0;">
                             <div><span class="label">Phrase (for matching line):</span></div>
-                            <div class="value" style="margin-top: 4px; font-size: 13px; max-width: 280px; word-wrap: break-word; background: #333; padding: 4px; border-radius: 3px;">\${info.phrase || '(none)'}</div>
+                            <div class="value" style="margin-top: 4px; font-size: 13px; max-width: 280px; word-wrap: break-word; background: #333; padding: 4px; border-radius: 3px;">\${escapeHtml(info.phrase) || '(none)'}</div>
                             <hr style="border-color: #555; margin: 8px 0;">
                             <div><span class="label">Clicked word (for cursor):</span></div>
-                            <div class="value" style="margin-top: 4px; font-size: 16px; color: #4fc3f7; font-weight: bold;">\${info.clickedWord || '(none)'}</div>
+                            <div class="value" style="margin-top: 4px; font-size: 16px; color: #4fc3f7; font-weight: bold;">\${escapeHtml(info.clickedWord) || '(none)'}</div>
                         \`;
                         document.body.appendChild(popup);
 
@@ -1503,15 +1514,15 @@ export class PdfViewerPanel {
                             <div class="title">Forward Sync Debug <span class="close-btn" style="float: right; cursor: pointer; font-size: 18px; line-height: 1;">&times;</span></div>
                             <hr style="border-color: #555; margin: 8px 0;">
                             <div><span class="label">Source:</span></div>
-                            <div class="value" style="font-size: 12px; color: #aaa;">\${filename}</div>
-                            <div><span class="label">Line:</span> <span class="value">\${info.line}</span> &nbsp; <span class="label">Col:</span> <span class="value">\${info.column}</span></div>
+                            <div class="value" style="font-size: 12px; color: #aaa;">\${escapeHtml(filename)}</div>
+                            <div><span class="label">Line:</span> <span class="value">\${escapeHtml(info.line)}</span> &nbsp; <span class="label">Col:</span> <span class="value">\${escapeHtml(info.column)}</span></div>
                             <hr style="border-color: #555; margin: 8px 0;">
                             <div><span class="label">Source text:</span></div>
-                            <div class="value" style="margin-top: 4px; font-size: 13px; max-width: 280px; word-wrap: break-word; background: #333; padding: 4px; border-radius: 3px;">\${info.text || '(none)'}</div>
+                            <div class="value" style="margin-top: 4px; font-size: 13px; max-width: 280px; word-wrap: break-word; background: #333; padding: 4px; border-radius: 3px;">\${escapeHtml(info.text) || '(none)'}</div>
                             <hr style="border-color: #555; margin: 8px 0;">
                             <div><span class="label">PDF target:</span></div>
-                            <div><span class="label">Page:</span> <span class="value">\${info.page}</span></div>
-                            <div><span class="label">PDF coords:</span> <span class="value">(\${info.pdfX.toFixed(1)}, \${info.pdfY.toFixed(1)})</span></div>
+                            <div><span class="label">Page:</span> <span class="value">\${escapeHtml(info.page)}</span></div>
+                            <div><span class="label">PDF coords:</span> <span class="value">(\${escapeHtml(info.pdfX.toFixed(1))}, \${escapeHtml(info.pdfY.toFixed(1))})</span></div>
                         \`;
                         document.body.appendChild(popup);
 
@@ -1895,7 +1906,7 @@ export class PdfViewerPanel {
                                 // Update the debug popup with SyncTeX result
                                 const synctexInfo = document.getElementById('synctex-info');
                                 if (synctexInfo) {
-                                    synctexInfo.innerHTML = \`<span style="color: #aaa;">\${message.file}</span> line <span style="font-weight: bold;">\${message.line}</span>\`;
+                                    synctexInfo.innerHTML = \`<span style="color: #aaa;">\${escapeHtml(message.file)}</span> line <span style="font-weight: bold;">\${escapeHtml(message.line)}</span>\`;
                                 }
                                 break;
                         }

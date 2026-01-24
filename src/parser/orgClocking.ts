@@ -9,6 +9,7 @@ import type {
     ClockElement,
     OrgElement,
 } from './orgElementTypes';
+import { DAY_NAMES_SHORT } from '../utils/dateConstants';
 
 // =============================================================================
 // Clock Entry Types
@@ -238,11 +239,10 @@ export function parseClockElement(clock: ClockElement): ClockEntry | null {
  * Format a date as org-mode timestamp
  */
 export function formatClockTimestamp(date: Date, includeTime = true): string {
-    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const dayName = days[date.getDay()];
+    const dayName = DAY_NAMES_SHORT[date.getDay()];
 
     if (!includeTime) {
         return `[${year}-${month}-${day} ${dayName}]`;

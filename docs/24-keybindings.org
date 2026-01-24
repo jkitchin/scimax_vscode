@@ -19,6 +19,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | s-S-j       | (Mac) Open today's journal entry    |
 | C-c m       | Show Hydra main menu                |
 | C-c C-m     | Show Hydra context menu             |
+| C-c d       | Show database hydra menu            |
 | C-c c       | Quick capture                       |
 | C-c t       | Quick capture TODO                  |
 | C-M-v       | Show database menu                  |
@@ -27,6 +28,7 @@ This document provides a comprehensive reference for all keybindings in Scimax V
 | s-S-r       | (Mac) Reload window                 |
 | M-[         | Previous journal entry (in journal) |
 | M-]         | Next journal entry (in journal)     |
+| C-c S-/     | Context-sensitive help              |
 
 * ✅ Help Commands
 CLOSED: [2026-01-17 Sat 13:38]
@@ -68,30 +70,36 @@ Select a result to see details or open the documentation file at that location.
 
 * Emacs-Style Editor Keybindings
 
-| Key             | Action                        |
-|-----------------+-------------------------------|
-| M-x             | Show command palette          |
-| C-x C-f         | Quick open file               |
-| C-x C-s         | Save file                     |
-| C-x s           | Save all files                |
-| C-x k           | Close active editor           |
-| C-x 3           | Split editor right            |
-| C-x 2           | Split editor down             |
-| C-x 1           | Close other editors in group  |
-| C-x 0           | Close all editors             |
-| C-x o           | Focus next editor group       |
-| C-x C-<left>    | Navigate back                 |
-| C-x C-<right>   | Navigate forward              |
-| C-/             | Undo                          |
-| C-y             | Paste                         |
-| C-w             | Cut (with selection)          |
-| M-w             | Copy (with selection)         |
-| C-;             | Toggle comment                |
-| M-c             | Capitalize word and move next |
-| M-l             | Lowercase word and move next  |
-| M-u             | Uppercase word and move next  |
-| M-<             | Beginning of buffer           |
-| M->             | End of buffer                 |
+| Key             | Action                         |
+|-----------------+--------------------------------|
+| M-x             | Show command palette           |
+| C-x C-f         | Quick open file                |
+| C-x d           | Open folder                    |
+| C-x C-s         | Save file                      |
+| C-x s           | Save all files                 |
+| C-x k           | Close active editor            |
+| C-x b           | Switch to recent editor        |
+| C-x 3           | Split editor right             |
+| C-x 2           | Split editor down              |
+| C-x 1           | Close other editors in group   |
+| C-x 0           | Close all editors              |
+| C-x o           | Focus next editor group        |
+| C-x <left>      | Previous editor                |
+| C-x <right>     | Next editor                    |
+| C-x C-<left>    | Navigate back                  |
+| C-x C-<right>   | Navigate forward               |
+| C-/             | Undo                           |
+| C-y             | Paste                          |
+| C-w             | Cut (with selection)           |
+| M-w             | Copy (with selection)          |
+| C-;             | Toggle comment                 |
+| M-c             | Capitalize word and move next  |
+| M-l             | Lowercase word and move next   |
+| M-u             | Uppercase word and move next   |
+| M-<             | Beginning of buffer            |
+| M->             | End of buffer                  |
+| M-S-%           | Query replace (interactive)    |
+| C-<delete>      | Delete word left               |
 
 *Note for macOS:* Alt+u, Alt+c, and Alt+l are "dead keys" that insert accents (¨, ç, etc.) by default. To use these keybindings, disable the accent menu:
 
@@ -112,8 +120,11 @@ Then restart VS Code.
 | C-c C-p     | Previous heading         |
 | C-c C-f     | Next sibling heading     |
 | C-c C-b     | Previous sibling heading |
+| C-c u       | Go to parent heading     |
 | C-<up>      | Previous source block    |
 | C-<down>    | Next source block        |
+| M-S-,       | Beginning of buffer      |
+| M-S-.       | End of buffer            |
 
 Note: Navigation keybindings (C-c C-n, C-c C-p, C-c C-f, C-c C-b, C-c C-j) work in
 org-mode, markdown, and LaTeX files with consistent behavior.
@@ -130,6 +141,9 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | M-<down>      | Move heading/subtree down      |
 | C-<return>    | Insert new heading             |
 | s-<return>    | (Mac) Insert new heading       |
+| C-c @         | Mark (select) subtree          |
+| C-c C-x t     | Insert inline task             |
+| C-c C-x i     | Add ID to heading              |
 
 * Items
 
@@ -145,6 +159,7 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | Key        | Action                               |
 |------------+--------------------------------------|
 | C-c .      | Insert timestamp                     |
+| C-c ,      | Insert inactive timestamp            |
 | C-c C-r    | Add repeater to timestamp            |
 | S-<up>     | Shift timestamp up                   |
 | S-<down>   | Shift timestamp down                 |
@@ -158,13 +173,18 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | Key               | Action                            |
 |-------------------+-----------------------------------|
 | C-c \vert         | Create table                      |
+| C-c S-\           | Create table (alternative)        |
 | C-c -             | Insert table separator row        |
 | C-c ^             | Sort table by column              |
+| C-c S-6           | Sort table by column (alt)        |
 | C-c C-c           | Recalculate table (on TBLFM line) |
 | C-c *             | Recalculate table (alternative)   |
+| C-c S-8           | Recalculate table (alt)           |
 | C-c C-e t         | Export table                      |
 | M-<return>        | Insert row below                  |
 | M-S-<return>      | Insert row above                  |
+| M-S-<up>          | Insert row above (alt)            |
+| M-S-<down>        | Insert row below (alt)            |
 | M-S-<backspace>   | Delete row                        |
 | M-S-<right>       | Insert column right (in table)    |
 | M-S-<left>        | Delete column (in table)          |
@@ -182,13 +202,21 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 ** Navigation & Manipulation
 
-| Key       | Action                       |
-|-----------+------------------------------|
-| C-<up>    | Previous source block        |
-| C-<down>  | Next source block            |
-| C-c C-b   | Jump to source block         |
-| C-c C-,   | Insert source block below    |
-| C-c -     | Split source block at cursor |
+| Key           | Action                          |
+|---------------+---------------------------------|
+| C-<up>        | Previous source block           |
+| C-<down>      | Next source block               |
+| C-c C-b       | Jump to source block            |
+| C-c C-v g     | Jump to source block (alt)      |
+| C-c C-v n     | Next source block (alt)         |
+| C-c n         | Next source block               |
+| C-c C-,       | Insert source block below       |
+| C-c -         | Split source block at cursor    |
+| Esc a         | Insert block above (in src)     |
+| Esc b         | Insert block below (in src)     |
+| Esc -         | Split block (in src)            |
+| S-<return>    | Execute and move to next block  |
+| M-S-<return>  | Execute and insert new block    |
 
 ** Advanced Babel Operations
 
@@ -273,13 +301,46 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 ** Projectile
 
-| Key     | Action                      |
-|---------+-----------------------------|
-| C-c p p | Switch project              |
-| C-c p f | Find file in project        |
-| C-c p s | Search in project           |
-| C-c p d | Open project root directory |
-| C-c p a | Add project                 |
+| Key       | Action                          |
+|-----------+---------------------------------|
+| C-c p p   | Switch project                  |
+| C-c p f   | Find file in project            |
+| C-c p s   | Search in project               |
+| C-c p d   | Open project root directory     |
+| C-c p a   | Add project                     |
+| C-c p S-f | Find file in all known projects |
+
+** ⚠️ Database and Agenda
+
+| Key     | Action                  |
+|---------+-------------------------|
+| C-c a a | Agenda menu             |
+| C-c a w | Week agenda             |
+| C-c a m | Month agenda            |
+| C-c a t | TODO list               |
+| C-c a d | Deadlines               |
+| C-c d   | Database hydra menu     |
+| C-c d f | Browse indexed files    |
+| C-c d s | Search database         |
+| C-c d h | Search headings         |
+| C-c d t | Show TODOs              |
+| C-c d a | Show agenda             |
+
+** ⚠️ Templates
+
+| Key         | Action                       |
+|-------------+------------------------------|
+| C-c C-t i   | Quick insert template        |
+| C-c C-t n   | New file from template       |
+| C-c C-t l   | List templates               |
+| C-c C-t s   | Create template from selection |
+
+** ⚠️ Spelling
+
+| Key       | Action                    |
+|-----------+---------------------------|
+| C-c ;     | Go to previous spelling error |
+| C-c S-;   | Go to next spelling error |
 
 * Edit Marks (Track Changes)
 
@@ -294,6 +355,24 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c e ] | Next edit mark          |
 | C-c e [ | Previous edit mark      |
 | C-c e s | Show edit marks summary |
+
+* ⚠️ Mark Ring (Emacs-style)
+
+Emacs-style mark and region commands.
+
+| Key             | Action                        |
+|-----------------+-------------------------------|
+| C-<space>       | Set mark at point             |
+| Ctrl+Space      | Set mark at point (alt)       |
+| C-g             | Cancel selection              |
+| C-c <space>     | Push mark to ring             |
+| Ctrl+C Space    | Push mark to ring (alt)       |
+| C-u C-<space>   | Pop mark from local ring      |
+| Ctrl+U Ctrl+Space | Pop from local ring (alt)   |
+| C-x C-<space>   | Pop mark from global ring     |
+| Ctrl+X Ctrl+Space | Pop from global ring (alt)  |
+| C-x C-x         | Exchange point and mark       |
+| C-c m s         | Show mark ring                |
 
 * Speed Commands
 
@@ -313,16 +392,17 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 
 ** Visibility Speed Commands
 
-| Key   | Action                          |
-|-------+---------------------------------|
+| Key   | Action                            |
+|-------+-----------------------------------|
 | <tab> | Toggle fold (same as regular tab) |
-| c     | Cycle global fold               |
-| C     | Show children only              |
-| o     | Overview (collapse all)         |
-| 1     | Show level 1 headings           |
-| 2     | Show level 2 headings           |
-| 3     | Show level 3 headings           |
-| 0     | Show all headings               |
+| c     | Cycle global fold                 |
+| C     | Show children only                |
+| o     | Overview (collapse all)           |
+| 1     | Show level 1 headings             |
+| 2     | Show level 2 headings             |
+| 3     | Show level 3 headings             |
+| 0     | Show all headings                 |
+| N     | Narrow to subtree                 |
 
 ** Structure Editing Speed Commands
 
@@ -337,27 +417,34 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 
 ** "TODO" & Content Speed Commands
 
-| Key | Action              |
-|-----+---------------------|
-| t   | Cycle TODO state    |
-| d   | Insert DEADLINE     |
-| s   | Insert SCHEDULED    |
-| e   | Set effort estimate |
+| Key | Action                 |
+|-----+------------------------|
+| t   | Cycle TODO state       |
+| d   | Insert DEADLINE        |
+| s   | Insert SCHEDULED       |
+| e   | Set effort estimate    |
+| :   | Set tags               |
+| P   | Set property           |
+| I   | Clock in               |
+| O   | Clock out              |
 
 ** Editing Speed Commands
 
-| Key | Action               |
-|-----+----------------------|
-| w   | Kill (cut) subtree   |
-| y   | Yank (paste) subtree |
-| W   | Clone subtree        |
-| a   | Archive subtree      |
+| Key | Action                  |
+|-----+-------------------------|
+| w   | Kill (cut) subtree      |
+| y   | Yank (paste) subtree    |
+| W   | Clone subtree           |
+| a   | Archive subtree         |
+| A   | Toggle archive tag      |
+| $   | Archive to sibling      |
 
 ** Other Speed Commands
 
 | Key | Action                   |
 |-----+--------------------------|
 | ?   | Show speed commands help |
+| /   | Show speed commands help |
 
 ** ✅ BibTeX Speed Commands
 CLOSED: [2026-01-19 Mon 18:18]
@@ -384,12 +471,13 @@ CLOSED: [2026-01-19 Mon 18:18]
 | S   | Sentence case title |
 | c   | Clean/format entry  |
 
-**** ✅ Wrap in Braces (Case Protection)
+**** ✅ Wrap/Strip Braces (Case Protection)
 CLOSED: [2026-01-21 Wed 08:02]
 
-| Key         | Action                                     |
-|-------------+--------------------------------------------|
-| Cmd+Shift+] | Wrap selection or word at cursor in braces |
+| Key         | Action                                      |
+|-------------+---------------------------------------------|
+| C-S-]       | Wrap selection or word at cursor in braces  |
+| C-S-[       | Strip braces from selection or word         |
 
 Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.
 
@@ -417,14 +505,17 @@ CLOSED: [2026-01-19 Mon 18:18]
 *** ✅ Actions
 CLOSED: [2026-01-19 Mon 18:18]
 
-| Key | Action               |
-|-----+----------------------|
-| y   | Copy citation key    |
-| b   | Copy BibTeX entry    |
-| k   | Delete entry         |
-| K   | Generate citation key|
-| U   | Update from web      |
-| ?   | Show help            |
+| Key | Action                    |
+|-----+---------------------------|
+| y   | Copy citation key         |
+| b   | Copy BibTeX entry         |
+| B   | Strip braces from entry   |
+| k   | Delete entry              |
+| K   | Generate citation key     |
+| U   | Update from web           |
+| N   | Open notes for entry      |
+| A   | Toggle journal abbreviation |
+| ?   | Show help                 |
 
 * ✅ Toggle Speed Commands
 CLOSED: [2026-01-19 Mon 18:19]
@@ -531,6 +622,47 @@ CLOSED: [2026-01-19 Mon 18:20]
 | C-c C-k   | Clean auxiliary files       |
 
 See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.
+
+** ⚠️ LaTeX Speed Commands
+
+Speed commands active at the start of =\section=, =\subsection=, or =\begin{}= lines:
+
+*** Section Speed Commands
+
+| Key | Action             |
+|-----+--------------------|
+| n   | Next section       |
+| p   | Previous section   |
+| f   | Forward sibling    |
+| b   | Backward sibling   |
+| u   | Up to parent       |
+| j   | Jump to section    |
+| U   | Move section up    |
+| D   | Move section down  |
+| <   | Promote section    |
+| >   | Demote section     |
+| I   | Insert section     |
+| N   | Narrow to section  |
+| W   | Widen (show all)   |
+| /   | Show help          |
+
+*** Environment Speed Commands
+
+| Key | Action                  |
+|-----+-------------------------|
+| n   | Next environment        |
+| p   | Previous environment    |
+| j   | Jump to environment     |
+| s   | Select environment      |
+| c   | Change environment      |
+| k   | Kill environment        |
+| w   | Wrap in environment     |
+| u   | Unwrap environment      |
+| *   | Toggle starred variant  |
+| l   | Add label               |
+| C   | Add caption             |
+| i   | Environment info        |
+| /   | Show help               |
 
 * ✅ Quick Reference Card
 CLOSED: [2026-01-19 Mon 18:20]

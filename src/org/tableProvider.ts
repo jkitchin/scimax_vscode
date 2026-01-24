@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { escapeHtml } from '../utils/escapeUtils';
 
 // Decoration type for hiding overflow text in truncated columns
 let truncationDecorationType: vscode.TextEditorDecorationType | undefined;
@@ -1567,8 +1568,7 @@ function tableToHTML(rows: string[][]): string {
     const dataRows = rows.filter(r => r.length > 0);
     if (dataRows.length === 0) return '';
 
-    const escapeHtml = (str: string) =>
-        str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // escapeHtml is imported from '../utils/escapeUtils'
 
     let html = '<table>\n';
 

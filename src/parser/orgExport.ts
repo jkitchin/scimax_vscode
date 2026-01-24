@@ -53,6 +53,10 @@ import type {
     TableCellObject,
     AffiliatedKeywords,
 } from './orgElementTypes';
+import { escapeString, escapeHtml as escapeHtmlUtil } from '../utils/escapeUtils';
+
+// Re-export escapeString for backwards compatibility with existing imports
+export { escapeString };
 
 // =============================================================================
 // Export Options
@@ -666,29 +670,7 @@ export function generateSectionNumber(level: number, state: ExportState): string
 // Utility Functions
 // =============================================================================
 
-/**
- * Escape special characters for the target format
- */
-export function escapeString(str: string, format: 'html' | 'latex'): string {
-    if (format === 'html') {
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    } else if (format === 'latex') {
-        // Use a placeholder for backslashes first to avoid double escaping
-        const BACKSLASH_PLACEHOLDER = '\x00BACKSLASH\x00';
-        return str
-            .replace(/\\/g, BACKSLASH_PLACEHOLDER)
-            .replace(/[&%$#_{}]/g, '\\$&')
-            .replace(/\^/g, '\\textasciicircum{}')
-            .replace(/~/g, '\\textasciitilde{}')
-            .replace(new RegExp(BACKSLASH_PLACEHOLDER, 'g'), '\\textbackslash{}');
-    }
-    return str;
-}
+// escapeString is now imported from '../utils/escapeUtils' and re-exported above
 
 /**
  * Convert org-mode timestamp to ISO date string
@@ -859,17 +841,8 @@ export function hasEditmarks(text: string): boolean {
     );
 }
 
-/**
- * Helper to escape HTML special characters
- */
-function escapeHtml(str: string): string {
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
+// Use shared escape utility
+const escapeHtml = escapeHtmlUtil;
 
 /**
  * Escape text that's outside of HTML tags.

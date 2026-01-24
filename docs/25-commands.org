@@ -79,6 +79,15 @@ CLOSED: [2026-01-18 Sun 09:57]
 | [[cmd:scimax.org.renumberList]]       | Renumber Ordered List    | -                  |
 | [[cmd:scimax.org.updateDynamicBlock]] | Update Dynamic Block     | C-c C-x C-u (org)  |
 
+** ⚠️ Lists
+
+Commands for manipulating org-mode and markdown lists.
+
+| Command ID                       | Description            | Default Keybinding |
+|----------------------------------+------------------------+--------------------|
+| [[cmd:scimax.list.cycleIndent]]  | Cycle List Item Indent | -                  |
+| [[cmd:scimax.list.cycleOutdent]] | Cycle List Item Outdent| -                  |
+
 * ✅ TODO and Tasks
 CLOSED: [2026-01-17 Sat 12:24]
 
@@ -273,6 +282,17 @@ CLOSED: [2026-01-17 Sat 12:27]
 |-----------------------------------+---------------------+--------------------|
 | [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |
 
+** ⚠️ Custom Exporters
+
+User-defined export backends using JavaScript/TypeScript. See [[file:10-export.org::*Custom Exporters][Custom Exporters documentation]].
+
+| Command ID                                | Description                          | Default Keybinding |
+|-------------------------------------------+--------------------------------------+--------------------|
+| [[cmd:scimax.export.custom]]              | Export with Custom Exporter          | -                  |
+| [[cmd:scimax.export.createExampleExporter]]| Create Example Exporter Template     | -                  |
+| [[cmd:scimax.export.openExportersFolder]] | Open User Exporters Folder           | -                  |
+| [[cmd:scimax.export.reloadCustomExporters]]| Reload Custom Exporters             | -                  |
+
 * ✅ Links
 CLOSED: [2026-01-17 Sat 12:27]
 
@@ -428,10 +448,11 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.db.rebuild]]     | Rebuild Database      | -                  |
 | [[cmd:scimax.db.backup]]      | Backup Database       | -                  |
 | [[cmd:scimax.db.restore]]     | Restore Database      | -                  |
-| [[cmd:scimax.db.verify]]      | Verify Database       | -                  |
-| [[cmd:scimax.db.cancelSync]]       | Cancel Database Sync       | -                  |
-| [[cmd:scimax.db.cancelEmbeddings]] | Cancel Embedding Generation | -                  |
-| [[cmd:scimax.database.refresh]]    | Refresh Database           | -                  |
+| [[cmd:scimax.db.verify]]           | Verify Database              | -                  |
+| [[cmd:scimax.db.toggleAutoScan]]   | Toggle Auto-Scan on Save     | -                  |
+| [[cmd:scimax.db.cancelSync]]       | Cancel Database Sync         | -                  |
+| [[cmd:scimax.db.cancelEmbeddings]] | Cancel Embedding Generation  | -                  |
+| [[cmd:scimax.database.refresh]]    | Refresh Database             | -                  |
 
 ** ✅ Troubleshooting and Diagnostics
 CLOSED: [2026-01-22 Thu 20:56]
@@ -1081,6 +1102,15 @@ CLOSED: [2026-01-17 Sat 12:50]
 | [[cmd:scimax.insertScreenshot]]                | Insert Screenshot                      | F10 (org/md)       |
 
 *Note:* On macOS, the first time you use =F10= for screenshots, you may need to grant screen recording permission to VS Code in System Settings > Privacy & Security > Screen Recording, then restart VS Code. See [[file:12-image-overlays.org::*Inserting Screenshots][Inserting Screenshots]] for details.
+
+* ⚠️ Spelling
+
+Commands for navigating spelling errors. Requires VS Code spell-checking extension.
+
+| Command ID                        | Description                  | Default Keybinding |
+|-----------------------------------+------------------------------+--------------------|
+| [[cmd:scimax.spelling.nextError]] | Go to Next Spelling Error    | -                  |
+| [[cmd:scimax.spelling.previousError]]| Go to Previous Spelling Error | -                  |
 
 * ✅ Jupyter
 CLOSED: [2026-01-17 Sat 12:50]

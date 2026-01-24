@@ -7,6 +7,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { loadIgnorePatterns, shouldIgnore, shouldIgnoreAbsolute } from './ignorePatterns';
 
+// Use fs.promises for async operations
+const fsp = fs.promises;
+
 /**
  * Options for file walking
  */
@@ -97,7 +100,7 @@ export async function walkDirectory(
         }
 
         try {
-            const entries = fs.readdirSync(dir, { withFileTypes: true });
+            const entries = await fsp.readdir(dir, { withFileTypes: true });
 
             for (const entry of entries) {
                 // Check cancellation again
@@ -182,7 +185,9 @@ export async function walkDirectories(
             break;
         }
 
-        if (!fs.existsSync(dir)) {
+        try {
+            await fsp.access(dir);
+        } catch {
             continue;
         }
 
@@ -232,8 +237,33 @@ export async function findOrgFiles(
 }
 
 /**
- * Check if a directory appears to be a project root
+ * Check if a directory appears to be a project root (async version)
  * (has .git, .projectile, package.json, etc.)
+ */
+export async function isProjectRootAsync(dirPath: string): Promise<{ isProject: boolean; type: 'git' | 'projectile' | 'npm' | 'unknown' }> {
+    try {
+        const entries = await fsp.readdir(dirPath);
+
+        if (entries.includes('.git')) {
+            return { isProject: true, type: 'git' };
+        }
+        if (entries.includes('.projectile')) {
+            return { isProject: true, type: 'projectile' };
+        }
+        if (entries.includes('package.json')) {
+            return { isProject: true, type: 'npm' };
+        }
+
+        return { isProject: false, type: 'unknown' };
+    } catch {
+        return { isProject: false, type: 'unknown' };
+    }
+}
+
+/**
+ * Check if a directory appears to be a project root (sync version - avoid in async contexts)
+ * (has .git, .projectile, package.json, etc.)
+ * @deprecated Use isProjectRootAsync in async contexts
  */
 export function isProjectRoot(dirPath: string): { isProject: boolean; type: 'git' | 'projectile' | 'npm' | 'unknown' } {
     try {
@@ -274,7 +304,7 @@ export async function scanForProjects(
         if (depth > maxDepth || scannedDirs.has(dir)) return;
         scannedDirs.add(dir);
 
-        const { isProject, type } = isProjectRoot(dir);
+        const { isProject, type } = await isProjectRootAsync(dir);
         if (isProject && type !== 'unknown') {
             projects.push({ path: dir, type });
             // Don't recurse into projects
@@ -282,7 +312,7 @@ export async function scanForProjects(
         }
 
         try {
-            const entries = fs.readdirSync(dir, { withFileTypes: true });
+            const entries = await fsp.readdir(dir, { withFileTypes: true });
 
             for (const entry of entries) {
                 if (cancellationToken?.cancelled) return;
