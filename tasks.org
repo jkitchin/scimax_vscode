@@ -1,7 +1,17 @@
 #+TITLE: Scimax Tasks
 #+AUTHOR: John Kitchin
 
-* TODO test exports
+* TODO equations in Word don't work 
+
+may require making images
+
+* TODO statistics cookies doen't get removed with p:nil option
+
+
+
+
+* DONE test exports
+CLOSED: [2026-01-24 Sat 04:15]
 ** DONE do we need to save the file before exporting?
 CLOSED: [2026-01-15 Thu 20:34]
 
@@ -14,7 +24,8 @@ right now it exports, but citations are not working.
 CLOSED: [2026-01-16 Fri 14:19]
 ** DONE latex sync does not work
 CLOSED: [2026-01-16 Fri 14:11]ho
-** TODO html 
+** DONE html 
+CLOSED: [2026-01-24 Sat 04:15]
 
 We don't have good citation support in html yet.
 

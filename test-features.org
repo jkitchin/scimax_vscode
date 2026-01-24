@@ -1,7 +1,7 @@
 #+TITLE: Scimax VS Code Feature Test
 #+AUTHOR: John Kitchin
 #+DATE: <2026-01-11 Sat>
-#+OPTIONS: toc:2 num:t
+#+OPTIONS: toc:2 num:t tags:nil pri:nil todo:nil p:nil
 
 * Introduction
 This file tests various org-mode features in the Scimax VS Code extension.
@@ -21,7 +21,7 @@ You can also combine them: */bold italic/*, _/underline italic/_.
 :CATEGORY: testing
 :END:
 
-** TODO High priority task [#A]
+** TODO [#A] High priority task 
 DEADLINE: <2026-01-16 Fri>
 :LOGBOOK:
 - State "TODO"       from ""           [2026-01-11 Sat 10:00]
@@ -29,16 +29,15 @@ DEADLINE: <2026-01-16 Fri>
 
 This is an important task that needs to be done soon.
 
-** DONE Completed task [#B]
-
-CLOSED: [2026-01-10 Fri 15:30]
+** DONE [#C] Completed task 
+CLOSED: [2026-01-24 Sat 03:28]
 :PROPERTIES:
 :EFFORT: 2h
 :END:
 
 This task has been completed.
 
-** TODO Recurring task [#C]
+** TODO [#B] Recurring task 
 SCHEDULED: <2026-01-12 Sun +1w>
 
 This task repeats every week.
@@ -223,7 +222,12 @@ The notes drawer contains additional information.
 
 Inline math: $E = mc^2$ and \(F = ma\).
 
-Display math:
+Display notation:lo
+
+\[a^2 + b^2 = c^2\]
+
+Latex environment:
+
 \begin{equation}
 \label{eq:schrodinger}
 i\hbar\frac{\partial}{\partial t}\Psi = \hat{H}\Psi
@@ -274,6 +278,8 @@ This text is centered.
 This comment won't appear in exported documents.
 TODO: Remember to update this section.
 #+END_COMMENT
+
+*** COMMENT This should also not appear
 
 * Cross-References :refs:
 
