@@ -1386,7 +1386,6 @@ if plt.get_fignums():
  * Supports both org-mode and markdown fenced code blocks
  */
 async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
-    console.log(`[executeSourceBlockAtCursor] Called, lineNumber=${lineNumber}`);
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showWarningMessage('No active editor');

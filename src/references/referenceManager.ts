@@ -567,19 +567,13 @@ export class ReferenceManager {
             }
         }
 
-        console.log('Target bib file:', bibPath, '- reason:', sourceReason);
-        console.log('Open documents:', vscode.workspace.textDocuments.map(d => `${d.languageId}: ${d.uri.fsPath}`));
-
         // Append to file
         const bibtex = entryToBibTeX(entry);
-
-        console.log('Adding BibTeX entry to:', bibPath);
 
         // Check if the file is open in an editor - if so, use workspace edit for immediate update
         const openDoc = vscode.workspace.textDocuments.find(
             doc => doc.uri.fsPath === bibPath
         );
-        console.log('File is open in editor:', !!openDoc);
 
         if (openDoc) {
             // File is open - use workspace edit to update the editor directly

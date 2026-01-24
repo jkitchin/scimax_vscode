@@ -467,6 +467,4 @@ export function registerJumpCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.jump.copyLine', jumpCopyLine),
         vscode.commands.registerCommand('scimax.jump.killLine', jumpKillLine)
     );
-
-    console.log('Scimax: Jump commands registered');
 }

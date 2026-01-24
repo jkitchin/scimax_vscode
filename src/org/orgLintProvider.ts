@@ -147,6 +147,4 @@ export function registerOrgLintCommands(
             }
         })
     );
-
-    console.log('Scimax: Org-lint commands registered');
 }

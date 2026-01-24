@@ -564,11 +564,9 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.gotoHeading', async (args: { file: string; heading: string }) => {
             const { file, heading } = args;
-            console.log('[scimax] gotoHeading command called:', { file, heading });
 
             try {
                 const isNewlyOpened = !isFileAlreadyOpen(file);
-                console.log('[scimax] isNewlyOpened:', isNewlyOpened);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 
@@ -946,7 +944,6 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.openFile', async (args: { file: string }) => {
             const { file } = args;
-            console.log('[scimax] openFile command called for:', file);
 
             try {
                 const uri = vscode.Uri.file(file);
@@ -971,17 +968,13 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 // Text files - open in editor with unfolding
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
-                console.log('[scimax] File opened, waiting for fold state...');
 
                 // Wait for VS Code to restore fold state
                 await new Promise(resolve => setTimeout(resolve, 300));
-                console.log('[scimax] Unfolding all...');
 
                 // Unfold all to ensure content is visible
                 await vscode.commands.executeCommand('editor.unfoldAll');
-                console.log('[scimax] Unfold complete');
             } catch (error) {
-                console.error('[scimax] openFile error:', error);
                 vscode.window.showErrorMessage(`Failed to open file: ${file}`);
             }
         })

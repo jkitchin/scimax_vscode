@@ -380,6 +380,4 @@ export function registerFuzzySearchCommands(context: vscode.ExtensionContext): v
         vscode.commands.registerCommand('scimax.fuzzySearchOpenFiles', fuzzySearchOpenFiles),
         vscode.commands.registerCommand('scimax.fuzzySearchOutline', fuzzySearchOutline)
     );
-
-    console.log('Scimax: Fuzzy search commands registered');
 }

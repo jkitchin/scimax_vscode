@@ -180,7 +180,6 @@ export class JournalAbbreviationService {
             await this.loadCsvFile(userPath, 'custom');
         }
 
-        console.log(`Journal abbreviations loaded: ${this.fullToAbbrev.size} entries`);
         this._onDidUpdate.fire();
     }
 

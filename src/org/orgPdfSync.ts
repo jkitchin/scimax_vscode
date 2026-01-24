@@ -210,18 +210,14 @@ export async function orgForwardSync(
 ): Promise<{ page: number; x: number; y: number; width: number; height: number } | null> {
     const data = syncDataMap.get(orgPath);
     if (!data) {
-        console.log('orgForwardSync: No sync data for', orgPath);
         return null;
     }
 
     // Map org line to tex line
     const texLine = orgLineToTexLine(orgPath, orgLine);
     if (!texLine) {
-        console.log('orgForwardSync: Could not map org line', orgLine, 'to tex line');
         return null;
     }
-
-    console.log(`orgForwardSync: org line ${orgLine} → tex line ${texLine}`);
 
     // Run SyncTeX forward
     const result = await runSyncTeXForward(data.texPath, texLine, orgColumn, data.pdfPath);
@@ -239,27 +235,21 @@ export async function orgInverseSync(
 ): Promise<{ line: number; column: number } | null> {
     const data = syncDataMap.get(orgPath);
     if (!data) {
-        console.log('orgInverseSync: No sync data for', orgPath);
         return null;
     }
 
     // Run SyncTeX inverse
     const result = await runSyncTeXInverse(data.pdfPath, page, x, y);
     if (!result) {
-        console.log('orgInverseSync: SyncTeX returned no result');
         return null;
     }
-
-    console.log(`orgInverseSync: tex line ${result.line} from SyncTeX`);
 
     // Map tex line to org line
     const orgLine = texLineToOrgLine(orgPath, result.line);
     if (!orgLine) {
-        console.log('orgInverseSync: Could not map tex line', result.line, 'to org line');
         return { line: result.line, column: result.column };
     }
 
-    console.log(`orgInverseSync: tex line ${result.line} → org line ${orgLine}`);
     return { line: orgLine, column: result.column };
 }
 

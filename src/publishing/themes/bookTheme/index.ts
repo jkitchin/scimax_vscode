@@ -138,6 +138,5 @@ function getEmbeddedCss(): string {
  */
 function getEmbeddedJs(): string {
     return `/* Book Theme JS - see assets/book-theme.js for full version */
-console.log('Book theme loaded');
 `;
 }

@@ -674,6 +674,4 @@ export function registerEditmarkCommands(context: vscode.ExtensionContext): void
     if (editor) {
         updateDecorations(editor);
     }
-
-    console.log('Scimax: Editmark commands registered');
 }

@@ -199,7 +199,6 @@ export function registerReferenceCommands(
                 if (langId === 'bibtex') {
                     // If in a bib file, use that
                     targetBibFile = docPath;
-                    console.log('Target: active bibtex file');
                 } else if (langId === 'org' || langId === 'latex' || langId === 'markdown') {
                     // Look for bibliography reference in the document
                     const text = activeEditor.document.getText();
@@ -223,7 +222,6 @@ export function registerReferenceCommands(
                         }
                         if (require('fs').existsSync(bibRef)) {
                             targetBibFile = bibRef;
-                            console.log('Target: bibliography from document:', bibRef);
                         }
                     }
                 }
@@ -235,7 +233,6 @@ export function registerReferenceCommands(
                 if (config.bibliographyFiles.length > 0) {
                     const homeDir = process.env.HOME || process.env.USERPROFILE || '';
                     targetBibFile = config.bibliographyFiles[0].replace(/^~/, homeDir);
-                    console.log('Target: configured bibliography:', targetBibFile);
                 }
             }
 
@@ -246,11 +243,8 @@ export function registerReferenceCommands(
                 );
                 if (openBib) {
                     targetBibFile = openBib.uri.fsPath;
-                    console.log('Target: open bibtex document:', targetBibFile);
                 }
             }
-
-            console.log('Final target bib file:', targetBibFile);
 
             // Helper to extract DOI from various formats
             const extractDoi = (text: string): string | null => {

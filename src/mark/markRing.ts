@@ -583,6 +583,4 @@ export function registerMarkCommands(context: vscode.ExtensionContext): void {
             }
         }
     });
-
-    console.log('Scimax: Mark ring commands registered');
 }
