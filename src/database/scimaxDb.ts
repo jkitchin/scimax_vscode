@@ -1243,7 +1243,6 @@ export class ScimaxDb {
 
         this.isProcessingEmbeddings = true;
         this.embeddingCancelled = false;  // Reset cancellation flag
-        const total = this.embeddingQueue.length;
         let processed = 0;
 
         // Create status bar item with click-to-cancel
@@ -1251,7 +1250,8 @@ export class ScimaxDb {
             vscode.StatusBarAlignment.Right,
             -10  // Lower priority than stale check
         );
-        this.embeddingStatusBar.text = `$(sparkle) Embeddings: 0/${total}`;
+        const remaining = this.embeddingQueue.length;
+        this.embeddingStatusBar.text = `$(sparkle) Embeddings: ${remaining} remaining`;
         this.embeddingStatusBar.tooltip = 'Scimax: Generating embeddings for semantic search (click to cancel)';
         this.embeddingStatusBar.command = 'scimax.db.cancelEmbeddings';
         this.embeddingStatusBar.show();
@@ -1280,13 +1280,11 @@ export class ScimaxDb {
                     // Create new chunks with embeddings
                     await this.createChunks(fileRecord.id, filePath, content);
 
-                    // Update status
+                    // Update status - show remaining count (more accurate when files are added during processing)
                     if (this.embeddingStatusBar) {
                         const remaining = this.embeddingQueue.length;
-                        this.embeddingStatusBar.text = `$(sparkle) Embeddings: ${processed}/${total}`;
-                        if (remaining > 0) {
-                            this.embeddingStatusBar.tooltip = `Scimax: ${remaining} files remaining`;
-                        }
+                        this.embeddingStatusBar.text = `$(sparkle) Embeddings: ${remaining} remaining`;
+                        this.embeddingStatusBar.tooltip = `Scimax: ${processed} files processed (click to cancel)`;
                     }
 
                 } catch (error) {
