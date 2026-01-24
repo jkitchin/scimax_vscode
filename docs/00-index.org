@@ -380,6 +380,7 @@ Quick reference to find specific features across documentation.
 | Citations             | [[file:19-references.org][References]]                       | [[file:05-links.org][Links]], [[file:10-export.org][Export]], [[file:28-non-standard-features.org][Non-Standard Features]] |
 | CSL citation styles   | [[file:10-export.org][Export]]                               | [[file:19-references.org][References]] - APA, MLA, Chicago, Harvard, IEEE, Vancouver                           |
 | Code blocks           | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:08-supported-languages.org][Supported Languages]], [[file:04-tables.org][Tables]]                                   |
+| Custom exporters      | [[file:10-export.org][Export]]                               | [[file:25-commands.org][Commands]] - User-defined JS/TS export backends                                       |
 | Command markup        | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:24-keybindings.org][Keybindings]], [[file:10-export.org][Export]]                                                   |
 | Configuration         | [[file:26-configuration.org][Configuration]]                 | Feature-specific docs                                                                                                      |
 | Deadlines             | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
@@ -413,6 +414,7 @@ Quick reference to find specific features across documentation.
 | Lists (ordered)       | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Lists (unordered)     | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:02-document-structure.org][Document Structure]]                                                                     |
 | Markdown support      | [[file:30-markdown-compatibility.org][Markdown Compatibility]] | [[file:02-document-structure.org][Document Structure]], [[file:23-speed-commands.org][Speed Commands]], [[file:07-source-blocks.org][Source Blocks]] |
+| Mark ring             | [[file:24-keybindings.org][Keybindings]]                     | Emacs-style mark and region commands                                                                                       |
 | Markup (text)         | [[file:01.5-basic-syntax.org][Basic Syntax]]                 | [[file:10-export.org][Export]], bold, italic, underline, code                                            |
 | Math preview          | [[file:11-latex-preview.org][LaTeX Preview]]                 | [[file:10-export.org][Export]]                                                                                             |
 | Non-standard features | [[file:28-non-standard-features.org][Non-Standard Features]] | [[file:19-references.org][References]], [[file:10-export.org][Export]]                                                     |
@@ -428,6 +430,7 @@ Quick reference to find specific features across documentation.
 | Scheduling            | [[file:06-timestamps.org][Timestamps]]                       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
 | Semantic search       | [[file:18-database-search.org][Database and Search]]         | [[file:26-configuration.org][Configuration]]                                                                               |
 | Session execution     | [[file:07-source-blocks.org][Source Code Blocks]]            | [[file:09-jupyter.org][Jupyter Integration]]                                                                               |
+| Spelling navigation   | [[file:24-keybindings.org][Keybindings]]                     | [[file:25-commands.org][Commands]] - Navigate between spelling errors                                                     |
 | Speed commands        | [[file:23-speed-commands.org][Speed Commands]]               | [[file:24-keybindings.org][Keybindings]], [[file:21-navigation.org][Navigation]]                                           |
 | Tables                | [[file:04-tables.org][Tables]]                               | [[file:10-export.org][Export]]                                                                                             |
 | Tags                  | [[file:02-document-structure.org][Document Structure]]       | [[file:13-agenda.org][Agenda]], [[file:03-todo-items.org][TODO Items]]                                                     |
