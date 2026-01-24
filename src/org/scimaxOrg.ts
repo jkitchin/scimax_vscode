@@ -2314,12 +2314,9 @@ export async function toggleCheckbox(): Promise<void> {
     const line = document.lineAt(position.line);
     const lineText = line.text;
 
-    console.log(`[toggleCheckbox] Called at line ${position.line}: "${lineText.substring(0, 50)}..."`);
-
     // Match checkbox: - [ ], - [X], - [-]
     const checkboxMatch = lineText.match(/^(\s*[-+*]|\s*\d+[.)])\s+\[([ Xx-])\]\s+(.*)$/);
     if (!checkboxMatch) {
-        console.log(`[toggleCheckbox] Not a checkbox, showing message`);
         vscode.window.showInformationMessage('Not on a checkbox');
         return;
     }
@@ -3591,47 +3588,73 @@ function isOnHeading(document: vscode.TextDocument, position: vscode.Position): 
 }
 
 /**
+ * Update heading-related contexts for the given editor
+ */
+function updateHeadingContexts(editor: vscode.TextEditor | undefined): void {
+    if (!editor) {
+        vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
+        return;
+    }
+
+    const document = editor.document;
+
+    // Only check for supported file types
+    if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
+        vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
+        vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
+        return;
+    }
+
+    const position = editor.selection.active;
+    const line = document.lineAt(position.line).text;
+
+    const onHeading = isOnHeading(document, position);
+    vscode.commands.executeCommand('setContext', 'scimax.onHeading', onHeading);
+
+    // Check if on results line (#+RESULTS: or :RESULTS: drawer)
+    const onResults = /^\s*#\+RESULTS(\[.*\])?:/i.test(line) || /^\s*:RESULTS:\s*$/i.test(line);
+    vscode.commands.executeCommand('setContext', 'scimax.onResults', onResults);
+
+    // Check if on drawer line (:NAME: but not :END:)
+    const onDrawer = /^\s*:([A-Za-z][A-Za-z0-9_-]*):\s*$/.test(line) && !/^\s*:END:\s*$/i.test(line);
+    vscode.commands.executeCommand('setContext', 'scimax.onDrawer', onDrawer);
+
+    // Check if on heading with statistics cookie [n/m] or [n%]
+    const onStatisticsCookie = /^(\*+)\s+/.test(line) && /\[(\d+)\/(\d+)\]|\[(\d+)%\]/.test(line);
+    vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', onStatisticsCookie);
+
+    // Check if on LaTeX \begin{...} line
+    const onLatexBegin = document.languageId === 'latex' && /^\s*\\begin\{/.test(line);
+    vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', onLatexBegin);
+}
+
+/**
  * Setup heading context tracking for Tab folding
  */
 export function setupHeadingContext(context: vscode.ExtensionContext): void {
+    // Update contexts on selection change
     context.subscriptions.push(
         vscode.window.onDidChangeTextEditorSelection(e => {
-            const editor = e.textEditor;
-            const document = editor.document;
-
-            // Only check for supported file types
-            if (!['org', 'markdown', 'latex'].includes(document.languageId)) {
-                vscode.commands.executeCommand('setContext', 'scimax.onHeading', false);
-                vscode.commands.executeCommand('setContext', 'scimax.onResults', false);
-                vscode.commands.executeCommand('setContext', 'scimax.onDrawer', false);
-                vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', false);
-                vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', false);
-                return;
-            }
-
-            const position = editor.selection.active;
-            const line = document.lineAt(position.line).text;
-
-            const onHeading = isOnHeading(document, position);
-            vscode.commands.executeCommand('setContext', 'scimax.onHeading', onHeading);
-
-            // Check if on results line (#+RESULTS: or :RESULTS: drawer)
-            const onResults = /^\s*#\+RESULTS(\[.*\])?:/i.test(line) || /^\s*:RESULTS:\s*$/i.test(line);
-            vscode.commands.executeCommand('setContext', 'scimax.onResults', onResults);
-
-            // Check if on drawer line (:NAME: but not :END:)
-            const onDrawer = /^\s*:([A-Za-z][A-Za-z0-9_-]*):\s*$/.test(line) && !/^\s*:END:\s*$/i.test(line);
-            vscode.commands.executeCommand('setContext', 'scimax.onDrawer', onDrawer);
-
-            // Check if on heading with statistics cookie [n/m] or [n%]
-            const onStatisticsCookie = /^(\*+)\s+/.test(line) && /\[(\d+)\/(\d+)\]|\[(\d+)%\]/.test(line);
-            vscode.commands.executeCommand('setContext', 'scimax.onStatisticsCookie', onStatisticsCookie);
-
-            // Check if on LaTeX \begin{...} line
-            const onLatexBegin = document.languageId === 'latex' && /^\s*\\begin\{/.test(line);
-            vscode.commands.executeCommand('setContext', 'scimax.onLatexBegin', onLatexBegin);
+            updateHeadingContexts(e.textEditor);
         })
     );
+
+    // Update contexts when switching editors
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            updateHeadingContexts(editor);
+        })
+    );
+
+    // Initialize contexts for the current editor
+    updateHeadingContexts(vscode.window.activeTextEditor);
 }
 
 // =============================================================================
