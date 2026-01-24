@@ -7,6 +7,18 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 
+// Mock vscode module before importing customExporter (which imports pathResolver)
+vi.mock('vscode', () => ({
+    workspace: {
+        getConfiguration: vi.fn(() => ({
+            get: vi.fn((key: string) => {
+                if (key === 'directory') return '';
+                return undefined;
+            })
+        }))
+    }
+}));
+
 // Import the module under test
 import {
     compileTemplate,
