@@ -58,6 +58,29 @@ node_modules/**
 # date-fns: include all (selective inclusion is too fragile)
 !node_modules/date-fns/**
 !node_modules/minimatch/**
+# docx for Word export
+!node_modules/docx/**
+!node_modules/jszip/**
+!node_modules/nanoid/**
+!node_modules/xml/**
+!node_modules/xml-js/**
+!node_modules/hash.js/**
+!node_modules/lie/**
+!node_modules/pako/**
+!node_modules/readable-stream/**
+!node_modules/setimmediate/**
+!node_modules/inherits/**
+!node_modules/string_decoder/**
+!node_modules/util-deprecate/**
+!node_modules/safe-buffer/**
+!node_modules/core-util-is/**
+!node_modules/isarray/**
+!node_modules/process-nextick-args/**
+!node_modules/sax/**
+# shiki for syntax highlighting
+!node_modules/shiki/**
+!node_modules/@shikijs/**
+!node_modules/@types/hast/**
 !node_modules/brace-expansion/**
 !node_modules/balanced-match/**
 !node_modules/uuid/**

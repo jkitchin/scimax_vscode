@@ -29,6 +29,7 @@ export interface Migration {
  * Migration versions:
  * - v1: Initial schema (files, headings, source_blocks, links, hashtags, chunks, fts_content)
  * - v2: Add projects table and project_id foreign key
+ * - v3: Add db_metadata table for storing configuration like embedding dimensions
  */
 export const migrations: Migration[] = [
     {
@@ -144,6 +145,18 @@ export const migrations: Migration[] = [
             // Indexes for projects
             `CREATE INDEX IF NOT EXISTS idx_projects_path ON projects(path)`,
             `CREATE INDEX IF NOT EXISTS idx_files_project ON files(project_id)`
+        ]
+    },
+    {
+        version: 3,
+        description: 'Add db_metadata table for storing configuration like embedding dimensions',
+        up: [
+            // Metadata table for key-value storage of database configuration
+            `CREATE TABLE IF NOT EXISTS db_metadata (
+                key TEXT PRIMARY KEY NOT NULL,
+                value TEXT NOT NULL,
+                updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now') * 1000)
+            )`
         ]
     }
 ];

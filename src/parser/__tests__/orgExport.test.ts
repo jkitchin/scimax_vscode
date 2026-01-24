@@ -605,6 +605,40 @@ describe('HTML Export', () => {
         });
     });
 
+    describe('LaTeX Environment Export', () => {
+        it('exports latex-environment without wrapping in display math delimiters', () => {
+            // Regression test: latex-environment should NOT be wrapped in \[...\]
+            // because the environment already defines its own display mode
+            const doc = parseOrg(`Display math:
+\\begin{equation}
+\\label{eq:test}
+x = y
+\\end{equation}
+`);
+            const result = exportToHtml(doc, { bodyOnly: true });
+
+            // Should contain the equation environment directly
+            expect(result).toContain('\\begin{equation}');
+            expect(result).toContain('\\end{equation}');
+            // Should NOT wrap in \[...\] - that would create invalid nested display math
+            expect(result).not.toContain('\\[\n\\begin{equation}');
+            expect(result).not.toContain('\\end{equation}\n\\]');
+        });
+
+        it('exports align environment correctly', () => {
+            const doc = parseOrg(`\\begin{align}
+x &= y \\\\
+a &= b
+\\end{align}
+`);
+            const result = exportToHtml(doc, { bodyOnly: true });
+
+            expect(result).toContain('\\begin{align}');
+            expect(result).toContain('\\end{align}');
+            expect(result).not.toContain('\\[');
+        });
+    });
+
     describe('Citation Export', () => {
         // Sample BibTeX entries for testing
         const sampleBibEntries: BibEntry[] = [
