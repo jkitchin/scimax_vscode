@@ -393,15 +393,16 @@ CLOSED: [2026-01-24 Sat 17:48]
 | ;U   | HH:MM (no seconds) | 2:30    |
 | ;t   | Decimal hours      | 2.50    |
 
-*** ⚠️ Duration Calculation Example
+*** ✅ Duration Calculation Example
+CLOSED: [2026-01-24 Sat 17:55]
 
 | Task    | Start | End   | Duration |
 |---------+-------+-------+----------|
-| Coding  | 9:00  | 12:30 | 12:30    |
-| Meeting | 13:00 | 14:15 | 14:15    |
-| Review  | 14:30 | 16:00 | 16:00    |
+| Coding  | 9:00  | 12:30 | 3:30     |
+| Meeting | 13:00 | 14:15 | 1:15     |
+| Review  | 14:30 | 16:00 | 1:30     |
 |---------+-------+-------+----------|
-| Total   |       |       | 0:00     |
+| Total   |       |       | 42:45    |
 #+TBLFM: $4=$3-$2;U::@>$4=vsum(@2$4..@-1$4);U
 
 Duration values are automatically parsed when the =T=, =U=, or =t= flag is
