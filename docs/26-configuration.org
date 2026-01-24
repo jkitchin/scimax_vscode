@@ -444,9 +444,11 @@ Configure logging and diagnostics.
 
 ** Settings Overview
 
-| Setting         | Type   | Default | Description                    |
-|-----------------+--------+---------+--------------------------------|
-| scimax.logLevel | string | "info"  | Log level for Scimax output    |
+| Setting              | Type   | Default | Description                          |
+|----------------------+--------+---------+--------------------------------------|
+| scimax.logLevel      | string | "info"  | Log level for Scimax output          |
+| scimax.logMaxSizeKB  | number | 1024    | Max log file size before rotation    |
+| scimax.logBackupCount| number | 3       | Number of backup log files to keep   |
 
 ** Detailed Configuration
 
@@ -466,10 +468,30 @@ Configure logging and diagnostics.
 
 Note: Errors are always logged to the error log regardless of this setting, and a status bar indicator appears when errors occur.
 
+*** scimax.logMaxSizeKB
+
+- *Type*: number
+- *Default*: =1024= (1MB)
+- *Min/Max*: 100 - 10240
+- *Description*: Maximum size of each log file in KB before rotation. Logs are written to the extension's storage directory.
+
+*** scimax.logBackupCount
+
+- *Type*: number
+- *Default*: =3=
+- *Min/Max*: 1 - 10
+- *Description*: Number of rotated log backup files to keep (=scimax.log.1=, =scimax.log.2=, etc.). Oldest backup is deleted when limit is reached.
+
+*** Opening Log Files
+
+Use the command =Scimax: Open Log File Directory= to open the directory containing log files for debugging.
+
 *Example*:
 #+begin_src json
 {
-  "scimax.logLevel": "debug"
+  "scimax.logLevel": "debug",
+  "scimax.logMaxSizeKB": 2048,
+  "scimax.logBackupCount": 5
 }
 #+end_src
 

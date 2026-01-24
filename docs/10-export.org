@@ -463,19 +463,23 @@ The following ox-ipynb keywords are supported:
 
 ** ⚠️ DOCX Export
 
-DOCX export generates Microsoft Word (.docx) documents with full formatting support, syntax-highlighted code blocks, embedded images, and bibliography generation.
+DOCX export generates Microsoft Word (.docx) documents using [[https://pandoc.org/][Pandoc]] for high-quality conversion with proper equation rendering and bibliography support.
+
+*** Requirements
+
+*Pandoc must be installed* for DOCX export. Install from https://pandoc.org/installing.html
 
 *** Features
 
-- Native Word document format (no external tools required)
-- Syntax highlighting for code blocks using Shiki
+- High-quality conversion via Pandoc
+- *LaTeX equations* render as native Word equations
+- *Bibliography support* via pandoc-citeproc
+- Full export options support (=p:nil=, =todo:nil=, =tags:nil=, etc.)
+- Citation formats: org-ref (=cite:key=) and org-cite (=[cite:@key]=)
 - Embedded images from file links
-- Built-in Word styles for consistent formatting
-- Citation and bibliography support
-- Tables with header row styling
+- Tables with proper formatting
 - Nested lists (ordered, unordered, description)
-- Special blocks (quote, verse, note, warning, tip)
-- Footnotes using Word's native footnote system
+- Special blocks (quote, example, verse)
 
 *** Basic Usage
 
@@ -486,9 +490,9 @@ Export the current org file to Word:
 | C-c C-e d d  | =scimax.org.exportDocx=     | Export to .docx file          |
 | C-c C-e d o  | =scimax.org.exportDocxOpen= | Export and open in Word       |
 
-*** Code Syntax Highlighting
+*** Code Blocks
 
-Source blocks are exported with syntax highlighting using the Shiki library:
+Source blocks are exported as formatted code:
 
 #+BEGIN_SRC org
 ,#+BEGIN_SRC python
@@ -499,9 +503,7 @@ def fibonacci(n):
 ,#+END_SRC
 #+END_SRC
 
-The code block appears in Word with proper colors matching popular editor themes (github-light by default).
-
-*Supported languages include:* Python, JavaScript, TypeScript, Java, C, C++, Rust, Go, Ruby, Shell, SQL, R, Julia, and many more.
+Code blocks appear in Word with monospace formatting. Pandoc handles the conversion.
 
 *** Images
 
@@ -535,18 +537,25 @@ Org tables are converted to Word tables with:
 
 *** Citations and Bibliography
 
-DOCX export integrates with the citation processor for full bibliography support:
+DOCX export uses Pandoc's citeproc for full bibliography support. Both org-ref and org-cite citation formats are supported:
 
 #+BEGIN_SRC org
-#+BIBLIOGRAPHY: references.bib
-#+CSL_STYLE: apa
+* My Document
 
 Recent work cite:smith2023 demonstrates...
 
 According to citet:jones2024, the approach...
+
+You can also use org-cite: [cite:@smith2023] or [cite/t:@jones2024].
+
+* References
+
+bibliography:~/references.bib
 #+END_SRC
 
-The bibliography section is automatically generated at the end of the document.
+The =bibliography:= line specifies your BibTeX file. Citations are automatically resolved and a formatted bibliography is generated at the end of the document.
+
+*Note:* Add a =* References= heading where you want the bibliography to appear.
 
 *** Word Styles
 
@@ -577,11 +586,25 @@ Critical warning with distinct visual treatment.
 ,#+END_warning
 #+END_SRC
 
+*** LaTeX Equations
+
+LaTeX equations are converted to native Word equation format:
+
+#+BEGIN_SRC org
+Inline math: $E = mc^2$
+
+Display math:
+\begin{equation}
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\end{equation}
+#+END_SRC
+
+Both inline (=$...$=) and display (=\begin{equation}...=) formats are supported.
+
 *** Limitations
 
-- Table of contents requires manual update in Word (Insert → Update Field)
+- Table of contents may require manual update in Word (Insert → Update Field)
 - Complex nested tables may need adjustment
-- Some advanced LaTeX math may not render (use simple equations)
 - Internal links work within the document but external file links are text-only
 
 ** ⚠️ Clipboard Export (ox-clip)
@@ -1344,9 +1367,10 @@ The `#+OPTIONS' keyword controls various export behaviors:
 | =<=, =timestamp= | =t=, =nil=       | =t=     | Include timestamps                       |
 | =creator=    | =t=, =nil=          | =nil=   | Include creator string in postamble      |
 | =f=          | =t=, =nil=          | =t=     | Include footnotes                        |
-| =p=          | =t=, =nil=          | =nil=   | Include planning info (SCHEDULED, etc.)  |
+| =p=          | =t=, =nil=          | =nil=   | Include statistics cookies ([1/3], [50%])|
 | =c=          | =t=, =nil=          | =nil=   | Include CLOCK entries                    |
 | =d=          | =t=, =nil=, =(list)= | =nil=  | Include drawers (or specific drawers)    |
+| =prop=       | =t=, =nil=          | =t=     | Include PROPERTIES drawers               |
 | =\vert{}=    | =t=, =nil=          | =t=     | Include tables                           |
 | =^=          | =t=, =nil=, ={}=    | =t=     | Sub/superscripts (={}= requires braces)  |
 | =:=          | =t=, =nil=          | =t=     | Include fixed-width sections             |
