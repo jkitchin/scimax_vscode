@@ -10,7 +10,7 @@ import * as os from 'os';
 import * as crypto from 'crypto';
 
 import type { OrgDocumentNode } from './orgElementTypes';
-import { parseOptionsKeyword, ExportOptions, DEFAULT_EXPORT_OPTIONS } from './orgExport';
+import { parseOptionsKeyword, ExportOptions, DEFAULT_EXPORT_OPTIONS, expandMacro, BUILTIN_MACROS } from './orgExport';
 
 // =============================================================================
 // Pandoc Availability Check
@@ -341,6 +341,7 @@ function convertOrgRefToOrgCite(content: string): string {
  */
 export class DocxExportBackend {
     public readonly name = 'docx';
+    private macros: Record<string, string> = {};
 
     /**
      * Export a complete document to DOCX format using pandoc
@@ -531,6 +532,18 @@ export class DocxExportBackend {
     private serializeToOrg(doc: OrgDocumentNode, opts: DocxExportOptions): string {
         const lines: string[] = [];
 
+        // Collect document-defined macros
+        this.macros = {};
+        if (doc.keywordLists && doc.keywordLists['MACRO']) {
+            for (const macroDef of doc.keywordLists['MACRO']) {
+                // Parse "name value" format
+                const match = macroDef.match(/^(\S+)\s+(.*)$/);
+                if (match) {
+                    this.macros[match[1]] = match[2];
+                }
+            }
+        }
+
         // Add document keywords
         if (doc.keywords['TITLE']) {
             lines.push(`#+TITLE: ${doc.keywords['TITLE']}`);
@@ -556,7 +569,17 @@ export class DocxExportBackend {
             lines.push(''); // Blank line after keywords
         }
 
-        // Serialize document content
+        // Serialize preamble section (content before first headline)
+        if (doc.section && doc.section.children) {
+            for (const element of doc.section.children) {
+                const serialized = this.serializeElement(element, opts);
+                if (serialized) {
+                    lines.push(serialized);
+                }
+            }
+        }
+
+        // Serialize document content (headlines and their sections)
         for (const element of doc.children) {
             const serialized = this.serializeElement(element, opts);
             if (serialized) {
@@ -666,7 +689,17 @@ export class DocxExportBackend {
             }
         }
 
-        // Serialize children (section and sub-headlines)
+        // Serialize the section content (paragraphs, blocks, etc.)
+        if (headline.section && headline.section.children) {
+            for (const child of headline.section.children) {
+                const serialized = this.serializeElement(child, opts);
+                if (serialized) {
+                    lines.push(serialized);
+                }
+            }
+        }
+
+        // Serialize child headlines
         for (const child of headline.children || []) {
             const serialized = this.serializeElement(child, opts);
             if (serialized) {
@@ -739,12 +772,42 @@ export class DocxExportBackend {
                 return obj.properties?.value || '';
             case 'citation':
                 return this.serializeCitation(obj, opts);
+            case 'macro':
+                return this.serializeMacro(obj, opts);
+            case 'export-snippet':
+                return this.serializeExportSnippet(obj, opts);
             default:
                 if (obj.properties?.value) {
                     return obj.properties.value;
                 }
                 return '';
         }
+    }
+
+    private serializeMacro(macro: any, opts: DocxExportOptions): string {
+        const key = macro.properties?.key || '';
+        const args = macro.properties?.args || [];
+
+        // Try document-defined macros first
+        if (this.macros[key]) {
+            return expandMacro(key, args, this.macros);
+        }
+
+        // Fall back to built-in macros
+        return expandMacro(key, args, BUILTIN_MACROS);
+    }
+
+    private serializeExportSnippet(snippet: any, opts: DocxExportOptions): string {
+        const backend = snippet.properties?.backend || '';
+        const value = snippet.properties?.value || '';
+
+        // Only include snippets for DOCX or Word backend
+        if (backend.toLowerCase() === 'docx' || backend.toLowerCase() === 'word') {
+            return value;
+        }
+
+        // Filter out HTML, LaTeX, and other backend snippets
+        return '';
     }
 
     private serializeLink(link: any, opts: DocxExportOptions): string {

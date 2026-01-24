@@ -25,17 +25,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Install Pandoc (Ubuntu)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y pandoc
-
-      - name: Install Pandoc (macOS)
-        if: runner.os == 'macOS'
-        run: brew install pandoc
-
-      - name: Install Pandoc (Windows)
-        if: runner.os == 'Windows'
-        run: choco install pandoc
+      - name: Install Pandoc
+        uses: pandoc/actions/setup@v1
+        with:
+          version: 3.1.11
 
       - name: Install dependencies
         run: npm ci
