@@ -3,13 +3,16 @@
  * Implements #+TBLFM: spreadsheet-like calculations
  *
  * Supports:
- * - Column references: $1, $2, $3, ...
+ * - Column references: $1, $2, $3, ..., $+1, $-2 (relative)
+ * - Row references: @1, @2, @0 (current), @+1, @-1 (relative)
  * - Field references: @2$3 (row 2, column 3)
  * - Range references: @2$1..@5$3
- * - Special references: $# (column count), @# (row count)
+ * - Special references: $# (column count), @# (row count), $0, @0 (current)
+ * - Named parameters: $name (from $ rows or #+CONSTANTS:)
  * - Remote table references: remote(tablename, @2$3)
  * - Functions: vsum, vmean, vmin, vmax, vcount, etc.
  * - Basic arithmetic: +, -, *, /, ^, %
+ * - Duration values: HH:MM:SS with T/U/t format flags
  */
 
 import * as vscode from 'vscode';
@@ -37,6 +40,15 @@ export interface ParsedTable {
     columnCount: number;
     dataRowCount: number;
     firstDataRow: number; // 1-indexed row number of first data row (after header separator)
+    parameters: Map<string, string>; // Named parameters from $ rows (e.g., $max=50)
+    columnNames: Map<string, number>; // Column names from header row (column name -> column number)
+}
+
+/**
+ * Document-level constants from #+CONSTANTS: lines
+ */
+export interface DocumentConstants {
+    constants: Map<string, string>; // name -> value
 }
 
 export interface TableFormula {
@@ -67,6 +79,86 @@ export interface EvalContext {
     currentCol: number;
     document: vscode.TextDocument;
     namedTables: Map<string, ParsedTable>;
+    constants: Map<string, string>; // Document-level constants from #+CONSTANTS:
+}
+
+// =============================================================================
+// Duration Handling
+// =============================================================================
+
+/**
+ * Parse a duration string in HH:MM or HH:MM:SS format to total seconds
+ */
+export function parseDuration(value: string): number | null {
+    // Match HH:MM:SS or HH:MM format
+    const match = value.trim().match(/^(-?)(\d+):(\d{2})(?::(\d{2}))?$/);
+    if (!match) {
+        return null;
+    }
+
+    const negative = match[1] === '-';
+    const hours = parseInt(match[2], 10);
+    const minutes = parseInt(match[3], 10);
+    const seconds = match[4] ? parseInt(match[4], 10) : 0;
+
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    return negative ? -totalSeconds : totalSeconds;
+}
+
+/**
+ * Format seconds as HH:MM:SS duration (T flag)
+ */
+export function formatDurationHMS(seconds: number): string {
+    const negative = seconds < 0;
+    seconds = Math.abs(Math.round(seconds));
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    const prefix = negative ? '-' : '';
+    return `${prefix}${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+/**
+ * Format seconds as HH:MM duration (U flag)
+ */
+export function formatDurationHM(seconds: number): string {
+    const negative = seconds < 0;
+    seconds = Math.abs(Math.round(seconds));
+
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+
+    const prefix = negative ? '-' : '';
+    return `${prefix}${hours}:${String(minutes).padStart(2, '0')}`;
+}
+
+/**
+ * Format seconds as decimal hours (t flag)
+ */
+export function formatDurationDecimalHours(seconds: number): string {
+    const hours = seconds / 3600;
+    return hours.toFixed(2);
+}
+
+/**
+ * Check if a value looks like a duration
+ */
+export function isDuration(value: string): boolean {
+    return /^-?\d+:\d{2}(:\d{2})?$/.test(value.trim());
+}
+
+/**
+ * Get cell value, optionally parsing as duration (returns seconds)
+ */
+function getCellValueAsDuration(table: ParsedTable, row: number, col: number): number {
+    const value = getCellValue(table, row, col);
+    if (typeof value === 'number') {
+        return value;
+    }
+    const duration = parseDuration(String(value));
+    return duration !== null ? duration : 0;
 }
 
 // =============================================================================
@@ -133,10 +225,13 @@ export function parseTableAt(
 
     // Parse cells
     const cells: TableCell[][] = [];
+    const parameters = new Map<string, string>();
+    const columnNames = new Map<string, number>();
     let maxCols = 0;
     let dataRowIndex = 0;
     let firstHlineSeen = false;
     let firstDataRow = 1; // Default to row 1 if no hline separator
+    let headerRowCells: string[] = [];
 
     for (let i = startLine; i <= endLine; i++) {
         const lineText = document.lineAt(i).text.trim();
@@ -158,6 +253,23 @@ export function parseTableAt(
         } else {
             const cellValues = parseTableRow(lineText);
             const isHeaderRow = !firstHlineSeen; // Rows before first hline are header rows
+
+            // Check for parameter row (first cell starts with $)
+            if (cellValues.length > 0 && cellValues[0].trim().startsWith('$')) {
+                // This is a parameter row - extract name=value pairs
+                for (const cellValue of cellValues) {
+                    const paramMatch = cellValue.trim().match(/^\$(\w+)\s*=\s*(.+)$/);
+                    if (paramMatch) {
+                        parameters.set(paramMatch[1], paramMatch[2].trim());
+                    }
+                }
+            }
+
+            // Store header row for column name extraction
+            if (isHeaderRow && headerRowCells.length === 0) {
+                headerRowCells = cellValues;
+            }
+
             const row: TableCell[] = cellValues.map((value, col) => ({
                 value,
                 row: dataRowIndex,
@@ -168,6 +280,15 @@ export function parseTableAt(
             cells.push(row);
             maxCols = Math.max(maxCols, cellValues.length);
             dataRowIndex++;
+        }
+    }
+
+    // Extract column names from header row
+    for (let i = 0; i < headerRowCells.length; i++) {
+        const name = headerRowCells[i].trim();
+        if (name && !name.startsWith('<') && !name.match(/^[-\+]+$/)) {
+            // Store column name -> column number (1-indexed)
+            columnNames.set(name.toLowerCase(), i + 1);
         }
     }
 
@@ -186,6 +307,8 @@ export function parseTableAt(
         columnCount: maxCols,
         dataRowCount,
         firstDataRow,
+        parameters,
+        columnNames,
     };
 }
 
@@ -316,22 +439,71 @@ function parseFormulaTarget(targetStr: string): FormulaTarget | null {
 // =============================================================================
 
 /**
+ * Resolve a named reference to its value
+ * Checks: table parameters > document constants > column names
+ */
+function resolveNamedReference(name: string, context: EvalContext): string | null {
+    // Check table parameters first (from $ rows)
+    if (context.table.parameters.has(name)) {
+        return context.table.parameters.get(name)!;
+    }
+
+    // Check document constants (from #+CONSTANTS:)
+    if (context.constants.has(name)) {
+        return context.constants.get(name)!;
+    }
+
+    // Check column names - returns column number as string for use in formulas
+    const lowerName = name.toLowerCase();
+    if (context.table.columnNames.has(lowerName)) {
+        // Return the value from the column in the current row
+        const col = context.table.columnNames.get(lowerName)!;
+        return String(getCellValue(context.table, context.currentRow, col));
+    }
+
+    return null;
+}
+
+/**
+ * Resolve a relative column reference ($+N or $-N) to absolute column number
+ */
+function resolveRelativeColumn(offset: number, context: EvalContext): number {
+    return context.currentCol + offset;
+}
+
+/**
+ * Resolve a relative row reference (@+N or @-N) to absolute row number
+ */
+function resolveRelativeRow(offset: number, context: EvalContext): number {
+    return context.currentRow + offset;
+}
+
+/**
  * Evaluate a formula expression
  */
 export function evaluateExpression(
     expression: string,
-    context: EvalContext
+    context: EvalContext,
+    formatFlags?: string
 ): number | string {
     try {
         // Replace cell references with values
         let evalExpr = expression;
 
-        // Replace range functions first
+        // Check if we need duration mode (T, U, t flags)
+        const durationMode = !!(formatFlags && /[TUt]/.test(formatFlags));
+
+        // Replace range functions first (with duration support)
         evalExpr = evalExpr.replace(
             /v(sum|mean|min|max|count|prod)\(([^)]+)\)/gi,
             (_, func, rangeExpr) => {
-                const values = resolveRange(rangeExpr.trim(), context);
-                const nums = values.map(v => parseFloat(v)).filter(n => !isNaN(n));
+                const values = resolveRange(rangeExpr.trim(), context, durationMode);
+                const nums = values.map(v => {
+                    if (durationMode && isDuration(v)) {
+                        return parseDuration(v) ?? 0;
+                    }
+                    return parseFloat(v);
+                }).filter(n => !isNaN(n));
                 return String(evaluateFunction(func.toLowerCase(), nums));
             }
         );
@@ -348,31 +520,111 @@ export function evaluateExpression(
                     ...context,
                     table: remoteTable,
                 };
-                return String(resolveCellRef(cellRef.trim(), remoteContext));
+                return String(resolveCellRef(cellRef.trim(), remoteContext, durationMode));
             }
         );
 
-        // Replace field references @R$C (R can be >, <, -N, or number)
+        // Replace @0$0 (current cell) first
         evalExpr = evalExpr.replace(
-            /@([><]|-?\d+)\$(\d+)/g,
-            (_, rowRef, col) => {
-                const row = resolveRowRefInExpr(rowRef, context.table);
-                return String(getCellValue(
+            /@0\$0/g,
+            () => {
+                return String(getCellValueForEval(
                     context.table,
-                    row,
-                    parseInt(col, 10)
+                    context.currentRow,
+                    context.currentCol,
+                    durationMode
                 ));
             }
         );
 
-        // Replace column references $C with current row
+        // Replace @0$C (current row, specific column)
+        evalExpr = evalExpr.replace(
+            /@0\$(\d+)/g,
+            (_, col) => {
+                return String(getCellValueForEval(
+                    context.table,
+                    context.currentRow,
+                    parseInt(col, 10),
+                    durationMode
+                ));
+            }
+        );
+
+        // Replace @R$0 (specific row, current column)
+        evalExpr = evalExpr.replace(
+            /@([><]|[+-]?\d+)\$0/g,
+            (_, rowRef) => {
+                const row = resolveRowRefInExpr(rowRef, context.table, context.currentRow);
+                return String(getCellValueForEval(
+                    context.table,
+                    row,
+                    context.currentCol,
+                    durationMode
+                ));
+            }
+        );
+
+        // Replace field references @R$C (R can be >, <, 0, +N, -N, or number)
+        // Also support relative columns $+N, $-N
+        evalExpr = evalExpr.replace(
+            /@([><]|[+-]?\d+)\$([+-]?\d+)/g,
+            (_, rowRef, colRef) => {
+                const row = resolveRowRefInExpr(rowRef, context.table, context.currentRow);
+                let col: number;
+                if (colRef.startsWith('+') || colRef.startsWith('-')) {
+                    col = resolveRelativeColumn(parseInt(colRef, 10), context);
+                } else {
+                    col = parseInt(colRef, 10);
+                }
+                return String(getCellValueForEval(
+                    context.table,
+                    row,
+                    col,
+                    durationMode
+                ));
+            }
+        );
+
+        // Replace relative column references $+N or $-N with current row
+        evalExpr = evalExpr.replace(
+            /\$([+-]\d+)/g,
+            (_, offset) => {
+                const col = resolveRelativeColumn(parseInt(offset, 10), context);
+                return String(getCellValueForEval(
+                    context.table,
+                    context.currentRow,
+                    col,
+                    durationMode
+                ));
+            }
+        );
+
+        // Replace named references $name (must come before $N to avoid conflicts)
+        evalExpr = evalExpr.replace(
+            /\$([a-zA-Z_][a-zA-Z0-9_]*)/g,
+            (match, name) => {
+                const value = resolveNamedReference(name, context);
+                if (value !== null) {
+                    // If duration mode and value is duration, convert to seconds
+                    if (durationMode && isDuration(value)) {
+                        return String(parseDuration(value) ?? 0);
+                    }
+                    const num = parseFloat(value);
+                    return isNaN(num) ? value : String(num);
+                }
+                return match; // Keep original if not found
+            }
+        );
+
+        // Replace absolute column references $C with current row
         evalExpr = evalExpr.replace(
             /\$(\d+)/g,
             (_, col) => {
-                return String(getCellValue(
+                return String(getCellValueForEval(
                     context.table,
                     context.currentRow,
-                    parseInt(col, 10)
+                    parseInt(col, 10),
+                    durationMode
                 ));
             }
         );
@@ -384,6 +636,9 @@ export function evaluateExpression(
         evalExpr = evalExpr.replace(/@</g, '1');
         evalExpr = evalExpr.replace(/\$>/g, String(context.table.columnCount));
         evalExpr = evalExpr.replace(/\$</g, '1');
+        // Replace @0 and $0 that might remain
+        evalExpr = evalExpr.replace(/@0/g, String(context.currentRow));
+        evalExpr = evalExpr.replace(/\$0/g, String(context.currentCol));
 
         // Handle power operator (^ -> **)
         evalExpr = evalExpr.replace(/\^/g, '**');
@@ -393,6 +648,22 @@ export function evaluateExpression(
     } catch (error) {
         return `#ERROR: ${error}`;
     }
+}
+
+/**
+ * Get cell value for evaluation, with optional duration conversion
+ */
+function getCellValueForEval(
+    table: ParsedTable,
+    row: number,
+    col: number,
+    durationMode?: boolean
+): number | string {
+    const value = getCellValue(table, row, col);
+    if (durationMode && typeof value === 'string' && isDuration(value)) {
+        return parseDuration(value) ?? 0;
+    }
+    return value;
 }
 
 /**
@@ -411,8 +682,11 @@ function countDataRows(table: ParsedTable): number {
 /**
  * Resolve a row reference string to data row index (1-indexed, skipping hlines)
  * This matches org-mode's row numbering where @1 is first data row, @2 is second, etc.
+ * @param rowStr - Row reference string: number, '>', '<', '0', '+N', '-N'
+ * @param table - The parsed table
+ * @param currentRow - Current row for @0 and relative references
  */
-function resolveRowRefInExpr(rowStr: string, table: ParsedTable): number {
+function resolveRowRefInExpr(rowStr: string, table: ParsedTable, currentRow?: number): number {
     if (rowStr === '>') {
         // @> means last data row
         return countDataRows(table);
@@ -421,10 +695,25 @@ function resolveRowRefInExpr(rowStr: string, table: ParsedTable): number {
         // @< means first data row
         return 1;
     }
-    // Handle @-N (relative to last data row)
-    const relMatch = rowStr.match(/^-(\d+)$/);
-    if (relMatch) {
-        const offset = parseInt(relMatch[1], 10);
+    if (rowStr === '0') {
+        // @0 means current row
+        return currentRow ?? 1;
+    }
+    // Handle @+N (relative forward from current row)
+    const forwardMatch = rowStr.match(/^\+(\d+)$/);
+    if (forwardMatch) {
+        const offset = parseInt(forwardMatch[1], 10);
+        return (currentRow ?? 1) + offset;
+    }
+    // Handle @-N (relative backward from current row or last data row if no current)
+    const backMatch = rowStr.match(/^-(\d+)$/);
+    if (backMatch) {
+        const offset = parseInt(backMatch[1], 10);
+        if (currentRow !== undefined) {
+            // Relative to current row
+            return currentRow - offset;
+        }
+        // Fallback: relative to last data row (org-mode behavior for TBLFM)
         const lastDataRow = countDataRows(table);
         return lastDataRow - offset;
     }
@@ -433,17 +722,22 @@ function resolveRowRefInExpr(rowStr: string, table: ParsedTable): number {
 
 /**
  * Resolve a range reference to array of values
+ * @param durationMode - If true, keep duration strings as-is for later parsing
  */
-function resolveRange(rangeExpr: string, context: EvalContext): string[] {
+function resolveRange(rangeExpr: string, context: EvalContext, durationMode?: boolean): string[] {
     const values: string[] = [];
 
-    // Parse range with special row refs @R1$C1..@R2$C2 where R can be >, <, -N, or number
-    const rangeMatch = rangeExpr.match(/@([><]|-?\d+)\$(\d+)\.\.@([><]|-?\d+)\$(\d+)/);
+    // Parse range with special row refs @R1$C1..@R2$C2 where R can be >, <, 0, +N, -N, or number
+    const rangeMatch = rangeExpr.match(/@([><0]|[+-]?\d+)\$([+-]?\d+)\.\.@([><0]|[+-]?\d+)\$([+-]?\d+)/);
     if (rangeMatch) {
-        const startRow = resolveRowRefInExpr(rangeMatch[1], context.table);
-        const startCol = parseInt(rangeMatch[2], 10);
-        const endRow = resolveRowRefInExpr(rangeMatch[3], context.table);
-        const endCol = parseInt(rangeMatch[4], 10);
+        const startRow = resolveRowRefInExpr(rangeMatch[1], context.table, context.currentRow);
+        let startCol = rangeMatch[2].match(/^[+-]/)
+            ? context.currentCol + parseInt(rangeMatch[2], 10)
+            : parseInt(rangeMatch[2], 10);
+        const endRow = resolveRowRefInExpr(rangeMatch[3], context.table, context.currentRow);
+        let endCol = rangeMatch[4].match(/^[+-]/)
+            ? context.currentCol + parseInt(rangeMatch[4], 10)
+            : parseInt(rangeMatch[4], 10);
 
         for (let r = startRow; r <= endRow; r++) {
             for (let c = startCol; c <= endCol; c++) {
@@ -455,12 +749,15 @@ function resolveRange(rangeExpr: string, context: EvalContext): string[] {
     }
 
     // Parse column range $C1..$C2 (current row, columns C1 to C2)
-    // When used in a column formula like $6=vsum($2..$5), this refers to
-    // columns 2-5 of the current row being evaluated
-    const colRangeMatch = rangeExpr.match(/\$(\d+)\.\.\$(\d+)/);
+    // Also supports relative columns: $+1..$+3 or $1..$+2
+    const colRangeMatch = rangeExpr.match(/\$([+-]?\d+)\.\.\$([+-]?\d+)/);
     if (colRangeMatch) {
-        const startCol = parseInt(colRangeMatch[1], 10);
-        const endCol = parseInt(colRangeMatch[2], 10);
+        let startCol = colRangeMatch[1].match(/^[+-]/)
+            ? context.currentCol + parseInt(colRangeMatch[1], 10)
+            : parseInt(colRangeMatch[1], 10);
+        let endCol = colRangeMatch[2].match(/^[+-]/)
+            ? context.currentCol + parseInt(colRangeMatch[2], 10)
+            : parseInt(colRangeMatch[2], 10);
 
         // Use the current row from context (set by applyFormulas)
         const row = context.currentRow;
@@ -472,7 +769,7 @@ function resolveRange(rangeExpr: string, context: EvalContext): string[] {
     }
 
     // Parse single column $C (all data rows)
-    const colMatch = rangeExpr.match(/\$(\d+)/);
+    const colMatch = rangeExpr.match(/^\$(\d+)$/);
     if (colMatch) {
         const col = parseInt(colMatch[1], 10);
         for (let r = 1; r <= context.table.dataRowCount; r++) {
@@ -483,11 +780,15 @@ function resolveRange(rangeExpr: string, context: EvalContext): string[] {
     }
 
     // Parse row range @R$C1..@R$C2 (same row, different columns) - supports special row refs
-    const rowRangeMatch = rangeExpr.match(/@([><]|-?\d+)\$(\d+)\.\.@\1\$(\d+)/);
+    const rowRangeMatch = rangeExpr.match(/@([><0]|[+-]?\d+)\$([+-]?\d+)\.\.@([><0]|[+-]?\d+)\$([+-]?\d+)/);
     if (rowRangeMatch) {
-        const row = resolveRowRefInExpr(rowRangeMatch[1], context.table);
-        const startCol = parseInt(rowRangeMatch[2], 10);
-        const endCol = parseInt(rowRangeMatch[3], 10);
+        const row = resolveRowRefInExpr(rowRangeMatch[1], context.table, context.currentRow);
+        let startCol = rowRangeMatch[2].match(/^[+-]/)
+            ? context.currentCol + parseInt(rowRangeMatch[2], 10)
+            : parseInt(rowRangeMatch[2], 10);
+        let endCol = rowRangeMatch[4].match(/^[+-]/)
+            ? context.currentCol + parseInt(rowRangeMatch[4], 10)
+            : parseInt(rowRangeMatch[4], 10);
 
         for (let c = startCol; c <= endCol; c++) {
             const val = getCellValue(context.table, row, c);
@@ -501,17 +802,23 @@ function resolveRange(rangeExpr: string, context: EvalContext): string[] {
 
 /**
  * Resolve a single cell reference
+ * @param durationMode - If true and value is duration, return seconds as number
  */
-function resolveCellRef(cellRef: string, context: EvalContext): number | string {
-    // Handle special row refs like @>$2, @<$2, @-1$2
-    const match = cellRef.match(/@([><]|-?\d+)\$(\d+)/);
+function resolveCellRef(cellRef: string, context: EvalContext, durationMode?: boolean): number | string {
+    // Handle @0$0 (current cell)
+    if (cellRef === '@0$0') {
+        return getCellValueForEval(context.table, context.currentRow, context.currentCol, durationMode);
+    }
+
+    // Handle special row refs like @>$2, @<$2, @0$2, @+1$2, @-1$2
+    // Also supports relative columns: @2$+1, @2$-1
+    const match = cellRef.match(/@([><0]|[+-]?\d+)\$([+-]?\d+)/);
     if (match) {
-        const row = resolveRowRefInExpr(match[1], context.table);
-        return getCellValue(
-            context.table,
-            row,
-            parseInt(match[2], 10)
-        );
+        const row = resolveRowRefInExpr(match[1], context.table, context.currentRow);
+        let col = match[2].match(/^[+-]/)
+            ? context.currentCol + parseInt(match[2], 10)
+            : parseInt(match[2], 10);
+        return getCellValueForEval(context.table, row, col, durationMode);
     }
     return 0;
 }
@@ -805,7 +1112,8 @@ function resolveRowRef(rowRef: number | string, table: ParsedTable, currentRow?:
 export function applyFormulas(
     table: ParsedTable,
     document: vscode.TextDocument,
-    namedTables: Map<string, ParsedTable>
+    namedTables: Map<string, ParsedTable>,
+    constants?: Map<string, string>
 ): Map<string, string> {
     const updates = new Map<string, string>();
 
@@ -816,6 +1124,7 @@ export function applyFormulas(
             currentCol: 1,
             document,
             namedTables,
+            constants: constants ?? new Map(),
         };
 
         switch (formula.target.type) {
@@ -827,7 +1136,7 @@ export function applyFormulas(
                 for (let row = startRow; row <= endRow; row++) {
                     context.currentRow = row;
                     context.currentCol = col;
-                    const result = evaluateExpression(formula.expression, context);
+                    const result = evaluateExpression(formula.expression, context, formula.format);
                     const formatted = formatResult(result, formula.format);
                     updates.set(`@${row}$${col}`, formatted);
                 }
@@ -840,7 +1149,7 @@ export function applyFormulas(
                 const col = formula.target.column!;
                 context.currentRow = row;
                 context.currentCol = col;
-                const result = evaluateExpression(formula.expression, context);
+                const result = evaluateExpression(formula.expression, context, formula.format);
                 const formatted = formatResult(result, formula.format);
                 updates.set(`@${row}$${col}`, formatted);
                 break;
@@ -857,7 +1166,7 @@ export function applyFormulas(
                     for (let col = startCol; col <= endCol; col++) {
                         context.currentRow = row;
                         context.currentCol = col;
-                        const result = evaluateExpression(formula.expression, context);
+                        const result = evaluateExpression(formula.expression, context, formula.format);
                         const formatted = formatResult(result, formula.format);
                         updates.set(`@${row}$${col}`, formatted);
                     }
@@ -872,7 +1181,11 @@ export function applyFormulas(
 
 /**
  * Format result according to format string
- * Supports: %.2f, %d, %.0f%% (with %% -> literal %)
+ * Supports:
+ * - %.2f, %d, %.0f%% (with %% -> literal %)
+ * - T flag: format as HH:MM:SS duration (result is seconds)
+ * - U flag: format as HH:MM duration (result is seconds)
+ * - t flag: format as decimal hours (result is seconds)
  */
 function formatResult(result: number | string, format?: string): string {
     if (typeof result === 'string') {
@@ -885,6 +1198,21 @@ function formatResult(result: number | string, format?: string): string {
             return String(result);
         }
         return result.toFixed(2).replace(/\.?0+$/, '');
+    }
+
+    // Check for duration format flags first (T, U, t)
+    // These expect the result to be in seconds
+    if (format.includes('T')) {
+        // Format as HH:MM:SS
+        return formatDurationHMS(result);
+    }
+    if (format.includes('U')) {
+        // Format as HH:MM (no seconds)
+        return formatDurationHM(result);
+    }
+    if (format.includes('t')) {
+        // Format as decimal hours
+        return formatDurationDecimalHours(result);
     }
 
     // Parse format string (e.g., "%.2f", "%d", "%.0f%%")
@@ -977,6 +1305,31 @@ function formatTableRow(cells: string[]): string {
 }
 
 /**
+ * Parse #+CONSTANTS: lines from document to extract named constants
+ * Format: #+CONSTANTS: name1=value1 name2=value2 ...
+ */
+export function parseDocumentConstants(document: vscode.TextDocument): Map<string, string> {
+    const constants = new Map<string, string>();
+
+    for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text;
+        const match = line.match(/^#\+CONSTANTS:\s*(.+)$/i);
+        if (match) {
+            // Parse name=value pairs (space-separated)
+            const pairs = match[1].split(/\s+/);
+            for (const pair of pairs) {
+                const [name, value] = pair.split('=');
+                if (name && value !== undefined) {
+                    constants.set(name.trim(), value.trim());
+                }
+            }
+        }
+    }
+
+    return constants;
+}
+
+/**
  * Recalculate table and get edit
  */
 export function recalculateTable(
@@ -991,8 +1344,11 @@ export function recalculateTable(
     // Find all named tables in the document for remote references
     const namedTables = findNamedTables(document);
 
+    // Parse document-level constants
+    const constants = parseDocumentConstants(document);
+
     // Apply formulas
-    const updates = applyFormulas(table, document, namedTables);
+    const updates = applyFormulas(table, document, namedTables, constants);
     if (updates.size === 0) {
         return null;
     }
@@ -1165,37 +1521,365 @@ export function registerTableFormulaCommands(context: vscode.ExtensionContext): 
 # Org Table Formula Reference
 
 ## Cell References
-- $1, $2, $3... - Column by number
-- @2$3 - Cell at row 2, column 3
-- @2$1..@2$5 - Range from @2$1 to @2$5
-- $# - Total number of columns
-- @# - Total number of rows
+
+### Column References
+- \`$1\`, \`$2\`, \`$3\`... - Absolute column by number
+- \`$0\` - Current column
+- \`$+1\`, \`$-2\` - Relative to current column
+- \`$<\`, \`$>\` - First/last column
+- \`$#\` - Total number of columns
+
+### Row References
+- \`@1\`, \`@2\`, \`@3\`... - Absolute row by number
+- \`@0\` - Current row
+- \`@+1\`, \`@-2\` - Relative to current row
+- \`@<\`, \`@>\` - First/last row
+- \`@I\`, \`@II\`, \`@III\` - First/second/third hline
+- \`@#\` - Total number of rows
+
+### Field References
+- \`@2$3\` - Cell at row 2, column 3
+- \`@0$0\` - Current cell
+- \`@+1$-1\` - Relative references
+
+### Range References
+- \`@2$1..@5$3\` - Rectangle from @2$1 to @5$3
+- \`$2..$5\` - Columns 2-5 in current row
+- \`@2$1..@2$4\` - Row 2, columns 1-4
+
+## Named References
+
+### Table Parameters (in $ rows)
+\`\`\`
+| $max=100 | $rate=0.15 |
+\`\`\`
+Then use \`$max\` or \`$rate\` in formulas.
+
+### Document Constants
+\`\`\`
+#+CONSTANTS: pi=3.14159 tax=0.08
+\`\`\`
+Then use \`$pi\` or \`$tax\` in formulas.
+
+### Column Names
+Header row names can be used: \`$Price\`, \`$Quantity\`
+
+## Remote References
+- \`remote(tablename, @2$3)\` - Reference cell from another table
+- Tables named with \`#+NAME: tablename\`
 
 ## Functions
-- vsum(range) - Sum of values
-- vmean(range) - Average of values
-- vmin(range) - Minimum value
-- vmax(range) - Maximum value
-- vcount(range) - Count of values
-- vprod(range) - Product of values
+- \`vsum(range)\` - Sum of values
+- \`vmean(range)\` - Average of values
+- \`vmin(range)\` - Minimum value
+- \`vmax(range)\` - Maximum value
+- \`vcount(range)\` - Count of values
+- \`vprod(range)\` - Product of values
+- \`sdev(range)\` - Standard deviation
 
 ## Operators
-- +, -, *, / - Basic arithmetic
-- ^ or ** - Power
-- % - Modulo
-
-## Examples
-- $3=$1+$2 - Column 3 = Column 1 + Column 2
-- @5$3=vsum(@2$3..@4$3) - Sum of column 3, rows 2-4
-- @2$4=vsum(@2$1..@2$3) - Sum of row 2, columns 1-3
+- \`+\`, \`-\`, \`*\`, \`/\` - Basic arithmetic
+- \`^\` or \`**\` - Power
+- \`%\` - Modulo
 
 ## Format Specifiers
-- ;%.2f - 2 decimal places
-- ;%d - Integer
-- ;%.0f - No decimals
+
+### Number Formats
+- \`;%.2f\` - 2 decimal places
+- \`;%d\` - Integer
+- \`;%.0f%%\` - Percentage
+
+### Duration Formats (for time values like 1:30:00)
+- \`;T\` - Output as HH:MM:SS
+- \`;U\` - Output as HH:MM (no seconds)
+- \`;t\` - Output as decimal hours (1.5)
+
+## Examples
+
+### Basic Calculations
+- \`$3=$1+$2\` - Column 3 = Column 1 + Column 2
+- \`@5$3=vsum(@2$3..@4$3)\` - Sum of column 3, rows 2-4
+- \`@2$4=vsum(@2$1..@2$3)\` - Sum of row 2, columns 1-3
+
+### Duration Calculations
+- \`$3=$1+$2;T\` - Add time columns, format as HH:MM:SS
+- \`@>$2=vsum(@2$2..@-1$2);U\` - Sum times, format as HH:MM
+
+### Using Parameters
+- \`$4=$2*$rate\` - Use table parameter
+- \`$3=$1*$tax\` - Use document constant
 `;
             const doc = { content: helpText, language: 'markdown' };
             vscode.workspace.openTextDocument(doc).then(d => vscode.window.showTextDocument(d));
+        }),
+
+        // Toggle formula highlighting
+        vscode.commands.registerCommand('scimax.table.toggleFormulaHighlight', async () => {
+            formulaHighlightEnabled = !formulaHighlightEnabled;
+            const editor = vscode.window.activeTextEditor;
+            if (editor) {
+                if (formulaHighlightEnabled) {
+                    updateFormulaHighlighting(editor);
+                    vscode.window.showInformationMessage('Formula highlighting enabled');
+                } else {
+                    clearFormulaHighlighting(editor);
+                    vscode.window.showInformationMessage('Formula highlighting disabled');
+                }
+            }
         })
     );
+
+    // Register event handlers for formula highlighting
+    context.subscriptions.push(
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            if (editor && formulaHighlightEnabled) {
+                updateFormulaHighlighting(editor);
+            }
+        }),
+        vscode.workspace.onDidChangeTextDocument(event => {
+            const editor = vscode.window.activeTextEditor;
+            if (editor && editor.document === event.document && formulaHighlightEnabled) {
+                updateFormulaHighlighting(editor);
+            }
+        }),
+        vscode.window.onDidChangeTextEditorSelection(event => {
+            if (formulaHighlightEnabled) {
+                updateFormulaHighlighting(event.textEditor);
+            }
+        })
+    );
+}
+
+// =============================================================================
+// Formula Highlighting
+// =============================================================================
+
+let formulaHighlightEnabled = false;
+
+// Decoration types for formula highlighting
+const formulaTargetDecorationType = vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(100, 200, 100, 0.3)',
+    border: '1px solid rgba(100, 200, 100, 0.6)',
+});
+
+const formulaSourceDecorationType = vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(100, 150, 255, 0.2)',
+    border: '1px dashed rgba(100, 150, 255, 0.5)',
+});
+
+const formulaLineDecorationType = vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(255, 200, 100, 0.15)',
+});
+
+/**
+ * Update formula highlighting for the current editor
+ */
+function updateFormulaHighlighting(editor: vscode.TextEditor): void {
+    const document = editor.document;
+    if (!document.fileName.endsWith('.org')) {
+        clearFormulaHighlighting(editor);
+        return;
+    }
+
+    const position = editor.selection.active;
+    const table = parseTableAt(document, position);
+
+    if (!table || table.formulas.length === 0) {
+        clearFormulaHighlighting(editor);
+        return;
+    }
+
+    const targetDecorations: vscode.DecorationOptions[] = [];
+    const sourceDecorations: vscode.DecorationOptions[] = [];
+    const tblfmDecorations: vscode.DecorationOptions[] = [];
+
+    // Highlight the TBLFM line
+    if (table.tblfmLine !== undefined) {
+        const tblfmLineText = document.lineAt(table.tblfmLine).text;
+        tblfmDecorations.push({
+            range: new vscode.Range(table.tblfmLine, 0, table.tblfmLine, tblfmLineText.length),
+        });
+    }
+
+    // For each formula, highlight targets and sources
+    for (const formula of table.formulas) {
+        // Find target cells
+        const targetCells = getFormulaCells(formula.target, table);
+        for (const cell of targetCells) {
+            const range = getCellRange(document, table, cell.row, cell.col);
+            if (range) {
+                targetDecorations.push({
+                    range,
+                    hoverMessage: `Formula target: ${formula.raw}`,
+                });
+            }
+        }
+
+        // Find source cells referenced in the expression
+        const sourceCells = extractReferencedCells(formula.expression, table);
+        for (const cell of sourceCells) {
+            const range = getCellRange(document, table, cell.row, cell.col);
+            if (range) {
+                sourceDecorations.push({
+                    range,
+                    hoverMessage: `Referenced in formula`,
+                });
+            }
+        }
+    }
+
+    editor.setDecorations(formulaTargetDecorationType, targetDecorations);
+    editor.setDecorations(formulaSourceDecorationType, sourceDecorations);
+    editor.setDecorations(formulaLineDecorationType, tblfmDecorations);
+}
+
+/**
+ * Clear all formula highlighting
+ */
+function clearFormulaHighlighting(editor: vscode.TextEditor): void {
+    editor.setDecorations(formulaTargetDecorationType, []);
+    editor.setDecorations(formulaSourceDecorationType, []);
+    editor.setDecorations(formulaLineDecorationType, []);
+}
+
+/**
+ * Get all cells affected by a formula target
+ */
+function getFormulaCells(target: FormulaTarget, table: ParsedTable): Array<{row: number, col: number}> {
+    const cells: Array<{row: number, col: number}> = [];
+
+    switch (target.type) {
+        case 'column': {
+            const col = target.column!;
+            const startRow = table.firstDataRow;
+            const endRow = table.firstDataRow + table.dataRowCount - 1;
+            for (let row = startRow; row <= endRow; row++) {
+                cells.push({ row, col });
+            }
+            break;
+        }
+        case 'field': {
+            const row = resolveRowRef(target.row!, table);
+            const col = target.column!;
+            cells.push({ row, col });
+            break;
+        }
+        case 'range': {
+            const startRow = resolveRowRef(target.row!, table);
+            const startCol = target.column!;
+            const endRow = resolveRowRef(target.endRow!, table);
+            const endCol = target.endColumn!;
+            for (let row = startRow; row <= endRow; row++) {
+                for (let col = startCol; col <= endCol; col++) {
+                    cells.push({ row, col });
+                }
+            }
+            break;
+        }
+    }
+
+    return cells;
+}
+
+/**
+ * Extract all cell references from a formula expression
+ */
+function extractReferencedCells(expression: string, table: ParsedTable): Array<{row: number, col: number}> {
+    const cells: Array<{row: number, col: number}> = [];
+    const seen = new Set<string>();
+
+    // Match @R$C references
+    const fieldMatches = expression.matchAll(/@([><0]|[+-]?\d+)\$([+-]?\d+)/g);
+    for (const match of fieldMatches) {
+        const row = resolveRowRefInExpr(match[1], table);
+        const col = parseInt(match[2], 10);
+        const key = `${row},${col}`;
+        if (!seen.has(key) && row > 0 && col > 0) {
+            seen.add(key);
+            cells.push({ row, col });
+        }
+    }
+
+    // Match range references for expanding
+    const rangeMatches = expression.matchAll(/@([><0]|[+-]?\d+)\$(\d+)\.\.@([><0]|[+-]?\d+)\$(\d+)/g);
+    for (const match of rangeMatches) {
+        const startRow = resolveRowRefInExpr(match[1], table);
+        const startCol = parseInt(match[2], 10);
+        const endRow = resolveRowRefInExpr(match[3], table);
+        const endCol = parseInt(match[4], 10);
+        for (let r = startRow; r <= endRow; r++) {
+            for (let c = startCol; c <= endCol; c++) {
+                const key = `${r},${c}`;
+                if (!seen.has(key) && r > 0 && c > 0) {
+                    seen.add(key);
+                    cells.push({ row: r, col: c });
+                }
+            }
+        }
+    }
+
+    return cells;
+}
+
+/**
+ * Get the text range for a specific cell in the table
+ */
+function getCellRange(
+    document: vscode.TextDocument,
+    table: ParsedTable,
+    dataRow: number,
+    col: number
+): vscode.Range | null {
+    // Find the document line for this data row
+    let currentDataRow = 0;
+    let lineIndex = table.startLine;
+
+    for (let i = 0; i < table.cells.length; i++) {
+        const row = table.cells[i];
+        if (row.length > 0 && !row[0].isHline) {
+            currentDataRow++;
+            if (currentDataRow === dataRow) {
+                // Found the row, now find the column
+                const lineText = document.lineAt(lineIndex).text;
+                const cellPositions = getCellPositions(lineText);
+
+                if (col >= 1 && col <= cellPositions.length) {
+                    const { start, end } = cellPositions[col - 1];
+                    return new vscode.Range(lineIndex, start, lineIndex, end);
+                }
+                return null;
+            }
+        }
+        lineIndex++;
+    }
+
+    return null;
+}
+
+/**
+ * Get start and end positions of each cell in a table row
+ */
+function getCellPositions(line: string): Array<{start: number, end: number}> {
+    const positions: Array<{start: number, end: number}> = [];
+    let inCell = false;
+    let cellStart = 0;
+
+    for (let i = 0; i < line.length; i++) {
+        if (line[i] === '|') {
+            if (inCell) {
+                // End of cell (trim whitespace)
+                let start = cellStart;
+                let end = i;
+                // Trim leading whitespace
+                while (start < end && line[start] === ' ') start++;
+                // Trim trailing whitespace
+                while (end > start && line[end - 1] === ' ') end--;
+                positions.push({ start, end });
+            }
+            inCell = true;
+            cellStart = i + 1;
+        }
+    }
+
+    return positions;
 }
