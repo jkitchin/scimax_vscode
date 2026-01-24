@@ -837,8 +837,19 @@ function getCellValue(table: ParsedTable, row: number, col: number): number | st
         if (dataRowIndex === row) {
             const cell = cellRow.find(c => c.col === col);
             if (cell) {
-                const num = parseFloat(cell.value);
-                return isNaN(num) ? cell.value : num;
+                const value = cell.value.trim();
+                // Keep duration strings (HH:MM or HH:MM:SS) as strings
+                // so they can be parsed properly in duration mode
+                if (isDuration(value)) {
+                    return value;
+                }
+                const num = parseFloat(value);
+                // Only return as number if the entire value parses as a number
+                // (parseFloat('9:00') returns 9, which is wrong)
+                if (!isNaN(num) && String(num) === value) {
+                    return num;
+                }
+                return value;
             }
             return '';
         }
