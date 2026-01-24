@@ -177,7 +177,7 @@ export const DEFAULT_EXPORT_OPTIONS: ExportOptions = {
     includeTimestamps: true,
     includeCreator: false,
     includeFootnotes: true,
-    includePlanning: false,
+    includePlanning: true,
     includeClocks: false,
     includeDrawers: false,
     includeTables: true,
@@ -558,9 +558,15 @@ export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
 
         // Add to TOC if toc is enabled
         if (state.options.toc) {
+            // Get title, optionally stripping statistics cookies if includePlanning is false
+            let tocTitle = headline.properties.rawValue;
+            if (state.options.includePlanning === false) {
+                // Remove statistics cookies like [1/3] or [50%]
+                tocTitle = tocTitle.replace(/\s*\[(\d+\/\d+|\d+%)\]/g, '');
+            }
             state.tocEntries.push({
                 level: headline.properties.level,
-                title: headline.properties.rawValue,
+                title: tocTitle.trim(),
                 id,
             });
         }

@@ -96,6 +96,9 @@ const FOOTNOTE_REF_PATTERN = /\[fn:([a-zA-Z0-9_-]*):?([^\]]*)\]/g;
 // Captures: [1]=style (optional), [2]=full citation content (keys with optional prefix/suffix)
 const ORG_CITE_PATTERN = /\[cite(?:\/([a-zA-Z]+))?:([^\]]+)\]/g;
 
+// Statistics cookie pattern: [1/3] or [50%]
+const STATISTICS_COOKIE_PATTERN = /\[(\d+\/\d+|\d+%)\]/g;
+
 // Planning line patterns
 const RE_PLANNING_LINE = /^\s*(SCHEDULED|DEADLINE|CLOSED):/;
 const RE_SCHEDULED = /SCHEDULED:\s*(<[^>]+>|\[[^\]]+\])/;
@@ -444,6 +447,17 @@ export function parseObjectsFast(text: string): OrgObject[] {
             };
         });
     }
+
+    // Statistics cookies: [1/3] or [50%]
+    // Must check before generic bracket patterns
+    collectMatches(STATISTICS_COOKIE_PATTERN, (m) => ({
+        type: 'statistics-cookie' as const,
+        range: { start: m.index!, end: m.index! + m[0].length },
+        postBlank: 0,
+        properties: {
+            value: m[0],  // Include brackets: [1/3] or [50%]
+        },
+    }));
 
     // Targets: <<target>> and <<<radio-target>>>
     if (text.includes('<<')) {
