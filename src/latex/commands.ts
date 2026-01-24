@@ -287,7 +287,6 @@ export function registerLatexProviders(context: vscode.ExtensionContext): void {
             const isSameDir = path.dirname(pdfPath) === path.dirname(texPath);
 
             if (isSameFile || isSameDir) {
-                console.log('Auto-compiling LaTeX on save...');
                 await vscode.commands.executeCommand('scimax.latex.compile');
                 // Refresh the PDF after compilation
                 setTimeout(() => {
@@ -1122,14 +1121,9 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
                 searchWord = searchWord.replace(/\\[a-zA-Z]+\{?/g, '').replace(/[{}]/g, '').trim();
             }
 
-            console.log(`SyncTeX forward: ${texFile}:${line}:${column} -> ${pdfPath}`);
-            console.log(`  Search word: "${searchWord}"`);
-            console.log(`  Source text: "${sourceText}"`);
-
             // Run SyncTeX forward lookup
             const result = await runSyncTeXForward(texFile, line, column, pdfPath);
             if (result) {
-                console.log('SyncTeX forward success:', result);
                 panel.scrollToPosition(result, {
                     line,
                     column,
@@ -1172,10 +1166,6 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
             const texFile = editor.document.uri.fsPath;
             const pdfPath = texFile.replace(/\.tex$/, '.pdf');
 
-            console.log('Forward sync: TeX to PDF');
-            console.log('  TeX file:', texFile);
-            console.log('  PDF path:', pdfPath);
-
             // Check if PDF exists
             const pdfExists = await vscode.workspace.fs.stat(vscode.Uri.file(pdfPath)).then(
                 () => true,
@@ -1184,7 +1174,6 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
 
             if (!pdfExists) {
                 // Compile first
-                console.log('  PDF does not exist, compiling...');
                 vscode.window.showInformationMessage('Compiling LaTeX to generate PDF...');
                 await vscode.commands.executeCommand('scimax.latex.compile');
                 // Wait for compilation
@@ -1193,40 +1182,32 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
 
             // Open panel if not already open, or reload if different PDF
             if (!PdfViewerPanel.currentPanel) {
-                console.log('  Opening PDF panel...');
                 await openPdfInPanel(context);
                 await new Promise(resolve => setTimeout(resolve, 500));
             } else {
                 // Check if the panel has the right PDF loaded
                 const currentPdf = PdfViewerPanel.currentPanel.currentPdfPath;
                 if (currentPdf !== pdfPath) {
-                    console.log('  Panel has different PDF, reloading...');
-                    console.log('    Current:', currentPdf);
-                    console.log('    Needed:', pdfPath);
                     await openPdfInPanel(context);
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
             }
 
             if (!PdfViewerPanel.currentPanel) {
-                console.log('  ERROR: Could not open PDF panel');
                 return;
             }
 
             const panel = PdfViewerPanel.currentPanel;
             const panelPdfPath = panel.currentPdfPath;
             if (!panelPdfPath) {
-                console.log('  ERROR: No PDF loaded in panel');
                 return;
             }
 
             // Check if synctex file exists
             const synctexFile = getSyncTeXFilePath(panelPdfPath);
-            console.log('  SyncTeX file:', synctexFile || 'NOT FOUND');
 
             if (!synctexFile) {
                 // Need to recompile with synctex
-                console.log('  Recompiling with SyncTeX...');
                 vscode.window.showInformationMessage('Recompiling with SyncTeX...');
                 await vscode.commands.executeCommand('scimax.latex.compile');
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -1252,15 +1233,10 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
                 // Clean up the word - remove LaTeX commands/escapes
                 searchWord = searchWord.replace(/\\[a-zA-Z]+\{?/g, '').replace(/[{}]/g, '').trim();
             }
-            console.log(`  Search word: "${searchWord}"`);
-
-            console.log(`  Source position: line ${line}, column ${column}`);
-            console.log(`  Source text: "${sourceText}"`);
 
             const result = await runSyncTeXForward(texFile, line, column, panelPdfPath);
             if (result) {
-                console.log('  SyncTeX result:', result);
-                // Pass debug info and search word to the PDF panel
+                // Pass search word to the PDF panel
                 panel.scrollToPosition(result, {
                     line,
                     column,
@@ -1269,7 +1245,6 @@ export function registerLatexCompileCommands(context: vscode.ExtensionContext): 
                     searchWord: searchWord
                 });
             } else {
-                console.log('  SyncTeX returned no result for this position');
                 vscode.window.showWarningMessage('SyncTeX: No PDF position found for this line');
             }
         })
@@ -1341,6 +1316,4 @@ export function activateLatexFeatures(context: vscode.ExtensionContext): void {
     registerLatexCommands(context);
     registerLatexProviders(context);
     registerLatexCompileCommands(context);
-
-    console.log('LaTeX navigation, structure, and compile features activated');
 }

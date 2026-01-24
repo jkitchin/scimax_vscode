@@ -76,8 +76,6 @@ export async function runSyncTeXForward(
             '-o', pdfFile
         ];
 
-        console.log('SyncTeX forward command:', 'synctex', args.join(' '));
-
         const proc = spawn('synctex', args, {
             env: {
                 ...process.env,
@@ -97,12 +95,6 @@ export async function runSyncTeXForward(
         });
 
         proc.on('close', (code: number | null) => {
-            console.log('SyncTeX forward exit code:', code);
-            console.log('SyncTeX forward stdout:', stdout.substring(0, 500));
-            if (stderr) {
-                console.log('SyncTeX forward stderr:', stderr);
-            }
-
             // synctex can return 0 even with no results
             if (!stdout || !stdout.includes('SyncTeX result')) {
                 console.error('SyncTeX forward failed: No valid results found');
@@ -151,8 +143,6 @@ export async function runSyncTeXForward(
             const width = wMatch ? parseFloat(wMatch[1]) : 400;
             const height = HMatch ? parseFloat(HMatch[1]) : 12;
 
-            console.log('SyncTeX forward result:', { page, x, y, width, height });
-
             resolve({
                 page,
                 x,
@@ -191,8 +181,6 @@ export async function runSyncTeXInverse(
             '-o', `${page}:${x}:${y}:${pdfFile}`
         ];
 
-        console.log('SyncTeX inverse command:', 'synctex', args.join(' '));
-
         const proc = spawn('synctex', args, {
             env: {
                 ...process.env,
@@ -212,15 +200,8 @@ export async function runSyncTeXInverse(
         });
 
         proc.on('close', (code: number | null) => {
-            console.log('SyncTeX inverse exit code:', code);
-            console.log('SyncTeX inverse stdout:', stdout.substring(0, 500));
-            if (stderr) {
-                console.log('SyncTeX inverse stderr:', stderr);
-            }
-
             // synctex can return 0 even with no results
             if (!stdout || !stdout.includes('SyncTeX result')) {
-                console.error('SyncTeX inverse failed: No valid results found');
                 resolve(null);
                 return;
             }
@@ -241,7 +222,6 @@ export async function runSyncTeXInverse(
             const offsetMatch = stdout.match(/^Offset:(\d+)/m);
 
             if (!inputMatch || !lineMatch) {
-                console.error('SyncTeX inverse: could not parse input/line from output');
                 resolve(null);
                 return;
             }
@@ -252,8 +232,6 @@ export async function runSyncTeXInverse(
                 column: columnMatch ? parseInt(columnMatch[1], 10) : 0,
                 offset: offsetMatch ? parseInt(offsetMatch[1], 10) : 0,
             };
-
-            console.log('SyncTeX inverse result:', result);
 
             resolve(result);
         });

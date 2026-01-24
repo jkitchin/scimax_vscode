@@ -808,7 +808,6 @@ export async function runChkTeX(document: vscode.TextDocument): Promise<void> {
         }
     } catch (error) {
         // ChkTeX not available or failed
-        console.log('ChkTeX not available:', error);
     }
 
     diagnosticCollection.set(document.uri, diagnostics);
@@ -1102,7 +1101,7 @@ export class LaTeXFormattingProvider implements vscode.DocumentFormattingEditPro
                 return [vscode.TextEdit.replace(fullRange, formatted)];
             }
         } catch (error) {
-            console.log('latexindent not available or failed:', error);
+            // latexindent not available or failed
         }
 
         return [];
@@ -1123,7 +1122,7 @@ export class LaTeXRangeFormattingProvider implements vscode.DocumentRangeFormatt
                 return [vscode.TextEdit.replace(range, formatted)];
             }
         } catch (error) {
-            console.log('latexindent failed:', error);
+            // latexindent failed
         }
 
         return [];

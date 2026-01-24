@@ -197,7 +197,6 @@ export class PdfViewerPanel {
 
         // Check if source is an org file with sync data
         if (this.sourceFile && this.sourceFile.endsWith('.org') && hasSyncData(this.sourceFile)) {
-            console.log('Inverse sync: Using org-mode sync for', this.sourceFile);
             const orgResult = await orgInverseSync(this.sourceFile, page, x, y);
             if (orgResult) {
                 // Send result back to webview
@@ -236,7 +235,6 @@ export class PdfViewerPanel {
 
             // If we have clicked text, try to find it in the source line for more precise positioning
             if (clickedText) {
-                console.log(`Looking for clicked text "${clickedText}" in source`);
                 await this.jumpToSourceWithText(result.file, result.line, col, clickedText, contextText);
             } else {
                 await this.jumpToSource(result.file, result.line, col);
@@ -255,8 +253,6 @@ export class PdfViewerPanel {
             const lineIndex = Math.max(0, line - 1);
             const lineText = doc.lineAt(lineIndex);
             const col = Math.min(column, lineText.text.length);
-
-            console.log(`Jumping to ${file}:${line}:${col} (requested col: ${column})`);
 
             const startPos = new vscode.Position(lineIndex, col);
 
@@ -305,10 +301,8 @@ export class PdfViewerPanel {
                 borderRadius: '3px'
             });
             focusedEditor.setDecorations(this.currentHighlight, [range]);
-
-            console.log('Selection set:', startPos.line, startPos.character, '-', endPos.line, endPos.character);
         } catch (error) {
-            console.error('Failed to jump to source:', error);
+            // Failed to jump to source
         }
     }
 
@@ -365,7 +359,6 @@ export class PdfViewerPanel {
     private flashHighlight(editor: vscode.TextEditor, start: vscode.Position, end: vscode.Position): void {
         // Skip if start and end are the same (nothing to highlight)
         if (start.isEqual(end)) {
-            console.log('flashHighlight: skipping empty range');
             return;
         }
 
@@ -377,7 +370,6 @@ export class PdfViewerPanel {
 
         const range = new vscode.Range(start, end);
         editor.setDecorations(highlightDecoration, [range]);
-        console.log('flashHighlight: highlighting range', start.line, start.character, '-', end.line, end.character);
 
         // Remove decoration after 3 seconds
         setTimeout(() => {
@@ -495,11 +487,6 @@ export class PdfViewerPanel {
             }
         }
 
-        // Log scoring for debugging
-        if (score > 0.3) {
-            console.log(`  Line scoring: base=${(matchCount / targetWords.length).toFixed(2)}, bigrams=${bigramCount}, trigrams=${trigramCount}, total=${score.toFixed(2)}`);
-        }
-
         return { score, column: firstMatchCol >= 0 ? firstMatchCol : 0 };
     }
 
@@ -557,7 +544,6 @@ export class PdfViewerPanel {
 
         // Also consider very short text with parentheses as likely math
         if (text.length < 12 && /\(.*\)/.test(text)) {
-            console.log(`Short text with parens "${text}" treated as math`);
             return true;
         }
 
@@ -578,7 +564,6 @@ export class PdfViewerPanel {
             // Check if this looks like math content - check both clicked word AND context phrase
             const isMathContent = this.looksLikeMath(clickedText) || (contextText && this.looksLikeMath(contextText));
             if (isMathContent) {
-                console.log(`Detected math content: clicked="${clickedText}", context="${contextText}", using SyncTeX position directly`);
                 // For math, SyncTeX is usually accurate enough - just go there
                 await this.jumpToSource(file, line, column);
                 return;
@@ -591,8 +576,6 @@ export class PdfViewerPanel {
             const searchText = contextText || clickedText;
             const cleanedSearchText = searchText.replace(/[.,;:!?'"()[\]{}]/g, '').trim();
             const searchWords = cleanedSearchText.split(/\s+/).filter(w => w.length >= 2);
-
-            console.log(`Target word: "${targetWord}", Search words: ${JSON.stringify(searchWords)} near line ${line}`);
 
             if (searchWords.length === 0) {
                 // No words to search for, just go to SyncTeX location
@@ -628,8 +611,6 @@ export class PdfViewerPanel {
                 // Good enough match found
                 finalLine = bestMatch.lineIdx;
                 const matchedLineText = doc.lineAt(finalLine).text;
-                console.log(`Best match: line ${finalLine + 1} (SyncTeX said ${line}), score=${bestMatch.score.toFixed(2)}`);
-                console.log(`  Matched text: "${matchedLineText.substring(0, 80)}..."`);
 
                 // Now find the SPECIFIC clicked word within the matched line
                 // Important: Find the occurrence that's near the context words, not just the first one
@@ -647,12 +628,9 @@ export class PdfViewerPanel {
                     searchStart = idx + 1;
                 }
 
-                console.log(`Found ${occurrences.length} occurrences of "${targetWord}" at positions:`, occurrences);
-
                 if (occurrences.length === 1) {
                     // Only one occurrence, use it
                     finalCol = occurrences[0];
-                    console.log(`Single occurrence of "${targetWord}" at column ${finalCol}`);
                 } else if (occurrences.length > 1) {
                     // Multiple occurrences - find the one with best context match
                     // Look for adjacent words from the search phrase
@@ -675,8 +653,6 @@ export class PdfViewerPanel {
                             }
                         }
 
-                        console.log(`  Occurrence at ${pos}: contextScore=${contextScore}, before="${before}", after="${after.substring(0, 15)}..."`);
-
                         if (contextScore > bestContextScore) {
                             bestContextScore = contextScore;
                             bestOccurrence = pos;
@@ -684,20 +660,13 @@ export class PdfViewerPanel {
                     }
 
                     finalCol = bestOccurrence;
-                    console.log(`Best occurrence of "${targetWord}" at column ${finalCol} (context score: ${bestContextScore})`);
                 } else {
                     // No occurrences found, fall back to column from scoreLineMatch
                     finalCol = bestMatch.column;
-                    console.log(`Target word "${targetWord}" not found, using match column ${finalCol}`);
                 }
-
-                console.log(`Found match at line ${finalLine + 1} with score ${bestMatch.score.toFixed(2)}`);
             } else {
-                console.log(`No good match found (best score: ${bestMatch.score.toFixed(2)}), using SyncTeX position`);
                 finalCol = Math.min(column, doc.lineAt(finalLine).text.length);
             }
-
-            console.log(`Jumping to ${file}:${finalLine + 1}:${finalCol} (clicked: "${clickedText}")`);
 
             const lineText = doc.lineAt(finalLine).text;
             const lowerLineText = lineText.toLowerCase();
@@ -728,12 +697,10 @@ export class PdfViewerPanel {
             if (phraseEnd > phraseStart) {
                 selectionStart = phraseStart;
                 selectionEnd = phraseEnd;
-                console.log(`Found phrase span: cols ${selectionStart}-${selectionEnd}`);
             } else {
                 // Fall back to just the clicked word
                 selectionStart = finalCol;
                 selectionEnd = finalCol + targetWord.length;
-                console.log(`Using clicked word only: cols ${selectionStart}-${selectionEnd}`);
             }
 
             // Ensure we have valid positions
@@ -742,8 +709,6 @@ export class PdfViewerPanel {
 
             const startPos = new vscode.Position(finalLine, selectionStart);
             const endPos = new vscode.Position(finalLine, selectionEnd);
-
-            console.log(`Selecting: line ${finalLine + 1}, cols ${selectionStart}-${selectionEnd}, text: "${lineText.substring(selectionStart, selectionEnd)}"`);
 
             // First, force focus to the editor area (away from webview)
             await vscode.commands.executeCommand('workbench.action.focusFirstEditorGroup');
@@ -781,12 +746,7 @@ export class PdfViewerPanel {
                 borderRadius: '3px'
             });
             focusedEditor.setDecorations(this.currentHighlight, [phraseRange]);
-
-            // Verify selection was set
-            console.log('Selection set:', focusedEditor.selection.start.line, focusedEditor.selection.start.character, '-', focusedEditor.selection.end.line, focusedEditor.selection.end.character);
-            console.log('Selection empty?', focusedEditor.selection.isEmpty);
         } catch (error) {
-            console.error('Failed to jump to source with text:', error);
             await this.jumpToSource(file, line, column);
         }
     }
