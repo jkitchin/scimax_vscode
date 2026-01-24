@@ -48,7 +48,7 @@ src/
 │   └── kernelSpec.ts         # Kernel discovery
 ├── database/
 │   ├── scimaxDb.ts           # SQLite database with FTS5 + vector search
-│   ├── embeddingService.ts   # Ollama/OpenAI/local embeddings
+│   ├── embeddingService.ts   # Ollama/OpenAI embeddings
 │   ├── migrations.ts         # Schema versioning and migrations
 │   └── lazyDb.ts             # Lazy database initialization
 ├── utils/
@@ -106,7 +106,6 @@ Each manager is passed to its command registration function and tree providers.
 ### Dependencies
 
 - `@libsql/client` - SQLite with vector search (from Turso)
-- `@xenova/transformers` - Local embeddings via Transformers.js
 - `zeromq` - Native Jupyter kernel communication
 - `uuid` - Unique ID generation for Jupyter messages
 - `date-fns` - Date manipulation for journal
