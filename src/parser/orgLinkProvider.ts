@@ -949,6 +949,26 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             console.log('[scimax] openFile command called for:', file);
 
             try {
+                const uri = vscode.Uri.file(file);
+                const ext = path.extname(file).toLowerCase();
+
+                // Binary files that should be opened externally or with VS Code's built-in viewers
+                const binaryExtensions = [
+                    '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.svg', '.ico',
+                    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+                    '.zip', '.tar', '.gz', '.7z', '.rar',
+                    '.mp3', '.mp4', '.wav', '.avi', '.mov', '.mkv',
+                    '.exe', '.dmg', '.app'
+                ];
+
+                if (binaryExtensions.includes(ext)) {
+                    // Use vscode.open which handles binary files appropriately
+                    // (images open in preview, PDFs in external viewer, etc.)
+                    await vscode.commands.executeCommand('vscode.open', uri);
+                    return;
+                }
+
+                // Text files - open in editor with unfolding
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
                 console.log('[scimax] File opened, waiting for fold state...');
