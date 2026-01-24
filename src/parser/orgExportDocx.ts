@@ -180,6 +180,14 @@ const DEFAULT_DOCX_OPTIONS: Required<
 /**
  * Extended export state for DOCX
  */
+/** Accumulated text styles for nested markup */
+interface TextStyles {
+    bold?: boolean;
+    italics?: boolean;
+    underline?: boolean;
+    strike?: boolean;
+}
+
 interface DocxExportState extends ExportState {
     /** DOCX-specific options */
     docxOptions: DocxExportOptions;
@@ -199,6 +207,8 @@ interface DocxExportState extends ExportState {
     skipNextResults?: boolean;
     /** Base path for resolving relative paths */
     basePath: string;
+    /** Accumulated text styles for nested markup */
+    textStyles: TextStyles;
 }
 
 // =============================================================================
@@ -244,6 +254,7 @@ export class DocxExportBackend {
             docxFootnotes: new Map(),
             footnoteRefCounter: 0,
             basePath: opts.basePath || process.cwd(),
+            textStyles: {},
         };
 
         // Initialize citation processor
@@ -1327,8 +1338,19 @@ export class DocxExportBackend {
         state: DocxExportState
     ): Promise<TextRun[]> {
         switch (object.type) {
-            case 'plain-text':
-                return [new TextRun({ text: (object as PlainTextObject).properties.value })];
+            case 'plain-text': {
+                // Apply accumulated text styles from nested markup
+                const runOptions: any = {
+                    text: (object as PlainTextObject).properties.value,
+                    bold: state.textStyles.bold,
+                    italics: state.textStyles.italics,
+                    strike: state.textStyles.strike,
+                };
+                if (state.textStyles.underline) {
+                    runOptions.underline = { type: 'single' };
+                }
+                return [new TextRun(runOptions)];
+            }
 
             case 'bold':
                 return this.exportBold(object as BoldObject, state);
@@ -1367,6 +1389,10 @@ export class DocxExportBackend {
                 return this.exportFootnoteReference(object as FootnoteReferenceObject, state);
 
             case 'statistics-cookie':
+                // Statistics cookies are tied to planning info - hide when p:nil
+                if (state.options.includePlanning === false) {
+                    return [];
+                }
                 return [new TextRun({
                     text: (object as StatisticsCookieObject).properties.value,
                     color: DOCX_COLORS.textMuted,
@@ -1399,27 +1425,36 @@ export class DocxExportBackend {
     // Object exporters
 
     private async exportBold(obj: BoldObject, state: DocxExportState): Promise<TextRun[]> {
-        // For nested markup, extract plain text and apply formatting
-        const text = this.extractPlainText(obj.children);
-        return [new TextRun({ text, bold: true })];
+        // Set bold style, export children (which inherit styles), then clear
+        const wasBold = state.textStyles.bold;
+        state.textStyles.bold = true;
+        const runs = await this.exportObjects(obj.children, state);
+        state.textStyles.bold = wasBold;
+        return runs;
     }
 
     private async exportItalic(obj: ItalicObject, state: DocxExportState): Promise<TextRun[]> {
-        const text = this.extractPlainText(obj.children);
-        return [new TextRun({ text, italics: true })];
+        const wasItalic = state.textStyles.italics;
+        state.textStyles.italics = true;
+        const runs = await this.exportObjects(obj.children, state);
+        state.textStyles.italics = wasItalic;
+        return runs;
     }
 
     private async exportUnderline(obj: UnderlineObject, state: DocxExportState): Promise<TextRun[]> {
-        const text = this.extractPlainText(obj.children);
-        return [new TextRun({
-            text,
-            underline: { type: 'single' as any },
-        })];
+        const wasUnderline = state.textStyles.underline;
+        state.textStyles.underline = true;
+        const runs = await this.exportObjects(obj.children, state);
+        state.textStyles.underline = wasUnderline;
+        return runs;
     }
 
     private async exportStrikeThrough(obj: StrikeThroughObject, state: DocxExportState): Promise<TextRun[]> {
-        const text = this.extractPlainText(obj.children);
-        return [new TextRun({ text, strike: true })];
+        const wasStrike = state.textStyles.strike;
+        state.textStyles.strike = true;
+        const runs = await this.exportObjects(obj.children, state);
+        state.textStyles.strike = wasStrike;
+        return runs;
     }
 
     /**
@@ -1470,6 +1505,12 @@ export class DocxExportBackend {
             linkText = this.extractPlainText(obj.children);
         }
 
+        // Handle citation links (cite:, citep:, citet:, etc.)
+        const citationTypes = ['cite', 'citep', 'citet', 'Citep', 'Citet', 'citeauthor', 'citeyear', 'citealp', 'citealt'];
+        if (citationTypes.includes(linkType)) {
+            return this.exportCitationLink(linkType, linkPath, state);
+        }
+
         // Handle image links
         if (/\.(png|jpg|jpeg|gif|svg|webp|bmp)$/i.test(linkPath)) {
             return this.exportImageLink(linkPath, state);
@@ -1506,6 +1547,49 @@ export class DocxExportBackend {
                 ],
             }) as unknown as TextRun,
         ];
+    }
+
+    /**
+     * Export citation link (cite:key, citep:key, etc.)
+     */
+    private exportCitationLink(
+        linkType: string,
+        keys: string,
+        state: DocxExportState
+    ): TextRun[] {
+        // Keys may be comma-separated
+        const keyList = keys.split(',').map(k => k.trim());
+
+        // Determine citation style
+        let style: 'textual' | 'parenthetical' | 'author' | 'year' = 'parenthetical';
+        switch (linkType) {
+            case 'citet':
+            case 'Citet':
+                style = 'textual';
+                break;
+            case 'citep':
+            case 'Citep':
+            case 'cite':
+                style = 'parenthetical';
+                break;
+            case 'citeauthor':
+                style = 'author';
+                break;
+            case 'citeyear':
+                style = 'year';
+                break;
+        }
+
+        // Use citation processor if available
+        if (state.citationProcessor) {
+            const result = state.citationProcessor.formatCitationByKeys(keyList, style);
+            return [new TextRun({ text: result.text })];
+        }
+
+        // Fallback: format keys simply
+        const keyStr = keyList.join(', ');
+        const formatted = style === 'parenthetical' ? `(${keyStr})` : keyStr;
+        return [new TextRun({ text: formatted })];
     }
 
     private async exportImageLink(
