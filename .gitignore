@@ -33,6 +33,16 @@ docs/tangled/
 # Test output
 test-output/
 
+# Export test outputs (root level)
+*.docx
+~$*.docx
+test-features.html
+test-features.pdf
+test-features.tex
+tasks.pdf
+tasks.tex
+docx-export-debug.org
+
 # TypeScript compiled config files
 vitest.config.d.mts
 vitest.config.d.mts.map
