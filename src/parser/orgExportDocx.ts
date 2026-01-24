@@ -1,215 +1,335 @@
 /**
  * DOCX export backend for org-mode documents
- * Converts org AST to Microsoft Word documents
+ * Uses pandoc for high-quality Word document generation with native equation support
  */
-
-import {
-    Document,
-    Paragraph,
-    TextRun,
-    HeadingLevel,
-    Table,
-    TableRow,
-    TableCell,
-    WidthType,
-    AlignmentType,
-    ExternalHyperlink,
-    InternalHyperlink,
-    Bookmark,
-    ImageRun,
-    FootnoteReferenceRun,
-    Packer,
-    BorderStyle,
-    convertInchesToTwip,
-    ShadingType,
-    LevelFormat,
-    TableOfContents,
-    PageBreak,
-    IDocumentOptions,
-} from 'docx';
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { execSync } from 'child_process';
+import * as os from 'os';
+import * as crypto from 'crypto';
 
-import type {
-    OrgElement,
-    OrgObject,
-    OrgDocumentNode,
-    HeadlineElement,
-    SectionElement,
-    ParagraphElement,
-    SrcBlockElement,
-    ExampleBlockElement,
-    QuoteBlockElement,
-    CenterBlockElement,
-    SpecialBlockElement,
-    VerseBlockElement,
-    LatexEnvironmentElement,
-    TableElement,
-    TableRowElement,
-    PlainListElement,
-    ItemElement,
-    DrawerElement,
-    KeywordElement,
-    HorizontalRuleElement,
-    FixedWidthElement,
-    FootnoteDefinitionElement,
-    ExportBlockElement,
-    BoldObject,
-    ItalicObject,
-    UnderlineObject,
-    StrikeThroughObject,
-    CodeObject,
-    VerbatimObject,
-    LinkObject,
-    TimestampObject,
-    EntityObject,
-    LatexFragmentObject,
-    SubscriptObject,
-    SuperscriptObject,
-    FootnoteReferenceObject,
-    StatisticsCookieObject,
-    TargetObject,
-    RadioTargetObject,
-    PlainTextObject,
-    InlineSrcBlockObject,
-    MacroObject,
-    TableCellObject,
-    AffiliatedKeywords,
-    ExportSnippetObject,
-} from './orgElementTypes';
+import type { OrgDocumentNode } from './orgElementTypes';
+import { parseOptionsKeyword, ExportOptions, DEFAULT_EXPORT_OPTIONS } from './orgExport';
 
-import type { ExportState, ExportOptions } from './orgExport';
+// =============================================================================
+// Pandoc Availability Check
+// =============================================================================
 
-import {
-    createExportState,
-    generateId,
-    generateSectionNumber,
-    shouldExport,
-    expandMacro,
-    BUILTIN_MACROS,
-    collectTargets,
-    collectFootnotes,
-    parseOptionsKeyword,
-} from './orgExport';
+let pandocAvailable: boolean | null = null;
+let pandocVersion: string | null = null;
 
-import {
-    createDocxStyles,
-    getHeadingLevel,
-    DocxStyleOptions,
-    DOCX_COLORS,
-} from './orgExportDocxStyles';
-
-import { highlightCode, preloadHighlighter, HighlightOptions } from './orgExportDocxHighlight';
-
-import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
-import type { BibEntry } from '../references/bibtexParser';
-import { latexToUnicode } from './orgExportDocxMath';
+/**
+ * Check if pandoc is available on the system
+ */
+function checkPandoc(): { available: boolean; version: string | null } {
+    if (pandocAvailable !== null) {
+        return { available: pandocAvailable, version: pandocVersion };
+    }
+    try {
+        const result = execSync('pandoc --version', { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] });
+        const match = result.match(/pandoc\s+([\d.]+)/);
+        pandocVersion = match ? match[1] : 'unknown';
+        pandocAvailable = true;
+    } catch {
+        pandocAvailable = false;
+        pandocVersion = null;
+    }
+    return { available: pandocAvailable, version: pandocVersion };
+}
 
 // =============================================================================
 // DOCX Export Options
 // =============================================================================
 
 /**
- * Options specific to DOCX export
+ * Options specific to DOCX export via pandoc
  */
 export interface DocxExportOptions extends ExportOptions {
-    /** Document creator name */
-    creator?: string;
-    /** Company name */
-    company?: string;
-    /** Document description */
-    description?: string;
-
-    // Styling options
-    /** Base font family (default: Calibri) */
-    fontFamily?: string;
-    /** Base font size in points (default: 11) */
-    fontSize?: number;
-    /** Heading font family (default: Calibri Light) */
-    headingFontFamily?: string;
-    /** Code font family (default: Consolas) */
-    codeFontFamily?: string;
-    /** Code font size in points (default: 10) */
-    codeFontSize?: number;
-
-    // Code highlighting
-    /** Shiki theme for syntax highlighting (default: github-light) */
-    highlightTheme?: string;
-    /** Whether to enable code highlighting (default: true) */
-    enableCodeHighlight?: boolean;
-
-    // Images
-    /** Maximum image width in pixels (default: 600) */
-    imageMaxWidth?: number;
-    /** Base path for resolving relative image paths */
+    /** Document title (from #+TITLE) */
+    title?: string;
+    /** Document author (from #+AUTHOR) */
+    author?: string;
+    /** Document date (from #+DATE) */
+    date?: string;
+    /** Path to reference docx for styling */
+    referenceDoc?: string;
+    /** Enable table of contents (can be boolean or number for depth) */
+    toc?: boolean | number;
+    /** TOC depth (default: 3) */
+    tocDepth?: number;
+    /** Enable section numbering */
+    sectionNumbers?: boolean;
+    /** Base path for resolving relative paths */
     basePath?: string;
-
-    // Citations
-    /** CSL style for citations (default: apa) */
-    citationStyle?: CSLStyleName | string;
-    /** Whether to generate bibliography (default: true) */
-    bibliography?: boolean;
-    /** BibTeX entries for citation processing */
-    bibEntries?: BibEntry[];
-    /** Pre-configured citation processor */
-    citationProcessor?: CitationProcessor;
+    /** Additional pandoc arguments */
+    pandocArgs?: string[];
+    /** Raw org content to pass directly to pandoc (bypasses AST serialization) */
+    rawContent?: string;
 }
 
-const DEFAULT_DOCX_OPTIONS: Required<
-    Omit<DocxExportOptions, keyof ExportOptions | 'citationProcessor' | 'bibEntries' | 'basePath'>
-> = {
-    creator: 'Scimax VSCode',
-    company: '',
-    description: '',
-    fontFamily: 'Calibri',
-    fontSize: 11,
-    headingFontFamily: 'Calibri Light',
-    codeFontFamily: 'Consolas',
-    codeFontSize: 10,
-    highlightTheme: 'github-light',
-    enableCodeHighlight: true,
-    imageMaxWidth: 600,
-    citationStyle: 'apa',
-    bibliography: true,
+const DEFAULT_DOCX_OPTIONS: DocxExportOptions = {
+    ...DEFAULT_EXPORT_OPTIONS,
+    backend: 'docx',
+    toc: false,
+    tocDepth: 3,
+    sectionNumbers: true,
 };
 
 // =============================================================================
-// DOCX Export State
+// Org Content Preprocessing
 // =============================================================================
 
 /**
- * Extended export state for DOCX
+ * Preprocess org content for export, applying export options
+ * This transforms the raw org text while respecting export settings
  */
-/** Accumulated text styles for nested markup */
-interface TextStyles {
-    bold?: boolean;
-    italics?: boolean;
-    underline?: boolean;
-    strike?: boolean;
+function preprocessOrgForExport(content: string, opts: DocxExportOptions): string {
+    let result = content;
+
+    // Remove statistics cookies [1/3] [50%] when includePlanning is false
+    if (opts.includePlanning === false) {
+        // Match statistics cookies in headlines - they appear after the title text
+        result = result.replace(/\s*\[(\d+\/\d+|\d+%)\]/g, '');
+    }
+
+    // Remove planning lines (SCHEDULED:, DEADLINE:, CLOSED:) when includePlanning is false
+    if (opts.includePlanning === false) {
+        // Planning lines appear right after headlines, starting with SCHEDULED/DEADLINE/CLOSED
+        result = result.replace(/^[ \t]*(SCHEDULED|DEADLINE|CLOSED):.*$/gm, '');
+        // Clean up any resulting blank lines
+        result = result.replace(/\n{3,}/g, '\n\n');
+    }
+
+    // Remove CLOCK entries when includeClocks is false
+    if (opts.includeClocks === false) {
+        result = result.replace(/^[ \t]*CLOCK:.*$/gm, '');
+        result = result.replace(/\n{3,}/g, '\n\n');
+    }
+
+    // Remove TODO keywords when includeTodo is false
+    if (opts.includeTodo === false) {
+        // Match headline with TODO/DONE keywords
+        // Standard keywords: TODO, DONE, NEXT, WAITING, CANCELLED, etc.
+        const todoKeywords = ['TODO', 'DONE', 'NEXT', 'WAITING', 'CANCELLED', 'CANCELED', 'HOLD', 'SOMEDAY'];
+        if (opts.todoKeywords) {
+            todoKeywords.push(...opts.todoKeywords.todo, ...opts.todoKeywords.done);
+        }
+        const todoPattern = new RegExp(`^(\\*+)\\s+(${todoKeywords.join('|')})\\s+`, 'gm');
+        result = result.replace(todoPattern, '$1 ');
+    }
+
+    // Remove priority cookies [#A] when includePriority is false
+    if (opts.includePriority === false) {
+        result = result.replace(/\s*\[#[A-Z]\]/g, '');
+    }
+
+    // Remove tags from headlines when includeTags is false
+    if (opts.includeTags === false) {
+        // Tags appear at end of headline: :tag1:tag2:
+        result = result.replace(/^(\*+\s+.*?)\s+:[\w@#%\-:]+:[ \t]*$/gm, '$1');
+    }
+
+    // Remove drawers when includeDrawers is false
+    if (opts.includeDrawers === false) {
+        // Match drawer blocks: :DRAWERNAME: ... :END:
+        // Use a safer approach that processes line by line to avoid matching across headings
+        const lines = result.split('\n');
+        const outputLines: string[] = [];
+        let inDrawer = false;
+
+        for (const line of lines) {
+            // Check for drawer start (but not :END:)
+            if (/^[ \t]*:[A-Z_]+:[ \t]*$/.test(line) && !/^[ \t]*:END:[ \t]*$/.test(line)) {
+                inDrawer = true;
+                continue;
+            }
+            // Check for drawer end
+            if (/^[ \t]*:END:[ \t]*$/.test(line)) {
+                inDrawer = false;
+                continue;
+            }
+            // Skip lines inside drawer, but NEVER skip headlines
+            if (inDrawer && !line.match(/^\*+ /)) {
+                continue;
+            }
+            // If we hit a headline while in a drawer, the drawer was malformed - exit drawer mode
+            if (inDrawer && line.match(/^\*+ /)) {
+                inDrawer = false;
+            }
+            outputLines.push(line);
+        }
+        result = outputLines.join('\n');
+        result = result.replace(/\n{3,}/g, '\n\n');
+    }
+
+    // Remove PROPERTIES drawers specifically when includeProperties is false (prop:nil)
+    if (opts.includeProperties === false) {
+        const lines = result.split('\n');
+        const outputLines: string[] = [];
+        let inPropertiesDrawer = false;
+
+        for (const line of lines) {
+            // Check for :PROPERTIES: start
+            if (/^[ \t]*:PROPERTIES:[ \t]*$/.test(line)) {
+                inPropertiesDrawer = true;
+                continue;
+            }
+            // Check for :END: while in properties drawer
+            if (inPropertiesDrawer && /^[ \t]*:END:[ \t]*$/.test(line)) {
+                inPropertiesDrawer = false;
+                continue;
+            }
+            // Skip property lines inside PROPERTIES drawer
+            if (inPropertiesDrawer) {
+                // Property lines look like :PROPERTY_NAME: value
+                if (/^[ \t]*:[A-Z_]+:/.test(line)) {
+                    continue;
+                }
+                // If we hit something that's not a property line, we're out of the drawer
+                inPropertiesDrawer = false;
+            }
+            // Also remove orphaned property lines (without :PROPERTIES: wrapper)
+            // These look like :PROPERTY_NAME: value on their own line right after a heading
+            if (/^:[A-Z_]+:\s+\S/.test(line) && !line.startsWith('*')) {
+                continue;
+            }
+            outputLines.push(line);
+        }
+        result = outputLines.join('\n');
+        result = result.replace(/\n{3,}/g, '\n\n');
+    }
+
+    // Convert LaTeX environments to $$...$$ format so pandoc recognizes them as math
+    // This mimics what ox-pandoc does in org-pandoc-latex-environ
+    result = convertLatexEnvironmentsForPandoc(result);
+
+    // Extract bibliography path for pandoc (before removing the lines)
+    const bibMatch = result.match(/^bibliography:(.+)$/m) ||
+                     result.match(/^#\+BIBLIOGRAPHY:\s*(.+)$/im);
+    if (bibMatch) {
+        const bibPath = bibMatch[1].trim();
+        // Store for later use in pandoc command
+        (opts as any)._bibliographyPath = bibPath;
+    }
+
+    // Remove org-ref bibliography/bibstyle lines (pandoc will handle via --bibliography flag)
+    result = result.replace(/^bibliography:.*$/gm, '');
+    result = result.replace(/^bibstyle:.*$/gm, '');
+    result = result.replace(/^#\+BIBLIOGRAPHY:.*$/gim, '');
+
+    // Convert org-ref style citations to org-cite format: cite:key -> [cite:@key]
+    // Pandoc's org reader understands [cite:@key] natively with --citeproc
+    result = convertOrgRefToOrgCite(result);
+
+    // Clean up orphaned :END: markers that don't have matching drawer starts
+    // This can happen when drawer content is partially processed
+    // Process line by line to find :END: without preceding drawer start
+    const lines = result.split('\n');
+    const cleanedLines: string[] = [];
+    let inDrawer = false;
+
+    for (const line of lines) {
+        // Check for drawer start
+        if (/^[ \t]*:(PROPERTIES|LOGBOOK|NOTES|CLOCK|RESULTS|[A-Z_]+):[ \t]*$/.test(line) &&
+            !/^[ \t]*:END:[ \t]*$/.test(line)) {
+            inDrawer = true;
+            cleanedLines.push(line);
+            continue;
+        }
+        // Check for :END:
+        if (/^[ \t]*:END:[ \t]*$/.test(line)) {
+            if (inDrawer) {
+                // Valid :END: - keep it
+                cleanedLines.push(line);
+            }
+            // If not in drawer, this is orphaned - skip it
+            inDrawer = false;
+            continue;
+        }
+        cleanedLines.push(line);
+    }
+    result = cleanedLines.join('\n');
+
+    return result;
 }
 
-interface DocxExportState extends ExportState {
-    /** DOCX-specific options */
-    docxOptions: DocxExportOptions;
-    /** Citation processor instance */
-    citationProcessor?: CitationProcessor;
-    /** Citation locations for back-links */
-    citationLocations: Map<string, string[]>;
-    /** Counter for unique citation IDs */
-    citationCounter: number;
-    /** Collected bookmarks for internal links */
-    bookmarks: Map<string, string>;
-    /** Document footnotes */
-    docxFootnotes: Map<string, { paragraphs: Paragraph[] }>;
-    /** Footnote reference counter */
-    footnoteRefCounter: number;
-    /** Skip next results block flag */
-    skipNextResults?: boolean;
-    /** Base path for resolving relative paths */
-    basePath: string;
-    /** Accumulated text styles for nested markup */
-    textStyles: TextStyles;
+/**
+ * Convert LaTeX environments to $$...$$ format for pandoc
+ * Pandoc's org reader doesn't always recognize \begin{equation}...\end{equation}
+ * but does recognize $$...$$ as display math
+ * This mimics ox-pandoc's org-pandoc-latex-environ function
+ */
+function convertLatexEnvironmentsForPandoc(content: string): string {
+    // Math environments that should be wrapped in $$...$$
+    const mathEnvs = [
+        'equation', 'equation\\*',
+        'align', 'align\\*',
+        'gather', 'gather\\*',
+        'multline', 'multline\\*',
+        'eqnarray', 'eqnarray\\*',
+        'displaymath',
+        'math',
+    ];
+
+    let result = content;
+
+    for (const env of mathEnvs) {
+        // Match \begin{env}...\end{env} including content with newlines
+        const pattern = new RegExp(
+            `\\\\begin\\{${env}\\}([\\s\\S]*?)\\\\end\\{${env}\\}`,
+            'g'
+        );
+
+        result = result.replace(pattern, (_match: string, innerContent: string) => {
+            // Strip \label{...} from the content (pandoc doesn't need it for OMML)
+            let mathContent = innerContent.replace(/\\label\{[^}]*\}/g, '');
+
+            // For non-starred environments, we keep the environment for numbering context
+            // but wrap in $$ so pandoc recognizes it as math
+            if (!env.includes('\\*')) {
+                // Keep the full environment but wrap in $$ for pandoc
+                return `$$\\begin{${env.replace('\\*', '*')}}${mathContent}\\end{${env.replace('\\*', '*')}}$$`;
+            } else {
+                // For starred (unnumbered) environments, just use the content
+                return `$$${mathContent.trim()}$$`;
+            }
+        });
+    }
+
+    // Also handle \[...\] display math (should already work but ensure it's clean)
+    // And standalone display math blocks
+
+    return result;
+}
+
+/**
+ * Convert org-ref style citations cite:key, citep:key, citet:key to org-cite format
+ * Pandoc's org reader understands [cite:@key] format natively with --citeproc
+ *
+ * Note: Must not match existing org-cite format [cite:@key]
+ */
+function convertOrgRefToOrgCite(content: string): string {
+    // Match org-ref citations: cite:key, citep:key, citet:key, citep:key1,key2
+    // Use negative lookbehind (?<!\[) to avoid matching inside existing [cite:...]
+    // Also avoid matching keys that start with @ (already org-cite format)
+    return content.replace(/(?<!\[)(cite[pt]?):(?!@)([^\s\[\](),.;]+(?:,[^\s\[\](),.;]+)*)/g, (match, citeType, keysStr) => {
+        // Handle comma-separated keys
+        const keys = keysStr.split(',').map((k: string) => k.trim()).filter((k: string) => k);
+
+        if (keys.length === 0) return match;
+
+        // Convert to org-cite format [cite:@key] or [cite/t:@key] for textual
+        const keyList = keys.map((k: string) => `@${k}`).join(';');
+
+        if (citeType === 'citet') {
+            // Textual citation: [cite/t:@key]
+            return `[cite/t:${keyList}]`;
+        } else {
+            // citep or cite: [cite:@key]
+            return `[cite:${keyList}]`;
+        }
+    });
 }
 
 // =============================================================================
@@ -217,1620 +337,621 @@ interface DocxExportState extends ExportState {
 // =============================================================================
 
 /**
- * DOCX export backend
- * Note: Unlike HTML/LaTeX backends, this returns a Promise<Buffer>
+ * DOCX export backend using pandoc
  */
 export class DocxExportBackend {
     public readonly name = 'docx';
 
     /**
-     * Export a complete document to DOCX format
+     * Export a complete document to DOCX format using pandoc
      * Returns a Buffer containing the DOCX file data
      */
     async exportDocument(
         doc: OrgDocumentNode,
         options?: Partial<DocxExportOptions>
     ): Promise<Buffer> {
+        // Check pandoc availability
+        const { available, version } = checkPandoc();
+        if (!available) {
+            throw new Error(
+                'Pandoc is not installed or not in PATH. ' +
+                'Please install pandoc from https://pandoc.org/installing.html'
+            );
+        }
+
         // Parse #+OPTIONS: keyword if present
         const optionsKeyword = doc.keywords['OPTIONS'];
         const parsedOptions = optionsKeyword ? parseOptionsKeyword(optionsKeyword) : {};
 
+        // Handle toc option which can be boolean or number (depth)
+        let tocEnabled = DEFAULT_DOCX_OPTIONS.toc;
+        let tocDepth = DEFAULT_DOCX_OPTIONS.tocDepth;
+        if (parsedOptions.toc !== undefined) {
+            if (typeof parsedOptions.toc === 'number') {
+                tocEnabled = parsedOptions.toc > 0;
+                tocDepth = parsedOptions.toc;
+            } else {
+                tocEnabled = parsedOptions.toc;
+            }
+        }
+        if (options?.toc !== undefined) {
+            tocEnabled = !!options.toc;
+        }
+        if (options?.tocDepth !== undefined) {
+            tocDepth = options.tocDepth;
+        }
+
         const opts: DocxExportOptions = {
             ...DEFAULT_DOCX_OPTIONS,
-            ...parsedOptions,  // OPTIONS keyword values
-            ...options,        // Explicit options override OPTIONS
+            ...parsedOptions,
+            ...options,
             backend: 'docx',
+            toc: tocEnabled,
+            tocDepth: tocDepth,
         };
 
-        // Create base export state
-        const baseState = createExportState(opts);
+        // Extract metadata from document keywords
+        const title = doc.keywords['TITLE'] || opts.title || '';
+        const author = doc.keywords['AUTHOR'] || opts.author || '';
+        const date = doc.keywords['DATE'] || opts.date || '';
 
-        // Create DOCX-specific state
-        const state: DocxExportState = {
-            ...baseState,
-            docxOptions: opts,
-            citationLocations: new Map(),
-            citationCounter: 0,
-            bookmarks: new Map(),
-            docxFootnotes: new Map(),
-            footnoteRefCounter: 0,
-            basePath: opts.basePath || process.cwd(),
-            textStyles: {},
-        };
+        // Use raw content if provided, otherwise serialize the AST
+        // Raw content is preferred as AST serialization may lose some formatting
+        // Apply preprocessing to respect export options
+        const rawOrg = opts.rawContent || this.serializeToOrg(doc, opts);
+        const orgContent = preprocessOrgForExport(rawOrg, opts);
 
-        // Initialize citation processor
-        if (opts.citationProcessor) {
-            state.citationProcessor = opts.citationProcessor;
-        } else if (opts.bibEntries && opts.bibEntries.length > 0) {
-            state.citationProcessor = new CitationProcessor({
-                style: opts.citationStyle || 'apa',
-            });
-            state.citationProcessor.loadEntries(opts.bibEntries);
-        }
+        // Create temp files
+        const tmpDir = os.tmpdir();
+        const uniqueId = crypto.randomBytes(8).toString('hex');
+        const inputFile = path.join(tmpDir, `export-${uniqueId}.org`);
+        const outputFile = path.join(tmpDir, `export-${uniqueId}.docx`);
 
-        // Pre-process document
-        collectTargets(doc, state);
-        collectFootnotes(doc, state);
+        try {
+            // Write org content to temp file
+            fs.writeFileSync(inputFile, orgContent, 'utf-8');
 
-        // Collect document-defined macros from #+MACRO: keywords
-        if (doc.keywordLists?.['MACRO']) {
-            const docMacros: Record<string, string> = {};
-            for (const macroDef of doc.keywordLists['MACRO']) {
-                // Format: "name replacement text" or "name(args) replacement text"
-                const match = macroDef.match(/^(\S+)\s+(.*)$/);
-                if (match) {
-                    docMacros[match[1]] = match[2];
-                }
+            // Build pandoc command
+            const args: string[] = [
+                `"${inputFile}"`,
+                '-f', 'org',
+                '-t', 'docx',
+                '-o', `"${outputFile}"`,
+            ];
+
+            // Add metadata
+            if (title) {
+                args.push('-M', `title="${title}"`);
             }
-            // Document macros override options macros
-            state.options.macros = { ...state.options.macros, ...docMacros };
-        }
-
-        // Pre-load syntax highlighter if enabled
-        if (opts.enableCodeHighlight) {
-            await preloadHighlighter(opts.highlightTheme);
-        }
-
-        // Extract document metadata
-        const title = opts.title || doc.keywords['TITLE'] || 'Untitled';
-        const author = opts.author || doc.keywords['AUTHOR'] || '';
-        const date = opts.date || doc.keywords['DATE'] || '';
-
-        // Build document sections
-        const sections = await this.buildDocumentSections(doc, state);
-
-        // Create the Word document
-        const docxDocument = this.createDocument(
-            {
-                title,
-                author,
-                date,
-                creator: opts.creator,
-                company: opts.company,
-                description: opts.description,
-            },
-            sections,
-            state,
-            opts
-        );
-
-        // Pack to buffer
-        return Packer.toBuffer(docxDocument);
-    }
-
-    /**
-     * Create the DOCX Document object
-     */
-    private createDocument(
-        meta: {
-            title: string;
-            author: string;
-            date: string;
-            creator?: string;
-            company?: string;
-            description?: string;
-        },
-        sections: Paragraph[],
-        state: DocxExportState,
-        opts: DocxExportOptions
-    ): Document {
-        // Build footnotes object for Document
-        // Footnotes are passed as a Record<number, { children: Paragraph[] }>
-        const footnotes: Record<number, { children: Paragraph[] }> = {};
-        let footnoteId = 1;
-        for (const [_label, { paragraphs }] of state.docxFootnotes) {
-            footnotes[footnoteId] = {
-                children: paragraphs,
-            };
-            footnoteId++;
-        }
-
-        // Style options
-        const styleOpts: DocxStyleOptions = {
-            fontFamily: opts.fontFamily,
-            fontSize: opts.fontSize,
-            headingFontFamily: opts.headingFontFamily,
-            codeFontFamily: opts.codeFontFamily,
-            codeFontSize: opts.codeFontSize,
-        };
-
-        return new Document({
-            creator: meta.creator || 'Scimax VSCode',
-            title: meta.title,
-            description: meta.description,
-            styles: createDocxStyles(styleOpts),
-            numbering: this.createNumberingConfig(),
-            ...(Object.keys(footnotes).length > 0 ? { footnotes } : {}),
-            sections: [
-                {
-                    properties: {},
-                    children: sections,
-                },
-            ],
-        });
-    }
-
-    /**
-     * Create numbering configuration for lists
-     */
-    private createNumberingConfig() {
-        return {
-            config: [
-                {
-                    reference: 'bullet-list',
-                    levels: [
-                        { level: 0, format: LevelFormat.BULLET, text: '\u2022', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: convertInchesToTwip(0.5), hanging: convertInchesToTwip(0.25) } } } },
-                        { level: 1, format: LevelFormat.BULLET, text: '\u25E6', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: convertInchesToTwip(1.0), hanging: convertInchesToTwip(0.25) } } } },
-                        { level: 2, format: LevelFormat.BULLET, text: '\u2013', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: convertInchesToTwip(1.5), hanging: convertInchesToTwip(0.25) } } } },
-                    ],
-                },
-                {
-                    reference: 'ordered-list',
-                    levels: [
-                        { level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: convertInchesToTwip(0.5), hanging: convertInchesToTwip(0.25) } } } },
-                        { level: 1, format: LevelFormat.LOWER_LETTER, text: '%2.', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: convertInchesToTwip(1.0), hanging: convertInchesToTwip(0.25) } } } },
-                        { level: 2, format: LevelFormat.LOWER_ROMAN, text: '%3.', alignment: AlignmentType.LEFT, style: { paragraph: { indent: { left: convertInchesToTwip(1.5), hanging: convertInchesToTwip(0.25) } } } },
-                    ],
-                },
-            ],
-        };
-    }
-
-    /**
-     * Build all document sections (paragraphs)
-     */
-    private async buildDocumentSections(
-        doc: OrgDocumentNode,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const sections: Paragraph[] = [];
-
-        // Title
-        const title = state.docxOptions.title || doc.keywords['TITLE'];
-        if (title) {
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: title, bold: true, size: 56 })], // 28pt
-                    heading: HeadingLevel.TITLE,
-                    spacing: { after: 200 },
-                })
-            );
-        }
-
-        // Author and date
-        const author = state.docxOptions.author || doc.keywords['AUTHOR'];
-        const date = state.docxOptions.date || doc.keywords['DATE'];
-        if (author || date) {
-            const metaRuns: TextRun[] = [];
             if (author) {
-                metaRuns.push(new TextRun({ text: author, italics: true }));
-            }
-            if (author && date) {
-                metaRuns.push(new TextRun({ text: ' \u2014 ' })); // em dash
+                args.push('-M', `author="${author}"`);
             }
             if (date) {
-                metaRuns.push(new TextRun({ text: date, italics: true }));
+                args.push('-M', `date="${date}"`);
             }
-            sections.push(
-                new Paragraph({
-                    children: metaRuns,
-                    spacing: { after: 400 },
-                })
-            );
-        }
 
-        // Table of contents
-        if (state.options.toc) {
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: 'Table of Contents', bold: true, size: 48 })],
-                    heading: HeadingLevel.HEADING_1,
-                })
-            );
-            // Note: TableOfContents is handled differently in Word and requires
-            // the document to have field codes updated when opened
-            sections.push(
-                new Paragraph({
-                    children: [new TextRun({ text: '(Update table of contents in Word: Ctrl+A, F9)' })],
-                })
-            );
-            sections.push(new Paragraph({ children: [new PageBreak()] }));
-        }
+            // Add TOC if enabled
+            if (opts.toc) {
+                args.push('--toc');
+                args.push('--toc-depth', String(opts.tocDepth || 3));
+            }
 
-        // Export preamble section
-        if (doc.section) {
-            const sectionContent = await this.exportSection(doc.section, state);
-            sections.push(...sectionContent);
-        }
+            // Add section numbering
+            if (opts.sectionNumbers) {
+                args.push('--number-sections');
+            }
 
-        // Export headlines
-        for (const headline of doc.children) {
-            if (shouldExport(headline, state.options)) {
-                const headlineContent = await this.exportHeadline(headline, state);
-                sections.push(...headlineContent);
+            // Add reference doc for styling if provided
+            if (opts.referenceDoc && fs.existsSync(opts.referenceDoc)) {
+                args.push('--reference-doc', `"${opts.referenceDoc}"`);
+            }
+
+            // Add bibliography support if a bibliography path was found
+            const bibPath = (opts as any)._bibliographyPath;
+            let useBibliography = false;
+            let expandedBibPath = '';
+            if (bibPath) {
+                // Expand ~ to home directory
+                expandedBibPath = bibPath.replace(/^~/, process.env.HOME || '');
+                if (fs.existsSync(expandedBibPath)) {
+                    useBibliography = true;
+                }
+            }
+
+            // Add any additional pandoc arguments
+            if (opts.pandocArgs && opts.pandocArgs.length > 0) {
+                args.push(...opts.pandocArgs);
+            }
+
+            // Set working directory for relative path resolution
+            const cwd = opts.basePath || process.cwd();
+
+            // Build and run pandoc command
+            let command: string;
+            let bibWarning: string | undefined;
+            if (useBibliography) {
+                const bibArgs = [...args, '--bibliography', `"${expandedBibPath}"`, '--citeproc'];
+                command = `pandoc ${bibArgs.join(' ')}`;
+                try {
+                    execSync(command, {
+                        cwd,
+                        stdio: ['pipe', 'pipe', 'pipe'],
+                        timeout: 60000,
+                        maxBuffer: 50 * 1024 * 1024,
+                    });
+                } catch (bibError: any) {
+                    // Extract the error message for user feedback
+                    const errorMsg = bibError.stderr?.toString() || bibError.message || String(bibError);
+                    bibWarning = `Bibliography processing failed: ${errorMsg.slice(0, 500)}`;
+                    console.warn(bibWarning);
+
+                    // Fall back to export without bibliography
+                    command = `pandoc ${args.join(' ')}`;
+                    execSync(command, {
+                        cwd,
+                        stdio: ['pipe', 'pipe', 'pipe'],
+                        timeout: 60000,
+                        maxBuffer: 50 * 1024 * 1024,
+                    });
+                }
+            } else {
+                command = `pandoc ${args.join(' ')}`;
+                execSync(command, {
+                    cwd,
+                    stdio: ['pipe', 'pipe', 'pipe'],
+                    timeout: 60000, // 60 second timeout
+                    maxBuffer: 50 * 1024 * 1024, // 50MB buffer
+                });
+            }
+
+            // Store warning for caller to display
+            if (bibWarning) {
+                (opts as any)._bibWarning = bibWarning;
+            }
+
+            // Read the generated docx
+            const buffer = fs.readFileSync(outputFile);
+            return buffer;
+
+        } finally {
+            // Clean up temp files
+            try {
+                if (fs.existsSync(inputFile)) fs.unlinkSync(inputFile);
+                if (fs.existsSync(outputFile)) fs.unlinkSync(outputFile);
+            } catch {
+                // Ignore cleanup errors
             }
         }
-
-        // Export bibliography
-        if (state.docxOptions.bibliography !== false && state.citationProcessor) {
-            const bibSections = this.exportBibliography(state);
-            sections.push(...bibSections);
-        }
-
-        return sections;
     }
 
     /**
-     * Export a headline to paragraphs
+     * Serialize the AST back to org format
+     * This preserves the original structure while applying any transformations
      */
-    private async exportHeadline(
-        headline: HeadlineElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const paragraphs: Paragraph[] = [];
+    private serializeToOrg(doc: OrgDocumentNode, opts: DocxExportOptions): string {
+        const lines: string[] = [];
 
-        // Generate bookmark ID
-        const id = headline.properties.customId ||
-            headline.properties.id ||
-            generateId(headline.properties.rawValue);
-        state.bookmarks.set(headline.properties.rawValue, id);
-
-        // Build title runs
-        const titleRuns: TextRun[] = [];
-
-        // Add section number if enabled
-        if (state.options.sectionNumbers) {
-            const numberLabel = generateSectionNumber(headline.properties.level, state);
-            titleRuns.push(new TextRun({ text: `${numberLabel} `, color: DOCX_COLORS.textMuted }));
+        // Add document keywords
+        if (doc.keywords['TITLE']) {
+            lines.push(`#+TITLE: ${doc.keywords['TITLE']}`);
+        }
+        if (doc.keywords['AUTHOR']) {
+            lines.push(`#+AUTHOR: ${doc.keywords['AUTHOR']}`);
+        }
+        if (doc.keywords['DATE']) {
+            lines.push(`#+DATE: ${doc.keywords['DATE']}`);
+        }
+        if (doc.keywords['OPTIONS']) {
+            lines.push(`#+OPTIONS: ${doc.keywords['OPTIONS']}`);
         }
 
-        // Add TODO keyword if present
-        if (headline.properties.todoKeyword && state.options.includeTodo !== false) {
-            const todoType = headline.properties.todoType || 'todo';
-            const color = todoType === 'done' ? DOCX_COLORS.doneKeyword : DOCX_COLORS.todoKeyword;
-            titleRuns.push(new TextRun({
-                text: `${headline.properties.todoKeyword} `,
-                bold: true,
-                color,
-            }));
+        // Add other keywords
+        for (const [key, value] of Object.entries(doc.keywords)) {
+            if (!['TITLE', 'AUTHOR', 'DATE', 'OPTIONS'].includes(key)) {
+                lines.push(`#+${key}: ${value}`);
+            }
+        }
+
+        if (lines.length > 0) {
+            lines.push(''); // Blank line after keywords
+        }
+
+        // Serialize document content
+        for (const element of doc.children) {
+            const serialized = this.serializeElement(element, opts);
+            if (serialized) {
+                lines.push(serialized);
+            }
+        }
+
+        return lines.join('\n');
+    }
+
+    /**
+     * Serialize a single element to org format
+     */
+    private serializeElement(element: any, opts: DocxExportOptions): string {
+        switch (element.type) {
+            case 'headline':
+                return this.serializeHeadline(element, opts);
+            case 'section':
+                return this.serializeSection(element, opts);
+            case 'paragraph':
+                return this.serializeParagraph(element, opts);
+            case 'src-block':
+                return this.serializeSrcBlock(element, opts);
+            case 'example-block':
+                return this.serializeExampleBlock(element, opts);
+            case 'quote-block':
+                return this.serializeQuoteBlock(element, opts);
+            case 'center-block':
+                return this.serializeCenterBlock(element, opts);
+            case 'verse-block':
+                return this.serializeVerseBlock(element, opts);
+            case 'special-block':
+                return this.serializeSpecialBlock(element, opts);
+            case 'plain-list':
+                return this.serializePlainList(element, opts);
+            case 'table':
+                return this.serializeTable(element, opts);
+            case 'latex-environment':
+                return this.serializeLatexEnvironment(element, opts);
+            case 'keyword':
+                return this.serializeKeyword(element, opts);
+            case 'fixed-width':
+                return this.serializeFixedWidth(element, opts);
+            case 'drawer':
+                return this.serializeDrawer(element, opts);
+            case 'horizontal-rule':
+                return '-----';
+            case 'comment':
+                return `# ${element.properties?.value || ''}`;
+            case 'comment-block':
+                return `#+BEGIN_COMMENT\n${element.properties?.value || ''}\n#+END_COMMENT`;
+            default:
+                // For unknown elements, try to get raw value
+                if (element.properties?.value) {
+                    return element.properties.value;
+                }
+                return '';
+        }
+    }
+
+    private serializeHeadline(headline: any, opts: DocxExportOptions): string {
+        const lines: string[] = [];
+        const level = headline.properties?.level || 1;
+        const stars = '*'.repeat(level);
+
+        let title = '';
+
+        // Add TODO keyword if present and includeTodo is true
+        if (headline.properties?.todoKeyword && opts.includeTodo !== false) {
+            title += headline.properties.todoKeyword + ' ';
+        }
+
+        // Add priority if present and includePriority is true
+        if (headline.properties?.priority && opts.includePriority !== false) {
+            title += `[#${headline.properties.priority}] `;
         }
 
         // Add title text
-        if (headline.properties.title) {
-            const titleContent = await this.exportObjects(headline.properties.title, state);
-            titleRuns.push(...titleContent);
-        } else {
-            titleRuns.push(new TextRun({ text: headline.properties.rawValue }));
+        if (headline.properties?.title) {
+            title += this.serializeObjects(headline.properties.title, opts);
+        } else if (headline.properties?.rawValue) {
+            title += headline.properties.rawValue;
         }
 
-        // Add tags
-        if (headline.properties.tags.length > 0 && state.options.includeTags !== false) {
-            titleRuns.push(new TextRun({ text: '  ' }));
-            for (const tag of headline.properties.tags) {
-                titleRuns.push(new TextRun({
-                    text: `:${tag}:`,
-                    color: DOCX_COLORS.textMuted,
-                    size: 18, // Smaller
-                }));
+        // Strip statistics cookies if includePlanning is false
+        if (opts.includePlanning === false) {
+            title = title.replace(/\s*\[(\d+\/\d+|\d+%)\]/g, '');
+        }
+
+        // Add tags if includeTags is true
+        if (headline.properties?.tags?.length > 0 && opts.includeTags !== false) {
+            const tagStr = ':' + headline.properties.tags.join(':') + ':';
+            title += ' ' + tagStr;
+        }
+
+        lines.push(`${stars} ${title.trim()}`);
+
+        // Add planning info if present
+        if (headline.properties?.planning && opts.includePlanning !== false) {
+            const planning = headline.properties.planning;
+            const planParts: string[] = [];
+            if (planning.scheduled) planParts.push(`SCHEDULED: ${planning.scheduled}`);
+            if (planning.deadline) planParts.push(`DEADLINE: ${planning.deadline}`);
+            if (planning.closed) planParts.push(`CLOSED: ${planning.closed}`);
+            if (planParts.length > 0) {
+                lines.push(planParts.join(' '));
             }
         }
 
-        // Create heading paragraph with bookmark
-        const headingLevel = getHeadingLevel(headline.properties.level);
-        paragraphs.push(
-            new Paragraph({
-                children: [
-                    new Bookmark({
-                        id,
-                        children: titleRuns,
-                    }),
-                ],
-                heading: headingLevel,
-            })
-        );
-
-        // Export section content
-        if (headline.section) {
-            const sectionContent = await this.exportSection(headline.section, state);
-            paragraphs.push(...sectionContent);
-        }
-
-        // Export child headlines
-        for (const child of headline.children) {
-            if (shouldExport(child, state.options)) {
-                const childContent = await this.exportHeadline(child, state);
-                paragraphs.push(...childContent);
+        // Serialize children (section and sub-headlines)
+        for (const child of headline.children || []) {
+            const serialized = this.serializeElement(child, opts);
+            if (serialized) {
+                lines.push(serialized);
             }
         }
 
-        return paragraphs;
+        return lines.join('\n');
     }
 
-    /**
-     * Export a section to paragraphs
-     */
-    private async exportSection(
-        section: SectionElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const paragraphs: Paragraph[] = [];
-
-        for (const child of section.children) {
-            const elementParagraphs = await this.exportElement(child, state);
-            paragraphs.push(...elementParagraphs);
-        }
-
-        return paragraphs;
-    }
-
-    /**
-     * Export a single element to paragraphs
-     */
-    async exportElement(
-        element: OrgElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        switch (element.type) {
-            case 'paragraph':
-                return this.exportParagraph(element as ParagraphElement, state);
-            case 'src-block':
-                return this.exportSrcBlock(element as SrcBlockElement, state);
-            case 'example-block':
-                return this.exportExampleBlock(element as ExampleBlockElement, state);
-            case 'quote-block':
-                return this.exportQuoteBlock(element as QuoteBlockElement, state);
-            case 'center-block':
-                return this.exportCenterBlock(element as CenterBlockElement, state);
-            case 'special-block':
-                return this.exportSpecialBlock(element as SpecialBlockElement, state);
-            case 'verse-block':
-                return this.exportVerseBlock(element as VerseBlockElement, state);
-            case 'table':
-                return this.exportTable(element as TableElement, state);
-            case 'plain-list':
-                return this.exportPlainList(element as PlainListElement, state);
-            case 'horizontal-rule':
-                return this.exportHorizontalRule();
-            case 'fixed-width':
-                return this.exportFixedWidth(element as FixedWidthElement, state);
-            case 'drawer':
-                return this.exportDrawer(element as DrawerElement, state);
-            case 'export-block':
-                return this.exportExportBlock(element as ExportBlockElement, state);
-            case 'latex-environment':
-                return this.exportLatexEnvironment(element as LatexEnvironmentElement, state);
-            case 'keyword':
-            case 'comment-block':
-            case 'footnote-definition':
-                // Skip these elements
-                return [];
-            default:
-                return [];
-        }
-    }
-
-    /**
-     * Export a paragraph element
-     */
-    private async exportParagraph(
-        paragraph: ParagraphElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const runs = await this.exportObjects(paragraph.children, state);
-
-        return [
-            new Paragraph({
-                children: runs,
-                spacing: { after: 200 },
-            }),
-        ];
-    }
-
-    /**
-     * Export a source block with syntax highlighting
-     */
-    private async exportSrcBlock(
-        block: SrcBlockElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const lang = block.properties.language || 'text';
-        const code = block.properties.value;
-
-        // Parse :exports header argument
-        const params = block.properties.parameters || '';
-        const exportsMatch = params.match(/:exports\s+(\w+)/i);
-        const exports = exportsMatch ? exportsMatch[1].toLowerCase() : 'both';
-
-        if (exports === 'none') {
-            state.skipNextResults = true;
-            return [];
-        }
-
-        if (exports === 'results') {
-            state.skipNextResults = false;
-            return [];
-        }
-
-        if (exports === 'code') {
-            state.skipNextResults = true;
-        } else {
-            state.skipNextResults = false;
-        }
-
-        const paragraphs: Paragraph[] = [];
-
-        // Add caption if present
-        if (block.affiliated?.caption) {
-            const caption = Array.isArray(block.affiliated.caption)
-                ? block.affiliated.caption[1]
-                : block.affiliated.caption;
-            paragraphs.push(
-                new Paragraph({
-                    children: [new TextRun({ text: caption, italics: true })],
-                    style: 'Caption',
-                })
-            );
-        }
-
-        // Highlight the code
-        const highlightedLines = await highlightCode(code, lang, {
-            theme: state.docxOptions.highlightTheme,
-            fontFamily: state.docxOptions.codeFontFamily,
-            fontSize: (state.docxOptions.codeFontSize || 10) * 2,
-            enabled: state.docxOptions.enableCodeHighlight,
-        });
-
-        // Create a paragraph for each line
-        for (const lineRuns of highlightedLines) {
-            paragraphs.push(
-                new Paragraph({
-                    children: lineRuns,
-                    style: 'CodeBlock',
-                    shading: {
-                        type: ShadingType.SOLID,
-                        fill: DOCX_COLORS.codeBackground,
-                    },
-                })
-            );
-        }
-
-        // Add spacing after code block
-        paragraphs.push(new Paragraph({ children: [], spacing: { after: 200 } }));
-
-        return paragraphs;
-    }
-
-    /**
-     * Export an example block
-     */
-    private async exportExampleBlock(
-        block: ExampleBlockElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const lines = block.properties.value.split('\n');
-        const paragraphs: Paragraph[] = [];
-
-        for (const line of lines) {
-            paragraphs.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: line,
-                            font: state.docxOptions.codeFontFamily || 'Consolas',
-                            size: (state.docxOptions.codeFontSize || 10) * 2,
-                        }),
-                    ],
-                    style: 'CodeBlock',
-                    shading: {
-                        type: ShadingType.SOLID,
-                        fill: 'FFF9C4', // Light yellow
-                    },
-                })
-            );
-        }
-
-        paragraphs.push(new Paragraph({ children: [], spacing: { after: 200 } }));
-
-        return paragraphs;
-    }
-
-    /**
-     * Export a quote block
-     */
-    private async exportQuoteBlock(
-        block: QuoteBlockElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const paragraphs: Paragraph[] = [];
-
-        for (const child of block.children) {
-            if (child.type === 'paragraph') {
-                const runs = await this.exportObjects((child as ParagraphElement).children, state);
-                // Add italic styling to quote text
-                const italicRuns = runs.map(run => new TextRun({
-                    text: '',
-                    italics: true,
-                    color: DOCX_COLORS.textLight,
-                }));
-                paragraphs.push(
-                    new Paragraph({
-                        children: runs.map(() => new TextRun({ text: '', italics: true })),
-                        style: 'Quote',
-                        indent: { left: convertInchesToTwip(0.5) },
-                    })
-                );
-                // Re-export with italic styling
-                const quoteRuns: TextRun[] = [];
-                for (const obj of (child as ParagraphElement).children) {
-                    if (obj.type === 'plain-text') {
-                        quoteRuns.push(new TextRun({
-                            text: (obj as PlainTextObject).properties.value,
-                            italics: true,
-                            color: DOCX_COLORS.textLight,
-                        }));
-                    } else {
-                        const objRuns = await this.exportObject(obj, state);
-                        quoteRuns.push(...objRuns);
-                    }
-                }
-                paragraphs.pop(); // Remove the placeholder
-                paragraphs.push(
-                    new Paragraph({
-                        children: quoteRuns,
-                        style: 'Quote',
-                        indent: { left: convertInchesToTwip(0.5) },
-                    })
-                );
-            } else {
-                const childParas = await this.exportElement(child, state);
-                paragraphs.push(...childParas);
+    private serializeSection(section: any, opts: DocxExportOptions): string {
+        const lines: string[] = [];
+        for (const child of section.children || []) {
+            const serialized = this.serializeElement(child, opts);
+            if (serialized) {
+                lines.push(serialized);
             }
         }
-
-        return paragraphs;
+        return lines.join('\n');
     }
 
-    /**
-     * Export a center block
-     */
-    private async exportCenterBlock(
-        block: CenterBlockElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const paragraphs: Paragraph[] = [];
-
-        for (const child of block.children) {
-            if (child.type === 'paragraph') {
-                const runs = await this.exportObjects((child as ParagraphElement).children, state);
-                paragraphs.push(
-                    new Paragraph({
-                        children: runs,
-                        alignment: AlignmentType.CENTER,
-                    })
-                );
-            } else {
-                const childParas = await this.exportElement(child, state);
-                paragraphs.push(...childParas);
-            }
-        }
-
-        return paragraphs;
+    private serializeParagraph(para: any, opts: DocxExportOptions): string {
+        const content = this.serializeObjects(para.children || [], opts);
+        return content + '\n';
     }
 
-    /**
-     * Export a special block (note, warning, tip, etc.)
-     */
-    private async exportSpecialBlock(
-        block: SpecialBlockElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const blockType = block.properties.blockType.toLowerCase();
-        const paragraphs: Paragraph[] = [];
+    private serializeObjects(objects: any[], opts: DocxExportOptions): string {
+        if (!objects || objects.length === 0) return '';
 
-        // Determine background color based on block type
-        let bgColor = DOCX_COLORS.noteBackground;
-        if (blockType === 'warning' || blockType === 'caution') {
-            bgColor = DOCX_COLORS.warningBackground;
-        } else if (blockType === 'tip') {
-            bgColor = DOCX_COLORS.tipBackground;
-        }
-
-        // Add block type header
-        paragraphs.push(
-            new Paragraph({
-                children: [
-                    new TextRun({
-                        text: blockType.toUpperCase(),
-                        bold: true,
-                        color: DOCX_COLORS.textLight,
-                    }),
-                ],
-                shading: {
-                    type: ShadingType.SOLID,
-                    fill: bgColor,
-                },
-                indent: { left: convertInchesToTwip(0.25), right: convertInchesToTwip(0.25) },
-            })
-        );
-
-        // Export content
-        for (const child of block.children) {
-            if (child.type === 'paragraph') {
-                const runs = await this.exportObjects((child as ParagraphElement).children, state);
-                paragraphs.push(
-                    new Paragraph({
-                        children: runs,
-                        shading: {
-                            type: ShadingType.SOLID,
-                            fill: bgColor,
-                        },
-                        indent: { left: convertInchesToTwip(0.25), right: convertInchesToTwip(0.25) },
-                    })
-                );
-            } else {
-                const childParas = await this.exportElement(child, state);
-                paragraphs.push(...childParas);
-            }
-        }
-
-        paragraphs.push(new Paragraph({ children: [], spacing: { after: 200 } }));
-
-        return paragraphs;
+        return objects.map(obj => this.serializeObject(obj, opts)).join('');
     }
 
-    /**
-     * Export a verse block (preserve line breaks)
-     */
-    private async exportVerseBlock(
-        block: VerseBlockElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const lines = block.properties.value.split('\n');
-        const paragraphs: Paragraph[] = [];
-
-        for (const line of lines) {
-            paragraphs.push(
-                new Paragraph({
-                    children: [new TextRun({ text: line, italics: true })],
-                    indent: { left: convertInchesToTwip(0.5) },
-                    spacing: { after: 0 },
-                })
-            );
-        }
-
-        paragraphs.push(new Paragraph({ children: [], spacing: { after: 200 } }));
-
-        return paragraphs;
-    }
-
-    /**
-     * Export a table
-     */
-    private async exportTable(
-        table: TableElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        if (state.options.includeTables === false) {
-            return [];
-        }
-
-        const paragraphs: Paragraph[] = [];
-
-        // Add caption if present
-        if (table.affiliated?.caption) {
-            const caption = Array.isArray(table.affiliated.caption)
-                ? table.affiliated.caption[1]
-                : table.affiliated.caption;
-            paragraphs.push(
-                new Paragraph({
-                    children: [new TextRun({ text: caption, italics: true })],
-                    style: 'Caption',
-                })
-            );
-        }
-
-        // Separate header and body rows
-        const rows: TableRowElement[] = [];
-        let headerRows: TableRowElement[] = [];
-        let inHeader = true;
-
-        for (const row of table.children) {
-            if (row.properties.rowType === 'rule') {
-                inHeader = false;
-                continue;
-            }
-            if (inHeader) {
-                headerRows.push(row);
-            } else {
-                rows.push(row);
-            }
-        }
-
-        // If no separator, treat all as body
-        if (rows.length === 0 && headerRows.length > 0) {
-            rows.push(...headerRows);
-            headerRows = [];
-        }
-
-        // Build table rows
-        const tableRows: TableRow[] = [];
-
-        // Header rows
-        for (const row of headerRows) {
-            const cells = await this.exportTableRow(row, state, true);
-            tableRows.push(
-                new TableRow({
-                    children: cells,
-                    tableHeader: true,
-                })
-            );
-        }
-
-        // Body rows
-        for (const row of rows) {
-            const cells = await this.exportTableRow(row, state, false);
-            tableRows.push(
-                new TableRow({
-                    children: cells,
-                })
-            );
-        }
-
-        // Create table
-        const docxTable = new Table({
-            rows: tableRows,
-            width: {
-                size: 100,
-                type: WidthType.PERCENTAGE,
-            },
-        });
-
-        paragraphs.push(docxTable as any); // Table can be used in place of Paragraph
-
-        paragraphs.push(new Paragraph({ children: [], spacing: { after: 200 } }));
-
-        return paragraphs;
-    }
-
-    /**
-     * Export a table row
-     */
-    private async exportTableRow(
-        row: TableRowElement,
-        state: DocxExportState,
-        isHeader: boolean
-    ): Promise<TableCell[]> {
-        const cells: TableCell[] = [];
-
-        for (const cell of row.children) {
-            const content = cell.children
-                ? await this.exportObjects(cell.children, state)
-                : [new TextRun({ text: cell.properties.value })];
-
-            cells.push(
-                new TableCell({
-                    children: [
-                        new Paragraph({
-                            children: content,
-                        }),
-                    ],
-                    shading: isHeader
-                        ? { type: ShadingType.SOLID, fill: DOCX_COLORS.tableHeaderBackground }
-                        : undefined,
-                    borders: {
-                        top: { style: BorderStyle.SINGLE, size: 1, color: DOCX_COLORS.tableBorder },
-                        bottom: { style: BorderStyle.SINGLE, size: 1, color: DOCX_COLORS.tableBorder },
-                        left: { style: BorderStyle.SINGLE, size: 1, color: DOCX_COLORS.tableBorder },
-                        right: { style: BorderStyle.SINGLE, size: 1, color: DOCX_COLORS.tableBorder },
-                    },
-                })
-            );
-        }
-
-        return cells;
-    }
-
-    /**
-     * Export a plain list
-     */
-    private async exportPlainList(
-        list: PlainListElement,
-        state: DocxExportState,
-        level: number = 0
-    ): Promise<Paragraph[]> {
-        const paragraphs: Paragraph[] = [];
-        const listType = list.properties.listType;
-        const reference = listType === 'ordered' ? 'ordered-list' : 'bullet-list';
-
-        for (const item of list.children) {
-            const itemParas = await this.exportListItem(item, state, reference, level);
-            paragraphs.push(...itemParas);
-        }
-
-        return paragraphs;
-    }
-
-    /**
-     * Export a list item
-     */
-    private async exportListItem(
-        item: ItemElement,
-        state: DocxExportState,
-        reference: string,
-        level: number
-    ): Promise<Paragraph[]> {
-        const paragraphs: Paragraph[] = [];
-        const runs: TextRun[] = [];
-
-        // Add checkbox if present
-        if (item.properties.checkbox) {
-            const checkbox =
-                item.properties.checkbox === 'on'
-                    ? '\u2611 ' // ☑
-                    : item.properties.checkbox === 'trans'
-                    ? '\u2610 ' // ☐ with dash (use regular)
-                    : '\u2610 '; // ☐
-            runs.push(new TextRun({ text: checkbox }));
-        }
-
-        // Export item content (first child is usually paragraph)
-        for (const child of item.children) {
-            if (child.type === 'paragraph') {
-                const paraContent = await this.exportObjects(
-                    (child as ParagraphElement).children,
-                    state
-                );
-                runs.push(...paraContent);
-            } else if (child.type === 'plain-list') {
-                // Nested list - first add the current item paragraph
-                if (runs.length > 0) {
-                    paragraphs.push(
-                        new Paragraph({
-                            children: runs,
-                            numbering: {
-                                reference,
-                                level,
-                            },
-                        })
-                    );
-                    runs.length = 0;
-                }
-                // Then add nested list
-                const nestedParas = await this.exportPlainList(
-                    child as PlainListElement,
-                    state,
-                    level + 1
-                );
-                paragraphs.push(...nestedParas);
-            }
-        }
-
-        // Add remaining runs
-        if (runs.length > 0) {
-            paragraphs.push(
-                new Paragraph({
-                    children: runs,
-                    numbering: {
-                        reference,
-                        level,
-                    },
-                })
-            );
-        }
-
-        return paragraphs;
-    }
-
-    /**
-     * Export a horizontal rule
-     */
-    private exportHorizontalRule(): Paragraph[] {
-        return [
-            new Paragraph({
-                children: [],
-                border: {
-                    bottom: {
-                        style: BorderStyle.SINGLE,
-                        size: 6,
-                        color: DOCX_COLORS.textMuted,
-                    },
-                },
-                spacing: { before: 200, after: 200 },
-            }),
-        ];
-    }
-
-    /**
-     * Export fixed width (results) block
-     */
-    private async exportFixedWidth(
-        element: FixedWidthElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        // Check if we should skip this results block
-        if (state.skipNextResults) {
-            state.skipNextResults = false;
-            return [];
-        }
-
-        const lines = element.properties.value.split('\n');
-        const paragraphs: Paragraph[] = [];
-
-        for (const line of lines) {
-            paragraphs.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: line,
-                            font: state.docxOptions.codeFontFamily || 'Consolas',
-                            size: (state.docxOptions.codeFontSize || 10) * 2,
-                        }),
-                    ],
-                    style: 'CodeBlock',
-                })
-            );
-        }
-
-        return paragraphs;
-    }
-
-    /**
-     * Export a drawer
-     */
-    private async exportDrawer(
-        drawer: DrawerElement,
-        state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const drawerName = drawer.properties.name.toUpperCase();
-
-        // Skip PROPERTIES drawer
-        if (drawerName === 'PROPERTIES') {
-            return [];
-        }
-
-        // Check includeDrawers option
-        if (state.options.includeDrawers === false) {
-            return [];
-        }
-
-        if (Array.isArray(state.options.includeDrawers)) {
-            if (!state.options.includeDrawers.some(d => d.toUpperCase() === drawerName)) {
-                return [];
-            }
-        }
-
-        // Skip LOGBOOK if clocks not included
-        if (drawerName === 'LOGBOOK' && state.options.includeClocks === false) {
-            return [];
-        }
-
-        const paragraphs: Paragraph[] = [];
-        for (const child of drawer.children) {
-            const childParas = await this.exportElement(child, state);
-            paragraphs.push(...childParas);
-        }
-
-        return paragraphs;
-    }
-
-    /**
-     * Export an export block (only if backend matches)
-     */
-    private async exportExportBlock(
-        block: ExportBlockElement,
-        _state: DocxExportState
-    ): Promise<Paragraph[]> {
-        // DOCX doesn't support raw export blocks like HTML
-        // We could potentially handle docx-specific blocks in the future
-        return [];
-    }
-
-    /**
-     * Export LaTeX environment (equation, align, etc.)
-     * Converts LaTeX to Unicode for readable display in Word
-     */
-    private async exportLatexEnvironment(
-        element: LatexEnvironmentElement,
-        _state: DocxExportState
-    ): Promise<Paragraph[]> {
-        const latex = element.properties.value;
-
-        // Extract content without \begin{} and \end{} for cleaner display
-        let content = latex;
-        const beginMatch = latex.match(/\\begin\{[^}]+\}\s*/);
-        const endMatch = latex.match(/\s*\\end\{[^}]+\}$/);
-        if (beginMatch && endMatch) {
-            content = latex.slice(beginMatch[0].length, -endMatch[0].length).trim();
-        }
-
-        // Convert LaTeX to Unicode
-        const unicodeContent = latexToUnicode(content);
-
-        // Split into lines for multi-line equations
-        const lines = unicodeContent.split('\n').filter(line => line.trim());
-
-        const runs: TextRun[] = [];
-        for (let i = 0; i < lines.length; i++) {
-            if (i > 0) {
-                runs.push(new TextRun({ break: 1 }));
-            }
-            runs.push(new TextRun({
-                text: lines[i].trim(),
-                font: 'Cambria Math',
-                size: 24, // 12pt
-            }));
-        }
-
-        return [
-            new Paragraph({
-                children: runs,
-                alignment: AlignmentType.CENTER,
-                spacing: { before: 200, after: 200 },
-            }),
-        ];
-    }
-
-    /**
-     * Export bibliography section
-     */
-    private exportBibliography(state: DocxExportState): Paragraph[] {
-        if (!state.citationProcessor) {
-            return [];
-        }
-
-        const citedKeys = state.citationProcessor.getCitedKeys();
-        if (citedKeys.size === 0) {
-            return [];
-        }
-
-        const paragraphs: Paragraph[] = [];
-
-        // Add heading
-        paragraphs.push(
-            new Paragraph({
-                children: [new TextRun({ text: 'References', bold: true, size: 48 })],
-                heading: HeadingLevel.HEADING_1,
-                spacing: { before: 400, after: 200 },
-            })
-        );
-
-        // Get formatted entries
-        // For now, generate simple entries (could be enhanced with proper CSL)
-        for (const key of citedKeys) {
-            const entry = state.citationProcessor.getEntry(key);
-            if (!entry) continue;
-
-            const parts: string[] = [];
-
-            // Authors
-            if (entry.author && entry.author.length > 0) {
-                const authorNames = entry.author.map(a =>
-                    a.literal || `${a.family || ''}${a.given ? ', ' + a.given : ''}`
-                );
-                parts.push(authorNames.join('; '));
-            }
-
-            // Year
-            if (entry.issued?.['date-parts']?.[0]?.[0]) {
-                parts.push(`(${entry.issued['date-parts'][0][0]})`);
-            }
-
-            // Title
-            if (entry.title) {
-                parts.push(entry.title);
-            }
-
-            // Journal/container
-            if (entry['container-title']) {
-                parts.push(entry['container-title']);
-            }
-
-            paragraphs.push(
-                new Paragraph({
-                    children: [
-                        new Bookmark({
-                            id: `ref-${key}`,
-                            children: [new TextRun({ text: parts.join('. ') + '.' })],
-                        }),
-                    ],
-                    style: 'BibliographyEntry',
-                })
-            );
-        }
-
-        return paragraphs;
-    }
-
-    /**
-     * Export an array of inline objects to TextRuns
-     */
-    async exportObjects(
-        objects: OrgObject[],
-        state: DocxExportState
-    ): Promise<TextRun[]> {
-        const runs: TextRun[] = [];
-
-        for (const obj of objects) {
-            const objRuns = await this.exportObject(obj, state);
-            runs.push(...objRuns);
-        }
-
-        return runs;
-    }
-
-    /**
-     * Export a single object to TextRuns
-     */
-    async exportObject(
-        object: OrgObject,
-        state: DocxExportState
-    ): Promise<TextRun[]> {
-        switch (object.type) {
-            case 'plain-text': {
-                // Apply accumulated text styles from nested markup
-                const runOptions: any = {
-                    text: (object as PlainTextObject).properties.value,
-                    bold: state.textStyles.bold,
-                    italics: state.textStyles.italics,
-                    strike: state.textStyles.strike,
-                };
-                if (state.textStyles.underline) {
-                    runOptions.underline = { type: 'single' };
-                }
-                return [new TextRun(runOptions)];
-            }
-
+    private serializeObject(obj: any, opts: DocxExportOptions): string {
+        switch (obj.type) {
+            case 'plain-text':
+                return obj.properties?.value || '';
             case 'bold':
-                return this.exportBold(object as BoldObject, state);
-
+                return `*${this.serializeObjects(obj.children || [], opts)}*`;
             case 'italic':
-                return this.exportItalic(object as ItalicObject, state);
-
+                return `/${this.serializeObjects(obj.children || [], opts)}/`;
             case 'underline':
-                return this.exportUnderline(object as UnderlineObject, state);
-
+                return `_${this.serializeObjects(obj.children || [], opts)}_`;
             case 'strike-through':
-                return this.exportStrikeThrough(object as StrikeThroughObject, state);
-
+                return `+${this.serializeObjects(obj.children || [], opts)}+`;
             case 'code':
-                return this.exportCode(object as CodeObject, state);
-
+                return `~${obj.properties?.value || ''}~`;
             case 'verbatim':
-                return this.exportVerbatim(object as VerbatimObject, state);
-
+                return `=${obj.properties?.value || ''}=`;
             case 'link':
-                return this.exportLink(object as LinkObject, state);
-
-            case 'subscript':
-                return this.exportSubscript(object as SubscriptObject, state);
-
-            case 'superscript':
-                return this.exportSuperscript(object as SuperscriptObject, state);
-
-            case 'entity':
-                return this.exportEntity(object as EntityObject, state);
-
-            case 'timestamp':
-                return this.exportTimestamp(object as TimestampObject, state);
-
-            case 'footnote-reference':
-                return this.exportFootnoteReference(object as FootnoteReferenceObject, state);
-
-            case 'statistics-cookie':
-                // Statistics cookies are tied to planning info - hide when p:nil
-                if (state.options.includePlanning === false) {
-                    return [];
-                }
-                return [new TextRun({
-                    text: (object as StatisticsCookieObject).properties.value,
-                    color: DOCX_COLORS.textMuted,
-                })];
-
-            case 'target':
-                // Export as bookmark anchor
-                return [];
-
-            case 'inline-src-block':
-                return this.exportInlineSrcBlock(object as InlineSrcBlockObject, state);
-
-            case 'macro':
-                return this.exportMacro(object as MacroObject, state);
-
-            case 'export-snippet':
-                return this.exportExportSnippet(object as ExportSnippetObject, state);
-
-            case 'line-break':
-                return [new TextRun({ break: 1 })];
-
-            case 'citation':
-                return this.exportCitation(object as any, state);
-
+                return this.serializeLink(obj, opts);
             case 'latex-fragment':
-                return this.exportLatexFragment(object as LatexFragmentObject, state);
-
+                return obj.properties?.value || '';
+            case 'entity':
+                return obj.properties?.latex || obj.properties?.utf8 || '';
+            case 'subscript':
+                return `_{${this.serializeObjects(obj.children || [], opts)}}`;
+            case 'superscript':
+                return `^{${this.serializeObjects(obj.children || [], opts)}}`;
+            case 'line-break':
+                return '\\\\\n';
+            case 'footnote-reference':
+                return `[fn:${obj.properties?.label || ''}]`;
+            case 'timestamp':
+                return obj.properties?.rawValue || '';
+            case 'statistics-cookie':
+                // Hide statistics cookies if includePlanning is false
+                if (opts.includePlanning === false) {
+                    return '';
+                }
+                return obj.properties?.value || '';
+            case 'citation':
+                return this.serializeCitation(obj, opts);
             default:
-                return [];
+                if (obj.properties?.value) {
+                    return obj.properties.value;
+                }
+                return '';
         }
     }
 
-    // Object exporters
+    private serializeLink(link: any, opts: DocxExportOptions): string {
+        const path = link.properties?.path || link.properties?.rawLink || '';
+        const linkType = link.properties?.linkType || '';
 
-    private async exportBold(obj: BoldObject, state: DocxExportState): Promise<TextRun[]> {
-        // Set bold style, export children (which inherit styles), then clear
-        const wasBold = state.textStyles.bold;
-        state.textStyles.bold = true;
-        const runs = await this.exportObjects(obj.children, state);
-        state.textStyles.bold = wasBold;
-        return runs;
+        // Get description
+        let description = '';
+        if (link.children && link.children.length > 0) {
+            description = this.serializeObjects(link.children, opts);
+        }
+
+        // Handle different link types
+        if (linkType === 'cite' || linkType === 'citep' || linkType === 'citet') {
+            // org-ref style citation
+            return `${linkType}:${path}`;
+        }
+
+        if (description) {
+            return `[[${path}][${description}]]`;
+        }
+        return `[[${path}]]`;
     }
 
-    private async exportItalic(obj: ItalicObject, state: DocxExportState): Promise<TextRun[]> {
-        const wasItalic = state.textStyles.italics;
-        state.textStyles.italics = true;
-        const runs = await this.exportObjects(obj.children, state);
-        state.textStyles.italics = wasItalic;
-        return runs;
+    private serializeCitation(citation: any, opts: DocxExportOptions): string {
+        // org-cite format: [cite:@key] or [cite:@key1;@key2]
+        const keys = citation.properties?.keys || [];
+        const style = citation.properties?.style || '';
+
+        if (keys.length === 0) {
+            return citation.properties?.rawValue || '';
+        }
+
+        const keyStr = keys.map((k: any) => `@${k.key || k}`).join(';');
+        if (style) {
+            return `[cite/${style}:${keyStr}]`;
+        }
+        return `[cite:${keyStr}]`;
     }
 
-    private async exportUnderline(obj: UnderlineObject, state: DocxExportState): Promise<TextRun[]> {
-        const wasUnderline = state.textStyles.underline;
-        state.textStyles.underline = true;
-        const runs = await this.exportObjects(obj.children, state);
-        state.textStyles.underline = wasUnderline;
-        return runs;
+    private serializeSrcBlock(block: any, opts: DocxExportOptions): string {
+        const lang = block.properties?.language || '';
+        const params = block.properties?.parameters || '';
+        const value = block.properties?.value || '';
+
+        let header = `#+BEGIN_SRC ${lang}`;
+        if (params) {
+            header += ` ${params}`;
+        }
+
+        return `${header}\n${value}\n#+END_SRC\n`;
     }
 
-    private async exportStrikeThrough(obj: StrikeThroughObject, state: DocxExportState): Promise<TextRun[]> {
-        const wasStrike = state.textStyles.strike;
-        state.textStyles.strike = true;
-        const runs = await this.exportObjects(obj.children, state);
-        state.textStyles.strike = wasStrike;
-        return runs;
+    private serializeExampleBlock(block: any, opts: DocxExportOptions): string {
+        const value = block.properties?.value || '';
+        return `#+BEGIN_EXAMPLE\n${value}\n#+END_EXAMPLE\n`;
     }
 
-    /**
-     * Extract plain text from nested objects
-     */
-    private extractPlainText(objects: OrgObject[]): string {
-        let text = '';
-        for (const obj of objects) {
-            if (obj.type === 'plain-text') {
-                text += (obj as PlainTextObject).properties.value;
-            } else if (obj.children) {
-                text += this.extractPlainText(obj.children);
+    private serializeQuoteBlock(block: any, opts: DocxExportOptions): string {
+        const lines: string[] = ['#+BEGIN_QUOTE'];
+        for (const child of block.children || []) {
+            const serialized = this.serializeElement(child, opts);
+            if (serialized) {
+                lines.push(serialized);
             }
         }
-        return text;
+        lines.push('#+END_QUOTE\n');
+        return lines.join('\n');
     }
 
-    private exportCode(obj: CodeObject, state: DocxExportState): TextRun[] {
-        return [
-            new TextRun({
-                text: obj.properties.value,
-                font: state.docxOptions.codeFontFamily || 'Consolas',
-                size: (state.docxOptions.codeFontSize || 10) * 2,
-                shading: {
-                    type: ShadingType.SOLID,
-                    fill: DOCX_COLORS.codeBackground,
-                },
-            }),
-        ];
+    private serializeCenterBlock(block: any, opts: DocxExportOptions): string {
+        const lines: string[] = ['#+BEGIN_CENTER'];
+        for (const child of block.children || []) {
+            const serialized = this.serializeElement(child, opts);
+            if (serialized) {
+                lines.push(serialized);
+            }
+        }
+        lines.push('#+END_CENTER\n');
+        return lines.join('\n');
     }
 
-    private exportVerbatim(obj: VerbatimObject, state: DocxExportState): TextRun[] {
-        return [
-            new TextRun({
-                text: obj.properties.value,
-                font: state.docxOptions.codeFontFamily || 'Consolas',
-                size: (state.docxOptions.codeFontSize || 10) * 2,
-            }),
-        ];
+    private serializeVerseBlock(block: any, opts: DocxExportOptions): string {
+        const value = block.properties?.value || '';
+        return `#+BEGIN_VERSE\n${value}\n#+END_VERSE\n`;
     }
 
-    private async exportLink(obj: LinkObject, state: DocxExportState): Promise<TextRun[]> {
-        const { linkType, path: linkPath, rawLink } = obj.properties;
+    private serializeSpecialBlock(block: any, opts: DocxExportOptions): string {
+        const blockType = block.properties?.blockType || 'SPECIAL';
+        const lines: string[] = [`#+BEGIN_${blockType}`];
+        for (const child of block.children || []) {
+            const serialized = this.serializeElement(child, opts);
+            if (serialized) {
+                lines.push(serialized);
+            }
+        }
+        lines.push(`#+END_${blockType}\n`);
+        return lines.join('\n');
+    }
 
-        // Get link text
-        let linkText = rawLink || linkPath;
-        if (obj.children && obj.children.length > 0) {
-            linkText = this.extractPlainText(obj.children);
+    private serializePlainList(list: any, opts: DocxExportOptions): string {
+        const lines: string[] = [];
+        for (const item of list.children || []) {
+            const serialized = this.serializeListItem(item, list.properties?.listType, opts);
+            if (serialized) {
+                lines.push(serialized);
+            }
+        }
+        return lines.join('\n') + '\n';
+    }
+
+    private serializeListItem(item: any, listType: string, opts: DocxExportOptions): string {
+        const indent = '  '.repeat((item.properties?.indentation || 0) / 2);
+        let bullet = '-';
+
+        if (listType === 'ordered') {
+            bullet = (item.properties?.counter || '1') + '.';
+        } else if (listType === 'descriptive') {
+            const tag = item.properties?.tag || '';
+            bullet = `- ${tag} ::`;
         }
 
-        // Handle citation links (cite:, citep:, citet:, etc.)
-        const citationTypes = ['cite', 'citep', 'citet', 'Citep', 'Citet', 'citeauthor', 'citeyear', 'citealp', 'citealt'];
-        if (citationTypes.includes(linkType)) {
-            return this.exportCitationLink(linkType, linkPath, state);
+        const lines: string[] = [];
+        let firstLine = true;
+
+        for (const child of item.children || []) {
+            if (child.type === 'paragraph') {
+                const content = this.serializeParagraph(child, opts).trim();
+                if (firstLine) {
+                    lines.push(`${indent}${bullet} ${content}`);
+                    firstLine = false;
+                } else {
+                    lines.push(`${indent}  ${content}`);
+                }
+            } else if (child.type === 'plain-list') {
+                // Nested list
+                const nested = this.serializePlainList(child, opts);
+                lines.push(nested);
+            } else {
+                const serialized = this.serializeElement(child, opts);
+                if (serialized) {
+                    lines.push(serialized);
+                }
+            }
         }
 
-        // Handle image links
-        if (/\.(png|jpg|jpeg|gif|svg|webp|bmp)$/i.test(linkPath)) {
-            return this.exportImageLink(linkPath, state);
-        }
-
-        // Handle external links
-        if (linkType === 'http' || linkType === 'https' || linkType === 'mailto') {
-            const href = linkType === 'mailto' ? `mailto:${linkPath}` : linkPath;
-            return [
-                new ExternalHyperlink({
-                    link: href,
-                    children: [
-                        new TextRun({
-                            text: linkText,
-                            color: DOCX_COLORS.link,
-                            underline: { type: 'single' as any },
-                        }),
-                    ],
-                }) as unknown as TextRun,
-            ];
-        }
-
-        // Handle internal links
-        const targetId = state.bookmarks.get(linkPath) || generateId(linkPath);
-        return [
-            new InternalHyperlink({
-                anchor: targetId,
-                children: [
-                    new TextRun({
-                        text: linkText,
-                        color: DOCX_COLORS.link,
-                        underline: { type: 'single' as any },
-                    }),
-                ],
-            }) as unknown as TextRun,
-        ];
+        return lines.join('\n');
     }
 
-    /**
-     * Export citation link (cite:key, citep:key, etc.)
-     */
-    private exportCitationLink(
-        linkType: string,
-        keys: string,
-        state: DocxExportState
-    ): TextRun[] {
-        // Keys may be comma-separated
-        const keyList = keys.split(',').map(k => k.trim());
+    private serializeTable(table: any, opts: DocxExportOptions): string {
+        const lines: string[] = [];
 
-        // Determine citation style
-        let style: 'textual' | 'parenthetical' | 'author' | 'year' = 'parenthetical';
-        switch (linkType) {
-            case 'citet':
-            case 'Citet':
-                style = 'textual';
-                break;
-            case 'citep':
-            case 'Citep':
-            case 'cite':
-                style = 'parenthetical';
-                break;
-            case 'citeauthor':
-                style = 'author';
-                break;
-            case 'citeyear':
-                style = 'year';
-                break;
+        for (const row of table.children || []) {
+            if (row.properties?.rowType === 'rule') {
+                lines.push('|-');
+            } else {
+                const cells: string[] = [];
+                for (const cell of row.children || []) {
+                    const content = this.serializeObjects(cell.children || [], opts);
+                    cells.push(content.trim());
+                }
+                lines.push('| ' + cells.join(' | ') + ' |');
+            }
         }
 
-        // Use citation processor if available
-        if (state.citationProcessor) {
-            const result = state.citationProcessor.formatCitationByKeys(keyList, style);
-            return [new TextRun({ text: result.text })];
+        return lines.join('\n') + '\n';
+    }
+
+    private serializeLatexEnvironment(env: any, opts: DocxExportOptions): string {
+        return (env.properties?.value || '') + '\n';
+    }
+
+    private serializeKeyword(keyword: any, opts: DocxExportOptions): string {
+        const key = keyword.properties?.key || '';
+        const value = keyword.properties?.value || '';
+        return `#+${key}: ${value}`;
+    }
+
+    private serializeFixedWidth(fw: any, opts: DocxExportOptions): string {
+        const value = fw.properties?.value || '';
+        return value.split('\n').map((line: string) => `: ${line}`).join('\n') + '\n';
+    }
+
+    private serializeDrawer(drawer: any, opts: DocxExportOptions): string {
+        if (opts.includeDrawers === false) {
+            return '';
         }
-
-        // Fallback: format keys simply
-        const keyStr = keyList.join(', ');
-        const formatted = style === 'parenthetical' ? `(${keyStr})` : keyStr;
-        return [new TextRun({ text: formatted })];
-    }
-
-    private async exportImageLink(
-        imagePath: string,
-        state: DocxExportState
-    ): Promise<TextRun[]> {
-        try {
-            // Resolve path
-            const resolvedPath = path.isAbsolute(imagePath)
-                ? imagePath
-                : path.resolve(state.basePath, imagePath);
-
-            // Read image file
-            const imageBuffer = await fs.promises.readFile(resolvedPath);
-
-            // Get image dimensions (basic estimation, could be improved with sharp)
-            const maxWidth = state.docxOptions.imageMaxWidth || 600;
-            const width = Math.min(maxWidth, 600);
-            const height = Math.round(width * 0.75); // Assume 4:3 aspect ratio
-
-            return [
-                new ImageRun({
-                    data: imageBuffer,
-                    transformation: {
-                        width,
-                        height,
-                    },
-                    type: 'png', // docx will handle format detection
-                }) as unknown as TextRun,
-            ];
-        } catch (error) {
-            // Image not found - return placeholder text
-            return [
-                new TextRun({
-                    text: `[Image: ${imagePath}]`,
-                    italics: true,
-                    color: DOCX_COLORS.textMuted,
-                }),
-            ];
+        const name = drawer.properties?.name || 'DRAWER';
+        const lines: string[] = [`:${name}:`];
+        for (const child of drawer.children || []) {
+            const serialized = this.serializeElement(child, opts);
+            if (serialized) {
+                lines.push(serialized);
+            }
         }
-    }
-
-    private async exportSubscript(obj: SubscriptObject, state: DocxExportState): Promise<TextRun[]> {
-        const text = this.extractPlainText(obj.children);
-        return [new TextRun({ text, subScript: true })];
-    }
-
-    private async exportSuperscript(obj: SuperscriptObject, state: DocxExportState): Promise<TextRun[]> {
-        const text = this.extractPlainText(obj.children);
-        return [new TextRun({ text, superScript: true })];
-    }
-
-    private exportEntity(obj: EntityObject, _state: DocxExportState): TextRun[] {
-        // Use UTF-8 representation of the entity
-        return [new TextRun({ text: obj.properties.utf8 })];
-    }
-
-    private exportTimestamp(obj: TimestampObject, state: DocxExportState): TextRun[] {
-        if (!state.options.timestamps) {
-            return [];
-        }
-
-        return [
-            new TextRun({
-                text: obj.properties.rawValue,
-                color: DOCX_COLORS.textMuted,
-                font: state.docxOptions.codeFontFamily || 'Consolas',
-                size: (state.docxOptions.fontSize || 11) * 2 - 2,
-            }),
-        ];
-    }
-
-    private exportFootnoteReference(
-        obj: FootnoteReferenceObject,
-        state: DocxExportState
-    ): TextRun[] {
-        const label = obj.properties.label || String(++state.footnoteRefCounter);
-
-        // Check if footnote content exists
-        const footnoteInfo = state.footnotes.get(label);
-        if (footnoteInfo?.definition) {
-            // Create footnote paragraphs from definition
-            // Note: This is a simplified version - full implementation would
-            // need to properly export the footnote content
-            state.docxFootnotes.set(label, {
-                paragraphs: [
-                    new Paragraph({
-                        children: [new TextRun({ text: 'Footnote content' })],
-                    }),
-                ],
-            });
-        }
-
-        return [
-            new FootnoteReferenceRun(state.docxFootnotes.size) as unknown as TextRun,
-        ];
-    }
-
-    /**
-     * Export inline LaTeX fragment (math) as Unicode text
-     * Converts LaTeX to Unicode for readable display in Word
-     */
-    private exportLatexFragment(obj: LatexFragmentObject, _state: DocxExportState): TextRun[] {
-        const latex = obj.properties.value;
-        const fragmentType = obj.properties.fragmentType;
-
-        // For LaTeX commands like \ref{}, \cite{}, render as-is
-        if (fragmentType === 'command') {
-            return [new TextRun({ text: latex })];
-        }
-
-        // Extract just the math content (remove delimiters)
-        let mathContent = latex;
-        if (latex.startsWith('$$') && latex.endsWith('$$')) {
-            mathContent = latex.slice(2, -2);
-        } else if (latex.startsWith('$') && latex.endsWith('$')) {
-            mathContent = latex.slice(1, -1);
-        } else if (latex.startsWith('\\[') && latex.endsWith('\\]')) {
-            mathContent = latex.slice(2, -2);
-        } else if (latex.startsWith('\\(') && latex.endsWith('\\)')) {
-            mathContent = latex.slice(2, -2);
-        }
-
-        // Convert LaTeX to Unicode
-        const unicodeContent = latexToUnicode(mathContent);
-
-        // Render math with Cambria Math font (Word's equation font)
-        return [
-            new TextRun({
-                text: unicodeContent,
-                font: 'Cambria Math',
-            }),
-        ];
-    }
-
-    private exportInlineSrcBlock(obj: InlineSrcBlockObject, state: DocxExportState): TextRun[] {
-        return [
-            new TextRun({
-                text: obj.properties.value,
-                font: state.docxOptions.codeFontFamily || 'Consolas',
-                size: (state.docxOptions.codeFontSize || 10) * 2,
-                shading: {
-                    type: ShadingType.SOLID,
-                    fill: DOCX_COLORS.codeBackground,
-                },
-            }),
-        ];
-    }
-
-    private exportMacro(obj: MacroObject, state: DocxExportState): TextRun[] {
-        if (!state.options.expandMacros) {
-            return [new TextRun({ text: `{{{${obj.properties.key}(${obj.properties.args.join(',')})}}}` })];
-        }
-
-        const macros = { ...BUILTIN_MACROS, ...state.options.macros };
-        const expanded = expandMacro(obj.properties.key, obj.properties.args, macros);
-        return [new TextRun({ text: expanded })];
-    }
-
-    private exportExportSnippet(obj: ExportSnippetObject, _state: DocxExportState): TextRun[] {
-        // Only include if backend matches 'docx'
-        if (obj.properties.backend.toLowerCase() === 'docx') {
-            return [new TextRun({ text: obj.properties.value })];
-        }
-        // For other backends (html, latex, etc.), return empty - do not include
-        return [];
-    }
-
-    /**
-     * Export org-cite citation to DOCX
-     * Renders as bracketed citation keys
-     */
-    private exportCitation(citation: any, _state: DocxExportState): TextRun[] {
-        const { keys } = citation.properties;
-
-        if (!keys || keys.length === 0) {
-            return [new TextRun({ text: citation.properties.rawValue || '' })];
-        }
-
-        // Render as [key1, key2, ...] in the document
-        return [new TextRun({ text: `[${keys.join(', ')}]` })];
+        lines.push(':END:\n');
+        return lines.join('\n');
     }
 }
 
 // =============================================================================
-// Export Function
+// Public Export Function
 // =============================================================================
 
 /**
- * Export an org document to DOCX format
+ * Export an org document to DOCX format using pandoc
+ * Returns a Buffer containing the DOCX file data
  */
 export async function exportToDocx(
     doc: OrgDocumentNode,
@@ -1838,4 +959,18 @@ export async function exportToDocx(
 ): Promise<Buffer> {
     const backend = new DocxExportBackend();
     return backend.exportDocument(doc, options);
+}
+
+/**
+ * Check if pandoc is available for DOCX export
+ */
+export function isPandocAvailable(): boolean {
+    return checkPandoc().available;
+}
+
+/**
+ * Get pandoc version if available
+ */
+export function getPandocVersion(): string | null {
+    return checkPandoc().version;
 }

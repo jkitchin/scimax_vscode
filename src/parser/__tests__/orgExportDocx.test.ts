@@ -453,47 +453,50 @@ Arrows: \\rightarrow, \\leftarrow.
     });
 
     describe('Export Options', () => {
-        it('should respect custom font settings', async () => {
-            const content = `Simple text.
+        it('should export with TOC when enabled', async () => {
+            const content = `* Heading 1
+Some text.
+
+* Heading 2
+More text.
 `;
             const doc = parseOrgFast(content);
             const options: DocxExportOptions = {
-                fontFamily: 'Arial',
-                fontSize: 12,
+                toc: true,
+                tocDepth: 2,
             };
             const buffer = await exportToDocx(doc, options);
             const xml = await extractDocumentXml(buffer);
 
-            expect(containsText(xml, 'Simple text')).toBe(true);
+            expect(containsText(xml, 'Heading 1')).toBe(true);
+            expect(containsText(xml, 'Heading 2')).toBe(true);
         });
 
-        it('should respect highlight theme option', async () => {
-            const content = `#+BEGIN_SRC python
-print("test")
-#+END_SRC
+        it('should export with section numbers when enabled', async () => {
+            const content = `* First Section
+Content.
+
+* Second Section
+More content.
 `;
             const doc = parseOrgFast(content);
             const options: DocxExportOptions = {
-                highlightTheme: 'github-dark',
-                enableCodeHighlight: true,
+                sectionNumbers: true,
             };
             const buffer = await exportToDocx(doc, options);
             const xml = await extractDocumentXml(buffer);
 
-            expect(containsText(xml, 'print')).toBe(true);
+            expect(containsText(xml, 'First Section')).toBe(true);
         });
 
-        it('should disable code highlighting when requested', async () => {
+        it('should export code blocks', async () => {
             const content = `#+BEGIN_SRC python
 def test():
     pass
 #+END_SRC
 `;
             const doc = parseOrgFast(content);
-            const options: DocxExportOptions = {
-                enableCodeHighlight: false,
-            };
-            const buffer = await exportToDocx(doc, options);
+            const buffer = await exportToDocx(doc);
             const xml = await extractDocumentXml(buffer);
 
             expect(containsText(xml, 'def test()')).toBe(true);
@@ -551,8 +554,8 @@ This is the ~end~ of the document.
     });
 });
 
-describe('Syntax Highlighting', () => {
-    it('should highlight Python code', async () => {
+describe('Code Blocks via Pandoc', () => {
+    it('should export Python code', async () => {
         const content = `#+BEGIN_SRC python
 import os
 class MyClass:
@@ -561,7 +564,7 @@ class MyClass:
 #+END_SRC
 `;
         const doc = parseOrgFast(content);
-        const buffer = await exportToDocx(doc, { enableCodeHighlight: true });
+        const buffer = await exportToDocx(doc);
         const xml = await extractDocumentXml(buffer);
 
         expect(containsText(xml, 'import')).toBe(true);
@@ -569,7 +572,7 @@ class MyClass:
         expect(containsText(xml, 'def')).toBe(true);
     });
 
-    it('should highlight JavaScript code', async () => {
+    it('should export JavaScript code', async () => {
         const content = `#+BEGIN_SRC javascript
 const foo = () => {
     return "bar";
@@ -577,7 +580,7 @@ const foo = () => {
 #+END_SRC
 `;
         const doc = parseOrgFast(content);
-        const buffer = await exportToDocx(doc, { enableCodeHighlight: true });
+        const buffer = await exportToDocx(doc);
         const xml = await extractDocumentXml(buffer);
 
         expect(containsText(xml, 'const')).toBe(true);
@@ -590,10 +593,10 @@ some code here
 #+END_SRC
 `;
         const doc = parseOrgFast(content);
-        const buffer = await exportToDocx(doc, { enableCodeHighlight: true });
+        const buffer = await exportToDocx(doc);
         const xml = await extractDocumentXml(buffer);
 
-        // Should still export the code, just without highlighting
+        // Should still export the code
         expect(containsText(xml, 'some code here')).toBe(true);
     });
 });

@@ -140,6 +140,8 @@ export interface ExportOptions {
     includeClocks?: boolean;
     /** Include drawers (d:t/nil/("drawer1" "drawer2")) */
     includeDrawers?: boolean | string[];
+    /** Include PROPERTIES drawers specifically (prop:t/nil) */
+    includeProperties?: boolean;
     /** Include tables (|:t/nil) */
     includeTables?: boolean;
     /** Subscript/superscript handling (^:t/nil/{}) */
@@ -179,7 +181,8 @@ export const DEFAULT_EXPORT_OPTIONS: ExportOptions = {
     includeFootnotes: true,
     includePlanning: true,
     includeClocks: false,
-    includeDrawers: false,
+    includeDrawers: true,  // Changed to true to match Emacs default
+    includeProperties: true,  // PROPERTIES drawers included by default
     includeTables: true,
     subscripts: true,
     fixedWidth: true,
@@ -332,6 +335,11 @@ export function parseOptionsKeyword(optionsLine: string): Partial<ExportOptions>
                         .filter(Boolean);
                     opts.includeDrawers = drawerList.length > 0 ? drawerList : false;
                 }
+                break;
+
+            // PROPERTIES drawers specifically
+            case 'prop':
+                opts.includeProperties = toBool(value);
                 break;
 
             // Tables

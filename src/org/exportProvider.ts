@@ -805,8 +805,6 @@ async function exportPdfWithSync(
         lastExportTime: Date.now(),
     });
 
-    console.log(`Stored sync data for ${orgPath}: ${lineMappings.length} line mappings`);
-
     return { success: true, texPath, pdfPath: outputPath };
 }
 
@@ -1158,12 +1156,10 @@ async function showExportDispatcher(): Promise<void> {
 
                     case 'docx': {
                         const doc = parseOrgFast(content);
-                        const bibPaths = extractBibPaths(content, inputDir);
-                        const bibEntries = await loadBibEntries(bibPaths);
                         const docxOptions: DocxExportOptions = {
                             ...options,
                             basePath: inputDir,
-                            bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                            rawContent: content,
                         };
                         const buffer = await exportToDocx(doc, docxOptions);
                         await fs.promises.writeFile(outputPath, buffer);
@@ -1478,13 +1474,6 @@ async function quickExportDocx(): Promise<void> {
     const doc = parseOrgFast(content);
     const metadata = extractMetadata(doc);
 
-    // Load bibliography entries if basePath is provided
-    const bibPaths = extractBibPaths(content, inputDir);
-    let bibEntries: BibEntry[] = [];
-    if (bibPaths.length > 0) {
-        bibEntries = await loadBibEntries(bibPaths);
-    }
-
     // Determine output path (respect EXPORT_FILE_NAME if set)
     const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'docx');
     const outputPath = path.join(inputDir, outputFileName);
@@ -1501,10 +1490,19 @@ async function quickExportDocx(): Promise<void> {
                 const docxOptions: DocxExportOptions = {
                     ...metadata,
                     basePath: inputDir,
-                    bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                    rawContent: content,
                 };
                 const buffer = await exportToDocx(doc, docxOptions);
                 await fs.promises.writeFile(outputPath, buffer);
+
+                // Check for bibliography warning
+                const bibWarning = (docxOptions as any)._bibWarning;
+                if (bibWarning) {
+                    vscode.window.showWarningMessage(
+                        `Exported with warning: ${bibWarning.slice(0, 200)}...`
+                    );
+                }
+
                 const action = await vscode.window.showInformationMessage(
                     `Exported to ${path.basename(outputPath)}`,
                     'Open'
@@ -1740,12 +1738,9 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                 const content = preprocessContent(editor.document.getText(), inputDir);
                 const outputPath = inputPath.replace(/\.org$/, '.docx');
 
-                // Parse document and load bibliography
+                // Parse document
                 const doc = parseOrgFast(content);
                 const metadata = extractMetadata(doc);
-                const bibPaths = extractBibPaths(content, inputDir);
-                const bibEntries = await loadBibEntries(bibPaths);
-
                 await vscode.window.withProgress(
                     {
                         location: vscode.ProgressLocation.Notification,
@@ -1758,10 +1753,19 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                             const docxOptions: DocxExportOptions = {
                                 ...metadata,
                                 basePath: inputDir,
-                                bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                                rawContent: content,
                             };
                             const buffer = await exportToDocx(doc, docxOptions);
                             await fs.promises.writeFile(outputPath, buffer);
+
+                            // Check for bibliography warning
+                            const bibWarning = (docxOptions as any)._bibWarning;
+                            if (bibWarning) {
+                                vscode.window.showWarningMessage(
+                                    `Exported with warning: ${bibWarning.slice(0, 200)}...`
+                                );
+                            }
+
                             await vscode.env.openExternal(vscode.Uri.file(outputPath));
                         } catch (error) {
                             const message = error instanceof Error ? error.message : String(error);
@@ -1888,10 +1892,6 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
             const orgPath = editor.document.uri.fsPath;
             const pdfPath = orgPath.replace(/\.org$/, '.pdf');
 
-            console.log('Org forward sync: org to PDF');
-            console.log('  Org file:', orgPath);
-            console.log('  PDF path:', pdfPath);
-
             // Check if PDF exists
             const pdfExists = await vscode.workspace.fs.stat(vscode.Uri.file(pdfPath)).then(
                 () => true,
@@ -1900,7 +1900,6 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
 
             if (!pdfExists || !hasSyncData(orgPath)) {
                 // Need to export first
-                console.log('  PDF or sync data missing, exporting...');
                 vscode.window.showInformationMessage('Exporting org to PDF...');
                 const inputDir = path.dirname(orgPath);
                 const content = preprocessContent(editor.document.getText(), inputDir);
@@ -1914,21 +1913,18 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
 
             // Open panel if not already open
             if (!PdfViewerPanel.currentPanel) {
-                console.log('  Opening PDF panel...');
                 PdfViewerPanel.createOrShow(context.extensionUri, pdfPath, orgPath);
                 await new Promise(resolve => setTimeout(resolve, 500));
             } else {
                 // Check if the panel has the right PDF loaded
                 const currentPdf = PdfViewerPanel.currentPanel.currentPdfPath;
                 if (currentPdf !== pdfPath) {
-                    console.log('  Panel has different PDF, reloading...');
                     PdfViewerPanel.createOrShow(context.extensionUri, pdfPath, orgPath);
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
             }
 
             if (!PdfViewerPanel.currentPanel) {
-                console.log('  ERROR: Could not open PDF panel');
                 return;
             }
 
@@ -1953,13 +1949,9 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
             if (start > 0) sourceText = '...' + sourceText;
             if (end < lineText.length) sourceText = sourceText + '...';
 
-            console.log(`  Source position: line ${line}, column ${column}`);
-            console.log(`  Search word: "${searchWord}"`);
-
             // Run forward sync
             const result = await orgForwardSync(orgPath, line, column);
             if (result) {
-                console.log('  SyncTeX result:', result);
                 panel.scrollToPosition(result, {
                     line,
                     column,
@@ -1968,7 +1960,6 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
                     searchWord: searchWord
                 });
             } else {
-                console.log('  SyncTeX returned no result for this position');
                 vscode.window.showWarningMessage('Could not sync to PDF position');
             }
         })
@@ -2168,8 +2159,6 @@ async function exportDispatcher(): Promise<void> {
             case 'docx-open': {
                 const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'docx');
                 const outputPath = path.join(inputDir, outputFileName);
-                const bibPaths = extractBibPaths(content, inputDir);
-                const bibEntries = await loadBibEntries(bibPaths);
                 await vscode.window.withProgress(
                     {
                         location: vscode.ProgressLocation.Notification,
@@ -2181,10 +2170,19 @@ async function exportDispatcher(): Promise<void> {
                         const docxOptions: DocxExportOptions = {
                             ...metadata,
                             basePath: inputDir,
-                            bibEntries: bibEntries.length > 0 ? bibEntries : undefined,
+                            rawContent: content,
                         };
                         const buffer = await exportToDocx(doc, docxOptions);
                         await fs.promises.writeFile(outputPath, buffer);
+
+                        // Check for bibliography warning
+                        const bibWarning = (docxOptions as any)._bibWarning;
+                        if (bibWarning) {
+                            vscode.window.showWarningMessage(
+                                `Exported with warning: ${bibWarning.slice(0, 200)}...`
+                            );
+                        }
+
                         await vscode.env.openExternal(vscode.Uri.file(outputPath));
                     }
                 );
