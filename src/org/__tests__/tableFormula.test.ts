@@ -378,6 +378,49 @@ describe('Expression Evaluation', () => {
             expect(formatDurationHM(7200)).toBe('2:00');
             expect(formatDurationDecimalHours(7200)).toBe('2.00');
         });
+
+        it('should evaluate duration subtraction with U flag', () => {
+            // Create a mock table with time values
+            // Simple table without hlines for clarity
+            const mockTable: ParsedTable = {
+                startLine: 0,
+                endLine: 1,
+                cells: [
+                    // Row 1 (data row): Coding, 9:00, 12:30, ''
+                    [
+                        { col: 1, row: 1, value: 'Coding', isHline: false, isHeader: false },
+                        { col: 2, row: 1, value: '9:00', isHline: false, isHeader: false },
+                        { col: 3, row: 1, value: '12:30', isHline: false, isHeader: false },
+                        { col: 4, row: 1, value: '', isHline: false, isHeader: false }
+                    ],
+                ],
+                formulas: [],
+                columnCount: 4,
+                dataRowCount: 1,
+                firstDataRow: 1,
+                parameters: new Map(),
+                columnNames: new Map(),
+            };
+
+            const context: EvalContext = {
+                table: mockTable,
+                currentRow: 1, // First data row
+                currentCol: 4,
+                document: {} as vscode.TextDocument,
+                namedTables: new Map(),
+                constants: new Map(),
+            };
+
+            // Verify duration parsing
+            expect(parseDuration('9:00')).toBe(32400);
+            expect(parseDuration('12:30')).toBe(45000);
+
+            // Evaluate $3-$2 with U format flag (duration mode)
+            const result = evaluateExpression('$3-$2', context, 'U');
+            // 12:30 = 45000 seconds, 9:00 = 32400 seconds
+            // Difference = 12600 seconds = 3:30
+            expect(result).toBe(12600);
+        });
     });
 });
 

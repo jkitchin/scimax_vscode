@@ -930,9 +930,15 @@ function tokenize(expr: string): Token[] {
 
         if (/[\d.]/.test(ch)) {
             let num = '';
-            while (i < expr.length && /[\d.eE\-]/.test(expr[i])) {
+            // Read digits, decimal point, and scientific notation (but not minus - that's an operator)
+            while (i < expr.length && /[\d.eE]/.test(expr[i])) {
                 num += expr[i];
                 i++;
+                // Handle the exponent sign (e.g., 1e-5)
+                if ((expr[i - 1] === 'e' || expr[i - 1] === 'E') && (expr[i] === '+' || expr[i] === '-')) {
+                    num += expr[i];
+                    i++;
+                }
             }
             tokens.push({ type: 'number', value: parseFloat(num) });
             continue;

@@ -268,15 +268,19 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 * Text Markup
 
-| Key   | Action                               |
-|-------+--------------------------------------|
-| C-c b | Bold                                 |
-| C-c i | Italic                               |
-| C-c _ | Underline                            |
-| C-c ` | Code (inline)                        |
-| C-c = | Verbatim                             |
-| C-c + | Strikethrough                        |
-| C-c ' | Command (Emacs-style, non-standard)  |
+| Key     | Alt Key | Action                               |
+|---------+---------+--------------------------------------|
+| C-c b   | M-b     | Bold                                 |
+| C-c i   | M-i     | Italic                               |
+| C-c _   | M-u     | Underline                            |
+| C-c `   | M-c     | Code (inline)                        |
+| C-c =   | M-v     | Verbatim                             |
+| C-c +   | M-x     | Strikethrough                        |
+|         | M--     | Subscript                            |
+|         | M-=     | Superscript                          |
+| C-c '   |         | Command (Emacs-style, non-standard)  |
+
+*Note:* Option/Alt key bindings (=M-b=, =M-i=, etc.) provide mnemonic shortcuts for the most common markup operations. On macOS, =M-= is the Option key.
 
 * Search & Navigation
 
@@ -310,37 +314,40 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c p a   | Add project                     |
 | C-c p S-f | Find file in all known projects |
 
-** ⚠️ Database and Agenda
+** ✅ Database and Agenda
+CLOSED: [2026-01-24 Sat 17:38]
 
-| Key     | Action                  |
-|---------+-------------------------|
-| C-c a a | Agenda menu             |
-| C-c a w | Week agenda             |
-| C-c a m | Month agenda            |
-| C-c a t | TODO list               |
-| C-c a d | Deadlines               |
-| C-c d   | Database hydra menu     |
-| C-c d f | Browse indexed files    |
-| C-c d s | Search database         |
-| C-c d h | Search headings         |
-| C-c d t | Show TODOs              |
-| C-c d a | Show agenda             |
+| Key     | Action               |
+|---------+----------------------|
+| C-c a a | Agenda menu          |
+| C-c a w | Week agenda          |
+| C-c a m | Month agenda         |
+| C-c a t | TODO list            |
+| C-c a d | Deadlines            |
+| C-c d   | Database hydra menu  |
+| C-c d f | Browse indexed files |
+| C-c d s | Search database      |
+| C-c d h | Search headings      |
+| C-c d t | Show TODOs           |
+| C-c d a | Show agenda          |
 
-** ⚠️ Templates
+** ✅ Templates
+CLOSED: [2026-01-24 Sat 17:38]
 
-| Key         | Action                       |
-|-------------+------------------------------|
-| C-c C-t i   | Quick insert template        |
-| C-c C-t n   | New file from template       |
-| C-c C-t l   | List templates               |
-| C-c C-t s   | Create template from selection |
+| Key       | Action                         |
+|-----------+--------------------------------|
+| C-c C-t i | Quick insert template          |
+| C-c C-t n | New file from template         |
+| C-c C-t l | List templates                 |
+| C-c C-t s | Create template from selection |
 
-** ⚠️ Spelling
+** ✅ Spelling
+CLOSED: [2026-01-24 Sat 17:38]
 
-| Key       | Action                    |
-|-----------+---------------------------|
-| C-c ;     | Go to previous spelling error |
-| C-c S-;   | Go to next spelling error |
+| Key     | Action                        |
+|---------+-------------------------------|
+| C-c ;   | Go to previous spelling error |
+| C-c S-; | Go to next spelling error     |
 
 * Edit Marks (Track Changes)
 
@@ -356,23 +363,22 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c e [ | Previous edit mark      |
 | C-c e s | Show edit marks summary |
 
-* ⚠️ Mark Ring (Emacs-style)
+* ✅ Mark Ring (Emacs-style)
+CLOSED: [2026-01-24 Sat 17:38]
 
 Emacs-style mark and region commands.
 
-| Key             | Action                        |
-|-----------------+-------------------------------|
-| C-<space>       | Set mark at point             |
-| Ctrl+Space      | Set mark at point (alt)       |
-| C-g             | Cancel selection              |
-| C-c <space>     | Push mark to ring             |
-| Ctrl+C Space    | Push mark to ring (alt)       |
-| C-u C-<space>   | Pop mark from local ring      |
-| Ctrl+U Ctrl+Space | Pop from local ring (alt)   |
-| C-x C-<space>   | Pop mark from global ring     |
-| Ctrl+X Ctrl+Space | Pop from global ring (alt)  |
-| C-x C-x         | Exchange point and mark       |
-| C-c m s         | Show mark ring                |
+| Key               | Action                     |
+|-------------------+----------------------------|
+| C-Space           | Set mark at point          |
+| C-g               | Cancel selection           |
+| C-c Space         | Push mark to ring          |
+| C-u C-Space       | Pop mark from local ring   |
+| Ctrl+U Ctrl+Space | Pop from local ring (alt)  |
+| C-x C-Space       | Pop mark from global ring  |
+| Ctrl+X Ctrl+Space | Pop from global ring (alt) |
+| C-x C-x           | Exchange point and mark    |
+| C-c m s           | Show mark ring             |
 
 * Speed Commands
 
@@ -623,7 +629,8 @@ CLOSED: [2026-01-19 Mon 18:20]
 
 See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.
 
-** ⚠️ LaTeX Speed Commands
+** ✅ LaTeX Speed Commands
+CLOSED: [2026-01-24 Sat 17:39]
 
 Speed commands active at the start of =\section=, =\subsection=, or =\begin{}= lines:
 

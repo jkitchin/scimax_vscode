@@ -44,18 +44,21 @@ CLOSED: [2026-01-16 Fri 20:55]
 - `[m m]' Markdown file - Export to .md file
 - `[m o]' Markdown and open - Export to .md and open in VS Code
 
-*** ⚠️ Jupyter Notebook Exports
+*** ✅ Jupyter Notebook Exports
+CLOSED: [2026-01-24 Sat 17:34]
 
 - `[j j]' Jupyter Notebook - Export to .ipynb file
 - `[j o]' Notebook and open - Export and open in VS Code notebook viewer
 - `[j p]' Participant notebook - Export with solutions stripped (for teaching)
 
-*** ⚠️ DOCX (Word) Exports
+*** ✅ DOCX (Word) Exports
+CLOSED: [2026-01-24 Sat 17:34]
 
 - `[d d]' Word document - Export to .docx file
 - `[d o]' Word and open - Export and open in Microsoft Word
 
-*** ⚠️ Clipboard Exports (ox-clip style)
+*** ✅ Clipboard Exports (ox-clip style)
+CLOSED: [2026-01-24 Sat 17:34]
 
 Copy formatted content to clipboard for pasting into other applications:
 - `[k h]' HTML (rich) - Copy as formatted rich text (paste into Word, email, etc.)
@@ -368,7 +371,8 @@ print("Hello, world!")
 ```
 #+END_SRC
 
-** ⚠️ Jupyter Notebook Export
+** ✅ Jupyter Notebook Export
+CLOSED: [2026-01-24 Sat 17:43]
 
 Export org-mode documents to Jupyter Notebook format (.ipynb), compatible with Jupyter Lab, Jupyter Notebook, VS Code notebook viewer, and ox-ipynb from Emacs.
 
@@ -386,11 +390,11 @@ Export org-mode documents to Jupyter Notebook format (.ipynb), compatible with J
 
 Export the current org file to Jupyter Notebook:
 
-| Keybinding   | Command                            | Description                          |
-|--------------+------------------------------------+--------------------------------------|
-| C-c C-e j j  | =scimax.org.exportIpynb=           | Export to .ipynb file                |
-| C-c C-e j o  | =scimax.org.exportIpynbOpen=       | Export and open in notebook viewer   |
-| C-c C-e j p  | =scimax.org.exportIpynbParticipant= | Export with solutions stripped       |
+| Keybinding  | Command                           | Description                        |
+|-------------+-----------------------------------+------------------------------------|
+| C-c C-e j j | scimax.org.exportIpynb            | Export to .ipynb file              |
+| C-c C-e j o | scimax.org.exportIpynbOpen        | Export and open in notebook viewer |
+| C-c C-e j p | scimax.org.exportIpynbParticipant | Export with solutions stripped     |
 
 *** Kernel Detection
 
@@ -461,7 +465,8 @@ The following ox-ipynb keywords are supported:
 ,#+OX_IPYNB_NOTEBOOK_METADATA: {"custom_key": "value"}
 #+END_SRC
 
-** ⚠️ DOCX Export
+** ✅ DOCX Export
+CLOSED: [2026-01-24 Sat 17:40]
 
 DOCX export generates Microsoft Word (.docx) documents using [[https://pandoc.org/][Pandoc]] for high-quality conversion with proper equation rendering and bibliography support.
 
@@ -485,10 +490,10 @@ DOCX export generates Microsoft Word (.docx) documents using [[https://pandoc.or
 
 Export the current org file to Word:
 
-| Keybinding   | Command                   | Description                   |
-|--------------+---------------------------+-------------------------------|
-| C-c C-e d d  | =scimax.org.exportDocx=     | Export to .docx file          |
-| C-c C-e d o  | =scimax.org.exportDocxOpen= | Export and open in Word       |
+| Keybinding  | Command                     | Description             |
+|-------------+-----------------------------+-------------------------|
+| C-c C-e d d | =scimax.org.exportDocx=     | Export to .docx file    |
+| C-c C-e d o | =scimax.org.exportDocxOpen= | Export and open in Word |
 
 *** Code Blocks
 
@@ -607,7 +612,8 @@ Both inline (=$...$=) and display (=\begin{equation}...=) formats are supported.
 - Complex nested tables may need adjustment
 - Internal links work within the document but external file links are text-only
 
-** ⚠️ Clipboard Export (ox-clip)
+** ✅ Clipboard Export (ox-clip)
+CLOSED: [2026-01-24 Sat 17:34]
 
 Clipboard export (inspired by [[https://github.com/jkitchin/ox-clip][ox-clip]]) copies formatted org content to the clipboard, enabling pasting into email clients, Word, Google Docs, and other applications that accept rich text.
 
@@ -1351,30 +1357,31 @@ The `#+OPTIONS' keyword controls various export behaviors:
 #+OPTIONS: key1:value1 key2:value2 ...
 #+END_SRC
 
-*** ⚠️ Complete OPTIONS Reference
+*** ✅ Complete OPTIONS Reference
+CLOSED: [2026-01-24 Sat 17:34]
 
-| Option       | Values              | Default | Description                              |
-|--------------+---------------------+---------+------------------------------------------|
-| =toc=        | =t=, =nil=, =N=     | =nil=   | Table of contents (N = depth)            |
-| =num=        | =t=, =nil=, =N=     | =t=     | Section numbering (N = depth)            |
-| =H=          | =N=                 | =0=     | Headline levels to export (0 = all)      |
-| =author=     | =t=, =nil=          | =t=     | Include author in output                 |
-| =date=       | =t=, =nil=          | =t=     | Include date in output                   |
-| =email=      | =t=, =nil=          | =nil=   | Include email in output                  |
-| =tags=       | =t=, =nil=, =not-in-toc= | =t= | Include tags in headlines               |
-| =todo=       | =t=, =nil=          | =t=     | Include TODO keywords in headlines       |
-| =pri=        | =t=, =nil=          | =nil=   | Include priority cookies ([#A], etc.)    |
-| =<=, =timestamp= | =t=, =nil=       | =t=     | Include timestamps                       |
-| =creator=    | =t=, =nil=          | =nil=   | Include creator string in postamble      |
-| =f=          | =t=, =nil=          | =t=     | Include footnotes                        |
-| =p=          | =t=, =nil=          | =nil=   | Include statistics cookies ([1/3], [50%])|
-| =c=          | =t=, =nil=          | =nil=   | Include CLOCK entries                    |
-| =d=          | =t=, =nil=, =(list)= | =nil=  | Include drawers (or specific drawers)    |
-| =prop=       | =t=, =nil=          | =t=     | Include PROPERTIES drawers               |
-| =\vert{}=    | =t=, =nil=          | =t=     | Include tables                           |
-| =^=          | =t=, =nil=, ={}=    | =t=     | Sub/superscripts (={}= requires braces)  |
-| =:=          | =t=, =nil=          | =t=     | Include fixed-width sections             |
-| =\n=         | =t=, =nil=          | =nil=   | Preserve line breaks                     |
+| Option       | Values             | Default | Description                               |
+|--------------+--------------------+---------+-------------------------------------------|
+| toc          | t, nil, N          | nil     | Table of contents (N  depth)              |
+| num          | t, nil, N          | t       | Section numbering (N  depth)              |
+| H            | N                  | 0       | Headline levels to export (0  all)        |
+| author       | t, nil             | t       | Include author in output                  |
+| date         | t, nil             | t       | Include date in output                    |
+| email        | t, nil             | nil     | Include email in output                   |
+| tags         | t, nil, not-in-toc | t       | Include tags in headlines                 |
+| todo         | t, nil             | t       | Include TODO keywords in headlines        |
+| pri          | t, nil             | nil     | Include priority cookies ([#A], etc.)     |
+| <, timestamp | t, nil             | t       | Include timestamps                        |
+| creator      | t, nil             | nil     | Include creator string in postamble       |
+| f            | t, nil             | t       | Include footnotes                         |
+| p            | t, nil             | nil     | Include statistics cookies ([1/3], [50%]) |
+| c            | t, nil             | nil     | Include CLOCK entries                     |
+| d            | t, nil, (list)     | nil     | Include drawers (or specific drawers)     |
+| prop         | t, nil             | t       | Include PROPERTIES drawers                |
+| \vert{}      | t, nil             | t       | Include tables                            |
+| ^            | t, nil, {}         | t       | Sub/superscripts ({} requires braces)     |
+| :            | t, nil             | t       | Include fixed-width sections              |
+| \n           | t, nil             | nil     | Preserve line breaks                      |
 
 *** Examples
 
@@ -1441,7 +1448,8 @@ Note: =#+EMAIL= is only included in output when =email:t= is set in OPTIONS.
 #+LATEX_COMPILER: pdflatex
 #+END_SRC
 
-*** ⚠️ Export Settings Keywords
+*** ✅ Export Settings Keywords
+CLOSED: [2026-01-24 Sat 17:35]
 
 **** EXPORT_FILE_NAME
 
@@ -2169,28 +2177,29 @@ CLOSED: [2026-01-17 Sat 09:29]
 ** ✅ Complete Keybinding Reference
 CLOSED: [2026-01-17 Sat 09:29]
 
-| Keybinding       | Command                    | Description                      |
-|------------------+----------------------------+----------------------------------|
-| C-c C-e        | Export dispatcher          | Open export menu                 |
-| C-c C-e h h    | HTML export                | Export to .html                  |
-| C-c C-e h o    | HTML export and open       | Export and open in browser       |
-| C-c C-e h p    | HTML preview               | Preview in VS Code webview       |
-| C-c C-e l l    | LaTeX export               | Export to .tex                   |
-| C-c C-e l p    | PDF export                 | Export to PDF                    |
-| C-c C-e l o    | PDF export and open        | Export and open PDF              |
-| C-c C-e l v    | LaTeX preview              | Open PDF preview                 |
-| C-c C-e l s    | Forward sync               | Sync cursor to PDF (SyncTeX)     |
-| C-c C-e m m    | Markdown export            | Export to .md                    |
-| C-c C-e m o    | Markdown export and open   | Export and open in editor        |
-| C-c C-e d d    | DOCX export                | Export to .docx                  |
-| C-c C-e d o    | DOCX export and open       | Export and open in Word          |
-| C-c k          | Clipboard HTML (rich)      | Copy subtree as rich HTML        |
-| C-c C-e k h    | Clipboard HTML (rich)      | Copy as rich HTML (menu)         |
-| C-c C-e k H    | Clipboard HTML (source)    | Copy HTML source code            |
-| C-c C-e k l    | Clipboard LaTeX            | Copy LaTeX source code           |
-| C-c C-e k m    | Clipboard Markdown         | Copy Markdown source code        |
+| Keybinding  | Command                  | Description                  |
+|-------------+--------------------------+------------------------------|
+| C-c C-e     | Export dispatcher        | Open export menu             |
+| C-c C-e h h | HTML export              | Export to .html              |
+| C-c C-e h o | HTML export and open     | Export and open in browser   |
+| C-c C-e h p | HTML preview             | Preview in VS Code webview   |
+| C-c C-e l l | LaTeX export             | Export to .tex               |
+| C-c C-e l p | PDF export               | Export to PDF                |
+| C-c C-e l o | PDF export and open      | Export and open PDF          |
+| C-c C-e l v | LaTeX preview            | Open PDF preview             |
+| C-c C-e l s | Forward sync             | Sync cursor to PDF (SyncTeX) |
+| C-c C-e m m | Markdown export          | Export to .md                |
+| C-c C-e m o | Markdown export and open | Export and open in editor    |
+| C-c C-e d d | DOCX export              | Export to .docx              |
+| C-c C-e d o | DOCX export and open     | Export and open in Word      |
+| C-c k       | Clipboard HTML (rich)    | Copy subtree as rich HTML    |
+| C-c C-e k h | Clipboard HTML (rich)    | Copy as rich HTML (menu)     |
+| C-c C-e k H | Clipboard HTML (source)  | Copy HTML source code        |
+| C-c C-e k l | Clipboard LaTeX          | Copy LaTeX source code       |
+| C-c C-e k m | Clipboard Markdown       | Copy Markdown source code    |
 
-** ⚠️ Export Options Quick Reference
+** ✅ Export Options Quick Reference
+CLOSED: [2026-01-24 Sat 17:36]
 
 | Option   | Values             | Default | Effect                                 |
 |----------+--------------------+---------+----------------------------------------|

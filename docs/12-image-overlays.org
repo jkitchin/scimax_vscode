@@ -645,11 +645,13 @@ Note: Remote images don't show overlays but are clickable:
 [[https://example.com/logo.png][Company Logo]]
 #+END_SRC
 
-* ⚠️ Inserting Screenshots
+* ✅ Inserting Screenshots
+CLOSED: [2026-01-24 Sat 17:37]
 
 The extension provides a cross-platform screenshot command that captures a screen region and inserts a link to the saved image.
 
-** ⚠️ Taking a Screenshot
+** ✅ Taking a Screenshot
+CLOSED: [2026-01-24 Sat 17:37]
 
 Press =F10= in an org or markdown file to take a screenshot:
 
@@ -664,7 +666,8 @@ Press =F10= in an org or markdown file to take a screenshot:
 | Windows  | SnippingTool via PowerShell                               |
 | Linux    | Auto-detects: gnome-screenshot, scrot, flameshot, or maim |
 
-** ⚠️ macOS Permission Setup
+** ✅ macOS Permission Setup
+CLOSED: [2026-01-24 Sat 17:37]
 
 The first time you use the screenshot command on macOS, you may need to grant screen recording permission to VS Code:
 
@@ -675,7 +678,8 @@ The first time you use the screenshot command on macOS, you may need to grant sc
 5. *Restart VS Code* for the permission to take effect
 6. Try =F10= again
 
-** ⚠️ Inserted Link Format
+** ✅ Inserted Link Format
+CLOSED: [2026-01-24 Sat 17:37]
 
 For org-mode files, the inserted link includes a width attribute:
 
@@ -692,13 +696,15 @@ For markdown files:
 
 The width is automatically determined from the image dimensions (capped at 800 pixels).
 
-** ⚠️ Screenshot Directory
+** ✅ Screenshot Directory
+CLOSED: [2026-01-24 Sat 17:37]
 
 Screenshots are saved to a =screenshots/= subdirectory relative to the current file. The directory is created automatically if it doesn't exist.
 
 Filenames follow the pattern: =screenshot-YYYY-MM-DD-HH-MM-SS.png=
 
-** ⚠️ Linux Screenshot Tools
+** ✅ Linux Screenshot Tools
+CLOSED: [2026-01-24 Sat 17:37]
 
 On Linux, the extension tries these tools in order and uses the first one found:
 
@@ -710,11 +716,12 @@ On Linux, the extension tries these tools in order and uses the first one found:
 
 Install at least one of these tools for screenshot functionality.
 
-** ⚠️ Command Reference
+** ✅ Command Reference
+CLOSED: [2026-01-24 Sat 17:37]
 
-| Command                    | Keybinding | Description                          |
-|----------------------------+------------+--------------------------------------|
-| =scimax.insertScreenshot=  | =F10=      | Capture screen region and insert link |
+| Command                 | Keybinding | Description                           |
+|-------------------------+------------+---------------------------------------|
+| scimax.insertScreenshot | F10        | Capture screen region and insert link |
 
 * ✅ See Also
 

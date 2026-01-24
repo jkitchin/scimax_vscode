@@ -78,20 +78,24 @@ This email is used for services that offer better access to identified users. Cu
 
 You can also configure this via the command =scimax.ref.configureOpenAlex= which provides a quick pick menu for setting both your email and optional API key.
 
-* ⚠️ Org-mode Settings
+* ✅ Org-mode Settings
+CLOSED: [2026-01-24 Sat 17:40]
 
 Settings for org-mode document behavior including TODO states, progress logging, and more.
 
-** ⚠️ Settings Overview
+** ✅ Settings Overview
+CLOSED: [2026-01-24 Sat 17:41]
 
 | Setting                    | Type                 | Default  | Description                     |
 |----------------------------+----------------------+----------+---------------------------------|
 | scimax.org.logRepeat       | string (enum)        | "false"  | Enable progress logging         |
 | scimax.org.logIntoDrawer   | boolean or string    | false    | Where to log state changes      |
 
-** ⚠️ Detailed Configuration
+** ✅ Detailed Configuration
+CLOSED: [2026-01-24 Sat 17:41]
 
-*** ⚠️ scimax.org.logRepeat
+*** ✅ scimax.org.logRepeat
+CLOSED: [2026-01-24 Sat 17:41]
 
 - *Type*: string
 - *Values*: ="false"=, ="time"=, ="note"=
@@ -118,7 +122,8 @@ is marked done, it cycles back to TODO. This setting controls whether to log tha
 
 *Heading-level override*: Add =:LOGGING: logrepeat= property
 
-*** ⚠️ scimax.org.logIntoDrawer
+*** ✅ scimax.org.logIntoDrawer
+CLOSED: [2026-01-24 Sat 17:41]
 
 - *Type*: boolean or string
 - *Default*: =false=

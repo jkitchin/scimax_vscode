@@ -3754,6 +3754,54 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
+        "command": "scimax.markup.bold",
+        "key": "alt+b",
+        "mac": "alt+b",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.italic",
+        "key": "alt+i",
+        "mac": "alt+i",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.underline",
+        "key": "alt+u",
+        "mac": "alt+u",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.code",
+        "key": "alt+c",
+        "mac": "alt+c",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.verbatim",
+        "key": "alt+v",
+        "mac": "alt+v",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.strikethrough",
+        "key": "alt+x",
+        "mac": "alt+x",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.subscript",
+        "key": "alt+-",
+        "mac": "alt+-",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.markup.superscript",
+        "key": "alt+=",
+        "mac": "alt+=",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
         "command": "scimax.org.cycleTodo",
         "key": "ctrl+c ctrl+t",
         "mac": "ctrl+c ctrl+t",

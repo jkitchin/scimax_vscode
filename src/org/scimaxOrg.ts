@@ -85,6 +85,8 @@ async function applyMarkup(
 
     const document = editor.document;
     const selection = editor.selection;
+    let insertedEmptyMarkup = false;
+    let insertPosition: vscode.Position | undefined;
 
     await editor.edit(editBuilder => {
         if (selection.isEmpty) {
@@ -98,6 +100,8 @@ async function applyMarkup(
             } else {
                 // No word at cursor, insert empty markup
                 editBuilder.insert(position, `${prefix}${suffix}`);
+                insertedEmptyMarkup = true;
+                insertPosition = position;
             }
         } else {
             // Has selection - wrap selection
@@ -105,6 +109,12 @@ async function applyMarkup(
             editBuilder.replace(selection, `${prefix}${text}${suffix}`);
         }
     });
+
+    // Move cursor between the markers when inserting empty markup
+    if (insertedEmptyMarkup && insertPosition) {
+        const newPosition = insertPosition.translate(0, prefix.length);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
+    }
 }
 
 /**
