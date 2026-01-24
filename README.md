@@ -305,23 +305,55 @@ Toggle speed commands on/off with `Ctrl+c Ctrl+x s`.
 
 ### Export System
 
-Export org documents to multiple formats.
+Export org documents to multiple formats with full org-mode export option support.
 
 **Commands:**
-| Command                     | Description                    |
-| --------------------------- | ------------------------------ |
-| `Scimax: Export to HTML`    | Export current file to HTML    |
-| `Scimax: Export to Markdown`| Export to GitHub-flavored MD   |
-| `Scimax: Export to LaTeX`   | Export to LaTeX document       |
-| `Scimax: Export to PDF`     | Export to PDF via LaTeX/Pandoc |
-| `Scimax: Export Dispatch`   | Show export options dialog     |
+| Command                      | Description                     |
+| ---------------------------- | ------------------------------- |
+| `Scimax: Export to HTML`     | Export current file to HTML     |
+| `Scimax: Export to Markdown` | Export to GitHub-flavored MD    |
+| `Scimax: Export to LaTeX`    | Export to LaTeX document        |
+| `Scimax: Export to PDF`      | Export to PDF via LaTeX/Pandoc  |
+| `Scimax: Export to Word`     | Export to DOCX via Pandoc       |
+| `Scimax: Export Dispatch`    | Show export options dialog      |
 
 **Features:**
 - Full org-mode syntax support (headings, lists, tables, blocks)
 - Source block syntax highlighting in exports
-- Citation handling with bibliography
 - Table of contents generation
 - Custom CSS/templates for HTML export
+
+**DOCX Export (Pandoc-based):**
+The Word export uses [Pandoc](https://pandoc.org/) for high-quality document generation:
+- **LaTeX equations** render properly as native Word equations
+- **Bibliography support** via `--citeproc` - citations are resolved and a bibliography is generated
+- **Citation formats**: Both org-ref (`cite:key`) and org-cite (`[cite:@key]`) are supported
+
+**Export Options:**
+Control what appears in exports using `#+OPTIONS:` in your org file:
+| Option      | Effect                              |
+|-------------|-------------------------------------|
+| `toc:2`     | Table of contents to depth 2        |
+| `num:t`     | Number sections                     |
+| `p:nil`     | Remove statistics cookies `[1/3]`   |
+| `todo:nil`  | Remove TODO keywords                |
+| `tags:nil`  | Remove heading tags                 |
+| `pri:nil`   | Remove priority cookies `[#A]`      |
+| `prop:nil`  | Remove PROPERTIES drawers           |
+| `d:nil`     | Remove all drawers                  |
+
+**Example:**
+```org
+#+TITLE: My Document
+#+OPTIONS: toc:2 num:t p:nil todo:nil tags:nil
+
+* Introduction
+Content here...
+
+bibliography:~/references.bib
+```
+
+**Requirements:** [Pandoc](https://pandoc.org/installing.html) must be installed for DOCX/PDF export.
 
 ---
 
@@ -645,6 +677,8 @@ SQLite database powered by [libsql](https://github.com/tursodatabase/libsql) wit
 - **Tag inheritance**: Inherited tags from parent headings
 - **Agenda view**: Deadlines, scheduled items, and TODOs with overdue detection
 - **Scoped search**: Limit searches to specific directories
+- **Batched reindexing**: Memory-safe reindexing with configurable batch size and progress reporting
+- **Cancellable operations**: Long-running reindex can be cancelled via progress notification
 
 **Embedding Provider for Semantic Search:**
 | Provider           | Model            | Dimensions | Setup                          |
@@ -837,7 +871,7 @@ This package almost achieves feature parity with Emacs Scimax. If there are feat
 | Literate Programming | ob-ipython/ob-*    | Full support (Babel + Jupyter)        |
 | Text Markup          | scimax-org         | Full support (bold, italic, etc.)     |
 | Block Manipulation   | scimax-ob          | Full support (split, merge, navigate) |
-| Export               | ox-*               | Full support (HTML, LaTeX, MD, PDF)   |
+| Export               | ox-*               | Full support (HTML, LaTeX, MD, PDF, DOCX) |
 | Tables               | org-table          | Full support + export to CSV/HTML     |
 | Speed Commands       | org-speed-commands | Full support (37 commands)            |
 | Clocking             | org-clock          | Full support (in/out, reports, tables)|
@@ -875,6 +909,31 @@ Benchmarks on typical documents (may vary by system):
 | Large (~34K chars, 1571 lines) | <25ms            |
 
 The parser scales linearly with document size and handles documents with hundreds of headings, source blocks, and deeply nested structures efficiently.
+
+---
+
+## Troubleshooting & Logging
+
+Scimax includes a rotating file logger for debugging issues:
+
+**Commands:**
+| Command                          | Description                        |
+|----------------------------------|------------------------------------|
+| `Scimax: Open Log File Directory`| Open the directory containing logs |
+
+**Log Files:**
+- Logs are written to `scimax.log` in the extension's storage directory
+- Automatic rotation when file exceeds size limit (default 1MB)
+- Keeps configurable number of backup files (`scimax.log.1`, `scimax.log.2`, etc.)
+
+**Configuration:**
+```json
+{
+  "scimax.logLevel": "info",       // debug, info, warn, error
+  "scimax.logMaxSizeKB": 1024,     // Max log file size before rotation
+  "scimax.logBackupCount": 3       // Number of backup files to keep
+}
+```
 
 ---
 
