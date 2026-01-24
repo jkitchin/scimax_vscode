@@ -102,6 +102,8 @@ export interface QueueItem {
 export interface CallSpec {
     /** Block name to call */
     name: string;
+    /** File containing the block (for cross-file calls like file.org::block) */
+    file?: string;
     /** Inside header arguments */
     insideHeaders: string;
     /** End header arguments */
@@ -1012,16 +1014,40 @@ function resolveVariableValue(documentText: string | undefined, value: string): 
  *   #+CALL: name()
  *   #+CALL: name(arg=value)
  *   #+CALL: name[:inside-header](arg=value)[:end-header]
+ *   #+CALL: file.org::name(arg=value) - cross-file call with double colon
+ *   #+CALL: file.org:name(arg=value) - cross-file call with single colon
  */
 export function parseCallLine(line: string): CallSpec | null {
     // Allow optional leading whitespace
     const match = line.match(/^\s*#\+CALL:\s*(\S+?)(?:\[(.*?)\])?\((.*?)\)(?:\[(.*?)\])?/i);
     if (!match) return null;
 
-    const name = match[1];
+    let nameOrFileBlock = match[1];
     const insideHeaders = match[2] || '';
     const argsStr = match[3] || '';
     const endHeaders = match[4] || '';
+
+    // Check for cross-file reference: file.org::name or file.org:name
+    let file: string | undefined;
+    let name: string;
+
+    // Try double colon first (more specific)
+    const doubleColonIdx = nameOrFileBlock.indexOf('::');
+    if (doubleColonIdx > 0) {
+        file = nameOrFileBlock.substring(0, doubleColonIdx);
+        name = nameOrFileBlock.substring(doubleColonIdx + 2);
+    } else {
+        // Try single colon - but only if it looks like a file reference
+        // (contains a dot before the colon, indicating a file extension)
+        const singleColonIdx = nameOrFileBlock.indexOf(':');
+        if (singleColonIdx > 0 && nameOrFileBlock.substring(0, singleColonIdx).includes('.')) {
+            file = nameOrFileBlock.substring(0, singleColonIdx);
+            name = nameOrFileBlock.substring(singleColonIdx + 1);
+        } else {
+            // No file reference, just a block name
+            name = nameOrFileBlock;
+        }
+    }
 
     // Parse arguments
     const args: Record<string, string> = {};
@@ -1035,6 +1061,7 @@ export function parseCallLine(line: string): CallSpec | null {
 
     return {
         name,
+        file,
         insideHeaders,
         endHeaders,
         arguments: args,

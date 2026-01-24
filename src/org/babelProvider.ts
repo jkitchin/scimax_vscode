@@ -17,7 +17,8 @@ import {
     type HeaderArguments,
 } from '../parser/orgBabel';
 import type { SrcBlockElement } from '../parser/orgElementTypes';
-import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall } from '../parser/orgBabelAdvanced';
+import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall, type CallSpec, buildNamedBlocksMap } from '../parser/orgBabelAdvanced';
+import * as fs from 'fs';
 import { OrgParser } from '../parser/orgParser';
 import { getKernelManager } from '../jupyter/kernelManager';
 
@@ -1455,41 +1456,71 @@ async function executeSourceBlockAtCursor(lineNumber?: number): Promise<void> {
  */
 async function executeCallAtCursor(
     editor: vscode.TextEditor,
-    callSpec: { name: string; insideHeaders: string; endHeaders: string; arguments: Record<string, string> }
+    callSpec: CallSpec
 ): Promise<void> {
     const channel = getOutputChannel();
     const document = editor.document;
+    const documentDir = path.dirname(document.uri.fsPath);
+
+    const callDisplay = callSpec.file
+        ? `${callSpec.file}::${callSpec.name}`
+        : callSpec.name;
 
     channel.appendLine(`\n${'='.repeat(60)}`);
-    channel.appendLine(`Executing #+CALL: ${callSpec.name}(${Object.entries(callSpec.arguments).map(([k, v]) => `${k}=${v}`).join(', ')})`);
+    channel.appendLine(`Executing #+CALL: ${callDisplay}(${Object.entries(callSpec.arguments).map(([k, v]) => `${k}=${v}`).join(', ')})`);
     channel.appendLine(`${'='.repeat(60)}\n`);
 
-    // Build block map from document
-    const blockMap = buildNamedBlockMap(document);
+    // Build block map - from referenced file if cross-file call, otherwise from current document
+    let blockMap: Map<string, TangleBlock>;
+    let sourceText: string;
+    let sourceFile: string;
+
+    if (callSpec.file) {
+        // Cross-file call - resolve path relative to current document
+        const targetPath = path.isAbsolute(callSpec.file)
+            ? callSpec.file
+            : path.resolve(documentDir, callSpec.file);
+
+        if (!fs.existsSync(targetPath)) {
+            vscode.window.showErrorMessage(`Referenced file not found: ${callSpec.file}`);
+            channel.appendLine(`[ERROR] Referenced file not found: ${targetPath}`);
+            return;
+        }
+
+        sourceText = fs.readFileSync(targetPath, 'utf-8');
+        sourceFile = targetPath;
+        blockMap = buildNamedBlocksMap(sourceText);
+        channel.appendLine(`[INFO] Loading blocks from: ${targetPath}`);
+    } else {
+        // Same-file call
+        sourceText = document.getText();
+        sourceFile = document.uri.fsPath;
+        blockMap = buildNamedBlockMap(document);
+    }
 
     if (!blockMap.has(callSpec.name)) {
-        vscode.window.showErrorMessage(`Named block not found: ${callSpec.name}`);
-        channel.appendLine(`[ERROR] Named block not found: ${callSpec.name}`);
+        const errorMsg = callSpec.file
+            ? `Named block "${callSpec.name}" not found in ${callSpec.file}`
+            : `Named block not found: ${callSpec.name}`;
+        vscode.window.showErrorMessage(errorMsg);
+        channel.appendLine(`[ERROR] ${errorMsg}`);
         return;
     }
 
     const targetBlock = blockMap.get(callSpec.name)!;
-    channel.appendLine(`[INFO] Found block "${callSpec.name}" (${targetBlock.language}) at line ${targetBlock.lineNumber + 1}`);
+    channel.appendLine(`[INFO] Found block "${callSpec.name}" (${targetBlock.language}) at line ${targetBlock.lineNumber + 1} in ${path.basename(sourceFile)}`);
 
     showStatus(`Executing ${callSpec.name}...`);
 
     try {
-        // Get working directory
-        const documentDir = path.dirname(document.uri.fsPath);
-
-        // Execute the call, passing document text for resolving named references
+        // Execute the call, passing source text for resolving named references
         const result = await executeCall(
             callSpec,
             blockMap,
             {
                 cwd: documentDir,
             },
-            document.getText()
+            sourceText
         );
 
         if (result.success) {
