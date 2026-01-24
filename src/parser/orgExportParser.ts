@@ -615,9 +615,17 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
     const level = match[1].length;
     const todoKeyword = match[2] || null;
     const priority = match[3] || null;
-    const rawTitle = match[4];
+    let rawTitle = match[4];
     const tagString = match[5];
     const tags = tagString ? tagString.split(':').filter(t => t) : [];
+
+    // Check for COMMENT keyword at start of title
+    let commentedp = false;
+    const commentMatch = rawTitle.match(/^COMMENT\s+(.*)$/);
+    if (commentMatch) {
+        commentedp = true;
+        rawTitle = commentMatch[1];
+    }
 
     const startLine = state.lineIndex;
     state.lineIndex++;
@@ -674,7 +682,7 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
             priority: priority || undefined,
             tags,
             archivedp: tags.includes('ARCHIVE'),
-            commentedp: false,
+            commentedp,
             footnoteSection: false,
             lineNumber: startLine + 1,
         },
@@ -767,6 +775,11 @@ function parseElement(state: FastParserState): OrgElement | null {
     // Center block
     if (line.match(/^#\+BEGIN_CENTER/i)) {
         return parseSimpleBlock(state, 'center-block', 'CENTER');
+    }
+
+    // Comment block
+    if (line.match(/^#\+BEGIN_COMMENT/i)) {
+        return parseSimpleBlock(state, 'comment-block', 'COMMENT');
     }
 
     // Export block
@@ -878,7 +891,7 @@ function parseSrcBlock(state: FastParserState): SrcBlockElement | null {
     } as SrcBlockElement;
 }
 
-function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote-block' | 'verse-block' | 'center-block', blockName: string): OrgElement | null {
+function parseSimpleBlock(state: FastParserState, type: 'example-block' | 'quote-block' | 'verse-block' | 'center-block' | 'comment-block', blockName: string): OrgElement | null {
     state.lineIndex++;
     const contentLines: string[] = [];
 

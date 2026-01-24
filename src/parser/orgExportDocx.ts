@@ -104,6 +104,7 @@ import { highlightCode, preloadHighlighter, HighlightOptions } from './orgExport
 
 import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
 import type { BibEntry } from '../references/bibtexParser';
+import { renderLatexForDocx } from './orgExportDocxMath';
 
 // =============================================================================
 // DOCX Export Options
@@ -616,6 +617,8 @@ export class DocxExportBackend {
                 return this.exportDrawer(element as DrawerElement, state);
             case 'export-block':
                 return this.exportExportBlock(element as ExportBlockElement, state);
+            case 'latex-environment':
+                return this.exportLatexEnvironment(element as LatexEnvironmentElement, state);
             case 'keyword':
             case 'comment-block':
             case 'footnote-definition':
@@ -1243,6 +1246,48 @@ export class DocxExportBackend {
     }
 
     /**
+     * Export LaTeX environment (equation, align, etc.)
+     * Renders as Cambria Math font (Word's equation font) for best compatibility
+     */
+    private async exportLatexEnvironment(
+        element: LatexEnvironmentElement,
+        state: DocxExportState
+    ): Promise<Paragraph[]> {
+        const latex = element.properties.value;
+
+        // Extract content without \begin{} and \end{} for cleaner display
+        let content = latex;
+        const beginMatch = latex.match(/\\begin\{[^}]+\}\s*/);
+        const endMatch = latex.match(/\s*\\end\{[^}]+\}$/);
+        if (beginMatch && endMatch) {
+            content = latex.slice(beginMatch[0].length, -endMatch[0].length).trim();
+        }
+
+        // Split into lines for multi-line equations
+        const lines = content.split('\n').filter(line => line.trim());
+
+        const runs: TextRun[] = [];
+        for (let i = 0; i < lines.length; i++) {
+            if (i > 0) {
+                runs.push(new TextRun({ break: 1 }));
+            }
+            runs.push(new TextRun({
+                text: lines[i].trim(),
+                font: 'Cambria Math',
+                size: 24, // 12pt
+            }));
+        }
+
+        return [
+            new Paragraph({
+                children: runs,
+                alignment: AlignmentType.CENTER,
+                spacing: { before: 200, after: 200 },
+            }),
+        ];
+    }
+
+    /**
      * Export bibliography section
      */
     private exportBibliography(state: DocxExportState): Paragraph[] {
@@ -1416,6 +1461,9 @@ export class DocxExportBackend {
 
             case 'citation':
                 return this.exportCitation(object as any, state);
+
+            case 'latex-fragment':
+                return this.exportLatexFragment(object as LatexFragmentObject, state);
 
             default:
                 return [];
@@ -1685,6 +1733,41 @@ export class DocxExportBackend {
 
         return [
             new FootnoteReferenceRun(state.docxFootnotes.size) as unknown as TextRun,
+        ];
+    }
+
+    /**
+     * Export inline LaTeX fragment (math) as formatted text
+     * Uses Cambria Math font for best compatibility with Word
+     */
+    private exportLatexFragment(obj: LatexFragmentObject, _state: DocxExportState): TextRun[] {
+        const latex = obj.properties.value;
+        const fragmentType = obj.properties.fragmentType;
+
+        // For LaTeX commands like \ref{}, \cite{}, render as-is
+        if (fragmentType === 'command') {
+            return [new TextRun({ text: latex })];
+        }
+
+        // Extract just the math content (remove delimiters)
+        let mathContent = latex;
+        if (latex.startsWith('$$') && latex.endsWith('$$')) {
+            mathContent = latex.slice(2, -2);
+        } else if (latex.startsWith('$') && latex.endsWith('$')) {
+            mathContent = latex.slice(1, -1);
+        } else if (latex.startsWith('\\[') && latex.endsWith('\\]')) {
+            mathContent = latex.slice(2, -2);
+        } else if (latex.startsWith('\\(') && latex.endsWith('\\)')) {
+            mathContent = latex.slice(2, -2);
+        }
+
+        // Render math with Cambria Math font (Word's equation font)
+        return [
+            new TextRun({
+                text: mathContent,
+                font: 'Cambria Math',
+                italics: true,
+            }),
         ];
     }
 

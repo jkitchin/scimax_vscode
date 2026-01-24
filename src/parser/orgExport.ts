@@ -498,6 +498,47 @@ export function exportObjects(
  * Collect all targets and custom IDs from the document
  */
 export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
+    // Process inline objects to find targets
+    const processObjects = (objects: OrgObject[] | undefined) => {
+        if (!objects) return;
+        for (const obj of objects) {
+            if (obj.type === 'target') {
+                const targetObj = obj as TargetObject;
+                const id = generateId(targetObj.properties.value);
+                state.targets.set(targetObj.properties.value, id);
+            } else if (obj.type === 'radio-target') {
+                const radioObj = obj as RadioTargetObject;
+                // Get the text content for the radio target from its children
+                let content = '';
+                if (radioObj.children?.[0]?.type === 'plain-text') {
+                    content = (radioObj.children[0] as PlainTextObject).properties.value;
+                }
+                if (content) {
+                    const id = generateId(content);
+                    state.radioTargets.set(content, id);
+                }
+            }
+            // Process children of markup objects
+            if ('children' in obj && Array.isArray((obj as any).children)) {
+                processObjects((obj as any).children);
+            }
+        }
+    };
+
+    // Process elements recursively
+    const processElement = (element: OrgElement) => {
+        // Check for paragraph children (inline objects)
+        if (element.type === 'paragraph') {
+            processObjects((element as ParagraphElement).children);
+        }
+
+        // Process section children
+        if (element.type === 'section') {
+            const section = element as SectionElement;
+            section.children.forEach(processElement);
+        }
+    };
+
     const processHeadline = (headline: HeadlineElement) => {
         // Generate an ID for this headline - must match exportHeadline
         const id = headline.properties.customId ||
@@ -508,6 +549,9 @@ export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
             state.customIds.set(headline.properties.customId, id);
         }
 
+        // Also store headline raw value for fuzzy linking
+        state.targets.set(headline.properties.rawValue, id);
+
         // Add to TOC if toc is enabled
         if (state.options.toc) {
             state.tocEntries.push({
@@ -517,9 +561,19 @@ export function collectTargets(doc: OrgDocumentNode, state: ExportState): void {
             });
         }
 
+        // Process section content
+        if (headline.section) {
+            processElement(headline.section);
+        }
+
         // Process children
         headline.children.forEach((child) => processHeadline(child));
     };
+
+    // Process document section first (before headlines)
+    if (doc.section) {
+        processElement(doc.section);
+    }
 
     doc.children.forEach((headline) => processHeadline(headline));
 }
@@ -690,12 +744,17 @@ export function expandMacro(
 }
 
 /**
- * Check if an element should be exported based on tags
+ * Check if an element should be exported based on tags and comment status
  */
 export function shouldExport(
     element: HeadlineElement,
     options: ExportOptions
 ): boolean {
+    // COMMENT headlines are never exported
+    if (element.properties.commentedp) {
+        return false;
+    }
+
     const tags = element.properties.tags;
 
     // Check for exclusion
@@ -1170,6 +1229,7 @@ export function exportToLatex(
     let inSrcBlock = false;
     let srcBlockLang = '';
     const srcBlockContent: string[] = [];
+    let inLatexEnv = false;  // Track if we're inside a \begin{...}...\end{...} block
 
     for (const line of lines) {
         // Skip org-mode keywords
@@ -1223,16 +1283,44 @@ export function exportToLatex(
             continue;
         }
 
-        // Handle LaTeX fragments (keep as-is)
-        if (/^\s*\\begin\{/.test(line) || /^\s*\\end\{/.test(line) ||
-            /^\\\[/.test(line) || /^\\\]/.test(line)) {
+        // Handle LaTeX environments (keep as-is, including all content inside)
+        // Check for \begin{...} to start tracking
+        if (/^\s*\\begin\{/.test(line)) {
+            inLatexEnv = true;
+            latexLines.push(line);
+            continue;
+        }
+        // Check for \end{...} to stop tracking
+        if (/^\s*\\end\{/.test(line)) {
+            inLatexEnv = false;
+            latexLines.push(line);
+            continue;
+        }
+        // If inside a LaTeX environment, pass through unmodified
+        if (inLatexEnv) {
+            latexLines.push(line);
+            continue;
+        }
+        // Handle display math delimiters
+        if (/^\\\[/.test(line) || /^\\\]/.test(line)) {
             latexLines.push(line);
             continue;
         }
 
         // Handle inline math - keep $ and \( \) as-is
-        // Handle regular text with markup conversion
+        // Protect math regions from markup processing
         let processedLine = line;
+        const mathRegions: string[] = [];
+        const MATH_PLACEHOLDER = '\x00MATH';
+
+        // Extract and protect inline math: $...$ and \(...\)
+        // Use a function to collect matches and replace with placeholders
+        processedLine = processedLine.replace(/\$[^$]+\$|\\\([^)]+\\\)/g, (match) => {
+            mathRegions.push(match);
+            return `${MATH_PLACEHOLDER}${mathRegions.length - 1}${MATH_PLACEHOLDER}`;
+        });
+
+        // Handle regular text with markup conversion
 
         // Bold: *text* -> \textbf{text}
         processedLine = processedLine.replace(/\*([^*]+)\*/g, '\\textbf{$1}');
@@ -1249,6 +1337,12 @@ export function exportToLatex(
         // Links: [[url][desc]] -> \href{url}{desc}
         processedLine = processedLine.replace(/\[\[([^\]]+)\]\[([^\]]+)\]\]/g, '\\href{$1}{$2}');
         processedLine = processedLine.replace(/\[\[([^\]]+)\]\]/g, '\\url{$1}');
+
+        // Restore protected math regions
+        processedLine = processedLine.replace(
+            new RegExp(`${MATH_PLACEHOLDER}(\\d+)${MATH_PLACEHOLDER}`, 'g'),
+            (_, idx) => mathRegions[parseInt(idx)]
+        );
 
         // Process editmarks
         processedLine = processEditmarksLatex(processedLine, opts.editmarkMode);
