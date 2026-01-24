@@ -87,6 +87,17 @@ To build and install from source:
    code --install-extension scimax-vscode-*.vsix
    #+END_SRC
 
+** ⚠️ Updating the Extension
+
+To update to the latest version from within VS Code:
+
+1. Open the Command Palette (`C-S-P')
+2. Run "Scimax: Update from GitHub"
+3. Confirm the update when prompted
+4. Reload VS Code when prompted
+
+This downloads and installs the latest release from GitHub automatically.
+
 ** Verify Installation
 
 After installation:

@@ -23,5 +23,13 @@ install: package
 uninstall:
 	$(CODE) --uninstall-extension scimax-vscode
 
+install-latest:
+	@echo "Downloading latest release from GitHub..."
+	@rm -f scimax-vscode-*.vsix
+	gh release download --pattern "*.vsix" --repo jkitchin/scimax_vscode
+	@echo "Installing..."
+	$(CODE) --install-extension scimax-vscode-*.vsix --force
+	@echo "Done. Reload VS Code to activate."
+
 clean:
 	rm -rf out node_modules *.vsix
