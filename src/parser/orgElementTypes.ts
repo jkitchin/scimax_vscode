@@ -57,6 +57,7 @@ export type ElementType = GreaterElementType | LesserElementType;
  */
 export type ObjectType =
     | 'bold'
+    | 'citation'
     | 'code'
     | 'command'  // Non-standard: Emacs-style `command' markup
     | 'entity'

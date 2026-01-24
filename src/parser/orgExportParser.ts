@@ -24,6 +24,9 @@ import type {
     FixedWidthElement,
     CommentElement,
     DrawerElement,
+    FootnoteDefinitionElement,
+    PlanningElement,
+    TimestampObject,
     BoldObject,
     ItalicObject,
     UnderlineObject,
@@ -70,6 +73,31 @@ const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
 const INLINE_MATH_PATTERN = /(?<!\$)\$([^$\n]+)\$(?!\$)|\\\(([^)]+)\\\)/g;
 // Line break: \\ (two backslashes)
 const LINE_BREAK_PATTERN = /\\\\(?:\s|$)/g;
+
+// Macro pattern: {{{macro(args)}}} or {{{macro}}}
+const MACRO_PATTERN = /\{\{\{([a-zA-Z0-9_-]+)(?:\(([^)]*)\))?\}\}\}/g;
+
+// Export snippet pattern: @@backend:value@@
+const EXPORT_SNIPPET_PATTERN = /@@([a-zA-Z]+):([^@]+)@@/g;
+
+// Target pattern: <<target>> - creates a named anchor
+const TARGET_PATTERN = /<<([^<>\n]+)>>/g;
+
+// Radio target pattern: <<<target>>> - creates a clickable anchor
+const RADIO_TARGET_PATTERN = /<<<([^<>\n]+)>>>/g;
+
+// Footnote reference pattern: [fn:label] or [fn:label:inline definition] or [fn::inline definition]
+const FOOTNOTE_REF_PATTERN = /\[fn:([a-zA-Z0-9_-]*):?([^\]]*)\]/g;
+
+// Org-cite pattern: [cite:@key] or [cite/style:@key] or [cite:@key1;@key2]
+// Captures: [1]=style (optional), [2]=full citation content (keys with optional prefix/suffix)
+const ORG_CITE_PATTERN = /\[cite(?:\/([a-zA-Z]+))?:([^\]]+)\]/g;
+
+// Planning line patterns
+const RE_PLANNING_LINE = /^\s*(SCHEDULED|DEADLINE|CLOSED):/;
+const RE_SCHEDULED = /SCHEDULED:\s*(<[^>]+>|\[[^\]]+\])/;
+const RE_DEADLINE = /DEADLINE:\s*(<[^>]+>|\[[^\]]+\])/;
+const RE_CLOSED = /CLOSED:\s*(\[[^\]]+\])/;
 
 /**
  * Parse inline objects using regex patterns - much faster than character-by-character
@@ -208,12 +236,13 @@ export function parseObjectsFast(text: string): OrgObject[] {
     }));
 
     // Text markup (only if text contains the marker characters)
+    // Recursively parse children to support nested markup like */bold italic/*
     if (text.includes('*')) {
         collectMatches(BOLD_PATTERN, (m) => ({
             type: 'bold' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+            children: parseObjectsFast(m[1]),
         }));
     }
 
@@ -222,7 +251,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'italic' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+            children: parseObjectsFast(m[1]),
         }));
     }
 
@@ -231,7 +260,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'underline' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+            children: parseObjectsFast(m[1]),
         }));
     }
 
@@ -240,7 +269,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'strike-through' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
-            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+            children: parseObjectsFast(m[1]),
         }));
     }
 
@@ -310,6 +339,114 @@ export function parseObjectsFast(text: string): OrgObject[] {
             type: 'line-break' as const,
             range: { start: m.index!, end: m.index! + 2 }, // Only the \\ part, not trailing whitespace
             postBlank: 0,
+        }));
+    }
+
+    // Macros: {{{macro(args)}}}
+    if (text.includes('{{{')) {
+        collectMatches(MACRO_PATTERN, (m) => {
+            const key = m[1];
+            const argsStr = m[2] || '';
+            const args = argsStr ? argsStr.split(',').map(a => a.trim()) : [];
+            return {
+                type: 'macro' as const,
+                range: { start: m.index!, end: m.index! + m[0].length },
+                postBlank: 0,
+                properties: {
+                    key,
+                    args,
+                    value: m[0],
+                },
+            };
+        });
+    }
+
+    // Export snippets: @@backend:value@@
+    if (text.includes('@@')) {
+        collectMatches(EXPORT_SNIPPET_PATTERN, (m) => ({
+            type: 'export-snippet' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: {
+                backend: m[1],
+                value: m[2],
+            },
+        }));
+    }
+
+    // Footnote references: [fn:label] or [fn:label:definition] or [fn::definition]
+    if (text.includes('[fn:')) {
+        collectMatches(FOOTNOTE_REF_PATTERN, (m) => {
+            const label = m[1] || undefined;
+            const inlineContent = m[2] || undefined;
+
+            // Determine if this is an inline footnote
+            const isInline = inlineContent !== undefined && inlineContent.length > 0;
+
+            const obj: any = {
+                type: 'footnote-reference' as const,
+                range: { start: m.index!, end: m.index! + m[0].length },
+                postBlank: 0,
+                properties: {
+                    label: label || undefined,
+                    referenceType: isInline ? 'inline' : 'standard',
+                },
+            };
+
+            // For inline footnotes, parse the content as children
+            if (isInline) {
+                obj.children = [createPlainText(inlineContent, m.index! + 4 + (label?.length || 0) + 1, m.index! + m[0].length - 1)];
+            }
+
+            return obj;
+        });
+    }
+
+    // Org-cite citations: [cite:@key] or [cite/style:@key] or [cite:@key1;@key2]
+    if (text.includes('[cite')) {
+        collectMatches(ORG_CITE_PATTERN, (m) => {
+            const style = m[1] || undefined;  // e.g., 't' for textual, 'a' for author
+            const content = m[2];  // e.g., '@key1;@key2' or 'see @key p. 5'
+
+            // Parse the citation keys from the content
+            // Keys are prefixed with @ and separated by ;
+            const keys: string[] = [];
+            const keyMatches = content.matchAll(/@([a-zA-Z0-9_:-]+)/g);
+            for (const keyMatch of keyMatches) {
+                keys.push(keyMatch[1]);
+            }
+
+            return {
+                type: 'citation' as const,
+                range: { start: m.index!, end: m.index! + m[0].length },
+                postBlank: 0,
+                properties: {
+                    style: style || 'default',
+                    prefix: undefined,  // Could parse prefix before first @
+                    suffix: undefined,  // Could parse suffix after last key
+                    keys,
+                    rawValue: m[0],
+                },
+            };
+        });
+    }
+
+    // Targets: <<target>> and <<<radio-target>>>
+    if (text.includes('<<')) {
+        // Radio targets first (<<<...>>>) since they're longer
+        collectMatches(RADIO_TARGET_PATTERN, (m) => ({
+            type: 'radio-target' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            children: [createPlainText(m[1], m.index! + 3, m.index! + 3 + m[1].length)],
+        }));
+
+        // Regular targets (<<...>>)
+        collectMatches(TARGET_PATTERN, (m) => ({
+            type: 'target' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { value: m[1] },
         }));
     }
 
@@ -390,6 +527,7 @@ export function parseOrgFast(content: string): OrgDocumentNode {
         'LATEX_HEADER_EXTRA',
         'HTML_HEAD',
         'HTML_HEAD_EXTRA',
+        'MACRO',
     ]);
 
     // First pass: extract document keywords from the top
@@ -458,6 +596,19 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
     const startLine = state.lineIndex;
     state.lineIndex++;
 
+    // Check for planning line immediately after headline
+    let planning: PlanningElement | undefined;
+    if (state.lineIndex < state.lines.length) {
+        const planningLine = state.lines[state.lineIndex];
+        if (RE_PLANNING_LINE.test(planningLine)) {
+            const parsed = parsePlanningLine(planningLine);
+            if (parsed) {
+                planning = parsed;
+                state.lineIndex++;
+            }
+        }
+    }
+
     // Find the end of this headline's content
     let endLine = state.lineIndex;
     while (endLine < state.lines.length) {
@@ -501,6 +652,7 @@ function parseHeadline(state: FastParserState): HeadlineElement | null {
             footnoteSection: false,
             lineNumber: startLine + 1,
         },
+        planning,
         section: sectionElements.length > 0 ? {
             type: 'section',
             range: { start: 0, end: 0 },
@@ -645,6 +797,12 @@ function parseElement(state: FastParserState): OrgElement | null {
     // Results block
     if (line.match(/^#\+RESULTS:/i)) {
         return parseResults(state);
+    }
+
+    // Footnote definition: [fn:label] content
+    const footnoteMatch = line.match(/^\[fn:([a-zA-Z0-9_-]+)\]\s*(.*)/);
+    if (footnoteMatch) {
+        return parseFootnoteDefinition(state);
     }
 
     // Paragraph (default)
@@ -980,6 +1138,143 @@ function parseResults(state: FastParserState): OrgElement {
         postBlank: 0,
         properties: { value: contentLines.join('\n') },
     } as FixedWidthElement;
+}
+
+/**
+ * Parse a planning line (SCHEDULED, DEADLINE, CLOSED)
+ */
+function parsePlanningLine(line: string): PlanningElement | null {
+    const props: PlanningElement['properties'] = {};
+
+    // Parse SCHEDULED
+    const scheduledMatch = line.match(RE_SCHEDULED);
+    if (scheduledMatch) {
+        props.scheduled = parseTimestampString(scheduledMatch[1]);
+    }
+
+    // Parse DEADLINE
+    const deadlineMatch = line.match(RE_DEADLINE);
+    if (deadlineMatch) {
+        props.deadline = parseTimestampString(deadlineMatch[1]);
+    }
+
+    // Parse CLOSED
+    const closedMatch = line.match(RE_CLOSED);
+    if (closedMatch) {
+        props.closed = parseTimestampString(closedMatch[1]);
+    }
+
+    // Return null if no planning info found
+    if (!props.scheduled && !props.deadline && !props.closed) {
+        return null;
+    }
+
+    return {
+        type: 'planning',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        properties: props,
+    };
+}
+
+/**
+ * Parse a timestamp string into a TimestampObject
+ */
+function parseTimestampString(ts: string): TimestampObject | undefined {
+    if (!ts) return undefined;
+
+    const isActive = ts.startsWith('<');
+    // Match: <2024-01-15 Mon 10:00-11:00 +1w>
+    const match = ts.match(/^[<\[](\d{4})-(\d{2})-(\d{2})(?:\s+\w+)?(?:\s+(\d{2}):(\d{2}))?(?:-(\d{2}):(\d{2}))?(?:\s+([.+]+\d+[hdwmy]))?[>\]]/);
+
+    if (!match) return undefined;
+
+    const yearStart = parseInt(match[1], 10);
+    const monthStart = parseInt(match[2], 10);
+    const dayStart = parseInt(match[3], 10);
+    const hourStart = match[4] ? parseInt(match[4], 10) : undefined;
+    const minuteStart = match[5] ? parseInt(match[5], 10) : undefined;
+    const hourEnd = match[6] ? parseInt(match[6], 10) : undefined;
+    const minuteEnd = match[7] ? parseInt(match[7], 10) : undefined;
+    const repeater = match[8] || undefined;
+
+    return {
+        type: 'timestamp',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        properties: {
+            timestampType: isActive ? 'active' : 'inactive',
+            rawValue: ts,
+            yearStart,
+            monthStart,
+            dayStart,
+            hourStart,
+            minuteStart,
+            hourEnd,
+            minuteEnd,
+            repeaterType: repeater ? (repeater.startsWith('.+') ? '.+' : repeater.startsWith('++') ? '++' : '+') as '+' | '++' | '.+' : undefined,
+            repeaterValue: repeater ? parseInt(repeater.replace(/^[.+]+/, ''), 10) : undefined,
+            repeaterUnit: repeater ? repeater.slice(-1) as 'h' | 'd' | 'w' | 'm' | 'y' : undefined,
+        },
+    };
+}
+
+function parseFootnoteDefinition(state: FastParserState): FootnoteDefinitionElement | null {
+    const line = state.lines[state.lineIndex];
+    const match = line.match(/^\[fn:([a-zA-Z0-9_-]+)\]\s*(.*)/);
+    if (!match) return null;
+
+    const label = match[1];
+    const firstLineContent = match[2] || '';
+    state.lineIndex++;
+
+    // Collect continuation lines (indented or blank lines followed by indented)
+    const contentLines: string[] = [firstLineContent];
+    while (state.lineIndex < state.lines.length) {
+        const nextLine = state.lines[state.lineIndex];
+
+        // Stop at blank line followed by non-indented content
+        if (nextLine.trim() === '') {
+            // Look ahead to see if there's more indented content
+            if (state.lineIndex + 1 < state.lines.length) {
+                const afterBlank = state.lines[state.lineIndex + 1];
+                if (!afterBlank.match(/^\s+/)) {
+                    break;
+                }
+            } else {
+                break;
+            }
+            contentLines.push('');
+            state.lineIndex++;
+        } else if (nextLine.match(/^\s+/)) {
+            // Indented continuation line
+            contentLines.push(nextLine.trim());
+            state.lineIndex++;
+        } else {
+            // Non-indented, non-empty line - end of footnote
+            break;
+        }
+    }
+
+    const content = contentLines.join(' ').trim();
+
+    // Create a paragraph element containing the footnote content
+    const paragraph: ParagraphElement = {
+        type: 'paragraph',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        children: parseObjectsFast(content),
+    };
+
+    return {
+        type: 'footnote-definition',
+        range: { start: 0, end: 0 },
+        postBlank: 0,
+        properties: {
+            label,
+        },
+        children: [paragraph],
+    } as FootnoteDefinitionElement;
 }
 
 function parseParagraph(state: FastParserState): ParagraphElement | null {

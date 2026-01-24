@@ -76,6 +76,7 @@ import {
     processEditmarksHtml,
     EDITMARK_CSS,
     type EditmarkExportMode,
+    parseOptionsKeyword,
 } from './orgExport';
 
 import { CitationProcessor, CSLStyleName } from '../references/citationProcessor';
@@ -180,9 +181,14 @@ export class HtmlExportBackend implements ExportBackend {
      * Export a complete document to HTML
      */
     exportDocument(doc: OrgDocumentNode, options?: Partial<HtmlExportOptions>): string {
+        // Parse #+OPTIONS: keyword if present
+        const optionsKeyword = doc.keywords['OPTIONS'];
+        const parsedOptions = optionsKeyword ? parseOptionsKeyword(optionsKeyword) : {};
+
         const opts: HtmlExportOptions = {
             ...DEFAULT_HTML_OPTIONS,
-            ...options,
+            ...parsedOptions,  // OPTIONS keyword values
+            ...options,        // Explicit options override OPTIONS
             backend: 'html',
         };
 
@@ -422,6 +428,8 @@ export class HtmlExportBackend implements ExportBackend {
                 return this.exportMacro(object as MacroObject, state);
             case 'table-cell':
                 return this.exportTableCell(object as TableCellObject, state);
+            case 'citation':
+                return this.exportCitation(object as any, state);
             default:
                 return `<!-- Unknown object type: ${object.type} -->`;
         }
@@ -621,9 +629,11 @@ export class HtmlExportBackend implements ExportBackend {
     }
 
     private exportLatexEnvironment(env: LatexEnvironmentElement, state: ExportState): string {
-        // For MathJax, wrap in display math
+        // LaTeX environments like equation, align, etc. define their own math mode
+        // Don't wrap in \[...\] - that would create invalid nested display math
+        // Don't escape - MathJax needs raw LaTeX content
         const value = env.properties.value;
-        return `<div class="org-latex-environment">\n\\[\n${escapeString(value, 'html')}\n\\]\n</div>\n`;
+        return `<div class="org-latex-environment">\n${value}\n</div>\n`;
     }
 
     private exportTable(table: TableElement, state: ExportState): string {
@@ -1145,6 +1155,26 @@ export class HtmlExportBackend implements ExportBackend {
             return exportObjects(cell.children, this, state);
         }
         return escapeString(cell.properties.value, 'html');
+    }
+
+    /**
+     * Export org-cite citation to HTML
+     * Renders as a citation link/reference
+     */
+    private exportCitation(citation: any, state: ExportState): string {
+        const { style, keys } = citation.properties;
+
+        if (!keys || keys.length === 0) {
+            return escapeString(citation.properties.rawValue || '', 'html');
+        }
+
+        // For HTML, render citations as styled spans with data attributes
+        const keyLinks = keys.map((key: string) =>
+            `<cite class="org-cite" data-key="${escapeString(key, 'html')}">${escapeString(key, 'html')}</cite>`
+        ).join('; ');
+
+        const styleClass = style && style !== 'default' ? ` org-cite-${style}` : '';
+        return `<span class="org-citation${styleClass}">[${keyLinks}]</span>`;
     }
 
     // =========================================================================

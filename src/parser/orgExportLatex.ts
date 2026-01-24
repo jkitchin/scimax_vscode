@@ -69,6 +69,7 @@ import {
     BUILTIN_MACROS,
     collectTargets,
     collectFootnotes,
+    parseOptionsKeyword,
 } from './orgExport';
 
 // =============================================================================
@@ -198,9 +199,14 @@ export class LatexExportBackend implements ExportBackend {
         const noDefaultsKeyword = doc.keywords['LATEX_NO_DEFAULTS'];
         const noDefaults = options?.noDefaults || (noDefaultsKeyword === 't' || noDefaultsKeyword === 'true');
 
+        // Parse #+OPTIONS: keyword if present
+        const optionsKeyword = doc.keywords['OPTIONS'];
+        const parsedOptions = optionsKeyword ? parseOptionsKeyword(optionsKeyword) : {};
+
         const opts: LatexExportOptions = {
             ...DEFAULT_LATEX_OPTIONS,
-            ...options,
+            ...parsedOptions,  // OPTIONS keyword values
+            ...options,        // Explicit options override OPTIONS
             documentClass,
             classOptions,
             preamble,
@@ -395,6 +401,8 @@ export class LatexExportBackend implements ExportBackend {
                 return this.exportMacro(object as MacroObject, state);
             case 'table-cell':
                 return this.exportTableCell(object as TableCellObject, state);
+            case 'citation':
+                return this.exportCitation(object as any, state);
             default:
                 return `% Unknown object type: ${object.type}`;
         }
@@ -913,6 +921,31 @@ export class LatexExportBackend implements ExportBackend {
             case 'internal':
                 return `\\hyperref[${path}]{${description}}`;
 
+            case 'headline':
+                // Link to headline: [[*Headline Text]] -> \hyperref[sec:headline-text]{description}
+                // Remove leading * and generate a label-safe ID
+                const headlineText = path.startsWith('*') ? path.slice(1) : path;
+                const headlineId = generateId(headlineText);
+                return `\\hyperref[${headlineId}]{${description}}`;
+
+            case 'custom-id':
+                // Link to custom ID: [[#custom-id]] -> \hyperref[custom-id]{description}
+                const customId = path.startsWith('#') ? path.slice(1) : path;
+                return `\\hyperref[${customId}]{${description}}`;
+
+            case 'fuzzy':
+                // Fuzzy link - could be to a target, headline, or other element
+                // Try to find in targets first, then customIds
+                if (state.targets.has(path)) {
+                    return `\\hyperref[${path}]{${description}}`;
+                }
+                if (state.customIds.has(path)) {
+                    return `\\hyperref[${path}]{${description}}`;
+                }
+                // Generate an ID from the path and hope it matches
+                const fuzzyId = generateId(path);
+                return `\\hyperref[${fuzzyId}]{${description}}`;
+
             case 'mailto':
                 return `\\href{mailto:${path}}{${description}}`;
 
@@ -1133,6 +1166,41 @@ export class LatexExportBackend implements ExportBackend {
             return exportObjects(cell.children, this, state);
         }
         return escapeString(cell.properties.value, 'latex');
+    }
+
+    /**
+     * Export org-cite citation to LaTeX
+     * Converts [cite:@key] to \cite{key}, with style variants
+     */
+    private exportCitation(citation: any, state: ExportState): string {
+        const { style, keys } = citation.properties;
+
+        if (!keys || keys.length === 0) {
+            return citation.properties.rawValue || '';
+        }
+
+        const keyStr = keys.join(',');
+
+        // Map org-cite styles to LaTeX commands
+        // See https://orgmode.org/manual/Citation-handling.html
+        switch (style) {
+            case 't':
+            case 'text':
+                return `\\citet{${keyStr}}`;
+            case 'a':
+            case 'author':
+                return `\\citeauthor{${keyStr}}`;
+            case 'na':
+            case 'noauthor':
+                return `\\citeyear{${keyStr}}`;
+            case 'n':
+            case 'nocite':
+                return `\\nocite{${keyStr}}`;
+            case 'p':
+            case 'paren':
+            default:
+                return `\\cite{${keyStr}}`;
+        }
     }
 
     // =========================================================================
