@@ -793,7 +793,7 @@ export class JournalManager {
     public async getEntryStatsAsync(entry: JournalEntry): Promise<{ wordCount: number; lineCount: number; taskCount: number; doneCount: number }> {
         try {
             const content = await fsp.readFile(entry.path, 'utf8');
-            return this.computeStats(content);
+            return this.computeContentStats(content);
         } catch {
             return { wordCount: 0, lineCount: 0, taskCount: 0, doneCount: 0 };
         }
@@ -806,7 +806,7 @@ export class JournalManager {
     public getEntryStats(entry: JournalEntry): { wordCount: number; lineCount: number; taskCount: number; doneCount: number } {
         try {
             const content = fs.readFileSync(entry.path, 'utf8');
-            return this.computeStats(content);
+            return this.computeContentStats(content);
         } catch {
             return { wordCount: 0, lineCount: 0, taskCount: 0, doneCount: 0 };
         }
@@ -815,7 +815,7 @@ export class JournalManager {
     /**
      * Compute statistics from content string
      */
-    private computeStats(content: string): { wordCount: number; lineCount: number; taskCount: number; doneCount: number } {
+    private computeContentStats(content: string): { wordCount: number; lineCount: number; taskCount: number; doneCount: number } {
         const lines = content.split('\n');
         const words = content.split(/\s+/).filter(w => w.length > 0);
 

@@ -8,7 +8,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.mock('fs', () => ({
     existsSync: vi.fn(),
     readdirSync: vi.fn(),
-    readFileSync: vi.fn()
+    readFileSync: vi.fn(),
+    promises: {
+        readdir: vi.fn(),
+        stat: vi.fn(),
+        readFile: vi.fn()
+    }
 }));
 
 import * as fs from 'fs';

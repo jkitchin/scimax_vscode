@@ -735,7 +735,7 @@ function interpretTimestamp(ts: TimestampObject, opts: InterpreterOptions): stri
         const dayEnd = String(ts.properties.dayEnd).padStart(2, '0');
 
         const dateEnd = new Date(ts.properties.yearEnd!, ts.properties.monthEnd! - 1, ts.properties.dayEnd!);
-        const dayNameEnd = dayNames[dateEnd.getDay()];
+        const dayNameEnd = DAY_NAMES_SHORT[dateEnd.getDay()];
 
         result += `--${openBracket}${yearEnd}-${monthEnd}-${dayEnd} ${dayNameEnd}`;
 
