@@ -68,6 +68,8 @@ const COMMAND_PATTERN = /`([^`'\n]+)'/g;
 const DISPLAY_MATH_PATTERN = /\$\$([^$]+)\$\$|\\\[([^\]]+)\\\]/g;
 // Inline math: $...$ (not $$) or \(...\)
 const INLINE_MATH_PATTERN = /(?<!\$)\$([^$\n]+)\$(?!\$)|\\\(([^)]+)\\\)/g;
+// Line break: \\ (two backslashes)
+const LINE_BREAK_PATTERN = /\\\\(?:\s|$)/g;
 
 /**
  * Parse inline objects using regex patterns - much faster than character-by-character
@@ -302,6 +304,13 @@ export function parseObjectsFast(text: string): OrgObject[] {
                 },
             };
         });
+
+        // Line breaks (\\)
+        collectMatches(LINE_BREAK_PATTERN, (m) => ({
+            type: 'line-break' as const,
+            range: { start: m.index!, end: m.index! + 2 }, // Only the \\ part, not trailing whitespace
+            postBlank: 0,
+        }));
     }
 
     // If no matches found, return text as single plain text object

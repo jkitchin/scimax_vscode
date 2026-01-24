@@ -228,6 +228,7 @@ export class HtmlExportBackend implements ExportBackend {
         // Extract document metadata
         const title = opts.title || doc.keywords['TITLE'] || 'Untitled';
         const author = opts.author || doc.keywords['AUTHOR'] || '';
+        const email = opts.email || doc.keywords['EMAIL'] || '';
         const date = opts.date || doc.keywords['DATE'] || '';
         const language = opts.language || doc.keywords['LANGUAGE'] || 'en';
 
@@ -246,6 +247,7 @@ export class HtmlExportBackend implements ExportBackend {
         return this.wrapInHtmlDocument(content, {
             title,
             author,
+            email,
             date,
             language,
             ...opts,
@@ -456,16 +458,16 @@ export class HtmlExportBackend implements ExportBackend {
             title = exportObjects(headline.properties.title, this, state);
         }
 
-        // Add TODO keyword if present
-        if (headline.properties.todoKeyword) {
+        // Add TODO keyword if present (controlled by includeTodo option)
+        if (headline.properties.todoKeyword && state.options.includeTodo !== false) {
             const todoType = headline.properties.todoType || 'todo';
             const keyword = headline.properties.todoKeyword.toUpperCase();
             // Use specific class for each keyword for targeted styling
             title = `<span class="org-todo-keyword org-todo-${todoType} org-kw-${keyword.toLowerCase()}">${escapeString(headline.properties.todoKeyword, 'html')}</span> ${title}`;
         }
 
-        // Add priority if present
-        if (headline.properties.priority) {
+        // Add priority if present (controlled by includePriority option)
+        if (headline.properties.priority && state.options.includePriority === true) {
             title = `<span class="org-priority">[#${headline.properties.priority}]</span> ${title}`;
         }
 
@@ -474,8 +476,8 @@ export class HtmlExportBackend implements ExportBackend {
             title = `<span class="section-number">${numberLabel}</span> ${title}`;
         }
 
-        // Add tags
-        if (headline.properties.tags.length > 0) {
+        // Add tags (controlled by includeTags option)
+        if (headline.properties.tags.length > 0 && state.options.includeTags !== false) {
             const tagsHtml = headline.properties.tags
                 .map(tag => `<span class="org-tag">${escapeString(tag, 'html')}</span>`)
                 .join('');
@@ -625,6 +627,11 @@ export class HtmlExportBackend implements ExportBackend {
     }
 
     private exportTable(table: TableElement, state: ExportState): string {
+        // Skip tables if includeTables is false
+        if (state.options.includeTables === false) {
+            return '';
+        }
+
         if (table.properties.tableType === 'table.el') {
             // table.el tables are pre-formatted
             return `<pre class="table-el">${escapeString(table.properties.value || '', 'html')}</pre>\n`;
@@ -745,9 +752,44 @@ export class HtmlExportBackend implements ExportBackend {
     }
 
     private exportDrawer(drawer: DrawerElement, state: ExportState): string {
-        // By default, drawers are not exported
-        // Could be enabled with an option
-        return '';
+        const drawerName = drawer.properties.name.toUpperCase();
+
+        // Check includeDrawers option
+        const includeDrawers = state.options.includeDrawers;
+
+        // Skip all drawers if includeDrawers is false (the default)
+        if (includeDrawers === false) {
+            return '';
+        }
+
+        // If includeDrawers is an array, only include listed drawers
+        if (Array.isArray(includeDrawers)) {
+            if (!includeDrawers.some(d => d.toUpperCase() === drawerName)) {
+                return '';
+            }
+        }
+
+        // Skip PROPERTIES drawer always (it's metadata)
+        if (drawerName === 'PROPERTIES') {
+            return '';
+        }
+
+        // Export drawer contents
+        const content: string[] = [];
+        for (const child of drawer.children) {
+            content.push(this.exportElement(child, state));
+        }
+
+        // LOGBOOK contains clock entries - check includeClocks
+        if (drawerName === 'LOGBOOK') {
+            if (state.options.includeClocks === false) {
+                return '';
+            }
+            return `<div class="org-drawer org-logbook">\n${content.join('\n')}</div>\n`;
+        }
+
+        // Wrap in a generic drawer div
+        return `<div class="org-drawer org-drawer-${drawerName.toLowerCase()}">\n${content.join('\n')}</div>\n`;
     }
 
     private exportKeyword(keyword: KeywordElement, state: ExportState): string {
@@ -1181,6 +1223,7 @@ export class HtmlExportBackend implements ExportBackend {
             author: string;
             date: string;
             language: string;
+            email?: string;
         } & HtmlExportOptions,
         state: ExportState
     ): string {
@@ -1253,10 +1296,19 @@ export class HtmlExportBackend implements ExportBackend {
         // Title header
         parts.push('<header id="title-block">');
         parts.push(`<h1 class="title">${escapeString(meta.title, 'html')}</h1>`);
-        if (meta.author) {
-            parts.push(`<p class="author">${escapeString(meta.author, 'html')}</p>`);
+
+        // Include author if includeAuthor is not false
+        if (meta.author && meta.includeAuthor !== false) {
+            let authorHtml = escapeString(meta.author, 'html');
+            // Include email if includeEmail is true
+            if (meta.email && meta.includeEmail === true) {
+                authorHtml += ` <a href="mailto:${escapeString(meta.email, 'html')}">&lt;${escapeString(meta.email, 'html')}&gt;</a>`;
+            }
+            parts.push(`<p class="author">${authorHtml}</p>`);
         }
-        if (meta.date) {
+
+        // Include date if includeDate is not false
+        if (meta.date && meta.includeDate !== false) {
             parts.push(`<p class="date">${escapeString(meta.date, 'html')}</p>`);
         }
         parts.push('</header>');

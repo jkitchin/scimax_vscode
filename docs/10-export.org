@@ -987,21 +987,29 @@ The `#+OPTIONS' keyword controls various export behaviors:
 #+OPTIONS: key1:value1 key2:value2 ...
 #+END_SRC
 
-*** Common Options
+*** ⚠️ Complete OPTIONS Reference
 
-| Option  | Values           | Description                           |
-|---------+------------------+---------------------------------------|
-| =toc=   | =t=, =nil=, =N=  | Table of contents (N = depth)         |
-| =num=   | =t=, =nil=, =N=  | Section numbering (N = depth)         |
-| =H=     | =N=              | Headline levels to export             |
-| =author= | =t=, =nil=       | Include author                        |
-| =date=  | =t=, =nil=       | Include date                          |
-| =title= | =t=, =nil=       | Include title                         |
-| =tags=  | =t=, =nil=       | Include tags                          |
-| =todo=  | =t=, =nil=       | Include TODO keywords                 |
-| =<>=    | =t=, =nil=       | Include timestamps                    |
-| =*=     | =t=, =nil=       | Include emphasized text               |
-| =^=     | =t=, =nil=, ={=  | Sub/superscripts (={= requires braces)|
+| Option       | Values              | Default | Description                              |
+|--------------+---------------------+---------+------------------------------------------|
+| =toc=        | =t=, =nil=, =N=     | =nil=   | Table of contents (N = depth)            |
+| =num=        | =t=, =nil=, =N=     | =t=     | Section numbering (N = depth)            |
+| =H=          | =N=                 | =0=     | Headline levels to export (0 = all)      |
+| =author=     | =t=, =nil=          | =t=     | Include author in output                 |
+| =date=       | =t=, =nil=          | =t=     | Include date in output                   |
+| =email=      | =t=, =nil=          | =nil=   | Include email in output                  |
+| =tags=       | =t=, =nil=, =not-in-toc= | =t= | Include tags in headlines               |
+| =todo=       | =t=, =nil=          | =t=     | Include TODO keywords in headlines       |
+| =pri=        | =t=, =nil=          | =nil=   | Include priority cookies ([#A], etc.)    |
+| =<=, =timestamp= | =t=, =nil=       | =t=     | Include timestamps                       |
+| =creator=    | =t=, =nil=          | =nil=   | Include creator string in postamble      |
+| =f=          | =t=, =nil=          | =t=     | Include footnotes                        |
+| =p=          | =t=, =nil=          | =nil=   | Include planning info (SCHEDULED, etc.)  |
+| =c=          | =t=, =nil=          | =nil=   | Include CLOCK entries                    |
+| =d=          | =t=, =nil=, =(list)= | =nil=  | Include drawers (or specific drawers)    |
+| =\vert{}=    | =t=, =nil=          | =t=     | Include tables                           |
+| =^=          | =t=, =nil=, ={}=    | =t=     | Sub/superscripts (={}= requires braces)  |
+| =:=          | =t=, =nil=          | =t=     | Include fixed-width sections             |
+| =\n=         | =t=, =nil=          | =nil=   | Preserve line breaks                     |
 
 *** Examples
 
@@ -1010,14 +1018,29 @@ The `#+OPTIONS' keyword controls various export behaviors:
 #+OPTIONS: toc:3 num:t H:4 author:t date:t tags:nil todo:nil
 #+END_SRC
 
-*Minimal export:*
+*Minimal export (no metadata):*
 #+BEGIN_SRC org
-#+OPTIONS: toc:nil num:nil author:nil date:nil
+#+OPTIONS: toc:nil num:nil author:nil date:nil tags:nil todo:nil pri:nil
 #+END_SRC
 
 *Academic paper:*
 #+BEGIN_SRC org
-#+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t
+#+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t email:t
+#+END_SRC
+
+*Include all drawers:*
+#+BEGIN_SRC org
+#+OPTIONS: d:t c:t p:t
+#+END_SRC
+
+*Include only specific drawers:*
+#+BEGIN_SRC org
+#+OPTIONS: d:("LOGBOOK" "NOTES")
+#+END_SRC
+
+*Hide tags from headlines but keep them in TOC:*
+#+BEGIN_SRC org
+#+OPTIONS: tags:not-in-toc
 #+END_SRC
 
 ** Document Keywords
@@ -1028,8 +1051,11 @@ The `#+OPTIONS' keyword controls various export behaviors:
 #+TITLE: Document Title
 #+AUTHOR: Your Name
 #+DATE: 2024-01-15
+#+EMAIL: you@example.com
 #+LANGUAGE: en
 #+END_SRC
+
+Note: =#+EMAIL= is only included in output when =email:t= is set in OPTIONS.
 
 *** HTML-Specific Keywords
 
@@ -1050,12 +1076,72 @@ The `#+OPTIONS' keyword controls various export behaviors:
 #+LATEX_COMPILER: pdflatex
 #+END_SRC
 
-*** Export Settings
+*** ⚠️ Export Settings Keywords
+
+**** EXPORT_FILE_NAME
+
+Override the output file name:
 
 #+BEGIN_SRC org
-#+EXPORT_FILE_NAME: custom-name
-#+EXCLUDE_TAGS: noexport private
-#+SELECT_TAGS: export
+#+EXPORT_FILE_NAME: custom-output-name
+#+END_SRC
+
+- If set to =custom-output-name=, exporting to HTML produces =custom-output-name.html=
+- The extension is automatically appended based on export format
+- If the keyword already includes the correct extension, it's used as-is
+- Paths are relative to the org file's directory
+
+Example:
+#+BEGIN_SRC org
+#+TITLE: My Report
+#+EXPORT_FILE_NAME: final-report-v2
+
+,* Content here...
+#+END_SRC
+
+Exporting to PDF produces =final-report-v2.pdf= instead of the default filename.
+
+**** EXCLUDE_TAGS
+
+Exclude headlines with specific tags from export:
+
+#+BEGIN_SRC org
+#+EXCLUDE_TAGS: noexport private draft
+#+END_SRC
+
+- Space-separated list of tags
+- =noexport= is always excluded by default (even if not specified)
+- Headlines with any of these tags (and their children) are omitted
+- Useful for keeping internal notes, drafts, or private content
+
+**** SELECT_TAGS
+
+Export *only* headlines with specific tags:
+
+#+BEGIN_SRC org
+#+SELECT_TAGS: export publish
+#+END_SRC
+
+- When set, only headlines with at least one of these tags are exported
+- Headlines without a select tag are excluded (unless a child has one)
+- Overrides normal export behavior for selective publishing
+
+Example workflow:
+#+BEGIN_SRC org
+#+SELECT_TAGS: publish
+#+EXCLUDE_TAGS: noexport
+
+,* Internal Notes                                    :noexport:
+Not exported (excluded).
+
+,* Introduction
+Not exported (no select tag).
+
+,* Published Chapter                                 :publish:
+Exported (has select tag).
+
+,** Subsection
+Also exported (child of published chapter).
 #+END_SRC
 
 * Configuration Settings
@@ -1732,22 +1818,29 @@ CLOSED: [2026-01-17 Sat 09:29]
 | C-c C-e m m    | Markdown export            | Export to .md                    |
 | C-c C-e m o    | Markdown export and open   | Export and open in editor        |
 
-** Export Options Quick Reference
+** ⚠️ Export Options Quick Reference
 
-| Option   | Values         | Effect                                |
-|----------+----------------+---------------------------------------|
-| toc    | t/nil/N        | Table of contents (N  depth)         |
-| num    | t/nil/N        | Section numbering (N  depth)         |
-| H      | N              | Export headlines up to level N        |
-| author | t/nil          | Include author name                   |
-| date   | t/nil          | Include date                          |
-| title  | t/nil          | Include title                         |
-| ^      | t/nil/{}       | Interpret sub/superscripts            |
-| *      | t/nil          | Include emphasized text               |
-| <>     | t/nil          | Include timestamps                    |
-| tags   | t/nil/not-in-toc | Include tags                       |
-| todo   | t/nil          | Include TODO keywords                 |
-| \n     | t/nil          | Preserve line breaks                  |
+| Option   | Values             | Default | Effect                                 |
+|----------+--------------------+---------+----------------------------------------|
+| toc      | t/nil/N            | nil     | Table of contents (N = depth)          |
+| num      | t/nil/N            | t       | Section numbering (N = depth)          |
+| H        | N                  | 0       | Export headlines up to level N         |
+| author   | t/nil              | t       | Include author name                    |
+| date     | t/nil              | t       | Include date                           |
+| email    | t/nil              | nil     | Include email (from #+EMAIL)           |
+| tags     | t/nil/not-in-toc   | t       | Include tags in headlines              |
+| todo     | t/nil              | t       | Include TODO keywords                  |
+| pri      | t/nil              | nil     | Include priority cookies ([#A])        |
+| <        | t/nil              | t       | Include timestamps                     |
+| creator  | t/nil              | nil     | Include creator in postamble           |
+| f        | t/nil              | t       | Include footnotes                      |
+| p        | t/nil              | nil     | Include planning info                  |
+| c        | t/nil              | nil     | Include CLOCK entries                  |
+| d        | t/nil/(list)       | nil     | Include drawers                        |
+| \vert{}  | t/nil              | t       | Include tables                         |
+| ^        | t/nil/{}           | t       | Sub/superscripts ({}=braces required)  |
+| :        | t/nil              | t       | Include fixed-width sections           |
+| \n       | t/nil              | nil     | Preserve line breaks                   |
 
 ** LaTeX Package Reference
 

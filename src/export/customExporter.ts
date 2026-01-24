@@ -4,8 +4,8 @@
  * Allows users to define custom export backends via templates and manifests.
  * Uses Handlebars for template rendering with custom helpers.
  *
- * Directory structure:
- *   ~/.scimax/exporters/
+ * Directory structure (uses scimax.directory setting, defaults to ~/scimax):
+ *   ~/scimax/exporters/  (or ~/.scimax/exporters/)
  *   ├── cmu-memo/
  *   │   ├── manifest.json
  *   │   └── template.tex
@@ -24,6 +24,7 @@ import { parseOrgFast } from '../parser/orgExportParser';
 import { exportToLatex, LatexExportOptions } from '../parser/orgExportLatex';
 import { exportToHtml, HtmlExportOptions } from '../parser/orgExportHtml';
 import { escapeString } from '../parser/orgExport';
+import { getScimaxDirectory } from '../utils/pathResolver';
 
 // =============================================================================
 // Types
@@ -481,6 +482,17 @@ export async function executeCustomExport(
     const date = doc.keywords?.DATE || new Date().toISOString().split('T')[0];
     const language = doc.keywords?.LANGUAGE || 'en';
 
+    // Extract exclude/select tags (default noexport is always excluded)
+    const excludeTagsRaw = doc.keywords?.EXCLUDE_TAGS || '';
+    const excludeTags = excludeTagsRaw
+        ? excludeTagsRaw.split(/\s+/).filter(Boolean)
+        : ['noexport']; // Default to excluding 'noexport' tagged sections
+
+    const selectTagsRaw = doc.keywords?.SELECT_TAGS || '';
+    const selectTags = selectTagsRaw
+        ? selectTagsRaw.split(/\s+/).filter(Boolean)
+        : undefined;
+
     // Extract custom keywords
     const customKeywords = exporter.keywords
         ? extractCustomKeywords(doc, exporter.keywords)
@@ -498,6 +510,8 @@ export async function executeCustomExport(
                 bodyOnly: true, // Always get just the body for templates
                 documentClass: exporter.latexOptions?.documentClass,
                 classOptions: exporter.latexOptions?.classOptions,
+                excludeTags,
+                selectTags,
             };
             body = exportToLatex(doc, latexOpts);
             break;
@@ -509,6 +523,8 @@ export async function executeCustomExport(
                 date,
                 language,
                 bodyOnly: true,
+                excludeTags,
+                selectTags,
             };
             body = exportToHtml(doc, htmlOpts);
             break;
@@ -549,10 +565,18 @@ export async function executeCustomExport(
 export function getDefaultExporterPaths(): string[] {
     const paths: string[] = [];
 
-    // User home directory
+    // First check scimax.directory setting (highest priority)
+    const scimaxDir = getScimaxDirectory();
+    paths.push(path.join(scimaxDir, 'exporters'));
+
+    // User home directory (~/.scimax/exporters)
     const homeDir = process.env.HOME || process.env.USERPROFILE;
     if (homeDir) {
-        paths.push(path.join(homeDir, '.scimax', 'exporters'));
+        const dotScimaxPath = path.join(homeDir, '.scimax', 'exporters');
+        // Avoid duplicates if scimax.directory points to ~/.scimax
+        if (dotScimaxPath !== path.join(scimaxDir, 'exporters')) {
+            paths.push(dotScimaxPath);
+        }
     }
 
     // XDG config directory

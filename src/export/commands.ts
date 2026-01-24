@@ -139,23 +139,11 @@ async function executeCustomExportCommand(exporterId: string): Promise<void> {
                 // Write output file
                 await fs.promises.writeFile(outputPath, result, 'utf-8');
 
-                // If PDF output, compile LaTeX
+                // If PDF output, compile LaTeX and open the PDF
                 if (exporter.outputFormat === 'pdf') {
                     const pdfPath = outputPath.replace(/\.tex$/, '.pdf');
                     await compileToPdf(outputPath, pdfPath, inputDir);
-
-                    const action = await vscode.window.showInformationMessage(
-                        `Exported to ${path.basename(pdfPath)}`,
-                        'Open PDF',
-                        'Open LaTeX'
-                    );
-
-                    if (action === 'Open PDF') {
-                        await vscode.env.openExternal(vscode.Uri.file(pdfPath));
-                    } else if (action === 'Open LaTeX') {
-                        const doc = await vscode.workspace.openTextDocument(outputPath);
-                        await vscode.window.showTextDocument(doc);
-                    }
+                    await vscode.env.openExternal(vscode.Uri.file(pdfPath));
                 } else {
                     const action = await vscode.window.showInformationMessage(
                         `Exported to ${path.basename(outputPath)}`,
@@ -176,11 +164,39 @@ async function executeCustomExportCommand(exporterId: string): Promise<void> {
 }
 
 /**
+ * Auxiliary file extensions to clean up after successful PDF compilation
+ */
+const LATEX_AUX_EXTENSIONS = [
+    '.aux', '.log', '.out', '.toc', '.lof', '.lot',
+    '.bbl', '.blg', '.bcf', '.run.xml',
+    '.nav', '.snm', '.vrb',
+    '.fdb_latexmk', '.fls', '.synctex.gz',
+    '.idx', '.ilg', '.ind',
+];
+
+/**
+ * Clean up auxiliary files after successful PDF compilation
+ */
+async function cleanupAuxFiles(texPath: string): Promise<void> {
+    const basePath = texPath.replace(/\.tex$/, '');
+
+    for (const ext of LATEX_AUX_EXTENSIONS) {
+        const auxPath = basePath + ext;
+        try {
+            await fs.promises.unlink(auxPath);
+        } catch {
+            // File doesn't exist or can't be deleted - ignore
+        }
+    }
+}
+
+/**
  * Compile LaTeX to PDF using system LaTeX compiler
  */
 async function compileToPdf(texPath: string, pdfPath: string, cwd: string): Promise<void> {
     const config = vscode.workspace.getConfiguration('scimax.export.pdf');
     const compiler = config.get<string>('compiler', 'latexmk-lualatex');
+    const cleanAuxFiles = config.get<boolean>('cleanAuxFiles', true);
 
     // Build command
     let command: string;
@@ -233,8 +249,12 @@ async function compileToPdf(texPath: string, pdfPath: string, cwd: string): Prom
             stderr += data.toString();
         });
 
-        proc.on('close', (code) => {
+        proc.on('close', async (code) => {
             if (code === 0 || fs.existsSync(pdfPath)) {
+                // Clean up auxiliary files if enabled and PDF was created
+                if (cleanAuxFiles && fs.existsSync(pdfPath)) {
+                    await cleanupAuxFiles(texPath);
+                }
                 resolve();
             } else {
                 reject(new Error(`LaTeX compilation failed: ${stderr || stdout}`));

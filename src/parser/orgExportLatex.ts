@@ -230,14 +230,21 @@ export class LatexExportBackend implements ExportBackend {
         // Extract document metadata
         const title = opts.title || doc.keywords['TITLE'] || '';
         const author = opts.author || doc.keywords['AUTHOR'] || '';
+        const email = opts.email || doc.keywords['EMAIL'] || '';
         const date = opts.date || doc.keywords['DATE'] || '\\today';
 
         // Build content
         const content = this.exportDocumentContent(doc, state, opts);
 
+        // If bodyOnly is requested, return just the content without preamble/document wrapper
+        if (opts.bodyOnly) {
+            return content;
+        }
+
         return this.wrapInLatexDocument(content, {
             title,
             author,
+            email,
             date,
             ...opts,
         }, state);
@@ -317,7 +324,7 @@ export class LatexExportBackend implements ExportBackend {
             case 'plain-list':
                 return this.exportPlainList(element as PlainListElement, state);
             case 'drawer':
-                return ''; // Drawers not exported by default
+                return this.exportDrawer(element as DrawerElement, state);
             case 'keyword':
                 return this.exportKeyword(element as KeywordElement, state);
             case 'horizontal-rule':
@@ -421,16 +428,27 @@ export class LatexExportBackend implements ExportBackend {
             ? exportObjects(headline.properties.title, this, state)
             : escapeString(headline.properties.rawValue, 'latex');
 
-        // Add TODO keyword if present
-        if (headline.properties.todoKeyword) {
-            const todoType = headline.properties.todoType || 'todo';
+        // Add TODO keyword if present (controlled by includeTodo option)
+        if (headline.properties.todoKeyword && state.options.includeTodo !== false) {
             title = `\\textbf{${headline.properties.todoKeyword}} ${title}`;
+        }
+
+        // Add priority cookie if present (controlled by includePriority option)
+        if (headline.properties.priority && state.options.includePriority === true) {
+            title = `[\\#${headline.properties.priority}] ${title}`;
+        }
+
+        // Add tags if present (controlled by includeTags option)
+        const tags = headline.properties.tags;
+        if (tags.length > 0 && state.options.includeTags !== false) {
+            const tagsStr = tags.map(t => escapeString(t, 'latex')).join(':');
+            title = `${title} \\hfill :${tagsStr}:`;
         }
 
         const parts: string[] = [];
 
         // Section command
-        const starred = headline.properties.tags.includes('nonum') ? '*' : '';
+        const starred = tags.includes('nonum') ? '*' : '';
         parts.push(`${sectionCmd}${starred}{${title}}`);
 
         // Add label for cross-references
@@ -613,6 +631,11 @@ export class LatexExportBackend implements ExportBackend {
         state: ExportState,
         opts: LatexExportOptions
     ): string {
+        // Skip tables if includeTables is false
+        if (state.options.includeTables === false) {
+            return '';
+        }
+
         if (table.properties.tableType === 'table.el') {
             return `\\begin{verbatim}\n${table.properties.value || ''}\n\\end{verbatim}\n`;
         }
@@ -746,6 +769,47 @@ export class LatexExportBackend implements ExportBackend {
         }
 
         return latex + '\n';
+    }
+
+    private exportDrawer(drawer: DrawerElement, state: ExportState): string {
+        const drawerName = drawer.properties.name.toUpperCase();
+
+        // Check includeDrawers option
+        const includeDrawers = state.options.includeDrawers;
+
+        // Skip all drawers if includeDrawers is false
+        if (includeDrawers === false) {
+            return '';
+        }
+
+        // If includeDrawers is an array, only include listed drawers
+        if (Array.isArray(includeDrawers)) {
+            if (!includeDrawers.some(d => d.toUpperCase() === drawerName)) {
+                return '';
+            }
+        }
+
+        // Skip PROPERTIES drawer always (it's metadata)
+        if (drawerName === 'PROPERTIES') {
+            return '';
+        }
+
+        // Export drawer contents
+        let content = '';
+        for (const child of drawer.children) {
+            content += this.exportElement(child, state);
+        }
+
+        // Wrap in a comment block or environment based on drawer type
+        if (drawerName === 'LOGBOOK') {
+            // LOGBOOK contains clock entries
+            if (state.options.includeClocks === false) {
+                return '';
+            }
+            return `% LOGBOOK\n${content}`;
+        }
+
+        return content;
     }
 
     private exportKeyword(keyword: KeywordElement, state: ExportState): string {
@@ -1102,6 +1166,7 @@ export class LatexExportBackend implements ExportBackend {
             title: string;
             author: string;
             date: string;
+            email?: string;
         } & LatexExportOptions,
         _state: ExportState
     ): string {
@@ -1238,21 +1303,34 @@ export class LatexExportBackend implements ExportBackend {
             }
         }
 
-        // Title, author, date
+        // Title, author, date (controlled by OPTIONS)
         if (meta.title) {
             parts.push(`\\title{${escapeString(meta.title, 'latex')}}`);
         }
-        if (meta.author) {
-            parts.push(`\\author{${escapeString(meta.author, 'latex')}}`);
+
+        // Include author if includeAuthor is not false
+        if (meta.author && meta.includeAuthor !== false) {
+            let authorStr = escapeString(meta.author, 'latex');
+            // Include email if includeEmail is true
+            if (meta.email && meta.includeEmail === true) {
+                authorStr += `\\\\\\texttt{${escapeString(meta.email, 'latex')}}`;
+            }
+            parts.push(`\\author{${authorStr}}`);
         }
-        parts.push(`\\date{${meta.date}}`);
+
+        // Include date if includeDate is not false
+        if (meta.includeDate !== false) {
+            parts.push(`\\date{${meta.date}}`);
+        } else {
+            parts.push('\\date{}');
+        }
         parts.push('');
 
         // Begin document
         parts.push('\\begin{document}');
         parts.push('');
 
-        // Maketitle
+        // Maketitle (only if we have title and author/date to show)
         if (meta.title) {
             parts.push('\\maketitle');
             parts.push('');

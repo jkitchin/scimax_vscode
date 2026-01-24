@@ -68,6 +68,8 @@ export interface ExportOptions {
     author?: string;
     /** Document date (from #+DATE) */
     date?: string;
+    /** Document email (from #+EMAIL) */
+    email?: string;
     /** Document language (from #+LANGUAGE, default: en) */
     language?: string;
 
@@ -105,6 +107,43 @@ export interface ExportOptions {
 
     /** Export backend name (for backend-specific filtering) */
     backend?: string;
+
+    // =========================================================================
+    // OPTIONS keyword flags (#+OPTIONS: key:value ...)
+    // =========================================================================
+
+    /** Include author in output (author:t/nil) */
+    includeAuthor?: boolean;
+    /** Include date in output (date:t/nil) */
+    includeDate?: boolean;
+    /** Include email in output (email:t/nil) */
+    includeEmail?: boolean;
+    /** Include tags in headlines (tags:t/nil/not-in-toc) */
+    includeTags?: boolean | 'not-in-toc';
+    /** Include TODO keywords in headlines (todo:t/nil) */
+    includeTodo?: boolean;
+    /** Include priority cookies in headlines (pri:t/nil) */
+    includePriority?: boolean;
+    /** Include timestamps (<:t/nil or timestamp:t/nil) */
+    includeTimestamps?: boolean;
+    /** Include creator string in postamble (creator:t/nil) */
+    includeCreator?: boolean;
+    /** Include footnotes (f:t/nil) */
+    includeFootnotes?: boolean;
+    /** Include planning info - SCHEDULED, DEADLINE (p:t/nil) */
+    includePlanning?: boolean;
+    /** Include CLOCK entries (c:t/nil) */
+    includeClocks?: boolean;
+    /** Include drawers (d:t/nil/("drawer1" "drawer2")) */
+    includeDrawers?: boolean | string[];
+    /** Include tables (|:t/nil) */
+    includeTables?: boolean;
+    /** Subscript/superscript handling (^:t/nil/{}) */
+    subscripts?: boolean | 'braces';
+    /** Include fixed-width sections (::t/nil) */
+    fixedWidth?: boolean;
+    /** Export file name override (#+EXPORT_FILE_NAME:) */
+    exportFileName?: string;
 }
 
 /**
@@ -124,7 +163,201 @@ export const DEFAULT_EXPORT_OPTIONS: ExportOptions = {
         todo: ['TODO', 'NEXT', 'WAITING'],
         done: ['DONE', 'CANCELLED'],
     },
+    // OPTIONS keyword defaults (matching org-mode defaults)
+    includeAuthor: true,
+    includeDate: true,
+    includeEmail: false,
+    includeTags: true,
+    includeTodo: true,
+    includePriority: false,
+    includeTimestamps: true,
+    includeCreator: false,
+    includeFootnotes: true,
+    includePlanning: false,
+    includeClocks: false,
+    includeDrawers: false,
+    includeTables: true,
+    subscripts: true,
+    fixedWidth: true,
+    excludeTags: ['noexport'],
 };
+
+// =============================================================================
+// OPTIONS Keyword Parsing
+// =============================================================================
+
+/**
+ * Parse #+OPTIONS: keyword line into export options
+ *
+ * Supported flags:
+ * - toc:t/nil/N - Table of contents (t=yes, nil=no, N=depth)
+ * - num:t/nil - Section numbering
+ * - H:N - Headline level limit
+ * - author:t/nil - Include author
+ * - date:t/nil - Include date
+ * - email:t/nil - Include email
+ * - tags:t/nil/not-in-toc - Include tags
+ * - todo:t/nil - Include TODO keywords
+ * - pri:t/nil - Include priority cookies
+ * - <:t/nil or timestamp:t/nil - Include timestamps
+ * - creator:t/nil - Include creator
+ * - f:t/nil - Include footnotes
+ * - p:t/nil - Include planning info
+ * - c:t/nil - Include clocks
+ * - d:t/nil/("drawer1" "drawer2") - Include drawers
+ * - |:t/nil - Include tables
+ * - ^:t/nil/{} - Subscript/superscript handling
+ * - ::t/nil - Fixed-width sections
+ * - \n:t/nil - Preserve line breaks
+ */
+export function parseOptionsKeyword(optionsLine: string): Partial<ExportOptions> {
+    const opts: Partial<ExportOptions> = {};
+
+    if (!optionsLine || !optionsLine.trim()) {
+        return opts;
+    }
+
+    // Split on whitespace while preserving quoted strings for drawer lists
+    const pairs = optionsLine.match(/\S+:\S+|d:\([^)]*\)/g) || [];
+
+    for (const pair of pairs) {
+        const colonIdx = pair.indexOf(':');
+        if (colonIdx === -1) continue;
+
+        const key = pair.substring(0, colonIdx);
+        const value = pair.substring(colonIdx + 1);
+
+        // Helper to parse boolean value
+        const toBool = (v: string): boolean =>
+            v === 't' || v === 'true' || v === 'yes' || v === '1';
+
+        switch (key) {
+            // Table of contents
+            case 'toc':
+                if (value === 'nil' || value === 'false' || value === 'no') {
+                    opts.toc = false;
+                } else if (value === 't' || value === 'true' || value === 'yes') {
+                    opts.toc = true;
+                } else {
+                    const depth = parseInt(value, 10);
+                    opts.toc = !isNaN(depth) ? depth : true;
+                }
+                break;
+
+            // Section numbering
+            case 'num':
+                opts.sectionNumbers = toBool(value);
+                break;
+
+            // Headline level limit
+            case 'H':
+                opts.headlineLevel = parseInt(value, 10) || 0;
+                break;
+
+            // Author
+            case 'author':
+                opts.includeAuthor = toBool(value);
+                break;
+
+            // Date
+            case 'date':
+                opts.includeDate = toBool(value);
+                break;
+
+            // Email
+            case 'email':
+                opts.includeEmail = toBool(value);
+                break;
+
+            // Tags
+            case 'tags':
+                if (value === 'not-in-toc') {
+                    opts.includeTags = 'not-in-toc';
+                } else {
+                    opts.includeTags = toBool(value);
+                }
+                break;
+
+            // TODO keywords
+            case 'todo':
+                opts.includeTodo = toBool(value);
+                break;
+
+            // Priority
+            case 'pri':
+                opts.includePriority = toBool(value);
+                break;
+
+            // Timestamps (< or timestamp)
+            case '<':
+            case 'timestamp':
+                opts.includeTimestamps = toBool(value);
+                break;
+
+            // Creator
+            case 'creator':
+                opts.includeCreator = toBool(value);
+                break;
+
+            // Footnotes
+            case 'f':
+                opts.includeFootnotes = toBool(value);
+                break;
+
+            // Planning info
+            case 'p':
+                opts.includePlanning = toBool(value);
+                break;
+
+            // Clocks
+            case 'c':
+                opts.includeClocks = toBool(value);
+                break;
+
+            // Drawers
+            case 'd':
+                if (value === 'nil' || value === 'false' || value === 'no') {
+                    opts.includeDrawers = false;
+                } else if (value === 't' || value === 'true' || value === 'yes') {
+                    opts.includeDrawers = true;
+                } else if (value.startsWith('(') && value.endsWith(')')) {
+                    // Parse drawer list like ("LOGBOOK" "PROPERTIES")
+                    const drawerList = value.slice(1, -1)
+                        .split(/\s+/)
+                        .map(d => d.replace(/"/g, ''))
+                        .filter(Boolean);
+                    opts.includeDrawers = drawerList.length > 0 ? drawerList : false;
+                }
+                break;
+
+            // Tables
+            case '|':
+                opts.includeTables = toBool(value);
+                break;
+
+            // Subscripts/superscripts
+            case '^':
+                if (value === '{}') {
+                    opts.subscripts = 'braces';
+                } else {
+                    opts.subscripts = toBool(value);
+                }
+                break;
+
+            // Fixed-width
+            case ':':
+                opts.fixedWidth = toBool(value);
+                break;
+
+            // Preserve line breaks
+            case '\\n':
+                opts.preserveBreaks = toBool(value);
+                break;
+        }
+    }
+
+    return opts;
+}
 
 // =============================================================================
 // Export State

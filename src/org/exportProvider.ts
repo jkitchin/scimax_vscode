@@ -16,7 +16,7 @@ import { PdfViewerPanel } from '../latex/pdfViewerPanel';
 import { getSyncTeXFilePath } from '../latex/synctexUtils';
 import { parseBibTeX } from '../references/bibtexParser';
 import type { BibEntry } from '../references/bibtexParser';
-import type { ExportOptions } from '../parser/orgExport';
+import { parseOptionsKeyword, type ExportOptions } from '../parser/orgExport';
 import type { OrgDocumentNode, HeadlineElement } from '../parser/orgElementTypes';
 import { isBodyOnlyMode } from '../hydra/menus/exportMenu';
 
@@ -187,8 +187,22 @@ function extractMetadata(doc: OrgDocumentNode): Partial<ExportOptions> {
         if (doc.keywords.TITLE) options.title = doc.keywords.TITLE;
         if (doc.keywords.AUTHOR) options.author = doc.keywords.AUTHOR;
         if (doc.keywords.DATE) options.date = doc.keywords.DATE;
+        if (doc.keywords.EMAIL) options.email = doc.keywords.EMAIL;
         if (doc.keywords.LANGUAGE) options.language = doc.keywords.LANGUAGE;
-        if (doc.keywords.OPTIONS) parseOptionsLine(doc.keywords.OPTIONS, options);
+        if (doc.keywords.EXPORT_FILE_NAME) options.exportFileName = doc.keywords.EXPORT_FILE_NAME;
+
+        // Parse EXCLUDE_TAGS and SELECT_TAGS
+        if (doc.keywords.EXCLUDE_TAGS) {
+            options.excludeTags = doc.keywords.EXCLUDE_TAGS.split(/\s+/).filter(Boolean);
+        }
+        if (doc.keywords.SELECT_TAGS) {
+            options.selectTags = doc.keywords.SELECT_TAGS.split(/\s+/).filter(Boolean);
+        }
+
+        // Parse OPTIONS using centralized parser
+        if (doc.keywords.OPTIONS) {
+            Object.assign(options, parseOptionsKeyword(doc.keywords.OPTIONS));
+        }
     }
 
     // Also look for keywords in the document's section (preamble)
@@ -208,41 +222,61 @@ function extractMetadata(doc: OrgDocumentNode): Partial<ExportOptions> {
                     case 'DATE':
                         if (!options.date) options.date = value;
                         break;
+                    case 'EMAIL':
+                        if (!options.email) options.email = value;
+                        break;
                     case 'LANGUAGE':
                         if (!options.language) options.language = value;
                         break;
+                    case 'EXPORT_FILE_NAME':
+                        if (!options.exportFileName) options.exportFileName = value;
+                        break;
+                    case 'EXCLUDE_TAGS':
+                        if (!options.excludeTags) {
+                            options.excludeTags = value.split(/\s+/).filter(Boolean);
+                        }
+                        break;
+                    case 'SELECT_TAGS':
+                        if (!options.selectTags) {
+                            options.selectTags = value.split(/\s+/).filter(Boolean);
+                        }
+                        break;
                     case 'OPTIONS':
-                        parseOptionsLine(value, options);
+                        Object.assign(options, parseOptionsKeyword(value));
                         break;
                 }
             }
         }
     }
 
+    // Ensure noexport is always in excludeTags if not set
+    if (!options.excludeTags) {
+        options.excludeTags = ['noexport'];
+    } else if (!options.excludeTags.includes('noexport')) {
+        options.excludeTags.push('noexport');
+    }
+
     return options;
 }
 
 /**
- * Parse #+OPTIONS: line
+ * Get the export output file name
+ * Uses #+EXPORT_FILE_NAME if set, otherwise uses the default name
  */
-function parseOptionsLine(value: string, options: Partial<ExportOptions>): void {
-    if (!value) return;
-
-    const parts = value.split(/\s+/);
-    for (const part of parts) {
-        const [key, val] = part.split(':');
-        switch (key) {
-            case 'toc':
-                options.toc = val === 't' || val === 'yes' || (parseInt(val) > 0 ? parseInt(val) : false);
-                break;
-            case 'num':
-                options.sectionNumbers = val === 't' || val === 'yes';
-                break;
-            case 'H':
-                options.headlineLevel = parseInt(val) || 0;
-                break;
+function getExportFileName(
+    exportFileName: string | undefined,
+    defaultName: string,
+    extension: string
+): string {
+    if (exportFileName) {
+        // If it already has the target extension, use as-is
+        if (exportFileName.endsWith(`.${extension}`)) {
+            return exportFileName;
         }
+        // Otherwise append the extension
+        return `${exportFileName}.${extension}`;
     }
+    return `${defaultName}.${extension}`;
 }
 
 /**
@@ -1155,13 +1189,21 @@ async function quickExportHtml(): Promise<void> {
 
     const inputPath = editor.document.uri.fsPath;
     const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
     const content = preprocessContent(editor.document.getText(), inputDir);
-    const outputPath = inputPath.replace(/\.org$/, '.html');
     const bodyOnly = isBodyOnlyMode();
+
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    // Determine output path (respect EXPORT_FILE_NAME if set)
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'html');
+    const outputPath = path.join(inputDir, outputFileName);
 
     try {
         await deleteExistingOutput(outputPath);
-        const result = await exportHtml(content, {}, bodyOnly, inputDir);
+        const result = await exportHtml(content, metadata, bodyOnly, inputDir);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
         const suffix = bodyOnly ? ' (body only)' : '';
         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}${suffix}`);
@@ -1183,13 +1225,21 @@ async function quickExportLatex(): Promise<void> {
 
     const inputPath = editor.document.uri.fsPath;
     const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
     const content = preprocessContent(editor.document.getText(), inputDir);
-    const outputPath = inputPath.replace(/\.org$/, '.tex');
     const bodyOnly = isBodyOnlyMode();
+
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    // Determine output path (respect EXPORT_FILE_NAME if set)
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'tex');
+    const outputPath = path.join(inputDir, outputFileName);
 
     try {
         await deleteExistingOutput(outputPath);
-        const result = await exportLatex(content, {}, bodyOnly);
+        const result = await exportLatex(content, metadata, bodyOnly);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
         const suffix = bodyOnly ? ' (body only)' : '';
         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}${suffix}`);
@@ -1211,9 +1261,17 @@ async function quickExportPdf(): Promise<void> {
 
     const inputPath = editor.document.uri.fsPath;
     const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
     const content = preprocessContent(editor.document.getText(), inputDir);
-    const outputPath = inputPath.replace(/\.org$/, '.pdf');
     const compilerDesc = getPdfCompilerDescription();
+
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    // Determine output path (respect EXPORT_FILE_NAME if set)
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'pdf');
+    const outputPath = path.join(inputDir, outputFileName);
 
     await vscode.window.withProgress(
         {
@@ -1224,7 +1282,7 @@ async function quickExportPdf(): Promise<void> {
         async () => {
             try {
                 await deleteExistingOutput(outputPath);
-                const logPath = await exportPdf(content, {}, outputPath);
+                const logPath = await exportPdf(content, metadata, outputPath);
                 if (logPath) {
                     await handlePdfExportError(logPath);
                 } else {
@@ -1256,12 +1314,20 @@ async function quickExportMarkdown(): Promise<void> {
 
     const inputPath = editor.document.uri.fsPath;
     const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
     const content = preprocessContent(editor.document.getText(), inputDir);
-    const outputPath = inputPath.replace(/\.org$/, '.md');
+
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
+    // Determine output path (respect EXPORT_FILE_NAME if set)
+    const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'md');
+    const outputPath = path.join(inputDir, outputFileName);
 
     try {
         await deleteExistingOutput(outputPath);
-        const result = await exportMarkdown(content, {});
+        const result = await exportMarkdown(content, metadata);
         await fs.promises.writeFile(outputPath, result, 'utf-8');
         vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}`);
     } catch (error) {
@@ -1285,8 +1351,12 @@ async function previewHtml(): Promise<void> {
     const content = preprocessContent(editor.document.getText(), inputDir);
     const fileName = path.basename(inputPath);
 
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
+
     try {
-        const htmlContent = await exportHtml(content, {}, false, inputDir);
+        const htmlContent = await exportHtml(content, metadata, false, inputDir);
 
         // Inject CSP meta tag to allow loading external scripts (MathJax, highlight.js)
         // VS Code webviews have restrictive default CSP that blocks CDN scripts
@@ -1679,33 +1749,41 @@ async function exportDispatcher(): Promise<void> {
 
     const inputPath = editor.document.uri.fsPath;
     const inputDir = path.dirname(inputPath);
+    const inputName = path.basename(inputPath, '.org');
     const content = preprocessContent(editor.document.getText(), inputDir);
+
+    // Parse document to extract metadata and export settings
+    const doc = parseOrgFast(content);
+    const metadata = extractMetadata(doc);
 
     const bodyOnly = isBodyOnlyMode();
     try {
         switch (selected.value) {
             case 'html-file': {
-                const outputPath = inputPath.replace(/\.org$/, '.html');
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'html');
+                const outputPath = path.join(inputDir, outputFileName);
                 await deleteExistingOutput(outputPath);
-                const html = await exportHtml(content, {}, bodyOnly, inputDir);
+                const html = await exportHtml(content, metadata, bodyOnly, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 const suffix = bodyOnly ? ' (body only)' : '';
                 vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)}${suffix}`);
                 break;
             }
             case 'html-open': {
-                const outputPath = inputPath.replace(/\.org$/, '.html');
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'html');
+                const outputPath = path.join(inputDir, outputFileName);
                 await deleteExistingOutput(outputPath);
-                const html = await exportHtml(content, {}, bodyOnly, inputDir);
+                const html = await exportHtml(content, metadata, bodyOnly, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 await vscode.env.openExternal(vscode.Uri.file(outputPath));
                 break;
             }
             case 'html-body': {
                 // Explicit body-only export (ignores toggle, always body-only)
-                const outputPath = inputPath.replace(/\.org$/, '.html');
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'html');
+                const outputPath = path.join(inputDir, outputFileName);
                 await deleteExistingOutput(outputPath);
-                const html = await exportHtml(content, {}, true, inputDir);
+                const html = await exportHtml(content, metadata, true, inputDir);
                 await fs.promises.writeFile(outputPath, html, 'utf-8');
                 vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)} (body only)`);
                 break;
@@ -1720,22 +1798,24 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'latex-body': {
                 // Explicit body-only export (ignores toggle, always body-only)
-                const outputPath = inputPath.replace(/\.org$/, '.tex');
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'tex');
+                const outputPath = path.join(inputDir, outputFileName);
                 await deleteExistingOutput(outputPath);
-                const latex = await exportLatex(content, {}, true);
+                const latex = await exportLatex(content, metadata, true);
                 await fs.promises.writeFile(outputPath, latex, 'utf-8');
                 vscode.window.showInformationMessage(`Exported to ${path.basename(outputPath)} (body only)`);
                 break;
             }
             case 'pdf-file': {
-                const outputPath = inputPath.replace(/\.org$/, '.pdf');
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'pdf');
+                const outputPath = path.join(inputDir, outputFileName);
                 const compilerDesc = getPdfCompilerDescription();
                 await vscode.window.withProgress(
                     { location: vscode.ProgressLocation.Notification, title: `Generating PDF via ${compilerDesc}...`, cancellable: false },
                     async (progress) => {
                         progress.report({ message: 'Generating LaTeX and compiling...' });
                         await deleteExistingOutput(outputPath);
-                        const logPath = await exportPdf(content, {}, outputPath);
+                        const logPath = await exportPdf(content, metadata, outputPath);
                         if (logPath) {
                             await handlePdfExportError(logPath);
                         } else {
@@ -1746,14 +1826,15 @@ async function exportDispatcher(): Promise<void> {
                 break;
             }
             case 'pdf-open': {
-                const outputPath = inputPath.replace(/\.org$/, '.pdf');
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'pdf');
+                const outputPath = path.join(inputDir, outputFileName);
                 const compilerDesc = getPdfCompilerDescription();
                 await vscode.window.withProgress(
                     { location: vscode.ProgressLocation.Notification, title: `Generating PDF via ${compilerDesc}...`, cancellable: false },
                     async (progress) => {
                         progress.report({ message: 'Generating LaTeX and compiling...' });
                         await deleteExistingOutput(outputPath);
-                        const logPath = await exportPdf(content, {}, outputPath);
+                        const logPath = await exportPdf(content, metadata, outputPath);
                         if (logPath) {
                             await handlePdfExportError(logPath);
                         } else {
@@ -1769,9 +1850,10 @@ async function exportDispatcher(): Promise<void> {
             }
             case 'md-open': {
                 await quickExportMarkdown();
-                const outputPath = inputPath.replace(/\.org$/, '.md');
-                const doc = await vscode.workspace.openTextDocument(outputPath);
-                await vscode.window.showTextDocument(doc);
+                const outputFileName = getExportFileName(metadata.exportFileName, inputName, 'md');
+                const outputPath = path.join(inputDir, outputFileName);
+                const mdDoc = await vscode.workspace.openTextDocument(outputPath);
+                await vscode.window.showTextDocument(mdDoc);
                 break;
             }
         }
