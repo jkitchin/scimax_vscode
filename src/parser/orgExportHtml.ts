@@ -1159,22 +1159,32 @@ export class HtmlExportBackend implements ExportBackend {
 
     /**
      * Export org-cite citation to HTML
-     * Renders as a citation link/reference
+     * Renders as citation links similar to org-ref style
      */
     private exportCitation(citation: any, state: ExportState): string {
+        const htmlState = state as HtmlExportState;
         const { style, keys } = citation.properties;
 
         if (!keys || keys.length === 0) {
             return escapeString(citation.properties.rawValue || '', 'html');
         }
 
-        // For HTML, render citations as styled spans with data attributes
-        const keyLinks = keys.map((key: string) =>
-            `<cite class="org-cite" data-key="${escapeString(key, 'html')}">${escapeString(key, 'html')}</cite>`
-        ).join('; ');
+        // Render as links to bibliography entries, similar to org-ref
+        const keyLinks = keys.map((key: string) => {
+            htmlState.citationCounter++;
+            const citationId = `cite-${htmlState.citationCounter}`;
+            const escapedKey = escapeString(key, 'html');
+            return `<a id="${citationId}" href="#ref-${escapedKey}" class="org-ref-reference">${escapedKey}</a>`;
+        });
 
-        const styleClass = style && style !== 'default' ? ` org-cite-${style}` : '';
-        return `<span class="org-citation${styleClass}">[${keyLinks}]</span>`;
+        // Style determines how to join multiple citations
+        if (style === 't' || style === 'text') {
+            // Textual: Author (year) style - join with "and"
+            return keyLinks.join(' and ');
+        } else {
+            // Parenthetical (default): (Author, year) style - join with semicolon in brackets
+            return `(${keyLinks.join('; ')})`;
+        }
     }
 
     // =========================================================================

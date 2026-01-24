@@ -530,6 +530,18 @@ export function parseOrgFast(content: string): OrgDocumentNode {
         'MACRO',
     ]);
 
+    // Pre-scan: collect MACRO definitions from ENTIRE document (they can appear anywhere)
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const macroMatch = line.match(/^#\+MACRO:\s*(.*)$/i);
+        if (macroMatch) {
+            if (!doc.keywordLists['MACRO']) {
+                doc.keywordLists['MACRO'] = [];
+            }
+            doc.keywordLists['MACRO'].push(macroMatch[1]);
+        }
+    }
+
     // First pass: extract document keywords from the top
     while (state.lineIndex < lines.length) {
         const line = lines[state.lineIndex];
