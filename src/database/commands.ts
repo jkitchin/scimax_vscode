@@ -14,6 +14,7 @@ import {
 } from './embeddingService';
 import { getDatabase, getExtensionContext, cancelStaleFileCheck } from './lazyDb';
 import { resolveScimaxPath } from '../utils/pathResolver';
+import { databaseLogger as log } from '../utils/logger';
 
 /**
  * Debounce function for dynamic QuickPick updates
@@ -160,36 +161,77 @@ export function registerDbCommands(
         })
     );
 
-    // Reindex all files
+    // Reindex all files (two-phase: scan paths first, then batch index)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.reindex', async () => {
+            log.info('=== REINDEX COMMAND STARTED ===');
             const db = await requireDatabase();
-            if (!db) return;
+            if (!db) {
+                log.error('Reindex failed: database not available');
+                return;
+            }
+
+            const cancellationToken = { cancelled: false };
 
             await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Window,
-                title: 'Indexing',
-                cancellable: false
-            }, async (progress) => {
+                location: vscode.ProgressLocation.Notification,
+                title: 'Reindexing files',
+                cancellable: true
+            }, async (progress, token) => {
+                // Set up cancellation
+                token.onCancellationRequested(() => {
+                    log.info('Reindex cancellation requested by user');
+                    cancellationToken.cancelled = true;
+                });
+
                 let totalIndexed = 0;
                 let totalDeleted = 0;
                 const config = vscode.workspace.getConfiguration('scimax.db');
                 const directoriesToIndex: string[] = [];
 
-                // Phase 1: Remove entries for deleted files
+                // Batch size for memory-safe processing (files per batch before GC pause)
+                // Increased defaults for faster reindexing while still allowing GC
+                const batchSize = config.get<number>('reindexBatchSize', 50);
+                const pauseMs = config.get<number>('reindexPauseMs', 100);
+                const maxFilesPerReindex = config.get<number>('maxFilesPerReindex', 0);
+                log.info('Reindex config', { batchSize, pauseMs, maxFilesPerReindex });
+
+                // ========== PHASE 1: Remove deleted files ==========
+                log.info('--- PHASE 1: Checking for deleted files ---');
                 progress.report({ message: 'Checking for deleted files...' });
-                const deleteResult = await db.removeDeletedFiles((status) => {
-                    progress.report({
-                        message: `Checking files (${status.checked}/${status.total})...`
+                try {
+                    const deleteResult = await db.removeDeletedFiles((status) => {
+                        if (cancellationToken.cancelled) return;
+                        progress.report({
+                            message: `Checking files (${status.checked}/${status.total})...`
+                        });
+                        // Log every 500 files
+                        if (status.checked % 500 === 0) {
+                            log.debug('Phase 1 progress', { checked: status.checked, total: status.total });
+                        }
                     });
-                });
-                totalDeleted = deleteResult.deleted;
+                    totalDeleted = deleteResult.deleted;
+                    log.info('Phase 1 complete', { deleted: totalDeleted, checked: deleteResult.checked });
+                } catch (error) {
+                    log.error('Phase 1 failed', error as Error);
+                    throw error;
+                }
+
+                if (cancellationToken.cancelled) {
+                    log.info('Reindex cancelled after Phase 1');
+                    vscode.window.showInformationMessage('Reindex cancelled');
+                    return;
+                }
+
+                // ========== Collect directories to scan ==========
+                log.info('--- Collecting directories to scan ---');
 
                 // Include journal directory if enabled
                 if (config.get<boolean>('includeJournal', true)) {
                     const journalDir = resolveScimaxPath('scimax.journal.directory', 'journal');
                     if (journalDir && fs.existsSync(journalDir)) {
                         directoriesToIndex.push(journalDir);
+                        log.debug('Added journal directory', { path: journalDir });
                     }
                 }
 
@@ -199,6 +241,7 @@ export function registerDbCommands(
                     for (const folder of workspaceFolders) {
                         directoriesToIndex.push(folder.uri.fsPath);
                     }
+                    log.debug('Added workspace folders', { count: workspaceFolders.length });
                 }
 
                 // Include scimax projects if enabled
@@ -207,16 +250,20 @@ export function registerDbCommands(
                     if (ctx) {
                         interface Project { path: string; }
                         const projects = ctx.globalState.get<Project[]>('scimax.projects', []);
+                        let addedProjects = 0;
                         for (const project of projects) {
                             if (fs.existsSync(project.path)) {
                                 directoriesToIndex.push(project.path);
+                                addedProjects++;
                             }
                         }
+                        log.debug('Added scimax projects', { total: projects.length, existing: addedProjects });
                     }
                 }
 
                 // Include additional directories from config
                 const additionalDirs = config.get<string[]>('include') || [];
+                let addedAdditional = 0;
                 for (let dir of additionalDirs) {
                     // Expand ~ for home directory
                     if (dir.startsWith('~')) {
@@ -224,31 +271,230 @@ export function registerDbCommands(
                     }
                     if (fs.existsSync(dir)) {
                         directoriesToIndex.push(dir);
+                        addedAdditional++;
                     }
+                }
+                if (additionalDirs.length > 0) {
+                    log.debug('Added additional directories', { configured: additionalDirs.length, existing: addedAdditional });
                 }
 
                 // Deduplicate directories
                 const uniqueDirs = [...new Set(directoriesToIndex)];
+                log.info('Directories to scan', { total: uniqueDirs.length });
 
                 if (uniqueDirs.length === 0) {
+                    log.warn('No directories to index');
                     vscode.window.showWarningMessage('No directories to index. Check scimax.db settings.');
                     return;
                 }
 
-                // Phase 2: Index all directories (new and changed files)
-                for (let i = 0; i < uniqueDirs.length; i++) {
-                    const dir = uniqueDirs[i];
-                    const indexed = await db.indexDirectory(dir, progress);
-                    totalIndexed += indexed;
+                // ========== PHASE 2: Collect file paths ==========
+                log.debug('--- PHASE 2: Scanning directories for file paths ---');
+                progress.report({ message: 'Scanning for files...' });
 
-                    // Yield between directories
-                    await new Promise(resolve => setTimeout(resolve, 10));
+                // Use a Set directly to avoid duplicate array
+                const filePathSet = new Set<string>();
+
+                for (let dirIndex = 0; dirIndex < uniqueDirs.length; dirIndex++) {
+                    const dir = uniqueDirs[dirIndex];
+                    if (cancellationToken.cancelled) break;
+
+                    log.debug('Scanning directory', { index: dirIndex + 1, total: uniqueDirs.length, dir: path.basename(dir) });
+                    progress.report({ message: `Scanning ${path.basename(dir)}... (${filePathSet.size} files found)` });
+
+                    try {
+                        const filePaths = await db.collectFilePaths(dir, (count) => {
+                            progress.report({ message: `Scanning ${path.basename(dir)}... (${filePathSet.size + count} files found)` });
+                        });
+                        // Add to set (automatic dedup)
+                        for (const fp of filePaths) {
+                            filePathSet.add(fp);
+                        }
+                        log.debug('Directory scanned', { dir: path.basename(dir), found: filePaths.length, total: filePathSet.size });
+                    } catch (error) {
+                        log.error('Error scanning directory', error as Error, { path: dir });
+                    }
+                }
+
+                if (cancellationToken.cancelled) {
+                    log.info('Reindex cancelled during Phase 2');
+                    vscode.window.showInformationMessage('Reindex cancelled');
+                    return;
+                }
+
+                const totalUniqueFiles = filePathSet.size;
+                log.info('Phase 2 complete', { uniqueFiles: totalUniqueFiles });
+                progress.report({ message: `Found ${totalUniqueFiles} files. Checking which need indexing...` });
+
+                // ========== PHASE 3: Filter files needing reindex ==========
+                // Process directly from set to array of files needing reindex
+                log.info('--- PHASE 3: Filtering files that need reindexing ---');
+                const filesToIndex: string[] = [];
+                let checked = 0;
+
+                for (const filePath of filePathSet) {
+                    if (cancellationToken.cancelled) break;
+
+                    try {
+                        if (await db.needsReindex(filePath)) {
+                            filesToIndex.push(filePath);
+                        }
+                    } catch (error) {
+                        log.error('Error checking file', error as Error, { path: filePath });
+                    }
+
+                    checked++;
+                    // Progress update every 100 files
+                    if (checked % 100 === 0) {
+                        progress.report({
+                            message: `Checking ${checked}/${totalUniqueFiles} files (${filesToIndex.length} need indexing)`
+                        });
+                    }
+                    // Log every 1000 files
+                    if (checked % 1000 === 0) {
+                        log.info('Phase 3 progress', { checked, total: totalUniqueFiles, needIndex: filesToIndex.length });
+                    }
+                }
+
+                // Clear the set to free memory before Phase 4
+                filePathSet.clear();
+
+                if (cancellationToken.cancelled) {
+                    log.info('Reindex cancelled during Phase 3');
+                    vscode.window.showInformationMessage('Reindex cancelled');
+                    return;
+                }
+
+                log.info('Phase 3 complete', { checked: totalUniqueFiles, needIndex: filesToIndex.length });
+
+                if (filesToIndex.length === 0) {
+                    const stats = await db.getStats();
+                    const deletedMsg = totalDeleted > 0 ? `Removed ${totalDeleted} deleted. ` : '';
+                    log.info('All files up to date', { totalFiles: totalUniqueFiles, deleted: totalDeleted });
+                    vscode.window.showInformationMessage(
+                        `${deletedMsg}All ${totalUniqueFiles} files are up to date. Total: ${stats.files} files, ${stats.headings} headings`
+                    );
+                    return;
+                }
+
+                // Apply max files limit if configured (0 = unlimited)
+                let filesSkipped = 0;
+                const originalCount = filesToIndex.length;
+                if (maxFilesPerReindex > 0 && filesToIndex.length > maxFilesPerReindex) {
+                    filesSkipped = filesToIndex.length - maxFilesPerReindex;
+                    // Truncate to max - remaining files will be indexed on next run
+                    filesToIndex.length = maxFilesPerReindex;
+                    log.info('Applied max files limit', {
+                        maxFilesPerReindex,
+                        processing: maxFilesPerReindex,
+                        skipped: filesSkipped
+                    });
+                    vscode.window.showInformationMessage(
+                        `Processing ${maxFilesPerReindex} of ${originalCount} files. ` +
+                        `Run reindex again to continue (${filesSkipped} remaining). ` +
+                        `Increase scimax.db.maxFilesPerReindex to process more files per session.`
+                    );
+                }
+
+                // ========== PHASE 4: Index files in batches ==========
+                const totalFilesToIndex = filesToIndex.length;
+                const totalBatches = Math.ceil(totalFilesToIndex / batchSize);
+                log.info('--- PHASE 4: Indexing files in batches ---', {
+                    filesToIndex: totalFilesToIndex,
+                    batchSize,
+                    pauseMs,
+                    totalBatches
+                });
+                progress.report({ message: `Indexing ${totalFilesToIndex} files in batches of ${batchSize}...` });
+
+                // Process in batches, using shift() to release memory as we go
+                // This allows GC to reclaim processed file paths
+                let batchNum = 0;
+
+                while (filesToIndex.length > 0 && !cancellationToken.cancelled) {
+                    batchNum++;
+                    // Take files from front of array (shift releases memory)
+                    const batchFiles: string[] = [];
+                    for (let i = 0; i < batchSize && filesToIndex.length > 0; i++) {
+                        batchFiles.push(filesToIndex.shift()!);
+                    }
+
+                    log.debug('Starting batch', { batch: batchNum, total: totalBatches, files: batchFiles.length });
+                    progress.report({
+                        message: `Batch ${batchNum}/${totalBatches}: Indexing ${totalIndexed}/${totalFilesToIndex} files...`
+                    });
+
+                    // Index this batch - one file at a time with yields
+                    let batchIndexed = 0;
+                    let batchErrors = 0;
+
+                    for (let fileIndex = 0; fileIndex < batchFiles.length; fileIndex++) {
+                        if (cancellationToken.cancelled) break;
+
+                        const filePath = batchFiles[fileIndex];
+                        const fileName = path.basename(filePath);
+                        const globalFileNum = totalIndexed + 1;
+
+                        // Log every 10th file to avoid excessive output
+                        if (globalFileNum % 10 === 0 || globalFileNum === 1) {
+                            log.debug('Indexing', { file: fileName, num: globalFileNum, total: totalFilesToIndex });
+                        }
+
+                        try {
+                            await db.indexFile(filePath, { queueEmbeddings: true });
+                            totalIndexed++;
+                            batchIndexed++;
+                        } catch (error) {
+                            batchErrors++;
+                            log.error('Error indexing file', error as Error, { path: filePath });
+                        }
+
+                        // Yield after EVERY file to keep UI responsive
+                        // Yield to allow event loop to process
+                        await new Promise(resolve => setTimeout(resolve, 1));
+                    }
+
+                    // Clear batch array to release references
+                    batchFiles.length = 0;
+
+                    log.debug('Batch complete', {
+                        batch: batchNum,
+                        indexed: batchIndexed,
+                        errors: batchErrors,
+                        totalIndexed,
+                        remaining: filesToIndex.length
+                    });
+
+                    // Brief pause between batches to allow GC and prevent blocking
+                    if (filesToIndex.length > 0) {
+                        log.debug('Batch pause', { pauseMs, nextBatch: batchNum + 1, remaining: filesToIndex.length });
+                        progress.report({ message: `Indexed ${totalIndexed}/${totalFilesToIndex}...` });
+                        await new Promise(resolve => setTimeout(resolve, pauseMs));
+                    }
+                }
+
+                if (cancellationToken.cancelled) {
+                    log.info('Reindex cancelled during Phase 4', { indexed: totalIndexed });
+                    vscode.window.showInformationMessage(
+                        `Reindex cancelled. Indexed ${totalIndexed} files before stopping.`
+                    );
+                    return;
                 }
 
                 const stats = await db.getStats();
                 const deletedMsg = totalDeleted > 0 ? `, removed ${totalDeleted} deleted` : '';
+                const skippedMsg = filesSkipped > 0 ? `. Run again to continue (${filesSkipped} remaining)` : '';
+
+                log.info('=== REINDEX COMPLETE ===', {
+                    indexed: totalIndexed,
+                    deleted: totalDeleted,
+                    skipped: filesSkipped,
+                    totalFiles: stats.files,
+                    totalHeadings: stats.headings
+                });
+
                 vscode.window.showInformationMessage(
-                    `Indexed ${totalIndexed} files${deletedMsg}. Total: ${stats.files} files, ${stats.headings} headings, ${stats.blocks} code blocks`
+                    `Reindex complete: ${totalIndexed} files indexed${deletedMsg}. Total: ${stats.files} files, ${stats.headings} headings${skippedMsg}`
                 );
             });
         })

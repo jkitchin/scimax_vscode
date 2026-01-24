@@ -219,7 +219,12 @@ export class OrgParserUnified {
      * Parse org content into a full AST
      */
     parse(content: string): OrgDocumentNode {
-        const lines = content.split('\n');
+        // Normalize line endings: convert CRLF (Windows) to LF (Unix)
+        // This prevents catastrophic regex backtracking on files with \r\n endings
+        const normalizedContent = content.indexOf('\r') !== -1
+            ? content.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+            : content;
+        const lines = normalizedContent.split('\n');
         const doc: OrgDocumentNode = {
             type: 'org-data',
             properties: {},

@@ -3,12 +3,15 @@
  *
  * Provides structured logging with:
  * - Log levels (DEBUG, INFO, WARN, ERROR)
- * - VS Code output channel
+ * - VS Code output channel for real-time viewing
+ * - Rotating file logs (like Python's RotatingFileHandler)
  * - Visual error indication via status bar
  * - Module-scoped loggers
  */
 
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * Log levels in order of severity
@@ -31,6 +34,167 @@ const LOG_LEVEL_MAP: Record<string, LogLevel> = {
 };
 
 /**
+ * Rotating file handler similar to Python's logging.handlers.RotatingFileHandler
+ *
+ * Writes logs to a file and rotates when it exceeds maxBytes.
+ * Keeps up to backupCount rotated files (scimax.log.1, scimax.log.2, etc.)
+ */
+class RotatingFileHandler {
+    private logPath: string;
+    private maxBytes: number;
+    private backupCount: number;
+    private currentSize: number = 0;
+    private writeStream: fs.WriteStream | null = null;
+    private initialized: boolean = false;
+
+    constructor(
+        private storageDir: string,
+        private filename: string = 'scimax.log',
+        maxBytes: number = 1024 * 1024, // 1MB default
+        backupCount: number = 3
+    ) {
+        this.logPath = path.join(storageDir, filename);
+        this.maxBytes = maxBytes;
+        this.backupCount = backupCount;
+    }
+
+    /**
+     * Initialize the file handler
+     */
+    async initialize(): Promise<void> {
+        if (this.initialized) return;
+
+        try {
+            // Ensure storage directory exists
+            await fs.promises.mkdir(this.storageDir, { recursive: true });
+
+            // Get current file size if it exists
+            try {
+                const stats = await fs.promises.stat(this.logPath);
+                this.currentSize = stats.size;
+            } catch {
+                this.currentSize = 0;
+            }
+
+            // Open write stream in append mode
+            this.writeStream = fs.createWriteStream(this.logPath, { flags: 'a' });
+            this.initialized = true;
+        } catch (error) {
+            console.error('Failed to initialize rotating file handler:', error);
+        }
+    }
+
+    /**
+     * Write a log entry, rotating if necessary
+     */
+    async write(message: string): Promise<void> {
+        if (!this.initialized || !this.writeStream) {
+            return;
+        }
+
+        const entry = message + '\n';
+        const entrySize = Buffer.byteLength(entry, 'utf8');
+
+        // Check if we need to rotate
+        if (this.currentSize + entrySize > this.maxBytes) {
+            await this.rotate();
+        }
+
+        // Write the entry
+        this.writeStream.write(entry);
+        this.currentSize += entrySize;
+    }
+
+    /**
+     * Rotate the log files
+     * scimax.log -> scimax.log.1 -> scimax.log.2 -> ... -> deleted
+     */
+    private async rotate(): Promise<void> {
+        // Close current stream
+        if (this.writeStream) {
+            this.writeStream.end();
+            this.writeStream = null;
+        }
+
+        try {
+            // Delete the oldest backup if it exists
+            const oldestBackup = `${this.logPath}.${this.backupCount}`;
+            try {
+                await fs.promises.unlink(oldestBackup);
+            } catch {
+                // File doesn't exist, that's fine
+            }
+
+            // Shift existing backups: .2 -> .3, .1 -> .2, etc.
+            for (let i = this.backupCount - 1; i >= 1; i--) {
+                const src = `${this.logPath}.${i}`;
+                const dst = `${this.logPath}.${i + 1}`;
+                try {
+                    await fs.promises.rename(src, dst);
+                } catch {
+                    // File doesn't exist, that's fine
+                }
+            }
+
+            // Rename current log to .1
+            try {
+                await fs.promises.rename(this.logPath, `${this.logPath}.1`);
+            } catch {
+                // File doesn't exist, that's fine
+            }
+
+            // Reset size and open new stream
+            this.currentSize = 0;
+            this.writeStream = fs.createWriteStream(this.logPath, { flags: 'a' });
+        } catch (error) {
+            console.error('Failed to rotate log files:', error);
+            // Try to reopen the stream anyway
+            this.writeStream = fs.createWriteStream(this.logPath, { flags: 'a' });
+        }
+    }
+
+    /**
+     * Get paths to all log files (current + backups)
+     */
+    getLogFiles(): string[] {
+        const files: string[] = [this.logPath];
+        for (let i = 1; i <= this.backupCount; i++) {
+            files.push(`${this.logPath}.${i}`);
+        }
+        return files;
+    }
+
+    /**
+     * Get the current log file path
+     */
+    getLogPath(): string {
+        return this.logPath;
+    }
+
+    /**
+     * Get current size info
+     */
+    getStatus(): { currentSize: number; maxBytes: number; backupCount: number } {
+        return {
+            currentSize: this.currentSize,
+            maxBytes: this.maxBytes,
+            backupCount: this.backupCount
+        };
+    }
+
+    /**
+     * Close the file handler
+     */
+    close(): void {
+        if (this.writeStream) {
+            this.writeStream.end();
+            this.writeStream = null;
+        }
+        this.initialized = false;
+    }
+}
+
+/**
  * Error entry for tracking recent errors
  */
 interface ErrorEntry {
@@ -46,11 +210,13 @@ interface ErrorEntry {
 class LoggingService {
     private outputChannel: vscode.OutputChannel | null = null;
     private statusBarItem: vscode.StatusBarItem | null = null;
+    private fileHandler: RotatingFileHandler | null = null;
     private errorCount: number = 0;
     private recentErrors: ErrorEntry[] = [];
     private maxRecentErrors: number = 50;
     private configuredLevel: LogLevel = LogLevel.INFO;
     private disposables: vscode.Disposable[] = [];
+    private storageDir: string = '';
 
     /**
      * Initialize the logging service
@@ -68,6 +234,16 @@ class LoggingService {
         );
         this.statusBarItem.command = 'scimax.showErrorLog';
         context.subscriptions.push(this.statusBarItem);
+
+        // Initialize rotating file handler
+        this.storageDir = context.globalStorageUri.fsPath;
+        const config = vscode.workspace.getConfiguration('scimax');
+        const maxBytes = config.get<number>('logMaxSizeKB', 1024) * 1024; // Default 1MB
+        const backupCount = config.get<number>('logBackupCount', 3);
+        this.fileHandler = new RotatingFileHandler(this.storageDir, 'scimax.log', maxBytes, backupCount);
+        this.fileHandler.initialize().catch(err => {
+            console.error('Failed to initialize log file handler:', err);
+        });
 
         // Load configuration
         this.loadConfiguration();
@@ -116,7 +292,19 @@ class LoggingService {
         );
         context.subscriptions.push(reportIssueCommand);
 
+        // Register command to open log directory
+        const openLogDirCommand = vscode.commands.registerCommand(
+            'scimax.openLogDirectory',
+            () => this.openLogDirectory()
+        );
+        context.subscriptions.push(openLogDirCommand);
+
         this.log(LogLevel.INFO, 'Logger', 'Logging service initialized');
+
+        // Log where files are being written
+        if (this.fileHandler) {
+            this.log(LogLevel.INFO, 'Logger', 'Log files location', { path: this.storageDir });
+        }
     }
 
     /**
@@ -166,22 +354,16 @@ class LoggingService {
 
         const formatted = this.formatMessage(level, module, message, data);
 
-        // Always output to channel if available
+        // Write to rotating file (always, regardless of output channel)
+        if (this.fileHandler) {
+            this.fileHandler.write(formatted).catch(() => {
+                // Ignore file write errors to not break logging
+            });
+        }
+
+        // Output to VS Code channel if available
         if (this.outputChannel) {
-            switch (level) {
-                case LogLevel.DEBUG:
-                    this.outputChannel.appendLine(formatted);
-                    break;
-                case LogLevel.INFO:
-                    this.outputChannel.appendLine(formatted);
-                    break;
-                case LogLevel.WARN:
-                    this.outputChannel.appendLine(formatted);
-                    break;
-                case LogLevel.ERROR:
-                    this.outputChannel.appendLine(formatted);
-                    break;
-            }
+            this.outputChannel.appendLine(formatted);
         }
 
         // Also log to console for development
@@ -210,7 +392,12 @@ class LoggingService {
 
         // Log stack trace if available
         if (error?.stack) {
-            this.outputChannel?.appendLine(`  Stack: ${error.stack}`);
+            const stackLine = `  Stack: ${error.stack}`;
+            this.outputChannel?.appendLine(stackLine);
+            // Also write stack trace to file
+            if (this.fileHandler) {
+                this.fileHandler.write(stackLine).catch(() => {});
+            }
         }
 
         // Track the error
@@ -344,6 +531,30 @@ class LoggingService {
     }
 
     /**
+     * Get info about log files for diagnostics
+     */
+    getLogFileInfo(): { path: string; files: string[]; status: { currentSize: number; maxBytes: number; backupCount: number } } | null {
+        if (!this.fileHandler) {
+            return null;
+        }
+        return {
+            path: this.fileHandler.getLogPath(),
+            files: this.fileHandler.getLogFiles(),
+            status: this.fileHandler.getStatus()
+        };
+    }
+
+    /**
+     * Open the log file directory in the file explorer
+     */
+    async openLogDirectory(): Promise<void> {
+        if (this.storageDir) {
+            const uri = vscode.Uri.file(this.storageDir);
+            await vscode.commands.executeCommand('revealFileInOS', uri);
+        }
+    }
+
+    /**
      * Generate a diagnostic report for debugging
      * Formatted for easy copying to Claude or issue reports
      */
@@ -363,6 +574,18 @@ class LoggingService {
             `- Log Level: ${LogLevel[this.configuredLevel]}`,
             ''
         ];
+
+        // Log file info
+        const logInfo = this.getLogFileInfo();
+        if (logInfo) {
+            lines.push(
+                '## Log Files',
+                `- Location: ${logInfo.path}`,
+                `- Current Size: ${Math.round(logInfo.status.currentSize / 1024)} KB / ${Math.round(logInfo.status.maxBytes / 1024)} KB`,
+                `- Backup Count: ${logInfo.status.backupCount}`,
+                ''
+            );
+        }
 
         // Database stats if available
         try {
@@ -537,6 +760,12 @@ REVIEW FOR SENSITIVE INFO (file paths, usernames) BEFORE PASTING.
      * Dispose resources
      */
     dispose(): void {
+        // Close file handler
+        if (this.fileHandler) {
+            this.fileHandler.close();
+            this.fileHandler = null;
+        }
+
         for (const disposable of this.disposables) {
             disposable.dispose();
         }

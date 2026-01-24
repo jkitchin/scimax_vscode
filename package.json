@@ -1023,6 +1023,10 @@
         "title": "Scimax: Show Database Stats"
       },
       {
+        "command": "scimax.setLogLevel",
+        "title": "Scimax: Set Log Level"
+      },
+      {
         "command": "scimax.showErrorLog",
         "title": "Scimax: Show Error Log"
       },
@@ -1041,6 +1045,10 @@
       {
         "command": "scimax.reportIssue",
         "title": "Scimax: Report Issue on GitHub"
+      },
+      {
+        "command": "scimax.openLogDirectory",
+        "title": "Scimax: Open Log File Directory"
       },
       {
         "command": "scimax.db.backup",
@@ -3131,6 +3139,11 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
       },
       {
+        "command": "-tab",
+        "key": "tab",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+      },
+      {
         "command": "scimax.org.toggleFold",
         "key": "tab",
         "when": "editorTextFocus && editorLangId == 'org' && scimax.onResults && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
@@ -4980,6 +4993,20 @@
           "default": "info",
           "description": "Log level for Scimax output. 'debug' shows all messages, 'error' shows only errors. Errors are always logged regardless of this setting."
         },
+        "scimax.logMaxSizeKB": {
+          "type": "number",
+          "default": 1024,
+          "minimum": 100,
+          "maximum": 10240,
+          "description": "Maximum size of each log file in KB before rotation. Default is 1024 KB (1 MB). Logs are written to the extension's storage directory."
+        },
+        "scimax.logBackupCount": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Number of rotated log backup files to keep (scimax.log.1, scimax.log.2, etc.). Oldest backup is deleted when limit is reached."
+        },
         "scimax.db.includeJournal": {
           "type": "boolean",
           "default": true,
@@ -5023,8 +5050,8 @@
         },
         "scimax.db.autoCheckStale": {
           "type": "boolean",
-          "default": true,
-          "description": "Automatically check for externally modified files (git pull, Dropbox sync, etc.) when database is first accessed. Runs in background without blocking."
+          "default": false,
+          "description": "Automatically check for externally modified files on startup. Disabled by default to prevent memory issues with large collections. Use manual 'Reindex Files' command instead."
         },
         "scimax.db.staleCheckDelayMs": {
           "type": "number",
@@ -5043,6 +5070,27 @@
           "default": 50,
           "minimum": 0,
           "description": "Maximum number of new files to index per background sync. Set to 0 for unlimited. Lower values prevent memory issues with large codebases."
+        },
+        "scimax.db.reindexBatchSize": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "maximum": 200,
+          "description": "Number of files to process per batch during reindex. After each batch, a pause allows memory cleanup. Higher values are faster but use more memory."
+        },
+        "scimax.db.reindexPauseMs": {
+          "type": "number",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 10000,
+          "description": "Milliseconds to pause between batches during reindex. Allows garbage collection and keeps UI responsive. Increase if experiencing memory issues."
+        },
+        "scimax.db.maxFilesPerReindex": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 50000,
+          "description": "Maximum files to process per reindex session. Set to 0 for unlimited. Use lower values (e.g., 500-1000) for initial indexing of large collections to prevent out-of-memory errors. Subsequent reindex runs will continue from where they left off."
         },
         "scimax.db.queryTimeoutMs": {
           "type": "number",
@@ -5834,10 +5882,9 @@
     "@citation-js/plugin-csl": "^0.7.22",
     "@libsql/client": "^0.17.0",
     "date-fns": "^2.30.0",
-    "docx": "^9.5.1",
     "handlebars": "^4.7.8",
+    "jszip": "^3.10.1",
     "minimatch": "^9.0.0",
-    "shiki": "^1.29.2",
     "uuid": "^9.0.0",
     "zeromq": "^6.0.0-beta.19"
   }

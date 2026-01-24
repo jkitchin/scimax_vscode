@@ -45,6 +45,33 @@ describe('OrgParserUnified', () => {
             expect(doc.properties['header-args']).toBe(':results output');
             expect(doc.properties['ID']).toBe('my-doc-id');
         });
+
+        it('handles Windows line endings (CRLF)', () => {
+            // This test prevents regression of the CRLF OOM bug
+            // Files with \r\n line endings would cause catastrophic regex backtracking
+            const content = "#+TITLE: Test\r\n* Heading 1\r\nParagraph text\r\n** Heading 2\r\nMore text\r\n";
+
+            const doc = parseOrg(content);
+            expect(doc.keywords['TITLE']).toBe('Test');
+            expect(doc.children).toHaveLength(1);
+
+            const h1 = doc.children[0] as HeadlineElement;
+            expect(h1.type).toBe('headline');
+            expect(h1.properties.rawValue).toBe('Heading 1');
+            expect(h1.children).toHaveLength(1);
+
+            const h2 = h1.children[0] as HeadlineElement;
+            expect(h2.type).toBe('headline');
+            expect(h2.properties.rawValue).toBe('Heading 2');
+        });
+
+        it('handles mixed line endings', () => {
+            // Mix of Unix (\n), Windows (\r\n), and old Mac (\r)
+            const content = "* Heading 1\n** Heading 2\r\n*** Heading 3\rParagraph";
+
+            const doc = parseOrg(content);
+            expect(doc.children).toHaveLength(1);
+        });
     });
 
     describe('headline parsing', () => {

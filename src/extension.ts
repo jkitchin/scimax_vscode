@@ -86,6 +86,37 @@ export async function activate(context: vscode.ExtensionContext) {
     initializeLogging(context);
     extensionLogger.info('Extension activating...');
 
+    // Register log level command
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.setLogLevel', async () => {
+            const config = vscode.workspace.getConfiguration('scimax');
+            const currentLevel = config.get<string>('logLevel', 'info');
+
+            const levels = [
+                { label: 'debug', description: 'Verbose output for troubleshooting' },
+                { label: 'info', description: 'Normal operation messages (default)' },
+                { label: 'warn', description: 'Warnings and errors only' },
+                { label: 'error', description: 'Errors only' }
+            ];
+
+            // Mark current level
+            const items = levels.map(l => ({
+                ...l,
+                label: l.label === currentLevel ? `$(check) ${l.label}` : `     ${l.label}`
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `Current log level: ${currentLevel}`
+            });
+
+            if (selected) {
+                const newLevel = selected.label.replace(/^\$\(check\) |^ +/, '');
+                await config.update('logLevel', newLevel, vscode.ConfigurationTarget.Global);
+                vscode.window.showInformationMessage(`Log level set to: ${newLevel}`);
+            }
+        })
+    );
+
     // Set Leuven as default theme on first activation
     const hasSetDefaultTheme = context.globalState.get<boolean>('scimax.hasSetDefaultTheme');
     if (!hasSetDefaultTheme) {
@@ -95,7 +126,6 @@ export async function activate(context: vscode.ExtensionContext) {
         if (!currentTheme || currentTheme === 'Default Dark+' || currentTheme === 'Default Light+' ||
             currentTheme === 'Visual Studio Dark' || currentTheme === 'Visual Studio Light') {
             await config.update('colorTheme', 'Leuven', vscode.ConfigurationTarget.Global);
-            console.log('Scimax: Set Leuven as default color theme');
         }
         await context.globalState.update('scimax.hasSetDefaultTheme', true);
     }

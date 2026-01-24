@@ -607,7 +607,6 @@ export class ScimaxDb {
     /**
      * Find files as an async generator to avoid accumulating all paths in memory.
      * Uses iterative traversal with a stack instead of recursion.
-     * This is critical for large directories to prevent OOM during startup scans.
      */
     private async *findFilesGenerator(directory: string): AsyncGenerator<string, void, undefined> {
         const stack: string[] = [directory];
@@ -626,7 +625,6 @@ export class ScimaxDb {
                     const fullPath = path.join(dir, item.name);
 
                     // Yield every 50 items within a directory to stay responsive
-                    // This handles directories with thousands of files
                     itemsProcessed++;
                     if (itemsProcessed % 50 === 0) {
                         await new Promise(resolve => setTimeout(resolve, 0));
@@ -663,9 +661,50 @@ export class ScimaxDb {
     }
 
     /**
-     * Check if file needs reindexing
+     * Collect all file paths in a directory (fast scan, no parsing).
+     * Returns an array of file paths - just strings, minimal memory.
+     *
+     * @param directory - Root directory to scan
+     * @param onProgress - Optional callback for progress updates (receives file count)
      */
-    private async needsReindex(filePath: string): Promise<boolean> {
+    public async collectFilePaths(
+        directory: string,
+        onProgress?: (count: number) => void
+    ): Promise<string[]> {
+        log.debug('collectFilePaths: starting', { directory });
+        const filePaths: string[] = [];
+        let count = 0;
+
+        try {
+            for await (const filePath of this.findFilesGenerator(directory)) {
+                filePaths.push(filePath);
+                count++;
+
+                // Progress update every 100 files
+                if (count % 100 === 0) {
+                    onProgress?.(count);
+                    // Yield to keep UI responsive
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+
+                // Log every 500 files
+                if (count % 500 === 0) {
+                    log.debug('collectFilePaths: progress', { directory, count });
+                }
+            }
+        } catch (error) {
+            log.error('collectFilePaths: error during scan', error as Error, { directory, count });
+            throw error;
+        }
+
+        log.debug('collectFilePaths: complete', { directory, totalFiles: count });
+        return filePaths;
+    }
+
+    /**
+     * Check if file needs reindexing (not in DB or modified since last index)
+     */
+    public async needsReindex(filePath: string): Promise<boolean> {
         if (!this.db) return true;
 
         const result = await this.db.execute({
@@ -730,7 +769,11 @@ export class ScimaxDb {
         if (!this.db) return;
 
         try {
+            // Log start of indexing for crash debugging
+            log.debug('INDEX_START', { path: filePath });
+
             // Validate file before reading (use async to not block event loop)
+            log.debug('INDEX_STAT', { path: filePath });
             const stats = await fs.promises.stat(filePath);
 
             // Check file size limit (default 10MB)
@@ -773,10 +816,14 @@ export class ScimaxDb {
             }
 
             // Read file content (use async to not block event loop)
+            log.debug('INDEX_READ', { path: filePath, sizeKB: Math.round(stats.size / 1024) });
             const content = await fs.promises.readFile(filePath, 'utf8');
+            log.debug('INDEX_READ_DONE', { path: filePath, length: content.length });
 
             // Verify actual line count (only for files that passed size estimate)
+            log.debug('INDEX_LINECOUNT', { path: filePath });
             const lineCount = content.split('\n').length;
+            log.debug('INDEX_LINECOUNT_DONE', { path: filePath, lines: lineCount });
             if (lineCount > maxLines) {
                 log.warn('Skipping file with too many lines', {
                     path: filePath,
@@ -791,27 +838,39 @@ export class ScimaxDb {
             // (e.g., org files with Emacs Lisp results containing control characters)
             const knownTextExt = ['.org', '.md', '.txt'];
             const ext = path.extname(filePath).toLowerCase();
+            log.debug('INDEX_BINARY_CHECK', { path: filePath, ext });
             if (!knownTextExt.includes(ext) && this.isBinaryContent(content)) {
                 log.warn('Skipping binary file', { path: filePath });
                 return;
             }
+            log.debug('INDEX_FILETYPE', { path: filePath });
             const fileType = this.getFileType(filePath);
+
+            log.debug('INDEX_HASH', { path: filePath });
             const hash = crypto.createHash('md5').update(content).digest('hex');
+            log.debug('INDEX_HASH_DONE', { path: filePath, hash: hash.substring(0, 8) });
 
             // Parse content outside the lock (CPU-intensive, not DB-related)
             let parsedDoc: LegacyDocument | null = null;
 
             if (fileType === 'org') {
+                log.debug('INDEX_PARSE', { path: filePath, lines: lineCount });
                 parsedDoc = this.parser.parse(content);
-                // Yield after parsing to prevent blocking event loop
-                await new Promise(resolve => setTimeout(resolve, 0));
+                log.debug('INDEX_PARSE_DONE', { path: filePath });
             }
 
+            log.debug('INDEX_HASHTAGS', { path: filePath });
             const hashtags = extractHashtags(content);
 
+            // Capture content reference for use in lock closure
+            // We'll clear this after lock completes to help GC
+            let contentForDb: string | null = content;
+
             // All database writes happen inside the write lock to prevent SQLITE_BUSY
+            log.debug('INDEX_DB_START', { path: filePath });
             await this.withWriteLock(async () => {
                 // Remove old data for this file (already has internal retry logic)
+                log.debug('INDEX_DB_DELETE', { path: filePath });
                 await withRetry(
                     () => this.db!.batch([
                         { sql: 'DELETE FROM headings WHERE file_path = ?', args: [filePath] },
@@ -831,6 +890,7 @@ export class ScimaxDb {
                 );
 
                 // Insert file record
+                log.debug('INDEX_DB_INSERT', { path: filePath });
                 const fileResult = await this.db!.execute({
                     sql: `INSERT INTO files (path, file_type, mtime, hash, size, indexed_at, keywords)
                           VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -841,11 +901,14 @@ export class ScimaxDb {
 
                 // Index content based on type
                 if (fileType === 'org' && parsedDoc) {
-                    await this.indexOrgDocument(fileId, filePath, parsedDoc, content);
+                    log.debug('INDEX_ORG_DOC', { path: filePath, fileId });
+                    await this.indexOrgDocument(fileId, filePath, parsedDoc, contentForDb!);
+                    log.debug('INDEX_ORG_DOC_DONE', { path: filePath });
                     // Explicitly clear parsedDoc to help GC reclaim memory
                     parsedDoc = null;
                 } else if (fileType === 'md') {
-                    await this.indexMarkdownDocument(fileId, filePath, content);
+                    log.debug('INDEX_MD_DOC', { path: filePath, fileId });
+                    await this.indexMarkdownDocument(fileId, filePath, contentForDb!);
                 }
 
                 // Index hashtags and FTS5 in a batch for efficiency
@@ -858,13 +921,18 @@ export class ScimaxDb {
                     });
                 }
 
-                // Index for FTS5
+                // Index for FTS5 - limit content to first 100KB to reduce memory pressure
+                // Full-text search rarely needs more than this for effective matching
+                const ftsContent = contentForDb!.length > 100000
+                    ? contentForDb!.slice(0, 100000) + '\n[content truncated for FTS]'
+                    : contentForDb!;
                 finalStatements.push({
                     sql: 'INSERT INTO fts_content (file_path, title, content) VALUES (?, ?, ?)',
-                    args: [filePath, path.basename(filePath), content]
+                    args: [filePath, path.basename(filePath), ftsContent]
                 });
 
                 if (finalStatements.length > 0) {
+                    log.debug('INDEX_FTS', { path: filePath, statements: finalStatements.length });
                     await this.db!.batch(finalStatements);
                 }
 
@@ -875,10 +943,15 @@ export class ScimaxDb {
                         this.queueEmbeddings(filePath);
                     } else {
                         // Generate immediately (manual reindex)
-                        await this.createChunks(fileId, filePath, content);
+                        log.debug('INDEX_CHUNKS', { path: filePath });
+                        await this.createChunks(fileId, filePath, contentForDb!);
                     }
                 }
             });
+            log.debug('INDEX_COMPLETE', { path: filePath });
+
+            // Explicitly clear content reference after lock completes to help GC
+            contentForDb = null;
 
         } catch (error) {
             log.error('Failed to index file', error as Error, { path: filePath });
@@ -989,10 +1062,11 @@ export class ScimaxDb {
             const batch = statements.slice(i, i + BATCH_SIZE);
             await this.db.batch(batch);
 
-            // Yield to event loop between batches to prevent extension host from being killed
-            // Always yield after each batch, not just between batches
-            await new Promise(resolve => setTimeout(resolve, 0));
+            // Note: Removed yield as it was causing extension host to be killed
         }
+
+        // Clear statements array to help GC reclaim memory
+        statements.length = 0;
     }
 
     /**
