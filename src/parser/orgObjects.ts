@@ -74,6 +74,10 @@ const RE_MACRO = /^\{\{\{([a-zA-Z][a-zA-Z0-9_-]*)(?:\(([^)]*)\))?\}\}\}/;
 const RE_SUBSCRIPT = /^_([a-zA-Z0-9]+)/;
 const RE_SUPERSCRIPT = /^\^([a-zA-Z0-9]+)/;
 
+// Citation links (bare format: cite:key, citep:key1,key2, citet:&key1;&key2)
+// Supports org-ref v2 (comma-separated) and v3 (ampersand-prefixed, semicolon-separated)
+const RE_CITATION_LINK = /^(cite[pt]?|citeauthor|citeyear|Citep|Citet|citealp|citealt|citenum):([\w&;,:-]+)/;
+
 // =============================================================================
 // Object Parser Configuration
 // =============================================================================
@@ -107,7 +111,7 @@ const EMPHASIS_MARKERS: Record<string, { type: ObjectType; close: string }> = {
 /**
  * Characters that can start an inline object (for fast-path routing)
  */
-const OBJECT_START_CHARS = new Set(['\\', '$', '[', '<', '@', '{', '_', '^', '*', '/', '+', '=', '~', 's', 'c']);
+const OBJECT_START_CHARS = new Set(['\\', '$', '[', '<', '@', '{', '_', '^', '*', '/', '+', '=', '~', 's', 'c', 'C']);
 
 // =============================================================================
 // Main Parser Class
@@ -242,6 +246,17 @@ export function parseObjects(
                 // Inline babel call (call_name(...))
                 if (text[pos + 1] === 'a' && text[pos + 2] === 'l' && text[pos + 3] === 'l' && text[pos + 4] === '_' && isAllowed('inline-babel-call')) {
                     parsed = tryParseInlineBabelCall(text, pos, baseOffset);
+                }
+                // Citation links (cite:, citep:, citet:, citeauthor:, etc.)
+                if (!parsed && isAllowed('link')) {
+                    parsed = tryParseCitationLink(text, pos, prevChar, baseOffset);
+                }
+                break;
+
+            case 'C':
+                // Capitalized citation links (Citep:, Citet:)
+                if (isAllowed('link')) {
+                    parsed = tryParseCitationLink(text, pos, prevChar, baseOffset);
                 }
                 break;
 
@@ -835,6 +850,33 @@ function tryParseMacro(text: string, pos: number, baseOffset: number): MacroObje
             key: match[1],
             args,
         },
+    };
+}
+
+function tryParseCitationLink(text: string, pos: number, prevChar: string, baseOffset: number): LinkObject | null {
+    // Citation links: cite:key, citep:key1,key2, citet:&key1;&key2
+    // Must not be preceded by a word character (to avoid matching mid-word)
+    if (prevChar && /\w/.test(prevChar)) {
+        return null;
+    }
+
+    const match = text.slice(pos).match(RE_CITATION_LINK);
+    if (!match) return null;
+
+    const command = match[1];
+    const path = match[2];
+
+    return {
+        type: 'link',
+        range: { start: pos + baseOffset, end: pos + match[0].length + baseOffset },
+        postBlank: 0,
+        properties: {
+            linkType: command.toLowerCase(),
+            path,
+            format: 'plain',
+            rawLink: match[0],
+        },
+        children: undefined,
     };
 }
 
