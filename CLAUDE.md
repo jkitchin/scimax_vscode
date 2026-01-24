@@ -25,46 +25,119 @@ This is a VS Code extension providing scientific computing features inspired by 
 ```
 src/
 ├── extension.ts              # Entry point, activates all features
-├── parser/
+├── parser/                   # Core parsing and export engines
 │   ├── orgParser.ts          # Org-mode and Markdown parsing
 │   ├── orgParserUnified.ts   # Full AST parser (org-element compatible)
+│   ├── orgExportParser.ts    # Fast parser optimized for export
 │   ├── orgBabel.ts           # Source block execution engine
-│   ├── orgExport.ts          # Export backends (HTML, LaTeX, MD, PDF)
+│   ├── orgBabelAdvanced.ts   # Advanced Babel features (noweb, tangling)
+│   ├── orgExport.ts          # Export framework and utilities
+│   ├── orgExportHtml.ts      # HTML export backend
+│   ├── orgExportLatex.ts     # LaTeX export backend
+│   ├── orgExportDocx.ts      # DOCX export backend (via Pandoc)
+│   ├── orgExportIpynb.ts     # Jupyter notebook export
 │   ├── orgClocking.ts        # Time tracking and clock entries
+│   ├── orgAgenda.ts          # Agenda item extraction
+│   ├── orgEntities.ts        # Special character entities (→, α, etc.)
+│   ├── orgInclude.ts         # #+INCLUDE directive handling
+│   ├── orgSerialize.ts       # AST to org-mode text serialization
+│   ├── orgModify.ts          # AST modification utilities
 │   └── orgElementTypes.ts    # Type definitions for org elements
-├── org/
+├── org/                      # VS Code org-mode integration
 │   ├── babelProvider.ts      # VS Code integration for Babel execution
 │   ├── exportProvider.ts     # Export commands and UI
 │   ├── scimaxOrg.ts          # Text markup, DWIM return, navigation
 │   ├── scimaxOb.ts           # Source block manipulation (scimax-ob)
-│   ├── tableProvider.ts      # Table editing and export
-│   ├── hoverProvider.ts      # Hover previews (images, entities)
+│   ├── tableProvider.ts      # Table editing and formulas
+│   ├── tableFormula.ts       # Spreadsheet-style table calculations
+│   ├── hoverProvider.ts      # Hover previews (images, entities, links)
 │   ├── completionProvider.ts # Smart completions
-│   └── documentSymbolProvider.ts # Document outline
-├── jupyter/
+│   ├── documentSymbolProvider.ts # Document outline
+│   ├── agendaProvider.ts     # Agenda views (day, week, month)
+│   ├── captureProvider.ts    # Quick capture templates
+│   ├── timestampProvider.ts  # Date/time insertion and manipulation
+│   ├── todoStates.ts         # TODO state cycling and configuration
+│   ├── orgLint.ts            # Document linting rules
+│   ├── latexPreviewProvider.ts # Inline LaTeX preview
+│   └── speedCommands/        # Single-key commands at headings
+├── jupyter/                  # Jupyter kernel integration
 │   ├── kernelManager.ts      # Jupyter kernel lifecycle
 │   ├── kernelConnection.ts   # ZeroMQ socket handling
 │   ├── jupyterExecutor.ts    # Babel integration for jupyter-*
 │   └── kernelSpec.ts         # Kernel discovery
-├── database/
-│   ├── scimaxDb.ts           # SQLite database with FTS5 + vector search
+├── database/                 # SQLite database layer
+│   ├── scimaxDb.ts           # Main database with FTS5 + vector search
 │   ├── embeddingService.ts   # Ollama/OpenAI embeddings
 │   ├── migrations.ts         # Schema versioning and migrations
-│   └── lazyDb.ts             # Lazy database initialization
-├── utils/
-│   ├── logger.ts             # Centralized logging with VS Code output channel
-│   └── resilience.ts         # Retry logic and timeouts for async operations
-├── cli/
+│   ├── lazyDb.ts             # Lazy database initialization
+│   ├── secretStorage.ts      # Secure API key storage
+│   ├── commands.ts           # Database-related VS Code commands
+│   └── databaseViewProvider.ts # Database stats tree view
+├── latex/                    # LaTeX/TeX file support
+│   ├── latexLanguageProvider.ts # LaTeX language features
+│   ├── latexCompiler.ts      # TeX compilation integration
+│   ├── latexHoverProvider.ts # LaTeX hover information
+│   ├── latexNavigation.ts    # Section/label navigation
+│   └── latexSpeedCommands.ts # Speed commands for LaTeX
+├── references/               # Bibliography management (org-ref style)
+│   ├── referenceManager.ts   # BibTeX file management
+│   ├── bibtexParser.ts       # BibTeX parsing
+│   ├── citationParser.ts     # Citation syntax parsing
+│   ├── citationProcessor.ts  # Citation formatting
+│   ├── openalexService.ts    # OpenAlex API for DOI lookup
+│   └── providers.ts          # Completion, hover for citations
+├── manuscript/               # Academic manuscript tools
+│   ├── manuscriptManager.ts  # Multi-file manuscript coordination
+│   ├── latexCompiler.ts      # LaTeX compilation pipeline
+│   ├── figureProcessor.ts    # Figure handling and conversion
+│   └── fileFlattener.ts      # Combine includes into single file
+├── export/                   # Custom export system
+│   ├── customExporter.ts     # User-defined export backends
+│   └── commands.ts           # Export commands
+├── publishing/               # Static site publishing
+│   ├── orgPublish.ts         # org-publish style projects
+│   ├── publishProject.ts     # Project publishing logic
+│   └── themes/               # Publishing themes (e.g., bookTheme)
+├── journal/                  # Date-based journaling
+│   ├── journalManager.ts     # Journal entry management
+│   ├── calendarView.ts       # Calendar navigation
+│   └── statusBar.ts          # Journal status bar item
+├── notebook/                 # Project-based organization
+│   ├── notebookManager.ts    # Project/notebook management
+│   └── notebookTreeProvider.ts # Project tree view
+├── zotero/                   # Zotero integration
+│   └── zoteroService.ts      # Zotero API client
+├── highlighting/             # Syntax highlighting
+│   ├── semanticTokenProvider.ts # Semantic tokens for org
+│   ├── foldingProvider.ts    # Code folding
+│   └── blockDecorations.ts   # Source block decorations
+├── diagnostic/               # Extension diagnostics
+│   ├── diagnosticReport.ts   # System diagnostic report generation
+│   └── diagnosticPanel.ts    # Diagnostic webview panel
+├── utils/                    # Shared utilities
+│   ├── logger.ts             # Centralized logging
+│   ├── resilience.ts         # Retry logic and timeouts
+│   ├── dateParser.ts         # Date parsing utilities
+│   └── escapeUtils.ts        # String escaping helpers
+├── cli/                      # Command-line interface
 │   ├── index.ts              # CLI entry point
-│   └── commands/             # CLI subcommands (db, search, export, etc.)
-├── journal/                  # Date-based journaling system
-├── references/               # BibTeX bibliography management (org-ref)
-├── notebook/                 # Project-based organization (scimax-notebook)
+│   ├── database.ts           # CLI database operations
+│   └── commands/             # CLI subcommands
+├── help/                     # Help system
+│   ├── contextHelp.ts        # Context-sensitive help
+│   └── describeKey.ts        # Keybinding documentation
+├── hydra/                    # Hydra menu framework
+│   ├── hydraManager.ts       # Menu state management
+│   └── commands.ts           # Built-in hydra menus
 ├── projectile/               # Project management
 ├── fuzzySearch/              # Swiper-style search
 ├── jump/                     # Avy-style navigation
 ├── editmarks/                # Track changes system
-└── hydra/                    # Hydra menu framework
+├── mark/                     # Mark ring (like Emacs)
+├── templates/                # File/snippet templates
+└── shared/                   # Cross-module utilities
+    ├── fileWalker.ts         # Recursive file discovery
+    └── ignorePatterns.ts     # .gitignore-style filtering
 ```
 
 ### Key Patterns
@@ -74,16 +147,17 @@ src/
 - `commands.ts` - VS Code command registrations
 - `providers.ts` - VS Code language providers (hover, completion, tree views)
 
-**Database Layer**: `OrgDbSqlite` is the production database using `@libsql/client` (Turso's SQLite fork). It provides:
+**Database Layer**: `ScimaxDb` is the production database using `@libsql/client` (Turso's SQLite fork). It provides:
 - FTS5 full-text search with BM25 ranking
-- Vector similarity search for semantic queries
+- Vector similarity search for semantic queries (with embeddings)
+- Tables: `files`, `headings`, `source_blocks`, `chunks` (for embeddings)
 - Snake_case column names (`file_path`, `line_number`, `days_until`)
 
 **Async Methods**: Most `OrgDbSqlite` methods are async and return Promises. Always `await` them.
 
 ### Important Type Conventions
 
-`OrgDbSqlite` uses snake_case for database fields:
+`ScimaxDb` uses snake_case for database fields:
 ```typescript
 SearchResult.file_path    // not filePath
 SearchResult.line_number  // not lineNumber
@@ -91,13 +165,11 @@ AgendaItem.days_until     // not daysUntil
 HeadingRecord.file_path, line_number, todo_state, etc.
 ```
 
-The legacy `OrgDb` class uses camelCase - don't mix them.
-
 ### Extension Entry Point
 
 `extension.ts` initializes in order:
 1. JournalManager
-2. OrgDbSqlite (with optional embedding service)
+2. ScimaxDb (with optional embedding service)
 3. ReferenceManager
 4. NotebookManager
 
@@ -137,15 +209,27 @@ These modules provide Emacs-like editing commands:
 
 ### Export System
 
-The export system (`src/parser/orgExport.ts`) converts org documents:
+The export system has separate backends for each format:
 
 ```typescript
-// Export to HTML
+// HTML export (src/parser/orgExportHtml.ts)
+import { exportToHtml } from './parser/orgExportHtml';
 const html = exportToHtml(document, { toc: true, standalone: true });
 
-// Export to LaTeX
+// LaTeX export (src/parser/orgExportLatex.ts)
+import { exportToLatex } from './parser/orgExportLatex';
 const latex = exportToLatex(document, { documentClass: 'article' });
+
+// DOCX export via Pandoc (src/parser/orgExportDocx.ts)
+import { exportToDocx } from './parser/orgExportDocx';
+const buffer = await exportToDocx(document, { toc: true });
+
+// Jupyter notebook export (src/parser/orgExportIpynb.ts)
+import { exportToIpynb } from './parser/orgExportIpynb';
+const notebook = exportToIpynb(document);
 ```
+
+The DOCX backend requires Pandoc to be installed on the system.
 
 ## Development Workflow
 
