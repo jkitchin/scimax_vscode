@@ -840,6 +840,10 @@
         "title": "Scimax: Restart Jupyter Kernel for Block"
       },
       {
+        "command": "scimax.insertScreenshot",
+        "title": "Scimax: Insert Screenshot"
+      },
+      {
         "command": "scimax.org.export",
         "title": "Scimax: Export Org Document",
         "icon": "$(export)"
@@ -2079,6 +2083,10 @@
       {
         "command": "scimax.help.apropos",
         "title": "Scimax: Apropos (Search Documentation)"
+      },
+      {
+        "command": "scimax.update",
+        "title": "Scimax: Update from GitHub"
       },
       {
         "command": "scimax.contextHelp",
@@ -4815,6 +4823,12 @@
         "key": "ctrl+delete",
         "mac": "ctrl+delete",
         "when": "editorTextFocus && !editorReadonly"
+      },
+      {
+        "command": "scimax.insertScreenshot",
+        "key": "f10",
+        "mac": "f10",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       }
     ],
     "configuration": {

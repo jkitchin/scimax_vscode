@@ -44,6 +44,7 @@ import { registerBabelAdvancedCommands } from './parser/orgBabelAdvanced';
 import { registerExportCommands } from './org/exportProvider';
 import { registerCustomExportCommands } from './export/commands';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
+import { registerScreenshotCommands } from './org/screenshotProvider';
 import { registerScimaxObCommands } from './org/scimaxOb';
 import { registerSpeedCommands } from './org/speedCommands';
 import { parseStartupOptions, applyStartupVisibility } from './org/speedCommands/visibility';
@@ -391,6 +392,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Scimax-org commands (text markup, DWIM return, navigation)
     registerScimaxOrgCommands(context);
+
+    // Register Screenshot commands
+    registerScreenshotCommands(context);
 
     // Register Scimax-ob commands (source block manipulation)
     registerScimaxObCommands(context);

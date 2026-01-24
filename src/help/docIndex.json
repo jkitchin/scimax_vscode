@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-23T13:56:09.262Z",
-  "count": 3122,
+  "buildDate": "2026-01-24T01:12:44.287Z",
+  "count": 3134,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -1824,10 +1824,46 @@
       ]
     },
     {
-      "heading": "Verify Installation",
+      "heading": "Updating the Extension",
       "level": 2,
       "file": "01-getting-started.org",
       "line": 90,
+      "content": "To update to the latest version from within VS Code: 1. Open the Command Palette (`C-S-P') 2. Run \"Scimax: Update from GitHub\" 3. Confirm the update when prompted 4. Reload VS Code when prompted This downloads and installs the latest release from GitHub automatically.",
+      "path": [
+        "Installation"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-S-P"
+      ],
+      "keywords": [
+        "updating",
+        "extension",
+        "update",
+        "latest",
+        "version",
+        "within",
+        "code",
+        "open",
+        "command",
+        "palette",
+        "c-s-p",
+        "run",
+        "scimax",
+        "github",
+        "confirm",
+        "prompted",
+        "reload",
+        "downloads",
+        "installs",
+        "release"
+      ]
+    },
+    {
+      "heading": "Verify Installation",
+      "level": 2,
+      "file": "01-getting-started.org",
+      "line": 101,
       "content": "After installation: 1. Open the Command Palette (`C-S-P') 2. Type \"Scimax\" 3. You should see Scimax commands listed",
       "path": [
         "Installation"
@@ -1854,7 +1890,7 @@
       "heading": "First Steps",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 98,
+      "line": 109,
       "content": "",
       "path": [],
       "commands": [],
@@ -1868,7 +1904,7 @@
       "heading": "Opening an Org File",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 100,
+      "line": 111,
       "content": "Org files use the `.org' extension. To create your first file: 1. Press `C-n' to create a new file (note s-n on Mac) 2. Save it with `C-s' and give it a `.org' extension (e.g., `notes.org') 3. The file will automatically use org-mode syntax highlighting",
       "path": [
         "First Steps"
@@ -1904,7 +1940,7 @@
       "heading": "Creating Your First Document",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 108,
+      "line": 119,
       "content": "Type the following to create a basic document structure: #+BEGIN_SRC org ,#+TITLE: My First Document ,#+AUTHOR: Your Name ,#+DATE: 2026-01-13 ,* Introduction This is my first Scimax VS Code document. ,** A Subsection Content under the subsection. ,* Tasks ,** TODO Learn Scimax VS Code DEADLINE: <2026-01-20 Mon> ,** DONE Install the extension CLOSED: [2026-01-13 Mon] ,* Code Example ,#+BEGIN_SRC python :results output print(\"Hello from Scimax VS Code!\") ,#+END_SRC #+END_SRC",
       "path": [
         "First Steps"
@@ -1938,7 +1974,7 @@
       "heading": "Basic Navigation",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 140,
+      "line": 151,
       "content": "",
       "path": [
         "First Steps"
@@ -1954,7 +1990,7 @@
       "heading": "Folding",
       "level": 3,
       "file": "01-getting-started.org",
-      "line": 142,
+      "line": 153,
       "content": "- Press `Tab' on a heading to cycle its visibility (folded/children/subtree) - Press `S-<tab>' anywhere to cycle global visibility *bold* /italics/",
       "path": [
         "First Steps",
@@ -1981,7 +2017,7 @@
       "heading": "Moving Between Headings",
       "level": 3,
       "file": "01-getting-started.org",
-      "line": 149,
+      "line": 160,
       "content": "| Key         | Action                   | |-------------+--------------------------| | `C-c C-j'   | Jump to any heading      | | `M-<up>'    | Move heading up          | | `M-<down>'  | Move heading down        | | `M-<left>'  | Promote heading (←level) | | `M-<right>' | Demote heading (→level)  |",
       "path": [
         "First Steps",
@@ -2018,7 +2054,7 @@
       "heading": "Executing Code",
       "level": 3,
       "file": "01-getting-started.org",
-      "line": 158,
+      "line": 169,
       "content": "1. Place your cursor inside a source block 2. Press `C-<return>' or `C-c C-c' 3. Results appear below the block",
       "path": [
         "First Steps",
@@ -2048,7 +2084,7 @@
       "heading": "Understanding the Interface",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 164,
+      "line": 175,
       "content": "",
       "path": [],
       "commands": [],
@@ -2062,7 +2098,7 @@
       "heading": "Outline View",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 166,
+      "line": 177,
       "content": "The Outline view in VS Code's sidebar shows your document structure: 1. Click the Outline icon in the sidebar (or press `C-S-O') 2. See all headings hierarchically 3. Click a heading to jump to it",
       "path": [
         "Understanding the Interface"
@@ -2093,7 +2129,7 @@
       "heading": "Tree Views",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 174,
+      "line": 185,
       "content": "Scimax VS Code adds several tree views to the Explorer sidebar:",
       "path": [
         "Understanding the Interface"
@@ -2115,7 +2151,7 @@
       "heading": "Journal Tree",
       "level": 3,
       "file": "01-getting-started.org",
-      "line": 178,
+      "line": 189,
       "content": "Shows your journal entries organized by date. Access today's entry with `C-S-J' (or `s-S-J' on Mac).",
       "path": [
         "Understanding the Interface",
@@ -2144,7 +2180,7 @@
       "heading": "Projects Tree",
       "level": 3,
       "file": "01-getting-started.org",
-      "line": 183,
+      "line": 194,
       "content": "Shows your registered projects for quick navigation.",
       "path": [
         "Understanding the Interface",
@@ -2165,7 +2201,7 @@
       "heading": "Agenda Tree",
       "level": 3,
       "file": "01-getting-started.org",
-      "line": 187,
+      "line": 198,
       "content": "Shows TODO items, deadlines, and scheduled tasks across your files.",
       "path": [
         "Understanding the Interface",
@@ -2189,7 +2225,7 @@
       "heading": "Status Bar",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 191,
+      "line": 202,
       "content": "The status bar shows: - Current journal date (when in journal files) - Kernel status (when using Jupyter)",
       "path": [
         "Understanding the Interface"
@@ -2211,7 +2247,7 @@
       "heading": "Hydra Menus",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 198,
+      "line": 209,
       "content": "Hydra menus provide discoverable access to commands: - `C-c m' - Open main menu - `C-c C-m' - Open context-sensitive menu - `C-M-V' - Open database/search menu Menus show available commands with their keybindings. Press a key to execute a command or `Escape' to close the menu.",
       "path": [
         "Understanding the Interface"
@@ -2249,7 +2285,7 @@
       "heading": "Essential Commands",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 209,
+      "line": 220,
       "content": "",
       "path": [],
       "commands": [],
@@ -2263,7 +2299,7 @@
       "heading": "Document Commands",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 211,
+      "line": 222,
       "content": "| Key        | Command                         | |------------+---------------------------------| | Tab        | Cycle fold at heading           | | S-<tab>    | Cycle global fold               | | C-c C-j    | Jump to heading                 | | C-<return> | Insert new heading (at heading) | | C-c C-t    | Cycle TODO state                | | C-c C-c    | Context action (execute/toggle) |",
       "path": [
         "Essential Commands"
@@ -2301,7 +2337,7 @@
       "heading": "Source Block Commands",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 222,
+      "line": 233,
       "content": "| Key        | Command                        | |------------+--------------------------------| | C-<return> | Execute current block          | | S-<return> | Execute block and move to next | | C-<up>     | Go to previous block           | | C-<down>   | Go to next block               |",
       "path": [
         "Essential Commands"
@@ -2330,7 +2366,7 @@
       "heading": "Export Commands",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 231,
+      "line": 242,
       "content": "| Key         | Command                | |-------------+------------------------| | C-c C-e     | Open export dispatcher | | C-c C-e h h | Export to HTML         | | C-c C-e l l | Export to LaTeX        | | C-c C-e l p | Export to PDF          |",
       "path": [
         "Essential Commands"
@@ -2358,7 +2394,7 @@
       "heading": "Navigation Commands",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 240,
+      "line": 251,
       "content": "| Key     | Command                       | |---------+-------------------------------| | C-c s   | Fuzzy search current file     | | C-c j c | Jump to character (Avy-style) | | C-c j w | Jump to word                  | | C-c j l | Jump to line                  |",
       "path": [
         "Essential Commands"
@@ -2388,7 +2424,7 @@
       "heading": "Help Commands",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 249,
+      "line": 260,
       "content": "| Key   | Command                                      | |-------+----------------------------------------------| | C-h k | Describe key (type a key to see its command) | | C-h b | List all keybindings                         | | C-h f | Describe command (find command by name)      | | C-h v | Describe variable (view setting details)     | | C-h a | Apropos (search documentation for keywords)  |",
       "path": [
         "Essential Commands"
@@ -2424,7 +2460,7 @@
       "heading": "Recommended Settings",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 259,
+      "line": 270,
       "content": "Open VS Code settings (`C-,') and search for \"scimax\" to see all options.",
       "path": [],
       "commands": [],
@@ -2443,7 +2479,7 @@
       "heading": "Essential Settings",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 263,
+      "line": 274,
       "content": "#+BEGIN_SRC json { // Enable speed commands (single-key at heading start) \"scimax.speedCommands.enabled\": true, // Set your journal directory \"scimax.journal.directory\": \"~/Documents/journal\", // Configure bibliography files for citations \"scimax.ref.bibliographyFiles\": [\"~/references.bib\"], // Enable image overlays \"scimax.imageOverlays.enabled\": true, // Auto-index files for search \"scimax.db.autoIndex\": true } #+END_SRC",
       "path": [
         "Recommended Settings"
@@ -2483,7 +2519,7 @@
       "heading": "Python Configuration",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 284,
+      "line": 295,
       "content": "If Python isn't automatically detected: #+BEGIN_SRC json { \"scimax.literate.pythonPath\": \"/usr/bin/python3\" } #+END_SRC",
       "path": [
         "Recommended Settings"
@@ -2508,7 +2544,7 @@
       "heading": "LaTeX Configuration",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 294,
+      "line": 305,
       "content": "For PDF export: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"pdflatex\", \"scimax.latexLivePreview.useLatexmk\": true } #+END_SRC",
       "path": [
         "Recommended Settings"
@@ -2534,7 +2570,7 @@
       "heading": "Migrating from Emacs",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 305,
+      "line": 316,
       "content": "If you're coming from Emacs Org-mode or Scimax, here are key differences:",
       "path": [],
       "commands": [],
@@ -2554,7 +2590,7 @@
       "heading": "Similar Features",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 309,
+      "line": 320,
       "content": "| Emacs          | VS Code                  | |----------------+--------------------------| | C-c C-c        | C-c C-c                  | | C-c C-t        | C-c C-t                  | | C-c C-e        | C-c C-e                  | | TAB on heading | Tab on heading           | | S-TAB          | S-<tab>                  | | M-RET          | C-<return> (at heading)  | | M-left/right   | M-<left>/Right           | | M-up/down      | M-<up>/Down              | | Speed commands | Same keys (when enabl",
       "path": [
         "Migrating from Emacs"
@@ -2594,7 +2630,7 @@
       "heading": "Different Behaviors",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 323,
+      "line": 334,
       "content": "- *Completion*: Uses VS Code's completion system, triggered automatically - *Folding*: Uses VS Code's native folding with org-specific ranges - *Buffer management*: VS Code tabs instead of Emacs buffers - *Customization*: JSON settings instead of Emacs Lisp",
       "path": [
         "Migrating from Emacs"
@@ -2628,7 +2664,7 @@
       "heading": "Missing Features",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 330,
+      "line": 341,
       "content": "Some advanced Emacs features may not be available: - Org-mode's full capture/refile system (simplified version available) - Column view - Some specialized agenda views - Custom link types (limited set supported)",
       "path": [
         "Migrating from Emacs"
@@ -2662,7 +2698,7 @@
       "heading": "Next Steps",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 339,
+      "line": 350,
       "content": "Now that you're set up, explore these topics: 1. [[file:02-document-structure.org][Document Structure]] - Master headings, folding, and navigation 2. [[file:03-todo-items.org][TODO Items]] - Learn task management 3. [[file:07-source-blocks.org][Source Code Blocks]] - Execute code in your documents 4. [[file:24-keybindings.org][Keybindings]] - Learn all keyboard shortcuts",
       "path": [],
       "commands": [],
@@ -2694,7 +2730,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 348,
+      "line": 359,
       "content": "",
       "path": [],
       "commands": [],
@@ -2707,7 +2743,7 @@
       "heading": "Code Blocks Not Executing",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 350,
+      "line": 361,
       "content": "1. Check that the language is installed (e.g., Python, Node.js) 2. Verify the language is in your PATH 3. Check the Output panel (`C-S-U') for errors 4. Run `scimax.org.checkExecutors' to verify available executors",
       "path": [
         "Troubleshooting"
@@ -2742,7 +2778,7 @@
       "heading": "LaTeX Preview Not Working",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 357,
+      "line": 368,
       "content": "1. Ensure LaTeX is installed (`latex --version' in terminal) 2. Check that dvipng or dvisvgm is available 3. Run `scimax.checkLatexTools' to verify installation",
       "path": [
         "Troubleshooting"
@@ -2772,7 +2808,7 @@
       "heading": "Search Not Finding Results",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 363,
+      "line": 374,
       "content": "1. Run `scimax.db.reindex' to rebuild the search index 2. Check that files aren't in excluded patterns 3. Verify the search scope (`scimax.db.setScope')",
       "path": [
         "Troubleshooting"
@@ -2801,7 +2837,7 @@
       "heading": "Journal Not Opening",
       "level": 2,
       "file": "01-getting-started.org",
-      "line": 369,
+      "line": 380,
       "content": "1. Check that `scimax.journal.directory' is set correctly 2. Ensure the directory exists and is writable 3. Try creating the directory manually if needed",
       "path": [
         "Troubleshooting"
@@ -2830,7 +2866,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "01-getting-started.org",
-      "line": 375,
+      "line": 386,
       "content": "- Previous: [[file:00-index.org][Documentation Index]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:01.5-basic-syntax.org][Basic Syntax]]",
       "path": [],
       "commands": [],
@@ -27079,11 +27115,11 @@
       ]
     },
     {
-      "heading": "Common Options",
+      "heading": "Complete OPTIONS Reference",
       "level": 3,
       "file": "10-export.org",
       "line": 990,
-      "content": "| Option  | Values           | Description                           | |---------+------------------+---------------------------------------| | =toc=   | =t=, =nil=, =N=  | Table of contents (N = depth)         | | =num=   | =t=, =nil=, =N=  | Section numbering (N = depth)         | | =H=     | =N=              | Headline levels to export             | | =author= | =t=, =nil=       | Include author                        | | =date=  | =t=, =nil=       | Include date                          | | ",
+      "content": "| Option       | Values              | Default | Description                              | |--------------+---------------------+---------+------------------------------------------| | =toc=        | =t=, =nil=, =N=     | =nil=   | Table of contents (N = depth)            | | =num=        | =t=, =nil=, =N=     | =t=     | Section numbering (N = depth)            | | =H=          | =N=                 | =0=     | Headline levels to export (0 = all)      | | =author=     | =t=, =nil=          | =",
       "path": [
         "Export Options Reference",
         "#+OPTIONS Keyword"
@@ -27091,12 +27127,14 @@
       "commands": [],
       "keybindings": [],
       "keywords": [
-        "common",
+        "complete",
         "options",
+        "reference",
         "option",
         "values",
+        "default",
         "description",
-        "------------------------------------------------------------------",
+        "--------------------------------------------------------------------------------------",
         "toc",
         "nil",
         "table",
@@ -27108,17 +27146,15 @@
         "headline",
         "levels",
         "export",
-        "author",
-        "include",
-        "date"
+        "author"
       ]
     },
     {
       "heading": "Examples",
       "level": 3,
       "file": "10-export.org",
-      "line": 1006,
-      "content": "*Full configuration:* #+BEGIN_SRC org #+OPTIONS: toc:3 num:t H:4 author:t date:t tags:nil todo:nil #+END_SRC *Minimal export:* #+BEGIN_SRC org #+OPTIONS: toc:nil num:nil author:nil date:nil #+END_SRC *Academic paper:* #+BEGIN_SRC org #+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t #+END_SRC",
+      "line": 1014,
+      "content": "*Full configuration:* #+BEGIN_SRC org #+OPTIONS: toc:3 num:t H:4 author:t date:t tags:nil todo:nil #+END_SRC *Minimal export (no metadata):* #+BEGIN_SRC org #+OPTIONS: toc:nil num:nil author:nil date:nil tags:nil todo:nil pri:nil #+END_SRC *Academic paper:* #+BEGIN_SRC org #+OPTIONS: toc:t num:t H:3 ^:{} author:t date:t email:t #+END_SRC *Include all drawers:* #+BEGIN_SRC org #+OPTIONS: d:t c:t p:t #+END_SRC *Include only specific drawers:* #+BEGIN_SRC org #+OPTIONS: d:(\"LOGBOOK\" \"NOTES\") #+END_",
       "path": [
         "Export Options Reference",
         "#+OPTIONS Keyword"
@@ -27141,18 +27177,18 @@
         "endsrc",
         "minimal",
         "export",
+        "metadata",
         "tocnil",
         "numnil",
         "authornil",
-        "datenil",
-        "academic"
+        "datenil"
       ]
     },
     {
       "heading": "Document Keywords",
       "level": 2,
       "file": "10-export.org",
-      "line": 1023,
+      "line": 1046,
       "content": "",
       "path": [
         "Export Options Reference"
@@ -27168,8 +27204,8 @@
       "heading": "Required Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1025,
-      "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+LANGUAGE: en #+END_SRC",
+      "line": 1048,
+      "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+EMAIL: you@example.com #+LANGUAGE: en #+END_SRC Note: =#+EMAIL= is only included in output when =email:t= is set in OPTIONS.",
       "path": [
         "Export Options Reference",
         "Document Keywords"
@@ -27187,15 +27223,23 @@
         "name",
         "date",
         "2024-01-15",
+        "email",
+        "youexamplecom",
         "language",
-        "endsrc"
+        "endsrc",
+        "note",
+        "included",
+        "output",
+        "emailt",
+        "set",
+        "options"
       ]
     },
     {
       "heading": "HTML-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1034,
+      "line": 1060,
       "content": "#+BEGIN_SRC org #+HTML_HEAD: <style>body { font-family: sans-serif; }</style> #+HTML_HEAD_EXTRA: <meta name=\"keywords\" content=\"research, science\" /> #+HTML_LINK_HOME: index.html #+HTML_LINK_UP: ../index.html #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -27229,7 +27273,7 @@
       "heading": "LaTeX-Specific Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1043,
+      "line": 1069,
       "content": "#+BEGIN_SRC org #+LATEX_CLASS: article #+LATEX_CLASS_OPTIONS: [11pt,a4paper] #+LATEX_HEADER: \\usepackage{geometry} #+LATEX_HEADER: \\geometry{margin=1in} #+LATEX_COMPILER: pdflatex #+END_SRC",
       "path": [
         "Export Options Reference",
@@ -27257,11 +27301,11 @@
       ]
     },
     {
-      "heading": "Export Settings",
+      "heading": "Export Settings Keywords",
       "level": 3,
       "file": "10-export.org",
-      "line": 1053,
-      "content": "#+BEGIN_SRC org #+EXPORT_FILE_NAME: custom-name #+EXCLUDE_TAGS: noexport private #+SELECT_TAGS: export #+END_SRC",
+      "line": 1079,
+      "content": "",
       "path": [
         "Export Options Reference",
         "Document Keywords"
@@ -27271,22 +27315,122 @@
       "keywords": [
         "export",
         "settings",
+        "keywords"
+      ]
+    },
+    {
+      "heading": "EXPORT_FILE_NAME",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 1081,
+      "content": "Override the output file name: #+BEGIN_SRC org #+EXPORT_FILE_NAME: custom-output-name #+END_SRC - If set to =custom-output-name=, exporting to HTML produces =custom-output-name.html= - The extension is automatically appended based on export format - If the keyword already includes the correct extension, it's used as-is - Paths are relative to the org file's directory Example: #+BEGIN_SRC org #+TITLE: My Report #+EXPORT_FILE_NAME: final-report-v2 ,* Content here... #+END_SRC Exporting to PDF prod",
+      "path": [
+        "Export Options Reference",
+        "Document Keywords",
+        "Export Settings Keywords"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "exportfilename",
+        "override",
+        "output",
+        "name",
         "beginsrc",
         "org",
-        "exportfilename",
-        "custom-name",
+        "custom-output-name",
+        "endsrc",
+        "set",
+        "exporting",
+        "html",
+        "produces",
+        "custom-output-namehtml",
+        "extension",
+        "automatically",
+        "appended",
+        "based",
+        "export",
+        "format",
+        "keyword"
+      ]
+    },
+    {
+      "heading": "EXCLUDE_TAGS",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 1104,
+      "content": "Exclude headlines with specific tags from export: #+BEGIN_SRC org #+EXCLUDE_TAGS: noexport private draft #+END_SRC - Space-separated list of tags - =noexport= is always excluded by default (even if not specified) - Headlines with any of these tags (and their children) are omitted - Useful for keeping internal notes, drafts, or private content",
+      "path": [
+        "Export Options Reference",
+        "Document Keywords",
+        "Export Settings Keywords"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
         "excludetags",
+        "exclude",
+        "headlines",
+        "specific",
+        "tags",
+        "export",
+        "beginsrc",
+        "org",
         "noexport",
         "private",
+        "draft",
+        "endsrc",
+        "space-separated",
+        "list",
+        "always",
+        "excluded",
+        "default",
+        "even",
+        "specified",
+        "any"
+      ]
+    },
+    {
+      "heading": "SELECT_TAGS",
+      "level": 4,
+      "file": "10-export.org",
+      "line": 1117,
+      "content": "Export *only* headlines with specific tags: #+BEGIN_SRC org #+SELECT_TAGS: export publish #+END_SRC - When set, only headlines with at least one of these tags are exported - Headlines without a select tag are excluded (unless a child has one) - Overrides normal export behavior for selective publishing Example workflow: #+BEGIN_SRC org #+SELECT_TAGS: publish #+EXCLUDE_TAGS: noexport ,* Internal Notes                                    :noexport: Not exported (excluded). ,* Introduction Not export",
+      "path": [
+        "Export Options Reference",
+        "Document Keywords",
+        "Export Settings Keywords"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
         "selecttags",
-        "endsrc"
+        "export",
+        "headlines",
+        "specific",
+        "tags",
+        "beginsrc",
+        "org",
+        "publish",
+        "endsrc",
+        "set",
+        "least",
+        "one",
+        "exported",
+        "without",
+        "select",
+        "tag",
+        "excluded",
+        "unless",
+        "child",
+        "overrides"
       ]
     },
     {
       "heading": "Configuration Settings",
       "level": 1,
       "file": "10-export.org",
-      "line": 1061,
+      "line": 1147,
       "content": "",
       "path": [],
       "commands": [],
@@ -27300,7 +27444,7 @@
       "heading": "Export Settings Location",
       "level": 2,
       "file": "10-export.org",
-      "line": 1063,
+      "line": 1149,
       "content": "All export settings are in VS Code preferences: 1. `C-,' (`s-,' on Mac) to open Settings 2. Search for \"scimax export\" or \"scimax latex\" 3. Modify settings as needed",
       "path": [
         "Configuration Settings"
@@ -27326,7 +27470,7 @@
       "heading": "LaTeX Export Configuration",
       "level": 2,
       "file": "10-export.org",
-      "line": 1070,
+      "line": 1156,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -27343,7 +27487,7 @@
       "heading": "Custom Header",
       "level": 3,
       "file": "10-export.org",
-      "line": 1072,
+      "line": 1158,
       "content": "*Setting:* `scimax.export.latex.customHeader' *Type:* String (multiline) *Description:* Complete custom LaTeX preamble replacing auto-generated one. *Example:* #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": \"\\\\documentclass[12pt]{article}\\n\\\\usepackage[utf8]{inputenc}\\n\\\\usepackage{graphicx}\\n\\\\usepackage{amsmath}\" } #+END_SRC Or in `settings.json': #+BEGIN_SRC json { \"scimax.export.latex.customHeader\": [ \"\\\\documentclass[12pt]{article}\", \"\\\\usepackage[utf8]{inputenc}\", \"\\\\usepackage{gra",
       "path": [
         "Configuration Settings",
@@ -27380,7 +27524,7 @@
       "heading": "LaTeX Preview Settings",
       "level": 2,
       "file": "10-export.org",
-      "line": 1100,
+      "line": 1186,
       "content": "",
       "path": [
         "Configuration Settings"
@@ -27397,7 +27541,7 @@
       "heading": "Compiler",
       "level": 3,
       "file": "10-export.org",
-      "line": 1102,
+      "line": 1188,
       "content": "*Setting:* `scimax.latexLivePreview.compiler' *Values:* `\"pdflatex\"', `\"xelatex\"', `\"lualatex\"' *Default:* `\"pdflatex\"' *Example:* #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC",
       "path": [
         "Configuration Settings",
@@ -27425,7 +27569,7 @@
       "heading": "Use latexmk",
       "level": 3,
       "file": "10-export.org",
-      "line": 1117,
+      "line": 1203,
       "content": "*Setting:* `scimax.latexLivePreview.useLatexmk' *Type:* Boolean *Default:* `true' *Description:* Use latexmk for smart incremental builds (recommended).",
       "path": [
         "Configuration Settings",
@@ -27453,7 +27597,7 @@
       "heading": "Build on Save",
       "level": 3,
       "file": "10-export.org",
-      "line": 1127,
+      "line": 1213,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnSave' *Type:* Boolean *Default:* `true' *Description:* Automatically rebuild PDF when org file is saved.",
       "path": [
         "Configuration Settings",
@@ -27483,7 +27627,7 @@
       "heading": "Build on Idle",
       "level": 3,
       "file": "10-export.org",
-      "line": 1137,
+      "line": 1223,
       "content": "*Setting:* `scimax.latexLivePreview.buildOnIdle' *Type:* Boolean *Default:* `false' *Description:* Rebuild PDF after idle period (for live preview).",
       "path": [
         "Configuration Settings",
@@ -27514,7 +27658,7 @@
       "heading": "Idle Delay",
       "level": 3,
       "file": "10-export.org",
-      "line": 1147,
+      "line": 1233,
       "content": "*Setting:* `scimax.latexLivePreview.idleDelay' *Type:* Number (milliseconds) *Default:* `2000' *Description:* Delay before idle build triggers.",
       "path": [
         "Configuration Settings",
@@ -27543,7 +27687,7 @@
       "heading": "Complete Configuration Example",
       "level": 2,
       "file": "10-export.org",
-      "line": 1157,
+      "line": 1243,
       "content": "#+BEGIN_SRC json { // LaTeX Export \"scimax.export.latex.customHeader\": \"\", // LaTeX Preview \"scimax.latexLivePreview.compiler\": \"pdflatex\", \"scimax.latexLivePreview.useLatexmk\": true, \"scimax.latexLivePreview.buildOnSave\": true, \"scimax.latexLivePreview.buildOnIdle\": false, \"scimax.latexLivePreview.idleDelay\": 2000, // LaTeX Equation Preview \"scimax.latexPreview.enabled\": true, \"scimax.latexPreview.cacheEnabled\": true, \"scimax.latexPreview.darkModeAware\": true } #+END_SRC",
       "path": [
         "Configuration Settings"
@@ -27581,7 +27725,7 @@
       "heading": "Advanced Export Techniques",
       "level": 1,
       "file": "10-export.org",
-      "line": 1178,
+      "line": 1264,
       "content": "",
       "path": [],
       "commands": [],
@@ -27596,7 +27740,7 @@
       "heading": "Conditional Export",
       "level": 2,
       "file": "10-export.org",
-      "line": 1180,
+      "line": 1266,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -27612,7 +27756,7 @@
       "heading": "Exclude Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 1182,
+      "line": 1268,
       "content": "Tag headlines to exclude them from export: #+BEGIN_SRC org #+EXCLUDE_TAGS: noexport private draft ,* Public Section Content for everyone. ,* Private Notes                                    :noexport: Internal notes not included in export. ,* Draft Ideas                                      :draft: Work in progress, excluded. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27647,7 +27791,7 @@
       "heading": "Select Content by Tag",
       "level": 3,
       "file": "10-export.org",
-      "line": 1199,
+      "line": 1285,
       "content": "Only export tagged content: #+BEGIN_SRC org #+SELECT_TAGS: export publish ,* Internal Document This section won't be exported. ,* Published Chapter                                 :export: This section will be exported. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27679,7 +27823,7 @@
       "heading": "Backend-Specific Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 1213,
+      "line": 1299,
       "content": "",
       "path": [
         "Advanced Export Techniques"
@@ -27695,7 +27839,7 @@
       "heading": "HTML-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1215,
+      "line": 1301,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT html <div class=\"alert alert-info\"> This appears only in HTML export. </div> #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27724,7 +27868,7 @@
       "heading": "LaTeX-Only Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1225,
+      "line": 1311,
       "content": "#+BEGIN_SRC org #+BEGIN_EXPORT latex \\begin{tcolorbox}[title=Important] This appears only in LaTeX/PDF export. \\end{tcolorbox} #+END_EXPORT #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27755,7 +27899,7 @@
       "heading": "Export Snippets",
       "level": 3,
       "file": "10-export.org",
-      "line": 1235,
+      "line": 1321,
       "content": "Inline backend-specific content: #+BEGIN_SRC org Click @@html:<button>@@here@@html:</button>@@ to continue. The value is @@latex:\\textcolor{red}{@@important@@latex:}@@. #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27785,7 +27929,7 @@
       "heading": "Macros for Reusable Content",
       "level": 2,
       "file": "10-export.org",
-      "line": 1245,
+      "line": 1331,
       "content": "Define macros for repeated content: #+BEGIN_SRC org #+MACRO: version 2.5.0 #+MACRO: author-email john.doe@example.com Current version: {{{version}}} Contact: {{{author-email}}} #+END_SRC Built-in macros: - `{{{date}}}' - Current date - `{{{time}}}' - Current time - `{{{title}}}' - Document title - `{{{author}}}' - Document author",
       "path": [
         "Advanced Export Techniques"
@@ -27819,7 +27963,7 @@
       "heading": "Include Files",
       "level": 2,
       "file": "10-export.org",
-      "line": 1264,
+      "line": 1350,
       "content": "Include content from other files using the `#+INCLUDE:' directive. Files are processed during export, allowing modular document organization.",
       "path": [
         "Advanced Export Techniques"
@@ -27843,7 +27987,7 @@
       "heading": "Basic Syntax",
       "level": 3,
       "file": "10-export.org",
-      "line": 1269,
+      "line": 1355,
       "content": "#+BEGIN_SRC org ,#+INCLUDE: \"chapter1.org\" ,#+INCLUDE: \"path/to/file.org\" #+END_SRC Paths can be relative (to the current document) or absolute.",
       "path": [
         "Advanced Export Techniques",
@@ -27871,7 +28015,7 @@
       "heading": "Block Wrappers",
       "level": 3,
       "file": "10-export.org",
-      "line": 1278,
+      "line": 1364,
       "content": "Wrap included content in a block: #+BEGIN_SRC org ,# Include as source code block ,#+INCLUDE: \"code/example.py\" src python ,#+INCLUDE: \"script.sh\" src bash ,# Include as example (verbatim) block ,#+INCLUDE: \"output.txt\" example ,# Include as quote block ,#+INCLUDE: \"excerpt.txt\" quote ,# Include as export block (raw format) ,#+INCLUDE: \"custom.html\" export html #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27906,7 +28050,7 @@
       "heading": "Line Selection with :lines",
       "level": 3,
       "file": "10-export.org",
-      "line": 1297,
+      "line": 1383,
       "content": "Include only specific lines from a file: #+BEGIN_SRC org ,# Lines 10 through 20 (inclusive, 1-indexed) ,#+INCLUDE: \"data.org\" :lines \"10-20\" ,# From line 10 to end of file ,#+INCLUDE: \"data.org\" :lines \"10-\" ,# From beginning to line 20 ,#+INCLUDE: \"data.org\" :lines \"-20\" ,# Single line ,#+INCLUDE: \"data.org\" :lines \"15\" #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -27939,7 +28083,7 @@
       "heading": "Headline Level Adjustment with :minlevel",
       "level": 3,
       "file": "10-export.org",
-      "line": 1315,
+      "line": 1401,
       "content": "Shift all headlines in the included file to a minimum level: #+BEGIN_SRC org ,# Shift headlines so the minimum level is 2 ,#+INCLUDE: \"chapter.org\" :minlevel 2 #+END_SRC This is useful for including a standalone document as a section: - A file with `* Heading' becomes `** Heading' with `:minlevel 2' - Sub-headlines are adjusted proportionally",
       "path": [
         "Advanced Export Techniques",
@@ -27974,7 +28118,7 @@
       "heading": "Content Only with :only-contents",
       "level": 3,
       "file": "10-export.org",
-      "line": 1328,
+      "line": 1414,
       "content": "Strip the first headline and include only its contents: #+BEGIN_SRC org ,#+INCLUDE: \"section.org\" :only-contents t #+END_SRC This extracts the body of the first headline without including the headline itself.",
       "path": [
         "Advanced Export Techniques",
@@ -28005,7 +28149,7 @@
       "heading": "Combining Options",
       "level": 3,
       "file": "10-export.org",
-      "line": 1339,
+      "line": 1425,
       "content": "Options can be combined: #+BEGIN_SRC org ,# Include lines 5-25 of Python file, shift headlines to level 3 ,#+INCLUDE: \"code.py\" src python :lines \"5-25\" ,# Include chapter, make it a subsection (minlevel 2) ,#+INCLUDE: \"chapter.org\" :minlevel 2 :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -28040,7 +28184,7 @@
       "heading": "Recursive Includes",
       "level": 3,
       "file": "10-export.org",
-      "line": 1351,
+      "line": 1437,
       "content": "Included files can themselves contain `#+INCLUDE:' directives, which are processed recursively. A maximum depth of 10 levels prevents infinite loops.",
       "path": [
         "Advanced Export Techniques",
@@ -28070,7 +28214,7 @@
       "heading": "Example: Modular Book Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 1356,
+      "line": 1442,
       "content": "#+BEGIN_SRC org ,#+TITLE: My Book ,#+AUTHOR: Author Name ,#+INCLUDE: \"frontmatter.org\" ,* Part I: Introduction ,#+INCLUDE: \"chapters/intro.org\" :minlevel 2 ,* Part II: Main Content ,#+INCLUDE: \"chapters/chapter1.org\" :minlevel 2 ,#+INCLUDE: \"chapters/chapter2.org\" :minlevel 2 ,* Appendices ,#+INCLUDE: \"appendices/code-samples.org\" :minlevel 2 ,* Index ,#+INCLUDE: \"backmatter/index.org\" :only-contents t #+END_SRC",
       "path": [
         "Advanced Export Techniques",
@@ -28105,7 +28249,7 @@
       "heading": "Custom Link Types",
       "level": 2,
       "file": "10-export.org",
-      "line": 1378,
+      "line": 1464,
       "content": "Define custom export behavior for link types: #+BEGIN_SRC org # Link to bug tracker [[bug:1234][Bug #1234]] # Link to commit [[commit:abc123][View commit]] #+END_SRC",
       "path": [
         "Advanced Export Techniques"
@@ -28135,7 +28279,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "10-export.org",
-      "line": 1390,
+      "line": 1476,
       "content": "",
       "path": [],
       "commands": [],
@@ -28148,7 +28292,7 @@
       "heading": "HTML Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1392,
+      "line": 1478,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -28165,7 +28309,7 @@
       "heading": "MathJax Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 1394,
+      "line": 1480,
       "content": "*Problem:* Math equations appear as plain text. *Solution:* 1. Ensure internet connection (MathJax loads from CDN) 2. Check browser console for errors 3. Verify math syntax (use `\\(...\\)' or `$...$' for inline, `\\[...\\]' for display)",
       "path": [
         "Troubleshooting",
@@ -28200,7 +28344,7 @@
       "heading": "Broken Images",
       "level": 3,
       "file": "10-export.org",
-      "line": 1403,
+      "line": 1489,
       "content": "*Problem:* Images don't appear in exported HTML. *Solution:* 1. Use relative paths: `[[file:./images/plot.png]]' 2. Ensure images are in same directory or subdirectory 3. Check image file names (case-sensitive on Linux)",
       "path": [
         "Troubleshooting",
@@ -28234,7 +28378,7 @@
       "heading": "CSS Not Applied",
       "level": 3,
       "file": "10-export.org",
-      "line": 1412,
+      "line": 1498,
       "content": "*Problem:* Custom CSS doesn't show. *Solution:* 1. Verify `#+HTML_HEAD:' syntax 2. Check CSS selector specificity 3. Inspect generated HTML for CSS inclusion",
       "path": [
         "Troubleshooting",
@@ -28266,7 +28410,7 @@
       "heading": "LaTeX/PDF Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1421,
+      "line": 1507,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -28283,7 +28427,7 @@
       "heading": "Missing Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 1423,
+      "line": 1509,
       "content": "*Problem:* Compilation fails with \"! LaTeX Error: File `xyz.sty' not found\" *Solution:* #+BEGIN_SRC bash # TeX Live sudo tlmgr install xyz # MiKTeX (Windows) miktex packages install xyz # MacTeX sudo tlmgr install xyz #+END_SRC",
       "path": [
         "Troubleshooting",
@@ -28318,7 +28462,7 @@
       "heading": "Unicode Errors",
       "level": 3,
       "file": "10-export.org",
-      "line": 1439,
+      "line": 1525,
       "content": "*Problem:* \"! Package inputenc Error: Unicode character ... not set up\" *Solution:* 1. Switch to XeLaTeX or LuaLaTeX: #+BEGIN_SRC json { \"scimax.latexLivePreview.compiler\": \"xelatex\" } #+END_SRC 2. Or use LaTeX-safe characters",
       "path": [
         "Troubleshooting",
@@ -28352,7 +28496,7 @@
       "heading": "Bibliography Not Generated",
       "level": 3,
       "file": "10-export.org",
-      "line": 1451,
+      "line": 1537,
       "content": "*Problem:* Citations show as `[?]' in PDF. *Solution:* 1. Ensure `.bib' file exists 2. Use `latexmk' (handles BibTeX automatically) 3. Check citation keys match bibliography entries 4. Verify `bibliography:' and `bibliographystyle:' links",
       "path": [
         "Troubleshooting",
@@ -28387,7 +28531,7 @@
       "heading": "Images Not Found",
       "level": 3,
       "file": "10-export.org",
-      "line": 1461,
+      "line": 1547,
       "content": "*Problem:* LaTeX can't find image files. *Solution:* 1. Use relative paths from org file location 2. Avoid spaces in filenames 3. Use supported formats: PNG, JPG, PDF, EPS 4. Check `\\graphicspath' if using custom image directories",
       "path": [
         "Troubleshooting",
@@ -28422,7 +28566,7 @@
       "heading": "Compilation Timeout",
       "level": 3,
       "file": "10-export.org",
-      "line": 1471,
+      "line": 1557,
       "content": "*Problem:* PDF export hangs or times out. *Solution:* 1. Check for infinite loops in LaTeX code 2. Reduce document size 3. Disable auto-build: `buildOnSave: false' 4. Review `.log' file for warnings",
       "path": [
         "Troubleshooting",
@@ -28457,7 +28601,7 @@
       "heading": "Markdown Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1481,
+      "line": 1567,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -28474,7 +28618,7 @@
       "heading": "Table Alignment",
       "level": 3,
       "file": "10-export.org",
-      "line": 1483,
+      "line": 1569,
       "content": "*Problem:* Tables don't align properly. *Solution:* - GitHub-flavored Markdown tables are left-aligned by default - Org-mode alignment hints (`<l>', `<c>', `<r>') are not supported - Consider using HTML tables for complex layouts",
       "path": [
         "Troubleshooting",
@@ -28508,7 +28652,7 @@
       "heading": "Math Not Rendering",
       "level": 3,
       "file": "10-export.org",
-      "line": 1492,
+      "line": 1578,
       "content": "*Problem:* Math equations don't work. *Solution:* - GitHub supports some math via `$$...$$' (display) and `$...$' (inline) - Other platforms may require MathJax integration - Consider exporting to HTML for math-heavy content",
       "path": [
         "Troubleshooting",
@@ -28543,7 +28687,7 @@
       "heading": "General Export Issues",
       "level": 2,
       "file": "10-export.org",
-      "line": 1501,
+      "line": 1587,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -28560,7 +28704,7 @@
       "heading": "Empty Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1503,
+      "line": 1589,
       "content": "*Problem:* Export produces empty or minimal file. *Solution:* 1. Check export scope (full vs. subtree) 2. Verify content isn't excluded by tags 3. Ensure headlines match `H:' level setting 4. Review `#+OPTIONS' settings",
       "path": [
         "Troubleshooting",
@@ -28595,7 +28739,7 @@
       "heading": "Slow Export",
       "level": 3,
       "file": "10-export.org",
-      "line": 1513,
+      "line": 1599,
       "content": "*Problem:* Export takes very long. *Solution:* 1. Disable `buildOnIdle' for PDF export 2. Reduce `toc' depth 3. Split large documents into smaller files 4. Use `#+INCLUDE:' for modular organization",
       "path": [
         "Troubleshooting",
@@ -28630,7 +28774,7 @@
       "heading": "Wrong Output Location",
       "level": 3,
       "file": "10-export.org",
-      "line": 1523,
+      "line": 1609,
       "content": "*Problem:* Export file appears in unexpected location. *Solution:* 1. Check `#+EXPORT_FILE_NAME:' keyword 2. Verify save dialog selection 3. Review file permissions in target directory",
       "path": [
         "Troubleshooting",
@@ -28664,7 +28808,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "10-export.org",
-      "line": 1532,
+      "line": 1618,
       "content": "",
       "path": [],
       "commands": [],
@@ -28678,7 +28822,7 @@
       "heading": "Document Organization",
       "level": 2,
       "file": "10-export.org",
-      "line": 1534,
+      "line": 1620,
       "content": "",
       "path": [
         "Best Practices"
@@ -28694,7 +28838,7 @@
       "heading": "Use Meaningful Headings",
       "level": 3,
       "file": "10-export.org",
-      "line": 1536,
+      "line": 1622,
       "content": "- Clear, descriptive headline text - Logical hierarchy (avoid jumping levels) - Consistent depth for similar content",
       "path": [
         "Best Practices",
@@ -28724,7 +28868,7 @@
       "heading": "Metadata at Top",
       "level": 3,
       "file": "10-export.org",
-      "line": 1541,
+      "line": 1627,
       "content": "#+BEGIN_SRC org #+TITLE: Document Title #+AUTHOR: Your Name #+DATE: 2024-01-15 #+OPTIONS: toc:t num:t #+LATEX_CLASS: article #+END_SRC",
       "path": [
         "Best Practices",
@@ -28755,7 +28899,7 @@
       "heading": "Separate Concerns",
       "level": 3,
       "file": "10-export.org",
-      "line": 1550,
+      "line": 1636,
       "content": "- Content in main file - References in `.bib' file - Images in `images/' directory - Custom styles in `.css' file",
       "path": [
         "Best Practices",
@@ -28781,7 +28925,7 @@
       "heading": "Version Control",
       "level": 2,
       "file": "10-export.org",
-      "line": 1556,
+      "line": 1642,
       "content": "",
       "path": [
         "Best Practices"
@@ -28797,7 +28941,7 @@
       "heading": "Track Generated Files Separately",
       "level": 3,
       "file": "10-export.org",
-      "line": 1558,
+      "line": 1644,
       "content": "Add to `.gitignore': #+BEGIN_SRC text *.pdf *.html *.tex *.aux *.log *.out *.toc #+END_SRC",
       "path": [
         "Best Practices",
@@ -28827,7 +28971,7 @@
       "heading": "Use Meaningful Commit Messages",
       "level": 3,
       "file": "10-export.org",
-      "line": 1570,
+      "line": 1656,
       "content": "#+BEGIN_SRC text Update export configuration for XeLaTeX support Add custom LaTeX preamble for ACM format Fix image paths in HTML export #+END_SRC",
       "path": [
         "Best Practices",
@@ -28862,7 +29006,7 @@
       "heading": "Performance Optimization",
       "level": 2,
       "file": "10-export.org",
-      "line": 1577,
+      "line": 1663,
       "content": "CLOSED: [2026-01-17 Sat 09:25]",
       "path": [
         "Best Practices"
@@ -28882,7 +29026,7 @@
       "heading": "For Large Documents",
       "level": 3,
       "file": "10-export.org",
-      "line": 1580,
+      "line": 1666,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Disable auto-build during editing 2. Use `#+INCLUDE:' for modular structure 3. Cache expensive computations 4. Optimize image sizes",
       "path": [
         "Best Practices",
@@ -28916,7 +29060,7 @@
       "heading": "For Fast Iteration",
       "level": 3,
       "file": "10-export.org",
-      "line": 1587,
+      "line": 1673,
       "content": "CLOSED: [2026-01-17 Sat 09:25] 1. Use HTML preview for quick checks 2. Enable `buildOnIdle' with appropriate delay 3. Use body-only export for faster generation 4. Minimize custom packages",
       "path": [
         "Best Practices",
@@ -28951,7 +29095,7 @@
       "heading": "Example Workflows",
       "level": 1,
       "file": "10-export.org",
-      "line": 1594,
+      "line": 1680,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [],
       "commands": [],
@@ -28969,7 +29113,7 @@
       "heading": "Academic Paper Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 1597,
+      "line": 1683,
       "content": "CLOSED: [2026-01-17 Sat 09:26]",
       "path": [
         "Example Workflows"
@@ -28990,7 +29134,7 @@
       "heading": "1. Initial Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 1600,
+      "line": 1686,
       "content": "#+BEGIN_SRC org #+TITLE: Novel Approach to Machine Learning #+AUTHOR: Dr. Jane Smith #+DATE: \\today #+OPTIONS: toc:t num:t H:3 #+LATEX_CLASS: IEEEtran #+LATEX_HEADER: \\usepackage{amsmath,amssymb} #+LATEX_HEADER: \\usepackage{algorithm,algorithmic} #+BIBLIOGRAPHY: references.bib #+END_SRC",
       "path": [
         "Example Workflows",
@@ -29025,7 +29169,7 @@
       "heading": "2. Write Content",
       "level": 3,
       "file": "10-export.org",
-      "line": 1612,
+      "line": 1698,
       "content": "Structure with standard sections: - Abstract - Introduction - Related Work - Methodology - Results - Discussion - Conclusion",
       "path": [
         "Example Workflows",
@@ -29053,7 +29197,7 @@
       "heading": "3. Add Citations",
       "level": 3,
       "file": "10-export.org",
-      "line": 1622,
+      "line": 1708,
       "content": "#+BEGIN_SRC org Recent work cite:smith2023 has shown... #+END_SRC",
       "path": [
         "Example Workflows",
@@ -29077,7 +29221,7 @@
       "heading": "4. Export to PDF",
       "level": 3,
       "file": "10-export.org",
-      "line": 1627,
+      "line": 1713,
       "content": "`C-c C-e l p' → PDF via LaTeX",
       "path": [
         "Example Workflows",
@@ -29100,7 +29244,7 @@
       "heading": "5. Submit",
       "level": 3,
       "file": "10-export.org",
-      "line": 1630,
+      "line": 1716,
       "content": "Review generated PDF, make final edits, submit.",
       "path": [
         "Example Workflows",
@@ -29122,7 +29266,7 @@
       "heading": "Technical Documentation Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 1633,
+      "line": 1719,
       "content": "",
       "path": [
         "Example Workflows"
@@ -29139,7 +29283,7 @@
       "heading": "1. Setup",
       "level": 3,
       "file": "10-export.org",
-      "line": 1635,
+      "line": 1721,
       "content": "#+BEGIN_SRC org #+TITLE: API Documentation #+AUTHOR: Development Team #+OPTIONS: toc:2 num:nil H:4 #+HTML_HEAD: <link rel=\"stylesheet\" href=\"docs.css\" /> #+END_SRC",
       "path": [
         "Example Workflows",
@@ -29173,7 +29317,7 @@
       "heading": "2. Write Sections",
       "level": 3,
       "file": "10-export.org",
-      "line": 1643,
+      "line": 1729,
       "content": "- Getting Started - API Reference - Examples - Troubleshooting",
       "path": [
         "Example Workflows",
@@ -29196,7 +29340,7 @@
       "heading": "3. Export to HTML",
       "level": 3,
       "file": "10-export.org",
-      "line": 1649,
+      "line": 1735,
       "content": "`C-c C-e h h' → HTML",
       "path": [
         "Example Workflows",
@@ -29217,7 +29361,7 @@
       "heading": "4. Deploy",
       "level": 3,
       "file": "10-export.org",
-      "line": 1652,
+      "line": 1738,
       "content": "Copy HTML and CSS to docs server or GitHub Pages.",
       "path": [
         "Example Workflows",
@@ -29240,7 +29384,7 @@
       "heading": "Blog Post Workflow",
       "level": 2,
       "file": "10-export.org",
-      "line": 1655,
+      "line": 1741,
       "content": "CLOSED: [2026-01-17 Sat 09:27]",
       "path": [
         "Example Workflows"
@@ -29261,7 +29405,7 @@
       "heading": "1. Write in Org",
       "level": 3,
       "file": "10-export.org",
-      "line": 1658,
+      "line": 1744,
       "content": "CLOSED: [2026-01-17 Sat 09:27] #+BEGIN_SRC org #+TITLE: 10 Tips for Better Python Code #+AUTHOR: Tech Blogger #+DATE: 2024-01-15 #+OPTIONS: toc:nil num:nil #+END_SRC",
       "path": [
         "Example Workflows",
@@ -29296,7 +29440,7 @@
       "heading": "2. Export to Markdown",
       "level": 3,
       "file": "10-export.org",
-      "line": 1667,
+      "line": 1753,
       "content": "CLOSED: [2026-01-17 Sat 09:27] `C-c C-e m m' → Markdown",
       "path": [
         "Example Workflows",
@@ -29321,7 +29465,7 @@
       "heading": "3. Publish",
       "level": 3,
       "file": "10-export.org",
-      "line": 1671,
+      "line": 1757,
       "content": "CLOSED: [2026-01-17 Sat 09:27] Copy Markdown to CMS or static site generator (Hugo, Jekyll, etc.)",
       "path": [
         "Example Workflows",
@@ -29350,7 +29494,7 @@
       "heading": "Resources",
       "level": 1,
       "file": "10-export.org",
-      "line": 1676,
+      "line": 1762,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -29367,7 +29511,7 @@
       "heading": "External Links",
       "level": 2,
       "file": "10-export.org",
-      "line": 1679,
+      "line": 1765,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [
         "Resources"
@@ -29387,7 +29531,7 @@
       "heading": "Org-Mode Documentation",
       "level": 3,
       "file": "10-export.org",
-      "line": 1682,
+      "line": 1768,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://orgmode.org/manual/Exporting.html][Official Export Documentation]] - [[https://orgmode.org/worg/org-tutorials/org-latex-export.html][LaTeX Export Tutorial]] - [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][HTML Export Tutorial]]",
       "path": [
         "Resources",
@@ -29416,7 +29560,7 @@
       "heading": "LaTeX Resources",
       "level": 3,
       "file": "10-export.org",
-      "line": 1688,
+      "line": 1774,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.latex-project.org/][LaTeX Project]] - [[https://ctan.org/][CTAN - Package Archive]] - [[https://www.overleaf.com/learn][Overleaf Learn LaTeX]]",
       "path": [
         "Resources",
@@ -29446,7 +29590,7 @@
       "heading": "Tools",
       "level": 3,
       "file": "10-export.org",
-      "line": 1694,
+      "line": 1780,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://www.mathjax.org/][MathJax Documentation]] - [[https://highlightjs.org/][highlight.js]] - [[https://pandoc.org/][Pandoc - Universal Document Converter]]",
       "path": [
         "Resources",
@@ -29476,7 +29620,7 @@
       "heading": "Related Scimax Documentation",
       "level": 2,
       "file": "10-export.org",
-      "line": 1700,
+      "line": 1786,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[file:01-getting-started.org][Getting Started with Scimax]] - [[file:04-tables.org][Working with Tables]] - [[file:05-links.org][Links and Cross-References]] - [[file:03-todo-items.org][TODO Items and Planning]]",
       "path": [
         "Resources"
@@ -29510,7 +29654,7 @@
       "heading": "Community",
       "level": 2,
       "file": "10-export.org",
-      "line": 1708,
+      "line": 1794,
       "content": "CLOSED: [2026-01-17 Sat 09:29] - [[https://github.com/jkitchin/scimax_vscode][Scimax VS Code Repository]] - [[https://github.com/jkitchin/scimax_vscode/issues][Issue Tracker]] - [[https://github.com/jkitchin/scimax_vscode/discussions][Discussions]]",
       "path": [
         "Resources"
@@ -29538,7 +29682,7 @@
       "heading": "Appendix",
       "level": 1,
       "file": "10-export.org",
-      "line": 1715,
+      "line": 1801,
       "content": "CLOSED: [2026-01-17 Sat 09:29]",
       "path": [],
       "commands": [],
@@ -29555,7 +29699,7 @@
       "heading": "Complete Keybinding Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 1718,
+      "line": 1804,
       "content": "CLOSED: [2026-01-17 Sat 09:29] | Keybinding       | Command                    | Description                      | |------------------+----------------------------+----------------------------------| | C-c C-e        | Export dispatcher          | Open export menu                 | | C-c C-e h h    | HTML export                | Export to .html                  | | C-c C-e h o    | HTML export and open       | Export and open in browser       | | C-c C-e h p    | HTML preview               | Pr",
       "path": [
         "Appendix"
@@ -29590,8 +29734,8 @@
       "heading": "Export Options Quick Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 1735,
-      "content": "| Option   | Values         | Effect                                | |----------+----------------+---------------------------------------| | toc    | t/nil/N        | Table of contents (N  depth)         | | num    | t/nil/N        | Section numbering (N  depth)         | | H      | N              | Export headlines up to level N        | | author | t/nil          | Include author name                   | | date   | t/nil          | Include date                          | | title  | t/nil      ",
+      "line": 1821,
+      "content": "| Option   | Values             | Default | Effect                                 | |----------+--------------------+---------+----------------------------------------| | toc      | t/nil/N            | nil     | Table of contents (N = depth)          | | num      | t/nil/N            | t       | Section numbering (N = depth)          | | H        | N                  | 0       | Export headlines up to level N         | | author   | t/nil              | t       | Include author name            ",
       "path": [
         "Appendix"
       ],
@@ -29604,10 +29748,12 @@
         "reference",
         "option",
         "values",
+        "default",
         "effect",
-        "-----------------------------------------------------------------",
+        "-------------------------------------------------------------------------------",
         "toc",
         "tniln",
+        "nil",
         "table",
         "contents",
         "depth",
@@ -29615,16 +29761,14 @@
         "section",
         "numbering",
         "headlines",
-        "level",
-        "author",
-        "tnil"
+        "level"
       ]
     },
     {
       "heading": "LaTeX Package Reference",
       "level": 2,
       "file": "10-export.org",
-      "line": 1752,
+      "line": 1845,
       "content": "",
       "path": [
         "Appendix"
@@ -29641,7 +29785,7 @@
       "heading": "Essential Packages (Auto-Included)",
       "level": 3,
       "file": "10-export.org",
-      "line": 1754,
+      "line": 1847,
       "content": "| Package       | Purpose                              | |---------------+--------------------------------------| | inputenc    | Character encoding (UTF-8)           | | fontenc     | Font encoding (T1)                   | | hyperref    | Hyperlinks and PDF metadata          | | graphicx    | Image inclusion                      | | amsmath     | Mathematical typesetting             | | amssymb     | Math symbols                         | | booktabs    | Professional tables                  | |",
       "path": [
         "Appendix",
@@ -29676,7 +29820,7 @@
       "heading": "Optional Packages",
       "level": 3,
       "file": "10-export.org",
-      "line": 1768,
+      "line": 1861,
       "content": "| Package       | Purpose                              | Add With                        | |---------------+--------------------------------------+---------------------------------| | geometry    | Page layout                          | #+LATEX_HEADER:               | | natbib      | Bibliography                         | #+LATEX_HEADER:               | | minted      | Advanced syntax highlighting         | #+LATEX_HEADER:               | | tikz        | Graphics and diagrams                | #+",
       "path": [
         "Appendix",
@@ -29710,7 +29854,7 @@
       "heading": "HTML Classes and IDs",
       "level": 2,
       "file": "10-export.org",
-      "line": 1780,
+      "line": 1873,
       "content": "Exported HTML uses semantic classes for styling:",
       "path": [
         "Appendix"
@@ -29731,7 +29875,7 @@
       "heading": "Document Structure",
       "level": 3,
       "file": "10-export.org",
-      "line": 1784,
+      "line": 1877,
       "content": "- `.org-content' - Main content container - `.org-section' - Document section - `.org-preamble' - Document preamble - `#title-block' - Title, author, date header",
       "path": [
         "Appendix",
@@ -29761,7 +29905,7 @@
       "heading": "Headings and TOC",
       "level": 3,
       "file": "10-export.org",
-      "line": 1790,
+      "line": 1883,
       "content": "- `.org-toc' - Table of contents - `.section-number' - Section number prefix",
       "path": [
         "Appendix",
@@ -29785,7 +29929,7 @@
       "heading": "Text Elements",
       "level": 3,
       "file": "10-export.org",
-      "line": 1794,
+      "line": 1887,
       "content": "- `.org-todo' - TODO keyword - `.org-done' - DONE keyword - `.org-priority' - Priority marker - `.org-tags' - Tag container - `.org-tag' - Individual tag - `.org-timestamp' - Timestamp - `.org-underline' - Underlined text",
       "path": [
         "Appendix",
@@ -29819,7 +29963,7 @@
       "heading": "Blocks",
       "level": 3,
       "file": "10-export.org",
-      "line": 1803,
+      "line": 1896,
       "content": "- `.org-src-container' - Source block wrapper - `.src' - Source block pre element - `.example' - Example block - `.org-center' - Centered content - `.org-latex-environment' - LaTeX environment",
       "path": [
         "Appendix",
@@ -29849,7 +29993,7 @@
       "heading": "Tables and Lists",
       "level": 3,
       "file": "10-export.org",
-      "line": 1810,
+      "line": 1903,
       "content": "- `.org-table' - Table element - `.org-footnotes' - Footnotes container - `.org-footnote' - Individual footnote - `.org-footnote-ref' - Footnote reference link",
       "path": [
         "Appendix",
@@ -29878,7 +30022,7 @@
       "heading": "Admonitions",
       "level": 3,
       "file": "10-export.org",
-      "line": 1816,
+      "line": 1909,
       "content": "- `.admonition' - Generic admonition - `.org-warning' - Warning box - `.org-note' - Note box - `.org-tip' - Tip box - `.org-important' - Important box",
       "path": [
         "Appendix",
@@ -29905,7 +30049,7 @@
       "heading": "Troubleshooting Decision Tree",
       "level": 2,
       "file": "10-export.org",
-      "line": 1823,
+      "line": 1916,
       "content": "#+BEGIN_SRC text Export Problem? ├─ HTML Export │  ├─ Math not rendering → Check MathJax CDN, internet connection │  ├─ Images broken → Verify paths, file existence │  └─ Styling wrong → Check CSS inclusion, specificity ├─ PDF Export │  ├─ Compilation fails │  │  ├─ Missing package → Install via tlmgr/MiKTeX │  │  ├─ Unicode error → Switch to XeLaTeX/LuaLaTeX │  │  └─ Timeout → Review .log, reduce complexity │  ├─ Bibliography missing → Check .bib file, use latexmk │  └─ Images not found → Verif",
       "path": [
         "Appendix"
@@ -29939,7 +30083,7 @@
       "heading": "Related Topics",
       "level": 1,
       "file": "10-export.org",
-      "line": 1852,
+      "line": 1945,
       "content": "- [[file:07-source-blocks.org][Source Code Blocks]] - Code execution in documents - [[file:11-latex-preview.org][LaTeX Preview]] - Math preview before export - [[file:19-references.org][References]] - Citations and bibliography in exports - [[file:04-tables.org][Tables]] - Table formatting in exports - [[file:26-configuration.org][Configuration]] - Export settings and customization",
       "path": [],
       "commands": [],
@@ -29971,7 +30115,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "10-export.org",
-      "line": 1860,
+      "line": 1953,
       "content": "- Previous: [[file:09-jupyter.org][Jupyter]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:11-latex-preview.org][LaTeX Preview]]",
       "path": [],
       "commands": [],
@@ -34122,10 +34266,230 @@
       ]
     },
     {
-      "heading": "See Also",
+      "heading": "Inserting Screenshots",
       "level": 1,
       "file": "12-image-overlays.org",
       "line": 648,
+      "content": "The extension provides a cross-platform screenshot command that captures a screen region and inserts a link to the saved image.",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "inserting",
+        "screenshots",
+        "extension",
+        "provides",
+        "cross-platform",
+        "screenshot",
+        "command",
+        "captures",
+        "screen",
+        "region",
+        "inserts",
+        "link",
+        "saved",
+        "image"
+      ]
+    },
+    {
+      "heading": "Taking a Screenshot",
+      "level": 2,
+      "file": "12-image-overlays.org",
+      "line": 652,
+      "content": "Press =F10= in an org or markdown file to take a screenshot: 1. Press =F10= - the screen capture tool activates 2. Select the area you want to capture (or press Escape to cancel) 3. The screenshot is saved to a =screenshots/= directory next to your file 4. An image link is automatically inserted at the cursor position | Platform | Tool Used                                                 | |----------+-----------------------------------------------------------| | macOS    | =screencapture= (buil",
+      "path": [
+        "Inserting Screenshots"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "taking",
+        "screenshot",
+        "press",
+        "f10",
+        "org",
+        "markdown",
+        "take",
+        "screen",
+        "capture",
+        "tool",
+        "activates",
+        "select",
+        "area",
+        "want",
+        "escape",
+        "cancel",
+        "saved",
+        "screenshots",
+        "directory",
+        "next"
+      ]
+    },
+    {
+      "heading": "macOS Permission Setup",
+      "level": 2,
+      "file": "12-image-overlays.org",
+      "line": 667,
+      "content": "The first time you use the screenshot command on macOS, you may need to grant screen recording permission to VS Code: 1. Press =F10= to trigger the screenshot 2. macOS will show a permission dialog or the capture will fail silently 3. Go to *System Settings > Privacy & Security > Screen Recording* 4. Enable the checkbox for *Visual Studio Code* 5. *Restart VS Code* for the permission to take effect 6. Try =F10= again",
+      "path": [
+        "Inserting Screenshots"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "macos",
+        "permission",
+        "setup",
+        "first",
+        "time",
+        "screenshot",
+        "command",
+        "need",
+        "grant",
+        "screen",
+        "recording",
+        "code",
+        "press",
+        "f10",
+        "trigger",
+        "show",
+        "dialog",
+        "capture",
+        "fail",
+        "silently"
+      ]
+    },
+    {
+      "heading": "Inserted Link Format",
+      "level": 2,
+      "file": "12-image-overlays.org",
+      "line": 678,
+      "content": "For org-mode files, the inserted link includes a width attribute: #+BEGIN_SRC org #+attr_org: :width 800 [[./screenshots/screenshot-2026-01-23-14-30-45.png]] #+END_SRC For markdown files: #+BEGIN_SRC markdown ![screenshot](./screenshots/screenshot-2026-01-23-14-30-45.png) #+END_SRC The width is automatically determined from the image dimensions (capped at 800 pixels).",
+      "path": [
+        "Inserting Screenshots"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "inserted",
+        "link",
+        "format",
+        "org-mode",
+        "includes",
+        "width",
+        "attribute",
+        "beginsrc",
+        "org",
+        "attrorg",
+        "800",
+        "screenshotsscreenshot-2026-01-23-14-30-45png",
+        "endsrc",
+        "markdown",
+        "screenshot",
+        "automatically",
+        "determined",
+        "image",
+        "dimensions",
+        "capped"
+      ]
+    },
+    {
+      "heading": "Screenshot Directory",
+      "level": 2,
+      "file": "12-image-overlays.org",
+      "line": 695,
+      "content": "Screenshots are saved to a =screenshots/= subdirectory relative to the current file. The directory is created automatically if it doesn't exist. Filenames follow the pattern: =screenshot-YYYY-MM-DD-HH-MM-SS.png=",
+      "path": [
+        "Inserting Screenshots"
+      ],
+      "commands": [],
+      "keybindings": [
+        "M-DD-HH-MM-SS"
+      ],
+      "keywords": [
+        "screenshot",
+        "directory",
+        "screenshots",
+        "saved",
+        "subdirectory",
+        "relative",
+        "current",
+        "created",
+        "automatically",
+        "doesn",
+        "exist",
+        "filenames",
+        "follow",
+        "pattern",
+        "screenshot-yyyy-mm-dd-hh-mm-sspng"
+      ]
+    },
+    {
+      "heading": "Linux Screenshot Tools",
+      "level": 2,
+      "file": "12-image-overlays.org",
+      "line": 701,
+      "content": "On Linux, the extension tries these tools in order and uses the first one found: 1. =gnome-screenshot -a= (GNOME desktop) 2. =scrot -s= (lightweight, widely available) 3. =flameshot gui= (feature-rich, popular choice) 4. =maim -s= (modern alternative to scrot) 5. =import= (ImageMagick, works everywhere) Install at least one of these tools for screenshot functionality.",
+      "path": [
+        "Inserting Screenshots"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "linux",
+        "screenshot",
+        "tools",
+        "extension",
+        "tries",
+        "order",
+        "uses",
+        "first",
+        "one",
+        "found",
+        "gnome-screenshot",
+        "gnome",
+        "desktop",
+        "scrot",
+        "lightweight",
+        "widely",
+        "available",
+        "flameshot",
+        "gui",
+        "feature-rich"
+      ]
+    },
+    {
+      "heading": "Command Reference",
+      "level": 2,
+      "file": "12-image-overlays.org",
+      "line": 713,
+      "content": "| Command                    | Keybinding | Description                          | |----------------------------+------------+--------------------------------------| | =scimax.insertScreenshot=  | =F10=      | Capture screen region and insert link |",
+      "path": [
+        "Inserting Screenshots"
+      ],
+      "commands": [
+        "scimax.insertScreenshot"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "command",
+        "reference",
+        "keybinding",
+        "description",
+        "------------------------------------------------------------------------------",
+        "f10",
+        "capture",
+        "screen",
+        "region",
+        "insert",
+        "link"
+      ]
+    },
+    {
+      "heading": "See Also",
+      "level": 1,
+      "file": "12-image-overlays.org",
+      "line": 719,
       "content": "- [[file:05-links.org][Links]] - General link syntax and functionality - [[file:07-source-blocks.org][Source Blocks]] - Executing code that generates images - [[file:09-jupyter.org][Jupyter Integration]] - Working with Jupyter kernels - [[file:10-export.org][Export]] - Exporting documents with images - [[file:26-configuration.org][Configuration]] - Full configuration reference",
       "path": [],
       "commands": [],
@@ -34157,7 +34521,7 @@
       "heading": "Technical Details",
       "level": 1,
       "file": "12-image-overlays.org",
-      "line": 656,
+      "line": 727,
       "content": "",
       "path": [],
       "commands": [],
@@ -34171,7 +34535,7 @@
       "heading": "Thumbnail Generation",
       "level": 2,
       "file": "12-image-overlays.org",
-      "line": 658,
+      "line": 729,
       "content": "Thumbnails are generated using: 1. *ImageMagick* (convert command) - Preferred, works on all platforms 2. *macOS sips* - Native macOS tool, used as fallback on Mac 3. *Direct copy* - If no tools available, original images are used Thumbnails are cached in the extension's global storage directory with filenames based on: - MD5 hash of the original image path - Configured thumbnail dimensions - Original file extension",
       "path": [
         "Technical Details"
@@ -34205,7 +34569,7 @@
       "heading": "Cache Location",
       "level": 2,
       "file": "12-image-overlays.org",
-      "line": 671,
+      "line": 742,
       "content": "Thumbnails are stored in: - *Linux:* ~/.config/Code/User/globalStorage/scimax-vscode/image-overlay-cache/ - *macOS:* ~/Library/Application Support/Code/User/globalStorage/scimax-vscode/image-overlay-cache/ - *Windows:* %APPDATA%\\Code\\User\\globalStorage\\scimax-vscode\\image-overlay-cache\\",
       "path": [
         "Technical Details"
@@ -34230,7 +34594,7 @@
       "heading": "Performance Considerations",
       "level": 2,
       "file": "12-image-overlays.org",
-      "line": 679,
+      "line": 750,
       "content": "- Thumbnail generation is asynchronous and doesn't block the editor - The cache prevents regenerating thumbnails on each file open - The maxOverlaysPerDocument setting prevents memory issues with large documents - Overlays are debounced during typing to avoid excessive updates - Gutter mode is more performant than after/both modes",
       "path": [
         "Technical Details"
@@ -34264,7 +34628,7 @@
       "heading": "VS Code Limitations",
       "level": 2,
       "file": "12-image-overlays.org",
-      "line": 687,
+      "line": 758,
       "content": "Unlike Emacs, VS Code cannot: - Display arbitrary-sized inline images in the editor - Replace link text with actual image content - Provide true \"overlay\" functionality at the text level The implementation uses VS Code's decoration API with gutter icons as the closest approximation to Emacs overlays.",
       "path": [
         "Technical Details"
@@ -34298,7 +34662,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "12-image-overlays.org",
-      "line": 696,
+      "line": 767,
       "content": "- Previous: [[file:11-latex-preview.org][LaTeX Preview]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:13-agenda.org][Agenda]]",
       "path": [],
       "commands": [],
@@ -68232,7 +68596,7 @@
       "level": 1,
       "file": "24-keybindings.org",
       "line": 216,
-      "content": "| Key        | Action                   | |------------+--------------------------| | C-c C-l    | Insert link              | | C-c C-o    | Open link                | | <return>   | Open link (when on link) |",
+      "content": "| Key        | Action                   | |------------+--------------------------| | C-c C-l    | Insert link              | | C-c C-o    | Open link                | | <return>   | Open link (when on link) | | F10        | Insert screenshot        | *Note:* On macOS, =F10= requires screen recording permission. See [[file:12-image-overlays.org::*Inserting Screenshots][Inserting Screenshots]].",
       "path": [],
       "commands": [],
       "keybindings": [
@@ -68250,14 +68614,23 @@
         "link",
         "c-o",
         "open",
-        "return"
+        "return",
+        "f10",
+        "screenshot",
+        "note",
+        "macos",
+        "requires",
+        "screen",
+        "recording",
+        "permission",
+        "file12-image-overlaysorginserting"
       ]
     },
     {
       "heading": "Citations & References",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 224,
+      "line": 227,
       "content": "| Key        | Action                                 | |------------+----------------------------------------| | C-c ]      | Insert citation                        | | C-c z      | Insert citation from Zotero            | | C-u C-c ]  | Insert cross-reference                 | | S-<left>   | Transpose citation left (on citation)  | | S-<right>  | Transpose citation right (on citation) | | S-<up>     | Sort citations (on citation)           | | S-<down>   | Sort citations by year (on citation) ",
       "path": [],
       "commands": [],
@@ -68292,7 +68665,7 @@
       "heading": "Text Markup",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 238,
+      "line": 241,
       "content": "| Key   | Action                               | |-------+--------------------------------------| | C-c b | Bold                                 | | C-c i | Italic                               | | C-c _ | Underline                            | | C-c ` | Code (inline)                        | | C-c = | Verbatim                             | | C-c + | Strikethrough                        | | C-c ' | Command (Emacs-style, non-standard)  |",
       "path": [],
       "commands": [],
@@ -68322,7 +68695,7 @@
       "heading": "Search & Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 250,
+      "line": 253,
       "content": "",
       "path": [],
       "commands": [],
@@ -68336,7 +68709,7 @@
       "heading": "Fuzzy Search (Swiper-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 252,
+      "line": 255,
       "content": "| Key     | Action                         | |---------+--------------------------------| | C-c s   | Fuzzy search in current buffer | | C-c S-s | Fuzzy search in open files     | | C-c M-s | Fuzzy search outline/headings  |",
       "path": [
         "Search & Navigation"
@@ -68366,7 +68739,7 @@
       "heading": "Jump (Avy-style)",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 260,
+      "line": 263,
       "content": "| Key     | Action                 | |---------+------------------------| | C-c j c | Jump to character      | | C-c j j | Jump to 2 characters   | | C-c j w | Jump to word           | | C-c j l | Jump to line           | | C-c j o | Jump to symbol/outline | | C-c j s | Jump to subword        |",
       "path": [
         "Search & Navigation"
@@ -68394,7 +68767,7 @@
       "heading": "Projectile",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 271,
+      "line": 274,
       "content": "| Key     | Action                      | |---------+-----------------------------| | C-c p p | Switch project              | | C-c p f | Find file in project        | | C-c p s | Search in project           | | C-c p d | Open project root directory | | C-c p a | Add project                 |",
       "path": [
         "Search & Navigation"
@@ -68423,7 +68796,7 @@
       "heading": "Edit Marks (Track Changes)",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 281,
+      "line": 284,
       "content": "| Key     | Action                  | |---------+-------------------------| | C-c e i | Mark insertion          | | C-c e d | Mark deletion           | | C-c e c | Add comment             | | C-c e t | Mark typo               | | C-c e a | Accept edit mark        | | C-c e r | Reject edit mark        | | C-c e ] | Next edit mark          | | C-c e [ | Previous edit mark      | | C-c e s | Show edit marks summary |",
       "path": [],
       "commands": [],
@@ -68457,7 +68830,7 @@
       "heading": "Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 295,
+      "line": 298,
       "content": "Speed commands are single-key shortcuts available when the cursor is at the *beginning* of a heading (the first character of the heading line). They must be enabled in settings (scimax.speedCommands.enabled).",
       "path": [],
       "commands": [
@@ -68485,7 +68858,7 @@
       "heading": "Navigation Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 299,
+      "line": 302,
       "content": "| Key | Action                            | |-----+-----------------------------------| | n   | Next heading (same level)         | | p   | Previous heading (same level)     | | f   | Next sibling heading              | | b   | Previous sibling heading          | | u   | Parent heading (up one level)     | | j   | Jump to heading (quick picker)    | | g   | Goto menu (additional navigation) |",
       "path": [
         "Speed Commands"
@@ -68518,7 +68891,7 @@
       "heading": "Visibility Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 311,
+      "line": 314,
       "content": "| Key   | Action                          | |-------+---------------------------------| | <tab> | Toggle fold (same as regular tab) | | c     | Cycle global fold               | | C     | Show children only              | | o     | Overview (collapse all)         | | 1     | Show level 1 headings           | | 2     | Show level 2 headings           | | 3     | Show level 3 headings           | | 0     | Show all headings               |",
       "path": [
         "Speed Commands"
@@ -68550,7 +68923,7 @@
       "heading": "Structure Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 324,
+      "line": 327,
       "content": "| Key | Action               | |-----+----------------------| | l   | Promote subtree      | | r   | Demote subtree       | | L   | Promote heading only | | R   | Demote heading only  | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
@@ -68577,7 +68950,7 @@
       "heading": "\"TODO\" & Content Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 335,
+      "line": 338,
       "content": "| Key | Action              | |-----+---------------------| | t   | Cycle TODO state    | | d   | Insert DEADLINE     | | s   | Insert SCHEDULED    | | e   | Set effort estimate |",
       "path": [
         "Speed Commands"
@@ -68606,7 +68979,7 @@
       "heading": "Editing Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 344,
+      "line": 347,
       "content": "| Key | Action               | |-----+----------------------| | w   | Kill (cut) subtree   | | y   | Yank (paste) subtree | | W   | Clone subtree        | | a   | Archive subtree      |",
       "path": [
         "Speed Commands"
@@ -68633,7 +69006,7 @@
       "heading": "Other Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 353,
+      "line": 356,
       "content": "| Key | Action                   | |-----+--------------------------| | ?   | Show speed commands help |",
       "path": [
         "Speed Commands"
@@ -68654,7 +69027,7 @@
       "heading": "BibTeX Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 359,
+      "line": 362,
       "content": "CLOSED: [2026-01-19 Mon 18:18] Speed commands for BibTeX files, active at column 0 of @entry lines (e.g., =@article{=, =@book{=).",
       "path": [
         "Speed Commands"
@@ -68681,7 +69054,7 @@
       "heading": "Navigation",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 364,
+      "line": 367,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action         | |-----+----------------| | n   | Next entry     | | p   | Previous entry | | j   | Jump to entry  |",
       "path": [
         "Speed Commands",
@@ -68708,7 +69081,7 @@
       "heading": "Formatting",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 373,
+      "line": 376,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action              | |-----+---------------------| | s   | Sort fields         | | d   | Downcase entry      | | t   | Title case title    | | S   | Sentence case title | | c   | Clean/format entry  |",
       "path": [
         "Speed Commands",
@@ -68739,7 +69112,7 @@
       "heading": "Wrap in Braces (Case Protection)",
       "level": 4,
       "file": "24-keybindings.org",
-      "line": 384,
+      "line": 387,
       "content": "CLOSED: [2026-01-21 Wed 08:02] | Key         | Action                                     | |-------------+--------------------------------------------| | Cmd+Shift+] | Wrap selection or word at cursor in braces | Wraps text in ={}= for case protection in BibTeX titles (e.g., ={NASA}=, ={Python}=). Works anywhere in the file, not just at entry start.",
       "path": [
         "Speed Commands",
@@ -68775,7 +69148,7 @@
       "heading": "Access",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 393,
+      "line": 396,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action               | |-----+----------------------| | o   | Open PDF             | | u   | Open URL/DOI         | | N   | Open notes           | | g   | Google Scholar       | | x   | CrossRef             | | w   | Web of Science       |",
       "path": [
         "Speed Commands",
@@ -68807,7 +69180,7 @@
       "heading": "OpenAlex Integration",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 405,
+      "line": 408,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action                        | |-----+-------------------------------| | C   | Show citing works (OpenAlex)  | | R   | Show related works (OpenAlex) | | r   | Show references (OpenAlex)    |",
       "path": [
         "Speed Commands",
@@ -68836,7 +69209,7 @@
       "heading": "Actions",
       "level": 3,
       "file": "24-keybindings.org",
-      "line": 414,
+      "line": 417,
       "content": "CLOSED: [2026-01-19 Mon 18:18] | Key | Action               | |-----+----------------------| | y   | Copy citation key    | | b   | Copy BibTeX entry    | | k   | Delete entry         | | K   | Generate citation key| | U   | Update from web      | | ?   | Show help            |",
       "path": [
         "Speed Commands",
@@ -68869,7 +69242,7 @@
       "heading": "Toggle Speed Commands",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 426,
+      "line": 429,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key       | Action                       | |-----------+------------------------------| | C-c C-x s | Toggle speed commands on/off |",
       "path": [],
       "commands": [],
@@ -68896,7 +69269,7 @@
       "heading": "Additional Notes",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 433,
+      "line": 436,
       "content": "CLOSED: [2026-01-19 Mon 18:19]",
       "path": [],
       "commands": [],
@@ -68914,7 +69287,7 @@
       "heading": "Context-Dependent Keybindings",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 436,
+      "line": 439,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Many keybindings are context-aware and behave differently depending on cursor position: - C-c C-c toggles checkboxes normally, executes source blocks inside code blocks, and recalculates tables on TBLFM lines - S-<arrow> keys modify timestamps normally, but transpose/sort citations when on a citation - M-S-<left>/M-S-<right> promote/demote subtrees normally, but delete/insert columns when in a table - <return> opens links when cursor is on a link",
       "path": [
         "Additional Notes"
@@ -68951,7 +69324,7 @@
       "heading": "When Conditions",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 446,
+      "line": 449,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Some keybindings only work in specific contexts: - Org-mode/Markdown files: Most document structure commands - On headings: Folding, promotion, demotion - In tables: Table-specific commands - In source blocks: Block execution - At heading start: Speed commands",
       "path": [
         "Additional Notes"
@@ -68985,7 +69358,7 @@
       "heading": "Mac vs Windows/Linux",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 456,
+      "line": 459,
       "content": "CLOSED: [2026-01-19 Mon 18:19] Most keybindings use C- (Ctrl) on all platforms to match Emacs conventions. Exceptions where Mac uses s- (Cmd): - s-S-j (journal) - s-<return> (execute/insert heading) - s-S-k (delete citation) - s-S-r (reload window) - C-s-v (database menu)",
       "path": [
         "Additional Notes"
@@ -69021,7 +69394,7 @@
       "heading": "LaTeX Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 466,
+      "line": 469,
       "content": "CLOSED: [2026-01-19 Mon 18:20] These keybindings are active in LaTeX files (=.tex=):",
       "path": [],
       "commands": [],
@@ -69042,7 +69415,7 @@
       "heading": "Section Navigation",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 471,
+      "line": 474,
       "content": "CLOSED: [2026-01-19 Mon 18:19] | Key         | Action                       | |-------------+------------------------------| | C-c C-n     | Next section                 | | C-c C-p     | Previous section             | | C-c C-u     | Parent section               | | C-c C-f     | Next sibling section         | | C-c C-b     | Previous sibling section     | | C-c C-j     | Jump to any section          | | C-c j       | Jump to any section (alt)    |",
       "path": [
         "LaTeX Navigation"
@@ -69084,7 +69457,7 @@
       "heading": "Structure Editing",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 484,
+      "line": 487,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key              | Action                     | |------------------+----------------------------| | Alt+Left         | Promote section            | | Alt+Right        | Demote section             | | Alt+Shift+Left   | Promote subtree            | | Alt+Shift+Right  | Demote subtree             | | Alt+Up           | Move section up            | | Alt+Down         | Move section down          | | C-c @            | Mark (select) section      |",
       "path": [
         "LaTeX Navigation"
@@ -69126,7 +69499,7 @@
       "heading": "Environment Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 497,
+      "line": 500,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                          | |-----------+---------------------------------| | C-c C-e   | Select environment              | | C-c e     | Change environment type         | | C-c w     | Wrap selection in environment   | | C-c *     | Toggle starred variant          | | C-c %     | Jump to matching begin/end      | | C-c l     | Jump to label                   | | C-c C-l   | Add label to environment        |",
       "path": [
         "LaTeX Navigation"
@@ -69164,7 +69537,7 @@
       "heading": "Folding",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 510,
+      "line": 513,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action            | |-----------+-------------------| | Tab       | Toggle fold       | | Shift+Tab | Cycle global fold |",
       "path": [
         "LaTeX Navigation"
@@ -69194,7 +69567,7 @@
       "heading": "Compile and Preview",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 518,
+      "line": 521,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Key       | Action                      | |-----------+-----------------------------| | C-c C-c   | Compile document            | | C-c v     | View PDF (built-in panel)   | | C-c C-v   | View PDF (external viewer)  | | C-c C-a   | Compile and view PDF        | | C-c g     | SyncTeX forward search      | | C-c C-k   | Clean auxiliary files       | See [[file:33-latex-navigation.org][LaTeX Navigation and Structure]] for complete documentation.",
       "path": [
         "LaTeX Navigation"
@@ -69234,7 +69607,7 @@
       "heading": "Quick Reference Card",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 532,
+      "line": 535,
       "content": "CLOSED: [2026-01-19 Mon 18:20]",
       "path": [],
       "commands": [],
@@ -69253,7 +69626,7 @@
       "heading": "Most Common Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 535,
+      "line": 538,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Command            | Keybinding   | |--------------------+--------------| | Open journal       | C-S-j        | | Execute code block | C-<return>   | | Cycle TODO         | C-c C-t      | | Insert timestamp   | C-c .        | | Insert link        | C-c C-l      | | Insert citation    | C-c ]        | | Export dispatcher  | C-c C-e      | | Jump to heading    | C-c C-j      | | Fuzzy search       | C-c s        | | Hydra menu         | C-c m        |",
       "path": [
         "Quick Reference Card"
@@ -69294,7 +69667,7 @@
       "heading": "Most Common Speed Commands",
       "level": 2,
       "file": "24-keybindings.org",
-      "line": 551,
+      "line": 554,
       "content": "CLOSED: [2026-01-19 Mon 18:20] | Speed Key | Action                 | |-----------+------------------------| | n/p       | Next/Previous heading  | | f/b       | Forward/Back sibling   | | u         | Up to parent           | | j         | Jump to heading        | | t         | Cycle TODO             | | l/r       | Promote/Demote subtree |",
       "path": [
         "Quick Reference Card"
@@ -69328,7 +69701,7 @@
       "heading": "Further Help",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 563,
+      "line": 566,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Use C-c m to open the Hydra menu for guided command discovery - Use M-x to search all commands by name - Enable speed commands help with ? when at heading start - See [[file:00-index.org][Documentation Index]] for comprehensive guides",
       "path": [],
       "commands": [],
@@ -69363,7 +69736,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "24-keybindings.org",
-      "line": 571,
+      "line": 574,
       "content": "CLOSED: [2026-01-19 Mon 18:20] - Previous: [[file:23-speed-commands.org][Speed Commands]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:25-commands.org][Commands]]",
       "path": [],
       "commands": [],
@@ -72567,7 +72940,7 @@
       "heading": "Jupyter",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1082,
+      "line": 1085,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -72584,7 +72957,7 @@
       "heading": "Kernel Management",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1085,
+      "line": 1088,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Command ID                             | Description                    | Default Keybinding | |----------------------------------------+--------------------------------+--------------------| | [[cmd:scimax.jupyter.showKernels]]     | Show Available Jupyter Kernels | -                  | | [[cmd:scimax.jupyter.showRunning]]     | Show Running Kernels           | -                  | | [[cmd:scimax.jupyter.startKernel]]     | Start Jupyter Kernel           | -    ",
       "path": [
         "Jupyter"
@@ -72620,7 +72993,7 @@
       "heading": "Appendix: Keybinding Quick Reference",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1099,
+      "line": 1102,
       "content": "CLOSED: [2026-01-17 Sat 12:50]",
       "path": [],
       "commands": [],
@@ -72640,7 +73013,7 @@
       "heading": "Most Common Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1102,
+      "line": 1105,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding   | Command                             | |--------------+-------------------------------------| | C-RET        | Execute code block / Insert heading | | C-c C-e      | Export dispatcher                   | | C-c C-j      | Jump to heading                     | | C-c C-t      | Cycle TODO state                    | | C-c C-l      | Insert link                         | | C-c C-o      | Open link                           | | C-c ]        | Insert citat",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -72682,7 +73055,7 @@
       "heading": "Export Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1124,
+      "line": 1127,
       "content": "CLOSED: [2026-01-17 Sat 12:50] | Keybinding  | Export Target      | |-------------+--------------------| | C-c C-e h h | HTML               | | C-c C-e h o | HTML and open      | | C-c C-e l l | LaTeX              | | C-c C-e l p | PDF                | | C-c C-e l o | PDF and open       | | C-c C-e l v | LaTeX live preview | | C-c C-e m m | Markdown           |",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -72716,7 +73089,7 @@
       "heading": "Babel/Source Block Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1137,
+      "line": 1140,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                 | |------------+------------------------| | C-RET      | Execute block          | | C-c C-c    | Execute block (in src) | | S-RET      | Execute and next       | | C-c C-v t  | Tangle                 | | C-c C-v p  | Execute to point       | | C-c C-v i  | Execute inline         | | C-c C-v q  | Queue block            | | C-DOWN     | Next source block      | | C-UP       | Previous source block  | | C-c C-n    | Insert block b",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -72757,7 +73130,7 @@
       "heading": "Project and Navigation Keybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1154,
+      "line": 1157,
       "content": "CLOSED: [2026-01-17 Sat 12:51] | Keybinding | Action                    | |------------+---------------------------| | C-c p p    | Switch project            | | C-c p f    | Find file in project      | | C-c p s    | Search in project         | | C-c p d    | Open project root         | | C-c p a    | Add project               | | C-c s      | Fuzzy search (current)    | | C-c S-s    | Fuzzy search (open files) | | C-c M-s    | Fuzzy search (outline)    | | C-c j c    | Jump to character       ",
       "path": [
         "Appendix: Keybinding Quick Reference"
@@ -72794,7 +73167,7 @@
       "heading": "Help System",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1171,
+      "line": 1174,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: help-system :END: Commands for discovering keybindings and command functionality. | Command ID                           | Description            | Default Keybinding | |--------------------------------------+------------------------+--------------------| | [[cmd:scimax.help.describeCommand]]  | Describe Command       | C-h f              | | [[cmd:scimax.help.describeKey]]      | Describe Key           | C-h k              | | [[cmd:scimax",
       "path": [],
       "commands": [
@@ -72831,7 +73204,7 @@
       "heading": "scimax.help.describeCommand",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1187,
+      "line": 1191,
       "content": "Shows the keybindings for a specific command. Useful for learning keyboard shortcuts.",
       "path": [
         "Help System"
@@ -72855,7 +73228,7 @@
       "heading": "scimax.help.describeKey",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1191,
+      "line": 1195,
       "content": "Describes what a specific key combination does. Enter the key sequence to see its bound command.",
       "path": [
         "Help System"
@@ -72879,7 +73252,7 @@
       "heading": "scimax.help.listKeybindings",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1195,
+      "line": 1199,
       "content": "Lists all keybindings defined by the extension. Opens a quick pick to browse available shortcuts.",
       "path": [
         "Help System"
@@ -72905,7 +73278,7 @@
       "heading": "scimax.help.describeVariable",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1199,
+      "line": 1203,
       "content": "Browse all scimax settings with completion. Shows the setting type, default value, current value, and description. Select a setting to open VS Code Settings.",
       "path": [
         "Help System"
@@ -72935,7 +73308,7 @@
       "heading": "scimax.help.apropos",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1203,
+      "line": 1207,
       "content": "Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.",
       "path": [
         "Help System"
@@ -72968,10 +73341,46 @@
       ]
     },
     {
+      "heading": "scimax.update",
+      "level": 2,
+      "file": "25-commands.org",
+      "line": 1211,
+      "content": "Update Scimax VS Code from GitHub releases. This command: 1. Fetches the latest release from the [[https://github.com/jkitchin/scimax_vscode][GitHub repository]] 2. Shows the current version vs. the latest available version 3. Downloads the VSIX file with progress indication 4. Installs it using VS Code's extension manager 5. Offers to reload VS Code to activate the new version This provides an easy way to update without leaving VS Code. Requires the repository to have GitHub releases with VSIX ",
+      "path": [
+        "Help System"
+      ],
+      "commands": [
+        "scimax.update"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "update",
+        "scimax",
+        "code",
+        "github",
+        "releases",
+        "command",
+        "fetches",
+        "latest",
+        "release",
+        "httpsgithubcomjkitchinscimaxvscode",
+        "repository",
+        "shows",
+        "current",
+        "version",
+        "available",
+        "downloads",
+        "vsix",
+        "progress",
+        "indication",
+        "installs"
+      ]
+    },
+    {
       "heading": "Linting",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1207,
+      "line": 1223,
       "content": "CLOSED: [2026-01-18 Sun 09:59] :PROPERTIES: :CUSTOM_ID: linting :END: Commands for checking org-mode document quality. | Command ID                     | Description        | Default Keybinding | |--------------------------------+--------------------+--------------------| | [[cmd:scimax.org.lint]]        | Run Linter         | -                  | | [[cmd:scimax.org.lintCheckers]]| Show Lint Checkers | -                  |",
       "path": [],
       "commands": [
@@ -73006,7 +73415,7 @@
       "heading": "scimax.org.lint",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1220,
+      "line": 1236,
       "content": "Runs the org-mode linter on the current document. The linter checks for: - Duplicate IDs - Broken internal links - Missing TODO keywords in sequences - Unbalanced brackets and quotes - Invalid timestamps - Missing required properties - And more Results appear in the Problems panel.",
       "path": [
         "Linting"
@@ -73042,7 +73451,7 @@
       "heading": "scimax.org.lintCheckers",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1233,
+      "line": 1249,
       "content": "Shows available lint checkers and allows enabling/disabling specific checks.",
       "path": [
         "Linting"
@@ -73066,7 +73475,7 @@
       "heading": "Mark Ring",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1237,
+      "line": 1253,
       "content": ":PROPERTIES: :CUSTOM_ID: mark-ring :END: Emacs-style mark ring for navigation and selection. Save cursor positions (marks) and return to them later. Each document has its own mark ring, plus there's a global mark ring that tracks positions across all documents. | Command ID                       | Description               | Default Keybinding | |----------------------------------+---------------------------+--------------------| | [[cmd:scimax.mark.set]]          | Set Mark (for selection)  | C",
       "path": [],
       "commands": [
@@ -73100,7 +73509,7 @@
       "heading": "Mark Ring Concepts",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1257,
+      "line": 1273,
       "content": "- **Mark**: A saved cursor position that you can return to - **Point**: The current cursor position - **Mark Ring**: A stack of marks (per-document), most recent first (default size: 16) - **Global Mark Ring**: A cross-file stack of marks for navigating between documents - **Selection Mode**: When mark is set, cursor movement extends the selection from the mark",
       "path": [
         "Mark Ring"
@@ -73134,7 +73543,7 @@
       "heading": "Common Workflows",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1265,
+      "line": 1281,
       "content": "",
       "path": [
         "Mark Ring"
@@ -73150,7 +73559,7 @@
       "heading": "Setting a Mark for Selection",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1267,
+      "line": 1283,
       "content": "1. Press =C-SPC= to set mark at current position (line flashes briefly as feedback) 2. Move cursor to end of desired selection - the region automatically expands 3. Press =C-SPC= again to deactivate selection mode (toggle behavior) 4. Press =C-g= to cancel selection and collapse to cursor position",
       "path": [
         "Mark Ring",
@@ -73188,7 +73597,7 @@
       "heading": "Returning to Previous Positions",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1273,
+      "line": 1289,
       "content": "1. Press =C-SPC C-SPC= to push mark without activating selection mode 2. Navigate elsewhere in the file 3. Press =C-u C-SPC= to pop the most recent mark and jump to it 4. Current position is saved before jumping, so you can return with another pop",
       "path": [
         "Mark Ring",
@@ -73226,7 +73635,7 @@
       "heading": "Cross-file Navigation",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1279,
+      "line": 1295,
       "content": "1. Marks are automatically pushed to the global ring when set 2. Press =C-x C-SPC= to pop from global mark ring and jump (can cross files) 3. Use =C-x C-x= to exchange point and mark (swap current position with last mark)",
       "path": [
         "Mark Ring",
@@ -73264,7 +73673,7 @@
       "heading": "Viewing the Mark Ring",
       "level": 3,
       "file": "25-commands.org",
-      "line": 1284,
+      "line": 1300,
       "content": "1. Run =scimax.mark.show= from command palette 2. Quick pick shows local marks and global marks with line previews 3. Select an entry to jump to that position 4. Timestamps show how long ago each mark was set",
       "path": [
         "Mark Ring",
@@ -73301,7 +73710,7 @@
       "heading": "Publishing",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1290,
+      "line": 1306,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: publishing :END: Commands for publishing org files to HTML, creating static sites similar to Emacs org-publish. | Command ID                        | Description                   | Default Keybinding | |-----------------------------------+-------------------------------+--------------------| | [[cmd:scimax.publish.init]]       | Initialize Publishing Project | -                  | | [[cmd:scimax.publish.project]]    | Publish Project      ",
       "path": [],
       "commands": [
@@ -73336,7 +73745,7 @@
       "heading": "Setting Up a Publishing Project",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1307,
+      "line": 1323,
       "content": "1. Run =scimax.publish.init= to create a publishing configuration 2. Configure the project in the generated =.org-publish.json= file 3. Use =scimax.publish.project= to publish the configured project",
       "path": [
         "Publishing"
@@ -73364,7 +73773,7 @@
       "heading": "Publishing Configuration",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1313,
+      "line": 1329,
       "content": "The =.org-publish.json= file configures: - Source directory for org files - Output directory for HTML - Include/exclude patterns - HTML template settings - Asset handling (CSS, images)",
       "path": [
         "Publishing"
@@ -73395,7 +73804,7 @@
       "heading": "Query Replace",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1322,
+      "line": 1338,
       "content": "CLOSED: [2026-01-18 Sun 10:02] :PROPERTIES: :CUSTOM_ID: query-replace :END: Interactive search and replace. | Command ID                  | Description   | Default Keybinding | |-----------------------------+---------------+--------------------| | [[cmd:scimax.queryReplace]] | Query Replace | M-%                | Provides Emacs-style interactive query-replace with confirmation for each replacement.",
       "path": [],
       "commands": [
@@ -73429,7 +73838,7 @@
       "heading": "Utilities",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1337,
+      "line": 1353,
       "content": "CLOSED: [2026-01-21 Wed 13:21] :PROPERTIES: :CUSTOM_ID: utilities :END: Miscellaneous utility commands. | Command ID                       | Description                       | Default Keybinding | |----------------------------------+-----------------------------------+--------------------| | [[cmd:scimax.openFolder]]        | Open Folder                       | -                  | | [[cmd:scimax.replaceNonAscii]]   | Replace Non-ASCII Characters      | -                  | | [[cmd:scimax.showD",
       "path": [],
       "commands": [
@@ -73465,7 +73874,7 @@
       "heading": "scimax.replaceNonAscii",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1351,
+      "line": 1367,
       "content": "Replaces common non-ASCII characters (smart quotes, em-dashes, etc.) with their ASCII equivalents. Useful for preparing documents for systems that don't handle Unicode well.",
       "path": [
         "Utilities"
@@ -73499,7 +73908,7 @@
       "heading": "scimax.showDebugInfo",
       "level": 2,
       "file": "25-commands.org",
-      "line": 1355,
+      "line": 1371,
       "content": "Displays diagnostic information about the scimax extension, including version, enabled features, and configuration state. Useful for troubleshooting.",
       "path": [
         "Utilities"
@@ -73529,7 +73938,7 @@
       "heading": "Index",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1359,
+      "line": 1375,
       "content": "CLOSED: [2026-01-17 Sat 12:51] This document contains [[*Introduction][310+ commands]] organized into [[*Document Structure][27 categories]] with their keybindings and descriptions. For configuration options, see the VS Code settings under scimax.*. For more information about the Scimax VS Code extension, visit the project repository.",
       "path": [],
       "commands": [],
@@ -73561,7 +73970,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "25-commands.org",
-      "line": 1368,
+      "line": 1384,
       "content": "- Previous: [[file:24-keybindings.org][Keybindings]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:26-configuration.org][Configuration]]",
       "path": [],
       "commands": [],

@@ -220,6 +220,9 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c C-l    | Insert link              |
 | C-c C-o    | Open link                |
 | <return>   | Open link (when on link) |
+| F10        | Insert screenshot        |
+
+*Note:* On macOS, =F10= requires screen recording permission. See [[file:12-image-overlays.org::*Inserting Screenshots][Inserting Screenshots]].
 
 * Citations & References
 

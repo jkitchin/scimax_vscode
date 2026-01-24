@@ -1078,6 +1078,9 @@ CLOSED: [2026-01-17 Sat 12:50]
 | [[cmd:scimax.imageOverlays.refresh]]           | Refresh Image Overlays                 | -                  |
 | [[cmd:scimax.imageOverlays.clearCache]]        | Clear Image Overlay Cache              | -                  |
 | [[cmd:scimax.imageOverlays.showStats]]         | Show Image Overlay Cache Statistics    | -                  |
+| [[cmd:scimax.insertScreenshot]]                | Insert Screenshot                      | F10 (org/md)       |
+
+*Note:* On macOS, the first time you use =F10= for screenshots, you may need to grant screen recording permission to VS Code in System Settings > Privacy & Security > Screen Recording, then restart VS Code. See [[file:12-image-overlays.org::*Inserting Screenshots][Inserting Screenshots]] for details.
 
 * ✅ Jupyter
 CLOSED: [2026-01-17 Sat 12:50]
@@ -1183,6 +1186,7 @@ Commands for discovering keybindings and command functionality.
 | [[cmd:scimax.help.listKeybindings]]  | List All Keybindings   | C-h b              |
 | [[cmd:scimax.help.describeVariable]] | Describe Setting       | C-h v              |
 | [[cmd:scimax.help.apropos]]          | Search Documentation   | C-h a              |
+| [[cmd:scimax.update]]                | Update from GitHub     |                    |
 
 ** scimax.help.describeCommand
 
@@ -1203,6 +1207,18 @@ Browse all scimax settings with completion. Shows the setting type, default valu
 ** scimax.help.apropos
 
 Search the documentation for keywords. Enter search terms to find relevant documentation sections. Results are ranked by relevance (headings, commands, keybindings, content). Select a result to view details or open the documentation file.
+
+** ⚠️ scimax.update
+
+Update Scimax VS Code from GitHub releases. This command:
+
+1. Fetches the latest release from the [[https://github.com/jkitchin/scimax_vscode][GitHub repository]]
+2. Shows the current version vs. the latest available version
+3. Downloads the VSIX file with progress indication
+4. Installs it using VS Code's extension manager
+5. Offers to reload VS Code to activate the new version
+
+This provides an easy way to update without leaving VS Code. Requires the repository to have GitHub releases with VSIX files attached.
 
 * ✅ Linting
 CLOSED: [2026-01-18 Sun 09:59]
