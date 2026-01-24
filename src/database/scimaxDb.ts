@@ -101,13 +101,13 @@ export interface DbStats {
     files: number;
     headings: number;
     blocks: number;
-    links: number;
     chunks: number;
     has_embeddings: boolean;
     vector_search_supported: boolean;
     vector_search_error: string | null;
     last_indexed?: number;
     by_type: { org: number; md: number };
+    database_size?: number;  // Size of database file in bytes
 }
 
 /**
@@ -1042,19 +1042,6 @@ export class ScimaxDb {
             });
         }
 
-        // Index links
-        for (const link of doc.links) {
-            statements.push({
-                sql: `INSERT INTO links
-                      (file_id, file_path, link_type, target, description, line_number)
-                      VALUES (?, ?, ?, ?, ?, ?)`,
-                args: [
-                    fileId, filePath, link.type, link.target,
-                    link.description || null, link.lineNumber
-                ]
-            });
-        }
-
         // Execute in batches of 50 to avoid overwhelming the database
         // and yield between batches to keep extension responsive
         const BATCH_SIZE = 50;
@@ -1891,17 +1878,16 @@ export class ScimaxDb {
      */
     public async getStats(): Promise<DbStats> {
         if (!this.db) return {
-            files: 0, headings: 0, blocks: 0, links: 0, chunks: 0,
+            files: 0, headings: 0, blocks: 0, chunks: 0,
             has_embeddings: false, vector_search_supported: false,
             vector_search_error: null, by_type: { org: 0, md: 0 }
         };
 
-        const [files, headings, blocks, links, chunks, embeddings, orgFiles, mdFiles] = await this.executeResilient(
+        const [files, headings, blocks, chunks, embeddings, orgFiles, mdFiles] = await this.executeResilient(
             () => Promise.all([
                 this.db!.execute('SELECT COUNT(*) as count FROM files'),
                 this.db!.execute('SELECT COUNT(*) as count FROM headings'),
                 this.db!.execute('SELECT COUNT(*) as count FROM source_blocks'),
-                this.db!.execute('SELECT COUNT(*) as count FROM links'),
                 this.db!.execute('SELECT COUNT(*) as count FROM chunks'),
                 this.db!.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL'),
                 this.db!.execute("SELECT COUNT(*) as count FROM files WHERE file_type = 'org'"),
@@ -1916,11 +1902,20 @@ export class ScimaxDb {
             'getStats:lastFile'
         );
 
+        // Get database file size
+        let databaseSize: number | undefined;
+        try {
+            const stat = await fs.promises.stat(this.dbPath);
+            databaseSize = stat.size;
+        } catch {
+            // File may not exist yet or be inaccessible
+            databaseSize = undefined;
+        }
+
         return {
             files: files.rows[0].count as number,
             headings: headings.rows[0].count as number,
             blocks: blocks.rows[0].count as number,
-            links: links.rows[0].count as number,
             chunks: chunks.rows[0].count as number,
             has_embeddings: (embeddings.rows[0].count as number) > 0,
             vector_search_supported: this.vectorSearchSupported,
@@ -1929,7 +1924,8 @@ export class ScimaxDb {
             by_type: {
                 org: orgFiles.rows[0].count as number,
                 md: mdFiles.rows[0].count as number
-            }
+            },
+            database_size: databaseSize
         };
     }
 

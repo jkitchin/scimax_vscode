@@ -358,23 +358,6 @@ class CliDatabaseImpl implements CliDatabase {
                 ],
             });
         }
-
-        // Index links
-        for (const link of doc.links) {
-            await this.client.execute({
-                sql: `INSERT INTO links
-                      (file_id, file_path, link_type, target, description, line_number)
-                      VALUES (?, ?, ?, ?, ?, ?)`,
-                args: [
-                    fileId,
-                    filePath,
-                    link.type,
-                    link.target,
-                    link.description || null,
-                    link.lineNumber,
-                ],
-            });
-        }
     }
 }
 

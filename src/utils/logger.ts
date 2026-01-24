@@ -594,13 +594,20 @@ class LoggingService {
             if (db) {
                 const stats = await db.getStats();
                 const schemaInfo = await db.getSchemaInfo();
+                // Format database size
+                const formatDbSize = (bytes: number | undefined): string => {
+                    if (bytes === undefined) return 'unknown';
+                    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+                    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+                    return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+                };
                 lines.push(
                     '## Database',
+                    `- Size: ${formatDbSize(stats.database_size)}`,
                     `- Schema Version: ${schemaInfo.currentVersion}/${schemaInfo.latestVersion}`,
                     `- Files Indexed: ${stats.files} (org: ${stats.by_type.org}, md: ${stats.by_type.md})`,
                     `- Headings: ${stats.headings}`,
                     `- Source Blocks: ${stats.blocks}`,
-                    `- Links: ${stats.links}`,
                     `- Vector Search: ${stats.vector_search_supported ? 'available' : 'not available'}${stats.vector_search_error ? ` (${stats.vector_search_error})` : ''}`,
                     `- Embeddings: ${stats.has_embeddings ? 'yes' : 'no'}`,
                     ''

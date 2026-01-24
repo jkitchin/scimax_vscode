@@ -1161,7 +1161,7 @@ export function registerDbCommands(
 
             vscode.window.showInformationMessage(
                 `Scimax DB: ${stats.files} files ${fileTypes}, ${stats.headings} headings, ` +
-                `${stats.blocks} code blocks, ${stats.links} links. ` +
+                `${stats.blocks} code blocks. ` +
                 `${semanticStatus}. Last indexed: ${lastIndexed}`
             );
         })

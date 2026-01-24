@@ -208,7 +208,6 @@ export class DatabaseViewProvider implements vscode.TreeDataProvider<DatabaseTre
         // Content statistics
         items.push(new DatabaseStatItem('Headings', `${this.stats.headings}`, undefined, 'list-tree'));
         items.push(new DatabaseStatItem('Source blocks', `${this.stats.blocks}`, undefined, 'code'));
-        items.push(new DatabaseStatItem('Links', `${this.stats.links}`, undefined, 'link'));
 
         // Embedding chunks
         if (this.stats.chunks > 0) {

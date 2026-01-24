@@ -45,7 +45,6 @@ export interface DatabaseInfo {
         files: number;
         headings: number;
         blocks: number;
-        links: number;
         chunks: number;
         hasEmbeddings: boolean;
         vectorSearchSupported: boolean;
@@ -446,7 +445,7 @@ function isImportantSetting(key: string): boolean {
  * Get database information including stats and embedding config
  */
 async function getDatabaseInfo(context: vscode.ExtensionContext): Promise<DatabaseInfo> {
-    const dbPath = path.join(context.globalStorageUri.fsPath, 'scimax.db');
+    const dbPath = path.join(context.globalStorageUri.fsPath, 'scimax-db.sqlite');
     const info: DatabaseInfo = {
         location: dbPath,
         exists: false,
@@ -485,7 +484,6 @@ async function getDatabaseInfo(context: vscode.ExtensionContext): Promise<Databa
                     files: dbStats.files,
                     headings: dbStats.headings,
                     blocks: dbStats.blocks,
-                    links: dbStats.links,
                     chunks: dbStats.chunks,
                     hasEmbeddings: dbStats.has_embeddings,
                     vectorSearchSupported: dbStats.vector_search_supported,
@@ -795,7 +793,6 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
         lines.push(`| Files | ${info.database.stats.files} (${info.database.stats.byType.org} org, ${info.database.stats.byType.md} md) |`);
         lines.push(`| Headings | ${info.database.stats.headings} |`);
         lines.push(`| Source Blocks | ${info.database.stats.blocks} |`);
-        lines.push(`| Links | ${info.database.stats.links} |`);
         lines.push(`| Chunks | ${info.database.stats.chunks} |`);
         if (info.database.stats.lastIndexed) {
             lines.push(`| Last Indexed | ${info.database.stats.lastIndexed} |`);
