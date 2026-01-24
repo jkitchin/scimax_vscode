@@ -1,7 +1,7 @@
 #+TITLE: Scimax VS Code Feature Test
 #+AUTHOR: John Kitchin
 #+DATE: <2026-01-11 Sat>
-#+OPTIONS: toc:2 num:t tags:nil pri:nil todo:nil p:nil
+#+OPTIONS: toc:2 num:t tags:nil pri:nil todo:nil p:nil prop:nil
 
 * Introduction
 This file tests various org-mode features in the Scimax VS Code extension.
@@ -21,7 +21,7 @@ You can also combine them: */bold italic/*, _/underline italic/_.
 :CATEGORY: testing
 :END:
 
-** TODO [#A] High priority task 
+** [#A] High priority task 
 DEADLINE: <2026-01-16 Fri>
 :LOGBOOK:
 - State "TODO"       from ""           [2026-01-11 Sat 10:00]
@@ -141,7 +141,7 @@ E = mc^2
 
 ** inline code
 
-The area is src_python{20 * 4 + 5}.
+The area is src_python{return 20 * 4 + 5} {{{results(=85=)}}}.
 
 #+NAME: double
 #+BEGIN_SRC python :results value :var n=2 
@@ -150,11 +150,17 @@ return n * 2
 
 #+RESULTS:
 
-Twice the number 4 is call_double(n=5).
+Twice the number 4 is call_double(n=5) {{{results(=10=)}}}.
 
 #+CALL: double(n=4)
 
-#+CALL: test-features.org:double(6)
+#+RESULTS: double
+: 8
+
+#+CALL: test-features.org:double(n=6)
+
+#+RESULTS: double
+: 12
 
 * Tables :tables:
 
@@ -224,7 +230,17 @@ Inline math: $E = mc^2$ and \(F = ma\).
 
 Display notation:lo
 
-\[a^2 + b^2 = c^2\]
+\[\int_0^x e^{-x^2/\lambda}\]
+
+\begin{equation}
+A = \begin{bmatrix} 
+a_{11} & a_{12} & \cdots & a_{1n} \\ 
+a_{21} & a_{22} & \cdots & a_{2n} \\ 
+\vdots & \vdots & \ddots & \vdots \\ 
+a_{m1} & a_{m2} & \cdots & a_{mn} 
+\end{bmatrix}
+\end{equation}
+
 
 Latex environment:
 
@@ -233,7 +249,7 @@ Latex environment:
 i\hbar\frac{\partial}{\partial t}\Psi = \hat{H}\Psi
 \end{equation}
 
-See Eq. \ref{eq:schrodinger} for the Schrodinger equation.
+See Eq. \ref{eq:schrodinger} (ref:eq:schrodinger) for the Schrodinger equation.
 
 Another equation:
 \begin{align}
@@ -333,6 +349,8 @@ This section inherits parent tags.
 :END:
 
 Archived content goes here.
+
+* References
 
 bibstyle:unsrtnat
 bibliography:~/Dropbox/emacs/bibliography/references.bib
