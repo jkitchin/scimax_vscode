@@ -188,28 +188,46 @@ Formulas are defined in a #+TBLFM: line below the table:
 
 *** Column References
 
-| Reference | Meaning       |
-|-----------+---------------|
-| $1        | First column  |
-| $2        | Second column |
-| $N        | Nth column    |
+| Reference | Meaning                     |
+|-----------+-----------------------------|
+| $1        | First column                |
+| $2        | Second column               |
+| $N        | Nth column                  |
+| $0        | Current column              |
+| $+1       | Next column (relative)      |
+| $-2       | Two columns back (relative) |
+| $<        | First column                |
+| $>        | Last column                 |
+| $#        | Total number of columns     |
 
 *** Row References
 
-| Reference | Meaning    |
-|-----------+------------|
-| @1        | First row  |
-| @2        | Second row |
-| @N        | Nth row    |
-| @>        | Last row   |
+| Reference | Meaning                       |
+|-----------+-------------------------------|
+| @1        | First row                     |
+| @2        | Second row                    |
+| @N        | Nth row                       |
+| @0        | Current row                   |
+| @+1       | Next row (relative)           |
+| @-1       | Previous row (relative)       |
+| @<        | First row                     |
+| @>        | Last row                      |
+| @I        | First hline                   |
+| @II       | Second hline                  |
+| @III      | Third hline                   |
+| @#        | Total number of data rows     |
 
 *** Combined References
 
-| Reference | Meaning            |
-|-----------+--------------------|
-| @2$3      | Row 2, column 3    |
-| @3$>      | Row 3, last column |
-| @>$4      | Last row, column 4 |
+| Reference | Meaning               |
+|-----------+-----------------------|
+| @2$3      | Row 2, column 3       |
+| @3$>      | Row 3, last column    |
+| @>$4      | Last row, column 4    |
+| @0$0      | Current cell          |
+| @0$3      | Current row, column 3 |
+| @2$0      | Row 2, current column |
+| @+1$-1    | Relative reference    |
 
 *** Ranges
 
@@ -218,6 +236,7 @@ Formulas are defined in a #+TBLFM: line below the table:
 | @2$1..@5$1 | Column 1, rows 2 through 5  |
 | @2$1..@2$4 | Row 2, columns 1 through 4  |
 | @2$1..@5$4 | Rectangle from @2$1 to @5$4 |
+| $2..$5     | Columns 2-5 in current row  |
 
 ** Formula Syntax
 
@@ -237,13 +256,15 @@ Multiple formulas separated by `::':
 
 ** Built-in Functions
 
-| Function | Description            |
-|----------+------------------------|
-| vsum     | Sum of values in range |
-| vmean    | Average of values      |
-| vmin     | Minimum value          |
-| vmax     | Maximum value          |
-| vcount   | Count of values        |
+| Function | Description              |
+|----------+--------------------------|
+| vsum     | Sum of values in range   |
+| vmean    | Average of values        |
+| vmin     | Minimum value            |
+| vmax     | Maximum value            |
+| vcount   | Count of values          |
+| vprod    | Product of values        |
+| sdev     | Standard deviation       |
 
 Example:
 
@@ -306,7 +327,145 @@ CLOSED: [2026-01-17 Sat 20:01]
 | Total    | 1000   | 100     |
 |----------+--------+---------|
 #+TBLFM: @>$2=vsum(@2$2..@-1$2)::@>$3=100::@2$3..@-1$3=100*$2/@>$2;%.0f%%
- 
+
+** ⚠️ Named Parameters and Constants
+
+Named parameters let you use meaningful names instead of cell references.
+
+*** Table Parameters ($ rows)
+
+Define parameters directly in the table using a row where cells contain
+=$name=value= assignments:
+
+| $tax=0.08   | $discount=0.10 |
+|-------------+----------------|
+| Price       | Final          |
+|-------------+----------------|
+| 100         | 99.2           |
+| 200         | 198.4          |
+#+TBLFM: $2=$1*(1+$tax)*(1-$discount)
+
+The =$tax= and =$discount= values are extracted from the first row and can
+be used as =$tax= and =$discount= in formulas.
+
+*** Document Constants (#+CONSTANTS:)
+
+Define constants at the document level using the =#+CONSTANTS:= keyword:
+
+#+BEGIN_SRC org
+,#+CONSTANTS: pi=3.14159 e=2.71828 tax_rate=0.075
+#+END_SRC
+
+Then use them in any table formula in the document:
+
+| Radius | Area   |
+|--------+--------|
+| 5      | 78.54  |
+| 10     | 314.16 |
+#+TBLFM: $2=$pi*$1^2;%.2f
+
+Multiple =#+CONSTANTS:= lines can be used; all constants are combined.
+
+*** Column Names
+
+Header row values can be used as column references. Given:
+
+| Price | Quantity | Total |
+|-------+----------+-------|
+| 10    | 5        | 50    |
+| 20    | 3        | 60    |
+#+TBLFM: $Total=$Price*$Quantity
+
+Column names are case-insensitive.
+
+** ⚠️ Duration and Time Calculations
+
+Tables can calculate with time/duration values in =HH:MM= or =HH:MM:SS= format.
+
+*** Duration Format Flags
+
+| Flag | Output Format                   | Example     |
+|------+---------------------------------+-------------|
+| ;T   | HH:MM:SS                        | 2:30:00     |
+| ;U   | HH:MM (no seconds)              | 2:30        |
+| ;t   | Decimal hours                   | 2.50        |
+
+*** Duration Calculation Example
+
+| Task     | Start | End   | Duration |
+|----------+-------+-------+----------|
+| Coding   | 9:00  | 12:30 | 3:30     |
+| Meeting  | 13:00 | 14:15 | 1:15     |
+| Review   | 14:30 | 16:00 | 1:30     |
+|----------+-------+-------+----------|
+| Total    |       |       | 6:15     |
+#+TBLFM: $4=$3-$2;U::@>$4=vsum(@2$4..@-1$4);U
+
+Duration values are automatically parsed when the =T=, =U=, or =t= flag is
+present. They are converted to seconds for calculation, then formatted
+according to the flag.
+
+*** Time Tracking Example
+
+| Date       | Hours |
+|------------+-------|
+| 2026-01-20 | 8:30  |
+| 2026-01-21 | 7:45  |
+| 2026-01-22 | 9:00  |
+|------------+-------|
+| Total      | 25:15 |
+| Avg        | 8.42  |
+#+TBLFM: @5$2=vsum(@2$2..@4$2);U::@6$2=vmean(@2$2..@4$2);t
+
+** ⚠️ Remote Table References
+
+Reference cells from other named tables in the document:
+
+#+BEGIN_SRC org
+,#+NAME: rates
+| Region | Rate |
+|--------+------|
+| US     | 0.10 |
+| EU     | 0.20 |
+
+,#+NAME: sales
+| Region | Revenue | Tax         |
+|--------+---------+-------------|
+| US     | 1000    | 100         |
+| EU     | 2000    | 400         |
+,#+TBLFM: @2$3=$2*remote(rates,@2$2)::@3$3=$2*remote(rates,@3$2)
+#+END_SRC
+
+The =remote(tablename, reference)= function retrieves a value from another
+table named with =#+NAME:=.
+
+** ⚠️ Formula Highlighting
+
+Toggle formula highlighting to visualize which cells are affected by formulas:
+
+| Command                             | Description                      |
+|-------------------------------------+----------------------------------|
+| scimax.table.toggleFormulaHighlight | Toggle formula cell highlighting |
+
+When enabled:
+- *Green highlight*: Cells that are targets of formulas (will be calculated)
+- *Blue highlight*: Cells that are referenced in formulas (source values)
+- *Yellow highlight*: The #+TBLFM line itself
+
+** Format Specifiers
+
+Control how formula results are displayed:
+
+| Specifier | Description              | Example Result |
+|-----------+--------------------------+----------------|
+| ;%.2f     | 2 decimal places         | 3.14           |
+| ;%d       | Integer                  | 3              |
+| ;%.0f%%   | Percentage               | 50%            |
+| ;%e       | Scientific notation      | 3.14e+00       |
+| ;T        | Duration as HH:MM:SS     | 1:30:00        |
+| ;U        | Duration as HH:MM        | 1:30           |
+| ;t        | Duration as decimal hrs  | 1.50           |
+
 * ✅ Table Import/Export
 CLOSED: [2026-01-17 Sat 19:44]
 
@@ -460,25 +619,29 @@ CLOSED: [2026-01-15 Thu 15:24]
 
 ** Commands
 
-| Command                        | Description            |
-|--------------------------------+------------------------|
-| scimax.table.create            | Create new table       |
-| scimax.table.insertRowAbove    | Insert row above       |
-| scimax.table.insertRowBelow    | Insert row below       |
-| scimax.table.deleteRow         | Delete current row     |
-| scimax.table.insertColumnRight | Insert column right    |
-| scimax.table.deleteColumn      | Delete current column  |
-| scimax.table.moveRowUp         | Move row up            |
-| scimax.table.moveRowDown       | Move row down          |
-| scimax.table.moveColumnLeft    | Move column left       |
-| scimax.table.moveColumnRight   | Move column right      |
-| scimax.table.recalculate       | Recalculate formulas   |
-| scimax.table.sumColumn         | Sum current column     |
-| scimax.table.averageColumn     | Average current column |
-| scimax.table.sortByColumn      | Sort by current column |
-| scimax.table.export            | Export table           |
-| scimax.table.import            | Import table           |
-| scimax.table.gotoNamed         | Go to named table      |
+| Command                             | Description                |
+|-------------------------------------+----------------------------|
+| scimax.table.create                 | Create new table           |
+| scimax.table.insertRowAbove         | Insert row above           |
+| scimax.table.insertRowBelow         | Insert row below           |
+| scimax.table.deleteRow              | Delete current row         |
+| scimax.table.insertColumnRight      | Insert column right        |
+| scimax.table.deleteColumn           | Delete current column      |
+| scimax.table.moveRowUp              | Move row up                |
+| scimax.table.moveRowDown            | Move row down              |
+| scimax.table.moveColumnLeft         | Move column left           |
+| scimax.table.moveColumnRight        | Move column right          |
+| scimax.table.recalculate            | Recalculate formulas       |
+| scimax.table.sumColumn              | Sum current column         |
+| scimax.table.averageColumn          | Average current column     |
+| scimax.table.sortByColumn           | Sort by current column     |
+| scimax.table.export                 | Export table               |
+| scimax.table.import                 | Import table               |
+| scimax.table.gotoNamed              | Go to named table          |
+| scimax.table.insertColumnFormula    | Insert column formula      |
+| scimax.table.insertFieldFormula     | Insert field formula       |
+| scimax.table.formulaHelp            | Show formula reference     |
+| scimax.table.toggleFormulaHighlight | Toggle formula highlighting |
 
 * ✅ Related Topics
 CLOSED: [2026-01-15 Thu 15:31]
