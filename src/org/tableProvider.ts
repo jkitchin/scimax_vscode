@@ -37,100 +37,102 @@ interface TableInfo {
  * Get the display width of a string, accounting for wide characters (emojis, CJK, etc.)
  * Most emojis and CJK characters display as 2 columns wide in monospace fonts.
  */
+/**
+ * Get the display width of a single character
+ */
+function getCharWidth(char: string): number {
+    const code = char.codePointAt(0);
+    if (code === undefined) return 0;
+
+    // Variation selectors and ZWJ don't add width
+    if ((code >= 0xFE00 && code <= 0xFE0F) || code === 0x200D) {
+        return 0;
+    }
+
+    // Emoji ranges (simplified - covers most common emojis)
+    if (
+        (code >= 0x1F300 && code <= 0x1F9FF) || // Miscellaneous Symbols and Pictographs, Emoticons, etc.
+        (code >= 0x2600 && code <= 0x26FF) ||   // Miscellaneous Symbols
+        (code >= 0x2700 && code <= 0x27BF) ||   // Dingbats
+        (code >= 0x231A && code <= 0x231B) ||   // Watch, Hourglass
+        (code >= 0x23E9 && code <= 0x23F3) ||   // Various symbols
+        (code >= 0x23F8 && code <= 0x23FA) ||   // Various symbols
+        (code >= 0x25AA && code <= 0x25AB) ||   // Small squares
+        (code >= 0x25B6 && code <= 0x25C0) ||   // Triangles
+        (code >= 0x25FB && code <= 0x25FE) ||   // Squares
+        (code >= 0x2614 && code <= 0x2615) ||   // Umbrella, hot beverage
+        (code >= 0x2648 && code <= 0x2653) ||   // Zodiac
+        (code >= 0x267F && code <= 0x267F) ||   // Wheelchair
+        (code >= 0x2693 && code <= 0x2693) ||   // Anchor
+        (code >= 0x26A1 && code <= 0x26A1) ||   // High voltage
+        (code >= 0x26AA && code <= 0x26AB) ||   // Circles
+        (code >= 0x26BD && code <= 0x26BE) ||   // Soccer, baseball
+        (code >= 0x26C4 && code <= 0x26C5) ||   // Snowman, sun
+        (code >= 0x26CE && code <= 0x26CE) ||   // Ophiuchus
+        (code >= 0x26D4 && code <= 0x26D4) ||   // No entry
+        (code >= 0x26EA && code <= 0x26EA) ||   // Church
+        (code >= 0x26F2 && code <= 0x26F3) ||   // Fountain, golf
+        (code >= 0x26F5 && code <= 0x26F5) ||   // Sailboat
+        (code >= 0x26FA && code <= 0x26FA) ||   // Tent
+        (code >= 0x26FD && code <= 0x26FD) ||   // Fuel pump
+        (code >= 0x2702 && code <= 0x2702) ||   // Scissors
+        (code >= 0x2705 && code <= 0x2705) ||   // Check mark
+        (code >= 0x2708 && code <= 0x270D) ||   // Airplane to writing hand
+        (code >= 0x270F && code <= 0x270F) ||   // Pencil
+        (code >= 0x2712 && code <= 0x2712) ||   // Black nib
+        (code >= 0x2714 && code <= 0x2714) ||   // Check mark
+        (code >= 0x2716 && code <= 0x2716) ||   // X mark
+        (code >= 0x271D && code <= 0x271D) ||   // Cross
+        (code >= 0x2721 && code <= 0x2721) ||   // Star of David
+        (code >= 0x2728 && code <= 0x2728) ||   // Sparkles
+        (code >= 0x2733 && code <= 0x2734) ||   // Eight spoked asterisk
+        (code >= 0x2744 && code <= 0x2744) ||   // Snowflake
+        (code >= 0x2747 && code <= 0x2747) ||   // Sparkle
+        (code >= 0x274C && code <= 0x274C) ||   // Cross mark
+        (code >= 0x274E && code <= 0x274E) ||   // Cross mark
+        (code >= 0x2753 && code <= 0x2755) ||   // Question marks
+        (code >= 0x2757 && code <= 0x2757) ||   // Exclamation
+        (code >= 0x2763 && code <= 0x2764) ||   // Heart exclamation, heart
+        (code >= 0x2795 && code <= 0x2797) ||   // Plus, minus, divide
+        (code >= 0x27A1 && code <= 0x27A1) ||   // Right arrow
+        (code >= 0x27B0 && code <= 0x27B0) ||   // Curly loop
+        (code >= 0x27BF && code <= 0x27BF) ||   // Double curly loop
+        (code >= 0x2934 && code <= 0x2935) ||   // Arrows
+        (code >= 0x2B05 && code <= 0x2B07) ||   // Arrows
+        (code >= 0x2B1B && code <= 0x2B1C) ||   // Squares
+        (code >= 0x2B50 && code <= 0x2B50) ||   // Star
+        (code >= 0x2B55 && code <= 0x2B55) ||   // Circle
+        (code >= 0x3030 && code <= 0x3030) ||   // Wavy dash
+        (code >= 0x303D && code <= 0x303D) ||   // Part alternation mark
+        (code >= 0x3297 && code <= 0x3297) ||   // Circled ideograph congratulation
+        (code >= 0x3299 && code <= 0x3299)      // Circled ideograph secret
+    ) {
+        return 2;
+    }
+
+    // CJK characters
+    if (
+        (code >= 0x4E00 && code <= 0x9FFF) ||   // CJK Unified Ideographs
+        (code >= 0x3400 && code <= 0x4DBF) ||   // CJK Unified Ideographs Extension A
+        (code >= 0xF900 && code <= 0xFAFF) ||   // CJK Compatibility Ideographs
+        (code >= 0x3000 && code <= 0x303F) ||   // CJK Symbols and Punctuation
+        (code >= 0xFF00 && code <= 0xFFEF)      // Fullwidth Forms
+    ) {
+        return 2;
+    }
+
+    // Warning sign (U+26A0) and Refresh/cycle symbol (U+1F504)
+    if (code === 0x26A0 || code === 0x1F504) {
+        return 2;
+    }
+
+    return 1;
+}
+
 function getDisplayWidth(str: string): number {
     let width = 0;
     for (const char of str) {
-        const code = char.codePointAt(0);
-        if (code === undefined) continue;
-
-        // Emoji ranges (simplified - covers most common emojis)
-        // Including emoji modifiers, variation selectors, etc.
-        if (
-            (code >= 0x1F300 && code <= 0x1F9FF) || // Miscellaneous Symbols and Pictographs, Emoticons, etc.
-            (code >= 0x2600 && code <= 0x26FF) ||   // Miscellaneous Symbols
-            (code >= 0x2700 && code <= 0x27BF) ||   // Dingbats
-            (code >= 0x231A && code <= 0x231B) ||   // Watch, Hourglass
-            (code >= 0x23E9 && code <= 0x23F3) ||   // Various symbols
-            (code >= 0x23F8 && code <= 0x23FA) ||   // Various symbols
-            (code >= 0x25AA && code <= 0x25AB) ||   // Small squares
-            (code >= 0x25B6 && code <= 0x25C0) ||   // Triangles
-            (code >= 0x25FB && code <= 0x25FE) ||   // Squares
-            (code >= 0x2614 && code <= 0x2615) ||   // Umbrella, hot beverage
-            (code >= 0x2648 && code <= 0x2653) ||   // Zodiac
-            (code >= 0x267F && code <= 0x267F) ||   // Wheelchair
-            (code >= 0x2693 && code <= 0x2693) ||   // Anchor
-            (code >= 0x26A1 && code <= 0x26A1) ||   // High voltage
-            (code >= 0x26AA && code <= 0x26AB) ||   // Circles
-            (code >= 0x26BD && code <= 0x26BE) ||   // Soccer, baseball
-            (code >= 0x26C4 && code <= 0x26C5) ||   // Snowman, sun
-            (code >= 0x26CE && code <= 0x26CE) ||   // Ophiuchus
-            (code >= 0x26D4 && code <= 0x26D4) ||   // No entry
-            (code >= 0x26EA && code <= 0x26EA) ||   // Church
-            (code >= 0x26F2 && code <= 0x26F3) ||   // Fountain, golf
-            (code >= 0x26F5 && code <= 0x26F5) ||   // Sailboat
-            (code >= 0x26FA && code <= 0x26FA) ||   // Tent
-            (code >= 0x26FD && code <= 0x26FD) ||   // Fuel pump
-            (code >= 0x2702 && code <= 0x2702) ||   // Scissors
-            (code >= 0x2705 && code <= 0x2705) ||   // Check mark (✅)
-            (code >= 0x2708 && code <= 0x270D) ||   // Airplane to writing hand
-            (code >= 0x270F && code <= 0x270F) ||   // Pencil
-            (code >= 0x2712 && code <= 0x2712) ||   // Black nib
-            (code >= 0x2714 && code <= 0x2714) ||   // Check mark
-            (code >= 0x2716 && code <= 0x2716) ||   // X mark
-            (code >= 0x271D && code <= 0x271D) ||   // Cross
-            (code >= 0x2721 && code <= 0x2721) ||   // Star of David
-            (code >= 0x2728 && code <= 0x2728) ||   // Sparkles
-            (code >= 0x2733 && code <= 0x2734) ||   // Eight spoked asterisk
-            (code >= 0x2744 && code <= 0x2744) ||   // Snowflake
-            (code >= 0x2747 && code <= 0x2747) ||   // Sparkle
-            (code >= 0x274C && code <= 0x274C) ||   // Cross mark (❌)
-            (code >= 0x274E && code <= 0x274E) ||   // Cross mark
-            (code >= 0x2753 && code <= 0x2755) ||   // Question marks
-            (code >= 0x2757 && code <= 0x2757) ||   // Exclamation
-            (code >= 0x2763 && code <= 0x2764) ||   // Heart exclamation, heart
-            (code >= 0x2795 && code <= 0x2797) ||   // Plus, minus, divide
-            (code >= 0x27A1 && code <= 0x27A1) ||   // Right arrow
-            (code >= 0x27B0 && code <= 0x27B0) ||   // Curly loop
-            (code >= 0x27BF && code <= 0x27BF) ||   // Double curly loop
-            (code >= 0x2934 && code <= 0x2935) ||   // Arrows
-            (code >= 0x2B05 && code <= 0x2B07) ||   // Arrows
-            (code >= 0x2B1B && code <= 0x2B1C) ||   // Squares
-            (code >= 0x2B50 && code <= 0x2B50) ||   // Star
-            (code >= 0x2B55 && code <= 0x2B55) ||   // Circle
-            (code >= 0x3030 && code <= 0x3030) ||   // Wavy dash
-            (code >= 0x303D && code <= 0x303D) ||   // Part alternation mark
-            (code >= 0x3297 && code <= 0x3297) ||   // Circled ideograph congratulation
-            (code >= 0x3299 && code <= 0x3299) ||   // Circled ideograph secret
-            (code >= 0xFE00 && code <= 0xFE0F) ||   // Variation selectors (don't add width)
-            (code >= 0x200D && code <= 0x200D)      // Zero-width joiner (don't add width)
-        ) {
-            // Variation selectors and ZWJ don't add width
-            if ((code >= 0xFE00 && code <= 0xFE0F) || code === 0x200D) {
-                continue;
-            }
-            width += 2;
-        }
-        // CJK characters
-        else if (
-            (code >= 0x4E00 && code <= 0x9FFF) ||   // CJK Unified Ideographs
-            (code >= 0x3400 && code <= 0x4DBF) ||   // CJK Unified Ideographs Extension A
-            (code >= 0xF900 && code <= 0xFAFF) ||   // CJK Compatibility Ideographs
-            (code >= 0x3000 && code <= 0x303F) ||   // CJK Symbols and Punctuation
-            (code >= 0xFF00 && code <= 0xFFEF)      // Fullwidth Forms
-        ) {
-            width += 2;
-        }
-        // Warning sign ⚠️ (U+26A0)
-        else if (code === 0x26A0) {
-            width += 2;
-        }
-        // Refresh/cycle symbol 🔄 (U+1F504)
-        else if (code === 0x1F504) {
-            width += 2;
-        }
-        else {
-            width += 1;
-        }
+        width += getCharWidth(char);
     }
     return width;
 }
@@ -515,8 +517,10 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
             if (columnSpecs[i].minWidth !== undefined) {
                 columnWidths[i] = Math.max(columnWidths[i], columnSpecs[i].minWidth!);
             }
-            // Note: maxWidth is handled by decorations, not by constraining column width
-            // This keeps full content in the file while displaying truncated
+            // Apply maximum width if specified (constrains column width for alignment)
+            if (columnSpecs[i].maxWidth !== undefined) {
+                columnWidths[i] = Math.min(columnWidths[i], columnSpecs[i].maxWidth!);
+            }
         } else {
             columnAlignments.push('l');
             columnMinWidths.push(undefined);
@@ -538,19 +542,48 @@ function findTableAtCursor(document: vscode.TextDocument, position: vscode.Posit
 }
 
 /**
+ * Truncate a string to a maximum display width, adding '>' indicator when truncated
+ */
+function truncateToWidth(str: string, maxWidth: number): string {
+    const displayWidth = getDisplayWidth(str);
+    if (displayWidth <= maxWidth) {
+        return str;
+    }
+
+    // Need to truncate - leave room for '>' indicator
+    const targetWidth = maxWidth - 1;
+    let result = '';
+    let currentWidth = 0;
+
+    for (const char of str) {
+        const charWidth = getCharWidth(char);
+        if (currentWidth + charWidth > targetWidth) {
+            break;
+        }
+        result += char;
+        currentWidth += charWidth;
+    }
+
+    return result + '>';
+}
+
+/**
  * Format a row with proper alignment
- * Note: Does NOT truncate content - truncation is handled by decorations
+ * Truncates content when maxWidth is specified in column specs
  */
 function formatRow(
     cells: string[],
     columnWidths: number[],
     columnAlignments?: ColumnAlignment[],
-    _columnMaxWidths?: (number | undefined)[]
+    columnMaxWidths?: (number | undefined)[]
 ): string {
     const paddedCells = cells.map((cell, i) => {
         const width = columnWidths[i] || getDisplayWidth(cell);
         const alignment = columnAlignments?.[i] || 'l';
-        return alignCell(cell, width, alignment);
+        // Truncate cell content if maxWidth is specified
+        const maxWidth = columnMaxWidths?.[i];
+        const truncatedCell = maxWidth !== undefined ? truncateToWidth(cell, maxWidth) : cell;
+        return alignCell(truncatedCell, width, alignment);
     });
     return '| ' + paddedCells.join(' | ') + ' |';
 }
@@ -1784,6 +1817,114 @@ export async function importTableFromClipboard(): Promise<void> {
 }
 
 /**
+ * Import a table from a file (CSV or TSV)
+ * Prompts for a file and inserts the contents as an aligned org-table
+ */
+export async function importTableFromFile(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    // Prompt for file selection
+    const fileUri = await vscode.window.showOpenDialog({
+        canSelectMany: false,
+        openLabel: 'Import Table',
+        filters: {
+            'Table Files': ['csv', 'tsv', 'txt'],
+            'All Files': ['*']
+        }
+    });
+
+    if (!fileUri || fileUri.length === 0) {
+        return; // User cancelled
+    }
+
+    // Read file contents
+    const fs = await import('fs');
+    const filePath = fileUri[0].fsPath;
+
+    let fileContent: string;
+    try {
+        fileContent = fs.readFileSync(filePath, 'utf8');
+    } catch (error) {
+        vscode.window.showErrorMessage(`Failed to read file: ${error}`);
+        return;
+    }
+
+    if (!fileContent.trim()) {
+        vscode.window.showInformationMessage('File is empty');
+        return;
+    }
+
+    // Detect delimiter: count tabs vs commas in first few lines
+    const sampleLines = fileContent.split('\n').slice(0, 5).join('\n');
+    const tabCount = (sampleLines.match(/\t/g) || []).length;
+    const commaCount = (sampleLines.match(/,/g) || []).length;
+
+    // Use tab if there are more tabs than commas, otherwise use comma
+    const delimiter = tabCount > commaCount ? '\t' : ',';
+
+    // Parse the data
+    const lines = fileContent.trim().split('\n');
+    const rows: string[][] = lines.map(line => {
+        if (delimiter === ',') {
+            // Handle CSV with quoted fields
+            const cells: string[] = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    cells.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            cells.push(current.trim());
+            return cells;
+        } else {
+            return line.split('\t').map(c => c.trim());
+        }
+    });
+
+    // Calculate column widths (using display width for emojis)
+    const columnWidths: number[] = [];
+    for (const row of rows) {
+        for (let i = 0; i < row.length; i++) {
+            columnWidths[i] = Math.max(columnWidths[i] || 0, getDisplayWidth(row[i]), 1);
+        }
+    }
+
+    // Format as org table
+    const isOrg = editor.document.languageId === 'org';
+    const tableLines: string[] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+        tableLines.push(formatRow(rows[i], columnWidths));
+        // Add separator after first row (header)
+        if (i === 0) {
+            tableLines.push(formatSeparator(columnWidths, isOrg));
+        }
+    }
+
+    await editor.edit(editBuilder => {
+        editBuilder.insert(editor.selection.active, tableLines.join('\n') + '\n');
+    });
+
+    vscode.window.showInformationMessage(
+        `Imported ${rows.length} rows from ${filePath.split('/').pop()} (${delimiter === '\t' ? 'tab' : 'comma'}-delimited)`
+    );
+}
+
+/**
  * Sum a column of numbers
  */
 export async function sumColumn(): Promise<void> {
@@ -2167,12 +2308,47 @@ export function updateTruncationDecorations(editor: vscode.TextEditor): void {
             }
         }
 
+        // Process separator rows - truncate to match constrained column widths
+        for (const sepLineNum of table.separatorLines) {
+            const sepLine = document.lineAt(sepLineNum).text;
+
+            // Calculate where the separator should end based on maxWidth constraints
+            // Format: |---+---...| where each column section is (width + 2) chars
+            let expectedEnd = 1; // Start after initial |
+            for (let colIdx = 0; colIdx < table.columnWidths.length; colIdx++) {
+                const maxWidth = table.columnMaxWidths[colIdx];
+                // Use maxWidth if specified, otherwise use calculated column width
+                const colWidth = maxWidth !== undefined ? maxWidth : table.columnWidths[colIdx];
+                // Add targetWidth + 1 (for >) + 2 (for padding " | ") for truncated cols
+                // Or colWidth + 2 for normal columns
+                const cellWidth = maxWidth !== undefined ? (maxWidth + 1 + 2) : (colWidth + 2);
+                expectedEnd += cellWidth;
+                if (colIdx < table.columnWidths.length - 1) {
+                    expectedEnd += 1; // For the + separator between columns
+                }
+            }
+            expectedEnd += 1; // For final |
+
+            // If separator is longer than expected, hide the excess
+            const sepLength = sepLine.length;
+            if (sepLength > expectedEnd) {
+                // Find the position of the last | that should be visible
+                // We need to hide dashes before the final |, not after
+                const lastPipeIdx = sepLine.lastIndexOf('|');
+                if (lastPipeIdx > expectedEnd - 1) {
+                    truncationRanges.push({
+                        range: new vscode.Range(sepLineNum, expectedEnd - 1, sepLineNum, lastPipeIdx)
+                    });
+                }
+            }
+        }
+
         // Process each data row
         for (let rowIdx = 0; rowIdx < table.rows.length; rowIdx++) {
             const lineNum = table.startLine + rowIdx;
             const row = table.rows[rowIdx];
 
-            // Skip empty rows (separators, spec rows)
+            // Skip empty rows (separators are handled above, spec rows handled separately)
             if (row.length === 0) continue;
 
             // Skip the spec row itself
@@ -2531,6 +2707,7 @@ export function registerTableCommands(context: vscode.ExtensionContext): void {
         vscode.commands.registerCommand('scimax.table.gotoNamed', gotoNamedTable),
         vscode.commands.registerCommand('scimax.table.export', exportTable),
         vscode.commands.registerCommand('scimax.table.import', importTableFromClipboard),
+        vscode.commands.registerCommand('scimax.table.importFile', importTableFromFile),
         vscode.commands.registerCommand('scimax.table.sumColumn', sumColumn),
         vscode.commands.registerCommand('scimax.table.expandColumn', expandColumn),
         vscode.commands.registerCommand('scimax.table.expandAllColumns', expandAllColumns),
