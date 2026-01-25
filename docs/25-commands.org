@@ -172,9 +172,10 @@ CLOSED: [2026-01-17 Sat 12:26]
 |----------------------------------------+----------------------------+--------------------|
 | [[cmd:scimax.table.recalculate]]       | Recalculate Table Formulas | C-c C-c (tblfm)    |
 |                                        |                            | C-c * (org)        |
-| [[cmd:scimax.table.insertColumnFormula]]| Insert Column Formula      | -                  |
-| [[cmd:scimax.table.insertFieldFormula]]| Insert Field Formula       | -                  |
-| [[cmd:scimax.table.formulaHelp]]       | Table Formula Help         | -                  |
+| [[cmd:scimax.table.insertColumnFormula]]| Insert Column Formula       | -                  |
+| [[cmd:scimax.table.insertFieldFormula]]| Insert Field Formula        | -                  |
+| [[cmd:scimax.table.formulaHelp]]       | Table Formula Help          | -                  |
+| [[cmd:scimax.table.toggleFormulaHighlight]]| Toggle Formula Highlight | -                  |
 
 * ✅ Source Blocks
 CLOSED: [2026-01-17 Sat 12:26]
@@ -282,6 +283,27 @@ CLOSED: [2026-01-17 Sat 12:27]
 | Command ID                        | Description         | Default Keybinding |
 |-----------------------------------+---------------------+--------------------|
 | [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |
+
+** ⚠️ Jupyter Notebook Export
+
+Export org documents to Jupyter notebook (.ipynb) format.
+
+| Command ID                              | Description                      | Default Keybinding |
+|-----------------------------------------+----------------------------------+--------------------|
+| [[cmd:scimax.org.exportIpynb]]          | Export to Jupyter Notebook       | -                  |
+| [[cmd:scimax.org.exportIpynbOpen]]      | Export to Notebook and Open      | -                  |
+| [[cmd:scimax.org.exportIpynbParticipant]]| Export via Chat Participant     | -                  |
+
+** ⚠️ Clipboard Export
+
+Copy document content to clipboard in various formats for pasting into other applications.
+
+| Command ID                           | Description                          | Default Keybinding |
+|--------------------------------------+--------------------------------------+--------------------|
+| [[cmd:scimax.org.clipboardHtmlRich]] | Copy as Rich HTML (for Word, etc.)   | -                  |
+| [[cmd:scimax.org.clipboardHtmlSource]]| Copy as HTML Source                 | -                  |
+| [[cmd:scimax.org.clipboardLatex]]    | Copy as LaTeX                        | -                  |
+| [[cmd:scimax.org.clipboardMarkdown]] | Copy as Markdown                     | -                  |
 
 ** ✅ Custom Exporters
 CLOSED: [2026-01-24 Sat 17:42]
@@ -463,12 +485,14 @@ Commands for debugging issues and reporting problems.
 
 | Command ID                    | Description                | Default Keybinding |
 |-------------------------------+----------------------------+--------------------|
-| [[cmd:scimax.showErrorLog]]   | Show Error Log             | -                  |
-| [[cmd:scimax.clearErrors]]    | Clear Error Log            | -                  |
-| [[cmd:scimax.showDiagnostics]] | Show Diagnostic Report    | -                  |
-| [[cmd:scimax.copyDiagnostics]] | Copy Diagnostic Report    | -                  |
-| [[cmd:scimax.reportIssue]]    | Report Issue on GitHub     | -                  |
-| [[cmd:scimax.contextHelp]]    | Context-Sensitive Help     | -                  |
+| [[cmd:scimax.showErrorLog]]    | Show Error Log             | -                  |
+| [[cmd:scimax.clearErrors]]     | Clear Error Log            | -                  |
+| [[cmd:scimax.showDiagnostics]] | Show Diagnostic Report     | -                  |
+| [[cmd:scimax.copyDiagnostics]] | Copy Diagnostic Report     | -                  |
+| [[cmd:scimax.reportIssue]]     | Report Issue on GitHub     | -                  |
+| [[cmd:scimax.contextHelp]]     | Context-Sensitive Help     | -                  |
+| [[cmd:scimax.openLogDirectory]]| Open Log Files Directory   | -                  |
+| [[cmd:scimax.setLogLevel]]     | Set Logging Level          | -                  |
 
 * ✅ References (org-ref)
 CLOSED: [2026-01-17 Sat 12:46]
