@@ -4,6 +4,7 @@
  */
 
 import { DEFAULT_TODO_STATES } from '../org/todoStates';
+import { normalizeLineEndings } from '../utils/escapeUtils';
 
 export interface OrgHeading {
     level: number;
@@ -76,7 +77,7 @@ function parseTodoKeywordLine(line: string): string[] | null {
  * Scan document for #+TODO: keywords and extract all custom states
  */
 function extractTodoStatesFromContent(content: string): string[] {
-    const lines = content.split('\n');
+    const lines = normalizeLineEndings(content).split('\n');
     const customStates: string[] = [];
 
     for (const line of lines) {
@@ -107,7 +108,7 @@ export class OrgParser {
      * Parse an org document from text content
      */
     public parse(content: string): OrgDocument {
-        const lines = content.split('\n');
+        const lines = normalizeLineEndings(content).split('\n');
         const document: OrgDocument = {
             headings: [],
             sourceBlocks: [],
@@ -494,7 +495,7 @@ export class OrgParser {
  */
 export function parseMarkdownCodeBlocks(content: string): OrgSourceBlock[] {
     const blocks: OrgSourceBlock[] = [];
-    const lines = content.split('\n');
+    const lines = normalizeLineEndings(content).split('\n');
     let i = 0;
 
     while (i < lines.length) {

@@ -1,7 +1,18 @@
 /**
- * Shared escape utilities for HTML and LaTeX
+ * Shared escape utilities for HTML, LaTeX, and text normalization
  * Consolidates duplicate escape functions across the codebase
  */
+
+/**
+ * Normalize line endings to Unix-style (LF only)
+ * Converts CRLF (\r\n) and standalone CR (\r) to LF (\n)
+ * @param str - String to normalize
+ * @returns String with consistent LF line endings
+ */
+export function normalizeLineEndings(str: string): string {
+    if (str === null || str === undefined) return '';
+    return str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+}
 
 /**
  * Escape special HTML characters to prevent XSS and rendering issues

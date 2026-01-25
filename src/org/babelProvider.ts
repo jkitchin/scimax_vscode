@@ -20,6 +20,7 @@ import type { SrcBlockElement } from '../parser/orgElementTypes';
 import { findInlineSrcAtPosition, findInlineBabelCallAtPosition, parseCallLine, executeCall, type TangleBlock, type InlineBabelCall, type CallSpec, buildNamedBlocksMap } from '../parser/orgBabelAdvanced';
 import * as fs from 'fs';
 import { OrgParser } from '../parser/orgParser';
+import { normalizeLineEndings } from '../utils/escapeUtils';
 import { getKernelManager } from '../jupyter/kernelManager';
 
 // Output channel for Babel execution
@@ -561,7 +562,7 @@ function findSourceBlockAtCursor(
     document: vscode.TextDocument,
     position: vscode.Position
 ): SourceBlockInfo | null {
-    const text = document.getText();
+    const text = normalizeLineEndings(document.getText());
     const lines = text.split('\n');
 
     // Find #+BEGIN_SRC and #+END_SRC pairs
@@ -769,7 +770,7 @@ function findSourceBlockAtCursor(
  * Find the markdown fenced block at cursor position
  */
 function findMarkdownFencedBlockAtCursor(document: vscode.TextDocument, position: vscode.Position): SourceBlockInfo | null {
-    const lines = document.getText().split('\n');
+    const lines = normalizeLineEndings(document.getText()).split('\n');
     let i = 0;
     while (i < lines.length) {
         const line = lines[i];
@@ -1569,7 +1570,7 @@ async function insertCallResults(
     resultText: string
 ): Promise<void> {
     const document = editor.document;
-    const lines = document.getText().split('\n');
+    const lines = normalizeLineEndings(document.getText()).split('\n');
 
     // Look for existing #+RESULTS: after the call line
     let existingResultsStart: number | undefined;
@@ -1866,7 +1867,7 @@ async function clearResultsAtCursor(blockLine?: number): Promise<void> {
  */
 async function clearCallResults(editor: vscode.TextEditor, callLine: number): Promise<void> {
     const document = editor.document;
-    const lines = document.getText().split('\n');
+    const lines = normalizeLineEndings(document.getText()).split('\n');
 
     // Look for existing #+RESULTS: after the call line
     let existingResultsStart: number | undefined;
@@ -2194,7 +2195,7 @@ export function registerBabelCommands(context: vscode.ExtensionContext): void {
 
     // Helper function to check if cursor is inside a markdown fenced code block
     function isInMarkdownFencedBlock(document: vscode.TextDocument, position: vscode.Position): boolean {
-        const lines = document.getText().split('\n');
+        const lines = normalizeLineEndings(document.getText()).split('\n');
         let i = 0;
         while (i < lines.length) {
             const line = lines[i];

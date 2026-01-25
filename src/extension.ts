@@ -303,8 +303,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Track documents that have had #+STARTUP: folding applied
     const startupAppliedDocs = new Set<string>();
+    const crlfWarnedDocs = new Set<string>();
 
     // Apply #+STARTUP: visibility options when opening org files
+    // Also check for CRLF line endings and offer to convert
     context.subscriptions.push(
         vscode.window.onDidChangeActiveTextEditor(async (editor) => {
             if (!editor) return;
@@ -314,7 +316,27 @@ export async function activate(context: vscode.ExtensionContext) {
             if (document.languageId !== 'org') return;
 
             const docKey = document.uri.toString();
-            // Only apply once per document (per session)
+
+            // Check for CRLF line endings (only warn once per document per session)
+            if (!crlfWarnedDocs.has(docKey)) {
+                const text = document.getText();
+                if (text.includes('\r\n')) {
+                    crlfWarnedDocs.add(docKey);
+                    const choice = await vscode.window.showWarningMessage(
+                        'This file has Windows (CRLF) line endings which may cause parsing issues. Convert to Unix (LF) line endings?',
+                        'Convert to LF',
+                        'Ignore'
+                    );
+                    if (choice === 'Convert to LF') {
+                        // Change the EOL setting for this document
+                        const edit = new vscode.WorkspaceEdit();
+                        // VS Code handles EOL conversion when we set the document's EOL
+                        await vscode.commands.executeCommand('workbench.action.editor.changeEOL', 'LF');
+                    }
+                }
+            }
+
+            // Only apply startup options once per document (per session)
             if (startupAppliedDocs.has(docKey)) return;
             startupAppliedDocs.add(docKey);
 
@@ -332,7 +354,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Clean up tracking when documents are closed
     context.subscriptions.push(
         vscode.workspace.onDidCloseTextDocument((document) => {
-            startupAppliedDocs.delete(document.uri.toString());
+            const docKey = document.uri.toString();
+            startupAppliedDocs.delete(docKey);
+            crlfWarnedDocs.delete(docKey);
         })
     );
 
