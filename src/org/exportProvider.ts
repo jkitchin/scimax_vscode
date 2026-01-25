@@ -1966,8 +1966,15 @@ export function registerExportCommands(context: vscode.ExtensionContext): void {
     );
 
     // Double-click handler for org files to trigger jump to PDF
+    // Disabled by default because it can be triggered accidentally when selecting text
     context.subscriptions.push(
         vscode.window.onDidChangeTextEditorSelection(async (event) => {
+            // Check if double-click sync is enabled
+            const config = vscode.workspace.getConfiguration('scimax.export.pdf');
+            if (!config.get<boolean>('doubleClickSync', false)) {
+                return;
+            }
+
             const editor = event.textEditor;
             if (editor.document.languageId !== 'org') {
                 return;

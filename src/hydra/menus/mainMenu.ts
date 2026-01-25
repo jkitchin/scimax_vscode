@@ -52,6 +52,14 @@ export const mainMenu: HydraMenuDefinition = {
                     exit: 'submenu',
                     action: 'scimax.templates',
                 },
+                {
+                    key: 'a',
+                    label: 'Applications',
+                    description: 'External applications (terminal, file manager)',
+                    icon: 'terminal-bash',
+                    exit: 'submenu',
+                    action: 'scimax.applications',
+                },
             ],
         },
         {

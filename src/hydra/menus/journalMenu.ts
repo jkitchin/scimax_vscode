@@ -14,7 +14,7 @@ export const journalMenu: HydraMenuDefinition = {
             title: 'Open Entry',
             items: [
                 {
-                    key: 't',
+                    key: 'j',
                     label: 'Today',
                     description: 'Open today\'s journal entry',
                     icon: 'calendar',
