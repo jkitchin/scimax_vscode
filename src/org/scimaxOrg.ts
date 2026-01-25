@@ -85,34 +85,74 @@ async function applyMarkup(
 
     const document = editor.document;
     const selection = editor.selection;
-    let insertedEmptyMarkup = false;
-    let insertPosition: vscode.Position | undefined;
 
-    await editor.edit(editBuilder => {
-        if (selection.isEmpty) {
-            // No selection - wrap word at cursor
-            const position = selection.active;
-            const wordRange = document.getWordRangeAtPosition(position);
+    // Check if cursor is inside empty markup markers - if so, move outside
+    if (selection.isEmpty) {
+        const position = selection.active;
+        const line = document.lineAt(position.line).text;
+        const col = position.character;
 
-            if (wordRange) {
-                const word = document.getText(wordRange);
-                editBuilder.replace(wordRange, `${prefix}${word}${suffix}`);
-            } else {
-                // No word at cursor, insert empty markup
-                editBuilder.insert(position, `${prefix}${suffix}`);
-                insertedEmptyMarkup = true;
-                insertPosition = position;
+        // Check if we're between prefix and suffix markers
+        if (col >= prefix.length && col + suffix.length <= line.length) {
+            const before = line.substring(col - prefix.length, col);
+            const after = line.substring(col, col + suffix.length);
+
+            if (before === prefix && after === suffix) {
+                // Move cursor outside the closing marker
+                const newPosition = position.translate(0, suffix.length);
+                editor.selection = new vscode.Selection(newPosition, newPosition);
+                return;
             }
-        } else {
-            // Has selection - wrap selection
-            const text = document.getText(selection);
-            editBuilder.replace(selection, `${prefix}${text}${suffix}`);
         }
-    });
+    }
 
-    // Move cursor between the markers when inserting empty markup
-    if (insertedEmptyMarkup && insertPosition) {
-        const newPosition = insertPosition.translate(0, prefix.length);
+    // Check if no selection and no word at cursor - use snippet for proper cursor positioning
+    if (selection.isEmpty) {
+        const position = selection.active;
+        const wordRange = document.getWordRangeAtPosition(position);
+
+        if (!wordRange) {
+            // No word at cursor - insert empty markup with cursor between markers
+            const snippet = new vscode.SnippetString(`${prefix}$0${suffix}`);
+            await editor.insertSnippet(snippet);
+            return;
+        }
+
+        // Has word at cursor - check if already wrapped in markers
+        const line = document.lineAt(wordRange.start.line).text;
+        const beforeStart = wordRange.start.character - prefix.length;
+        const afterEnd = wordRange.end.character;
+
+        if (beforeStart >= 0 && afterEnd + suffix.length <= line.length) {
+            const beforeWord = line.substring(beforeStart, wordRange.start.character);
+            const afterWord = line.substring(afterEnd, afterEnd + suffix.length);
+
+            if (beforeWord === prefix && afterWord === suffix) {
+                // Already wrapped - just move cursor outside
+                const newPosition = new vscode.Position(wordRange.start.line, afterEnd + suffix.length);
+                editor.selection = new vscode.Selection(newPosition, newPosition);
+                return;
+            }
+        }
+
+        // Not wrapped yet - wrap it and move cursor outside
+        const word = document.getText(wordRange);
+        await editor.edit(editBuilder => {
+            editBuilder.replace(wordRange, `${prefix}${word}${suffix}`);
+        });
+        // Move cursor to end (after closing marker)
+        const newCol = wordRange.start.character + prefix.length + word.length + suffix.length;
+        const newPosition = new vscode.Position(wordRange.start.line, newCol);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
+    } else {
+        // Has selection - wrap selection and move cursor outside
+        const text = document.getText(selection);
+        await editor.edit(editBuilder => {
+            editBuilder.replace(selection, `${prefix}${text}${suffix}`);
+        });
+        // Move cursor to end (after closing marker)
+        const newCol = selection.start.character + prefix.length + text.length + suffix.length;
+        const newPosition = new vscode.Position(selection.start.line, newCol);
         editor.selection = new vscode.Selection(newPosition, newPosition);
     }
 }
@@ -739,17 +779,64 @@ export async function commandRegionOrPoint(): Promise<void> {
 }
 
 /**
+ * Apply brace-style markup like subscript/superscript
+ * - If cursor is before }, jump out
+ * - If selection, wrap in prefix{...} and jump out
+ * - Otherwise, insert prefix{} with cursor inside
+ */
+async function applyBraceMarkup(
+    prefix: string,
+    editor?: vscode.TextEditor
+): Promise<void> {
+    editor = editor || vscode.window.activeTextEditor;
+    if (!editor) return;
+
+    const document = editor.document;
+    const selection = editor.selection;
+
+    // Check if cursor is just before } - if so, jump out
+    if (selection.isEmpty) {
+        const position = selection.active;
+        const line = document.lineAt(position.line).text;
+        const col = position.character;
+
+        if (col < line.length && line[col] === '}') {
+            // Move cursor past the }
+            const newPosition = position.translate(0, 1);
+            editor.selection = new vscode.Selection(newPosition, newPosition);
+            return;
+        }
+    }
+
+    if (selection.isEmpty) {
+        // No selection - insert template with cursor inside braces
+        const snippet = new vscode.SnippetString(`${prefix}{$0}`);
+        await editor.insertSnippet(snippet);
+    } else {
+        // Has selection - wrap and move cursor outside
+        const text = document.getText(selection);
+        await editor.edit(editBuilder => {
+            editBuilder.replace(selection, `${prefix}{${text}}`);
+        });
+        // Move cursor to end (after closing brace)
+        const newCol = selection.start.character + prefix.length + 1 + text.length + 1;
+        const newPosition = new vscode.Position(selection.start.line, newCol);
+        editor.selection = new vscode.Selection(newPosition, newPosition);
+    }
+}
+
+/**
  * Make text subscript (_{subscript})
  */
 export async function subscriptRegionOrPoint(): Promise<void> {
-    await applyMarkup('_{', '}');
+    await applyBraceMarkup('_');
 }
 
 /**
  * Make text superscript (^{superscript})
  */
 export async function superscriptRegionOrPoint(): Promise<void> {
-    await applyMarkup('^{', '}');
+    await applyBraceMarkup('^');
 }
 
 /**

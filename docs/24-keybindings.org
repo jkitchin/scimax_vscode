@@ -268,19 +268,19 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 
 * Text Markup
 
-| Key     | Alt Key | Action                               |
-|---------+---------+--------------------------------------|
-| C-c b   | M-b     | Bold                                 |
-| C-c i   | M-i     | Italic                               |
-| C-c _   | M-u     | Underline                            |
-| C-c `   | M-c     | Code (inline)                        |
-| C-c =   | M-v     | Verbatim                             |
-| C-c +   | M-x     | Strikethrough                        |
-|         | M--     | Subscript                            |
-|         | M-=     | Superscript                          |
-| C-c '   |         | Command (Emacs-style, non-standard)  |
+| Key   | Alt Key (Mac: C-M) | Action                              |
+|-------+--------------------+-------------------------------------|
+| C-c b | M-b (C-M-b)        | Bold                                |
+| C-c i | M-i (C-M-i)        | Italic                              |
+| C-c _ | M-u (C-M-u)        | Underline                           |
+| C-c ` | M-c (C-M-c)        | Code (inline)                       |
+| C-c = | M-v (C-M-v)        | Verbatim                            |
+| C-c + | M-x (C-M-x)        | Strikethrough                       |
+|       | M-- (C-M--)        | Subscript                           |
+|       | M-= (C-M-=)        | Superscript                         |
+| C-c ' |                    | Command (Emacs-style, non-standard) |
 
-*Note:* Option/Alt key bindings (=M-b=, =M-i=, etc.) provide mnemonic shortcuts for the most common markup operations. On macOS, =M-= is the Option key.
+*Note:* On macOS, use Ctrl+Option (=C-M-=) for markup shortcuts since plain Option inserts special characters. On Windows/Linux, plain Alt (=M-=) works.
 
 * Search & Navigation
 
