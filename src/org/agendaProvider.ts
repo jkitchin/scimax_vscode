@@ -1284,6 +1284,30 @@ export class AgendaManager {
         return parts.join('\n');
     }
 
+    /**
+     * Get agenda view for a single file (current file)
+     */
+    async getAgendaViewForFile(filePath: string, config?: Partial<AgendaViewConfig>): Promise<AgendaView> {
+        const allHeadlines: HeadlineElement[] = [];
+        const fileMap = new Map<string, string>();
+
+        // Parse the single file
+        const agendaFile = await this.parseFile(filePath);
+        if (agendaFile) {
+            for (const headline of agendaFile.headlines) {
+                this.collectHeadlinesWithFile(headline, filePath, allHeadlines, fileMap);
+            }
+        }
+
+        return generateAgendaView(allHeadlines, fileMap, {
+            showDone: this.config.showDone,
+            showHabits: this.config.showHabits,
+            days: this.config.defaultSpan,
+            files: [filePath],
+            ...config,
+        }, agendaFile?.diarySexps || [], 1);
+    }
+
     dispose(): void {
         // Cancel any ongoing scan
         this.cancelScan();
@@ -1737,6 +1761,22 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             if (items) await jumpToAgendaItem(items);
         }),
 
+        // Current file agenda
+        vscode.commands.registerCommand('scimax.agenda.currentFile', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showWarningMessage('No active editor');
+                return;
+            }
+            const filePath = editor.document.uri.fsPath;
+            if (!filePath.endsWith('.org')) {
+                vscode.window.showWarningMessage('Current file is not an org file');
+                return;
+            }
+            const items = await showAgendaQuickPickForFile(manager, filePath, { type: 'month', days: 30 });
+            if (items) await jumpToAgendaItem(items);
+        }),
+
         // TODO list
         vscode.commands.registerCommand('scimax.agenda.todoList', async () => {
             const todoList = await manager.getTodoList({ excludeDone: true });
@@ -2183,6 +2223,48 @@ async function showAgendaQuickPick(
 
     const selected = await vscode.window.showQuickPick(items, {
         placeHolder: `Agenda: ${view.totalItems} items`,
+        matchOnDescription: true,
+        matchOnDetail: true,
+    });
+
+    return selected ? (selected as any).agendaItem : undefined;
+}
+
+async function showAgendaQuickPickForFile(
+    manager: AgendaManager,
+    filePath: string,
+    config: Partial<AgendaViewConfig>
+): Promise<AgendaItem | undefined> {
+    const view = await manager.getAgendaViewForFile(filePath, config);
+    const items: vscode.QuickPickItem[] = [];
+
+    for (const group of view.groups) {
+        if (group.items.length === 0) continue;
+
+        items.push({
+            label: group.label,
+            kind: vscode.QuickPickItemKind.Separator,
+        });
+
+        for (const item of group.items) {
+            items.push({
+                label: `${getItemIcon(item)} ${item.title}`,
+                description: formatItemDescription(item),
+                detail: `Line ${item.line}`,
+                // @ts-ignore
+                agendaItem: item,
+            });
+        }
+    }
+
+    if (items.length === 0) {
+        vscode.window.showInformationMessage('No agenda items found in current file');
+        return undefined;
+    }
+
+    const fileName = path.basename(filePath);
+    const selected = await vscode.window.showQuickPick(items, {
+        placeHolder: `Agenda for ${fileName}: ${view.totalItems} items`,
         matchOnDescription: true,
         matchOnDetail: true,
     });

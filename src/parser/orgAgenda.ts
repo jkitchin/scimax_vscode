@@ -106,6 +106,8 @@ export interface AgendaViewConfig {
     priorities?: string[];
     /** Filter by category */
     categories?: string[];
+    /** Filter by specific files (absolute paths) */
+    files?: string[];
     /** Whether to show done items */
     showDone?: boolean;
     /** Whether to show habits */
@@ -406,6 +408,13 @@ function filterAgendaItems(items: AgendaItem[], config: AgendaViewConfig): Agend
         // Filter habits if disabled
         if (!config.showHabits && item.tags.includes('HABIT')) {
             return false;
+        }
+
+        // Filter by specific files
+        if (config.files && config.files.length > 0) {
+            if (!config.files.includes(item.file)) {
+                return false;
+            }
         }
 
         return true;
