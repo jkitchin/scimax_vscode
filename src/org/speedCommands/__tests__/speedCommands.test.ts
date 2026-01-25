@@ -208,13 +208,23 @@ describe('speed command key mappings', () => {
             expect(cmd?.command).toBe('scimax.heading.moveDown');
         });
 
-        it('r demotes subtree', () => {
+        it('r demotes heading', () => {
             const cmd = getSpeedCommand('r');
+            expect(cmd?.command).toBe('scimax.heading.demote');
+        });
+
+        it('l promotes heading', () => {
+            const cmd = getSpeedCommand('l');
+            expect(cmd?.command).toBe('scimax.heading.promote');
+        });
+
+        it('R demotes subtree', () => {
+            const cmd = getSpeedCommand('R');
             expect(cmd?.command).toBe('scimax.heading.demoteSubtree');
         });
 
-        it('l promotes subtree', () => {
-            const cmd = getSpeedCommand('l');
+        it('L promotes subtree', () => {
+            const cmd = getSpeedCommand('L');
             expect(cmd?.command).toBe('scimax.heading.promoteSubtree');
         });
 
