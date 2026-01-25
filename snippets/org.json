@@ -301,5 +301,15 @@
     "prefix": "<i",
     "body": "src_${1:python}{${0}}",
     "description": "Inline source code"
+  },
+  "Title": {
+    "prefix": "ti",
+    "body": "#+title: $0",
+    "description": "Document title keyword"
+  },
+  "Caption": {
+    "prefix": "ca",
+    "body": "#+caption: $0",
+    "description": "Caption keyword for figures/tables"
   }
 }
