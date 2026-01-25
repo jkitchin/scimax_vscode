@@ -573,26 +573,26 @@ async function cycleGlobalFold(): Promise<void> {
 }
 
 export function registerFoldingProvider(context: vscode.ExtensionContext): void {
-    // Register org-mode folding provider
+    // Register org-mode folding provider for both saved and untitled files
     context.subscriptions.push(
         vscode.languages.registerFoldingRangeProvider(
-            { language: 'org', scheme: 'file' },
+            [{ language: 'org', scheme: 'file' }, { language: 'org', scheme: 'untitled' }],
             new OrgFoldingRangeProvider()
         )
     );
 
-    // Register LaTeX folding provider
+    // Register LaTeX folding provider for both saved and untitled files
     context.subscriptions.push(
         vscode.languages.registerFoldingRangeProvider(
-            { language: 'latex', scheme: 'file' },
+            [{ language: 'latex', scheme: 'file' }, { language: 'latex', scheme: 'untitled' }],
             new LaTeXFoldingRangeProvider()
         )
     );
 
-    // Register Markdown folding provider
+    // Register Markdown folding provider for both saved and untitled files
     context.subscriptions.push(
         vscode.languages.registerFoldingRangeProvider(
-            { language: 'markdown', scheme: 'file' },
+            [{ language: 'markdown', scheme: 'file' }, { language: 'markdown', scheme: 'untitled' }],
             new MarkdownFoldingRangeProvider()
         )
     );
