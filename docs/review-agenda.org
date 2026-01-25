@@ -44,7 +44,10 @@ fi
 #+RESULTS:
 : * Review Agenda
 : 
-: No items marked with ⚠️ or 👀 found. All documentation reviewed!
+: ** [[file:01-getting-started.org][01-getting-started.org]] (1 items)
+:    - [[file:01-getting-started.org::90][** ⚠️ Updating the Extension]]
+: 
+: Total: 1 items need review
 
 
 * Current Review Status
@@ -65,11 +68,11 @@ Items link directly to the source file and line number for quick navigation.
 
 ** Legend
 
-| State | Meaning |
-|-------+---------|
-| ⚠️    | New heading, needs review |
+| State | Meaning                       |
+|-------+-------------------------------|
+| ⚠️    | New heading, needs review     |
 | 👀    | Changed heading, needs review |
-| ✅    | Reviewed and approved |
+| ✅    | Reviewed and approved         |
 
                                                                                                                                                                   
      
