@@ -577,12 +577,13 @@ export async function copyToClipboard(options: ClipboardExportOptions): Promise<
     try {
         switch (options.format) {
             case 'html':
-                exportedContent = await exportToHtmlString(content, basePath, !options.richText);
+                // Always use body only for clipboard - we don't need doctype/html/head wrapper
+                exportedContent = await exportToHtmlString(content, basePath, true);
                 formatLabel = options.richText ? 'rich HTML' : 'HTML source';
                 break;
 
             case 'latex':
-                exportedContent = await exportToLatexString(content, false);
+                exportedContent = await exportToLatexString(content, true);
                 formatLabel = 'LaTeX';
                 break;
 
