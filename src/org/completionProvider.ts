@@ -6,6 +6,16 @@
 import * as vscode from 'vscode';
 import { ORG_ENTITIES } from '../parser/orgEntities';
 
+// Python snippets for use inside source blocks
+// These only expand at the beginning of a line
+const PYTHON_SNIPPETS: Array<{ prefix: string; body: string; detail: string }> = [
+    { prefix: 'pxl', body: 'plt.xlabel($1)', detail: 'plt.xlabel()' },
+    { prefix: 'pyl', body: 'plt.ylabel($1)', detail: 'plt.ylabel()' },
+    { prefix: 'plt', body: 'import matplotlib.pyplot as plt', detail: 'Import matplotlib' },
+    { prefix: 'np', body: 'import numpy as np', detail: 'Import numpy' },
+    { prefix: 'pl', body: 'plt.legend()', detail: 'plt.legend()' },
+];
+
 // Common source block languages
 const SOURCE_LANGUAGES = [
     'python', 'bash', 'sh', 'shell', 'emacs-lisp', 'elisp',
@@ -139,6 +149,13 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
         // Line-start keyword shortcuts (ti, n, ca, etc.)
         if (linePrefix.match(/^\s*(ti|n|ca|au|da|op)$/i)) {
             items.push(...this.getLineStartKeywordCompletions(linePrefix, position));
+        }
+
+        // Python snippets (only at beginning of line in Python source blocks)
+        const pythonSnippetMatch = linePrefix.match(/^\s*(pxl|pyl|plt|np|pl)$/);
+        if (pythonSnippetMatch) {
+            const pythonCompletions = this.getPythonSnippetCompletions(document, position, linePrefix);
+            items.push(...pythonCompletions);
         }
 
         return items;
@@ -368,6 +385,67 @@ export class OrgCompletionProvider implements vscode.CompletionItemProvider {
                     new vscode.Position(position.line, startCol),
                     position
                 );
+                return item;
+            });
+    }
+
+    /**
+     * Check if position is inside a Python source block
+     */
+    private isInPythonSourceBlock(document: vscode.TextDocument, position: vscode.Position): boolean {
+        const text = document.getText();
+        const lines = text.split('\n');
+
+        // Search backwards for #+BEGIN_SRC python
+        let inBlock = false;
+        let blockLanguage = '';
+
+        for (let i = 0; i <= position.line; i++) {
+            const line = lines[i];
+            const beginMatch = line.match(/^\s*#\+BEGIN_SRC\s+(python|jupyter-python)/i);
+            if (beginMatch) {
+                inBlock = true;
+                blockLanguage = beginMatch[1].toLowerCase();
+            }
+            if (inBlock && line.match(/^\s*#\+END_SRC\s*$/i)) {
+                inBlock = false;
+                blockLanguage = '';
+            }
+        }
+
+        return inBlock && (blockLanguage === 'python' || blockLanguage === 'jupyter-python');
+    }
+
+    /**
+     * Get Python snippet completions (only at line start in Python blocks)
+     */
+    private getPythonSnippetCompletions(
+        document: vscode.TextDocument,
+        position: vscode.Position,
+        linePrefix: string
+    ): vscode.CompletionItem[] {
+        // Only provide completions if we're in a Python source block
+        if (!this.isInPythonSourceBlock(document, position)) {
+            return [];
+        }
+
+        const typed = linePrefix.trim().toLowerCase();
+        const startCol = linePrefix.length - linePrefix.trimStart().length;
+
+        return PYTHON_SNIPPETS
+            .filter(s => s.prefix === typed)
+            .map(s => {
+                const item = new vscode.CompletionItem(s.prefix, vscode.CompletionItemKind.Snippet);
+                item.insertText = new vscode.SnippetString(s.body);
+                item.detail = s.detail;
+                item.documentation = `Expands to: ${s.body.replace(/\$\d/g, '')}`;
+                // Replace the typed prefix
+                item.range = new vscode.Range(
+                    new vscode.Position(position.line, startCol),
+                    position
+                );
+                // Higher sort priority so these appear first
+                item.sortText = '0' + s.prefix;
                 return item;
             });
     }
