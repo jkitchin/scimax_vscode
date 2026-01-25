@@ -360,7 +360,8 @@ export class RefHoverProvider implements vscode.HoverProvider {
         const line = document.lineAt(position.line).text;
 
         // Match org-ref style links: ref:label, eqref:label, pageref:label, etc.
-        const orgRefPattern = /(?<![\\w])(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>\[\](){}:,]+)/g;
+        // Use negative lookbehind to avoid matching href:, etc.
+        const orgRefPattern = /(?<!\w)(ref|eqref|pageref|nameref|autoref|cref|Cref):([^\s<>\[\](){}:,]+)/g;
 
         let match;
         while ((match = orgRefPattern.exec(line)) !== null) {
@@ -369,7 +370,8 @@ export class RefHoverProvider implements vscode.HoverProvider {
 
             if (position.character >= start && position.character <= end) {
                 const refType = match[1];
-                const label = match[2];
+                // Strip trailing punctuation that's typically sentence terminators
+                const label = match[2].replace(/[.,;:!?]+$/, '');
                 return this.createRefHover(document, refType, label);
             }
         }
@@ -383,7 +385,8 @@ export class RefHoverProvider implements vscode.HoverProvider {
 
             if (position.character >= start && position.character <= end) {
                 const refType = match[1];
-                const label = match[2];
+                // Strip trailing punctuation for consistency
+                const label = match[2].replace(/[.,;:!?]+$/, '');
                 return this.createRefHover(document, `\\${refType}`, label);
             }
         }
@@ -430,7 +433,7 @@ export class RefHoverProvider implements vscode.HoverProvider {
         } else {
             markdown.appendMarkdown(`### ${refType}:${label}\n\n`);
             markdown.appendMarkdown(`*Label not found*\n\n`);
-            markdown.appendMarkdown(`Define with: \`label:${label}\` or \`\\label{${label}}\``);
+            markdown.appendMarkdown(`Define with: \`#+name: ${label}\`, \`#+label: ${label}\`, or \`\\label{${label}}\``);
         }
 
         return new vscode.Hover(markdown);
@@ -447,17 +450,19 @@ export class RefHoverProvider implements vscode.HoverProvider {
         surroundingLines: string[];
     } | null> {
         // Patterns to find label definitions
+        // Note: patterns are made more permissive to handle trailing whitespace and line endings
+        const escapedLabel = this.escapeRegex(label);
         const labelPatterns = [
             // org-ref style: label:name
-            { regex: new RegExp(`label:${this.escapeRegex(label)}(?=[\\s.,;:!?)]|$)`, 'i'), type: 'Label' },
+            { regex: new RegExp(`label:${escapedLabel}(?=[\\s.,;:!?)]|$)`, 'i'), type: 'Label' },
             // LaTeX style: \label{name}
-            { regex: new RegExp(`\\\\label\\{${this.escapeRegex(label)}\\}`, 'i'), type: 'LaTeX Label' },
+            { regex: new RegExp(`\\\\label\\{${escapedLabel}\\}`, 'i'), type: 'LaTeX Label' },
             // org-mode CUSTOM_ID property
-            { regex: new RegExp(`:CUSTOM_ID:\\s*${this.escapeRegex(label)}\\s*$`, 'i'), type: 'Heading (CUSTOM_ID)' },
-            // org-mode #+NAME:
-            { regex: new RegExp(`^\\s*#\\+NAME:\\s*${this.escapeRegex(label)}\\s*$`, 'i'), type: 'Named Element' },
+            { regex: new RegExp(`:CUSTOM_ID:\\s*${escapedLabel}(?:\\s|$)`, 'i'), type: 'Heading (CUSTOM_ID)' },
+            // org-mode #+NAME: (more permissive - allows trailing content)
+            { regex: new RegExp(`^\\s*#\\+NAME:\\s*${escapedLabel}(?:\\s|$)`, 'i'), type: 'Named Element' },
             // org-mode #+LABEL: (for figures/tables)
-            { regex: new RegExp(`^\\s*#\\+LABEL:\\s*${this.escapeRegex(label)}\\s*$`, 'i'), type: 'Figure/Table' }
+            { regex: new RegExp(`^\\s*#\\+LABEL:\\s*${escapedLabel}(?:\\s|$)`, 'i'), type: 'Figure/Table' }
         ];
 
         // Search in current document first
@@ -465,7 +470,8 @@ export class RefHoverProvider implements vscode.HoverProvider {
         const lines = text.split('\n');
 
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
+            // Trim trailing whitespace/carriage returns that may remain after split
+            const line = lines[i].replace(/\r$/, '');
             for (const { regex, type } of labelPatterns) {
                 if (regex.test(line)) {
                     // Found the label! Get context
@@ -501,7 +507,8 @@ export class RefHoverProvider implements vscode.HoverProvider {
                         const fileLines = content.split('\n');
 
                         for (let i = 0; i < fileLines.length; i++) {
-                            const line = fileLines[i];
+                            // Trim trailing whitespace/carriage returns
+                            const line = fileLines[i].replace(/\r$/, '');
                             for (const { regex, type } of labelPatterns) {
                                 if (regex.test(line)) {
                                     const context = this.getContext(fileLines, i, type);
