@@ -922,6 +922,38 @@ function parseNotebookLinkPath(path: string): { projectName: string; filePath: s
     return { projectName, filePath, target: target || undefined };
 }
 
+/**
+ * Reference link handler (for #+name: targets)
+ * Allows linking to named elements like tables and src blocks
+ */
+export const refHandler: LinkTypeHandler = {
+    type: 'ref',
+    description: 'Named element references',
+
+    resolve(path: string, context: LinkContext): LinkResolution {
+        return {
+            displayText: path,
+            tooltip: `Reference: ${path}`,
+            metadata: { name: path },
+        };
+    },
+
+    export(path: string, description: string | undefined, backend: 'html' | 'latex' | 'text'): string {
+        const text = description || path;
+        switch (backend) {
+            case 'html':
+                return `<a href="#${escapeHtml(path)}">${escapeHtml(text)}</a>`;
+            case 'latex':
+                return description
+                    ? `\\hyperref[${path}]{${escapeLatex(text)}}`
+                    : `\\ref{${path}}`;
+            case 'text':
+            default:
+                return text;
+        }
+    },
+};
+
 // =============================================================================
 // Helper Functions
 // =============================================================================
@@ -950,6 +982,7 @@ export function registerBuiltinHandlers(): void {
     linkTypeRegistry.register(roamHandler);
     linkTypeRegistry.register(cmdHandler);
     linkTypeRegistry.register(notebookHandler);
+    linkTypeRegistry.register(refHandler);
 }
 
 // Auto-register built-in handlers

@@ -3278,6 +3278,9 @@ export async function openLinkAtPoint(): Promise<void> {
     } else if (url.startsWith('id:')) {
         // ID link: [[id:uuid]] - search for :ID: property
         await searchAndJumpToId(url.slice(3));
+    } else if (url.startsWith('ref:')) {
+        // Reference link: [[ref:name]] - search for #+name: name
+        await searchAndJumpToTarget(document, url.slice(4));
     } else if (url.includes('::')) {
         // File link with search component but without file: prefix
         // e.g., [[05-links.org::#custom-id]] or [[file.org::*Heading]]
