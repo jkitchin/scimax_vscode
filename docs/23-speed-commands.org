@@ -152,10 +152,10 @@ Reorganize and modify your document structure.
 |-----+----------------------+------------------------------------------------|
 | U   | Move subtree up      | Move entire subtree (and children) up          |
 | D   | Move subtree down    | Move entire subtree (and children) down        |
-| r   | Demote subtree       | Decrease level of subtree (shift right)        |
-| l   | Promote subtree      | Increase level of subtree (shift left)         |
-| R   | Demote heading       | Decrease level of heading only (not children)  |
-| L   | Promote heading      | Increase level of heading only (not children)  |
+| r   | Demote heading       | Decrease level of heading only (shift right)   |
+| l   | Promote heading      | Increase level of heading only (shift left)    |
+| R   | Demote subtree       | Decrease level of subtree (and children)       |
+| L   | Promote subtree      | Increase level of subtree (and children)       |
 | w   | Kill (cut) subtree   | Cut subtree to clipboard                       |
 | y   | Yank (paste) subtree | Paste subtree from clipboard with level adjust |
 | W   | Clone subtree        | Duplicate the current subtree                  |
@@ -165,8 +165,8 @@ CLOSED: [2026-01-15 Thu 14:47]
 
 - *Promote* (left) decreases the heading level (fewer stars/hashes)
 - *Demote* (right) increases the heading level (more stars/hashes)
-- Uppercase `L'/`R' affect only the heading line
-- Lowercase `l'/`r' affect the entire subtree
+- Lowercase `l'/`r' affect only the heading line
+- Uppercase `L'/`R' affect the entire subtree (heading and children)
 - `y' (yank) intelligently adjusts heading levels to match context
 
 ** ✅ TODO and Priority Commands
@@ -454,16 +454,16 @@ Complete alphabetical reference of all speed commands.
 | g   | Navigation | Go to... (submenu)      |
 | I   | Clocking   | Clock in                |
 | j   | Navigation | Jump to heading         |
-| l   | Structure  | Promote subtree         |
-| L   | Structure  | Promote heading         |
+| l   | Structure  | Promote heading         |
+| L   | Structure  | Promote subtree         |
 | n   | Navigation | Next heading            |
 | N   | Special    | Narrow to subtree       |
 | o   | Visibility | Overview (fold all)     |
 | O   | Clocking   | Clock out               |
 | p   | Navigation | Previous heading        |
 | P   | Metadata   | Set property            |
-| r   | Structure  | Demote subtree          |
-| R   | Structure  | Demote heading          |
+| r   | Structure  | Demote heading          |
+| R   | Structure  | Demote subtree          |
 | s   | Planning   | Add/edit SCHEDULED      |
 | S   | Special    | Widen (show all)        |
 | t   | TODO       | Cycle TODO state        |

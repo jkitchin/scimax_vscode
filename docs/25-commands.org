@@ -805,10 +805,10 @@ CLOSED: [2026-01-17 Sat 12:48]
 |---------------------------------------+----------------------+-----------|
 | [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   |
 | [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   |
-| [[cmd:scimax.heading.demoteSubtree]]  | Demote Subtree       | r         |
-| [[cmd:scimax.heading.promoteSubtree]] | Promote Subtree      | l         |
-| [[cmd:scimax.heading.demote]]         | Demote Heading       | R (S-r)   |
-| [[cmd:scimax.heading.promote]]        | Promote Heading      | L (S-l)   |
+| [[cmd:scimax.heading.demote]]         | Demote Heading       | r         |
+| [[cmd:scimax.heading.promote]]        | Promote Heading      | l         |
+| [[cmd:scimax.heading.demoteSubtree]]  | Demote Subtree       | R (S-r)   |
+| [[cmd:scimax.heading.promoteSubtree]] | Promote Subtree      | L (S-l)   |
 | [[cmd:scimax.org.killSubtree]]        | Kill Subtree         | w         |
 | [[cmd:scimax.speed.yankSubtree]]      | Yank (Paste) Subtree | y         |
 | [[cmd:scimax.org.cloneSubtree]]       | Clone Subtree        | W (S-w)   |

@@ -414,10 +414,10 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 
 | Key | Action               |
 |-----+----------------------|
-| l   | Promote subtree      |
-| r   | Demote subtree       |
-| L   | Promote heading only |
-| R   | Demote heading only  |
+| l   | Promote heading only |
+| r   | Demote heading only  |
+| L   | Promote subtree      |
+| R   | Demote subtree       |
 | U   | Move subtree up      |
 | D   | Move subtree down    |
 

@@ -1985,6 +1985,10 @@
         "title": "Scimax: Import Table from Clipboard"
       },
       {
+        "command": "scimax.table.importFile",
+        "title": "Scimax: Import Table from File"
+      },
+      {
         "command": "scimax.table.sumColumn",
         "title": "Scimax: Sum Column"
       },
@@ -2231,6 +2235,10 @@
       {
         "command": "scimax.agenda.month",
         "title": "Scimax: Month Agenda"
+      },
+      {
+        "command": "scimax.agenda.currentFile",
+        "title": "Scimax: Agenda for Current File"
       },
       {
         "command": "scimax.agenda.todoList",
@@ -3083,6 +3091,12 @@
         "when": "!terminalFocus"
       },
       {
+        "command": "scimax.agenda.currentFile",
+        "key": "ctrl+c a shift+,",
+        "mac": "ctrl+c a shift+,",
+        "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
         "command": "scimax.journal.prev",
         "key": "alt+[",
         "mac": "ctrl+cmd+[",
@@ -3377,6 +3391,30 @@
         "when": "editorTextFocus && !terminalFocus"
       },
       {
+        "command": "scimax.table.moveRowUp",
+        "key": "alt+up",
+        "mac": "alt+up",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.moveRowDown",
+        "key": "alt+down",
+        "mac": "alt+down",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.moveColumnLeft",
+        "key": "alt+left",
+        "mac": "alt+left",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
+        "command": "scimax.table.moveColumnRight",
+        "key": "alt+right",
+        "mac": "alt+right",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable"
+      },
+      {
         "command": "scimax.table.insertRowAbove",
         "key": "alt+shift+up",
         "mac": "alt+shift+up",
@@ -3422,13 +3460,13 @@
         "command": "scimax.heading.promote",
         "key": "alt+left",
         "mac": "alt+left",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.demote",
         "key": "alt+right",
         "mac": "alt+right",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.promoteSubtree",
@@ -3446,13 +3484,13 @@
         "command": "scimax.heading.moveUp",
         "key": "alt+up",
         "mac": "alt+up",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.moveDown",
         "key": "alt+down",
         "mac": "alt+down",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !scimax.onHeading && !scimax.inTable"
       },
       {
         "command": "scimax.heading.insert",

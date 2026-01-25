@@ -1,5 +1,5 @@
 {
-  "buildDate": "2026-01-25T00:26:59.829Z",
+  "buildDate": "2026-01-25T17:46:33.748Z",
   "count": 3188,
   "entries": [
     {
@@ -67301,7 +67301,7 @@
       "level": 2,
       "file": "23-speed-commands.org",
       "line": 146,
-      "content": "CLOSED: [2026-01-17 Sat 15:38] Reorganize and modify your document structure. | Key | Command              | Description                                    | |-----+----------------------+------------------------------------------------| | U   | Move subtree up      | Move entire subtree (and children) up          | | D   | Move subtree down    | Move entire subtree (and children) down        | | r   | Demote subtree       | Decrease level of subtree (shift right)        | | l   | Promote subtre",
+      "content": "CLOSED: [2026-01-17 Sat 15:38] Reorganize and modify your document structure. | Key | Command              | Description                                    | |-----+----------------------+------------------------------------------------| | U   | Move subtree up      | Move entire subtree (and children) up          | | D   | Move subtree down    | Move entire subtree (and children) down        | | r   | Demote heading       | Decrease level of heading only (shift right)   | | l   | Promote headin",
       "path": [
         "Speed Command Reference"
       ],
@@ -67335,7 +67335,7 @@
       "level": 3,
       "file": "23-speed-commands.org",
       "line": 163,
-      "content": "CLOSED: [2026-01-15 Thu 14:47] - *Promote* (left) decreases the heading level (fewer stars/hashes) - *Demote* (right) increases the heading level (more stars/hashes) - Uppercase `L'/`R' affect only the heading line - Lowercase `l'/`r' affect the entire subtree - `y' (yank) intelligently adjusts heading levels to match context",
+      "content": "CLOSED: [2026-01-15 Thu 14:47] - *Promote* (left) decreases the heading level (fewer stars/hashes) - *Demote* (right) increases the heading level (more stars/hashes) - Lowercase `l'/`r' affect only the heading line - Uppercase `L'/`R' affect the entire subtree (heading and children) - `y' (yank) intelligently adjusts heading levels to match context",
       "path": [
         "Speed Command Reference",
         "Structure Editing Commands"
@@ -67360,7 +67360,7 @@
         "demote",
         "right",
         "increases",
-        "uppercase",
+        "lowercase",
         "affect",
         "line"
       ]
@@ -70475,7 +70475,7 @@
       "level": 2,
       "file": "24-keybindings.org",
       "line": 413,
-      "content": "| Key | Action               | |-----+----------------------| | l   | Promote subtree      | | r   | Demote subtree       | | L   | Promote heading only | | R   | Demote heading only  | | U   | Move subtree up      | | D   | Move subtree down    |",
+      "content": "| Key | Action               | |-----+----------------------| | l   | Promote heading only | | r   | Demote heading only  | | L   | Promote subtree      | | R   | Demote subtree       | | U   | Move subtree up      | | D   | Move subtree down    |",
       "path": [
         "Speed Commands"
       ],
@@ -70490,9 +70490,9 @@
         "action",
         "---------------------------",
         "promote",
-        "subtree",
-        "demote",
         "heading",
+        "demote",
+        "subtree",
         "move",
         "down"
       ]
@@ -73815,15 +73815,15 @@
       "level": 2,
       "file": "25-commands.org",
       "line": 801,
-      "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description          | Speed Key | |---------------------------------------+----------------------+-----------| | [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   | | [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   | | [[cmd:scimax.heading.demoteSubtree]]  | Demote Subtree       | r         | | [[cmd:scimax.heading.promoteSubtree]] | Promote Subtree      | l         | | [[cmd",
+      "content": "CLOSED: [2026-01-17 Sat 12:48] | Command ID                            | Description          | Speed Key | |---------------------------------------+----------------------+-----------| | [[cmd:scimax.heading.moveUp]]         | Move Heading Up      | U (S-u)   | | [[cmd:scimax.heading.moveDown]]       | Move Heading Down    | D (S-d)   | | [[cmd:scimax.heading.demote]]         | Demote Heading       | r         | | [[cmd:scimax.heading.promote]]        | Promote Heading      | l         | | [[cmd",
       "path": [
         "Speed Commands"
       ],
       "commands": [
         "scimax.heading.moveUp",
         "scimax.heading.moveDown",
-        "scimax.heading.demoteSubtree",
-        "scimax.heading.promoteSubtree"
+        "scimax.heading.demote",
+        "scimax.heading.promote"
       ],
       "keybindings": [],
       "keywords": [
@@ -73845,7 +73845,6 @@
         "down",
         "s-d",
         "demote",
-        "subtree",
         "promote"
       ]
     },
