@@ -1467,6 +1467,19 @@
         "title": "Scimax: Open Dired for Workspace"
       },
       {
+        "command": "scimax.findFile",
+        "title": "Scimax: Find File (C-x C-f)",
+        "icon": "$(file)"
+      },
+      {
+        "command": "scimax.findFileHome",
+        "title": "Scimax: Find File in Home Directory"
+      },
+      {
+        "command": "scimax.findFileWorkspace",
+        "title": "Scimax: Find File in Workspace"
+      },
+      {
         "command": "scimax.projectile.switch",
         "title": "Scimax: Switch Project"
       },
@@ -1809,6 +1822,14 @@
       {
         "command": "scimax.org.cloneSubtree",
         "title": "Scimax: Clone Subtree"
+      },
+      {
+        "command": "scimax.org.refile",
+        "title": "Scimax: Refile Subtree"
+      },
+      {
+        "command": "scimax.org.refileCopy",
+        "title": "Scimax: Copy Subtree to Refile Target"
       },
       {
         "command": "scimax.org.markSubtree",
@@ -2973,6 +2994,11 @@
         "command": "scimax.dired.open",
         "key": "ctrl+x d",
         "mac": "ctrl+x d"
+      },
+      {
+        "command": "scimax.findFile",
+        "key": "ctrl+x ctrl+f",
+        "mac": "ctrl+x ctrl+f"
       },
       {
         "command": "workbench.action.navigateBack",
@@ -4168,6 +4194,11 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
       },
       {
+        "command": "scimax.org.refile",
+        "key": "shift+f",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
         "command": "scimax.org.cycleTodo",
         "key": "t",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
@@ -4730,6 +4761,18 @@
         "key": "ctrl+c ctrl+x i",
         "mac": "ctrl+c ctrl+x i",
         "when": "editorTextFocus && editorLangId == 'org' && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.refile",
+        "key": "ctrl+c ctrl+w",
+        "mac": "ctrl+c ctrl+w",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
+      },
+      {
+        "command": "scimax.org.refileCopy",
+        "key": "ctrl+c alt+w",
+        "mac": "ctrl+c alt+w",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && !terminalFocus"
       },
       {
         "command": "scimax.table.recalculate",

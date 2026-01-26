@@ -46,6 +46,7 @@ import { registerCustomExportCommands } from './export/commands';
 import { registerScimaxOrgCommands } from './org/scimaxOrg';
 import { registerScreenshotCommands } from './org/screenshotProvider';
 import { registerScimaxObCommands } from './org/scimaxOb';
+import { registerRefileCommands } from './org/refileProvider';
 import { registerSpeedCommands } from './org/speedCommands';
 import { parseStartupOptions, applyStartupVisibility } from './org/speedCommands/visibility';
 import { registerImageOverlayCommands } from './org/imageOverlayProvider';
@@ -73,6 +74,7 @@ import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger } from './utils/logger';
 import { registerDiredCommands } from './dired';
+import { registerFindFileCommands } from './findFile';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -482,6 +484,9 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Scimax-ob commands (source block manipulation)
     registerScimaxObCommands(context);
 
+    // Register Refile commands (move/copy subtrees to target headings)
+    registerRefileCommands(context);
+
     // Register Speed Commands (single-key shortcuts at heading start)
     registerSpeedCommands(context);
 
@@ -493,6 +498,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Dired Commands (C-x d, Emacs-style directory editor)
     registerDiredCommands(context);
+
+    // Register Find File Commands (C-x C-f, Emacs-style file navigation)
+    registerFindFileCommands(context);
 
     // Register Image Overlay Commands (inline image thumbnails)
     registerImageOverlayCommands(context);
