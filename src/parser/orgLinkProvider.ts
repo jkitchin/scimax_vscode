@@ -949,23 +949,24 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
                 const uri = vscode.Uri.file(file);
                 const ext = path.extname(file).toLowerCase();
 
-                // Binary files that should be opened externally or with VS Code's built-in viewers
-                const binaryExtensions = [
-                    '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.svg', '.ico',
-                    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
-                    '.zip', '.tar', '.gz', '.7z', '.rar',
-                    '.mp3', '.mp4', '.wav', '.avi', '.mov', '.mkv',
-                    '.exe', '.dmg', '.app'
+                // Text files that benefit from unfold-all behavior after opening
+                // For these, we use openTextDocument to control fold state
+                const textExtensionsWithFolding = [
+                    '.org', '.md', '.markdown', '.txt', '.rst',
+                    '.ts', '.js', '.tsx', '.jsx', '.py', '.rb', '.go', '.rs',
+                    '.java', '.c', '.cpp', '.h', '.hpp', '.cs',
+                    '.json', '.yaml', '.yml', '.toml', '.xml', '.html', '.css',
+                    '.sh', '.bash', '.zsh', '.el', '.lisp', '.scm'
                 ];
 
-                if (binaryExtensions.includes(ext)) {
-                    // Use vscode.open which handles binary files appropriately
-                    // (images open in preview, PDFs in external viewer, etc.)
+                if (!textExtensionsWithFolding.includes(ext)) {
+                    // Let VS Code decide how to open this file
+                    // (notebooks as notebooks, images in viewer, office docs with appropriate handler, etc.)
                     await vscode.commands.executeCommand('vscode.open', uri);
                     return;
                 }
 
-                // Text files - open in editor with unfolding
+                // Text files with folding - open in editor and unfold
                 const doc = await vscode.workspace.openTextDocument(file);
                 const editor = await vscode.window.showTextDocument(doc);
 

@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-26T18:52:14.008Z",
-  "count": 3202,
+  "buildDate": "2026-01-26T18:57:56.337Z",
+  "count": 3214,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -94377,10 +94377,46 @@
       ]
     },
     {
-      "heading": "WDired Mode (Writable Dired)",
+      "heading": "Actions Menu (M-o)",
       "level": 2,
       "file": "37-dired.org",
       "line": 56,
+      "content": "Press ~M-o~ (Option+O on Mac) to open an actions menu for the selected file: | Action | Description | |--------+-------------| | Enter Directory | Enter the selected directory | | Open in Editor | Open file in VS Code editor | | Open in Finder/Explorer | Reveal in system file manager | | Copy Path | Copy full path to clipboard | | Copy File | Copy file to destination | | Rename/Move | Rename or move file | | Delete | Delete file (with confirmation) | | Mark | Mark file for batch operations | | U",
+      "path": [
+        "Dired - Directory Editor"
+      ],
+      "commands": [],
+      "keybindings": [
+        "M-o"
+      ],
+      "keywords": [
+        "actions",
+        "menu",
+        "m-o",
+        "press",
+        "optiono",
+        "mac",
+        "open",
+        "selected",
+        "action",
+        "description",
+        "---------------------",
+        "enter",
+        "directory",
+        "editor",
+        "code",
+        "finderexplorer",
+        "reveal",
+        "system",
+        "manager",
+        "copy"
+      ]
+    },
+    {
+      "heading": "WDired Mode (Writable Dired)",
+      "level": 2,
+      "file": "37-dired.org",
+      "line": 73,
       "content": "WDired mode allows you to rename files by editing their names directly, like editing text: | Key | Action | |-----+--------| | ~C-x C-q~ | Enter wdired mode (names become editable) | | ~C-c C-c~ | Commit renames | | ~C-c C-k~ | Cancel and exit wdired mode | In wdired mode: 1. Edit filenames directly in the listing 2. Changes are highlighted 3. Press ~C-c C-c~ to apply all renames at once 4. Press ~C-c C-k~ to discard changes",
       "path": [
         "Dired - Directory Editor"
@@ -94418,7 +94454,7 @@
       "heading": "Sorting and Filtering",
       "level": 2,
       "file": "37-dired.org",
-      "line": 72,
+      "line": 89,
       "content": "| Key | Action | |-----+--------| | ~s~ | Cycle sort field (name, size, date, extension) | | ~.~ | Toggle showing hidden files (dotfiles) | | ~/~ | Set filter pattern (regex) |",
       "path": [
         "Dired - Directory Editor"
@@ -94452,7 +94488,7 @@
       "heading": "Display Format",
       "level": 2,
       "file": "37-dired.org",
-      "line": 80,
+      "line": 97,
       "content": "Each line shows: #+begin_example drwxr-xr-x  4096  2024-01-15 10:30  Documents/ -rw-r--r--  1234  2024-01-14 09:15  file.txt lrwxrwxrwx    12  2024-01-13 08:00  link -> target #+end_example - First column: file permissions (d=directory, l=symlink, -=file) - Second column: file size - Third column: modification date/time - Fourth column: filename (directories end with /)",
       "path": [
         "Dired - Directory Editor"
@@ -94486,7 +94522,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "37-dired.org",
-      "line": 94,
+      "line": 111,
       "content": "| Setting | Default | Description | |---------+---------+-------------| | ~scimax.dired.showHidden~ | ~false~ | Show hidden files by default | | ~scimax.dired.confirmDelete~ | ~true~ | Show confirmation before deleting | | ~scimax.dired.defaultSort~ | ~\"name\"~ | Default sort field (name, size, mtime, extension) |",
       "path": [
         "Dired - Directory Editor"
@@ -94522,7 +94558,7 @@
       "heading": "Security",
       "level": 2,
       "file": "37-dired.org",
-      "line": 102,
+      "line": 119,
       "content": "Dired includes security protections: - Path traversal prevention (no ~..~ in filenames) - Filename validation (no path separators in names) - Delete operations use system trash by default - Regex patterns are validated to prevent ReDoS attacks",
       "path": [
         "Dired - Directory Editor"
@@ -94556,24 +94592,385 @@
       "heading": "Related Topics",
       "level": 2,
       "file": "37-dired.org",
-      "line": 110,
-      "content": "- [[file:21-navigation.org][Navigation]] - General navigation features - [[file:17-projectile.org][Projectile]] - Project management - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts",
+      "line": 127,
+      "content": "- [[file:38-find-file.org][Find File]] - Quick file navigation (C-x C-f) - [[file:21-navigation.org][Navigation]] - General navigation features - [[file:17-projectile.org][Projectile]] - Project management - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts",
       "path": [
         "Dired - Directory Editor"
       ],
       "commands": [],
-      "keybindings": [],
+      "keybindings": [
+        "C-x C-f"
+      ],
       "keywords": [
         "related",
         "topics",
-        "file21-navigationorg",
+        "file38-find-fileorg",
+        "find",
+        "quick",
         "navigation",
+        "c-x",
+        "c-f",
+        "file21-navigationorg",
         "general",
         "features",
         "file17-projectileorg",
         "projectile",
         "project",
         "management",
+        "file24-keybindingsorg",
+        "keybindings",
+        "keyboard",
+        "shortcuts"
+      ]
+    },
+    {
+      "heading": "Find File (C-x C-f)",
+      "level": 1,
+      "file": "38-find-file.org",
+      "line": 4,
+      "content": "Find File provides Emacs-style file navigation in VS Code. It displays a filterable directory listing in a webview panel where you can quickly navigate directories, open files, and perform actions like inserting file paths or org-links.",
+      "path": [],
+      "commands": [],
+      "keybindings": [
+        "C-x C-f"
+      ],
+      "keywords": [
+        "find",
+        "c-x",
+        "c-f",
+        "provides",
+        "emacs-style",
+        "navigation",
+        "code",
+        "displays",
+        "filterable",
+        "directory",
+        "listing",
+        "webview",
+        "panel",
+        "quickly",
+        "navigate",
+        "directories",
+        "open",
+        "perform",
+        "actions",
+        "like"
+      ]
+    },
+    {
+      "heading": "Opening Find File",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 8,
+      "content": "| Keybinding | Command | Description | |------------+---------+-------------| | ~C-x C-f~ | =scimax.findFile= | Open find-file (starts in current file's directory) | | | =scimax.findFileHome= | Open find-file in home directory | | | =scimax.findFileWorkspace= | Open find-file in workspace root |",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [
+        "scimax.findFile",
+        "scimax.findFileHome",
+        "scimax.findFileWorkspace"
+      ],
+      "keybindings": [
+        "C-x C-f"
+      ],
+      "keywords": [
+        "opening",
+        "find",
+        "keybinding",
+        "command",
+        "description",
+        "----------------------------------",
+        "c-x",
+        "c-f",
+        "open",
+        "find-file",
+        "starts",
+        "current",
+        "directory",
+        "home",
+        "workspace",
+        "root"
+      ]
+    },
+    {
+      "heading": "Navigation",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 16,
+      "content": "| Key | Action | |-----+--------| | ~Up~ / ~C-p~ | Move selection up | | ~Down~ / ~C-n~ | Move selection down | | ~Tab~ | Enter selected directory | | ~Backspace~ | Go to parent directory (or delete filter character) | | ~Enter~ | Open file in editor, or open directory in dired | | ~PageUp~ / ~PageDown~ | Move selection by 10 | | ~Home~ / ~End~ | Jump to first/last entry |",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-p",
+        "C-n"
+      ],
+      "keywords": [
+        "navigation",
+        "key",
+        "action",
+        "-------------",
+        "c-p",
+        "move",
+        "selection",
+        "down",
+        "c-n",
+        "tab",
+        "enter",
+        "selected",
+        "directory",
+        "backspace",
+        "parent",
+        "delete",
+        "filter",
+        "character",
+        "open",
+        "editor"
+      ]
+    },
+    {
+      "heading": "Filtering",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 28,
+      "content": "Simply type to filter the file list. The filter uses fuzzy matching - characters must appear in order but don't need to be consecutive. | Key | Action | |-----+--------| | /any character/ | Add to filter | | ~Backspace~ | Remove last filter character (or go to parent if empty) | | ~C-u~ | Clear filter |",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-u"
+      ],
+      "keywords": [
+        "filtering",
+        "simply",
+        "type",
+        "filter",
+        "list",
+        "uses",
+        "fuzzy",
+        "matching",
+        "characters",
+        "must",
+        "appear",
+        "order",
+        "don",
+        "need",
+        "consecutive",
+        "key",
+        "action",
+        "-------------",
+        "any",
+        "character"
+      ]
+    },
+    {
+      "heading": "Toggle Hidden Files",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 38,
+      "content": "| Key | Action | |-----+--------| | ~.~ | Toggle showing hidden files (dotfiles) | Only works when filter is empty.",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "toggle",
+        "hidden",
+        "key",
+        "action",
+        "-------------",
+        "showing",
+        "dotfiles",
+        "works",
+        "filter",
+        "empty"
+      ]
+    },
+    {
+      "heading": "Actions Menu (M-o)",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 46,
+      "content": "Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key to execute the action, or click on an action. | Key | Action | |-----+--------| | ~o~ | Open file (default) | | ~j~ | Open in split (side-by-side) | | ~p~ | Insert relative path at original cursor | | ~P~ | Insert absolute path at original cursor | | ~l~ | Insert org-link with relative path | | ~L~ | Insert org-link with absolute path | | ~c~ | Copy relative path to clipboard | | ~C~ | Copy absolute path to clipboard ",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [
+        "M-o"
+      ],
+      "keywords": [
+        "actions",
+        "menu",
+        "m-o",
+        "press",
+        "optiono",
+        "mac",
+        "open",
+        "speed",
+        "key",
+        "execute",
+        "action",
+        "click",
+        "-------------",
+        "default",
+        "split",
+        "side-by-side",
+        "insert",
+        "relative",
+        "path",
+        "original"
+      ]
+    },
+    {
+      "heading": "Path Insertion",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 67,
+      "content": "When you invoke find-file from an editor, your cursor position is remembered. The insert actions (~p~, ~P~, ~l~, ~L~) will insert the path at that original position. Example workflow: 1. In an org file, position cursor where you want a link 2. Press ~C-x C-f~ to open find-file 3. Navigate to the target file 4. Press ~M-o l~ to insert an org-link with relative path Result: =[[file:relative/path/to/file.org][file.org]]= is inserted at your cursor.",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [
+        "C-x C-f",
+        "M-o"
+      ],
+      "keywords": [
+        "path",
+        "insertion",
+        "invoke",
+        "find-file",
+        "editor",
+        "cursor",
+        "position",
+        "remembered",
+        "insert",
+        "actions",
+        "original",
+        "example",
+        "workflow",
+        "org",
+        "want",
+        "link",
+        "press",
+        "c-x",
+        "c-f",
+        "open"
+      ]
+    },
+    {
+      "heading": "Clickable Status Bar",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 79,
+      "content": "All status bar items are clickable: - Click ~Tab~ to enter directory - Click ~Enter~ to open - Click ~M-o~ to show actions menu - Click ~Backspace~ to go up/clear filter - Click ~.~ to toggle hidden files - Click ~Esc~ to quit",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [
+        "M-o"
+      ],
+      "keywords": [
+        "clickable",
+        "status",
+        "bar",
+        "items",
+        "click",
+        "tab",
+        "enter",
+        "directory",
+        "open",
+        "m-o",
+        "show",
+        "actions",
+        "menu",
+        "backspace",
+        "upclear",
+        "filter",
+        "toggle",
+        "hidden",
+        "esc",
+        "quit"
+      ]
+    },
+    {
+      "heading": "Display Format",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 89,
+      "content": "Each entry shows: - Icon (folder or file) - Name (directories end with /) - Size (for files) Directories are sorted before files, both alphabetically.",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "display",
+        "format",
+        "entry",
+        "shows",
+        "icon",
+        "folder",
+        "name",
+        "directories",
+        "end",
+        "size",
+        "sorted",
+        "before",
+        "alphabetically"
+      ]
+    },
+    {
+      "heading": "Quitting",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 98,
+      "content": "| Key | Action | |-----+--------| | ~Esc~ | Close find-file panel |",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "quitting",
+        "key",
+        "action",
+        "-------------",
+        "esc",
+        "close",
+        "find-file",
+        "panel"
+      ]
+    },
+    {
+      "heading": "Related Topics",
+      "level": 2,
+      "file": "38-find-file.org",
+      "line": 104,
+      "content": "- [[file:37-dired.org][Dired]] - Full-featured directory editor - [[file:21-navigation.org][Navigation]] - General navigation features - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts",
+      "path": [
+        "Find File (C-x C-f)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "related",
+        "topics",
+        "file37-diredorg",
+        "dired",
+        "full-featured",
+        "directory",
+        "editor",
+        "file21-navigationorg",
+        "navigation",
+        "general",
+        "features",
         "file24-keybindingsorg",
         "keybindings",
         "keyboard",
@@ -95846,10 +96243,12 @@
       "level": 1,
       "file": "index.org",
       "line": 34,
-      "content": "- [[file:database-search.html][Database and Search]] - [[file:references.html][References and Citations]] - [[file:journal.html][Journal]] - [[file:notebook.html][Notebook (Project Organization)]] - [[file:projectile.html][Projectile (Project Management)]] - [[file:dired.html][Dired (Directory Editor)]] - [[file:hydra-menus.html][Hydra Menus]] - [[file:editmarks.html][Editmarks (Track Changes)]]",
+      "content": "- [[file:database-search.html][Database and Search]] - [[file:references.html][References and Citations]] - [[file:journal.html][Journal]] - [[file:notebook.html][Notebook (Project Organization)]] - [[file:projectile.html][Projectile (Project Management)]] - [[file:dired.html][Dired (Directory Editor)]] - [[file:find-file.html][Find File (C-x C-f)]] - [[file:hydra-menus.html][Hydra Menus]] - [[file:editmarks.html][Editmarks (Track Changes)]]",
       "path": [],
       "commands": [],
-      "keybindings": [],
+      "keybindings": [
+        "C-x C-f"
+      ],
       "keywords": [
         "advanced",
         "features",
@@ -95877,7 +96276,7 @@
       "heading": "Reference",
       "level": 1,
       "file": "index.org",
-      "line": 44,
+      "line": 45,
       "content": "- [[file:org-api.html][Org API]]",
       "path": [],
       "commands": [],
