@@ -435,12 +435,14 @@ describe('DiredManager', () => {
         });
 
         it('should not navigate above root', async () => {
-            await manager.loadDirectory('/');
+            // Use platform-appropriate root: '/' on Unix, 'C:\' on Windows
+            const root = process.platform === 'win32' ? path.parse(process.cwd()).root : '/';
+            await manager.loadDirectory(root);
 
             await manager.navigateToParent();
 
             const state = manager.getState();
-            expect(state.currentDirectory).toBe('/');
+            expect(state.currentDirectory).toBe(root);
         });
     });
 
