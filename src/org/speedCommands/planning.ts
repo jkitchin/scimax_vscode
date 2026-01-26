@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
 import { parseRelativeDate, getDateExpressionExamples } from '../../utils/dateParser';
 import { formatOrgTimestamp as formatTimestamp } from '../../parser/orgRepeater';
-import { DAY_NAMES_SHORT } from '../../utils/dateConstants';
 
 /**
  * Format a date as an org-mode timestamp (wrapper for consistency)
@@ -86,44 +85,12 @@ function getPlanningIndent(document: vscode.TextDocument, headingLine: number): 
 }
 
 /**
- * Prompt user for a date using quick pick with natural language support
+ * Prompt user for a date using natural language input
  */
 async function promptForDate(title: string): Promise<Date | null> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextWeek = new Date(today);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-    const nextMonth = new Date(today);
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
-
-    const formatDisplay = (d: Date) => {
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${DAY_NAMES_SHORT[d.getDay()]}`;
-    };
-
-    const options: (vscode.QuickPickItem & { date?: Date })[] = [
-        { label: 'Today', description: formatDisplay(today), date: today },
-        { label: 'Tomorrow', description: formatDisplay(tomorrow), date: tomorrow },
-        { label: 'Next week', description: formatDisplay(nextWeek), date: nextWeek },
-        { label: 'Next month', description: formatDisplay(nextMonth), date: nextMonth },
-        { label: 'Enter date...', description: 'Type a date expression (e.g., +2d, monday, jan 15)' },
-    ];
-
-    const selected = await vscode.window.showQuickPick(options, {
-        placeHolder: title
-    });
-
-    if (!selected) return null;
-
-    if (selected.date) {
-        return selected.date;
-    }
-
-    // Custom date input with natural language support
     const input = await vscode.window.showInputBox({
-        prompt: `Enter date expression. ${getDateExpressionExamples()}`,
-        placeHolder: '+2d, monday, jan 15, 2026-01-15',
+        prompt: title,
+        placeHolder: 'today, tomorrow, +2d, monday, jan 15, 2026-01-15',
         validateInput: (value) => {
             if (!value) return null;
             const parsed = parseRelativeDate(value);
