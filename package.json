@@ -1182,6 +1182,10 @@
         "title": "Scimax: Search OpenAlex"
       },
       {
+        "command": "scimax.ref.searchCrossRef",
+        "title": "Scimax: Search CrossRef and Add Entry"
+      },
+      {
         "command": "scimax.ref.configureOpenAlex",
         "title": "Scimax: Configure OpenAlex API"
       },

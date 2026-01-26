@@ -785,6 +785,86 @@ export function registerReferenceCommands(
         })
     );
 
+    // Search CrossRef and add entry (like doi-utils-add-entry-from-crossref-query)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.ref.searchCrossRef', async () => {
+            const editor = vscode.window.activeTextEditor;
+
+            // Get initial query from selection or prompt
+            let initialQuery = '';
+            if (editor && !editor.selection.isEmpty) {
+                initialQuery = editor.document.getText(editor.selection).replace(/\n/g, ' ').trim();
+            }
+
+            const query = await vscode.window.showInputBox({
+                prompt: 'Search CrossRef',
+                placeHolder: 'Enter title, author, keywords...',
+                value: initialQuery
+            });
+
+            if (!query) return;
+
+            // Search CrossRef
+            const results = await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: 'Searching CrossRef...',
+                cancellable: false
+            }, async () => {
+                return await searchCrossRefWorks(query);
+            });
+
+            if (!results || results.length === 0) {
+                vscode.window.showInformationMessage(`No results found for "${query}"`);
+                return;
+            }
+
+            // Format results for QuickPick
+            const items = results.map(item => ({
+                label: item.title,
+                description: `${item.authors} (${item.year})`,
+                detail: `${item.publisher} | DOI: ${item.doi}`,
+                doi: item.doi
+            }));
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: `${results.length} results for "${query}"`,
+                matchOnDescription: true,
+                matchOnDetail: true
+            });
+
+            if (!selected) return;
+
+            // Add entry via DOI (reuses existing fetchFromDOI logic)
+            try {
+                const entry = await vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: 'Fetching BibTeX from CrossRef...',
+                    cancellable: false
+                }, async () => {
+                    return await manager.fetchFromDOI(selected.doi);
+                });
+
+                if (!entry) {
+                    vscode.window.showErrorMessage(`Failed to fetch entry for DOI: ${selected.doi}`);
+                    return;
+                }
+
+                // Show preview and confirm
+                const preview = formatCitation(entry, 'full');
+                const action = await vscode.window.showInformationMessage(
+                    `${entry.key}: ${preview.substring(0, 150)}...`,
+                    'Add', 'Cancel'
+                );
+
+                if (action === 'Add') {
+                    await manager.addEntryWithUniqueKey(entry);
+                }
+            } catch (error) {
+                vscode.window.showErrorMessage(`Error: ${error}`);
+            }
+        })
+    );
+
     // Insert ref link (C-u C-c ])
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.ref.insertRef', async () => {
@@ -1022,6 +1102,112 @@ function extractCitationKeys(text: string): Set<string> {
     }
 
     return keys;
+}
+
+/**
+ * CrossRef work result from /works endpoint
+ */
+interface CrossRefWorkResult {
+    title: string;
+    authors: string;
+    publisher: string;
+    year: string;
+    doi: string;
+}
+
+/**
+ * Search CrossRef /works endpoint by query
+ * Returns formatted results for display
+ */
+async function searchCrossRefWorks(query: string, rows: number = 20): Promise<CrossRefWorkResult[]> {
+    return new Promise((resolve) => {
+        const https = require('https');
+
+        // Get email for polite pool access
+        const config = vscode.workspace.getConfiguration('scimax');
+        const mailto = config.get<string>('email') || '';
+
+        const url = new URL('https://api.crossref.org/works');
+        url.searchParams.set('query', query);
+        url.searchParams.set('rows', rows.toString());
+        if (mailto) {
+            url.searchParams.set('mailto', mailto);
+        }
+
+        const options = {
+            hostname: url.hostname,
+            path: url.pathname + url.search,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'scimax-vscode/1.0 (https://github.com/jkitchin/scimax_vscode)'
+            },
+            timeout: 10000
+        };
+
+        const req = https.request(options, (res: any) => {
+            let data = '';
+
+            res.on('data', (chunk: any) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    try {
+                        const json = JSON.parse(data);
+                        const items = json.message?.items || [];
+
+                        const results: CrossRefWorkResult[] = items.map((item: any) => {
+                            // Format title
+                            const title = (item.title || []).join(' ') || 'Untitled';
+
+                            // Format authors
+                            const authors = (item.author || [])
+                                .map((a: any) => a.given ? `${a.given} ${a.family}` : a.family || a.name || '')
+                                .filter((a: string) => a)
+                                .join(', ') || 'Unknown';
+
+                            // Get year from various date fields
+                            const year = item.published?.['date-parts']?.[0]?.[0]?.toString() ||
+                                        item['published-print']?.['date-parts']?.[0]?.[0]?.toString() ||
+                                        item['published-online']?.['date-parts']?.[0]?.[0]?.toString() ||
+                                        item.created?.['date-parts']?.[0]?.[0]?.toString() ||
+                                        'n.d.';
+
+                            // Publisher
+                            const publisher = item.publisher || item['container-title']?.[0] || '';
+
+                            return {
+                                title,
+                                authors,
+                                publisher,
+                                year,
+                                doi: item.DOI || ''
+                            };
+                        }).filter((r: CrossRefWorkResult) => r.doi); // Only return items with DOIs
+
+                        resolve(results);
+                    } catch {
+                        resolve([]);
+                    }
+                } else {
+                    resolve([]);
+                }
+            });
+        });
+
+        req.on('error', () => {
+            resolve([]);
+        });
+
+        req.on('timeout', () => {
+            req.destroy();
+            resolve([]);
+        });
+
+        req.end();
+    });
 }
 
 interface LabelInfo {
