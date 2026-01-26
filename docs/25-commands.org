@@ -284,26 +284,28 @@ CLOSED: [2026-01-17 Sat 12:27]
 |-----------------------------------+---------------------+--------------------|
 | [[cmd:scimax.org.exportMarkdown]] | Export to Markdown  | C-c C-e m m        |
 
-** ⚠️ Jupyter Notebook Export
+** ✅ Jupyter Notebook Export
+CLOSED: [2026-01-25 Sun 20:43]
 
 Export org documents to Jupyter notebook (.ipynb) format.
 
-| Command ID                              | Description                      | Default Keybinding |
-|-----------------------------------------+----------------------------------+--------------------|
-| [[cmd:scimax.org.exportIpynb]]          | Export to Jupyter Notebook       | -                  |
-| [[cmd:scimax.org.exportIpynbOpen]]      | Export to Notebook and Open      | -                  |
-| [[cmd:scimax.org.exportIpynbParticipant]]| Export via Chat Participant     | -                  |
+| Command ID                                | Description                 | Default Keybinding |
+|-------------------------------------------+-----------------------------+--------------------|
+| [[cmd:scimax.org.exportIpynb]]            | Export to Jupyter Notebook  | -                  |
+| [[cmd:scimax.org.exportIpynbOpen]]        | Export to Notebook and Open | -                  |
+| [[cmd:scimax.org.exportIpynbParticipant]] | Export via Chat Participant | -                  |
 
-** ⚠️ Clipboard Export
+** ✅ Clipboard Export
+CLOSED: [2026-01-25 Sun 20:43]
 
 Copy document content to clipboard in various formats for pasting into other applications.
 
-| Command ID                           | Description                          | Default Keybinding |
-|--------------------------------------+--------------------------------------+--------------------|
-| [[cmd:scimax.org.clipboardHtmlRich]] | Copy as Rich HTML (for Word, etc.)   | -                  |
-| [[cmd:scimax.org.clipboardHtmlSource]]| Copy as HTML Source                 | -                  |
-| [[cmd:scimax.org.clipboardLatex]]    | Copy as LaTeX                        | -                  |
-| [[cmd:scimax.org.clipboardMarkdown]] | Copy as Markdown                     | -                  |
+| Command ID                             | Description                        | Default Keybinding |
+|----------------------------------------+------------------------------------+--------------------|
+| [[cmd:scimax.org.clipboardHtmlRich]]   | Copy as Rich HTML (for Word, etc.) | -                  |
+| [[cmd:scimax.org.clipboardHtmlSource]] | Copy as HTML Source                | -                  |
+| [[cmd:scimax.org.clipboardLatex]]      | Copy as LaTeX                      | -                  |
+| [[cmd:scimax.org.clipboardMarkdown]]   | Copy as Markdown                   | -                  |
 
 ** ✅ Custom Exporters
 CLOSED: [2026-01-24 Sat 17:42]
@@ -541,6 +543,7 @@ CLOSED: [2026-01-17 Sat 12:46]
 | [[cmd:scimax.ref.showCitingWorks]]  | Show Citing Works (OpenAlex)  | -                  |
 | [[cmd:scimax.ref.showRelatedWorks]] | Show Related Works (OpenAlex) | -                  |
 | [[cmd:scimax.ref.searchOpenAlex]]   | Search OpenAlex               | -                  |
+| [[cmd:scimax.ref.searchCrossRef]]   | Search CrossRef and Add Entry | -                  |
 | [[cmd:scimax.ref.configureOpenAlex]]| Configure OpenAlex API        | -                  |
 
 ** ✅ BibTeX Speed Commands

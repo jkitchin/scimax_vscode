@@ -509,6 +509,27 @@ The system fetches metadata from CrossRef API and converts it to BibTeX format. 
 - Generate a new unique key
 - Cancel
 
+** Search CrossRef by Query
+
+| Command                   | Description                              |
+|---------------------------+------------------------------------------|
+| scimax.ref.searchCrossRef | Search CrossRef and add entry by query   |
+
+When you don't have a DOI, you can search CrossRef directly by title, author, or keywords:
+
+1. Run =scimax.ref.searchCrossRef=
+2. Enter search query (or select text first to pre-fill)
+3. Browse results showing title, authors, year, publisher, and DOI
+4. Select an entry to add
+5. Confirm to add to bibliography
+
+This is useful when:
+- You have a paper title but not its DOI
+- You want to find papers by a specific author
+- You remember keywords but not the exact citation
+
+If you have text selected when running the command, it will be used as the initial search query.
+
 ** OpenAlex Integration
 
 OpenAlex provides enhanced metadata for academic works:
@@ -581,7 +602,15 @@ Beyond citations, Scimax supports cross-references to figures, tables, equations
 
 ** Label Definitions
 
-Define labels for cross-referencing:
+Define labels for cross-referencing. The =ref:= link type searches for these label definitions:
+
+| Definition Type | Syntax                    | Example               |
+|-----------------+---------------------------+-----------------------|
+| #+NAME:         | =#+NAME: label=           | Tables, figures, blocks |
+| #+LABEL:        | =#+LABEL: label=          | Figures, tables       |
+| label:          | =label:label=             | Inline labels         |
+| \label{}        | =\label{label}=           | LaTeX labels          |
+| :CUSTOM_ID:     | =:CUSTOM_ID: label=       | Heading IDs           |
 
 *** Org-Mode Labels
 
@@ -607,6 +636,7 @@ label:eq-main  \[ E = mc^2 \]
 References:
 #+BEGIN_SRC org
 See ref:fig-results for the results.
+See ref:tbl-data for the data summary.
 As shown in eqref:eq-main, energy equals...
 The ref:methods section describes our approach.
 #+END_SRC
@@ -772,12 +802,13 @@ When viewing a .bib file, code lenses appear for each entry:
 
 ** DOI and External Commands
 
-| Command                     | Description                   |
-|-----------------------------+-------------------------------|
-| scimax.ref.fetchFromDOI     | Add reference from DOI        |
-| scimax.ref.showCitingWorks  | Show citing works (OpenAlex)  |
-| scimax.ref.showRelatedWorks | Show related works (OpenAlex) |
-| scimax.ref.searchOpenAlex   | Search OpenAlex database      |
+| Command                     | Description                        |
+|-----------------------------+------------------------------------|
+| scimax.ref.fetchFromDOI     | Add reference from DOI             |
+| scimax.ref.searchCrossRef   | Search CrossRef and add entry      |
+| scimax.ref.showCitingWorks  | Show citing works (OpenAlex)       |
+| scimax.ref.showRelatedWorks | Show related works (OpenAlex)      |
+| scimax.ref.searchOpenAlex   | Search OpenAlex database           |
 
 * Best Practices
 

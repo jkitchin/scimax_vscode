@@ -439,13 +439,26 @@ CLOSED: [2026-01-15 Thu 15:05]
 
 | Key/Command         | Action             |
 |---------------------+--------------------|
+| C-c C-s             | Add/edit SCHEDULED |
+| C-c C-d             | Add/edit DEADLINE  |
 | Speed key s         | Add/edit SCHEDULED |
 | Speed key d         | Add/edit DEADLINE  |
 | scimax.org.schedule | Schedule task      |
 | scimax.org.deadline | Set deadline       |
 
-Position cursor on a TODO headline and press s or d (with speed commands
-enabled).
+When you press one of these keys, you're prompted to enter a date using natural language. Simply type expressions like:
+
+| Expression | Result                           |
+|------------+----------------------------------|
+| today      | Today's date                     |
+| tomorrow   | Tomorrow's date                  |
+| monday     | Next Monday                      |
+| +2d        | Two days from now                |
+| +1w        | One week from now                |
+| jan 15     | January 15 of current/next year  |
+| 2026-01-15 | Specific ISO date                |
+
+Position cursor on a TODO headline and press the keybinding or use speed commands at the beginning of a headline.
 
 ** ✅ SCHEDULED vs DEADLINE
 CLOSED: [2026-01-15 Thu 15:05]
