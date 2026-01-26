@@ -4140,6 +4140,47 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         })
     );
 
+    // Kill line (C-k in Emacs) - delete to end of line and copy to clipboard
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.killLine', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                return;
+            }
+
+            const document = editor.document;
+            const selection = editor.selection;
+            const position = selection.active;
+            const line = document.lineAt(position.line);
+
+            // If cursor is at end of line, kill the newline (join with next line)
+            if (position.character >= line.text.length) {
+                if (position.line < document.lineCount - 1) {
+                    const range = new vscode.Range(position, new vscode.Position(position.line + 1, 0));
+                    const text = document.getText(range);
+                    await vscode.env.clipboard.writeText(text);
+                    await editor.edit(editBuilder => {
+                        editBuilder.delete(range);
+                    });
+                }
+                return;
+            }
+
+            // Kill from cursor to end of line
+            const endOfLine = line.range.end;
+            const range = new vscode.Range(position, endOfLine);
+            const text = document.getText(range);
+
+            // Copy to clipboard
+            await vscode.env.clipboard.writeText(text);
+
+            // Delete the text
+            await editor.edit(editBuilder => {
+                editBuilder.delete(range);
+            });
+        })
+    );
+
     // Query replace
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.queryReplace', queryReplace)

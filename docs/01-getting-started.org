@@ -383,7 +383,21 @@ Now that you're set up, explore these topics:
 2. Ensure the directory exists and is writable
 3. Try creating the directory manually if needed
 
-* Navigation
+** Disable Option-Key Accents on macOS
+
+M-<key> combinations may produce accented characters instead of the intended
+commands on a Mac. To fix this, you can change your keyboard input settings:
+
+- Add Unicode Hex Input
+
+System Settings → Keyboard → Input Sources → click "+" → select Other → add "Unicode Hex Input"
+
+
+- Remove U.S. Input (optional)
+
+System Settings → Keyboard → Input Sources → select "U.S." → click "−"
+
+  * Navigation
 
 - Previous: [[file:00-index.org][Documentation Index]]
 - Index: [[file:00-index.org][Documentation Index]]
