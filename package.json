@@ -1027,6 +1027,10 @@
         "title": "Scimax: Set Log Level"
       },
       {
+        "command": "scimax.googleSearch",
+        "title": "Scimax: Google Search"
+      },
+      {
         "command": "scimax.showErrorLog",
         "title": "Scimax: Show Error Log"
       },
@@ -2878,6 +2882,12 @@
         "command": "workbench.action.showCommands",
         "key": "alt+x",
         "mac": "alt+x"
+      },
+      {
+        "command": "scimax.googleSearch",
+        "key": "ctrl+c ctrl+g",
+        "mac": "ctrl+c ctrl+g",
+        "when": "editorTextFocus && !terminalFocus"
       },
       {
         "command": "scimax.spelling.previousError",
