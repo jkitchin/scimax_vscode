@@ -43,11 +43,13 @@ export const SPEED_COMMAND_DEFINITIONS: SpeedCommandDefinition[] = [
     { key: 'l', command: 'scimax.heading.promote', description: 'Promote heading', category: 'structure' },
     { key: 'R', command: 'scimax.heading.demoteSubtree', description: 'Demote subtree', category: 'structure' },
     { key: 'L', command: 'scimax.heading.promoteSubtree', description: 'Promote subtree', category: 'structure' },
-    { key: 'w', command: 'scimax.org.killSubtree', description: 'Kill (cut) subtree', category: 'structure' },
+    { key: 'k', command: 'scimax.org.killSubtree', description: 'Kill (cut) subtree', category: 'structure' },
     { key: 'y', command: 'scimax.speed.yankSubtree', description: 'Yank (paste) subtree', category: 'structure' },
     { key: 'W', command: 'scimax.org.cloneSubtree', description: 'Clone subtree', category: 'structure' },
-    { key: 'F', command: 'scimax.org.refile', description: 'Refile subtree', category: 'structure' },
-    { key: '@', command: 'scimax.org.markSubtree', description: 'Mark (select) subtree', category: 'structure' },
+    { key: 'w', command: 'scimax.org.refile', description: 'Refile subtree', category: 'structure' },
+    { key: 'm', command: 'scimax.org.markSubtree', description: 'Mark (select) subtree', category: 'structure' },
+    { key: '@', command: 'scimax.org.markSubtree', description: 'Mark (select) subtree (alternate)', category: 'structure' },
+    { key: '^', command: 'scimax.org.sortEntries', description: 'Sort entries', category: 'structure' },
 
     // TODO/State
     { key: 't', command: 'scimax.org.cycleTodo', description: 'Cycle TODO state', category: 'todo' },

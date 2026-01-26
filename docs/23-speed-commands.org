@@ -156,9 +156,13 @@ Reorganize and modify your document structure.
 | l   | Promote heading      | Increase level of heading only (shift left)    |
 | R   | Demote subtree       | Decrease level of subtree (and children)       |
 | L   | Promote subtree      | Increase level of subtree (and children)       |
-| w   | Kill (cut) subtree   | Cut subtree to clipboard                       |
+| k   | Kill (cut) subtree   | Cut subtree to clipboard                       |
 | y   | Yank (paste) subtree | Paste subtree from clipboard with level adjust |
+| w   | Refile subtree       | Move subtree to another location               |
 | W   | Clone subtree        | Duplicate the current subtree                  |
+| m   | Mark subtree         | Select (highlight) the current subtree         |
+| @   | Mark subtree (alt)   | Select subtree (alternate key)                 |
+| ^   | Sort entries         | Sort child entries by various criteria         |
 
 *** ✅ Structure Editing Notes
 CLOSED: [2026-01-15 Thu 14:47]
@@ -168,6 +172,33 @@ CLOSED: [2026-01-15 Thu 14:47]
 - Lowercase `l'/`r' affect only the heading line
 - Uppercase `L'/`R' affect the entire subtree (heading and children)
 - `y' (yank) intelligently adjusts heading levels to match context
+- `k' kills (cuts) the subtree, matching Emacs scimax
+- `w' refiles the subtree, matching Emacs org-mode
+- `m' and `@' both mark (select) the subtree
+
+*** 👀 Sorting Entries (^)
+
+The `^' speed command sorts child entries of the current heading. When invoked, it presents a menu of sorting criteria:
+
+| Key | Sort Type                          |
+|-----+------------------------------------|
+| a/A | Alphabetically (A = reverse)       |
+| n/N | Numerically (by leading number)    |
+| t/T | By timestamp (first in entry)      |
+| d/D | By DEADLINE date                   |
+| s/S | By SCHEDULED date                  |
+| p/P | By priority ([#A], [#B], [#C])     |
+| o/O | By TODO keyword order              |
+| c/C | By creation time                   |
+| k/K | By total clocked time              |
+| r/R | By property value (prompts)        |
+
+*Uppercase letters reverse the sort order.*
+
+Sorting scope depends on cursor position:
+- On a heading: Sorts direct children of that heading
+- With a selection: Sorts entries within the selection
+- Before first heading: Sorts all top-level entries
 
 ** ✅ TODO and Priority Commands
 CLOSED: [2026-01-15 Thu 14:47]
@@ -390,8 +421,10 @@ CLOSED: [2026-01-15 Thu 14:50]
 1. Navigate to a heading
 2. Use `U'/`D' to reorder siblings
 3. Use `l'/`r' to adjust hierarchy
-4. Use `w' to cut and `y' to paste sections
-5. Use `a' to archive completed work
+4. Use `k' to cut and `y' to paste sections
+5. Use `w' to refile sections to another location
+6. Use `^' to sort child entries
+7. Use `a' to archive completed work
 
 *** ✅ Reviewing Documents
 CLOSED: [2026-01-15 Thu 14:50]
@@ -441,6 +474,8 @@ Complete alphabetical reference of all speed commands.
 | 3   | TODO       | Set priority [#C]       |
 | :   | Metadata   | Set tags                |
 | ?   | Special    | Speed commands help     |
+| @   | Structure  | Mark subtree (alt)      |
+| ^   | Structure  | Sort entries            |
 | $   | Special    | Archive to sibling      |
 | a   | Special    | Archive subtree         |
 | A   | Special    | Toggle :ARCHIVE: tag    |
@@ -454,8 +489,10 @@ Complete alphabetical reference of all speed commands.
 | g   | Navigation | Go to... (submenu)      |
 | I   | Clocking   | Clock in                |
 | j   | Navigation | Jump to heading         |
+| k   | Structure  | Kill (cut) subtree      |
 | l   | Structure  | Promote heading         |
 | L   | Structure  | Promote subtree         |
+| m   | Structure  | Mark subtree            |
 | n   | Navigation | Next heading            |
 | N   | Special    | Narrow to subtree       |
 | o   | Visibility | Overview (fold all)     |
@@ -470,7 +507,7 @@ Complete alphabetical reference of all speed commands.
 | <tab> | Visibility | Cycle fold at point     |
 | u   | Navigation | Parent heading          |
 | U   | Structure  | Move subtree up         |
-| w   | Structure  | Kill (cut) subtree      |
+| w   | Structure  | Refile subtree          |
 | W   | Structure  | Clone subtree           |
 | y   | Structure  | Yank (paste) subtree    |
 
@@ -786,6 +823,7 @@ Speed commands are implemented in:
   - `clocking.ts' - Time tracking
   - `archive.ts' - Archive operations
   - `structure.ts' - Structure editing commands
+  - `sort.ts' - Entry sorting (org-sort-entries)
 - `/src/references/bibtexSpeedCommands.ts' - BibTeX speed commands
   - Entry navigation (next, previous, jump)
   - Entry formatting (sort, downcase, title case, sentence case, clean)

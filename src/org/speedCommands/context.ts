@@ -14,6 +14,7 @@ import * as visibility from './visibility';
 import * as clocking from './clocking';
 import * as archive from './archive';
 import * as structure from './structure';
+import { orgSort } from './sort';
 import { isSectionLine } from '../../latex/latexNavigation';
 
 /**
@@ -343,6 +344,11 @@ export function registerSpeedCommands(context: vscode.ExtensionContext): void {
     // Structure commands
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.speed.yankSubtree', structure.yankSubtree)
+    );
+
+    // Sort command
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.org.sortEntries', orgSort)
     );
 
     // Help command

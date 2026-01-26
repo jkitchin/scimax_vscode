@@ -7,3 +7,4 @@
 
 export { registerSpeedCommands, setupSpeedCommandContext } from './context';
 export { SPEED_COMMAND_DEFINITIONS, SpeedCommandDefinition } from './config';
+export { orgSort } from './sort';

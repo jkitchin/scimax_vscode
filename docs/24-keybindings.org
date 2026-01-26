@@ -440,10 +440,13 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 
 | Key | Action                  |
 |-----+-------------------------|
-| w   | Kill (cut) subtree      |
+| k   | Kill (cut) subtree      |
 | y   | Yank (paste) subtree    |
+| w   | Refile subtree          |
 | W   | Clone subtree           |
-| F   | Refile subtree          |
+| m   | Mark (select) subtree   |
+| @   | Mark subtree (alt)      |
+| ^   | Sort entries            |
 | a   | Archive subtree         |
 | A   | Toggle archive tag      |
 | $   | Archive to sibling      |

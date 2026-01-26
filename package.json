@@ -1836,6 +1836,10 @@
         "title": "Scimax: Mark (Select) Subtree"
       },
       {
+        "command": "scimax.org.sortEntries",
+        "title": "Scimax: Sort Entries"
+      },
+      {
         "command": "scimax.org.insertHeading",
         "title": "Scimax: Insert Heading"
       },
@@ -4184,13 +4188,28 @@
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
       },
       {
-        "command": "scimax.org.killSubtree",
+        "command": "scimax.org.refile",
         "key": "w",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.killSubtree",
+        "key": "k",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.markSubtree",
+        "key": "m",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
       },
       {
         "command": "scimax.org.markSubtree",
         "key": "shift+2",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
+      },
+      {
+        "command": "scimax.org.sortEntries",
+        "key": "shift+6",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
       },
       {

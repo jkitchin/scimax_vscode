@@ -814,10 +814,12 @@ CLOSED: [2026-01-17 Sat 12:48]
 | [[cmd:scimax.heading.promote]]        | Promote Heading      | l         |
 | [[cmd:scimax.heading.demoteSubtree]]  | Demote Subtree       | R (S-r)   |
 | [[cmd:scimax.heading.promoteSubtree]] | Promote Subtree      | L (S-l)   |
-| [[cmd:scimax.org.killSubtree]]        | Kill Subtree         | w         |
+| [[cmd:scimax.org.killSubtree]]        | Kill Subtree         | k         |
 | [[cmd:scimax.speed.yankSubtree]]      | Yank (Paste) Subtree | y         |
+| [[cmd:scimax.org.refile]]             | Refile Subtree       | w         |
 | [[cmd:scimax.org.cloneSubtree]]       | Clone Subtree        | W (S-w)   |
-| [[cmd:scimax.org.refile]]             | Refile Subtree       | F (S-f)   |
+| [[cmd:scimax.org.markSubtree]]        | Mark (Select) Subtree| m, @ (S-2)|
+| [[cmd:scimax.org.sortEntries]]        | Sort Entries         | ^ (S-6)   |
 
 ** ✅ TODO and Tags
 CLOSED: [2026-01-17 Sat 12:48]

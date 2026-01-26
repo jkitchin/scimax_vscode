@@ -228,9 +228,29 @@ describe('speed command key mappings', () => {
             expect(cmd?.command).toBe('scimax.heading.promoteSubtree');
         });
 
-        it('w kills subtree', () => {
+        it('w refiles subtree', () => {
             const cmd = getSpeedCommand('w');
+            expect(cmd?.command).toBe('scimax.org.refile');
+        });
+
+        it('k kills subtree', () => {
+            const cmd = getSpeedCommand('k');
             expect(cmd?.command).toBe('scimax.org.killSubtree');
+        });
+
+        it('m marks subtree', () => {
+            const cmd = getSpeedCommand('m');
+            expect(cmd?.command).toBe('scimax.org.markSubtree');
+        });
+
+        it('@ marks subtree (alternate)', () => {
+            const cmd = getSpeedCommand('@');
+            expect(cmd?.command).toBe('scimax.org.markSubtree');
+        });
+
+        it('^ sorts entries', () => {
+            const cmd = getSpeedCommand('^');
+            expect(cmd?.command).toBe('scimax.org.sortEntries');
         });
 
         it('y yanks subtree', () => {
