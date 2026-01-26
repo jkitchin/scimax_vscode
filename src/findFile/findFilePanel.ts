@@ -126,8 +126,8 @@ export class FindFilePanel {
                     await this.handleOpen();
                     break;
 
-                case 'showActions':
-                    await this.showActionsMenu();
+                case 'action':
+                    await this.executeAction(message.action);
                     break;
 
                 case 'filter':
@@ -179,86 +179,15 @@ export class FindFilePanel {
     }
 
     /**
-     * Show the actions menu (M-o)
+     * Execute an action on the selected entry
      */
-    private async showActionsMenu(): Promise<void> {
+    private async executeAction(action: FindFileAction): Promise<void> {
         const entry = this.manager.getSelectedEntry();
         if (!entry || entry.name === '..') {
             this.sendMessage({ command: 'info', message: 'No file selected' });
             return;
         }
 
-        const originalPosition = this.manager.getOriginalPosition();
-        const hasOriginalPosition = originalPosition !== null;
-
-        interface ActionItem extends vscode.QuickPickItem {
-            action: FindFileAction;
-        }
-
-        const actions: ActionItem[] = [
-            {
-                label: '$(file) Insert relative path',
-                description: hasOriginalPosition ? undefined : '(no original position)',
-                action: 'insertRelative'
-            },
-            {
-                label: '$(file-symlink-directory) Insert absolute path',
-                description: hasOriginalPosition ? undefined : '(no original position)',
-                action: 'insertAbsolute'
-            },
-            {
-                label: '$(link) Insert org-link (relative)',
-                description: hasOriginalPosition ? undefined : '(no original position)',
-                action: 'orgLinkRelative'
-            },
-            {
-                label: '$(link) Insert org-link (absolute)',
-                description: hasOriginalPosition ? undefined : '(no original position)',
-                action: 'orgLinkAbsolute'
-            },
-            {
-                label: '$(folder-opened) Open in Finder/Explorer',
-                action: 'openExternal'
-            },
-            {
-                label: '$(copy) Copy relative path',
-                action: 'copyRelative'
-            },
-            {
-                label: '$(copy) Copy absolute path',
-                action: 'copyAbsolute'
-            },
-            {
-                label: '$(folder) Open directory in dired',
-                action: 'openDired'
-            },
-            {
-                label: '$(trash) Delete',
-                action: 'delete'
-            },
-            {
-                label: '$(edit) Rename',
-                action: 'rename'
-            },
-            {
-                label: '$(split-horizontal) Open in split',
-                action: 'openSplit'
-            }
-        ];
-
-        const selected = await vscode.window.showQuickPick(actions, {
-            placeHolder: `Actions for ${entry.name}`
-        });
-
-        if (!selected) return;
-
-        await this.executeAction(selected.action, entry);
-    }
-
-    /**
-     * Execute an action on the selected entry
-     */
-    private async executeAction(action: FindFileAction, entry: { name: string; path: string; isDirectory: boolean }): Promise<void> {
         const originalPosition = this.manager.getOriginalPosition();
 
         switch (action) {
@@ -543,6 +472,19 @@ export class FindFilePanel {
             padding: 1px 5px;
             font-family: inherit;
             font-weight: 500;
+            cursor: pointer;
+        }
+
+        .status-bar kbd:hover {
+            background: var(--vscode-keybindingLabel-bottomBorder, #bbb);
+        }
+
+        .status-bar .clickable {
+            cursor: pointer;
+        }
+
+        .status-bar .clickable:hover {
+            text-decoration: underline;
         }
 
         .message {
@@ -570,6 +512,82 @@ export class FindFilePanel {
             0%, 70% { opacity: 1; }
             100% { opacity: 0; }
         }
+
+        .actions-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .actions-overlay.visible {
+            display: flex;
+        }
+
+        .actions-panel {
+            background: var(--vscode-editor-background, #fff);
+            border: 1px solid var(--vscode-panel-border, #ccc);
+            border-radius: 6px;
+            padding: 16px;
+            max-width: 500px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .actions-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--vscode-panel-border, #ccc);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 24px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 6px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .action-item:hover {
+            background: var(--vscode-list-hoverBackground, #e8e8e8);
+        }
+
+        .action-key {
+            background: var(--vscode-keybindingLabel-background, #dddddd);
+            color: var(--vscode-keybindingLabel-foreground, #333);
+            border: 1px solid var(--vscode-keybindingLabel-border, #ccc);
+            border-radius: 3px;
+            padding: 1px 6px;
+            font-family: monospace;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+        }
+
+        .action-desc {
+            color: var(--vscode-foreground, #333);
+        }
+
+        .actions-footer {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid var(--vscode-panel-border, #ccc);
+            font-size: 11px;
+            color: var(--vscode-descriptionForeground, #666);
+        }
     </style>
 </head>
 <body>
@@ -588,12 +606,33 @@ export class FindFilePanel {
     </div>
 
     <div class="status-bar">
-        <kbd>Tab</kbd> enter dir |
-        <kbd>Enter</kbd> open |
-        <kbd>a</kbd>/<kbd>C-o</kbd> actions |
-        <kbd>Backspace</kbd> up/clear |
-        <kbd>.</kbd> hidden |
-        <kbd>Esc</kbd> quit
+        <span class="clickable" id="btn-tab"><kbd>Tab</kbd> enter dir</span> |
+        <span class="clickable" id="btn-enter"><kbd>Enter</kbd> open</span> |
+        <span class="clickable" id="btn-actions"><kbd>M-o</kbd> actions</span> |
+        <span class="clickable" id="btn-backspace"><kbd>Backspace</kbd> up/clear</span> |
+        <span class="clickable" id="btn-hidden"><kbd>.</kbd> hidden</span> |
+        <span class="clickable" id="btn-quit"><kbd>Esc</kbd> quit</span>
+    </div>
+
+    <div class="actions-overlay" id="actions-overlay">
+        <div class="actions-panel">
+            <div class="actions-title">action:</div>
+            <div class="actions-grid">
+                <div class="action-item" data-action="open"><span class="action-key">o</span><span class="action-desc">open (default)</span></div>
+                <div class="action-item" data-action="openSplit"><span class="action-key">j</span><span class="action-desc">open in split</span></div>
+                <div class="action-item" data-action="insertRelative"><span class="action-key">p</span><span class="action-desc">insert relative path</span></div>
+                <div class="action-item" data-action="insertAbsolute"><span class="action-key">P</span><span class="action-desc">insert absolute path</span></div>
+                <div class="action-item" data-action="orgLinkRelative"><span class="action-key">l</span><span class="action-desc">insert org-link (rel)</span></div>
+                <div class="action-item" data-action="orgLinkAbsolute"><span class="action-key">L</span><span class="action-desc">insert org-link (abs)</span></div>
+                <div class="action-item" data-action="copyRelative"><span class="action-key">c</span><span class="action-desc">copy relative path</span></div>
+                <div class="action-item" data-action="copyAbsolute"><span class="action-key">C</span><span class="action-desc">copy absolute path</span></div>
+                <div class="action-item" data-action="openDired"><span class="action-key">d</span><span class="action-desc">open in dired</span></div>
+                <div class="action-item" data-action="openExternal"><span class="action-key">e</span><span class="action-desc">open in Finder</span></div>
+                <div class="action-item" data-action="rename"><span class="action-key">r</span><span class="action-desc">rename</span></div>
+                <div class="action-item" data-action="delete"><span class="action-key">D</span><span class="action-desc">delete</span></div>
+            </div>
+            <div class="actions-footer"><kbd>M-o</kbd> or <kbd>Esc</kbd> to cancel</div>
+        </div>
     </div>
 
     <div id="message-container"></div>
@@ -601,6 +640,23 @@ export class FindFilePanel {
     <script>
         const vscode = acquireVsCodeApi();
         let state = null;
+        let actionsMode = false;
+
+        // Action key mappings
+        const actionKeys = {
+            'o': 'open',
+            'j': 'openSplit',
+            'p': 'insertRelative',
+            'P': 'insertAbsolute',
+            'l': 'orgLinkRelative',
+            'L': 'orgLinkAbsolute',
+            'c': 'copyRelative',
+            'C': 'copyAbsolute',
+            'd': 'openDired',
+            'e': 'openExternal',
+            'r': 'rename',
+            'D': 'delete'
+        };
 
         // Send ready message
         vscode.postMessage({ command: 'ready' });
@@ -620,6 +676,63 @@ export class FindFilePanel {
                     showMessage(message.message, 'error');
                     break;
             }
+        });
+
+        function showActionsPanel() {
+            actionsMode = true;
+            document.getElementById('actions-overlay').classList.add('visible');
+        }
+
+        function hideActionsPanel() {
+            actionsMode = false;
+            document.getElementById('actions-overlay').classList.remove('visible');
+        }
+
+        // Set up click handlers for status bar buttons
+        document.getElementById('btn-tab').addEventListener('click', () => {
+            const selected = state?.filteredEntries[state.selectedIndex];
+            if (selected?.isDirectory) {
+                vscode.postMessage({ command: 'navigateInto' });
+            }
+        });
+        document.getElementById('btn-enter').addEventListener('click', () => {
+            vscode.postMessage({ command: 'open' });
+        });
+        document.getElementById('btn-actions').addEventListener('click', () => {
+            showActionsPanel();
+        });
+        document.getElementById('btn-backspace').addEventListener('click', () => {
+            if (state?.filterText && state.filterText.length > 0) {
+                vscode.postMessage({ command: 'backspace' });
+            } else {
+                vscode.postMessage({ command: 'navigateUp' });
+            }
+        });
+        document.getElementById('btn-hidden').addEventListener('click', () => {
+            vscode.postMessage({ command: 'toggleHidden' });
+        });
+        document.getElementById('btn-quit').addEventListener('click', () => {
+            vscode.postMessage({ command: 'quit' });
+        });
+
+        // Click on overlay background to close
+        document.getElementById('actions-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'actions-overlay') {
+                hideActionsPanel();
+            }
+        });
+
+        // Click handlers for action items
+        document.querySelectorAll('.action-item[data-action]').forEach(item => {
+            item.addEventListener('click', () => {
+                const action = item.dataset.action;
+                hideActionsPanel();
+                if (action === 'open') {
+                    vscode.postMessage({ command: 'open' });
+                } else {
+                    vscode.postMessage({ command: 'action', action: action });
+                }
+            });
         });
 
         function render() {
@@ -708,6 +821,32 @@ export class FindFilePanel {
 
         // Keyboard handling
         document.addEventListener('keydown', (e) => {
+            // Handle actions mode
+            if (actionsMode) {
+                e.preventDefault();
+
+                // C-o, M-o, or Escape to cancel
+                if ((e.key === 'o' && (e.altKey || e.ctrlKey)) ||
+                    (e.code === 'KeyO' && (e.altKey || e.ctrlKey)) ||
+                    e.key === 'ø' || e.key === 'œ' ||
+                    e.key === 'Escape') {
+                    hideActionsPanel();
+                    return;
+                }
+
+                // Check for action key
+                const action = actionKeys[e.key];
+                if (action) {
+                    hideActionsPanel();
+                    if (action === 'open') {
+                        vscode.postMessage({ command: 'open' });
+                    } else {
+                        vscode.postMessage({ command: 'action', action: action });
+                    }
+                }
+                return;
+            }
+
             // Tab - enter directory
             if (e.key === 'Tab') {
                 e.preventDefault();
@@ -725,20 +864,14 @@ export class FindFilePanel {
                 return;
             }
 
-            // Ctrl+O - show actions (M-o doesn't work on macOS)
-            if (e.key === 'o' && e.ctrlKey) {
+            // M-o (Alt/Option+O) or Ctrl+O - show actions panel
+            // Check multiple variants for Mac compatibility
+            if ((e.key === 'o' && (e.altKey || e.ctrlKey)) ||
+                e.key === 'ø' || e.key === 'œ' || e.key === 'ο' ||
+                (e.code === 'KeyO' && (e.altKey || e.ctrlKey))) {
                 e.preventDefault();
-                vscode.postMessage({ command: 'showActions' });
+                showActionsPanel();
                 return;
-            }
-
-            // 'a' for actions when filter is empty
-            if (e.key === 'a' && !e.ctrlKey && !e.altKey && !e.metaKey) {
-                if (!state?.filterText || state.filterText === '') {
-                    e.preventDefault();
-                    vscode.postMessage({ command: 'showActions' });
-                    return;
-                }
             }
 
             // Escape - quit

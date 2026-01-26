@@ -56,7 +56,7 @@ export type FindFileMessageFromWebview =
     | { command: 'navigateInto' }       // Tab on directory
     | { command: 'navigateUp' }         // Backspace or ".."
     | { command: 'open' }               // Enter
-    | { command: 'showActions' }        // M-o (Alt+O)
+    | { command: 'action'; action: FindFileAction }  // Speed key action
     | { command: 'filter'; text: string }
     | { command: 'backspace' }          // Delete character from filter
     | { command: 'clearFilter' }        // Clear all filter text

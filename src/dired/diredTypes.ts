@@ -104,6 +104,7 @@ export type DiredMessageFromWebview =
     | { command: 'openInEditor'; index: number }
     | { command: 'openExternal'; index: number }
     | { command: 'copyPath'; index: number }
+    | { command: 'showActions' }
     | { command: 'ready' }
     | { command: 'quit' };
 

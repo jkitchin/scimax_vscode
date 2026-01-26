@@ -1,0 +1,108 @@
+#+TITLE: Find File - Emacs-style File Navigation
+#+STARTUP: showall
+
+* Find File (C-x C-f)
+
+Find File provides Emacs-style file navigation in VS Code. It displays a filterable directory listing in a webview panel where you can quickly navigate directories, open files, and perform actions like inserting file paths or org-links.
+
+** Opening Find File
+
+| Keybinding | Command | Description |
+|------------+---------+-------------|
+| ~C-x C-f~ | =scimax.findFile= | Open find-file (starts in current file's directory) |
+| | =scimax.findFileHome= | Open find-file in home directory |
+| | =scimax.findFileWorkspace= | Open find-file in workspace root |
+
+** Navigation
+
+| Key | Action |
+|-----+--------|
+| ~Up~ / ~C-p~ | Move selection up |
+| ~Down~ / ~C-n~ | Move selection down |
+| ~Tab~ | Enter selected directory |
+| ~Backspace~ | Go to parent directory (or delete filter character) |
+| ~Enter~ | Open file in editor, or open directory in dired |
+| ~PageUp~ / ~PageDown~ | Move selection by 10 |
+| ~Home~ / ~End~ | Jump to first/last entry |
+
+** Filtering
+
+Simply type to filter the file list. The filter uses fuzzy matching - characters must appear in order but don't need to be consecutive.
+
+| Key | Action |
+|-----+--------|
+| /any character/ | Add to filter |
+| ~Backspace~ | Remove last filter character (or go to parent if empty) |
+| ~C-u~ | Clear filter |
+
+** Toggle Hidden Files
+
+| Key | Action |
+|-----+--------|
+| ~.~ | Toggle showing hidden files (dotfiles) |
+
+Only works when filter is empty.
+
+** Actions Menu (M-o)
+
+Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key to execute the action, or click on an action.
+
+| Key | Action |
+|-----+--------|
+| ~o~ | Open file (default) |
+| ~j~ | Open in split (side-by-side) |
+| ~p~ | Insert relative path at original cursor |
+| ~P~ | Insert absolute path at original cursor |
+| ~l~ | Insert org-link with relative path |
+| ~L~ | Insert org-link with absolute path |
+| ~c~ | Copy relative path to clipboard |
+| ~C~ | Copy absolute path to clipboard |
+| ~d~ | Open directory in dired |
+| ~e~ | Open in Finder/Explorer |
+| ~r~ | Rename file |
+| ~D~ | Delete file |
+
+Press ~M-o~ or ~Esc~ to cancel the actions menu.
+
+** Path Insertion
+
+When you invoke find-file from an editor, your cursor position is remembered. The insert actions (~p~, ~P~, ~l~, ~L~) will insert the path at that original position.
+
+Example workflow:
+1. In an org file, position cursor where you want a link
+2. Press ~C-x C-f~ to open find-file
+3. Navigate to the target file
+4. Press ~M-o l~ to insert an org-link with relative path
+
+Result: =[[file:relative/path/to/file.org][file.org]]= is inserted at your cursor.
+
+** Clickable Status Bar
+
+All status bar items are clickable:
+- Click ~Tab~ to enter directory
+- Click ~Enter~ to open
+- Click ~M-o~ to show actions menu
+- Click ~Backspace~ to go up/clear filter
+- Click ~.~ to toggle hidden files
+- Click ~Esc~ to quit
+
+** Display Format
+
+Each entry shows:
+- Icon (folder or file)
+- Name (directories end with /)
+- Size (for files)
+
+Directories are sorted before files, both alphabetically.
+
+** Quitting
+
+| Key | Action |
+|-----+--------|
+| ~Esc~ | Close find-file panel |
+
+** Related Topics
+
+- [[file:37-dired.org][Dired]] - Full-featured directory editor
+- [[file:21-navigation.org][Navigation]] - General navigation features
+- [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts

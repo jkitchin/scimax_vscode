@@ -286,6 +286,10 @@ export class DiredPanel {
                     this.manager.exitWdiredMode();
                     break;
 
+                case 'showActions':
+                    await this.showActionsMenu();
+                    break;
+
                 case 'quit':
                     this.dispose();
                     break;
@@ -436,6 +440,80 @@ export class DiredPanel {
         }
         if (result.renamed.length > 0) {
             vscode.window.showInformationMessage(`Moved ${result.renamed.length} files`);
+        }
+    }
+
+    /**
+     * Show the actions menu (M-o)
+     */
+    private async showActionsMenu(): Promise<void> {
+        const state = this.manager.getState();
+        const entry = state.entries[state.selectedIndex];
+        if (!entry || entry.name === '.' || entry.name === '..') {
+            this.sendMessage({ command: 'info', message: 'No file selected' });
+            return;
+        }
+
+        interface ActionItem extends vscode.QuickPickItem {
+            action: string;
+        }
+
+        const actions: ActionItem[] = [
+            { label: '$(file) Open in Editor', action: 'openInEditor' },
+            { label: '$(folder-opened) Open in Finder/Explorer', action: 'openExternal' },
+            { label: '$(copy) Copy Path', action: 'copyPath' },
+            { label: '$(files) Copy File', action: 'copy' },
+            { label: '$(edit) Rename/Move', action: 'rename' },
+            { label: '$(trash) Delete', action: 'delete' },
+            { label: '$(check) Mark', action: 'mark' },
+            { label: '$(circle-slash) Unmark', action: 'unmark' },
+            { label: '$(warning) Flag for Deletion', action: 'flag' },
+        ];
+
+        if (entry.isDirectory) {
+            actions.unshift({ label: '$(folder) Enter Directory', action: 'enter' });
+        }
+
+        const selected = await vscode.window.showQuickPick(actions, {
+            placeHolder: `Actions for ${entry.name}`
+        });
+
+        if (!selected) return;
+
+        switch (selected.action) {
+            case 'enter':
+                await this.manager.openAtIndex(state.selectedIndex);
+                break;
+            case 'openInEditor':
+                if (!entry.isDirectory) {
+                    await vscode.window.showTextDocument(vscode.Uri.file(entry.path));
+                }
+                break;
+            case 'openExternal':
+                await vscode.commands.executeCommand('revealFileInOS', vscode.Uri.file(entry.path));
+                break;
+            case 'copyPath':
+                await vscode.env.clipboard.writeText(entry.path);
+                this.sendMessage({ command: 'info', message: 'Path copied to clipboard' });
+                break;
+            case 'copy':
+                await this.handleCopy();
+                break;
+            case 'rename':
+                await this.handleRename();
+                break;
+            case 'delete':
+                await this.handleDelete();
+                break;
+            case 'mark':
+                this.manager.markCurrent();
+                break;
+            case 'unmark':
+                this.manager.unmarkCurrent();
+                break;
+            case 'flag':
+                this.manager.flagCurrent();
+                break;
         }
     }
 
@@ -1152,6 +1230,13 @@ export class DiredPanel {
                     e.preventDefault();
                     vscode.postMessage({ command: 'navigate', direction: 'end' });
                     break;
+            }
+
+            // M-o (Alt+O) for actions menu
+            if (e.altKey && e.key === 'o') {
+                e.preventDefault();
+                vscode.postMessage({ command: 'showActions' });
+                return;
             }
 
             // C-x C-q for wdired mode

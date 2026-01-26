@@ -53,6 +53,23 @@ Operate on marked files (or current file if none marked):
 | ~R~ | Rename/move marked files (prompts for destination) |
 | ~+~ | Create new directory |
 
+** Actions Menu (M-o)
+
+Press ~M-o~ (Option+O on Mac) to open an actions menu for the selected file:
+
+| Action | Description |
+|--------+-------------|
+| Enter Directory | Enter the selected directory |
+| Open in Editor | Open file in VS Code editor |
+| Open in Finder/Explorer | Reveal in system file manager |
+| Copy Path | Copy full path to clipboard |
+| Copy File | Copy file to destination |
+| Rename/Move | Rename or move file |
+| Delete | Delete file (with confirmation) |
+| Mark | Mark file for batch operations |
+| Unmark | Remove mark from file |
+| Flag for Deletion | Flag file for deletion |
+
 ** WDired Mode (Writable Dired)
 
 WDired mode allows you to rename files by editing their names directly, like editing text:
@@ -109,6 +126,7 @@ Dired includes security protections:
 
 ** Related Topics
 
+- [[file:38-find-file.org][Find File]] - Quick file navigation (C-x C-f)
 - [[file:21-navigation.org][Navigation]] - General navigation features
 - [[file:17-projectile.org][Projectile]] - Project management
 - [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts
