@@ -74,8 +74,6 @@ export const SPEED_COMMAND_DEFINITIONS: SpeedCommandDefinition[] = [
     { key: 'a', command: 'scimax.speed.archiveSubtree', description: 'Archive subtree', category: 'special' },
     { key: 'A', command: 'scimax.speed.toggleArchiveTag', description: 'Toggle :ARCHIVE: tag', category: 'special' },
     { key: '$', command: 'scimax.speed.archiveToSibling', description: 'Archive to sibling', category: 'special' },
-    { key: 'N', command: 'scimax.speed.narrowToSubtree', description: 'Narrow to subtree', category: 'special' },
-    { key: 'S', command: 'scimax.speed.widen', description: 'Widen (show all)', category: 'special' },
     { key: '?', command: 'scimax.speed.help', description: 'Speed commands help', category: 'special' },
 ];
 

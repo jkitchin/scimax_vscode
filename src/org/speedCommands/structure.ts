@@ -1,14 +1,11 @@
 /**
  * Speed Command Structure Functions
  *
- * Yank (paste) subtrees and narrow/widen view.
+ * Yank (paste) subtrees.
  */
 
 import * as vscode from 'vscode';
 import { getHeadingLevel, getSubtreeRange } from './context';
-
-// Store narrowed state
-let narrowedRange: { uri: string; startLine: number; endLine: number } | null = null;
 
 /**
  * Yank (paste) subtree from clipboard
@@ -106,76 +103,6 @@ function adjustHeadingLevels(text: string, delta: number, isOrg: boolean): strin
         const newLevel = Math.max(1, stars.length + delta);
         return char.repeat(newLevel) + space;
     });
-}
-
-/**
- * Narrow view to current subtree
- * This uses VS Code's folding to simulate narrowing
- */
-export async function narrowToSubtree(): Promise<void> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-
-    const document = editor.document;
-    const position = editor.selection.active;
-
-    // Find the heading
-    let headingLine = position.line;
-    if (getHeadingLevel(document, headingLine) === 0) {
-        // Search backward for heading
-        for (let i = position.line - 1; i >= 0; i--) {
-            if (getHeadingLevel(document, i) > 0) {
-                headingLine = i;
-                break;
-            }
-        }
-        if (getHeadingLevel(document, headingLine) === 0) {
-            vscode.window.showInformationMessage('No heading found');
-            return;
-        }
-    }
-
-    const { startLine, endLine } = getSubtreeRange(document, headingLine);
-
-    // Store narrowed state
-    narrowedRange = {
-        uri: document.uri.toString(),
-        startLine,
-        endLine
-    };
-
-    // Fold everything except the subtree
-    await vscode.commands.executeCommand('editor.foldAll');
-
-    // Unfold the target subtree
-    await vscode.commands.executeCommand('editor.unfold', {
-        selectionLines: Array.from({ length: endLine - startLine + 1 }, (_, i) => startLine + i),
-        direction: 'down',
-        levels: 100
-    });
-
-    // Move cursor to start of subtree
-    const newPos = new vscode.Position(startLine, 0);
-    editor.selection = new vscode.Selection(newPos, newPos);
-    editor.revealRange(new vscode.Range(newPos, newPos), vscode.TextEditorRevealType.InCenter);
-
-    vscode.window.setStatusBarMessage('Narrowed to subtree (press S to widen)', 3000);
-}
-
-/**
- * Widen view (undo narrowing)
- */
-export async function widen(): Promise<void> {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-
-    // Unfold everything
-    await vscode.commands.executeCommand('editor.unfoldAll');
-
-    // Clear narrowed state
-    narrowedRange = null;
-
-    vscode.window.setStatusBarMessage('Widened', 2000);
 }
 
 /**

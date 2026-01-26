@@ -76,7 +76,7 @@ describe('speedCommands config', () => {
         });
 
         it('contains all expected special commands', () => {
-            const specialKeys = ['a', 'A', '$', 'N', 'S', '?'];
+            const specialKeys = ['a', 'A', '$', '?'];
             for (const key of specialKeys) {
                 const cmd = getSpeedCommand(key);
                 expect(cmd).toBeDefined();
@@ -118,8 +118,8 @@ describe('speedCommands config', () => {
         });
 
         it('is case-sensitive', () => {
-            const lowerCmd = getSpeedCommand('n');
-            const upperCmd = getSpeedCommand('N');
+            const lowerCmd = getSpeedCommand('u');
+            const upperCmd = getSpeedCommand('U');
 
             expect(lowerCmd).toBeDefined();
             expect(upperCmd).toBeDefined();
@@ -330,16 +330,6 @@ describe('speed command key mappings', () => {
     });
 
     describe('special keys', () => {
-        it('N narrows to subtree', () => {
-            const cmd = getSpeedCommand('N');
-            expect(cmd?.command).toBe('scimax.speed.narrowToSubtree');
-        });
-
-        it('S widens', () => {
-            const cmd = getSpeedCommand('S');
-            expect(cmd?.command).toBe('scimax.speed.widen');
-        });
-
         it('? shows help', () => {
             const cmd = getSpeedCommand('?');
             expect(cmd?.command).toBe('scimax.speed.help');

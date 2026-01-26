@@ -342,9 +342,7 @@ export function registerSpeedCommands(context: vscode.ExtensionContext): void {
 
     // Structure commands
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.speed.yankSubtree', structure.yankSubtree),
-        vscode.commands.registerCommand('scimax.speed.narrowToSubtree', structure.narrowToSubtree),
-        vscode.commands.registerCommand('scimax.speed.widen', structure.widen)
+        vscode.commands.registerCommand('scimax.speed.yankSubtree', structure.yankSubtree)
     );
 
     // Help command

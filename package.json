@@ -2109,14 +2109,6 @@
         "title": "Scimax: Yank (Paste) Subtree"
       },
       {
-        "command": "scimax.speed.narrowToSubtree",
-        "title": "Scimax: Narrow to Subtree"
-      },
-      {
-        "command": "scimax.speed.widen",
-        "title": "Scimax: Widen"
-      },
-      {
         "command": "scimax.speed.help",
         "title": "Scimax: Speed Commands Help"
       },
@@ -4258,16 +4250,6 @@
       {
         "command": "scimax.speed.archiveToSibling",
         "key": "shift+4",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
-      },
-      {
-        "command": "scimax.speed.narrowToSubtree",
-        "key": "shift+n",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
-      },
-      {
-        "command": "scimax.speed.widen",
-        "key": "shift+s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.atHeadingStart && scimax.speedCommandsEnabled"
       },
       {
