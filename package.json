@@ -1454,9 +1454,17 @@
         "title": "Scimax: Insert Subheading"
       },
       {
-        "command": "scimax.openFolder",
-        "title": "Scimax: Open Folder",
+        "command": "scimax.dired.open",
+        "title": "Scimax: Open Dired (Directory Editor)",
         "icon": "$(folder-opened)"
+      },
+      {
+        "command": "scimax.dired.openCurrent",
+        "title": "Scimax: Open Dired for Current File Directory"
+      },
+      {
+        "command": "scimax.dired.openWorkspace",
+        "title": "Scimax: Open Dired for Workspace"
       },
       {
         "command": "scimax.projectile.switch",
@@ -1887,6 +1895,10 @@
       {
         "command": "scimax.insertNewline",
         "title": "Scimax: Insert Newline"
+      },
+      {
+        "command": "scimax.killLine",
+        "title": "Scimax: Kill Line (copy to clipboard)"
       },
       {
         "command": "scimax.ob.insertBlockAbove",
@@ -2966,7 +2978,7 @@
         "mac": "ctrl+x right"
       },
       {
-        "command": "scimax.openFolder",
+        "command": "scimax.dired.open",
         "key": "ctrl+x d",
         "mac": "ctrl+x d"
       },
@@ -3960,6 +3972,12 @@
         "key": "ctrl+j",
         "mac": "ctrl+j",
         "when": "editorTextFocus"
+      },
+      {
+        "command": "scimax.killLine",
+        "key": "ctrl+k",
+        "mac": "ctrl+k",
+        "when": "editorTextFocus && !editorReadonly"
       },
       {
         "command": "scimax.org.storeLink",
@@ -5132,6 +5150,27 @@
           "minimum": 1,
           "maximum": 10,
           "description": "Number of rotated log backup files to keep (scimax.log.1, scimax.log.2, etc.). Oldest backup is deleted when limit is reached."
+        },
+        "scimax.dired.showHidden": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show hidden files (dotfiles) in dired by default"
+        },
+        "scimax.dired.confirmDelete": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show confirmation dialog before deleting files in dired"
+        },
+        "scimax.dired.defaultSort": {
+          "type": "string",
+          "enum": [
+            "name",
+            "size",
+            "mtime",
+            "extension"
+          ],
+          "default": "name",
+          "description": "Default sort field for dired listings"
         },
         "scimax.db.includeJournal": {
           "type": "boolean",

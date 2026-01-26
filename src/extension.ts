@@ -72,6 +72,7 @@ import { registerDiagnosticCommands } from './diagnostic';
 import { TemplateManager, registerTemplateCommands } from './templates';
 import { registerManuscriptCommands } from './manuscript';
 import { initializeLogging, extensionLogger } from './utils/logger';
+import { registerDiredCommands } from './dired';
 
 let journalManager: JournalManager;
 let hydraManager: HydraManager;
@@ -490,53 +491,8 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register Diagnostic Commands (show debug/system info)
     registerDiagnosticCommands(context);
 
-    // Register Open Folder command (C-x d, like Emacs dired)
-    context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.openFolder', async () => {
-            const result = await vscode.window.showOpenDialog({
-                canSelectFolders: true,
-                canSelectFiles: false,
-                canSelectMany: false,
-                openLabel: 'Open Folder'
-            });
-
-            if (result && result[0]) {
-                const uri = result[0];
-
-                // Check if already open
-                const currentFolders = vscode.workspace.workspaceFolders || [];
-                if (currentFolders.some(f => f.uri.fsPath === uri.fsPath)) {
-                    vscode.window.showInformationMessage(`Folder ${uri.fsPath} is already open`);
-                    return;
-                }
-
-                // Ask how to open
-                const openIn = await vscode.window.showQuickPick([
-                    { label: '$(folder-opened) Current Window (Recommended)', value: 'current' },
-                    { label: '$(window) New Window', value: 'new' },
-                    { label: '$(add) Add to Workspace', value: 'add' }
-                ], {
-                    placeHolder: 'How to open folder?'
-                });
-
-                if (!openIn) return;
-
-                switch (openIn.value) {
-                    case 'new':
-                        await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: true });
-                        break;
-                    case 'current':
-                        await vscode.commands.executeCommand('vscode.openFolder', uri, { forceNewWindow: false });
-                        break;
-                    case 'add':
-                        vscode.workspace.updateWorkspaceFolders(
-                            vscode.workspace.workspaceFolders?.length || 0, 0, { uri }
-                        );
-                        break;
-                }
-            }
-        })
-    );
+    // Register Dired Commands (C-x d, Emacs-style directory editor)
+    registerDiredCommands(context);
 
     // Register Image Overlay Commands (inline image thumbnails)
     registerImageOverlayCommands(context);
