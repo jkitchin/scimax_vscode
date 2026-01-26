@@ -4181,6 +4181,47 @@ export function registerScimaxOrgCommands(context: vscode.ExtensionContext): voi
         })
     );
 
+    // Insert file contents at cursor (C-x i in Emacs)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.insertFile', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showWarningMessage('No active editor');
+                return;
+            }
+
+            // Show file picker
+            const result = await vscode.window.showOpenDialog({
+                canSelectFiles: true,
+                canSelectFolders: false,
+                canSelectMany: false,
+                openLabel: 'Insert',
+                title: 'Select file to insert'
+            });
+
+            if (!result || result.length === 0) {
+                return;
+            }
+
+            const filePath = result[0].fsPath;
+
+            try {
+                // Read file contents
+                const fs = await import('fs');
+                const content = await fs.promises.readFile(filePath, 'utf-8');
+
+                // Insert at cursor position
+                await editor.edit(editBuilder => {
+                    editBuilder.insert(editor.selection.active, content);
+                });
+
+                vscode.window.showInformationMessage(`Inserted ${filePath}`);
+            } catch (error: any) {
+                vscode.window.showErrorMessage(`Failed to read file: ${error.message}`);
+            }
+        })
+    );
+
     // Query replace
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.queryReplace', queryReplace)
