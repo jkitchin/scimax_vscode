@@ -59,6 +59,8 @@ CLOSED: [2026-01-17 Sat 12:24]
 | [[cmd:scimax.org.insertInlineTask]]| Insert Inline Task       | -                  |
 | [[cmd:scimax.org.killSubtree]]     | Kill Subtree             | -                  |
 | [[cmd:scimax.org.cloneSubtree]]    | Clone Subtree            | -                  |
+| [[cmd:scimax.org.refile]]          | Refile Subtree           | C-c C-w            |
+| [[cmd:scimax.org.refileCopy]]      | Copy Subtree to Target   | C-c M-w            |
 | [[cmd:scimax.org.markSubtree]]     | Mark (Select) Subtree    | C-c @ (org)        |
 | [[cmd:scimax.org.addIdToHeading]]  | Add ID to Heading        | -                  |
 
@@ -815,6 +817,7 @@ CLOSED: [2026-01-17 Sat 12:48]
 | [[cmd:scimax.org.killSubtree]]        | Kill Subtree         | w         |
 | [[cmd:scimax.speed.yankSubtree]]      | Yank (Paste) Subtree | y         |
 | [[cmd:scimax.org.cloneSubtree]]       | Clone Subtree        | W (S-w)   |
+| [[cmd:scimax.org.refile]]             | Refile Subtree       | F (S-f)   |
 
 ** ✅ TODO and Tags
 CLOSED: [2026-01-17 Sat 12:48]
@@ -1422,8 +1425,22 @@ Miscellaneous utility commands.
 | Command ID                       | Description                       | Default Keybinding |
 |----------------------------------+-----------------------------------+--------------------|
 | [[cmd:scimax.openFolder]]        | Open Folder                       | -                  |
+| [[cmd:scimax.dired.open]]        | Open Dired (Directory Editor)     | C-x d              |
+| [[cmd:scimax.dired.openCurrent]] | Open Dired for Current File Dir   | -                  |
+| [[cmd:scimax.dired.openWorkspace]]| Open Dired for Workspace         | -                  |
 | [[cmd:scimax.replaceNonAscii]]   | Replace Non-ASCII Characters      | -                  |
 | [[cmd:scimax.showDebugInfo]]     | Show Debug/Diagnostic Info        | -                  |
+
+** Dired Commands
+
+Dired (Directory Editor) provides Emacs-style file management. Open with =C-x d= and use these keys in the dired panel:
+
+- Navigation: =n/p= (next/prev), =RET= (open), =^= (parent), =g= (refresh)
+- Marking: =m= (mark), =u= (unmark), =U= (unmark all), =t= (toggle marks)
+- Operations: =D= (delete), =C= (copy), =R= (rename/move), =+= (create directory)
+- WDired: =C-x C-q= (enter edit mode), =C-c C-c= (commit), =C-c C-k= (cancel)
+
+See [[file:37-dired.org][Dired documentation]] for full details.
 
 ** scimax.replaceNonAscii
 

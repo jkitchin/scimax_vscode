@@ -74,7 +74,7 @@ Select a result to see details or open the documentation file at that location.
 |-----------------+--------------------------------|
 | M-x             | Show command palette           |
 | C-x C-f         | Quick open file                |
-| C-x d           | Open folder                    |
+| C-x d           | Open Dired (directory editor)  |
 | C-x C-s         | Save file                      |
 | C-x s           | Save all files                 |
 | C-x k           | Close active editor            |
@@ -144,6 +144,8 @@ org-mode, markdown, and LaTeX files with consistent behavior.
 | C-c @         | Mark (select) subtree          |
 | C-c C-x t     | Insert inline task             |
 | C-c C-x i     | Add ID to heading              |
+| C-c C-w       | Refile subtree to target       |
+| C-c M-w       | Copy subtree to refile target  |
 
 * Items
 
@@ -441,6 +443,7 @@ Speed commands are single-key shortcuts available when the cursor is at the *beg
 | w   | Kill (cut) subtree      |
 | y   | Yank (paste) subtree    |
 | W   | Clone subtree           |
+| F   | Refile subtree          |
 | a   | Archive subtree         |
 | A   | Toggle archive tag      |
 | $   | Archive to sibling      |

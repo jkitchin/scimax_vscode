@@ -1,0 +1,114 @@
+#+TITLE: Dired - Directory Editor
+#+STARTUP: showall
+
+* Dired - Directory Editor
+
+Dired (Directory Editor) provides Emacs-style file management in VS Code. It displays directory listings in a webview panel where you can navigate, mark files, and perform bulk operations using familiar Emacs keybindings.
+
+** Opening Dired
+
+| Keybinding | Command | Description |
+|------------+---------+-------------|
+| ~C-x d~ | =scimax.dired.open= | Open dired (prompts for directory or uses workspace) |
+| | =scimax.dired.openCurrent= | Open dired for current file's directory |
+| | =scimax.dired.openWorkspace= | Open dired for workspace root |
+
+** Navigation
+
+Once in the dired panel, use these keys to navigate:
+
+| Key | Action |
+|-----+--------|
+| ~n~ or ~j~ or ~Down~ | Move to next file |
+| ~p~ or ~k~ or ~Up~ | Move to previous file |
+| ~RET~ or ~o~ | Open file/directory |
+| ~^~ | Navigate to parent directory |
+| ~g~ | Refresh directory listing |
+| ~<~ | Go to first entry |
+| ~>~ | Go to last entry |
+
+** Marking Files
+
+Mark files for batch operations:
+
+| Key | Action |
+|-----+--------|
+| ~m~ | Mark current file and move down |
+| ~u~ | Unmark current file and move down |
+| ~U~ | Unmark all files |
+| ~t~ | Toggle all marks |
+| ~d~ | Flag file for deletion |
+| ~% m~ | Mark files matching regex pattern |
+
+Marked files appear with ~*~ indicator. Flagged files (for deletion) appear with ~D~ indicator.
+
+** File Operations
+
+Operate on marked files (or current file if none marked):
+
+| Key | Action |
+|-----+--------|
+| ~D~ | Delete marked/flagged files (moves to trash by default) |
+| ~C~ | Copy marked files (prompts for destination) |
+| ~R~ | Rename/move marked files (prompts for destination) |
+| ~+~ | Create new directory |
+
+** WDired Mode (Writable Dired)
+
+WDired mode allows you to rename files by editing their names directly, like editing text:
+
+| Key | Action |
+|-----+--------|
+| ~C-x C-q~ | Enter wdired mode (names become editable) |
+| ~C-c C-c~ | Commit renames |
+| ~C-c C-k~ | Cancel and exit wdired mode |
+
+In wdired mode:
+1. Edit filenames directly in the listing
+2. Changes are highlighted
+3. Press ~C-c C-c~ to apply all renames at once
+4. Press ~C-c C-k~ to discard changes
+
+** Sorting and Filtering
+
+| Key | Action |
+|-----+--------|
+| ~s~ | Cycle sort field (name, size, date, extension) |
+| ~.~ | Toggle showing hidden files (dotfiles) |
+| ~/~ | Set filter pattern (regex) |
+
+** Display Format
+
+Each line shows:
+#+begin_example
+drwxr-xr-x  4096  2024-01-15 10:30  Documents/
+-rw-r--r--  1234  2024-01-14 09:15  file.txt
+lrwxrwxrwx    12  2024-01-13 08:00  link -> target
+#+end_example
+
+- First column: file permissions (d=directory, l=symlink, -=file)
+- Second column: file size
+- Third column: modification date/time
+- Fourth column: filename (directories end with /)
+
+** Configuration
+
+| Setting | Default | Description |
+|---------+---------+-------------|
+| ~scimax.dired.showHidden~ | ~false~ | Show hidden files by default |
+| ~scimax.dired.confirmDelete~ | ~true~ | Show confirmation before deleting |
+| ~scimax.dired.defaultSort~ | ~"name"~ | Default sort field (name, size, mtime, extension) |
+
+** Security
+
+Dired includes security protections:
+- Path traversal prevention (no ~..~ in filenames)
+- Filename validation (no path separators in names)
+- Delete operations use system trash by default
+- Regex patterns are validated to prevent ReDoS attacks
+
+** Related Topics
+
+- [[file:21-navigation.org][Navigation]] - General navigation features
+- [[file:17-projectile.org][Projectile]] - Project management
+- [[file:24-keybindings.org][Keybindings]] - All keyboard shortcuts
