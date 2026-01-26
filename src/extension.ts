@@ -117,6 +117,34 @@ export async function activate(context: vscode.ExtensionContext) {
         })
     );
 
+    // Google search command - uses selected text or prompts for query
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.googleSearch', async () => {
+            const editor = vscode.window.activeTextEditor;
+            let query = '';
+
+            // Use selected text if available
+            if (editor && !editor.selection.isEmpty) {
+                query = editor.document.getText(editor.selection).trim();
+            }
+
+            // If no selection, prompt for query
+            if (!query) {
+                const input = await vscode.window.showInputBox({
+                    prompt: 'Enter search query',
+                    placeHolder: 'Search Google...'
+                });
+                if (!input) return;
+                query = input;
+            }
+
+            const encodedQuery = encodeURIComponent(query);
+            await vscode.env.openExternal(
+                vscode.Uri.parse(`https://www.google.com/search?q=${encodedQuery}`)
+            );
+        })
+    );
+
     // Set Leuven as default theme on first activation
     const hasSetDefaultTheme = context.globalState.get<boolean>('scimax.hasSetDefaultTheme');
     if (!hasSetDefaultTheme) {
