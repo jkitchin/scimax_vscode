@@ -3221,47 +3221,47 @@
       {
         "command": "scimax.table.nextCell",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.table.prevCell",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.list.cycleIndent",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.list.cycleOutdent",
         "key": "shift+tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/ && scimax.onListItem && !scimax.inTable && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "-tab",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId =~ /org|markdown|latex/ && scimax.onHeading && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == 'org' && scimax.onResults && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onResults && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == 'org' && scimax.onDrawer && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId == 'org' && scimax.onDrawer && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.toggleFold",
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.onLatexBegin && !editorHasSelection && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.onLatexBegin && !editorHasSelection && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
@@ -4548,7 +4548,7 @@
           "key": "Tab"
         },
         "key": "tab",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !suggestWidgetVisible && !inSnippetMode"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.atLatexSectionStart && scimax.speedCommandsEnabled && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode"
       },
       {
         "command": "scimax.latex.speedCommand",
@@ -4979,7 +4979,7 @@
         "command": "scimax.org.toggleFold",
         "key": "tab",
         "mac": "tab",
-        "when": "editorTextFocus && editorLangId == 'latex' && scimax.onHeading && !suggestWidgetVisible && !inSnippetMode && !editorHasSelection"
+        "when": "editorTextFocus && editorLangId == 'latex' && scimax.onHeading && !suggestWidgetVisible && !inlineSuggestionVisible && !inSnippetMode && !editorHasSelection"
       },
       {
         "command": "scimax.org.cycleGlobalFold",
