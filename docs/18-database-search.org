@@ -13,6 +13,7 @@ Scimax VS Code includes a powerful database and search system that indexes your 
 - *Full-text search* with FTS5 (SQLite's Full-Text Search) and BM25 ranking
 - *Semantic search* using vector embeddings for meaning-based queries
 - *Hybrid search* combining keyword and semantic approaches
+- *Advanced search* with query expansion, weighted RRF, and LLM reranking (SOTA)
 - *Structured queries* for headings, TODOs, tags, properties, and links
 - *Agenda views* for scheduled items and deadlines
 - *Code block search* filtered by programming language
@@ -383,6 +384,218 @@ Results include:
 - Source indicator (Keywords, AI, or both)
 - File location and preview
 - Up to 20 results
+
+* ⚠️ Advanced Search (SOTA Pipeline)
+
+** Overview
+
+Advanced search implements a state-of-the-art (SOTA) search pipeline inspired by modern search engines like [[https://github.com/tobi/qmd][qmd]]. It combines multiple techniques for maximum recall and precision:
+
+1. *Query Expansion* - Generates alternative query formulations
+2. *Parallel Retrieval* - Runs FTS5 and vector search concurrently
+3. *Weighted Reciprocal Rank Fusion (RRF)* - Combines results intelligently
+4. *LLM Reranking* - Uses AI to improve final ranking (optional)
+
+** Usage
+
+*** Command
+
+Run =Scimax: Advanced Search= (=scimax.db.searchAdvanced=)
+
+*** When to Use
+
+- Complex research queries
+- When you want maximum recall
+- When hybrid search isn't finding relevant content
+- For important searches where accuracy matters more than speed
+
+** Query Expansion
+
+Query expansion improves recall by generating alternative formulations of your query.
+
+*** Pseudo-Relevance Feedback (PRF)
+
+*No LLM required* - Analyzes top results to find related terms.
+
+How it works:
+1. Runs initial search with original query
+2. Extracts key terms from top 5 results
+3. Creates expanded query with additional terms
+4. Searches again with expanded query
+
+Example:
+#+BEGIN_SRC org
+Original: "machine learning"
+Expanded: "machine learning neural network training models"
+#+END_SRC
+
+*** LLM Query Expansion
+
+*Requires Ollama* - Uses a language model to generate query variants.
+
+How it works:
+1. Sends query to LLM (e.g., qwen3:1.7b)
+2. LLM generates 3 alternative phrasings
+3. All variants searched in parallel
+4. Original query gets 2× weight in ranking
+
+Example:
+#+BEGIN_SRC org
+Original: "database optimization"
+Variants:
+  - "improve SQL query performance"
+  - "speed up database queries"
+  - "index tuning for databases"
+#+END_SRC
+
+** Weighted RRF
+
+Standard RRF assigns scores based on rank position. Advanced search enhances this with:
+
+*** Position Bonuses
+
+Top-ranked results get bonuses:
+- Rank 1: +15% bonus
+- Rank 2: +10% bonus
+- Rank 3: +5% bonus
+
+*** Original Query Weight
+
+The original query's results receive 2× weight compared to expanded query results.
+
+*** Score Normalization
+
+Different backends produce different score ranges:
+- BM25: Negative values (normalized to 0-1)
+- Vector: Cosine distance (converted to similarity)
+- All scores normalized before fusion
+
+** LLM Reranking
+
+*Requires Ollama* - Uses AI to score relevance after initial retrieval.
+
+*** How It Works
+
+1. Takes top 30 candidates from RRF fusion
+2. LLM scores each document's relevance (0-10)
+3. Scores blended with retrieval scores using position-aware weights
+
+*** Position-Aware Blending
+
+High-confidence retrieval matches are preserved:
+- Ranks 1-3: 75% retrieval, 25% reranker
+- Ranks 4-10: 60% retrieval, 40% reranker
+- Ranks 11+: 40% retrieval, 60% reranker
+
+*** Performance Considerations
+
+Reranking adds latency (~1-2 seconds for 30 documents). Disable for fast searches.
+
+** Capabilities Check
+
+Run =Scimax: Show Search Capabilities= (=scimax.db.searchCapabilities=) to see:
+
+#+BEGIN_SRC org
+✓ Full-Text Search (FTS5/BM25) - Available
+✓ Semantic/Vector Search - Available (Ollama)
+✓ Query Expansion (PRF) - Available (no LLM required)
+✗ Query Expansion (LLM) - Unavailable - check Ollama
+✗ LLM Reranking - Unavailable - pull qwen3:0.6b
+#+END_SRC
+
+** Graceful Degradation
+
+Advanced search works without all features:
+
+| If Unavailable | Fallback |
+|----------------+----------|
+| Vector search  | FTS-only |
+| LLM expansion  | PRF-only |
+| Reranking      | Skip reranking |
+| All LLM features | Equivalent to hybrid search |
+
+** Configuration
+
+*** Search Mode
+
+#+BEGIN_SRC json
+{
+  "scimax.search.defaultMode": "hybrid",  // or "fast", "semantic", "advanced"
+  "scimax.search.defaultLimit": 20
+}
+#+END_SRC
+
+*** Query Expansion
+
+#+BEGIN_SRC json
+{
+  "scimax.search.queryExpansion.enabled": true,
+  "scimax.search.queryExpansion.method": "prf",  // or "llm", "both"
+  "scimax.search.queryExpansion.prfTopK": 5,
+  "scimax.search.queryExpansion.prfTermCount": 5,
+  "scimax.search.queryExpansion.llmModel": "qwen3:1.7b"
+}
+#+END_SRC
+
+*** Reranking
+
+#+BEGIN_SRC json
+{
+  "scimax.search.reranking.enabled": false,  // Enable for better accuracy
+  "scimax.search.reranking.model": "qwen3:0.6b",
+  "scimax.search.reranking.topK": 30,
+  "scimax.search.reranking.usePositionBlending": true
+}
+#+END_SRC
+
+*** Hybrid Weights
+
+#+BEGIN_SRC json
+{
+  "scimax.search.hybrid.ftsWeight": 0.5,
+  "scimax.search.hybrid.vectorWeight": 0.5,
+  "scimax.search.hybrid.usePositionBonus": true,
+  "scimax.search.hybrid.k": 60  // RRF constant
+}
+#+END_SRC
+
+*** Caching
+
+#+BEGIN_SRC json
+{
+  "scimax.search.caching.enabled": true,
+  "scimax.search.caching.ttlSeconds": 900,  // 15 minutes
+  "scimax.search.caching.maxEntries": 500
+}
+#+END_SRC
+
+** Setting Up LLM Features
+
+To enable query expansion and reranking with Ollama:
+
+1. Install Ollama: https://ollama.ai
+2. Start Ollama: =ollama serve=
+3. Pull models:
+   #+BEGIN_SRC bash
+   ollama pull qwen3:1.7b   # For query expansion
+   ollama pull qwen3:0.6b   # For reranking
+   #+END_SRC
+4. Enable in settings:
+   #+BEGIN_SRC json
+   {
+     "scimax.search.queryExpansion.method": "both",
+     "scimax.search.reranking.enabled": true
+   }
+   #+END_SRC
+
+** Performance Comparison
+
+| Mode     | Speed    | Recall | Precision | When to Use |
+|----------+----------+--------+-----------+-------------|
+| Fast     | <50ms    | Low    | High      | Exact matches |
+| Semantic | ~200ms   | High   | Medium    | Conceptual queries |
+| Hybrid   | ~300ms   | High   | High      | General purpose |
+| Advanced | 1-3s     | Highest| Highest   | Important searches |
 
 * Structured Queries
 
@@ -986,16 +1199,18 @@ Ollama embedding model name.
 
 ** Search Commands
 
-| Command                    | Description                  |
-|----------------------------+------------------------------|
-| scimax.db.search           | Full-text search (FTS5)      |
-| scimax.db.searchSemantic   | Semantic search (vector)     |
-| scimax.db.searchHybrid     | Hybrid search (FTS + vector) |
-| scimax.db.searchHeadings   | Search headings              |
-| scimax.db.searchByTag      | Search by org tag            |
-| scimax.db.searchByProperty | Search by property value     |
-| scimax.db.searchBlocks     | Search code blocks           |
-| scimax.db.searchHashtags   | Search by hashtag            |
+| Command                      | Description                        |
+|------------------------------+------------------------------------|
+| scimax.db.search             | Full-text search (FTS5)            |
+| scimax.db.searchSemantic     | Semantic search (vector)           |
+| scimax.db.searchHybrid       | Hybrid search (FTS + vector)       |
+| scimax.db.searchAdvanced     | Advanced search (full pipeline)    |
+| scimax.db.searchCapabilities | Show search capabilities           |
+| scimax.db.searchHeadings     | Search headings                    |
+| scimax.db.searchByTag        | Search by org tag                  |
+| scimax.db.searchByProperty   | Search by property value           |
+| scimax.db.searchBlocks       | Search code blocks                 |
+| scimax.db.searchHashtags     | Search by hashtag                  |
 
 ** View Commands
 

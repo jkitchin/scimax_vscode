@@ -1096,6 +1096,14 @@
         "title": "Scimax: Hybrid Search (Keywords + AI)"
       },
       {
+        "command": "scimax.db.searchAdvanced",
+        "title": "Scimax: Advanced Search (Full Pipeline)"
+      },
+      {
+        "command": "scimax.db.searchCapabilities",
+        "title": "Scimax: Show Search Capabilities"
+      },
+      {
         "command": "scimax.db.configureEmbeddings",
         "title": "Scimax: Configure Embedding Service"
       },
@@ -5364,6 +5372,116 @@
           "type": "string",
           "default": "nomic-embed-text",
           "description": "Ollama model for embeddings"
+        },
+        "scimax.search.defaultMode": {
+          "type": "string",
+          "enum": ["fast", "semantic", "hybrid", "advanced"],
+          "default": "hybrid",
+          "description": "Default search mode. 'fast' uses FTS5 only, 'semantic' uses vector search, 'hybrid' combines both with RRF, 'advanced' adds query expansion and reranking."
+        },
+        "scimax.search.defaultLimit": {
+          "type": "number",
+          "default": 20,
+          "minimum": 5,
+          "maximum": 100,
+          "description": "Default number of search results to return."
+        },
+        "scimax.search.queryExpansion.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable query expansion in advanced search mode. Improves recall by generating alternative query formulations."
+        },
+        "scimax.search.queryExpansion.method": {
+          "type": "string",
+          "enum": ["prf", "llm", "both"],
+          "default": "prf",
+          "description": "Query expansion method. 'prf' uses pseudo-relevance feedback (no LLM required), 'llm' uses Ollama, 'both' combines both methods."
+        },
+        "scimax.search.queryExpansion.prfTopK": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 20,
+          "description": "Number of top results to analyze for pseudo-relevance feedback."
+        },
+        "scimax.search.queryExpansion.prfTermCount": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 15,
+          "description": "Number of terms to extract from top results for query expansion."
+        },
+        "scimax.search.queryExpansion.llmModel": {
+          "type": "string",
+          "default": "qwen3:1.7b",
+          "description": "Ollama model for LLM-based query expansion. Smaller models like qwen3:1.7b work well."
+        },
+        "scimax.search.reranking.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable LLM reranking in advanced search mode. Requires Ollama. Improves precision but adds latency."
+        },
+        "scimax.search.reranking.model": {
+          "type": "string",
+          "default": "qwen3:0.6b",
+          "description": "Ollama model for reranking. Smaller models are faster. qwen3:0.6b is recommended."
+        },
+        "scimax.search.reranking.topK": {
+          "type": "number",
+          "default": 30,
+          "minimum": 5,
+          "maximum": 100,
+          "description": "Number of top results to rerank. Higher values improve accuracy but increase latency."
+        },
+        "scimax.search.reranking.usePositionBlending": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use position-aware blending when combining retrieval and reranker scores. Top ranks rely more on retrieval confidence."
+        },
+        "scimax.search.hybrid.ftsWeight": {
+          "type": "number",
+          "default": 0.5,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for FTS5/BM25 results in hybrid search. Combined with vectorWeight should equal 1."
+        },
+        "scimax.search.hybrid.vectorWeight": {
+          "type": "number",
+          "default": 0.5,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Weight for vector/semantic results in hybrid search. Combined with ftsWeight should equal 1."
+        },
+        "scimax.search.hybrid.usePositionBonus": {
+          "type": "boolean",
+          "default": true,
+          "description": "Apply top-rank bonus in RRF fusion. Rewards results that consistently appear at the top across different retrieval methods."
+        },
+        "scimax.search.hybrid.k": {
+          "type": "number",
+          "default": 60,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "RRF constant (k). Higher values reduce the impact of rank position. Standard value is 60."
+        },
+        "scimax.search.caching.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable caching for search operations. Improves performance for repeated queries."
+        },
+        "scimax.search.caching.ttlSeconds": {
+          "type": "number",
+          "default": 900,
+          "minimum": 60,
+          "maximum": 3600,
+          "description": "Cache time-to-live in seconds. Default is 15 minutes."
+        },
+        "scimax.search.caching.maxEntries": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "maximum": 5000,
+          "description": "Maximum number of cache entries. Older entries are evicted when limit is reached."
         },
         "scimax.projectile.scanMaxDepth": {
           "type": "number",
