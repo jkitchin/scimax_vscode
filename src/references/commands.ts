@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { ReferenceManager } from './referenceManager';
 import { BibEntry, formatCitation, formatCitationLink, formatAuthors, entryToBibTeX, OrgCitationSyntax } from './bibtexParser';
+import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
 import {
     fetchOpenAlexWork,
     fetchCitingWorks,
@@ -88,47 +89,18 @@ export function registerReferenceCommands(
             }
 
             // Build quick pick items with search text for fuzzy matching
-            type CitationItem = vscode.QuickPickItem & { entry: BibEntry; searchText: string };
-            const allItems: CitationItem[] = entries.map(entry => {
+            const items = entries.map(entry => {
                 const formatted = manager.formatForQuickPick(entry);
-                // Include full title (not truncated) in search text
                 const fullTitle = entry.title || '';
                 return {
                     ...formatted,
+                    data: entry,
                     searchText: `${formatted.label} ${formatted.description} ${fullTitle}`.toLowerCase()
                 };
             });
 
-            // Fuzzy filter: split query by spaces, all parts must match
-            const fuzzyFilter = (items: CitationItem[], query: string): CitationItem[] => {
-                if (!query.trim()) return items;
-                const parts = query.toLowerCase().split(/\s+/).filter(p => p.length > 0);
-                return items
-                    .filter(item => parts.every(part => item.searchText.includes(part)))
-                    .map(item => ({ ...item, alwaysShow: true })); // Bypass VS Code's filtering
-            };
-
-            // Create quick pick with custom filtering
-            const quickPick = vscode.window.createQuickPick<CitationItem>();
-            quickPick.placeholder = 'Search references (space-separated terms)...';
-            quickPick.matchOnDescription = false;
-            quickPick.matchOnDetail = false;
-            quickPick.items = allItems;
-
-            quickPick.onDidChangeValue(value => {
-                quickPick.items = fuzzyFilter(allItems, value);
-            });
-
-            const selected = await new Promise<CitationItem | undefined>(resolve => {
-                quickPick.onDidAccept(() => {
-                    resolve(quickPick.selectedItems[0]);
-                    quickPick.hide();
-                });
-                quickPick.onDidHide(() => {
-                    resolve(undefined);
-                    quickPick.dispose();
-                });
-                quickPick.show();
+            const selected = await showFuzzyQuickPick(items, {
+                placeholder: 'Search references (space-separated terms)...'
             });
 
             if (!selected) return;
@@ -143,13 +115,13 @@ export function registerReferenceCommands(
 
             if (existingCitation) {
                 // Check if key already exists in citation
-                if (existingCitation.keys.includes(selected.entry.key)) {
-                    vscode.window.showInformationMessage(`${selected.entry.key} is already in this citation`);
+                if (existingCitation.keys.includes(selected.data.key)) {
+                    vscode.window.showInformationMessage(`${selected.data.key} is already in this citation`);
                     return;
                 }
 
                 // Append to existing citation
-                const newKeys = [...existingCitation.keys, selected.entry.key];
+                const newKeys = [...existingCitation.keys, selected.data.key];
                 let newCitation: string;
                 if (existingCitation.isV3) {
                     // v3 format: cite:&key1;&key2 - each key needs & prefix
@@ -172,7 +144,7 @@ export function registerReferenceCommands(
                 const newPosition = new vscode.Position(position.line, existingCitation.start + newCitation.length);
                 editor.selection = new vscode.Selection(newPosition, newPosition);
 
-                vscode.window.showInformationMessage(`Added ${selected.entry.key} to citation`);
+                vscode.window.showInformationMessage(`Added ${selected.data.key} to citation`);
                 return;
             }
 
@@ -205,7 +177,7 @@ export function registerReferenceCommands(
 
             // Insert citation with configured syntax
             const citation = formatCitationLink(
-                selected.entry.key,
+                selected.data.key,
                 styleSelection.value,
                 format,
                 undefined, // prenote

@@ -16,6 +16,7 @@ import {
 import { getDatabase, getExtensionContext, cancelStaleFileCheck } from './lazyDb';
 import { resolveScimaxPath } from '../utils/pathResolver';
 import { databaseLogger as log } from '../utils/logger';
+import { showFuzzyQuickPick } from '../utils/fuzzyQuickPick';
 
 /**
  * Debounce function for dynamic QuickPick updates
