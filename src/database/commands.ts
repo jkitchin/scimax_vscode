@@ -755,7 +755,7 @@ export function registerDbCommands(
         })
     );
 
-    // Search headings (ivy-style: load all, filter locally)
+    // Search headings (ivy-style: load all, filter locally with fuzzy matching)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.searchHeadings', async () => {
             const db = await requireDatabase();
@@ -763,20 +763,46 @@ export function registerDbCommands(
 
             // Load all headings upfront for ivy-style filtering
             const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { heading: HeadingRecord }>();
-            quickPick.placeholder = 'Type to filter headings...';
-            quickPick.matchOnDescription = true;
-            quickPick.matchOnDetail = true;
+            quickPick.placeholder = 'Type to filter headings (space-separated terms)...';
+            // Disable VS Code's built-in filtering - we'll do our own fuzzy matching
+            quickPick.matchOnDescription = false;
+            quickPick.matchOnDetail = false;
             quickPick.busy = true;
+
+            type HeadingItem = vscode.QuickPickItem & { heading: HeadingRecord; searchText: string };
+            let allItems: HeadingItem[] = [];
+
+            // Fuzzy filter function: split query by spaces, all parts must match
+            const fuzzyFilter = (items: HeadingItem[], query: string): HeadingItem[] => {
+                if (!query.trim()) return items;
+                const parts = query.toLowerCase().split(/\s+/).filter(p => p.length > 0);
+                return items
+                    .filter(item => parts.every(part => item.searchText.includes(part)))
+                    .map(item => ({ ...item, alwaysShow: true })); // Bypass VS Code's filtering
+            };
 
             // Load headings in background
             db.searchHeadings('', { limit: 5000 }).then(headings => {
-                quickPick.items = headings.map(heading => ({
-                    label: `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`,
-                    description: formatHeadingDescription(heading),
-                    detail: `${path.basename(heading.file_path)}:${heading.line_number}`,
-                    heading
-                }));
+                allItems = headings.map(heading => {
+                    const label = `${'  '.repeat(heading.level - 1)}${getHeadingIcon(heading)} ${heading.title}`;
+                    const description = formatHeadingDescription(heading);
+                    const detail = `${path.basename(heading.file_path)}:${heading.line_number}`;
+                    return {
+                        label,
+                        description,
+                        detail,
+                        heading,
+                        // Pre-compute lowercase search text for faster filtering
+                        searchText: `${label} ${description} ${detail}`.toLowerCase()
+                    };
+                });
+                quickPick.items = allItems;
                 quickPick.busy = false;
+            });
+
+            // Custom filtering on value change
+            quickPick.onDidChangeValue(value => {
+                quickPick.items = fuzzyFilter(allItems, value);
             });
 
             quickPick.onDidAccept(async () => {

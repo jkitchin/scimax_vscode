@@ -87,14 +87,48 @@ export function registerReferenceCommands(
                 return;
             }
 
-            // Build quick pick items
-            const items = entries.map(entry => manager.formatForQuickPick(entry));
+            // Build quick pick items with search text for fuzzy matching
+            type CitationItem = vscode.QuickPickItem & { entry: BibEntry; searchText: string };
+            const allItems: CitationItem[] = entries.map(entry => {
+                const formatted = manager.formatForQuickPick(entry);
+                // Include full title (not truncated) in search text
+                const fullTitle = entry.title || '';
+                return {
+                    ...formatted,
+                    searchText: `${formatted.label} ${formatted.description} ${fullTitle}`.toLowerCase()
+                };
+            });
 
-            // Show quick pick with search
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: 'Search and select a reference to cite',
-                matchOnDescription: true,
-                matchOnDetail: true
+            // Fuzzy filter: split query by spaces, all parts must match
+            const fuzzyFilter = (items: CitationItem[], query: string): CitationItem[] => {
+                if (!query.trim()) return items;
+                const parts = query.toLowerCase().split(/\s+/).filter(p => p.length > 0);
+                return items
+                    .filter(item => parts.every(part => item.searchText.includes(part)))
+                    .map(item => ({ ...item, alwaysShow: true })); // Bypass VS Code's filtering
+            };
+
+            // Create quick pick with custom filtering
+            const quickPick = vscode.window.createQuickPick<CitationItem>();
+            quickPick.placeholder = 'Search references (space-separated terms)...';
+            quickPick.matchOnDescription = false;
+            quickPick.matchOnDetail = false;
+            quickPick.items = allItems;
+
+            quickPick.onDidChangeValue(value => {
+                quickPick.items = fuzzyFilter(allItems, value);
+            });
+
+            const selected = await new Promise<CitationItem | undefined>(resolve => {
+                quickPick.onDidAccept(() => {
+                    resolve(quickPick.selectedItems[0]);
+                    quickPick.hide();
+                });
+                quickPick.onDidHide(() => {
+                    resolve(undefined);
+                    quickPick.dispose();
+                });
+                quickPick.show();
             });
 
             if (!selected) return;
