@@ -1,6 +1,7 @@
 /**
  * Screenshot capture and insertion for org-mode and markdown
  * Cross-platform support: macOS, Windows, Linux
+ * Includes OCR functionality using tesseract.js
  */
 
 import * as vscode from 'vscode';
@@ -8,8 +9,40 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { spawn } from 'child_process';
 import { createLogger } from '../utils/logger';
+import Tesseract from 'tesseract.js';
 
 const log = createLogger('Screenshot');
+
+// =============================================================================
+// OCR Worker Management
+// =============================================================================
+
+// Lazy-initialized worker for performance (reused across calls)
+let ocrWorker: Tesseract.Worker | null = null;
+
+/**
+ * Get or create the OCR worker (lazy initialization)
+ * First call takes ~2-3 seconds, subsequent calls reuse the worker
+ */
+async function getOcrWorker(): Promise<Tesseract.Worker> {
+    if (!ocrWorker) {
+        log.info('Initializing OCR worker...');
+        ocrWorker = await Tesseract.createWorker('eng');
+        log.info('OCR worker initialized');
+    }
+    return ocrWorker;
+}
+
+/**
+ * Perform OCR on an image file
+ * @param imagePath Path to the image file
+ * @returns Extracted text, trimmed
+ */
+async function performOcr(imagePath: string): Promise<string> {
+    const worker = await getOcrWorker();
+    const { data: { text } } = await worker.recognize(imagePath);
+    return text.trim();
+}
 
 // =============================================================================
 // Image Dimensions (pure TypeScript, no external deps)
@@ -258,15 +291,16 @@ async function takeScreenshot(outputPath: string): Promise<ScreenshotResult> {
 
 /**
  * Generate a timestamped filename for screenshot
+ * @param prefix Filename prefix (default: 'screenshot')
  */
-function generateScreenshotFilename(): string {
+function generateScreenshotFilename(prefix: string = 'screenshot'): string {
     const now = new Date();
     const pad = (n: number) => n.toString().padStart(2, '0');
 
     const date = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
     const time = `${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
 
-    return `screenshot-${date}-${time}.png`;
+    return `${prefix}-${date}-${time}.png`;
 }
 
 /**
@@ -356,11 +390,110 @@ export async function insertScreenshot(): Promise<void> {
 }
 
 /**
+ * Insert OCR screenshot: captures screen region, extracts text via OCR,
+ * and inserts both the extracted text and an image link
+ */
+export async function insertOcrScreenshot(): Promise<void> {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        vscode.window.showErrorMessage('No active editor');
+        return;
+    }
+
+    const document = editor.document;
+    const isOrg = document.languageId === 'org';
+    const isMd = document.languageId === 'markdown';
+
+    if (!isOrg && !isMd) {
+        vscode.window.showErrorMessage('OCR screenshot insertion only works in org-mode or markdown files');
+        return;
+    }
+
+    // Get the directory of the current file
+    const fileDir = path.dirname(document.uri.fsPath);
+    const screenshotsDir = path.join(fileDir, 'screenshots');
+
+    // Create screenshots directory if it doesn't exist
+    if (!fs.existsSync(screenshotsDir)) {
+        fs.mkdirSync(screenshotsDir, { recursive: true });
+    }
+
+    const filename = generateScreenshotFilename('ocr-screenshot');
+    const outputPath = path.join(screenshotsDir, filename);
+
+    // Show status message for screenshot capture
+    let statusMessage = vscode.window.setStatusBarMessage('$(camera) Select area for OCR screenshot...');
+
+    try {
+        const result = await takeScreenshot(outputPath);
+
+        if (result.cancelled) {
+            statusMessage.dispose();
+            vscode.window.setStatusBarMessage('OCR screenshot cancelled', 2000);
+            return;
+        }
+
+        if (!result.success) {
+            statusMessage.dispose();
+            vscode.window.showErrorMessage(`Screenshot failed: ${result.error}`);
+            return;
+        }
+
+        // Update status for OCR processing
+        statusMessage.dispose();
+        statusMessage = vscode.window.setStatusBarMessage('$(sync~spin) Performing OCR...');
+
+        // Perform OCR on the captured image
+        log.info(`Performing OCR on ${outputPath}`);
+        const ocrText = await performOcr(outputPath);
+        log.info(`OCR extracted ${ocrText.length} characters`);
+
+        statusMessage.dispose();
+
+        // Get image dimensions
+        const dimensions = getImageDimensions(outputPath);
+        const width = dimensions ? Math.min(800, dimensions.width) : 800;
+
+        // Build the output: OCR text + blank line + image link
+        let outputText: string;
+        const relativePath = `./screenshots/${filename}`;
+
+        if (isOrg) {
+            outputText = `\n${ocrText}\n\n#+attr_org: :width ${width}\n[[${relativePath}]]\n`;
+        } else {
+            // Markdown
+            outputText = `\n${ocrText}\n\n![ocr-screenshot](${relativePath})\n`;
+        }
+
+        // Insert at cursor position
+        await editor.edit((editBuilder) => {
+            editBuilder.insert(editor.selection.active, outputText);
+        });
+
+        vscode.window.setStatusBarMessage(`OCR screenshot saved: ${filename}`, 3000);
+        log.info(`OCR screenshot saved to ${outputPath}`);
+
+        // Trigger image preview refresh if available
+        vscode.commands.executeCommand('scimax.org.refreshInlineImages').then(
+            () => {},
+            () => {} // Command might not exist, ignore
+        );
+
+    } catch (error) {
+        statusMessage.dispose();
+        const err = error instanceof Error ? error : new Error(String(error));
+        log.error('OCR screenshot failed', err);
+        vscode.window.showErrorMessage(`OCR screenshot failed: ${err.message}`);
+    }
+}
+
+/**
  * Register screenshot commands
  */
 export function registerScreenshotCommands(context: vscode.ExtensionContext): void {
     context.subscriptions.push(
-        vscode.commands.registerCommand('scimax.insertScreenshot', insertScreenshot)
+        vscode.commands.registerCommand('scimax.insertScreenshot', insertScreenshot),
+        vscode.commands.registerCommand('scimax.insertOcrScreenshot', insertOcrScreenshot)
     );
 
     log.info('Screenshot commands registered');

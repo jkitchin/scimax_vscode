@@ -46,6 +46,15 @@ node_modules/**
 !node_modules/moo/**
 !node_modules/sync-fetch/**
 !node_modules/fetch-ponyfill/**
+# tesseract.js for OCR
+!node_modules/tesseract.js/**
+!node_modules/tesseract.js-core/**
+!node_modules/bmp-js/**
+!node_modules/idb-keyval/**
+!node_modules/is-url/**
+!node_modules/regenerator-runtime/**
+!node_modules/wasm-feature-detect/**
+!node_modules/zlibjs/**
 # other runtime deps
 !node_modules/@babel/**
 # handlebars for custom exporters

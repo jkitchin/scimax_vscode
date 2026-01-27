@@ -5,11 +5,102 @@ import { NotebookManager, Notebook, Collaborator } from './notebookManager';
 import { ProjectileManager, Project } from '../projectile/projectileManager';
 import { getDatabase } from '../database/lazyDb';
 
+// =============================================================================
+// Pending Navigation for Cross-Window Link Opening
+// =============================================================================
+
+/**
+ * Pending navigation request stored when opening a notebook link in a new window
+ */
+interface PendingNavigation {
+    projectPath: string;
+    filePath: string;
+    target?: string;
+    timestamp: number;
+}
+
+const PENDING_NAVIGATION_KEY = 'scimax.notebook.pendingNavigation';
+const PENDING_NAVIGATION_TIMEOUT_MS = 30000; // 30 seconds
+
+/**
+ * Store a pending navigation request in global state
+ */
+function storePendingNavigation(
+    context: vscode.ExtensionContext,
+    navigation: PendingNavigation
+): void {
+    // Get existing pending navigations
+    const pending = context.globalState.get<PendingNavigation[]>(PENDING_NAVIGATION_KEY, []);
+
+    // Add the new one
+    pending.push(navigation);
+
+    // Clean up old entries (older than timeout)
+    const now = Date.now();
+    const filtered = pending.filter(p => now - p.timestamp < PENDING_NAVIGATION_TIMEOUT_MS);
+
+    context.globalState.update(PENDING_NAVIGATION_KEY, filtered);
+}
+
+/**
+ * Check for and execute any pending navigation for the current workspace
+ * Called during extension activation
+ */
+export async function checkPendingNavigation(
+    context: vscode.ExtensionContext
+): Promise<boolean> {
+    const pending = context.globalState.get<PendingNavigation[]>(PENDING_NAVIGATION_KEY, []);
+    if (pending.length === 0) return false;
+
+    const now = Date.now();
+    const currentWorkspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!currentWorkspace) return false;
+
+    // Find a pending navigation for the current workspace
+    const matchIndex = pending.findIndex(p =>
+        p.projectPath === currentWorkspace &&
+        now - p.timestamp < PENDING_NAVIGATION_TIMEOUT_MS
+    );
+
+    if (matchIndex === -1) return false;
+
+    const navigation = pending[matchIndex];
+
+    // Remove the matched navigation from pending list
+    pending.splice(matchIndex, 1);
+    await context.globalState.update(PENDING_NAVIGATION_KEY, pending);
+
+    // Execute the navigation
+    const fullPath = path.join(navigation.projectPath, navigation.filePath);
+
+    if (!fs.existsSync(fullPath)) {
+        vscode.window.showErrorMessage(`File not found: ${fullPath}`);
+        return false;
+    }
+
+    // Open the file
+    const doc = await vscode.workspace.openTextDocument(fullPath);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    // Navigate to target if specified
+    if (navigation.target) {
+        await navigateToTarget(editor, doc, navigation.target);
+    }
+
+    return true;
+}
+
+// Extension context reference for storing pending navigations
+let extensionContext: vscode.ExtensionContext | null = null;
+
 export function registerNotebookCommands(
     context: vscode.ExtensionContext,
     notebookManager: NotebookManager,
     projectileManager: ProjectileManager
 ): void {
+    // Store context reference for pending navigation storage
+    extensionContext = context;
+
     // Create new notebook
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.notebook.new', async () => {
@@ -694,13 +785,43 @@ async function openNotebookLink(
     const fullPath = path.join(project.path, filePath);
 
     // Check if file exists
-    const fs = require('fs');
     if (!fs.existsSync(fullPath)) {
         vscode.window.showErrorMessage(`File not found: ${fullPath}`);
         return;
     }
 
-    // Open the file
+    // Check if project is already the current workspace
+    const currentWorkspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    const isCurrentWorkspace = currentWorkspace === project.path;
+
+    // Get setting for opening in new window
+    const config = vscode.workspace.getConfiguration('scimax.notebook');
+    const openInNewWindow = config.get<boolean>('openLinksInNewWindow', true);
+
+    if (!isCurrentWorkspace && openInNewWindow) {
+        // Project differs from current workspace - open in new window
+        if (!extensionContext) {
+            vscode.window.showErrorMessage('Extension context not available');
+            return;
+        }
+
+        // Store pending navigation for the new window to pick up
+        storePendingNavigation(extensionContext, {
+            projectPath: project.path,
+            filePath: filePath,
+            target: target,
+            timestamp: Date.now()
+        });
+
+        // Open the project folder in a new window
+        const projectUri = vscode.Uri.file(project.path);
+        await vscode.commands.executeCommand('vscode.openFolder', projectUri, { forceNewWindow: true });
+
+        // Note: The new window will handle the navigation via checkPendingNavigation
+        return;
+    }
+
+    // Same workspace or new window disabled - open directly
     const doc = await vscode.workspace.openTextDocument(fullPath);
     const editor = await vscode.window.showTextDocument(doc);
 

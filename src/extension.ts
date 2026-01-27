@@ -24,7 +24,7 @@ import {
     registerCiteActionCommand
 } from './references/providers';
 import { NotebookManager } from './notebook/notebookManager';
-import { registerNotebookCommands } from './notebook/commands';
+import { registerNotebookCommands, checkPendingNavigation } from './notebook/commands';
 import { OrgLinkProvider, MarkdownHeadingLinkProvider, registerOrgLinkCommands } from './parser/orgLinkProvider';
 import { registerSemanticTokenProvider } from './highlighting/semanticTokenProvider';
 import { registerFoldingProvider } from './highlighting/foldingProvider';
@@ -611,6 +611,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Register Notebook Commands (uses projectileManager for nb: link resolution)
     registerNotebookCommands(context, notebookManager, projectileManager);
+
+    // Check for pending navigation from notebook links opened in new window
+    checkPendingNavigation(context).catch(err => {
+        console.error('Failed to check pending navigation:', err);
+    });
 
     // Initialize Template Manager
     templateManager = new TemplateManager(context);
