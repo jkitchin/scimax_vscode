@@ -3353,7 +3353,14 @@ export async function openLinkAtPoint(): Promise<void> {
             try {
                 await vscode.workspace.fs.stat(targetUri);
             } catch {
-                // File doesn't exist - create it
+                // File doesn't exist - create parent directories and the file
+                const parentDir = vscode.Uri.joinPath(targetUri, '..');
+                try {
+                    await vscode.workspace.fs.stat(parentDir);
+                } catch {
+                    // Parent directory doesn't exist - create it recursively
+                    await vscode.workspace.fs.createDirectory(parentDir);
+                }
                 await vscode.workspace.fs.writeFile(targetUri, new Uint8Array());
             }
             await vscode.commands.executeCommand('vscode.open', targetUri);
@@ -3393,7 +3400,14 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
     try {
         await vscode.workspace.fs.stat(targetUri);
     } catch {
-        // File doesn't exist - create it
+        // File doesn't exist - create parent directories and the file
+        const parentDir = vscode.Uri.joinPath(targetUri, '..');
+        try {
+            await vscode.workspace.fs.stat(parentDir);
+        } catch {
+            // Parent directory doesn't exist - create it recursively
+            await vscode.workspace.fs.createDirectory(parentDir);
+        }
         await vscode.workspace.fs.writeFile(targetUri, new Uint8Array());
     }
 
