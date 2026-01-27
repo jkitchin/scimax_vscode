@@ -88,11 +88,15 @@ export class OrgSemanticTokenProvider implements vscode.DocumentSemanticTokensPr
         let match;
 
         while ((match = bracketLinkRegex.exec(line)) !== null) {
+            // Check if this is a citation link (cite:, citep:, citet:, etc.)
+            const target = match[1];
+            const isCitation = /^cite[a-zA-Z]*:/.test(target);
+
             tokens.push({
                 line: lineNum,
                 startChar: match.index,
                 length: match[0].length,
-                tokenType: tokenTypes.indexOf('orgLink'),
+                tokenType: tokenTypes.indexOf(isCitation ? 'orgCitation' : 'orgLink'),
                 tokenModifiers: 0
             });
         }

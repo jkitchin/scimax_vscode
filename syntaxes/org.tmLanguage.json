@@ -914,6 +914,16 @@
     "links": {
       "patterns": [
         {
+          "comment": "Citation link in brackets with description: [[cite:&key][desc]]",
+          "name": "entity.other.citation.bracket.org",
+          "match": "\\[\\[cite[a-zA-Z]*:[^\\]]+\\]\\[[^\\]]+\\]\\]"
+        },
+        {
+          "comment": "Citation link in brackets without description: [[cite:&key]]",
+          "name": "entity.other.citation.bracket.org",
+          "match": "\\[\\[cite[a-zA-Z]*:[^\\]]+\\]\\]"
+        },
+        {
           "name": "meta.link.bracket.org",
           "match": "\\[\\[([^\\]]+)\\]\\[([^\\]]+)\\]\\]",
           "captures": {

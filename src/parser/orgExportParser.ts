@@ -37,6 +37,8 @@ import type {
     PlainTextObject,
     LatexFragmentObject,
     LatexEnvironmentElement,
+    SubscriptObject,
+    SuperscriptObject,
     OrgRange,
 } from './orgElementTypes';
 
@@ -66,6 +68,14 @@ const CODE_PATTERN = /=([^\s=](?:[^=]{0,500}[^\s=])?)=/g;
 const VERBATIM_PATTERN = /~([^\s~](?:[^~]{0,500}[^\s~])?)~/g;
 // Emacs-style command markup: `command'
 const COMMAND_PATTERN = /`([^`'\n]+)'/g;
+
+// Subscript and superscript patterns
+// Subscript: _{content} (braced) or _word (simple, single word/digits after word char)
+const SUBSCRIPT_BRACED_PATTERN = /(?<=[a-zA-Z0-9])_\{([^}]+)\}/g;
+const SUBSCRIPT_SIMPLE_PATTERN = /(?<=[a-zA-Z0-9])_([a-zA-Z0-9]+)(?![a-zA-Z0-9{])/g;
+// Superscript: ^{content} (braced) or ^word (simple)
+const SUPERSCRIPT_BRACED_PATTERN = /(?<=[a-zA-Z0-9])\^\{([^}]+)\}/g;
+const SUPERSCRIPT_SIMPLE_PATTERN = /(?<=[a-zA-Z0-9])\^([a-zA-Z0-9]+)(?![a-zA-Z0-9{])/g;
 
 // LaTeX math patterns
 // Display math: $$...$$ or \[...\]
@@ -117,7 +127,7 @@ export function parseObjectsFast(text: string): OrgObject[] {
         return [];
     }
 
-    if (text.length < 3 || !/[*/_+=~\[\]:$\\<{@]/.test(text)) {
+    if (text.length < 3 || !/[*/_+=~\[\]:$\\<{@^]/.test(text)) {
         return [createPlainText(text, 0, text.length)];
     }
 
@@ -308,6 +318,48 @@ export function parseObjectsFast(text: string): OrgObject[] {
             postBlank: 0,
             properties: { value: m[1] },
         }));
+    }
+
+    // Subscript: _{content} or _word (must follow word character)
+    if (text.includes('_')) {
+        // Braced subscript: _{content}
+        collectMatches(SUBSCRIPT_BRACED_PATTERN, (m) => ({
+            type: 'subscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: true },
+            children: parseObjectsFast(m[1]),
+        } as SubscriptObject));
+
+        // Simple subscript: _word
+        collectMatches(SUBSCRIPT_SIMPLE_PATTERN, (m) => ({
+            type: 'subscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: false },
+            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+        } as SubscriptObject));
+    }
+
+    // Superscript: ^{content} or ^word (must follow word character)
+    if (text.includes('^')) {
+        // Braced superscript: ^{content}
+        collectMatches(SUPERSCRIPT_BRACED_PATTERN, (m) => ({
+            type: 'superscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: true },
+            children: parseObjectsFast(m[1]),
+        } as SuperscriptObject));
+
+        // Simple superscript: ^word
+        collectMatches(SUPERSCRIPT_SIMPLE_PATTERN, (m) => ({
+            type: 'superscript' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: { usesBraces: false },
+            children: [createPlainText(m[1], m.index! + 1, m.index! + 1 + m[1].length)],
+        } as SuperscriptObject));
     }
 
     // LaTeX math (higher priority, check first)

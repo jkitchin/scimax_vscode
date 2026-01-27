@@ -1328,23 +1328,25 @@ describe('LaTeX Export', () => {
                 children: [],
                 section: {
                     type: 'section',
-                    properties: {},
+                    range: createRange(0, 50),
+                    postBlank: 0,
                     children: [{
                         type: 'paragraph',
-                        properties: {},
+                        range: createRange(0, 50),
+                        postBlank: 0,
                         children: [{
                             type: 'link',
+                            range: createRange(0, 30),
+                            postBlank: 0,
                             properties: {
                                 linkType: 'custom-id',
                                 path: '#my-target',
+                                format: 'bracket' as const,
                                 rawLink: '#my-target',
                             },
-                            children: [{
-                                type: 'text',
-                                value: 'link text',
-                            }],
-                        }],
-                    }],
+                            children: [createPlainText('link text')],
+                        } as LinkObject],
+                    } as ParagraphElement],
                 },
             };
             const result = exportToLatex(doc, { hyperref: true });
@@ -1363,34 +1365,43 @@ describe('LaTeX Export', () => {
                 children: [],
                 section: {
                     type: 'section',
-                    properties: {},
+                    range: createRange(0, 100),
+                    postBlank: 0,
                     children: [{
                         type: 'table',
+                        range: createRange(0, 100),
+                        postBlank: 0,
                         properties: { tableType: 'org' },
                         children: [
                             {
                                 type: 'table-row',
+                                range: createRange(0, 20),
+                                postBlank: 0,
                                 properties: { rowType: 'standard' },
                                 children: [
-                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: 'A' }] },
-                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: 'B' }] },
-                                ],
-                            },
+                                    { type: 'table-cell', range: createRange(0, 5), postBlank: 0, properties: { value: 'A' } },
+                                    { type: 'table-cell', range: createRange(5, 10), postBlank: 0, properties: { value: 'B' } },
+                                ] as TableCellObject[],
+                            } as TableRowElement,
                             {
                                 type: 'table-row',
+                                range: createRange(20, 25),
+                                postBlank: 0,
                                 properties: { rowType: 'rule' },
                                 children: [],
-                            },
+                            } as TableRowElement,
                             {
                                 type: 'table-row',
+                                range: createRange(25, 50),
+                                postBlank: 0,
                                 properties: { rowType: 'standard' },
                                 children: [
-                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: '1' }] },
-                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: '2' }] },
-                                ],
-                            },
+                                    { type: 'table-cell', range: createRange(25, 30), postBlank: 0, properties: { value: '1' } },
+                                    { type: 'table-cell', range: createRange(30, 35), postBlank: 0, properties: { value: '2' } },
+                                ] as TableCellObject[],
+                            } as TableRowElement,
                         ],
-                    }],
+                    } as TableElement],
                 },
             };
             const result = exportToLatex(doc, { booktabs: true });
