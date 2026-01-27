@@ -941,6 +941,7 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
     );
 
     // Open a file and unfold everything so content is visible
+    // If the file doesn't exist, create it (and parent directories if needed)
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.org.openFile', async (args: { file: string }) => {
             const { file } = args;
@@ -948,6 +949,15 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
             try {
                 const uri = vscode.Uri.file(file);
                 const ext = path.extname(file).toLowerCase();
+
+                // Create the file if it doesn't exist
+                if (!fs.existsSync(file)) {
+                    const dir = path.dirname(file);
+                    if (!fs.existsSync(dir)) {
+                        fs.mkdirSync(dir, { recursive: true });
+                    }
+                    fs.writeFileSync(file, '');
+                }
 
                 // Text files that benefit from unfold-all behavior after opening
                 // For these, we use openTextDocument to control fold state
@@ -975,8 +985,8 @@ export function registerOrgLinkCommands(context: vscode.ExtensionContext): void 
 
                 // Unfold all to ensure content is visible
                 await vscode.commands.executeCommand('editor.unfoldAll');
-            } catch (error) {
-                vscode.window.showErrorMessage(`Failed to open file: ${file}`);
+            } catch (error: any) {
+                vscode.window.showErrorMessage(`Failed to open file: ${file} - ${error.message}`);
             }
         })
     );

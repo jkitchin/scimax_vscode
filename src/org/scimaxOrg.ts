@@ -3401,19 +3401,31 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
         await vscode.workspace.fs.stat(targetUri);
     } catch {
         // File doesn't exist - create parent directories and the file
-        const parentDir = vscode.Uri.joinPath(targetUri, '..');
         try {
-            await vscode.workspace.fs.stat(parentDir);
-        } catch {
-            // Parent directory doesn't exist - create it recursively
-            await vscode.workspace.fs.createDirectory(parentDir);
+            const parentDir = vscode.Uri.joinPath(targetUri, '..');
+            try {
+                await vscode.workspace.fs.stat(parentDir);
+            } catch {
+                // Parent directory doesn't exist - create it recursively
+                await vscode.workspace.fs.createDirectory(parentDir);
+            }
+            await vscode.workspace.fs.writeFile(targetUri, new Uint8Array());
+        } catch (createError: any) {
+            vscode.window.showErrorMessage(`Failed to create file: ${createError.message}`);
+            return;
         }
-        await vscode.workspace.fs.writeFile(targetUri, new Uint8Array());
     }
 
     // Open the file
-    const doc = await vscode.workspace.openTextDocument(targetUri);
-    const editor = await vscode.window.showTextDocument(doc);
+    let doc: vscode.TextDocument;
+    let editor: vscode.TextEditor;
+    try {
+        doc = await vscode.workspace.openTextDocument(targetUri);
+        editor = await vscode.window.showTextDocument(doc);
+    } catch (openError: any) {
+        vscode.window.showErrorMessage(`Failed to open file: ${targetUri.fsPath} - ${openError.message}`);
+        return;
+    }
 
     // Navigate to the target if specified
     if (searchPart) {
