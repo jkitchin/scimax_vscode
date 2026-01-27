@@ -48,6 +48,7 @@ import type { SearchResult } from '../scimaxDb';
 // Helper to create mock search results
 function createResult(filePath: string, lineNumber: number, score: number): SearchResult {
     return {
+        type: 'heading',
         file_path: filePath,
         line_number: lineNumber,
         title: `Title for ${filePath}`,
