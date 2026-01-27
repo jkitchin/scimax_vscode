@@ -247,6 +247,25 @@ export class DiredPanel {
                     }
                     break;
 
+                case 'findFile':
+                    // Find file - create if it doesn't exist
+                    const fileName = await vscode.window.showInputBox({
+                        prompt: 'File name (creates if not exists)',
+                        placeHolder: 'Enter file name'
+                    });
+                    if (fileName) {
+                        const currentDir = this.manager.getState().currentDirectory;
+                        const filePath = vscode.Uri.joinPath(vscode.Uri.file(currentDir), fileName);
+                        try {
+                            await vscode.workspace.fs.stat(filePath);
+                        } catch {
+                            // File doesn't exist - create it
+                            await vscode.workspace.fs.writeFile(filePath, new Uint8Array());
+                        }
+                        await vscode.commands.executeCommand('vscode.open', filePath);
+                    }
+                    break;
+
                 case 'promptMarkRegex':
                     // Prompt for regex pattern to mark files
                     const regexPattern = await vscode.window.showInputBox({
@@ -1178,6 +1197,11 @@ export class DiredPanel {
                 case '+':
                     e.preventDefault();
                     createDir();
+                    break;
+                case 'f':
+                    // Find file - create if it doesn't exist
+                    e.preventDefault();
+                    vscode.postMessage({ command: 'findFile' });
                     break;
                 case 'q':
                     e.preventDefault();

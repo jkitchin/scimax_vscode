@@ -106,6 +106,7 @@ export type DiredMessageFromWebview =
     | { command: 'copyPath'; index: number }
     | { command: 'showActions' }
     | { command: 'ready' }
+    | { command: 'findFile' }
     | { command: 'quit' };
 
 /**

@@ -3345,12 +3345,20 @@ export async function openLinkAtPoint(): Promise<void> {
         const currentDir = vscode.Uri.joinPath(document.uri, '..');
         const targetUri = vscode.Uri.joinPath(currentDir, url);
 
-        // Check if it's a file that exists
-        try {
-            await vscode.workspace.fs.stat(targetUri);
-            vscode.commands.executeCommand('vscode.open', targetUri);
-        } catch {
-            // Not a file - try fuzzy search for heading or named element
+        // Check if it looks like a file path (has extension)
+        const hasExtension = /\.[a-zA-Z0-9]+$/.test(url);
+
+        if (hasExtension) {
+            // It's a file link - create if it doesn't exist
+            try {
+                await vscode.workspace.fs.stat(targetUri);
+            } catch {
+                // File doesn't exist - create it
+                await vscode.workspace.fs.writeFile(targetUri, new Uint8Array());
+            }
+            await vscode.commands.executeCommand('vscode.open', targetUri);
+        } else {
+            // No extension - try fuzzy search for heading or named element
             await searchAndJumpToTarget(document, url);
         }
     }
@@ -3379,6 +3387,14 @@ async function openFileLink(url: string, currentDocument: vscode.TextDocument): 
     } else {
         // Empty file path means current file
         targetUri = currentDocument.uri;
+    }
+
+    // Create the file if it doesn't exist
+    try {
+        await vscode.workspace.fs.stat(targetUri);
+    } catch {
+        // File doesn't exist - create it
+        await vscode.workspace.fs.writeFile(targetUri, new Uint8Array());
     }
 
     // Open the file
