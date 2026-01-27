@@ -1,6 +1,6 @@
 {
-  "buildDate": "2026-01-26T18:57:56.337Z",
-  "count": 3214,
+  "buildDate": "2026-01-27T12:48:28.871Z",
+  "count": 3240,
   "entries": [
     {
       "heading": "Scimax VS Code",
@@ -50852,7 +50852,7 @@
       "level": 1,
       "file": "18-database-search.org",
       "line": 8,
-      "content": "CLOSED: [2026-01-17 Sat 11:45] Scimax VS Code includes a powerful database and search system that indexes your org, markdown, and Jupyter notebook files. The database provides: - *Full-text search* with FTS5 (SQLite's Full-Text Search) and BM25 ranking - *Semantic search* using vector embeddings for meaning-based queries - *Hybrid search* combining keyword and semantic approaches - *Structured queries* for headings, TODOs, tags, properties, and links - *Agenda views* for scheduled items and dead",
+      "content": "CLOSED: [2026-01-17 Sat 11:45] Scimax VS Code includes a powerful database and search system that indexes your org, markdown, and Jupyter notebook files. The database provides: - *Full-text search* with FTS5 (SQLite's Full-Text Search) and BM25 ranking - *Semantic search* using vector embeddings for meaning-based queries - *Hybrid search* combining keyword and semantic approaches - *Advanced search* with query expansion, weighted RRF, and LLM reranking (SOTA) - *Structured queries* for headings,",
       "path": [],
       "commands": [],
       "keybindings": [],
@@ -50883,7 +50883,7 @@
       "heading": "What Gets Indexed",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 22,
+      "line": 23,
       "content": "CLOSED: [2026-01-17 Sat 11:45]",
       "path": [],
       "commands": [],
@@ -50901,7 +50901,7 @@
       "heading": "File Types",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 25,
+      "line": 26,
       "content": "CLOSED: [2026-01-17 Sat 11:45] The database automatically indexes three types of files: - `.org' files - Org-mode documents - `.md' files - Markdown documents - `.ipynb' files - Jupyter notebooks",
       "path": [
         "What Gets Indexed"
@@ -50931,7 +50931,7 @@
       "heading": "Indexed Content",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 34,
+      "line": 35,
       "content": "CLOSED: [2026-01-17 Sat 11:45] For each file, the database extracts and indexes:",
       "path": [
         "What Gets Indexed"
@@ -50954,7 +50954,7 @@
       "heading": "Headings",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 39,
+      "line": 40,
       "content": "CLOSED: [2026-01-17 Sat 11:45] - Heading text and level (*, **, ***, etc.) - TODO states (TODO, DONE, IN-PROGRESS, etc.) - Priority markers ([#A], [#B], [#C]) - Tags (both direct and inherited) - Properties (CUSTOM_ID, CATEGORY, etc.) - Scheduling information (SCHEDULED, DEADLINE, CLOSED) - Line numbers for navigation",
       "path": [
         "What Gets Indexed",
@@ -50989,7 +50989,7 @@
       "heading": "Source Blocks",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 49,
+      "line": 50,
       "content": "CLOSED: [2026-01-17 Sat 11:45] - Programming language - Complete code content - Header arguments (`:results', `:exports', etc.) - Line numbers - For notebooks: cell indices",
       "path": [
         "What Gets Indexed",
@@ -51024,7 +51024,7 @@
       "heading": "Links",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 57,
+      "line": 58,
       "content": "CLOSED: [2026-01-17 Sat 11:45] - Link type (file, http, https, id, etc.) - Target path or URL - Optional description text - Line number",
       "path": [
         "What Gets Indexed",
@@ -51057,7 +51057,7 @@
       "heading": "Hashtags",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 64,
+      "line": 65,
       "content": "CLOSED: [2026-01-17 Sat 11:45] - Inline hashtags (e.g., #research, #todo) - Associated file paths",
       "path": [
         "What Gets Indexed",
@@ -51082,7 +51082,7 @@
       "heading": "Full Text",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 69,
+      "line": 70,
       "content": "CLOSED: [2026-01-17 Sat 11:45] - Complete document content for full-text search - Indexed with FTS5 virtual tables - Porter stemming and Unicode normalization Here is a hashtag #FullTextSearch",
       "path": [
         "What Gets Indexed",
@@ -51117,7 +51117,7 @@
       "heading": "Text Chunks (for Semantic Search)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 78,
+      "line": 79,
       "content": "CLOSED: [2026-01-17 Sat 11:46] - Document divided into ~2000 character chunks - 3-line overlap between chunks for context - Vector embeddings (if embedding service configured) - Line ranges for each chunk",
       "path": [
         "What Gets Indexed",
@@ -51152,7 +51152,7 @@
       "heading": "File Watching",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 85,
+      "line": 86,
       "content": "CLOSED: [2026-01-18 Sun 11:43] The database automatically watches for file changes: - New files are indexed when created - Modified files are re-indexed (debounced with 500ms delay) - Deleted files are removed from the index - Changes are queued and processed sequentially",
       "path": [
         "What Gets Indexed"
@@ -51186,7 +51186,7 @@
       "heading": "Ignore Patterns",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 95,
+      "line": 96,
       "content": "CLOSED: [2026-01-17 Sat 11:46] By default, the following patterns are ignored: - `**/node_modules/**' - `**/.git/**' - `**/dist/**' - `**/build/**' - `**/.ipynb_checkpoints/**' Configure additional patterns in settings: =scimax.db.exclude= [[cmd:workbench.action.openSettings2]] [[cmd:workbench.action.openSettings2?@scimax][Open Scimax Settings]]",
       "path": [
         "What Gets Indexed"
@@ -51222,7 +51222,7 @@
       "heading": "Full-Text Search",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 112,
+      "line": 113,
       "content": "CLOSED: [2026-01-17 Sat 11:46]",
       "path": [],
       "commands": [],
@@ -51240,7 +51240,7 @@
       "heading": "Overview",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 115,
+      "line": 116,
       "content": "CLOSED: [2026-01-17 Sat 11:46] Full-text search uses SQLite's FTS5 (Full-Text Search version 5) with: - *BM25 ranking* - Industry-standard relevance scoring - *Porter stemming* - Matches word variations (e.g., \"run\" matches \"running\") - *Unicode normalization* - Handles accented characters correctly - *Snippet generation* - Shows matching context with highlighting",
       "path": [
         "Full-Text Search"
@@ -51274,7 +51274,7 @@
       "heading": "Usage",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 125,
+      "line": 126,
       "content": "CLOSED: [2026-01-17 Sat 11:49]",
       "path": [
         "Full-Text Search"
@@ -51293,7 +51293,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 128,
+      "line": 129,
       "content": "CLOSED: [2026-01-17 Sat 11:49] Run `Scimax: Search All Files (FTS5)' or use command `scimax.db.search' [[cmd:scimax.db.search]]",
       "path": [
         "Full-Text Search",
@@ -51320,7 +51320,7 @@
       "heading": "Query Syntax",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 134,
+      "line": 135,
       "content": "CLOSED: [2026-01-17 Sat 11:49] FTS5 supports rich query syntax:",
       "path": [
         "Full-Text Search",
@@ -51344,7 +51344,7 @@
       "heading": "Basic Queries",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 139,
+      "line": 140,
       "content": "CLOSED: [2026-01-17 Sat 11:49] #+BEGIN_SRC org machine learning          # Match both words (in any order) \"machine learning\"        # Match exact phrase neural OR artificial      # Match either word #+END_SRC",
       "path": [
         "Full-Text Search",
@@ -51380,7 +51380,7 @@
       "heading": "Boolean Operators",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 148,
+      "line": 149,
       "content": "#+BEGIN_SRC org python AND jupyter        # Must contain both python NOT tensorflow     # Contains python but not tensorflow deep OR machine learning  # Contains \"deep\" or the phrase \"machine learning\" #+END_SRC",
       "path": [
         "Full-Text Search",
@@ -51411,7 +51411,7 @@
       "heading": "Prefix Matching",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 156,
+      "line": 157,
       "content": "#+BEGIN_SRC org comput*                   # Matches: computer, computing, computation data*                     # Matches: data, database, dataset #+END_SRC",
       "path": [
         "Full-Text Search",
@@ -51440,7 +51440,7 @@
       "heading": "Column Queries",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 163,
+      "line": 164,
       "content": "#+BEGIN_SRC org title: introduction       # Search only in titles content: python           # Search only in content #+END_SRC",
       "path": [
         "Full-Text Search",
@@ -51467,7 +51467,7 @@
       "heading": "Proximity Queries",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 170,
+      "line": 171,
       "content": "#+BEGIN_SRC org NEAR(neural network, 5)   # Words within 5 tokens of each other #+END_SRC",
       "path": [
         "Full-Text Search",
@@ -51494,7 +51494,7 @@
       "heading": "Results",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 176,
+      "line": 177,
       "content": "Search results include: - File path and basename - Line number - Preview snippet with `<mark>' tags highlighting matches - BM25 relevance score - Up to 100 results (configurable)",
       "path": [
         "Full-Text Search"
@@ -51526,7 +51526,7 @@
       "heading": "Example Searches",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 186,
+      "line": 187,
       "content": "#+BEGIN_SRC org # Find all references to \"gradient descent\" gradient descent # Find Python-related TODO items TODO python # Find documents about data science or machine learning \"data science\" OR \"machine learning\" # Find recent mentions of TensorFlow (excluding Keras) tensorflow NOT keras # Find all documents with \"introduction\" in title title: introduction #+END_SRC",
       "path": [
         "Full-Text Search"
@@ -51560,7 +51560,7 @@
       "heading": "Semantic Search",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 205,
+      "line": 206,
       "content": "CLOSED: [2026-01-17 Sat 11:55]",
       "path": [],
       "commands": [],
@@ -51578,7 +51578,7 @@
       "heading": "Overview",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 208,
+      "line": 209,
       "content": "CLOSED: [2026-01-17 Sat 11:55] Semantic search finds content by *meaning* rather than exact words. It uses vector embeddings to represent text in a high-dimensional space where semantically similar content is close together. Benefits: - Find content even when using different words - Discover related concepts - More natural query language Example: Searching for \"machine learning algorithms\" will also find documents about \"neural networks\", \"deep learning models\", and \"classification methods\" even",
       "path": [
         "Semantic Search"
@@ -51612,7 +51612,7 @@
       "heading": "Requirements",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 220,
+      "line": 221,
       "content": "CLOSED: [2026-01-17 Sat 11:58] Semantic search requires: 1. *Vector search support in libsql* - The database must support vector operations 2. *Embedding provider configured* - Ollama must be running locally 3. *Files indexed with embeddings* - Run `scimax.db.reindex' after configuring",
       "path": [
         "Semantic Search"
@@ -51648,7 +51648,7 @@
       "heading": "Checking Availability",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 229,
+      "line": 230,
       "content": "Run `Scimax: Show Database Stats' (`scimax.db.stats') to see: - Whether vector search is supported - Number of embeddings stored - Any error messages If vector search is unavailable, the stats will show: #+BEGIN_EXAMPLE Semantic search: Unavailable (vector search not supported) #+END_EXAMPLE",
       "path": [
         "Semantic Search",
@@ -51685,7 +51685,7 @@
       "heading": "Fallback to Full-Text Search",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 241,
+      "line": 242,
       "content": "If semantic search is unavailable, use full-text search (`scimax.db.search') instead. FTS5 is always available and very fast for keyword-based queries.",
       "path": [
         "Semantic Search",
@@ -51714,7 +51714,7 @@
       "heading": "Embedding Provider",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 245,
+      "line": 246,
       "content": "Scimax uses Ollama for embeddings:",
       "path": [
         "Semantic Search"
@@ -51734,7 +51734,7 @@
       "heading": "Ollama",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 249,
+      "line": 250,
       "content": "- *Pros*: Free, private, local control, high quality - *Cons*: Requires Ollama installed and running - *Models*: - `nomic-embed-text' (768 dims, recommended) - `all-minilm' (384 dims, smaller) - `mxbai-embed-large' (1024 dims, larger) - *Setup*: Install Ollama, then `ollama pull nomic-embed-text'",
       "path": [
         "Semantic Search",
@@ -51769,7 +51769,7 @@
       "heading": "Configuration",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 258,
+      "line": 259,
       "content": "CLOSED: [2026-01-17 Sat 11:59]",
       "path": [
         "Semantic Search"
@@ -51788,7 +51788,7 @@
       "heading": "Interactive Setup",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 261,
+      "line": 262,
       "content": "CLOSED: [2026-01-17 Sat 11:59] Run `Scimax: Configure Embedding Service' (`scimax.db.configureEmbeddings') This wizard will: 1. Let you choose a provider 2. Select a model 3. Test the connection 4. Update your settings 5. Prompt you to reindex files",
       "path": [
         "Semantic Search",
@@ -51825,7 +51825,7 @@
       "heading": "Manual Configuration",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 273,
+      "line": 274,
       "content": "CLOSED: [2026-01-17 Sat 11:59] Add to your VS Code settings (`settings.json'):",
       "path": [
         "Semantic Search",
@@ -51850,7 +51850,7 @@
       "heading": "Ollama Configuration",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 278,
+      "line": 279,
       "content": "#+BEGIN_SRC json { \"scimax.db.embeddingProvider\": \"ollama\", \"scimax.db.ollamaUrl\": \"http://localhost:11434\", \"scimax.db.ollamaModel\": \"nomic-embed-text\" } #+END_SRC",
       "path": [
         "Semantic Search",
@@ -51877,7 +51877,7 @@
       "heading": "Usage",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 288,
+      "line": 289,
       "content": "CLOSED: [2026-01-17 Sat 12:01]",
       "path": [
         "Semantic Search"
@@ -51896,7 +51896,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 291,
+      "line": 292,
       "content": "CLOSED: [2026-01-17 Sat 12:01] Run `Scimax: Semantic Search' or use command `scimax.db.searchSemantic'",
       "path": [
         "Semantic Search",
@@ -51922,7 +51922,7 @@
       "heading": "Query Examples",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 295,
+      "line": 296,
       "content": "CLOSED: [2026-01-17 Sat 12:01] Semantic search uses natural language: #+BEGIN_SRC org # Conceptual searches explain neural network architecture how to optimize database queries project management best practices # Related concept discovery clustering algorithms    # Finds: k-means, hierarchical, DBSCAN data visualization       # Finds: matplotlib, charts, plots, graphs # Question answering what is gradient descent how does attention mechanism work #+END_SRC",
       "path": [
         "Semantic Search",
@@ -51957,7 +51957,7 @@
       "heading": "Results",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 315,
+      "line": 316,
       "content": "Results include: - File path and line number - Preview (first 200 characters of chunk) - Similarity score (0-100%, higher is more relevant) - Cosine distance (lower is more similar) - Up to 20 results by default",
       "path": [
         "Semantic Search"
@@ -51991,7 +51991,7 @@
       "heading": "Reindexing for Semantic Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 325,
+      "line": 326,
       "content": "After configuring an embedding provider, you *must reindex* your files: 1. Run `Scimax: Reindex Files' (`scimax.db.reindex') 2. Wait for indexing to complete 3. The database will generate embeddings for all text chunks 4. Semantic search will now be available",
       "path": [
         "Semantic Search"
@@ -52027,7 +52027,7 @@
       "heading": "Hybrid Search",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 334,
+      "line": 335,
       "content": "",
       "path": [],
       "commands": [],
@@ -52041,7 +52041,7 @@
       "heading": "Overview",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 336,
+      "line": 337,
       "content": "Hybrid search combines full-text (keyword) and semantic (vector) search using *Reciprocal Rank Fusion* (RRF). This approach: - Gets the best of both worlds - Balances exact matches with conceptual similarity - Provides more robust results",
       "path": [
         "Hybrid Search"
@@ -52075,7 +52075,7 @@
       "heading": "Usage",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 344,
+      "line": 345,
       "content": "",
       "path": [
         "Hybrid Search"
@@ -52090,7 +52090,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 346,
+      "line": 347,
       "content": "Run `Scimax: Hybrid Search' or use command `scimax.db.searchHybrid'",
       "path": [
         "Hybrid Search",
@@ -52112,7 +52112,7 @@
       "heading": "How It Works",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 349,
+      "line": 350,
       "content": "1. Query runs through both FTS5 and vector search 2. Results from each are ranked 3. RRF algorithm combines rankings: - Higher rank in either search boosts result - Results appearing in both searches rank highest 4. Final results sorted by combined score",
       "path": [
         "Hybrid Search",
@@ -52147,7 +52147,7 @@
       "heading": "Weights",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 358,
+      "line": 359,
       "content": "Default weights are 50/50, but can be adjusted: #+BEGIN_SRC typescript // Internal API (for extension developers) db.searchHybrid(query, { limit: 20, ftsWeight: 0.5,      // 50% weight on keywords vectorWeight: 0.5    // 50% weight on semantics }); #+END_SRC",
       "path": [
         "Hybrid Search",
@@ -52181,7 +52181,7 @@
       "heading": "When to Use Hybrid",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 371,
+      "line": 372,
       "content": "- Default choice for general searches - When you want both exact matches and related concepts - When query has both specific terms and broad concepts - Example: \"python sklearn classification accuracy\" - finds both sklearn-specific code and general ML accuracy discussions",
       "path": [
         "Hybrid Search",
@@ -52216,7 +52216,7 @@
       "heading": "Results",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 378,
+      "line": 379,
       "content": "Results include: - Combined ranking score - Source indicator (Keywords, AI, or both) - File location and preview - Up to 20 results",
       "path": [
         "Hybrid Search"
@@ -52237,10 +52237,725 @@
       ]
     },
     {
+      "heading": "Advanced Search (SOTA Pipeline)",
+      "level": 1,
+      "file": "18-database-search.org",
+      "line": 388,
+      "content": "",
+      "path": [],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "advanced",
+        "search",
+        "sota",
+        "pipeline"
+      ]
+    },
+    {
+      "heading": "Overview",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 390,
+      "content": "Advanced search implements a state-of-the-art (SOTA) search pipeline inspired by modern search engines like [[https://github.com/tobi/qmd][qmd]]. It combines multiple techniques for maximum recall and precision: 1. *Query Expansion* - Generates alternative query formulations 2. *Parallel Retrieval* - Runs FTS5 and vector search concurrently 3. *Weighted Reciprocal Rank Fusion (RRF)* - Combines results intelligently 4. *LLM Reranking* - Uses AI to improve final ranking (optional)",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "overview",
+        "advanced",
+        "search",
+        "implements",
+        "state-of-the-art",
+        "sota",
+        "pipeline",
+        "inspired",
+        "modern",
+        "engines",
+        "like",
+        "httpsgithubcomtobiqmd",
+        "qmd",
+        "combines",
+        "multiple",
+        "techniques",
+        "maximum",
+        "recall",
+        "precision",
+        "query"
+      ]
+    },
+    {
+      "heading": "Usage",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 399,
+      "content": "",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "usage"
+      ]
+    },
+    {
+      "heading": "Command",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 401,
+      "content": "Run =Scimax: Advanced Search= (=scimax.db.searchAdvanced=)",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Usage"
+      ],
+      "commands": [
+        "scimax.db.searchAdvanced"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "command",
+        "run",
+        "scimax",
+        "advanced",
+        "search"
+      ]
+    },
+    {
+      "heading": "When to Use",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 405,
+      "content": "- Complex research queries - When you want maximum recall - When hybrid search isn't finding relevant content - For important searches where accuracy matters more than speed",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Usage"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "complex",
+        "research",
+        "queries",
+        "want",
+        "maximum",
+        "recall",
+        "hybrid",
+        "search",
+        "isn",
+        "finding",
+        "relevant",
+        "content",
+        "important",
+        "searches",
+        "accuracy",
+        "matters",
+        "speed"
+      ]
+    },
+    {
+      "heading": "Query Expansion",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 412,
+      "content": "Query expansion improves recall by generating alternative formulations of your query.",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "query",
+        "expansion",
+        "improves",
+        "recall",
+        "generating",
+        "alternative",
+        "formulations"
+      ]
+    },
+    {
+      "heading": "Pseudo-Relevance Feedback (PRF)",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 416,
+      "content": "*No LLM required* - Analyzes top results to find related terms. How it works: 1. Runs initial search with original query 2. Extracts key terms from top 5 results 3. Creates expanded query with additional terms 4. Searches again with expanded query Example: #+BEGIN_SRC org Original: \"machine learning\" Expanded: \"machine learning neural network training models\" #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Query Expansion"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "pseudo-relevance",
+        "feedback",
+        "prf",
+        "llm",
+        "required",
+        "analyzes",
+        "top",
+        "results",
+        "find",
+        "related",
+        "terms",
+        "works",
+        "runs",
+        "initial",
+        "search",
+        "original",
+        "query",
+        "extracts",
+        "key",
+        "creates"
+      ]
+    },
+    {
+      "heading": "LLM Query Expansion",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 432,
+      "content": "*Requires Ollama* - Uses a language model to generate query variants. How it works: 1. Sends query to LLM (e.g., qwen3:1.7b) 2. LLM generates 3 alternative phrasings 3. All variants searched in parallel 4. Original query gets 2× weight in ranking Example: #+BEGIN_SRC org Original: \"database optimization\" Variants: - \"improve SQL query performance\" - \"speed up database queries\" - \"index tuning for databases\" #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Query Expansion"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "llm",
+        "query",
+        "expansion",
+        "requires",
+        "ollama",
+        "uses",
+        "language",
+        "model",
+        "generate",
+        "variants",
+        "works",
+        "sends",
+        "qwen317b",
+        "generates",
+        "alternative",
+        "phrasings",
+        "searched",
+        "parallel",
+        "original",
+        "gets"
+      ]
+    },
+    {
+      "heading": "Weighted RRF",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 451,
+      "content": "Standard RRF assigns scores based on rank position. Advanced search enhances this with:",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "weighted",
+        "rrf",
+        "standard",
+        "assigns",
+        "scores",
+        "based",
+        "rank",
+        "position",
+        "advanced",
+        "search",
+        "enhances"
+      ]
+    },
+    {
+      "heading": "Position Bonuses",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 455,
+      "content": "Top-ranked results get bonuses: - Rank 1: +15% bonus - Rank 2: +10% bonus - Rank 3: +5% bonus",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Weighted RRF"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "position",
+        "bonuses",
+        "top-ranked",
+        "results",
+        "get",
+        "rank",
+        "bonus"
+      ]
+    },
+    {
+      "heading": "Original Query Weight",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 462,
+      "content": "The original query's results receive 2× weight compared to expanded query results.",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Weighted RRF"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "original",
+        "query",
+        "weight",
+        "results",
+        "receive",
+        "compared",
+        "expanded"
+      ]
+    },
+    {
+      "heading": "Score Normalization",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 466,
+      "content": "Different backends produce different score ranges: - BM25: Negative values (normalized to 0-1) - Vector: Cosine distance (converted to similarity) - All scores normalized before fusion",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Weighted RRF"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "score",
+        "normalization",
+        "different",
+        "backends",
+        "produce",
+        "ranges",
+        "bm25",
+        "negative",
+        "values",
+        "normalized",
+        "0-1",
+        "vector",
+        "cosine",
+        "distance",
+        "converted",
+        "similarity",
+        "scores",
+        "before",
+        "fusion"
+      ]
+    },
+    {
+      "heading": "LLM Reranking",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 473,
+      "content": "*Requires Ollama* - Uses AI to score relevance after initial retrieval.",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "llm",
+        "reranking",
+        "requires",
+        "ollama",
+        "uses",
+        "score",
+        "relevance",
+        "after",
+        "initial",
+        "retrieval"
+      ]
+    },
+    {
+      "heading": "How It Works",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 477,
+      "content": "1. Takes top 30 candidates from RRF fusion 2. LLM scores each document's relevance (0-10) 3. Scores blended with retrieval scores using position-aware weights",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "LLM Reranking"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "works",
+        "takes",
+        "top",
+        "candidates",
+        "rrf",
+        "fusion",
+        "llm",
+        "scores",
+        "document",
+        "relevance",
+        "0-10",
+        "blended",
+        "retrieval",
+        "position-aware",
+        "weights"
+      ]
+    },
+    {
+      "heading": "Position-Aware Blending",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 483,
+      "content": "High-confidence retrieval matches are preserved: - Ranks 1-3: 75% retrieval, 25% reranker - Ranks 4-10: 60% retrieval, 40% reranker - Ranks 11+: 40% retrieval, 60% reranker",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "LLM Reranking"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "position-aware",
+        "blending",
+        "high-confidence",
+        "retrieval",
+        "matches",
+        "preserved",
+        "ranks",
+        "1-3",
+        "reranker",
+        "4-10"
+      ]
+    },
+    {
+      "heading": "Performance Considerations",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 490,
+      "content": "Reranking adds latency (~1-2 seconds for 30 documents). Disable for fast searches.",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "LLM Reranking"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "performance",
+        "considerations",
+        "reranking",
+        "adds",
+        "latency",
+        "1-2",
+        "seconds",
+        "documents",
+        "disable",
+        "fast",
+        "searches"
+      ]
+    },
+    {
+      "heading": "Capabilities Check",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 494,
+      "content": "Run =Scimax: Show Search Capabilities= (=scimax.db.searchCapabilities=) to see: #+BEGIN_SRC org ✓ Full-Text Search (FTS5/BM25) - Available ✓ Semantic/Vector Search - Available (Ollama) ✓ Query Expansion (PRF) - Available (no LLM required) ✗ Query Expansion (LLM) - Unavailable - check Ollama ✗ LLM Reranking - Unavailable - pull qwen3:0.6b #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [
+        "scimax.db.searchCapabilities"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "capabilities",
+        "check",
+        "run",
+        "scimax",
+        "show",
+        "search",
+        "beginsrc",
+        "org",
+        "full-text",
+        "fts5bm25",
+        "available",
+        "semanticvector",
+        "ollama",
+        "query",
+        "expansion",
+        "prf",
+        "llm",
+        "required",
+        "unavailable",
+        "reranking"
+      ]
+    },
+    {
+      "heading": "Graceful Degradation",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 506,
+      "content": "Advanced search works without all features: | If Unavailable | Fallback | |----------------+----------| | Vector search  | FTS-only | | LLM expansion  | PRF-only | | Reranking      | Skip reranking | | All LLM features | Equivalent to hybrid search |",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "graceful",
+        "degradation",
+        "advanced",
+        "search",
+        "works",
+        "without",
+        "features",
+        "unavailable",
+        "fallback",
+        "--------------------------",
+        "vector",
+        "fts-only",
+        "llm",
+        "expansion",
+        "prf-only",
+        "reranking",
+        "skip",
+        "equivalent",
+        "hybrid"
+      ]
+    },
+    {
+      "heading": "Configuration",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 517,
+      "content": "",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "configuration"
+      ]
+    },
+    {
+      "heading": "Search Mode",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 519,
+      "content": "#+BEGIN_SRC json { \"scimax.search.defaultMode\": \"hybrid\",  // or \"fast\", \"semantic\", \"advanced\" \"scimax.search.defaultLimit\": 20 } #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Configuration"
+      ],
+      "commands": [
+        "scimax.search.defaultMode",
+        "scimax.search.defaultLimit"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "search",
+        "mode",
+        "beginsrc",
+        "json",
+        "hybrid",
+        "fast",
+        "semantic",
+        "advanced",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Query Expansion",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 528,
+      "content": "#+BEGIN_SRC json { \"scimax.search.queryExpansion.enabled\": true, \"scimax.search.queryExpansion.method\": \"prf\",  // or \"llm\", \"both\" \"scimax.search.queryExpansion.prfTopK\": 5, \"scimax.search.queryExpansion.prfTermCount\": 5, \"scimax.search.queryExpansion.llmModel\": \"qwen3:1.7b\" } #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Configuration"
+      ],
+      "commands": [
+        "scimax.search.queryExpansion.enabled",
+        "scimax.search.queryExpansion.method",
+        "scimax.search.queryExpansion.prfTopK",
+        "scimax.search.queryExpansion.prfTermCount",
+        "scimax.search.queryExpansion.llmModel"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "query",
+        "expansion",
+        "beginsrc",
+        "json",
+        "true",
+        "prf",
+        "llm",
+        "qwen317b",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Reranking",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 540,
+      "content": "#+BEGIN_SRC json { \"scimax.search.reranking.enabled\": false,  // Enable for better accuracy \"scimax.search.reranking.model\": \"qwen3:0.6b\", \"scimax.search.reranking.topK\": 30, \"scimax.search.reranking.usePositionBlending\": true } #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Configuration"
+      ],
+      "commands": [
+        "scimax.search.reranking.enabled",
+        "scimax.search.reranking.model",
+        "scimax.search.reranking.topK",
+        "scimax.search.reranking.usePositionBlending"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "reranking",
+        "beginsrc",
+        "json",
+        "false",
+        "enable",
+        "better",
+        "accuracy",
+        "qwen306b",
+        "true",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Hybrid Weights",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 551,
+      "content": "#+BEGIN_SRC json { \"scimax.search.hybrid.ftsWeight\": 0.5, \"scimax.search.hybrid.vectorWeight\": 0.5, \"scimax.search.hybrid.usePositionBonus\": true, \"scimax.search.hybrid.k\": 60  // RRF constant } #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Configuration"
+      ],
+      "commands": [
+        "scimax.search.hybrid.ftsWeight",
+        "scimax.search.hybrid.vectorWeight",
+        "scimax.search.hybrid.usePositionBonus",
+        "scimax.search.hybrid.k"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "hybrid",
+        "weights",
+        "beginsrc",
+        "json",
+        "true",
+        "rrf",
+        "constant",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Caching",
+      "level": 3,
+      "file": "18-database-search.org",
+      "line": 562,
+      "content": "#+BEGIN_SRC json { \"scimax.search.caching.enabled\": true, \"scimax.search.caching.ttlSeconds\": 900,  // 15 minutes \"scimax.search.caching.maxEntries\": 500 } #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)",
+        "Configuration"
+      ],
+      "commands": [
+        "scimax.search.caching.enabled",
+        "scimax.search.caching.ttlSeconds",
+        "scimax.search.caching.maxEntries"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "caching",
+        "beginsrc",
+        "json",
+        "true",
+        "900",
+        "minutes",
+        "500",
+        "endsrc"
+      ]
+    },
+    {
+      "heading": "Setting Up LLM Features",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 572,
+      "content": "To enable query expansion and reranking with Ollama: 1. Install Ollama: https://ollama.ai 2. Start Ollama: =ollama serve= 3. Pull models: #+BEGIN_SRC bash ollama pull qwen3:1.7b   # For query expansion ollama pull qwen3:0.6b   # For reranking #+END_SRC 4. Enable in settings: #+BEGIN_SRC json { \"scimax.search.queryExpansion.method\": \"both\", \"scimax.search.reranking.enabled\": true } #+END_SRC",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [
+        "scimax.search.queryExpansion.method",
+        "scimax.search.reranking.enabled"
+      ],
+      "keybindings": [],
+      "keywords": [
+        "setting",
+        "llm",
+        "features",
+        "enable",
+        "query",
+        "expansion",
+        "reranking",
+        "ollama",
+        "install",
+        "httpsollamaai",
+        "start",
+        "serve",
+        "pull",
+        "models",
+        "beginsrc",
+        "bash",
+        "qwen317b",
+        "qwen306b",
+        "endsrc",
+        "settings"
+      ]
+    },
+    {
+      "heading": "Performance Comparison",
+      "level": 2,
+      "file": "18-database-search.org",
+      "line": 591,
+      "content": "| Mode     | Speed    | Recall | Precision | When to Use | |----------+----------+--------+-----------+-------------| | Fast     | <50ms    | Low    | High      | Exact matches | | Semantic | ~200ms   | High   | Medium    | Conceptual queries | | Hybrid   | ~300ms   | High   | High      | General purpose | | Advanced | 1-3s     | Highest| Highest   | Important searches |",
+      "path": [
+        "Advanced Search (SOTA Pipeline)"
+      ],
+      "commands": [],
+      "keybindings": [],
+      "keywords": [
+        "performance",
+        "comparison",
+        "mode",
+        "speed",
+        "recall",
+        "precision",
+        "----------------------------------------------------",
+        "fast",
+        "50ms",
+        "low",
+        "high",
+        "exact",
+        "matches",
+        "semantic",
+        "200ms",
+        "medium",
+        "conceptual",
+        "queries",
+        "hybrid",
+        "300ms"
+      ]
+    },
+    {
       "heading": "Structured Queries",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 387,
+      "line": 600,
       "content": "Beyond free-text search, the database supports structured queries for specific content types.",
       "path": [],
       "commands": [],
@@ -52262,7 +52977,7 @@
       "heading": "Heading Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 391,
+      "line": 604,
       "content": "Search specifically in headings, with optional filtering:",
       "path": [
         "Structured Queries"
@@ -52282,7 +52997,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 395,
+      "line": 608,
       "content": "`Scimax: Search Headings' (`scimax.db.searchHeadings')",
       "path": [
         "Structured Queries",
@@ -52303,7 +53018,7 @@
       "heading": "Features",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 398,
+      "line": 611,
       "content": "- Search by heading text - Filter by TODO state - Filter by tag - Shows heading level, tags, TODO state - Displays deadlines and scheduled dates",
       "path": [
         "Structured Queries",
@@ -52333,7 +53048,7 @@
       "heading": "Example Use Cases",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 405,
+      "line": 618,
       "content": "#+BEGIN_SRC org # Find all headings about Python python # Find TODOs with specific tag (use Tag Search) :work: # Browse document structure <empty query> #+END_SRC",
       "path": [
         "Structured Queries",
@@ -52367,7 +53082,7 @@
       "heading": "Tag Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 417,
+      "line": 630,
       "content": "Search headings by org-mode tags:",
       "path": [
         "Structured Queries"
@@ -52386,7 +53101,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 421,
+      "line": 634,
       "content": "`Scimax: Search By Tag' (`scimax.db.searchByTag')",
       "path": [
         "Structured Queries",
@@ -52407,7 +53122,7 @@
       "heading": "Features",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 424,
+      "line": 637,
       "content": "- Lists all tags found in indexed files - Shows heading count per tag - Supports both direct and inherited tags - Tags displayed as `:tagname:'",
       "path": [
         "Structured Queries",
@@ -52437,7 +53152,7 @@
       "heading": "Property Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 430,
+      "line": 643,
       "content": "Search headings by property drawer values:",
       "path": [
         "Structured Queries"
@@ -52456,7 +53171,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 434,
+      "line": 647,
       "content": "`Scimax: Search By Property' (`scimax.db.searchByProperty')",
       "path": [
         "Structured Queries",
@@ -52477,7 +53192,7 @@
       "heading": "Common Properties",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 437,
+      "line": 650,
       "content": "#+BEGIN_SRC org CUSTOM_ID    # Unique identifiers for linking ID           # Auto-generated UUIDs CATEGORY     # Classification CREATED      # Creation timestamp MODIFIED     # Last modification time #+END_SRC",
       "path": [
         "Structured Queries",
@@ -52512,7 +53227,7 @@
       "heading": "Examples",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 446,
+      "line": 659,
       "content": "#+BEGIN_SRC org # Find all entries with CATEGORY property Property: CATEGORY Value: <empty> # Find entries with specific CATEGORY Property: CATEGORY Value: research # Find entries with CUSTOM_ID Property: CUSTOM_ID Value: <empty or specific> #+END_SRC",
       "path": [
         "Structured Queries",
@@ -52540,7 +53255,7 @@
       "heading": "TODO Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 461,
+      "line": 674,
       "content": "Browse and filter TODO items:",
       "path": [
         "Structured Queries"
@@ -52559,7 +53274,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 465,
+      "line": 678,
       "content": "`Scimax: Show TODOs' (`scimax.db.showTodos')",
       "path": [
         "Structured Queries",
@@ -52580,7 +53295,7 @@
       "heading": "Features",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 468,
+      "line": 681,
       "content": "- Lists all TODO items across workspace - Filter by state (TODO, DONE, IN-PROGRESS, etc.) - Shows priority, tags, scheduling - Excludes DONE and CANCELLED by default in other views",
       "path": [
         "Structured Queries",
@@ -52614,7 +53329,7 @@
       "heading": "Common TODO States",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 474,
+      "line": 687,
       "content": "#+BEGIN_SRC org TODO          # Not started IN-PROGRESS   # Currently working on NEXT          # Up next WAIT          # Waiting on something DONE          # Completed CANCELLED     # Abandoned #+END_SRC",
       "path": [
         "Structured Queries",
@@ -52647,7 +53362,7 @@
       "heading": "Source Block Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 484,
+      "line": 697,
       "content": "CLOSED: [2026-01-17 Sat 12:03] Search code blocks by language:",
       "path": [
         "Structured Queries"
@@ -52671,7 +53386,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 489,
+      "line": 702,
       "content": "CLOSED: [2026-01-17 Sat 12:03] `Scimax: Search Code Blocks' (`scimax.db.searchBlocks'). [[cmd:scimax.db.searchBlocks]]",
       "path": [
         "Structured Queries",
@@ -52698,7 +53413,7 @@
       "heading": "Features",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 494,
+      "line": 707,
       "content": "CLOSED: [2026-01-17 Sat 12:03] - Filter by programming language - Optional text search within code - Shows first line of code as preview - Includes both org files and notebook cells",
       "path": [
         "Structured Queries",
@@ -52733,7 +53448,7 @@
       "heading": "Example Workflow",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 502,
+      "line": 715,
       "content": "CLOSED: [2026-01-17 Sat 12:03] #+BEGIN_SRC org 1. Select language (or \"All languages\") 2. Optionally enter search text 3. Browse matching code blocks 4. Jump to file location #+END_SRC",
       "path": [
         "Structured Queries",
@@ -52768,7 +53483,7 @@
       "heading": "Hashtag Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 511,
+      "line": 724,
       "content": "CLOSED: [2026-01-17 Sat 12:03] Find files by inline hashtags:",
       "path": [
         "Structured Queries"
@@ -52791,7 +53506,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 516,
+      "line": 729,
       "content": "CLOSED: [2026-01-17 Sat 12:04] `Scimax: Search Hashtags' (`scimax.db.searchHashtags'). [[cmd:scimax.db.searchHashtags]]",
       "path": [
         "Structured Queries",
@@ -52817,7 +53532,7 @@
       "heading": "Features",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 521,
+      "line": 734,
       "content": "CLOSED: [2026-01-17 Sat 12:04] - Lists all hashtags found (`#tagname') - Shows file count per hashtag - Displays files containing selected hashtag - Case-insensitive matching",
       "path": [
         "Structured Queries",
@@ -52850,7 +53565,7 @@
       "heading": "Hashtag Format",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 528,
+      "line": 741,
       "content": "CLOSED: [2026-01-17 Sat 12:04] #+BEGIN_SRC org # In your documents This is a #research note about #machinelearning # Database indexes as research machinelearning #+END_SRC",
       "path": [
         "Structured Queries",
@@ -52881,7 +53596,7 @@
       "heading": "File Browser",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 540,
+      "line": 753,
       "content": "CLOSED: [2026-01-17 Sat 12:04] Browse all indexed files:",
       "path": [
         "Structured Queries"
@@ -52902,7 +53617,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 545,
+      "line": 758,
       "content": "CLOSED: [2026-01-17 Sat 12:04] `Scimax: Browse Indexed Files' (`scimax.db.browseFiles'). [[cmd:scimax.db.browseFiles]]",
       "path": [
         "Structured Queries",
@@ -52928,7 +53643,7 @@
       "heading": "Features",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 550,
+      "line": 763,
       "content": "CLOSED: [2026-01-17 Sat 12:04] - Lists all files in database - Shows last indexed date - Sorted by most recently indexed - Displays file type (org, md, ipynb)",
       "path": [
         "Structured Queries",
@@ -52960,7 +53675,7 @@
       "heading": "Agenda and Time Management",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 558,
+      "line": 771,
       "content": "CLOSED: [2026-01-17 Sat 12:04]",
       "path": [],
       "commands": [],
@@ -52979,7 +53694,7 @@
       "heading": "Agenda View",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 561,
+      "line": 774,
       "content": "CLOSED: [2026-01-17 Sat 12:04] The agenda shows scheduled items and deadlines:",
       "path": [
         "Agenda and Time Management"
@@ -53003,7 +53718,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 566,
+      "line": 779,
       "content": "CLOSED: [2026-01-17 Sat 12:05] `Scimax: Show Agenda' (`scimax.db.agenda'). [[cmd:scimax.db.agenda]]",
       "path": [
         "Agenda and Time Management",
@@ -53029,7 +53744,7 @@
       "heading": "Time Periods",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 571,
+      "line": 784,
       "content": "CLOSED: [2026-01-17 Sat 12:05] - Next 2 weeks (default) - Next month - Next 3 months - All items (no time limit)",
       "path": [
         "Agenda and Time Management",
@@ -53057,7 +53772,7 @@
       "heading": "Options",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 579,
+      "line": 792,
       "content": "CLOSED: [2026-01-17 Sat 12:05] - Include unscheduled TODOs - Filter by time range - Sorted by urgency (overdue first)",
       "path": [
         "Agenda and Time Management",
@@ -53087,7 +53802,7 @@
       "heading": "Item Types",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 586,
+      "line": 799,
       "content": "CLOSED: [2026-01-17 Sat 12:05]",
       "path": [
         "Agenda and Time Management",
@@ -53108,7 +53823,7 @@
       "heading": "Deadline",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 589,
+      "line": 802,
       "content": "CLOSED: [2026-01-17 Sat 12:05] Items with DEADLINE timestamps: #+BEGIN_SRC org ,* TODO Submit report DEADLINE: <2026-01-20 Mon> #+END_SRC",
       "path": [
         "Agenda and Time Management",
@@ -53139,7 +53854,7 @@
       "heading": "Scheduled",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 597,
+      "line": 810,
       "content": "CLOSED: [2026-01-17 Sat 12:05] Items with SCHEDULED timestamps: #+BEGIN_SRC org ,* TODO Team meeting SCHEDULED: <2026-01-15 Wed 14:00> #+END_SRC",
       "path": [
         "Agenda and Time Management",
@@ -53171,7 +53886,7 @@
       "heading": "Unscheduled TODOs",
       "level": 4,
       "file": "18-database-search.org",
-      "line": 606,
+      "line": 819,
       "content": "CLOSED: [2026-01-17 Sat 12:06] Items with TODO state but no scheduling",
       "path": [
         "Agenda and Time Management",
@@ -53197,7 +53912,7 @@
       "heading": "Deadline View",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 611,
+      "line": 824,
       "content": "CLOSED: [2026-01-17 Sat 12:06] Show only upcoming deadlines:",
       "path": [
         "Agenda and Time Management"
@@ -53220,7 +53935,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 616,
+      "line": 829,
       "content": "`Scimax: Show Deadlines' (`scimax.db.deadlines'). [[cmd:scimax.db.deadlines]]",
       "path": [
         "Agenda and Time Management",
@@ -53242,7 +53957,7 @@
       "heading": "Features",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 619,
+      "line": 832,
       "content": "CLOSED: [2026-01-17 Sat 12:06] - Next 2 weeks of deadlines - Overdue items highlighted - Shows days until deadline - Excludes DONE and CANCELLED",
       "path": [
         "Agenda and Time Management",
@@ -53275,7 +53990,7 @@
       "heading": "Display Format",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 627,
+      "line": 840,
       "content": "#+BEGIN_SRC org ⚠️  Overdue: Submit TPS Report (3 days ago) 🔔 Today: Code Review 🔔 Tomorrow: Documentation Update 🔔 In 5 days: Project Demo #+END_SRC",
       "path": [
         "Agenda and Time Management",
@@ -53309,7 +54024,7 @@
       "heading": "Date Formats",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 635,
+      "line": 848,
       "content": "",
       "path": [
         "Agenda and Time Management"
@@ -53325,7 +54040,7 @@
       "heading": "Scheduling in Org Files",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 637,
+      "line": 850,
       "content": "#+BEGIN_SRC org # Simple date SCHEDULED: <2026-01-20> # Date with time SCHEDULED: <2026-01-20 Mon 14:00> # Date with time range SCHEDULED: <2026-01-20 Mon 14:00-16:00> # Deadline with warning period DEADLINE: <2026-01-20 Mon -3d> # Closed timestamp CLOSED: [2026-01-13 Mon 10:30] #+END_SRC",
       "path": [
         "Agenda and Time Management",
@@ -53360,7 +54075,7 @@
       "heading": "Relative Dates",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 655,
+      "line": 868,
       "content": "#+BEGIN_SRC org +2w    # 2 weeks from now +1m    # 1 month from now +3d    # 3 days from now +1y    # 1 year from now #+END_SRC",
       "path": [
         "Agenda and Time Management",
@@ -53385,7 +54100,7 @@
       "heading": "Search Scope",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 663,
+      "line": 876,
       "content": "Limit searches to specific directories:",
       "path": [],
       "commands": [],
@@ -53403,7 +54118,7 @@
       "heading": "Commands",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 667,
+      "line": 880,
       "content": "`Scimax: Set Search Scope' (`scimax.db.setScope')",
       "path": [
         "Search Scope"
@@ -53424,7 +54139,7 @@
       "heading": "Scope Types",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 670,
+      "line": 883,
       "content": "",
       "path": [
         "Search Scope"
@@ -53440,7 +54155,7 @@
       "heading": "All Files (Default)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 672,
+      "line": 885,
       "content": "- Searches entire indexed database - Includes all workspace folders - Includes additional configured directories",
       "path": [
         "Search Scope",
@@ -53466,7 +54181,7 @@
       "heading": "Current Directory",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 677,
+      "line": 890,
       "content": "- Limits to active file's directory - Includes subdirectories - Useful for project-focused searches",
       "path": [
         "Search Scope",
@@ -53490,7 +54205,7 @@
       "heading": "Current Scope Indicator",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 682,
+      "line": 895,
       "content": "The current scope is shown when setting scope: #+BEGIN_SRC org Search scope: all Search scope: directory (my-project) #+END_SRC",
       "path": [
         "Search Scope"
@@ -53515,7 +54230,7 @@
       "heading": "Database Management",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 689,
+      "line": 902,
       "content": "",
       "path": [],
       "commands": [],
@@ -53529,7 +54244,7 @@
       "heading": "Reindexing",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 691,
+      "line": 904,
       "content": "",
       "path": [
         "Database Management"
@@ -53544,7 +54259,7 @@
       "heading": "Full Reindex",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 693,
+      "line": 906,
       "content": "Command: `Scimax: Reindex Files' (`scimax.db.reindex'). [[cmd:scimax.db.reindex]] - Scans all workspace folders - Checks file modification times - Only reindexes changed files - Shows progress notification - Reports statistics on completion",
       "path": [
         "Database Management",
@@ -53580,7 +54295,7 @@
       "heading": "Auto-Indexing",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 702,
+      "line": 915,
       "content": "CLOSED: [2026-01-17 Sat 12:08] #+BEGIN_SRC json { \"scimax.db.autoIndex\": true } #+END_SRC Warning: Disable for very large workspaces (>10,000 files) to prevent memory issues.",
       "path": [
         "Database Management",
@@ -53614,7 +54329,7 @@
       "heading": "Indexing Sources",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 713,
+      "line": 926,
       "content": "CLOSED: [2026-01-22 Thu 21:43] By default, the database indexes: - Journal directory (=scimax.db.includeJournal: true=) - Workspace folders (=scimax.db.includeWorkspace: true=) - Scimax projects (=scimax.db.includeProjects: true=) Add additional directories with =scimax.db.include=: #+BEGIN_SRC json { \"scimax.db.include\": [ \"/home/user/research\", \"/home/user/notes\", \"~/Documents/org\" ] } #+END_SRC",
       "path": [
         "Database Management",
@@ -53654,7 +54369,7 @@
       "heading": "Optimization",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 733,
+      "line": 946,
       "content": "",
       "path": [
         "Database Management"
@@ -53669,7 +54384,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 735,
+      "line": 948,
       "content": "CLOSED: [2026-01-17 Sat 12:08] `Scimax: Optimize Database' (`scimax.db.optimize'). [[cmd:scimax.db.optimize]]",
       "path": [
         "Database Management",
@@ -53695,7 +54410,7 @@
       "heading": "Operations",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 740,
+      "line": 953,
       "content": "- Removes entries for deleted files - Runs VACUUM to reclaim space - Rebuilds indexes for performance - Should be run periodically (monthly)",
       "path": [
         "Database Management",
@@ -53724,7 +54439,7 @@
       "heading": "Clearing Database",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 746,
+      "line": 959,
       "content": "",
       "path": [
         "Database Management"
@@ -53740,7 +54455,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 748,
+      "line": 961,
       "content": "`Scimax: Clear Database' (`scimax.db.clear')",
       "path": [
         "Database Management",
@@ -53761,7 +54476,7 @@
       "heading": "Warning",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 751,
+      "line": 964,
       "content": "This is destructive and requires confirmation: - Removes all indexed data - Clears embeddings - Resets statistics - Requires full reindex to restore",
       "path": [
         "Database Management",
@@ -53790,7 +54505,7 @@
       "heading": "When to Clear",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 758,
+      "line": 971,
       "content": "- Database corruption - Major schema changes - Troubleshooting issues - Fresh start needed",
       "path": [
         "Database Management",
@@ -53816,7 +54531,7 @@
       "heading": "Statistics",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 764,
+      "line": 977,
       "content": "",
       "path": [
         "Database Management"
@@ -53831,7 +54546,7 @@
       "heading": "Command",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 766,
+      "line": 979,
       "content": "`Scimax: Show Database Stats' (`scimax.db.stats')",
       "path": [
         "Database Management",
@@ -53853,7 +54568,7 @@
       "heading": "Information Displayed",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 769,
+      "line": 982,
       "content": "#+BEGIN_SRC org Scimax DB: 127 files (98 org, 23 md, 6 ipynb), 1,234 headings, 456 code blocks, 789 links. Semantic search: Enabled (243 chunks). Last indexed: 2026-01-13 14:30:00 #+END_SRC",
       "path": [
         "Database Management",
@@ -53888,7 +54603,7 @@
       "heading": "Stats Include",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 777,
+      "line": 990,
       "content": "- File count by type - Heading count - Code block count - Link count - Chunk count (for semantic search) - Embedding status - Last index timestamp",
       "path": [
         "Database Management",
@@ -53919,7 +54634,7 @@
       "heading": "Performance Considerations",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 786,
+      "line": 999,
       "content": "",
       "path": [],
       "commands": [],
@@ -53933,7 +54648,7 @@
       "heading": "Indexing Performance",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 788,
+      "line": 1001,
       "content": "",
       "path": [
         "Performance Considerations"
@@ -53949,7 +54664,7 @@
       "heading": "File Size",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 790,
+      "line": 1003,
       "content": "- Small files (<100KB): ~10-50ms - Medium files (100KB-1MB): ~50-200ms - Large files (>1MB): ~200ms-1s",
       "path": [
         "Performance Considerations",
@@ -53974,7 +54689,7 @@
       "heading": "Batch Indexing",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 795,
+      "line": 1008,
       "content": "- 100 small files: ~2-5 seconds - 1,000 small files: ~20-60 seconds - With embeddings: 2-5x slower",
       "path": [
         "Performance Considerations",
@@ -54000,7 +54715,7 @@
       "heading": "Optimization Tips",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 800,
+      "line": 1013,
       "content": "1. Use ignore patterns for large non-content directories 2. Disable auto-indexing for huge workspaces 3. Index incrementally (only changed files) 4. Run optimization monthly",
       "path": [
         "Performance Considerations",
@@ -54031,7 +54746,7 @@
       "heading": "Search Performance",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 806,
+      "line": 1019,
       "content": "",
       "path": [
         "Performance Considerations"
@@ -54047,7 +54762,7 @@
       "heading": "Full-Text Search (FTS5)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 808,
+      "line": 1021,
       "content": "- Query time: 10-50ms (typical) - Scales well to 10,000+ files - BM25 scoring is highly optimized - Results returned in rank order",
       "path": [
         "Performance Considerations",
@@ -54080,7 +54795,7 @@
       "heading": "Semantic Search",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 814,
+      "line": 1027,
       "content": "- Query time: 50-500ms depending on provider - Local embeddings: slower but private - Ollama: moderate speed - OpenAI: fastest but requires network",
       "path": [
         "Performance Considerations",
@@ -54113,7 +54828,7 @@
       "heading": "Hybrid Search",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 820,
+      "line": 1033,
       "content": "- Query time: Combined FTS + vector time - Typically 100-600ms - Runs searches in parallel - RRF fusion adds ~10ms",
       "path": [
         "Performance Considerations",
@@ -54144,7 +54859,7 @@
       "heading": "Database Size",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 826,
+      "line": 1039,
       "content": "",
       "path": [
         "Performance Considerations"
@@ -54160,7 +54875,7 @@
       "heading": "Typical Sizes",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 828,
+      "line": 1041,
       "content": "#+BEGIN_SRC org 100 files:      ~5-10 MB 1,000 files:    ~50-100 MB 10,000 files:   ~500 MB-1 GB #+END_SRC",
       "path": [
         "Performance Considerations",
@@ -54187,7 +54902,7 @@
       "heading": "With Embeddings",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 835,
+      "line": 1048,
       "content": "#+BEGIN_SRC org +50-100% size increase for chunks and vectors 384-dim embeddings: ~1.5 KB per chunk 768-dim embeddings: ~3 KB per chunk 1536-dim embeddings: ~6 KB per chunk #+END_SRC",
       "path": [
         "Performance Considerations",
@@ -54216,7 +54931,7 @@
       "heading": "Memory Usage",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 843,
+      "line": 1056,
       "content": "",
       "path": [
         "Performance Considerations"
@@ -54232,7 +54947,7 @@
       "heading": "Indexing",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 845,
+      "line": 1058,
       "content": "- Base: ~50-100 MB - Peak during large batch: ~200-500 MB - Embedding generation: +100-300 MB",
       "path": [
         "Performance Considerations",
@@ -54258,7 +54973,7 @@
       "heading": "Searching",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 850,
+      "line": 1063,
       "content": "- FTS5: ~10-50 MB - Vector search: ~50-200 MB (loads embeddings) - Minimal memory footprint when idle",
       "path": [
         "Performance Considerations",
@@ -54285,7 +55000,7 @@
       "heading": "Scaling Guidelines",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 855,
+      "line": 1068,
       "content": "",
       "path": [
         "Performance Considerations"
@@ -54301,7 +55016,7 @@
       "heading": "Small Workspace (<100 files)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 857,
+      "line": 1070,
       "content": "- Enable auto-indexing - Use any embedding provider - Full reindex in seconds",
       "path": [
         "Performance Considerations",
@@ -54327,7 +55042,7 @@
       "heading": "Medium Workspace (100-1,000 files)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 862,
+      "line": 1075,
       "content": "- Enable auto-indexing - Local or Ollama embeddings recommended - Full reindex in under a minute",
       "path": [
         "Performance Considerations",
@@ -54355,7 +55070,7 @@
       "heading": "Large Workspace (1,000-10,000 files)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 867,
+      "line": 1080,
       "content": "- Consider disabling auto-indexing - Ollama embeddings recommended - Reindex incrementally",
       "path": [
         "Performance Considerations",
@@ -54381,7 +55096,7 @@
       "heading": "Very Large Workspace (>10,000 files)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 872,
+      "line": 1085,
       "content": "- Disable auto-indexing (manual reindex) - Use selective directory indexing - Consider multiple smaller databases - Ollama with a fast model recommended",
       "path": [
         "Performance Considerations",
@@ -54414,7 +55129,7 @@
       "heading": "Configuration Reference",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 878,
+      "line": 1091,
       "content": "",
       "path": [],
       "commands": [],
@@ -54428,7 +55143,7 @@
       "heading": "Database Settings",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 880,
+      "line": 1093,
       "content": "",
       "path": [
         "Configuration Reference"
@@ -54444,7 +55159,7 @@
       "heading": "=scimax.db.includeJournal=",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 882,
+      "line": 1095,
       "content": "Type: =boolean= Default: =true= Include journal directory in database indexing.",
       "path": [
         "Configuration Reference",
@@ -54470,7 +55185,7 @@
       "heading": "=scimax.db.includeWorkspace=",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 888,
+      "line": 1101,
       "content": "Type: =boolean= Default: =true= Include workspace folders in database indexing.",
       "path": [
         "Configuration Reference",
@@ -54496,7 +55211,7 @@
       "heading": "=scimax.db.includeProjects=",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 894,
+      "line": 1107,
       "content": "Type: =boolean= Default: =true= Include all scimax projects in database indexing.",
       "path": [
         "Configuration Reference",
@@ -54522,7 +55237,7 @@
       "heading": "=scimax.db.include=",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 900,
+      "line": 1113,
       "content": "Type: =string[]= Default: =[]= Additional directories or files to index (supports ~ for home directory). #+BEGIN_SRC json { \"scimax.db.include\": [ \"/home/user/notes\", \"~/Documents/research\" ] } #+END_SRC",
       "path": [
         "Configuration Reference",
@@ -54553,7 +55268,7 @@
       "heading": "=scimax.db.exclude=",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 915,
+      "line": 1128,
       "content": "Type: =string[]= Default: =[\"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/build/**\"]= Patterns or paths to exclude from indexing (globs and absolute paths). #+BEGIN_SRC json { \"scimax.db.exclude\": [ \"**/node_modules/**\", \"**/.git/**\", \"**/dist/**\", \"**/temp/**\", \"**/*.backup.org\", \"~/notes/scratch.org\" ] } #+END_SRC",
       "path": [
         "Configuration Reference",
@@ -54589,7 +55304,7 @@
       "heading": "`scimax.db.autoIndex'",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 934,
+      "line": 1147,
       "content": "Type: `boolean' Default: `false' Automatically index workspace on activation. Disable for large workspaces. #+BEGIN_SRC json { \"scimax.db.autoIndex\": true } #+END_SRC",
       "path": [
         "Configuration Reference",
@@ -54621,7 +55336,7 @@
       "heading": "Embedding Settings",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 946,
+      "line": 1159,
       "content": "",
       "path": [
         "Configuration Reference"
@@ -54637,7 +55352,7 @@
       "heading": "`scimax.db.embeddingProvider'",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 948,
+      "line": 1161,
       "content": "Type: `enum' Values: \"none\" | \"ollama\" Default: `\"ollama\"' Embedding provider for semantic search. #+BEGIN_SRC json { \"scimax.db.embeddingProvider\": \"ollama\" } #+END_SRC",
       "path": [
         "Configuration Reference",
@@ -54667,7 +55382,7 @@
       "heading": "`scimax.db.ollamaUrl'",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 961,
+      "line": 1174,
       "content": "Type: `string' Default: `\"http://localhost:11434\"' Ollama server URL. #+BEGIN_SRC json { \"scimax.db.ollamaUrl\": \"http://localhost:11434\" } #+END_SRC",
       "path": [
         "Configuration Reference",
@@ -54694,7 +55409,7 @@
       "heading": "`scimax.db.ollamaModel'",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 973,
+      "line": 1186,
       "content": "Type: `string' Default: `\"nomic-embed-text\"' Ollama embedding model name. #+BEGIN_SRC json { \"scimax.db.ollamaModel\": \"nomic-embed-text\" } #+END_SRC",
       "path": [
         "Configuration Reference",
@@ -54722,7 +55437,7 @@
       "heading": "Command Reference",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 985,
+      "line": 1198,
       "content": "",
       "path": [],
       "commands": [],
@@ -54736,8 +55451,8 @@
       "heading": "Search Commands",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 987,
-      "content": "| Command                    | Description                  | |----------------------------+------------------------------| | scimax.db.search           | Full-text search (FTS5)      | | scimax.db.searchSemantic   | Semantic search (vector)     | | scimax.db.searchHybrid     | Hybrid search (FTS + vector) | | scimax.db.searchHeadings   | Search headings              | | scimax.db.searchByTag      | Search by org tag            | | scimax.db.searchByProperty | Search by property value     | | sc",
+      "line": 1200,
+      "content": "| Command                      | Description                        | |------------------------------+------------------------------------| | scimax.db.search             | Full-text search (FTS5)            | | scimax.db.searchSemantic     | Semantic search (vector)           | | scimax.db.searchHybrid       | Hybrid search (FTS + vector)       | | scimax.db.searchAdvanced     | Advanced search (full pipeline)    | | scimax.db.searchCapabilities | Show search capabilities           | | scimax.d",
       "path": [
         "Command Reference"
       ],
@@ -54745,9 +55460,9 @@
         "scimax.db.search",
         "scimax.db.searchSemantic",
         "scimax.db.searchHybrid",
-        "scimax.db.searchHeadings",
-        "scimax.db.searchByTag",
-        "scimax.db.searchByProperty"
+        "scimax.db.searchAdvanced",
+        "scimax.db.searchCapabilities",
+        "scimax.d"
       ],
       "keybindings": [],
       "keywords": [
@@ -54755,25 +55470,25 @@
         "commands",
         "command",
         "description",
-        "----------------------------------------------------------",
+        "------------------------------------------------------------------",
         "full-text",
         "fts5",
         "semantic",
         "vector",
         "hybrid",
         "fts",
-        "headings",
-        "org",
-        "tag",
-        "property",
-        "value"
+        "advanced",
+        "full",
+        "pipeline",
+        "show",
+        "capabilities"
       ]
     },
     {
       "heading": "View Commands",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1000,
+      "line": 1215,
       "content": "| Command               | Description             | |-----------------------+-------------------------| | scimax.db.showTodos   | Show TODO items         | | scimax.db.agenda      | Show agenda             | | scimax.db.deadlines   | Show upcoming deadlines | | scimax.db.browseFiles | Browse indexed files    |",
       "path": [
         "Command Reference"
@@ -54805,7 +55520,7 @@
       "heading": "Management Commands",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1009,
+      "line": 1224,
       "content": "| Command                       | Description                 | |-------------------------------+-----------------------------| | scimax.db.reindex             | Reindex all files           | | scimax.db.optimize            | Optimize database           | | scimax.db.clear               | Clear database              | | scimax.db.stats               | Show database statistics    | | scimax.db.setScope            | Set search scope            | | scimax.db.configureEmbeddings | Configure embeddin",
       "path": [
         "Command Reference"
@@ -54842,7 +55557,7 @@
       "heading": "Database Maintenance",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1024,
+      "line": 1239,
       "content": "CLOSED: [2026-01-22 Thu 21:17]",
       "path": [],
       "commands": [],
@@ -54860,7 +55575,7 @@
       "heading": "Backup and Restore",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1027,
+      "line": 1242,
       "content": "CLOSED: [2026-01-22 Thu 21:17] The database can be backed up and restored to prevent data loss and enable migration between machines.",
       "path": [
         "Database Maintenance"
@@ -54890,7 +55605,7 @@
       "heading": "Backup",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1032,
+      "line": 1247,
       "content": "CLOSED: [2026-01-22 Thu 21:17] Command: =Scimax: Backup Database= (=scimax.db.backup=) Creates a portable backup file containing: - All indexed file paths (not file contents) - Project information - Database metadata Backup is stored in JSON format for portability. #+BEGIN_SRC org # Example backup location ~/.scimax/backup-2026-01-22.json #+END_SRC",
       "path": [
         "Database Maintenance",
@@ -54927,7 +55642,7 @@
       "heading": "Restore",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1049,
+      "line": 1264,
       "content": "CLOSED: [2026-01-22 Thu 21:17] Command: =Scimax: Restore Database= (=scimax.db.restore=) Restores database from a backup file: - Imports project list - Queues files for reindexing - Preserves original creation timestamps Note: Actual file content must still be reindexed after restore.",
       "path": [
         "Database Maintenance",
@@ -54964,7 +55679,7 @@
       "heading": "Database Rebuild",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1061,
+      "line": 1276,
       "content": "CLOSED: [2026-01-22 Thu 21:17] Command: =Scimax: Rebuild Database= (=scimax.db.rebuild=) Completely rebuilds the database from scratch: - Drops and recreates all tables - Re-scans all configured directories - Regenerates all indexes - Regenerates embeddings (if configured) Use when: - Database appears corrupted - Major schema changes after update - Switching embedding providers - Performance issues after many incremental updates",
       "path": [
         "Database Maintenance"
@@ -55000,7 +55715,7 @@
       "heading": "Options",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1078,
+      "line": 1293,
       "content": "| Option        | Description                          | |---------------+--------------------------------------| | Full rebuild  | Complete reindex of all files        | | Projects only | Only rebuild project table           |",
       "path": [
         "Database Maintenance",
@@ -55026,7 +55741,7 @@
       "heading": "Database Verification",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1085,
+      "line": 1300,
       "content": "CLOSED: [2026-01-22 Thu 21:18] Command: =Scimax: Verify Database= (=scimax.db.verify=) Checks database integrity and freshness:",
       "path": [
         "Database Maintenance"
@@ -55054,7 +55769,7 @@
       "heading": "Checks Performed",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1092,
+      "line": 1307,
       "content": "1. *File existence* - Verifies indexed files still exist on disk 2. *Modification time* - Detects files modified since indexing 3. *Index integrity* - Validates FTS5 and vector indexes 4. *Project validity* - Checks project directories exist",
       "path": [
         "Database Maintenance",
@@ -55089,7 +55804,7 @@
       "heading": "Result Format",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1099,
+      "line": 1314,
       "content": "#+BEGIN_SRC org Database Verification Results: - Total files: 127 - Missing files: 2 - Stale files: 5 - Projects: 8 (7 valid, 1 missing) - Status: NEEDS_REINDEX #+END_SRC",
       "path": [
         "Database Maintenance",
@@ -55120,7 +55835,7 @@
       "heading": "Status Values",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1110,
+      "line": 1325,
       "content": "| Status       | Meaning                          | |--------------+----------------------------------| | OK           | Database is current and valid    | | NEEDS_REINDEX| Some files are stale or missing | | CORRUPTED    | Index integrity check failed     |",
       "path": [
         "Database Maintenance",
@@ -55150,7 +55865,7 @@
       "heading": "Project Integration",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1118,
+      "line": 1333,
       "content": "CLOSED: [2026-01-22 Thu 21:44] The database now stores project information, integrated with the Projectile project manager:",
       "path": [
         "Database Maintenance"
@@ -55177,7 +55892,7 @@
       "heading": "Benefits",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1123,
+      "line": 1338,
       "content": "- Projects persist across VS Code restarts - Shared project list between Projectile and Database - Fast project switching using indexed data - Projects can be associated with indexed files",
       "path": [
         "Database Maintenance",
@@ -55209,7 +55924,7 @@
       "heading": "Project Commands",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1130,
+      "line": 1345,
       "content": "Projects are managed through Projectile commands (=C-c p=), but the database provides the persistence layer. See [[file:17-projectile.org][Projectile]] for project management commands.",
       "path": [
         "Database Maintenance",
@@ -55239,7 +55954,7 @@
       "heading": "Troubleshooting",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1136,
+      "line": 1351,
       "content": "",
       "path": [],
       "commands": [],
@@ -55252,7 +55967,7 @@
       "heading": "Semantic Search Not Working",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1138,
+      "line": 1353,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -55269,7 +55984,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1140,
+      "line": 1355,
       "content": "Semantic search returns no results, shows \"unavailable\", or displays an error.",
       "path": [
         "Troubleshooting",
@@ -55293,7 +56008,7 @@
       "heading": "First: Check Vector Search Support",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1143,
+      "line": 1358,
       "content": "Run `Scimax: Show Database Stats' (`scimax.db.stats') to see the semantic search status: | Status Message                         | Meaning                                 | |----------------------------------------+-----------------------------------------| | Semantic search: Enabled (N chunks)    | Working, N chunks with embeddings       | | Semantic search: Ready (no embeddings) | Supported, but no provider configured   | | Semantic search: Unavailable (error)   | Vector search not supported ",
       "path": [
         "Troubleshooting",
@@ -55330,7 +56045,7 @@
       "heading": "Vector Search Unavailable",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1153,
+      "line": 1368,
       "content": "If you see \"Semantic search: Unavailable\", the libsql database doesn't support vector operations. This can happen if: - The libsql version doesn't include vector support - The vector index failed to create *Workaround*: Use full-text search (`scimax.db.search') instead. FTS5 is always available and fast.",
       "path": [
         "Troubleshooting",
@@ -55367,7 +56082,7 @@
       "heading": "Embedding Provider Issues",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1162,
+      "line": 1377,
       "content": "If vector search is supported but not working: 1. Check embedding provider is configured: `scimax.db.embeddingProvider' 2. Test connection: Run `Scimax: Configure Embedding Service' 3. Ensure files are reindexed after configuring embeddings 4. Check console for errors (`Help: Toggle Developer Tools')",
       "path": [
         "Troubleshooting",
@@ -55404,7 +56119,7 @@
       "heading": "Local Provider Issues",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1171,
+      "line": 1386,
       "content": "- First use downloads model (~30MB), wait for completion - Check extension cache directory has write permissions - Try different model if one fails",
       "path": [
         "Troubleshooting",
@@ -55438,7 +56153,7 @@
       "heading": "Ollama Issues",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1176,
+      "line": 1391,
       "content": "- Ensure Ollama is running: `ollama serve' - Pull model: `ollama pull nomic-embed-text' - Check URL is correct in settings - Test connection: `curl http://localhost:11434/api/embeddings'",
       "path": [
         "Troubleshooting",
@@ -55469,7 +56184,7 @@
       "heading": "Search Returns No Results",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1182,
+      "line": 1397,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -55486,7 +56201,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1184,
+      "line": 1399,
       "content": "Searches return empty results despite having files.",
       "path": [
         "Troubleshooting",
@@ -55508,7 +56223,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1187,
+      "line": 1402,
       "content": "1. Run `Scimax: Show Database Stats' to check file count 2. If files ` 0, run 'Scimax: Reindex Files 3. Check file extensions (.org, .md, .ipynb) 4. Verify files aren't in ignored directories 5. Check search scope is set to \"All files\"",
       "path": [
         "Troubleshooting",
@@ -55542,7 +56257,7 @@
       "heading": "Slow Indexing",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1194,
+      "line": 1409,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -55558,7 +56273,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1196,
+      "line": 1411,
       "content": "Indexing takes very long or appears stuck.",
       "path": [
         "Troubleshooting",
@@ -55579,7 +56294,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1199,
+      "line": 1414,
       "content": "1. Check workspace size (number of files) 2. Add ignore patterns for large non-content directories 3. Disable embedding generation if not needed 4. Index directories incrementally 5. Check disk I/O and available memory",
       "path": [
         "Troubleshooting",
@@ -55614,7 +56329,7 @@
       "heading": "Database Corruption",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1206,
+      "line": 1421,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -55630,7 +56345,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1208,
+      "line": 1423,
       "content": "Errors mentioning \"database is locked\" or \"disk I/O error\".",
       "path": [
         "Troubleshooting",
@@ -55652,7 +56367,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1211,
+      "line": 1426,
       "content": "1. Close other VS Code windows accessing same workspace 2. Restart VS Code 3. Run `Scimax: Clear Database' and reindex 4. Check disk space is available 5. Verify database file permissions",
       "path": [
         "Troubleshooting",
@@ -55685,7 +56400,7 @@
       "heading": "High Memory Usage",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1218,
+      "line": 1433,
       "content": "",
       "path": [
         "Troubleshooting"
@@ -55702,7 +56417,7 @@
       "heading": "Problem",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1220,
+      "line": 1435,
       "content": "VS Code uses excessive memory during indexing or searching.",
       "path": [
         "Troubleshooting",
@@ -55725,7 +56440,7 @@
       "heading": "Solutions",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1223,
+      "line": 1438,
       "content": "1. Disable auto-indexing 2. Reduce number of indexed directories 3. Use more aggressive ignore patterns 4. Clear and reindex database 5. Restart VS Code between large indexing operations",
       "path": [
         "Troubleshooting",
@@ -55759,7 +56474,7 @@
       "heading": "Examples and Workflows",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1230,
+      "line": 1445,
       "content": "",
       "path": [],
       "commands": [],
@@ -55773,7 +56488,7 @@
       "heading": "Research Paper Management",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1232,
+      "line": 1447,
       "content": "#+BEGIN_SRC org # Organize papers with properties ,* TODO Read: Attention Is All You Need :PROPERTIES: :CUSTOM_ID: vaswani2017attention :AUTHOR: Vaswani et al. :YEAR: 2017 :CATEGORY: research :END: #transformers #attention #nlp SCHEDULED: <2026-01-15 Wed> # Search by property Property: CATEGORY Value: research # Search by hashtag #nlp # Semantic search transformer architecture papers #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -55807,7 +56522,7 @@
       "heading": "Project Todo Management",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1259,
+      "line": 1474,
       "content": "#+BEGIN_SRC org # Use tags for organization ,* TODO Implement login feature :work:backend: DEADLINE: <2026-01-20 Mon> ,* TODO Write API documentation :work:docs: SCHEDULED: <2026-01-18 Sat> # Search by tag :work: -> shows all work items :backend: -> shows backend tasks # View agenda Next 2 weeks -> prioritized by deadline # Search TODOs Filter by: TODO (in progress) #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -55841,7 +56556,7 @@
       "heading": "Code Snippet Library",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1280,
+      "line": 1495,
       "content": "#+BEGIN_SRC org # Store reusable code blocks ,* Data Processing Utils ,#+BEGIN_SRC python def normalize_data(df): \"\"\"Normalize numeric columns\"\"\" return (df - df.mean()) / df.std() ,#+END_SRC # Search code blocks Language: python Query: normalize # Or semantic search how to standardize dataframe columns #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -55875,7 +56590,7 @@
       "heading": "Personal Knowledge Base",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1300,
+      "line": 1515,
       "content": "#+BEGIN_SRC org # Use hybrid search for discovery Query: \"improve code performance\" Results will include: - Exact matches: \"code performance\" articles - Related concepts: optimization, profiling, caching - Similar topics: algorithm efficiency, memory management # Use properties for metadata :PROPERTIES: :CREATED: [2026-01-13 Mon 10:00] :MODIFIED: [2026-01-13 Mon 15:30] :CATEGORY: programming :END: #+END_SRC",
       "path": [
         "Examples and Workflows"
@@ -55909,7 +56624,7 @@
       "heading": "Best Practices",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1319,
+      "line": 1534,
       "content": "",
       "path": [],
       "commands": [],
@@ -55923,7 +56638,7 @@
       "heading": "Indexing Strategy",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1321,
+      "line": 1536,
       "content": "1. *Start selective* - Index specific directories first 2. *Use ignore patterns* - Exclude build artifacts and dependencies 3. *Index incrementally* - Don't reindex everything on changes 4. *Schedule optimization* - Run monthly for large databases 5. *Monitor statistics* - Check file counts and sizes regularly",
       "path": [
         "Best Practices"
@@ -55957,7 +56672,7 @@
       "heading": "Search Strategy",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1329,
+      "line": 1544,
       "content": "1. *Start broad* - Use semantic or hybrid search for exploration 2. *Refine with keywords* - Switch to FTS for specific terms 3. *Use structured queries* - Filter by tags/properties when possible 4. *Set scope appropriately* - Narrow to directories for focused work 5. *Combine approaches* - Use multiple search types for thorough research",
       "path": [
         "Best Practices"
@@ -55991,7 +56706,7 @@
       "heading": "Organization Tips",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1337,
+      "line": 1552,
       "content": "1. *Use consistent tags* - Establish tag naming conventions 2. *Add properties* - Include metadata for filtering 3. *Set schedules* - Use SCHEDULED/DEADLINE for time management 4. *Include hashtags* - Quick inline categorization 5. *Write descriptive headings* - Better search results",
       "path": [
         "Best Practices"
@@ -56025,7 +56740,7 @@
       "heading": "Performance Tips",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1345,
+      "line": 1560,
       "content": "1. *Disable auto-indexing* - For large workspaces (manual trigger) 2. *Choose appropriate embeddings* - Balance quality vs. speed 3. *Limit result counts* - Don't request thousands of results 4. *Use search scope* - Narrow searches to relevant directories 5. *Cache frequent queries* - Database has 15-minute result cache",
       "path": [
         "Best Practices"
@@ -56059,7 +56774,7 @@
       "heading": "Technical Architecture",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1353,
+      "line": 1568,
       "content": "",
       "path": [],
       "commands": [],
@@ -56073,7 +56788,7 @@
       "heading": "Database Schema",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1355,
+      "line": 1570,
       "content": "",
       "path": [
         "Technical Architecture"
@@ -56089,7 +56804,7 @@
       "heading": "Files Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1357,
+      "line": 1572,
       "content": "Tracks indexed files with modification tracking: - `path', `file_type', `mtime', `hash', `size', `indexed_at'",
       "path": [
         "Technical Architecture",
@@ -56115,7 +56830,7 @@
       "heading": "Headings Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1361,
+      "line": 1576,
       "content": "Org/markdown headings with full metadata: - `level', `title', `todo_state', `priority' - `tags', `inherited_tags', `properties' - `scheduled', `deadline', `closed' - `line_number', `begin_pos'",
       "path": [
         "Technical Architecture",
@@ -56147,7 +56862,7 @@
       "heading": "Source Blocks Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1368,
+      "line": 1583,
       "content": "Code blocks with language and content: - `language', `content', `headers' - `line_number', `cell_index'",
       "path": [
         "Technical Architecture",
@@ -56171,7 +56886,7 @@
       "heading": "Links Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1373,
+      "line": 1588,
       "content": "All link types (file, http, id, etc.): - `link_type', `target', `description' - `line_number'",
       "path": [
         "Technical Architecture",
@@ -56196,7 +56911,7 @@
       "heading": "Hashtags Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1378,
+      "line": 1593,
       "content": "Inline hashtags: - `tag', `file_path'",
       "path": [
         "Technical Architecture",
@@ -56216,7 +56931,7 @@
       "heading": "Chunks Table",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1382,
+      "line": 1597,
       "content": "Text chunks for semantic search: - `content', `line_start', `line_end' - `embedding' (F32_BLOB vector)",
       "path": [
         "Technical Architecture",
@@ -56242,7 +56957,7 @@
       "heading": "FTS Content (Virtual Table)",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1387,
+      "line": 1602,
       "content": "Full-text search index: - `file_path', `title', `content' - Porter stemming, Unicode normalization - BM25 ranking support",
       "path": [
         "Technical Architecture",
@@ -56273,7 +56988,7 @@
       "heading": "Indexes",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1393,
+      "line": 1608,
       "content": "Performance indexes on: - `headings.file_id', `headings.todo_state' - `headings.deadline', `headings.scheduled' - `source_blocks.language' - `hashtags.tag' - `chunks.embedding' (vector index with cosine metric) - `files.file_type'",
       "path": [
         "Technical Architecture"
@@ -56301,7 +57016,7 @@
       "heading": "Vector Search",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1403,
+      "line": 1618,
       "content": "Using libsql's vector extension: - Cosine similarity metric - F32_BLOB storage format - HNSW-like index structure - Efficient nearest neighbor queries",
       "path": [
         "Technical Architecture"
@@ -56332,7 +57047,7 @@
       "heading": "Parsers",
       "level": 2,
       "file": "18-database-search.org",
-      "line": 1411,
+      "line": 1626,
       "content": "",
       "path": [
         "Technical Architecture"
@@ -56347,7 +57062,7 @@
       "heading": "Org Mode",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1413,
+      "line": 1628,
       "content": "`UnifiedParserAdapter' - Full AST parser compatible with org-element: - Recursive heading parsing with inheritance - Property drawer extraction - Timestamp parsing (scheduled, deadline, closed) - Source block with headers - Link extraction",
       "path": [
         "Technical Architecture",
@@ -56382,7 +57097,7 @@
       "heading": "Markdown",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1421,
+      "line": 1636,
       "content": "Simplified parser: - ATX heading syntax (`#') - Fenced code blocks - Inline links",
       "path": [
         "Technical Architecture",
@@ -56408,7 +57123,7 @@
       "heading": "Jupyter Notebooks",
       "level": 3,
       "file": "18-database-search.org",
-      "line": 1427,
+      "line": 1642,
       "content": "`ipynbParser' - Notebook-specific parser: - Markdown cells → headings and links - Code cells → source blocks - Cell indices tracked for navigation - Hashtags from markdown cells",
       "path": [
         "Technical Architecture",
@@ -56440,7 +57155,7 @@
       "heading": "See Also",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1434,
+      "line": 1649,
       "content": "- [[file:01-getting-started.org][Getting Started]] - Initial setup and first steps - [[file:07-source-blocks.org][Source Blocks]] - Code execution and literate programming - [[file:03-todo-items.org][TODO Items]] - Task management features - [[file:05-links.org][Links]] - Link types and navigation - [[file:26-configuration.org][Configuration]] - Full settings reference",
       "path": [],
       "commands": [],
@@ -56472,7 +57187,7 @@
       "heading": "Navigation",
       "level": 1,
       "file": "18-database-search.org",
-      "line": 1442,
+      "line": 1657,
       "content": "- Previous: [[file:17-projectile.org][Projectile]] - Index: [[file:00-index.org][Documentation Index]] - Next: [[file:19-references.org][References]]",
       "path": [],
       "commands": [],

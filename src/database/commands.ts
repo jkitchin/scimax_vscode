@@ -6,7 +6,8 @@ import {
     HeadingRecord,
     SearchResult,
     AgendaItem,
-    SearchScope
+    SearchScope,
+    AdvancedSearchResult
 } from './scimaxDb';
 import {
     testEmbeddingService,
@@ -592,6 +593,98 @@ export function registerDbCommands(
                     await openFileAtLine(result.file_path, result.line_number);
                 }
             });
+        })
+    );
+
+    // Advanced search (full pipeline with expansion + reranking)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.searchAdvanced', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            // Show progress for advanced search
+            await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: 'Advanced Search',
+                    cancellable: false
+                },
+                async (progress) => {
+                    await createDynamicQuickPick<SearchResult>({
+                        placeholder: 'Type to search (advanced: expansion + reranking)...',
+                        debounceMs: 300,  // Slightly longer debounce for advanced search
+                        minQueryLength: 2,
+                        searchFn: async (query) => {
+                            return db.searchAdvanced(query, { mode: 'advanced' }, (stage, current, total) => {
+                                progress.report({
+                                    message: stage,
+                                    increment: (current / total) * 25
+                                });
+                            });
+                        },
+                        formatItem: (result) => {
+                            const advResult = result as any;
+                            let icon = '$(search)';
+                            if (advResult.rerankerScore !== undefined) {
+                                icon = '$(sparkle)';
+                            } else if (advResult.retrievalMethod === 'vector') {
+                                icon = '$(symbol-field)';
+                            }
+                            return {
+                                label: `${icon} ${path.basename(result.file_path)}:${result.line_number}`,
+                                description: advResult.querySource ? `via ${advResult.querySource}` : '',
+                                detail: result.preview,
+                                data: result
+                            };
+                        },
+                        onSelect: async (result) => {
+                            await openFileAtLine(result.file_path, result.line_number);
+                        }
+                    });
+                }
+            );
+        })
+    );
+
+    // Show search capabilities
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.searchCapabilities', async () => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            const caps = await db.getSearchCapabilities();
+
+            const items = [
+                {
+                    label: caps.fts ? '$(check) Full-Text Search (FTS5/BM25)' : '$(x) Full-Text Search',
+                    description: caps.fts ? 'Available' : 'Unavailable'
+                },
+                {
+                    label: caps.semantic ? '$(check) Semantic/Vector Search' : '$(x) Semantic/Vector Search',
+                    description: caps.semantic ? 'Available (Ollama)' : 'Unavailable - configure embeddings'
+                },
+                {
+                    label: caps.queryExpansionPRF ? '$(check) Query Expansion (PRF)' : '$(x) Query Expansion (PRF)',
+                    description: caps.queryExpansionPRF ? 'Available (no LLM required)' : 'Unavailable'
+                },
+                {
+                    label: caps.queryExpansionLLM ? '$(check) Query Expansion (LLM)' : '$(x) Query Expansion (LLM)',
+                    description: caps.queryExpansionLLM ? 'Available (Ollama)' : 'Unavailable - check Ollama'
+                },
+                {
+                    label: caps.reranking ? '$(check) LLM Reranking' : '$(x) LLM Reranking',
+                    description: caps.reranking ? 'Available (Ollama)' : 'Unavailable - pull qwen3:0.6b'
+                }
+            ];
+
+            const selected = await vscode.window.showQuickPick(items, {
+                placeHolder: 'Search Capabilities - select to configure',
+                title: 'Scimax Search Capabilities'
+            });
+
+            if (selected && selected.description?.includes('configure')) {
+                await vscode.commands.executeCommand('scimax.db.configureEmbeddings');
+            }
         })
     );
 

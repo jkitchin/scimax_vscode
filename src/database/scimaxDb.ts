@@ -18,6 +18,17 @@ import {
 import type { EmbeddingService } from './embeddingService';
 import { MigrationRunner, getLatestVersion } from './migrations';
 import { databaseLogger as log } from '../utils/logger';
+import {
+    AdvancedSearchEngine,
+    AdvancedSearchOptions,
+    AdvancedSearchResult,
+    SearchMode,
+    SearchProgressCallback,
+    loadConfig as loadAdvancedSearchConfig
+} from './advancedSearch';
+
+// Re-export advanced search types
+export type { AdvancedSearchOptions, AdvancedSearchResult, SearchMode, SearchProgressCallback };
 import { withRetry, withTimeout, isTransientError } from '../utils/resilience';
 
 /**
@@ -162,6 +173,9 @@ export class ScimaxDb {
     // Event emitter for file index completion
     private _onDidIndexFile = new vscode.EventEmitter<string>();
     readonly onDidIndexFile = this._onDidIndexFile.event;
+
+    // Advanced search engine
+    private advancedSearchEngine: AdvancedSearchEngine | null = null;
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
@@ -379,6 +393,34 @@ export class ScimaxDb {
     public setEmbeddingService(service: EmbeddingService): void {
         this.embeddingService = service;
         this.embeddingDimensions = service.dimensions;
+        // Update advanced search engine with new embedding service
+        this.initAdvancedSearch();
+    }
+
+    /**
+     * Initialize advanced search engine
+     * Call this after the database and embedding service are ready
+     */
+    private initAdvancedSearch(): void {
+        if (!this.advancedSearchEngine) {
+            this.advancedSearchEngine = new AdvancedSearchEngine(loadAdvancedSearchConfig());
+        }
+
+        // Bind search functions
+        this.advancedSearchEngine.setSearchFunctions(
+            (query, options) => this.searchFullText(query, options),
+            this.embeddingService ? (query, options) => this.searchSemantic(query, options) : null,
+            this.embeddingService
+        );
+
+        log.info('Advanced search engine initialized');
+    }
+
+    /**
+     * Get the advanced search engine instance
+     */
+    public getAdvancedSearchEngine(): AdvancedSearchEngine | null {
+        return this.advancedSearchEngine;
     }
 
     /**
@@ -1567,6 +1609,66 @@ export class ScimaxDb {
             .sort((a, b) => b.rrf - a.rrf)
             .slice(0, limit)
             .map(item => ({ ...item.result, score: item.rrf }));
+    }
+
+    /**
+     * Advanced search with query expansion, weighted RRF, and reranking
+     *
+     * Search modes:
+     * - 'fast': FTS5 only (fastest)
+     * - 'semantic': Vector search only
+     * - 'hybrid': FTS5 + Vector with RRF (default)
+     * - 'advanced': Full pipeline with expansion and reranking
+     *
+     * @param query Search query
+     * @param options Search options
+     * @param onProgress Optional progress callback
+     */
+    public async searchAdvanced(
+        query: string,
+        options?: AdvancedSearchOptions,
+        onProgress?: SearchProgressCallback
+    ): Promise<AdvancedSearchResult[]> {
+        // Initialize engine if not done yet
+        if (!this.advancedSearchEngine) {
+            this.initAdvancedSearch();
+        }
+
+        if (!this.advancedSearchEngine) {
+            // Fallback to basic hybrid search
+            log.warn('Advanced search engine not available, falling back to hybrid');
+            return this.searchHybrid(query, options);
+        }
+
+        return this.advancedSearchEngine.search(query, options, onProgress);
+    }
+
+    /**
+     * Get search capabilities
+     * Returns which search features are currently available
+     */
+    public async getSearchCapabilities(): Promise<{
+        fts: boolean;
+        semantic: boolean;
+        queryExpansionPRF: boolean;
+        queryExpansionLLM: boolean;
+        reranking: boolean;
+    }> {
+        if (!this.advancedSearchEngine) {
+            this.initAdvancedSearch();
+        }
+
+        if (!this.advancedSearchEngine) {
+            return {
+                fts: true,
+                semantic: this.embeddingService !== null && this.vectorSearchSupported,
+                queryExpansionPRF: true,
+                queryExpansionLLM: false,
+                reranking: false
+            };
+        }
+
+        return this.advancedSearchEngine.getCapabilities();
     }
 
     /**
