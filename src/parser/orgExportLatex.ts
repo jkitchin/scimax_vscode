@@ -1221,27 +1221,6 @@ export class LatexExportBackend implements ExportBackend {
     // Document Structure
     // =========================================================================
 
-    /**
-     * Extract package names from preamble lines
-     * Returns a Set of package names that the user has explicitly specified
-     */
-    private extractUserPackages(preamble: string | undefined): Set<string> {
-        const userPackages = new Set<string>();
-        if (!preamble) return userPackages;
-
-        // Match \usepackage[options]{pkg} or \usepackage{pkg} or \usepackage{pkg1,pkg2}
-        const usepackageRegex = /\\usepackage(?:\[[^\]]*\])?\{([^}]+)\}/g;
-        let match;
-        while ((match = usepackageRegex.exec(preamble)) !== null) {
-            // Handle multiple packages in one \usepackage{pkg1,pkg2}
-            const packages = match[1].split(',').map(p => p.trim());
-            for (const pkg of packages) {
-                userPackages.add(pkg);
-            }
-        }
-        return userPackages;
-    }
-
     private wrapInLatexDocument(
         content: string,
         meta: {
@@ -1273,9 +1252,7 @@ export class LatexExportBackend implements ExportBackend {
                 parts.push('');
             }
         } else {
-            // Normal mode: auto-generate packages, but skip any that user overrides
-            const userPackages = this.extractUserPackages(meta.preamble);
-
+            // Normal mode: use document class and user preamble only
             // Document class
             const classOpts = meta.classOptions?.length
                 ? `[${meta.classOptions.join(',')}]`
@@ -1283,103 +1260,8 @@ export class LatexExportBackend implements ExportBackend {
             parts.push(`\\documentclass${classOpts}{${meta.documentClass}}`);
             parts.push('');
 
-            // Standard packages - skip if user provides their own
-            if (!userPackages.has('inputenc')) {
-                parts.push('% Encoding');
-                parts.push('\\usepackage[utf8]{inputenc}');
-            }
-            if (!userPackages.has('fontenc')) {
-                parts.push('\\usepackage[T1]{fontenc}');
-            }
-            if (!userPackages.has('inputenc') || !userPackages.has('fontenc')) {
-                parts.push('');
-            }
-
-            // Hyperref - skip if user provides their own
-            if (meta.hyperref && !userPackages.has('hyperref')) {
-                const hyperopts = Object.entries(meta.hyperrefOptions || {})
-                    .map(([k, v]) => v ? `${k}=${v}` : k)
-                    .join(',\n  ');
-                parts.push('% Hyperlinks');
-                parts.push(`\\usepackage[${hyperopts}]{hyperref}`);
-                parts.push('');
-            }
-
-            // Code highlighting - skip if user provides their own
-            if (meta.minted && !userPackages.has('minted')) {
-                parts.push('% Code highlighting with minted');
-                parts.push('\\usepackage{minted}');
-                parts.push('');
-            } else if (meta.listings && !userPackages.has('listings')) {
-                parts.push('% Code highlighting with listings');
-                parts.push('\\usepackage{listings}');
-                if (!userPackages.has('xcolor')) {
-                    parts.push('\\usepackage{xcolor}');
-                }
-                parts.push('\\lstset{');
-                parts.push('  basicstyle=\\ttfamily\\small,');
-                parts.push('  breaklines=true,');
-                parts.push('  frame=single,');
-                parts.push('  backgroundcolor=\\color{gray!10}');
-                parts.push('}');
-                parts.push('');
-            }
-
-            // Tables - skip if user provides their own
-            if (meta.booktabs && !userPackages.has('booktabs')) {
-                parts.push('% Better tables');
-                parts.push('\\usepackage{booktabs}');
-                parts.push('');
-            }
-
-            // Graphics - skip if user provides their own
-            if (!userPackages.has('graphicx')) {
-                parts.push('% Graphics');
-                parts.push('\\usepackage{graphicx}');
-                parts.push('');
-            }
-
-            // Strike-through - skip if user provides their own
-            if (!userPackages.has('ulem')) {
-                parts.push('% Strike-through');
-                parts.push('\\usepackage[normalem]{ulem}');
-                parts.push('');
-            }
-
-            // AMS math - skip if user provides their own
-            if (!userPackages.has('amsmath') || !userPackages.has('amssymb')) {
-                parts.push('% Math');
-                if (!userPackages.has('amsmath')) {
-                    parts.push('\\usepackage{amsmath}');
-                }
-                if (!userPackages.has('amssymb')) {
-                    parts.push('\\usepackage{amssymb}');
-                }
-                parts.push('');
-            }
-
-            // Citations - skip if user provides their own (natbib or biblatex)
-            if (!userPackages.has('natbib') && !userPackages.has('biblatex')) {
-                parts.push('% Citations');
-                parts.push('\\usepackage[numbers,super,sort&compress]{natbib}');
-                parts.push('');
-            }
-
-            // Additional packages from options
-            if (meta.packages && meta.packages.length > 0) {
-                parts.push('% Additional packages');
-                for (const pkg of meta.packages) {
-                    if (!userPackages.has(pkg)) {
-                        parts.push(`\\usepackage{${pkg}}`);
-                    }
-                }
-                parts.push('');
-            }
-
-            // Custom preamble (added after default packages)
-            // This includes user's #+LATEX_HEADER: lines which may override packages
+            // User preamble from #+LATEX_HEADER: lines
             if (meta.preamble) {
-                parts.push('% User preamble');
                 parts.push(meta.preamble);
                 parts.push('');
             }

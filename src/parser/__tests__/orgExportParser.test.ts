@@ -452,6 +452,63 @@ bibliography:refs.bib`;
         });
     });
 
+    describe('LaTeX Fragments', () => {
+        it('parses LaTeX command with braces', () => {
+            const objects = parseObjectsFast('See \\ref{fig-1} for details');
+            const latex = objects.find(o => o.type === 'latex-fragment') as any;
+            expect(latex).toBeDefined();
+            expect(latex?.properties?.value).toBe('\\ref{fig-1}');
+            expect(latex?.properties?.fragmentType).toBe('command');
+        });
+
+        it('parses standalone LaTeX command without braces', () => {
+            const objects = parseObjectsFast('\\noindent This is text');
+            const latex = objects.find(o => o.type === 'latex-fragment') as any;
+            expect(latex).toBeDefined();
+            expect(latex?.properties?.value).toBe('\\noindent');
+            expect(latex?.properties?.fragmentType).toBe('command');
+        });
+
+        it('parses multiple standalone LaTeX commands', () => {
+            const objects = parseObjectsFast('\\noindent First line\\newpage Second');
+            const latexFragments = objects.filter(o => o.type === 'latex-fragment');
+            expect(latexFragments).toHaveLength(2);
+            expect((latexFragments[0] as any).properties?.value).toBe('\\noindent');
+            expect((latexFragments[1] as any).properties?.value).toBe('\\newpage');
+        });
+
+        it('parses inline math with $', () => {
+            const objects = parseObjectsFast('The equation $E=mc^2$ is famous');
+            const latex = objects.find(o => o.type === 'latex-fragment') as any;
+            expect(latex).toBeDefined();
+            expect(latex?.properties?.fragmentType).toBe('inline-math');
+        });
+
+        it('parses display math with $$', () => {
+            const objects = parseObjectsFast('$$\\sum_{i=1}^n x_i$$');
+            const latex = objects.find(o => o.type === 'latex-fragment') as any;
+            expect(latex).toBeDefined();
+            expect(latex?.properties?.fragmentType).toBe('display-math');
+        });
+
+        it('parses \\noindent in CENTER block', () => {
+            const content = `#+BEGIN_CENTER
+\\noindent
+*Bold text*
+#+END_CENTER`;
+            const doc = parseOrgFast(content);
+            const centerBlock = doc.section?.children?.[0] as any;
+            expect(centerBlock?.type).toBe('center-block');
+
+            // First child should be a paragraph with latex-fragment
+            const firstPara = centerBlock?.children?.[0] as any;
+            expect(firstPara?.type).toBe('paragraph');
+            const latex = firstPara?.children?.find((o: any) => o.type === 'latex-fragment');
+            expect(latex).toBeDefined();
+            expect(latex?.properties?.value).toBe('\\noindent');
+        });
+    });
+
     describe('Edge Cases', () => {
         it('handles headline with asterisks in title', () => {
             const doc = parseOrgFast('* Title with * asterisk');

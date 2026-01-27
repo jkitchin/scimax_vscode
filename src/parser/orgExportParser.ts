@@ -76,6 +76,9 @@ const INLINE_MATH_PATTERN = /(?<!\$)\$([^$\n]+)\$(?!\$)|\\\(([^)]+)\\\)/g;
 const LINE_BREAK_PATTERN = /\\\\(?:\s|$)/g;
 // LaTeX command pattern: \command{arg} or \command[opt]{arg} - for \ref, \cite, \eqref, \label, \pageref, \autoref, etc.
 const LATEX_COMMAND_PATTERN = /\\([a-zA-Z]+)(?:\[[^\]]*\])?\{([^}]*)\}/g;
+// Standalone LaTeX command pattern: \noindent, \newpage, \clearpage, \bigskip, etc. (no braces)
+// Must not match \[ or \( (math delimiters) or \\ (line break) - those are handled separately
+const LATEX_STANDALONE_COMMAND_PATTERN = /\\([a-zA-Z]{2,})(?![a-zA-Z{[\(])/g;
 
 // Macro pattern: {{{macro(args)}}} or {{{macro}}}
 const MACRO_PATTERN = /\{\{\{([a-zA-Z0-9_-]+)(?:\(([^)]*)\))?\}\}\}/g;
@@ -349,6 +352,17 @@ export function parseObjectsFast(text: string): OrgObject[] {
 
         // LaTeX commands: \ref{}, \cite{}, \eqref{}, \label{}, \pageref{}, \autoref{}, etc.
         collectMatches(LATEX_COMMAND_PATTERN, (m) => ({
+            type: 'latex-fragment' as const,
+            range: { start: m.index!, end: m.index! + m[0].length },
+            postBlank: 0,
+            properties: {
+                value: m[0],
+                fragmentType: 'command' as const,
+            },
+        }));
+
+        // Standalone LaTeX commands: \noindent, \newpage, \clearpage, \bigskip, etc.
+        collectMatches(LATEX_STANDALONE_COMMAND_PATTERN, (m) => ({
             type: 'latex-fragment' as const,
             range: { start: m.index!, end: m.index! + m[0].length },
             postBlank: 0,
