@@ -5182,7 +5182,7 @@
             "subtree",
             "selection"
           ],
-          "default": "subtree",
+          "default": "selection",
           "description": "Default scope for clipboard exports: 'full' exports entire document, 'subtree' exports current headline and children, 'selection' exports selected text."
         },
         "scimax.org.logRepeat": {
@@ -5582,6 +5582,7 @@
         "scimax.export.latex.customHeader": {
           "type": "string",
           "default": "",
+          "editPresentation": "multilineText",
           "markdownDescription": "Custom LaTeX header (preamble) that replaces the auto-generated one. Should include `\\documentclass` through all `\\usepackage` commands. Example:\n```latex\n\\documentclass[11pt]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n```"
         },
         "scimax.export.latex.documentClass": {
@@ -5597,6 +5598,7 @@
         "scimax.export.latex.defaultPreamble": {
           "type": "string",
           "default": "\\usepackage[utf8]{inputenc}\n\\usepackage{lmodern}\n\\usepackage{graphicx}\n\\usepackage{longtable}\n\\usepackage{float}\n\\usepackage{wrapfig}\n\\usepackage{rotating}\n\\usepackage[normalem]{ulem}\n\\usepackage{amsmath}\n\\usepackage{amssymb}\n\\usepackage{capt-of}\n\\usepackage{mhchem}",
+          "editPresentation": "multilineText",
           "markdownDescription": "Default LaTeX preamble (packages and commands) added after `\\documentclass`. Can be extended by `#+LATEX_HEADER:` lines in the document. Example:\n```latex\n\\usepackage[utf8]{inputenc}\n\\usepackage{graphicx}\n\\usepackage{amsmath}\n```"
         },
         "scimax.export.pdf.compiler": {
