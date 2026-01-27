@@ -169,6 +169,7 @@ describe('rerankerService', () => {
     describe('RerankedResult interface', () => {
         it('should have correct structure', () => {
             const result: RerankedResult = {
+                type: 'heading',
                 file_path: 'test.org',
                 line_number: 10,
                 title: 'Test',

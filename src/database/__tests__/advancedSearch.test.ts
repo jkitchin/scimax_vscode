@@ -95,19 +95,21 @@ describe('advancedSearch', () => {
 
     describe('AdvancedSearchEngine', () => {
         let engine: AdvancedSearchEngine;
-        let mockFtsSearch: ReturnType<typeof vi.fn>;
-        let mockSemanticSearch: ReturnType<typeof vi.fn>;
+        type FtsSearchFn = (query: string, options?: { limit?: number }) => Promise<SearchResult[]>;
+        type SemanticSearchFn = (query: string, options?: { limit?: number }) => Promise<SearchResult[]>;
+        let mockFtsSearch: ReturnType<typeof vi.fn<FtsSearchFn>>;
+        let mockSemanticSearch: ReturnType<typeof vi.fn<SemanticSearchFn>>;
 
         beforeEach(() => {
             engine = new AdvancedSearchEngine(getDefaultConfig());
 
-            // Create mock search functions
-            mockFtsSearch = vi.fn().mockResolvedValue([
+            // Create mock search functions with proper typing
+            mockFtsSearch = vi.fn<FtsSearchFn>().mockResolvedValue([
                 createResult('fts1.org', 1, -10),
                 createResult('fts2.org', 2, -8),
             ]);
 
-            mockSemanticSearch = vi.fn().mockResolvedValue([
+            mockSemanticSearch = vi.fn<SemanticSearchFn>().mockResolvedValue([
                 createResult('sem1.org', 1, 0.9),
                 createResult('fts1.org', 1, 0.85), // Overlap with FTS
             ]);
@@ -126,8 +128,8 @@ describe('advancedSearch', () => {
         describe('setSearchFunctions', () => {
             it('should configure search functions', () => {
                 const newEngine = new AdvancedSearchEngine();
-                const fts = vi.fn().mockResolvedValue([]);
-                const semantic = vi.fn().mockResolvedValue([]);
+                const fts = vi.fn<FtsSearchFn>().mockResolvedValue([]);
+                const semantic = vi.fn<SemanticSearchFn>().mockResolvedValue([]);
 
                 newEngine.setSearchFunctions(fts, semantic, null);
 
@@ -138,7 +140,7 @@ describe('advancedSearch', () => {
 
             it('should handle null semantic search', () => {
                 const newEngine = new AdvancedSearchEngine();
-                const fts = vi.fn().mockResolvedValue([]);
+                const fts = vi.fn<FtsSearchFn>().mockResolvedValue([]);
 
                 newEngine.setSearchFunctions(fts, null, null);
 
@@ -300,6 +302,7 @@ describe('advancedSearch', () => {
     describe('AdvancedSearchResult interface', () => {
         it('should have correct structure', () => {
             const result: AdvancedSearchResult = {
+                type: 'heading',
                 file_path: 'test.org',
                 line_number: 10,
                 title: 'Test',
