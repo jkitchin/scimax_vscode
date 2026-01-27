@@ -1157,7 +1157,16 @@ export function registerDbCommands(
         })
     );
 
-    // Browse files
+    // Browse files with action buttons
+    const removeButton: vscode.QuickInputButton = {
+        iconPath: new vscode.ThemeIcon('trash'),
+        tooltip: 'Remove from database'
+    };
+    const ignoreButton: vscode.QuickInputButton = {
+        iconPath: new vscode.ThemeIcon('exclude'),
+        tooltip: 'Add to ignore patterns'
+    };
+
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.db.browseFiles', async () => {
             const db = await requireDatabase();
@@ -1170,24 +1179,150 @@ export function registerDbCommands(
                 return;
             }
 
-            const items = files
+            const quickPick = vscode.window.createQuickPick<vscode.QuickPickItem & { file: { path: string; indexed_at: number } }>();
+            quickPick.placeholder = `${files.length} indexed files (use buttons for actions)`;
+            quickPick.matchOnDetail = true;
+
+            quickPick.items = files
                 .sort((a, b) => b.indexed_at - a.indexed_at)
                 .map(file => ({
                     label: `$(file) ${path.basename(file.path)}`,
                     description: new Date(file.indexed_at).toLocaleDateString(),
                     detail: file.path,
+                    buttons: [removeButton, ignoreButton],
                     file
                 }));
 
-            const selected = await vscode.window.showQuickPick(items, {
-                placeHolder: `${files.length} indexed files`,
-                matchOnDetail: true
+            quickPick.onDidAccept(async () => {
+                const selected = quickPick.selectedItems[0];
+                if (selected) {
+                    quickPick.hide();
+                    const doc = await vscode.workspace.openTextDocument(selected.file.path);
+                    await vscode.window.showTextDocument(doc);
+                }
             });
 
-            if (selected) {
-                const doc = await vscode.workspace.openTextDocument(selected.file.path);
-                await vscode.window.showTextDocument(doc);
+            quickPick.onDidTriggerItemButton(async (e) => {
+                const filePath = (e.item as any).file.path;
+                if (e.button === removeButton) {
+                    quickPick.hide();
+                    await vscode.commands.executeCommand('scimax.db.removeFile', filePath);
+                } else if (e.button === ignoreButton) {
+                    quickPick.hide();
+                    await vscode.commands.executeCommand('scimax.db.ignoreFile', filePath);
+                }
+            });
+
+            quickPick.onDidHide(() => quickPick.dispose());
+            quickPick.show();
+        })
+    );
+
+    // Remove file from database (by path argument)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.removeFile', async (filePath?: string) => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            // If no path provided, use current file
+            if (!filePath) {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor) {
+                    vscode.window.showWarningMessage('No file selected');
+                    return;
+                }
+                filePath = editor.document.uri.fsPath;
             }
+
+            const fileName = path.basename(filePath);
+            const confirm = await vscode.window.showWarningMessage(
+                `Remove "${fileName}" from the database?`,
+                { modal: false },
+                'Remove'
+            );
+
+            if (confirm === 'Remove') {
+                await db.removeFile(filePath);
+                vscode.window.showInformationMessage(`Removed "${fileName}" from database`);
+            }
+        })
+    );
+
+    // Remove current file from database
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.removeCurrentFile', async () => {
+            await vscode.commands.executeCommand('scimax.db.removeFile');
+        })
+    );
+
+    // Add file to ignore patterns (by path argument)
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.ignoreFile', async (filePath?: string) => {
+            const db = await requireDatabase();
+            if (!db) return;
+
+            // If no path provided, use current file
+            if (!filePath) {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor) {
+                    vscode.window.showWarningMessage('No file selected');
+                    return;
+                }
+                filePath = editor.document.uri.fsPath;
+            }
+
+            const fileName = path.basename(filePath);
+
+            // Ask what kind of pattern to add
+            const patternChoice = await vscode.window.showQuickPick([
+                {
+                    label: `$(file) This file only`,
+                    description: filePath,
+                    pattern: filePath
+                },
+                {
+                    label: `$(folder) This directory`,
+                    description: path.dirname(filePath) + '/**',
+                    pattern: path.dirname(filePath) + '/**'
+                },
+                {
+                    label: `$(symbol-file) All *${path.extname(filePath)} files`,
+                    description: `**/*${path.extname(filePath)}`,
+                    pattern: `**/*${path.extname(filePath)}`
+                }
+            ], {
+                placeHolder: `Add ignore pattern for "${fileName}"`
+            });
+
+            if (!patternChoice) return;
+
+            // Get current exclude patterns
+            const config = vscode.workspace.getConfiguration('scimax.db');
+            const currentPatterns = config.get<string[]>('exclude') || [];
+
+            // Check if pattern already exists
+            if (currentPatterns.includes(patternChoice.pattern)) {
+                vscode.window.showInformationMessage(`Pattern already in exclude list: ${patternChoice.pattern}`);
+                return;
+            }
+
+            // Add the new pattern
+            const newPatterns = [...currentPatterns, patternChoice.pattern];
+            await config.update('exclude', newPatterns, vscode.ConfigurationTarget.Global);
+
+            // Also remove from database
+            await db.removeFile(filePath);
+
+            vscode.window.showInformationMessage(
+                `Added "${patternChoice.pattern}" to ignore patterns and removed "${fileName}" from database`
+            );
+        })
+    );
+
+    // Add current file to ignore patterns
+    context.subscriptions.push(
+        vscode.commands.registerCommand('scimax.db.ignoreCurrentFile', async () => {
+            await vscode.commands.executeCommand('scimax.db.ignoreFile');
         })
     );
 
