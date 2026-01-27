@@ -27,6 +27,14 @@ import {
     LoggingConfig
 } from './progressLogging';
 import { createLogger } from '../utils/logger';
+import {
+    findPlanningLine,
+    buildPlanningLine,
+    removeClosed,
+} from './planningLine';
+
+// Re-export planning line utilities for external use
+export { findPlanningLine, buildPlanningLine, removeClosed };
 
 const log = createLogger('Org');
 
@@ -1762,21 +1770,26 @@ function formatClosedTimestamp(): string {
 }
 
 /**
- * Find existing CLOSED line for a heading
- * Returns the line number if found, -1 otherwise
+ * Find existing CLOSED line for a heading (for backward compatibility).
+ * This checks if any planning line contains CLOSED.
+ * Returns the line number if found, -1 otherwise.
  */
 function findClosedLine(document: vscode.TextDocument, headingLine: number): number {
-    // Look at lines immediately after the heading for CLOSED:
-    // Stop at next heading or content that's not a planning line
+    // Look at lines immediately after the heading for planning line with CLOSED
     for (let i = headingLine + 1; i < document.lineCount; i++) {
         const lineText = document.lineAt(i).text;
 
-        // Check for CLOSED line
+        // Check for CLOSED in a planning line
         if (lineText.match(/^\s*CLOSED:\s*\[/)) {
             return i;
         }
 
-        // Skip DEADLINE and SCHEDULED lines
+        // Check if this line has CLOSED along with DEADLINE/SCHEDULED
+        if (lineText.match(/CLOSED:\s*\[/) && lineText.match(/(DEADLINE|SCHEDULED):/)) {
+            return i;
+        }
+
+        // Skip DEADLINE and SCHEDULED lines (planning line without CLOSED)
         if (lineText.match(/^\s*(DEADLINE|SCHEDULED):/)) {
             continue;
         }
@@ -1798,7 +1811,29 @@ function findClosedLine(document: vscode.TextDocument, headingLine: number): num
 }
 
 /**
- * Update CLOSED timestamp when transitioning TODO states
+ * Find the planning line number (DEADLINE/SCHEDULED without CLOSED) for a heading.
+ * Returns the line number if found, -1 otherwise.
+ */
+function findPlanningLineNumber(document: vscode.TextDocument, headingLine: number): number {
+    // The planning line must be immediately after the heading
+    const nextLine = headingLine + 1;
+    if (nextLine >= document.lineCount) {
+        return -1;
+    }
+
+    const lineText = document.lineAt(nextLine).text;
+
+    // Check if it's a planning line (DEADLINE or SCHEDULED, with or without CLOSED)
+    if (lineText.match(/^\s*(CLOSED|DEADLINE|SCHEDULED):/)) {
+        return nextLine;
+    }
+
+    return -1;
+}
+
+/**
+ * Update CLOSED timestamp when transitioning TODO states.
+ * In org-mode, CLOSED, DEADLINE, and SCHEDULED should all be on the same planning line.
  * @param editor The active text editor
  * @param headingLine The line number of the heading
  * @param wasInDoneState Whether the previous state was a done state
@@ -1811,39 +1846,59 @@ export async function updateClosedTimestamp(
     isNowInDoneState: boolean
 ): Promise<void> {
     const document = editor.document;
-    const existingClosedLine = findClosedLine(document, headingLine);
+    const closedTimestamp = formatClosedTimestamp();
 
     if (isNowInDoneState && !wasInDoneState) {
         // Transitioning TO done state - add CLOSED timestamp
-        if (existingClosedLine === -1) {
-            // No existing CLOSED, add one after heading
+        const planningLineNum = findPlanningLineNumber(document, headingLine);
+
+        if (planningLineNum !== -1) {
+            // There's an existing planning line - update it with CLOSED
+            const existingLine = document.lineAt(planningLineNum).text;
+            const newLine = buildPlanningLine(existingLine, closedTimestamp);
+            const lineRange = document.lineAt(planningLineNum).range;
+
+            await editor.edit(editBuilder => {
+                editBuilder.replace(lineRange, newLine);
+            });
+        } else {
+            // No existing planning line - create a new one
             const headingText = document.lineAt(headingLine).text;
             const indent = headingText.match(/^(\s*)/)?.[1] || '';
-            const closedLine = `${indent}CLOSED: ${formatClosedTimestamp()}`;
+            const closedLine = `${indent}CLOSED: ${closedTimestamp}`;
 
-            // Insert after heading line
             await editor.edit(editBuilder => {
                 editBuilder.insert(
                     new vscode.Position(headingLine + 1, 0),
                     closedLine + '\n'
                 );
             });
-        } else {
-            // Update existing CLOSED line
-            const lineRange = document.lineAt(existingClosedLine).range;
-            const existingText = document.lineAt(existingClosedLine).text;
-            const indent = existingText.match(/^(\s*)/)?.[1] || '';
-            await editor.edit(editBuilder => {
-                editBuilder.replace(lineRange, `${indent}CLOSED: ${formatClosedTimestamp()}`);
-            });
         }
     } else if (!isNowInDoneState && wasInDoneState) {
         // Transitioning FROM done state - remove CLOSED timestamp
-        if (existingClosedLine !== -1) {
-            const lineRange = document.lineAt(existingClosedLine).rangeIncludingLineBreak;
-            await editor.edit(editBuilder => {
-                editBuilder.delete(lineRange);
-            });
+        const planningLineNum = findPlanningLineNumber(document, headingLine);
+
+        if (planningLineNum !== -1) {
+            const existingLine = document.lineAt(planningLineNum).text;
+
+            // Check if line contains CLOSED
+            if (existingLine.match(/CLOSED:\s*\[/)) {
+                const newLine = removeClosed(existingLine);
+
+                if (newLine === '') {
+                    // Line only had CLOSED - delete the entire line
+                    const lineRange = document.lineAt(planningLineNum).rangeIncludingLineBreak;
+                    await editor.edit(editBuilder => {
+                        editBuilder.delete(lineRange);
+                    });
+                } else {
+                    // Line has other planning keywords - just remove CLOSED
+                    const lineRange = document.lineAt(planningLineNum).range;
+                    await editor.edit(editBuilder => {
+                        editBuilder.replace(lineRange, newLine);
+                    });
+                }
+            }
         }
     }
 }
