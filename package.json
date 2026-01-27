@@ -844,6 +844,10 @@
         "title": "Scimax: Insert Screenshot"
       },
       {
+        "command": "scimax.insertOcrScreenshot",
+        "title": "Scimax: Insert OCR Screenshot"
+      },
+      {
         "command": "scimax.org.export",
         "title": "Scimax: Export Org Document",
         "icon": "$(export)"
@@ -1005,6 +1009,22 @@
       {
         "command": "scimax.db.browseFiles",
         "title": "Scimax: Browse Indexed Files"
+      },
+      {
+        "command": "scimax.db.removeFile",
+        "title": "Scimax: Remove File from Database"
+      },
+      {
+        "command": "scimax.db.removeCurrentFile",
+        "title": "Scimax: Remove Current File from Database"
+      },
+      {
+        "command": "scimax.db.ignoreFile",
+        "title": "Scimax: Add File to Ignore Patterns"
+      },
+      {
+        "command": "scimax.db.ignoreCurrentFile",
+        "title": "Scimax: Add Current File to Ignore Patterns"
       },
       {
         "command": "scimax.db.setScope",
@@ -3913,8 +3933,8 @@
       },
       {
         "command": "scimax.markup.strikethrough",
-        "key": "alt+x",
-        "mac": "alt+x",
+        "key": "alt+s",
+        "mac": "alt+s",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       },
       {
@@ -5086,6 +5106,12 @@
         "key": "f10",
         "mac": "f10",
         "when": "editorTextFocus && editorLangId =~ /org|markdown/"
+      },
+      {
+        "command": "scimax.insertOcrScreenshot",
+        "key": "shift+f10",
+        "mac": "shift+f10",
+        "when": "editorTextFocus && editorLangId =~ /org|markdown/"
       }
     ],
     "configuration": {
@@ -5375,7 +5401,12 @@
         },
         "scimax.search.defaultMode": {
           "type": "string",
-          "enum": ["fast", "semantic", "hybrid", "advanced"],
+          "enum": [
+            "fast",
+            "semantic",
+            "hybrid",
+            "advanced"
+          ],
           "default": "hybrid",
           "description": "Default search mode. 'fast' uses FTS5 only, 'semantic' uses vector search, 'hybrid' combines both with RRF, 'advanced' adds query expansion and reranking."
         },
@@ -5393,7 +5424,11 @@
         },
         "scimax.search.queryExpansion.method": {
           "type": "string",
-          "enum": ["prf", "llm", "both"],
+          "enum": [
+            "prf",
+            "llm",
+            "both"
+          ],
           "default": "prf",
           "description": "Query expansion method. 'prf' uses pseudo-relevance feedback (no LLM required), 'llm' uses Ollama, 'both' combines both methods."
         },
@@ -5785,6 +5820,11 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically detect projects in workspace"
+        },
+        "scimax.notebook.openLinksInNewWindow": {
+          "type": "boolean",
+          "default": true,
+          "description": "Open notebook links (nb:project::file) in a new window when the project differs from the current workspace"
         },
         "scimax.hydra.showKeyHints": {
           "type": "boolean",
@@ -6227,6 +6267,7 @@
     "handlebars": "^4.7.8",
     "jszip": "^3.10.1",
     "minimatch": "^9.0.0",
+    "tesseract.js": "^7.0.0",
     "uuid": "^9.0.0",
     "zeromq": "^6.0.0-beta.19"
   }
