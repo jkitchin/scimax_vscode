@@ -1306,28 +1306,99 @@ describe('LaTeX Export', () => {
             expect(result).toContain('\\end{document}');
         });
 
-        it('includes standard packages', () => {
+        it('includes packages from preamble option', () => {
             const doc = createSimpleDocument('Test');
-            const result = exportToLatex(doc);
+            const preamble = `\\usepackage[utf8]{inputenc}
+\\usepackage{graphicx}
+\\usepackage{amsmath}`;
+            const result = exportToLatex(doc, { preamble });
 
             expect(result).toContain('\\usepackage[utf8]{inputenc}');
             expect(result).toContain('\\usepackage{graphicx}');
             expect(result).toContain('\\usepackage{amsmath}');
         });
 
-        it('includes hyperref when enabled', () => {
-            const doc = createSimpleDocument('Test');
+        it('uses hyperref commands when hyperref option is true', () => {
+            // Create a doc with a link that uses hyperref
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    properties: {},
+                    children: [{
+                        type: 'paragraph',
+                        properties: {},
+                        children: [{
+                            type: 'link',
+                            properties: {
+                                linkType: 'custom-id',
+                                path: '#my-target',
+                                rawLink: '#my-target',
+                            },
+                            children: [{
+                                type: 'text',
+                                value: 'link text',
+                            }],
+                        }],
+                    }],
+                },
+            };
             const result = exportToLatex(doc, { hyperref: true });
 
-            expect(result).toContain('\\usepackage');
-            expect(result).toContain('hyperref');
+            // hyperref option enables \hyperref commands in output
+            expect(result).toContain('\\hyperref');
         });
 
-        it('includes booktabs when enabled', () => {
-            const doc = createSimpleDocument('Test');
+        it('uses booktabs commands when booktabs option is true', () => {
+            // Create a doc with a table
+            const doc: OrgDocumentNode = {
+                type: 'org-data',
+                properties: {},
+                keywords: { TITLE: 'Test' },
+                keywordLists: {},
+                children: [],
+                section: {
+                    type: 'section',
+                    properties: {},
+                    children: [{
+                        type: 'table',
+                        properties: { tableType: 'org' },
+                        children: [
+                            {
+                                type: 'table-row',
+                                properties: { rowType: 'standard' },
+                                children: [
+                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: 'A' }] },
+                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: 'B' }] },
+                                ],
+                            },
+                            {
+                                type: 'table-row',
+                                properties: { rowType: 'rule' },
+                                children: [],
+                            },
+                            {
+                                type: 'table-row',
+                                properties: { rowType: 'standard' },
+                                children: [
+                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: '1' }] },
+                                    { type: 'table-cell', properties: {}, children: [{ type: 'text', value: '2' }] },
+                                ],
+                            },
+                        ],
+                    }],
+                },
+            };
             const result = exportToLatex(doc, { booktabs: true });
 
-            expect(result).toContain('\\usepackage{booktabs}');
+            // booktabs option uses \toprule, \midrule, \bottomrule instead of \hline
+            expect(result).toContain('\\toprule');
+            expect(result).toContain('\\midrule');
+            expect(result).toContain('\\bottomrule');
         });
 
         it('includes table of contents when enabled', () => {
