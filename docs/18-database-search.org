@@ -385,7 +385,8 @@ Results include:
 - File location and preview
 - Up to 20 results
 
-* ⚠️ Advanced Search (SOTA Pipeline)
+* ✅ Advanced Search (SOTA Pipeline)
+CLOSED: [2026-01-27 Tue 18:11]
 
 ** Overview
 
@@ -400,7 +401,7 @@ Advanced search implements a state-of-the-art (SOTA) search pipeline inspired by
 
 *** Command
 
-Run =Scimax: Advanced Search= (=scimax.db.searchAdvanced=)
+Run =Scimax: Advanced Search= ([[cmd:scimax.db.searchAdvanced]])
 
 *** When to Use
 

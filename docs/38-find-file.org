@@ -7,38 +7,38 @@ Find File provides Emacs-style file navigation in VS Code. It displays a filtera
 
 ** Opening Find File
 
-| Keybinding | Command | Description |
-|------------+---------+-------------|
-| ~C-x C-f~ | =scimax.findFile= | Open find-file (starts in current file's directory) |
-| | =scimax.findFileHome= | Open find-file in home directory |
-| | =scimax.findFileWorkspace= | Open find-file in workspace root |
+| Keybinding | Command                    | Description                                         |
+|------------+----------------------------+-----------------------------------------------------|
+| ~C-x C-f~  | =scimax.findFile=          | Open find-file (starts in current file's directory) |
+|            | =scimax.findFileHome=      | Open find-file in home directory                    |
+|            | =scimax.findFileWorkspace= | Open find-file in workspace root                    |
 
 ** Navigation
 
-| Key | Action |
-|-----+--------|
-| ~Up~ / ~C-p~ | Move selection up |
-| ~Down~ / ~C-n~ | Move selection down |
-| ~Tab~ | Enter selected directory |
-| ~Backspace~ | Go to parent directory (or delete filter character) |
-| ~Enter~ | Open file in editor, or open directory in dired |
-| ~PageUp~ / ~PageDown~ | Move selection by 10 |
-| ~Home~ / ~End~ | Jump to first/last entry |
+| Key                   | Action                                              |
+|-----------------------+-----------------------------------------------------|
+| ~Up~ / ~C-p~          | Move selection up                                   |
+| ~Down~ / ~C-n~        | Move selection down                                 |
+| ~Tab~                 | Enter selected directory                            |
+| ~Backspace~           | Go to parent directory (or delete filter character) |
+| ~Enter~               | Open file in editor, or open directory in dired     |
+| ~PageUp~ / ~PageDown~ | Move selection by 10                                |
+| ~Home~ / ~End~        | Jump to first/last entry                            |
 
 ** Filtering
 
 Simply type to filter the file list. The filter uses fuzzy matching - characters must appear in order but don't need to be consecutive.
 
-| Key | Action |
-|-----+--------|
-| /any character/ | Add to filter |
-| ~Backspace~ | Remove last filter character (or go to parent if empty) |
-| ~C-u~ | Clear filter |
+| Key             | Action                                                  |
+|-----------------+---------------------------------------------------------|
+| /any character/ | Add to filter                                           |
+| ~Backspace~     | Remove last filter character (or go to parent if empty) |
+| ~C-u~           | Clear filter                                            |
 
 ** Toggle Hidden Files
 
-| Key | Action |
-|-----+--------|
+| Key | Action                                 |
+|-----+----------------------------------------|
 | ~.~ | Toggle showing hidden files (dotfiles) |
 
 Only works when filter is empty.
@@ -47,20 +47,20 @@ Only works when filter is empty.
 
 Press ~M-o~ (Option+O on Mac) to open the actions menu. Then press a speed key to execute the action, or click on an action.
 
-| Key | Action |
-|-----+--------|
-| ~o~ | Open file (default) |
-| ~j~ | Open in split (side-by-side) |
+| Key | Action                                  |
+|-----+-----------------------------------------|
+| ~o~ | Open file (default)                     |
+| ~j~ | Open in split (side-by-side)            |
 | ~p~ | Insert relative path at original cursor |
 | ~P~ | Insert absolute path at original cursor |
-| ~l~ | Insert org-link with relative path |
-| ~L~ | Insert org-link with absolute path |
-| ~c~ | Copy relative path to clipboard |
-| ~C~ | Copy absolute path to clipboard |
-| ~d~ | Open directory in dired |
-| ~e~ | Open in Finder/Explorer |
-| ~r~ | Rename file |
-| ~D~ | Delete file |
+| ~l~ | Insert org-link with relative path      |
+| ~L~ | Insert org-link with absolute path      |
+| ~c~ | Copy relative path to clipboard         |
+| ~C~ | Copy absolute path to clipboard         |
+| ~d~ | Open directory in dired                 |
+| ~e~ | Open in Finder/Explorer                 |
+| ~r~ | Rename file                             |
+| ~D~ | Delete file                             |
 
 Press ~M-o~ or ~Esc~ to cancel the actions menu.
 
@@ -97,8 +97,8 @@ Directories are sorted before files, both alphabetically.
 
 ** Quitting
 
-| Key | Action |
-|-----+--------|
+| Key   | Action                |
+|-------+-----------------------|
 | ~Esc~ | Close find-file panel |
 
 ** Related Topics

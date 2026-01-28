@@ -7,37 +7,37 @@ Dired (Directory Editor) provides Emacs-style file management in VS Code. It dis
 
 ** Opening Dired
 
-| Keybinding | Command | Description |
-|------------+---------+-------------|
-| ~C-x d~ | =scimax.dired.open= | Open dired (prompts for directory or uses workspace) |
-| | =scimax.dired.openCurrent= | Open dired for current file's directory |
-| | =scimax.dired.openWorkspace= | Open dired for workspace root |
+| Keybinding | Command                      | Description                                          |
+|------------+------------------------------+------------------------------------------------------|
+| ~C-x d~    | =scimax.dired.open=          | Open dired (prompts for directory or uses workspace) |
+|            | =scimax.dired.openCurrent=   | Open dired for current file's directory              |
+|            | =scimax.dired.openWorkspace= | Open dired for workspace root                        |
 
 ** Navigation
 
 Once in the dired panel, use these keys to navigate:
 
-| Key | Action |
-|-----+--------|
-| ~n~ or ~j~ or ~Down~ | Move to next file |
-| ~p~ or ~k~ or ~Up~ | Move to previous file |
-| ~RET~ or ~o~ | Open file/directory |
-| ~^~ | Navigate to parent directory |
-| ~g~ | Refresh directory listing |
-| ~<~ | Go to first entry |
-| ~>~ | Go to last entry |
+| Key                  | Action                       |
+|----------------------+------------------------------|
+| ~n~ or ~j~ or ~Down~ | Move to next file            |
+| ~p~ or ~k~ or ~Up~   | Move to previous file        |
+| ~RET~ or ~o~         | Open file/directory          |
+| ~^~                  | Navigate to parent directory |
+| ~g~                  | Refresh directory listing    |
+| ~<~                  | Go to first entry            |
+| ~>~                  | Go to last entry             |
 
 ** Marking Files
 
 Mark files for batch operations:
 
-| Key | Action |
-|-----+--------|
-| ~m~ | Mark current file and move down |
-| ~u~ | Unmark current file and move down |
-| ~U~ | Unmark all files |
-| ~t~ | Toggle all marks |
-| ~d~ | Flag file for deletion |
+| Key   | Action                            |
+|-------+-----------------------------------|
+| ~m~   | Mark current file and move down   |
+| ~u~   | Unmark current file and move down |
+| ~U~   | Unmark all files                  |
+| ~t~   | Toggle all marks                  |
+| ~d~   | Flag file for deletion            |
 | ~% m~ | Mark files matching regex pattern |
 
 Marked files appear with ~*~ indicator. Flagged files (for deletion) appear with ~D~ indicator.
@@ -46,39 +46,39 @@ Marked files appear with ~*~ indicator. Flagged files (for deletion) appear with
 
 Operate on marked files (or current file if none marked):
 
-| Key | Action |
-|-----+--------|
+| Key | Action                                                  |
+|-----+---------------------------------------------------------|
 | ~D~ | Delete marked/flagged files (moves to trash by default) |
-| ~C~ | Copy marked files (prompts for destination) |
-| ~R~ | Rename/move marked files (prompts for destination) |
-| ~+~ | Create new directory |
+| ~C~ | Copy marked files (prompts for destination)             |
+| ~R~ | Rename/move marked files (prompts for destination)      |
+| ~+~ | Create new directory                                    |
 
 ** Actions Menu (M-o)
 
 Press ~M-o~ (Option+O on Mac) to open an actions menu for the selected file:
 
-| Action | Description |
-|--------+-------------|
-| Enter Directory | Enter the selected directory |
-| Open in Editor | Open file in VS Code editor |
-| Open in Finder/Explorer | Reveal in system file manager |
-| Copy Path | Copy full path to clipboard |
-| Copy File | Copy file to destination |
-| Rename/Move | Rename or move file |
-| Delete | Delete file (with confirmation) |
-| Mark | Mark file for batch operations |
-| Unmark | Remove mark from file |
-| Flag for Deletion | Flag file for deletion |
+| Action                  | Description                     |
+|-------------------------+---------------------------------|
+| Enter Directory         | Enter the selected directory    |
+| Open in Editor          | Open file in VS Code editor     |
+| Open in Finder/Explorer | Reveal in system file manager   |
+| Copy Path               | Copy full path to clipboard     |
+| Copy File               | Copy file to destination        |
+| Rename/Move             | Rename or move file             |
+| Delete                  | Delete file (with confirmation) |
+| Mark                    | Mark file for batch operations  |
+| Unmark                  | Remove mark from file           |
+| Flag for Deletion       | Flag file for deletion          |
 
 ** WDired Mode (Writable Dired)
 
 WDired mode allows you to rename files by editing their names directly, like editing text:
 
-| Key | Action |
-|-----+--------|
+| Key       | Action                                    |
+|-----------+-------------------------------------------|
 | ~C-x C-q~ | Enter wdired mode (names become editable) |
-| ~C-c C-c~ | Commit renames |
-| ~C-c C-k~ | Cancel and exit wdired mode |
+| ~C-c C-c~ | Commit renames                            |
+| ~C-c C-k~ | Cancel and exit wdired mode               |
 
 In wdired mode:
 1. Edit filenames directly in the listing
@@ -88,11 +88,11 @@ In wdired mode:
 
 ** Sorting and Filtering
 
-| Key | Action |
-|-----+--------|
+| Key | Action                                         |
+|-----+------------------------------------------------|
 | ~s~ | Cycle sort field (name, size, date, extension) |
-| ~.~ | Toggle showing hidden files (dotfiles) |
-| ~/~ | Set filter pattern (regex) |
+| ~.~ | Toggle showing hidden files (dotfiles)         |
+| ~/~ | Set filter pattern (regex)                     |
 
 ** Display Format
 
@@ -110,11 +110,11 @@ lrwxrwxrwx    12  2024-01-13 08:00  link -> target
 
 ** Configuration
 
-| Setting | Default | Description |
-|---------+---------+-------------|
-| ~scimax.dired.showHidden~ | ~false~ | Show hidden files by default |
-| ~scimax.dired.confirmDelete~ | ~true~ | Show confirmation before deleting |
-| ~scimax.dired.defaultSort~ | ~"name"~ | Default sort field (name, size, mtime, extension) |
+| Setting                      | Default  | Description                                       |
+|------------------------------+----------+---------------------------------------------------|
+| ~scimax.dired.showHidden~    | ~false~  | Show hidden files by default                      |
+| ~scimax.dired.confirmDelete~ | ~true~   | Show confirmation before deleting                 |
+| ~scimax.dired.defaultSort~   | ~"name"~ | Default sort field (name, size, mtime, extension) |
 
 ** Security
 
