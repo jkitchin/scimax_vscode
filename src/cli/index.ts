@@ -29,37 +29,59 @@ interface CliConfig {
 }
 
 /**
- * Find scimax configuration by walking up from cwd
+ * Get the VS Code global storage path for the scimax extension
+ */
+function getVSCodeGlobalStoragePath(): string {
+    const home = process.env.HOME || process.env.USERPROFILE || '';
+    const platform = process.platform;
+
+    let basePath: string;
+    if (platform === 'darwin') {
+        basePath = path.join(home, 'Library', 'Application Support', 'Code', 'User', 'globalStorage');
+    } else if (platform === 'win32') {
+        basePath = path.join(process.env.APPDATA || '', 'Code', 'User', 'globalStorage');
+    } else {
+        // Linux and others
+        basePath = path.join(home, '.config', 'Code', 'User', 'globalStorage');
+    }
+
+    return path.join(basePath, 'jkitchin.scimax-vscode', 'scimax-db.sqlite');
+}
+
+/**
+ * Find scimax configuration - uses VS Code's global storage database
  */
 function findConfig(): CliConfig {
-    let dir = process.cwd();
+    // Primary: VS Code extension's global storage database
+    const vscodeDbPath = getVSCodeGlobalStoragePath();
+    if (fs.existsSync(vscodeDbPath)) {
+        return {
+            dbPath: vscodeDbPath,
+            rootDir: process.cwd(),
+        };
+    }
 
+    // Fallback: check for local .scimax/config.json (for custom setups)
+    let dir = process.cwd();
     while (dir !== path.dirname(dir)) {
         const configPath = path.join(dir, '.scimax', 'config.json');
         if (fs.existsSync(configPath)) {
             const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-            return {
-                dbPath: path.join(dir, '.scimax', 'org.db'),
-                rootDir: dir,
-                ...config,
-            };
+            if (config.dbPath && fs.existsSync(config.dbPath)) {
+                return {
+                    dbPath: config.dbPath,
+                    rootDir: dir,
+                    ...config,
+                };
+            }
         }
-
-        // Also check for just .scimax directory
-        const scimaxDir = path.join(dir, '.scimax');
-        if (fs.existsSync(scimaxDir)) {
-            return {
-                dbPath: path.join(scimaxDir, 'org.db'),
-                rootDir: dir,
-            };
-        }
-
         dir = path.dirname(dir);
     }
 
-    // Default: use cwd
+    // Default: return VS Code path even if it doesn't exist yet
+    // (will show a helpful error message)
     return {
-        dbPath: path.join(process.cwd(), '.scimax', 'org.db'),
+        dbPath: vscodeDbPath,
         rootDir: process.cwd(),
     };
 }

@@ -239,15 +239,14 @@ class CliDatabaseImpl implements CliDatabase {
     }
 
     async getIndexedFiles(): Promise<Array<{ path: string; lastModified?: number }>> {
+        // Query from files table (primary source of indexed files)
         const result = await this.client.execute(`
-            SELECT DISTINCT file_path, MAX(id) as last_id
-            FROM headings
-            GROUP BY file_path
+            SELECT path, mtime FROM files ORDER BY path
         `);
 
         return result.rows.map((row) => ({
-            path: row.file_path as string,
-            lastModified: undefined, // Would need a files table to track this
+            path: row.path as string,
+            lastModified: row.mtime as number | undefined,
         }));
     }
 
