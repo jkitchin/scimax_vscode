@@ -213,9 +213,21 @@ export class FindFileManager {
     }
 
     /**
-     * Fuzzy match: check if pattern characters appear in order in text
+     * Fuzzy match: split pattern by spaces, each part must match in order
+     * Example: "vs sc" matches "vscode_scimax" because "vs" matches "vscode" and "sc" matches "scimax"
      */
     private fuzzyMatch(text: string, pattern: string): boolean {
+        const parts = pattern.split(/\s+/).filter(p => p.length > 0);
+        if (parts.length === 0) return true;
+
+        // Each part must match as a subsequence in the text
+        return parts.every(part => this.subsequenceMatch(text, part));
+    }
+
+    /**
+     * Check if pattern characters appear in order in text (subsequence match)
+     */
+    private subsequenceMatch(text: string, pattern: string): boolean {
         let patternIndex = 0;
         for (let i = 0; i < text.length && patternIndex < pattern.length; i++) {
             if (text[i] === pattern[patternIndex]) {
