@@ -2353,6 +2353,10 @@
         "title": "Scimax: Exclude File from Agenda"
       },
       {
+        "command": "scimax.agenda.ignoreFileFromItem",
+        "title": "Exclude This File from Agenda"
+      },
+      {
         "command": "scimax.agenda.unignoreFile",
         "title": "Scimax: Remove File from Agenda Exclude List"
       },
@@ -6231,6 +6235,11 @@
           "command": "scimax.agenda.gotoItem",
           "when": "view == scimax.agenda && viewItem == agendaItem",
           "group": "inline"
+        },
+        {
+          "command": "scimax.agenda.ignoreFileFromItem",
+          "when": "view == scimax.agenda && viewItem == agendaItem",
+          "group": "navigation"
         }
       ]
     }

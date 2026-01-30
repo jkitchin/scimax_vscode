@@ -1670,6 +1670,18 @@ export function registerAgendaCommands(context: vscode.ExtensionContext): void {
             treeProvider.refresh();
         }),
 
+        // Exclude file from agenda (right-click on tree item)
+        vscode.commands.registerCommand('scimax.agenda.ignoreFileFromItem', async (node: AgendaItemNode) => {
+            if (!node || !node.item) {
+                vscode.window.showWarningMessage('No agenda item selected');
+                return;
+            }
+            const filePath = node.item.file;
+            await manager.excludeFile(filePath);
+            vscode.window.showInformationMessage(`Added to agenda exclude list: ${path.basename(filePath)}`);
+            treeProvider.refresh();
+        }),
+
         vscode.commands.registerCommand('scimax.agenda.unignoreFile', async () => {
             const config = vscode.workspace.getConfiguration('scimax.agenda');
             const excludeList = config.get<string[]>('exclude', []);
