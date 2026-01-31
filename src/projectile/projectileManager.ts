@@ -39,6 +39,13 @@ export class ProjectileManager {
     }
 
     /**
+     * Get the extension context (for globalState access)
+     */
+    getContext(): vscode.ExtensionContext {
+        return this.context;
+    }
+
+    /**
      * Set database reference for persistence
      * Must be called before initialize() for database-backed storage
      */

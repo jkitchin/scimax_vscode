@@ -1512,6 +1512,10 @@
         "title": "Scimax: Switch Project"
       },
       {
+        "command": "scimax.projectile.switchActions",
+        "title": "Scimax: Project Picker Actions"
+      },
+      {
         "command": "scimax.projectile.findFile",
         "title": "Scimax: Find File in Project"
       },
@@ -3593,6 +3597,12 @@
         "key": "ctrl+c p p",
         "mac": "ctrl+c p p",
         "when": "!terminalFocus"
+      },
+      {
+        "command": "scimax.projectile.switchActions",
+        "key": "alt+o",
+        "mac": "alt+o",
+        "when": "inQuickOpen && scimax.projectPickerActive"
       },
       {
         "command": "scimax.projectile.findFile",
