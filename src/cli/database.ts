@@ -7,7 +7,156 @@
 
 import * as fs from 'fs';
 import * as crypto from 'crypto';
+import * as http from 'http';
+import * as https from 'https';
 import { createClient, Client } from '@libsql/client';
+import type { EmbeddingSettings } from './settings';
+
+/**
+ * CLI Embedding service interface (no VS Code dependencies)
+ */
+export interface CliEmbeddingService {
+    embed(text: string): Promise<number[]>;
+    embedBatch(texts: string[]): Promise<number[][]>;
+    dimensions: number;
+}
+
+/**
+ * Ollama embedding service for CLI
+ * Uses local Ollama server with models like nomic-embed-text
+ */
+export class CliOllamaEmbeddingService implements CliEmbeddingService {
+    private baseUrl: string;
+    private model: string;
+    public dimensions: number;
+
+    constructor(baseUrl: string = 'http://localhost:11434', model: string = 'nomic-embed-text') {
+        this.baseUrl = baseUrl;
+        this.model = model;
+        this.dimensions = this.getDimensions(model);
+    }
+
+    private getDimensions(model: string): number {
+        const dims: Record<string, number> = {
+            'nomic-embed-text': 768,
+            'all-minilm': 384,
+            'mxbai-embed-large': 1024,
+            'snowflake-arctic-embed': 1024
+        };
+        return dims[model] || 768;
+    }
+
+    async embed(text: string): Promise<number[]> {
+        // Truncate text if it exceeds a safe limit for the model's context
+        const maxChars = 6000;
+        let prompt = text;
+        if (prompt.length > maxChars) {
+            prompt = prompt.substring(0, maxChars);
+        }
+
+        try {
+            const response = await this.request('/api/embeddings', {
+                model: this.model,
+                prompt
+            });
+            return response.embedding;
+        } catch (error: any) {
+            // If we still hit context length error, try more aggressive truncation
+            if (error.message?.includes('exceeds the context length') && prompt.length > 2000) {
+                const shorterPrompt = prompt.substring(0, 2000);
+                const response = await this.request('/api/embeddings', {
+                    model: this.model,
+                    prompt: shorterPrompt
+                });
+                return response.embedding;
+            }
+            throw error;
+        }
+    }
+
+    async embedBatch(texts: string[]): Promise<number[][]> {
+        // Ollama doesn't support batch API, so we parallelize with concurrency limit
+        const concurrencyLimit = 5;
+        const results: number[][] = new Array(texts.length);
+
+        for (let i = 0; i < texts.length; i += concurrencyLimit) {
+            const chunk = texts.slice(i, i + concurrencyLimit);
+            const promises = chunk.map((text, idx) =>
+                this.embed(text).then(embedding => {
+                    results[i + idx] = embedding;
+                })
+            );
+            await Promise.all(promises);
+        }
+
+        return results;
+    }
+
+    private async request(endpoint: string, body: any): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const url = new URL(endpoint, this.baseUrl);
+            const isHttps = url.protocol === 'https:';
+            const lib = isHttps ? https : http;
+
+            const options = {
+                hostname: url.hostname,
+                port: url.port || (isHttps ? 443 : 80),
+                path: url.pathname,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const req = lib.request(options, (res) => {
+                let data = '';
+                res.on('data', chunk => data += chunk);
+                res.on('end', () => {
+                    if (res.statusCode && res.statusCode >= 400) {
+                        reject(new Error(`Ollama API error (${res.statusCode}): ${data}`));
+                        return;
+                    }
+                    try {
+                        resolve(JSON.parse(data));
+                    } catch {
+                        reject(new Error(`Failed to parse response: ${data}`));
+                    }
+                });
+            });
+
+            req.setTimeout(30000, () => {
+                req.destroy();
+                reject(new Error('Ollama embedding request timeout (30s)'));
+            });
+
+            req.on('error', reject);
+            req.write(JSON.stringify(body));
+            req.end();
+        });
+    }
+}
+
+/**
+ * Create embedding service from settings
+ */
+export function createCliEmbeddingService(settings: EmbeddingSettings): CliEmbeddingService | null {
+    if (settings.provider === 'ollama') {
+        return new CliOllamaEmbeddingService(settings.ollamaUrl, settings.ollamaModel);
+    }
+    return null;
+}
+
+/**
+ * Test embedding service connection
+ */
+export async function testCliEmbeddingService(service: CliEmbeddingService): Promise<boolean> {
+    try {
+        const embedding = await service.embed('test');
+        return embedding.length === service.dimensions;
+    } catch {
+        return false;
+    }
+}
 
 // Document structure expected by indexFile (matches LegacyDocument from orgParserAdapter)
 export interface CliDocument {
@@ -96,13 +245,23 @@ export interface CliDatabase {
     // Write operations (for rebuild)
     indexFile(filePath: string, doc: CliDocument): Promise<void>;
     clearFile(filePath: string): Promise<void>;
+
+    // Embedding operations
+    setEmbeddingService(service: CliEmbeddingService): void;
+    createEmbeddingsForFile(filePath: string, content: string): Promise<void>;
+    clearEmbeddingsForFile(filePath: string): Promise<void>;
 }
 
 class CliDatabaseImpl implements CliDatabase {
     private client: Client;
+    private embeddingService: CliEmbeddingService | null = null;
 
     constructor(client: Client) {
         this.client = client;
+    }
+
+    setEmbeddingService(service: CliEmbeddingService): void {
+        this.embeddingService = service;
     }
 
     async close(): Promise<void> {
@@ -217,14 +376,15 @@ class CliDatabaseImpl implements CliDatabase {
     }
 
     async getStats(): Promise<CliDbStats> {
-        const fileCount = await this.client.execute('SELECT COUNT(DISTINCT file_path) as count FROM headings');
+        // Count from files table (source of truth for indexed files)
+        const fileCount = await this.client.execute('SELECT COUNT(*) as count FROM files');
         const headingCount = await this.client.execute('SELECT COUNT(*) as count FROM headings');
         const todoCount = await this.client.execute('SELECT COUNT(*) as count FROM headings WHERE todo_state IS NOT NULL');
 
-        // Check for embeddings table
+        // Check for embeddings in chunks table
         let hasEmbeddings = false;
         try {
-            const embResult = await this.client.execute('SELECT COUNT(*) as count FROM content_chunks WHERE embedding IS NOT NULL');
+            const embResult = await this.client.execute('SELECT COUNT(*) as count FROM chunks WHERE embedding IS NOT NULL');
             hasEmbeddings = (embResult.rows[0].count as number) > 0;
         } catch {
             // Table might not exist
@@ -355,6 +515,115 @@ class CliDatabaseImpl implements CliDatabase {
                     block.lineNumber,
                     JSON.stringify(block.headers),
                 ],
+            });
+        }
+    }
+
+    async clearEmbeddingsForFile(filePath: string): Promise<void> {
+        // Get file ID
+        const fileResult = await this.client.execute({
+            sql: 'SELECT id FROM files WHERE path = ?',
+            args: [filePath],
+        });
+
+        if (fileResult.rows.length === 0) {
+            return; // File not in database
+        }
+
+        const fileId = fileResult.rows[0].id as number;
+
+        // Delete chunks for this file (chunks table stores embeddings)
+        try {
+            await this.client.execute({
+                sql: 'DELETE FROM chunks WHERE file_id = ?',
+                args: [fileId],
+            });
+        } catch {
+            // chunks table might not exist in older databases
+        }
+    }
+
+    async createEmbeddingsForFile(filePath: string, content: string): Promise<void> {
+        if (!this.embeddingService) return;
+
+        // Get file ID
+        const fileResult = await this.client.execute({
+            sql: 'SELECT id FROM files WHERE path = ?',
+            args: [filePath],
+        });
+
+        if (fileResult.rows.length === 0) {
+            return; // File not in database
+        }
+
+        const fileId = fileResult.rows[0].id as number;
+
+        // Clear existing chunks for this file
+        await this.clearEmbeddingsForFile(filePath);
+
+        // Check if chunks table exists with embedding column
+        try {
+            await this.client.execute('SELECT embedding FROM chunks LIMIT 0');
+        } catch {
+            // Table doesn't exist or doesn't have embedding column, skip
+            return;
+        }
+
+        // Create chunks from content
+        const lines = content.split('\n');
+        const chunkSize = 1000; // chars
+        const chunks: { text: string; lineStart: number; lineEnd: number }[] = [];
+        let currentChunk = '';
+        let currentLineStart = 1;
+        let charCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            currentChunk += line + '\n';
+            charCount += line.length + 1;
+
+            if (charCount >= chunkSize) {
+                chunks.push({
+                    text: currentChunk.trim(),
+                    lineStart: currentLineStart,
+                    lineEnd: i + 1
+                });
+
+                // Overlap with last 3 lines
+                const overlapLines = currentChunk.split('\n').slice(-3);
+                currentChunk = overlapLines.join('\n');
+                currentLineStart = Math.max(1, i - 2);
+                charCount = currentChunk.length;
+            }
+        }
+
+        // Add final chunk
+        if (currentChunk.trim()) {
+            chunks.push({
+                text: currentChunk.trim(),
+                lineStart: currentLineStart,
+                lineEnd: lines.length
+            });
+        }
+
+        if (chunks.length === 0) return;
+
+        // Generate embeddings
+        const texts = chunks.map(c => c.text);
+        const embeddings = await this.embeddingService.embedBatch(texts);
+
+        // Insert chunks with embeddings
+        for (let i = 0; i < chunks.length; i++) {
+            const vectorStr = `[${embeddings[i].join(',')}]`;
+            await this.client.execute({
+                sql: `INSERT INTO chunks
+                      (file_id, file_path, content, line_start, line_end, embedding)
+                      VALUES (?, ?, ?, ?, ?, vector32(?))`,
+                args: [
+                    fileId, filePath, chunks[i].text,
+                    chunks[i].lineStart, chunks[i].lineEnd,
+                    vectorStr
+                ]
             });
         }
     }

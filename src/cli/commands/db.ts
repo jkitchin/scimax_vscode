@@ -1,11 +1,21 @@
 /**
  * Database command - rebuild, stats, maintenance
+ *
+ * Uses the same settings as the VS Code extension for consistent behavior.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { createCliDatabase, CliDocument } from '../database';
+import { createCliDatabase, CliDocument, createCliEmbeddingService, testCliEmbeddingService } from '../database';
 import { parseToLegacyFormat, flattenHeadings, LegacyHeading } from '../../parser/orgParserAdapter';
+import {
+    loadSettings,
+    expandPath,
+    shouldExclude,
+    findOrgFiles,
+    getDirectoriesToScan,
+    ScimaxSettings
+} from '../settings';
 
 /**
  * Extract scheduling info (SCHEDULED, DEADLINE, CLOSED) for a heading
@@ -51,65 +61,7 @@ interface ParsedArgs {
     flags: Record<string, string | boolean>;
 }
 
-/**
- * Get VS Code settings path for current platform
- */
-function getVSCodeSettingsPath(): string {
-    const home = process.env.HOME || process.env.USERPROFILE || '';
-    const platform = process.platform;
-
-    if (platform === 'darwin') {
-        return path.join(home, 'Library', 'Application Support', 'Code', 'User', 'settings.json');
-    } else if (platform === 'win32') {
-        return path.join(process.env.APPDATA || '', 'Code', 'User', 'settings.json');
-    } else {
-        return path.join(home, '.config', 'Code', 'User', 'settings.json');
-    }
-}
-
-/**
- * Read VS Code settings and extract scimax-relevant paths
- */
-function getConfiguredDirectories(): string[] {
-    const dirs: string[] = [];
-    const home = process.env.HOME || process.env.USERPROFILE || '';
-
-    try {
-        const settingsPath = getVSCodeSettingsPath();
-        if (fs.existsSync(settingsPath)) {
-            const content = fs.readFileSync(settingsPath, 'utf-8');
-            // Remove comments (simple approach - doesn't handle all edge cases)
-            const jsonContent = content.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//g, '');
-            const settings = JSON.parse(jsonContent);
-
-            // Get scimax.db.include directories
-            const includeDirs: string[] = settings['scimax.db.include'] || [];
-            for (let dir of includeDirs) {
-                if (dir.startsWith('~')) {
-                    dir = dir.replace(/^~/, home);
-                }
-                if (fs.existsSync(dir)) {
-                    dirs.push(dir);
-                }
-            }
-
-            // Get journal directory
-            let journalDir: string | undefined = settings['scimax.journal.directory'];
-            if (journalDir) {
-                if (journalDir.startsWith('~')) {
-                    journalDir = journalDir.replace(/^~/, home);
-                }
-                if (fs.existsSync(journalDir)) {
-                    dirs.push(journalDir);
-                }
-            }
-        }
-    } catch {
-        // Ignore errors reading settings
-    }
-
-    return dirs;
-}
+// Settings reading moved to ../settings.ts for shared use across CLI commands
 
 /**
  * Get unique root directories from already-indexed files in the database.
@@ -203,8 +155,10 @@ USAGE:
     scimax db check             Check for stale/missing entries
 
 OPTIONS:
-    --path <dir>    Directory to scan (default: current) [for rebuild]
-    --force         Force full rebuild
+    --path <dir>       Directory to scan (default: current) [for rebuild]
+    --force            Force full rebuild
+    --embeddings       Also update embeddings (requires Ollama configured)
+    --no-embeddings    Skip embedding generation
 `);
     }
 }
@@ -236,7 +190,44 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
     console.log(`Database path: ${config.dbPath}`);
     console.log();
 
+    // Load settings for embedding configuration
+    const settings = loadSettings();
+
     const db = await createCliDatabase(config.dbPath);
+
+    // Determine whether to update embeddings
+    // --embeddings flag enables, --no-embeddings disables, otherwise use settings
+    let updateEmbeddings = false;
+    let embeddingService = null;
+
+    if (args.flags['no-embeddings']) {
+        updateEmbeddings = false;
+        console.log('Embeddings: Disabled (--no-embeddings flag)');
+    } else if (args.flags.embeddings || settings.embedding.provider !== 'none') {
+        // Try to create embedding service
+        embeddingService = createCliEmbeddingService(settings.embedding);
+        if (embeddingService) {
+            // Test connection
+            process.stdout.write('Testing embedding service connection...');
+            const ok = await testCliEmbeddingService(embeddingService);
+            if (ok) {
+                updateEmbeddings = true;
+                db.setEmbeddingService(embeddingService);
+                console.log(' OK');
+                console.log(`  Provider: ${settings.embedding.provider}`);
+                console.log(`  Model: ${settings.embedding.ollamaModel}`);
+                console.log(`  Dimensions: ${embeddingService.dimensions}`);
+            } else {
+                console.log(' FAILED');
+                console.log('  Embeddings will be skipped. Is Ollama running?');
+            }
+        } else {
+            console.log('Embeddings: No provider configured');
+        }
+    } else {
+        console.log('Embeddings: Disabled (no provider configured)');
+    }
+    console.log();
 
     try {
         // Get all files already in the database
@@ -252,6 +243,7 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
         let indexed = 0;
         let deleted = 0;
         let errors = 0;
+        let embeddingsGenerated = 0;
 
         for (const file of files) {
             const filePath = file.path;
@@ -309,7 +301,19 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
 
                 await db.indexFile(filePath, cliDoc);
                 indexed++;
-                console.log(' OK');
+
+                // Generate embeddings if enabled
+                if (updateEmbeddings) {
+                    try {
+                        await db.createEmbeddingsForFile(filePath, content);
+                        embeddingsGenerated++;
+                        console.log(' OK (+embeddings)');
+                    } catch (embErr) {
+                        console.log(` OK (embeddings failed: ${embErr instanceof Error ? embErr.message : String(embErr)})`);
+                    }
+                } else {
+                    console.log(' OK');
+                }
             } catch (err) {
                 errors++;
                 console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
@@ -318,6 +322,9 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
 
         console.log();
         console.log(`Indexed: ${indexed} file(s)`);
+        if (updateEmbeddings) {
+            console.log(`Embeddings generated: ${embeddingsGenerated} file(s)`);
+        }
         if (deleted > 0) {
             console.log(`Removed (missing): ${deleted} file(s)`);
         }
@@ -333,6 +340,16 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
     console.log(`Database path: ${config.dbPath}`);
     console.log();
 
+    // Load settings from VS Code settings.json
+    const settings = loadSettings();
+
+    // Show exclude patterns being used
+    console.log('Using exclude patterns:');
+    for (const pattern of settings.db.exclude) {
+        console.log(`  ${pattern}`);
+    }
+    console.log();
+
     // Collect directories to scan
     const directoriesToScan: string[] = [];
 
@@ -344,8 +361,8 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
         // Auto-discover directories from multiple sources
         console.log('Discovering directories to scan...');
 
-        // 1. From VS Code settings (scimax.db.include, scimax.journal.directory)
-        const configDirs = getConfiguredDirectories();
+        // 1. From VS Code settings (scimax.db.include, scimax.journal.directory, scimax.agenda.include)
+        const configDirs = getDirectoriesToScan(settings);
         if (configDirs.length > 0) {
             console.log(`  From VS Code settings: ${configDirs.length} directories`);
             directoriesToScan.push(...configDirs);
@@ -385,10 +402,12 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
     }
     console.log();
 
-    // Find all org files across all directories
+    // Find all org files across all directories (using shared function with exclude patterns)
     const allOrgFiles: string[] = [];
     for (const dir of uniqueDirs) {
-        const files = findOrgFiles(dir);
+        const files = findOrgFiles(dir, settings.db.exclude, {
+            maxFileSizeMB: settings.db.maxFileSizeMB
+        });
         allOrgFiles.push(...files);
     }
 
@@ -404,9 +423,33 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
 
     const db = await createCliDatabase(config.dbPath);
 
+    // Setup embedding service if configured
+    let updateEmbeddings = false;
+    if (args.flags['no-embeddings']) {
+        console.log('Embeddings: Disabled (--no-embeddings flag)');
+    } else if (args.flags.embeddings || settings.embedding.provider !== 'none') {
+        const embeddingService = createCliEmbeddingService(settings.embedding);
+        if (embeddingService) {
+            process.stdout.write('Testing embedding service connection...');
+            const ok = await testCliEmbeddingService(embeddingService);
+            if (ok) {
+                updateEmbeddings = true;
+                db.setEmbeddingService(embeddingService);
+                console.log(' OK');
+                console.log(`  Provider: ${settings.embedding.provider}`);
+                console.log(`  Model: ${settings.embedding.ollamaModel}`);
+            } else {
+                console.log(' FAILED');
+                console.log('  Embeddings will be skipped. Is Ollama running?');
+            }
+        }
+    }
+    console.log();
+
     try {
         let indexed = 0;
         let errors = 0;
+        let embeddingsGenerated = 0;
 
         for (const filePath of orgFiles) {
             // Show just filename for cleaner output
@@ -451,7 +494,19 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
 
                 await db.indexFile(filePath, cliDoc);
                 indexed++;
-                console.log(' OK');
+
+                // Generate embeddings if enabled
+                if (updateEmbeddings) {
+                    try {
+                        await db.createEmbeddingsForFile(filePath, content);
+                        embeddingsGenerated++;
+                        console.log(' OK (+embeddings)');
+                    } catch (embErr) {
+                        console.log(` OK (embeddings failed: ${embErr instanceof Error ? embErr.message : String(embErr)})`);
+                    }
+                } else {
+                    console.log(' OK');
+                }
             } catch (err) {
                 errors++;
                 console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
@@ -460,6 +515,9 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
 
         console.log();
         console.log(`Indexed: ${indexed} file(s)`);
+        if (updateEmbeddings) {
+            console.log(`Embeddings generated: ${embeddingsGenerated} file(s)`);
+        }
         if (errors > 0) {
             console.log(`Errors: ${errors} file(s)`);
         }
@@ -469,7 +527,8 @@ async function rebuildDatabase(config: CliConfig, args: ParsedArgs): Promise<voi
 }
 
 async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void> {
-    const dirArg = args.args[0];
+    // args.args[0] is the subcommand ('scan'), args.args[1] is the directory
+    const dirArg = args.args[1];
 
     if (!dirArg) {
         console.error('Error: scan requires a directory argument');
@@ -489,12 +548,24 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
         process.exit(1);
     }
 
+    // Load settings from VS Code settings.json
+    const settings = loadSettings();
+
     console.log(`Scanning directory: ${scanDir}`);
     console.log(`Database path: ${config.dbPath}`);
     console.log();
 
-    // Find all org files
-    const orgFiles = findOrgFiles(scanDir);
+    // Show exclude patterns being used
+    console.log('Using exclude patterns:');
+    for (const pattern of settings.db.exclude) {
+        console.log(`  ${pattern}`);
+    }
+    console.log();
+
+    // Find all org files (using shared function with exclude patterns)
+    const orgFiles = findOrgFiles(scanDir, settings.db.exclude, {
+        maxFileSizeMB: settings.db.maxFileSizeMB
+    });
     console.log(`Found ${orgFiles.length} org file(s) to index.`);
     console.log();
 
@@ -505,9 +576,33 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
 
     const db = await createCliDatabase(config.dbPath);
 
+    // Setup embedding service if configured
+    let updateEmbeddings = false;
+    if (args.flags['no-embeddings']) {
+        console.log('Embeddings: Disabled (--no-embeddings flag)');
+    } else if (args.flags.embeddings || settings.embedding.provider !== 'none') {
+        const embeddingService = createCliEmbeddingService(settings.embedding);
+        if (embeddingService) {
+            process.stdout.write('Testing embedding service connection...');
+            const ok = await testCliEmbeddingService(embeddingService);
+            if (ok) {
+                updateEmbeddings = true;
+                db.setEmbeddingService(embeddingService);
+                console.log(' OK');
+                console.log(`  Provider: ${settings.embedding.provider}`);
+                console.log(`  Model: ${settings.embedding.ollamaModel}`);
+            } else {
+                console.log(' FAILED');
+                console.log('  Embeddings will be skipped. Is Ollama running?');
+            }
+        }
+    }
+    console.log();
+
     try {
         let indexed = 0;
         let errors = 0;
+        let embeddingsGenerated = 0;
 
         for (const filePath of orgFiles) {
             const relativePath = path.relative(scanDir, filePath);
@@ -551,7 +646,19 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
 
                 await db.indexFile(filePath, cliDoc);
                 indexed++;
-                console.log(' OK');
+
+                // Generate embeddings if enabled
+                if (updateEmbeddings) {
+                    try {
+                        await db.createEmbeddingsForFile(filePath, content);
+                        embeddingsGenerated++;
+                        console.log(' OK (+embeddings)');
+                    } catch (embErr) {
+                        console.log(` OK (embeddings failed: ${embErr instanceof Error ? embErr.message : String(embErr)})`);
+                    }
+                } else {
+                    console.log(' OK');
+                }
             } catch (err) {
                 errors++;
                 console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
@@ -560,6 +667,9 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
 
         console.log();
         console.log(`Indexed: ${indexed} file(s)`);
+        if (updateEmbeddings) {
+            console.log(`Embeddings generated: ${embeddingsGenerated} file(s)`);
+        }
         if (errors > 0) {
             console.log(`Errors: ${errors} file(s)`);
         }
@@ -568,26 +678,7 @@ async function scanDirectory(config: CliConfig, args: ParsedArgs): Promise<void>
     }
 }
 
-function findOrgFiles(dir: string, files: string[] = []): string[] {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-
-    for (const entry of entries) {
-        const fullPath = path.join(dir, entry.name);
-
-        // Skip common ignore patterns
-        if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.scimax') {
-            continue;
-        }
-
-        if (entry.isDirectory()) {
-            findOrgFiles(fullPath, files);
-        } else if (entry.isFile() && entry.name.endsWith('.org')) {
-            files.push(fullPath);
-        }
-    }
-
-    return files;
-}
+// findOrgFiles moved to ../settings.ts for shared use across CLI commands
 
 async function checkDatabase(config: CliConfig): Promise<void> {
     if (!fs.existsSync(config.dbPath)) {

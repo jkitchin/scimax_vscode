@@ -63,6 +63,13 @@ export interface DatabaseInfo {
         model?: string;
         dimensions?: number;
         ollamaUrl?: string;
+        // Runtime status
+        ollamaRunning?: boolean;
+        ollamaVersion?: string;
+        modelAvailable?: boolean;
+        availableModels?: string[];
+        embeddingCount?: number;
+        connectionError?: string;
     };
 }
 
@@ -118,6 +125,7 @@ const EXECUTABLES: Array<{
     { name: 'kpsewhich', displayName: 'kpsewhich', versionArg: '--version', purpose: 'TeX path lookup' },
     { name: 'node', displayName: 'Node.js', versionArg: '--version', purpose: 'JavaScript execution' },
     { name: 'npm', displayName: 'npm', versionArg: '--version', purpose: 'Package management' },
+    { name: 'ollama', displayName: 'Ollama', versionArg: '--version', purpose: 'Local LLM inference (embeddings)' },
 ];
 
 /**
@@ -472,6 +480,17 @@ async function getDatabaseInfo(context: vscode.ExtensionContext): Promise<Databa
         info.embedding.model = config.get<string>('ollamaModel') || 'nomic-embed-text';
         info.embedding.ollamaUrl = config.get<string>('ollamaUrl') || 'http://localhost:11434';
         info.embedding.dimensions = getEmbeddingDimensions(info.embedding.model, provider);
+
+        // Check Ollama runtime status
+        const ollamaStatus = await checkOllamaStatus(
+            info.embedding.ollamaUrl,
+            info.embedding.model
+        );
+        info.embedding.ollamaRunning = ollamaStatus.running;
+        info.embedding.ollamaVersion = ollamaStatus.version;
+        info.embedding.modelAvailable = ollamaStatus.modelAvailable;
+        info.embedding.availableModels = ollamaStatus.availableModels;
+        info.embedding.connectionError = ollamaStatus.error;
     }
 
     // Get database stats if initialized (don't force initialization)
@@ -506,6 +525,99 @@ async function getDatabaseInfo(context: vscode.ExtensionContext): Promise<Databa
     }
 
     return info;
+}
+
+/**
+ * Check Ollama service status
+ */
+async function checkOllamaStatus(
+    url: string,
+    expectedModel: string
+): Promise<{
+    running: boolean;
+    version?: string;
+    modelAvailable: boolean;
+    availableModels: string[];
+    error?: string;
+}> {
+    const result = {
+        running: false,
+        version: undefined as string | undefined,
+        modelAvailable: false,
+        availableModels: [] as string[],
+        error: undefined as string | undefined,
+    };
+
+    try {
+        // Check if Ollama is running by getting version
+        const versionResponse = await fetchWithTimeout(`${url}/api/version`, 5000);
+        if (versionResponse.ok) {
+            const versionData = await versionResponse.json() as { version?: string };
+            result.running = true;
+            result.version = versionData.version;
+        }
+    } catch (err: any) {
+        result.error = err.message || 'Connection failed';
+        return result;
+    }
+
+    try {
+        // Get list of available models
+        const tagsResponse = await fetchWithTimeout(`${url}/api/tags`, 5000);
+        if (tagsResponse.ok) {
+            const tagsData = await tagsResponse.json() as { models?: Array<{ name: string }> };
+            const models = tagsData.models || [];
+            result.availableModels = models.map((m) => m.name);
+            // Check if expected model is available (handle model:tag format)
+            result.modelAvailable = models.some((m) => {
+                const modelName = m.name.split(':')[0];
+                return modelName === expectedModel || m.name === expectedModel;
+            });
+        }
+    } catch {
+        // Models list failed, but Ollama is running
+    }
+
+    return result;
+}
+
+/**
+ * Simple fetch with timeout (no external dependencies)
+ */
+function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+    return new Promise((resolve, reject) => {
+        const urlObj = new URL(url);
+        const lib = urlObj.protocol === 'https:' ? require('https') : require('http');
+
+        const req = lib.request(
+            {
+                hostname: urlObj.hostname,
+                port: urlObj.port || (urlObj.protocol === 'https:' ? 443 : 80),
+                path: urlObj.pathname,
+                method: 'GET',
+                timeout: timeoutMs,
+            },
+            (res: any) => {
+                let data = '';
+                res.on('data', (chunk: any) => (data += chunk));
+                res.on('end', () => {
+                    resolve({
+                        ok: res.statusCode >= 200 && res.statusCode < 300,
+                        status: res.statusCode,
+                        json: () => Promise.resolve(JSON.parse(data)),
+                    } as Response);
+                });
+            }
+        );
+
+        req.on('error', reject);
+        req.on('timeout', () => {
+            req.destroy();
+            reject(new Error('Connection timeout'));
+        });
+
+        req.end();
+    });
 }
 
 /**
@@ -806,17 +918,34 @@ export function formatReportAsMarkdown(info: DiagnosticInfo): string {
     lines.push('| Property | Value |');
     lines.push('|----------|-------|');
     lines.push(`| Provider | ${info.database.embedding?.provider || 'none'} |`);
-    if (info.database.embedding?.model) {
+    if (info.database.embedding?.provider === 'ollama') {
         lines.push(`| Model | ${info.database.embedding.model} |`);
-    }
-    if (info.database.embedding?.dimensions) {
         lines.push(`| Dimensions | ${info.database.embedding.dimensions} |`);
-    }
-    if (info.database.embedding?.ollamaUrl) {
         lines.push(`| Ollama URL | ${info.database.embedding.ollamaUrl} |`);
+        // Runtime status
+        if (info.database.embedding.connectionError) {
+            lines.push(`| Ollama Status | ❌ Not running (${info.database.embedding.connectionError}) |`);
+        } else if (info.database.embedding.ollamaRunning) {
+            lines.push(`| Ollama Status | ✅ Running (v${info.database.embedding.ollamaVersion || 'unknown'}) |`);
+            if (info.database.embedding.modelAvailable) {
+                lines.push(`| Model Status | ✅ Available |`);
+            } else {
+                lines.push(`| Model Status | ❌ Not found (run: \`ollama pull ${info.database.embedding.model}\`) |`);
+            }
+            if (info.database.embedding.availableModels && info.database.embedding.availableModels.length > 0) {
+                const modelList = info.database.embedding.availableModels.slice(0, 5).join(', ');
+                const suffix = info.database.embedding.availableModels.length > 5
+                    ? ` (+${info.database.embedding.availableModels.length - 5} more)`
+                    : '';
+                lines.push(`| Available Models | ${modelList}${suffix} |`);
+            }
+        } else {
+            lines.push(`| Ollama Status | ⚠️ Unknown |`);
+        }
     }
     if (info.database.stats) {
         lines.push(`| Has Embeddings | ${info.database.stats.hasEmbeddings ? 'Yes' : 'No'} |`);
+        lines.push(`| Embedding Chunks | ${info.database.stats.chunks} |`);
         lines.push(`| Vector Search | ${info.database.stats.vectorSearchSupported ? 'Supported' : 'Not available'} |`);
         if (info.database.stats.vectorSearchError) {
             lines.push(`| Vector Search Error | ${info.database.stats.vectorSearchError} |`);
