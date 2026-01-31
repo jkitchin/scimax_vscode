@@ -149,14 +149,14 @@ scimax db - Database operations
 
 USAGE:
     scimax db stats             Show database statistics
-    scimax db reindex           Re-index all files already in the database
+    scimax db reindex           Re-index changed files (skips unchanged by mtime)
     scimax db rebuild           Rebuild database from org files
     scimax db scan <dir>        Scan a specific directory and add to database
     scimax db check             Check for stale/missing entries
 
 OPTIONS:
     --path <dir>       Directory to scan (default: current) [for rebuild]
-    --force            Force full rebuild
+    --force            Force reindex of all files (ignore mtime)
     --embeddings       Also update embeddings (requires Ollama configured)
     --no-embeddings    Skip embedding generation
 `);
@@ -229,6 +229,13 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
     }
     console.log();
 
+    // Check for --force flag
+    const forceReindex = !!args.flags.force;
+    if (forceReindex) {
+        console.log('Force mode: will reindex all files regardless of mtime');
+        console.log();
+    }
+
     try {
         // Get all files already in the database
         const files = await db.getIndexedFiles();
@@ -241,6 +248,7 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
         }
 
         let indexed = 0;
+        let skipped = 0;
         let deleted = 0;
         let errors = 0;
         let embeddingsGenerated = 0;
@@ -260,6 +268,20 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
                     console.log(` ERROR: ${err instanceof Error ? err.message : String(err)}`);
                 }
                 continue;
+            }
+
+            // Check if file has changed (by mtime) unless --force is set
+            if (!forceReindex && file.lastModified) {
+                try {
+                    const stats = fs.statSync(filePath);
+                    // Compare mtime (allow 1 second tolerance for filesystem differences)
+                    if (Math.abs(stats.mtimeMs - file.lastModified) < 1000) {
+                        skipped++;
+                        continue; // Skip unchanged file
+                    }
+                } catch {
+                    // If we can't stat, proceed with reindexing
+                }
             }
 
             process.stdout.write(`  Indexing: ${displayPath}...`);
@@ -322,6 +344,9 @@ async function reindexFiles(config: CliConfig, args: ParsedArgs): Promise<void> 
 
         console.log();
         console.log(`Indexed: ${indexed} file(s)`);
+        if (skipped > 0) {
+            console.log(`Skipped (unchanged): ${skipped} file(s)`);
+        }
         if (updateEmbeddings) {
             console.log(`Embeddings generated: ${embeddingsGenerated} file(s)`);
         }
