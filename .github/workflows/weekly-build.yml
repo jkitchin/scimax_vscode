@@ -33,6 +33,18 @@ jobs:
       - name: Package extension
         run: npx vsce package
 
+      - name: Install VS Code
+        run: |
+          wget -q "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64" -O code.deb
+          sudo dpkg -i code.deb
+          sudo apt-get install -f -y
+
+      - name: Install extension
+        run: code --install-extension *.vsix --force
+
+      - name: Verify installation
+        run: code --list-extensions | grep -i scimax
+
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:
