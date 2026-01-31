@@ -278,6 +278,9 @@ export function registerSpeedCommands(context: vscode.ExtensionContext): void {
     // Setup context tracking
     setupSpeedCommandContext(context);
 
+    // Initialize planning module with extension context (for calendar picker)
+    planning.initializePlanning(context);
+
     // Navigation commands
     context.subscriptions.push(
         vscode.commands.registerCommand('scimax.speed.nextSibling', navigation.nextSiblingHeading),

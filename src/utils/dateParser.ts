@@ -10,8 +10,10 @@
  * Parse a natural language date expression into a Date object.
  *
  * Supported expressions:
- * - Named: today, tomorrow, yesterday, next week, next month
+ * - Named: today, tomorrow, yesterday, next week, next month, next year
  * - Day names: monday, mon, tuesday, tue, etc. (next occurrence)
+ * - Next day: next monday, next friday, etc. (the week after this week's occurrence)
+ * - This day: this monday, this friday, etc. (this week's occurrence)
  * - Relative: +2d, -1w, +3m, +1y (days, weeks, months, years)
  * - Month + day: jan 15, 15 jan, december 25
  * - ISO format: 2026-01-15
@@ -24,6 +26,17 @@ export function parseRelativeDate(input: string): Date | null {
     today.setHours(0, 0, 0, 0);
 
     const trimmed = input.trim().toLowerCase();
+
+    // Day name lookup for reuse
+    const dayNames: { [key: string]: number } = {
+        'sun': 0, 'sunday': 0,
+        'mon': 1, 'monday': 1,
+        'tue': 2, 'tues': 2, 'tuesday': 2,
+        'wed': 3, 'wednesday': 3,
+        'thu': 4, 'thur': 4, 'thurs': 4, 'thursday': 4,
+        'fri': 5, 'friday': 5,
+        'sat': 6, 'saturday': 6
+    };
 
     // Named expressions
     if (trimmed === 'today') return today;
@@ -47,18 +60,52 @@ export function parseRelativeDate(input: string): Date | null {
         d.setMonth(d.getMonth() + 1);
         return d;
     }
+    if (trimmed === 'next year') {
+        const d = new Date(today);
+        d.setFullYear(d.getFullYear() + 1);
+        return d;
+    }
 
-    // Day names: monday, tuesday, etc. -> next occurrence of that day
-    const dayNames: { [key: string]: number } = {
-        'sun': 0, 'sunday': 0,
-        'mon': 1, 'monday': 1,
-        'tue': 2, 'tues': 2, 'tuesday': 2,
-        'wed': 3, 'wednesday': 3,
-        'thu': 4, 'thur': 4, 'thurs': 4, 'thursday': 4,
-        'fri': 5, 'friday': 5,
-        'sat': 6, 'saturday': 6
-    };
+    // "next <day>" expressions: "next friday", "next mon", etc.
+    const nextDayMatch = trimmed.match(/^next\s+(\w+)$/);
+    if (nextDayMatch) {
+        const dayName = nextDayMatch[1];
+        if (dayNames[dayName] !== undefined) {
+            const targetDay = dayNames[dayName];
+            const currentDay = today.getDay();
+            // Always go to next week's occurrence (7-13 days from now)
+            let daysUntil = targetDay - currentDay;
+            if (daysUntil <= 0) {
+                daysUntil += 7;
+            }
+            // "next friday" means the friday after "this friday"
+            // so add 7 more days if it's this week's occurrence
+            daysUntil += 7;
+            const d = new Date(today);
+            d.setDate(d.getDate() + daysUntil);
+            return d;
+        }
+    }
 
+    // "this <day>" expressions: "this friday", "this mon", etc.
+    const thisDayMatch = trimmed.match(/^this\s+(\w+)$/);
+    if (thisDayMatch) {
+        const dayName = thisDayMatch[1];
+        if (dayNames[dayName] !== undefined) {
+            const targetDay = dayNames[dayName];
+            const currentDay = today.getDay();
+            let daysUntil = targetDay - currentDay;
+            // "this friday" means this week's friday, even if it's today
+            if (daysUntil < 0) {
+                daysUntil += 7; // If past, go to next week (graceful fallback)
+            }
+            const d = new Date(today);
+            d.setDate(d.getDate() + daysUntil);
+            return d;
+        }
+    }
+
+    // Day names alone: monday, tuesday, etc. -> next occurrence of that day
     if (dayNames[trimmed] !== undefined) {
         const targetDay = dayNames[trimmed];
         const currentDay = today.getDay();
@@ -163,5 +210,5 @@ export function parseRelativeDate(input: string): Date | null {
  * Get examples of supported date expressions for display in UI
  */
 export function getDateExpressionExamples(): string {
-    return 'Examples: today, tomorrow, monday, +2d, -1w, +3m, jan 15, 2026-01-15';
+    return 'Examples: today, tomorrow, friday, next friday, this monday, +2d, +1w, jan 15';
 }

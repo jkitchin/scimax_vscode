@@ -8,6 +8,17 @@ import * as vscode from 'vscode';
 import { getHeadingLevel } from './context';
 import { parseRelativeDate, getDateExpressionExamples } from '../../utils/dateParser';
 import { formatOrgTimestamp as formatTimestamp } from '../../parser/orgRepeater';
+import { showCalendarDatePicker } from '../calendarDatePicker';
+
+// Store extension URI for calendar picker
+let extensionUri: vscode.Uri | undefined;
+
+/**
+ * Initialize the planning module with extension context
+ */
+export function initializePlanning(context: vscode.ExtensionContext): void {
+    extensionUri = context.extensionUri;
+}
 
 /**
  * Format a date as an org-mode timestamp (wrapper for consistency)
@@ -85,12 +96,99 @@ function getPlanningIndent(document: vscode.TextDocument, headingLine: number): 
 }
 
 /**
- * Prompt user for a date using natural language input
+ * Prompt user for a date using QuickPick with calendar option
  */
 async function promptForDate(title: string): Promise<Date | null> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    // Find next occurrence of each weekday
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const currentDay = today.getDay();
+
+    // Create options for upcoming weekdays
+    const weekdayOptions: vscode.QuickPickItem[] = [];
+    for (let i = 1; i <= 7; i++) {
+        const futureDate = new Date(today);
+        futureDate.setDate(today.getDate() + i);
+        const dayName = dayNames[futureDate.getDay()];
+        const dateStr = formatDateForDisplay(futureDate);
+        weekdayOptions.push({
+            label: dayName,
+            description: dateStr,
+            detail: `+${i} day${i > 1 ? 's' : ''}`
+        });
+    }
+
+    const items: vscode.QuickPickItem[] = [
+        { label: 'Today', description: formatDateForDisplay(today), detail: 'Today\'s date' },
+        { label: 'Tomorrow', description: formatDateForDisplay(tomorrow), detail: '+1 day' },
+        { label: '$(separator)', kind: vscode.QuickPickItemKind.Separator },
+        ...weekdayOptions,
+        { label: '$(separator)', kind: vscode.QuickPickItemKind.Separator },
+        { label: '$(calendar) Open Calendar...', description: 'Pick from a calendar widget' },
+        { label: '$(edit) Type date expression...', description: 'Enter natural language date' }
+    ];
+
+    const selected = await vscode.window.showQuickPick(items, {
+        title: title,
+        placeHolder: 'Select a date or choose an input method'
+    });
+
+    if (!selected) return null;
+
+    if (selected.label === '$(calendar) Open Calendar...') {
+        if (!extensionUri) {
+            vscode.window.showErrorMessage('Calendar picker not available - extension not properly initialized');
+            return null;
+        }
+        return showCalendarDatePicker(extensionUri, title);
+    }
+
+    if (selected.label === '$(edit) Type date expression...') {
+        return promptForDateText(title);
+    }
+
+    // Parse the selected option
+    if (selected.label === 'Today') return today;
+    if (selected.label === 'Tomorrow') return tomorrow;
+
+    // Parse weekday selection
+    const dayIndex = dayNames.indexOf(selected.label);
+    if (dayIndex !== -1) {
+        // Find the next occurrence of this day
+        let daysUntil = dayIndex - currentDay;
+        if (daysUntil <= 0) daysUntil += 7;
+        const date = new Date(today);
+        date.setDate(today.getDate() + daysUntil);
+        return date;
+    }
+
+    return null;
+}
+
+/**
+ * Format a date for display in QuickPick
+ */
+function formatDateForDisplay(date: Date): string {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}`;
+}
+
+/**
+ * Prompt user for a date using text input with natural language parsing
+ */
+async function promptForDateText(title: string): Promise<Date | null> {
     const input = await vscode.window.showInputBox({
         prompt: title,
-        placeHolder: 'today, tomorrow, +2d, monday, jan 15, 2026-01-15',
+        placeHolder: 'today, tomorrow, +2d, friday, next friday, jan 15',
         validateInput: (value) => {
             if (!value) return null;
             const parsed = parseRelativeDate(value);
