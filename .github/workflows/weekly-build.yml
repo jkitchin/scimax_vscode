@@ -21,6 +21,11 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Install Pandoc
+        uses: pandoc/actions/setup@v1
+        with:
+          version: 3.1.11
+
       - name: Install dependencies
         run: npm ci
 
