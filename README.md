@@ -1,6 +1,7 @@
 # Scimax for VS Code
 
 [![Tests](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml/badge.svg)](https://github.com/jkitchin/scimax_vscode/actions/workflows/test.yml)
+[![Weekly Build](https://github.com/jkitchin/scimax_vscode/actions/workflows/weekly-build.yml/badge.svg)](https://github.com/jkitchin/scimax_vscode/actions/workflows/weekly-build.yml)
 
 <img src="./media/scimax-logo.png" width="200" />
 
