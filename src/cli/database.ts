@@ -264,6 +264,21 @@ class CliDatabaseImpl implements CliDatabase {
         this.embeddingService = service;
     }
 
+    /**
+     * Execute a database statement with retry logic for transient errors
+     */
+    private async executeWithRetry(
+        stmt: { sql: string; args?: any[] } | string,
+        operationName: string = 'db operation'
+    ): Promise<any> {
+        return withRetry(
+            () => typeof stmt === 'string'
+                ? this.client.execute(stmt)
+                : this.client.execute(stmt),
+            operationName
+        );
+    }
+
     async close(): Promise<void> {
         this.client.close();
     }
@@ -434,11 +449,11 @@ class CliDatabaseImpl implements CliDatabase {
 
         const fileId = fileResult.rows[0].id as number;
 
-        // Delete associated data
-        await this.client.execute({ sql: 'DELETE FROM headings WHERE file_id = ?', args: [fileId] });
-        await this.client.execute({ sql: 'DELETE FROM source_blocks WHERE file_id = ?', args: [fileId] });
-        await this.client.execute({ sql: 'DELETE FROM links WHERE file_id = ?', args: [fileId] });
-        await this.client.execute({ sql: 'DELETE FROM files WHERE id = ?', args: [fileId] });
+        // Delete associated data with retry
+        await this.executeWithRetry({ sql: 'DELETE FROM headings WHERE file_id = ?', args: [fileId] }, 'delete headings');
+        await this.executeWithRetry({ sql: 'DELETE FROM source_blocks WHERE file_id = ?', args: [fileId] }, 'delete blocks');
+        await this.executeWithRetry({ sql: 'DELETE FROM links WHERE file_id = ?', args: [fileId] }, 'delete links');
+        await this.executeWithRetry({ sql: 'DELETE FROM files WHERE id = ?', args: [fileId] }, 'delete file');
     }
 
     async indexFile(filePath: string, doc: CliDocument): Promise<void> {
@@ -450,12 +465,12 @@ class CliDatabaseImpl implements CliDatabase {
         // Clear existing data for this file
         await this.clearFile(filePath);
 
-        // Insert file record
-        await this.client.execute({
+        // Insert file record with retry
+        await this.executeWithRetry({
             sql: `INSERT INTO files (path, file_type, mtime, hash, size, indexed_at, keywords)
                   VALUES (?, 'org', ?, ?, ?, ?, '{}')`,
             args: [filePath, stats.mtimeMs, hash, stats.size, Date.now()],
-        });
+        }, 'insert file');
 
         // Get the new file ID
         const fileResult = await this.client.execute({
@@ -473,11 +488,11 @@ class CliDatabaseImpl implements CliDatabase {
             linePositions.push(pos);
         }
 
-        // Index headings
+        // Index headings with retry
         for (const heading of doc.headings) {
             const beginPos = linePositions[heading.lineNumber - 1] || 0;
 
-            await this.client.execute({
+            await this.executeWithRetry({
                 sql: `INSERT INTO headings
                       (file_id, file_path, level, title, line_number, begin_pos,
                        todo_state, priority, tags, inherited_tags, properties,
@@ -498,12 +513,12 @@ class CliDatabaseImpl implements CliDatabase {
                     heading.deadline || null,
                     heading.closed || null,
                 ],
-            });
+            }, 'insert heading');
         }
 
-        // Index source blocks
+        // Index source blocks with retry
         for (const block of doc.sourceBlocks) {
-            await this.client.execute({
+            await this.executeWithRetry({
                 sql: `INSERT INTO source_blocks
                       (file_id, file_path, language, content, line_number, headers, cell_index)
                       VALUES (?, ?, ?, ?, ?, ?, NULL)`,
@@ -515,7 +530,7 @@ class CliDatabaseImpl implements CliDatabase {
                     block.lineNumber,
                     JSON.stringify(block.headers),
                 ],
-            });
+            }, 'insert block');
         }
     }
 
@@ -532,12 +547,12 @@ class CliDatabaseImpl implements CliDatabase {
 
         const fileId = fileResult.rows[0].id as number;
 
-        // Delete chunks for this file (chunks table stores embeddings)
+        // Delete chunks for this file (chunks table stores embeddings) with retry
         try {
-            await this.client.execute({
+            await this.executeWithRetry({
                 sql: 'DELETE FROM chunks WHERE file_id = ?',
                 args: [fileId],
-            });
+            }, 'delete chunks');
         } catch {
             // chunks table might not exist in older databases
         }
@@ -612,10 +627,10 @@ class CliDatabaseImpl implements CliDatabase {
         const texts = chunks.map(c => c.text);
         const embeddings = await this.embeddingService.embedBatch(texts);
 
-        // Insert chunks with embeddings
+        // Insert chunks with embeddings (with retry)
         for (let i = 0; i < chunks.length; i++) {
             const vectorStr = `[${embeddings[i].join(',')}]`;
-            await this.client.execute({
+            await this.executeWithRetry({
                 sql: `INSERT INTO chunks
                       (file_id, file_path, content, line_start, line_end, embedding)
                       VALUES (?, ?, ?, ?, ?, vector32(?))`,
@@ -624,9 +639,71 @@ class CliDatabaseImpl implements CliDatabase {
                     chunks[i].lineStart, chunks[i].lineEnd,
                     vectorStr
                 ]
-            });
+            }, 'insert chunk');
         }
     }
+}
+
+/**
+ * Retry configuration for database operations
+ */
+const RETRY_CONFIG = {
+    maxAttempts: 5,
+    initialDelayMs: 100,
+    maxDelayMs: 5000,
+    backoffMultiplier: 2,
+};
+
+/**
+ * Check if an error is a transient SQLite error that should be retried
+ */
+function isTransientError(error: any): boolean {
+    const message = error?.message || String(error);
+    return (
+        message.includes('SQLITE_BUSY') ||
+        message.includes('database is locked') ||
+        message.includes('SQLITE_LOCKED')
+    );
+}
+
+/**
+ * Sleep for a specified duration
+ */
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Execute a database operation with retry and exponential backoff
+ */
+async function withRetry<T>(
+    operation: () => Promise<T>,
+    operationName: string
+): Promise<T> {
+    let lastError: any;
+    let delay = RETRY_CONFIG.initialDelayMs;
+
+    for (let attempt = 1; attempt <= RETRY_CONFIG.maxAttempts; attempt++) {
+        try {
+            return await operation();
+        } catch (error: any) {
+            lastError = error;
+
+            if (!isTransientError(error) || attempt === RETRY_CONFIG.maxAttempts) {
+                throw error;
+            }
+
+            // Log retry attempt
+            console.error(
+                `  [Retry ${attempt}/${RETRY_CONFIG.maxAttempts}] ${operationName}: ${error.message}. Waiting ${delay}ms...`
+            );
+
+            await sleep(delay);
+            delay = Math.min(delay * RETRY_CONFIG.backoffMultiplier, RETRY_CONFIG.maxDelayMs);
+        }
+    }
+
+    throw lastError;
 }
 
 /**
@@ -636,6 +713,9 @@ export async function createCliDatabase(dbPath: string): Promise<CliDatabase> {
     const client = createClient({
         url: `file:${dbPath}`,
     });
+
+    // Set busy timeout to wait for locks (30 seconds)
+    await client.execute('PRAGMA busy_timeout = 30000');
 
     return new CliDatabaseImpl(client);
 }
